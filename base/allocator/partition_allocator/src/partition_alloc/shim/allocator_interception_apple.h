@@ -5,7 +5,7 @@
 #ifndef PARTITION_ALLOC_SHIM_ALLOCATOR_INTERCEPTION_APPLE_H_
 #define PARTITION_ALLOC_SHIM_ALLOCATOR_INTERCEPTION_APPLE_H_
 
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include <cstddef>

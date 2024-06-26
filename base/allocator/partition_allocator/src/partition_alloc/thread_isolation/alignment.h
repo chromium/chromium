@@ -5,7 +5,7 @@
 #ifndef PARTITION_ALLOC_THREAD_ISOLATION_ALIGNMENT_H_
 #define PARTITION_ALLOC_THREAD_ISOLATION_ALIGNMENT_H_
 
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 

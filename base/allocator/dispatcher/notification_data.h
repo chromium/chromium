@@ -10,7 +10,7 @@
 #include "base/allocator/dispatcher/memory_tagging.h"
 #include "base/allocator/dispatcher/subsystem.h"
 #include "base/base_export.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 
 namespace base::allocator::dispatcher {
 

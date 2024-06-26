@@ -17,7 +17,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 #if BUILDFLAG(IS_ANDROID)

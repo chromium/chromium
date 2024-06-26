@@ -6,11 +6,11 @@
 
 #include <cstdint>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/dangling_raw_ptr_checks.h"
 #include "partition_alloc/in_slot_metadata.h"
 #include "partition_alloc/partition_alloc.h"
 #include "partition_alloc/partition_alloc_base/check.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/reservation_offset_table.h"
 

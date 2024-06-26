@@ -20,7 +20,7 @@
 //     allocating via malloc() and freeing using __libc_free().
 //     See tcmalloc's libc_override_glibc.h for more context.
 
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include <features.h>  // for __GLIBC__

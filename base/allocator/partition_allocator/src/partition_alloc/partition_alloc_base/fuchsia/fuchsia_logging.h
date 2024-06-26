@@ -9,8 +9,8 @@
 #include <zircon/types.h>
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
 
 // Use the PA_ZX_LOG family of macros along with a zx_status_t containing a

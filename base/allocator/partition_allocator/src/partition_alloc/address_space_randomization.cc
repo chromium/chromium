@@ -5,7 +5,7 @@
 #include "partition_alloc/address_space_randomization.h"
 
 #include "partition_alloc/build_config.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/random.h"
 

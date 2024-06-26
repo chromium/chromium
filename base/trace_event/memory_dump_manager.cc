@@ -37,7 +37,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 #include "third_party/abseil-cpp/absl/base/dynamic_annotations.h"
 
 #if BUILDFLAG(IS_ANDROID)

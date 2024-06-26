@@ -9,10 +9,10 @@
 #include <cstddef>
 #include <memory>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/export_template.h"
 #include "partition_alloc/partition_alloc_base/no_destructor.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "partition_alloc/partition_alloc.h"

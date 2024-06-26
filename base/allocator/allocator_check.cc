@@ -5,7 +5,7 @@
 #include "base/allocator/allocator_check.h"
 
 #include "build/build_config.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "partition_alloc/shim/winheap_stubs_win.h"

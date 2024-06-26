@@ -9,10 +9,10 @@
 #include <cstdint>
 #include <utility>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/freeslot_bitmap_constants.h"
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_constants.h"
 
 #if PA_BUILDFLAG(USE_FREESLOT_BITMAP)

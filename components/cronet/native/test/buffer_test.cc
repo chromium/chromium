@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cronet_c.h"
-
 #include <limits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/check.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/cronet/native/test/test_util.h"
+#include "cronet_c.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

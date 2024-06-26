@@ -9,7 +9,7 @@
 #include <type_traits>
 
 #include "partition_alloc/build_config.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "partition_alloc/buildflags.h"
 
 namespace partition_alloc::internal::base::subtle {
 

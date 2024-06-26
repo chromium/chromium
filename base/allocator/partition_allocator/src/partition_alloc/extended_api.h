@@ -5,7 +5,7 @@
 #ifndef PARTITION_ALLOC_EXTENDED_API_H_
 #define PARTITION_ALLOC_EXTENDED_API_H_
 
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/partition_stats.h"
 #include "partition_alloc/thread_cache.h"

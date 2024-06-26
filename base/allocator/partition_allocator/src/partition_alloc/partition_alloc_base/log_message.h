@@ -8,8 +8,8 @@
 #include <cstddef>
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 #include "partition_alloc/partition_alloc_base/scoped_clear_last_error.h"
 #include "partition_alloc/partition_alloc_base/strings/cstring_builder.h"
 

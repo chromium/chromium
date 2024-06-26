@@ -23,8 +23,8 @@
 #include "base/memory/aligned_memory.h"
 #include "base/memory/page_size.h"
 #include "build/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/page_allocator.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)

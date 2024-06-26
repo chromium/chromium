@@ -11,7 +11,7 @@
 #include "base/immediate_crash.h"
 #include "base/logging.h"
 #include "build/build_config.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 #include "partition_alloc/page_allocator.h"

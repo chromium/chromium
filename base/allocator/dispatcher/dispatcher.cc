@@ -8,7 +8,7 @@
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/no_destructor.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/shim/allocator_shim.h"
 
 #if DCHECK_IS_ON()

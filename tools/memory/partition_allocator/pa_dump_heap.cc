@@ -13,8 +13,8 @@
 #include <optional>
 #include <string>
 
+#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/in_slot_metadata.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_page.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"

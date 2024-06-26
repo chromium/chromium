@@ -8,7 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "partition_alloc/build_config.h"

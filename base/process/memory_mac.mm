@@ -5,10 +5,11 @@
 #include "base/process/memory.h"
 
 #include <stdlib.h>
+
 #include <new>
 
 #include "build/build_config.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/shim/allocator_interception_apple.h"
 #include "partition_alloc/shim/allocator_shim.h"
 

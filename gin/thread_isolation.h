@@ -5,7 +5,7 @@
 #ifndef GIN_THREAD_ISOLATION_H_
 #define GIN_THREAD_ISOLATION_H_
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 

@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "build/buildflag.h"
 #include "build/rust/tests/test_rust_static_library/src/lib.rs.h"
 #include "testing/gtest/include/gtest/gtest.h"

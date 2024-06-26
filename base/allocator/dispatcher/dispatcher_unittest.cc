@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/partition_root.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#include "base/allocator/dispatcher/dispatcher.h"
 
 #include "base/allocator/dispatcher/configuration.h"
-#include "base/allocator/dispatcher/dispatcher.h"
 #include "base/allocator/dispatcher/notification_data.h"
 #include "base/allocator/dispatcher/testing/dispatcher_test.h"
 #include "base/allocator/dispatcher/testing/tools.h"
 #include "build/build_config.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
+#include "partition_alloc/partition_root.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 #include "partition_alloc/partition_alloc_for_testing.h"

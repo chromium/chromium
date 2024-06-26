@@ -7,9 +7,9 @@
 #include <cstdint>
 #include <limits>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/freeslot_bitmap_constants.h"
 #include "partition_alloc/partition_alloc.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/partition_page.h"

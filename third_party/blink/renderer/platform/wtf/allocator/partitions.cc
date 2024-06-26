@@ -32,10 +32,10 @@
 
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_alloc_support.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
 #include "base/debug/alias.h"

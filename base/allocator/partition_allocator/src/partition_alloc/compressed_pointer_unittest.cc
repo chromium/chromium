@@ -4,8 +4,8 @@
 
 #include "partition_alloc/compressed_pointer.h"
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_root.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

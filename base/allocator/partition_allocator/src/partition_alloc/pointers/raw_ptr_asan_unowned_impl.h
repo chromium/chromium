@@ -8,9 +8,9 @@
 #include <cstddef>
 #include <type_traits>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/cxx20_is_constant_evaluated.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_forward.h"
 
 #if !PA_BUILDFLAG(USE_RAW_PTR_ASAN_UNOWNED_IMPL)

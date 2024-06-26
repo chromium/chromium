@@ -12,8 +12,8 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/time/time.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_root.h"
 
 namespace base {

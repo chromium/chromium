@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/allocator/early_zone_registration_apple.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 
 __attribute__((constructor(0))) void InitializePartitionAlloc() {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)

@@ -4,7 +4,7 @@
 
 #include "partition_alloc/extended_api.h"
 
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "partition_alloc/thread_cache.h"

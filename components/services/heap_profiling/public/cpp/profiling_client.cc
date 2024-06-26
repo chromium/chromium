@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/debug/stack_trace.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"

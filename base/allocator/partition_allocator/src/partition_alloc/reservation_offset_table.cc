@@ -4,7 +4,7 @@
 
 #include "partition_alloc/reservation_offset_table.h"
 
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 
 namespace partition_alloc::internal {
 

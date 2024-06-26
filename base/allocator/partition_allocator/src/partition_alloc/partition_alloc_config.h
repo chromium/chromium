@@ -6,8 +6,7 @@
 #define PARTITION_ALLOC_PARTITION_ALLOC_CONFIG_H_
 
 #include "partition_alloc/build_config.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 
 // PA_CONFIG() uses a similar trick as BUILDFLAG() to allow the compiler catch
 // typos or a missing #include.

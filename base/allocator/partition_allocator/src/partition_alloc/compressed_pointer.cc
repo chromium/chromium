@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "partition_alloc/compressed_pointer.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
+
+#include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 

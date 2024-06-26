@@ -5,7 +5,7 @@
 #include "partition_alloc/partition_alloc_base/strings/cstring_builder.h"
 
 #include "partition_alloc/build_config.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
 
 #if !PA_BUILDFLAG(IS_WIN)

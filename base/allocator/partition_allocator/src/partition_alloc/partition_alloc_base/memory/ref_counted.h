@@ -6,11 +6,11 @@
 #define PARTITION_ALLOC_PARTITION_ALLOC_BASE_MEMORY_REF_COUNTED_H_
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/atomic_ref_count.h"
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 #include "partition_alloc/partition_alloc_base/memory/scoped_refptr.h"
 
 namespace partition_alloc::internal::base {

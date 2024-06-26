@@ -5,7 +5,7 @@
 #ifndef BASE_MEMORY_RAW_PTR_ASAN_BOUND_ARG_TRACKER_H_
 #define BASE_MEMORY_RAW_PTR_ASAN_BOUND_ARG_TRACKER_H_
 
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 #include <cstddef>

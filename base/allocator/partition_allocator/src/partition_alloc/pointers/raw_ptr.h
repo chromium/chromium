@@ -12,16 +12,14 @@
 #include <utility>
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/flags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/cxx20_is_constant_evaluated.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/pointers/instance_tracer.h"
-#include "partition_alloc/raw_ptr_buildflags.h"
 
 #if PA_BUILDFLAG(IS_WIN)
 #include "partition_alloc/partition_alloc_base/win/win_handle_types.h"

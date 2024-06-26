@@ -116,6 +116,6 @@ template("pa_buildflag_header") {
                              "visibility",
                            ])
 
-    public_deps = [ "${_current_dir}:build_config" ]
+    public_deps = [ "${_current_dir}:buildflag_macro" ]
   }
 }

@@ -6,7 +6,7 @@
 
 #include "base/allocator/dispatcher/dispatcher.h"
 #include "base/allocator/dispatcher/initializer.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/debugging_buildflags.h"
 #include "build/build_config.h"

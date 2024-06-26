@@ -15,7 +15,30 @@ if (!defined(partition_alloc_remove_configs)) {
   partition_alloc_remove_configs = []
 }
 
-# Add partition_alloc.gni and import it for partition_alloc configs.
+# Enables compilation of the freelist dispatcher, which we'll use to
+# carry out runtime evaluation of PartitionAlloc's two freelist
+# implementations: the existing encoded-next freelist and the new
+# pool offset freelist. When false, the latter is not built.
+use_freelist_dispatcher = has_64_bit_pointers
+
+assert(has_64_bit_pointers || !use_freelist_dispatcher,
+       "freelist dispatcher can't be used without 64-bit pointers")
+
+record_alloc_info = false
+
+# GWP-ASan is tied to BRP's enablement.
+enable_gwp_asan_support = enable_backup_ref_ptr_support
+
+# Pools are a logical concept when address space is 32-bit.
+glue_core_pools = glue_core_pools && has_64_bit_pointers
+
+# Pointer compression requires 64-bit pointers.
+enable_pointer_compression =
+    enable_pointer_compression_support && has_64_bit_pointers
+
+# Duplicates the setup Chromium uses to define `DCHECK_IS_ON()`, but avails it
+# as a buildflag.
+dchecks_are_on = is_debug || dcheck_always_on
 
 # TODO(crbug.com/40276913): Split PartitionAlloc into a public and
 # private parts. The public config would include add the "./include" dir and
@@ -90,11 +113,82 @@ config("wexit_time_destructors") {
   }
 }
 
+source_set("buildflag_macro") {
+  sources = [ "buildflag.h" ]
+  public_configs = [ ":public_includes" ]
+}
+
+pa_buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [
+    "ASSERT_CPP_20=$assert_cpp20",
+    "BACKUP_REF_PTR_EXTRA_OOB_CHECKS=$backup_ref_ptr_extra_oob_checks",
+    "BACKUP_REF_PTR_POISON_OOB_PTR=$backup_ref_ptr_poison_oob_ptr",
+    "ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=$enable_backup_ref_ptr_feature_flag",
+    "ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=$enable_backup_ref_ptr_instance_tracer",
+    "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$enable_backup_ref_ptr_slow_checks",
+    "ENABLE_BACKUP_REF_PTR_SUPPORT=$enable_backup_ref_ptr_support",
+    "ENABLE_DANGLING_RAW_PTR_CHECKS=$enable_dangling_raw_ptr_checks",
+    "ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=$enable_dangling_raw_ptr_feature_flag",
+    "ENABLE_GWP_ASAN_SUPPORT=$enable_gwp_asan_support",
+    "ENABLE_PKEYS=$enable_pkeys",
+    "ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=$enable_pointer_arithmetic_trait_check",
+    "ENABLE_POINTER_COMPRESSION=$enable_pointer_compression",
+    "ENABLE_POINTER_SUBTRACTION_CHECK=$enable_pointer_subtraction_check",
+    "ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=$enable_shadow_metadata",
+    "ENABLE_THREAD_ISOLATION=$enable_pkeys",
+    "FORCE_ENABLE_RAW_PTR_EXCLUSION=$force_enable_raw_ptr_exclusion",
+    "FORWARD_THROUGH_MALLOC=$forward_through_malloc",
+    "GLUE_CORE_POOLS=$glue_core_pools",
+    "HAS_64_BIT_POINTERS=$has_64_bit_pointers",
+    "HAS_MEMORY_TAGGING=$has_memory_tagging",
+    "IS_CASTOS=$is_castos",
+    "IS_CAST_ANDROID=$is_cast_android",
+    "IS_CHROMEOS=$is_chromeos",
+    "IS_DEBUG=$is_debug",
+    "RAW_PTR_ZERO_ON_CONSTRUCT=$raw_ptr_zero_on_construct",
+    "RAW_PTR_ZERO_ON_DESTRUCT=$raw_ptr_zero_on_destruct",
+    "RAW_PTR_ZERO_ON_MOVE=$raw_ptr_zero_on_move",
+    "RECORD_ALLOC_INFO=$record_alloc_info",
+    "STACK_SCAN_SUPPORTED=$stack_scan_supported",
+    "USE_ALLOCATOR_SHIM=$use_allocator_shim",
+    "USE_ASAN_BACKUP_REF_PTR=$use_asan_backup_ref_ptr",
+    "USE_FREELIST_DISPATCHER=$use_freelist_dispatcher",
+    "USE_FREESLOT_BITMAP=$use_freeslot_bitmap",
+    "USE_FULL_MTE=$use_full_mte",
+    "USE_LARGE_EMPTY_SLOT_SPAN_RING=$use_large_empty_slot_span_ring",
+    "USE_PARTITION_ALLOC=$use_partition_alloc",
+    "USE_PARTITION_ALLOC_AS_MALLOC=$use_partition_alloc_as_malloc",
+    "USE_RAW_PTR_ASAN_UNOWNED_IMPL=$use_raw_ptr_asan_unowned_impl",
+    "USE_RAW_PTR_BACKUP_REF_IMPL=$use_raw_ptr_backup_ref_impl",
+    "USE_RAW_PTR_HOOKABLE_IMPL=$use_raw_ptr_hookable_impl",
+    "USE_STARSCAN=$use_starscan",
+    "DCHECKS_ARE_ON=$dchecks_are_on",
+    "EXPENSIVE_DCHECKS_ARE_ON=$enable_expensive_dchecks",
+    "DCHECK_IS_CONFIGURABLE=$dcheck_is_configurable",
+    "CAN_UNWIND_WITH_FRAME_POINTERS=$can_unwind_with_frame_pointers",
+  ]
+}
+
+# TODO(crbug.com/41481467): Remove this alias.
+# Temporary alias, the time to update partition_alloc dependants.
+# Currently needed by pdfium and dawn.
+source_set("partition_alloc_buildflags") {
+  public = [ "partition_alloc_buildflags.h" ]
+  public_deps = [ ":buildflags" ]
+}
+
+# Provides platform and architecture detections from the compiler defines.
 source_set("build_config") {
   sources = [
     "build_config.h",
     "buildflag.h",
   ]
+  public_deps = [
+    ":buildflag_macro",  # Provides 'PA_BUILDFLAG()' macro.
+    ":buildflags",  # Provides `IS_CHROMEOS` definition.
+  ]
+  public_configs = [ ":public_includes" ]
 }
 
 component("raw_ptr") {
@@ -144,136 +238,6 @@ component("raw_ptr") {
   configs -= partition_alloc_remove_configs
   configs += partition_alloc_add_configs
   configs += [ ":dependants_extra_warnings" ]
-}
-
-# Enables compilation of the freelist dispatcher, which we'll use to
-# carry out runtime evaluation of PartitionAlloc's two freelist
-# implementations: the existing encoded-next freelist and the new
-# pool offset freelist. When false, the latter is not built.
-use_freelist_dispatcher = has_64_bit_pointers
-
-assert(has_64_bit_pointers || !use_freelist_dispatcher,
-       "freelist dispatcher can't be used without 64-bit pointers")
-
-pa_buildflag_header("partition_alloc_buildflags") {
-  header = "partition_alloc_buildflags.h"
-
-  _record_alloc_info = false
-
-  # GWP-ASan is tied to BRP's enablement.
-  _enable_gwp_asan_support = enable_backup_ref_ptr_support
-
-  # Pools are a logical concept when address space is 32-bit.
-  _glue_core_pools = glue_core_pools && has_64_bit_pointers
-
-  # Pointer compression requires 64-bit pointers.
-  _enable_pointer_compression =
-      enable_pointer_compression_support && has_64_bit_pointers
-
-  # TODO(crbug.com/40158212): Need to refactor the following buildflags.
-  # The buildflags (except RECORD_ALLOC_INFO) are used by both chrome and
-  # PartitionAlloc. For PartitionAlloc,
-  # gen/base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h
-  # defines and PartitionAlloc includes the header file. For chrome,
-  # gen/base/allocator/buildflags.h defines and chrome includes.
-  flags = [
-    "HAS_64_BIT_POINTERS=$has_64_bit_pointers",
-    "HAS_MEMORY_TAGGING=$has_memory_tagging",
-
-    "USE_ALLOCATOR_SHIM=$use_allocator_shim",
-    "USE_LARGE_EMPTY_SLOT_SPAN_RING=$use_large_empty_slot_span_ring",
-    "USE_PARTITION_ALLOC=$use_partition_alloc",
-    "USE_PARTITION_ALLOC_AS_MALLOC=$use_partition_alloc_as_malloc",
-
-    "ENABLE_BACKUP_REF_PTR_SUPPORT=$enable_backup_ref_ptr_support",
-    "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$enable_backup_ref_ptr_slow_checks",
-    "ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=$enable_backup_ref_ptr_feature_flag",
-    "ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=$enable_backup_ref_ptr_instance_tracer",
-    "ENABLE_DANGLING_RAW_PTR_CHECKS=$enable_dangling_raw_ptr_checks",
-    "ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=$enable_dangling_raw_ptr_feature_flag",
-    "ENABLE_POINTER_SUBTRACTION_CHECK=$enable_pointer_subtraction_check",
-    "ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=$enable_pointer_arithmetic_trait_check",
-    "BACKUP_REF_PTR_EXTRA_OOB_CHECKS=$backup_ref_ptr_extra_oob_checks",
-    "BACKUP_REF_PTR_POISON_OOB_PTR=$backup_ref_ptr_poison_oob_ptr",
-    "USE_RAW_PTR_BACKUP_REF_IMPL=$use_raw_ptr_backup_ref_impl",
-    "USE_ASAN_BACKUP_REF_PTR=$use_asan_backup_ref_ptr",
-    "USE_RAW_PTR_ASAN_UNOWNED_IMPL=$use_raw_ptr_asan_unowned_impl",
-    "USE_RAW_PTR_HOOKABLE_IMPL=$use_raw_ptr_hookable_impl",
-    "ENABLE_GWP_ASAN_SUPPORT=$_enable_gwp_asan_support",
-
-    "FORCE_ENABLE_RAW_PTR_EXCLUSION=$force_enable_raw_ptr_exclusion",
-
-    "USE_FULL_MTE=$use_full_mte",
-
-    "RECORD_ALLOC_INFO=$_record_alloc_info",
-    "USE_FREESLOT_BITMAP=$use_freeslot_bitmap",
-    "GLUE_CORE_POOLS=$_glue_core_pools",
-    "ENABLE_POINTER_COMPRESSION=$_enable_pointer_compression",
-    "ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=$enable_shadow_metadata",
-    "USE_FREELIST_DISPATCHER=$use_freelist_dispatcher",
-
-    "USE_STARSCAN=$use_starscan",
-
-    "STACK_SCAN_SUPPORTED=$stack_scan_supported",
-
-    "ENABLE_PKEYS=$enable_pkeys",
-    "ENABLE_THREAD_ISOLATION=$enable_pkeys",
-
-    "FORWARD_THROUGH_MALLOC=$forward_through_malloc",
-    "ASSERT_CPP_20=$assert_cpp20",
-    "IS_DEBUG=$is_debug",
-  ]
-}
-
-pa_buildflag_header("raw_ptr_buildflags") {
-  header = "raw_ptr_buildflags.h"
-
-  flags = [
-    "RAW_PTR_ZERO_ON_CONSTRUCT=$raw_ptr_zero_on_construct",
-    "RAW_PTR_ZERO_ON_MOVE=$raw_ptr_zero_on_move",
-    "RAW_PTR_ZERO_ON_DESTRUCT=$raw_ptr_zero_on_destruct",
-  ]
-}
-
-pa_buildflag_header("chromecast_buildflags") {
-  header = "chromecast_buildflags.h"
-
-  flags = [
-    "IS_CAST_ANDROID=$is_cast_android",
-    "IS_CASTOS=$is_castos",
-  ]
-}
-
-pa_buildflag_header("chromeos_buildflags") {
-  header = "chromeos_buildflags.h"
-  flags = [ "IS_CHROMEOS=$is_chromeos" ]
-}
-
-pa_buildflag_header("debugging_buildflags") {
-  header = "debugging_buildflags.h"
-  header_dir = rebase_path(".", "//") + "/partition_alloc_base/debug"
-
-  # Duplicates the setup Chromium uses to define `DCHECK_IS_ON()`, but avails it
-  # as a buildflag.
-  _dchecks_are_on = is_debug || dcheck_always_on
-
-  flags = [
-    "DCHECKS_ARE_ON=$_dchecks_are_on",
-    "EXPENSIVE_DCHECKS_ARE_ON=$enable_expensive_dchecks",
-    "DCHECK_IS_CONFIGURABLE=$dcheck_is_configurable",
-    "CAN_UNWIND_WITH_FRAME_POINTERS=$can_unwind_with_frame_pointers",
-  ]
-}
-
-group("buildflags") {
-  public_deps = [
-    ":chromecast_buildflags",
-    ":chromeos_buildflags",
-    ":debugging_buildflags",
-    ":partition_alloc_buildflags",
-    ":raw_ptr_buildflags",
-  ]
-  public_configs = [ ":public_includes" ]
 }
 
 if (is_clang_or_gcc) {
@@ -535,10 +499,7 @@ if (is_clang_or_gcc) {
 
     public_deps = [
       ":build_config",
-      ":chromecast_buildflags",
-      ":chromeos_buildflags",
-      ":debugging_buildflags",
-      ":partition_alloc_buildflags",
+      ":buildflags",
     ]
 
     configs += [
@@ -758,10 +719,7 @@ if (is_clang_or_gcc) {
 
     public_deps = [
       ":build_config",
-      ":chromecast_buildflags",
-      ":chromeos_buildflags",
-      ":debugging_buildflags",
-      ":partition_alloc_buildflags",
+      ":buildflags",
     ]
     public_configs = [ ":public_includes" ]
     configs += [

@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/numerics/checked_math.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/shim/allocator_shim.h"
 #include "partition_alloc/shim/checked_multiply_win.h"
 

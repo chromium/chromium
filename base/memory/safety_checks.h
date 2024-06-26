@@ -10,7 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_constants.h"
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

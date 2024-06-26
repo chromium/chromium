@@ -18,7 +18,7 @@
 #include "base/memory/free_deleter.h"
 #include "base/sanitizer_buildflags.h"
 #include "build/build_config.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_POSIX)

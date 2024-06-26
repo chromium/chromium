@@ -4,8 +4,8 @@
 
 #include "components/gwp_asan/client/lightweight_detector/partitionalloc_shims.h"
 
+#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/multiprocess_test.h"

@@ -4,9 +4,9 @@
 
 #include "partition_alloc/memory_reclaimer.h"
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc.h"
 #include "partition_alloc/partition_alloc_base/no_destructor.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_config.h"
 

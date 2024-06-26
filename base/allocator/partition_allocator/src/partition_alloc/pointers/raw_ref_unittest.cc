@@ -8,8 +8,7 @@
 #include <type_traits>
 
 #include "base/test/gtest_util.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/pointers/raw_ptr.h"
 #include "partition_alloc/pointers/raw_ptr_counting_impl_for_test.h"
 #include "partition_alloc/pointers/raw_ptr_test_support.h"

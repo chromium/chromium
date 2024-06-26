@@ -14,8 +14,8 @@
 #include <vector>
 
 #include "base/allocator/partition_allocator/src/partition_alloc/address_pool_manager.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"

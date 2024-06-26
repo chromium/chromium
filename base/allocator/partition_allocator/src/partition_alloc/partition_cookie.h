@@ -5,8 +5,8 @@
 #ifndef PARTITION_ALLOC_PARTITION_COOKIE_H_
 #define PARTITION_ALLOC_PARTITION_COOKIE_H_
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 #include "partition_alloc/partition_alloc_check.h"
 
 namespace partition_alloc::internal {

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/task/thread_pool/worker_thread_waitable_event.h"
-#include "base/task/thread_pool/worker_thread_semaphore.h"
 
 #include <stddef.h>
 
@@ -28,6 +27,7 @@
 #include "base/task/thread_pool/task_tracker.h"
 #include "base/task/thread_pool/test_utils.h"
 #include "base/task/thread_pool/worker_thread_observer.h"
+#include "base/task/thread_pool/worker_thread_semaphore.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/test_waitable_event.h"
@@ -36,7 +36,7 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/shim/allocator_shim.h"
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"

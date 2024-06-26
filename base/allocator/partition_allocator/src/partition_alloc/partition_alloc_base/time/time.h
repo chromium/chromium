@@ -73,7 +73,7 @@
 #include "partition_alloc/partition_alloc_base/numerics/clamped_math.h"
 
 #if PA_BUILDFLAG(IS_APPLE)
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 #endif  // PA_BUILDFLAG(IS_APPLE)
 
 #if PA_BUILDFLAG(IS_FUCHSIA)

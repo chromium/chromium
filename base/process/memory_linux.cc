@@ -15,7 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/shim/allocator_shim.h"
 
 #if !PA_BUILDFLAG(USE_ALLOCATOR_SHIM) && \

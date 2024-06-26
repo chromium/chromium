@@ -7,7 +7,7 @@
 #include <mach/mach.h>
 #include <malloc/malloc.h>
 
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/shim/early_zone_registration_constants.h"
 
 // BASE_EXPORT tends to be defined as soon as anything from //base is included.

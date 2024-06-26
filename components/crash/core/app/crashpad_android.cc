@@ -13,7 +13,7 @@
 #include <algorithm>
 #include <string_view>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
 #include "base/android/build_info.h"
 #include "base/android/java_exception_reporter.h"

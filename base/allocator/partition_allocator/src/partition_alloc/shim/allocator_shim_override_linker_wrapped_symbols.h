@@ -15,7 +15,7 @@
 // -wrap linker flags (e.g., libchrome.so) will be rewritten to the
 // linker as references to __wrap_malloc, __wrap_free, which are defined here.
 
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include <algorithm>

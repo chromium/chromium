@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "partition_alloc/pointers/raw_ptr.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 
 namespace {
 

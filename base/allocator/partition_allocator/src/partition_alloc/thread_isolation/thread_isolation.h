@@ -5,15 +5,15 @@
 #ifndef PARTITION_ALLOC_THREAD_ISOLATION_THREAD_ISOLATION_H_
 #define PARTITION_ALLOC_THREAD_ISOLATION_THREAD_ISOLATION_H_
 
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
 #include <cstddef>
 #include <cstdint>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 
 #if PA_BUILDFLAG(ENABLE_PKEYS)
 #include "partition_alloc/thread_isolation/pkey.h"

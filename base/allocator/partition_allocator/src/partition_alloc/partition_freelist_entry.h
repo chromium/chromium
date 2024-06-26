@@ -7,10 +7,10 @@
 
 #include <cstddef>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_constants.h"
 
 namespace partition_alloc::internal {

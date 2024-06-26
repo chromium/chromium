@@ -5,7 +5,7 @@
 #include "partition_alloc/partition_alloc_base/debug/stack_trace.h"
 
 #include "partition_alloc/build_config.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
 
 // Surprisingly, uClibc defines __GLIBC__ in some build configs, but

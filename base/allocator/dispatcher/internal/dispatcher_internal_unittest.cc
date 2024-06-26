@@ -13,7 +13,7 @@
 #include "base/allocator/dispatcher/testing/observer_mock.h"
 #include "base/allocator/dispatcher/testing/tools.h"
 #include "base/dcheck_is_on.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
