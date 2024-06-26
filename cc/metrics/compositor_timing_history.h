@@ -5,9 +5,6 @@
 #ifndef CC_METRICS_COMPOSITOR_TIMING_HISTORY_H_
 #define CC_METRICS_COMPOSITOR_TIMING_HISTORY_H_
 
-#include <memory>
-#include <vector>
-
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/base/rolling_time_delta_history.h"
@@ -66,8 +63,6 @@ class CC_EXPORT CompositorTimingHistory {
   void SetRecordingEnabled(bool enabled);
 
   // Events to be timed.
-  void WillBeginImplFrame(const viz::BeginFrameArgs& args,
-                          base::TimeTicks now);
   void WillFinishImplFrame(bool needs_redraw);
   void BeginImplFrameNotExpectedSoon();
   void WillBeginMainFrame(const viz::BeginFrameArgs& args);
@@ -98,7 +93,6 @@ class CC_EXPORT CompositorTimingHistory {
 
   void SetCompositorDrawingContinuously(bool active);
 
-  static std::unique_ptr<UMAReporter> CreateUMAReporter(UMACategory category);
   virtual base::TimeTicks Now() const;
 
   bool using_synchronous_renderer_compositor_;
@@ -158,7 +152,7 @@ class CC_EXPORT CompositorTimingHistory {
 
   bool pending_tree_is_impl_side_;
 
-  std::unique_ptr<UMAReporter> uma_reporter_;
+  const UMACategory uma_category_;
 
   // Owned by LayerTreeHost and is destroyed when LayerTreeHost is destroyed.
   raw_ptr<RenderingStatsInstrumentation, DanglingUntriaged>

@@ -4,7 +4,8 @@
 
 #include "cc/metrics/compositor_timing_history.h"
 
-#include "base/logging.h"
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"

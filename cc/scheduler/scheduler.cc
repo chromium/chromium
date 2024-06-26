@@ -707,7 +707,6 @@ void Scheduler::BeginImplFrame(const viz::BeginFrameArgs& args,
 
     begin_impl_frame_tracker_.Start(args);
     state_machine_.OnBeginImplFrame(args.frame_id, args.animate_only);
-    compositor_timing_history_->WillBeginImplFrame(args, now);
     compositor_frame_reporting_controller_->WillBeginImplFrame(args);
     bool has_damage =
         client_->WillBeginImplFrame(begin_impl_frame_tracker_.Current());
