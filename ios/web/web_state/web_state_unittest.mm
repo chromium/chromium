@@ -561,15 +561,10 @@ TEST_F(WebStateTest, RestorePageTitles) {
     NavigationItem* item = navigation_manager->GetItemAtIndex(i);
     EXPECT_EQ(GURL(base::StringPrintf("http://www.%u.com", i)),
               item->GetVirtualURL());
-    // TODO(crbug.com/347207400): Remove iOS18 condition as soon as deprecation
-    // is reverted.
-    if (@available(iOS 18.0, *)) {
-    } else {
-      EXPECT_EQ(base::ASCIIToUTF16(base::StringPrintf("Test%u", i)),
-                item->GetTitle());
-      EXPECT_EQ(base::ASCIIToUTF16(base::StringPrintf("Test%u", i)),
-                item->GetTitleForDisplay());
-    }
+    EXPECT_EQ(base::ASCIIToUTF16(base::StringPrintf("Test%u", i)),
+              item->GetTitle());
+    EXPECT_EQ(base::ASCIIToUTF16(base::StringPrintf("Test%u", i)),
+              item->GetTitleForDisplay());
   }
 }
 
