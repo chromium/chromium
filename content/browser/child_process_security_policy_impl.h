@@ -632,10 +632,12 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                            IsolatedOriginsRemovedWhenBrowserContextDestroyed);
   FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest,
                            IsolateAllSuborigins);
-  FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest,
-                           WildcardAndNonWildcardOrigins);
-  FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest,
-                           WildcardAndNonWildcardEmbedded);
+  FRIEND_TEST_ALL_PREFIXES(
+      ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
+      WildcardAndNonWildcardOrigins);
+  FRIEND_TEST_ALL_PREFIXES(
+      ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
+      WildcardAndNonWildcardEmbedded);
   FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest,
                            ParseIsolatedOrigins);
   FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest, WildcardDefaultPort);

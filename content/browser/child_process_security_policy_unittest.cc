@@ -33,6 +33,7 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_task_environment.h"
@@ -327,6 +328,21 @@ class ChildProcessSecurityPolicyTest
   TestBrowserContext browser_context_;
   ChildProcessSecurityPolicyTestBrowserClient test_browser_client_;
   raw_ptr<ContentBrowserClient> old_browser_client_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// A test class that forces kOriginKeyedProcessesByDefault off in
+// ChildProcessSecurityPolicyTest. Used for tests that are trying to verify
+// behavior that is inconsistent with Origin Isolation.
+class ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault
+    : public ChildProcessSecurityPolicyTest {
+ public:
+  ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault() {
+    feature_list_.InitAndDisableFeature(
+        features::kOriginKeyedProcessesByDefault);
+  }
+
+ private:
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -2025,7 +2041,8 @@ TEST_P(ChildProcessSecurityPolicyTest, IsolateAllSuborigins) {
 
 // Verify that the isolation behavior for wildcard and non-wildcard origins,
 // singly or in concert, behaves correctly via calls to GetSiteForURL().
-TEST_P(ChildProcessSecurityPolicyTest, WildcardAndNonWildcardOrigins) {
+TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
+       WildcardAndNonWildcardOrigins) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -2090,7 +2107,8 @@ TEST_P(ChildProcessSecurityPolicyTest, WildcardAndNonWildcardOrigins) {
                      testing::IsEmpty());
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, WildcardAndNonWildcardEmbedded) {
+TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
+       WildcardAndNonWildcardEmbedded) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -3232,7 +3250,8 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_OriginKeyed) {
 // This test verifies that CanAccessDataForOrigin returns true for a process id
 // even if all BrowsingInstanceIDs for that process have been deleted, so long
 // as the request matches the process' lock. This test sets a site-keyed lock.
-TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_SiteKeyed) {
+TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
+       NoBrowsingInstanceIDs_SiteKeyed) {
   url::Origin foo = url::Origin::Create(GURL("https://sub.foo.com/"));
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
@@ -3402,6 +3421,13 @@ TEST_P(ChildProcessSecurityPolicyTest, CannotLockUsedProcessToSite) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     ChildProcessSecurityPolicyTest,
+    ::testing::Values(ChildProcessSecurityPolicyTestCase::kCitadelDisabled,
+                      ChildProcessSecurityPolicyTestCase::kCitadelEnabled),
+    &ChildProcessSecurityPolicyTest::DescribeParams);
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
     ::testing::Values(ChildProcessSecurityPolicyTestCase::kCitadelDisabled,
                       ChildProcessSecurityPolicyTestCase::kCitadelEnabled),
     &ChildProcessSecurityPolicyTest::DescribeParams);

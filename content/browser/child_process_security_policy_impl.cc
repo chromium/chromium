@@ -898,14 +898,15 @@ void ChildProcessSecurityPolicyImpl::AddForTesting(
     int child_id,
     BrowserContext* browser_context) {
   Add(child_id, browser_context);
-  LockProcess(
-      IsolationContext(BrowsingInstanceId(1), browser_context,
-                       /*is_guest=*/false, /*is_fenced=*/false,
-                       OriginAgentClusterIsolationState::CreateNonIsolated()),
-      child_id, /*is_process_used=*/false,
-      ProcessLock::CreateAllowAnySite(
-          StoragePartitionConfig::CreateDefault(browser_context),
-          WebExposedIsolationInfo::CreateNonIsolated()));
+  LockProcess(IsolationContext(
+                  BrowsingInstanceId(1), browser_context,
+                  /*is_guest=*/false, /*is_fenced=*/false,
+                  OriginAgentClusterIsolationState::CreateForDefaultIsolation(
+                      browser_context)),
+              child_id, /*is_process_used=*/false,
+              ProcessLock::CreateAllowAnySite(
+                  StoragePartitionConfig::CreateDefault(browser_context),
+                  WebExposedIsolationInfo::CreateNonIsolated()));
 }
 
 void ChildProcessSecurityPolicyImpl::Remove(int child_id) {
