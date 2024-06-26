@@ -856,11 +856,11 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // static
-scoped_refptr<VideoFrame> VideoFrame::WrapUnownedExternalDmabufs(
+scoped_refptr<VideoFrame> VideoFrame::WrapExternalDmabufs(
     const VideoFrameLayout& layout,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
-    std::vector<int> dmabuf_fds,
+    std::vector<base::ScopedFD> dmabuf_fds,
     base::TimeDelta timestamp) {
   const StorageType storage = STORAGE_DMABUFS;
   const VideoPixelFormat format = layout.format();
@@ -889,33 +889,12 @@ scoped_refptr<VideoFrame> VideoFrame::WrapUnownedExternalDmabufs(
          sizeof(frame->mailbox_holders_));
   frame->mailbox_holders_and_gmb_release_cb_ =
       ReleaseMailboxAndGpuMemoryBufferCB();
-  frame->dmabuf_fds_ = std::move(dmabuf_fds);
-  DCHECK(frame->HasDmaBufs());
-
-  return frame;
-}
-
-// static
-scoped_refptr<VideoFrame> VideoFrame::WrapExternalDmabufs(
-    const VideoFrameLayout& layout,
-    const gfx::Rect& visible_rect,
-    const gfx::Size& natural_size,
-    std::vector<base::ScopedFD> dmabuf_fds,
-    base::TimeDelta timestamp) {
-  // Creates a vector for storing the FD values from dmabuf_fds
-  std::vector<int> unowned_dmabuf_fds;
-  unowned_dmabuf_fds.reserve(dmabuf_fds.size());
+  // Copies the unowned FDs from |dmabuf_fds_| to |frame|.
+  frame->dmabuf_fds_.reserve(dmabuf_fds.size());
   for (auto& dmabuf_fd : dmabuf_fds) {
-    unowned_dmabuf_fds.push_back(dmabuf_fd.get());
+    frame->dmabuf_fds_.push_back(dmabuf_fd.get());
   }
-
-  scoped_refptr<VideoFrame> frame =
-      WrapUnownedExternalDmabufs(layout, visible_rect, natural_size,
-                                 std::move(unowned_dmabuf_fds), timestamp);
-  if (!frame) {
-    DLOG(ERROR) << __func__ << " Couldn't create VideoFrame instance.";
-    return nullptr;
-  }
+  DCHECK(frame->HasDmaBufs());
 
   // Storing the incoming vector of ScopedFDs in the destruction observer list
   // ensures that the file descriptors get closed when |frame| is destroyed.

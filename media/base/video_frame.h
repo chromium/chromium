@@ -405,20 +405,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Wraps provided dmabufs
   // (https://www.kernel.org/doc/html/latest/driver-api/dma-buf.html) with a
-  // VideoFrame.
-  // The returned VideoFrame does not own the dmabufs passed in.  The image data
-  // is only accessible via dmabuf fds, which are usually passed directly to a
-  // hardware device and/or to another process, or can also be mapped via mmap()
-  // for CPU access.
-  static scoped_refptr<VideoFrame> WrapUnownedExternalDmabufs(
-      const VideoFrameLayout& layout,
-      const gfx::Rect& visible_rect,
-      const gfx::Size& natural_size,
-      std::vector<int> dmabuf_fds,
-      base::TimeDelta timestamp);
-
-  // Wraps provided dmabufs
-  // (https://www.kernel.org/doc/html/latest/driver-api/dma-buf.html) with a
   // VideoFrame. The frame will take ownership of |dmabuf_fds|, and will
   // automatically close() them on destruction. Callers can duplicate the file
   // descriptors if they need to retain a copy of the FDs for themselves. Note
