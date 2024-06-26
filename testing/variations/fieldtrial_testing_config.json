@@ -15151,6 +15151,30 @@
             ]
         }
     ],
+    "OptGuideURLCacheSize": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240625",
+                    "params": {
+                        "max_url_keyed_hint_cache_size": "50"
+                    },
+                    "enable_features": [
+                        "OptimizationHints"
+                    ]
+                }
+            ]
+        }
+    ],
     "OptimizeStaticAnimationProperties": [
         {
             "platforms": [
