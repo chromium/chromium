@@ -8,6 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/containers/contains.h"
+#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
@@ -76,6 +77,12 @@ using web::wk_navigation_util::IsWKInternalUrl;
 
 namespace {
 char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
+
+// Disables logic to update CRWWebController's `_currentURLLoadWasTriggered`
+// when setting a WKWebView's interaction state.
+BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
+             "IOSSessionRestoreLoadTriggerKillSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace
 
 // TODO(crbug.com/40746865): Allow usage of iOS15 interactionState on iOS 14 SDK
@@ -835,6 +842,9 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
   DCHECK_EQ(self.webView.backForwardList.currentItem, nil);
   self.navigationHandler.blockUniversalLinksOnNextDecidePolicy = true;
   [self.webView setInteractionState:interactionState];
+  if (!base::FeatureList::IsEnabled(kIOSSessionRestoreLoadTriggerKillSwitch)) {
+    _currentURLLoadWasTrigerred = YES;
+  }
   return YES;
 }
 
