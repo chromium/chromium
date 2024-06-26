@@ -457,17 +457,16 @@ void LoginUnlockThroughputRecorder::FullSessionRestoreDataLoaded(
   DCHECK(!full_session_restore_data_loaded_);
   full_session_restore_data_loaded_ = true;
 
-  if (window_ids.empty()) {
+  // TODO(b/343001594): If `restore_automatically` is false, we should report
+  // the metrics with different names rather than ignoring session restore.
+  // For now we ignore session restore to keep consistency with old behavior.
+  if (window_ids.empty() || !restore_automatically) {
     shelf_tracker_.IgnoreBrowserIcon();
 
     DCHECK(!window_restore_done_);
     window_restore_done_ = true;
     ScheduleWaitForShelfAnimationEndIfNeeded();
   } else {
-    // TODO(b/343001594): Handle the case where `restore_automatically` is
-    // false. If `restore_automatically` is false, we should report the metrics
-    // with different names.
-
     for (const auto& w : window_ids) {
       window_restore_tracker_.AddWindow(w.session_window_id, w.app_name);
     }
