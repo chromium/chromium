@@ -18,3 +18,6 @@ NSString* const kContentNotificationNAUBodyParameter =
 
 const char kNAUHistogramName[] =
     "ContentNotifications.NotificationActionUpload.Success";
+
+const char kContentNotificationActionHistogramName[] =
+    "ContentNotifications.Notification.Action";

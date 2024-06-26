@@ -50,6 +50,9 @@ void ContentNotificationClient::HandleNotificationInteraction(
   if ([response.actionIdentifier
           isEqualToString:kContentNotificationFeedbackActionIdentifier]) {
     config.actionType = NAUActionTypeFeedbackClicked;
+    base::UmaHistogramEnumeration(
+        kContentNotificationActionHistogramName,
+        NotificationActionType::kNotificationActionTypeFeedbackClicked);
     NSDictionary<NSString*, NSString*>* feedbackPayload =
         contentNotificationService->GetFeedbackPayload(payload);
     loadFeedbackWithPayloadAndClientId(feedbackPayload,
@@ -57,6 +60,9 @@ void ContentNotificationClient::HandleNotificationInteraction(
   } else if ([response.actionIdentifier
                  isEqualToString:UNNotificationDefaultActionIdentifier]) {
     config.actionType = NAUActionTypeOpened;
+    base::UmaHistogramEnumeration(
+        kContentNotificationActionHistogramName,
+        NotificationActionType::kNotificationActionTypeOpened);
     const GURL& url = contentNotificationService->GetDestinationUrl(payload);
     if (url.is_empty()) {
       base::UmaHistogramBoolean("ContentNotifications.OpenURLAction.HasURL",
@@ -70,6 +76,9 @@ void ContentNotificationClient::HandleNotificationInteraction(
                  isEqualToString:UNNotificationDismissActionIdentifier]) {
     base::UmaHistogramBoolean("ContentNotifications.DismissAction", true);
     config.actionType = NAUActionTypeDismissed;
+    base::UmaHistogramEnumeration(
+        kContentNotificationActionHistogramName,
+        NotificationActionType::kNotificationActionTypeDismissed);
   }
   // TODO(crbug.com/337871560): Three way patch NAU and adding completion
   // handler.
@@ -92,6 +101,9 @@ UIBackgroundFetchResult ContentNotificationClient::HandleNotificationReception(
     ContentNotificationNAUConfiguration* config =
         [[ContentNotificationNAUConfiguration alloc] init];
     config.actionType = NAUActionTypeDisplayed;
+    base::UmaHistogramEnumeration(
+        kContentNotificationActionHistogramName,
+        NotificationActionType::kNotificationActionTypeDisplayed);
     // Create a new payload without the parameter to mimic the original payload,
     // to be sent with the NAU.
     NSMutableDictionary<NSString*, id>* newPayload = [payload mutableCopy];

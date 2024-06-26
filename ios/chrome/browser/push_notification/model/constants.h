@@ -8,7 +8,8 @@
 #import <Foundation/Foundation.h>
 #import <string>
 
-// Enum for the NAU implementation for Content notifications.
+// Enum for the NAU implementation for Content notifications. Change
+// NotificationActionType enum when this one changes.
 typedef NS_ENUM(NSInteger, NAUActionType) {
   // When a content notification is displayed on the device.
   NAUActionTypeDisplayed = 0,
@@ -18,6 +19,20 @@ typedef NS_ENUM(NSInteger, NAUActionType) {
   NAUActionTypeDismissed = 2,
   // When the feedback secondary action is triggered.
   NAUActionTypeFeedbackClicked = 3,
+};
+
+// Enum for the NAU implementation for Content notifications used for metrics.
+enum class NotificationActionType {
+  // When a content notification is displayed on the device.
+  kNotificationActionTypeDisplayed = NAUActionTypeDisplayed,
+  // When a content notification is opened.
+  kNotificationActionTypeOpened = NAUActionTypeOpened,
+  // When a content notification is dismissed.
+  kNotificationActionTypeDismissed = NAUActionTypeDismissed,
+  // When the feedback secondary action is triggered.
+  kNotificationActionTypeFeedbackClicked = NAUActionTypeFeedbackClicked,
+  // Max value.
+  kMaxValue = kNotificationActionTypeFeedbackClicked,
 };
 
 // Enum for the NAU implementation for Content notifications.
@@ -56,5 +71,8 @@ extern NSString* const kContentNotificationNAUBodyParameter;
 
 // The histogram name for the NAU success metric.
 extern const char kNAUHistogramName[];
+
+// The histogram name to record a Content Notification action.
+extern const char kContentNotificationActionHistogramName[];
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_CONSTANTS_H_
