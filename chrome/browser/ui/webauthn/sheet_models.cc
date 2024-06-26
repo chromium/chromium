@@ -1857,17 +1857,11 @@ bool AuthenticatorTrustThisComputerAssertionSheetModel::IsCancelButtonVisible()
 std::u16string
 AuthenticatorTrustThisComputerAssertionSheetModel::GetCancelButtonLabel()
     const {
-  const std::optional<std::string>& phone_name =
-      dialog_model()->priority_phone_name;
-  if (phone_name) {
-    return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_USE_PHONE_WITH_NAME,
-                                      base::UTF8ToUTF16(*phone_name));
-  }
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_USE_A_DIFFERENT_DEVICE);
+  return l10n_util::GetStringUTF16(IDS_CANCEL);
 }
 
 void AuthenticatorTrustThisComputerAssertionSheetModel::OnCancel() {
-  dialog_model()->ContactPriorityPhone();
+  dialog_model()->CancelAuthenticatorRequest();
 }
 
 bool AuthenticatorTrustThisComputerAssertionSheetModel::IsAcceptButtonVisible()
@@ -1879,6 +1873,26 @@ std::u16string
 AuthenticatorTrustThisComputerAssertionSheetModel::GetAcceptButtonLabel()
     const {
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_ENTRY_NEXT);
+}
+
+bool AuthenticatorTrustThisComputerAssertionSheetModel::
+    IsOtherMechanismButtonVisible() const {
+  return true;
+}
+
+std::u16string AuthenticatorTrustThisComputerAssertionSheetModel::
+    GetOtherMechanismButtonLabel() const {
+  const std::optional<std::string>& phone_name =
+      dialog_model()->priority_phone_name;
+  if (phone_name) {
+    return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_USE_PHONE_WITH_NAME,
+                                      base::UTF8ToUTF16(*phone_name));
+  }
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_USE_A_DIFFERENT_DEVICE);
+}
+
+void AuthenticatorTrustThisComputerAssertionSheetModel::OnBack() {
+  dialog_model()->ContactPriorityPhone();
 }
 
 void AuthenticatorTrustThisComputerAssertionSheetModel::OnAccept() {

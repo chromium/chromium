@@ -805,6 +805,9 @@ class AuthenticatorTrustThisComputerAssertionSheetModel
   void OnCancel() override;
   bool IsAcceptButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
+  bool IsOtherMechanismButtonVisible() const override;
+  std::u16string GetOtherMechanismButtonLabel() const override;
+  void OnBack() override;
   void OnAccept() override;
 };
 
