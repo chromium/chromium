@@ -8,3 +8,7 @@ per-file metrics_browser_proxy.ts=rainhard@chromium.org,msramek@chromium.org
 
 # Two-column description style
 per-file settings_columned_section.css=rainhard@chromium.org
+
+# Settings icons
+per-file icons.html=rainhard@chromium.org
+
