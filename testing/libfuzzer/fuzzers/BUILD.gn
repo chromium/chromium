@@ -213,22 +213,6 @@ if (v8_enable_webassembly) {
     max_len = 500
   }
 
-  v8_fuzzer("wasm_compile_all_fuzzer") {
-    max_len = 500
-  }
-
-  v8_fuzzer("wasm_compile_fuzzer") {
-    max_len = 500
-  }
-
-  v8_fuzzer("wasm_compile_simd_fuzzer") {
-    max_len = 500
-  }
-
-  v8_fuzzer("wasm_compile_wasmgc_fuzzer") {
-    max_len = 500
-  }
-
   v8_fuzzer("wasm_fuzzer") {
     max_len = 500
     seed_corpus = "//testing/libfuzzer/fuzzers/wasm_corpus/"
@@ -244,8 +228,29 @@ if (v8_enable_webassembly) {
     seed_corpus = "//testing/libfuzzer/fuzzers/wasm_corpus/"
   }
 
-  v8_fuzzer("wasm_init_expr_fuzzer") {
-    max_len = 500
+  # These fuzzers are not supported in official builds as they depend on
+  # functionality in the v8 library that is skipped in official builds for
+  # binary size reasons.
+  if (!is_official_build) {
+    v8_fuzzer("wasm_compile_all_fuzzer") {
+      max_len = 500
+    }
+
+    v8_fuzzer("wasm_compile_fuzzer") {
+      max_len = 500
+    }
+
+    v8_fuzzer("wasm_compile_simd_fuzzer") {
+      max_len = 500
+    }
+
+    v8_fuzzer("wasm_compile_wasmgc_fuzzer") {
+      max_len = 500
+    }
+
+    v8_fuzzer("wasm_init_expr_fuzzer") {
+      max_len = 500
+    }
   }
 }
 
