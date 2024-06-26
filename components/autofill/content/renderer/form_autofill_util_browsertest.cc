@@ -2110,13 +2110,21 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormInLightDom) {
 // Also tests that GetFormControlElements(f) == {t | GetOwningForm(t) == f} for
 // every form f that owns some t.
 TEST_F(FormAutofillUtilsTest, GetOwningFormInLightDomWithExplicitAssociation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {blink::features::kAutofillIncludeFormElementsInShadowDom,
+       blink::features::kAutofillIncludeShadowDomInUnassociatedListedElements},
+      {});
+
   LoadHTML(R"(
     <html>
       <body>
-        <form id=f1>
-          <input id=t1>
-          <input id=t2 form=f2>
-        </form>
+        <div>
+          <form id=f1>
+            <input id=t1>
+            <input id=t2 form=f2>
+          </form>
+        </div>
         <form id=f2>
           <input id=t3>
           <input id=t4 form=f1>
@@ -2144,14 +2152,6 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormInLightDomWithExplicitAssociation) {
   EXPECT_EQ(GetOwningForm(t2), f2);
   EXPECT_EQ(GetOwningForm(t3), f2);
   EXPECT_EQ(GetOwningForm(t4), f1);
-  // TODO: crbug.com/348835230 - If `AutofillIncludeFormElementsInShadowDom` is
-  // enabled, the owner of `t5` changes from `f_unowned` to `f2`. That
-  // contradicts its association. Some options we have are:
-  // - Let `f_unowned` own `t5` so that "ownership == association" for
-  //   light DOM forms.
-  // - Let `f2` own `t5` and accept "ownership != association" in the light DOM.
-  // - Let `f2` own `t5` and change Blink so that `t5` is associated with `f2`.
-  //   https://html.spec.whatwg.org/#reset-the-form-owner seems to allow this.
   EXPECT_EQ(GetOwningForm(t5), f_unowned);
   EXPECT_EQ(GetOwningForm(t6), f1);
   EXPECT_EQ(GetOwningForm(t7), f2);
@@ -2172,7 +2172,9 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormInShadowDomWithoutFormInShadowDom) {
         <form id=f1>
           <div id=host1>
             <template shadowrootmode=open>
-              <input id=t1>
+              <div>
+                <input id=t1>
+              </div>
             </template>
             <input id=t2>
           </div>
@@ -2216,9 +2218,11 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormInShadowDomWithFormInShadowDom) {
         <form id=f1>
           <div id=host1>
             <template shadowrootmode=open>
-              <form id=f2>
-                <input id=t1>
-              </form>
+              <div>
+                <form id=f2>
+                  <input id=t1>
+                </form>
+              </div>
               <input id=t2>
             </template>
           </div>
