@@ -1,11 +1,11 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/tpcd/experiment/tpcd_pref_names.h"
+#include "components/privacy_sandbox/tpcd_pref_names.h"
 
-#include "chrome/browser/tpcd/experiment/tpcd_utils.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/privacy_sandbox/tpcd_utils.h"
 
 namespace tpcd::experiment {
 namespace prefs {

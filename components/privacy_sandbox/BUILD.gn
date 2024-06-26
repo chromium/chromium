@@ -136,6 +136,21 @@ source_set("privacy_sandbox_notice_storage") {
   public_deps = [ "//base" ]
 }
 
+source_set("tpcd") {
+  sources = [
+    "tpcd_pref_names.cc",
+    "tpcd_pref_names.h",
+    "tpcd_utils.h",
+  ]
+
+  deps = [
+    "//components/pref_registry:pref_registry",
+    "//components/prefs",
+  ]
+
+  public_deps = [ "//base" ]
+}
+
 # These sources depend on targets from "//content/browser", which means they can't be
 # loaded on ios.
 # TOOD(b/301947962): Delete this check after CookieSettings is removed from iOS.
