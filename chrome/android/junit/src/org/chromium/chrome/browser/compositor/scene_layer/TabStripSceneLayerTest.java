@@ -143,20 +143,17 @@ public class TabStripSceneLayerTest {
 
         // Verify JNI calls.
         verify(mTabStripSceneMock)
-                .updateModelSelectorButtonBackground(
+                .updateModelSelectorButton(
                         1L,
                         mTabStripSceneLayer,
                         mModelSelectorButton.getResourceId(),
                         ((TintedCompositorButton) mModelSelectorButton).getBackgroundResourceId(),
                         mModelSelectorButton.getDrawX(),
                         mModelSelectorButton.getDrawY(),
-                        mModelSelectorButton.getWidth() * mDpToPx,
-                        mModelSelectorButton.getHeight() * mDpToPx,
-                        false,
                         true,
+                        false,
                         ((TintedCompositorButton) mModelSelectorButton).getTint(),
                         ((TintedCompositorButton) mModelSelectorButton).getBackgroundTint(),
-                        false,
                         mModelSelectorButton.getOpacity(),
                         mResourceManager);
         verify(mTabStripSceneMock)
@@ -165,12 +162,12 @@ public class TabStripSceneLayerTest {
                         eq(mTabStripSceneLayer),
                         /* resourceId= */ anyInt(),
                         /* backgroundResourceId= */ anyInt(),
-                        /* isHovered= */ eq(mNewTabButton.isHovered()),
                         /* x= */ eq(mNewTabButton.getDrawX() * mDpToPx),
                         /* y= */ eq(mNewTabButton.getDrawY() * mDpToPx),
                         /* topPadding= */ eq(topPadding),
                         /* touchTargetOffset= */ anyFloat(),
                         /* visible= */ eq(mNewTabButton.isVisible()),
+                        /* isHovered= */ eq(mNewTabButton.isHovered()),
                         /* tint= */ anyInt(),
                         /* backgroundTint= */ anyInt(),
                         /* buttonAlpha= */ anyFloat(),

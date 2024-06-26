@@ -13,6 +13,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
+#include "ui/android/resources/resource_manager.h"
 
 namespace cc::slim {
 class Layer;
@@ -65,12 +66,12 @@ class TabStripSceneLayer : public SceneLayer {
       const base::android::JavaParamRef<jobject>& jobj,
       jint resource_id,
       jint bg_resource_id,
-      jboolean should_apply_hover_highlight,
       jfloat x,
       jfloat y,
       jfloat top_padding,
       jfloat touch_target_offset,
       jboolean visible,
+      jboolean should_apply_hover_highlight,
       jint tint,
       jint background_tint,
       jfloat button_alpha,
@@ -80,29 +81,13 @@ class TabStripSceneLayer : public SceneLayer {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jobj,
       jint resource_id,
-      jfloat x,
-      jfloat y,
-      jfloat width,
-      jfloat height,
-      jboolean incognito,
-      jboolean visible,
-      jfloat button_alpha,
-      const base::android::JavaParamRef<jobject>& jresource_manager);
-
-  void UpdateModelSelectorButtonBackground(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
-      jint resource_id,
       jint bg_resource_id,
       jfloat x,
       jfloat y,
-      jfloat width,
-      jfloat height,
-      jboolean incognito,
       jboolean visible,
+      jboolean should_apply_hover_highlight,
       jint tint,
       jint background_tint,
-      jboolean should_apply_hover_highlight,
       jfloat button_alpha,
       const base::android::JavaParamRef<jobject>& jresource_manager);
 
@@ -186,6 +171,17 @@ class TabStripSceneLayer : public SceneLayer {
 
   scoped_refptr<cc::slim::SolidColorLayer> GetNextGroupTitleLayer();
   scoped_refptr<cc::slim::SolidColorLayer> GetNextGroupBottomLayer();
+
+  void UpdateCompositorButton(
+      scoped_refptr<cc::slim::UIResourceLayer> button,
+      scoped_refptr<cc::slim::UIResourceLayer> background,
+      ui::Resource* button_resource,
+      ui::Resource* background_resource,
+      float x,
+      float y,
+      bool visible,
+      bool should_apply_hover_highlight,
+      float button_alpha);
 
   typedef std::vector<scoped_refptr<TabHandleLayer>> TabHandleLayerList;
 
