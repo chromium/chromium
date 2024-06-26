@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/overlay_candidate.h"
@@ -19,7 +20,6 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/gpu_task_scheduler_helper.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/ca_layer_result.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rrect_f.h"
@@ -84,7 +84,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
     // Size of output surface in pixels.
     gfx::Size resource_size;
     // Format of the buffer to scanout.
-    gfx::BufferFormat format = gfx::BufferFormat::BGRA_8888;
+    SharedImageFormat format = SinglePlaneFormat::kBGRA_8888;
     // ColorSpace of the buffer for scanout.
     gfx::ColorSpace color_space;
     // Enable blending when we have underlay.
@@ -109,7 +109,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
   static OutputSurfaceOverlayPlane ProcessOutputSurfaceAsOverlay(
       const gfx::Size& viewport_size,
       const gfx::Size& resource_size,
-      const gfx::BufferFormat& buffer_format,
+      const SharedImageFormat si_format,
       const gfx::ColorSpace& color_space,
       bool has_alpha,
       float opacity,

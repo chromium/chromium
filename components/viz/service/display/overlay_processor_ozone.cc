@@ -18,6 +18,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/buildflags.h"
 #include "components/viz/common/features.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/service/display/overlay_strategy_fullscreen.h"
 #include "components/viz/service/display/overlay_strategy_single_on_top.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
@@ -42,7 +43,8 @@ void ConvertToOzoneOverlaySurface(
     const OverlayProcessorInterface::OutputSurfaceOverlayPlane& primary_plane,
     ui::OverlaySurfaceCandidate* ozone_candidate) {
   ozone_candidate->transform = primary_plane.transform;
-  ozone_candidate->format = primary_plane.format;
+  ozone_candidate->format =
+      SinglePlaneSharedImageFormatToBufferFormat(primary_plane.format);
   ozone_candidate->color_space = primary_plane.color_space;
   ozone_candidate->display_rect = primary_plane.display_rect;
   ozone_candidate->crop_rect = primary_plane.uv_rect;

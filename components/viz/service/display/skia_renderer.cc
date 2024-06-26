@@ -1162,7 +1162,8 @@ void SkiaRenderer::FinishDrawingFrame() {
       surface_candidate.display_rect = surface_plane.display_rect;
       surface_candidate.uv_rect = surface_plane.uv_rect;
       surface_candidate.resource_size_in_pixels = surface_plane.resource_size;
-      surface_candidate.format = surface_plane.format;
+      surface_candidate.format =
+          SinglePlaneSharedImageFormatToBufferFormat(surface_plane.format);
       surface_candidate.color_space = surface_plane.color_space;
       if (current_frame()->display_color_spaces.SupportsHDR() &&
           current_frame()->root_render_pass->content_color_usage ==
