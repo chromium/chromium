@@ -2735,10 +2735,6 @@ source_set("ash") {
     "profiles/profile_helper.h",
     "profiles/signin_profile_handler.cc",
     "profiles/signin_profile_handler.h",
-    "quick_pair/fast_pair_support_utils.cc",
-    "quick_pair/fast_pair_support_utils.h",
-    "quick_pair/quick_pair_browser_delegate_impl.cc",
-    "quick_pair/quick_pair_browser_delegate_impl.h",
     "release_notes/release_notes_notification.cc",
     "release_notes/release_notes_notification.h",
     "release_notes/release_notes_storage.cc",
@@ -3062,6 +3058,7 @@ source_set("ash") {
 
   allow_circular_includes_from = [
     "//chrome/browser/apps/platform_apps/api",
+    "//chrome/browser/ash/quick_pair",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/accessibility/live_caption",
     "//chrome/browser/ash/accessibility/service",
@@ -3659,6 +3656,7 @@ source_set("ash") {
     "//chrome/browser/ash/pcie_peripheral",
     "//chrome/browser/ash/phonehub",
     "//chrome/browser/ash/power/ml:user_activity_ukm_logger_helpers",
+    "//chrome/browser/ash/quick_pair",
     "//chrome/browser/ash/sharesheet",
     "//chrome/browser/ash/sync",
     "//chrome/browser/ash/system_web_apps",

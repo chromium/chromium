@@ -4087,6 +4087,7 @@ static_library("ui") {
       "//chrome/browser/ash/accessibility/service",
       "//chrome/browser/ash/camera_mic",
       "//chrome/browser/ash/drive",
+      "//chrome/browser/ash/quick_pair",
       "//chrome/browser/ash/usb",
       "//chrome/browser/ui/webui/ash/crostini_installer:mojo_bindings",
       "//chrome/browser/ui/webui/ash/emoji:mojo_bindings",
@@ -4132,6 +4133,7 @@ static_library("ui") {
       "//chrome/browser/ash/system_web_apps/apps/projector_app",
       "//chrome/browser/ash/system_web_apps/apps/vc_background_ui",
       "//chrome/browser/ash/tether",
+      "//chrome/browser/ash/quick_pair",
       "//chrome/browser/ash/usb",
       "//chrome/browser/chromeos/extensions/wm",
     ]
