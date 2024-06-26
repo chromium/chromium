@@ -83,9 +83,17 @@ size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
 // we're making it more resilient to ConfigurePartitions() interface changes, so
 // that we don't have to modify multiple callers. This is particularly important
 // when callers are in a different repo, like PDFium or Dawn.
-PA_ALWAYS_INLINE void ConfigurePartitionsForTesting() {
+PA_ALWAYS_INLINE void ConfigurePartitionsForTesting(
+    bool enable_memory_tagging_if_available = true) {
   auto enable_brp = allocator_shim::EnableBrp(true);
+
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+  auto enable_memory_tagging =
+      allocator_shim::EnableMemoryTagging(enable_memory_tagging_if_available);
+#else
   auto enable_memory_tagging = allocator_shim::EnableMemoryTagging(false);
+#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+
   // Since the only user of this function is a test function, we use
   // synchronous reporting mode, if MTE is enabled.
   auto memory_tagging_reporting_mode =

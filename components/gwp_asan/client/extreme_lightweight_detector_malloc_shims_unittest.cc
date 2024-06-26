@@ -30,7 +30,9 @@ class ExtremeLightweightDetectorMallocShimsTest
     : public base::MultiProcessTest {
  public:
   static void MultiprocessTestSetup() {
-    allocator_shim::ConfigurePartitionsForTesting();
+    bool enable_memory_tagging_if_available = false;
+    allocator_shim::ConfigurePartitionsForTesting(
+        enable_memory_tagging_if_available);
     InstallExtremeLightweightDetectorHooks(
         {.sampling_frequency = kSamplingFrequency,
          .quarantine_capacity_in_bytes = kQuarantineCapacityInBytes});
