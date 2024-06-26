@@ -1,0 +1,59 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("os_feedback") {
+  sources = [
+    "chrome_os_feedback_delegate.cc",
+    "chrome_os_feedback_delegate.h",
+    "os_feedback_screenshot_manager.cc",
+    "os_feedback_screenshot_manager.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/webui/os_feedback_ui",
+    "//ash/webui/os_feedback_ui/backend",
+    "//ash/webui/os_feedback_ui/mojom",
+    "//ash/webui/system_apps/public:system_web_app_type",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/multidevice_setup",
+    "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/common",
+    "//chromeos/ash/services/multidevice_setup/public/cpp",
+    "//components/feedback",
+    "//components/feedback/content",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//mojo/public/cpp/base",
+    "//net",
+    "//ui/aura",
+    "//ui/gfx",
+    "//ui/snapshot",
+    "//ui/web_dialogs",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/system_web_apps/apps" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "os_feedback_screenshot_manager_unittest.cc" ]
+
+  deps = [
+    ":os_feedback",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
