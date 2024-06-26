@@ -454,7 +454,8 @@ suite('UrlGeneratorTest', function() {
     assertTrue(urlGenerator.$.errorMessageToast.open);
   });
 
-  test('token generation success', async () => {
+  // TODO(crbug.com/349562679): Re-enable test.
+  test.skip('token generation success', async () => {
     // Ensure the button is disabled when we open the page.
     const copyTokenButton = urlGenerator.shadowRoot!.getElementById(
                                 'copyTokenButton')! as CrButtonElement;
