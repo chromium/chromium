@@ -22122,6 +22122,29 @@
             ]
         }
     ],
+    "TransportSecurityFileWriterSchedule": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled1Minute_20240626",
+                    "params": {
+                        "commit_interval": "1m"
+                    },
+                    "enable_features": [
+                        "TransportSecurityFileWriterSchedule"
+                    ]
+                }
+            ]
+        }
+    ],
     "TrustSafetySentimentSurvey": [
         {
             "platforms": [
