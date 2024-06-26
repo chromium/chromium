@@ -55,13 +55,6 @@ export class MostRelevantTabResumptionModuleElement extends I18nMixin
         type: Object,
       },
 
-      /** To determine if the hover layer should have all rounded corners. */
-      isSingleTab_: {
-        type: Boolean,
-        reflectToAttribute: true,
-        computed: `computeIsSingleTab_(tabs)`,
-      },
-
       /**
        * To determine whether to show the module with the device icon.
        */
@@ -210,10 +203,6 @@ private shouldShowDeviceIcon_:
     return loadTimeData.getBoolean('modulesRedesignedEnabled') ?
         tab.sessionName :
         this.i18n('modulesTabResumptionDevicePrefix') + ` ${tab.sessionName}`;
-  }
-
-  private computeIsSingleTab_(): boolean {
-    return this.tabs && this.tabs.length === 1;
   }
 
   private computeFaviconSize_(): number {
