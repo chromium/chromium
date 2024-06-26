@@ -539,20 +539,10 @@ public class MainSettingsFragmentTest {
         // Fake an identity error.
         fakeSyncService.setRequiresClientUpgrade(true);
         // Sign in and wait for sync machinery to be active.
-        CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
+        mSyncTestRule.setUpAccountAndSignInForTesting();
         SyncTestUtil.waitForSyncTransportActive();
 
         launchSettingsActivity();
-
-        // Population of profile data is flaky. Thus, wait till it's populated.
-        // TODO(crbug.com/40944114): Check if there exists an alternate way out.
-        SignInPreference signInPreference = mMainSettings.findPreference(MainSettings.PREF_SIGN_IN);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return signInPreference
-                            .getProfileDataCache()
-                            .hasProfileDataForTesting(accountInfo.getEmail());
-                });
 
         View view =
                 mSettingsActivityTestRule

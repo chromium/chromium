@@ -40,7 +40,6 @@ found in the LICENSE file.
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_error"/>
 
-                <!-- TODO(crbug.com/40944114): Align the icon to the center of the first line of the text view. -->
                 <org.chromium.ui.widget.TextViewWithLeading
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
