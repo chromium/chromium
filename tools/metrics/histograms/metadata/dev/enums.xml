@@ -809,16 +809,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="4" label="Other"/>
 </enum>
 
-<enum name="DevToolsBreakpointEditDialogRevealedFrom">
-  <int value="0" label="Breakpoint sidebar context menu"/>
-  <int value="1" label="Breakpoint sidebar edit button"/>
-  <int value="2" label="Breakpoint marker context menu"/>
-  <int value="3" label="Line gutter context menu"/>
-  <int value="4" label="Keyboard Shortcut"/>
-  <int value="5" label="Linkifier"/>
-  <int value="6" label="Mouse click"/>
-</enum>
-
 <enum name="DevToolsColorConvertedFrom">
   <int value="0" label="Color Swatch (Shift + Click menu)"/>
   <int value="1" label="Color Picker"/>

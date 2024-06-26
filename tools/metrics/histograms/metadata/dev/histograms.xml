@@ -57,16 +57,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DevTools.BreakpointEditDialogRevealedFrom"
-    enum="DevToolsBreakpointEditDialogRevealedFrom" expires_after="2024-06-30">
-  <owner>yangguo@chromium.org</owner>
-  <owner>bmeurer@google.com</owner>
-  <owner>kimanh@chromium.org</owner>
-  <summary>
-    Records the ways in which the Breakpoint Edit Dialog was opened.
-  </summary>
-</histogram>
-
 <histogram name="DevTools.CDPCommandFrom{ClientType}" enum="CDPCommands"
     expires_after="2024-11-03">
   <owner>wolfi@google.com</owner>
