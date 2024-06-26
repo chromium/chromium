@@ -23,10 +23,9 @@
 #include "media/base/video_types.h"
 #include "media/base/waiting.h"
 #include "media/gpu/buffer_validation.h"
-#include "media/gpu/chromeos/frame_resource.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
+#include "media/gpu/chromeos/native_pixmap_frame_resource.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
-#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "media/media_buildflags.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -471,7 +470,7 @@ void VdVideoDecodeAccelerator::RequestFrames(
 
 VideoFrame::StorageType VdVideoDecodeAccelerator::GetFrameStorageType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
-  return VideoFrame::STORAGE_GPU_MEMORY_BUFFER;
+  return VideoFrame::STORAGE_DMABUFS;
 }
 
 void VdVideoDecodeAccelerator::AssignPictureBuffers(
@@ -556,28 +555,20 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
   CHECK(buffer_format);
   // Usage is SCANOUT_CPU_READ_WRITE because we may need to map the buffer in
   // order to use the LibYUVImageProcessorBackend.
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
-      gpu::GpuMemoryBufferSupport().CreateGpuMemoryBufferImplFromHandle(
-          std::move(gmb_handle), layout_->coded_size(), *buffer_format,
-          gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, base::NullCallback());
-  if (!gpu_memory_buffer) {
-    VLOGF(1) << "Failed to create GpuMemoryBuffer. format: "
-             << gfx::BufferFormatToString(*buffer_format)
-             << ", coded_size: " << layout_->coded_size().ToString();
-    return;
-  }
-
+  // TODO(b/349610963): investigate whether there is a better buffer usage.
   // FrameResource::CreateWrappingFrame() will check whether the updated
   // visible_rect is sub rect of the original visible_rect. Therefore we set
   // visible_rect as large as coded_size to guarantee this condition.
-  scoped_refptr<FrameResource> origin_frame =
-      VideoFrameResource::Create(VideoFrame::WrapExternalGpuMemoryBuffer(
+  scoped_refptr<media::FrameResource> origin_frame =
+      NativePixmapFrameResource::Create(
           gfx::Rect(layout_->coded_size()), layout_->coded_size(),
-          std::move(gpu_memory_buffer), base::TimeDelta()));
+          base::TimeDelta(), gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
+          base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
+              layout_->coded_size(), *buffer_format,
+              std::move(gmb_handle.native_pixmap_handle)));
 
-  // This passes because GetFrameStorageType() is hard coded to match the
-  // storage type of frames produced by
-  // VideoFrame::WrapExternalGpuMemoryBuffer().
+  // Makes sure that GetFrameStorageType() agrees with the usage of the previous
+  // call to NativePixmapFrameResource::Create().
   CHECK_EQ(origin_frame->storage_type(), GetFrameStorageType());
 
   auto res = frame_id_to_picture_id_.emplace(origin_frame->GetSharedMemoryId(),
