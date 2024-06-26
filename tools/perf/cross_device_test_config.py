@@ -107,8 +107,7 @@ TARGET_DEVICES = {
             'Speedometer2': 20,
         },
         'speedometer3': {
-            # TODO(crbug.com/349387339): Reduced from 20 to 5 for now.
-            'Speedometer3': 5,
+            'Speedometer3': 20,
         },
     },
     'linux-perf': {
