@@ -65,9 +65,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
       // means some previous test left bluetooth disabled.
       WaitForState(kBluetoothPowerState, true),
 
-      Log("Opening quick settings bubble"),
-      PressButton(kUnifiedSystemTrayElementId),
-      WaitForShow(kQuickSettingsViewElementId),
+      Log("Opening quick settings bubble"), OpenQuickSettings(),
 
       // The bluetooth toggle button may take time to enable because
       // the UI queries the bluetooth adapter state asynchronously.

@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -184,6 +185,24 @@ ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::NavigateSettingsToBluetoothPage(
     const ui::ElementIdentifier& element_id) {
   return NavigateSettingsToPage(element_id, /*path=*/"/bluetooth");
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::OpenQuickSettings() {
+  return Steps(PressButton(ash::kUnifiedSystemTrayElementId),
+               WaitForShow(ash::kQuickSettingsViewElementId));
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::NavigateQuickSettingsToNetworkPage() {
+  return NavigateQuickSettingsToPage(
+      ash::kNetworkFeatureTileDrillInArrowElementId);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::NavigateQuickSettingsToBluetoothPage() {
+  return NavigateQuickSettingsToPage(
+      ash::kBluetoothFeatureTileDrillInArrowElementId);
 }
 
 Profile* InteractiveAshTest::GetActiveUserProfile() {
@@ -393,37 +412,6 @@ InteractiveAshTest::SelectDropdownElementOption(
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
-InteractiveAshTest::NavigateSettingsToPage(
-    const ui::ElementIdentifier& element_id,
-    const char* path) {
-  CHECK(path);
-  const WebContentsInteractionTestUtil::DeepQuery menu_item(
-      {{"os-settings-ui", "os-settings-menu",
-        base::StringPrintf("os-settings-menu-item[path=\"%s\"]", path)}});
-  return Steps(ScrollIntoView(element_id, menu_item),
-               MoveMouseTo(element_id, menu_item), ClickMouse());
-}
-
-ui::test::internal::InteractiveTestPrivate::MultiStep
-InteractiveAshTest::FindElementWithTextAndDoAction(
-    const ui::ElementIdentifier& element_id,
-    const WebContentsInteractionTestUtil::DeepQuery& root,
-    const WebContentsInteractionTestUtil::DeepQuery& selectors,
-    const std::string& action) {
-  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementWithTextFound);
-
-  WebContentsInteractionTestUtil::StateChange state_change;
-  state_change.type = WebContentsInteractionTestUtil::StateChange::Type::
-      kExistsAndConditionTrue;
-  state_change.where = root;
-  state_change.test_function =
-      base::StringPrintf(kFindElementAndDoActionJs, action.c_str(),
-                         DeepQueryToSelectors(selectors).c_str());
-  state_change.event = kElementWithTextFound;
-  return WaitForStateChange(element_id, state_change);
-}
-
-ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::SendTextAsKeyEvents(const ui::ElementIdentifier& element_id,
                                         const std::string& text) {
   MultiStep steps;
@@ -480,4 +468,45 @@ InteractiveAshTest::SendTextAsKeyEvents(const ui::ElementIdentifier& element_id,
                            modifiers, ui::Accelerator::KeyState::PRESSED)));
   }
   return steps;
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::FindElementWithTextAndDoAction(
+    const ui::ElementIdentifier& element_id,
+    const WebContentsInteractionTestUtil::DeepQuery& root,
+    const WebContentsInteractionTestUtil::DeepQuery& selectors,
+    const std::string& action) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementWithTextFound);
+
+  WebContentsInteractionTestUtil::StateChange state_change;
+  state_change.type = WebContentsInteractionTestUtil::StateChange::Type::
+      kExistsAndConditionTrue;
+  state_change.where = root;
+  state_change.test_function =
+      base::StringPrintf(kFindElementAndDoActionJs, action.c_str(),
+                         DeepQueryToSelectors(selectors).c_str());
+  state_change.event = kElementWithTextFound;
+  return WaitForStateChange(element_id, state_change);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::NavigateSettingsToPage(
+    const ui::ElementIdentifier& element_id,
+    const char* path) {
+  CHECK(path);
+  const WebContentsInteractionTestUtil::DeepQuery menu_item(
+      {{"os-settings-ui", "os-settings-menu",
+        base::StringPrintf("os-settings-menu-item[path=\"%s\"]", path)}});
+  return Steps(ScrollIntoView(element_id, menu_item),
+               MoveMouseTo(element_id, menu_item), ClickMouse());
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::NavigateQuickSettingsToPage(
+    const ui::ElementIdentifier& element_id) {
+  // This function assumes that the drill-in arrow is or will become visible
+  // without any action.
+  return Steps(WaitForShow(ash::kQuickSettingsViewElementId),
+               WaitForShow(element_id), MoveMouseTo(element_id), ClickMouse(),
+               FlushEvents());
 }

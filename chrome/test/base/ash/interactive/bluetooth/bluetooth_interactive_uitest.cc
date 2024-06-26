@@ -98,19 +98,11 @@ IN_PROC_BROWSER_TEST_F(BluetoothInteractiveUITest,
 
       Log("Opening the Quick Settings bubble"),
 
-      PressButton(kUnifiedSystemTrayElementId),
-      WaitForShow(kQuickSettingsViewElementId),
+      OpenQuickSettings(),
 
-      Log("Waiting for the Bluetooth feature tile drill-in arrow to be shown"),
+      Log("Navigating to the bluetooth detailed page"),
 
-      WaitForShow(kBluetoothFeatureTileDrillInArrowElementId),
-
-      Log("Clicking the Bluetooth feature tile drill-in arrow"),
-
-      MoveMouseTo(kBluetoothFeatureTileDrillInArrowElementId), ClickMouse(),
-
-      // Allow the UI to settle.
-      FlushEvents(),
+      NavigateQuickSettingsToBluetoothPage(),
 
       Log("Waiting for \"pair new device\" button to be be shown"),
       WaitForShow(kBluetoothDetailedViewPairNewDeviceElementId),

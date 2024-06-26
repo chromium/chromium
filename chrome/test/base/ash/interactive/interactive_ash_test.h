@@ -71,6 +71,19 @@ class InteractiveAshTest
   ui::test::internal::InteractiveTestPrivate::MultiStep
   NavigateSettingsToBluetoothPage(const ui::ElementIdentifier& element_id);
 
+  // Opens the Quick Settings bubble.
+  ui::test::internal::InteractiveTestPrivate::MultiStep OpenQuickSettings();
+
+  // Navigates to the internet page within Quick Settings. This function expects
+  // the Quick Settings to already be open and on the root page.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  NavigateQuickSettingsToNetworkPage();
+
+  // Navigates to the bluetooth page within Quick Settings. This function
+  // expects the Quick Settings to already be open and on the root page.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  NavigateQuickSettingsToBluetoothPage();
+
   // Returns the active user profile.
   Profile* GetActiveUserProfile();
 
@@ -213,6 +226,13 @@ class InteractiveAshTest
   ui::test::internal::InteractiveTestPrivate::MultiStep NavigateSettingsToPage(
       const ui::ElementIdentifier& element_id,
       const char* path);
+
+  // Helper function that navigates to a detailed page within Quick Settings.
+  // This function expects the Quick Settings to already be open and on the root
+  // page. The `element_id` parameter should be the drill-in arrow for the
+  // desired detailed page.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  NavigateQuickSettingsToPage(const ui::ElementIdentifier& element_id);
 };
 
 #endif  // CHROME_TEST_BASE_ASH_INTERACTIVE_INTERACTIVE_ASH_TEST_H_
