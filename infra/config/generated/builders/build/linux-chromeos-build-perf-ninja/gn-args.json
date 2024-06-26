@@ -11,6 +11,7 @@
     "is_debug": false,
     "proprietary_codecs": true,
     "symbol_level": 0,
+    "target_cpu": "x64",
     "target_os": "chromeos",
     "use_clang_coverage": true,
     "use_cups": true,

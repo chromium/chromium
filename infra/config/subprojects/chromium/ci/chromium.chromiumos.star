@@ -131,6 +131,8 @@ ci.builder(
             "amd64-generic",
             "ozone_headless",
             "asan",
+            "chromeos",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -177,6 +179,8 @@ ci.builder(
             "cfi_full",
             "thin_lto",
             "also_build_lacros_chrome_for_architecture_amd64",
+            "chromeos",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -228,6 +232,7 @@ ci.builder(
             "amd64-generic",
             "ozone_headless",
             "debug",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -276,6 +281,7 @@ ci.builder(
             "lacros",
             "debug",
             "static",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -327,6 +333,7 @@ ci.builder(
             "ozone_headless",
             "use_fake_dbus_clients",
             "also_build_lacros_chrome_for_architecture_amd64",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -447,6 +454,7 @@ ci.builder(
             "arm-generic",
             "debug",
             "ozone_headless",
+            "arm",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -483,6 +491,7 @@ ci.builder(
             "remoteexec",
             "arm-generic",
             "ozone_headless",
+            "arm",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -520,6 +529,7 @@ ci.builder(
             "arm64-generic-vm",
             "dcheck_always_on",
             "ozone_headless",
+            "arm64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -575,6 +585,7 @@ This builder builds chromium and tests it on the public CrOS image on skylab DUT
             "jacuzzi",
             "ozone_headless",
             "remoteexec",
+            "arm64",
         ],
     ),
     # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
@@ -633,6 +644,7 @@ This builder builds chromium and tests it on the public CrOS image on skylab DUT
             "octopus",
             "ozone_headless",
             "remoteexec",
+            "x64",
         ],
     ),
     # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
@@ -686,6 +698,7 @@ ci.builder(
             "lacros",
             "release",
             "is_skylab",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -826,6 +839,7 @@ ci.builder(
             "ozone_headless",
             "lacros",
             "release",
+            "x64",
         ],
     ),
     # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
@@ -875,6 +889,7 @@ ci.builder(
             "lacros",
             "release",
             "is_skylab",
+            "arm",
         ],
     ),
     os = os.LINUX_DEFAULT,
@@ -923,6 +938,7 @@ ci.builder(
             "lacros",
             "release",
             "is_skylab",
+            "arm64",
         ],
     ),
     os = os.LINUX_DEFAULT,
@@ -973,6 +989,7 @@ ci.builder(
             "ozone_headless",
             "lacros",
             "release",
+            "arm",
         ],
     ),
     # TODO(crbug.com/40179221) Enable tree closing when stable.
@@ -1022,6 +1039,7 @@ ci.builder(
             "ozone_headless",
             "lacros",
             "release",
+            "arm64",
         ],
     ),
     # TODO(crbug.com/40231151): enable gardener rotation and tree_closing
@@ -1065,6 +1083,7 @@ ci.builder(
             "debug_builder",
             "remoteexec",
             "use_cups",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -1117,6 +1136,7 @@ ci.builder(
             "remoteexec",
             "use_cups",
             "also_build_lacros_chrome",
+            "x64",
         ],
     ),
     # See crbug.com/1345687. This builder need higher memory.
@@ -1160,6 +1180,7 @@ ci.builder(
             "remoteexec",
             "also_build_ash_chrome",
             "use_cups",
+            "x64",
         ],
     ),
     # See crbug.com/1345687. This builder need higher memory.
@@ -1238,6 +1259,7 @@ ci.builder(
             "remoteexec",
             "also_build_ash_chrome",
             "use_cups",
+            "x64",
         ],
     ),
     # See crbug.com/1345687. This builder need higher memory.
@@ -1280,6 +1302,7 @@ ci.builder(
             "release_builder",
             "remoteexec",
             "chromeos",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(

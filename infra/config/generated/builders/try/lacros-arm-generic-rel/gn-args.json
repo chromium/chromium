@@ -6,6 +6,7 @@
     "is_chromeos_device": true,
     "is_debug": false,
     "ozone_platform_headless": true,
+    "target_cpu": "arm",
     "target_os": "chromeos",
     "use_remoteexec": true,
     "use_siso": true
