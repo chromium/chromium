@@ -177,6 +177,10 @@ class PdfInkModuleTest : public testing::Test {
     return message;
   }
 
+  void EnableAnnotationMode() {
+    EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationModeMessage(true)));
+  }
+
   FakeClient& client() { return client_; }
   PdfInkModule& ink_module() { return ink_module_; }
 
@@ -195,7 +199,7 @@ TEST_F(PdfInkModuleTest, UnknownMessage) {
 
 // Verify that a set eraser message sets the annotation brush to an eraser.
 TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageEraser) {
-  EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationModeMessage(true)));
+  EnableAnnotationMode();
   EXPECT_EQ(true, ink_module().enabled());
 
   base::Value::Dict message =
@@ -209,7 +213,7 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageEraser) {
 // Verify that a set pen message sets the annotation brush to a pen, with the
 // given params.
 TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
-  EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationModeMessage(true)));
+  EnableAnnotationMode();
   EXPECT_EQ(true, ink_module().enabled());
 
   AnnotationBrushMessageParams message_params{/*color_r=*/10, /*color_g=*/255,
@@ -230,7 +234,7 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
 // Verify that a set highlighter message sets the annotation brush to a
 // highlighter, with the given params.
 TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
-  EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationModeMessage(true)));
+  EnableAnnotationMode();
   EXPECT_EQ(true, ink_module().enabled());
 
   AnnotationBrushMessageParams message_params{/*color_r=*/240, /*color_g=*/133,
@@ -251,7 +255,7 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
 // Verify that brushes with zero color values can be set as the annotation
 // brush.
 TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
-  EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationModeMessage(true)));
+  EnableAnnotationMode();
   EXPECT_EQ(true, ink_module().enabled());
 
   AnnotationBrushMessageParams message_params{/*color_r=*/0, /*color_g=*/0,
@@ -273,7 +277,7 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
 // is needed because the PDF extension allows for a brush size of 0, but
 // `InkBrush` cannot have a size of 0.
 TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageSizeZeroTranslation) {
-  EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationModeMessage(true)));
+  EnableAnnotationMode();
   EXPECT_EQ(true, ink_module().enabled());
 
   AnnotationBrushMessageParams message_params{/*color_r=*/255, /*color_g=*/255,
@@ -294,7 +298,7 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageSizeZeroTranslation) {
 // Verify that the size of the brush is properly translated. The PDF extension's
 // max brush size is 1, while the max for `InkBrush` will be 8.
 TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageSizeOneTranslation) {
-  EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationModeMessage(true)));
+  EnableAnnotationMode();
   EXPECT_EQ(true, ink_module().enabled());
 
   AnnotationBrushMessageParams message_params{/*color_r=*/255, /*color_g=*/255,
@@ -341,6 +345,13 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
     constexpr gfx::RectF kPage(0.0f, 0.0f, 50.0f, 60.0f);
     client().set_page_layouts(base::span_from_ref(kPage));
     client().set_page_visibility(0, true);
+  }
+
+  void InitializeVerticalTwoPageLayout() {
+    // Page 2 is below page 1. Not side-by-side.
+    client().set_page_layouts(kVerticalLayout2Pages);
+    client().set_page_visibility(0, true);
+    client().set_page_visibility(1, true);
   }
 
   void ApplyStrokeWithMousePoints(
@@ -479,12 +490,8 @@ TEST_F(PdfInkModuleStrokeTest, InvalidationsFromStroke) {
 }
 
 TEST_F(PdfInkModuleStrokeTest, StrokeOutsidePage) {
-  EXPECT_TRUE(
-      ink_module().OnMessage(CreateSetAnnotationModeMessage(/*enable=*/true)));
-
-  client().set_page_layouts(kVerticalLayout2Pages);
-  client().set_page_visibility(0, true);
-  client().set_page_visibility(1, true);
+  EnableAnnotationMode();
+  InitializeVerticalTwoPageLayout();
 
   // Start out without any strokes.
   EXPECT_TRUE(ink_module().GetStrokesInputPositionsForTesting().empty());
@@ -501,12 +508,8 @@ TEST_F(PdfInkModuleStrokeTest, StrokeOutsidePage) {
 }
 
 TEST_F(PdfInkModuleStrokeTest, StrokeInsidePages) {
-  EXPECT_TRUE(
-      ink_module().OnMessage(CreateSetAnnotationModeMessage(/*enable=*/true)));
-
-  client().set_page_layouts(kVerticalLayout2Pages);
-  client().set_page_visibility(0, true);
-  client().set_page_visibility(1, true);
+  EnableAnnotationMode();
+  InitializeVerticalTwoPageLayout();
 
   // Start out without any strokes.
   EXPECT_TRUE(ink_module().GetStrokesInputPositionsForTesting().empty());
@@ -539,12 +542,8 @@ TEST_F(PdfInkModuleStrokeTest, StrokeInsidePages) {
 }
 
 TEST_F(PdfInkModuleStrokeTest, StrokeAcrossPages) {
-  EXPECT_TRUE(
-      ink_module().OnMessage(CreateSetAnnotationModeMessage(/*enable=*/true)));
-
-  client().set_page_layouts(kVerticalLayout2Pages);
-  client().set_page_visibility(0, true);
-  client().set_page_visibility(1, true);
+  EnableAnnotationMode();
+  InitializeVerticalTwoPageLayout();
 
   // Start out without any strokes.
   EXPECT_TRUE(ink_module().GetStrokesInputPositionsForTesting().empty());
@@ -564,12 +563,8 @@ TEST_F(PdfInkModuleStrokeTest, StrokeAcrossPages) {
 }
 
 TEST_F(PdfInkModuleStrokeTest, StrokePageExitAndRentry) {
-  EXPECT_TRUE(
-      ink_module().OnMessage(CreateSetAnnotationModeMessage(/*enable=*/true)));
-
-  client().set_page_layouts(kVerticalLayout2Pages);
-  client().set_page_visibility(0, true);
-  client().set_page_visibility(1, true);
+  EnableAnnotationMode();
+  InitializeVerticalTwoPageLayout();
 
   // Start out without any strokes.
   EXPECT_TRUE(ink_module().GetStrokesInputPositionsForTesting().empty());
