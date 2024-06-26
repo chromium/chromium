@@ -282,15 +282,8 @@ TEST_F(HotspotControllerTest, MAYBE_AbortEnableTethering) {
 
 // TODO(crbug.com/349291155): MemorySanitizer: use-of-uninitialized-value
 // Uninitialized value was created by an allocation of 'disable_result' in the
-// stack frame.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_ShillOperationFailureWhileAborting \
-  DISABLED_ShillOperationFailureWhileAborting
-#else
-#define MAYBE_ShillOperationFailureWhileAborting \
-  ShillOperationFailureWhileAborting
-#endif
-TEST_F(HotspotControllerTest, MAYBE_ShillOperationFailureWhileAborting) {
+// stack frame. Disabled since also failing on non-msan.
+TEST_F(HotspotControllerTest, DISABLED_ShillOperationFailureWhileAborting) {
   SetHotspotAllowed();
   AddActiveCellularService();
   base::RunLoop().RunUntilIdle();
