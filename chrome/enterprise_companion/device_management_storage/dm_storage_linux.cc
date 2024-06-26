@@ -128,19 +128,20 @@ class TokenService : public TokenServiceInterface {
   std::string dm_token_;
 };
 
-DMStorage::DMStorage(const base::FilePath& policy_cache_root,
-                     const base::FilePath& enrollment_token_path,
-                     const base::FilePath& dm_token_path)
-    : DMStorage(policy_cache_root,
-                std::make_unique<TokenService>(enrollment_token_path,
-                                               dm_token_path)) {}
+scoped_refptr<DMStorage> CreateDMStorage(
+    const base::FilePath& policy_cache_root,
+    const base::FilePath& enrollment_token_path,
+    const base::FilePath& dm_token_path) {
+  return CreateDMStorage(
+      policy_cache_root,
+      std::make_unique<TokenService>(enrollment_token_path, dm_token_path));
+}
 
 scoped_refptr<DMStorage> GetDefaultDMStorage() {
-  return base::MakeRefCounted<DMStorage>(
-      base::FilePath("/opt")
-          .AppendASCII(COMPANY_SHORTNAME_STRING)
-          .AppendASCII(PRODUCT_FULLNAME_STRING)
-          .AppendASCII("DeviceManagement"));
+  return CreateDMStorage(base::FilePath("/opt")
+                             .AppendASCII(COMPANY_SHORTNAME_STRING)
+                             .AppendASCII(PRODUCT_FULLNAME_STRING)
+                             .AppendASCII("DeviceManagement"));
 }
 
 }  // namespace device_management_storage

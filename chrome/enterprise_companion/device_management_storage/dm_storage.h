@@ -90,65 +90,44 @@ class TokenServiceInterface {
 class DMStorage : public base::RefCountedThreadSafe<DMStorage> {
  public:
   static constexpr size_t kMaxDmTokenLength = 4096;
-#if BUILDFLAG(IS_WIN)
-  explicit DMStorage(const base::FilePath& policy_cache_root);
-#else
-  explicit DMStorage(const base::FilePath& policy_cache_root,
-                     const base::FilePath& enrollment_token_path = {},
-                     const base::FilePath& dm_token_path = {});
-#endif
-  DMStorage(const base::FilePath& policy_cache_root,
-            std::unique_ptr<TokenServiceInterface> token_service);
-  DMStorage(const DMStorage&) = delete;
-  DMStorage& operator=(const DMStorage&) = delete;
 
   // Forwards to token service to get device ID
-  std::string GetDeviceID() const { return token_service_->GetDeviceID(); }
+  virtual std::string GetDeviceID() const = 0;
 
   // Forwards to token service to check if enrollment is mandatory.
-  bool IsEnrollmentMandatory() const {
-    return token_service_->IsEnrollmentMandatory();
-  }
+  virtual bool IsEnrollmentMandatory() const = 0;
 
   // Forwards to token service to save enrollment token.
-  bool StoreEnrollmentToken(const std::string& enrollment_token) {
-    return token_service_->StoreEnrollmentToken(enrollment_token);
-  }
+  virtual bool StoreEnrollmentToken(const std::string& enrollment_token) = 0;
 
   // Forwards to token service to delete enrollment token.
-  bool DeleteEnrollmentToken() {
-    return token_service_->DeleteEnrollmentToken();
-  }
+  virtual bool DeleteEnrollmentToken() = 0;
 
   // Forwards to token service to get enrollment token.
-  std::string GetEnrollmentToken() const {
-    return token_service_->GetEnrollmentToken();
-  }
+  virtual std::string GetEnrollmentToken() const = 0;
 
   // Forwards to token service to save DM token.
-  bool StoreDmToken(const std::string& dm_token) {
-    return token_service_->StoreDmToken(dm_token);
-  }
+  virtual bool StoreDmToken(const std::string& dm_token) = 0;
 
   // Forwards to token service to get DM token.
-  std::string GetDmToken() const { return token_service_->GetDmToken(); }
+  virtual std::string GetDmToken() const = 0;
 
   // Writes a special DM token to storage to mark current device as
   // deregistered.
-  bool InvalidateDMToken();
+  virtual bool InvalidateDMToken() = 0;
 
   // Deletes the existing DM token for re-registration.
-  bool DeleteDMToken();
+  virtual bool DeleteDMToken() = 0;
 
   // Returns true if the DM token is valid, where valid is defined as non-blank
   // and not de-registered.
-  bool IsValidDMToken() const;
+  virtual bool IsValidDMToken() const = 0;
 
   // Returns true if the device is de-registered.
-  bool IsDeviceDeregistered() const;
+  virtual bool IsDeviceDeregistered() const = 0;
 
   // Checks if the caller has permissions to persist the DM policies.
-  bool CanPersistPolicies() const;
+  virtual bool CanPersistPolicies() const = 0;
 
   // Persists DM policies.
   //
@@ -177,33 +156,40 @@ class DMStorage : public base::RefCountedThreadSafe<DMStorage> {
   //  ('Z29vZ2xlL21hY2hpbmUtbGV2ZWwtb21haGE=' is base64 encoding of
   //  "google/machine-level-omaha").
   //
-  bool PersistPolicies(const DMPolicyMap& policy_map) const;
+  virtual bool PersistPolicies(const DMPolicyMap& policy_map) const = 0;
 
   // Removes all the cached policies, including the cached policy info.
-  bool RemoveAllPolicies() const;
+  virtual bool RemoveAllPolicies() const = 0;
 
   // Creates a CachedPolicyInfo object and populates it with the public key
   // information loaded from file |policy_cache_root_|\CachedPolicyInfo.
-  std::unique_ptr<CachedPolicyInfo> GetCachedPolicyInfo() const;
+  virtual std::unique_ptr<CachedPolicyInfo> GetCachedPolicyInfo() const = 0;
 
   // Returns the policy data loaded from the PolicyFetchResponse file in the
   // |policy_cache_root_|\{Base64Encoded{|policy_type|}} directory.
-  std::optional<enterprise_management::PolicyData> ReadPolicyData(
-      const std::string& policy_type);
+  virtual std::optional<enterprise_management::PolicyData> ReadPolicyData(
+      const std::string& policy_type) = 0;
 
   // Returns the folder that caches the downloaded policies.
-  base::FilePath policy_cache_folder() const { return policy_cache_root_; }
+  virtual base::FilePath policy_cache_folder() const = 0;
 
- private:
+ protected:
   friend class base::RefCountedThreadSafe<DMStorage>;
-  ~DMStorage();
-
-  const base::FilePath policy_cache_root_;
-  const base::FilePath policy_info_file_;
-  std::unique_ptr<TokenServiceInterface> token_service_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
+  virtual ~DMStorage() = default;
 };
+
+#if BUILDFLAG(IS_WIN)
+scoped_refptr<DMStorage> CreateDMStorage(
+    const base::FilePath& policy_cache_root);
+#else
+scoped_refptr<DMStorage> CreateDMStorage(
+    const base::FilePath& policy_cache_root,
+    const base::FilePath& enrollment_token_path = {},
+    const base::FilePath& dm_token_path = {});
+#endif
+scoped_refptr<DMStorage> CreateDMStorage(
+    const base::FilePath& policy_cache_root,
+    std::unique_ptr<TokenServiceInterface> token_service);
 
 // Returns the DMStorage under which the Device Management policies are
 // persisted. For Windows, this is `%ProgramFiles(x86)%\{CompanyName}\Policies`.

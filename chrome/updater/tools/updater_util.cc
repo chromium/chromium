@@ -151,8 +151,7 @@ scoped_refptr<device_management_storage::DMStorage> GetDMStorage() {
           kCBCMPolicyPathSwitch);
   return storage_path.empty()
              ? device_management_storage::GetDefaultDMStorage()
-             : base::MakeRefCounted<device_management_storage::DMStorage>(
-                   storage_path);
+             : device_management_storage::CreateDMStorage(storage_path);
 }
 
 std::unique_ptr<device_management_storage::CachedPolicyInfo>

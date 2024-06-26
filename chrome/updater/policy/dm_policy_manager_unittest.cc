@@ -400,8 +400,8 @@ TEST(DMPolicyManager, GetOmahaPolicySettings) {
   });
   base::ScopedTempDir cache_root;
   ASSERT_TRUE(cache_root.CreateUniqueTempDir());
-  auto storage = base::MakeRefCounted<device_management_storage::DMStorage>(
-      cache_root.GetPath(), std::make_unique<TestTokenService>());
+  auto storage = CreateDMStorage(cache_root.GetPath(),
+                                 std::make_unique<TestTokenService>());
   EXPECT_TRUE(storage->CanPersistPolicies());
   EXPECT_TRUE(storage->PersistPolicies(policies));
 

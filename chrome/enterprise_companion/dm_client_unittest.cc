@@ -94,8 +94,8 @@ class DMClientTest : public ::testing::Test {
     test_token_service_ = test_token_service.get();
     mock_cloud_policy_client_ =
         new MockCloudPolicyClient(&fake_device_management_service_);
-    dm_storage_ = base::MakeRefCounted<device_management_storage::DMStorage>(
-        storage_dir_.GetPath(), std::move(test_token_service));
+    dm_storage_ =
+        CreateDMStorage(storage_dir_.GetPath(), std::move(test_token_service));
     dm_client_ = CreateDMClient(
         base::BindLambdaForTesting([&](policy::DeviceManagementService*) {
           return base::WrapUnique(static_cast<policy::CloudPolicyClient*>(

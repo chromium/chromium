@@ -69,7 +69,7 @@ class TestTokenService : public TokenServiceInterface {
 
 #if BUILDFLAG(IS_MAC)
 TEST(DMStorage, LoadDeviceID) {
-  auto storage = base::MakeRefCounted<DMStorage>(
+  auto storage = CreateDMStorage(
       base::FilePath(FILE_PATH_LITERAL("/TestPolicyCacheRoot")));
   EXPECT_FALSE(storage->GetDeviceID().empty());
 }
@@ -83,7 +83,7 @@ TEST(DMStorage, LoadEnrollmentToken) {
 
   base::ScopedTempDir cache_root;
   ASSERT_TRUE(cache_root.CreateUniqueTempDir());
-  auto storage = base::MakeRefCounted<DMStorage>(cache_root.GetPath());
+  auto storage = CreateDMStorage(cache_root.GetPath());
   EXPECT_TRUE(storage->GetEnrollmentToken().empty());
 
   base::win::RegKey legacy_key;
@@ -115,7 +115,7 @@ TEST(DMStorage, StoreEnrollmentToken) {
 
   base::ScopedTempDir cache_root;
   ASSERT_TRUE(cache_root.CreateUniqueTempDir());
-  auto storage = base::MakeRefCounted<DMStorage>(cache_root.GetPath());
+  auto storage = CreateDMStorage(cache_root.GetPath());
   EXPECT_TRUE(storage->GetEnrollmentToken().empty());
 
   EXPECT_TRUE(storage->StoreEnrollmentToken("enrollment_token"));
@@ -132,7 +132,7 @@ TEST(DMStorage, DeleteEnrollmentToken) {
 
   base::ScopedTempDir cache_root;
   ASSERT_TRUE(cache_root.CreateUniqueTempDir());
-  auto storage = base::MakeRefCounted<DMStorage>(cache_root.GetPath());
+  auto storage = CreateDMStorage(cache_root.GetPath());
   EXPECT_TRUE(storage->GetEnrollmentToken().empty());
 
   EXPECT_TRUE(storage->StoreEnrollmentToken("test_token"));
@@ -154,7 +154,7 @@ TEST(DMStorage, StoreEnrollmentToken) {
   base::ScopedTempDir cache_root;
   ASSERT_TRUE(cache_root.CreateUniqueTempDir());
   const base::FilePath cache_root_path = cache_root.GetPath();
-  auto storage = base::MakeRefCounted<DMStorage>(
+  auto storage = CreateDMStorage(
       cache_root_path, cache_root_path.AppendASCII("enrollment_token_file"),
       cache_root_path.AppendASCII("dm_token_file"));
   EXPECT_TRUE(storage->GetEnrollmentToken().empty());
@@ -170,7 +170,7 @@ TEST(DMStorage, DeleteEnrollmentToken) {
   base::ScopedTempDir cache_root;
   ASSERT_TRUE(cache_root.CreateUniqueTempDir());
   const base::FilePath cache_root_path = cache_root.GetPath();
-  auto storage = base::MakeRefCounted<DMStorage>(
+  auto storage = CreateDMStorage(
       cache_root_path, cache_root_path.AppendASCII("enrollment_token_file"),
       cache_root_path.AppendASCII("dm_token_file"));
   EXPECT_TRUE(storage->GetEnrollmentToken().empty());
@@ -183,8 +183,8 @@ TEST(DMStorage, DeleteEnrollmentToken) {
 TEST(DMStorage, DMToken) {
   base::ScopedTempDir cache_root;
   ASSERT_TRUE(cache_root.CreateUniqueTempDir());
-  auto storage = base::MakeRefCounted<DMStorage>(
-      cache_root.GetPath(), std::make_unique<TestTokenService>());
+  auto storage = CreateDMStorage(cache_root.GetPath(),
+                                 std::make_unique<TestTokenService>());
   EXPECT_TRUE(storage->IsValidDMToken());
   EXPECT_FALSE(storage->GetDmToken().empty());
   EXPECT_FALSE(storage->IsDeviceDeregistered());
@@ -224,7 +224,7 @@ TEST(DMStorage, PersistPolicies) {
   EXPECT_TRUE(base::CreateDirectory(stale_poliy));
   EXPECT_TRUE(base::DirectoryExists(stale_poliy));
 
-  auto storage = base::MakeRefCounted<DMStorage>(cache_root.GetPath());
+  auto storage = CreateDMStorage(cache_root.GetPath());
   EXPECT_TRUE(storage->CanPersistPolicies());
   EXPECT_TRUE(storage->PersistPolicies(policies));
   base::FilePath policy_info_file =
@@ -278,8 +278,8 @@ TEST(DMStorage, GetCachedPolicyInfo) {
 
   base::ScopedTempDir cache_root;
   ASSERT_TRUE(cache_root.CreateUniqueTempDir());
-  auto storage = base::MakeRefCounted<DMStorage>(
-      cache_root.GetPath(), std::make_unique<TestTokenService>());
+  auto storage = CreateDMStorage(cache_root.GetPath(),
+                                 std::make_unique<TestTokenService>());
   EXPECT_TRUE(storage->CanPersistPolicies());
   EXPECT_TRUE(storage->PersistPolicies({
       {"sample-policy-type", response.SerializeAsString()},
@@ -309,8 +309,8 @@ TEST(DMStorage, ReadPolicyData) {
   });
   base::ScopedTempDir cache_root;
   ASSERT_TRUE(cache_root.CreateUniqueTempDir());
-  auto storage = base::MakeRefCounted<DMStorage>(
-      cache_root.GetPath(), std::make_unique<TestTokenService>());
+  auto storage = CreateDMStorage(cache_root.GetPath(),
+                                 std::make_unique<TestTokenService>());
   EXPECT_TRUE(storage->CanPersistPolicies());
   EXPECT_TRUE(storage->PersistPolicies(policies));
 

@@ -248,8 +248,10 @@ std::string TokenService::GetDmToken() const {
 
 }  // namespace
 
-DMStorage::DMStorage(const base::FilePath& policy_cache_root)
-    : DMStorage(policy_cache_root, std::make_unique<TokenService>()) {}
+scoped_refptr<DMStorage> CreateDMStorage(
+    const base::FilePath& policy_cache_root) {
+  return CreateDMStorage(policy_cache_root, std::make_unique<TokenService>());
+}
 
 scoped_refptr<DMStorage> GetDefaultDMStorage() {
   base::FilePath program_filesx86_dir;
@@ -258,7 +260,7 @@ scoped_refptr<DMStorage> GetDefaultDMStorage() {
     return nullptr;
   }
 
-  return base::MakeRefCounted<DMStorage>(
+  return CreateDMStorage(
       program_filesx86_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
           .AppendASCII("Policies"));
 }

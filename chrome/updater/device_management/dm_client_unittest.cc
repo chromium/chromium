@@ -129,10 +129,10 @@ class DMRequestCallbackHandler
     ASSERT_TRUE(storage_dir_.CreateUniqueTempDir());
     constexpr char kEnrollmentToken[] = "TestEnrollmentToken";
     constexpr char kDmToken[] = "test-dm-token";
-    storage_ = base::MakeRefCounted<device_management_storage::DMStorage>(
-        storage_dir_.GetPath(),
-        std::make_unique<TestTokenService>(kEnrollmentToken,
-                                           init_dm_token ? kDmToken : ""));
+    storage_ =
+        CreateDMStorage(storage_dir_.GetPath(),
+                        std::make_unique<TestTokenService>(
+                            kEnrollmentToken, init_dm_token ? kDmToken : ""));
 
     if (init_cache_info) {
       ASSERT_TRUE(storage_->CanPersistPolicies());
