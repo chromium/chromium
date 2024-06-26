@@ -12,18 +12,18 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "services/device/public/cpp/geolocation/buildflags.h"
+#include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
-
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
-#include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "services/device/public/cpp/geolocation/system_geolocation_source.h"
-#endif
+#endif  // BUILDFLAG(IS_APPLE) ||
+        // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
 #if BUILDFLAG(IS_APPLE)
 #include "services/device/public/mojom/geoposition.mojom.h"
-#endif
+#endif  // BUILDFLAG(IS_APPLE)
 
 namespace device {
 
@@ -36,20 +36,16 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationSystemPermissionManager {
   static void SetInstance(
       std::unique_ptr<GeolocationSystemPermissionManager> manager);
 
+  // Synchronously retrieves and returns the current system permission status.
+  // Calling this method is an error if system location permission integration
+  // is disabled.
+  LocationSystemPermissionStatus GetSystemPermission() const;
+
   void RequestSystemPermission();
   // Opens appropriate system preferences/setting page.
   void OpenSystemPermissionSetting();
 
-#if !BUILDFLAG(IS_APPLE) && \
-    !BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
-  // Default empty implementation of GeolocationSystemPermissionManager.
-  // It is used on operation systems for which we don't support system-level
-  // geolocation. A separate class (as opposed to nullptr) makes sure no
-  // unsupported calls are made in such context.
-};  // class GeolocationSystemPermissionManager
-
-#else
-
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   class PermissionObserver : public base::CheckedObserver {
    public:
     virtual void OnSystemPermissionUpdated(
@@ -67,9 +63,6 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationSystemPermissionManager {
       const GeolocationSystemPermissionManager&) = delete;
   virtual ~GeolocationSystemPermissionManager();
 
-  // Synchronously retrieves the current system permission status.
-  LocationSystemPermissionStatus GetSystemPermission() const;
-
   // Adds a permission observer.
   void AddObserver(PermissionObserver* observer);
   // Removes a permission observer.
@@ -85,26 +78,35 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationSystemPermissionManager {
   SystemGeolocationSource& GetSystemGeolocationSource() {
     return *system_geolocation_source_;
   }
-#endif
+#endif  // BUILDFLAG(IS_APPLE)
 
   SystemGeolocationSource& SystemGeolocationSourceForTest();
+#endif  // BUILDFLAG(IS_APPLE) ||
+        // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
  private:
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   void UpdateSystemPermission(LocationSystemPermissionStatus status);
   void NotifyPermissionObservers();
+#endif  // BUILDFLAG(IS_APPLE) ||
+        // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
+  LocationSystemPermissionStatus permission_cache_ =
+      LocationSystemPermissionStatus::kNotDetermined;
+
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   std::unique_ptr<SystemGeolocationSource> system_geolocation_source_;
 
   // Using scoped_refptr so objects can hold a reference and ensure this list
   // is not destroyed on shutdown before it had a chance to remove itself from
   // the list
   scoped_refptr<PermissionObserverList> observers_;
-  LocationSystemPermissionStatus permission_cache_ =
-      LocationSystemPermissionStatus::kNotDetermined;
+
   base::WeakPtrFactory<GeolocationSystemPermissionManager> weak_factory_{this};
+#endif  // BUILDFLAG(IS_APPLE) ||
+        // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 };
 
-#endif
 
 }  // namespace device
 

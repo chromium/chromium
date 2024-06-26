@@ -6,8 +6,8 @@
 
 #include "base/check_op.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/sequence_checker.h"
-#include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 
 namespace device {
 
@@ -72,11 +72,6 @@ void GeolocationSystemPermissionManager::RemoveObserver(
   observers_->RemoveObserver(observer);
 }
 
-LocationSystemPermissionStatus
-GeolocationSystemPermissionManager::GetSystemPermission() const {
-  return permission_cache_;
-}
-
 void GeolocationSystemPermissionManager::UpdateSystemPermission(
     LocationSystemPermissionStatus status) {
   permission_cache_ = status;
@@ -99,6 +94,16 @@ GeolocationSystemPermissionManager::SystemGeolocationSourceForTest() {
 }
 
 #endif
+
+LocationSystemPermissionStatus
+GeolocationSystemPermissionManager::GetSystemPermission() const {
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+  return permission_cache_;
+#else
+  NOTREACHED_NORETURN();
+#endif  // BUILDFLAG(IS_APPLE) ||
+        // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+}
 
 void GeolocationSystemPermissionManager::RequestSystemPermission() {
 #if BUILDFLAG(IS_APPLE)
