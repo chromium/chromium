@@ -901,8 +901,8 @@ MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
     return nullptr;
   }
 
-  return MakeGarbageCollected<MLConstantOperand>(
-      this, std::move(descriptor), Vector<uint8_t>(buffer_view->ByteSpan()));
+  return MakeGarbageCollected<MLConstantOperand>(this, std::move(descriptor),
+                                                 buffer_view->ByteSpan());
 }
 
 MLOperand* MLGraphBuilder::argMin(const MLOperand* input,

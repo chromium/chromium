@@ -58,7 +58,6 @@
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_buffer.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_constant_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_test_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.h"

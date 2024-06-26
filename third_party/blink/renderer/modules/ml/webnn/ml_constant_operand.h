@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_CONSTANT_OPERAND_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_CONSTANT_OPERAND_H_
 
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
-#include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -20,11 +20,11 @@ class MLGraphBuilder;
 // method. See https://www.w3.org/TR/webnn/#api-mlgraphbuilder-constant.
 class MODULES_EXPORT MLConstantOperand final : public MLOperand {
  public:
-  // The length of `bytes` must match the number of bytes described by
-  // `descriptor`.
+  // Creates a constant operand which is backed by a copy of `bytes`. The length
+  // of `bytes` must match the number of bytes described by `descriptor`.
   MLConstantOperand(MLGraphBuilder* builder,
                     webnn::OperandDescriptor descriptor,
-                    Vector<uint8_t> bytes);
+                    base::span<const uint8_t> bytes);
 
   MLConstantOperand(const MLConstantOperand&) = delete;
   MLConstantOperand& operator=(const MLConstantOperand&) = delete;
@@ -41,7 +41,7 @@ class MODULES_EXPORT MLConstantOperand final : public MLOperand {
   //
   // TODO(crbug.com/349428379): Consider eagerly transferring this data across
   // mojo, rather than wastefully holding onto this copy indefinitely.
-  const Vector<uint8_t> constant_bytes_;
+  const base::HeapArray<uint8_t> constant_bytes_;
 };
 
 }  // namespace blink
