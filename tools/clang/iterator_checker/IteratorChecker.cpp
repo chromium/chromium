@@ -36,153 +36,552 @@ const char kInvalidIteratorComparison[] =
 
 // To understand C++ code, we need a way to encode what is an iterator and what
 // are the functions that might invalidate them.
-//
-// The Clang frontend supports several source-level annotations in the form of
-// GCC-style attributes and pragmas that can help make using the Clang Static
-// Analyzer useful. We aim to provide support for those annotations. For now, we
-// hard code those for "known" interesting classes.
-// TODO(crbug.com/40272746) Support source-level annotations.
-enum Annotation : uint8_t {
+enum AnnotationType : uint8_t {
   kNone = 0,
 
-  // Annotate function returning an iterator.
-  kReturnIterator = 1 << 0,
+  // Annotate function declarations, return and argument types specifying to
+  // which container value they belong.
+  kContainer = 1 << 0,
+  kEndContainer = 1 << 1,
 
-  // Annotate function returning an "end" iterator.
-  // The distinction with `kReturnIterator` is important because we need to
-  // special case its iterator creation.
-  kReturnEndIterator = 1 << 1,
+  // Annotate function declarations and argument types specifying which
+  // container or iterator values to invalidate.
+  kInvalidate = 1 << 2,
 
   // Annotate function returning a pair of iterators.
   // TODO(crbug.com/40272746) Not yet implemented.
-  kReturnIteratorPair = 1 << 2,
+  kIteratorPair = 1 << 3,
 
-  // Annotate function invalidating the iterator in its arguments.
-  kInvalidateArgs = 1 << 3,
-
-  // Annotate function invalidating every iterators.
-  kInvalidateAll = 1 << 4,
+  // Annotate functions and argument types specifying
+  // which container or iterator values to swap.
+  // TODO(crbug.com/40272746) Not yet implemented.
+  kSwap = 1 << 4,
 };
 
-static llvm::DenseMap<llvm::StringRef, uint8_t> g_functions_annotations = {
-    {"std::begin", Annotation::kReturnIterator},
-    {"std::cbegin", Annotation::kReturnIterator},
-    {"std::end", Annotation::kReturnEndIterator},
-    {"std::cend", Annotation::kReturnEndIterator},
-    {"std::next", Annotation::kReturnIterator},
-    {"std::prev", Annotation::kReturnIterator},
-    {"std::find", Annotation::kReturnIterator},
-    // TODO(crbug.com/40272746) Add additional functions.
+// Represents a single annotation, defined by its:
+//  - `type`: Specifies the kind of annotation.
+//  - `identifier`: If applicable, a symbolic name that specifies which
+//  container the annotation is referring to.
+struct Annotation {
+  Annotation(AnnotationType type, llvm::StringRef identifier)
+      : type(type), identifier(identifier) {}
+
+  Annotation(AnnotationType type) : type(type) {}
+
+  AnnotationType type;
+  llvm::StringRef identifier;
 };
 
-static llvm::DenseMap<llvm::StringRef, llvm::DenseMap<llvm::StringRef, uint8_t>>
+// TODO(crbug.com/40272746): Use a set instead, because having duplicated
+// annotations doesn't make sense.
+using Annotations = std::vector<Annotation>;
+
+// Represents the aggregation of all annotations assignable to a function.
+struct GroupedFunctionAnnotation {
+  Annotations function_annotations;
+  Annotations return_annotations;
+  std::vector<Annotations> args_annotations;
+
+  GroupedFunctionAnnotation() = default;
+
+  GroupedFunctionAnnotation& Function(const Annotation& annotation) {
+    function_annotations.push_back(annotation);
+    return *this;
+  }
+
+  GroupedFunctionAnnotation& Return(const Annotation& annotation) {
+    return_annotations.push_back(annotation);
+    return *this;
+  }
+
+  GroupedFunctionAnnotation& Arg(const Annotations& annotations) {
+    args_annotations.push_back(annotations);
+    return *this;
+  }
+};
+
+// Find the first annotation in `annotations` of the specified `types`.
+Annotations::const_iterator FindAnnotation(const Annotations& annotations,
+                                           const uint8_t types) {
+  return std::find_if(
+      annotations.begin(), annotations.end(),
+      [&types](Annotation annotation) { return annotation.type & types; });
+}
+
+// Find the first annotation in `annotations` of the specified `types` and
+// `identifier`.
+Annotations::const_iterator FindAnnotation(const Annotations& annotations,
+                                           const uint8_t types,
+                                           const llvm::StringRef& identifier) {
+  return std::find_if(annotations.begin(), annotations.end(),
+                      [&types, &identifier](Annotation annotation) {
+                        return (annotation.type & types) &&
+                               (annotation.identifier == identifier);
+                      });
+}
+
+// Merge two different `GroupedFunctionAnnotation`.
+GroupedFunctionAnnotation MergeGroupedFunctionAnnotations(
+    GroupedFunctionAnnotation first,
+    const GroupedFunctionAnnotation& second) {
+  first.function_annotations.insert(first.function_annotations.end(),
+                                    second.function_annotations.begin(),
+                                    second.function_annotations.end());
+
+  first.return_annotations.insert(first.return_annotations.end(),
+                                  second.return_annotations.begin(),
+                                  second.return_annotations.end());
+
+  for (size_t i = 0; i < second.args_annotations.size(); i++) {
+    if (i < first.args_annotations.size()) {
+      first.args_annotations[i].insert(first.args_annotations[i].end(),
+                                       second.args_annotations[i].begin(),
+                                       second.args_annotations[i].end());
+    } else {
+      first.args_annotations.push_back(second.args_annotations[i]);
+    }
+  }
+
+  return first;
+}
+
+// Mapping between identifiers of source-level annotations and the related
+// annotation type (e.g. [[clang::annotate("container")]]).
+static llvm::DenseMap<llvm::StringRef, AnnotationType> g_annotations = {
+    {"container", AnnotationType::kContainer},
+    {"end_container", AnnotationType::kEndContainer},
+    {"invalidate", AnnotationType::kInvalidate},
+    {"swap", AnnotationType::kSwap},
+};
+
+// Hardcoded types annotations.
+static llvm::DenseMap<llvm::StringRef, Annotations> g_types_annotations = {
+    {"__normal_iterator", {Annotation(AnnotationType::kContainer)}},
+    {"reverse_iterator", {Annotation(AnnotationType::kContainer)}},
+};
+
+// Hardcoded function annotations.
+static llvm::DenseMap<llvm::StringRef, GroupedFunctionAnnotation>
+    g_functions_annotations = {
+        {
+            "std::begin",
+            {},
+        },
+        {
+            "std::cbegin",
+            {},
+        },
+        {
+            "std::end",
+            GroupedFunctionAnnotation().Return(
+                Annotation(AnnotationType::kEndContainer)),
+        },
+        {
+            "std::rend",
+            GroupedFunctionAnnotation().Return(
+                Annotation(AnnotationType::kEndContainer)),
+        },
+        {
+            "std::cend",
+            GroupedFunctionAnnotation().Return(
+                Annotation(AnnotationType::kEndContainer)),
+        },
+        {
+            "std::next",
+            {},
+        },
+        {
+            "std::prev",
+            {},
+        },
+        {
+            "std::find",
+            {},
+        },
+        {
+            "std::search",
+            {},
+        },
+        {
+            "std::swap",
+            GroupedFunctionAnnotation()
+                .Arg({Annotation(AnnotationType::kSwap)})
+                .Arg({Annotation(AnnotationType::kSwap)}),
+        },
+        // TODO(crbug.com/40272746) Add additional functions.
+};
+
+// Hardcoded member function annotations.
+static llvm::DenseMap<
+    llvm::StringRef,
+    llvm::DenseMap<llvm::StringRef, GroupedFunctionAnnotation>>
     g_member_function_annotations = {
         {
             "std::vector",
             {
-                {"append_range", Annotation::kInvalidateAll},
-                {"assign", Annotation::kInvalidateAll},
-                {"assign_range", Annotation::kInvalidateAll},
-                {"back", Annotation::kNone},
-                {"begin", Annotation::kReturnIterator},
-                {"capacity", Annotation::kNone},
-                {"cbegin", Annotation::kReturnIterator},
-                {"cend", Annotation::kReturnEndIterator},
-                {"clear", Annotation::kInvalidateAll},
-                {"crbegin", Annotation::kReturnIterator},
-                {"crend", Annotation::kReturnIterator},
-                {"data", Annotation::kNone},
-                {"emplace",
-                 Annotation::kReturnIterator | Annotation::kInvalidateAll},
-                {"emplace_back", Annotation::kInvalidateAll},
-                {"empty", Annotation::kNone},
-                {"end", Annotation::kReturnEndIterator},
-                {"erase",
-                 Annotation::kReturnIterator | Annotation::kInvalidateAll},
-                {"front", Annotation::kNone},
-                {"insert",
-                 Annotation::kInvalidateAll | Annotation::kReturnIterator},
-                {"insert_range",
-                 Annotation::kInvalidateAll | Annotation::kReturnIterator},
-                {"max_size", Annotation::kNone},
-                {"pop_back", Annotation::kInvalidateAll},
-                {"push_back", Annotation::kInvalidateAll},
-                {"rbegin", Annotation::kReturnIterator},
-                {"rend", Annotation::kReturnIterator},
-                {"reserve", Annotation::kInvalidateAll},
-                {"resize", Annotation::kInvalidateAll},
-                {"shrink_to_fit", Annotation::kInvalidateAll},
-                {"size", Annotation::kNone},
-                {"swap", Annotation::kNone},
+                {
+                    "append_range",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "assign",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "assign_range",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "back",
+                    {},
+                },
+                {
+                    "begin",
+                    {},
+                },
+                {
+                    "capacity",
+                    {},
+                },
+                {
+                    "cbegin",
+                    {},
+                },
+                {
+                    "cend",
+                    GroupedFunctionAnnotation().Return(
+                        Annotation(AnnotationType::kEndContainer)),
+                },
+                {
+                    "clear",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "crbegin",
+                    {},
+                },
+                {
+                    "crend",
+                    GroupedFunctionAnnotation().Return(
+                        Annotation(AnnotationType::kEndContainer)),
+                },
+                {
+                    "data",
+                    {},
+                },
+                {
+                    "emplace",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "emplace_back",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "empty",
+                    {},
+                },
+                {
+                    "end",
+                    GroupedFunctionAnnotation().Return(
+                        Annotation(AnnotationType::kEndContainer)),
+                },
+                {
+                    "erase",
+                    GroupedFunctionAnnotation()
+                        .Function(Annotation(AnnotationType::kInvalidate))
+                        .Return(Annotation(AnnotationType::kEndContainer)),
+                },
+                {
+                    "front",
+                    {},
+                },
+                {
+                    "insert",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "insert_range",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "max_size",
+                    {},
+                },
+                {
+                    "pop_back",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "push_back",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "rbegin",
+                    {},
+                },
+                {
+                    "rend",
+                    GroupedFunctionAnnotation().Return(
+                        Annotation(AnnotationType::kEndContainer)),
+                },
+                {
+                    "reserve",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "resize",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "shrink_to_fit",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "size",
+                    {},
+                },
+                {
+                    "swap",
+                    GroupedFunctionAnnotation()
+                        .Function(Annotation(AnnotationType::kSwap))
+                        .Arg({Annotation(AnnotationType::kSwap)}),
+                },
             },
         },
         {
             "std::unordered_set",
             {
-                {"begin", Annotation::kReturnIterator},
-                {"cbegin", Annotation::kReturnIterator},
-                {"end", Annotation::kReturnEndIterator},
-                {"cend", Annotation::kReturnEndIterator},
-                {"clear", Annotation::kInvalidateAll},
-                {"insert",
-                 Annotation::kInvalidateAll | Annotation::kReturnIteratorPair},
-                {"emplace",
-                 Annotation::kInvalidateAll | Annotation::kReturnIteratorPair},
-                {"emplace_hint",
-                 Annotation::kInvalidateAll | Annotation::kReturnIterator},
-                {"erase",
-                 Annotation::kInvalidateArgs | Annotation::kReturnIterator},
-                {"extract", Annotation::kInvalidateArgs},
-                {"find", Annotation::kReturnIterator},
+                {
+                    "begin",
+                    {},
+                },
+                {
+                    "cbegin",
+                    {},
+                },
+                {
+                    "end",
+                    GroupedFunctionAnnotation().Return(
+                        Annotation(AnnotationType::kEndContainer)),
+                },
+                {
+                    "cend",
+                    GroupedFunctionAnnotation().Return(
+                        Annotation(AnnotationType::kEndContainer)),
+                },
+                {
+                    "clear",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "insert",
+                    GroupedFunctionAnnotation()
+                        .Function(Annotation(AnnotationType::kInvalidate))
+                        .Return(Annotation(AnnotationType::kIteratorPair)),
+                },
+                {
+                    "emplace",
+                    GroupedFunctionAnnotation()
+                        .Function(Annotation(AnnotationType::kInvalidate))
+                        .Return(Annotation(AnnotationType::kIteratorPair)),
+                },
+                {
+                    "emplace_hint",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "erase",
+                    GroupedFunctionAnnotation().Arg(
+                        {Annotation(AnnotationType::kInvalidate)}),
+                },
+                {
+                    "extract",
+                    GroupedFunctionAnnotation().Arg(
+                        {Annotation(AnnotationType::kInvalidate)}),
+                },
+                {
+                    "find",
+                    {},
+                },
                 // TODO(crbug.com/40272746) Add additional functions.
             },
         },
         {
             "WTF::Vector",
             {
-                {"begin", Annotation::kReturnIterator},
-                {"rbegin", Annotation::kReturnIterator},
-                {"end", Annotation::kReturnEndIterator},
-                {"rend", Annotation::kReturnEndIterator},
-                {"clear", Annotation::kInvalidateAll},
-                {"shrink_to_fit", Annotation::kInvalidateAll},
-                {"push_back", Annotation::kInvalidateAll},
-                {"emplace_back", Annotation::kInvalidateAll},
-                {"insert", Annotation::kInvalidateAll},
-                {"InsertAt", Annotation::kInvalidateAll},
-                {"InsertVector", Annotation::kInvalidateAll},
-                {"push_front", Annotation::kInvalidateAll},
-                {"PrependVector", Annotation::kInvalidateAll},
-                {"EraseAt", Annotation::kInvalidateAll},
-                {"erase",
-                 Annotation::kInvalidateAll | Annotation::kReturnIterator},
+                {
+                    "begin",
+                    {},
+                },
+                {
+                    "rbegin",
+                    {},
+                },
+                {
+                    "end",
+                    GroupedFunctionAnnotation().Return(
+                        Annotation(AnnotationType::kEndContainer)),
+                },
+                {
+                    "rend",
+                    GroupedFunctionAnnotation().Return(
+                        Annotation(AnnotationType::kEndContainer)),
+                },
+                {
+                    "clear",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "shrink_to_fit",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "push_back",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "emplace_back",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "insert",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "InsertAt",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "InsertVector",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "push_front",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "PrependVector",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "EraseAt",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "erase",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
                 // `pop_back` invalidates only the iterator pointed to the last
                 // element, but we have no way to track it.
-                {"pop_back", Annotation::kNone},
+                {
+                    "pop_back",
+                    {},
+                },
                 // TODO(crbug.com/40272746) Add additional functions.
             },
         },
         {
             "std::deque",
             {
-                {"begin", Annotation::kReturnIterator},
-                {"cbegin", Annotation::kReturnIterator},
-                {"rbegin", Annotation::kReturnIterator},
-                {"end", Annotation::kReturnEndIterator},
-                {"cend", Annotation::kReturnEndIterator},
-                {"rend", Annotation::kReturnEndIterator},
-                {"clear", Annotation::kInvalidateAll},
-                {"shrink_to_fit", Annotation::kInvalidateAll},
-                {"insert",
-                 Annotation::kInvalidateAll | Annotation::kReturnIterator},
-                {"emplace",
-                 Annotation::kInvalidateAll | Annotation::kReturnIterator},
-                {"erase",
-                 Annotation::kInvalidateAll | Annotation::kReturnIterator},
-                {"push_back", Annotation::kInvalidateAll},
-                {"emplace_back", Annotation::kInvalidateAll},
-                {"push_front", Annotation::kInvalidateAll},
-                {"emplace_front", Annotation::kInvalidateAll},
+                {
+                    "begin",
+                    {},
+                },
+                {
+                    "cbegin",
+                    {},
+                },
+                {
+                    "rbegin",
+                    {},
+                },
+                {
+                    "end",
+                    GroupedFunctionAnnotation().Return(
+                        Annotation(AnnotationType::kEndContainer)),
+                },
+                {
+                    "cend",
+                    GroupedFunctionAnnotation().Return(
+                        Annotation(AnnotationType::kEndContainer)),
+                },
+                {
+                    "rend",
+                    GroupedFunctionAnnotation().Return(
+                        Annotation(AnnotationType::kEndContainer)),
+                },
+                {
+                    "clear",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "shrink_to_fit",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "insert",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "emplace",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "erase",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "push_back",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "emplace_back",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "push_front",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
+                {
+                    "emplace_front",
+                    GroupedFunctionAnnotation().Function(
+                        Annotation(AnnotationType::kInvalidate)),
+                },
                 // TODO(crbug.com/40272746) Add additional functions.
             },
         },
@@ -391,12 +790,8 @@ class InvalidIteratorAnalysis
   // CallExpr: https://clang.llvm.org/doxygen/classclang_1_1CallExpr.html
   void Transfer(const clang::CallExpr& callexpr,
                 clang::dataflow::Environment& env) {
+    // This handles both member and non-member call expressions.
     TransferCallExprCommon(callexpr, env);
-
-    if (auto* expr = clang::dyn_cast<clang::CXXMemberCallExpr>(&callexpr)) {
-      Transfer(*expr, env);
-      return;
-    }
 
     if (auto* expr = clang::dyn_cast<clang::CXXOperatorCallExpr>(&callexpr)) {
       Transfer(*expr, env);
@@ -406,33 +801,182 @@ class InvalidIteratorAnalysis
 
   void TransferCallExprCommon(const clang::CallExpr& expr,
                               clang::dataflow::Environment& env) {
-    auto* callee = expr.getDirectCallee();
-    if (!callee) {
+    std::optional<GroupedFunctionAnnotation> grouped_annotation =
+        GetFunctionAnnotation(expr);
+
+    if (!grouped_annotation) {
       return;
     }
 
-    // If the function is known to return an iterator and we can associate it
-    // with a known container, then we deduce the resulting expression is itself
-    // an iterator:
-    std::string callee_name = callee->getQualifiedNameAsString();
-    auto it = g_functions_annotations.find(callee_name);
-    if (it == g_functions_annotations.end()) {
+    ProcessAnnotationInvalidate(expr, grouped_annotation.value(), env);
+    ProcessAnnotationReturnIterator(expr, grouped_annotation.value(), env);
+    // TODO(crbug.com/40272746): Add support to "swap" and "require same
+    // container" operations.
+  }
+
+  void ProcessAnnotationInvalidate(
+      const clang::CallExpr& expr,
+      const GroupedFunctionAnnotation& grouped_annotation,
+      clang::dataflow::Environment& env) {
+    // In order to invalidate iterators and containers, we have to look for
+    // invalidation annotations inside:
+    // 1. Arguments types annotations.
+    // 2. Function annotations.
+
+    ProcessAnnotationInvalidateArgs(expr, grouped_annotation, env);
+    ProcessAnnotationInvalidateContainer(expr, grouped_annotation, env);
+  }
+
+  void ProcessAnnotationInvalidateArgs(
+      const clang::CallExpr& expr,
+      const GroupedFunctionAnnotation& grouped_annotation,
+      clang::dataflow::Environment& env) {
+    // Looking inside arguments types annotations.
+    for (size_t i = 0; i < grouped_annotation.args_annotations.size(); i++) {
+      Annotations args_annotation = grouped_annotation.args_annotations[i];
+
+      auto invalidate_arg_annotation =
+          FindAnnotation(args_annotation, AnnotationType::kInvalidate);
+
+      if (invalidate_arg_annotation == args_annotation.end()) {
+        continue;
+      }
+
+      clang::dataflow::RecordStorageLocation* iterator =
+          UnwrapAsIterator(expr.getArg(i), env);
+
+      if (iterator) {
+        // If we get an iterator from the argument, we just invalidate that
+        // iterator.
+        InfoStream() << "INVALIDATING ONE: " << DebugString(env, *iterator)
+                     << '\n';
+        InvalidateIterator(env, *iterator);
+      } else {
+        // If we cannot get the iterator from the argument, then let's
+        // invalidate everything instead.
+        clang::dataflow::Value* container =
+            GetContainerFromArg(env, *expr.getArg(i));
+
+        if (container) {
+          InfoStream() << "INVALIDATING MANY: Container: " << container << '\n';
+          InvalidateContainer(env, *container);
+        }
+      }
+    }
+  }
+
+  void ProcessAnnotationInvalidateContainer(
+      const clang::CallExpr& expr,
+      const GroupedFunctionAnnotation& grouped_annotation,
+      clang::dataflow::Environment& env) {
+    // Looking inside function annotations.
+    auto invalidate_function_annotation = FindAnnotation(
+        grouped_annotation.function_annotations, AnnotationType::kInvalidate);
+
+    if (invalidate_function_annotation ==
+        grouped_annotation.function_annotations.end()) {
       return;
     }
 
-    if (!(it->second & Annotation::kReturnIterator) &&
-        !(it->second & Annotation::kReturnEndIterator)) {
+    // Container to be invalidated.
+    clang::dataflow::Value* container = GetContainerFromImplicitArg(env, expr);
+
+    if (container) {
+      InfoStream() << "INVALIDATING MANY: Container: " << container << '\n';
+      InvalidateContainer(env, *container);
+    }
+  }
+
+  void ProcessAnnotationReturnIterator(
+      const clang::CallExpr& expr,
+      const GroupedFunctionAnnotation& grouped_annotation,
+      clang::dataflow::Environment& env) {
+    // In order to return the iterator, we first have to look if there is a
+    // container annotation inside the return type annotations.
+    // If there is, we then have to look for container annotations inside:
+    // 1. Function annotations.
+    // 2. Arguments annotations.
+
+    // Looking inside return type annotations.
+    auto container_return_annotation = FindAnnotation(
+        grouped_annotation.return_annotations,
+        AnnotationType::kContainer | AnnotationType::kEndContainer);
+
+    if (container_return_annotation ==
+        grouped_annotation.return_annotations.end()) {
       return;
     }
 
-    bool is_end = (it->second & Annotation::kReturnEndIterator) != 0;
+    // Container of the iterator to be returned.
+    clang::dataflow::Value* container = nullptr;
 
-    // In order to get the container value, we look for it:
-    // 1. if there is an iterator tied to the first argument expression, in the
-    // iterator itself
-    // 2. otherwise, in the argument expression itself
+    // Looking inside arguments types annotations.
+    for (size_t i = 0; i < grouped_annotation.args_annotations.size(); i++) {
+      Annotations args_annotation = grouped_annotation.args_annotations[i];
+
+      auto container_arg_annotation =
+          FindAnnotation(args_annotation, AnnotationType::kContainer,
+                         container_return_annotation->identifier);
+
+      if (container_arg_annotation != args_annotation.end()) {
+        // We stop looking for the args annotations as soon as we found one.
+        container = GetContainerFromArg(env, *expr.getArg(i));
+        break;
+      }
+    }
+
+    // If we don't find the container of the iterator to be returned in the
+    // arguments, we assume that :
+    // - if it's a member call, it must belong to the implicit argument.
+    // - otherwise, it must belong to the first argument
+    if (!container) {
+      if (clang::isa<clang::CXXMemberCallExpr>(expr)) {
+        container = GetContainerFromImplicitArg(env, expr);
+      } else {
+        container = GetContainerFromArg(env, *expr.getArg(0));
+      }
+    }
+
+    if (container) {
+      bool is_end =
+          container_return_annotation->type == AnnotationType::kEndContainer;
+
+      TransferCallReturningIterator(
+          &expr, *container,
+          is_end ? env.getBoolLiteralValue(false) : env.makeAtomicBoolValue(),
+          is_end ? env.getBoolLiteralValue(true) : env.makeAtomicBoolValue(),
+          env);
+    }
+  }
+
+  clang::dataflow::Value* GetContainerFromImplicitArg(
+      const clang::dataflow::Environment& env,
+      const clang::CallExpr& expr) {
+    const clang::CXXMemberCallExpr* member_expr =
+        clang::cast<clang::CXXMemberCallExpr>(&expr);
+
+    clang::dataflow::Value* container = nullptr;
+
+    if (!member_expr->getImplicitObjectArgument()->getType()->isRecordType()) {
+      container = env.getValue(*member_expr->getImplicitObjectArgument());
+    } else {
+      clang::dataflow::RecordStorageLocation* loc =
+          env.get<clang::dataflow::RecordStorageLocation>(
+              *member_expr->getImplicitObjectArgument());
+
+      if (loc) {
+        container = GetContainerValue(env, *loc);
+      }
+    }
+
+    return container;
+  }
+
+  clang::dataflow::Value* GetContainerFromArg(
+      const clang::dataflow::Environment& env,
+      const clang::Expr& arg) {
     clang::dataflow::RecordStorageLocation* iterator =
-        UnwrapAsIterator(expr.getArg(0), env);
+        UnwrapAsIterator(&arg, env);
     clang::dataflow::Value* container = nullptr;
 
     if (iterator) {
@@ -440,22 +984,291 @@ class InvalidIteratorAnalysis
     } else {
       auto* loc =
           clang::dyn_cast_or_null<clang::dataflow::RecordStorageLocation>(
-              env.getStorageLocation(*expr.getArg(0)));
+              env.getStorageLocation(arg));
 
       if (loc) {
         container = GetContainerValue(env, *loc);
       }
     }
 
-    if (!iterator && !container) {
-      return;
+    return container;
+  }
+
+  // Return annotations related to the specified call expression if present,
+  // otherwise return `std::nullopt`.
+  std::optional<GroupedFunctionAnnotation> GetFunctionAnnotation(
+      const clang::CallExpr& expr) {
+    auto* callee = expr.getDirectCallee();
+    if (!callee) {
+      return std::nullopt;
     }
 
-    TransferCallReturningIterator(
-        &expr, *container,
-        is_end ? env.getBoolLiteralValue(false) : env.makeAtomicBoolValue(),
-        is_end ? env.getBoolLiteralValue(true) : env.makeAtomicBoolValue(),
-        env);
+    GroupedFunctionAnnotation annotated_grouped_annotation =
+        GetAnnotatedFunctionAnnotation(*callee);
+
+    GroupedFunctionAnnotation hardcoded_grouped_annotation =
+        GetHardcodedFunctionAnnotation(
+            *callee, clang::isa<clang::CXXMemberCallExpr>(expr));
+
+    return MergeGroupedFunctionAnnotations(annotated_grouped_annotation,
+                                           hardcoded_grouped_annotation);
+  }
+
+  GroupedFunctionAnnotation GetHardcodedFunctionAnnotation(
+      const clang::FunctionDecl& callee,
+      const bool is_member_function) {
+    GroupedFunctionAnnotation grouped_annotation;
+
+    // Get hardcoded functions annotations.
+    if (is_member_function) {
+      const std::string callee_type = clang::cast<clang::CXXMethodDecl>(callee)
+                                          .getParent()
+                                          ->getQualifiedNameAsString();
+      auto container_annotations =
+          g_member_function_annotations.find(callee_type);
+      if (container_annotations != g_member_function_annotations.end()) {
+        const std::string callee_name = callee.getNameAsString();
+        auto it = container_annotations->second.find(callee_name);
+        if (it != container_annotations->second.end()) {
+          grouped_annotation = it->second;
+        }
+      }
+    } else {
+      std::string callee_name = callee.getQualifiedNameAsString();
+      auto it = g_functions_annotations.find(callee_name);
+      if (it != g_functions_annotations.end()) {
+        grouped_annotation = it->second;
+      }
+    }
+
+    // Get hardcoded types annotations from the return type and arguments types.
+    auto* decl = clang::dyn_cast_or_null<clang::TypeDecl>(
+        callee.getReturnType()->getAsRecordDecl());
+
+    if (decl) {
+      auto it = g_types_annotations.find(decl->getNameAsString());
+
+      if (it != g_types_annotations.end()) {
+        grouped_annotation.return_annotations.insert(
+            grouped_annotation.return_annotations.end(), it->second.begin(),
+            it->second.end());
+      }
+    }
+
+    for (size_t i = 0; i < callee.getNumParams(); i++) {
+      auto* decl = clang::dyn_cast_or_null<clang::TypeDecl>(
+          callee.getParamDecl(i)->getType()->getAsRecordDecl());
+
+      if (!decl) {
+        continue;
+      }
+
+      auto it = g_types_annotations.find(decl->getNameAsString());
+
+      if (it != g_types_annotations.end()) {
+        if (i < grouped_annotation.args_annotations.size()) {
+          grouped_annotation.args_annotations[i].insert(
+              grouped_annotation.args_annotations[i].end(), it->second.begin(),
+              it->second.end());
+        } else {
+          grouped_annotation.args_annotations.push_back(it->second);
+        }
+      }
+    }
+
+    return grouped_annotation;
+  }
+
+  GroupedFunctionAnnotation GetAnnotatedFunctionAnnotation(
+      const clang::FunctionDecl& callee) {
+    // Get annotations from function declaration.
+    Annotations function_annotations = ExtractAnnotationsFromDecl(callee);
+
+    // Get types annotations from the function context.
+    llvm::DenseMap<llvm::StringRef, Annotations> context_types_annotations;
+    GetAnnotationsFromContext(context_types_annotations, callee.getParent());
+
+    // Get annotations from return type, using also the function
+    // context.
+    Annotations return_annotations;
+    if (auto function_type_loc = callee.getFunctionTypeLoc()) {
+      return_annotations = ExtractAnnotationsFromTypeLoc(
+          function_type_loc.getReturnLoc(), context_types_annotations);
+    }
+
+    // Get annotations from arguments types, using also the function
+    // context.
+    std::vector<Annotations> arguments_annotations;
+    for (size_t i = 0; i < callee.getNumParams(); i++) {
+      auto* param = callee.getParamDecl(i);
+
+      Annotations arg_annotations;
+
+      if (auto type_source = param->getTypeSourceInfo()) {
+        arg_annotations = ExtractAnnotationsFromTypeLoc(
+            type_source->getTypeLoc(), context_types_annotations);
+      }
+
+      arguments_annotations.emplace_back(arg_annotations);
+    }
+
+    return GroupedFunctionAnnotation{function_annotations, return_annotations,
+                                     arguments_annotations};
+  }
+
+  // Retrieve types annotations from the context and save them in
+  // `context_types_annotations`. In this way it is possible to annotate a type
+  // when it is declared just once, avoiding to annotate the same multiple
+  // times.
+  void GetAnnotationsFromContext(
+      llvm::DenseMap<llvm::StringRef, Annotations>& context_types_annotations,
+      const clang::DeclContext* context) {
+    for (auto decl : context->decls()) {
+      if (auto* type_decl = clang::dyn_cast<clang::TypeDecl>(decl)) {
+        Annotations annotations;
+
+        for (auto* attr : decl->attrs()) {
+          if (auto* annotate_attr =
+                  clang::dyn_cast<clang::AnnotateAttr>(attr)) {
+            auto it = g_annotations.find(annotate_attr->getAnnotation());
+
+            if (it == g_annotations.end()) {
+              continue;
+            }
+
+            llvm::StringRef identifier =
+                GetIdentifierFromAnnotation(annotate_attr);
+            annotations.emplace_back(it->second, identifier);
+          }
+        }
+
+        if (!annotations.empty()) {
+          context_types_annotations[type_decl->getName()] = annotations;
+        }
+      }
+    }
+  }
+
+  llvm::StringRef GetIdentifierFromAnnotation(
+      const clang::AnnotateAttr* annotate_attr) {
+    llvm::StringRef identifier;
+
+    if (annotate_attr->args_size() > 0) {
+      const auto* string_literal =
+          GetStringLiteral(annotate_attr->args_begin()[0]);
+
+      // We assume that the first argument must be always a string literal.
+      assert(string_literal);
+
+      identifier = string_literal->getString();
+    }
+
+    return identifier;
+  }
+
+  llvm::StringRef GetIdentifierFromAnnotation(
+      const clang::AnnotateTypeAttr* annotate_type_attr) {
+    llvm::StringRef identifier;
+
+    if (annotate_type_attr->args_size() > 0) {
+      const auto* string_literal =
+          GetStringLiteral(annotate_type_attr->args_begin()[0]);
+
+      // We assume that the first argument must always be a string literal.
+      assert(string_literal);
+
+      identifier = string_literal->getString();
+    }
+
+    return identifier;
+  }
+
+  const clang::StringLiteral* GetStringLiteral(const clang::Expr* expr) {
+    using clang::ast_matchers::constantExpr;
+    using clang::ast_matchers::hasDescendant;
+    using clang::ast_matchers::match;
+    using clang::ast_matchers::selectFirst;
+    using clang::ast_matchers::stringLiteral;
+
+    return selectFirst<clang::StringLiteral>(
+        "str", match(constantExpr(hasDescendant(stringLiteral().bind("str"))),
+                     *expr, getASTContext()));
+  }
+
+  Annotations ExtractAnnotationsFromDecl(const clang::Decl& decl) {
+    Annotations annotations;
+
+    if (decl.hasAttrs()) {
+      for (auto attr : decl.attrs()) {
+        llvm::StringRef annotation;
+        llvm::StringRef identifier;
+
+        if (auto* annotate_attr = clang::dyn_cast<clang::AnnotateAttr>(attr)) {
+          annotation = annotate_attr->getAnnotation();
+          identifier = GetIdentifierFromAnnotation(annotate_attr);
+        } else if (auto* annotate_type_attr =
+                       clang::dyn_cast<clang::AnnotateTypeAttr>(attr)) {
+          annotation = annotate_type_attr->getAnnotation();
+          identifier = GetIdentifierFromAnnotation(annotate_type_attr);
+        }
+
+        auto it = g_annotations.find(annotation);
+
+        if (it != g_annotations.end()) {
+          annotations.emplace_back(it->second, identifier);
+        }
+      }
+    }
+
+    return annotations;
+  }
+
+  Annotations ExtractAnnotationsFromTypeLoc(
+      clang::TypeLoc type_loc,
+      const llvm::DenseMap<llvm::StringRef, Annotations>&
+          context_types_annotations) {
+    Annotations attrs;
+
+    // First, get type annotations from the context using
+    // `context_types_annotations`.
+    std::string type_name = type_loc.getType()
+                                .getNonReferenceType()
+                                .getUnqualifiedType()
+                                .getDesugaredType(getASTContext())
+                                .getAsString();
+
+    auto it = context_types_annotations.find(type_name);
+    if (it != context_types_annotations.end()) {
+      attrs.insert(attrs.end(), it->second.begin(), it->second.end());
+    }
+
+    // Then, get type annotations by searching them in the type attributes.
+    // Because it is possible to specify multiple attributes for a type, we
+    // have to traverse them one by one.
+    while (true) {
+      auto attributed_loc = type_loc.getAs<clang::AttributedTypeLoc>();
+
+      if (attributed_loc.isNull()) {
+        break;
+      }
+
+      auto* attr = attributed_loc.getAttrAs<clang::AnnotateTypeAttr>();
+
+      if (attr) {
+        auto annotation = attr->getAnnotation();
+
+        auto it = g_annotations.find(annotation);
+
+        if (it != g_annotations.end()) {
+          llvm::StringRef identifier = GetIdentifierFromAnnotation(attr);
+          attrs.emplace_back(it->second, identifier);
+        }
+      }
+
+      type_loc = type_loc.getNextTypeLoc();
+    }
+
+    return attrs;
   }
 
   void TransferCallReturningIterator(const clang::CallExpr* expr,
@@ -464,7 +1277,7 @@ class InvalidIteratorAnalysis
                                      clang::dataflow::BoolValue& is_end,
                                      clang::dataflow::Environment& env) {
     clang::dataflow::RecordStorageLocation* loc = nullptr;
-    if (expr->isPRValue()) {
+    if (expr->isPRValue() && expr->getType()->isRecordType()) {
       loc = &env.getResultObjectLocation(*expr);
     } else {
       loc = env.get<clang::dataflow::RecordStorageLocation>(*expr);
@@ -476,92 +1289,6 @@ class InvalidIteratorAnalysis
     }
     assert(loc);
     PopulateIteratorValue(loc, container, is_valid, is_end, env);
-  }
-
-  // CXXMemberCallExpr:
-  // https://clang.llvm.org/doxygen/classclang_1_1CXXMemberCallExpr.html
-  void Transfer(const clang::CXXMemberCallExpr& callexpr,
-                clang::dataflow::Environment& env) {
-    auto* callee = callexpr.getDirectCallee();
-    if (!callee) {
-      return;
-    }
-
-    const std::string callee_type = clang::cast<clang::CXXMethodDecl>(callee)
-                                        ->getParent()
-                                        ->getQualifiedNameAsString();
-    auto container_annotations =
-        g_member_function_annotations.find(callee_type);
-    if (container_annotations == g_member_function_annotations.end()) {
-      return;
-    }
-
-    const std::string callee_name = callee->getNameAsString();
-    auto method_annotation = container_annotations->second.find(callee_name);
-    if (method_annotation == container_annotations->second.end()) {
-      return;
-    }
-
-    const uint8_t annotation = method_annotation->second;
-    assert(!(annotation & Annotation::kReturnIterator) ||
-           !(annotation & Annotation::kReturnIteratorPair));
-
-    clang::dataflow::Value* container = nullptr;
-
-    if (!callexpr.getImplicitObjectArgument()->getType()->isRecordType()) {
-      container = env.getValue(*callexpr.getImplicitObjectArgument());
-    } else {
-      clang::dataflow::RecordStorageLocation* loc =
-          env.get<clang::dataflow::RecordStorageLocation>(
-              *callexpr.getImplicitObjectArgument());
-      container = GetContainerValue(env, *loc);
-    }
-
-    if (!container) {
-      return;
-    }
-
-    if (annotation & Annotation::kInvalidateArgs) {
-      bool found_iterator = false;
-
-      // TODO(crbug.com/40272746): Invalid every arguments.
-      for (unsigned i = 0; i < callexpr.getNumArgs(); i++) {
-        if (auto* iterator = UnwrapAsIterator(callexpr.getArg(i), env)) {
-          InfoStream() << "INVALIDATING ONE: " << DebugString(env, *iterator)
-                       << '\n';
-          InvalidateIterator(env, *iterator);
-          found_iterator = true;
-        }
-      }
-
-      if (!found_iterator) {
-        // If we cannot get the iterator from the argument, then let's
-        // invalidate everything instead:
-        InfoStream() << "INVALIDATING MANY: Container: " << container << '\n';
-        InvalidateContainer(env, *container);
-      }
-    }
-
-    if (annotation & Annotation::kInvalidateAll) {
-      InfoStream() << "INVALIDATING MANY: Container: " << container << '\n';
-      InvalidateContainer(env, *container);
-    }
-
-    if (annotation & Annotation::kReturnIterator ||
-        annotation & Annotation::kReturnEndIterator) {
-      TransferCallReturningIterator(&callexpr, *container,
-                                    annotation & Annotation::kReturnEndIterator
-                                        ? env.getBoolLiteralValue(false)
-                                        : env.makeAtomicBoolValue(),
-                                    annotation & Annotation::kReturnEndIterator
-                                        ? env.getBoolLiteralValue(true)
-                                        : env.makeAtomicBoolValue(),
-                                    env);
-    }
-
-    if (annotation & Annotation::kReturnIteratorPair) {
-      //  TODO(crbug.com/40272746): Iterator pair are not yet supported.
-    }
   }
 
   // CXXOperatorCallExpr:
