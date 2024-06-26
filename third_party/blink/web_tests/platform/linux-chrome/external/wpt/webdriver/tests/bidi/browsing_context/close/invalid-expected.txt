@@ -1,0 +1,10 @@
+This is a wdspec test.
+[FAIL] test_params_prompt_unload_invalid_type[]
+  TypeError: close() got an unexpected keyword argument 'prompt_unload'
+[FAIL] test_params_prompt_unload_invalid_type[42]
+  TypeError: close() got an unexpected keyword argument 'prompt_unload'
+[FAIL] test_params_prompt_unload_invalid_type[value2]
+  TypeError: close() got an unexpected keyword argument 'prompt_unload'
+[FAIL] test_params_prompt_unload_invalid_type[value3]
+  TypeError: close() got an unexpected keyword argument 'prompt_unload'
+Harness: the test ran to completion.

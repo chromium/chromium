@@ -292218,7 +292218,7 @@
      ]
     },
     "web-identity": [
-     "c36f63e813868d095f578bb511a3e409e3051abd",
+     "3369c96de284723699219b856f48f7862edb80e6",
      []
     ]
    },
@@ -295321,7 +295321,7 @@
       []
      ],
      "dispatcher.js": [
-      "ce17a7c9145311fe06e68e201caf732aaf8badcd",
+      "dab0100020b82919bfbf4e68a10bec1e2e3b66ab",
       []
      ],
      "dispatcher.py": [
@@ -298701,16 +298701,8 @@
        "fd0bb71a0c7ac405a7b1d148d6a08341c44117d7",
        []
       ],
-      "keys.py": [
-       "6b7d67e21e7eea7927a40ab094847b7224d49985",
-       []
-      ],
       "pending-userinfo-iframe.html": [
        "da2cd26066abd87eaa04d5ade3845424d49de103",
-       []
-      ],
-      "request-params-check.py": [
-       "08c28e32b7942d6db83f7b9c2e4664c9cf47987f",
        []
       ],
       "simple.html": [
@@ -355217,19 +355209,19 @@
    "fedcm": {
     "support": {
      "accounts.py": [
-      "126f911a58c80a62de06b6062cdb4488549471b9",
+      "c0117862816ff4668b6dd9416633bee6eb9af227",
       []
      ],
      "accounts_check_same_site_strict.py": [
-      "796ac003cbc0bb34773b50c1c5de4351aae8dddd",
+      "27a5d6a5b3e393bdf9b017a2adfd780c0c1d85bb",
       []
      ],
      "accounts_no_approved_clients.py": [
-      "faea06edc363067b83ce23391e75d254cf9eea76",
+      "1820376034e5e1bcb23b23e840dba95b8db3472b",
       []
      ],
      "client_metadata.py": [
-      "72ddcc5cd62569fa280adcab9490e84b851e6780",
+      "57390015bddc355729aaac35fdb768098d7e5d31",
       []
      ],
      "client_metadata.py.headers": [
@@ -355237,15 +355229,15 @@
       []
      ],
      "client_metadata_clear_count.py": [
-      "0e52d99c1dd23a238daa64869ac0787d6010faba",
+      "bbce7a45f75a8afaa87e4b5fe181ff902c2bcc9c",
       []
      ],
      "continue_on.py": [
-      "2a580e0f3f4fd525c3826795f5bfd05eb0a55675",
+      "0195e478e2975d37cbe8aaa58141caf15aa797bc",
       []
      ],
      "disconnect.py": [
-      "cf62ceda22515dd036cdea9fec4de7305b4a51b4",
+      "13131fa1f30217fe5d83b244410f740b14b1bda2",
       []
      ],
      "disconnect_failure.py": [
@@ -355253,7 +355245,11 @@
       []
      ],
      "error_with_code_and_url.py": [
-      "71bfea00f463051e7bd496cf1c28f25208e2b41e",
+      "609d49c76bc269053d9827766483057bf66a7234",
+      []
+     ],
+     "keys.py": [
+      "6b7d67e21e7eea7927a40ab094847b7224d49985",
       []
      ],
      "login.html": [
@@ -355269,7 +355265,7 @@
       []
      ],
      "manifest.py": [
-      "a40fc100eee697ed7dcd451626409af18606442e",
+      "ed984a42387198f95b2510041e5f73758541e9d3",
       []
      ],
      "manifest_check_disclosure_shown_false.json": [
@@ -355341,7 +355337,11 @@
       []
      ],
      "no_accounts.py": [
-      "8767c50afb470d994b67b0486791b6835a8f558f",
+      "fad93088db5b9204c890fea871574c8b7d1ee4f8",
+      []
+     ],
+     "request-params-check.py": [
+      "08c28e32b7942d6db83f7b9c2e4664c9cf47987f",
       []
      ],
      "resolve.html": [
@@ -355349,7 +355349,7 @@
       []
      ],
      "select_manifest_in_root_manifest.py": [
-      "d4f1efff6a74c7636f60cba35b4eff010fccfd29",
+      "4b3e7964f0fbb7a6031f30a6264407bb0759b82b",
       []
      ],
      "set_accounts_cookie.py": [
@@ -355357,47 +355357,47 @@
       []
      ],
      "single_account.py": [
-      "7c8906ae7b97d281b22049266076c0ff72f62385",
+      "000a23d925c8ce58e2b6d578badc3957cc8c9381",
       []
      ],
      "token.py": [
-      "7ec81c390a9ea116e0a1809e08159a1d1c40e5a1",
+      "f4ad108d8d5159a1fc130b0a1dc6fc3bea229f32",
       []
      ],
      "token_check_disclosure_shown_false.py": [
-      "a25a14af694848e65ed7c2943b3482910d20c355",
+      "d10f839f028aa08ae856d3bd41f031f57db0c26d",
       []
      ],
      "token_check_disclosure_shown_true.py": [
-      "00b755b920cd999b4bc91af63ed70071a71c634a",
+      "7c5e53c8e8f4979d2d3e5e81aca63f8d872387c2",
       []
      ],
      "token_check_same_site_strict.py": [
-      "4e55bf27f610032b30eb3278ddd0f7db4716efef",
+      "f030b9b6fd5365baf5013931207345f13f835bde",
       []
      ],
      "token_with_account_id.py": [
-      "04e7b5b56b9e560b8ebdaef150ef5037aeb18be0",
+      "de3a7662d1897398378d5bb834f2321037d504e3",
       []
      ],
      "token_with_auto_selected_flag.py": [
-      "3e011ce788c88aae5363d367a6c653b655867354",
+      "d59da115c1006d633cdacbaec2933320be7b83cc",
       []
      ],
      "token_with_http_error.py": [
-      "05b9945ba80dad9fd3bf87a467d50a7f4e9d3071",
+      "ea14b6f528df490b24c10ba68875b9096febf0eb",
       []
      ],
      "token_with_rp_mode.py": [
-      "add634c99bb959eefe821ffad9bb12d9e2a904a2",
+      "a75d512025e967ec3fbd44b28423716b1757f1e9",
       []
      ],
      "two_accounts.py": [
-      "4022561ff78321d91605b07f76d03a1f8deb5297",
+      "b59d6a0965974b32371a55176b33b6d3c0def5b0",
       []
      ],
      "variable_accounts.py": [
-      "fc4446acc49e4e1538a10478e3aa744ccc495db2",
+      "73d694227117d2ad5379a984e0eb2690bb75fe2f",
       []
      ]
     }
@@ -361366,7 +361366,7 @@
          []
         ],
         "executor-window.py": [
-         "1a660100b9cca765464281fecf167b49a71b6f99",
+         "733d36b15edcdec6a957866942aad0d82ac6cc43",
          []
         ],
         "executor-worker.js": [
@@ -361374,7 +361374,7 @@
          []
         ],
         "remote-context-helper.js": [
-         "fc04f950d286c26173aa670ccafc66b72d32c352",
+         "aca83720254308ee660f649a6e6794531c451822",
          []
         ]
        }
@@ -361382,7 +361382,7 @@
       "remote-context-helper-tests": {
        "resources": {
         "test-helper.js": [
-         "71cd87e55391f6f9d3868f3b13f4922703fbcd58",
+         "a277ca24ace2d4fc331dc346b0bc35ddad7020a3",
          []
         ],
         "test-script.js": [
@@ -408659,13 +408659,6 @@
       }
      ]
     ],
-    "bigint_value.htm": [
-     "acdeebb76f50ae4cbee33a4654af25c270004bcc",
-     [
-      null,
-      {}
-     ]
-    ],
     "bindings-inject-keys-bypass.any.js": [
      "a32a7a6633883c122ae7774e74999e5d7844de49",
      [
@@ -413824,11 +413817,83 @@
       {}
      ]
     ],
-    "value.htm": [
-     "32d7540ab37581d0abed91b8c2d635a2fe59f341",
+    "value.any.js": [
+     "d4fa6f520ccca59887288aa1b4fd595506db5608",
      [
-      null,
-      {}
+      "IndexedDB/value.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: keys and values"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/value.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: keys and values"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/value.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: keys and values"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/value.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: keys and values"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "value_recursive.htm": [
@@ -542845,7 +542910,7 @@
         ]
        ],
        "addIframe-srcdoc.window.js": [
-        "1a959cbaf05095a3682ea7ba99a8f618415d4090",
+        "054bdcf787665763f26f44ae5e9444eb1a259f4a",
         [
          "html/browsers/browsing-the-web/remote-context-helper-tests/addIframe-srcdoc.window.html",
          {
@@ -542873,6 +542938,197 @@
            [
             "script",
             "./resources/test-helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "addIframe-urlType.window.js": [
+        "2b333f37594d76911d342a4fda0ad26bb21e732f",
+        [
+         "html/browsers/browsing-the-web/remote-context-helper-tests/addIframe-urlType.window.html?urlType=blank",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "RemoteContextWrapper addIframe"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/test-helper.js"
+           ],
+           [
+            "variant",
+            "?urlType=origin"
+           ],
+           [
+            "variant",
+            "?urlType=data"
+           ],
+           [
+            "variant",
+            "?urlType=blob"
+           ],
+           [
+            "variant",
+            "?urlType=blank"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/browsing-the-web/remote-context-helper-tests/addIframe-urlType.window.html?urlType=blob",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "RemoteContextWrapper addIframe"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/test-helper.js"
+           ],
+           [
+            "variant",
+            "?urlType=origin"
+           ],
+           [
+            "variant",
+            "?urlType=data"
+           ],
+           [
+            "variant",
+            "?urlType=blob"
+           ],
+           [
+            "variant",
+            "?urlType=blank"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/browsing-the-web/remote-context-helper-tests/addIframe-urlType.window.html?urlType=data",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "RemoteContextWrapper addIframe"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/test-helper.js"
+           ],
+           [
+            "variant",
+            "?urlType=origin"
+           ],
+           [
+            "variant",
+            "?urlType=data"
+           ],
+           [
+            "variant",
+            "?urlType=blob"
+           ],
+           [
+            "variant",
+            "?urlType=blank"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/browsing-the-web/remote-context-helper-tests/addIframe-urlType.window.html?urlType=origin",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "RemoteContextWrapper addIframe"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/test-helper.js"
+           ],
+           [
+            "variant",
+            "?urlType=origin"
+           ],
+           [
+            "variant",
+            "?urlType=data"
+           ],
+           [
+            "variant",
+            "?urlType=blob"
+           ],
+           [
+            "variant",
+            "?urlType=blank"
            ]
           ]
          }
@@ -543179,6 +543435,172 @@
            [
             "script",
             "./resources/test-helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "addWindow-urlType-data.window.js": [
+        "edcff5843c0587e7bb26891d5111119f96bf2aaf",
+        [
+         "html/browsers/browsing-the-web/remote-context-helper-tests/addWindow-urlType-data.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "RemoteContextHelper addWindow with extra config"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/test-helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "addWindow-urlType.window.js": [
+        "66a725769be83168ec5daad40b74d10bfa3af2e3",
+        [
+         "html/browsers/browsing-the-web/remote-context-helper-tests/addWindow-urlType.window.html?urlType=blank",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "RemoteContextHelper addWindow with urlType"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/test-helper.js"
+           ],
+           [
+            "variant",
+            "?urlType=origin"
+           ],
+           [
+            "variant",
+            "?urlType=blob"
+           ],
+           [
+            "variant",
+            "?urlType=blank"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/browsing-the-web/remote-context-helper-tests/addWindow-urlType.window.html?urlType=blob",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "RemoteContextHelper addWindow with urlType"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/test-helper.js"
+           ],
+           [
+            "variant",
+            "?urlType=origin"
+           ],
+           [
+            "variant",
+            "?urlType=blob"
+           ],
+           [
+            "variant",
+            "?urlType=blank"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/browsing-the-web/remote-context-helper-tests/addWindow-urlType.window.html?urlType=origin",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "RemoteContextHelper addWindow with urlType"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/test-helper.js"
+           ],
+           [
+            "variant",
+            "?urlType=origin"
+           ],
+           [
+            "variant",
+            "?urlType=blob"
+           ],
+           [
+            "variant",
+            "?urlType=blank"
            ]
           ]
          }
@@ -733192,7 +733614,14 @@
          ]
         ],
         "invalid.py": [
-         "7c73a83b1325d1f4adc037efe7912b6d6b5e3922",
+         "2eb8190e13b490b1029aea2c5d9a5e83650df2e8",
+         [
+          null,
+          {}
+         ]
+        ],
+        "prompt_unload.py": [
+         "f4d8a249e734907dadf76d0bda48a6e777cf1b36",
          [
           null,
           {}
