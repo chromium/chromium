@@ -43,8 +43,8 @@ declare global {
  *     extracted.
  * @param elementArray The extracted form
  *     fields or null if a particular control has no corresponding field.
- * @return Whether there are fields and not too many fields in the
- *     form.
+ * @return Whether the form contains fields but not too many of them, or the
+ *     form contains iframes.
  */
 function extractFieldsFromControlElements(
     controlElements: fillConstants.FormControlElement[],
@@ -97,7 +97,7 @@ function extractFieldsFromControlElements(
     }
   }
 
-  return formFields.length > 0;
+  return formFields.length > 0 || childFrames.length > 0;
 }
 
 /**
@@ -344,6 +344,8 @@ function formOrFieldsetsToFormData(
   form.fields = formFields;
   // Protect against custom implementation of Array.toJSON in host pages.
   (form.fields as any).toJSON = null;
+
+  form.frame_id = gCrWeb.message.getFrameId();
 
   if (childFrames.length > 0) {
     form.child_frames = childFrames;

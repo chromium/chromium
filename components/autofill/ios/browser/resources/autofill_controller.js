@@ -5,6 +5,7 @@
 import * as fill_constants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {isTextAreaElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import {getFrameId} from '//ios/web/public/js_messaging/resources/frame_id.js';
+import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -87,6 +88,10 @@ const FORM_FILLED_COMMAND = 'formFilled';
  * @return {boolean} Whether the form is sufficiently interesting.
  */
 function isFormInteresting_(form) {
+  if (form.child_frames && form.child_frames.length > 0) {
+    return true;
+  }
+
   // If the form has at least one field with an autocomplete attribute, or one
   // non-checkable field, it is a candidate for autofill.
   for (let i = 0; i < form.fields.length; ++i) {
@@ -455,8 +460,12 @@ __gCrWeb.autofill.extractNewForms = function(
     const controlElements =
         __gCrWeb.autofill.extractAutofillableElementsInForm(formElement);
     const numEditableElements = countEditableElements_(controlElements);
+    const hasChildFrames =
+        gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled() ?
+        formElement.getElementsByTagName('iframe').length > 0 :
+        false;
 
-    if (numEditableElements === 0) {
+    if (numEditableElements === 0 && !hasChildFrames) {
       continue;
     }
 

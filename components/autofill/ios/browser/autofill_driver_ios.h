@@ -54,6 +54,7 @@ inline constexpr char kFormRemovalRemovedUnownedFieldsHistogram[] =
     "Autofill.iOS.FormRemoval.RemovedUnownedFields";
 
 class AutofillDriverIOSFactory;
+class AutofillDriverRouter;
 
 // AutofillDriverIOS drives the Autofill flow in the browser process based
 // on communication from JavaScript and from the external world.
@@ -183,13 +184,15 @@ class AutofillDriverIOS : public AutofillDriver,
   AutofillDriverIOS(web::WebState* web_state,
                     web::WebFrame* web_frame,
                     AutofillClient* client,
+                    AutofillDriverRouter* router,
                     id<AutofillDriverIOSBridge> bridge,
                     const std::string& app_locale);
 
   void SetParent(base::WeakPtr<AutofillDriverIOS> parent);
 
-  // Sets `this` as the parent of the frame identified by `token`.
-  void SetSelfAsParent(LocalFrameToken token);
+  // Sets `this` as the parent of the frame identified by `token` and with
+  // `form` as parent.
+  void SetSelfAsParent(const autofill::FormData& form, LocalFrameToken token);
 
   // Updates the saved information about the last interacted form or formless
   // field.
@@ -266,6 +269,8 @@ class AutofillDriverIOS : public AutofillDriver,
 
   base::ScopedObservation<AutofillManager, AutofillManager::Observer>
       manager_observation_{this};
+
+  raw_ptr<AutofillDriverRouter> router_;
 
   base::WeakPtrFactory<AutofillDriverIOS> weak_ptr_factory_{this};
 };

@@ -1954,6 +1954,51 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
   }];
 }
 
+// Test that, when xframes is enabled, forms that do not have input fields but
+// have child frames are still extracted because their child frames may contain
+// input fields.
+TEST_F(AutofillControllerJsTest,
+       ExtractForms_NoInputFieldsButChildFrames_WhenXframeEnabled) {
+  NSString* html = @"<html><body>"
+                    "<form id='testform'>"
+                    "<iframe></iframe>"
+                    "</form>"
+                    "</body></html>";
+  web::test::LoadHtml(html, web_state());
+
+  autofill::FormUtilJavaScriptFeature::GetInstance()->SetAutofillAcrossIframes(
+      WaitForMainFrame(), /*enabled=*/true);
+
+  // Verify that the form with child frames was extracted.
+  NSString* verifying_javascript = @"forms[0].id_attribute === 'testform';";
+  EXPECT_NSEQ(
+      @YES, ExecuteJavaScript([NSString
+                stringWithFormat:@"var forms = "
+                                  "__gCrWeb.autofill.extractNewForms(true); %@",
+                                 verifying_javascript]));
+}
+
+// Test that forms that don't have input fields and have child frames aren't
+// extracted when xframes is disabled.
+TEST_F(AutofillControllerJsTest,
+       ExtractForms_NoInputFieldsButChildFrames_WhenXframeDisabled) {
+  NSString* html = @"<html><body>"
+                    "<form id='testform'>"
+                    "<iframe></iframe>"
+                    "</form>"
+                    "</body></html>";
+  web::test::LoadHtml(html, web_state());
+
+  // Verify that the form with only child frames isn't eligible when the xframe
+  // feature is disabled.
+  NSString* verifying_javascript = @"forms.length === 0;";
+  EXPECT_NSEQ(
+      @YES, ExecuteJavaScript([NSString
+                stringWithFormat:@"var forms = "
+                                  "__gCrWeb.autofill.extractNewForms(true); %@",
+                                 verifying_javascript]));
+}
+
 TEST_F(AutofillControllerJsTest, FillActiveFormField) {
   web::test::LoadHtml(kHTMLForTestingElements, web_state());
 

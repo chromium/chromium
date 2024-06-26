@@ -2,17 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <string>
 #import <vector>
 
+#import "base/strings/stringprintf.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/types/id_type.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/browser_autofill_manager.h"
 #import "components/autofill/core/browser/test_autofill_client.h"
 #import "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/form_data_test_api.h"
+#import "components/autofill/core/common/form_field_data.h"
+#import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
@@ -25,17 +31,102 @@
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/testing/embedded_test_server_handlers.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/request_handler_util.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
+using base::test::ios::kWaitForJSCompletionTimeout;
+using ::testing::AllOf;
+using ::testing::Each;
 using testing::IsTrue;
+using ::testing::Property;
+using ::testing::UnorderedElementsAre;
 using testing::VariantWith;
 
 namespace autofill {
+
+namespace {
+// Returns the FormFieldData pointer for the field in `fields` that has the
+// corresponding `placeholder`. Returns nullptr if there is no field to be
+// found.
+FormFieldData* GetFieldWithPlaceholder(const std::u16string& placeholder,
+                                       std::vector<FormFieldData>* fields) {
+  auto it =
+      base::ranges::find(*fields, placeholder, &FormFieldData::placeholder);
+  return it != fields->end() ? &(*it) : nullptr;
+}
+
+// Set the fill data for the `field`.
+void SetFillDataForField(
+    const std::u16string& value,
+    FieldType field_type,
+    FormFieldData* field,
+    base::flat_map<FieldGlobalId, FieldType>* field_type_map) {
+  CHECK(field);
+  field->set_value(value);
+  field->set_is_autofilled(true);
+  field->set_is_user_edited(false);
+  (*field_type_map)[field->global_id()] = field_type;
+}
+
+// Waits on the input field that corresponds to `field_id` in the `frame` DOM to
+// be filled with `expected_value`. Returns true on success or false when it
+// times out, meaning failure.
+bool WaitOnFieldFilledWithValue(web::WebFrame* frame,
+                                const std::string& field_id,
+                                const std::u16string& expected_value) {
+  __block bool execute_script = true;
+  __block std::u16string value;
+  return base::test::ios::WaitUntilConditionOrTimeout(
+      kWaitForJSCompletionTimeout, ^() {
+        if (execute_script) {
+          const std::u16string script = base::UTF8ToUTF16(base::StringPrintf(
+              "document.getElementById('%s').value;", field_id.c_str()));
+          execute_script = false;
+          frame->ExecuteJavaScript(
+              script, base::BindOnce(^(const base::Value* result) {
+                // Script execution is done, re-arm.
+                execute_script = true;
+
+                if (!result || !result->is_string()) {
+                  return;
+                }
+                value = base::UTF8ToUTF16(result->GetString());
+              }));
+        }
+        return value == expected_value;
+      });
+}
+
+// Executes `script` in the specified `frame`, wait until execution is done,
+// then pass the execution result to the provided `callback`.
+[[nodiscard]] bool ExecuteJavaScriptInFrame(
+    web::WebFrame* frame,
+    const std::u16string& script,
+    base::OnceCallback<void(const base::Value*)> callback =
+        base::DoNothingAs<void(const base::Value*)>()) {
+  __block bool done = false;
+
+  frame->ExecuteJavaScript(script,
+                           base::BindOnce(
+                               ^(base::OnceCallback<void(const base::Value*)> c,
+                                 const base::Value* result) {
+                                 done = true;
+                                 std::move(c).Run(result);
+                               },
+                               std::move(callback)));
+  return base::test::ios::WaitUntilConditionOrTimeout(
+      kWaitForJSCompletionTimeout, ^() {
+        return done;
+      });
+}
+
+}  // namespace
 
 // Version of AutofillManager that caches the FormData it receives so we can
 // examine them. The public API deals with FormStructure, the post-parsing
@@ -56,6 +147,21 @@ class TestAutofillManager : public BrowserAutofillManager {
     return did_fill_forms_waiter_.Wait(min_num_awaited_calls);
   }
 
+  [[nodiscard]] testing::AssertionResult WaitForFormsSubmitted(
+      int min_num_awaited_calls) {
+    return did_submit_forms_waiter_.Wait(min_num_awaited_calls);
+  }
+
+  [[nodiscard]] testing::AssertionResult WaitForFormsAskedForFillData(
+      int min_num_awaited_calls) {
+    return ask_for_filldata_forms_waiter_.Wait(min_num_awaited_calls);
+  }
+
+  [[nodiscard]] testing::AssertionResult WaitOnTextFieldDidChange(
+      int min_num_awaited_calls) {
+    return text_field_did_change_forms_waiter_.Wait(min_num_awaited_calls);
+  }
+
   void OnFormsSeen(const std::vector<FormData>& updated_forms,
                    const std::vector<FormGlobalId>& removed_forms) override {
     for (const FormData& form : updated_forms) {
@@ -70,18 +176,55 @@ class TestAutofillManager : public BrowserAutofillManager {
     BrowserAutofillManager::OnDidFillAutofillFormData(form, timestamp);
   }
 
+  void OnFormSubmitted(const FormData& form,
+                       const bool known_success,
+                       const mojom::SubmissionSource source) override {
+    submitted_forms_.emplace_back(form);
+    BrowserAutofillManager::OnFormSubmitted(form, known_success, source);
+  }
+
+  void OnAskForValuesToFill(
+      const FormData& form,
+      const FieldGlobalId& field_id,
+      const gfx::Rect& caret_bounds,
+      AutofillSuggestionTriggerSource trigger_source) override {
+    ask_for_filldata_forms_.emplace_back(form);
+    BrowserAutofillManager::OnAskForValuesToFill(form, field_id, caret_bounds,
+                                                 trigger_source);
+  }
+
+  void OnTextFieldDidChange(const FormData& form,
+                            const FieldGlobalId& field_id,
+                            const base::TimeTicks timestamp) override {
+    text_field_did_change_forms_.emplace_back(form);
+    BrowserAutofillManager::OnTextFieldDidChange(form, field_id, timestamp);
+  }
+
   const std::vector<FormData>& seen_forms() { return seen_forms_; }
   const std::vector<FormData>& filled_forms() { return filled_forms_; }
+  const std::vector<FormData>& submitted_forms() { return submitted_forms_; }
+  const std::vector<FormData>& ask_for_filldata_forms() {
+    return ask_for_filldata_forms_;
+  }
+  const std::vector<FormData>& text_filled_did_change_forms() {
+    return text_field_did_change_forms_;
+  }
 
   void ResetTestState() {
     seen_forms_.clear();
     filled_forms_.clear();
     forms_seen_waiter_.Reset();
+    did_submit_forms_waiter_.Reset();
+    ask_for_filldata_forms_waiter_.Reset();
+    text_field_did_change_forms_waiter_.Reset();
   }
 
  private:
   std::vector<FormData> seen_forms_;
   std::vector<FormData> filled_forms_;
+  std::vector<FormData> submitted_forms_;
+  std::vector<FormData> ask_for_filldata_forms_;
+  std::vector<FormData> text_field_did_change_forms_;
 
   TestAutofillManagerWaiter forms_seen_waiter_{
       *this,
@@ -90,6 +233,18 @@ class TestAutofillManager : public BrowserAutofillManager {
   TestAutofillManagerWaiter did_fill_forms_waiter_{
       *this,
       {AutofillManagerEvent::kDidFillAutofillFormData}};
+
+  TestAutofillManagerWaiter did_submit_forms_waiter_{
+      *this,
+      {AutofillManagerEvent::kFormSubmitted}};
+
+  TestAutofillManagerWaiter ask_for_filldata_forms_waiter_{
+      *this,
+      {AutofillManagerEvent::kAskForValuesToFill}};
+
+  TestAutofillManagerWaiter text_field_did_change_forms_waiter_{
+      *this,
+      {AutofillManagerEvent::kTextFieldDidChange}};
 };
 
 class AutofillAcrossIframesTest : public AutofillTestWithWebState {
@@ -131,7 +286,7 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
   web::WebFrame* WaitForMainFrame() {
     __block web::WebFrame* main_frame = nullptr;
     EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-        base::test::ios::kWaitForJSCompletionTimeout, ^bool {
+        kWaitForJSCompletionTimeout, ^bool {
           web::WebFramesManager* frames_manager =
               autofill::FormUtilJavaScriptFeature::GetInstance()
                   ->GetWebFramesManager(web_state());
@@ -182,6 +337,16 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
     web_state()->WasShown();
   }
 
+  // Returns the frame that corresponds to `frame_id`.
+  web::WebFrame* GetFrameByID(const std::string& frame_id) {
+    web::WebFramesManager* frames_manager =
+        FormUtilJavaScriptFeature::GetInstance()->GetWebFramesManager(
+            web_state());
+    CHECK(frames_manager);
+
+    return frames_manager->GetFrameWithId(frame_id);
+  }
+
   std::unique_ptr<TestAutofillManagerInjector<TestAutofillManager>>
       autofill_manager_injector_;
   std::unique_ptr<PrefService> prefs_;
@@ -229,10 +394,16 @@ TEST_F(AutofillAcrossIframesTest, WithChildFrames) {
   AddInput("text", "address");
   StartTestServerAndLoad();
 
-  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(1));
-  ASSERT_EQ(main_frame_manager().seen_forms().size(), 1u);
+  // Wait for the 3 forms to be reported as seen to the main frame that hosts
+  // the browser form (which is the flattened representation of all forms in the
+  // tree structure that share a common parent).
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(3));
+  ASSERT_EQ(main_frame_manager().seen_forms().size(), 3u);
 
-  const FormData& form = main_frame_manager().seen_forms()[0];
+  // Pick the last form that was seen which reflects the latest and most
+  // complete state of the browser form, which contains all fields in the forms
+  // tree (aka browser form).
+  const FormData& form = main_frame_manager().seen_forms().back();
   ASSERT_EQ(form.child_frames().size(), 2u);
 
   FrameTokenWithPredecessor remote_token1 = form.child_frames()[0];
@@ -251,7 +422,7 @@ TEST_F(AutofillAcrossIframesTest, WithChildFrames) {
   // registrar receives these from each frame in a separate JS message.
   __block std::optional<LocalFrameToken> local_token1, local_token2;
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^bool {
+      kWaitForJSCompletionTimeout, ^bool {
         local_token1 = registrar->LookupChildFrame(
             absl::get<RemoteFrameToken>(remote_token1.token));
         local_token2 = registrar->LookupChildFrame(
@@ -283,15 +454,17 @@ TEST_F(AutofillAcrossIframesTest, WithChildFrames) {
   ASSERT_TRUE(main_frame_from_form_data);
   EXPECT_TRUE(main_frame_from_form_data->IsMainFrame());
 
+  // Verify that the form information in the fields corresponds to the
+  // information that is actually in the form.
   FormSignature form_signature = CalculateFormSignature(form);
-
-  EXPECT_EQ(form.fields().size(), 2u);
-  for (const FormFieldData& field : form.fields()) {
-    EXPECT_EQ(field.host_frame(), form.host_frame());
-    EXPECT_EQ(field.host_form_id(), form.renderer_id());
-    EXPECT_EQ(field.origin(), url::Origin::Create(form.url()));
-    EXPECT_EQ(field.host_form_signature(), form_signature);
-  }
+  url::Origin form_origin = url::Origin::Create(form.url());
+  EXPECT_THAT(
+      form.fields(),
+      Each(AllOf(
+          Property(&FormFieldData::host_frame, form.host_frame()),
+          Property(&FormFieldData::host_form_id, form.renderer_id()),
+          Property(&FormFieldData::origin, form_origin),
+          Property(&FormFieldData::host_form_signature, form_signature))));
 }
 
 // Largely repeats `WithChildFrames` above, but exercises the Resolve method on
@@ -314,7 +487,7 @@ TEST_F(AutofillAcrossIframesTest, Resolve) {
       autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state());
   ASSERT_TRUE(registrar);
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^bool {
+      kWaitForJSCompletionTimeout, ^bool {
         return registrar
             ->LookupChildFrame(absl::get<RemoteFrameToken>(remote_token.token))
             .has_value();
@@ -360,7 +533,7 @@ TEST_F(AutofillAcrossIframesTest, SetAndGetParent) {
       autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state());
   ASSERT_TRUE(registrar);
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^bool {
+      kWaitForJSCompletionTimeout, ^bool {
         return registrar
             ->LookupChildFrame(absl::get<RemoteFrameToken>(remote_token.token))
             .has_value();
@@ -392,7 +565,7 @@ TEST_F(AutofillAcrossIframesTest, TriggerExtractionInFrame) {
   // Wait for the main frame and the child frame to be known to the
   // WebFramesManager.
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^bool {
+      kWaitForJSCompletionTimeout, ^bool {
         return frames_manager->GetAllWebFrames().size() == 2;
       }));
 
@@ -412,9 +585,8 @@ TEST_F(AutofillAcrossIframesTest, TriggerExtractionInFrame) {
   }
 }
 
-// TODO(crbug.com/40266699): This is currently just verifying the single-frame
-// behavior, and needs to be expanded once driver calls are correctly routed.
-TEST_F(AutofillAcrossIframesTest, FillForm) {
+// Tests that the feature does not break filling in the main frame.
+TEST_F(AutofillAcrossIframesTest, FillSingleFrameForm) {
   const std::u16string kNamePlaceholder = u"Name";
   const std::u16string kFakeName = u"Bob Bobbertson";
   const std::u16string kPhonePlaceholder = u"Phone";
@@ -467,6 +639,374 @@ TEST_F(AutofillAcrossIframesTest, FillForm) {
                     << field.placeholder();
     }
   }
+}
+
+// Tests filling across multiple frames in the same forms tree structure.
+TEST_F(AutofillAcrossIframesTest, FillMultiFrameForm) {
+  const std::u16string kNamePlaceholder = u"Name";
+  const std::u16string kFakeName = u"Bob Bobbertson";
+  const std::u16string kPhonePlaceholder = u"Phone";
+  const std::u16string kFakePhone = u"18005551234";
+
+  AddIframe("cf1", "<form><input type=\"text\" placeholder=\"" +
+                       base::UTF16ToASCII(kNamePlaceholder) +
+                       "\"></input></form>");
+  AddIframe("cf2", "<form><input type=\"text\" placeholder=\"" +
+                       base::UTF16ToASCII(kPhonePlaceholder) +
+                       "\"></input></form>");
+  StartTestServerAndLoad();
+
+  // Wait for the 3 forms to be reported as seen to the main frame that hosts
+  // the browser form (which is the flattened representation of all forms in the
+  // tree structure that share the form in the main frame as a common root).
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(3));
+  ASSERT_EQ(main_frame_manager().seen_forms().size(), 3u);
+
+  // Pick the last form that was seen which reflects the latest and most
+  // complete state of the browser form.
+  FormData form = main_frame_manager().seen_forms().back();
+  ASSERT_EQ(form.child_frames().size(), 2u);
+  ASSERT_EQ(form.fields().size(), 2u);
+
+  base::flat_map<FieldGlobalId, FieldType> field_type_map;
+
+  std::vector<FormFieldData> fields = form.fields();
+
+  FormFieldData* name_field =
+      GetFieldWithPlaceholder(kNamePlaceholder, &fields);
+  FormFieldData* phone_field =
+      GetFieldWithPlaceholder(kPhonePlaceholder, &fields);
+
+  // Set fill data for name field.
+  SetFillDataForField(kFakeName, FieldType::NAME_FULL, name_field,
+                      &field_type_map);
+  // Set fill data for phone field.
+  SetFillDataForField(kFakePhone, FieldType::PHONE_HOME_NUMBER, phone_field,
+                      &field_type_map);
+
+  base::flat_set<FieldGlobalId> filled_field_ids =
+      main_frame_driver()->ApplyFormAction(
+          mojom::FormActionType::kFill, mojom::ActionPersistence::kFill, fields,
+          form.main_frame_origin(), field_type_map);
+
+  EXPECT_THAT(filled_field_ids, UnorderedElementsAre(name_field->global_id(),
+                                                     phone_field->global_id()));
+
+  // Wait that the 2 forms are filled, one for each frame. The fill events are
+  // all routed to the frame hosting the browser form, which corresponds to the
+  // root form in the forms structure.
+  ASSERT_TRUE(main_frame_manager().WaitForFormsFilled(2));
+  ASSERT_EQ(main_frame_manager().filled_forms().size(), 2u);
+
+  // Inspect the extracted, filled form, and ensure the expected data was
+  // filled into the desired fields, where the last form correspond to the
+  // most up to date snapshot of the browser form, a virtual form flattened
+  // across frames and forms in the same tree.
+  FormData filled_form = main_frame_manager().filled_forms().back();
+  EXPECT_THAT(
+      filled_form.fields(),
+      UnorderedElementsAre(
+          // Verify the name field.
+          AllOf(Property(&FormFieldData::placeholder, kNamePlaceholder),
+                Property(&FormFieldData::value, kFakeName)),
+          // Verify the phone field.
+          AllOf(Property(&FormFieldData::placeholder, kPhonePlaceholder),
+                Property(&FormFieldData::value, kFakePhone))));
+}
+
+// Tests filling fields singularly, one by one, in a multi frame form.
+// This tests the scenario where the user fills the form with the fill data
+// from a suggestion they've selected.
+TEST_F(AutofillAcrossIframesTest, FillMultiFrameForm_SingleField) {
+  const std::u16string kNamePlaceholder = u"Name";
+  const std::u16string kFakeName = u"Bob Bobbertson";
+  const std::u16string kPhonePlaceholder = u"Phone";
+  const std::u16string kFakePhone = u"18005551234";
+
+  AddIframe("cf1", "<form><input type=\"text\" placeholder=\"" +
+                       base::UTF16ToASCII(kNamePlaceholder) +
+                       "\" id=\"name-field\"></input></form>");
+  AddIframe("cf2", "<form><input type=\"text\" placeholder=\"" +
+                       base::UTF16ToASCII(kPhonePlaceholder) +
+                       "\" id=\"phone-field\"></input></form>");
+  StartTestServerAndLoad();
+
+  // Wait for the 3 forms to be reported as seen to the main frame that hosts
+  // the browser form (which is the flattened representation of all forms in the
+  // tree structure that share a common parent).
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(3));
+  ASSERT_EQ(main_frame_manager().seen_forms().size(), 3u);
+
+  // Pick the last form that was seen which reflects the latest and most
+  // complete state of the browser form.
+  FormData form = main_frame_manager().seen_forms().back();
+  ASSERT_EQ(form.child_frames().size(), 2u);
+  ASSERT_EQ(form.fields().size(), 2u);
+
+  std::vector<FormFieldData> fields = form.fields();
+
+  FormFieldData* name_field =
+      GetFieldWithPlaceholder(kNamePlaceholder, &fields);
+  ASSERT_TRUE(name_field);
+  FormFieldData* phone_field =
+      GetFieldWithPlaceholder(kPhonePlaceholder, &fields);
+  ASSERT_TRUE(phone_field);
+
+  // Fill each field individually, one by one.
+  main_frame_driver()->ApplyFieldAction(mojom::FieldActionType::kReplaceAll,
+                                        mojom::ActionPersistence::kFill,
+                                        name_field->global_id(), kFakeName);
+  main_frame_driver()->ApplyFieldAction(mojom::FieldActionType::kReplaceAll,
+                                        mojom::ActionPersistence::kFill,
+                                        phone_field->global_id(), kFakePhone);
+
+  // Verify that the name field was filled.
+  {
+    web::WebFrame* frame = GetFrameByID(name_field->host_frame().ToString());
+    ASSERT_TRUE(frame);
+    EXPECT_TRUE(WaitOnFieldFilledWithValue(frame, "name-field", kFakeName));
+  }
+
+  // Verify that the phone field was filled.
+  {
+    web::WebFrame* frame = GetFrameByID(phone_field->host_frame().ToString());
+    ASSERT_TRUE(frame);
+    EXPECT_TRUE(WaitOnFieldFilledWithValue(frame, "phone-field", kFakePhone));
+  }
+}
+
+// Tests that the data from the multi frame browser form is passed upon
+// submission. This tests the scenario where the user submits the form where
+// they might be asked whether they want to save their profile.
+TEST_F(AutofillAcrossIframesTest, SubmitMultiFrameForm) {
+  const std::u16string kNamePlaceholder = u"Name";
+  const std::u16string kFakeName = u"Bob Bobbertson";
+  const std::u16string kPhonePlaceholder = u"Phone";
+  const std::u16string kFakePhone = u"18005551234";
+
+  AddIframe("cf1", "<form><input type=\"text\" placeholder=\"" +
+                       base::UTF16ToASCII(kNamePlaceholder) +
+                       "\"></input></form>");
+  AddIframe("cf2", "<form><input type=\"text\" placeholder=\"" +
+                       base::UTF16ToASCII(kPhonePlaceholder) +
+                       "\"></input></form>");
+  StartTestServerAndLoad();
+
+  // Wait for the 3 forms to be reported as seen to the main frame that hosts
+  // the browser form (which is the flattened representation of all forms in the
+  // tree structure that share the form in the main frame as a common root).
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(3));
+  ASSERT_EQ(main_frame_manager().seen_forms().size(), 3u);
+
+  // Pick the last form that was seen which reflects the latest and most
+  // complete state of the browser form.
+  const FormData& form = main_frame_manager().seen_forms().back();
+  ASSERT_EQ(form.child_frames().size(), 2u);
+  ASSERT_EQ(form.fields().size(), 2u);
+
+  std::vector<FieldGlobalId> field_global_ids(form.fields().size());
+  base::ranges::transform(
+      form.fields(), field_global_ids.begin(),
+      [](const FormFieldData& field) { return field.global_id(); });
+
+  main_frame_driver()->FormSubmitted(main_frame_manager().seen_forms().front(),
+                                     /*known_success=*/true,
+                                     mojom::SubmissionSource::FORM_SUBMISSION);
+
+  // Wait on the main frame form to report itself as submitted, which is the
+  // only form in the forms tree that was submitted.
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSubmitted(1));
+  ASSERT_EQ(main_frame_manager().submitted_forms().size(), 1u);
+
+  // Verify that the submitted form represent the browser form across frames.
+  const FormData& submitted_form = main_frame_manager().submitted_forms()[0];
+  EXPECT_THAT(submitted_form.fields(),
+              UnorderedElementsAre(
+                  Property(&FormFieldData::global_id, field_global_ids[0]),
+                  Property(&FormFieldData::global_id, field_global_ids[1])));
+}
+
+// Tests that, when asked for, there is a query made to retrive fill data for
+// the entire browser form, across frames. This tests the scenario where
+// Autofill suggestions are provided to the user upon taping on one of the
+// fields in the form.
+TEST_F(AutofillAcrossIframesTest, AskForFillDataOnMultiFrameForm) {
+  const std::u16string kNamePlaceholder = u"Name";
+  const std::u16string kFakeName = u"Bob Bobbertson";
+  const std::u16string kPhonePlaceholder = u"Phone";
+  const std::u16string kFakePhone = u"18005551234";
+
+  AddIframe("cf1", "<form><input type=\"text\" placeholder=\"" +
+                       base::UTF16ToASCII(kNamePlaceholder) +
+                       "\"></input></form>");
+  AddIframe("cf2", "<form><input type=\"text\" placeholder=\"" +
+                       base::UTF16ToASCII(kPhonePlaceholder) +
+                       "\"></input></form>");
+  StartTestServerAndLoad();
+
+  // Wait for the 3 forms to be reported as seen to the main frame that hosts
+  // the browser form (which is the flattened representation of all forms in the
+  // tree structure that share the form in the main frame as a common root).
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(3));
+  ASSERT_EQ(main_frame_manager().seen_forms().size(), 3u);
+
+  // Pick the last form that was seen which reflects the latest and most
+  // complete state of the browser form.
+  FormData form = main_frame_manager().seen_forms().back();
+  ASSERT_EQ(form.child_frames().size(), 2u);
+  ASSERT_EQ(form.fields().size(), 2u);
+
+  std::vector<FieldGlobalId> field_global_ids(form.fields().size());
+  base::ranges::transform(
+      form.fields(), field_global_ids.begin(),
+      [](const FormFieldData& field) { return field.global_id(); });
+
+  std::vector<FormFieldData> fields = form.fields();
+
+  FormFieldData* name_field =
+      GetFieldWithPlaceholder(kNamePlaceholder, &fields);
+
+  main_frame_driver()->AskForValuesToFill(form, name_field->global_id());
+
+  // Wait on the main frame form to report itself as having fill data for the
+  // entire browser form, across frames.
+  ASSERT_TRUE(main_frame_manager().WaitForFormsAskedForFillData(1));
+  ASSERT_EQ(main_frame_manager().ask_for_filldata_forms().size(), 1u);
+
+  // Verify that the form that we ask fill data for represents the browser form
+  // across frames.
+  const FormData& filldata_form =
+      main_frame_manager().ask_for_filldata_forms()[0];
+  EXPECT_THAT(filldata_form.fields(),
+              UnorderedElementsAre(
+                  Property(&FormFieldData::global_id, field_global_ids[0]),
+                  Property(&FormFieldData::global_id, field_global_ids[1])));
+}
+
+// Tests that any text change on one of the child frames is correctly routed
+// to the parent form where it represents the whole browser form.
+TEST_F(AutofillAcrossIframesTest, TextChangeOnMultiFrameForm) {
+  const std::u16string kNamePlaceholder = u"Name";
+  const std::u16string kFakeName = u"Bob Bobbertson";
+  const std::u16string kPhonePlaceholder = u"Phone";
+  const std::u16string kFakePhone = u"18005551234";
+
+  AddIframe("cf1", "<form><input type=\"text\" placeholder=\"" +
+                       base::UTF16ToASCII(kNamePlaceholder) +
+                       "\"></input></form>");
+  AddIframe("cf2", "<form><input type=\"text\" placeholder=\"" +
+                       base::UTF16ToASCII(kPhonePlaceholder) +
+                       "\"></input></form>");
+  StartTestServerAndLoad();
+
+  // Wait for the 3 forms to be reported as seen to the main frame that hosts
+  // the browser form (which is the flattened representation of all forms in the
+  // tree structure that share the form in the main frame as a common root).
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(3));
+  ASSERT_EQ(main_frame_manager().seen_forms().size(), 3u);
+
+  // Pick the last form that was seen which reflects the latest and most
+  // complete state of the browser form.
+  FormData form = main_frame_manager().seen_forms().back();
+  ASSERT_EQ(form.child_frames().size(), 2u);
+  ASSERT_EQ(form.fields().size(), 2u);
+
+  std::vector<FieldGlobalId> field_global_ids(form.fields().size());
+  base::ranges::transform(
+      form.fields(), field_global_ids.begin(),
+      [](const FormFieldData& field) { return field.global_id(); });
+
+  std::vector<FormFieldData> fields = form.fields();
+
+  FormFieldData* name_field =
+      GetFieldWithPlaceholder(kNamePlaceholder, &fields);
+
+  main_frame_driver()->TextFieldDidChange(form, name_field->global_id(),
+                                          base::TimeTicks::Now());
+
+  // Wait on the main frame form to report itself as having fill data for the
+  // entire browser form, across frames.
+  ASSERT_TRUE(main_frame_manager().WaitOnTextFieldDidChange(1));
+  ASSERT_EQ(main_frame_manager().text_filled_did_change_forms().size(), 1u);
+
+  // Verify that the form that we ask fill data for represents the browser form
+  // across frames.
+  const FormData& text_filled_form =
+      main_frame_manager().text_filled_did_change_forms()[0];
+  EXPECT_THAT(text_filled_form.fields(),
+              UnorderedElementsAre(
+                  Property(&FormFieldData::global_id, field_global_ids[0]),
+                  Property(&FormFieldData::global_id, field_global_ids[1])));
+}
+
+// Tests that frame deletion is taken into consideration where the browser form
+// is updated accordingly.
+TEST_F(AutofillAcrossIframesTest, UpdateOnFrameDeletion) {
+  const std::u16string kNamePlaceholder = u"Name";
+  const std::u16string kFakeName = u"Bob Bobbertson";
+  const std::u16string kPhonePlaceholder = u"Phone";
+  const std::u16string kFakePhone = u"18005551234";
+
+  AddIframe("cf1", "<form><input type=\"text\" placeholder=\"" +
+                       base::UTF16ToASCII(kNamePlaceholder) +
+                       "\"></input></form>");
+  AddIframe("cf2", "<form><input type=\"text\" placeholder=\"" +
+                       base::UTF16ToASCII(kPhonePlaceholder) +
+                       "\"></input></form>");
+  StartTestServerAndLoad();
+
+  // Wait for the 3 forms to be reported as seen to the main frame that hosts
+  // the browser form (which is the flattened representation of all forms in the
+  // tree structure that share the form in the main frame as a common root).
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(3));
+  ASSERT_EQ(main_frame_manager().seen_forms().size(), 3u);
+
+  // Pick the last form that was seen which reflects the latest and most
+  // complete state of the browser form.
+  FormData form = main_frame_manager().seen_forms().back();
+  ASSERT_EQ(form.child_frames().size(), 2u);
+  ASSERT_EQ(form.fields().size(), 2u);
+
+  ASSERT_TRUE(ExecuteJavaScriptInFrame(
+      WaitForMainFrame(),
+      u"document.forms[0].getElementsByTagName('iframe')[0].remove();"));
+
+  base::flat_map<FieldGlobalId, FieldType> field_type_map;
+
+  std::vector<FormFieldData> fields = form.fields();
+
+  FormFieldData* name_field =
+      GetFieldWithPlaceholder(kNamePlaceholder, &fields);
+  FormFieldData* phone_field =
+      GetFieldWithPlaceholder(kPhonePlaceholder, &fields);
+
+  // Set fill data for name field.
+  SetFillDataForField(kFakeName, FieldType::NAME_FULL, name_field,
+                      &field_type_map);
+  // Set fill data for phone field.
+  SetFillDataForField(kFakePhone, FieldType::PHONE_HOME_NUMBER, phone_field,
+                      &field_type_map);
+
+  // Attempt to fill the 2 fields in the browser form while there is actually
+  // only one.
+  main_frame_driver()->ApplyFormAction(
+      mojom::FormActionType::kFill, mojom::ActionPersistence::kFill, fields,
+      form.main_frame_origin(), field_type_map);
+
+  // Verify that only one form is was filled since the frame containing the
+  // other form was deleted.
+  ASSERT_TRUE(main_frame_manager().WaitForFormsFilled(1));
+  ASSERT_EQ(main_frame_manager().filled_forms().size(), 1u);
+
+  // Verify that the form was updated to take into consideration the deleted
+  // frame where the is only one field that is actually filled.
+  FormData filled_form = main_frame_manager().filled_forms().back();
+  EXPECT_THAT(
+      filled_form.fields(),
+      UnorderedElementsAre(
+          // Verify the phone field.
+          AllOf(Property(&FormFieldData::placeholder, kPhonePlaceholder),
+                Property(&FormFieldData::value, kFakePhone))));
 }
 
 // Ensure that disabling the feature actually disables the feature.

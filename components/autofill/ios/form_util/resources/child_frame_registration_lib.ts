@@ -62,6 +62,29 @@ function processChildFrameMessage(payload: MessageEvent): void {
 }
 
 /**
+ * Gets the remote ID of the corresponding `frame`. Caches the remote ID of each
+ * frame to avoid registering the same frame more than once.
+ * @param frame The frame to get the remote ID for.
+ * @returns The remote ID for the frame. Will either return the ID that was
+ *      cached or a freshly generated one.
+ */
+function getRemoteIdForFrame(frame: HTMLIFrameElement): string {
+  if (!gCrWeb.hasOwnProperty('remoteFrameIdRegistrar')) {
+    gCrWeb.remoteFrameIdRegistrar = new Map();
+  }
+
+  // Return the cached remote token if the frame was already registered.
+  if (gCrWeb.remoteFrameIdRegistrar.has(frame)) {
+    return gCrWeb.remoteFrameIdRegistrar.get(frame);
+  }
+
+  // Otherwise, create a remote ID for the frame and cache it.
+  const remoteId: string = generateRandomId();
+  gCrWeb.remoteFrameIdRegistrar.set(frame, remoteId);
+  return remoteId;
+}
+
+/**
  * Generates a new remote ID for `frame`, and posts it to `frame`, so that
  * `frame` can register itself with the browser layer as the frame corresponding
  * to the new remote ID.
@@ -72,7 +95,7 @@ function processChildFrameMessage(payload: MessageEvent): void {
  *     the time this function completes.
  */
 function registerChildFrame(frame: HTMLIFrameElement): string {
-  const remoteFrameId: string = generateRandomId();
+  const remoteFrameId: string = getRemoteIdForFrame(frame);
 
   // TODO(crbug.com/40266126): Instead of a timeout, this should wait for an Ack
   // and resend until it gets one. The child frame may not yet be loaded.

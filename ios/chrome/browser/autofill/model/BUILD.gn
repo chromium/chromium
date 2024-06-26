@@ -165,6 +165,7 @@ source_set("unit_tests") {
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/browser:test_support",
+    "//components/autofill/ios/browser:util",
     "//components/autofill/ios/common",
     "//components/autofill/ios/form_util",
     "//components/autofill/ios/form_util:child_frame_registration_test_ts",

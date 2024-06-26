@@ -23,6 +23,7 @@
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -30,6 +31,7 @@
 using base::SysUTF8ToNSString;
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
+using ::testing::IsTrue;
 
 // Unit tests for
 // components/password_manager/ios/resources/password_controller.js
@@ -1349,6 +1351,21 @@ TEST_F(PasswordControllerJsTest, ExtractFormOutsideTheFormTag) {
   std::unique_ptr<base::Value> results = autofill::ParseJson(
       ExecuteJavaScript(@"__gCrWeb.passwords.getPasswordFormDataAsString(0)"));
   ASSERT_TRUE(results);
+  // Verify that the returned `results` correspond to a dictionary with
+  // key/value pairs.
+  ASSERT_TRUE(results->is_dict());
+
+  base::Value::Dict& results_content = results->GetDict();
+
+  // Verify that there is the "frame_id" key in the returned `results`.
+  const std::string* results_frame_id = results_content.FindString("frame_id");
+  ASSERT_TRUE(results_frame_id);
+  ASSERT_THAT(autofill::DeserializeJavaScriptFrameId(*results_frame_id),
+              IsTrue());
+
+  // Remove the key as it was already verified to make the expected results and
+  // the actual results comparable, since the frame_id is randomly generated.
+  results_content.Remove("frame_id");
 
   EXPECT_EQ(expected_form, *results);
 }

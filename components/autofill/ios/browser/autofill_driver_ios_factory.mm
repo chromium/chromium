@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/ios/browser/autofill_driver_ios_factory.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 
-#include "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/browser/autofill_driver_ios.h"
 
 namespace autofill {
 
@@ -27,7 +27,7 @@ AutofillDriverIOS* AutofillDriverIOSFactory::DriverForFrame(
   }
   std::unique_ptr<AutofillDriverIOS> driver =
       base::WrapUnique(new AutofillDriverIOS(web_state_, web_frame, client_,
-                                             bridge_, app_locale_));
+                                             &router_, bridge_, app_locale_));
   auto* raw_driver = driver.get();
   web_frame->SetUserData(AutofillDriverIOS::UserDataKey(), std::move(driver));
   return raw_driver;
