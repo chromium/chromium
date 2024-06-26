@@ -53,6 +53,7 @@ source_set("plus_addresses") {
   deps = [
     ":parsing",
     "//components/affiliations/core/browser:affiliations",
+    "//components/feature_engagement/public",
     "//components/plus_addresses/metrics",
     "//components/plus_addresses/metrics:submission_logger",
     "//components/plus_addresses/webdata",
@@ -112,6 +113,7 @@ source_set("unit_tests") {
     "//components/affiliations/core/browser:affiliations",
     "//components/affiliations/core/browser:test_support",
     "//components/autofill/core/browser:test_support",
+    "//components/feature_engagement/public",
     "//components/plus_addresses/metrics",
     "//components/plus_addresses/webdata",
     "//components/prefs:test_support",

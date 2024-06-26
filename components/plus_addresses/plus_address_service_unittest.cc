@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_http_client_impl.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
@@ -71,7 +72,19 @@ using ::testing::UnorderedElementsAre;
 constexpr char kPlusAddress[] = "plus+remote@plus.plus";
 
 auto IsSingleCreatePlusAddressSuggestion() {
-  return ElementsAre(EqualsSuggestion(SuggestionType::kCreateNewPlusAddress));
+  std::vector<std::vector<Suggestion::Text>> labels;
+  if constexpr (!BUILDFLAG(IS_ANDROID)) {
+    labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+        IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
+  }
+  return ElementsAre(
+      AllOf(EqualsSuggestion(SuggestionType::kCreateNewPlusAddress,
+                             /*main_text=*/l10n_util::GetStringUTF16(
+                                 IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT)),
+            Field(&Suggestion::icon, Suggestion::Icon::kPlusAddress),
+            Field(&Suggestion::feature_for_iph,
+                  &feature_engagement::kIPHPlusAddressCreateSuggestionFeature),
+            Field(&Suggestion::labels, labels)));
 }
 
 auto EqualsFillPlusAddressSuggestion(std::string_view address) {

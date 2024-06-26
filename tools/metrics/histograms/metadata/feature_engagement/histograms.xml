@@ -349,6 +349,9 @@ chromium-metrics-reviews@google.com.
                button"/>
   <variant name="IPH_PerformanceNewBadge"
       summary="New badge shows next to performance item on the app menu"/>
+  <variant name="IPH_PlusAddressCreateSuggestion"
+      summary="message shown in Autofill dropdown to educate users on the
+               existence of the plus address benefits"/>
   <variant name="IPH_PowerBookmarksSidePanel"
       summary="prompting users to view bookmarks in the side panel"/>
   <variant name="IPH_PreviewsOmniboxUI"

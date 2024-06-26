@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_http_client.h"
@@ -264,6 +265,8 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
               IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
     }
     create_plus_address_suggestion.icon = Suggestion::Icon::kPlusAddress;
+    create_plus_address_suggestion.feature_for_iph =
+        &feature_engagement::kIPHPlusAddressCreateSuggestionFeature;
     std::move(callback).Run({std::move(create_plus_address_suggestion)});
     return;
   }

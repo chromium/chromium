@@ -744,6 +744,8 @@ void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
       feature_engagement::kIPHAutofillExternalAccountProfileSuggestionFeature);
   browser->window()->MaybeShowFeaturePromo(
       feature_engagement::kIPHAutofillCreditCardBenefitFeature);
+  browser->window()->MaybeShowFeaturePromo(
+      feature_engagement::kIPHPlusAddressCreateSuggestionFeature);
 }
 
 void PopupViewViews::SearchBarOnInputChanged(const std::u16string& query) {
@@ -985,6 +987,11 @@ void PopupViewViews::CreateSuggestionViews() {
                          kIPHAutofillCreditCardBenefitFeature) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillCreditCardBenefitElementId);
+          } else if (feature_for_iph ==
+                     &feature_engagement::
+                         kIPHPlusAddressCreateSuggestionFeature) {
+            row_view->SetProperty(views::kElementIdentifierKey,
+                                  kPlusAddressCreateSuggestionElementId);
           }
       }
     }

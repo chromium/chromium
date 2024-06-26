@@ -133,4 +133,12 @@
       Lorem Ipsum dolor ...
     </message>
 
+    <!-- IPH strings -->
+    <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH" desc="Text shown in the IPH bubble for educating the user on creating plus addresses." translateable="false">
+      Placeholder Plus Address Create Suggestion IPH String
+    </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_SCREENREADER" is_accessibility_with_no_ui="true" desc="Screenreader text shown in the IPH bubble for educating the user on creating plus addresses." translateable="false">
+      Placeholder Plus Address Create Suggestion IPH Screenreader String
+    </message>
+
 </grit-part>
