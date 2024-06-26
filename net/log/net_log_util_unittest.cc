@@ -23,6 +23,7 @@
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_transaction.h"
+#include "net/http/mock_http_cache.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
@@ -56,9 +57,9 @@ TEST(NetLogUtil, GetNetInfo) {
   EXPECT_GT(net_info_without_cache.size(), 0u);
 
   // Force creation of a cache backend, and get NetInfo again.
-  raw_ptr<disk_cache::Backend> backend = nullptr;
-  EXPECT_EQ(OK, context->http_transaction_factory()->GetCache()->GetBackend(
-                    &backend, TestCompletionCallback().callback()));
+  auto [rv, _] = context->http_transaction_factory()->GetCache()->GetBackend(
+      TestGetBackendCompletionCallback().callback());
+  EXPECT_EQ(OK, rv);
   EXPECT_TRUE(http_cache->GetCurrentBackend());
   base::Value::Dict net_info_with_cache = GetNetInfo(context.get());
   EXPECT_GT(net_info_with_cache.size(), 0u);

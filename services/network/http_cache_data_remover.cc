@@ -82,19 +82,22 @@ std::unique_ptr<HttpCacheDataRemover> HttpCacheDataRemover::CreateAndStart(
       ->quic_session_pool()
       ->ClearCachedStatesInCryptoConfig(remover->url_matcher_);
 
-  net::CompletionOnceCallback callback =
-      base::BindOnce(&HttpCacheDataRemover::CacheRetrieved,
-                     remover->weak_factory_.GetWeakPtr());
-  int rv = http_cache->GetBackend(&remover->backend_, std::move(callback));
-  if (rv != net::ERR_IO_PENDING) {
-    remover->CacheRetrieved(rv);
+  auto callback = base::BindOnce(&HttpCacheDataRemover::CacheRetrieved,
+                                 remover->weak_factory_.GetWeakPtr());
+  net::HttpCache::GetBackendResult result =
+      http_cache->GetBackend(std::move(callback));
+  if (result.first != net::ERR_IO_PENDING) {
+    remover->CacheRetrieved(result);
   }
   return remover;
 }
 
-void HttpCacheDataRemover::CacheRetrieved(int rv) {
+void HttpCacheDataRemover::CacheRetrieved(
+    std::pair<int, raw_ptr<disk_cache::Backend>> result) {
   DCHECK(done_callback_);
 
+  int rv = result.first;
+  backend_ = result.second;
   // |backend_| can be null if it cannot be initialized.
   if (rv != net::OK || !backend_) {
     backend_ = nullptr;

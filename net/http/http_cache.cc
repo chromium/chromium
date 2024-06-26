@@ -449,29 +449,24 @@ HttpCache::~HttpCache() {
   }
 }
 
-int HttpCache::GetBackend(raw_ptr<disk_cache::Backend>* backend,
-                          CompletionOnceCallback callback) {
+HttpCache::GetBackendResult HttpCache::GetBackend(GetBackendCallback callback) {
   DCHECK(!callback.is_null());
 
   if (disk_cache_.get()) {
-    *backend = disk_cache_.get();
-    return OK;
+    return {OK, disk_cache_.get()};
   }
 
-  int rv =
-      CreateBackend(base::BindOnce(&HttpCache::ReportGetBackendResult,
-                                   GetWeakPtr(), backend, std::move(callback)));
+  int rv = CreateBackend(base::BindOnce(&HttpCache::ReportGetBackendResult,
+                                        GetWeakPtr(), std::move(callback)));
   if (rv != ERR_IO_PENDING) {
-    *backend = disk_cache_.get();
+    return {rv, disk_cache_.get()};
   }
-  return rv;
+  return {ERR_IO_PENDING, nullptr};
 }
 
-void HttpCache::ReportGetBackendResult(raw_ptr<disk_cache::Backend>* backend,
-                                       CompletionOnceCallback callback,
+void HttpCache::ReportGetBackendResult(GetBackendCallback callback,
                                        int net_error) {
-  *backend = disk_cache_.get();
-  std::move(callback).Run(net_error);
+  std::move(callback).Run(std::pair(net_error, disk_cache_.get()));
 }
 
 disk_cache::Backend* HttpCache::GetCurrentBackend() const {

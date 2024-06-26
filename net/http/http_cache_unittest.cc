@@ -148,30 +148,28 @@ void DeferCallback(bool* defer) {
   *defer = true;
 }
 
-class DeleteCacheCompletionCallback : public TestCompletionCallbackBase {
+class DeleteCacheCompletionCallback
+    : public TestGetBackendCompletionCallbackBase {
  public:
   explicit DeleteCacheCompletionCallback(std::unique_ptr<MockHttpCache> cache)
-      : backend_(nullptr), cache_(std::move(cache)) {}
+      : cache_(std::move(cache)) {}
 
   DeleteCacheCompletionCallback(const DeleteCacheCompletionCallback&) = delete;
   DeleteCacheCompletionCallback& operator=(
       const DeleteCacheCompletionCallback&) = delete;
 
-  CompletionOnceCallback callback() {
+  HttpCache::GetBackendCallback callback() {
     return base::BindOnce(&DeleteCacheCompletionCallback::OnComplete,
                           base::Unretained(this));
   }
 
-  raw_ptr<disk_cache::Backend>* backend() { return &backend_; }
-
  private:
-  void OnComplete(int result) {
-    backend_ = nullptr;
+  void OnComplete(HttpCache::GetBackendResult result) {
+    result.second = nullptr;  // would dangle on next line otherwise.
     cache_.reset();
     SetResult(result);
   }
 
-  raw_ptr<disk_cache::Backend> backend_;
   std::unique_ptr<MockHttpCache> cache_;
 };
 
@@ -838,11 +836,11 @@ TEST_F(HttpCacheTest, CreateThenDestroy) {
 TEST_F(HttpCacheTest, GetBackend) {
   MockHttpCache cache(HttpCache::DefaultBackend::InMemory(0));
 
-  raw_ptr<disk_cache::Backend> backend;
-  TestCompletionCallback cb;
+  TestGetBackendCompletionCallback cb;
   // This will lazily initialize the backend.
-  int rv = cache.http_cache()->GetBackend(&backend, cb.callback());
-  EXPECT_THAT(cb.GetResult(rv), IsOk());
+  HttpCache::GetBackendResult result =
+      cache.http_cache()->GetBackend(cb.callback());
+  EXPECT_THAT(cb.GetResult(result).first, IsOk());
 }
 
 TEST_F(HttpCacheTest, SimpleGET) {
@@ -6056,7 +6054,7 @@ TEST_F(HttpCacheTest, DeleteCacheWaitingForBackend2) {
   auto* cache_ptr = cache.get();
 
   DeleteCacheCompletionCallback cb(std::move(cache));
-  int rv = cache_ptr->http_cache()->GetBackend(cb.backend(), cb.callback());
+  auto [rv, _] = cache_ptr->http_cache()->GetBackend(cb.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   // Now let's queue a regular transaction
@@ -6069,9 +6067,9 @@ TEST_F(HttpCacheTest, DeleteCacheWaitingForBackend2) {
   c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
 
   // And another direct backend request.
-  TestCompletionCallback cb2;
-  rv = cache_ptr->http_cache()->GetBackend(cb.backend(), cb2.callback());
-  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  TestGetBackendCompletionCallback cb2;
+  auto [rv2, _2] = cache_ptr->http_cache()->GetBackend(cb2.callback());
+  EXPECT_THAT(rv2, IsError(ERR_IO_PENDING));
 
   // Just to make sure that everything is still pending.
   base::RunLoop().RunUntilIdle();
@@ -6081,7 +6079,7 @@ TEST_F(HttpCacheTest, DeleteCacheWaitingForBackend2) {
 
   // Generate the callback.
   factory_ptr->FinishCreation();
-  rv = cb.WaitForResult();
+  cb.WaitForResult();
 
   // The cache should be gone by now.
   base::RunLoop().RunUntilIdle();

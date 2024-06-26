@@ -146,11 +146,8 @@ class CacheCounterTest : public PlatformTest {
                                            ->http_transaction_factory()
                                            ->GetCache();
 
-          rv = http_cache->GetBackend(
-              &backend_,
-              base::BindRepeating(&CacheCounterTest::CacheOperationStep,
-                                  base::Unretained(this)));
-
+          std::tie(rv, backend_) = http_cache->GetBackend(base::BindRepeating(
+              &CacheCounterTest::SaveBackendAndStep, base::Unretained(this)));
           break;
         }
 
@@ -213,6 +210,11 @@ class CacheCounterTest : public PlatformTest {
         }
       }
     }
+  }
+
+  void SaveBackendAndStep(net::HttpCache::GetBackendResult result) {
+    backend_ = result.second;
+    CacheOperationStep(result.first);
   }
 
   void SaveEntryAndStep(disk_cache::EntryResult result) {

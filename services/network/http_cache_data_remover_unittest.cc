@@ -25,6 +25,7 @@
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties_manager.h"
 #include "net/http/http_transaction_factory.h"
+#include "net/http/mock_http_cache.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "services/network/network_context.h"
@@ -89,9 +90,12 @@ class HttpCacheDataRemoverTest : public testing::Test {
                  ->GetCache();
     ASSERT_TRUE(cache_);
     {
-      net::TestCompletionCallback callback;
-      int rv = cache_->GetBackend(&backend_, callback.callback());
-      ASSERT_EQ(net::OK, callback.GetResult(rv));
+      net::TestGetBackendCompletionCallback callback;
+      net::HttpCache::GetBackendResult result =
+          cache_->GetBackend(callback.callback());
+      result = callback.GetResult(result);
+      ASSERT_EQ(net::OK, result.first);
+      backend_ = result.second;
       ASSERT_TRUE(backend_);
     }
 

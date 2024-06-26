@@ -27,6 +27,7 @@
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties_manager.h"
 #include "net/http/http_transaction_factory.h"
+#include "net/http/mock_http_cache.h"
 #include "net/url_request/url_request_context.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
@@ -84,9 +85,12 @@ class HttpCacheDataCounterTest : public testing::Test {
                                 ->GetCache();
     ASSERT_TRUE(cache);
     {
-      net::TestCompletionCallback callback;
-      int rv = cache->GetBackend(&backend_, callback.callback());
-      ASSERT_EQ(net::OK, callback.GetResult(rv));
+      net::TestGetBackendCompletionCallback callback;
+      net::HttpCache::GetBackendResult result =
+          cache->GetBackend(callback.callback());
+      result = callback.GetResult(result);
+      ASSERT_EQ(net::OK, result.first);
+      backend_ = result.second;
       ASSERT_TRUE(backend_);
     }
 

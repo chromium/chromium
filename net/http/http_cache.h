@@ -175,14 +175,15 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
   HttpTransactionFactory* network_layer() { return network_layer_.get(); }
 
+  using GetBackendResult = std::pair<int, raw_ptr<disk_cache::Backend>>;
+  using GetBackendCallback = base::OnceCallback<void(GetBackendResult)>;
   // Retrieves the cache backend for this HttpCache instance. If the backend
-  // is not initialized yet, this method will initialize it. The return value is
-  // a network error code, and it could be ERR_IO_PENDING, in which case the
-  // `callback` will be notified when the operation completes. The pointer that
-  // receives the `backend` must remain valid until the operation completes.
+  // is not initialized yet, this method will initialize it. The integer portion
+  // of the return value is a network error code, and it could be
+  // ERR_IO_PENDING, in which case the `callback` will be notified when the
+  // operation completes.
   // `callback` will get cancelled if the HttpCache is destroyed.
-  int GetBackend(raw_ptr<disk_cache::Backend>* backend,
-                 CompletionOnceCallback callback);
+  GetBackendResult GetBackend(GetBackendCallback callback);
 
   // Returns the current backend (can be NULL).
   disk_cache::Backend* GetCurrentBackend() const;
@@ -505,9 +506,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // operation completes. Returns an error code.
   int CreateBackend(CompletionOnceCallback callback);
 
-  void ReportGetBackendResult(raw_ptr<disk_cache::Backend>* backend,
-                              CompletionOnceCallback callback,
-                              int net_error);
+  void ReportGetBackendResult(GetBackendCallback callback, int net_error);
 
   // Makes sure that the backend creation is complete before allowing the
   // provided transaction to use the object. Returns an error code.

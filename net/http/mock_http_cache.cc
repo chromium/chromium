@@ -720,11 +720,10 @@ MockHttpCache::MockHttpCache(
                   std::move(disk_cache_factory)) {}
 
 disk_cache::Backend* MockHttpCache::backend() {
-  TestCompletionCallback cb;
-  raw_ptr<disk_cache::Backend> backend;
-  int rv = http_cache_.GetBackend(&backend, cb.callback());
-  rv = cb.GetResult(rv);
-  return (rv == OK) ? backend : nullptr;
+  TestGetBackendCompletionCallback cb;
+  HttpCache::GetBackendResult result = http_cache_.GetBackend(cb.callback());
+  result = cb.GetResult(result);
+  return (result.first == OK) ? result.second : nullptr;
 }
 
 MockDiskCache* MockHttpCache::disk_cache() {

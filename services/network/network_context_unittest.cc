@@ -5,6 +5,7 @@
 #include "services/network/network_context.h"
 
 #include <algorithm>
+#include <initializer_list>
 #include <map>
 #include <memory>
 #include <optional>
@@ -273,6 +274,22 @@ std::unique_ptr<TestURLLoaderClient> FetchRequest(
 
   client->RunUntilComplete();
   return client;
+}
+
+// Looks up disk_cache::Backend used for a given `network_context`. May spin
+// the event loop.
+disk_cache::Backend* WaitForCacheBackend(NetworkContext& network_context) {
+  net::HttpCache* cache = network_context.url_request_context()
+                              ->http_transaction_factory()
+                              ->GetCache();
+  EXPECT_TRUE(cache);
+
+  net::TestGetBackendCompletionCallback callback;
+  net::HttpCache::GetBackendResult result =
+      cache->GetBackend(callback.callback());
+  result = callback.GetResult(result);
+  EXPECT_EQ(net::OK, result.first);
+  return result.second;
 }
 
 // proxy_resolver::mojom::ProxyResolverFactory that captures the most recent PAC
@@ -1054,17 +1071,8 @@ TEST_F(NetworkContextTest, MemoryCache) {
   context_params->http_cache_enabled = true;
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(std::move(context_params));
-  net::HttpCache* cache = network_context->url_request_context()
-                              ->http_transaction_factory()
-                              ->GetCache();
-  ASSERT_TRUE(cache);
-
-  raw_ptr<disk_cache::Backend> backend = nullptr;
-  net::TestCompletionCallback callback;
-  int rv = cache->GetBackend(&backend, callback.callback());
-  EXPECT_EQ(net::OK, callback.GetResult(rv));
+  disk_cache::Backend* backend = WaitForCacheBackend(*network_context);
   ASSERT_TRUE(backend);
-
   EXPECT_EQ(net::MEMORY_CACHE, backend->GetCacheType());
 }
 
@@ -1080,17 +1088,8 @@ TEST_F(NetworkContextTest, DiskCache) {
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(std::move(context_params));
-  net::HttpCache* cache = network_context->url_request_context()
-                              ->http_transaction_factory()
-                              ->GetCache();
-  ASSERT_TRUE(cache);
-
-  raw_ptr<disk_cache::Backend> backend = nullptr;
-  net::TestCompletionCallback callback;
-  int rv = cache->GetBackend(&backend, callback.callback());
-  EXPECT_EQ(net::OK, callback.GetResult(rv));
+  disk_cache::Backend* backend = WaitForCacheBackend(*network_context);
   ASSERT_TRUE(backend);
-
   EXPECT_EQ(net::DISK_CACHE, backend->GetCacheType());
   EXPECT_EQ(network_session_configurator::ChooseCacheType(),
             GetBackendType(backend));
@@ -1124,17 +1123,8 @@ class DiskCacheSizeTest : public NetworkContextTest {
     std::unique_ptr<NetworkContext> network_context =
         CreateContextWithParams(std::move(context_params));
 
-    net::HttpCache* cache = network_context->url_request_context()
-                                ->http_transaction_factory()
-                                ->GetCache();
-    EXPECT_TRUE(cache);
-
-    raw_ptr<disk_cache::Backend> backend = nullptr;
-    net::TestCompletionCallback callback;
-    int rv = cache->GetBackend(&backend, callback.callback());
-    EXPECT_EQ(net::OK, callback.GetResult(rv));
+    disk_cache::Backend* backend = WaitForCacheBackend(*network_context);
     EXPECT_TRUE(backend);
-
     EXPECT_EQ(net::DISK_CACHE, backend->GetCacheType());
 
     int64_t max_file_size = backend->MaxFileSize();
@@ -1174,15 +1164,7 @@ TEST_F(NetworkContextTest, SimpleCache) {
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(std::move(context_params));
-  net::HttpCache* cache = network_context->url_request_context()
-                              ->http_transaction_factory()
-                              ->GetCache();
-  ASSERT_TRUE(cache);
-
-  raw_ptr<disk_cache::Backend> backend = nullptr;
-  net::TestCompletionCallback callback;
-  int rv = cache->GetBackend(&backend, callback.callback());
-  EXPECT_EQ(net::OK, callback.GetResult(rv));
+  disk_cache::Backend* backend = WaitForCacheBackend(*network_context);
   ASSERT_TRUE(backend);
 
   base::StringPairs stats;
@@ -1769,20 +1751,13 @@ TEST_F(NetworkContextTest, ClearHttpCache) {
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(std::move(context_params));
-  net::HttpCache* cache = network_context->url_request_context()
-                              ->http_transaction_factory()
-                              ->GetCache();
+  disk_cache::Backend* backend = WaitForCacheBackend(*network_context);
 
   std::vector<std::string> entry_urls = {
       "http://www.google.com",    "https://www.google.com",
       "http://www.wikipedia.com", "https://www.wikipedia.com",
       "http://localhost:1234",    "https://localhost:1234",
   };
-  ASSERT_TRUE(cache);
-  raw_ptr<disk_cache::Backend> backend = nullptr;
-  net::TestCompletionCallback callback;
-  int rv = cache->GetBackend(&backend, callback.callback());
-  EXPECT_EQ(net::OK, callback.GetResult(rv));
   ASSERT_TRUE(backend);
 
   for (const auto& url : entry_urls) {
@@ -1869,14 +1844,13 @@ TEST_F(NetworkContextTest, NotifyExternalCacheHit) {
         net::HttpCache* cache = network_context->url_request_context()
                                     ->http_transaction_factory()
                                     ->GetCache();
-        raw_ptr<disk_cache::Backend> backend = nullptr;
         // We expect that every cache operation below is done synchronously
         // because we're using an in-memory backend.
 
         // The disk cache is lazily instantiated, force it and ensure it's
         // valid.
-        ASSERT_EQ(cache->GetBackend(&backend, base::BindOnce([](int rv) {})),
-                  net::OK);
+        auto [rv, backend] = cache->GetBackend(base::DoNothing());
+        ASSERT_EQ(rv, net::OK);
         ASSERT_NE(backend, nullptr);
         static_cast<disk_cache::MemBackendImpl*>(backend)->SetClockForTesting(
             &clock);

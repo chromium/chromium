@@ -392,6 +392,27 @@ class MockBlockingBackendFactory : public HttpCache::BackendFactory {
   bool fail_ = false;
 };
 
+struct GetBackendResultIsPendingHelper {
+  bool operator()(const HttpCache::GetBackendResult& result) const {
+    return result.first == net::ERR_IO_PENDING;
+  }
+};
+using TestGetBackendCompletionCallbackBase =
+    net::internal::TestCompletionCallbackTemplate<
+        HttpCache::GetBackendResult,
+        GetBackendResultIsPendingHelper>;
+
+class TestGetBackendCompletionCallback
+    : public TestGetBackendCompletionCallbackBase {
+ public:
+  TestGetBackendCompletionCallback() = default;
+
+  HttpCache::GetBackendCallback callback() {
+    return base::BindOnce(&TestGetBackendCompletionCallback::SetResult,
+                          base::Unretained(this));
+  }
+};
+
 }  // namespace net
 
 #endif  // NET_HTTP_MOCK_HTTP_CACHE_H_

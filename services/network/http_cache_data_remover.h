@@ -58,7 +58,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) HttpCacheDataRemover {
                        base::Time delete_end,
                        HttpCacheDataRemoverCallback done_callback);
 
-  void CacheRetrieved(int rv);
+  void CacheRetrieved(std::pair<int, raw_ptr<disk_cache::Backend>>);
   void ClearHttpCacheDone(int rv);
 
   base::RepeatingCallback<bool(const GURL&)> url_matcher_;
