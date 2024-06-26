@@ -24,7 +24,7 @@
 
   .axis,
   .divider {
-    stroke: var(--google-grey-300);
+    stroke: var(--color-side-panel-commerce-graph-axis);
     stroke-linecap: round;
   }
 
@@ -40,11 +40,11 @@
   }
 
   .circle {
-    fill: white;
+    fill: var(--color-side-panel-card-background);
   }
 
   .bubble {
-    fill: var(--google-grey-100);
+    fill: var(--color-side-panel-commerce-graph-bubble-background);
     stroke: none;
   }
 
@@ -58,28 +58,7 @@
   .path,
   .dash-line,
   .circle {
-    stroke: var(--google-blue-700);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .axis,
-    .divider {
-      stroke: var(--color-side-panel-commerce-graph-axis);
-    }
-
-    .path,
-    .dash-line,
-    .circle {
-      stroke: var(--color-side-panel-commerce-graph-line);
-    }
-
-    .circle {
-      fill: var(--color-side-panel-card-background);
-    }
-
-    .bubble {
-      fill: var(--color-side-panel-commerce-graph-bubble-background);
-    }
+    stroke: var(--color-side-panel-commerce-graph-line);
   }
 </style>
 
