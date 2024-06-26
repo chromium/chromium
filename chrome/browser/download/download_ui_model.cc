@@ -1166,28 +1166,28 @@ DownloadUIModel::BubbleStatusTextBuilder::GetCompletedStatusText() const {
   if (model_->GetEndTime().is_null()) {
     // Offline items have these null.
     return l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_STATUS_DONE);
-  } else {
-    std::u16string delta_str;
-    if (model_->GetDangerType() ==
-        download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE) {
-        // "2 B • Scan is done"
-        delta_str = l10n_util::GetStringUTF16(
-            IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_DONE_UPDATED);
-    } else {
-      base::TimeDelta time_elapsed = base::Time::Now() - model_->GetEndTime();
-      // If less than 1 minute has passed since download completed: "2 B • Done"
-      // Otherwise: e.g. "2 B • 3 minutes ago"
-      delta_str =
-          time_elapsed.InMinutes() == 0
-              ? l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_STATUS_DONE)
-              : ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
-                                       ui::TimeFormat::LENGTH_LONG,
-                                       time_elapsed);
-    }
-    return GetBubbleStatusMessageWithBytes(
-        ui::FormatBytes(model_->GetTotalBytes()), delta_str,
-        /*is_active=*/false);
   }
+  std::u16string delta_str;
+  if (model_->GetDangerType() ==
+      download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE) {
+    // "2 B • Scan is done"
+    delta_str = l10n_util::GetStringUTF16(
+        IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_DONE_UPDATED);
+  } else {
+    base::TimeDelta time_elapsed = base::Time::Now() - model_->GetEndTime();
+    // If less than 1 minute has passed since download completed: "2 B • Done"
+    // Otherwise: e.g. "2 B • 3 minutes ago"
+    // If the elapsed time is negative (could happen if the system time has
+    // been adjusted backwards), also just display "2 B • Done".
+    delta_str =
+        time_elapsed.InMinutes() <= 0
+            ? l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_STATUS_DONE)
+            : ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
+                                     ui::TimeFormat::LENGTH_LONG, time_elapsed);
+  }
+  return GetBubbleStatusMessageWithBytes(
+      ui::FormatBytes(model_->GetTotalBytes()), delta_str,
+      /*is_active=*/false);
 }
 
 // To clarify variable / method names in methods below that help form failure

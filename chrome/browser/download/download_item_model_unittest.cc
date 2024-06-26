@@ -550,6 +550,10 @@ TEST_F(DownloadItemModelTest, CompletedStatus) {
       {base::Seconds(50), "", "2 B \xE2\x80\xA2 Done"},
       {base::Seconds(60), "", "2 B \xE2\x80\xA2 1 minute ago"},
       {base::Hours(23), "", "2 B \xE2\x80\xA2 23 hours ago"},
+      // Negative TimeDeltas may happen if the system time is adjusted
+      // backwards.
+      {base::Seconds(-10), "", "2 B \xE2\x80\xA2 Done"},
+      {base::Minutes(-10), "", "2 B \xE2\x80\xA2 Done"},
   };
   for (const auto& test_case : kTimeElapsedTestCases) {
     SetupCompletedDownloadItem(test_case.time_since_download_complete);
