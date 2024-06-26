@@ -529,8 +529,8 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
 
   void CheckExtensionAllocationInPrefs(
       const ExtensionId& extension_id,
-      std::optional<size_t> expected_rules_count) {
-    size_t actual_rules_count = 0;
+      std::optional<int> expected_rules_count) {
+    int actual_rules_count = 0;
 
     bool has_allocated_rules_count =
         extension_prefs_->GetDNRAllocatedGlobalRuleCount(extension_id,

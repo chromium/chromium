@@ -6265,8 +6265,8 @@ class DeclarativeNetRequestGlobalRulesBrowserTest
  protected:
   void VerifyExtensionAllocationInPrefs(
       const ExtensionId& extension_id,
-      const std::optional<size_t>& expected_rules_count) {
-    size_t actual_rules_count = 0;
+      std::optional<int> expected_rules_count) {
+    int actual_rules_count = 0;
 
     const ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
     bool has_allocated_rules_count = prefs->GetDNRAllocatedGlobalRuleCount(
@@ -6361,9 +6361,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
   for (const auto& extension : extension_registry()->enabled_extensions()) {
     extensions_by_name[extension->name()] = extension.get();
 
-    size_t allocated_rule_count = 0;
+    int allocated_rule_count = 0;
     if (prefs->GetDNRAllocatedGlobalRuleCount(extension->id(),
                                               &allocated_rule_count)) {
+      DCHECK_GE(allocated_rule_count, 0);
       allocated_rule_counts[extension->name()] = allocated_rule_count;
     }
   }

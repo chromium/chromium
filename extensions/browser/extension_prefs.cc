@@ -2149,29 +2149,26 @@ bool ExtensionPrefs::ShouldIgnoreDNRRuleset(
 
 bool ExtensionPrefs::GetDNRAllocatedGlobalRuleCount(
     const ExtensionId& extension_id,
-    size_t* rule_count) const {
-  int rule_count_value = -1;
+    int* rule_count) const {
   if (!ReadPrefAsInteger(extension_id, kDNRExtensionRulesAllocated,
-                         &rule_count_value)) {
+                         rule_count)) {
     return false;
   }
 
-  DCHECK_GT(rule_count_value, 0);
-  *rule_count = static_cast<size_t>(rule_count_value);
+  DCHECK_GT(*rule_count, 0);
+
   return true;
 }
 
 void ExtensionPrefs::SetDNRAllocatedGlobalRuleCount(
     const ExtensionId& extension_id,
-    size_t rule_count) {
-  DCHECK_LE(
-      rule_count,
-      static_cast<size_t>(declarative_net_request::GetGlobalStaticRuleLimit()));
+    int rule_count) {
+  DCHECK_LE(rule_count, declarative_net_request::GetGlobalStaticRuleLimit());
 
   // Clear the pref entry if the extension has a global allocation of 0.
   std::optional<base::Value> pref_value;
   if (rule_count > 0) {
-    pref_value = base::Value(static_cast<int>(rule_count));
+    pref_value = base::Value(rule_count);
   }
   UpdateExtensionPref(extension_id, kDNRExtensionRulesAllocated,
                       std::move(pref_value));

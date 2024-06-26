@@ -742,9 +742,9 @@ class ExtensionPrefs : public KeyedService {
   // Returns the global rule allocation for the given |extension_id|. If no
   // rules are allocated to the extension, false is returned.
   bool GetDNRAllocatedGlobalRuleCount(const ExtensionId& extension_id,
-                                      size_t* rule_count) const;
+                                      int* rule_count) const;
   void SetDNRAllocatedGlobalRuleCount(const ExtensionId& extension_id,
-                                      size_t rule_count);
+                                      int rule_count);
 
   // Whether the extension with the given |extension_id| should have its excess
   // global rules allocation kept during its next load.
