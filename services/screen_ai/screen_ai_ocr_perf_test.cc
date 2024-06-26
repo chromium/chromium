@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -14,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -30,7 +30,7 @@ namespace screen_ai {
 
 namespace {
 
-constexpr const char kUsageMessage[] =
+constexpr char kUsageMessage[] =
     R"(Usage:
   screen_ai_ocr_perf [options]
 
@@ -120,7 +120,7 @@ class OcrTestEnvironment : public ::testing::Environment {
     CHECK(base::ReadFileToString(file_paths_path, &file_content))
         << "Could not read list of files for " << kFilePathsFileName;
 
-    std::vector<base::StringPiece> files_list = base::SplitStringPiece(
+    std::vector<std::string_view> files_list = base::SplitStringPiece(
         file_content, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     CHECK(!files_list.empty())
         << "Could not parse files list for " << kFilePathsFileName;
