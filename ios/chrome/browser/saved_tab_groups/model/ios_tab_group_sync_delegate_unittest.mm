@@ -17,6 +17,7 @@
 #import "components/tab_groups/tab_group_color.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
@@ -103,8 +104,8 @@ class IOSTabGroupSyncDelegateTest : public PlatformTest {
     browser_list_->AddBrowser(browser_);
     browser_list_->AddBrowser(browser_same_browser_state_);
 
-    delegate_ = std::make_unique<IOSTabGroupSyncDelegate>(browser_list_);
-    delegate_->SetTabGroupSyncService(mock_service_);
+    delegate_ = std::make_unique<IOSTabGroupSyncDelegate>(
+        browser_list_, mock_service_, /*local_update_observer*/ nullptr);
   }
 
   // Returns a vector containing the 3 local tabs.

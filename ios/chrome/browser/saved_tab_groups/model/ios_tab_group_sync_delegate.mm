@@ -15,6 +15,7 @@
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -34,13 +35,15 @@ using tab_groups::utils::LocalTabGroupInfo;
 
 namespace tab_groups {
 
-IOSTabGroupSyncDelegate::IOSTabGroupSyncDelegate(BrowserList* browser_list)
-    : browser_list_(browser_list) {}
+IOSTabGroupSyncDelegate::IOSTabGroupSyncDelegate(
+    BrowserList* browser_list,
+    TabGroupSyncService* sync_service,
+    std::unique_ptr<TabGroupLocalUpdateObserver> local_update_observer)
+    : browser_list_(browser_list),
+      sync_service_(sync_service),
+      local_update_observer_(std::move(local_update_observer)) {}
 
-void IOSTabGroupSyncDelegate::SetTabGroupSyncService(
-    TabGroupSyncService* sync_service) {
-  sync_service_ = sync_service;
-}
+IOSTabGroupSyncDelegate::~IOSTabGroupSyncDelegate() {}
 
 void IOSTabGroupSyncDelegate::HandleOpenTabGroupRequest(
     const base::Uuid& sync_tab_group_id,

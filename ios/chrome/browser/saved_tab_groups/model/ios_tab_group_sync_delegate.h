@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_IOS_TAB_GROUP_SYNC_DELEGATE_H_
 
 #import "base/memory/raw_ptr.h"
+#import "base/no_destructor.h"
 #import "components/saved_tab_groups/saved_tab_group.h"
 #import "components/saved_tab_groups/tab_group_sync_delegate.h"
 #import "components/saved_tab_groups/types.h"
@@ -16,6 +17,7 @@ class TabGroup;
 class TabInsertionBrowserAgent;
 
 namespace tab_groups {
+class TabGroupLocalUpdateObserver;
 class TabGroupSyncService;
 
 namespace utils {
@@ -33,13 +35,14 @@ namespace tab_groups {
 // IOS Subclass of the TabGroupSyncDelegate.
 class IOSTabGroupSyncDelegate : public TabGroupSyncDelegate {
  public:
-  explicit IOSTabGroupSyncDelegate(BrowserList* browser_list);
+  IOSTabGroupSyncDelegate(
+      BrowserList* browser_list,
+      TabGroupSyncService* sync_service,
+      std::unique_ptr<TabGroupLocalUpdateObserver> local_update_observer);
 
   IOSTabGroupSyncDelegate(const IOSTabGroupSyncDelegate&) = delete;
   IOSTabGroupSyncDelegate& operator=(const IOSTabGroupSyncDelegate&) = delete;
-
-  // Sets the `sync_service_`.
-  void SetTabGroupSyncService(TabGroupSyncService* sync_service);
+  ~IOSTabGroupSyncDelegate() override;
 
   // TabGroupSyncDelegate.
   void HandleOpenTabGroupRequest(
@@ -80,6 +83,7 @@ class IOSTabGroupSyncDelegate : public TabGroupSyncDelegate {
 
   raw_ptr<BrowserList> browser_list_ = nullptr;
   raw_ptr<TabGroupSyncService> sync_service_ = nullptr;
+  std::unique_ptr<TabGroupLocalUpdateObserver> local_update_observer_;
 };
 
 }  // namespace tab_groups

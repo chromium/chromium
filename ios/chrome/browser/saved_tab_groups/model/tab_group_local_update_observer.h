@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_TAB_GROUP_LOCAL_UPDATE_SERVICE_H_
-#define IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_TAB_GROUP_LOCAL_UPDATE_SERVICE_H_
+#ifndef IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_TAB_GROUP_LOCAL_UPDATE_OBSERVER_H_
+#define IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_TAB_GROUP_LOCAL_UPDATE_OBSERVER_H_
 
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/scoped_observation.h"
-#import "components/keyed_service/core/keyed_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -21,8 +20,7 @@ namespace tab_groups {
 class TabGroupSyncService;
 
 // Service for propagating local updates of Tab Group to the sync service.
-class TabGroupLocalUpdateService : public KeyedService,
-                                   public BrowserListObserver,
+class TabGroupLocalUpdateObserver : public BrowserListObserver,
                                    public WebStateListObserver,
                                    public web::WebStateObserver {
  public:
@@ -46,15 +44,12 @@ class TabGroupLocalUpdateService : public KeyedService,
                            web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
-  // KeyedService implementation:
-  void Shutdown() override;
+  TabGroupLocalUpdateObserver(BrowserList* browser_list,
+                             TabGroupSyncService* sync_service);
+  ~TabGroupLocalUpdateObserver() override;
 
-  TabGroupLocalUpdateService(BrowserList* browser_list,
-                             TabGroupSyncService* tab_group_sync_service);
-  ~TabGroupLocalUpdateService() override;
-
-  TabGroupLocalUpdateService(const TabGroupLocalUpdateService&) = delete;
-  TabGroupLocalUpdateService& operator=(const TabGroupLocalUpdateService&) =
+  TabGroupLocalUpdateObserver(const TabGroupLocalUpdateObserver&) = delete;
+  TabGroupLocalUpdateObserver& operator=(const TabGroupLocalUpdateObserver&) =
       delete;
 
  private:
@@ -68,7 +63,7 @@ class TabGroupLocalUpdateService : public KeyedService,
   void StartObservingWebState(web::WebState* web_state);
   void StopObservingWebState(web::WebState* web_state);
 
-  raw_ptr<TabGroupSyncService> tab_group_sync_service_ = nullptr;
+  raw_ptr<TabGroupSyncService> sync_service_ = nullptr;
   raw_ptr<BrowserList> browser_list_ = nullptr;
 
   base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>
@@ -81,4 +76,4 @@ class TabGroupLocalUpdateService : public KeyedService,
 
 }  // namespace tab_groups
 
-#endif  // IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_TAB_GROUP_LOCAL_UPDATE_SERVICE_H_
+#endif  // IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_TAB_GROUP_LOCAL_UPDATE_OBSERVER_H_

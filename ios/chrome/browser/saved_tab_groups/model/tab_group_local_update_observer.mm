@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_service.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
 
 #import <memory>
 #import <optional>
@@ -23,10 +23,10 @@
 
 namespace tab_groups {
 
-TabGroupLocalUpdateService::TabGroupLocalUpdateService(
+TabGroupLocalUpdateObserver::TabGroupLocalUpdateObserver(
     BrowserList* browser_list,
-    TabGroupSyncService* tab_group_sync_service)
-    : tab_group_sync_service_(tab_group_sync_service),
+    TabGroupSyncService* sync_service)
+    : sync_service_(sync_service),
       browser_list_(browser_list) {
   browser_list_observation_.Observe(browser_list);
 
@@ -36,18 +36,15 @@ TabGroupLocalUpdateService::TabGroupLocalUpdateService(
   }
 }
 
-TabGroupLocalUpdateService::~TabGroupLocalUpdateService() {}
+TabGroupLocalUpdateObserver::~TabGroupLocalUpdateObserver() = default;
 
-void TabGroupLocalUpdateService::Shutdown() {
-  browser_list_observation_.Reset();
-}
-
-void TabGroupLocalUpdateService::OnBrowserAdded(const BrowserList* browser_list,
-                                                Browser* browser) {
+void TabGroupLocalUpdateObserver::OnBrowserAdded(
+    const BrowserList* browser_list,
+    Browser* browser) {
   StartObservingBrowser(browser);
 }
 
-void TabGroupLocalUpdateService::OnBrowserRemoved(
+void TabGroupLocalUpdateObserver::OnBrowserRemoved(
     const BrowserList* browser_list,
     Browser* browser) {
   if (!browser->IsInactive()) {
@@ -55,12 +52,12 @@ void TabGroupLocalUpdateService::OnBrowserRemoved(
   }
 }
 
-void TabGroupLocalUpdateService::OnBrowserListShutdown(
+void TabGroupLocalUpdateObserver::OnBrowserListShutdown(
     BrowserList* browser_list) {
   browser_list_observation_.Reset();
 }
 
-void TabGroupLocalUpdateService::WebStateListDidChange(
+void TabGroupLocalUpdateObserver::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateListStatus& status) {
@@ -128,17 +125,17 @@ void TabGroupLocalUpdateService::WebStateListDidChange(
   }
 }
 
-void TabGroupLocalUpdateService::BatchOperationEnded(
+void TabGroupLocalUpdateObserver::BatchOperationEnded(
     WebStateList* web_state_list) {
   // TODO(crbug.com/329640035): Re-create the local model.
 }
 
-void TabGroupLocalUpdateService::WebStateListDestroyed(
+void TabGroupLocalUpdateObserver::WebStateListDestroyed(
     WebStateList* web_state_list) {
   StopObservingWebStateList(web_state_list);
 }
 
-void TabGroupLocalUpdateService::TitleWasSet(web::WebState* web_state) {
+void TabGroupLocalUpdateObserver::TitleWasSet(web::WebState* web_state) {
   BrowserAndIndex browser_and_index = FindBrowserAndIndex(
       web_state->GetUniqueIdentifier(), browser_list_->AllRegularBrowsers());
   const TabGroup* tab_group =
@@ -149,24 +146,24 @@ void TabGroupLocalUpdateService::TitleWasSet(web::WebState* web_state) {
   CHECK(tab_position >= 0);
   CHECK(tab_position < tab_group->range().count());
 
-  tab_group_sync_service_->UpdateTab(
+  sync_service_->UpdateTab(
       tab_group->tab_group_id(), web_state->GetUniqueIdentifier().identifier(),
       web_state->GetTitle(), web_state->GetVisibleURL(),
       std::make_optional(tab_position));
 }
 
-void TabGroupLocalUpdateService::DidFinishNavigation(
+void TabGroupLocalUpdateObserver::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   // TODO(crbug.com/329640035): Update the model with the new URL. The first
   // navigation should be ignored and the other navigations should be checked.
 }
 
-void TabGroupLocalUpdateService::WebStateDestroyed(web::WebState* web_state) {
+void TabGroupLocalUpdateObserver::WebStateDestroyed(web::WebState* web_state) {
   StopObservingWebState(web_state);
 }
 
-void TabGroupLocalUpdateService::StartObservingBrowser(Browser* browser) {
+void TabGroupLocalUpdateObserver::StartObservingBrowser(Browser* browser) {
   if (browser->IsInactive()) {
     // The updates of the inactive browser should not be propagated.
     return;
@@ -182,17 +179,17 @@ void TabGroupLocalUpdateService::StartObservingBrowser(Browser* browser) {
   }
 }
 
-void TabGroupLocalUpdateService::StopObservingWebStateList(
+void TabGroupLocalUpdateObserver::StopObservingWebStateList(
     WebStateList* web_state_list) {
   web_state_list_observation_.RemoveObservation(web_state_list);
 }
 
-void TabGroupLocalUpdateService::StartObservingWebState(
+void TabGroupLocalUpdateObserver::StartObservingWebState(
     web::WebState* web_state) {
   web_state_observation_.AddObservation(web_state);
 }
 
-void TabGroupLocalUpdateService::StopObservingWebState(
+void TabGroupLocalUpdateObserver::StopObservingWebState(
     web::WebState* web_state) {
   web_state_observation_.RemoveObservation(web_state);
 }

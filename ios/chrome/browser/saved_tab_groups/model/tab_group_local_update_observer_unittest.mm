@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_service.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
 
 #import <memory>
 #import <optional>
@@ -47,9 +47,9 @@ std::unique_ptr<KeyedService> CreateMockSyncService(
 
 }  // namespace
 
-class TabGroupLocalUpdateServiceTest : public PlatformTest {
+class TabGroupLocalUpdateObserverTest : public PlatformTest {
  public:
-  TabGroupLocalUpdateServiceTest() {
+  TabGroupLocalUpdateObserverTest() {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(TabGroupSyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
@@ -73,7 +73,7 @@ class TabGroupLocalUpdateServiceTest : public PlatformTest {
     browser_list_ =
         BrowserListFactory::GetForBrowserState(browser_state_.get());
     browser_list_->AddBrowser(browser_.get());
-    local_service_ = std::make_unique<TabGroupLocalUpdateService>(
+    local_service_ = std::make_unique<TabGroupLocalUpdateObserver>(
         browser_list_.get(), mock_service_);
 
     BrowserList* other_browser_list =
@@ -106,14 +106,14 @@ class TabGroupLocalUpdateServiceTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> other_browser_state_;
   std::unique_ptr<TestBrowser> other_browser_;
   raw_ptr<BrowserList> browser_list_;
-  std::unique_ptr<TabGroupLocalUpdateService> local_service_;
+  std::unique_ptr<TabGroupLocalUpdateObserver> local_service_;
   raw_ptr<MockTabGroupSyncService> mock_service_;
   const std::u16string kNewTitle = u"title to update";
 };
 
 // Tests that the service is correctly updated when the title of a tab that was
 // added after creating the service is updated.
-TEST_F(TabGroupLocalUpdateServiceTest, TitleUpdateExistingTab) {
+TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateExistingTab) {
   WebStateList* web_state_list = browser_->GetWebStateList();
 
   web::FakeWebState* web_state = InsertWebState(web_state_list);
@@ -131,7 +131,7 @@ TEST_F(TabGroupLocalUpdateServiceTest, TitleUpdateExistingTab) {
 
 // Tests that the service is correctly updated when the title of a tab that was
 // existing when creating the service is updated.
-TEST_F(TabGroupLocalUpdateServiceTest, TitleUpdateNewTab) {
+TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewTab) {
   WebStateList* web_state_list = browser_->GetWebStateList();
 
   web::FakeWebState* web_state = InsertWebState(web_state_list);
@@ -148,7 +148,7 @@ TEST_F(TabGroupLocalUpdateServiceTest, TitleUpdateNewTab) {
 
 // Tests that the service is correctly updated when the title of a tab that is
 // in a WebStateList that was added after the service creation is updated.
-TEST_F(TabGroupLocalUpdateServiceTest, TitleUpdateNewWebStateList) {
+TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewWebStateList) {
   WebStateList* web_state_list = browser_same_browser_state_->GetWebStateList();
 
   web::FakeWebState* web_state = InsertWebState(web_state_list);
@@ -170,7 +170,7 @@ TEST_F(TabGroupLocalUpdateServiceTest, TitleUpdateNewWebStateList) {
 // Tests that the service is correctly updated when the title of a tab that
 // inserted in a WebStateList that was added after the service creation is
 // updated.
-TEST_F(TabGroupLocalUpdateServiceTest, TitleUpdateNewWebStateListInsert) {
+TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewWebStateListInsert) {
   // Add the browser before inserting the tab.
   BrowserListFactory::GetForBrowserState(browser_state_.get())
       ->AddBrowser(browser_same_browser_state_.get());

@@ -105,7 +105,6 @@
 #import "ios/chrome/browser/safe_browsing/model/tailored_security/tailored_security_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/verdict_cache_manager_factory.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
-#import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/screen_time/model/screen_time_buildflags.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
@@ -334,7 +333,6 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   if (IsTabGroupSyncEnabled()) {
     // Ensure that the tab group sync services are created to observe updates.
     tab_groups::TabGroupSyncServiceFactory::GetInstance();
-    tab_groups::TabGroupLocalUpdateServiceFactory::GetInstance();
   }
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
