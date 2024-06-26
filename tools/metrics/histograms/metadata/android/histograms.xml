@@ -917,7 +917,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.CpuAbiBitnessSupport" enum="CpuAbiBitnessSupport"
     expires_after="2025-04-30">
-  <owner>bartekn@chromium.org</owner>
+  <owner>tasak@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
     Whether 64-bit and/or 32-bit apps can be installed on this device/OS.
@@ -2591,7 +2591,6 @@ chromium-metrics-reviews@google.com.
     enum="MultipleUserProfilesState" expires_after="2025-04-30">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
-  <owner>bartekn@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
     Records whether multiple user profiles are present in Android.
@@ -4948,7 +4947,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.VersionCode" enum="VersionCode"
     expires_after="2025-04-30">
-  <owner>bartekn@chromium.org</owner>
+  <owner>tasak@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
     Version code identifies which bundle is used. It's effectively a version
@@ -6146,7 +6145,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.WebView.PrimaryCpuAbiBitness"
     enum="PrimaryCpuAbiBitness" expires_after="2025-04-30">
-  <owner>bartekn@chromium.org</owner>
+  <owner>tasak@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
     Primary bitness of the bundle. This may be different from bitness of
