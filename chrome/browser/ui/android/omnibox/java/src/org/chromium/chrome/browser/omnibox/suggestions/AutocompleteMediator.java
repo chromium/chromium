@@ -518,7 +518,8 @@ class AutocompleteMediator
                                         suggestion,
                                         url,
                                         mLastActionUpTimestamp,
-                                        /* openInNewTab= */ false));
+                                        /* openInNewTab= */ false,
+                                        true));
 
         // Note: Action will be reset when load is initiated.
         mAutocomplete.ifPresent(a -> mDeferredLoadAction.get().run());
@@ -566,8 +567,20 @@ class AutocompleteMediator
             action.execute(mOmniboxActionDelegate);
             // onSuggestionClicked will post a call to finishInteraction, so we don't need to call
             // it immediately.
-            onSuggestionClicked(
-                    associatedSuggestion.get(), position, omniboxAnswerAction.destinationUrl);
+            loadUrlForOmniboxMatch(
+                    0,
+                    associatedSuggestion.get(),
+                    mAutocomplete
+                            .map(
+                                    a ->
+                                            a.getAnswerActionDestinationURL(
+                                                    associatedSuggestion.get(),
+                                                    mLastActionUpTimestamp,
+                                                    omniboxAnswerAction))
+                            .orElse(associatedSuggestion.get().getUrl()),
+                    getElapsedTimeSinceInputChange(),
+                    false,
+                    false);
         } else {
             action.execute(mOmniboxActionDelegate);
             finishInteraction();
@@ -933,7 +946,7 @@ class AutocompleteMediator
         }
 
         loadUrlForOmniboxMatch(
-                0, suggestionMatch, suggestionMatch.getUrl(), inputStart, openInNewTab);
+                0, suggestionMatch, suggestionMatch.getUrl(), inputStart, openInNewTab, true);
     }
 
     /**
@@ -952,7 +965,8 @@ class AutocompleteMediator
             @NonNull AutocompleteMatch suggestion,
             @NonNull GURL url,
             long inputStart,
-            boolean openInNewTab) {
+            boolean openInNewTab,
+            boolean shouldUpdateSuggestionUrl) {
         try (TraceEvent e = TraceEvent.scoped("AutocompleteMediator.loadUrlFromOmniboxMatch")) {
             OmniboxMetrics.recordFocusToOpenTime(System.currentTimeMillis() - mUrlFocusTime);
 
@@ -960,7 +974,9 @@ class AutocompleteMediator
             mDeferredLoadAction = Optional.empty();
 
             mOmniboxFocusResultedInNavigation = true;
-            url = updateSuggestionUrlIfNeeded(suggestion, matchIndex, url);
+            if (shouldUpdateSuggestionUrl) {
+                url = updateSuggestionUrlIfNeeded(suggestion, matchIndex, url);
+            }
 
             // loadUrl modifies AutocompleteController's state clearing the native
             // AutocompleteResults needed by onSuggestionsSelected. Therefore,

@@ -1511,20 +1511,13 @@ public class AutocompleteMediatorUnitTest {
         OmniboxAnswerAction answerAction =
                 (OmniboxAnswerAction)
                         OmniboxActionFactoryImpl.get()
-                                .buildOmniboxAnswerAction(
-                                        123L,
-                                        "7 day forecast",
-                                        "7 day forecast",
-                                        new GURL(
-                                                "https://www.google.com/search?q=Redmond%20WA%207%20Day%20Weather"));
+                                .buildOmniboxAnswerAction(123L, "7 day forecast", "7 day forecast");
 
         mMediator.onSuggestionsReceived(
                 AutocompleteResult.fromCache(mSuggestionsList, null), /* isFinal= */ true);
         mMediator.onOmniboxActionClicked(answerAction, 0);
 
         verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
-        assertEquals(
-                mOmniboxLoadUrlParamsCaptor.getValue().url, answerAction.destinationUrl.getSpec());
     }
 
     @SmallTest

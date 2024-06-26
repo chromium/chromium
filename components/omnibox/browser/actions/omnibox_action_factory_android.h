@@ -38,8 +38,7 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxAnswerAction(
     JNIEnv* env,
     intptr_t instance,
     const std::u16string& hint,
-    const std::u16string& accessibility_hint,
-    const GURL& destination_url);
+    const std::u16string& accessibility_hint);
 
 std::vector<jni_zero::ScopedJavaLocalRef<jobject>> ToJavaOmniboxActionsList(
     JNIEnv* env,

@@ -10,7 +10,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
 
 namespace {
 
@@ -33,7 +32,7 @@ TEST_F(OmniboxAnswerActionTest, ActionHasLabelsFromEnhancement) {
   std::string display_text = "Similar and opposite words";
   enhancement->set_display_text(display_text);
   auto action = base::MakeRefCounted<OmniboxAnswerAction>(
-      std::move(*enhancement), GURL(),
+      std::move(*enhancement), TemplateURLRef::SearchTermsArgs(),
       SuggestionAnswer::ANSWER_TYPE_DICTIONARY);
   const auto& labels = action->GetLabelStrings();
 
@@ -53,7 +52,7 @@ TEST_F(OmniboxAnswerActionTest, ConvertAction) {
 
   scoped_refptr<OmniboxAction> upcasted_action =
       base::MakeRefCounted<OmniboxAnswerAction>(
-          std::move(*enhancement), GURL(),
+          std::move(*enhancement), TemplateURLRef::SearchTermsArgs(),
           SuggestionAnswer::ANSWER_TYPE_DICTIONARY);
   auto* downcasted_action =
       OmniboxAnswerAction::FromAction(upcasted_action.get());
@@ -67,7 +66,7 @@ TEST_F(OmniboxAnswerActionTest, RecordMetrics) {
 
   {
     auto action = base::MakeRefCounted<OmniboxAnswerAction>(
-        std::move(*enhancement), GURL(),
+        std::move(*enhancement), TemplateURLRef::SearchTermsArgs(),
         SuggestionAnswer::ANSWER_TYPE_DICTIONARY);
     base::HistogramTester histograms;
     action->RecordActionShown(1, /*executed = */ false);
@@ -79,7 +78,8 @@ TEST_F(OmniboxAnswerActionTest, RecordMetrics) {
 
   {
     auto action = base::MakeRefCounted<OmniboxAnswerAction>(
-        std::move(*enhancement), GURL(), SuggestionAnswer::ANSWER_TYPE_FINANCE);
+        std::move(*enhancement), TemplateURLRef::SearchTermsArgs(),
+        SuggestionAnswer::ANSWER_TYPE_FINANCE);
     base::HistogramTester histograms;
     action->RecordActionShown(1, /*executed = */ false);
     histograms.ExpectBucketCount("Omnibox.AnswerAction.Shown",
@@ -90,7 +90,8 @@ TEST_F(OmniboxAnswerActionTest, RecordMetrics) {
 
   {
     auto action = base::MakeRefCounted<OmniboxAnswerAction>(
-        std::move(*enhancement), GURL(), SuggestionAnswer::ANSWER_TYPE_FINANCE);
+        std::move(*enhancement), TemplateURLRef::SearchTermsArgs(),
+        SuggestionAnswer::ANSWER_TYPE_FINANCE);
     base::HistogramTester histograms;
     action->RecordActionShown(1, /*executed = */ true);
     histograms.ExpectBucketCount("Omnibox.AnswerAction.Shown",

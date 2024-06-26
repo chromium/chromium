@@ -16,7 +16,7 @@
 class OmniboxAnswerAction : public OmniboxAction {
  public:
   OmniboxAnswerAction(omnibox::SuggestionEnhancement enhancement,
-                      GURL destination_url,
+                      TemplateURLRef::SearchTermsArgs search_terms_args,
                       SuggestionAnswer::AnswerType answer_type);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -30,11 +30,12 @@ class OmniboxAnswerAction : public OmniboxAction {
   static const OmniboxAnswerAction* FromAction(const OmniboxAction* action);
   static OmniboxAnswerAction* FromAction(OmniboxAction* action);
 
+  TemplateURLRef::SearchTermsArgs search_terms_args;
+
  private:
   ~OmniboxAnswerAction() override;
 
   omnibox::SuggestionEnhancement enhancement_;
-  GURL destination_url_;
   SuggestionAnswer::AnswerType answer_type_;
 };
 

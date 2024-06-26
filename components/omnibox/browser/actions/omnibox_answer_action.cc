@@ -52,7 +52,7 @@ constexpr const char* ToUmaUsageHistogramName(
 
 OmniboxAnswerAction::OmniboxAnswerAction(
     omnibox::SuggestionEnhancement enhancement,
-    GURL destination_url,
+    TemplateURLRef::SearchTermsArgs search_terms_args,
     SuggestionAnswer::AnswerType answer_type)
     : OmniboxAction(
           OmniboxAction::LabelStrings(
@@ -61,9 +61,9 @@ OmniboxAnswerAction::OmniboxAnswerAction(
               l10n_util::GetStringUTF16(
                   IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX),
               l10n_util::GetStringUTF16(IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST)),
-          destination_url),
+          {}),
+      search_terms_args(search_terms_args),
       enhancement_(std::move(enhancement)),
-      destination_url_(destination_url),
       answer_type_(answer_type) {}
 
 OmniboxAnswerAction::~OmniboxAnswerAction() = default;
@@ -72,9 +72,9 @@ OmniboxAnswerAction::~OmniboxAnswerAction() = default;
 base::android::ScopedJavaLocalRef<jobject>
 OmniboxAnswerAction::GetOrCreateJavaObject(JNIEnv* env) const {
   if (!j_omnibox_action_) {
-    j_omnibox_action_.Reset(BuildOmniboxAnswerAction(
-        env, reinterpret_cast<intptr_t>(this), strings_.hint,
-        strings_.accessibility_hint, destination_url_));
+    j_omnibox_action_.Reset(
+        BuildOmniboxAnswerAction(env, reinterpret_cast<intptr_t>(this),
+                                 strings_.hint, strings_.accessibility_hint));
   }
   return base::android::ScopedJavaLocalRef<jobject>(j_omnibox_action_);
 }

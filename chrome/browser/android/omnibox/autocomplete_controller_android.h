@@ -86,6 +86,11 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       JNIEnv* env,
       uintptr_t match_ptr,
       jlong elapsed_time_since_input_change);
+  base::android::ScopedJavaLocalRef<jobject> GetAnswerActionDestinationURL(
+      JNIEnv* env,
+      uintptr_t match_ptr,
+      jlong elapsed_time_since_input_change,
+      uintptr_t answer_action_ptr);
   base::android::ScopedJavaLocalRef<jobject> GetMatchingTabForSuggestion(
       JNIEnv* env,
       uintptr_t match_ptr);

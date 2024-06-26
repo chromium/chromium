@@ -240,6 +240,10 @@ class AutocompleteController : public AutocompleteProviderListener,
       base::TimeDelta query_formulation_time,
       AutocompleteMatch* match) const;
 
+  void UpdateSearchTermsArgsWithAdditionalSearchboxStats(
+      base::TimeDelta query_formulation_time,
+      TemplateURLRef::SearchTermsArgs& search_terms_args) const;
+
   // Constructs and sets the final destination URL on the given match.
   void SetMatchDestinationURL(AutocompleteMatch* match) const;
 

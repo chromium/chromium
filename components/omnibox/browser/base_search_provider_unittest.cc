@@ -875,27 +875,19 @@ TEST_F(BaseSearchProviderTest, CreateAnswerAction) {
     auto template_url = std::make_unique<TemplateURL>(template_url_data);
 
     auto action = BaseSearchProvider::CreateAnswerAction(
-        std::move(*enhancement), template_url->url_ref(), search_terms_args,
-        search_terms_data, SuggestionAnswer::ANSWER_TYPE_FINANCE);
+        std::move(*enhancement), search_terms_args,
+        SuggestionAnswer::ANSWER_TYPE_FINANCE);
 
     auto* answer_action = OmniboxAnswerAction::FromAction(action.get());
-    // Check that query is found in action's destination URL.
-    std::string query_formatted = test_case.query;
-    size_t index = query_formatted.find(" ");
-    while (index != std::string::npos) {
-      query_formatted.replace(index, 1, "+");
-      index = query_formatted.find(" ");
-    }
-    EXPECT_TRUE(answer_action->getUrl().spec().find(query_formatted) !=
-                std::string::npos);
-    // Ensure destination URL contains params. Checking the exact destintion URL
-    // of action is not easily possible as param order is not guaranteed.
+    // Ensure search terms additional params match. Checking the exact value is
+    // not easily possible as param order is not guaranteed.
     bool found_matching_param_sequence =
         test_case.possible_param_variations.empty();
     for (const std::string& param_sequence :
          test_case.possible_param_variations) {
-      found_matching_param_sequence |= answer_action->getUrl().spec().find(
-                                           param_sequence) != std::string::npos;
+      found_matching_param_sequence |=
+          answer_action->search_terms_args.additional_query_params ==
+          param_sequence;
     }
     EXPECT_TRUE(found_matching_param_sequence);
   }

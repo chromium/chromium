@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/omnibox/browser/actions/omnibox_answer_action.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -29,6 +30,7 @@
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/rich_answer_template.pb.h"
 
 class AutocompleteControllerTest : public testing::Test {
  public:
@@ -2252,4 +2254,38 @@ TEST_F(AutocompleteControllerTest, ShouldRunProvider_LensSearchbox) {
         << "Provider Type: "
         << AutocompleteProvider::TypeToString(provider->type());
   }
+}
+
+TEST_F(AutocompleteControllerTest, UpdateSearchboxStatsForAnswerAction) {
+  // Populate TemplateURLService with a keyword.
+  TemplateURLData turl_data;
+  turl_data.SetShortName(u"Keyword");
+  turl_data.SetKeyword(u"keyword");
+  turl_data.SetURL("https://google.com/search?q={searchTerms}");
+  controller_.template_url_service_->Add(
+      std::make_unique<TemplateURL>(turl_data));
+
+  omnibox::SuggestionEnhancement enhancement;
+  enhancement.set_display_text("Similar and opposite words");
+  auto answer_action = base::MakeRefCounted<OmniboxAnswerAction>(
+      std::move(enhancement), TemplateURLRef::SearchTermsArgs(),
+      SuggestionAnswer::ANSWER_TYPE_DICTIONARY);
+  AutocompleteMatch match1 = CreateSearchMatch("match1", true, 1300);
+  match1.actions.push_back(answer_action);
+
+  controller_.Stop(true);
+  EXPECT_THAT(controller_.SimulateAutocompletePass(
+                  /*sync=*/true, /*done=*/true,
+                  {match1, CreateSearchMatch("match2", true, 1200),
+                   CreateSearchMatch("match3", true, 1100)}),
+              testing::ElementsAreArray({
+                  "match1",
+                  "match2",
+                  "match3",
+              }));
+
+  EXPECT_EQ(
+      answer_action->search_terms_args.searchbox_stats.SerializeAsString(),
+      controller_.published_result_.match_at(0)
+          ->search_terms_args->searchbox_stats.SerializeAsString());
 }

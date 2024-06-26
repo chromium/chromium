@@ -12,7 +12,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.url.GURL;
 
 /** Tests for {@link OmniboxAnswerAction}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -25,12 +24,7 @@ public class OmniboxAnswerActionTest {
         OmniboxAnswerAction answerAction =
                 (OmniboxAnswerAction)
                         OmniboxActionFactoryImpl.get()
-                                .buildOmniboxAnswerAction(
-                                        123L,
-                                        "7 day forecast",
-                                        "7 day forecast",
-                                        new GURL(
-                                                "https://www.google.com/search?q=Redmond%20WA%207%20Day%20Weather"));
+                                .buildOmniboxAnswerAction(123L, "7 day forecast", "7 day forecast");
         answerAction.execute(null);
     }
 }

@@ -94,6 +94,10 @@ public abstract class OmniboxAction {
         return false;
     }
 
+    public long getNativeInstance() {
+        return mNativeInstance;
+    }
+
     /**
      * Execute the associated action.
      *

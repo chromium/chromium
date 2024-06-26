@@ -107,9 +107,7 @@ class BaseSearchProvider : public AutocompleteProvider {
 
   static scoped_refptr<OmniboxAction> CreateAnswerAction(
       omnibox::SuggestionEnhancement enhancement,
-      const TemplateURLRef& search_url,
       TemplateURLRef::SearchTermsArgs search_terms_args,
-      const SearchTermsData& search_terms_data,
       SuggestionAnswer::AnswerType answer_type);
 
   // Returns whether the URL of the current page is eligible to be sent in any

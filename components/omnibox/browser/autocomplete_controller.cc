@@ -41,6 +41,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
+#include "components/omnibox/browser/actions/omnibox_answer_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -898,6 +899,14 @@ void AutocompleteController::
     return;
   }
 
+  UpdateSearchTermsArgsWithAdditionalSearchboxStats(query_formulation_time,
+                                                    *match->search_terms_args);
+  SetMatchDestinationURL(match);
+}
+
+void AutocompleteController::UpdateSearchTermsArgsWithAdditionalSearchboxStats(
+    base::TimeDelta query_formulation_time,
+    TemplateURLRef::SearchTermsArgs& search_terms_args) const {
   // Append the query formulation time (time from when the user first typed a
   // character into the omnibox to when the user selected a query), whether
   // a field trial has triggered, and the current page classification to the
@@ -915,8 +924,7 @@ void AutocompleteController::
   // field. Eventually Chrome should start logging the substitute fields and
   // the downstream consumers should migrate to using those fields before we
   // can stop logging this deprecated field.
-  match->search_terms_args->searchbox_stats.set_experiment_stats(
-      experiment_stats);
+  search_terms_args.searchbox_stats.set_experiment_stats(experiment_stats);
 
   // Append the ExperimentStatsV2 to the searchbox stats parameter to be logged
   // in searchbox_stats.proto's experiment_stats_v2 field.
@@ -929,7 +937,7 @@ void AutocompleteController::
       std::string value = experiment_stat_v2.string_value();
       std::replace(value.begin(), value.end(), ':', ',');
       auto* reported_experiment_stats_v2 =
-          match->search_terms_args->searchbox_stats.add_experiment_stats_v2();
+          search_terms_args.searchbox_stats.add_experiment_stats_v2();
       reported_experiment_stats_v2->set_type_int(experiment_stat_v2.type_int());
       reported_experiment_stats_v2->set_string_value(value);
     }
@@ -940,15 +948,13 @@ void AutocompleteController::
       metrics::OmniboxEventProto::UNKNOWN_POSITION) {
     const auto omnibox_position_stat = GetOmniboxPositionExperimentStatsV2();
     auto* reported_experiment_stats_v2 =
-        match->search_terms_args->searchbox_stats.add_experiment_stats_v2();
+        search_terms_args.searchbox_stats.add_experiment_stats_v2();
     reported_experiment_stats_v2->set_type_int(
         omnibox_position_stat.type_int());
     reported_experiment_stats_v2->set_int_value(
         omnibox_position_stat.int_value());
   }
 #endif
-
-  SetMatchDestinationURL(match);
 }
 
 void AutocompleteController::SetMatchDestinationURL(
@@ -1685,21 +1691,30 @@ void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {
     for (auto& scoped_action : match->actions) {
       auto* action_in_suggest =
           OmniboxActionInSuggest::FromAction(scoped_action.get());
+      auto* answer_action =
+          OmniboxAnswerAction::FromAction(scoped_action.get());
 
+      TemplateURLRef::SearchTermsArgs* search_terms_args;
       if (action_in_suggest == nullptr ||
           !action_in_suggest->search_terms_args.has_value()) {
-        continue;
+        if (answer_action == nullptr) {
+          continue;
+        }
+        search_terms_args = &answer_action->search_terms_args;
+      } else {
+        search_terms_args = &action_in_suggest->search_terms_args.value();
       }
-      auto& search_terms_args = action_in_suggest->search_terms_args.value();
-      search_terms_args.searchbox_stats.mutable_assisted_query_info()
-          ->MergeFrom(
-              match->search_terms_args->searchbox_stats.assisted_query_info());
 
-      action_in_suggest->action_info.set_action_uri(
-          ComputeURLFromSearchTermsArgs(
-              match->GetTemplateURL(template_url_service_, false),
-              search_terms_args)
-              .spec());
+      search_terms_args->searchbox_stats.MergeFrom(
+          match->search_terms_args->searchbox_stats);
+
+      if (action_in_suggest != nullptr) {
+        action_in_suggest->action_info.set_action_uri(
+            ComputeURLFromSearchTermsArgs(
+                match->GetTemplateURL(template_url_service_, false),
+                *search_terms_args)
+                .spec());
+      }
     }
   }
 }

@@ -9,8 +9,6 @@ import androidx.annotation.NonNull;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.url.GURL;
-
 /** An interface for creation of the OmniboxAction instances. */
 public interface OmniboxActionFactory {
     /**
@@ -54,15 +52,11 @@ public interface OmniboxActionFactory {
      * @param nativeInstance Pointer to native instance of the object.
      * @param hint Text that should be displayed in the associated action chip.
      * @param accessibilityHint Text for screen reader to read when focusing action chip
-     * @param destinationUrl The URL of the SRP to navigate to when the action is executed.
      */
     @CalledByNative
     @NonNull
     OmniboxAction buildOmniboxAnswerAction(
-            long nativeInstance,
-            @NonNull String hint,
-            @NonNull String accessibilityHint,
-            @NonNull GURL destinationUrl);
+            long nativeInstance, @NonNull String hint, @NonNull String accessibilityHint);
 
     @NativeMethods
     public interface Natives {

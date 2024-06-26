@@ -231,8 +231,7 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
         suggestion.answer_template()->enhancements().enhancements(),
         std::back_inserter(match.actions),
         [&](const omnibox::SuggestionEnhancement& enhancement) {
-          return CreateAnswerAction(enhancement, search_url,
-                                    *match.search_terms_args, search_terms_data,
+          return CreateAnswerAction(enhancement, *match.search_terms_args,
                                     suggestion.answer_type());
         });
   }
@@ -272,9 +271,7 @@ scoped_refptr<OmniboxAction> BaseSearchProvider::CreateActionInSuggest(
 // static
 scoped_refptr<OmniboxAction> BaseSearchProvider::CreateAnswerAction(
     omnibox::SuggestionEnhancement enhancement,
-    const TemplateURLRef& search_url,
     TemplateURLRef::SearchTermsArgs search_terms_args,
-    const SearchTermsData& search_terms_data,
     SuggestionAnswer::AnswerType answer_type) {
   // Define actions destination URL.
   std::string query_params;
@@ -287,11 +284,8 @@ scoped_refptr<OmniboxAction> BaseSearchProvider::CreateAnswerAction(
   search_terms_args.additional_query_params = query_params;
   search_terms_args.search_terms = base::UTF8ToUTF16(enhancement.query());
 
-  TemplateURLRef::PostContent post_content;
-  GURL rewritten_destination(search_url.ReplaceSearchTerms(
-      search_terms_args, search_terms_data, &post_content));
   return base::MakeRefCounted<OmniboxAnswerAction>(
-      std::move(enhancement), rewritten_destination, answer_type);
+      std::move(enhancement), search_terms_args, answer_type);
 }
 
 // static

@@ -12,7 +12,6 @@ import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionFactory;
 import org.chromium.components.omnibox.action.OmniboxActionFactoryJni;
 import org.chromium.components.omnibox.action.OmniboxPedalId;
-import org.chromium.url.GURL;
 
 /** A factory creating the OmniboxAction instances. */
 public class OmniboxActionFactoryImpl implements OmniboxActionFactory {
@@ -78,10 +77,7 @@ public class OmniboxActionFactoryImpl implements OmniboxActionFactory {
     @NonNull
     @Override
     public OmniboxAction buildOmniboxAnswerAction(
-            long nativeInstance,
-            @NonNull String hint,
-            @NonNull String accessibilityHint,
-            GURL destinationUrl) {
-        return new OmniboxAnswerAction(nativeInstance, hint, accessibilityHint, destinationUrl);
+            long nativeInstance, @NonNull String hint, @NonNull String accessibilityHint) {
+        return new OmniboxAnswerAction(nativeInstance, hint, accessibilityHint);
     }
 }
