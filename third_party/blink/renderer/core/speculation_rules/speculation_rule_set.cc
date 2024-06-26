@@ -121,21 +121,6 @@ void SetParseErrorMessage(String* out_error, String message) {
   }
 }
 
-// In order to ship No-Vary-Search hint and keep the Origin Trial and be
-// able to remotely go back to Origin Trial in case we unship, we use
-// the suggested approach at
-// go/graduating-from-finch#optional-leave-a-finch-hook of using a separate
-// base feature to control shipping - in our case we will use the
-// new feature SpeculationRulesNoVarySearchHintControlShipping.
-bool IsSpeculationRulesNoVarySearchHintEnabled(ExecutionContext* context) {
-  // SpeculationRulesNoVarySearchHint controls the Origin Trial.
-  // SpeculationRulesNoVarySearchHintControlShipping controls shipping to all.
-  return RuntimeEnabledFeatures::SpeculationRulesNoVarySearchHintEnabled(
-             context) ||
-         RuntimeEnabledFeatures::
-             SpeculationRulesNoVarySearchHintShippedByDefaultEnabled(context);
-}
-
 SpeculationRule* ParseSpeculationRule(JSONObject* input,
                                       const KURL& base_url,
                                       ExecutionContext* context,
@@ -432,8 +417,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
 
   network::mojom::blink::NoVarySearchPtr no_vary_search = nullptr;
   if (JSONValue* no_vary_search_value = input->Get("expects_no_vary_search");
-      no_vary_search_value &&
-      IsSpeculationRulesNoVarySearchHintEnabled(context)) {
+      no_vary_search_value) {
     String no_vary_search_str;
     if (!no_vary_search_value->AsString(&no_vary_search_str)) {
       SetParseErrorMessage(out_error,

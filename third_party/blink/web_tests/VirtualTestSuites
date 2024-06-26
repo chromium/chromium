@@ -1876,7 +1876,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-blink-features=SpeculationRulesFetchFromHeader,SpeculationRulesDocumentRules,SpeculationRulesNoVarySearchHint,SpeculationRulesEagerness,SpeculationRulesDocumentRulesSelectorMatches",
+      "--enable-blink-features=SpeculationRulesFetchFromHeader,SpeculationRulesDocumentRules,SpeculationRulesEagerness,SpeculationRulesDocumentRulesSelectorMatches",
       "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true/block_until_head_timeout_eager_prefetch/0,PrefetchRedirects,PrefetchCookieIndices,CookieIndicesHeader",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
     ],
@@ -1892,7 +1892,6 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-blink-features=SpeculationRulesNoVarySearchHint",
       "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true"
     ],
     "expires": "Jul 1, 2024"
@@ -1907,7 +1906,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-blink-features=SpeculationRulesFetchFromHeader,SpeculationRulesDocumentRules,SpeculationRulesNoVarySearchHint,SpeculationRulesEagerness,SpeculationRulesDocumentRulesSelectorMatches",
+      "--enable-blink-features=SpeculationRulesFetchFromHeader,SpeculationRulesDocumentRules,SpeculationRulesEagerness,SpeculationRulesDocumentRulesSelectorMatches",
       "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true/block_until_head_timeout_eager_prefetch/0,PrefetchRedirects,PrefetchReusable,PrefetchCookieIndices,CookieIndicesHeader",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
     ],

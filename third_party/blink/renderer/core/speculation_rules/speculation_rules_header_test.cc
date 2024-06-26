@@ -237,8 +237,6 @@ TEST(SpeculationRulesHeaderTest, ValidURL) {
 TEST(SpeculationRulesHeaderTest, InvalidNvsHintError) {
   test::TaskEnvironment task_environment;
   ScopedSpeculationRulesFetchFromHeaderForTest enable_fetch_from_header(true);
-  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
-      true};
   base::HistogramTester histogram_tester;
   auto* chrome_client = MakeGarbageCollected<ConsoleCapturingChromeClient>();
   DummyPageHolder page_holder(/*initial_view_size=*/{}, chrome_client);
@@ -273,8 +271,6 @@ TEST(SpeculationRulesHeaderTest, InvalidNvsHintError) {
 TEST(SpeculationRulesHeaderTest, InvalidNvsHintWarning) {
   test::TaskEnvironment task_environment;
   ScopedSpeculationRulesFetchFromHeaderForTest enable_fetch_from_header(true);
-  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
-      true};
   base::HistogramTester histogram_tester;
   auto* chrome_client = MakeGarbageCollected<ConsoleCapturingChromeClient>();
   DummyPageHolder page_holder(/*initial_view_size=*/{}, chrome_client);

@@ -510,8 +510,6 @@ TEST_F(SpeculationRuleSetTest, IgnoresUnknownOrDifferentlyTypedTopLevelKeys) {
 }
 
 TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
-  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint_{
-      true};
   ScopedSpeculationRulesImplicitSourceForTest enable_implicit_source{true};
   auto* rule_set = CreateRuleSet(
       R"({"prefetch": [)"
@@ -1042,11 +1040,9 @@ TEST_F(SpeculationRuleSetTest, UseCounter) {
       page_holder.GetDocument().IsUseCounted(WebFeature::kSpeculationRules));
 }
 
-// Test helper method that returns if the No-Vary-Search hint use counter is
-// properly counted during shipping.
-// The use counter also acts as a proxy to check if the No-Vary-Search hint
-// feature is enabled.
-bool NoVarySearchHintUseCounterTestHelper() {
+// Tests that the presence of a speculationrules No-Vary-Search hint is
+// recorded.
+TEST_F(SpeculationRuleSetTest, NoVarySearchHintUseCounter) {
   DummyPageHolder page_holder;
   StubSpeculationHost speculation_host;
   page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
@@ -1061,61 +1057,9 @@ bool NoVarySearchHintUseCounterTestHelper() {
       }]})nvs";
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
                                       speculation_script);
-
-  return page_holder.GetDocument().IsUseCounted(
-      WebFeature::kSpeculationRulesNoVarySearchHint);
-}
-
-// Tests that the presence of a speculationrules No-Vary-Search hint is
-// recorded.
-TEST_F(SpeculationRuleSetTest, NoVarySearchHintUseCounter) {
-  {
-    // By default No-Vary-Search hint functionality is enabled without
-    // Origin Trial token.
-    ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
-        false};
-    ScopedSpeculationRulesNoVarySearchHintShippedByDefaultForTest
-        ship_no_vary_search_hint{true};
-    EXPECT_TRUE(NoVarySearchHintUseCounterTestHelper())
-        << "No-Vary-Search hint functionality is enabled "
-           "when shipped and without an Origin Trial token.";
-  }
-  {
-    // By default No-Vary-Search hint is enabled with Origin Trial token.
-    ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
-        true};
-    ScopedSpeculationRulesNoVarySearchHintShippedByDefaultForTest
-        ship_no_vary_search_hint{true};
-    EXPECT_TRUE(NoVarySearchHintUseCounterTestHelper())
-        << "No-Vary-Search hint functionality is enabled "
-           "when shipped and with an Origin Trial token.";
-  }
-  {
-    // No-Vary-Search hint is disabled when
-    // SpeculationRulesNoVarySearchHintControlShipping is set to false and
-    // there is no Origin Trial token.
-    ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
-        false};
-    ScopedSpeculationRulesNoVarySearchHintShippedByDefaultForTest
-        ship_no_vary_search_hint{false};
-    EXPECT_FALSE(NoVarySearchHintUseCounterTestHelper())
-        << "No-Vary-Search hint functionality is "
-           "disabled when unshipped and without "
-           "an Origin Trial token";
-  }
-  {
-    // No-Vary-Search hint is enabled when
-    // SpeculationRulesNoVarySearchHintControlShipping is set to false and
-    // there is an Origin Trial token.
-    ScopedSpeculationRulesNoVarySearchHintShippedByDefaultForTest
-        ship_no_vary_search_hint{false};
-    ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
-        true};
-    EXPECT_TRUE(NoVarySearchHintUseCounterTestHelper())
-        << "No-Vary-Search hint functionality is enabled when unshipped and "
-           "with "
-           "an Origin Trial token";
-  }
+  EXPECT_TRUE(page_holder.GetDocument().IsUseCounted(
+      WebFeature::kSpeculationRulesNoVarySearchHint))
+      << "No-Vary-Search hint functionality is counted";
 }
 
 // Tests that the document's URL is excluded from candidates.
@@ -1765,8 +1709,6 @@ TEST_F(DocumentRulesTest, HrefMatchesWithBaseURLAndRelativeTo) {
 TEST_F(DocumentRulesTest, DropInvalidRules) {
   ScopedSpeculationRulesDocumentRulesSelectorMatchesForTest
       enable_selector_matches{true};
-  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
-      true};
   ScopedSpeculationRulesImplicitSourceForTest enable_implicit_source{true};
   auto* rule_set = CreateRuleSet(
       R"({"prefetch": [)"
@@ -2180,8 +2122,6 @@ TEST_F(DocumentRulesTest, SpeculationCandidatesReportedAfterInitialization) {
 // No-Vary-Search hint.
 TEST_F(DocumentRulesTest,
        SpeculationCandidatesReportedAfterInitializationWithNVS) {
-  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
-      true};
   DummyPageHolder page_holder;
   StubSpeculationHost speculation_host;
   Document& document = page_holder.GetDocument();
@@ -4297,9 +4237,6 @@ TEST_F(SpeculationRuleSetTest, InvalidEagernessValue) {
 // Test that a valid No-Vary-Search hint will generate a speculation
 // candidate.
 TEST_F(SpeculationRuleSetTest, ValidNoVarySearchHintValueGeneratesCandidate) {
-  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
-      true};
-
   DummyPageHolder page_holder;
   StubSpeculationHost speculation_host;
 
@@ -4323,9 +4260,6 @@ TEST_F(SpeculationRuleSetTest, ValidNoVarySearchHintValueGeneratesCandidate) {
 }
 
 TEST_F(SpeculationRuleSetTest, InvalidNoVarySearchHintValueGeneratesCandidate) {
-  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
-      true};
-
   DummyPageHolder page_holder;
   StubSpeculationHost speculation_host;
 
@@ -4349,9 +4283,6 @@ TEST_F(SpeculationRuleSetTest, InvalidNoVarySearchHintValueGeneratesCandidate) {
 // Test that an empty but valid No-Vary-Search hint will generate a speculation
 // candidate.
 TEST_F(SpeculationRuleSetTest, EmptyNoVarySearchHintValueGeneratesCandidate) {
-  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
-      true};
-
   DummyPageHolder page_holder;
   StubSpeculationHost speculation_host;
 
@@ -4375,9 +4306,6 @@ TEST_F(SpeculationRuleSetTest, EmptyNoVarySearchHintValueGeneratesCandidate) {
 // Test that a No-Vary-Search hint equivalent to the default
 // will generate a speculation candidate.
 TEST_F(SpeculationRuleSetTest, DefaultNoVarySearchHintValueGeneratesCandidate) {
-  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
-      true};
-
   DummyPageHolder page_holder;
   StubSpeculationHost speculation_host;
 
@@ -4401,9 +4329,6 @@ TEST_F(SpeculationRuleSetTest, DefaultNoVarySearchHintValueGeneratesCandidate) {
 // Tests that No-Vary-Search errors that cause the speculation rules to be
 // skipped are logged to the console.
 TEST_F(SpeculationRuleSetTest, ConsoleWarningForNoVarySearchHintNotAString) {
-  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
-      true};
-
   auto* chrome_client = MakeGarbageCollected<ConsoleCapturingChromeClient>();
   DummyPageHolder page_holder(/*initial_view_size=*/{}, chrome_client);
   page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
@@ -4432,8 +4357,6 @@ TEST_F(SpeculationRuleSetTest, ConsoleWarningForNoVarySearchHintNotAString) {
 // Tests that No-Vary-Search errors that cause the speculation rules to be
 // skipped are logged to the console.
 TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseErrorRuleSkipped) {
-  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
-      true};
   auto* rule_set =
       CreateRuleSet(R"({
     "prefetch": [{
@@ -4453,8 +4376,6 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseErrorRuleSkipped) {
 // Tests that No-Vary-Search parsing errors that cause the speculation rules
 // to still be accepted are logged to the console.
 TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseErrorRuleAccepted) {
-  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
-      true};
   {
     auto* rule_set =
         CreateRuleSet(R"({
@@ -4566,8 +4487,6 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseErrorRuleAccepted) {
 }
 
 TEST_F(SpeculationRuleSetTest, ValidNoVarySearchHintNoErrorOrWarningMessages) {
-  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
-      true};
   {
     auto* rule_set =
         CreateRuleSet(R"({

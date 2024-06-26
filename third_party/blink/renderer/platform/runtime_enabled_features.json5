@@ -3788,17 +3788,6 @@
       status: "stable",
     },
     {
-      name: "SpeculationRulesNoVarySearchHint",
-      status: "stable",
-    },
-    // The "expects_no_vary_search" hint is enabled if it is enabled:
-    // * through an origin trial token (NoVarySearchPrefetch) or
-    // * by default (SpeculationRulesNoVarySearchHintShippedByDefault)
-    {
-      name: "SpeculationRulesNoVarySearchHintShippedByDefault",
-      status: "stable"
-    },
-    {
       name: "SpeculationRulesPointerDownHeuristics",
       base_feature_status: "enabled",
     },
