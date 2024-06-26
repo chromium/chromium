@@ -424,6 +424,88 @@ class CheckAddedDepsHaveTestApprovalsTest(unittest.TestCase):
                      self.calculate(old_include_rules, {}, new_include_rules,
                                     {}))
 
+  class FakeOwnersClient(object):
+    APPROVED = "APPROVED"
+    PENDING = "PENDING"
+    returns = {}
+
+    def ListOwners(self, *args, **kwargs):
+      return self.returns.get(self.ListOwners.__name__, "")
+
+    def mockListOwners(self, owners):
+      self.returns[self.ListOwners.__name__] = owners
+
+    def GetFilesApprovalStatus(self, *args, **kwargs):
+      return self.returns.get(self.GetFilesApprovalStatus.__name__, {})
+
+    def mockGetFilesApprovalStatus(self, status):
+      self.returns[self.GetFilesApprovalStatus.__name__] = status
+
+    def SuggestOwners(self, *args, **kwargs):
+      return ["eng1", "eng2", "eng3"]
+
+  class fakeGerrit(object):
+    def IsOwnersOverrideApproved(self, issue):
+      return False
+
+  def setUp(self):
+    self.input_api = input_api = MockInputApi()
+    input_api.environ = {}
+    input_api.owners_client = self.FakeOwnersClient()
+    input_api.gerrit = self.fakeGerrit()
+    input_api.change.issue = 123
+    self.mockOwnersAndReviewers("owner", set(["reviewer"]))
+    self.mockListSubmodules([])
+
+  def mockOwnersAndReviewers(self, owner, reviewers):
+    def mock(*args, **kwargs):
+      return [owner, reviewers]
+    self.input_api.canned_checks.GetCodereviewOwnerAndReviewers = mock
+
+  def mockListSubmodules(self, paths):
+    def mock(*args, **kwargs):
+      return paths
+    self.input_api.ListSubmodules = mock
+
+  def testApprovedAdditionalDep(self):
+    old_deps = """include_rules = []""".splitlines()
+    new_deps = """include_rules = ["+v8/123"]""".splitlines()
+    self.input_api.files = [MockAffectedFile("pdf/DEPS", new_deps, old_deps)]
+
+    # mark the additional dep as approved.
+    os_path = self.input_api.os_path
+    self.input_api.owners_client.mockGetFilesApprovalStatus(
+       {os_path.join('v8/123', 'DEPS'): self.FakeOwnersClient.APPROVED}
+    )
+    results = PRESUBMIT.CheckAddedDepsHaveTargetApprovals(
+        self.input_api, MockOutputApi())
+    # Then, the check should pass.
+    self.assertEqual([], results)
+
+  def testUnapprovedAdditionalDep(self):
+    old_deps = """include_rules = []""".splitlines()
+    new_deps = """include_rules = ["+v8/123"]""".splitlines()
+    self.input_api.files = [
+        MockAffectedFile('pdf/DEPS', new_deps, old_deps),
+    ]
+
+    # pending.
+    os_path = self.input_api.os_path
+    self.input_api.owners_client.mockGetFilesApprovalStatus(
+       {os_path.join('v8/123', 'DEPS'): self.FakeOwnersClient.PENDING}
+    )
+    results = PRESUBMIT.CheckAddedDepsHaveTargetApprovals(
+        self.input_api, MockOutputApi())
+    # the check should fail
+    self.assertIn('You need LGTM', results[0].message)
+    self.assertIn('+v8/123', results[0].message)
+
+    # unless the added dep is from a submodule.
+    self.mockListSubmodules(['v8'])
+    results = PRESUBMIT.CheckAddedDepsHaveTargetApprovals(
+        self.input_api, MockOutputApi())
+    self.assertEqual([], results)
+
 
 class JSONParsingTest(unittest.TestCase):
   def testSuccess(self):

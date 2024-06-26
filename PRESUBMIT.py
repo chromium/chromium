@@ -3582,8 +3582,33 @@ def CheckAddedDepsHaveTargetApprovals(input_api, output_api):
         else:
             return path
 
+    submodule_paths = set(input_api.ListSubmodules())
+    def is_from_submodules(path, submodule_paths):
+        path = input_api.os_path.normpath(path)
+        while path:
+            if path in submodule_paths:
+                return True
+
+            # All deps should be a relative path from the checkout.
+            # i.e., shouldn't start with "/" or "c:\", for example.
+            #
+            # That said, this is to prevent an infinite loop, just in case
+            # an input dep path starts with "/", because
+            # os.path.dirname("/") => "/"
+            parent = input_api.os_path.dirname(path)
+            if parent == path:
+                break
+            path = parent
+
+        return False
+
     unapproved_dependencies = [
         "'+%s'," % StripDeps(path) for path in missing_files
+        # if a newly added dep is from a submodule, it becomes trickier
+        # to get suggested owners, especially it is from a different host.
+        #
+        # skip the review enforcement for cross-repo deps.
+        if not is_from_submodules(path, submodule_paths)
     ]
 
     if unapproved_dependencies:
