@@ -35,19 +35,23 @@ interface ChromeRenderFrame {
   RequestBitmapForContextNode() => (skia.mojom.BitmapN32? bitmap);
 
   // Requests the bitmap and bounds of the image selected by the most recently
-  // opened context menu. Note that the bounds originate from the DOM layer, and
-  // no guarantee is made about their correlation with the bounds of the image
-  // as displayed in the presentation layer. The returned bounds are also not
-  // guaranteed to correspond to the result of returned image.
+  // opened context menu. Note that the bounds originate from the DOM layer, are
+  // in DIP and are relative to the local root's widget
+  // (see Element::BoundsInWidget()). No guarantee is made about their
+  // correlation with the bounds of the image as displayed in the presentation
+  // layer. The returned bounds are also not guaranteed to correspond to the
+  // result of returned image.
   RequestBitmapForContextNodeWithBoundsDiagnostic()
       => (skia.mojom.BitmapN32? bitmap, gfx.mojom.Rect bounds);
 
   // Requests the bounds of all images found in the DOM of the render frame.
-  // Note that the bounds originate from the DOM layer, and no
-  // guarantee is made about their correlation with the bounds of the image as
-  // displayed in the presentation layer. The returned bounds are also not
-  // guaranteed to correspond to the result of calling
-  // RequestBitmapForContextNode() on each image.
+  // Note that the bounds originate from the DOM layer, use window coordinates
+  // which are device scale independent, and have been adjusted to include
+  // any transformations, including page scale. No guarantee is made about
+  // their correlation with the bounds of the image as displayed in the
+  // presentation layer. The returned bounds are also not guaranteed to
+  // correspond to the result of calling RequestBitmapForContextNode() on each
+  // image.
   RequestBoundsForAllImagesDiagnostic() => (array<gfx.mojom.Rect> all_bounds);
 
   // Requests an encoded image selected by the most recently opened context
