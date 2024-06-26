@@ -49,6 +49,7 @@ class StackingBarLabelButton : public PillButton {
                    PillButton::Type::kFloatingWithoutIcon,
                    /*icon=*/nullptr,
                    kNotificationPillButtonHorizontalSpacing) {
+    SetEnabled(false);
     StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
                                      /*highlight_on_hover=*/true,
                                      /*highlight_on_focus=*/true);
@@ -282,7 +283,7 @@ bool StackedNotificationBar::Update(
       unpinned_count);
   clear_all_button_->SetTooltipText(tooltip);
   clear_all_button_->GetViewAccessibility().SetName(tooltip);
-  clear_all_button_->SetEnabled(unpinned_count != 0);
+  clear_all_button_->SetEnabled(unpinned_count > 0);
 
   return true;
 }

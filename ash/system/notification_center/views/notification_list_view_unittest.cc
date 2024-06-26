@@ -143,16 +143,14 @@ bool IsInner(int corner_radius) {
 
 // The base test class, has no params so tests with no params can inherit from
 // this.
-class NotificationListViewTest
-    : public AshTestBase,
-      public views::ViewObserver,
-      public testing::WithParamInterface<
-          /*enable_notification_center_controller=*/bool> {
+class NotificationListViewTest : public AshTestBase,
+                                 public views::ViewObserver,
+                                 public testing::WithParamInterface<
+                                     /*are_ongoing_processes_enabled=*/bool> {
  public:
   NotificationListViewTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kNotificationCenterController,
-        IsNotificationCenterControllerEnabled());
+    scoped_feature_list_.InitWithFeatureState(features::kOngoingProcesses,
+                                              AreOngoingProcessesEnabled());
   }
 
   void SetUp() override {
@@ -177,7 +175,7 @@ class NotificationListViewTest
 
   NotificationCenterTestApi* test_api() { return test_api_.get(); }
 
-  bool IsNotificationCenterControllerEnabled() const { return GetParam(); }
+  bool AreOngoingProcessesEnabled() const { return GetParam(); }
 
  protected:
   std::string AddNotification(bool pinned = false, bool expandable = false) {
@@ -205,9 +203,9 @@ class NotificationListViewTest
         new message_center::NotificationDelegate());
     notification->set_pinned(pinned);
     MessageCenter::Get()->AddNotification(std::move(notification));
-    // Manually trigger observer functions since `NotificationCenterController`
-    // is not created in this test.
-    if (IsNotificationCenterControllerEnabled() && notification_list_view_) {
+    // Manually trigger observer functions since `NotificationCenterController`,
+    // which is used to create ongoing processes is not created in this test.
+    if (AreOngoingProcessesEnabled() && notification_list_view_) {
       notification_list_view_->OnNotificationAdded(id);
     }
     return id;
@@ -215,9 +213,9 @@ class NotificationListViewTest
 
   void RemoveNotification(const std::string& id, bool by_user = true) {
     MessageCenter::Get()->RemoveNotification(id, by_user);
-    // Manually trigger observer functions since `NotificationCenterController`
-    // is not created in this test.
-    if (IsNotificationCenterControllerEnabled() && notification_list_view_) {
+    // Manually trigger observer functions since `NotificationCenterController`,
+    // which is used to create ongoing processes is not created in this test.
+    if (AreOngoingProcessesEnabled() && notification_list_view_) {
       notification_list_view_->OnNotificationRemoved(id, by_user);
     }
   }
@@ -230,7 +228,7 @@ class NotificationListViewTest
 
   void CreateMessageListView() {
     notification_list_view_ = std::make_unique<TestNotificationListView>();
-    if (IsNotificationCenterControllerEnabled()) {
+    if (AreOngoingProcessesEnabled()) {
       notification_list_view_->Init(
           message_center_utils::GetSortedNotificationsWithOwnView());
     } else {
@@ -800,9 +798,9 @@ TEST_P(NotificationListViewTest, OnChildNotificationViewUpdated) {
 
 // Tests that the view animates when notification contents are updated.
 TEST_P(NotificationListViewTest, AnimatesOnNotificationUpdated) {
-  // Skip the test when `NotificationCenterController` is enabled since the
-  // controller is not created in this test.
-  if (IsNotificationCenterControllerEnabled()) {
+  // Skip the test when `OngoingProcesses` are enabled since
+  // `NotificationCenterController` is not created in this test.
+  if (AreOngoingProcessesEnabled()) {
     GTEST_SKIP();
   }
 

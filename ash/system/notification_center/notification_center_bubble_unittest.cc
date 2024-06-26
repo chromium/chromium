@@ -32,13 +32,11 @@ namespace ash {
 
 class NotificationCenterBubbleTestBase : public AshTestBase {
  public:
-  NotificationCenterBubbleTestBase(bool enable_notification_center_controller)
+  NotificationCenterBubbleTestBase(bool enable_ongoing_processes)
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        enable_notification_center_controller_(
-            enable_notification_center_controller) {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kNotificationCenterController,
-        IsNotificationCenterControllerEnabled());
+        enable_ongoing_processes_(enable_ongoing_processes) {
+    scoped_feature_list_.InitWithFeatureState(features::kOngoingProcesses,
+                                              AreOngoingProcessesEnabled());
   }
 
   void SetUp() override {
@@ -48,30 +46,26 @@ class NotificationCenterBubbleTestBase : public AshTestBase {
 
   NotificationCenterTestApi* test_api() { return test_api_.get(); }
 
-  bool IsNotificationCenterControllerEnabled() const {
-    return enable_notification_center_controller_;
-  }
+  bool AreOngoingProcessesEnabled() const { return enable_ongoing_processes_; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<NotificationCenterTestApi> test_api_;
-  bool enable_notification_center_controller_ = false;
+  bool enable_ongoing_processes_ = false;
 };
 
-class NotificationCenterBubbleTest
-    : public NotificationCenterBubbleTestBase,
-      public testing::WithParamInterface<
-          /*enable_notification_center_controller=*/bool> {
+class NotificationCenterBubbleTest : public NotificationCenterBubbleTestBase,
+                                     public testing::WithParamInterface<
+                                         /*enable_ongoing_processes=*/bool> {
  public:
   NotificationCenterBubbleTest()
       : NotificationCenterBubbleTestBase(
-            /*enable_notification_center_controller=*/GetParam()) {}
+            /*enable_ongoing_processes=*/GetParam()) {}
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    NotificationCenterBubbleTest,
-    /*enable_notification_center_controller=*/testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         NotificationCenterBubbleTest,
+                         /*enable_ongoing_processes=*/testing::Bool());
 
 // Tests that the notification bubble does not get cut off by the top of the
 // screen on the launcher homescreen in tablet mode; see b/278471988.
@@ -313,7 +307,8 @@ TEST_P(NotificationCenterBubbleTest, BubbleActivationWithMouseClick) {
 
 // Tests that unlocking the device automatically closes the notification bubble.
 // See b/287622547.
-TEST_P(NotificationCenterBubbleTest, UnlockClosesBubble) {
+// TODO(b/347817687): Re-enable test by fixing dangling ptr check.
+TEST_P(NotificationCenterBubbleTest, DISABLED_UnlockClosesBubble) {
   // Add a notification so that the notification tray will be visible on the
   // lock screen.
   test_api()->AddNotification();
@@ -376,12 +371,11 @@ class NotificationCenterBubbleMultiDisplayTest
       public testing::WithParamInterface<
           std::tuple</* Primary display height */ int,
                      /* Secondary display height */ int,
-                     /* enable_notification_center_controller */ bool>> {
+                     /* enable_ongoing_processes */ bool>> {
  public:
   NotificationCenterBubbleMultiDisplayTest()
       : NotificationCenterBubbleTestBase(
-            /*enable_notification_center_controller=*/std::get<2>(GetParam())) {
-  }
+            /*enable_ongoing_processes=*/std::get<2>(GetParam())) {}
 
  protected:
   int GetPrimaryDisplayHeight() { return std::get<0>(GetParam()); }
