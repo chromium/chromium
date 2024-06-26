@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -289,6 +290,7 @@ TEST_F(VisitedURLRankingServiceImplTest, RankURLVisitAggregates) {
 }
 
 TEST_F(VisitedURLRankingServiceImplTest, RecordAction) {
+  base::HistogramTester histogram_tester;
   InitService(/*data_fetchers=*/{}, /*transformers=*/{});
 
   std::vector<
@@ -325,9 +327,18 @@ TEST_F(VisitedURLRankingServiceImplTest, RecordAction) {
   ASSERT_EQ(events.size(), 2u);
   EXPECT_EQ(events[0].second.count(visit_id_metric_hash), 1u);
   EXPECT_EQ(events[1].second.count(visit_id_metric_hash), 1u);
+
+  histogram_tester.ExpectBucketCount(
+      "VisitedURLRanking.ScoredURLAction",
+      static_cast<int>(ScoredURLUserAction::kSeen), 1);
+  histogram_tester.ExpectBucketCount(
+      "VisitedURLRanking.ScoredURLAction",
+      static_cast<int>(ScoredURLUserAction::kActivated), 1);
+  histogram_tester.ExpectTotalCount("VisitedURLRanking.ScoredURLAction", 2);
 }
 
 TEST_F(VisitedURLRankingServiceImplTest, RecordActionTimeout) {
+  base::HistogramTester histogram_tester;
   InitService(/*data_fetchers=*/{}, /*transformers=*/{});
 
   std::vector<
@@ -359,6 +370,10 @@ TEST_F(VisitedURLRankingServiceImplTest, RecordActionTimeout) {
           base::HashMetricName(kSampleSearchUrl));
   ASSERT_EQ(events.size(), 1u);
   EXPECT_EQ(events[0].second.count(visit_id_metric_hash), 1u);
+
+  histogram_tester.ExpectUniqueSample(
+      "VisitedURLRanking.ScoredURLAction",
+      static_cast<int>(ScoredURLUserAction::kSeen), 1);
 }
 
 }  // namespace visited_url_ranking
