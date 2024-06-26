@@ -214,7 +214,7 @@ chromium-metrics-reviews@google.com.
   <int value="7"
       label="(Obsolete) Payments integration user setting is disabled (Never
              recorded)."/>
-  <int value="8" label="User email is empty"/>
+  <int value="8" label="(Obsolete) User email is empty"/>
   <int value="9"
       label="(Obsolete) User is logged into an unsupported domain (Deprecated
              by an M117 launch)."/>

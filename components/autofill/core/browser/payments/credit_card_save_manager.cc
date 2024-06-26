@@ -437,7 +437,6 @@ bool CreditCardSaveManager::IsCreditCardUploadEnabled() {
 #endif  // BUILDFLAG(IS_IOS)
   return ::autofill::IsCreditCardUploadEnabled(
       client_->GetSyncService(),
-      payments_data_manager().GetAccountInfoForPaymentsServer().email,
       payments_data_manager().GetCountryCodeForExperimentGroup(),
       payments_data_manager().GetPaymentsSigninStateForMetrics(),
       client_->GetLogManager());

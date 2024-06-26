@@ -30,7 +30,6 @@ class PersonalDataManager;
 // be a member of a supported domain.
 bool IsCreditCardUploadEnabled(
     const syncer::SyncService* sync_service,
-    const std::string& user_email,
     const std::string& user_country,
     AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     LogManager* log_manager);

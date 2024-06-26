@@ -87,7 +87,6 @@ const char* const kAutofillUpstreamLaunchedCountries[] = {
 
 bool IsCreditCardUploadEnabled(
     const syncer::SyncService* sync_service,
-    const std::string& user_email,
     const std::string& user_country,
     AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     LogManager* log_manager) {
@@ -166,15 +165,6 @@ bool IsCreditCardUploadEnabled(
     return false;
   }
 
-  // Check that the user's account email address is known.
-  if (user_email.empty()) {
-    autofill_metrics::LogCardUploadEnabledMetric(
-        autofill_metrics::CardUploadEnabled::kEmailEmpty,
-        signin_state_for_metrics);
-    LogCardUploadDisabled(log_manager, "USER_EMAIL_EMPTY");
-    return false;
-  }
-
   if (base::FeatureList::IsEnabled(features::kAutofillUpstream)) {
     // Feature flag is enabled, so continue regardless of the country. This is
     // required for the ability to continue to launch to more countries as
@@ -217,7 +207,6 @@ bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
   if (!is_test_mode &&
       !IsCreditCardUploadEnabled(
           sync_service,
-          payments_data_manager.GetAccountInfoForPaymentsServer().email,
           payments_data_manager.GetCountryCodeForExperimentGroup(),
           payments_data_manager.GetPaymentsSigninStateForMetrics(),
           log_manager)) {

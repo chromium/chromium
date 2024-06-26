@@ -90,7 +90,7 @@ enum class CardUploadEnabled {
   kUsingExplicitSyncPassphrase = 5,
   kLocalSyncEnabled = 6,
   // Deprecated: kPaymentsIntegrationDisabled = 7,
-  kEmailEmpty = 8,
+  // Deprecated: kEmailEmpty = 8,
   // Deprecated: kEmailDomainNotSupported = 9,
   // Deprecated: kAutofillUpstreamDisabled = 10,
   // Deprecated: kCardUploadEnabled = 11,
