@@ -312,8 +312,10 @@ bool SkipIfLinuxWayland() {
 
 }  // namespace
 
-// TODO(crbug.com/349545780): Re-enable this test.
 #if BUILDFLAG(IS_LINUX)
+// For some reason, windows in Linux builds tend to either move around or
+// misreport their positions; it's not clear why this happens, but it can
+// (rarely) cause the test to flake. See e.g. crbug.com/349545780.
 #define MAYBE_AnnotateMenu DISABLED_AnnotateMenu
 #else
 #define MAYBE_AnnotateMenu AnnotateMenu
@@ -422,10 +424,10 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, TwoMenuHelpBubbles) {
 // Verifies that a help bubble can attach to a bubble which cannot activate or
 // receive events, and that events are still routed correctly to the help
 // bubble.
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
-// For some reason, windows in Linux ASAN builds tend to either move around or
+#if BUILDFLAG(IS_LINUX)
+// For some reason, windows in Linux builds tend to either move around or
 // misreport their positions; it's not clear why this happens, but it can
-// (rarely) cause the test to flake.
+// (rarely) cause the test to flake. See e.g. crbug.com/349545780.
 #define MAYBE_AnchorToTransparentBubble DISABLED_AnchorToTransparentBubble
 #else
 #define MAYBE_AnchorToTransparentBubble AnchorToTransparentBubble
