@@ -101,6 +101,7 @@ namespace blink {
 
 using network::mojom::ContentSecurityPolicySource;
 using network::mojom::ContentSecurityPolicyType;
+using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 
@@ -1889,26 +1890,21 @@ TEST_F(UnassociatedListedElementTest, GetUnassociatedListedElements) {
   ASSERT_TRUE(
       GetDocument().getElementById(AtomicString("associated_custom_element")));
 
-  ListedElement::List expected_elements;
-  expected_elements.push_back(GetElement("unassociated_button"));
-  expected_elements.push_back(GetElement("unassociated_fieldset"));
-  expected_elements.push_back(GetElement("unassociated_input"));
-  expected_elements.push_back(GetElement("unassociated_textarea"));
-  expected_elements.push_back(GetElement("unassociated_output"));
-  expected_elements.push_back(GetElement("unassociated_select"));
-  expected_elements.push_back(GetElement("unassociated_object"));
-  expected_elements.push_back(GetElement("unassociated_custom_element"));
-
-  ListedElement::List listed_elements =
-      GetDocument().UnassociatedListedElements();
-  EXPECT_TRUE(std::equal(listed_elements.begin(), listed_elements.end(),
-                         expected_elements.begin(), expected_elements.end()));
+  auto expected_elements = [&] {
+    return ElementsAre(
+        GetElement("unassociated_button"), GetElement("unassociated_fieldset"),
+        GetElement("unassociated_input"), GetElement("unassociated_textarea"),
+        GetElement("unassociated_output"), GetElement("unassociated_select"),
+        /*Button inside <select> Shadow DOM*/ _,
+        GetElement("unassociated_object"),
+        /*Button inside <object> Shadow DOM*/ _,
+        GetElement("unassociated_custom_element"));
+  };
+  EXPECT_THAT(GetDocument().UnassociatedListedElements(), expected_elements());
 
   // Try getting the cached unassociated listed elements again (calling
   // UnassociatedListedElements() again will not re-extract them).
-  listed_elements = GetDocument().UnassociatedListedElements();
-  EXPECT_TRUE(std::equal(listed_elements.begin(), listed_elements.end(),
-                         expected_elements.begin(), expected_elements.end()));
+  EXPECT_THAT(GetDocument().UnassociatedListedElements(), expected_elements());
 }
 
 // We extract unassociated listed element in a shadow DOM iff

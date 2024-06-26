@@ -22138,49 +22138,6 @@
             ]
         }
     ],
-    "TransactionsShadowDomSupport": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Fully_20240306",
-                    "enable_features": [
-                        "AutofillIncludeFormElementsInShadowDom",
-                        "AutofillIncludeShadowDomInUnassociatedListedElements",
-                        "ShadowDomSupport"
-                    ]
-                },
-                {
-                    "name": "Enabled_Without_Extracting_Unassociated_Listed_Elements_20240306",
-                    "enable_features": [
-                        "AutofillIncludeFormElementsInShadowDom",
-                        "ShadowDomSupport"
-                    ],
-                    "disable_features": [
-                        "AutofillIncludeShadowDomInUnassociatedListedElements"
-                    ]
-                },
-                {
-                    "name": "Enabled_Without_Extracting_Form_Elements_20240306",
-                    "enable_features": [
-                        "AutofillIncludeShadowDomInUnassociatedListedElements",
-                        "ShadowDomSupport"
-                    ],
-                    "disable_features": [
-                        "AutofillIncludeFormElementsInShadowDom"
-                    ]
-                }
-            ]
-        }
-    ],
     "TrustSafetySentimentSurvey": [
         {
             "platforms": [

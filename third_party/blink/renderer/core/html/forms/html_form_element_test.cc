@@ -294,33 +294,6 @@ TEST_F(HTMLFormElementTest, ListedElementsAfterIncludeShadowTrees) {
   EXPECT_THAT(form1->ListedElements(), ElementsAre(GetListedElement("input1")));
 }
 
-TEST_F(HTMLFormElementTest, ListedElementsIncludeShadowTreesFormAttribute) {
-  HTMLBodyElement* body = GetDocument().FirstBodyElement();
-
-  body->setHTMLUnsafe(R"HTML(
-    <form id=form1>
-      <div id=shadowhost>
-        <template shadowrootmode=open>
-          <input id=input2>
-          <form id=form2>
-            <input id=input3>
-          </form>
-          <input id=input4 form=form2>
-        </template>
-      </div>
-    </form>
-    <input id=input1 form=form1>
-  )HTML");
-
-  HTMLFormElement* form1 = GetFormElement("form1");
-  EXPECT_THAT(form1->ListedElements(), ElementsAre(GetListedElement("input1")));
-  EXPECT_THAT(
-      form1->ListedElements(/*include_shadow_trees=*/true),
-      ElementsAre(GetListedElement(
-                      "input2", GetElementById("shadowhost")->GetShadowRoot()),
-                  GetListedElement("input1")));
-}
-
 // Tests that form control elements inside nested forms are extracted if
 // `kAutofillIncludeFormElementsInShadowDom` is enabled.
 TEST_F(HTMLFormElementTest, ListedElementsInNestedForms) {

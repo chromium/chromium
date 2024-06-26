@@ -166,7 +166,7 @@ BASE_FEATURE(kAudioWorkletThreadPool,
 // inside Shadow DOM.
 BASE_FEATURE(kAutofillIncludeShadowDomInUnassociatedListedElements,
              "AutofillIncludeShadowDomInUnassociatedListedElements",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, Autofill extracts all top level shadow DOM form elements of a
 // document. Additionally, the shadow-tree-including form control elements of a
@@ -175,7 +175,7 @@ BASE_FEATURE(kAutofillIncludeShadowDomInUnassociatedListedElements,
 // itself is a descendant of `f`).
 BASE_FEATURE(kAutofillIncludeFormElementsInShadowDom,
              "AutofillIncludeFormElementsInShadowDom",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If disabled (default for many years), autofilling triggers KeyDown and
 // KeyUp events that do not send any key codes. If enabled, these events

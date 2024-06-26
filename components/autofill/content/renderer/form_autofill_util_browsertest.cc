@@ -54,7 +54,6 @@ using blink::WebFormElement;
 using blink::WebInputElement;
 using blink::WebLocalFrame;
 using blink::WebNode;
-using blink::WebSelectElement;
 using blink::WebString;
 using blink::WebVector;
 using ::testing::_;
@@ -1361,6 +1360,11 @@ TEST_F(FormAutofillUtilsTest, GetFormFieldElements_Unowned) {
   std::vector<WebFormControlElement> unowned_form_fields =
       form_util::GetFormControlElements(doc, WebFormElement());
 
+  // Both `<select>` and `<selectlist>` contain <button> elements in their
+  // Shadow DOM.
+  auto button = [] {
+    return Property(&WebElement::TagName, WebString(u"BUTTON"));
+  };
   EXPECT_THAT(
       unowned_form_fields,
       ElementsAre(GetFormControlElementById(doc, "unowned_button"),
@@ -1368,8 +1372,9 @@ TEST_F(FormAutofillUtilsTest, GetFormFieldElements_Unowned) {
                   GetFormControlElementById(doc, "unowned_input"),
                   GetFormControlElementById(doc, "unowned_textarea"),
                   GetFormControlElementById(doc, "unowned_output"),
-                  GetFormControlElementById(doc, "unowned_select"),
-                  GetFormControlElementById(doc, "unowned_selectlist")));
+                  GetFormControlElementById(doc, "unowned_select"), button(),
+                  GetFormControlElementById(doc, "unowned_selectlist"),
+                  button()));
 }
 
 // Tests that FormData::fields and FormData::child_frames are extracted fully
@@ -2200,8 +2205,7 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormInShadowDomWithoutFormInShadowDom) {
   EXPECT_EQ(GetOwningForm(t3), f_unowned);
   // TODO: crbug.com/349121116 - `t3` should not be owned by `f1`.
   EXPECT_THAT(GetFormControlElements(doc, f1), ElementsAre(t1, t2, t3));
-  // TODO: crbug.com/40204601 - `t3` should be owned by `f_unowned`.
-  EXPECT_THAT(GetFormControlElements(doc, f_unowned), IsEmpty());
+  EXPECT_THAT(GetFormControlElements(doc, f_unowned), ElementsAre(t3));
 }
 
 // Tests that the owning form of a form control element is the furthest
