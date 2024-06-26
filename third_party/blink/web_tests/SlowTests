@@ -678,7 +678,6 @@ crbug.com/874695 [ Mac11 Release ] http/tests/inspector-protocol/accessibility/a
 crbug.com/874695 [ Mac12 Release ] http/tests/inspector-protocol/accessibility/accessibility-nameSources-input-buttons.js [ Slow ]
 crbug.com/874695 [ Mac13 Release ] http/tests/inspector-protocol/accessibility/accessibility-nameSources-input-buttons.js [ Slow ]
 crbug.com/874695 [ Win ] http/tests/inspector-protocol/accessibility/accessibility-nameSources-input-buttons.js [ Slow ]
-crbug.com/874695 inspector-protocol/debugger/debugger-evaluate-in-worker-while-pause-in-page.js [ Slow ]
 crbug.com/874695 [ Release ] media/audio-controls-do-not-fade-out.html [ Slow ]
 crbug.com/874695 media/autoplay-muted.html [ Slow ]
 crbug.com/874695 media/color-profile-video-seek-filter.html [ Slow ]
