@@ -4556,6 +4556,8 @@ chromium-metrics-reviews@google.com.
                  recorded. Refer to where
                  FetchUtils::LogFetchKeepAliveRequestMetric(...,kFailed) is
                  called for details."/>
+    <variant name="SentToService"
+        summary="gets sent to NetworkService (or Browser)."/>
     <variant name="Started" summary="starts to load."/>
     <variant name="Succeeded" summary="succeeds to load."/>
     <variant name="Total"

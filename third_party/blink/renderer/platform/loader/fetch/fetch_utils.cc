@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-blink.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
@@ -276,6 +277,50 @@ void FetchUtils::LogFetchKeepAliveRequestMetric(
   base::UmaHistogramEnumeration(base::StrCat({"FetchKeepAlive.Requests2.",
                                               request_state_name, ".Renderer"}),
                                 sample_type);
+}
+
+void FetchUtils::LogFetchKeepAliveRequestSentToServiceMetric(
+    const network::ResourceRequest& resource_request) {
+  auto resource_type =
+      static_cast<mojom::blink::ResourceType>(resource_request.resource_type);
+  FetchKeepAliveRequestMetricType sample_type;
+  // See also blink::PopulateResourceRequest().
+  switch (resource_type) {
+    case mojom::blink::ResourceType::kXhr:
+      sample_type = FetchKeepAliveRequestMetricType::kFetch;
+      break;
+    // Includes BEACON/PING/ATTRIBUTION_SRC types
+    case mojom::blink::ResourceType::kPing:
+      sample_type = FetchKeepAliveRequestMetricType::kPing;
+      break;
+    case mojom::blink::ResourceType::kCspReport:
+      sample_type = FetchKeepAliveRequestMetricType::kReporting;
+      break;
+    case mojom::blink::ResourceType::kImage:
+      sample_type = FetchKeepAliveRequestMetricType::kBackgroundFetchIcon;
+      break;
+    case mojom::blink::ResourceType::kMainFrame:
+    case mojom::blink::ResourceType::kSubFrame:
+    case mojom::blink::ResourceType::kStylesheet:
+    case mojom::blink::ResourceType::kScript:
+    case mojom::blink::ResourceType::kFontResource:
+    case mojom::blink::ResourceType::kSubResource:
+    case mojom::blink::ResourceType::kObject:
+    case mojom::blink::ResourceType::kMedia:
+    case mojom::blink::ResourceType::kWorker:
+    case mojom::blink::ResourceType::kSharedWorker:
+    case mojom::blink::ResourceType::kPrefetch:
+    case mojom::blink::ResourceType::kFavicon:
+    case mojom::blink::ResourceType::kServiceWorker:
+    case mojom::blink::ResourceType::kPluginResource:
+    case mojom::blink::ResourceType::kNavigationPreloadMainFrame:
+    case mojom::blink::ResourceType::kNavigationPreloadSubFrame:
+    case mojom::blink::ResourceType::kJson:
+      NOTREACHED_NORETURN();
+  }
+
+  base::UmaHistogramEnumeration(
+      "FetchKeepAlive.Requests2.SentToService.Renderer", sample_type);
 }
 
 }  // namespace blink

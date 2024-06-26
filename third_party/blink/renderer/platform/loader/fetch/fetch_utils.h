@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_FETCH_UTILS_H_
 
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -46,6 +47,8 @@ class PLATFORM_EXPORT FetchUtils {
   static void LogFetchKeepAliveRequestMetric(
       const mojom::blink::RequestContextType&,
       const FetchKeepAliveRequestState&);
+  static void LogFetchKeepAliveRequestSentToServiceMetric(
+      const network::ResourceRequest& resource_request);
 };
 
 }  // namespace blink
