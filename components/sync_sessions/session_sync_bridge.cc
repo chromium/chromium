@@ -269,8 +269,6 @@ SessionSyncBridge::ApplyIncrementalSyncChanges(
 void SessionSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
                                          DataCallback callback) {
   DCHECK(syncing_);
-  // TODO(crbug.com/341920243): verify that |storage_keys| corresponds to the
-  // local session.
   std::move(callback).Run(store_->GetSessionDataForKeys(storage_keys));
 }
 
