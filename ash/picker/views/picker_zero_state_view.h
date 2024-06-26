@@ -38,11 +38,14 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   METADATA_HEADER(PickerZeroStateView, PickerPageView)
 
  public:
+  // `delegate`, `asset_fetcher` and `submenu_controller` must remain valid for
+  // the lifetime of this class.
   explicit PickerZeroStateView(
       PickerZeroStateViewDelegate* delegate,
       base::span<const PickerCategory> available_categories,
       int picker_view_width,
-      PickerAssetFetcher* asset_fetcher);
+      PickerAssetFetcher* asset_fetcher,
+      PickerSubmenuController* submenu_controller);
   PickerZeroStateView(const PickerZeroStateView&) = delete;
   PickerZeroStateView& operator=(const PickerZeroStateView&) = delete;
   ~PickerZeroStateView() override;
@@ -79,7 +82,7 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
 
   raw_ptr<PickerZeroStateViewDelegate> delegate_;
   PickerPreviewBubbleController preview_controller_;
-  PickerSubmenuController submenu_controller_;
+  raw_ptr<PickerSubmenuController> submenu_controller_;
 
   // The section list view, contains the section views.
   raw_ptr<PickerSectionListView> section_list_view_ = nullptr;

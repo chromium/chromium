@@ -15,6 +15,7 @@
 #include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/picker/views/picker_pseudo_focus_handler.h"
 #include "ash/picker/views/picker_search_results_view_delegate.h"
+#include "ash/picker/views/picker_submenu_controller.h"
 #include "ash/picker/views/picker_zero_state_view_delegate.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "base/memory/raw_ptr.h"
@@ -172,6 +173,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   std::optional<PickerCategory> selected_category_;
 
   PickerKeyEventHandler key_event_handler_;
+  PickerSubmenuController submenu_controller_;
   PickerPerformanceMetrics performance_metrics_;
   raw_ptr<PickerViewDelegate> delegate_ = nullptr;
 

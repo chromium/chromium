@@ -85,13 +85,14 @@ PickerZeroStateView::PickerZeroStateView(
     PickerZeroStateViewDelegate* delegate,
     base::span<const PickerCategory> available_categories,
     int picker_view_width,
-    PickerAssetFetcher* asset_fetcher)
-    : delegate_(delegate) {
+    PickerAssetFetcher* asset_fetcher,
+    PickerSubmenuController* submenu_controller)
+    : delegate_(delegate), submenu_controller_(submenu_controller) {
   SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
   section_list_view_ = AddChildView(std::make_unique<PickerSectionListView>(
-      picker_view_width, asset_fetcher, &submenu_controller_));
+      picker_view_width, asset_fetcher, submenu_controller_));
 
   delegate_->GetZeroStateSuggestedResults(
       base::BindRepeating(&PickerZeroStateView::OnFetchSuggestedResults,
@@ -212,7 +213,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
 
   auto new_window_submenu =
       views::Builder<PickerItemWithSubmenuView>()
-          .SetSubmenuController(&submenu_controller_)
+          .SetSubmenuController(submenu_controller_)
           .SetText(l10n_util::GetStringUTF16(IDS_PICKER_NEW_MENU_LABEL))
           .SetLeadingIcon(ui::ImageModel::FromVectorIcon(
               kSystemMenuPlusIcon, cros_tokens::kCrosSysOnSurface))
@@ -222,7 +223,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
   // submenus. Iterate through the results and put them into the right View.
   auto length_submenu =
       views::Builder<PickerItemWithSubmenuView>()
-          .SetSubmenuController(&submenu_controller_)
+          .SetSubmenuController(submenu_controller_)
           .SetText(
               l10n_util::GetStringUTF16(IDS_PICKER_CHANGE_LENGTH_MENU_LABEL))
           .SetLeadingIcon(ui::ImageModel::FromVectorIcon(
@@ -231,7 +232,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
 
   auto tone_submenu =
       views::Builder<PickerItemWithSubmenuView>()
-          .SetSubmenuController(&submenu_controller_)
+          .SetSubmenuController(submenu_controller_)
           .SetText(l10n_util::GetStringUTF16(IDS_PICKER_CHANGE_TONE_MENU_LABEL))
           .SetLeadingIcon(ui::ImageModel::FromVectorIcon(
               chromeos::kEditorMenuEmojifyIcon, cros_tokens::kCrosSysOnSurface))
@@ -240,7 +241,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
   // Case transformation results are shown in a submenu.
   auto case_transform_submenu =
       views::Builder<PickerItemWithSubmenuView>()
-          .SetSubmenuController(&submenu_controller_)
+          .SetSubmenuController(submenu_controller_)
           .SetText(l10n_util::GetStringUTF16(
               IDS_PICKER_CHANGE_CAPITALIZATION_MENU_LABEL))
           .SetLeadingIcon(ui::ImageModel::FromVectorIcon(

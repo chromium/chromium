@@ -33,10 +33,12 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   METADATA_HEADER(PickerSearchResultsView, PickerPageView)
 
  public:
-  // `asset_fetcher` must remain valid for the lifetime of this class.
+  // `delegate`, `asset_fetcher` and `submenu_controller` must remain valid for
+  // the lifetime of this class.
   explicit PickerSearchResultsView(PickerSearchResultsViewDelegate* delegate,
                                    int picker_view_width,
-                                   PickerAssetFetcher* asset_fetcher);
+                                   PickerAssetFetcher* asset_fetcher,
+                                   PickerSubmenuController* submenu_controller);
   PickerSearchResultsView(const PickerSearchResultsView&) = delete;
   PickerSearchResultsView& operator=(const PickerSearchResultsView&) = delete;
   ~PickerSearchResultsView() override;
@@ -117,7 +119,6 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   raw_ptr<PickerSkeletonLoaderView> skeleton_loader_view_ = nullptr;
 
   PickerPreviewBubbleController preview_controller_;
-  PickerSubmenuController submenu_controller_;
 };
 
 }  // namespace ash

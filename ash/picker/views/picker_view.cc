@@ -499,13 +499,15 @@ void PickerView::AddMainContainerView(PickerLayoutType layout_type) {
   zero_state_view_ =
       main_container_view_->AddPage(std::make_unique<PickerZeroStateView>(
           this, delegate_->GetAvailableCategories(), kPickerViewMaxSize.width(),
-          delegate_->GetAssetFetcher()));
+          delegate_->GetAssetFetcher(), &submenu_controller_));
   category_results_view_ =
       main_container_view_->AddPage(std::make_unique<PickerSearchResultsView>(
-          this, kPickerViewMaxSize.width(), delegate_->GetAssetFetcher()));
+          this, kPickerViewMaxSize.width(), delegate_->GetAssetFetcher(),
+          &submenu_controller_));
   search_results_view_ =
       main_container_view_->AddPage(std::make_unique<PickerSearchResultsView>(
-          this, kPickerViewMaxSize.width(), delegate_->GetAssetFetcher()));
+          this, kPickerViewMaxSize.width(), delegate_->GetAssetFetcher(),
+          &submenu_controller_));
 
   SetActivePage(zero_state_view_);
 }

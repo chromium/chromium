@@ -55,14 +55,15 @@ constexpr int kMaxIndexForMetrics = 10;
 PickerSearchResultsView::PickerSearchResultsView(
     PickerSearchResultsViewDelegate* delegate,
     int picker_view_width,
-    PickerAssetFetcher* asset_fetcher)
+    PickerAssetFetcher* asset_fetcher,
+    PickerSubmenuController* submenu_controller)
     : delegate_(delegate) {
   SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
   SetProperty(views::kElementIdentifierKey, kPickerSearchResultsPageElementId);
 
   section_list_view_ = AddChildView(std::make_unique<PickerSectionListView>(
-      picker_view_width, asset_fetcher, &submenu_controller_));
+      picker_view_width, asset_fetcher, submenu_controller));
   no_results_view_ = AddChildView(
       views::Builder<views::Label>(
           bubble_utils::CreateLabel(
