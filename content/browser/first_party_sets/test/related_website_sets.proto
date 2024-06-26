@@ -33,32 +33,31 @@ message Set {
 }
 
 message SitePair {
-  required CctldSite alias = 1;
+  required Site alias = 1;
   required Site canonical = 2;
 }
 
-enum Site {
+message Site {
+  optional SubdomainIndex subdomain_index = 1;
+  required SiteIndex site_index = 2;
+  required Tld tld = 3;
+}
+
+enum SubdomainIndex {
+  SUBDOMAIN_0 = 0;
+  SUBDOMAIN_1 = 1;
+  SUBDOMAIN_2 = 2;
+}
+
+enum SiteIndex {
   SITE_0 = 0;
   SITE_1 = 1;
   SITE_2 = 2;
   SITE_3 = 3;
   SITE_4 = 4;
-  SITE_5 = 5;
-  SITE_6 = 6;
-  SITE_7 = 7;
-  SITE_8 = 8;
-  SITE_9 = 9;
 }
 
-enum CctldSite {
-  CCTLD_0 = 0;
-  CCTLD_1 = 1;
-  CCTLD_2 = 2;
-  CCTLD_3 = 3;
-  CCTLD_4 = 4;
-  CCTLD_5 = 5;
-  CCTLD_6 = 6;
-  CCTLD_7 = 7;
-  CCTLD_8 = 8;
-  CCTLD_9 = 9;
+enum Tld {
+  TLD_0 = 0;
+  TLD_1 = 1;
 }

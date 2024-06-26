@@ -13,7 +13,6 @@
 
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/browser/first_party_sets/test/related_website_sets.pb.h"
 #include "net/first_party_sets/global_first_party_sets.h"
@@ -31,35 +30,48 @@ constexpr char kCctld[] = "ccTLDs";
 constexpr char kReplacements[] = "replacements";
 constexpr char kAdditions[] = "additions";
 
-constexpr char const* kSites[10] = {
-    "https://site-0.test", "https://sub.site-0.test",
-    "https://site-1.test", "https://sub.site-1.test",
-    "https://site-2.test", "https://sub.site-2.test",
-    "https://site-3.test", "https://sub.site-3.test",
-    "https://site-4.test", "https://sub.site-4.test",
+constexpr char const* kSubdomains[3] = {
+    "sub-0",
+    "sub-1",
+    "sub-2",
 };
 
-std::string MakeCctld(size_t index) {
-  CHECK_LT(index, std::size(kSites));
-  std::string out = kSites[index];
-  base::ReplaceFirstSubstringAfterOffset(
-      &out, /*start_offset=*/0, /*find_this=*/"test", /*replace_with*/ "cctld");
+constexpr char const* kSites[5] = {
+    "site-0", "site-1", "site-2", "site-3", "site-4",
+};
+
+constexpr char const* kTlds[2] = {
+    "test",
+    "cctld",
+};
+
+std::string ConvertSite(const related_website_sets::proto::Site& site) {
+  std::string out = "https://";
+  if (site.has_subdomain_index()) {
+    base::StrAppend(&out, {kSubdomains[site.subdomain_index()], "."});
+  }
+  base::StrAppend(&out, {
+                            kSites[site.site_index()],
+                            ".",
+                            kTlds[site.tld()],
+                        });
+
   return out;
 }
 
 base::Value::Dict ConvertSet(const related_website_sets::proto::Set& set) {
   base::Value::Dict json_set;
-  json_set.Set(kPrimary, kSites[set.primary()]);
-  for (int site : set.associated()) {
-    json_set.EnsureList(kAssociated)->Append(kSites[site]);
+  json_set.Set(kPrimary, ConvertSite(set.primary()));
+  for (const auto& site : set.associated()) {
+    json_set.EnsureList(kAssociated)->Append(ConvertSite(site));
   }
-  for (int site : set.service()) {
-    json_set.EnsureList(kService)->Append(kSites[site]);
+  for (const auto& site : set.service()) {
+    json_set.EnsureList(kService)->Append(ConvertSite(site));
   }
   for (const related_website_sets::proto::SitePair& site_pair :
        set.cctld_aliases()) {
-    json_set.EnsureDict(kCctld)->Set(MakeCctld(site_pair.alias()),
-                                     kSites[site_pair.canonical()]);
+    json_set.EnsureDict(kCctld)->Set(ConvertSite(site_pair.alias()),
+                                     ConvertSite(site_pair.canonical()));
   }
 
   return json_set;
