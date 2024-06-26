@@ -71,24 +71,14 @@ EXCLUDED_TESTS = [
     os.path.join('tests', 'codegen', 'issue-45222.rs'),
     # https://github.com/rust-lang/rust/issues/96497
     os.path.join('tests', 'codegen', 'issue-96497-slice-size-nowrap.rs'),
-    # TODO(crbug.com/41487664): remove after rolling rust with fix
-    os.path.join('tests', 'codegen', 'abi-main-signature-32bit-c-int.rs'),
-    # TODO(crbug.com/41486049): remove after rolling rust with fix
-    os.path.join('tests', 'ui', 'asm', 'inline-syntax.rs'),
-    # TODO(https://crbug.com/324853415): benign failure; remove when fixed.
-    os.path.join('tests', 'codegen', 'iter-repeat-n-trivial-drop.rs'),
     # TODO(crbug.com/342026487): benign failure; remove when fixed.
     os.path.join('tests', 'codegen', 'vec-in-place.rs'),
-
 ]
 EXCLUDED_TESTS_WINDOWS = [
     # https://github.com/rust-lang/rust/issues/96464
     os.path.join('tests', 'codegen', 'vec-shrink-panik.rs'),
 ]
 EXCLUDED_TESTS_MAC = [
-    # https://crbug.com/1479875 This fails on Mac. It relates to the large code
-    # model which we don't use, so suppress it for now.
-    os.path.join('tests', 'ui', 'thread-local', 'thread-local-issue-37508.rs'),
     # https://crbug.com/1521497 These fail on Mac.
     os.path.join('tests', 'ui', 'abi', 'stack-probes-lto.rs#x64'),
     os.path.join('tests', 'ui', 'abi', 'stack-probes.rs#x64'),
