@@ -804,6 +804,9 @@ bool BaseRenderingContext2D::ExtractColorFromV8StringAndUpdateCache(
     v8::Local<v8::String> v8_string,
     ExceptionState& exception_state,
     Color& color) {
+  // Internalize the string so that we can use pointer comparison for equality
+  // rather than string comparison.
+  v8_string = v8_string->InternalizeString(isolate);
   if (v8_string->Length()) {
     const auto it = color_cache_.Find<ColorCacheHashTranslator>(v8_string);
     if (it != color_cache_.end()) {
