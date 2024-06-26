@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/window_restore/pine_screenshot_icon_row_view.h"
+#include "ash/wm/window_restore/informed_restore_screenshot_icon_row_view.h"
 
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/shell.h"
@@ -10,7 +10,7 @@
 #include "ash/style/typography.h"
 #include "ash/wm/window_restore/informed_restore_app_image_view.h"
 #include "ash/wm/window_restore/pine_constants.h"
-#include "ash/wm/window_restore/pine_item_view.h"
+#include "ash/wm/window_restore/informed_restore_item_view.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/i18n/number_formatting.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -49,7 +49,7 @@ gfx::Size GetPreferredSizeOfTheRow(int child_number, bool one_browser_window) {
 
 }  // namespace
 
-PineScreenshotIconRowView::PineScreenshotIconRowView(
+InformedRestoreScreenshotIconRowView::InformedRestoreScreenshotIconRowView(
     const InformedRestoreContentsData::AppsInfos& apps_infos) {
   SetID(pine::kScreenshotIconRowViewID);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart);
@@ -69,7 +69,7 @@ PineScreenshotIconRowView::PineScreenshotIconRowView(
   // If there is only one browser window, show the browser icon and its tabs
   // favicons inside the icon row view.
   if (one_browser_window) {
-    AddChildView(std::make_unique<PineItemView>(apps_infos[0],
+    AddChildView(std::make_unique<InformedRestoreItemView>(apps_infos[0],
                                                 /*inside_screenshot=*/true));
   } else {
     const bool exceed_max_elements =
@@ -113,9 +113,10 @@ PineScreenshotIconRowView::PineScreenshotIconRowView(
   SetPreferredSize(GetPreferredSizeOfTheRow(child_number, one_browser_window));
 }
 
-PineScreenshotIconRowView::~PineScreenshotIconRowView() = default;
+InformedRestoreScreenshotIconRowView::~InformedRestoreScreenshotIconRowView()
+    = default;
 
-BEGIN_METADATA(PineScreenshotIconRowView)
+BEGIN_METADATA(InformedRestoreScreenshotIconRowView)
 END_METADATA
 
 }  // namespace ash

@@ -26,15 +26,15 @@
 #include "ash/wm/window_restore/informed_restore_app_image_view.h"
 #include "ash/wm/window_restore/informed_restore_contents_data.h"
 #include "ash/wm/window_restore/informed_restore_contents_view.h"
+#include "ash/wm/window_restore/informed_restore_item_view.h"
+#include "ash/wm/window_restore/informed_restore_items_container_view.h"
+#include "ash/wm/window_restore/informed_restore_items_overflow_view.h"
+#include "ash/wm/window_restore/informed_restore_screenshot_icon_row_view.h"
 #include "ash/wm/window_restore/informed_restore_test_api.h"
 #include "ash/wm/window_restore/informed_restore_test_base.h"
 #include "ash/wm/window_restore/pine_constants.h"
 #include "ash/wm/window_restore/pine_context_menu_model.h"
 #include "ash/wm/window_restore/pine_controller.h"
-#include "ash/wm/window_restore/pine_item_view.h"
-#include "ash/wm/window_restore/pine_items_container_view.h"
-#include "ash/wm/window_restore/pine_items_overflow_view.h"
-#include "ash/wm/window_restore/pine_screenshot_icon_row_view.h"
 #include "ash/wm/window_restore/window_restore_metrics.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/command_line.h"
@@ -128,8 +128,8 @@ class InformedRestoreTest : public InformedRestoreTestBase {
     return GetViewCount(root, pine::kOverflowImageViewID);
   }
 
-  const PineScreenshotIconRowView* GetScreenshotIconRowView() const {
-    return static_cast<const PineScreenshotIconRowView*>(
+  const InformedRestoreScreenshotIconRowView* GetScreenshotIconRowView() const {
+    return static_cast<const InformedRestoreScreenshotIconRowView*>(
         GetContentsView()->GetViewByID(pine::kScreenshotIconRowViewID));
   }
 
@@ -341,7 +341,7 @@ TEST_F(InformedRestoreTest, ScreenshotIconRowMaxElements) {
   // time to show the pine dialog.
   EXPECT_FALSE(base::PathExists(file_path));
   // Screenshot icon row should be shown when there is a screenshot.
-  const PineScreenshotIconRowView* screenshot_icon_row_view =
+  const InformedRestoreScreenshotIconRowView* screenshot_icon_row_view =
       GetScreenshotIconRowView();
   EXPECT_TRUE(screenshot_icon_row_view);
   // The icon row should show all the elements and all of them should be shown
@@ -374,7 +374,7 @@ TEST_F(InformedRestoreTest, ScreenshotIconRowExceedMaxElements) {
       Shell::Get()->pine_controller()->contents_data();
   EXPECT_TRUE(contents_data && !contents_data->image.isNull());
   // Screenshot icon row should be shown when there is a screenshot.
-  const PineScreenshotIconRowView* screenshot_icon_row_view =
+  const InformedRestoreScreenshotIconRowView* screenshot_icon_row_view =
       GetScreenshotIconRowView();
   EXPECT_TRUE(screenshot_icon_row_view);
   // The icon row should still have at most 5 number of items, but only 4 of
@@ -672,14 +672,14 @@ TEST_F(InformedRestoreTest, ClickRestoreToExit) {
   EXPECT_FALSE(OverviewGridTestApi(overview_grid).pine_widget());
 }
 
-TEST_F(InformedRestoreTest, PineItemView) {
+TEST_F(InformedRestoreTest, InformedRestoreItemView) {
   InformedRestoreContentsData::AppInfo app_info(
       "TEST_ID", "TEST_TITLE", /*window_id=*/0,
       std::vector<GURL>{GURL(), GURL(), GURL(), GURL()}, 4u, 0);
 
   // Test when the tab count is within regular limits.
-  auto item_view =
-      std::make_unique<PineItemView>(app_info, /*inside_screenshot=*/false);
+  auto item_view = std::make_unique<InformedRestoreItemView>(
+      app_info, /*inside_screenshot=*/false);
   EXPECT_EQ(
       4u,
       item_view->GetViewByID(pine::kFaviconContainerViewID)->children().size());
@@ -687,8 +687,8 @@ TEST_F(InformedRestoreTest, PineItemView) {
 
   // Test the when the tab count has overflow.
   app_info.tab_count = 10u;
-  item_view =
-      std::make_unique<PineItemView>(app_info, /*inside_screenshot=*/false);
+  item_view = std::make_unique<InformedRestoreItemView>(
+      app_info, /*inside_screenshot=*/false);
   EXPECT_EQ(
       5u,
       item_view->GetViewByID(pine::kFaviconContainerViewID)->children().size());
@@ -812,7 +812,8 @@ TEST_F(InformedRestoreTest, LayoutLandscapeToPortrait) {
 
   // In portrait mode, the `InformedRestoreContentsView` should have three
   // children: the title and description container (header), the
-  // `PineItemsContainerView`, and the buttons container (footer).
+  // `InformedRestoreItemsContainerView`, and the buttons container
+  // (footer).
   contents_view = views::AsViewClass<InformedRestoreContentsView>(
       pine_widget->GetContentsView());
   ASSERT_TRUE(contents_view);
@@ -840,7 +841,8 @@ TEST_F(InformedRestoreTest, LayoutPortraitToLandscape) {
 
   // In portrait mode, the `InformedRestoreContentsView` should have three
   // children: the title and description container (header), the
-  // `PineItemsContainerView`, and the buttons container (footer).
+  // `InformedRestoreItemsContainerView`, and the buttons container
+  // (footer).
   auto* contents_view = views::AsViewClass<InformedRestoreContentsView>(
       pine_widget->GetContentsView());
   ASSERT_TRUE(contents_view);
@@ -942,8 +944,9 @@ TEST_F(PineAppIconTest, UpdateAfterSessionStarted) {
                                          gfx::Image(test_icon),
                                          /*max_deviation=*/0));
 
-  const PineItemView* item_view = views::AsViewClass<PineItemView>(
-      GetContentsView()->GetViewByID(pine::kItemViewID));
+  const InformedRestoreItemView* item_view =
+      views::AsViewClass<InformedRestoreItemView>(
+          GetContentsView()->GetViewByID(pine::kItemViewID));
   ASSERT_TRUE(item_view);
   ASSERT_TRUE(item_view->title_label_view());
   EXPECT_TRUE(item_view->title_label_view()->GetText().empty());

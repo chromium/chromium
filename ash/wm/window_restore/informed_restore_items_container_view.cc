@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/window_restore/pine_items_container_view.h"
+#include "ash/wm/window_restore/informed_restore_items_container_view.h"
 
 #include "ash/wm/window_restore/pine_constants.h"
-#include "ash/wm/window_restore/pine_item_view.h"
-#include "ash/wm/window_restore/pine_items_overflow_view.h"
+#include "ash/wm/window_restore/informed_restore_item_view.h"
+#include "ash/wm/window_restore/informed_restore_items_overflow_view.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout_view.h"
 
 namespace ash {
 
-PineItemsContainerView::PineItemsContainerView(
+InformedRestoreItemsContainerView::InformedRestoreItemsContainerView(
     const InformedRestoreContentsData::AppsInfos& apps_infos) {
   const int elements = static_cast<int>(apps_infos.size());
   CHECK_GT(elements, 0);
@@ -30,16 +30,18 @@ PineItemsContainerView::PineItemsContainerView(
     // If there are more than four elements, we will need to save the last
     // space for the overflow view to condense the remaining info.
     if (elements > pine::kMaxItems && i >= pine::kOverflowMinThreshold) {
-      AddChildView(std::make_unique<PineItemsOverflowView>(apps_infos));
+      AddChildView(std::make_unique<InformedRestoreItemsOverflowView>(
+          apps_infos));
       break;
     }
 
     AddChildView(
-        std::make_unique<PineItemView>(app_info, /*inside_screenshot=*/false));
+        std::make_unique<InformedRestoreItemView>(
+            app_info, /*inside_screenshot=*/false));
   }
 }
 
-BEGIN_METADATA(PineItemsContainerView)
+BEGIN_METADATA(InformedRestoreItemsContainerView)
 END_METADATA
 
 }  // namespace ash

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/window_restore/pine_items_overflow_view.h"
+#include "ash/wm/window_restore/informed_restore_items_overflow_view.h"
 
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -30,13 +30,13 @@ constexpr gfx::Size kOverflowCountPreferredSize(18, 18);
 
 }  // namespace
 
-PineItemsOverflowView::PineItemsOverflowView(
+InformedRestoreItemsOverflowView::InformedRestoreItemsOverflowView(
     const InformedRestoreContentsData::AppsInfos& apps_infos) {
   const int num_elements = static_cast<int>(apps_infos.size());
   CHECK_GT(num_elements, pine::kMaxItems);
 
   // TODO(hewer): Fix margins so the icons and text are aligned with
-  // `PineItemView` elements.
+  // `InformedRestoreItemView` elements.
   SetBetweenChildSpacing(pine::kItemChildSpacing);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
   SetID(pine::kOverflowViewID);
@@ -147,9 +147,9 @@ PineItemsOverflowView::PineItemsOverflowView(
   SetFlexForView(remaining_windows_label, 1);
 }
 
-PineItemsOverflowView::~PineItemsOverflowView() = default;
+InformedRestoreItemsOverflowView::~InformedRestoreItemsOverflowView() = default;
 
-BEGIN_METADATA(PineItemsOverflowView)
+BEGIN_METADATA(InformedRestoreItemsOverflowView)
 END_METADATA
 
 }  // namespace ash

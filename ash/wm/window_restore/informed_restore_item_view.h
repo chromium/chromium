@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_WINDOW_RESTORE_PINE_ITEM_VIEW_H_
-#define ASH_WM_WINDOW_RESTORE_PINE_ITEM_VIEW_H_
+#ifndef ASH_WM_WINDOW_RESTORE_INFORMED_RESTORE_ITEM_VIEW_H_
+#define ASH_WM_WINDOW_RESTORE_INFORMED_RESTORE_ITEM_VIEW_H_
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_restore/informed_restore_contents_data.h"
@@ -23,8 +23,8 @@ namespace ash {
 // screenshot preview.
 //
 // TODO(hewer): Add ASCII art.
-class ASH_EXPORT PineItemView : public views::BoxLayoutView {
-  METADATA_HEADER(PineItemView, views::BoxLayoutView)
+class ASH_EXPORT InformedRestoreItemView : public views::BoxLayoutView {
+  METADATA_HEADER(InformedRestoreItemView, views::BoxLayoutView)
 
  public:
   using IndexedImagePair = std::pair</*index=*/int, gfx::ImageSkia>;
@@ -34,15 +34,15 @@ class ASH_EXPORT PineItemView : public views::BoxLayoutView {
   using IndexedImageCallback =
       base::OnceCallback<void(const IndexedImagePair&)>;
 
-  PineItemView(const InformedRestoreContentsData::AppInfo& app_info,
+  InformedRestoreItemView(const InformedRestoreContentsData::AppInfo& app_info,
                bool inside_screenshot);
-  PineItemView(const PineItemView&) = delete;
-  PineItemView& operator=(const PineItemView&) = delete;
-  ~PineItemView() override;
+  InformedRestoreItemView(const InformedRestoreItemView&) = delete;
+  InformedRestoreItemView& operator=(const InformedRestoreItemView&) = delete;
+  ~InformedRestoreItemView() override;
 
   const views::Label* title_label_view() const { return title_label_view_; }
 
-  base::WeakPtr<PineItemView> GetWeakPtr() {
+  base::WeakPtr<InformedRestoreItemView> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -69,9 +69,9 @@ class ASH_EXPORT PineItemView : public views::BoxLayoutView {
 
   base::CancelableTaskTracker cancelable_favicon_task_tracker_;
 
-  base::WeakPtrFactory<PineItemView> weak_ptr_factory_{this};
+  base::WeakPtrFactory<InformedRestoreItemView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // ASH_WM_WINDOW_RESTORE_PINE_ITEM_VIEW_H_
+#endif  // ASH_WM_WINDOW_RESTORE_INFORMED_RESTORE_ITEM_VIEW_H_

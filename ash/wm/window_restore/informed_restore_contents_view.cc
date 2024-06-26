@@ -17,11 +17,11 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_restore/informed_restore_contents_data.h"
+#include "ash/wm/window_restore/informed_restore_items_container_view.h"
+#include "ash/wm/window_restore/informed_restore_screenshot_icon_row_view.h"
 #include "ash/wm/window_restore/pine_constants.h"
 #include "ash/wm/window_restore/pine_context_menu_model.h"
 #include "ash/wm/window_restore/pine_controller.h"
-#include "ash/wm/window_restore/pine_items_container_view.h"
-#include "ash/wm/window_restore/pine_screenshot_icon_row_view.h"
 #include "ash/wm/window_restore/window_restore_metrics.h"
 #include "chromeos/ui/base/display_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -179,11 +179,11 @@ void InformedRestoreContentsView::UpdateContents() {
   if (showing_list_view_) {
     preview_container_view_->RemoveChildViewT(items_container_view_);
     items_container_view_ = preview_container_view_->AddChildViewAt(
-        std::make_unique<PineItemsContainerView>(apps_infos), 0);
+        std::make_unique<InformedRestoreItemsContainerView>(apps_infos), 0);
   } else {
     icon_row_container_->RemoveChildViewT(screenshot_icon_row_view_);
     screenshot_icon_row_view_ = icon_row_container_->AddChildView(
-        std::make_unique<PineScreenshotIconRowView>(apps_infos));
+        std::make_unique<InformedRestoreScreenshotIconRowView>(apps_infos));
     UpdateIconRowClipArea();
   }
 }
@@ -357,7 +357,8 @@ void InformedRestoreContentsView::CreateChildViews() {
                        .Build());
   if (showing_list_view_) {
     items_container_view_ = preview_container_view_->AddChildView(
-        std::make_unique<PineItemsContainerView>(contents_data->apps_infos));
+        std::make_unique<InformedRestoreItemsContainerView>(
+            contents_data->apps_infos));
     preview_container_view_->SetPreferredSize(
         gfx::Size(pine::kPreviewContainerWidth, kItemsViewContainerHeight));
   } else {
@@ -394,7 +395,8 @@ void InformedRestoreContentsView::CreateChildViews() {
     icon_row_container_->layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(pine::kPreviewContainerRadius));
     screenshot_icon_row_view_ = icon_row_container_->AddChildView(
-        std::make_unique<PineScreenshotIconRowView>(contents_data->apps_infos));
+        std::make_unique<InformedRestoreScreenshotIconRowView>(
+            contents_data->apps_infos));
     icon_row_container_->SetFlexForView(icon_row_spacer, 1);
   }
 

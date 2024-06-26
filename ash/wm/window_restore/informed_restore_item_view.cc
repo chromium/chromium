@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/window_restore/pine_item_view.h"
+#include "ash/wm/window_restore/informed_restore_item_view.h"
 
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -38,8 +38,9 @@ constexpr int kTabCountRounding = 6;
 
 }  // namespace
 
-PineItemView::PineItemView(const InformedRestoreContentsData::AppInfo& app_info,
-                           bool inside_screenshot)
+InformedRestoreItemView::InformedRestoreItemView(
+    const InformedRestoreContentsData::AppInfo& app_info,
+    bool inside_screenshot)
     : app_id_(app_info.app_id),
       tab_count_(app_info.tab_count),
       inside_screenshot_(inside_screenshot) {
@@ -54,7 +55,7 @@ PineItemView::PineItemView(const InformedRestoreContentsData::AppInfo& app_info,
       app_id_,
       inside_screenshot_ ? InformedRestoreAppImageView::Type::kScreenshot
                          : InformedRestoreAppImageView::Type::kItem,
-      base::BindOnce(&PineItemView::UpdateTitle,
+      base::BindOnce(&InformedRestoreItemView::UpdateTitle,
                      weak_ptr_factory_.GetWeakPtr())));
   image_view->SetID(pine::kItemImageViewID);
 
@@ -88,7 +89,8 @@ PineItemView::PineItemView(const InformedRestoreContentsData::AppInfo& app_info,
                     .SetEnabledColorId(pine::kPineItemTextColorId)
                     .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                     .CustomConfigure(base::BindOnce(
-                        [](const base::WeakPtr<PineItemView> weak_this,
+                        [](const base::WeakPtr<InformedRestoreItemView>
+                              weak_this,
                            views::Label* label) {
                           TypographyProvider::Get()->StyleLabel(
                               TypographyToken::kCrosButton2, *label);
@@ -118,28 +120,31 @@ PineItemView::PineItemView(const InformedRestoreContentsData::AppInfo& app_info,
   // guaranteed to maintain the order that the callbacks are initially run.
   auto barrier = base::BarrierCallback<const IndexedImagePair&>(
       /*num_callbacks=*/favicons.size(),
-      /*done_callback=*/base::BindOnce(&PineItemView::OnAllFaviconsLoaded,
-                                       weak_ptr_factory_.GetWeakPtr()));
+      /*done_callback=*/base::BindOnce(
+            &InformedRestoreItemView::OnAllFaviconsLoaded,
+            weak_ptr_factory_.GetWeakPtr()));
 
   auto* delegate = Shell::Get()->saved_desk_delegate();
   for (int i = 0; i < static_cast<int>(favicons.size()); ++i) {
     const GURL& url = favicons[i];
-    delegate->GetFaviconForUrl(url.spec(), app_info.lacros_profile_id,
-                               base::BindOnce(&PineItemView::OnOneFaviconLoaded,
-                                              GetWeakPtr(), barrier, i),
-                               &cancelable_favicon_task_tracker_);
+    delegate->GetFaviconForUrl(
+        url.spec(), app_info.lacros_profile_id,
+        base::BindOnce(
+            &InformedRestoreItemView::OnOneFaviconLoaded,
+            GetWeakPtr(), barrier, i),
+        &cancelable_favicon_task_tracker_);
   }
 }
 
-PineItemView::~PineItemView() = default;
+InformedRestoreItemView::~InformedRestoreItemView() = default;
 
-void PineItemView::OnOneFaviconLoaded(IndexedImageCallback callback,
+void InformedRestoreItemView::OnOneFaviconLoaded(IndexedImageCallback callback,
                                       int index,
                                       const gfx::ImageSkia& favicon) {
   std::move(callback).Run({index, favicon});
 }
 
-void PineItemView::OnAllFaviconsLoaded(
+void InformedRestoreItemView::OnAllFaviconsLoaded(
     std::vector<IndexedImagePair> indexed_favicons) {
   base::ranges::sort(indexed_favicons,
                      [](const auto& element_a, const auto& element_b) {
@@ -217,7 +222,7 @@ void PineItemView::OnAllFaviconsLoaded(
   }
 }
 
-void PineItemView::UpdateTitle() {
+void InformedRestoreItemView::UpdateTitle() {
   apps::AppRegistryCache* cache =
       apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(
           Shell::Get()->session_controller()->GetActiveAccountId());
@@ -237,7 +242,7 @@ void PineItemView::UpdateTitle() {
   title_label_view_->SetText(base::UTF8ToUTF16(title));
 }
 
-BEGIN_METADATA(PineItemView)
+BEGIN_METADATA(InformedRestoreItemView)
 END_METADATA
 
 }  // namespace ash
