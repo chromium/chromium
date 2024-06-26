@@ -29,7 +29,7 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
-/** Unit tests for {@link TabGroupSyncIphControllerUnitTest}. */
+/** Unit tests for {@link TabGroupSyncIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures({

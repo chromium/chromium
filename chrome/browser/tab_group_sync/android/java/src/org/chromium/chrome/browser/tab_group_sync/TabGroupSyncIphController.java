@@ -68,4 +68,10 @@ public class TabGroupSyncIphController {
                         .build();
         mUserEducationHelper.requestShowIPH(iphCommand);
     }
+
+    public void dismissTextBubble() {
+        if (mUserEducationHelper != null) {
+            mUserEducationHelper.dismissTextBubble();
+        }
+    }
 }

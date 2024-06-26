@@ -55,6 +55,7 @@ public class UserEducationHelper {
 
     private Profile mProfile;
     private List<IPHCommand> mPendingIPHCommands;
+    private TextBubble mTextBubble;
 
     /**
      * Constructs a {@link UserEducationHelper} that is immediately available to process inbound
@@ -146,7 +147,7 @@ public class UserEducationHelper {
         }
 
         HighlightParams highlightParams = iphCommand.highlightParams;
-        TextBubble textBubble = null;
+        mTextBubble = null;
         TriggerDetails triggerDetails =
                 new TriggerDetails(
                         tracker.shouldTriggerHelpUI(featureName), /* shouldShowSnooze= */ false);
@@ -167,7 +168,7 @@ public class UserEducationHelper {
             assert (!contentString.isEmpty());
             assert (!accessibilityString.isEmpty());
 
-            textBubble =
+            mTextBubble =
                     new TextBubble(
                             mActivity,
                             anchorView,
@@ -176,9 +177,9 @@ public class UserEducationHelper {
                             !iphCommand.removeArrow,
                             viewRectProvider != null ? viewRectProvider : rectProvider,
                             ChromeAccessibilityUtil.get().isAccessibilityEnabled());
-            textBubble.setPreferredVerticalOrientation(iphCommand.preferredVerticalOrientation);
-            textBubble.setDismissOnTouchInteraction(iphCommand.dismissOnTouch);
-            textBubble.addOnDismissListener(
+            mTextBubble.setPreferredVerticalOrientation(iphCommand.preferredVerticalOrientation);
+            mTextBubble.setDismissOnTouchInteraction(iphCommand.dismissOnTouch);
+            mTextBubble.addOnDismissListener(
                     () ->
                             mHandler.postDelayed(
                                     () -> {
@@ -187,11 +188,12 @@ public class UserEducationHelper {
                                         if (highlightParams != null) {
                                             ViewHighlighter.turnOffHighlight(anchorView);
                                         }
+                                        mTextBubble = null;
                                     },
                                     ViewHighlighter.IPH_MIN_DELAY_BETWEEN_TWO_HIGHLIGHTS));
-            textBubble.setAutoDismissTimeout(iphCommand.autoDismissTimeout);
+            mTextBubble.setAutoDismissTimeout(iphCommand.autoDismissTimeout);
 
-            textBubble.show();
+            mTextBubble.show();
         }
 
         if (highlightParams != null) {
@@ -203,5 +205,12 @@ public class UserEducationHelper {
         }
 
         iphCommand.onShowCallback.run();
+    }
+
+    /** Dismisses the currently showing text bubble, if any. */
+    public void dismissTextBubble() {
+        if (mTextBubble != null) {
+            mTextBubble.dismiss();
+        }
     }
 }

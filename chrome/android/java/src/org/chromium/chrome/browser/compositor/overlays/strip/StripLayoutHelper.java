@@ -316,6 +316,12 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
                     StripLayoutGroupTitle groupTitle = findGroupTitle(oldRootId);
                     if (groupTitle != null) groupTitle.updateRootId(newRootId);
+
+                    // Update LastSyncedGroupId to prevent the IPH from being dismissed when the
+                    // synced rootId changes.
+                    if (oldRootId == mLastSyncedGroupId) {
+                        mLastSyncedGroupId = newRootId;
+                    }
                 }
 
                 @Override
@@ -324,6 +330,11 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                         @Nullable Token oldTabGroupId,
                         @DidRemoveTabGroupReason int removalReason) {
                     releaseResourcesForGroupTitle(oldRootId);
+
+                    // dismiss the iph text bubble when the synced tab group is unsynced.
+                    if (oldRootId == mLastSyncedGroupId) {
+                        dismissTabGroupSyncIph();
+                    }
                 }
             };
 
@@ -896,6 +907,9 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         // Dismiss tab menu, similar to how the app menu is dismissed on orientation change
         mTabMenu.dismiss();
 
+        // Dismiss iph on orientation change, as its position might become incorrect.
+        dismissTabGroupSyncIph();
+
         if ((orientationChanged && wasSelectedTabVisible) || !mTabStateInitialized) {
             bringSelectedTabToVisibleArea(time, mTabStateInitialized);
         }
@@ -1021,6 +1035,14 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         }
     }
 
+    /** Dismiss the iph text bubble for synced tab group. */
+    private void dismissTabGroupSyncIph() {
+        if (mLastSyncedGroupId != Tab.INVALID_TAB_ID && mTabGroupSyncIphController != null) {
+            mTabGroupSyncIphController.dismissTextBubble();
+            mLastSyncedGroupId = Tab.INVALID_TAB_ID;
+        }
+    }
+
     /**
      * Helper-specific updates. Cascades the values updated by the animations and flings.
      *
@@ -1050,12 +1072,15 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             mIsFirstLayoutPass = false;
         }
 
+        // 4. Show iph text bubble for synced tab group if necessary.
         if (doneAnimating && mScroller.isFinished()) {
             showTabGroupSyncIph();
         }
         return doneAnimating;
     }
 
+    // TODO: Only trigger iph when tab strip is showing e.g. tab strip is not hidden and tab
+    //  switcher is not showing.
     private void showTabGroupSyncIph() {
         if (mLastSyncedGroupId != Tab.INVALID_TAB_ID
                 && !mModel.isIncognito()
@@ -1087,7 +1112,6 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                 return;
             }
             float dpToPx = mContext.getResources().getDisplayMetrics().density;
-            // TODO(crbug.com/346634578): Update this iph position for cases like window rotate.
             if (groupTitle != null) {
                 mTabGroupSyncIphController.maybeShowIphOnTabStrip(
                         mToolbarContainerView,

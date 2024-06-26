@@ -4416,24 +4416,11 @@ public class StripLayoutHelperTest {
         ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE,
         ChromeFeatureList.TAB_GROUP_SYNC_ANDROID
     })
-    public void testTabGroupSync_ShowIph() {
-        // Setup tab group.
-        initializeTest(false, false, true, 0, 5);
-        groupTabs(4, 5);
-        mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
-        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+    public void testTabGroupSyncIph_Show() {
+        // Setup tab group and Tab Group Sync iph.
+        TabGroupSyncIphController controller = setupTabGroupSyncIphOnTablet(4, 5);
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[4]);
-
-        // Prepare iph and required objects.
-        TabGroupSyncIphController controller = mock(TabGroupSyncIphController.class);
-        mStripLayoutHelper.setTabGroupSyncIphControllerForTesting(controller);
-        TestTabModel tabModel = spy(mModel);
-        when(tabModel.getProfile()).thenReturn(mProfile);
-        mStripLayoutHelper.setTabModel(tabModel, null, false);
-        mStripLayoutHelper.setLastSyncedGroupIdForTesting(tabs[tabs.length - 1].getId());
-        mStripLayoutHelper.setTabGroupSyncIphControllerForTesting(controller);
 
         // Trigger show iph.
         mStripLayoutHelper.updateLayout(TIMESTAMP);
@@ -4446,6 +4433,58 @@ public class StripLayoutHelperTest {
                         anyFloat(),
                         eq(SCREEN_WIDTH - groupTitle.getDrawX() - groupTitle.getWidth()),
                         anyFloat());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS,
+        ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE,
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID
+    })
+    public void testTabGroupSyncIph_DismissOnOrientationChanged() {
+        // Setup tab group and Tab Group Sync iph.
+        TabGroupSyncIphController controller = setupTabGroupSyncIphOnTablet(4, 5);
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[4]);
+
+        // Trigger show iph.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify iph is displayed at the correct horizontal position.
+        verify(controller)
+                .maybeShowIphOnTabStrip(
+                        any(),
+                        eq(groupTitle.getDrawX()),
+                        anyFloat(),
+                        eq(SCREEN_WIDTH - groupTitle.getDrawX() - groupTitle.getWidth()),
+                        anyFloat());
+
+        // Change orientation.
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_HEIGHT, SCREEN_WIDTH, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+
+        // Verify iph text bubble is dismissed on orientation change.
+        verify(controller).dismissTextBubble();
+    }
+
+    private TabGroupSyncIphController setupTabGroupSyncIphOnTablet(
+            int startTabIndex, int endTabIndex) {
+        initializeTest(false, false, true, 0, 5);
+        groupTabs(startTabIndex, endTabIndex);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+
+        // Prepare iph and required objects.
+        TabGroupSyncIphController controller = mock(TabGroupSyncIphController.class);
+        mStripLayoutHelper.setTabGroupSyncIphControllerForTesting(controller);
+        TestTabModel tabModel = spy(mModel);
+        when(tabModel.getProfile()).thenReturn(mProfile);
+        mStripLayoutHelper.setTabModel(tabModel, null, false);
+        mStripLayoutHelper.setLastSyncedGroupIdForTesting(tabs[tabs.length - 1].getId());
+        mStripLayoutHelper.setTabGroupSyncIphControllerForTesting(controller);
+
+        return controller;
     }
 
     @Test
