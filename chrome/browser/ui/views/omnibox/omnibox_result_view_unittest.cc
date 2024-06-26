@@ -231,6 +231,34 @@ TEST_F(OmniboxResultViewTest, MouseEnterAndExitSetsHoveredState) {
   EXPECT_NE(OmniboxPartState::HOVERED, result_view()->GetThemeState());
 }
 
+TEST_F(OmniboxResultViewTest, MouseEnterAndExitSetsHoveredAccessibleState) {
+  ui::AXNodeData node_data;
+  result_view()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_FALSE(result_view()->GetViewAccessibility().GetIsHovered());
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kHovered));
+
+  // The mouse entering the view should put the view in the HOVERED state.
+  result_view()->OnMouseEntered(FakeMouseEvent(ui::ET_MOUSE_MOVED, 0, 50, 50));
+  node_data = ui::AXNodeData();
+  result_view()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(result_view()->GetViewAccessibility().GetIsHovered());
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kHovered));
+
+  // Continuing to move over the view should not change the state.
+  result_view()->OnMouseMoved(FakeMouseEvent(ui::ET_MOUSE_MOVED, 0, 50, 50));
+  node_data = ui::AXNodeData();
+  result_view()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(result_view()->GetViewAccessibility().GetIsHovered());
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kHovered));
+
+  // But exiting should revert the HOVERED state.
+  result_view()->OnMouseExited(FakeMouseEvent(ui::ET_MOUSE_MOVED, 0, 200, 200));
+  node_data = ui::AXNodeData();
+  result_view()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_FALSE(result_view()->GetViewAccessibility().GetIsHovered());
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kHovered));
+}
+
 TEST_F(OmniboxResultViewTest, AccessibleNodeData) {
   // Check accessibility of result.
   std::u16string match_url = u"https://google.com";

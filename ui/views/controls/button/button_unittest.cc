@@ -324,6 +324,48 @@ TEST_F(ButtonTest, HoverStatePreservedOnDescendantViewHierarchyChange) {
   EXPECT_EQ(Button::STATE_HOVERED, button()->GetState());
 }
 
+TEST_F(ButtonTest, AccessibleHoveredStateUpdatesCorrectly) {
+  event_generator()->MoveMouseTo(button()->GetBoundsInScreen().CenterPoint());
+  event_generator()->PressLeftButton();
+
+  ui::AXNodeData node_data;
+  button()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_FALSE(button()->GetViewAccessibility().GetIsHovered());
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kHovered));
+
+  event_generator()->ReleaseLeftButton();
+  node_data = ui::AXNodeData();
+  button()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(button()->GetViewAccessibility().GetIsHovered());
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kHovered));
+
+  button()->SetEnabled(false);
+  EXPECT_EQ(Button::STATE_DISABLED, button()->GetState());
+  node_data = ui::AXNodeData();
+  button()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_FALSE(button()->GetViewAccessibility().GetIsHovered());
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kHovered));
+
+  button()->SetEnabled(true);
+  node_data = ui::AXNodeData();
+  button()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(button()->GetViewAccessibility().GetIsHovered());
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kHovered));
+
+  button()->SetVisible(false);
+  EXPECT_EQ(Button::STATE_NORMAL, button()->GetState());
+  node_data = ui::AXNodeData();
+  button()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_FALSE(button()->GetViewAccessibility().GetIsHovered());
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kHovered));
+
+  button()->SetVisible(true);
+  node_data = ui::AXNodeData();
+  button()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(button()->GetViewAccessibility().GetIsHovered());
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kHovered));
+}
+
 // Tests the different types of NotifyActions.
 TEST_F(ButtonTest, NotifyAction) {
   gfx::Point center(10, 10);

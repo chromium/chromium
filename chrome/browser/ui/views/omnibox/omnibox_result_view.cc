@@ -56,6 +56,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
@@ -589,9 +590,6 @@ void OmniboxResultView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
                              autocomplete_controller->result().size());
 
   node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, is_selected);
-  if (IsMouseHovered()) {
-    node_data->AddState(ax::mojom::State::kHovered);
-  }
 }
 
 void OmniboxResultView::OnThemeChanged() {
@@ -649,6 +647,7 @@ gfx::Image OmniboxResultView::GetIcon() const {
 void OmniboxResultView::UpdateHoverState() {
   UpdateRemoveSuggestionVisibility();
   ApplyThemeAndRefreshIcons();
+  GetViewAccessibility().SetIsHovered(IsMouseHovered());
 }
 
 void OmniboxResultView::UpdateRemoveSuggestionVisibility() {
