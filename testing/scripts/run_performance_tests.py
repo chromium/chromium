@@ -1002,11 +1002,11 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
   overall_return_code = 0
   # TODO(crbug.com/40631538): shard environment variables are not specified
   # for single-shard shard runs.
-  if 'GTEST_SHARD_INDEX' not in os.environ and '1' not in shard_map.keys():
+  if 'GTEST_SHARD_INDEX' not in os.environ and '1' in shard_map.keys():
     raise Exception(
         'Setting GTEST_SHARD_INDEX environment variable is required '
         'when you use a shard map.')
-  shard_index = os.environ.get('GTEST_SHARD_INDEX', 0)
+  shard_index = os.environ.get('GTEST_SHARD_INDEX', '0')
   shard_configuration = shard_map[shard_index]
   if not [x for x in shard_configuration if x in PERF_TOOLS]:
     raise Exception(
