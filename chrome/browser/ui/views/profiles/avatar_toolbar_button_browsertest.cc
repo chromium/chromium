@@ -419,6 +419,14 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
     waiting_run_loop.Run();
   }
 
+  void SimulateDisableSyncByPolicyWithError() {
+    GetTestSyncService()->SetDisableReasons(
+        {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
+    // Disabling sync by policy resets the sync setup.
+    GetTestSyncService()->SetInitialSyncFeatureSetupComplete(false);
+    GetTestSyncService()->FireStateChanged();
+  }
+
  private:
   void SetTestingFactories(content::BrowserContext* context) {
     SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -919,6 +927,24 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, TooltipText) {
 
   EXPECT_EQ(avatar->GetTooltipText(gfx::Point()), account_name);
 }
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+                       EnableSyncWithSyncDisabled) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  ASSERT_EQ(avatar->GetText(), std::u16string());
+
+  EnableSyncAndWait(u"test@gmail.com");
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+
+  SimulateDisableSyncByPolicyWithError();
+
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+
+  Browser* new_browser = CreateBrowser(browser()->profile());
+  AvatarToolbarButton* new_avatar = GetAvatarToolbarButton(new_browser);
+  EXPECT_EQ(new_avatar->GetText(), std::u16string());
+}
+
 #endif
 
 // Test suite for testing `AvatarToolbarButton`'s responsibility of updating

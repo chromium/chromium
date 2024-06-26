@@ -484,7 +484,10 @@ class SyncErrorStateProvider : public StateProvider,
   }
 
   // StateProvider:
-  bool IsActive() const override { return last_avatar_error_.has_value(); }
+  bool IsActive() const override {
+    return SyncServiceFactory::IsSyncAllowed(&profile_.get()) &&
+           last_avatar_error_.has_value();
+  }
 
   // Returning true for non sync paused error.
   bool IsErrorSyncPaused() const {
