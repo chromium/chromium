@@ -4515,7 +4515,7 @@
   <message name="IDS_SETTINGS_SAFETY_HUB" desc="Name of a page in settings that gives users an overview over their safety status and where users can take action to improve their safety.">
     Safety Check
   </message>
-  <message name="IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_BUTTON" desc="This is the label of a button that takes users to the Safety Check page in Chrome settings. This button appears in a section in privacy settings next to a text that gives more details on Safety Check.">
+  <message name="IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_BUTTON_LABEL" desc="This is the label of a button that takes users to the Safety Check page in Chrome settings. This button appears in a section in privacy settings, after the 'Safety Check' and 'Chrome found some safety recommendations for your review' strings. The words 'Safety Check' should be translated to match https://localizer.google.com/glossary/termset?gid=27517723&#38;tsid=4e021eb4 or if it's not available https://localizer.google.com/messages/details/ChromeClient/7810354727545555354. The tone should be terse, because we need this button to be as short as possible. If it is impossible to say 'Go to Safety Check' in 30 characters, you may translate this as 'Review'. (CHAR LIMIT = 30)">
     Go to Safety Check
   </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_PAGE_CARD_SECTION_HEADER" desc="The title of the first section in the Safety Hub page. The 'Safety at a glance' section gives an overview about the current state of passwords, browser version and safe browsing setting of the browser. ">
