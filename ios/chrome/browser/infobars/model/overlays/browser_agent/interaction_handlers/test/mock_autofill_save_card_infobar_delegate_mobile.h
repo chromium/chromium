@@ -40,6 +40,13 @@ class MockAutofillSaveCardInfoBarDelegateMobile
               (override));
   MOCK_METHOD(void, OnLegalMessageLinkClicked, (GURL url), (override));
   MOCK_METHOD(void, InfoBarDismissed, (), (override));
+  MOCK_METHOD(void,
+              CreditCardUploadCompleted,
+              (bool card_saved,
+               std::optional<autofill::payments::PaymentsAutofillClient::
+                                 OnConfirmationClosedCallback>
+                   on_confirmation_closed_callback),
+              (override));
 };
 
 class MockAutofillSaveCardInfoBarDelegateMobileFactory {

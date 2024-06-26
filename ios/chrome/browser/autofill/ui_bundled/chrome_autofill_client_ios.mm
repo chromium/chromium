@@ -479,4 +479,16 @@ ChromeAutofillClientIOS::ClassifyAsPasswordForm(AutofillManager& manager,
                  : PasswordFormType::kNoPasswordForm;
 }
 
+AutofillSaveCardInfoBarDelegateIOS*
+ChromeAutofillClientIOS::GetAutofillSaveCardInfoBarDelegateIOS() {
+  const auto save_card_infobar = base::ranges::find(
+      infobar_manager_->infobars(),
+      infobars::InfoBarDelegate::AUTOFILL_CC_INFOBAR_DELEGATE_MOBILE,
+      &infobars::InfoBar::GetIdentifier);
+  return save_card_infobar != infobar_manager_->infobars().cend()
+             ? AutofillSaveCardInfoBarDelegateIOS::FromInfobarDelegate(
+                   (*save_card_infobar)->delegate())
+             : nullptr;
+}
+
 }  // namespace autofill

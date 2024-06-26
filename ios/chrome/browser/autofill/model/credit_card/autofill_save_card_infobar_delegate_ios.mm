@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/common/features.h"
+#import "components/infobars/core/infobar_manager.h"
 
 namespace autofill {
 
@@ -35,6 +36,15 @@ AutofillSaveCardInfoBarDelegateIOS::~AutofillSaveCardInfoBarDelegateIOS() {
   if (on_confirmation_closed_callback_) {
     (*std::exchange(on_confirmation_closed_callback_, std::nullopt)).Run();
   }
+}
+
+// static
+AutofillSaveCardInfoBarDelegateIOS*
+AutofillSaveCardInfoBarDelegateIOS::FromInfobarDelegate(
+    infobars::InfoBarDelegate* delegate) {
+  return delegate->GetIdentifier() == AUTOFILL_CC_INFOBAR_DELEGATE_MOBILE
+             ? static_cast<AutofillSaveCardInfoBarDelegateIOS*>(delegate)
+             : nullptr;
 }
 
 bool AutofillSaveCardInfoBarDelegateIOS::ShouldExpire(

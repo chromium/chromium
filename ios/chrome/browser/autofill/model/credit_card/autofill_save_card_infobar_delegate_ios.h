@@ -26,6 +26,11 @@ class AutofillSaveCardInfoBarDelegateIOS
       const AutofillSaveCardInfoBarDelegateIOS&) = delete;
   ~AutofillSaveCardInfoBarDelegateIOS() override;
 
+  // Returns `delegate` as an AutofillSaveCardInfoBarDelegateIOS, or
+  // nullptr if it is of another type.
+  static AutofillSaveCardInfoBarDelegateIOS* FromInfobarDelegate(
+      infobars::InfoBarDelegate* delegate);
+
   // AutofillSaveCardInfoBarDelegateMobile overrides:
   bool ShouldExpire(const NavigationDetails& details) const override;
 

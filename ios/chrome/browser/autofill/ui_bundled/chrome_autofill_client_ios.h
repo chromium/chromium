@@ -5,31 +5,32 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_CHROME_AUTOFILL_CLIENT_IOS_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_CHROME_AUTOFILL_CLIENT_IOS_H_
 
-#include <memory>
-#include <optional>
-#include <string>
-#include <vector>
+#import <memory>
+#import <optional>
+#import <string>
+#import <vector>
 
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/autocomplete_history_manager.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
-#include "components/autofill/core/browser/payments/card_unmask_delegate.h"
-#include "components/autofill/core/browser/payments/legal_message_line.h"
-#include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/strike_databases/strike_database.h"
-#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
-#include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#import "base/memory/weak_ptr.h"
+#import "components/autofill/core/browser/autocomplete_history_manager.h"
+#import "components/autofill/core/browser/autofill_client.h"
+#import "components/autofill/core/browser/country_type.h"
+#import "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
+#import "components/autofill/core/browser/payments/card_unmask_delegate.h"
+#import "components/autofill/core/browser/payments/legal_message_line.h"
+#import "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
+#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/strike_databases/strike_database.h"
+#import "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
+#import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #import "components/autofill/ios/browser/autofill_client_ios_bridge.h"
-#include "components/infobars/core/infobar_manager.h"
-#include "components/plus_addresses/plus_address_types.h"
-#include "components/prefs/pref_service.h"
-#include "components/sync/service/sync_service.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "components/infobars/core/infobar_manager.h"
+#import "components/plus_addresses/plus_address_types.h"
+#import "components/prefs/pref_service.h"
+#import "components/sync/service/sync_service.h"
+#import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
 #import "ios/chrome/browser/autofill/ui_bundled/ios_chrome_payments_autofill_client.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 @protocol AutofillCommands;
 @class UIViewController;
@@ -143,6 +144,12 @@ class ChromeAutofillClientIOS : public AutofillClient {
       AutofillManager& manager,
       FormGlobalId form_id,
       FieldGlobalId field_id) const override;
+
+  // Searches infobars managed by the infobar_manager_ for infobar of the type
+  // AutofillSaveCardInfoBarDelegateIOS and returns it if found else returns a
+  // nullptr.
+  virtual AutofillSaveCardInfoBarDelegateIOS*
+  GetAutofillSaveCardInfoBarDelegateIOS();
 
  private:
   // Returns the account email of the signed-in user, or nullopt if there is no

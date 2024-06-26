@@ -95,7 +95,10 @@ void IOSChromePaymentsAutofillClient::CreditCardUploadCompleted(
     bool card_saved,
     std::optional<OnConfirmationClosedCallback>
         on_confirmation_closed_callback) {
-  NOTIMPLEMENTED();
+  if (client_->GetAutofillSaveCardInfoBarDelegateIOS()) {
+    client_->GetAutofillSaveCardInfoBarDelegateIOS()->CreditCardUploadCompleted(
+        card_saved, std::move(on_confirmation_closed_callback));
+  }
 }
 
 void IOSChromePaymentsAutofillClient::ShowAutofillProgressDialog(
