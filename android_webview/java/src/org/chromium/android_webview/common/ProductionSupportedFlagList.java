@@ -145,8 +145,8 @@ public final class ProductionSupportedFlagList {
                 AwSwitches.WEBVIEW_FENCED_FRAMES,
                 "Enables fenced frames. Also enables PrivacySandboxAdsAPIsOverride."),
         Flag.commandLine(
-                AwSwitches.DEBUG_BLINDAUTH,
-                "Override and enable features useful for blindauth testing/debugging."),
+                AwSwitches.DEBUG_BSA,
+                "Override and enable features useful for BSA library testing/debugging."),
         Flag.baseFeature(
                 "DefaultPassthroughCommandDecoder", "Use the passthrough GLES2 command decoder."),
         Flag.baseFeature(

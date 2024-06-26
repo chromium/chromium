@@ -238,11 +238,10 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck);
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDebugBlindauth)) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kDebugBsa)) {
     // Feature parameters can only be set via a field trial.
-    const char kTrialName[] = "StudyDebugBlindauth";
-    const char kGroupName[] = "GroupDebugBlindauth";
+    const char kTrialName[] = "StudyDebugBsa";
+    const char kGroupName[] = "GroupDebugBsa";
     base::FieldTrial* field_trial =
         base::FieldTrialList::CreateFieldTrial(kTrialName, kGroupName);
     // If field_trial is null, there was some unexpected name conflict.

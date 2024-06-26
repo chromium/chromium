@@ -30,7 +30,7 @@ extern const char kWebViewForceCrashJava[];
 extern const char kWebViewForceCrashNative[];
 extern const char kWebViewUseSeparateResourceContext[];
 extern const char kWebViewContextExperimentationMetrics[];
-extern const char kDebugBlindauth[];
+extern const char kDebugBsa[];
 
 }  // namespace switches
 
