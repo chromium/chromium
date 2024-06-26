@@ -18,6 +18,7 @@
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
@@ -124,7 +125,9 @@ void SerializeCommonAggregatableData(
 
   auto aggregatable_trigger_config =
       attribution_reporting::AggregatableTriggerConfig::Create(
-          source_registration_time_config, trigger_context_id);
+          source_registration_time_config, trigger_context_id,
+          // TODO(https://crbug.com/345274918): Read the max bytes value.
+          attribution_reporting::AggregatableFilteringIdsMaxBytes());
   if (!aggregatable_trigger_config.has_value()) {
     return false;
   }

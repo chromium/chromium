@@ -20,9 +20,45 @@
 
 namespace attribution_reporting {
 
+class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableValuesValue {
+ public:
+  static std::optional<AggregatableValuesValue> Create(int value,
+                                                       uint64_t filtering_id);
+
+  static base::expected<AggregatableValuesValue,
+                        mojom::TriggerRegistrationError>
+  FromJSON(const base::Value&, mojom::TriggerRegistrationError);
+
+  AggregatableValuesValue() = default;
+
+  ~AggregatableValuesValue() = default;
+
+  AggregatableValuesValue(const AggregatableValuesValue&) = default;
+  AggregatableValuesValue& operator=(const AggregatableValuesValue&) = default;
+
+  AggregatableValuesValue(AggregatableValuesValue&&) = default;
+  AggregatableValuesValue& operator=(AggregatableValuesValue&&) = default;
+
+  friend bool operator==(const AggregatableValuesValue&,
+                         const AggregatableValuesValue&) = default;
+
+  uint32_t value() const { return value_; }
+
+  uint64_t filtering_id() const { return filtering_id_; }
+
+  base::Value::Dict ToJson() const;
+
+ private:
+  AggregatableValuesValue(uint32_t value, uint64_t filtering_id);
+
+  uint32_t value_;
+
+  uint64_t filtering_id_;
+};
+
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableValues {
  public:
-  using Values = base::flat_map<std::string, uint32_t>;
+  using Values = base::flat_map<std::string, AggregatableValuesValue>;
 
   static std::optional<AggregatableValues> Create(Values, FilterPair);
 

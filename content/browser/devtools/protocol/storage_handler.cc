@@ -2094,7 +2094,9 @@ ToAggregatableValueDictEntries(
     out->emplace_back(
         Storage::AttributionReportingAggregatableValueDictEntry::Create()
             .SetKey(key)
-            .SetValue(value)
+            // TODO(https://crbug.com/345274918): Update DevTools protocol to
+            // include the max bytes field.
+            .SetValue(value.value())
             .Build());
   }
 

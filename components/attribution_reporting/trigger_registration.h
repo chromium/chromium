@@ -52,6 +52,8 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
 
   base::Value::Dict ToJson() const;
 
+  bool IsValid() const;
+
   friend bool operator==(const TriggerRegistration&,
                          const TriggerRegistration&) = default;
 

@@ -20,6 +20,9 @@ BASE_DECLARE_FEATURE(kAttributionAggregatableDebugReporting);
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING_FEATURES)
 BASE_DECLARE_FEATURE(kAttributionSourceDestinationLimit);
 
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING_FEATURES)
+BASE_DECLARE_FEATURE(kAttributionReportingAggregatableFilteringIds);
+
 }  // namespace attribution_reporting::features
 
 #endif  // COMPONENTS_ATTRIBUTION_REPORTING_FEATURES_H_

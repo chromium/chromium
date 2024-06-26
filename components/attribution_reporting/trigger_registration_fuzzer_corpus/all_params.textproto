@@ -211,6 +211,48 @@ object_value {
             }
           }
         }
+        field {
+          name: "c"
+          value {
+            object_value {
+              field {
+                name: "value"
+                value {
+                  number_value {
+                    integer_value {
+                      value: 789
+                    }
+                  }
+                }
+              }
+              field {
+                name: "filtering_id"
+                value {
+                  string_value {
+                    value: "125"
+                  }
+                }
+              }
+            }
+          }
+        }
+        field {
+          name: "d"
+          value {
+            object_value {
+              field {
+                name: "value"
+                value {
+                  number_value {
+                    integer_value {
+                      value: 321
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -281,6 +323,16 @@ object_value {
               }
             }
           }
+        }
+      }
+    }
+  }
+  field {
+    name: "aggregatable_filtering_id_max_bytes"
+    value {
+      number_value {
+        integer_value {
+          value: 1
         }
       }
     }

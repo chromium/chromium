@@ -186,9 +186,15 @@ struct AggregatableDedupKey {
   FilterPair filters;
 };
 
+struct AggregatableValuesValue {
+  uint32 value;
+  uint64 filtering_id;
+};
+
 struct AggregatableValues {
-  // A map of aggregation key identifier and the corresponding value.
-  map<string, uint32> values;
+  // A map of aggregation key identifier and the corresponding aggregatable
+  // values value.
+  map<string, AggregatableValuesValue> values;
 
   FilterPair filters;
 };
@@ -233,6 +239,9 @@ struct TriggerRegistration {
   // Specifies the context ID associated with the trigger. The context ID
   // cannot be empty or longer than 64 bytes.
   string? trigger_context_id;
+
+  // Specifies the maximum size of filtering ids within `aggregatable_values`.
+  uint8 aggregatable_filtering_id_max_bytes;
 
   // Specifies the aggregatable debug reporting configuration.
   AggregatableDebugReportingConfig aggregatable_debug_reporting_config;

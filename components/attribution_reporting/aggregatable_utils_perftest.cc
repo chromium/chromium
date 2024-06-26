@@ -11,6 +11,7 @@
 #include "base/functional/function_ref.h"
 #include "base/time/time.h"
 #include "base/timer/lap_timer.h"
+#include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
@@ -34,14 +35,16 @@ const TestCase kTestCases[] = {
         "include_no_attributed_source_time",
         *AggregatableTriggerConfig::Create(
             SourceRegistrationTimeConfig::kInclude,
-            /*trigger_context_id=*/std::nullopt),
+            /*trigger_context_id=*/std::nullopt,
+            AggregatableFilteringIdsMaxBytes()),
         0.008,
     },
     {
         "exclude_no_attributed_source_time_no_trigger_context_id",
         *AggregatableTriggerConfig::Create(
             SourceRegistrationTimeConfig::kExclude,
-            /*trigger_context_id=*/std::nullopt),
+            /*trigger_context_id=*/std::nullopt,
+            AggregatableFilteringIdsMaxBytes()),
         0.05,
     },
 };

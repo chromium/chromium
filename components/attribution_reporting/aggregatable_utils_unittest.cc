@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/time/time.h"
+#include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
@@ -24,6 +25,8 @@ using ::testing::IsEmpty;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
+
+const AggregatableFilteringIdsMaxBytes kFilteringIdMaxBytes;
 
 TEST(AggregatableUtilsTest, RoundDownToWholeDaySinceUnixEpoch) {
   const struct {
@@ -63,9 +66,9 @@ TEST(AggregatableUtilsTest, RoundDownToWholeDaySinceUnixEpoch) {
 
 TEST(AggregatableUtilsTest,
      GetNullAggregatableReports_IncludeSourceRegistrationTime) {
-  auto config =
-      *AggregatableTriggerConfig::Create(SourceRegistrationTimeConfig::kInclude,
-                                         /*trigger_context_id=*/std::nullopt);
+  auto config = *AggregatableTriggerConfig::Create(
+      SourceRegistrationTimeConfig::kInclude,
+      /*trigger_context_id=*/std::nullopt, kFilteringIdMaxBytes);
   base::Time now = base::Time::Now();
 
   const auto always_true = [](int) { return true; };
@@ -117,9 +120,9 @@ TEST(AggregatableUtilsTest,
 
 TEST(AggregatableUtilsTest,
      GetNullAggregatableReports_ExcludeSourceRegistrationTime) {
-  auto config =
-      *AggregatableTriggerConfig::Create(SourceRegistrationTimeConfig::kExclude,
-                                         /*trigger_context_id=*/std::nullopt);
+  auto config = *AggregatableTriggerConfig::Create(
+      SourceRegistrationTimeConfig::kExclude,
+      /*trigger_context_id=*/std::nullopt, kFilteringIdMaxBytes);
   base::Time now = base::Time::Now();
 
   const auto always_true = [](int) { return true; };
@@ -162,9 +165,9 @@ TEST(AggregatableUtilsTest,
 }
 
 TEST(AggregatableUtilsTest, GetNullAggregatableReports_RoundedTime) {
-  auto config =
-      *AggregatableTriggerConfig::Create(SourceRegistrationTimeConfig::kInclude,
-                                         /*trigger_context_id=*/std::nullopt);
+  auto config = *AggregatableTriggerConfig::Create(
+      SourceRegistrationTimeConfig::kInclude,
+      /*trigger_context_id=*/std::nullopt, kFilteringIdMaxBytes);
   const auto generate_func = [](int day) {
     return day == 3 || day == 4 || day == 5;
   };
@@ -195,9 +198,9 @@ TEST(AggregatableUtilsTest, GetNullAggregatableReports_RoundedTime) {
 }
 
 TEST(AggregatableUtilsTest, GetNullAggregatableReports_TriggerContextId) {
-  auto config =
-      *AggregatableTriggerConfig::Create(SourceRegistrationTimeConfig::kExclude,
-                                         /*trigger_context_id=*/"");
+  auto config = *AggregatableTriggerConfig::Create(
+      SourceRegistrationTimeConfig::kExclude,
+      /*trigger_context_id=*/"", kFilteringIdMaxBytes);
   base::Time now = base::Time::Now();
 
   const auto always_true = [](int) { return true; };
@@ -259,14 +262,16 @@ const NullReportsTestCase kNullReportsTestCases[] = {
         "include_no_attributed_source_time",
         *AggregatableTriggerConfig::Create(
             SourceRegistrationTimeConfig::kInclude,
-            /*trigger_context_id=*/std::nullopt),
+            /*trigger_context_id=*/std::nullopt,
+            kFilteringIdMaxBytes),
         0.008,
     },
     {
         "exclude_no_attributed_source_time_no_trigger_context_id",
         *AggregatableTriggerConfig::Create(
             SourceRegistrationTimeConfig::kExclude,
-            /*trigger_context_id=*/std::nullopt),
+            /*trigger_context_id=*/std::nullopt,
+            kFilteringIdMaxBytes),
         0.05,
     },
 };

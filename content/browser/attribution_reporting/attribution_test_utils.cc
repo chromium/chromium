@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
+#include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
@@ -421,7 +422,8 @@ AttributionTrigger TriggerBuilder::Build(
   reg.aggregation_coordinator_origin = aggregation_coordinator_origin_;
   reg.aggregatable_trigger_config =
       *attribution_reporting::AggregatableTriggerConfig::Create(
-          source_registration_time_config_, trigger_context_id_);
+          source_registration_time_config_, trigger_context_id_,
+          attribution_reporting::AggregatableFilteringIdsMaxBytes());
   reg.aggregatable_debug_reporting_config =
       aggregatable_debug_reporting_config_;
 
@@ -534,7 +536,8 @@ AttributionReport ReportBuilder::BuildAggregatableAttribution() const {
           AttributionReport::CommonAggregatableData(
               aggregation_coordinator_origin_, verification_token_,
               *attribution_reporting::AggregatableTriggerConfig::Create(
-                  source_registration_time_config_, trigger_context_id_)),
+                  source_registration_time_config_, trigger_context_id_,
+                  attribution_reporting::AggregatableFilteringIdsMaxBytes())),
           contributions_, source_));
 }
 
@@ -547,7 +550,8 @@ AttributionReport ReportBuilder::BuildNullAggregatable() const {
           AttributionReport::CommonAggregatableData(
               aggregation_coordinator_origin_, verification_token_,
               *attribution_reporting::AggregatableTriggerConfig::Create(
-                  source_registration_time_config_, trigger_context_id_)),
+                  source_registration_time_config_, trigger_context_id_,
+                  attribution_reporting::AggregatableFilteringIdsMaxBytes())),
           source_.common_info().reporting_origin(), source_.source_time()));
 }
 
@@ -750,8 +754,8 @@ std::ostream& operator<<(
 std::ostream& operator<<(std::ostream& out,
                          const AttributionReport::EventLevelData& data) {
   return out << "{trigger_data=" << data.trigger_data
-             << ",priority=" << data.priority
-             << ",source=" << data.source << "}";
+             << ",priority=" << data.priority << ",source=" << data.source
+             << "}";
 }
 
 std::ostream& operator<<(
@@ -876,7 +880,10 @@ TriggerBuilder DefaultAggregatableTriggerBuilder(
         *attribution_reporting::AggregatableTriggerData::Create(
             absl::MakeUint128(/*high=*/i, /*low=*/0),
             /*source_keys=*/{key_id}, FilterPair()));
-    aggregatable_values.emplace(std::move(key_id), histogram_values[i]);
+    aggregatable_values.emplace(
+        std::move(key_id),
+        *attribution_reporting::AggregatableValuesValue::Create(
+            histogram_values[i], /*filtering_id=*/0u));
   }
 
   return TriggerBuilder()

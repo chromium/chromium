@@ -45,6 +45,8 @@ component("attribution_reporting") {
     "aggregatable_debug_reporting_config.h",
     "aggregatable_dedup_key.cc",
     "aggregatable_dedup_key.h",
+    "aggregatable_filtering_id_max_bytes.cc",
+    "aggregatable_filtering_id_max_bytes.h",
     "aggregatable_trigger_config.cc",
     "aggregatable_trigger_config.h",
     "aggregatable_trigger_data.cc",
@@ -142,6 +144,7 @@ source_set("unit_tests") {
   sources = [
     "aggregatable_debug_reporting_config_unittest.cc",
     "aggregatable_dedup_key_unittest.cc",
+    "aggregatable_filtering_id_max_bytes_unittest.cc",
     "aggregatable_trigger_config_unittest.cc",
     "aggregatable_trigger_data_unittest.cc",
     "aggregatable_utils_unittest.cc",
@@ -270,6 +273,11 @@ mojom("registration_mojom") {
   cpp_typemaps = [
     {
       types = [
+        {
+          mojom = "attribution_reporting.mojom.AggregatableValuesValue"
+          cpp = "::attribution_reporting::AggregatableValuesValue"
+          forward_declaration = "namespace attribution_reporting { class AggregatableValuesValue; }"
+        },
         {
           mojom = "attribution_reporting.mojom.SuitableOrigin"
           cpp = "::attribution_reporting::SuitableOrigin"

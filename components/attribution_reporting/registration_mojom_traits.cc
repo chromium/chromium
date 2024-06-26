@@ -16,6 +16,7 @@
 #include "base/uuid.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
+#include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
@@ -411,6 +412,22 @@ bool StructTraits<attribution_reporting::mojom::AggregatableDedupKeyDataView,
 }
 
 // static
+bool StructTraits<attribution_reporting::mojom::AggregatableValuesValueDataView,
+                  attribution_reporting::AggregatableValuesValue>::
+    Read(attribution_reporting::mojom::AggregatableValuesValueDataView data,
+         attribution_reporting::AggregatableValuesValue* out) {
+  auto aggregatable_values_value =
+      attribution_reporting::AggregatableValuesValue::Create(
+          data.value(), data.filtering_id());
+  if (!aggregatable_values_value) {
+    return false;
+  }
+
+  *out = *std::move(aggregatable_values_value);
+  return true;
+}
+
+// static
 bool StructTraits<attribution_reporting::mojom::AggregatableValuesDataView,
                   attribution_reporting::AggregatableValues>::
     Read(attribution_reporting::mojom::AggregatableValuesDataView data,
@@ -469,11 +486,17 @@ bool StructTraits<attribution_reporting::mojom::TriggerRegistrationDataView,
     return false;
   }
 
+  auto max_bytes =
+      attribution_reporting::AggregatableFilteringIdsMaxBytes::Create(
+          data.aggregatable_filtering_id_max_bytes());
+  if (!max_bytes.has_value()) {
+    return false;
+  }
   std::optional<attribution_reporting::AggregatableTriggerConfig>
       aggregatable_trigger_config =
           attribution_reporting::AggregatableTriggerConfig::Create(
               data.source_registration_time_config(),
-              std::move(trigger_context_id));
+              std::move(trigger_context_id), max_bytes.value());
   if (!aggregatable_trigger_config.has_value()) {
     return false;
   }
@@ -486,7 +509,8 @@ bool StructTraits<attribution_reporting::mojom::TriggerRegistrationDataView,
 
   out->debug_key = data.debug_key();
   out->debug_reporting = data.debug_reporting();
-  return true;
+
+  return out->IsValid();
 }
 
 // static

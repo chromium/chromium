@@ -12,6 +12,8 @@
 
 namespace attribution_reporting {
 
+inline constexpr uint64_t kDefaultFilteringId = 0;
+
 inline constexpr size_t kMaxBytesPerFilterString = 25;
 inline constexpr size_t kMaxValuesPerFilter = 50;
 inline constexpr size_t kMaxFiltersPerSource = 50;
@@ -47,6 +49,8 @@ inline constexpr char kTriggerDataMatchingModulus[] = "modulus";
 inline constexpr char kSummaryWindowOperatorCount[] = "count";
 inline constexpr char kSummaryWindowOperatorValueSum[] = "value_sum";
 
+inline constexpr char kAggregatableFilteringIdsMaxBytes[] =
+    "aggregatable_filtering_id_max_bytes";
 inline constexpr char kAggregatableReportWindow[] =
     "aggregatable_report_window";
 inline constexpr char kAggregationKeys[] = "aggregation_keys";
@@ -79,6 +83,7 @@ inline constexpr char kAggregationCoordinatorOrigin[] =
     "aggregation_coordinator_origin";
 inline constexpr char kDeduplicationKey[] = "deduplication_key";
 inline constexpr char kEventTriggerData[] = "event_trigger_data";
+inline constexpr char kFilteringId[] = "filtering_id";
 inline constexpr char kFilters[] = "filters";
 inline constexpr char kKeyPiece[] = "key_piece";
 inline constexpr char kSourceKeys[] = "source_keys";

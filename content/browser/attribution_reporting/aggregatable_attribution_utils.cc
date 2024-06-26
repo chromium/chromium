@@ -103,9 +103,11 @@ CreateAggregatableHistogram(
           continue;
         }
 
-        contributions.emplace_back(key,
-                                   base::checked_cast<int32_t>(value->second),
-                                   /*filtering_id=*/std::nullopt);
+        contributions.emplace_back(
+            key, base::checked_cast<int32_t>(value->second.value()),
+            // TODO(https://crbug.com/345274918): Add the filtering id to
+            // contributions.
+            /*filtering_id=*/std::nullopt);
       }
       break;
     }

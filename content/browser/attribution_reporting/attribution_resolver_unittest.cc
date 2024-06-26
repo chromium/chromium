@@ -92,6 +92,8 @@ using ::testing::VariantWith;
 
 using AttributionFilterData = ::attribution_reporting::FilterData;
 
+using ::attribution_reporting::AggregatableValues;
+using ::attribution_reporting::AggregatableValuesValue;
 using ::attribution_reporting::FilterConfig;
 using ::attribution_reporting::FilterPair;
 using ::attribution_reporting::MaxEventLevelReports;
@@ -161,8 +163,9 @@ MATCHER_P(CreateReportMaxAggregatableReportsLimitIs, matcher, "") {
 
 }  // namespace
 
-// Unit test suite for the AttributionResolver interface. All AttributionResolver
-// implementations (including fakes) should be able to re-use this test suite.
+// Unit test suite for the AttributionResolver interface. All
+// AttributionResolver implementations (including fakes) should be able to
+// re-use this test suite.
 class AttributionResolverTest : public testing::Test {
  public:
   AttributionResolverTest() {
@@ -2373,7 +2376,8 @@ TEST_F(AttributionResolverTest, DedupKey_AggregatableReportNotDedups) {
             result.aggregatable_status());
 }
 
-TEST_F(AttributionResolverTest, AggregatableDedupKey_EventLevelReportNotDedups) {
+TEST_F(AttributionResolverTest,
+       AggregatableDedupKey_EventLevelReportNotDedups) {
   storage()->StoreSource(
       TestAggregatableSourceProvider()
           .GetBuilder()
@@ -2415,9 +2419,9 @@ TEST_F(AttributionResolverTest, AggregatableDedupKeysFiltering) {
               absl::MakeUint128(/*high=*/1, /*low=*/0),
               /*source_keys=*/{"0"}, FilterPair())};
 
-  auto aggregatable_values = {
-      *attribution_reporting::AggregatableValues::Create({{"0", 1}},
-                                                         FilterPair())};
+  auto aggregatable_values = {*AggregatableValues::Create(
+      {{"0", *AggregatableValuesValue::Create(1, /*filtering_id=*/0u)}},
+      FilterPair())};
 
   storage()->StoreSource(
       SourceBuilder()
@@ -3397,9 +3401,9 @@ TEST_F(AttributionResolverTest, TopLevelTriggerFiltering) {
               absl::MakeUint128(/*high=*/1, /*low=*/0),
               /*source_keys=*/{"0"}, FilterPair())};
 
-  auto aggregatable_values = {
-      *attribution_reporting::AggregatableValues::Create({{"0", 1}},
-                                                         FilterPair())};
+  auto aggregatable_values = {*AggregatableValues::Create(
+      {{"0", *AggregatableValuesValue::Create(1, /*filtering_id=*/0u)}},
+      FilterPair())};
 
   storage()->StoreSource(
       SourceBuilder()
@@ -3532,17 +3536,17 @@ TEST_F(AttributionResolverTest,
               *attribution_reporting::FilterData::Create({{"product", {"1"}}}))
           .Build());
 
-  EXPECT_EQ(
-      MaybeCreateAndStoreAggregatableReport(
-          TriggerBuilder()
-              .SetAggregatableValues(
-                  {*attribution_reporting::AggregatableValues::Create(
-                      {{"0", 123}}, FilterPair(
-                                        /*positive=*/{*FilterConfig::Create(
-                                            {{"product", {"2"}}})},
-                                        /*negative=*/{}))})
-              .Build()),
-      AttributionTrigger::AggregatableResult::kNoHistograms);
+  EXPECT_EQ(MaybeCreateAndStoreAggregatableReport(
+                TriggerBuilder()
+                    .SetAggregatableValues({*AggregatableValues::Create(
+                        {{"0", *AggregatableValuesValue::Create(
+                                   123, /*filtering_id=*/0u)}},
+                        FilterPair(
+                            /*positive=*/{*FilterConfig::Create(
+                                {{"product", {"2"}}})},
+                            /*negative=*/{}))})
+                    .Build()),
+            AttributionTrigger::AggregatableResult::kNoHistograms);
 }
 
 TEST_F(AttributionResolverTest, AggregatableAttribution_ReportsScheduled) {
@@ -3550,8 +3554,7 @@ TEST_F(AttributionResolverTest, AggregatableAttribution_ReportsScheduled) {
   storage()->StoreSource(source_builder.Build());
 
   AttributionTrigger trigger =
-      DefaultAggregatableTriggerBuilder(/*histogram_values=*/{5})
-          .Build();
+      DefaultAggregatableTriggerBuilder(/*histogram_values=*/{5}).Build();
   auto contributions =
       DefaultAggregatableHistogramContributions(/*histogram_values=*/{5});
   ASSERT_THAT(contributions, SizeIs(1));
@@ -3650,9 +3653,10 @@ TEST_F(AttributionResolverTest,
 
   EXPECT_EQ(MaybeCreateAndStoreAggregatableReport(
                 TriggerBuilder()
-                    .SetAggregatableValues(
-                        {*attribution_reporting::AggregatableValues::Create(
-                            {{"0", 123}}, FilterPair())})
+                    .SetAggregatableValues({*AggregatableValues::Create(
+                        {{"0", *AggregatableValuesValue::Create(
+                                   123, /*filtering_id=*/0u)}},
+                        FilterPair())})
                     .Build()),
             AttributionTrigger::AggregatableResult::kSuccess);
 }

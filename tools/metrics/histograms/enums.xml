@@ -3638,6 +3638,8 @@ Called by update_net_error_codes.py.-->
              is not suitable"/>
 </enum>
 
+<!-- LINT.IfChange(ConversionTriggerRegistrationError) -->
+
 <enum name="ConversionTriggerRegistrationError">
   <int value="0" label="Invalid JSON"/>
   <int value="1" label="Root JSON value has wrong type"/>
@@ -3676,7 +3678,13 @@ Called by update_net_error_codes.py.-->
       label="trigger_context_id disallowed for
              aggregatable_source_registration_time"/>
   <int value="29" label="event_trigger_data value field is invalid"/>
+  <int value="30" label="aggregatable_filtering_id_max_bytes field is invalid"/>
+  <int value="31"
+      label="non-default aggregatable_filtering_id_max_bytes is disallowed
+             for aggregatable_source_registration_time"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/attribution_reporting/trigger_registration_error.mojom:TriggerRegistrationError) -->
 
 <enum name="ConversionTriggerVerificationGetHeadersStatus">
   <int value="0" label="Success - Verification headers added to the request"/>

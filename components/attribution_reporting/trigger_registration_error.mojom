@@ -6,6 +6,8 @@ module attribution_reporting.mojom;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(TriggerRegistrationError)
 enum TriggerRegistrationError {
   kInvalidJson = 0,
   kRootWrongType = 1,
@@ -46,4 +48,8 @@ enum TriggerRegistrationError {
   kTriggerContextIdInvalidSourceRegistrationTimeConfig = 28,
 
   kEventValueInvalid = 29,
+
+  kAggregatableFilteringIdMaxBytesInvalidValue = 30,
+  kAggregatableFilteringIdsMaxBytesInvalidSourceRegistrationTimeConfig = 31,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionTriggerRegistrationError)

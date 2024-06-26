@@ -28,6 +28,48 @@ object_value {
                     }
                   }
                 }
+                field {
+                  name: "e"
+                  value {
+                    object_value {
+                      field {
+                        name: "value"
+                        value {
+                          number_value {
+                            integer_value {
+                              value: 789
+                            }
+                          }
+                        }
+                      }
+                      field {
+                        name: "filtering_id"
+                        value {
+                          string_value {
+                            value: "125"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                field {
+                  name: "f"
+                  value {
+                    object_value {
+                      field {
+                        name: "value"
+                        value {
+                          number_value {
+                            integer_value {
+                              value: 321
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
               }
             }
           }

@@ -16,9 +16,11 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
+#include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
@@ -34,9 +36,12 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::AggregatableFilteringIdsMaxBytes;
 using ::attribution_reporting::AggregatableValues;
+using ::attribution_reporting::AggregatableValuesValue;
 using ::attribution_reporting::FilterConfig;
 using ::attribution_reporting::FilterPair;
+using ::attribution_reporting::kDefaultFilteringId;
 using ::attribution_reporting::mojom::SourceType;
 using ::blink::mojom::AggregatableReportHistogramContribution;
 using ::testing::ElementsAre;
@@ -105,7 +110,9 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
   ASSERT_TRUE(source_filter_data.has_value());
 
   auto aggregatable_values = *attribution_reporting::AggregatableValues::Create(
-      {{"key1", 32768}, {"key2", 1664}}, FilterPair());
+      {{"key1", *AggregatableValuesValue::Create(32768, kDefaultFilteringId)},
+       {"key2", *AggregatableValuesValue::Create(1664, kDefaultFilteringId)}},
+      FilterPair());
 
   std::vector<AggregatableReportHistogramContribution> contributions =
       CreateAggregatableHistogram(
@@ -159,25 +166,31 @@ TEST(AggregatableAttributionUtilsTest,
            .description = "filter_not_matching",
            .aggregatable_values =
                {*attribution_reporting::AggregatableValues::Create(
-                   {{"key1", 32768}}, FilterPair(
-                                          /*positive=*/{*FilterConfig::Create(
-                                              {{"product", {"2"}}})},
-                                          /*negative=*/{}))},
+                   {{"key1", *AggregatableValuesValue::Create(
+                                 32768, kDefaultFilteringId)}},
+                   FilterPair(
+                       /*positive=*/{*FilterConfig::Create(
+                           {{"product", {"2"}}})},
+                       /*negative=*/{}))},
            .expected = {},
        },
        {
            .description = "first_entry_skipped",
            .aggregatable_values =
                {*attribution_reporting::AggregatableValues::Create(
-                    {{"key1", 32768}}, FilterPair(
-                                           /*positive=*/{*FilterConfig::Create(
-                                               {{"product", {"2"}}})},
-                                           /*negative=*/{})),
+                    {{"key1", *AggregatableValuesValue::Create(
+                                  32768, kDefaultFilteringId)}},
+                    FilterPair(
+                        /*positive=*/{*FilterConfig::Create(
+                            {{"product", {"2"}}})},
+                        /*negative=*/{})),
                 *attribution_reporting::AggregatableValues::Create(
-                    {{"key2", 1664}}, FilterPair(
-                                          /*positive=*/{*FilterConfig::Create(
-                                              {{"product", {"1"}}})},
-                                          /*negative=*/{}))},
+                    {{"key2", *AggregatableValuesValue::Create(
+                                  1664, kDefaultFilteringId)}},
+                    FilterPair(
+                        /*positive=*/{*FilterConfig::Create(
+                            {{"product", {"1"}}})},
+                        /*negative=*/{}))},
            .expected = {AggregatableReportHistogramContribution(
                1029, 1664, /*filtering_id=*/std::nullopt)},
        },
@@ -185,48 +198,60 @@ TEST(AggregatableAttributionUtilsTest,
            .description = "second_entry_ignored",
            .aggregatable_values =
                {*attribution_reporting::AggregatableValues::Create(
-                    {{"key1", 32768}}, FilterPair(
-                                           /*positive=*/{*FilterConfig::Create(
-                                               {{"product", {"1"}}})},
-                                           /*negative=*/{})),
+                    {{"key1", *AggregatableValuesValue::Create(
+                                  32768, kDefaultFilteringId)}},
+                    FilterPair(
+                        /*positive=*/{*FilterConfig::Create(
+                            {{"product", {"1"}}})},
+                        /*negative=*/{})),
                 *attribution_reporting::AggregatableValues::Create(
-                    {{"key2", 1664}}, FilterPair(
-                                          /*positive=*/{*FilterConfig::Create(
-                                              {{"product", {"1"}}})},
-                                          /*negative=*/{}))},
+                    {{"key2", *AggregatableValuesValue::Create(
+                                  1664, kDefaultFilteringId)}},
+                    FilterPair(
+                        /*positive=*/{*FilterConfig::Create(
+                            {{"product", {"1"}}})},
+                        /*negative=*/{}))},
            .expected = {AggregatableReportHistogramContribution(
-               1369, 32768, /*filtering_id=*/std::nullopt)},
+               1369, 32768,
+               /*filtering_id=*/std::nullopt)},
        },
        {
            .description = "filters_matched_keys_mismatched_no_contributions",
            .aggregatable_values =
                {*attribution_reporting::AggregatableValues::Create(
-                    {{"key3", 32768}}, FilterPair(
-                                           /*positive=*/{*FilterConfig::Create(
-                                               {{"product", {"1"}}})},
-                                           /*negative=*/{})),
+                    {{"key3", *AggregatableValuesValue::Create(
+                                  32768, kDefaultFilteringId)}},
+                    FilterPair(
+                        /*positive=*/{*FilterConfig::Create(
+                            {{"product", {"1"}}})},
+                        /*negative=*/{})),
                 // Shouldn't contribute as only the first aggregatable values
                 // entry with matching filters is considered.
                 *attribution_reporting::AggregatableValues::Create(
-                    {{"key2", 1664}}, FilterPair(
-                                          /*positive=*/{*FilterConfig::Create(
-                                              {{"product", {"1"}}})},
-                                          /*negative=*/{}))},
+                    {{"key2", *AggregatableValuesValue::Create(
+                                  1664, kDefaultFilteringId)}},
+                    FilterPair(
+                        /*positive=*/{*FilterConfig::Create(
+                            {{"product", {"1"}}})},
+                        /*negative=*/{}))},
            .expected = {},
        },
        {
            .description = "not_filter_matching_first_entry_skipped",
            .aggregatable_values =
                {*attribution_reporting::AggregatableValues::Create(
-                    {{"key1", 32768}},
+                    {{"key1", *AggregatableValuesValue::Create(
+                                  32768, kDefaultFilteringId)}},
                     FilterPair(/*positive=*/{},
                                /*negative=*/{*FilterConfig::Create(
                                    {{"product", {"1"}}})})),
                 *attribution_reporting::AggregatableValues::Create(
-                    {{"key2", 1664}}, FilterPair(
-                                          /*positive=*/{*FilterConfig::Create(
-                                              {{"product", {"1"}}})},
-                                          /*negative=*/{}))},
+                    {{"key2", *AggregatableValuesValue::Create(
+                                  1664, kDefaultFilteringId)}},
+                    FilterPair(
+                        /*positive=*/{*FilterConfig::Create(
+                            {{"product", {"1"}}})},
+                        /*negative=*/{}))},
            .expected = {AggregatableReportHistogramContribution(
                1029, 1664, /*filtering_id=*/std::nullopt)},
        }};
@@ -255,8 +280,10 @@ TEST(AggregatableAttributionUtilsTest,
           *source,
           /*aggregatable_trigger_data=*/{},
           /*aggregatable_values=*/
-          {*attribution_reporting::AggregatableValues::Create({{"key2", 32768}},
-                                                              FilterPair())});
+          {*attribution_reporting::AggregatableValues::Create(
+              {{"key2",
+                *AggregatableValuesValue::Create(32768, kDefaultFilteringId)}},
+              FilterPair())});
 
   histograms.ExpectTotalCount(
       "Conversions.AggregatableReport.FilteredTriggerDataPercentage", 0);
@@ -383,13 +410,19 @@ TEST(AggregatableAttributionUtilsTest, TotalBudgetMetrics) {
       {
           .desc = "within-max",
           .keys = {{"a", 1}, {"b", 2}},
-          .values = {{"a", 1}, {"b", 65535}},
+          .values = {{"a",
+                      *AggregatableValuesValue::Create(1, kDefaultFilteringId)},
+                     {"b", *AggregatableValuesValue::Create(
+                               65535, kDefaultFilteringId)}},
           .expected = 65536,
       },
       {
           .desc = "exceed-max",
           .keys = {{"a", 1}, {"b", 2}},
-          .values = {{"a", 10}, {"b", 65536}},
+          .values = {{"a", *AggregatableValuesValue::Create(
+                               10, kDefaultFilteringId)},
+                     {"b", *AggregatableValuesValue::Create(
+                               65536, kDefaultFilteringId)}},
           .expected = 100000,
       },
   };

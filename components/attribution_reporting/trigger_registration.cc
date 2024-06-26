@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/function_ref.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
@@ -16,6 +17,7 @@
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
+#include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
@@ -74,12 +76,29 @@ base::expected<std::vector<T>, TriggerRegistrationError> ParseList(
   return vec;
 }
 
+bool ContributionsFilteringIdsFitWithinMaxBytes(
+    const std::vector<AggregatableValues>& aggregatable_values,
+    AggregatableFilteringIdsMaxBytes max_bytes) {
+  for (const AggregatableValues& values : aggregatable_values) {
+    for (const std::pair<std::string, AggregatableValuesValue>& value :
+         values.values()) {
+      if (!max_bytes.CanEncompass(value.second.filtering_id())) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
 }  // namespace
 
 void RecordTriggerRegistrationError(TriggerRegistrationError error) {
-  static_assert(TriggerRegistrationError::kMaxValue ==
-                    TriggerRegistrationError::kEventValueInvalid,
-                "Update ConversionTriggerRegistrationError enum.");
+  static_assert(
+      TriggerRegistrationError::kMaxValue ==
+          TriggerRegistrationError::
+              kAggregatableFilteringIdsMaxBytesInvalidSourceRegistrationTimeConfig,
+      "Update ConversionTriggerRegistrationError enum.");
   base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError11",
                                 error);
 }
@@ -133,6 +152,16 @@ TriggerRegistration::Parse(base::Value::Dict dict) {
       aggregatable_debug_reporting_config.has_value()) {
     registration.aggregatable_debug_reporting_config =
         *std::move(aggregatable_debug_reporting_config);
+  }
+
+  if (!ContributionsFilteringIdsFitWithinMaxBytes(
+          registration.aggregatable_values,
+          registration.aggregatable_trigger_config
+              .aggregatable_filtering_id_max_bytes())) {
+    return base::unexpected(
+        dict.FindList(kAggregatableValues)
+            ? TriggerRegistrationError::kAggregatableValuesListValueInvalid
+            : TriggerRegistrationError::kAggregatableValuesValueInvalid);
   }
 
   return registration;
@@ -203,6 +232,12 @@ base::Value::Dict TriggerRegistration::ToJson() const {
   aggregatable_debug_reporting_config.Serialize(dict);
 
   return dict;
+}
+
+bool TriggerRegistration::IsValid() const {
+  return ContributionsFilteringIdsFitWithinMaxBytes(
+      aggregatable_values,
+      aggregatable_trigger_config.aggregatable_filtering_id_max_bytes());
 }
 
 }  // namespace attribution_reporting

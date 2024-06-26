@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
+#include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
@@ -455,6 +456,13 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     return trigger.aggregatable_trigger_config.trigger_context_id();
   }
 
+  static uint8_t aggregatable_filtering_id_max_bytes(
+      const attribution_reporting::TriggerRegistration& trigger) {
+    return trigger.aggregatable_trigger_config
+        .aggregatable_filtering_id_max_bytes()
+        .value();
+  }
+
   static const attribution_reporting::AggregatableDebugReportingConfig&
   aggregatable_debug_reporting_config(
       const attribution_reporting::TriggerRegistration& source) {
@@ -483,6 +491,25 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
   static bool Read(
       attribution_reporting::mojom::AggregatableDedupKeyDataView data,
       attribution_reporting::AggregatableDedupKey* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
+    StructTraits<attribution_reporting::mojom::AggregatableValuesValueDataView,
+                 attribution_reporting::AggregatableValuesValue> {
+  static uint32_t value(
+      const attribution_reporting::AggregatableValuesValue& data) {
+    return data.value();
+  }
+
+  static uint64_t filtering_id(
+      const attribution_reporting::AggregatableValuesValue& data) {
+    return data.filtering_id();
+  }
+
+  static bool Read(
+      attribution_reporting::mojom::AggregatableValuesValueDataView data,
+      attribution_reporting::AggregatableValuesValue* out);
 };
 
 template <>
