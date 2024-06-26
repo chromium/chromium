@@ -84,51 +84,6 @@ namespace screen_ai {
 using ScreenAIVisualAnnotatorProtoConvertorTest = testing::Test;
 
 TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
-       VisualAnnotationToAXTreeUpdate_LayoutExtractionResults) {
-  chrome_screen_ai::VisualAnnotation annotation;
-  gfx::Rect snapshot_bounds(800, 900);
-
-  screen_ai::ResetNodeIDForTesting();
-
-  {
-    chrome_screen_ai::UIComponent* component_0 = annotation.add_ui_component();
-    chrome_screen_ai::UIComponent::PredictedType* type_0 =
-        component_0->mutable_predicted_type();
-    type_0->set_enum_type(chrome_screen_ai::UIComponent::BUTTON);
-    chrome_screen_ai::Rect* box_0 = component_0->mutable_bounding_box();
-    box_0->set_x(0);
-    box_0->set_y(1);
-    box_0->set_width(2);
-    box_0->set_height(3);
-    box_0->set_angle(90.0f);
-
-    chrome_screen_ai::UIComponent* component_1 = annotation.add_ui_component();
-    chrome_screen_ai::UIComponent::PredictedType* type_1 =
-        component_1->mutable_predicted_type();
-    type_1->set_string_type("Signature");
-    chrome_screen_ai::Rect* box_1 = component_1->mutable_bounding_box();
-    // `x`, `y`, and `angle` should be defaulted to 0 since they are singular
-    // proto3 fields, not proto2.
-    box_1->set_width(5);
-    box_1->set_height(5);
-  }
-
-  {
-    const ui::AXTreeUpdate update =
-        VisualAnnotationToAXTreeUpdate(annotation, snapshot_bounds);
-
-    const std::string expected_update(
-        "id=-2 dialog child_ids=-3,-4 (0, 0)-(800, 900)\n"
-        "  id=-3 button (0, 1)-(2, 3)"
-        " transform=[ 0 -1 0 0\n  1 0 0 0\n  0 0 1 0\n  0 0 0 1 ]\n"
-        "\n"
-        "  id=-4 genericContainer (0, 0)-(5, 5) "
-        "role_description=Signature\n");
-    EXPECT_EQ(expected_update, update.ToString());
-  }
-}
-
-TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
        VisualAnnotationToAXTreeUpdate_OcrResults) {
   chrome_screen_ai::VisualAnnotation annotation;
   gfx::Rect snapshot_bounds(800, 900);

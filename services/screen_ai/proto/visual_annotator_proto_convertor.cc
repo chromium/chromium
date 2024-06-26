@@ -85,32 +85,6 @@ bool HaveIdenticalFormattingStyle(const chrome_screen_ai::WordBox& word_1,
   return true;
 }
 
-// Returns whether the provided `predicted_type` is:
-// A) set, and
-// B) has a confidence that is above our acceptance threshold.
-bool SerializePredictedType(
-    const chrome_screen_ai::UIComponent::PredictedType& predicted_type,
-    ui::AXNodeData& out_data) {
-  DCHECK_EQ(out_data.role, ax::mojom::Role::kUnknown);
-  switch (predicted_type.type_of_case()) {
-    case chrome_screen_ai::UIComponent::PredictedType::kEnumType:
-      out_data.role = static_cast<ax::mojom::Role>(predicted_type.enum_type());
-      break;
-    case chrome_screen_ai::UIComponent::PredictedType::kStringType:
-      out_data.role = ax::mojom::Role::kGenericContainer;
-      out_data.AddStringAttribute(ax::mojom::StringAttribute::kRoleDescription,
-                                  predicted_type.string_type());
-      break;
-    case chrome_screen_ai::UIComponent::PredictedType::TYPE_OF_NOT_SET:
-      NOTREACHED_IN_MIGRATION()
-          << "Malformed proto message: Required field "
-             "`chrome_screen_ai::UIComponent::PredictedType` not set.";
-      return false;
-  }
-
-  return true;
-}
-
 void SerializeBoundingBox(const chrome_screen_ai::Rect& bounding_box,
                           const ui::AXNodeID& container_id,
                           ui::AXNodeData& out_data) {
@@ -380,21 +354,6 @@ size_t SerializeWordBoxes(const google::protobuf::RepeatedPtrField<
   return 1u;
 }
 
-void SerializeUIComponent(const chrome_screen_ai::UIComponent& ui_component,
-                          const size_t index,
-                          ui::AXNodeData& parent_node,
-                          std::vector<ui::AXNodeData>& node_data) {
-  DCHECK_LT(index, node_data.size());
-  DCHECK_NE(parent_node.id, ui::kInvalidAXNodeID);
-  ui::AXNodeData& current_node = node_data[index];
-  if (!SerializePredictedType(ui_component.predicted_type(), current_node))
-    return;
-  current_node.id = GetNextNegativeNodeID();
-  SerializeBoundingBox(ui_component.bounding_box(), parent_node.id,
-                       current_node);
-  parent_node.child_ids.push_back(current_node.id);
-}
-
 // Returns the number of accessibility nodes that have been initialized in
 // `node_data`. A single `line_box` may turn into a number of inline text boxes
 // depending on how many formatting contexts it contains. If `line_box` is of a
@@ -473,8 +432,9 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
     const gfx::Rect& image_rect) {
   ui::AXTreeUpdate update;
 
-  DCHECK(visual_annotation.lines_size() == 0 ||
-         visual_annotation.ui_component_size() == 0);
+  if (visual_annotation.lines().empty()) {
+    return update;
+  }
 
   // TODO(https://crbug.com/327298772): Create an AXTreeSource and create the
   // update using AXTreeSerializer.
@@ -517,109 +477,89 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
         std::make_pair(line.order_within_block(), i));
   }
 
-  size_t rootnodes_count = 0u;
-  if (!visual_annotation.ui_component().empty())
-    ++rootnodes_count;
-  if (!visual_annotation.lines().empty()) {
-    ++rootnodes_count;
-    // Need four more nodes that convey the disclaimer messages. There are two
-    // messages, one before the content and one after. Each message is wrapped
-    // in an ARIA landmark so that it can easily be navigated to by a screen
-    // reader user and thus not missed.
-    formatting_context_count += 4;
-  }
+  // Need four more nodes that convey the disclaimer messages. There are two
+  // messages, one before the content and one after. Each message is wrapped
+  // in an ARIA landmark so that it can easily be navigated to by a screen
+  // reader user and thus not missed.
+  formatting_context_count += 4;
 
   // There are the same number of paragraphs as blocks.
   size_t paragraph_count = blocks_to_lines_map.size();
 
-  std::vector<ui::AXNodeData> nodes(rootnodes_count +
-                                    visual_annotation.ui_component().size() +
+  std::vector<ui::AXNodeData> nodes(1 +  // Root Node
                                     visual_annotation.lines().size() +
                                     paragraph_count + formatting_context_count);
 
   size_t index = 0u;
 
-  if (!visual_annotation.ui_component().empty()) {
-    ui::AXNodeData& rootnode = nodes[index++];
-    rootnode.role = ax::mojom::Role::kDialog;
-    rootnode.id = GetNextNegativeNodeID();
-    rootnode.relative_bounds.bounds = gfx::RectF(image_rect);
-    for (const auto& ui_component : visual_annotation.ui_component())
-      SerializeUIComponent(ui_component, index++, rootnode, nodes);
-  }
+  // We assume that OCR is performed on a page-by-page basis.
+  ui::AXNodeData& page_node = nodes[index++];
+  page_node.role = ax::mojom::Role::kRegion;
+  page_node.id = GetNextNegativeNodeID();
+  update.root_id = page_node.id;
+  page_node.AddBoolAttribute(ax::mojom::BoolAttribute::kIsPageBreakingObject,
+                             true);
+  page_node.relative_bounds.bounds = gfx::RectF(image_rect);
 
-  if (!visual_annotation.lines().empty()) {
-    // We assume that OCR is performed on a page-by-page basis.
-    ui::AXNodeData& page_node = nodes[index++];
-    page_node.role = ax::mojom::Role::kRegion;
-    page_node.id = GetNextNegativeNodeID();
-    update.root_id = page_node.id;
-    page_node.AddBoolAttribute(ax::mojom::BoolAttribute::kIsPageBreakingObject,
-                               true);
-    page_node.relative_bounds.bounds = gfx::RectF(image_rect);
+  // Add a disclaimer node informing the user of the beginning of extracted
+  // text, and place the message inside an appropriate ARIA landmark for easy
+  // navigation.
+  ui::AXNodeData& begin_node_wrapper = nodes[index++];
+  begin_node_wrapper.role = ax::mojom::Role::kBanner;
+  begin_node_wrapper.id = GetNextNegativeNodeID();
+  begin_node_wrapper.relative_bounds.bounds =
+      gfx::RectF(image_rect.x(), image_rect.y(), 1, 1);
+  page_node.child_ids.push_back(begin_node_wrapper.id);
+  ui::AXNodeData& begin_node = nodes[index++];
+  begin_node.role = ax::mojom::Role::kStaticText;
+  begin_node.id = GetNextNegativeNodeID();
+  begin_node.SetNameChecked(l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_BEGIN));
+  begin_node.relative_bounds.bounds = begin_node_wrapper.relative_bounds.bounds;
+  begin_node_wrapper.child_ids.push_back(begin_node.id);
 
-    // Add a disclaimer node informing the user of the beginning of extracted
-    // text, and place the message inside an appropriate ARIA landmark for easy
-    // navigation.
-    ui::AXNodeData& begin_node_wrapper = nodes[index++];
-    begin_node_wrapper.role = ax::mojom::Role::kBanner;
-    begin_node_wrapper.id = GetNextNegativeNodeID();
-    begin_node_wrapper.relative_bounds.bounds =
-        gfx::RectF(image_rect.x(), image_rect.y(), 1, 1);
-    page_node.child_ids.push_back(begin_node_wrapper.id);
-    ui::AXNodeData& begin_node = nodes[index++];
-    begin_node.role = ax::mojom::Role::kStaticText;
-    begin_node.id = GetNextNegativeNodeID();
-    begin_node.SetNameChecked(
-        l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_BEGIN));
-    begin_node.relative_bounds.bounds =
-        begin_node_wrapper.relative_bounds.bounds;
-    begin_node_wrapper.child_ids.push_back(begin_node.id);
+  for (const auto& block_to_lines_pair : blocks_to_lines_map) {
+    // TODO(crbug.com/347622611): Create separate paragraphs based on the
+    // blocks' spacing (e.g. by utilizing heuristics found in
+    // PdfAccessibilityTree). Blocks as returned by the OCR engine are still
+    // too small.
+    ui::AXNodeData& paragraph_node = nodes[index++];
+    paragraph_node.role = ax::mojom::Role::kParagraph;
+    paragraph_node.id = GetNextNegativeNodeID();
+    page_node.child_ids.push_back(paragraph_node.id);
 
-    for (const auto& block_to_lines_pair : blocks_to_lines_map) {
-      // TODO(crbug.com/327298772): Create separate paragraphs based on the
-      // blocks' spacing (e.g. by utilizing heuristics found in
-      // PdfAccessibilityTree). Blocks as returned by the OCR engine are still
-      // too small.
-      ui::AXNodeData& paragraph_node = nodes[index++];
-      paragraph_node.role = ax::mojom::Role::kParagraph;
-      paragraph_node.id = GetNextNegativeNodeID();
-      page_node.child_ids.push_back(paragraph_node.id);
+    for (const auto& line_sequence_number_to_index_pair :
+         block_to_lines_pair.second) {
+      const chrome_screen_ai::LineBox& line_box =
+          visual_annotation.lines(line_sequence_number_to_index_pair.second);
+      // Every line with a textual accessibility role should turn into one or
+      // more inline text boxes, each one  representing a formatting context.
+      // If the line is not of a textual role, only one node is initialized
+      // having a more specific role such as `ax::mojom::Role::kImage`.
+      index += SerializeLineBox(line_box, index, paragraph_node, nodes);
 
-      for (const auto& line_sequence_number_to_index_pair :
-           block_to_lines_pair.second) {
-        const chrome_screen_ai::LineBox& line_box =
-            visual_annotation.lines(line_sequence_number_to_index_pair.second);
-        // Every line with a textual accessibility role should turn into one or
-        // more inline text boxes, each one  representing a formatting context.
-        // If the line is not of a textual role, only one node is initialized
-        // having a more specific role such as `ax::mojom::Role::kImage`.
-        index += SerializeLineBox(line_box, index, paragraph_node, nodes);
-
-        // Accumulate bounds of all lines for the paragraph.
-        auto& bounding_box = line_box.bounding_box();
-        paragraph_node.relative_bounds.bounds.Union(
-            gfx::RectF(bounding_box.x(), bounding_box.y(), bounding_box.width(),
-                       bounding_box.height()));
-      }
+      // Accumulate bounds of all lines for the paragraph.
+      auto& bounding_box = line_box.bounding_box();
+      paragraph_node.relative_bounds.bounds.Union(
+          gfx::RectF(bounding_box.x(), bounding_box.y(), bounding_box.width(),
+                     bounding_box.height()));
     }
-
-    // Add a disclaimer node informing the user of the end of extracted text,
-    // and place the message inside an appropriate ARIA landmark for easy
-    // navigation.
-    ui::AXNodeData& end_node_wrapper = nodes[index++];
-    end_node_wrapper.role = ax::mojom::Role::kContentInfo;
-    end_node_wrapper.id = GetNextNegativeNodeID();
-    end_node_wrapper.relative_bounds.bounds =
-        gfx::RectF(image_rect.width(), image_rect.height(), 1, 1);
-    page_node.child_ids.push_back(end_node_wrapper.id);
-    ui::AXNodeData& end_node = nodes[index++];
-    end_node.role = ax::mojom::Role::kStaticText;
-    end_node.id = GetNextNegativeNodeID();
-    end_node.SetNameChecked(l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_END));
-    end_node.relative_bounds.bounds = end_node_wrapper.relative_bounds.bounds;
-    end_node_wrapper.child_ids.push_back(end_node.id);
   }
+
+  // Add a disclaimer node informing the user of the end of extracted text,
+  // and place the message inside an appropriate ARIA landmark for easy
+  // navigation.
+  ui::AXNodeData& end_node_wrapper = nodes[index++];
+  end_node_wrapper.role = ax::mojom::Role::kContentInfo;
+  end_node_wrapper.id = GetNextNegativeNodeID();
+  end_node_wrapper.relative_bounds.bounds =
+      gfx::RectF(image_rect.width(), image_rect.height(), 1, 1);
+  page_node.child_ids.push_back(end_node_wrapper.id);
+  ui::AXNodeData& end_node = nodes[index++];
+  end_node.role = ax::mojom::Role::kStaticText;
+  end_node.id = GetNextNegativeNodeID();
+  end_node.SetNameChecked(l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_END));
+  end_node.relative_bounds.bounds = end_node_wrapper.relative_bounds.bounds;
+  end_node_wrapper.child_ids.push_back(end_node.id);
 
   // Filter out invalid / unrecognized / unused nodes from the update.
   update.nodes.resize(nodes.size());
