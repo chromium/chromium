@@ -3096,6 +3096,7 @@ if (!is_android) {
       sources += [
         "../browser/ui/views/promos/ios_promo_bubble_browsertest.cc",
         "../browser/ui/views/promos/ios_promo_password_bubble_browsertest.cc",
+        "../browser/ui/views/user_education/low_usage_promo_browsertest.cc",
       ]
 
       deps += [ "//chrome/browser/promos:utils" ]
