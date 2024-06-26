@@ -1840,6 +1840,16 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.PdfOcr.MediaApp.MostDetectedLanguageInOcrData"
+    enum="LocaleCodeISO639" expires_after="2025-06-30">
+  <owner>kyungjunlee@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the language that is detected most in each OCR data when MediaApp
+    (i.e. AXMediaAppUntrustedHandler) receives the OCR data from the OCR model.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.PdfOcr.MediaApp.PdfLoaded" enum="BooleanExists"
     expires_after="2025-06-30">
   <owner>nektar@chromium.org</owner>

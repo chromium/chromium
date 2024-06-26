@@ -96,6 +96,7 @@ source_set("unit_tests") {
   sources = [
     "proto/main_content_extractor_proto_convertor_unittest.cc",
     "proto/visual_annotator_proto_convertor_unittest.cc",
+    "public/cpp/metrics_unittest.cc",
     "screen_ai_service_impl_unittest.cc",
   ]
 
@@ -106,6 +107,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/ukm:test_support",
     "//services/screen_ai/proto",
+    "//services/screen_ai/public/cpp:metrics",
     "//testing/gtest",
     "//ui/accessibility:test_support",
   ]

@@ -5535,6 +5535,7 @@ static_library("browser") {
       "//components/webapk:proto",
       "//device/vr/public/mojom:isolated_xr_service",
       "//remoting/host/chromeos:features",
+      "//services/screen_ai/public/cpp:metrics",
       "//third_party/nearby:rpc_resources_proto",
       "//third_party/nearby:wire_format_proto",
       "//ui/chromeos",

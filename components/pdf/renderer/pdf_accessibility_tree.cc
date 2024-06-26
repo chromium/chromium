@@ -20,7 +20,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/pdf/renderer/pdf_accessibility_tree_builder.h"
@@ -49,9 +48,7 @@
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "base/containers/contains.h"
-#include "base/metrics/metrics_hashes.h"
-#include "base/strings/string_util.h"
-#include "components/language/core/common/language_util.h"  // nogncheck
+#include "services/screen_ai/public/cpp/metrics.h"
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
@@ -223,42 +220,6 @@ gfx::Transform MakeTransformForImage(const gfx::RectF image_screen_size,
   return transform;
 }
 
-void RecordMostDetectedLanguageInOcrData(
-    const std::map<std::string, size_t>& detected_language_count_map) {
-  if (detected_language_count_map.empty()) {
-    return;
-  }
-
-  // Get the most detected language and record it UMA.
-  std::string most_detected_language;
-  size_t most_detected_language_count = 0u;
-  for (const auto& elem : detected_language_count_map) {
-    if (elem.second > most_detected_language_count) {
-      most_detected_language = elem.first;
-      most_detected_language_count = elem.second;
-    }
-  }
-  CHECK_GT(most_detected_language_count, 0u);
-
-  // Convert to a Chrome language code synonym. Then pass it to
-  // `base::HashMetricName()` that maps this code to a `LocaleCodeISO639` enum
-  // value expected by this histogram. See tools/metrics/histograms/enums.xml
-  // enum LocaleCodeISO639. The enum there doesn't always have locales where
-  // the base lang and the locale are the same (e.g. they don't have id-id, but
-  // do have id). So if the base lang and the locale are the same, just use the
-  // base lang.
-  std::string language_to_log = most_detected_language;
-  std::vector<std::string> lang_split =
-      base::SplitString(base::ToLowerASCII(language_to_log), "-",
-                        base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (lang_split.size() == 2 && lang_split[0] == lang_split[1]) {
-    language_to_log = lang_split[0];
-  }
-  language::ToChromeLanguageSynonym(&language_to_log);
-  base::UmaHistogramSparse(
-      "Accessibility.PdfOcr.MostDetectedLanguageInOcrData2",
-      base::HashMetricName(language_to_log));
-}
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 }  // namespace
@@ -1243,10 +1204,6 @@ void PdfAccessibilityTree::OnOcrDataReceived(
     gfx::Transform transform = MakeTransformForImage(
         ocr_request.image.bounds, ocr_request.image_pixel_size);
 
-    // Count each detected language and find out the most detected language in
-    // OCR result. Then record the most detected language in UMA.
-    std::map<std::string, size_t> detected_language_count_map;
-
     // Update the relative bounds of all nodes in the tree update. The PDF
     // accessibility tree assumes that all nodes have bounds relative to the
     // root node.
@@ -1264,14 +1221,9 @@ void PdfAccessibilityTree::OnOcrDataReceived(
       }
       // Make all nodes relative to the root node.
       node_from_ocr.relative_bounds.offset_container_id = doc_node_->id;
-      // Count languages detected in OCR results. It will be used in UMA.
-      std::string detected_language;
-      if (node_from_ocr.GetStringAttribute(
-              ax::mojom::StringAttribute::kLanguage, &detected_language)) {
-        detected_language_count_map[detected_language]++;
-      }
     }
-    RecordMostDetectedLanguageInOcrData(detected_language_count_map);
+    screen_ai::RecordMostDetectedLanguageInOcrData(
+        "Accessibility.PdfOcr.MostDetectedLanguageInOcrData2", tree_update);
 
     if (unserialized_node_exist) {
       // `nodes_` have not been unserialized yet, so update `nodes_` directly

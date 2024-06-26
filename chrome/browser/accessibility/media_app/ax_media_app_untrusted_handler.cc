@@ -33,6 +33,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "services/screen_ai/public/cpp/metrics.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -958,6 +959,9 @@ void AXMediaAppUntrustedHandler::OnPageOcred(
   ui::AXTreeUpdate complete_tree_update = tree_update;
   if (!tree_update.nodes.empty()) {
     text_extracted_ = true;
+    screen_ai::RecordMostDetectedLanguageInOcrData(
+        "Accessibility.PdfOcr.MediaApp.MostDetectedLanguageInOcrData",
+        tree_update);
   } else {
     // We can't pass an empty update to `AXTree`s constructor, so we add an
     // empty root node instead.

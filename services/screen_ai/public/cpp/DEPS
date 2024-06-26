@@ -3,7 +3,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "metrics.cc": [
+    "+components/language/core/common/language_util.h",
+  ],
   "utilities.cc": [
     "+ui/accessibility/accessibility_features.h",
-  ],
+  ]
 }
