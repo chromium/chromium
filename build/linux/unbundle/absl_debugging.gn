@@ -46,5 +46,7 @@ source_set("symbolize") {
   public_configs = [ ":system_absl_symbolize" ]
 }
 
+source_set("demangle_rust_test") {
+}
 source_set("stacktrace_test") {
 }

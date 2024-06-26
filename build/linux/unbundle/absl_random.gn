@@ -57,3 +57,8 @@ source_set("random") {
   deps = [ ":random_shim" ]
   public_configs = [ ":system_absl_random_random" ]
 }
+
+group("distributions_test") {
+}
+group("mock_distributions_test") {
+}
