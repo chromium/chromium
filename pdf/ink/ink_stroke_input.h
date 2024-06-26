@@ -5,6 +5,8 @@
 #ifndef PDF_INK_INK_STROKE_INPUT_H_
 #define PDF_INK_INK_STROKE_INPUT_H_
 
+#include <cstdint>
+
 namespace chrome_pdf {
 
 struct InkStrokeInput {
