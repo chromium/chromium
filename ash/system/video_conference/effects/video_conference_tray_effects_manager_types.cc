@@ -17,13 +17,15 @@ VcEffectState::VcEffectState(const gfx::VectorIcon* icon,
                              int accessible_name_id,
                              base::RepeatingClosure button_callback,
                              std::optional<int> state_value,
-                             int view_id)
+                             int view_id,
+                             bool is_disabled_by_enterprise)
     : icon_(icon),
       label_text_(label_text),
       accessible_name_id_(accessible_name_id),
       button_callback_(std::move(button_callback)),
       state_value_(state_value),
-      view_id_(view_id) {
+      view_id_(view_id),
+      is_disabled_by_enterprise_(is_disabled_by_enterprise) {
   DCHECK(icon);
 }
 

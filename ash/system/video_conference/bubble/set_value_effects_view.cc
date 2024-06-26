@@ -22,6 +22,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -36,12 +37,6 @@ namespace ash::video_conference {
 namespace {
 constexpr int kIconSize = 20;
 constexpr float kVcDisabledButtonOpacity = 0.38f;
-
-bool IsVcBackgroundAllowedByEnterprise() {
-  auto* controller = Shell::Get()->session_controller();
-  return std::get<1>(
-      controller->IsEligibleForSeaPen(controller->GetActiveAccountId()));
-}
 
 // Returns a gradient lottie animation defined in the resource file for the
 // `Image` button.
@@ -260,7 +255,7 @@ SetValueEffectSlider::SetValueEffectSlider(
         video_conference::BubbleViewID::kBackgroundBlurImageButton;
 
     TabSliderButton* slider_button;
-    if (is_image_button && IsVcBackgroundAllowedByEnterprise()) {
+    if (is_image_button && !state->is_disabled_by_enterprise()) {
       slider_button = tab_slider->AddButton(
           std::make_unique<AnimatedImageButton>(controller, effect, state));
     } else {
@@ -279,7 +274,7 @@ SetValueEffectSlider::SetValueEffectSlider(
               state->icon(), state->label_text()));
     }
 
-    if (is_image_button && !IsVcBackgroundAllowedByEnterprise()) {
+    if (state->is_disabled_by_enterprise()) {
       // Disable button.
       slider_button->SetState(views::Button::ButtonState::STATE_DISABLED);
       // Add tooltip to indicate why it is disabled.
@@ -287,6 +282,8 @@ SetValueEffectSlider::SetValueEffectSlider(
           IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_DISABLED_TOOLTIP));
       // Set opacity.
       slider_button->layer()->SetOpacity(kVcDisabledButtonOpacity);
+      // Set accessibility name.
+      slider_button->GetViewAccessibility().SetName(state->label_text());
     }
 
     slider_button->SetSelected(state->state_value().value() == current_state);

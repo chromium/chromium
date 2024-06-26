@@ -233,7 +233,8 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
                                       const gfx::VectorIcon& icon,
                                       int state_value,
                                       int string_id,
-                                      int view_id);
+                                      int view_id,
+                                      bool is_disabled_by_enterprise);
 
   // A helper for easier binding.
   void SetCameraEffectsInCameraHalDispatcherImpl(
@@ -244,6 +245,8 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
   bool in_testing_mode_ = false;
 
   bool is_eligible_for_background_replace_ = false;
+
+  bool is_background_replace_disabled_by_enterprise_ = false;
 
   // Directory that stores the camera background images.
   base::FilePath camera_background_img_dir_;

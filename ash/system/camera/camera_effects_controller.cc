@@ -586,6 +586,9 @@ void CameraEffectsController::OnActiveUserSessionChanged(
       std::get<0>(
           Shell::Get()->session_controller()->IsEligibleForSeaPen(account_id));
 
+  is_background_replace_disabled_by_enterprise_ = !std::get<1>(
+      Shell::Get()->session_controller()->IsEligibleForSeaPen(account_id));
+
   const base::FilePath profile_path =
       Shell::Get()->session_controller()->GetProfilePath(account_id);
   CHECK(!profile_path.empty())
@@ -996,18 +999,21 @@ void CameraEffectsController::InitializeEffectControls() {
         effect.get(), kVideoConferenceBackgroundBlurOffIcon,
         /*state_value=*/BackgroundBlurPrefValue::kOff,
         /*string_id=*/IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_OFF,
-        video_conference::BubbleViewID::kBackgroundBlurOffButton);
+        video_conference::BubbleViewID::kBackgroundBlurOffButton,
+        /*is_disabled_by_enterprise=*/false);
     AddBackgroundBlurStateToEffect(
         effect.get(), kVideoConferenceBackgroundBlurLightIcon,
         /*state_value=*/BackgroundBlurPrefValue::kLight,
         /*string_id=*/IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_LIGHT,
-        video_conference::BubbleViewID::kBackgroundBlurLightButton);
+        video_conference::BubbleViewID::kBackgroundBlurLightButton,
+        /*is_disabled_by_enterprise=*/false);
     AddBackgroundBlurStateToEffect(
         effect.get(), kVideoConferenceBackgroundBlurMaximumIcon,
         /*state_value=*/BackgroundBlurPrefValue::kMaximum,
         /*string_id=*/
         IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_FULL,
-        video_conference::BubbleViewID::kBackgroundBlurFullButton);
+        video_conference::BubbleViewID::kBackgroundBlurFullButton,
+        /*is_disabled_by_enterprise=*/false);
 
     if (is_eligible_for_background_replace_) {
       AddBackgroundBlurStateToEffect(
@@ -1015,7 +1021,9 @@ void CameraEffectsController::InitializeEffectControls() {
           /*state_value=*/BackgroundBlurPrefValue::kImage,
           /*string_id=*/
           IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_IMAGE,
-          video_conference::BubbleViewID::kBackgroundBlurImageButton);
+          video_conference::BubbleViewID::kBackgroundBlurImageButton,
+          /*is_disabled_by_enterprise=*/
+          is_background_replace_disabled_by_enterprise_);
     }
     effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kCamera);
     AddEffect(std::move(effect));
@@ -1063,7 +1071,8 @@ void CameraEffectsController::AddBackgroundBlurStateToEffect(
     const gfx::VectorIcon& icon,
     int state_value,
     int string_id,
-    int view_id) {
+    int view_id,
+    bool is_disabled_by_enterprise) {
   DCHECK(effect);
   effect->AddState(std::make_unique<VcEffectState>(
       &icon,
@@ -1074,7 +1083,7 @@ void CameraEffectsController::AddBackgroundBlurStateToEffect(
                           weak_factory_.GetWeakPtr(),
                           /*effect_id=*/VcEffectId::kBackgroundBlur,
                           /*value=*/state_value),
-      /*state=*/state_value, view_id));
+      /*state=*/state_value, view_id, is_disabled_by_enterprise));
 }
 
 void CameraEffectsController::SetCameraEffectsInCameraHalDispatcherImpl(

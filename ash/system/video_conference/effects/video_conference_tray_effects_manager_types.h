@@ -45,7 +45,8 @@ class ASH_EXPORT VcEffectState {
                 int accessible_name_id,
                 base::RepeatingClosure button_callback,
                 std::optional<int> state_value = std::nullopt,
-                int view_id = -1);
+                int view_id = -1,
+                bool is_disabled_by_enterprise = false);
 
   VcEffectState(const VcEffectState&) = delete;
   VcEffectState& operator=(const VcEffectState&) = delete;
@@ -57,6 +58,7 @@ class ASH_EXPORT VcEffectState {
   const std::u16string& label_text() const { return label_text_; }
   int accessible_name_id() const { return accessible_name_id_; }
   int view_id() const { return view_id_; }
+  bool is_disabled_by_enterprise() const { return is_disabled_by_enterprise_; }
   const base::RepeatingClosure& button_callback() const {
     return button_callback_;
   }
@@ -85,6 +87,9 @@ class ASH_EXPORT VcEffectState {
 
   // Optional id used to identify the state view.
   const int view_id_;
+
+  // Whether this effect state is disabled by enterprise policy.
+  bool is_disabled_by_enterprise_;
 
   base::WeakPtrFactory<const VcEffectState> weak_ptr_factory_{this};
 };
