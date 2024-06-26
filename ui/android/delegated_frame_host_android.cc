@@ -285,7 +285,16 @@ void DelegatedFrameHostAndroid::ResetFallbackToFirstNavigationSurface() {
       !first_local_surface_id_after_navigation_.is_valid()) {
     // If we have a valid `pre_navigation_local_surface_id_`, we must not be in
     // BFCache.
-    CHECK(!bfcache_fallback_.is_valid());
+    {
+      // TODO(https://crbug.com/349073060): Remove the scope when the bug is
+      // fixed.
+      SCOPED_CRASH_KEY_STRING64("crbug/349073060", "bfc_fallback_crashed",
+                                bfcache_fallback_.ToString().c_str());
+      SCOPED_CRASH_KEY_STRING64(
+          "crbug/349073060", "pre_nav_lsid_crashed",
+          pre_navigation_local_surface_id_.ToString().c_str());
+      CHECK(!bfcache_fallback_.is_valid());
+    }
     EvictDelegatedFrame(frame_evictor_->CollectSurfaceIdsForEviction());
     content_layer_->SetBackgroundColor(SkColors::kTransparent);
   }
