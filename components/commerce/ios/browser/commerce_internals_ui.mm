@@ -37,7 +37,7 @@ CommerceInternalsUI::CommerceInternalsUI(web::WebUIIOS* web_ui,
   web::WebUIIOSDataSource::Add(browser_state, source);
   web_ui->GetWebState()->GetInterfaceBinderForMainFrame()->AddInterface(
       base::BindRepeating(&CommerceInternalsUI::BindInterface,
-                          base::Unretained(this)));
+                          weak_factory_.GetWeakPtr()));
 }
 
 CommerceInternalsUI::~CommerceInternalsUI() {
