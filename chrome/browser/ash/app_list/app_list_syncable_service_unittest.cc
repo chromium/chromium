@@ -12,10 +12,12 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/containers/to_vector.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
+#include "chrome/browser/apps/app_preload_service/app_preload_service.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
@@ -3855,7 +3857,24 @@ TEST_F(AppListSyncableServiceTest,
             youtube_item->CalculateDefaultPositionIfApplicable());
 }
 
-TEST_F(AppListSyncableServiceTest, LauncherOrdering) {
+class AppListSyncableServiceAppPreloadTest
+    : public test::AppListSyncableServiceTestBase {
+ public:
+  AppListSyncableServiceAppPreloadTest() {
+    feature_list_.InitAndEnableFeature(
+        apps::kAppPreloadServiceEnableLauncherOrder);
+  }
+  AppListSyncableServiceAppPreloadTest(
+      const AppListSyncableServiceAppPreloadTest&) = delete;
+  AppListSyncableServiceAppPreloadTest& operator=(
+      const AppListSyncableServiceAppPreloadTest&) = delete;
+  ~AppListSyncableServiceAppPreloadTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(AppListSyncableServiceAppPreloadTest, LauncherOrdering) {
   const std::map<apps::LauncherItem, syncer::StringOrdinal>& ordinals =
       app_list_syncable_service()->GetDefaultOrdinalsForTest();
   auto ordinals_to_string = [&]() {
@@ -3986,6 +4005,58 @@ TEST_F(AppListSyncableServiceTest, LauncherOrdering) {
       }));
   EXPECT_EQ(app_list_syncable_service()->GetOemFolderNameForTest(),
             "aps-oem-folder");
+
+  auto items_to_string = [&]() {
+    std::vector<std::string> result;
+    for (const auto& item : GetModelUpdater()->GetItems()) {
+      result.push_back(
+          base::JoinString({item->id(), item->name(), item->folder_id(),
+                            item->position().ToDebugString()},
+                           "|"));
+    }
+    return result;
+  };
+
+  auto add_item = [&](apps::PackageId package_id) {
+    apps::AppPtr app = std::make_unique<apps::App>(apps::AppType::kChromeApp,
+                                                   package_id.identifier());
+    app->readiness = apps::Readiness::kReady;
+    app->installer_package_id = package_id;
+    std::vector<apps::AppPtr> deltas;
+    deltas.push_back(std::move(app));
+    apps::AppServiceProxyFactory::GetForProfile(profile_.get())
+        ->OnApps(std::move(deltas), apps::AppType::kUnknown,
+                 /*should_notify_initialized=*/false);
+    auto item = std::make_unique<ChromeAppListItem>(
+        profile_.get(), package_id.identifier(), GetModelUpdater());
+    ItemTestApi(item.get()).SetName(package_id.identifier());
+    app_list_syncable_service()->AddItem(std::move(item));
+  };
+
+  // The 3 default test apps should exist at first.
+  EXPECT_THAT(items_to_string(),
+              ElementsAreArray({
+                  "dceacbkfkmllgmjmbhgkpjegnodmildf|Hosted App||n",
+                  "emfkafnhnpcmabnnkckkchdilgeoekbo|Packaged App 1||h",
+                  "jlklkagmeajbjiobondfhiekepofmljl|Packaged App 2||e",
+              }));
+
+  // Positions should be set from APS, folderapp1 should create 'aps-folder',
+  // and oem1 should create 'aps-oem-folder'.
+  add_item(p("chromeapp:app1"));
+  add_item(p("chromeapp:folderapp1"));
+  add_item(p("chromeapp:oem1"));
+  EXPECT_THAT(items_to_string(),
+              ElementsAreArray({
+                  "app1|app1||h",
+                  "dceacbkfkmllgmjmbhgkpjegnodmildf|Hosted App||n",
+                  "ddb1da55-d478-4243-8642-56d3041f0263|aps-oem-folder||u",
+                  "emfkafnhnpcmabnnkckkchdilgeoekbo|Packaged App 1||h",
+                  "folder:aps-folder|aps-folder||v",
+                  "folderapp1|folderapp1|folder:aps-folder|n",
+                  "jlklkagmeajbjiobondfhiekepofmljl|Packaged App 2||e",
+                  "oem1|oem1|ddb1da55-d478-4243-8642-56d3041f0263|n",
+              }));
 }
 
 // Base class for tests of `AppListSyncableService::OnFirstSync()` parameterized

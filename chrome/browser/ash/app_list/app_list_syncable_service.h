@@ -458,9 +458,14 @@ class AppListSyncableService : public syncer::SyncableService,
   bool UpdateSyncItemFromAppItem(const ChromeAppListItem* app_item,
                                  AppListSyncableService::SyncItem* sync_item);
 
-  // Returns position from AppPreloadServer `launcher_ordering_` if found.
-  syncer::StringOrdinal GetPositionFromAppPreloadService(
-      const ChromeAppListItem* new_item) const;
+  // If `new_item` is found in AppPreloadServer `launcher_ordering`, this
+  // function returns true and sets `position`. Additionally sets `folder_id`,
+  // `folder_name`, and `folder_position` if the item is not in the root folder.
+  bool GetAppPreloadServiceInfo(const ChromeAppListItem* new_item,
+                                syncer::StringOrdinal* position,
+                                std::string* folder_id,
+                                std::string* folder_name,
+                                syncer::StringOrdinal* folder_position) const;
 
   // Sets OEM folder name if any OEM folder is specified in the root folder.
   void SetOemFolderNameFromAppPreloadService(
@@ -477,9 +482,12 @@ class AppListSyncableService : public syncer::SyncableService,
   void ApplyAppAttributes(const std::string& app_id,
                           std::unique_ptr<SyncItem> attributes);
 
-  // Creates a `ChromeAppListItem` and a sync item for OEM folder, if they don't
-  // already exist.
-  void EnsureOemFolderExists();
+  // Creates a `ChromeAppListItem` and a sync item for the specified folder if
+  // it doesn't already exist. `folder_position` is used if it is valid, and
+  // this item does not already have sync data.
+  void EnsureFolderExists(const std::string& folder_id,
+                          const std::string& folder_name,
+                          syncer::StringOrdinal folder_position);
 
   // Creates or updates a GuestOS folder's sync data if the folder is
   // missing.

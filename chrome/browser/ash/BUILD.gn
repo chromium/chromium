@@ -5597,6 +5597,7 @@ source_set("unit_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps:icon_standardizer",
     "//chrome/browser/apps/app_discovery_service",
+    "//chrome/browser/apps/app_preload_service",
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/apps/app_service:test_support",
     "//chrome/browser/apps/app_service/app_icon",
