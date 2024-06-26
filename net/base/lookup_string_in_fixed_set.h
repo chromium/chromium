@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_span.h"
 #include "net/base/net_export.h"
 
@@ -145,7 +146,8 @@ class NET_EXPORT FixedSetIncrementalLookup {
  private:
   // Span start points to the current position in the graph indicating the
   // current state of the automaton. Is as empty span if the graph is exhausted.
-  base::span<const uint8_t> bytes_;
+  // RAW_PTR_EXCLUSION: Already protected by `original_bytes_` (see below).
+  RAW_PTR_EXCLUSION base::span<const uint8_t> bytes_;
 
   // `original_bytes_` bytes isn't used per se, as we care only about the
   // current state in `bytes_` (which is a subspan), but is kept here as

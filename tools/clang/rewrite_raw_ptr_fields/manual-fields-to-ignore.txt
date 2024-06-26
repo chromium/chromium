@@ -190,8 +190,10 @@ AXPlatformNodeCocoa::_node
 ShellNativeAppWindowController::_appWindow
 WatchedLifetimeMenuController::_deallocCalled
 
-# Populated manually - end of buffer already protected by another raw_ptr.
+# Populated manually - pointee already protected by another raw_ptr in the same
+# class.
 blink::SegmentedSubstring::data_last_char_
+net::FixedSetIncrementalLookup::bytes_
 
 #######
 # BackupRefPtr-specific sections
