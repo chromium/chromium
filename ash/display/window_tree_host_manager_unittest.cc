@@ -2151,17 +2151,17 @@ TEST_F(WindowTreeHostManagerTest,
   widget->Show();
 
   TestMouseWatcherListener listener;
-  views::MouseWatcher watcher(
+  auto watcher = std::make_unique<views::MouseWatcher>(
       std::make_unique<views::MouseWatcherViewHost>(view, gfx::Insets()),
       &listener);
-  watcher.Start(root2);
+  watcher->Start(root2);
 
   ui::test::EventGenerator event_generator(
       widget->GetNativeWindow()->GetRootWindow());
   event_generator.MoveMouseToCenterOf(widget->GetNativeWindow());
 
   UpdateDisplay("400x300");
-  watcher.Stop();
+  watcher.reset();
 
   widget->CloseNow();
 }
