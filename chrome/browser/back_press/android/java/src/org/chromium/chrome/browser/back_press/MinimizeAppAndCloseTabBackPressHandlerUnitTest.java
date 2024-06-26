@@ -31,6 +31,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
@@ -143,6 +144,7 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
 
     @Test
     @SmallTest
+    @DisableFeatures({ChromeFeatureList.BACK_TO_HOME_ANIMATION})
     public void testMinimizeApp() {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -189,6 +191,7 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
 
     @Test
     @SmallTest
+    @DisableFeatures({ChromeFeatureList.BACK_TO_HOME_ANIMATION})
     public void testMinimizeApp_NoValidTab() {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(

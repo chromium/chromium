@@ -565,7 +565,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sBackGestureRefactorAndroid =
             newCachedFlag(BACK_GESTURE_REFACTOR, true);
     public static final CachedFlag sBackToHomeAnimation =
-            newCachedFlag(BACK_TO_HOME_ANIMATION, false);
+            newCachedFlag(BACK_TO_HOME_ANIMATION, true);
     public static final CachedFlag sBlockIntentsWhileLocked =
             newCachedFlag(BLOCK_INTENTS_WHILE_LOCKED, false);
     public static final CachedFlag sCctAuthView = newCachedFlag(CCT_AUTH_VIEW, false);
