@@ -28,7 +28,7 @@ import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import type {CrTooltipIconElement} from 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -114,7 +114,24 @@ export class ExtensionsDetailViewElement extends
       showMv2DeprecationMessage_: {
         type: Boolean,
         computed: 'computeShowMv2DeprecationMessage_(' +
-            'data.isAffectedByMV2Deprecation)',
+            'mv2ExperimentStage_, data.isAffectedByMV2Deprecation)',
+      },
+
+      /**
+       * Whether the find alternative button in the mv2 deprecation message is
+       * shown.
+       */
+      showMv2DeprecationFindAlternativeButton_: {
+        type: Boolean,
+        computed: 'computeShowMv2DeprecationFindAlternativeButton_(' +
+            'mv2ExperimentStage_, data.recommendationsUrl)',
+      },
+
+      /** Whether the remove button in the mv2 deprecation message is shown. */
+      showMv2DeprecationRemoveButton_: {
+        type: Boolean,
+        computed: 'computeShowMv2DeprecationRemoveButton_(' +
+            'mv2ExperimentStage_)',
       },
 
       /** Whether the extensions blocklist text is shown. */
@@ -156,6 +173,8 @@ export class ExtensionsDetailViewElement extends
   fromActivityLog: boolean;
   private showSafetyCheck_: boolean;
   private showMv2DeprecationMessage_: boolean;
+  private showMv2DeprecationFindAlternativeButton_: boolean;
+  private showMv2DeprecationRemoveButton_: boolean;
   private showBlocklistText_: boolean;
   private size_: string;
   private sortedViews_: chrome.developerPrivate.ExtensionView[];
@@ -349,6 +368,15 @@ export class ExtensionsDetailViewElement extends
     this.delegate.openUrl(recommendationsUrl);
   }
 
+  /**
+   * Triggers the extension's removal.
+   */
+  private onRemoveButtonClick_(): void {
+    chrome.metricsPrivate.recordUserAction(
+        'Extensions.Mv2Deprecation.DisableWithReEnable.Remove');
+    this.delegate.deleteItem(this.data.id);
+  }
+
   private onRepairClick_() {
     this.delegate.repairItem(this.data.id);
   }
@@ -489,8 +517,33 @@ export class ExtensionsDetailViewElement extends
    * Returns whether the mv2 deprecation message should be displayed.
    */
   private computeShowMv2DeprecationMessage_(): boolean {
+    switch (this.mv2ExperimentStage_) {
+      case Mv2ExperimentStage.NONE:
+        return false;
+      case Mv2ExperimentStage.WARNING:
+      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+        return this.data.isAffectedByMV2Deprecation;
+      default:
+        return false;
+    }
+  }
+
+  /**
+   * Returns whether the find alternative button in the mv2 deprecation message
+   * should be displayed.
+   */
+  private computeShowMv2DeprecationFindAlternativeButton_(): boolean {
     return this.mv2ExperimentStage_ === Mv2ExperimentStage.WARNING &&
-        this.data.isAffectedByMV2Deprecation;
+        !!this.data.recommendationsUrl;
+  }
+
+  /**
+   * Returns whether the remove button in the mv2 deprecation message should be
+   * displayed.
+   */
+  private computeShowMv2DeprecationRemoveButton_(): boolean {
+    return this.mv2ExperimentStage_ ===
+        Mv2ExperimentStage.DISABLE_WITH_REENABLE;
   }
 
   private onShowSafetyCheckChanged_() {
@@ -521,6 +574,38 @@ export class ExtensionsDetailViewElement extends
     // included in the Safe Browsing allowlist.
     return this.data.showSafeBrowsingAllowlistWarning &&
         !this.data.blacklistText;
+  }
+
+  /**
+   * Returns the Manifest V2 deprecation message header.
+   */
+  private getMv2DeprecationMessageHeader_(): string {
+    switch (this.mv2ExperimentStage_) {
+      case Mv2ExperimentStage.NONE:
+        return '';
+      case Mv2ExperimentStage.WARNING:
+        return this.i18n('mv2DeprecationMessageWarningHeader');
+      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+        return this.i18n('mv2DeprecationMessageDisabledHeader');
+      default:
+        assertNotReached();
+    }
+  }
+
+  /**
+   * Returns the Manifest V2 deprecation message subtitle.
+   */
+  private getMv2DeprecationMessageSubtitle_(): string {
+    switch (this.mv2ExperimentStage_) {
+      case Mv2ExperimentStage.NONE:
+        return '';
+      case Mv2ExperimentStage.WARNING:
+        return this.i18n('mv2DeprecationMessageWarningSubtitle');
+      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+        return this.i18n('mv2DeprecationMessageDisabledSubtitle');
+      default:
+        assertNotReached();
+    }
   }
 }
 

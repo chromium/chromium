@@ -719,6 +719,13 @@ suite('ExtensionDetailViewTest', function() {
     assertTrue(!!findAlternativeButton);
     assertFalse(isVisible(findAlternativeButton));
 
+    // Remove button is always hidden.
+    const removeButton =
+        item.shadowRoot!.querySelector<HTMLElement>('#mv2DeprecationMessage')!
+            .querySelector<HTMLButtonElement>('.remove-button');
+    assertTrue(!!removeButton);
+    assertFalse(isVisible(removeButton));
+
     // Add a recommendations url to the extension.
     const id = 'a'.repeat(32);
     const recommendationsUrl =
@@ -737,14 +744,38 @@ suite('ExtensionDetailViewTest', function() {
         findAlternativeButton, 'openUrl', [recommendationsUrl]);
   });
 
-  test('Mv2DeprecationMessage_DisableWithReEnable', function() {
-    // Message is hidden for experiment on stage 2 (disable with re-enable).
-    // TODO(crbug.com/339061151): verify message is visible once functionality
-    // is added.
+  test('Mv2DeprecationMessage_DisableWithReEnable', async function() {
+    // Message is hidden for experiment on stage 2 (disable with re-enable)
+    // when extension is not affected by the MV2 deprecation.
     loadTimeData.overrideValues({MV2ExperimentStage: 2});
     setupElement();
     flush();
     testVisible(item, '#mv2DeprecationMessage', false);
+
+    // Message is visible for experiment on stage 2 (disable with re-enable)
+    // when extension is affected by the MV2 deprecation.
+    item.set('data.isAffectedByMV2Deprecation', true);
+    flush();
+    testVisible(item, '#mv2DeprecationMessage', true);
+
+    // Find alternative button is always hidden.
+    const findAlternativeButton =
+        item.shadowRoot!.querySelector<HTMLElement>('#mv2DeprecationMessage')!
+            .querySelector<HTMLButtonElement>('.find-alternative-button');
+    assertTrue(!!findAlternativeButton);
+    assertFalse(isVisible(findAlternativeButton));
+
+    // Remove button is always visible.
+    const removeButton =
+        item.shadowRoot!.querySelector<HTMLElement>('#mv2DeprecationMessage')!
+            .querySelector<HTMLButtonElement>('.remove-button');
+    assertTrue(!!removeButton);
+    assertTrue(isVisible(removeButton));
+
+    // Click on the remove button, and verify it triggered the correct delegate
+    // call.
+    await mockDelegate.testClickingCalls(
+        removeButton, 'deleteItem', [extensionData.id]);
   });
 
   test('PinnedToToolbar', async function() {
