@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PRELOADING_DATA_H_
 #define CONTENT_PUBLIC_BROWSER_PRELOADING_DATA_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/preloading.h"
