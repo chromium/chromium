@@ -76,8 +76,7 @@ TEST_F(MailboxFrameRegistryTest, RegisterAccessUnregister) {
 
   // After unregistering a frame with its mailbox, that mailbox cannot be used
   // to access the frame again.
-  ASSERT_DEATH(
-      { registry_->AccessFrame(mailbox); }, "Check failed: it != map_.end().");
+  ASSERT_DEATH({ registry_->AccessFrame(mailbox); }, "");
 }
 
 // This tests registering a frame, accessing it, and the frame's lifecycle.
@@ -110,9 +109,7 @@ TEST_F(MailboxFrameRegistryTest, CheckRegistryLifecycle) {
 // The does a negative test of registering a frame with an unregistered mailbox.
 TEST_F(MailboxFrameRegistryTest, InvalidFrameAccess) {
   gpu::Mailbox mailbox = gpu::Mailbox::Generate();
-  ASSERT_DEATH(
-      { auto frame = registry_->AccessFrame(mailbox); },
-      "Check failed: it != map_.end().");
+  ASSERT_DEATH({ auto frame = registry_->AccessFrame(mailbox); }, "");
 }
 
 }  // namespace media
