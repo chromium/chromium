@@ -859,7 +859,32 @@ void ServiceWorkerContainerHostForClient::SendSetController(
   SCOPED_CRASH_KEY_BOOL("SWCH_SC", "notify_controllerchange",
                         notify_controllerchange);
 
-  container_->SetController(CreateControllerServiceWorkerInfo(),
+  auto controller_info = CreateControllerServiceWorkerInfo();
+  if (controller_info->fetch_request_window_id &&
+      !controller_info->object_info) {
+    // TODO(crbug.com/348109482) Remove these crash keys after fixing the issue.
+    // When `controller_info` has `fetch_request_window_id` but doesn't have
+    // `object_info`, it will hit CHECK crash in the renderer.
+    static bool has_dumped_without_crashing = false;
+    if (!has_dumped_without_crashing) {
+      has_dumped_without_crashing = true;
+      SCOPED_CRASH_KEY_STRING256(
+          "SWController", "fetch_request_window_id",
+          controller_info->fetch_request_window_id->ToString());
+      SCOPED_CRASH_KEY_BOOL("SWController", "has_context_core", !!context());
+      SCOPED_CRASH_KEY_NUMBER("SWController", "mode",
+                              static_cast<int>(controller_info->mode));
+      SCOPED_CRASH_KEY_NUMBER(
+          "SWController", "client_type",
+          static_cast<int>(service_worker_client().GetClientType()));
+      SCOPED_CRASH_KEY_BOOL(
+          "SWController", "PlzDedicatedWorker",
+          base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
+      base::debug::DumpWithoutCrashing();
+    }
+  }
+
+  container_->SetController(std::move(controller_info),
                             notify_controllerchange);
 }
 
