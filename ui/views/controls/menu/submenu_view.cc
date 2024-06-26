@@ -506,6 +506,12 @@ void SubmenuView::ShowAt(const MenuHost::InitParams& init_params) {
   }
   // Fire kMenuPopupStart for each menu/submenu that is shown.
   NotifyAccessibilityEvent(ax::mojom::Event::kMenuPopupStart, true);
+
+  // Announce if the menu/submenu is empty.
+  if (GetRowCount() == 0) {
+    GetViewAccessibility().AnnouncePolitely(
+        l10n_util::GetStringUTF16(IDS_APP_MENU_AX_ANNOUNCE_EMPTY_SUBMENU));
+  }
 }
 
 void SubmenuView::Reposition(const gfx::Rect& bounds,

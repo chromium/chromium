@@ -398,7 +398,10 @@ need to be translated for each locale.-->
       <message name="IDS_APP_MENU_EMPTY_SUBMENU" desc="Used when a submenu has no entries">
         (empty)
       </message>
-        <message name="IDS_CLIPBOARD_MENU_HTML" desc="Used when HTML is stored in the clipboard history">
+      <message name="IDS_APP_MENU_AX_ANNOUNCE_EMPTY_SUBMENU" is_accessibility_with_no_ui="true" desc="Screen reader announcement when a submenu that has been opened has no entries">
+        Empty
+      </message>
+      <message name="IDS_CLIPBOARD_MENU_HTML" desc="Used when HTML is stored in the clipboard history">
         HTML Content
       </message>
       <message name="IDS_CLIPBOARD_MENU_IMAGE" desc="Used when an image is stored in the clipboard history">
