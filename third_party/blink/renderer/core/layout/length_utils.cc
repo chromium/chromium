@@ -331,23 +331,14 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
     result = {{size, size}, /* depends_on_block_constraints */ false};
   }
 
-  const auto& max_inline_size =
-      is_parent_writing_mode_horizontal ? style.MaxWidth() : style.MaxHeight();
-  result.sizes.Constrain(
+  const MinMaxSizes min_max_sizes =
       is_parallel_with_parent
-          ? ResolveMaxInlineLength(space, style, border_padding,
-                                   min_max_sizes_func, max_inline_size)
-          : ResolveMaxBlockLength(space, style, border_padding,
-                                  max_inline_size));
+          ? ComputeMinMaxInlineSizes(space, child, border_padding,
+                                     min_max_sizes_func)
+          : ComputeMinMaxBlockSizes(space, style, border_padding);
 
-  const auto& min_inline_size =
-      is_parent_writing_mode_horizontal ? style.MinWidth() : style.MinHeight();
-  result.sizes.Encompass(
-      is_parallel_with_parent
-          ? ResolveMinInlineLength(space, style, border_padding,
-                                   min_max_sizes_func, min_inline_size)
-          : ResolveMinBlockLength(space, style, border_padding,
-                                  min_inline_size));
+  result.sizes.Constrain(min_max_sizes.max_size);
+  result.sizes.Encompass(min_max_sizes.min_size);
 
   // Tables need to apply one final constraint. They are never allowed to go
   // below their min-intrinsic size (even if they have an inline-size, etc).
