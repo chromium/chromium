@@ -4,10 +4,14 @@
 
 import {BrowserProxy} from './browser_proxy.js';
 
-// Global `window` context.
+// Types that Chrome provides, but aren't standard TS.
 declare global {
   interface Window {
     help: any;
+  }
+
+  interface Navigator {
+    userAgentData: any;
   }
 }
 
@@ -78,6 +82,15 @@ async function requestSurvey(
     },
   };
 
+  // High contrast mode on Windows will present as dark mode, but does not
+  // work with the dark mode survey (see b/343275531) as the colors Windows
+  // chooses hide some elements.
+  const isHighContrast = window.matchMedia('(forced-colors: active)').matches;
+  const isWindows = navigator.userAgentData.platform === 'Windows';
+  const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  const requestDarkMode = isDarkMode && !(isWindows && isHighContrast);
+
   helpApi.requestSurvey({
     triggerId: triggerId,
     enableTestingMode: enableTesting,
@@ -89,9 +102,7 @@ async function requestSurvey(
       }
       helpApi.presentSurvey({
         surveyData: requestSurveyCallbackParam.surveyData,
-        colorScheme: window.matchMedia('(prefers-color-scheme: dark)').matches ?
-            /* dark */ 2 :
-            /* light */ 1,
+        colorScheme: requestDarkMode ? /* dark */ 2 : /* light */ 1,
         customZIndex: 10000,
         customLogoUrl: 'https://www.gstatic.com/images' +
             '/branding/product/2x/chrome_48dp.png',
