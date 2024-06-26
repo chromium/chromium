@@ -6,10 +6,55 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-# Note: This target is separated from the rest of //chrome/browser/ash so that
-# it can depend on the `bluetooth::mojom::Adapter` interface, which is only
+static_library("nearby") {
+  sources = [
+    "nearby_dependencies_provider.cc",
+    "nearby_dependencies_provider.h",
+    "nearby_dependencies_provider_factory.cc",
+    "nearby_dependencies_provider_factory.h",
+    "nearby_process_manager_factory.cc",
+    "nearby_process_manager_factory.h",
+    "nearby_process_manager_impl.cc",
+    "nearby_process_manager_impl.h",
+    "quick_start_connectivity_service_factory.cc",
+    "quick_start_connectivity_service_factory.h",
+    "quick_start_connectivity_service_impl.cc",
+    "quick_start_connectivity_service_impl.h",
+  ]
+
+  deps = [
+    ":bluetooth_adapter_manager",
+    ":quick_start_connectivity_service",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/ash/nearby/presence/credential_storage/",
+    "//chrome/browser/nearby_sharing/common",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/nearby/common/connections_manager",
+    "//chromeos/ash/services/nearby/public/cpp",
+    "//chromeos/ash/services/nearby/public/mojom",
+    "//chromeos/ash/services/wifi_direct",
+    "//chromeos/services/network_config/public/mojom",
+    "//components/cross_device/logging",
+    "//components/cross_device/nearby",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//device/bluetooth",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/network/public/mojom",
+  ]
+}
+
+# Note: This target is separated from the rest of //chrome/browser/ash/nearby so
+# that it can depend on the `bluetooth::mojom::Adapter` interface, which is only
 # visible to a limited set of clients.
-source_set("bluetooth_adapter_manager") {
+static_library("bluetooth_adapter_manager") {
   sources = [
     "bluetooth_adapter_manager.cc",
     "bluetooth_adapter_manager.h",
@@ -25,7 +70,7 @@ source_set("bluetooth_adapter_manager") {
   ]
 }
 
-source_set("quick_start_connectivity_service") {
+static_library("quick_start_connectivity_service") {
   sources = [ "quick_start_connectivity_service.h" ]
 
   deps = [
@@ -33,5 +78,58 @@ source_set("quick_start_connectivity_service") {
     "//chromeos/ash/services/nearby/public/mojom",
     "//components/keyed_service/core",
     "//mojo/public/cpp/bindings",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_quick_start_connectivity_service.cc",
+    "fake_quick_start_connectivity_service.h",
+  ]
+
+  deps = [
+    ":quick_start_connectivity_service",
+    "//base",
+    "//chromeos/ash/components/nearby/common/connections_manager",
+    "//chromeos/ash/components/nearby/common/connections_manager:test_support",
+    "//chromeos/ash/components/quick_start",
+    "//chromeos/ash/components/quick_start:test_support",
+    "//chromeos/ash/services/nearby/public/cpp:test_support",
+    "//chromeos/ash/services/nearby/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "bluetooth_adapter_manager_unittest.cc",
+    "nearby_process_manager_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":bluetooth_adapter_manager",
+    ":nearby",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/nearby/presence/credential_storage:unit_tests",
+    "//chrome/browser/nearby_sharing/common",
+    "//chrome/services/sharing/nearby/test_support",
+    "//chromeos/ash/services/nearby/public/cpp:test_support",
+    "//chromeos/ash/services/nearby/public/mojom",
+    "//chromeos/ash/services/network_config/public/cpp:test_support",
+    "//components/account_id",
+    "//components/prefs",
+    "//content/test:test_support",
+    "//device/bluetooth",
+    "//device/bluetooth:mocks",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
   ]
 }
