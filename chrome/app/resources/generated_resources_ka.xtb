@@ -4116,6 +4116,7 @@
 <translation id="3978325380690188371">კლავიშების ფიქსაცია მიუწვდომელია, როცა ChromeVox ჩართულია</translation>
 <translation id="3979395879372752341">დამატებულია ახალი გაფართოება (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">ჩართეთ <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">ამ ჩანართების დამალვა</translation>
 <translation id="3981058120448670012">ახლომდებარე მოწყობილობებზე ხილულია, როგორც <ph name="DEVICE_NAME" /> (დარჩენილია <ph name="REMAINING_TIME" />)...</translation>
 <translation id="3981760180856053153">შეყვანილია შენახვის არასწორი ტიპი.</translation>
 <translation id="3982375475032951137">დააყენეთ თქვენი ბრაუზერი რამდენიმე მარტივი ეტაპის გავლით</translation>
@@ -7495,6 +7496,7 @@
 <translation id="6557290421156335491">ჩემი მალსახმობები</translation>
 <translation id="6560061709899140565">ტრანსლირების სხვა სესიების ჩვენება</translation>
 <translation id="6560151649238390891">შემოთავაზება ჩასმულია</translation>
+<translation id="656065428026159829">მეტის ნახვა</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">სისტემის ჟურნალების „ჩამოტვირთვების“ კატალოგში შენახვა.</translation>
 <translation id="656293578423618167">ფაილის მდებარეობა ან სახელი ძალიან გრძელია. გთხოვთ, შეინახოთ იგი უფრო მოკლე სახელით ან სხვა ადგილას.</translation>
@@ -9459,6 +9461,7 @@
 <translation id="8022466874160067884">მიუთითეთ თქვენი Google ანგარიში და პაროლი</translation>
 <translation id="8023133589013344428">ენების მართვა ChromeOS Flex-ის პარამეტრებიდან</translation>
 <translation id="8023801379949507775">გაანახლეთ გაფართოებები ეხლა</translation>
+<translation id="8024161440284949905">ამ ჩანართებით გაგრძელება</translation>
 <translation id="8025151549289123443">ჩაკეტილი ეკრანი და შესვლა</translation>
 <translation id="8025291188699172126">განახლებების შესახებ</translation>
 <translation id="8026471514777758216">თქვენი ყველა მოწყობილობა</translation>

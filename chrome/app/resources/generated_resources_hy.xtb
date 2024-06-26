@@ -4114,6 +4114,7 @@
 <translation id="3978325380690188371">«Կպչուն ստեղներ» գործառույթը հասանելի չէ, երբ ChromeVox-ը միացված է</translation>
 <translation id="3979395879372752341">Ավելացվել է նոր ընդլայնում (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Միացնել <ph name="NETWORKDEVICE" />-ը</translation>
+<translation id="398095528354975981">Թաքցնել այս ներդիրները</translation>
 <translation id="3981058120448670012">Մոտակա սարքերին տեսանելի է «<ph name="DEVICE_NAME" />» անունով <ph name="REMAINING_TIME" /> շարունակ…</translation>
 <translation id="3981760180856053153">Մուտքագրված է պահման սխալ տեսակ:</translation>
 <translation id="3982375475032951137">Կարգավորեք դիտարկիչը մի քանի պարզ քայլով</translation>
@@ -7490,6 +7491,7 @@
 <translation id="6557290421156335491">Իմ դյուրանցումները</translation>
 <translation id="6560061709899140565">Ցույց տալ հեռարձակման այլ աշխատաշրջաններ</translation>
 <translation id="6560151649238390891">Առաջարկը զետեղվեց</translation>
+<translation id="656065428026159829">Տեսնել ավելին</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Պահել համակարգի մատյանները «Ներբեռնումներ» գրացուցակում։</translation>
 <translation id="656293578423618167">Ֆայլի ուղին կամ անունը չափազանց երկար է: Տվեք ավելի կարճ անուն կամ պահեք այլ տեղում:</translation>
@@ -9456,6 +9458,7 @@
 <translation id="8022466874160067884">Մուտքագրել ձեր Google հաշիվը և գաղտնաբառը</translation>
 <translation id="8023133589013344428">Լեզուների կառավարում ChromeOS Flex-ի կարգավորումներում</translation>
 <translation id="8023801379949507775">Թարմացնել ընդլայնումները հիմա</translation>
+<translation id="8024161440284949905">Շարունակել այս ներդիրների դիտումը</translation>
 <translation id="8025151549289123443">Կողպէկրան և մուտք</translation>
 <translation id="8025291188699172126">Թարմացումների մասին</translation>
 <translation id="8026471514777758216">Ձեր բոլոր սարքերը</translation>

@@ -4113,6 +4113,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="3978325380690188371">Les tecles permanents no estan disponibles quan ChromeVox està activat</translation>
 <translation id="3979395879372752341">S'ha afegit una extensió nova (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Activa <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Amaga aquestes pestanyes</translation>
 <translation id="3981058120448670012">Visible com a <ph name="DEVICE_NAME" /> per als dispositius a prop durant <ph name="REMAINING_TIME" />...</translation>
 <translation id="3981760180856053153">Heu introduït un tipus de desament no vàlid.</translation>
 <translation id="3982375475032951137">Configura el navegador en uns quants passos molt senzills</translation>
@@ -7490,6 +7491,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6557290421156335491">Les meves dreceres</translation>
 <translation id="6560061709899140565">Mostra altres sessions d'emissió</translation>
 <translation id="6560151649238390891">El suggeriment s'ha inserit</translation>
+<translation id="656065428026159829">Mostra'n més</translation>
 <translation id="6561726789132298588">retorn</translation>
 <translation id="6562117348069327379">Emmagatzema els registres del sistema al directori Baixades.</translation>
 <translation id="656293578423618167">El camí o el nom del fitxer és massa llarg. Deseu-ho amb un nom més curt o en una altra ubicació.</translation>
@@ -9457,6 +9459,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8022466874160067884">Introdueix el teu Compte de Google i la contrasenya</translation>
 <translation id="8023133589013344428">Gestiona els idiomes a la configuració de ChromeOS Flex</translation>
 <translation id="8023801379949507775">Actualitza les extensions ara </translation>
+<translation id="8024161440284949905">Continua amb aquestes pestanyes</translation>
 <translation id="8025151549289123443">Pantalla de bloqueig i inici de sessió</translation>
 <translation id="8025291188699172126">Sobre les actualitzacions</translation>
 <translation id="8026471514777758216">Tots els teus dispositius</translation>

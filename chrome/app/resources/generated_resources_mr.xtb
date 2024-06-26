@@ -4128,6 +4128,7 @@
 <translation id="3978325380690188371">ChromeVox सुरू असते, तेव्हा स्टिकी की उपलब्ध नसते</translation>
 <translation id="3979395879372752341">नवीन एक्स्टेंशन जोडले (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> सुरू करा</translation>
+<translation id="398095528354975981">हे टॅब लपवा</translation>
 <translation id="3981058120448670012"><ph name="REMAINING_TIME" /> साठी <ph name="DEVICE_NAME" /> म्हणून जवळपासच्या डिव्हाइसना दृश्यमान...</translation>
 <translation id="3981760180856053153">अवैध सेव्ह प्रकार एंटर केले.</translation>
 <translation id="3982375475032951137">तुमचा ब्राउझर काही सोप्या पायऱ्यांमध्ये सेट करा</translation>
@@ -7506,6 +7507,7 @@
 <translation id="6557290421156335491">माझे शॉर्टकट</translation>
 <translation id="6560061709899140565">इतर कास्‍ट सेशन दाखवा</translation>
 <translation id="6560151649238390891">सूचना घातली</translation>
+<translation id="656065428026159829">आणखी पहा</translation>
 <translation id="6561726789132298588">प्रविष्‍ट करा</translation>
 <translation id="6562117348069327379">सिस्टम लॉग डाउनलोड डिरेक्टरीमध्ये स्टोअर करा.</translation>
 <translation id="656293578423618167">फाइल पथ किंवा नाव खूप मोठे आहे. कृपया एका छोट्या नावाने किंवा दुसर्‍या स्‍थानावर सेव्ह करा.</translation>
@@ -9471,6 +9473,7 @@
 <translation id="8022466874160067884">तुमचे Google खाते आणि पासवर्ड एंटर करा</translation>
 <translation id="8023133589013344428">ChromeOS Flex सेटिंग्जमध्ये भाषा व्यवस्थापित करा</translation>
 <translation id="8023801379949507775">एक्स्टेंशन त्वरित अपडेट करा</translation>
+<translation id="8024161440284949905">या टॅबसह पुढे सुरू ठेवा</translation>
 <translation id="8025151549289123443">लॉक स्‍क्रीन आणि साइन-इन</translation>
 <translation id="8025291188699172126">अपडेट यांविषयी</translation>
 <translation id="8026471514777758216">तुमची सर्व डिव्हाइस</translation>

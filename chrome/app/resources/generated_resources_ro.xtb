@@ -4116,6 +4116,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="3978325380690188371">Tastele adezive nu sunt disponibile când ChromeVox este activat</translation>
 <translation id="3979395879372752341">A fost adăugată o extensie (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Activează <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Ascunde aceste file</translation>
 <translation id="3981058120448670012">Vizibil pentru dispozitivele din apropiere ca <ph name="DEVICE_NAME" /> timp de <ph name="REMAINING_TIME" />...</translation>
 <translation id="3981760180856053153">A fost introdus un tip de salvare nevalid.</translation>
 <translation id="3982375475032951137">Configurează browserul în câțiva pași simpli</translation>
@@ -7494,6 +7495,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6557290421156335491">Comenzile mele rapide</translation>
 <translation id="6560061709899140565">Afișează alte sesiuni de proiectare</translation>
 <translation id="6560151649238390891">Sugestie inserată</translation>
+<translation id="656065428026159829">Vezi mai multe</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Stochează jurnale de sistem în directorul Descărcări.</translation>
 <translation id="656293578423618167">Calea sau numele fișierului sunt prea lungi. Salvați utilizând un nume mai scurt sau într-o altă locație.</translation>
@@ -9463,6 +9465,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8022466874160067884">Introdu Contul Google și parola</translation>
 <translation id="8023133589013344428">Gestionează limbile în setările sistemului de operare Chrome Flex</translation>
 <translation id="8023801379949507775">Actualizează extensiile acum</translation>
+<translation id="8024161440284949905">Continuă cu aceste file</translation>
 <translation id="8025151549289123443">Ecranul de blocare și conectarea</translation>
 <translation id="8025291188699172126">Despre actualizări</translation>
 <translation id="8026471514777758216">Toate dispozitivele tale</translation>

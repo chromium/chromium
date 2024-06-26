@@ -4130,6 +4130,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3978325380690188371">Træge taster er ikke tilgængelige, når ChromeVox er aktiveret</translation>
 <translation id="3979395879372752341">Ny udvidelse er tilføjet (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Aktivér <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Skjul disse faner</translation>
 <translation id="3981058120448670012">Andre enheder i nærheden får vist navnet <ph name="DEVICE_NAME" /> i <ph name="REMAINING_TIME" />...</translation>
 <translation id="3981760180856053153">Den indtastede filtype er ugyldig.</translation>
 <translation id="3982375475032951137">Konfigurer din browser ved et hjælp af et par enkle trin</translation>
@@ -7509,6 +7510,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6557290421156335491">Mine genveje</translation>
 <translation id="6560061709899140565">Vis andre Cast-sessioner</translation>
 <translation id="6560151649238390891">Forslaget blev indsat</translation>
+<translation id="656065428026159829">Se mere</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Gem systemlogs i mappen Downloads.</translation>
 <translation id="656293578423618167">Filstien eller -navnet er for langt. Gem med et kortere navn eller på en anden placering.</translation>
@@ -9477,6 +9479,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8022466874160067884">Angiv din Google-konto og -adgangskode</translation>
 <translation id="8023133589013344428">Administrer sprog i indstillingerne for ChromeOS Flex</translation>
 <translation id="8023801379949507775">Opdater udvidelser nu</translation>
+<translation id="8024161440284949905">Fortsæt med disse faner</translation>
 <translation id="8025151549289123443">Låseskærm og login</translation>
 <translation id="8025291188699172126">Om opdateringer</translation>
 <translation id="8026471514777758216">Alle dine enheder</translation>

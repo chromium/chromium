@@ -4126,6 +4126,7 @@
 <translation id="3978325380690188371">‏هنگام روشن بودن ChromeVox، کلیدهای چسبان دردسترس نیست</translation>
 <translation id="3979395879372752341">افزودنه‌های جدید اضافه شد (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">فعال کردن <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">پنهان کردن این برگه‌ها</translation>
 <translation id="3981058120448670012">نمایان برای دستگاه‌های اطراف با نام <ph name="DEVICE_NAME" /> به‌مدت <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">نوع ذخیره نامعتبری وارد شده است.</translation>
 <translation id="3982375475032951137">راه‌اندازی مرورگر طی چند مرحله ساده</translation>
@@ -7505,6 +7506,7 @@
 <translation id="6557290421156335491">میان‌برهای من</translation>
 <translation id="6560061709899140565">نمایش جلسه‌های دیگر پخش محتوا</translation>
 <translation id="6560151649238390891">پیشنهاد درج شد</translation>
+<translation id="656065428026159829">موارد بیشتر</translation>
 <translation id="6561726789132298588">Enter</translation>
 <translation id="6562117348069327379">گزارش‌های سیستم را در فهرست راهنمای «بارگیری‌ها» ذخیره کنید.</translation>
 <translation id="656293578423618167">مسیر یا نام فایل خیلی طولانی است. لطفاً با یک نام کوتاه‌تر یا در محل دیگری ذخیره کنید.</translation>
@@ -9473,6 +9475,7 @@
 <translation id="8022466874160067884">‏حساب Google و گذرواژه خود را وارد کنید</translation>
 <translation id="8023133589013344428">‏مدیریت زبان‌ها در تنظیمات ChromeOS Flex</translation>
 <translation id="8023801379949507775">اکنون افزونه‌ها به‌روز شوند</translation>
+<translation id="8024161440284949905">ادامه کار با این برگه‌ها</translation>
 <translation id="8025151549289123443">صفحه قفل و ورود به سیستم</translation>
 <translation id="8025291188699172126">درباره به‌روزرسانی‌ها</translation>
 <translation id="8026471514777758216">همه دستگاه‌ها</translation>
@@ -10195,7 +10198,7 @@
 <translation id="8549316893834449916">‏برای ورود به سیستم در Chromebook از «حساب Google» استفاده خواهید کرد – همان حسابی که برای Gmail،‏ Drive، ‏YouTube، و غیره از آن استفاده می‌کنید.</translation>
 <translation id="8550239873869577759">فایل مشکوکی بارگیری شده است</translation>
 <translation id="8551388862522347954">مجوزها</translation>
-<translation id="8551588720239073785">تنظیمات تاریخ و ساعت</translation>
+<translation id="8551588720239073785">تنظیمات ساعت و تاریخ</translation>
 <translation id="8551647092888540776"><ph name="FILE_NAMES" /> در حالت آفلاین باز نمی‌شود</translation>
 <translation id="8552102814346875916">ذخیره در فهرست «این سایت‌ها همیشه فعال نگه داشته شود»</translation>
 <translation id="8553342806078037065">مدیریت افراد دیگر</translation>

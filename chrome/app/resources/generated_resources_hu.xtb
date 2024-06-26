@@ -4127,6 +4127,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="3978325380690188371">A beragadó billentyűk nem használhatók, ha be van kapcsolva a ChromeVox</translation>
 <translation id="3979395879372752341">Új bővítmény hozzáadva (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> engedélyezése</translation>
+<translation id="398095528354975981">Ezeknek a lapoknak az elrejtése</translation>
 <translation id="3981058120448670012">Ennyi ideig látható a közeli eszközök számára <ph name="DEVICE_NAME" /> néven: <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">A megadott mentéstípus érvénytelen.</translation>
 <translation id="3982375475032951137">Néhány egyszerű lépésben beállíthatja böngészőjét</translation>
@@ -7507,6 +7508,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6557290421156335491">Saját parancsikonok</translation>
 <translation id="6560061709899140565">További átküldési munkamenetek megjelenítése</translation>
 <translation id="6560151649238390891">Javaslat beszúrva</translation>
+<translation id="656065428026159829">Továbbiak megjelenítése</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Rendszernaplók mentése a Letöltések mappába.</translation>
 <translation id="656293578423618167">A fájl elérési útja vagy neve túl hosszú. Kérjük, mentse rövidebb névvel, illetve másik helyre.</translation>
@@ -9473,6 +9475,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8022466874160067884">Adja meg Google-fiókját és jelszavát</translation>
 <translation id="8023133589013344428">Nyelvek kezelése a ChromeOS Flex beállításai között</translation>
 <translation id="8023801379949507775">Bővítmények frissítése most</translation>
+<translation id="8024161440284949905">Folytatás ezekkel a lapokkal</translation>
 <translation id="8025151549289123443">Lezárási képernyő és bejelentkezés</translation>
 <translation id="8025291188699172126">A frissítésekről</translation>
 <translation id="8026471514777758216">Minden eszközén</translation>

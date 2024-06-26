@@ -4129,6 +4129,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3978325380690188371">ChromeVox күйүп турганда, жабышма баскычтар жеткиликсиз</translation>
 <translation id="3979395879372752341">Жаңы кеңейтүү кошулду (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> иштетүү</translation>
+<translation id="398095528354975981">Бул өтмөктөрдү жашыруу</translation>
 <translation id="3981058120448670012">Жакын жердеги түзмөктөргө <ph name="DEVICE_NAME" /> катары <ph name="REMAINING_TIME" /> көрүнүп турат...</translation>
 <translation id="3981760180856053153">Жараксыз сактоо түрү киргизилди.</translation>
 <translation id="3982375475032951137">Бир нече жөнөкөй кадамдарды аткарып, серепчиңизди жөндөп алыңыз</translation>
@@ -7508,6 +7509,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6557290421156335491">Менин ыкчам баскычтарым</translation>
 <translation id="6560061709899140565">Тышкы экранга чыгаруу сеанстарын көрсөтүү</translation>
 <translation id="6560151649238390891">Сунуш киргизилди</translation>
+<translation id="656065428026159829">Дагы көрүү</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Системанын таржымалдарын Жүктөлүп алынгандар каталогунда сактоо.</translation>
 <translation id="656293578423618167">Файлдын аталышы же ага алып барчу жол өтө узун. Анын аталышын кыскартыңыз же жакыныраак жерге сактаңыз.</translation>
@@ -9473,6 +9475,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8022466874160067884">Google аккаунтуңузду жана сырсөздү териңиз</translation>
 <translation id="8023133589013344428">ChromeOS Flex параметрлеринен тилдерди башкаруу</translation>
 <translation id="8023801379949507775">Кеңейтүүлөрдү азыр жаңыртуу</translation>
+<translation id="8024161440284949905">Ушул өтмөктөрдө улантуу</translation>
 <translation id="8025151549289123443">Экранды кулпулоо жана аккаунтка кирүү</translation>
 <translation id="8025291188699172126">Жаңыртуулар тууралуу</translation>
 <translation id="8026471514777758216">Бардык түзмөктөрүңүздө</translation>

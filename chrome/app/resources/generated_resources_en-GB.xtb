@@ -4129,6 +4129,7 @@ This can include information about installed software, files, your browser and t
 <translation id="3978325380690188371">Sticky keys is not available when ChromeVox is on</translation>
 <translation id="3979395879372752341">New extension added (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Enable <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Hide these tabs</translation>
 <translation id="3981058120448670012">Visible to nearby devices as <ph name="DEVICE_NAME" /> for <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">Invalid save type entered.</translation>
 <translation id="3982375475032951137">Set up your browser in a few simple steps</translation>
@@ -7508,6 +7509,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6557290421156335491">My shortcuts</translation>
 <translation id="6560061709899140565">Show other cast sessions</translation>
 <translation id="6560151649238390891">Suggestion inserted</translation>
+<translation id="656065428026159829">See more</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Store system logs to the downloads directory.</translation>
 <translation id="656293578423618167">The file path or name is too long.  Please save with a shorter name or to another location.</translation>
@@ -9475,6 +9477,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8022466874160067884">Enter your Google Account and password</translation>
 <translation id="8023133589013344428">Manage languages in Chrome OS Flex settings</translation>
 <translation id="8023801379949507775">Update extensions now</translation>
+<translation id="8024161440284949905">Continue with these tabs</translation>
 <translation id="8025151549289123443">Lock screen and sign-in</translation>
 <translation id="8025291188699172126">About Updates</translation>
 <translation id="8026471514777758216">All your devices</translation>

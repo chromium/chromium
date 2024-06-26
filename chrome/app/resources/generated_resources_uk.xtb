@@ -4132,6 +4132,7 @@
 <translation id="3978325380690188371">Функція залипання клавіш недоступна, коли ввімкнено ChromeVox</translation>
 <translation id="3979395879372752341">Додано нове розширення (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Увімкнути <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Сховати ці вкладки</translation>
 <translation id="3981058120448670012">Пристрої поблизу бачитимуть назву "<ph name="DEVICE_NAME" />" упродовж <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">Введено недійсний тип збереження.</translation>
 <translation id="3982375475032951137">Налаштуйте веб-переглядач, виконавши прості дії</translation>
@@ -7507,6 +7508,7 @@
 <translation id="6557290421156335491">Мої ярлики</translation>
 <translation id="6560061709899140565">Показати інші сеанси трансляцій</translation>
 <translation id="6560151649238390891">Пропозицію вставлено</translation>
+<translation id="656065428026159829">Показати більше</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Зберігати журнали системи в каталозі "Завантаження".</translation>
 <translation id="656293578423618167">Шлях файлу чи назва файлу задовгі. Збережіть з коротшою назвою чи в іншому місці.</translation>
@@ -9479,6 +9481,7 @@
 <translation id="8022466874160067884">Введіть свій обліковий запис Google і пароль</translation>
 <translation id="8023133589013344428">Керувати мовами в налаштуваннях ОС Chrome Flex</translation>
 <translation id="8023801379949507775">Оновити розширення зараз</translation>
+<translation id="8024161440284949905">Продовжити із цими вкладками</translation>
 <translation id="8025151549289123443">Блокування екрана й вхід</translation>
 <translation id="8025291188699172126">Про оновлення</translation>
 <translation id="8026471514777758216">Доступ на всіх ваших пристроях</translation>

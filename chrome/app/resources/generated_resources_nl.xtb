@@ -4114,6 +4114,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="3978325380690188371">Plaktoetsen zijn niet beschikbaar als ChromeVox aanstaat</translation>
 <translation id="3979395879372752341">Nieuwe extensie toegevoegd (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> aanzetten</translation>
+<translation id="398095528354975981">Deze tabbladen verbergen</translation>
 <translation id="3981058120448670012">Nog <ph name="REMAINING_TIME" /> zichtbaar als <ph name="DEVICE_NAME" /> voor apparaten in de buurt…</translation>
 <translation id="3981760180856053153">Ongeldig opslagtype opgegeven.</translation>
 <translation id="3982375475032951137">Stel je browser in een paar eenvoudige stappen in</translation>
@@ -7486,6 +7487,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6557290421156335491">Mijn snelkoppelingen</translation>
 <translation id="6560061709899140565">Andere castsessies tonen</translation>
 <translation id="6560151649238390891">Suggestie ingevoegd</translation>
+<translation id="656065428026159829">Meer bekijken</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Systeemlogboeken opslaan in de map Downloads.</translation>
 <translation id="656293578423618167">Het bestandspad of de bestandsnaam is te lang. Sla op met een kortere naam of op een andere locatie.</translation>
@@ -9449,6 +9451,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8022466874160067884">Voer je Google-account en wachtwoord in</translation>
 <translation id="8023133589013344428">Talen beheren in de instellingen van Chrome OS Flex</translation>
 <translation id="8023801379949507775">Extensies nu updaten</translation>
+<translation id="8024161440284949905">Doorgaan met deze tabbladen</translation>
 <translation id="8025151549289123443">Vergrendelscherm en inloggen</translation>
 <translation id="8025291188699172126">Over updates</translation>
 <translation id="8026471514777758216">Al je apparaten</translation>

@@ -4105,6 +4105,7 @@
 <translation id="3978325380690188371">开启 ChromeVox 后，无法使用粘滞键</translation>
 <translation id="3979395879372752341">已添加新扩展程序（<ph name="EXTENSION_NAME" />）</translation>
 <translation id="3979748722126423326">启用<ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">隐藏这些标签页</translation>
 <translation id="3981058120448670012">向附近的设备显示为“<ph name="DEVICE_NAME" />”，剩余时间为 <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">输入的保存类型无效。</translation>
 <translation id="3982375475032951137">只需执行几个简单的步骤，即可完成浏览器设置</translation>
@@ -4281,7 +4282,7 @@
 <translation id="4107048419833779140">识别并弹出存储设备</translation>
 <translation id="4107522742068568249">前往“安全检查”页面</translation>
 <translation id="4109135793348361820">将窗口移至<ph name="USER_NAME" />(<ph name="USER_EMAIL" />)</translation>
-<translation id="4110485659976215879">取消忽略警告</translation>
+<translation id="4110485659976215879">恢复警告</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />（离线）</translation>
 <translation id="4113743276555482284">文件密码</translation>
 <translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />“位置信息精确度”设置处于开启状态时，系统将使用无线信号（例如 Wi-Fi 接入点、移动网络信号塔）的相关信息以及设备传感器数据（例如加速度计和陀螺仪）来更精确地推测设备位置，以便 Android 应用和服务使用这些位置信息提供基于地理位置的功能。为此，Google 会定期收集您附近的设备传感器和无线信号的相关信息，然后汇总根据无线信号识别的位置信息。<ph name="END_PARAGRAPH1" />
@@ -4457,7 +4458,7 @@
 <translation id="4259388776256904261">该过程可能需要一点时间</translation>
 <translation id="4260699894265914672">按一个键盘按键即可自定义</translation>
 <translation id="4261429981378979799">扩展程序权限</translation>
-<translation id="4262004481148703251">关闭警告</translation>
+<translation id="4262004481148703251">忽略警告</translation>
 <translation id="4263223596040212967">请检查键盘布局，然后重试。</translation>
 <translation id="4263470758446311292">最大限度节省内存。标签页会在更短的一段时间后变为非活跃状态。</translation>
 <translation id="4265096510956307240">验证身份</translation>
@@ -7324,7 +7325,7 @@
 <translation id="6442445294758185945">无法下载此项更新。请稍后再试。</translation>
 <translation id="6444070574980481588">设置日期和时间</translation>
 <translation id="6444147596556711162">使用“下一项”和“上一项”即可在屏幕上的各项内容之间切换</translation>
-<translation id="6444690771728873098">您可以安全地与家人群组成员分享您的密码副本</translation>
+<translation id="6444690771728873098">您可以安全地与家人群组成员分享您的密码</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - 正在搜寻蓝牙设备</translation>
 <translation id="6445450263907939268">如果您不想保留这些更改，可以还原之前的设置。</translation>
 <translation id="6446213738085045933">创建桌面快捷方式</translation>
@@ -7480,6 +7481,7 @@
 <translation id="6557290421156335491">我的快捷方式</translation>
 <translation id="6560061709899140565">显示其他投屏会话</translation>
 <translation id="6560151649238390891">已插入建议</translation>
+<translation id="656065428026159829">查看更多</translation>
 <translation id="6561726789132298588">Enter</translation>
 <translation id="6562117348069327379">将系统日志存储到“下载内容”目录中。</translation>
 <translation id="656293578423618167">该文件的路径或名称过长。请以较短的名称保存或保存到其他位置。</translation>
@@ -9447,6 +9449,7 @@
 <translation id="8022466874160067884">输入您的 Google 账号和密码</translation>
 <translation id="8023133589013344428">在 ChromeOS Flex 设置中管理语言</translation>
 <translation id="8023801379949507775">立即更新扩展程序</translation>
+<translation id="8024161440284949905">继续使用这些标签页</translation>
 <translation id="8025151549289123443">锁定屏幕和登录</translation>
 <translation id="8025291188699172126">更新简介</translation>
 <translation id="8026471514777758216">使您的所有设备保持同步</translation>

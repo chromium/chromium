@@ -4127,6 +4127,7 @@
 <translation id="3978325380690188371">ChromeVox ဖွင့်ထားစဉ် ကပ်ခွာကီးများ မရနိုင်ပါ</translation>
 <translation id="3979395879372752341">အိတ်စတန်းရှင်း အသစ် ထပ်ထည့်ပြီး (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> ကို ဖွင့်ထားရန်</translation>
+<translation id="398095528354975981">ဤတဘ်များကို ဖျောက်ထားရန်</translation>
 <translation id="3981058120448670012">အနီးရှိစက်များက <ph name="DEVICE_NAME" /> အဖြစ် <ph name="REMAINING_TIME" /> ကြာ မြင်နိုင်သည်...</translation>
 <translation id="3981760180856053153">ဝင်ခဲ့သည့် သိမ်းဆည်းမှု ပုံစံ မမှန်ပါ။</translation>
 <translation id="3982375475032951137">ရိုးရှင်းသည့်အဆင့်အနည်းငယ် ပြုလုပ်ရုံဖြင့် သင်၏ဘရောင်ဇာကို စနစ်ထည့်သွင်းပါ</translation>
@@ -7504,6 +7505,7 @@
 <translation id="6557290421156335491">ကျွန်ုပ်၏ ဖြတ်လမ်းလင့်ခ်များ</translation>
 <translation id="6560061709899140565">အခြားကာစ်စက်ရှင်များကို ပြပါ</translation>
 <translation id="6560151649238390891">အကြံပြုချက် ထည့်သွင်းပြီးပါပြီ</translation>
+<translation id="656065428026159829">ပိုကြည့်ရန်</translation>
 <translation id="6561726789132298588">ထည့်သွင်းရန်</translation>
 <translation id="6562117348069327379">စနစ်မှတ်တမ်းများကို 'ဒေါင်းလုဒ်များ' ဖိုင်လမ်းညွှန်သို့ သိမ်းနိုင်သည်။</translation>
 <translation id="656293578423618167">ဖိုင်လမ်းကြောင်း သို့မဟုတ် အမည်သည် ရှည်လွန်းနေပါသည်။ ကျေးဇူးပြုပြီး အမည်တို သို့မဟုတ် အခြား တစ်နေရာတွင် တွင် သိမ်းဆည်းပေးပါ။</translation>
@@ -9469,6 +9471,7 @@
 <translation id="8022466874160067884">သင့် Google Account နှင့် စကားဝှက် ထည့်ပါ</translation>
 <translation id="8023133589013344428">ChromeOS Flex ဆက်တင်များတွင် ဘာသာစကား စီမံရန်</translation>
 <translation id="8023801379949507775">အိတ်စတန်းရှင်းအား ယခု အဆင့်မြှင့်မည်</translation>
+<translation id="8024161440284949905">ဤတဘ်များဖြင့် ရှေ့ဆက်ရန်</translation>
 <translation id="8025151549289123443">လော့ခ်ချထားချိန် ဖန်သားပြင်နှင့် လက်မှတ်ထိုးဝင်ခြင်း</translation>
 <translation id="8025291188699172126">အပ်ဒိတ်များအကြောင်း</translation>
 <translation id="8026471514777758216">သင့်စက်အားလုံး</translation>

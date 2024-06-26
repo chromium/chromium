@@ -4116,6 +4116,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="3978325380690188371">ChromeVox yoqilganda yopishqoq tugmalar ishlamaydi</translation>
 <translation id="3979395879372752341">Yangi kengaytma qo‘shildi (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" />‘ni yoqish</translation>
+<translation id="398095528354975981">Bu varaqlarni berkitish</translation>
 <translation id="3981058120448670012">Boshqalarga <ph name="REMAINING_TIME" /> vaqtda <ph name="DEVICE_NAME" /> sifatida koʻrinadi...</translation>
 <translation id="3981760180856053153">Saqlash uchun yaroqsiz format kiritildi</translation>
 <translation id="3982375475032951137">Brauzerni oddiy bir nechta qadam bilan sozlang</translation>
@@ -7495,6 +7496,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6557290421156335491">Yorliqlarim</translation>
 <translation id="6560061709899140565">Boshqa translatsiya seanslarini chiqarish</translation>
 <translation id="6560151649238390891">Taklif joylandi</translation>
+<translation id="656065428026159829">Yana</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Tizim jurnallarini Yuklanmalar jildida saqlash</translation>
 <translation id="656293578423618167">Fayl nomi yoki joylashuvi juda uzun. Boshqa nom yoki jild tanlang.</translation>
@@ -9459,6 +9461,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8022466874160067884">Google hisobingiz va parolni kiriting</translation>
 <translation id="8023133589013344428">Tillarni ChromeOS Flex sozlamalaridan boshqaring</translation>
 <translation id="8023801379949507775">Kengaytmalarni hoziroq yangilash</translation>
+<translation id="8024161440284949905">Shu varaqlarda davom etish</translation>
 <translation id="8025151549289123443">Ekranni qulflash va kirish</translation>
 <translation id="8025291188699172126">Yangilanishlar haqida</translation>
 <translation id="8026471514777758216">Barcha qurilmalarda</translation>

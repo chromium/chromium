@@ -531,6 +531,7 @@
 <translation id="371398631992790800">புக்மார்க்குகளை மறை</translation>
 <translation id="37207012422556617">பிரபலமான தேடல்</translation>
 <translation id="3725081662140949903">உங்கள் கடவுச்சொல்லைப் பிறர் பயன்படுத்துவதைத் தடுக்க <ph name="APP" /> ஆப்ஸைத் திறந்து கடவுச்சொல்லை மாற்றவும்</translation>
+<translation id="372676576864368480"><ph name="LAST_DIGITS" /> என்று முடியும் கார்டு எண்ணைத் தானாக நிரப்பும்</translation>
 <translation id="3738428049780661523">உருவாக்கியது: <ph name="DATE" /></translation>
 <translation id="374357899112510277">பதிவிறக்கங்களை மறை</translation>
 <translation id="3745190878148784130">‘வார்த்தையின் அளவை மாற்று’ என்பதை மறை</translation>
@@ -1096,6 +1097,7 @@
 <translation id="6476800141292307438">பக்கத்தை <ph name="LANGUAGE" /> மொழியில் மொழிபெயர்க்கிறது. திரையின் கீழ்ப்பகுதிக்கு அருகில் விருப்பத்தேர்வுகள் உள்ளன.</translation>
 <translation id="648164694371393720">அங்கீகாரப் பிழை</translation>
 <translation id="6494931198667773526">முடியும் நேரம்</translation>
+<translation id="6500795388871406244">பரிந்துரைக்கப்படும் கடவுச்சொல்லைப் பயன்படுத்துங்கள்:</translation>
 <translation id="650279896687777322">மேலும் அறிக...</translation>
 <translation id="6507973708545996744">உங்களின் எல்லாச் சாதனங்களிலும் வாசிப்புப் பட்டியலைப் பெற உள்நுழையுங்கள்.</translation>
 <translation id="6510072653668207258">பின்னர் நினைவூட்டு</translation>
@@ -1308,6 +1310,7 @@
 <translation id="7583004045319035904">மறைநிலைத் தாவல்களை அன்லாக் செய்ய <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ஐப் பயன்படுத்தவும்.</translation>
 <translation id="7598439272585186139">கூடுதல் பாதுகாப்பைப் பெறுங்கள்</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> ஐ எப்போதும் மொழிபெயர்க்க வேண்டாம்</translation>
+<translation id="7603308509262646847"><ph name="NAME" /> என்ற கார்டு உரிமையாளர் பெயரைத் தானாக நிரப்பும்</translation>
 <translation id="7603852183842204213">பாப்-அப்கள் தடுக்கப்பட்டன (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">பக்கக் குழுக்கள்</translation>
 <translation id="7607521702806708809">கடவுச்சொல்லை நீக்கு</translation>
@@ -1340,6 +1343,7 @@
 <translation id="7749790401023484470">நீங்கள் எந்த வார்த்தையையும் தேர்ந்தெடுக்கவில்லை.</translation>
 <translation id="7752405526771734448">Lens காட்சித் தேடல்</translation>
 <translation id="7756478488453921771">மெனு → அமைப்புகள் → பேமெண்ட் முறைகள்</translation>
+<translation id="775755486779745798"><ph name="MONTH" /> என்ற காலாவதியாகும் மாதத்தைத் தானாக நிரப்பும்</translation>
 <translation id="7760127703945531263">மறைநிலைப் பக்கங்களைப் பூட்டலாம்</translation>
 <translation id="7765158879357617694">நகர்த்து</translation>
 <translation id="7772032839648071052">கடவுச்சொற்றொடரை உறுதி செய்க</translation>
@@ -1516,6 +1520,7 @@
 <translation id="8556590991644167667">{count,plural, =1{{count} எச்சரிக்கையை நிராகரித்துள்ளீர்கள்}other{{count} எச்சரிக்கைகளை நிராகரித்துள்ளீர்கள்}}</translation>
 <translation id="8560253818350321773">அடிக்கடி பயன்படுத்தியவற்றை முதலில் காட்டும்.</translation>
 <translation id="8569721750632860947">உங்கள் வாசிப்புப் பட்டியலில் எந்த URLலைச் சேர்க்க விரும்புகிறீர்கள்?</translation>
+<translation id="8577056989960190117"><ph name="YEAR" /> என்ற காலாவதியாகும் வருடத்தைத் தானாக நிரப்பும்</translation>
 <translation id="8588404856427128947">ஆஃப்</translation>
 <translation id="8591976964826315682">மறைநிலையில் மூன்றாம் தரப்பு குக்கீகளைத் தடு</translation>
 <translation id="8593565399399144771">இங்கே புதிய பக்கத்தைத் திறக்கலாம்.</translation>

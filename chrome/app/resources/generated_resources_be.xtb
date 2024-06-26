@@ -4115,6 +4115,7 @@
 <translation id="3978325380690188371">Калі праграма ChromeVox уключана, заліпанне клавіш недаступнае</translation>
 <translation id="3979395879372752341">Дададзена новае пашырэнне (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Уключыць прыладу <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Схаваць гэтыя ўкладкі</translation>
 <translation id="3981058120448670012">Прылады паблізу будуць бачыць назву "<ph name="DEVICE_NAME" />" на працягу <ph name="REMAINING_TIME" />...</translation>
 <translation id="3981760180856053153">Уведзены няправільны тып захавання.</translation>
 <translation id="3982375475032951137">Наладзьце браўзер, выканаўшы некалькі простых крокаў</translation>
@@ -7493,6 +7494,7 @@
 <translation id="6557290421156335491">Мае ярлыкі</translation>
 <translation id="6560061709899140565">Паказаць іншыя прылады, якія ажыццяўляюць трансляцыю</translation>
 <translation id="6560151649238390891">Прапанаваны варыянт устаўлены</translation>
+<translation id="656065428026159829">Яшчэ</translation>
 <translation id="6561726789132298588">Enter</translation>
 <translation id="6562117348069327379">Захоўванне сістэмных журналаў у каталозе "Спампоўкі".</translation>
 <translation id="656293578423618167">Шлях да файла або яго назва занадта доўгія.  Зрабіце назву карацейшай або ўкажыце іншае месцазнаходжанне.</translation>
@@ -9464,6 +9466,7 @@
 <translation id="8022466874160067884">Увесці імя карыстальніка і пароль Уліковага запісу Google</translation>
 <translation id="8023133589013344428">Кіраванне моўнымі параметрамі ў наладах Chrome OS Flex</translation>
 <translation id="8023801379949507775">Абнавіць пашырэнні</translation>
+<translation id="8024161440284949905">Працягвайце працу з гэтымі ўкладкамі</translation>
 <translation id="8025151549289123443">Экран блакіроўкі і ўваход</translation>
 <translation id="8025291188699172126">Пра абнаўленні</translation>
 <translation id="8026471514777758216">Усе вашы прылады</translation>

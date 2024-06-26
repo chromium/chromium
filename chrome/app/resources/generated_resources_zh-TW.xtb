@@ -4112,6 +4112,7 @@
 <translation id="3978325380690188371">ChromeVox 開啟時無法使用相黏鍵</translation>
 <translation id="3979395879372752341">已新增以下擴充功能：<ph name="EXTENSION_NAME" /></translation>
 <translation id="3979748722126423326">啟用 <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">隱藏這些分頁</translation>
 <translation id="3981058120448670012">以「<ph name="DEVICE_NAME" />」的名稱向附近的裝置顯示 <ph name="REMAINING_TIME" />...</translation>
 <translation id="3981760180856053153">輸入的儲存類型無效。</translation>
 <translation id="3982375475032951137">只要簡單幾個步驟就能完成瀏覽器設定</translation>
@@ -7486,6 +7487,7 @@
 <translation id="6557290421156335491">我的捷徑</translation>
 <translation id="6560061709899140565">顯示其他投放工作階段</translation>
 <translation id="6560151649238390891">已插入建議項目</translation>
+<translation id="656065428026159829">顯示更多</translation>
 <translation id="6561726789132298588">Enter 鍵</translation>
 <translation id="6562117348069327379">將系統記錄儲存至「下載」目錄。</translation>
 <translation id="656293578423618167">檔案路徑或檔案名稱過長。請縮短檔案名稱或選擇其他儲存位置。</translation>
@@ -9453,6 +9455,7 @@
 <translation id="8022466874160067884">輸入 Google 帳戶和密碼</translation>
 <translation id="8023133589013344428">在 ChromeOS Flex 設定中管理語言</translation>
 <translation id="8023801379949507775">立即更新擴充功能</translation>
+<translation id="8024161440284949905">繼續使用這些分頁</translation>
 <translation id="8025151549289123443">螢幕鎖定和登入</translation>
 <translation id="8025291188699172126">關於更新</translation>
 <translation id="8026471514777758216">你的所有裝置</translation>

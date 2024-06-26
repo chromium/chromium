@@ -4128,6 +4128,7 @@
 <translation id="3978325380690188371">‏מקשים "דביקים" לא זמינים כש-ChromeVox פועל</translation>
 <translation id="3979395879372752341">תוסף חדש נוסף (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">יש להפעיל <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">הסתרת הכרטיסיות האלה</translation>
 <translation id="3981058120448670012">המכשיר גלוי למכשירים בקרבת מקום בתור <ph name="DEVICE_NAME" /> למשך <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">הוזן סוג שמירה לא חוקי.</translation>
 <translation id="3982375475032951137">אפשר להגדיר את הדפדפן בכמה שלבים פשוטים</translation>
@@ -7508,6 +7509,7 @@
 <translation id="6557290421156335491">קיצורי הדרך שלי</translation>
 <translation id="6560061709899140565">‏הצגת סשנים אחרים של הפעלת Cast</translation>
 <translation id="6560151649238390891">ההצעה יושמה</translation>
+<translation id="656065428026159829">אפשרויות נוספות</translation>
 <translation id="6561726789132298588">Enter</translation>
 <translation id="6562117348069327379">אחסון יומני מערכת בספרייה 'הורדות'.</translation>
 <translation id="656293578423618167">הנתיב או שם הקובץ ארוך מדי. יש לשמור אותו בשם קצר יותר או במיקום אחר.</translation>
@@ -9478,6 +9480,7 @@
 <translation id="8022466874160067884">‏צריך להזין את חשבון Google ואת הסיסמה</translation>
 <translation id="8023133589013344428">‏ניהול השפות בהגדרות של ChromeOS Flex</translation>
 <translation id="8023801379949507775">עדכון תוספים</translation>
+<translation id="8024161440284949905">המשך הגלישה בכרטיסיות האלה</translation>
 <translation id="8025151549289123443">מסך הנעילה וכניסה לחשבון</translation>
 <translation id="8025291188699172126">מידע על העדכונים</translation>
 <translation id="8026471514777758216">כל המכשירים שלך</translation>

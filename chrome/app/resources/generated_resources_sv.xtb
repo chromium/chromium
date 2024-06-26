@@ -4129,6 +4129,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="3978325380690188371">Tröga tangenter är inte tillgängligt när ChromeVox är aktiverat</translation>
 <translation id="3979395879372752341">Ett nytt tillägg har lagts till (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Aktivera <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Dölj de här flikarna</translation>
 <translation id="3981058120448670012">Enheter i närheten kan se <ph name="DEVICE_NAME" /> i <ph name="REMAINING_TIME" /> …</translation>
 <translation id="3981760180856053153">Du har angett en ogiltig typ att spara.</translation>
 <translation id="3982375475032951137">Konfigurera webbläsaren med några enkla steg</translation>
@@ -7508,6 +7509,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6557290421156335491">Mina genvägar</translation>
 <translation id="6560061709899140565">Visa andra Cast-sessioner</translation>
 <translation id="6560151649238390891">Förslaget infogades</translation>
+<translation id="656065428026159829">Visa fler</translation>
 <translation id="6561726789132298588">retur</translation>
 <translation id="6562117348069327379">Spara systemloggar i katalogen Nedladdningar.</translation>
 <translation id="656293578423618167">För lång sökväg eller för långt filnamn. Spara med ett kortare namn eller på en annan plats.</translation>
@@ -9475,6 +9477,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8022466874160067884">Ange ditt Google-konto och lösenord</translation>
 <translation id="8023133589013344428">Hantera språk i inställningarna för ChromeOS Flex</translation>
 <translation id="8023801379949507775">Uppdatera tillägg nu</translation>
+<translation id="8024161440284949905">Fortsätt med de här flikarna</translation>
 <translation id="8025151549289123443">Låsskärm och inloggning</translation>
 <translation id="8025291188699172126">Om uppdateringar</translation>
 <translation id="8026471514777758216">Alla dina enheter</translation>

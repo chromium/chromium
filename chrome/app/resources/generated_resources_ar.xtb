@@ -4119,6 +4119,7 @@
 <translation id="3978325380690188371">‏لا يمكن تفعيل ميزة "تثبيت المفاتيح" عندما يكون ChromeVox مفعَّلاً.</translation>
 <translation id="3979395879372752341">تمت إضافة إحدى الإضافات الجديدة (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">تفعيل <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">إخفاء علامات التبويب هذه</translation>
 <translation id="3981058120448670012">جهازك مرئي للأجهزة القريبة باسم <ph name="DEVICE_NAME" /> لمدة <ph name="REMAINING_TIME" />...</translation>
 <translation id="3981760180856053153">نوع الحفظ الذي تم إدخاله غير صالح.</translation>
 <translation id="3982375475032951137">يمكنك إعداد المتصفِّح باتِّباع بضع خطوات بسيطة.</translation>
@@ -7498,6 +7499,7 @@
 <translation id="6557290421156335491">اختصاراتي</translation>
 <translation id="6560061709899140565">عرض جلسات البثّ الأخرى</translation>
 <translation id="6560151649238390891">تم إدراج الاقتراح.</translation>
+<translation id="656065428026159829">عرض المزيد</translation>
 <translation id="6561726789132298588">إدخال</translation>
 <translation id="6562117348069327379">يمكنك تخزين سجلّات النظام في دليل "عمليات التنزيل".</translation>
 <translation id="656293578423618167">اسم الملف أو مساره طويل جدًا. يُرجى الحفظ باستخدام اسم أقصر أو في مكان آخر.</translation>
@@ -9473,6 +9475,7 @@
 <translation id="8022466874160067884">‏إدخال حسابك على Google وكلمة المرور</translation>
 <translation id="8023133589013344428">‏إدارة اللغات في إعدادات نظام التشغيل ChromeOS Flex</translation>
 <translation id="8023801379949507775">تحديث الإضافات الآن</translation>
+<translation id="8024161440284949905">المتابعة باستخدام علامات التبويب هذه</translation>
 <translation id="8025151549289123443">شاشة القفل وتسجيل الدخول</translation>
 <translation id="8025291188699172126">لمحة عن التحديثات</translation>
 <translation id="8026471514777758216">التصفّح على جميع أجهزتك</translation>

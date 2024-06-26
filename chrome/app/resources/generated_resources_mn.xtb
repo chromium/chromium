@@ -4124,6 +4124,7 @@
 <translation id="3978325380690188371">ChromeVox асаалттай үед бэхэлсэн түлхүүр боломжгүй</translation>
 <translation id="3979395879372752341">Шинэ өргөтгөл нэмсэн ( <ph name="EXTENSION_NAME" /> )</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" />-ыг идэвхжүүл</translation>
+<translation id="398095528354975981">Эдгээр табыг нуух</translation>
 <translation id="3981058120448670012">Ойролцоох төхөөрөмжүүдэд <ph name="REMAINING_TIME" />-н турш <ph name="DEVICE_NAME" />-р харагдана...</translation>
 <translation id="3981760180856053153">Хадгалах хүчингүй төрөл орсон байна.</translation>
 <translation id="3982375475032951137">Хөтчөө энгийн хэдэн алхмаар тохируулна уу</translation>
@@ -7503,6 +7504,7 @@
 <translation id="6557290421156335491">Миний товчлол</translation>
 <translation id="6560061709899140565">Дамжуулах бусад харилцан үйлдлийг харуулах</translation>
 <translation id="6560151649238390891">Зөвлөмжийг оруулсан</translation>
+<translation id="656065428026159829">Дэлгэрэнгүй үзэх</translation>
 <translation id="6561726789132298588">Оруул</translation>
 <translation id="6562117348069327379">Системийн логуудыг Татаж авсан файлын лавлахад хадгална.</translation>
 <translation id="656293578423618167">Файлын зам эсвэл нэр нь хэтэрхий урт байна. Илүү богино нэрээр эсвэл өөр газарт хадгална уу.</translation>
@@ -9466,6 +9468,7 @@
 <translation id="8022466874160067884">Google Бүртгэл болон нууц үгээ оруулах</translation>
 <translation id="8023133589013344428">Хэлнүүдийг ChromeOS Flex-н тохиргоонд удирдах</translation>
 <translation id="8023801379949507775">Өргөтгөлийг одоо шинэчил</translation>
+<translation id="8024161440284949905">Эдгээр табтай үргэлжлүүлэх</translation>
 <translation id="8025151549289123443">Түгжигдсэн дэлгэц болон нэвтрэлт</translation>
 <translation id="8025291188699172126">Шинэчлэлтүүдийн талаар</translation>
 <translation id="8026471514777758216">Таны бүх төхөөрөмж</translation>

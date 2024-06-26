@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">பேஸ்ட்டல் மஞ்சள்</translation>
 <translation id="1056898198331236512">எச்சரிக்கை</translation>
 <translation id="1059913517121127803">ஸ்கேன் செய்ய முடியவில்லை</translation>
+<translation id="1061864016440983342">இருப்பிடம் இல்லாமல் பயன்படுத்து</translation>
 <translation id="1062823486781306604"><ph name="COUNT" />ல் <ph name="INDEX" />வது, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ஃபயர்வால் கண்டறியப்பட்டது</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">மேலும் அமைப்புகள்</translation>
 <translation id="2082932131694554252">அமைக்கப்பட்ட கீபோர்டு பட்டன்</translation>
 <translation id="2085089206770112532">காட்சி ஒளிர்வைக் குறைக்கும்</translation>
+<translation id="2086091080968010660">நேரம் சார்ந்த மாற்றங்கள் துல்லியமற்றதாக இருக்கக்கூடும். அமைப்புகளுக்குச் சென்று சாதனத்தின் இருப்பிட அணுகலை இயக்கவும்.</translation>
 <translation id="2102231663024125441">வார்த்தைகளைத் திருத்துதல்</translation>
 <translation id="2105810540595158374">சாதனம் ஒரு கேம் கண்ட்ரோலர்.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, பதிப்பு <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">இயல்புநிலைகளை மீட்டெடு</translation>
 <translation id="2286454467119466181">எளிதானது</translation>
 <translation id="2287186687001756809">படங்கள் எதுவுமில்லை. படங்களைச் சேர்க்க, <ph name="LINK" /> தளத்திற்குச் செல்லவும்</translation>
+<translation id="2294577623958216786">தற்போதைய கால அட்டவணை <ph name="SUNRISE" />-<ph name="SUNSET" /> என்று அமைக்கப்பட்டுள்ளது. சூரிய அஸ்தமனம் மற்றும் சூரிய உதயத்திற்கான கால அட்டவணையைத் தானாக மாற்ற, சாதனத்தின் இருப்பிட அணுகலை இயக்கவும்.</translation>
 <translation id="2305172810646967500">கருப்பு</translation>
 <translation id="2307344026739914387">தற்போதைய குறியீட்டு இணையைப் பயன்படுத்து</translation>
 <translation id="2308243864813041101">புதுப்பிப்பைத் தொடர <ph name="DEVICE_NAME" /> இன் USB கேபிளை அகற்றவும்</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">கீபோர்டு ஒளிர்வு</translation>
 <translation id="6412715219990689313">உள்ளமைந்த கீபோர்டு</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="6419454453018688975">சாதனத்தின் இருப்பிட அணுகலை இயக்கு</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">மோசமாக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">கணக்கு அமைப்புகளுக்குச் செல்லும்</translation>

@@ -4127,6 +4127,7 @@
 <translation id="3978325380690188371">ChromeVox ఆన్‌లో ఉన్నప్పుడు స్టిక్కీ కీలు అందుబాటులో ఉండవు</translation>
 <translation id="3979395879372752341">కొత్త ఎక్స్‌టెన్షన్‌ జోడించబడింది (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" />ను ప్రారంభించండి</translation>
+<translation id="398095528354975981">ఈ ట్యాబ్‌లను దాచండి</translation>
 <translation id="3981058120448670012">సమీపంలోని పరికరాలకు <ph name="REMAINING_TIME" /> పాటు <ph name="DEVICE_NAME" />గా కనిపిస్తుంది...</translation>
 <translation id="3981760180856053153">చెల్లని సేవ్ రకం ఎంటర్ చేయబడింది.</translation>
 <translation id="3982375475032951137">సులువైన కొద్ది దశలతో మీ బ్రౌజర్‌ని సెటప్ చేయండి</translation>
@@ -7505,6 +7506,7 @@
 <translation id="6557290421156335491">నా షార్ట్‌కట్‌లు</translation>
 <translation id="6560061709899140565">ఇతర ప్రసార సెషన్‌లను చూపండి</translation>
 <translation id="6560151649238390891">సూచన చేర్చబడింది</translation>
+<translation id="656065428026159829">మరిన్ని చూడండి</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">'డౌన్‌లోడ్స్' డైరెక్టరీలో సిస్టమ్ లాగ్స్‌ను స్టోర్ చేయండి.</translation>
 <translation id="656293578423618167">ఫైల్ పాత్ లేదా పేరు చాలా పొడవుగా ఉంది. దయచేసి చిన్న పేరుతో, లేదా మరొక స్థానానికి సేవ్ చేయండి.</translation>
@@ -9468,6 +9470,7 @@
 <translation id="8022466874160067884">మీ Google ఖాతా, పాస్‌వర్డ్‌ను ఎంటర్ చేయండి</translation>
 <translation id="8023133589013344428">ChromeOS Flex సెట్టింగ్‌లలో భాషలను మేనేజ్ చేయండి</translation>
 <translation id="8023801379949507775">ఎక్స్‌టెన్ష‌న్‌లను ఇప్పుడు అప్‌డేట్ చేయి</translation>
+<translation id="8024161440284949905">ఈ ట్యాబ్‌లతో కొనసాగించండి</translation>
 <translation id="8025151549289123443">లాక్ స్క్రీన్ మరియు సైన్ ఇన్</translation>
 <translation id="8025291188699172126">అప్‌డేట్‌ల గురించి</translation>
 <translation id="8026471514777758216">మీ అన్ని పరికరాలు</translation>

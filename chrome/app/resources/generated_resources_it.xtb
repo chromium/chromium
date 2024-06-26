@@ -4115,6 +4115,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="3978325380690188371">I tasti permanenti non sono disponibili quando è attivo ChromeVox</translation>
 <translation id="3979395879372752341">Nuova estensione aggiunta (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Abilita <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Nascondi queste schede</translation>
 <translation id="3981058120448670012">Visibile ai dispositivi nelle vicinanze con il nome <ph name="DEVICE_NAME" /> per <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">È stato inserito un tipo non valido per il salvataggio.</translation>
 <translation id="3982375475032951137">Configura il browser con pochi e semplici passaggi</translation>
@@ -7491,6 +7492,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6557290421156335491">Le mie scorciatoie</translation>
 <translation id="6560061709899140565">Mostra altre sessioni di trasmissione</translation>
 <translation id="6560151649238390891">Suggerimento inserito</translation>
+<translation id="656065428026159829">Mostra altri</translation>
 <translation id="6561726789132298588">invio</translation>
 <translation id="6562117348069327379">Archivia i log di sistema nella directory Download.</translation>
 <translation id="656293578423618167">Il percorso o il nome del file è troppo lungo. Salva il file con un nome più corto o in un'altra posizione.</translation>
@@ -9458,6 +9460,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8022466874160067884">Inserisci il tuo Account Google e la tua password</translation>
 <translation id="8023133589013344428">Gestisci le lingue nelle impostazioni di ChromeOS Flex</translation>
 <translation id="8023801379949507775">Aggiorna estensioni adesso</translation>
+<translation id="8024161440284949905">Continua con queste schede</translation>
 <translation id="8025151549289123443">Schermata di blocco e accesso</translation>
 <translation id="8025291188699172126">Informazioni sugli aggiornamenti</translation>
 <translation id="8026471514777758216">Tutti i tuoi dispositivi</translation>

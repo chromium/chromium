@@ -4118,6 +4118,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="3978325380690188371">A función Teclas presas non está dispoñible cando ChromeVox está activado</translation>
 <translation id="3979395879372752341">Engadiuse unha nova extensión (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Activar <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Ocultar estas pestanas</translation>
 <translation id="3981058120448670012">Visible como <ph name="DEVICE_NAME" /> para os dispositivos próximos durante <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">Introduciuse un tipo de almacenamento non válido.</translation>
 <translation id="3982375475032951137">Configura o navegador nuns poucos pasos sinxelos</translation>
@@ -7494,6 +7495,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6557290421156335491">Os meus atallos</translation>
 <translation id="6560061709899140565">Mostrar outras sesións de emisión de contido</translation>
 <translation id="6560151649238390891">Púxose a suxestión</translation>
+<translation id="656065428026159829">Ver máis</translation>
 <translation id="6561726789132298588">intro</translation>
 <translation id="6562117348069327379">Almacena os rexistros do sistema no directorio Descargas.</translation>
 <translation id="656293578423618167">A ruta ou o nome do ficheiro é demasiado longo. Gárdao con outro nome máis curto ou noutra localización.</translation>
@@ -9459,6 +9461,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8022466874160067884">Meter a túa Conta de Google e o contrasinal</translation>
 <translation id="8023133589013344428">Xestionar idiomas na configuración de Chrome OS Flex</translation>
 <translation id="8023801379949507775">Actualizar extensións agora</translation>
+<translation id="8024161440284949905">Continuar con estas pestanas</translation>
 <translation id="8025151549289123443">Pantalla de bloqueo e inicio de sesión</translation>
 <translation id="8025291188699172126">Acerca das actualizacións</translation>
 <translation id="8026471514777758216">Todos os teus dispositivos</translation>

@@ -158,6 +158,7 @@
 <translation id="3602290021589620013">மாதிரிக்காட்சி</translation>
 <translation id="3628308229821498208">பரிந்துரைக்கப்படும் தேடல்கள்</translation>
 <translation id="3697164069658504920">இயக்கப்பட்டிருக்கும்போது, USB சாதனங்களைப் பயன்படுத்த தளங்கள் அனுமதி கேட்கலாம். முடக்கப்பட்டிருக்கும்போது, USB சாதனங்களைத் தளங்களால் பயன்படுத்த முடியாது.</translation>
+<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">நீங்கள் ஒரு நபர்தானா என்பதைச் சரிபார்ப்பதற்காக நீங்கள் பார்வையிடும் தளம் Chrome உலாவியில் சிறிதளவு தகவலைச் சேமிக்கலாம்</translation>
 <translation id="3721953990244350188">நிராகரித்துவிட்டு அடுத்ததாக உள்ள செயலைப் பார்க்கலாம்</translation>
 <translation id="3744111561329211289">பின்புல ஒத்திசைவு</translation>
@@ -227,6 +228,7 @@
 <translation id="4962975101802056554">சாதனத்திற்கான அனைத்து அனுமதிகளையும் ரத்துசெய்யும்</translation>
 <translation id="497421865427891073">முன் செல்க</translation>
 <translation id="4976702386844183910">கடைசியாகப் பார்த்தது: <ph name="DATE" /></translation>
+<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">இந்தத் தளத்தில் மூன்றாம் தரப்புக் குக்கீகளை அனுமதித்துள்ளீர்கள்</translation>
 <translation id="4994033804516042629">தொடர்புகள் எதுவும் இல்லை</translation>
 <translation id="4996978546172906250">இதன்வழியாக பகிர்</translation>

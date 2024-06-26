@@ -411,6 +411,7 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1294807885394205587">ಈ ಪ್ರಕ್ರಿಯೆಯು ಕೆಲವು ನಿಮಿಷಗಳ ಕಾಲಾವಕಾಶ ತೆಗೆದುಕೊಳ್ಳಬಹುದು. ಕಂಟೇನರ್ ನಿರ್ವಾಹಕರನ್ನು ಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="12951065153783848">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿಮ್ಮ ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸುತ್ತದೆ</translation>
+<translation id="1296410481664942178">Google Calendar ಅನ್ನು ತೋರಿಸಬೇಡಿ</translation>
 <translation id="1296911687402551044">ಆಯ್ಕೆ ಮಾಡಲಾದ ಟ್ಯಾಬ್ ಅನ್ನು ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="1297175357211070620">ಗಮ್ಯಸ್ಥಾನ</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" /> ಗಾಗಿ ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸಿ</translation>
@@ -449,6 +450,7 @@
 <translation id="1327495825214193325">ADB ಡೀಬಗ್ ಮಾಡುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು, ಈ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸುವ ಅಗತ್ಯವಿದೆ. ಇದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು, ಫ್ಯಾಕ್ಟರಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಮರುಹೊಂದಿಸಬೇಕಾಗುತ್ತದೆ.</translation>
 <translation id="1327527584824210101">ನಿಮ್ಮ ಪಾಸ್‌ಕೀ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="1327794256477341646">ನಿಮ್ಮ ಸ್ಥಳವು ಅಗತ್ಯವಿರುವ ಫೀಚರ್‌ಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸುವುದಿಲ್ಲ</translation>
+<translation id="1328364753167940710"><ph name="NUM_HR" /> ಗಂಟೆಯಲ್ಲಿ</translation>
 <translation id="1329466763986822896">ಈ ಹಾಟ್‌ಸ್ಪಾಟ್‌ಗಾಗಿ ಗೌಪ್ಯತೆಯನ್ನು ಸುಧಾರಿಸಿ</translation>
 <translation id="1331977651797684645">ಇದು ನಾನು.</translation>
 <translation id="1333489022424033687">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿರುವ ಇತರ ಸೈಟ್‌ಗಳ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸದ ಹೊರತು <ph name="ORIGIN" /> ನಲ್ಲಿನ ಕೆಲವು ವೈಶಿಷ್ಟ್ಯಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸುವುದಿಲ್ಲ</translation>
@@ -1000,6 +1002,7 @@
 <translation id="1709762881904163296">ನೆಟ್‌ವರ್ಕ್‌ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="1709916727352927457">ಪಾಸ್‌ಕೀಯನ್ನು ಅಳಿಸಿ</translation>
 <translation id="1709972045049031556">ಹಂಚಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
+<translation id="1712143791363119140">ಪ್ರಗತಿಯಲ್ಲಿದೆ</translation>
 <translation id="1714644264617423774">ನಿಮ್ಮ ಸಾಧನದ ಬಳಕೆಯನ್ನು ಸುಲಭಗೊಳಿಸಲು, ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಫಿಚರ್‌ಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464"><ph name="SITE_NAME" /> ಮತ್ತು ಅದರಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ ಆ್ಯಪ್‌ಗೆ ಸಂಬಂಧಿಸಿದ ಸೈಟ್ ಡೇಟಾ ಮತ್ತು ಅನುಮತಿಗಳನ್ನು ಅಳಿಸಬೇಕೆ?</translation>
 <translation id="171826447717908393">ಪ್ರತ್ಯೇಕಗೊಳಿಸಲಾದ ವೆಬ್ ಆ್ಯಪ್‌ಗಳು (ಬೀಟಾ)</translation>
@@ -1403,6 +1406,7 @@
 <translation id="200928901437634269">ನಿಮ್ಮ ಮಗುವಿನ Google ಖಾತೆ ಅಥವಾ ಶಾಲಾ ಖಾತೆಯನ್ನು ಬಳಸಿ. ನೀವು ಪೋಷಕ ನಿಯಂತ್ರಣಗಳನ್ನು ಸಹ ಸೆಟ್ ಮಾಡಬಹುದು.</translation>
 <translation id="2009590708342941694">ಎಮೋಜಿ ಟೂಲ್</translation>
 <translation id="2010501376126504057">ಹೊಂದಾಣಿಕೆ ಸಾಧನಗಳು</translation>
+<translation id="2010636492623189611">ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="201217432804812273">"ಗುಂಪು ಸೇವ್ ಮಾಡಿ" ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="2012935757369720523">ಫೈಲ್ ಅನ್ನು ಅಳಿಸಿ</translation>
 <translation id="2013467735169740431">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಅನ್ನು ಲಾಕ್ ಮಾಡುವಂತೆ ಸೈಟ್‌ಗಳು ಕೇಳಬಹುದು</translation>
@@ -1998,6 +2002,7 @@
 <translation id="2435248616906486374">ನೆಟ್‌ವರ್ಕ್ ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="2435457462613246316">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="2436385001956947090">&amp;ಲಿಂಕ್ ನಕಲಿಸಿ</translation>
+<translation id="2437561292559037753">ಡೇಟಾ ಹಂಚಿಕೊಳ್ಳುವಿಕೆ</translation>
 <translation id="2438853563451647815">ಪ್ರಿಂಟರ್‌ಗೆ ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ರೀಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> ಅನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
@@ -2575,6 +2580,7 @@
 <translation id="2843698124892775282"><ph name="MEMORY_SAVINGS" /> ಯಷ್ಟು ಮುಕ್ತಗೊಳಿಸಿದೆ</translation>
 <translation id="2844169650293029770">USB-C ಸಾಧನ (ಎಡ ಭಾಗದ ಮುಂದಿನ ಪೋರ್ಟ್‌)</translation>
 <translation id="2844809857160214557">ಮುದ್ರಣ ಕಾರ್ಯಗಳನ್ನು ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="2845276301195220700">Google Calendar ಗಾಗಿ ಹೆಚ್ಚಿನ ಕ್ರಮಗಳು</translation>
 <translation id="2845382757467349449">ಯಾವಾಗಲೂ ಬುಕ್‌ಮಾರ್ಕ್‌ ಪಟ್ಟಿ ತೋರಿಸು</translation>
 <translation id="2845751331501453107">ನೀವು ಬ್ರೌಸ್ ಮಾಡುತ್ತಿದ್ದಂತೆ, ನೀವು ನೋಡುವ ಜಾಹೀರಾತುಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲಾಗಿದೆಯೇ ಅಥವಾ ಇಲ್ಲವೇ ಎಂಬುದು ಈ ಸೆಟ್ಟಿಂಗ್‌ಗಳು, <ph name="BEGIN_LINK1" />ಸೈಟ್ ಸೂಚಿಸಿದ ಜಾಹೀರಾತುಗಳು<ph name="LINK_END1" />, ನಿಮ್ಮ <ph name="BEGIN_LINK2" />ಕುಕಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳು<ph name="LINK_END2" /> ಮತ್ತು ನೀವು ವೀಕ್ಷಿಸುತ್ತಿರುವ ಸೈಟ್ ಜಾಹೀರಾತುಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸುತ್ತದೆಯೇ ಎಂಬುದನ್ನು ಅವಲಂಬಿಸಿರುತ್ತದೆ</translation>
 <translation id="284581348330507117">ಅನನ್ಯ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಚಿಸಿ</translation>
@@ -3689,6 +3695,7 @@
 <translation id="3694590407685276748">ಪಠ್ಯ ಕರ್ಸರ್ ಅನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
 <translation id="369489984217678710">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಸೈನ್-ಇನ್ ಡೇಟಾ</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{ಭದ್ರತೆ ಪರಿಶೀಲನೆಗಳನ್ನು ಮಾಡಲಾಗಿದೆ. ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತದೆ.}=1{ಭದ್ರತೆ ಪರಿಶೀಲನೆಗಳನ್ನು ಮಾಡಲಾಗಿದೆ. ನಿಮ್ಮ ಫೈಲ್ ಅನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತದೆ.}one{ಭದ್ರತೆ ಪರಿಶೀಲನೆಗಳನ್ನು ಮಾಡಲಾಗಿದೆ. ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತದೆ.}other{ಭದ್ರತೆ ಪರಿಶೀಲನೆಗಳನ್ನು ಮಾಡಲಾಗಿದೆ. ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತದೆ.}}</translation>
+<translation id="3695339288331169103"><ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /> ನಿಂದ</translation>
 <translation id="369736917241079046">ಲಾಂಚರ್ + ಲೆಫ್ಟ್ ಆ್ಯರೋ</translation>
 <translation id="3697716475445175867">ಕೊನೆಯದಾಗಿ ತೆರೆದಿರುವುದು</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{ಭವಿಷ್ಯದ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಕಳುಹಿಸದಂತೆ ನೀವು ಈ ಸೈಟ್ ಅನ್ನು ನಿಲ್ಲಿಸಬಹುದು.}one{ಭವಿಷ್ಯದ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಕಳುಹಿಸದಂತೆ ನೀವು ಈ ಸೈಟ್‌ಗಳನ್ನು ನಿಲ್ಲಿಸಬಹುದು.}other{ಭವಿಷ್ಯದ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಕಳುಹಿಸದಂತೆ ನೀವು ಈ ಸೈಟ್‌ಗಳನ್ನು ನಿಲ್ಲಿಸಬಹುದು.}}</translation>
@@ -4114,6 +4121,7 @@
 <translation id="3978325380690188371">ChromeVox ಆನ್ ಆಗಿರುವಾಗ ಸ್ಟಿಕಿ ಕೀಗಳು ಲಭ್ಯವಿರುವುದಿಲ್ಲ</translation>
 <translation id="3979395879372752341">ಹೊಸ ವಿಸ್ತರಣೆಯನ್ನು ಸೇರಿಸಲಾಗಿದೆ (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> ಸಕ್ರಿಯಗೊಳಿಸು</translation>
+<translation id="398095528354975981">ಈ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="3981058120448670012"><ph name="REMAINING_TIME" /> ಅವಧಿಗಾಗಿ ಸಮೀಪದಲ್ಲಿರುವ ಸಾಧನಗಳಿಗೆ <ph name="DEVICE_NAME" /> ಆಗಿ ಗೋಚರಿಸುತ್ತದೆ...</translation>
 <translation id="3981760180856053153">ಅಮಾನ್ಯವಾದ ಉಳಿಸು ಪ್ರಕಾರವನ್ನು ನಮೂದಿಸಲಾಗಿದೆ.</translation>
 <translation id="3982375475032951137">ಕೆಲವೇ ಸರಳ ಹಂತಗಳಲ್ಲಿ ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿ</translation>
@@ -4988,6 +4996,7 @@
 <translation id="4650591383426000695">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಿಂದ ನಿಮ್ಮ ಫೋನ್‌ನ ಸಂಪರ್ಕವನ್ನು ಕಡಿತಗೊಳಿಸಿ</translation>
 <translation id="4651484272688821107">ಡೆಮೊ ಮೋಡ್ ಸಂಪನ್ಮೂಲಗಳೊಂದಿಗೆ ಆನ್‌ಲೈನ್ ಘಟಕವನ್ನು ಲೋಡ್ ಮಾಡಲಾಗಲಿಲ್ಲ.</translation>
 <translation id="4651921906638302153">ಈ ಖಾತೆ ಬಳಸಿ ಸೈನ್ ಇನ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
+<translation id="4652921642122345344">ವಾಯ್ಸ್ ಸ್ಪೀಡ್ <ph name="RATE" />x</translation>
 <translation id="4652935475563630866">ಕ್ಯಾಮರಾ ಸೆಟ್ಟಿಂಗ್‌ನಲ್ಲಿರುವ ಬದಲಾವಣೆಯನ್ನು ಮರುಪ್ರಾರಂಭಿಸಲು Parallels Desktop ನ ಅಗತ್ಯವಿದೆ ಮುಂದುವರಿಯಲು, Parallels Desktop ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ.</translation>
 <translation id="4653116291358041820">ಸಣ್ಣ ಶ್ಯಾಡೋ</translation>
 <translation id="4653405415038586100">Linux ಅನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡುವಾಗ ದೋಷ ಉಂಟಾಗಿದೆ</translation>
@@ -5186,6 +5195,7 @@
 <translation id="4809927044794281115">ಲೈಟ್ ಥೀಮ್‌</translation>
 <translation id="4811212958317149293">ಕೀಬೋರ್ಡ್ ಸ್ವಯಂ-ಸ್ಕ್ಯಾನ್‌ನ ಆ್ಯಕ್ಸೆಸ್ ಬದಲಾಯಿಸಿ</translation>
 <translation id="4811503964269049987">ಆಯ್ಕೆಮಾಡಿದ ಟ್ಯಾಬ್ ಅನ್ನು ಸಮೂಹಗೊಳಿಸಿ</translation>
+<translation id="4812073856515324252"><ph name="APP_NAME" /> ಗಾಗಿ ನಿಮ್ಮ ಪಾಸ್‌ಕೀಯನ್ನು ಎಲ್ಲಿ ಸೇವ್ ಮಾಡಬೇಕು ಎಂಬುದನ್ನು ಆರಿಸಿ</translation>
 <translation id="4813512666221746211">ನೆಟ್‌ವರ್ಕ್  ದೋಷ</translation>
 <translation id="4814114628197290459">IBAN ಅನ್ನು ಅಳಿಸಿ</translation>
 <translation id="4814327014588285482">ಸ್ಕಿಪ್ ಮಾಡಿ ಮತ್ತು ನಂತರ ನನಗೆ ರಿಮೈಂಡ್ ಮಾಡಿ</translation>
@@ -5653,6 +5663,7 @@
 <translation id="5160634252433617617">ಭೌತಿಕ ಕೀಬೋರ್ಡ್</translation>
 <translation id="5160857336552977725">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಸಾಧನದಲ್ಲಿ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" /> ಅವರ USB ಸಾಧನಗಳು</translation>
+<translation id="5161442190864186925">ಮೀಟಿಂಗ್‌ಗೆ ಸೇರಿರಿ</translation>
 <translation id="5161827038979306924">Chrome ನಲ್ಲಿನ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ ಮತ್ತು ನಿಮ್ಮ ಹುಡುಕಾಟದ ಇತಿಹಾಸದ ನಡುವಿನ ವ್ಯತ್ಯಾಸವೇನು?</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5163910114647549394">ಟ್ಯಾಬ್‌ಸ್ಟ್ರಿಪ್‌ನ ಕೊನೆಗೆ ಟ್ಯಾಬ್ ಅನ್ನು ಸರಿಸಲಾಗಿದೆ</translation>
@@ -7491,6 +7502,7 @@
 <translation id="6557290421156335491">ನನ್ನ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="6560061709899140565">ಇತರ ಕ್ಯಾಸ್ಟ್ ಸೆಶನ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="6560151649238390891">ಸಲಹೆಯನ್ನು ಸೇರಿಸಲಾಗಿದೆ</translation>
+<translation id="656065428026159829">ಇನ್ನಷ್ಟು ನೋಡಿ</translation>
 <translation id="6561726789132298588">ನಮೂದಿಸಿ</translation>
 <translation id="6562117348069327379">ಡೌನ್‌ಲೋಡ್‌ಗಳ ಡೈರೆಕ್ಟರಿಗೆ ಸಿಸ್ಟಂ ಲಾಗ್‌ಗಳನ್ನು ಸಂಗ್ರಹಿಸಿ.</translation>
 <translation id="656293578423618167">ಫೈಲ್ ಹಾದಿ ಅಥವಾ ಹೆಸರು ತುಂಬಾ ಉದ್ದವಾಗಿದೆ. ದಯವಿಟ್ಟು ಕಿರಿದಾದ ಹೆಸರಿನೊಂದಿಗೆ ಅಥವಾ ಮತ್ತೊಂದು ಸ್ಥಾನದಲ್ಲಿ ಉಳಿಸಿ. </translation>
@@ -7962,6 +7974,7 @@
 <translation id="6912007319859991306">ಸೆಲ್ಯುಲರ್ SIM ಪಿನ್</translation>
 <translation id="6912380255120084882">ಬೇರೆ ಸಾಧನವನ್ನು ಬಳಸಿ ನೋಡಿ</translation>
 <translation id="691289340230098384">ಶೀರ್ಷಿಕೆ ಆದ್ಯತೆಗಳು</translation>
+<translation id="6913051485529944333">ಈ ಪುಟದಲ್ಲಿ ನೀವು Google Calendar ಅನ್ನು ಮತ್ತೆ ನೋಡುವುದಿಲ್ಲ</translation>
 <translation id="6914812290245989348">ಅಸುರಕ್ಷಿತ ಸೈಟ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡುವ ಮೊದಲು ಯಾವುದೇ ಎಚ್ಚರಿಕೆಗಳನ್ನು ನೋಡಬೇಡಿ</translation>
 <translation id="6916590542764765824">ವಿಸ್ತರಣೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6918677045355889289">ChromeOS ಅಪ್‌ಡೇಟ್ ಅಗತ್ಯವಿದೆ</translation>
@@ -9165,6 +9178,7 @@
 <translation id="7810202088502699111">ಈ ಪುಟದಲ್ಲಿ ಪಾಪ್-ಅಪ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>
 <translation id="7810367892333449285">ನಿಮ್ಮ ನಮೂದು <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ ವಿಳಾಸ<ph name="LPA_2" />$<ph name="LPA_3" />ಐಚ್ಛಿಕ ಹೊಂದಾಣಿಕೆಯ ID<ph name="LPA_4" /> ಫಾರ್ಮ್ಯಾಟ್‌ನಲ್ಲಿರಬೇಕು</translation>
 <translation id="7811263553491007091">ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಕೆಳಗಿನ ಈ ಹಿಂದೆ ಜನರೇಟ್ ಮಾಡಲಾದ ಥೀಮ್‌ಗಳಲ್ಲಿ ಒಂದನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
+<translation id="7812170317334653156">Google Calendar ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7814090115158024843">ಈ ಸೈಟ್‌ಗಳಲ್ಲಿ ಬರವಣಿಗೆಯ ಸಹಾಯವನ್ನು ಎಂದಿಗೂ ನೀಡಬೇಡಿ</translation>
 <translation id="7814458197256864873">&amp;ನಕಲಿಸಿ</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
@@ -9223,6 +9237,7 @@
 <translation id="7853747251428735">ಇನ್ನಷ್ಟು ಪರಿಕರ&amp;ಗಳು</translation>
 <translation id="7853999103056713222">ಸುರಕ್ಷಿತ ಪಾಸ್‌ವರ್ಡ್ ಒಂದನ್ನು ಬಳಸಿ</translation>
 <translation id="7855678561139483478">ಟ್ಯಾಬ್ ಅನ್ನು ಹೊಸ ವಿಂಡೋಗೆ ಸರಿಸಿ</translation>
+<translation id="7856117067008941054">Google Calendar ಮರೆ ಮಾಡಿ</translation>
 <translation id="7857004848504343806">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್, ಸುಭದ್ರ ಮಾಡ್ಯೂಲ್ ಅನ್ನು ಹೊಂದಿದೆ. ChromeOS Flex ನಲ್ಲಿ ಹಲವು ಪ್ರಮುಖ ಭದ್ರತಾ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಕಾರ್ಯಗತಗೊಳಿಸಲು ಇದನ್ನು ಬಳಸಲಾಗುತ್ತದೆ. ಇದರ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿದುಕೊಳ್ಳಲು Chromebook ಸಹಾಯ ಕೇಂದ್ರಕ್ಕೆ ಭೇಟಿ ನೀಡಿ: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">ಪಠ್ಯ ಸಲಹೆಗಳು</translation>
 <translation id="7858120906780498731">ChromeOS ಕನೆಕ್ಟೆಡ್ ಇನ್‌ಪುಟ್ ಸಾಧನಗಳು</translation>
@@ -9231,6 +9246,7 @@
 <translation id="786073089922909430">ಸೇವೆ: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
 <translation id="7861846108263890455">Google ಖಾತೆಯ ಭಾಷೆ</translation>
+<translation id="7864114920800968141"><ph name="NUM_MIN" /> ನಿಮಿಷದಲ್ಲಿ</translation>
 <translation id="7864539943188674973">ಬ್ಲೂಟೂತ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="7864825798076155402">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="7865127013871431856">ಅನುವಾದ ಆಯ್ಕೆಗಳು</translation>
@@ -9452,6 +9468,7 @@
 <translation id="8022466874160067884">ನಿಮ್ಮ Google ಖಾತೆ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="8023133589013344428">ChromeOS Flex ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿರುವ ಭಾಷೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="8023801379949507775">ಈಗ ವಿಸ್ತರಣೆಗಳನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ</translation>
+<translation id="8024161440284949905">ಈ ಟ್ಯಾಬ್‌ಗಳೊಂದಿಗೆ ಮುಂದುವರಿಯಿರಿ</translation>
 <translation id="8025151549289123443">ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಮಾಡಿ ಹಾಗೂ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="8025291188699172126">ಅಪ್‌ಡೇಟ್‌ಗಳ ಕುರಿತು</translation>
 <translation id="8026471514777758216">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳು</translation>

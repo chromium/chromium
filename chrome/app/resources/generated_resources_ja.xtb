@@ -4107,6 +4107,7 @@
 <translation id="3978325380690188371">ChromeVox が有効になっている場合、固定キーは利用できません</translation>
 <translation id="3979395879372752341">新しい拡張機能が追加されました（<ph name="EXTENSION_NAME" />）</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> を有効にする</translation>
+<translation id="398095528354975981">これらのタブを非表示にする</translation>
 <translation id="3981058120448670012"><ph name="REMAINING_TIME" />間、付近のデバイスに「<ph name="DEVICE_NAME" />」として表示されます...</translation>
 <translation id="3981760180856053153">入力された保存形式が無効です。</translation>
 <translation id="3982375475032951137">簡単な手順でブラウザを設定できます</translation>
@@ -7480,6 +7481,7 @@
 <translation id="6557290421156335491">カスタム ショートカット</translation>
 <translation id="6560061709899140565">他のキャスト セッションを表示</translation>
 <translation id="6560151649238390891">候補を挿入しました</translation>
+<translation id="656065428026159829">もっと見る</translation>
 <translation id="6561726789132298588">Enter</translation>
 <translation id="6562117348069327379">システムログをダウンロード ディレクトリに保存します。</translation>
 <translation id="656293578423618167">ファイルのパスまたは名前が長すぎます。名前を短くするか、別の場所に保存してください。</translation>
@@ -9444,6 +9446,7 @@
 <translation id="8022466874160067884">Google アカウントとパスワードを入力する</translation>
 <translation id="8023133589013344428">ChromeOS Flex の設定で言語を管理する</translation>
 <translation id="8023801379949507775">拡張機能を今すぐ更新</translation>
+<translation id="8024161440284949905">これらのタブを続行</translation>
 <translation id="8025151549289123443">ロック画面とログイン</translation>
 <translation id="8025291188699172126">更新について</translation>
 <translation id="8026471514777758216">デバイス間で連携</translation>

@@ -4132,6 +4132,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="3978325380690188371">Nid yw bysellau gludiog ar gael pan fydd ChromeVox ymlaen</translation>
 <translation id="3979395879372752341">Ychwanegwyd estyniad newydd (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Galluogi <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Cuddio'r tabiau hyn</translation>
 <translation id="3981058120448670012">Yn weladwy i ddyfeisiau gerllaw fel <ph name="DEVICE_NAME" /> am <ph name="REMAINING_TIME" />...</translation>
 <translation id="3981760180856053153">Rhoddwyd math cadw annilys.</translation>
 <translation id="3982375475032951137">Gosod eich porwr mewn ychydig o gamau syml</translation>
@@ -7511,6 +7512,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6557290421156335491">Fy llwybrau byr</translation>
 <translation id="6560061709899140565">Dangos sesiynau castio eraill</translation>
 <translation id="6560151649238390891">Cafodd yr awgrym ei fewnosod</translation>
+<translation id="656065428026159829">Gweld rhagor</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Storio logiau system i'r cyfeiriadur Lawrlwythiadau.</translation>
 <translation id="656293578423618167">Mae llwybr neu enw'r ffeil yn rhy hir.  Cadwch gydag enw byrrach neu i leoliad arall.</translation>
@@ -9484,6 +9486,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8022466874160067884">Rhowch eich Cyfrif Google a'ch cyfrinair</translation>
 <translation id="8023133589013344428">Rheoli ieithoedd yng ngosodiadau ChromeOS Flex</translation>
 <translation id="8023801379949507775">Diweddaru'r estyniadau nawr</translation>
+<translation id="8024161440284949905">Parhau gyda'r tabiau hyn</translation>
 <translation id="8025151549289123443">Clo sgrîn a mewngofnodi</translation>
 <translation id="8025291188699172126">Ynghylch Diweddariadau</translation>
 <translation id="8026471514777758216">Eich holl ddyfeisiau</translation>

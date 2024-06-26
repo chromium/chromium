@@ -4114,6 +4114,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="3978325380690188371">Tekla itsaskorrak ez daude erabilgarri ChromeVox aktibatuta dagoenean</translation>
 <translation id="3979395879372752341">Luzapena gehitu da (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Gaitu <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Ezkutatu fitxa hauek</translation>
 <translation id="3981058120448670012">Inguruko gailuek <ph name="DEVICE_NAME" /> gisa ikusiko dute denbora hau agortu arte: <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">Gordetze motak ez du balio.</translation>
 <translation id="3982375475032951137">Konfiguratu arakatzailea urrats gutxi batzuetan</translation>
@@ -7489,6 +7490,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6557290421156335491">Nire lasterbideak</translation>
 <translation id="6560061709899140565">Erakutsi beste igorpen-saio batzuk</translation>
 <translation id="6560151649238390891">Txertatu da iradokizuna</translation>
+<translation id="656065428026159829">Ikusi gehiago</translation>
 <translation id="6561726789132298588">sartu</translation>
 <translation id="6562117348069327379">Gorde sistemaren erregistroak Deskargak direktorioan.</translation>
 <translation id="656293578423618167">Fitxategi-bidea edo -izena luzeegia da. Gorde izen laburrago batekin edo beste kokapen batean.</translation>
@@ -9453,6 +9455,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8022466874160067884">Idatzi Google-ko kontua eta pasahitza</translation>
 <translation id="8023133589013344428">Kudeatu hizkuntzak ChromeOS Flex-en ezarpenetan</translation>
 <translation id="8023801379949507775">Eguneratu luzapenak</translation>
+<translation id="8024161440284949905">Egin aurrera fitxa hauekin</translation>
 <translation id="8025151549289123443">Pantaila blokeatua eta saio-hasiera</translation>
 <translation id="8025291188699172126">Eguneratzeei buruz</translation>
 <translation id="8026471514777758216">Gailu guztiak</translation>

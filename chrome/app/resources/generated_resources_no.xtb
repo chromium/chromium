@@ -4121,6 +4121,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="3978325380690188371">Trege taster er ikke tilgjengelig når ChromeVox er på</translation>
 <translation id="3979395879372752341">Ny utvidelse lagt til (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Aktivér <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Skjul disse fanene</translation>
 <translation id="3981058120448670012">Vises som <ph name="DEVICE_NAME" /> for enheter i nærheten i <ph name="REMAINING_TIME" /> …</translation>
 <translation id="3981760180856053153">Ugyldig lagringstype angitt.</translation>
 <translation id="3982375475032951137">Konfigurer nettleseren din med noen få enkle trinn</translation>
@@ -7498,6 +7499,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6557290421156335491">Mine snarveier</translation>
 <translation id="6560061709899140565">Vis andre cast-økter</translation>
 <translation id="6560151649238390891">Forslaget er satt inn</translation>
+<translation id="656065428026159829">Se mer</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Lagre systemlogger i Nedlastinger-katalogen.</translation>
 <translation id="656293578423618167">Filbanen- eller -navnet er for langt. Lagre med et annet navn eller på et annet sted.</translation>
@@ -9465,6 +9467,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8022466874160067884">Skriv inn Google-kontoen din og passordet ditt</translation>
 <translation id="8023133589013344428">Administrer språk i ChromeOS Flex-innstillingene</translation>
 <translation id="8023801379949507775">Oppdater utvidelser nå</translation>
+<translation id="8024161440284949905">Fortsett med disse fanene</translation>
 <translation id="8025151549289123443">Låseskjerm og pålogging</translation>
 <translation id="8025291188699172126">Om oppdateringer</translation>
 <translation id="8026471514777758216">Alle enhetene dine</translation>

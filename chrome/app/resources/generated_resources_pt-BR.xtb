@@ -4130,6 +4130,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3978325380690188371">As teclas de aderência não ficam disponíveis quando o ChromeVox está ativado</translation>
 <translation id="3979395879372752341">Nova extensão adicionada (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Ativar <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Ocultar essas guias</translation>
 <translation id="3981058120448670012">Visível para dispositivos próximos como <ph name="DEVICE_NAME" /> por <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">Tipo de salvamento inválido digitado.</translation>
 <translation id="3982375475032951137">Configure seu navegador com algumas etapas simples</translation>
@@ -7510,6 +7511,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6557290421156335491">Meus atalhos</translation>
 <translation id="6560061709899140565">Mostrar outras sessões de transmissão</translation>
 <translation id="6560151649238390891">Sugestão inserida</translation>
+<translation id="656065428026159829">Ver mais</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Armazenar registros do sistema no diretório Downloads.</translation>
 <translation id="656293578423618167">O caminho ou nome do arquivo é muito longo. Salve com um nome mais curto ou em outro local.</translation>
@@ -9479,6 +9481,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8022466874160067884">Digite sua senha e sua Conta do Google</translation>
 <translation id="8023133589013344428">Gerenciar idiomas nas configurações do ChromeOS Flex</translation>
 <translation id="8023801379949507775">Atualizar extensões agora</translation>
+<translation id="8024161440284949905">Continue com estas guias</translation>
 <translation id="8025151549289123443">Tela de bloqueio e login</translation>
 <translation id="8025291188699172126">Sobre as atualizações</translation>
 <translation id="8026471514777758216">Todos os seus dispositivos</translation>

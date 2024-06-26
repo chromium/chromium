@@ -4130,6 +4130,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="3978325380690188371">Hindi available ang mga sticky key kapag naka-on ang ChromeVox</translation>
 <translation id="3979395879372752341">Nagdagdag ng bagong extension (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Paganahin ang <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">I-hide ang mga tab na ito</translation>
 <translation id="3981058120448670012">Visible sa mga kalapit na device bilang <ph name="DEVICE_NAME" /> sa loob ng <ph name="REMAINING_TIME" />...</translation>
 <translation id="3981760180856053153">Di-wastong uri ng pag-save ang ipinasok.</translation>
 <translation id="3982375475032951137">I-set up ang iyong browser gamit ang ilang simpleng hakbang</translation>
@@ -7509,6 +7510,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6557290421156335491">Aking mga shortcut</translation>
 <translation id="6560061709899140565">Magpakita ng iba pang session ng pag-cast</translation>
 <translation id="6560151649238390891">Inilagay ang suhestyon</translation>
+<translation id="656065428026159829">Tumingin pa</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Mag-store ng mga log ng system sa directory na Mga Download.</translation>
 <translation id="656293578423618167">Masyadong mahaba ang path o pangalan ng file.  Mangyaring i-save nang may mas maikling pangalan o sa isa pang lokasyon.</translation>
@@ -9478,6 +9480,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8022466874160067884">Ilagay ang iyong Google Account at password</translation>
 <translation id="8023133589013344428">Pamahalaan ang mga wika sa mga setting ng ChromeOS Flex</translation>
 <translation id="8023801379949507775">I-update ang mga extension ngayon</translation>
+<translation id="8024161440284949905">Magpatuloy sa mga tab na ito</translation>
 <translation id="8025151549289123443">Lock screen at pag-sign in</translation>
 <translation id="8025291188699172126">Tungkol sa Mga Update</translation>
 <translation id="8026471514777758216">Lahat ng iyong device</translation>

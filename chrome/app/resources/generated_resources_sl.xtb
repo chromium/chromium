@@ -4132,6 +4132,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="3978325380690188371">Zaklepanje tipk ni na voljo, če je vklopljen ChromeVox</translation>
 <translation id="3979395879372752341">Nova razširitev je dodana (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Omogoči <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Skrij te zavihke</translation>
 <translation id="3981058120448670012">Vidna napravam v bližini kot <ph name="DEVICE_NAME" /> <ph name="REMAINING_TIME" /> …</translation>
 <translation id="3981760180856053153">Vrsta shranjevanje, ki ste jo vnesli, ni veljavna.</translation>
 <translation id="3982375475032951137">Nastavite brskalnik v nekaj preprostih korakih</translation>
@@ -7513,6 +7514,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6557290421156335491">Moje bližnjice</translation>
 <translation id="6560061709899140565">Prikaz drugih sej za predvajanje</translation>
 <translation id="6560151649238390891">Predlog je vstavljen</translation>
+<translation id="656065428026159829">Prikaži več</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Shranjevanje sistemskih dnevnikov v mapo Prenosi.</translation>
 <translation id="656293578423618167">Pot datoteke ali ime je predolgo. Shranite s krajšim imenom ali na drugo mesto.</translation>
@@ -9486,6 +9488,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8022466874160067884">Vnesite račun Google in geslo</translation>
 <translation id="8023133589013344428">Upravljanje jezikov v nastavitvah sistema ChromeOS Flex</translation>
 <translation id="8023801379949507775">Posodobi razširitve</translation>
+<translation id="8024161440284949905">Nadaljuj s temi zavihki</translation>
 <translation id="8025151549289123443">Zaklenjen zaslon in prijava</translation>
 <translation id="8025291188699172126">O posodobitvah</translation>
 <translation id="8026471514777758216">Vse vaše naprave</translation>

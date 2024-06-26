@@ -4118,6 +4118,7 @@
 <translation id="3978325380690188371">Режим залипания клавиш недоступен при включенной программе ChromeVox</translation>
 <translation id="3979395879372752341">Добавлено новое расширение (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Включить <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Скрыть эти вкладки</translation>
 <translation id="3981058120448670012">Отображается под названием "<ph name="DEVICE_NAME" />" для других устройств поблизости в течение <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">Введен недействительный тип сохранения.</translation>
 <translation id="3982375475032951137">Настройте браузер за несколько простых шагов.</translation>
@@ -7497,6 +7498,7 @@
 <translation id="6557290421156335491">Мои ярлыки</translation>
 <translation id="6560061709899140565">Показать другие сеансы трансляции</translation>
 <translation id="6560151649238390891">Вставлено предложенное</translation>
+<translation id="656065428026159829">Ещё</translation>
 <translation id="6561726789132298588">Войти</translation>
 <translation id="6562117348069327379">Системные журналы будут сохраняться в каталоге "Скачанные файлы".</translation>
 <translation id="656293578423618167">Слишком длинное название файла или путь к нему. Выберите другое название или каталог.</translation>
@@ -9469,6 +9471,7 @@
 <translation id="8022466874160067884">Ввести имя пользователя и пароль аккаунта Google</translation>
 <translation id="8023133589013344428">Управление языковыми параметрами в настройках Chrome OS Flex</translation>
 <translation id="8023801379949507775">Обновить расширения</translation>
+<translation id="8024161440284949905">Продолжите просмотр этих вкладок</translation>
 <translation id="8025151549289123443">Блокировка экрана и вход</translation>
 <translation id="8025291188699172126">Подробнее об обновлениях</translation>
 <translation id="8026471514777758216">Синхронизация данных на всех устройствах</translation>

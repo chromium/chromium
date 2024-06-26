@@ -4111,6 +4111,7 @@
 <translation id="3978325380690188371">ChromeVox қосулы кезде, бекітілген пернелер қолжетімді емес</translation>
 <translation id="3979395879372752341">Жаңа кеңейтім қосылды (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> қосу</translation>
+<translation id="398095528354975981">Бұл қойындыларды жасыру</translation>
 <translation id="3981058120448670012">Маңайдағы құрылғыларға <ph name="DEVICE_NAME" /> ретінде көріну уақыты: <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">Жарамсыз сақтау түрі енгізілді.</translation>
 <translation id="3982375475032951137">Браузерді бірнеше қарапайым қадаммен реттеңіз</translation>
@@ -7486,6 +7487,7 @@
 <translation id="6557290421156335491">Таңбашаларым</translation>
 <translation id="6560061709899140565">Басқа трансляциялау сеанстарын көрсету</translation>
 <translation id="6560151649238390891">Ұсыныс енгізілді.</translation>
+<translation id="656065428026159829">Басқаларын көру</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Жүйе журналдарын "Жүктеп алынғандар" каталогіне сақтау.</translation>
 <translation id="656293578423618167">Файл жолы немесе атауы тым ұзын. Қысқа атаумен немесе басқа орынға сақтаңыз.</translation>
@@ -9450,6 +9452,7 @@
 <translation id="8022466874160067884">Google аккаунтыңыз бен құпия сөзіңізді енгізіңіз</translation>
 <translation id="8023133589013344428">ChromeOS Flex параметрлерінде тілдерді реттеу</translation>
 <translation id="8023801379949507775">Кеңейтімдерді қазір жаңарту</translation>
+<translation id="8024161440284949905">Осы қойындылармен жалғастыру</translation>
 <translation id="8025151549289123443">Құлыптаулы экран және кіру</translation>
 <translation id="8025291188699172126">Жаңартулар туралы</translation>
 <translation id="8026471514777758216">Барлық құрылғыңыз</translation>

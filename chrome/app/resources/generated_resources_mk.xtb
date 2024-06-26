@@ -4130,6 +4130,7 @@
 <translation id="3978325380690188371">Функцијата „Лепливи копчиња“ не е достапна кога е вклучен ChromeVox</translation>
 <translation id="3979395879372752341">Додадена е нова наставка (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Овозможи <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Скриј ги картичкиве</translation>
 <translation id="3981058120448670012">Видлив за уреди во близина како <ph name="DEVICE_NAME" /> уште <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">Внесен е неважечки тип за зачувување.</translation>
 <translation id="3982375475032951137">Поставете го прелистувачот во неколку едноставни чекори</translation>
@@ -7509,6 +7510,7 @@
 <translation id="6557290421156335491">Мои кратенки</translation>
 <translation id="6560061709899140565">Прикажи други сесии на емитување</translation>
 <translation id="6560151649238390891">Предлогот е внесен</translation>
+<translation id="656065428026159829">Прикажи повеќе</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Складирајте системска евиденција во директориумот „Преземања“.</translation>
 <translation id="656293578423618167">Патеката на датотеката или нејзиното име се многу долги. Зачувајте ја со пократко име или на друга локација.</translation>
@@ -9476,6 +9478,7 @@
 <translation id="8022466874160067884">Внесете ги сметката и лозинката на Google</translation>
 <translation id="8023133589013344428">Управувајте со јазиците во поставките за ChromeOS Flex</translation>
 <translation id="8023801379949507775">Ажурирајте наставки сега</translation>
+<translation id="8024161440284949905">Продолжете со картичкиве</translation>
 <translation id="8025151549289123443">Заклучен екран и најавување</translation>
 <translation id="8025291188699172126">За ажурирањата</translation>
 <translation id="8026471514777758216">Сите ваши уреди</translation>

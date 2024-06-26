@@ -4112,6 +4112,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="3978325380690188371">ChromeVox açıkken yapışkan tuşlar kullanılamaz</translation>
 <translation id="3979395879372752341">Yeni uzantı eklendi (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> ağ cihazını etkinleştir</translation>
+<translation id="398095528354975981">Bu sekmeleri gizle</translation>
 <translation id="3981058120448670012"><ph name="REMAINING_TIME" /> boyunca yakındaki cihazlara <ph name="DEVICE_NAME" /> olarak gösterilecek...</translation>
 <translation id="3981760180856053153">Geçersiz kayıt türü girildi.</translation>
 <translation id="3982375475032951137">Tarayıcınızı birkaç basit adımda kurun</translation>
@@ -7491,6 +7492,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6557290421156335491">Kısayollarım</translation>
 <translation id="6560061709899140565">Diğer yayınlama oturumlarını göster</translation>
 <translation id="6560151649238390891">Öneri eklendi</translation>
+<translation id="656065428026159829">Daha fazla göster</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Sistem günlüklerini İndirilenler konumunda saklayın.</translation>
 <translation id="656293578423618167">Dosya yolu veya adı çok uzun. Lütfen daha kısa bir adla veya başka bir konuma  kaydedin.</translation>
@@ -9457,6 +9459,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8022466874160067884">Google Hesabınızı ve şifrenizi girin</translation>
 <translation id="8023133589013344428">ChromeOS Flex ayarlarında dilleri yönetin</translation>
 <translation id="8023801379949507775">Uzantıları şimdi güncelle</translation>
+<translation id="8024161440284949905">Bu sekmelerle devam edin</translation>
 <translation id="8025151549289123443">Kilit ekranı ve oturum açma</translation>
 <translation id="8025291188699172126">Güncellemeler Hakkında</translation>
 <translation id="8026471514777758216">Tüm cihazlarınız</translation>

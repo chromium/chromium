@@ -4117,6 +4117,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3978325380690188371">As teclas aderentes não estão disponíveis quando o ChromeVox está ativado</translation>
 <translation id="3979395879372752341">Nova extensão adicionada (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Ativar <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Ocultar estes separadores</translation>
 <translation id="3981058120448670012">Visível para dispositivos próximos como <ph name="DEVICE_NAME" /> durante <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">Introduzido tipo de gravação inválido.</translation>
 <translation id="3982375475032951137">Configure o navegador em alguns passos simples.</translation>
@@ -7497,6 +7498,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6557290421156335491">Os meus atalhos</translation>
 <translation id="6560061709899140565">Mostrar outras sessões de transmissão</translation>
 <translation id="6560151649238390891">Sugestão inserida</translation>
+<translation id="656065428026159829">Ver mais</translation>
 <translation id="6561726789132298588">introduzir</translation>
 <translation id="6562117348069327379">Armazene registos de sistema no diretório Transferências.</translation>
 <translation id="656293578423618167">O caminho ou nome do ficheiro é demasiado longo. Guarde com um nome mais curto ou noutra localização.</translation>
@@ -9464,6 +9466,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8022466874160067884">Introduzir a sua Conta Google e palavra-passe</translation>
 <translation id="8023133589013344428">Gerir idiomas nas definições do ChromeOS Flex</translation>
 <translation id="8023801379949507775">Atualizar extensões agora</translation>
+<translation id="8024161440284949905">Continue com estes separadores</translation>
 <translation id="8025151549289123443">Ecrã de bloqueio e início de sessão</translation>
 <translation id="8025291188699172126">Acerca das atualizações</translation>
 <translation id="8026471514777758216">Todos os seus dispositivos</translation>

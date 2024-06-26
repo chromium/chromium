@@ -4114,6 +4114,7 @@
 <translation id="3978325380690188371">Лепљиви тастери нису доступни када је ChromeVox укључен</translation>
 <translation id="3979395879372752341">Додат је нови додатак (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Омогући <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Сакриј ове картице</translation>
 <translation id="3981058120448670012">Видљиво уређајима у близини као <ph name="DEVICE_NAME" /> <ph name="REMAINING_TIME" />...</translation>
 <translation id="3981760180856053153">Унет је неважећи тип за чување.</translation>
 <translation id="3982375475032951137">Подесите прегледач у неколико једноставних корака</translation>
@@ -7492,6 +7493,7 @@
 <translation id="6557290421156335491">Моје пречице</translation>
 <translation id="6560061709899140565">Прикажи друге сесије пребацивања</translation>
 <translation id="6560151649238390891">Предлог је уметнут</translation>
+<translation id="656065428026159829">Прикажи још</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Складиштење евиденција система у директоријуму Преузимања.</translation>
 <translation id="656293578423618167">Путања или назив датотеке су предугачки. Сачувајте са краћим називом или на другој локацији.</translation>
@@ -9463,6 +9465,7 @@
 <translation id="8022466874160067884">Унесите Google налог и лозинку</translation>
 <translation id="8023133589013344428">Управљајте језицима у подешавањима Chrome OS Flex-а</translation>
 <translation id="8023801379949507775">Ажурирај додатке</translation>
+<translation id="8024161440284949905">Наставите са овим картицама</translation>
 <translation id="8025151549289123443">Закључани екран и пријављивање</translation>
 <translation id="8025291188699172126">О ажурирањима</translation>
 <translation id="8026471514777758216">Сви ваши уређаји</translation>

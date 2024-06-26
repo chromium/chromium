@@ -4128,6 +4128,7 @@
 <translation id="3978325380690188371">ປຸ່ມກົດຄ້າງບໍ່ມີໃຫ້ໃຊ້ເມື່ອ ChromeVox ເປີດຢູ່</translation>
 <translation id="3979395879372752341">ເພີ່ມສ່ວນຂະຫຍາຍໃໝ່ແລ້ວ ( <ph name="EXTENSION_NAME" /> )</translation>
 <translation id="3979748722126423326">ເປີດໃຊ້ງານ <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">ເຊື່ອງແຖບເຫຼົ່ານີ້</translation>
 <translation id="3981058120448670012">ເບິ່ງເຫັນຕໍ່ກັບອຸປະກອນທີ່ຢູ່ໃກ້ຄຽງເປັນ <ph name="DEVICE_NAME" /> ສຳລັບ <ph name="REMAINING_TIME" />...</translation>
 <translation id="3981760180856053153">ປະເພດບັນທຶກທີ່ໃຊ້ບໍ່ໄດ້ປ້ອນ​ເຂົ້າ​ແລ້ວ.</translation>
 <translation id="3982375475032951137">ຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບຂອງທ່ານໃນສອງສາມຂັ້ນຕອນ</translation>
@@ -7506,6 +7507,7 @@
 <translation id="6557290421156335491">ທາງລັດຂອງຂ້ອຍ</translation>
 <translation id="6560061709899140565">ສະແດງເຊດຊັນການສົ່ງສັນຍານອື່ນໆ</translation>
 <translation id="6560151649238390891">ແຊກການແນະນຳແລ້ວ</translation>
+<translation id="656065428026159829">ເບິ່ງເພີ່ມເຕີມ</translation>
 <translation id="6561726789132298588">ປ້ອນເຂົ້າ</translation>
 <translation id="6562117348069327379">ເກັບຮັກສາບັນທຶກລະບົບໄວ້ໃນແຟ້ມການດາວໂຫຼດ.</translation>
 <translation id="656293578423618167">ຊ່ອງທາງ ຫຼືຊື່ໄຟລ໌ຍາວເກີນໄປ. ກະລຸນາບັນທຶກດ້ວຍຊື່ທີ່ສັ້ນກ່ວາ ຫຼືໄປໃສ່ທີ່ຕັ້ງອື່ນ.</translation>
@@ -9469,6 +9471,7 @@
 <translation id="8022466874160067884">ລະບຸບັນຊີ Google ແລະ ລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="8023133589013344428">ຈັດການພາສາໃນການຕັ້ງຄ່າ ChromeOS Flex</translation>
 <translation id="8023801379949507775">ອັບເດດສ່ວນຂະຫຍາຍດຽວນີ້</translation>
+<translation id="8024161440284949905">ສືບຕໍ່ກັບແຖບເຫຼົ່ານີ້</translation>
 <translation id="8025151549289123443">ໜ້າຈໍລັອກ ແລະ ການເຂົ້າສູ່ລະບົບ</translation>
 <translation id="8025291188699172126">ກ່ຽວກັບການອັບເດດ</translation>
 <translation id="8026471514777758216">ອຸປະກອນທັງໝົດຂອງທ່ານ</translation>

@@ -4117,6 +4117,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3978325380690188371">ChromeVox සක්‍රීයව ඇති විට ඇලෙන යතුරු ලද නොහැක</translation>
 <translation id="3979395879372752341">නව දිගුව (<ph name="EXTENSION_NAME" />) එක් කෙරිණි</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> සක්‍රීය කරන්න</translation>
+<translation id="398095528354975981">මෙම පටිති සඟවන්න</translation>
 <translation id="3981058120448670012"><ph name="REMAINING_TIME" /> සඳහා අවට උපාංගවලට <ph name="DEVICE_NAME" /> ලෙස දෘශ්‍යමාන වන්න...</translation>
 <translation id="3981760180856053153">වැරදි සුරැකුම් වර්ගයක් ඇතුළත් කර ඇත.</translation>
 <translation id="3982375475032951137">සරල පියවර කිහිපයකින් ඔබේ බ්‍රවුසරය සකසන්න</translation>
@@ -7494,6 +7495,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6557290421156335491">මගේ කෙටිමං</translation>
 <translation id="6560061709899140565">අනෙකුත් විකාශ සැසි පෙන්වන්න</translation>
 <translation id="6560151649238390891">යෝජනාව ඇතුළු කළා</translation>
+<translation id="656065428026159829">තවත් බලන්න</translation>
 <translation id="6561726789132298588">ඇතුල් කරන්න</translation>
 <translation id="6562117348069327379">බාගැනීම් නාමාවලියට පද්ධති ලොග ගබඩා කරන්න.</translation>
 <translation id="656293578423618167">ගොනු නම හෝ මඟ ඉතා දිගුයි. කරුණාකර වෙනත් ස්ථානයක් වෙත සුරකින්න නැතහොත් කෙටි නමක් යොදන්න.</translation>
@@ -9460,6 +9462,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8022466874160067884">ඔබේ Google ගිණුම සහ මුරපදය ඇතුළු කරන්න</translation>
 <translation id="8023133589013344428">ChromeOS Flex සැකසීම් තුළ භාෂා කළමනාකරණය කරන්න</translation>
 <translation id="8023801379949507775">දිගු දැන්ම යාවත්කාලීන කරන්න</translation>
+<translation id="8024161440284949905">මෙම පටිති සමග ඉදිරියට යන්න</translation>
 <translation id="8025151549289123443">අගුලු තිරය සහ පිරීම</translation>
 <translation id="8025291188699172126">යාවත්කාලීන පිළිබඳව</translation>
 <translation id="8026471514777758216">ඔබේ සියලු උපාංග</translation>

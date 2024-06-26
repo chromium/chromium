@@ -4129,6 +4129,7 @@
 <translation id="3978325380690188371">Τα ασύγχρονα πλήκτρα δεν είναι διαθέσιμα όταν το ChromeVox είναι ενεργοποιημένο.</translation>
 <translation id="3979395879372752341">Προστέθηκε νέα επέκταση (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Ενεργοποίηση <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Απόκρυψη αυτών των καρτελών</translation>
 <translation id="3981058120448670012">Είναι ορατή σε κοντινές συσκευές με την ονομασία <ph name="DEVICE_NAME" /> για <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">Καταχωρήθηκε μη έγκυρος τύπος αποθήκευσης.</translation>
 <translation id="3982375475032951137">Ρυθμίστε το πρόγραμμα περιήγησης σε μερικά απλά βήματα</translation>
@@ -7509,6 +7510,7 @@
 <translation id="6557290421156335491">Οι συντομεύσεις μου</translation>
 <translation id="6560061709899140565">Εμφάνιση άλλων περιόδων λειτουργίας μετάδοσης</translation>
 <translation id="6560151649238390891">Έγινε εισαγωγή της πρότασης.</translation>
+<translation id="656065428026159829">Δείτε περισσότερα</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Αποθήκευση αρχείων καταγραφής συστήματος στον κατάλογο Λήψεις.</translation>
 <translation id="656293578423618167">Η διαδρομή ή το όνομα είναι πάρα πολύ μεγάλο. Αποθηκεύστε το με μικρότερο όνομα ή σε κάποια άλλη τοποθεσία.</translation>
@@ -9476,6 +9478,7 @@
 <translation id="8022466874160067884">Εισαγάγετε τον Λογαριασμό σας Google και τον κωδικό πρόσβασης</translation>
 <translation id="8023133589013344428">Διαχείριση γλωσσών στις ρυθμίσεις του ChromeOS Flex</translation>
 <translation id="8023801379949507775">Ενημέρωση επεκτάσεων τώρα</translation>
+<translation id="8024161440284949905">Συνέχεια με αυτές τις καρτέλες</translation>
 <translation id="8025151549289123443">Οθόνη κλειδώματος και σύνδεση</translation>
 <translation id="8025291188699172126">Σχετικά με τις ενημερώσεις</translation>
 <translation id="8026471514777758216">Όλες οι συσκευές σας</translation>

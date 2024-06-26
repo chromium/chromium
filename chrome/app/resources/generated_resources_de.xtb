@@ -4111,6 +4111,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3978325380690188371">Einfingerbedienung nicht verfügbar, wenn ChromeVox aktiviert ist</translation>
 <translation id="3979395879372752341">Neue Erweiterung hinzugefügt (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> aktivieren</translation>
+<translation id="398095528354975981">Diese Tabs ausblenden</translation>
 <translation id="3981058120448670012">Für <ph name="REMAINING_TIME" /> als <ph name="DEVICE_NAME" /> für Geräte in der Nähe sichtbar…</translation>
 <translation id="3981760180856053153">Eingegebener Speichertyp ist ungültig.</translation>
 <translation id="3982375475032951137">Du kannst deinen Browser mit ein paar einfachen Schritten einrichten</translation>
@@ -6021,7 +6022,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5445400788035474247">10-fach</translation>
 <translation id="5446983216438178612">Zertifikate für die Organisation anzeigen</translation>
 <translation id="5447384712203291074"><ph name="ITEM_COUNT_MULTIPLE" /> Elemente</translation>
-<translation id="5448092089030025717">{NUM_REUSED,plural, =0{Keine wiederverwendeten Passwörter}=1{1 wiederverwendetes Passwort}other{{NUM_REUSED} wiederverwendete Passwörter}}</translation>
+<translation id="5448092089030025717">{NUM_REUSED,plural, =0{Keine mehrfach verwendeten Passwörter}=1{1 mehrfach verwendetes Passwort}other{{NUM_REUSED} mehrfach verwendete Passwörter}}</translation>
 <translation id="5448293924669608770">Hoppla, bei der Anmeldung ist ein Fehler aufgetreten.</translation>
 <translation id="5449551289610225147">Ungültiges Passwort</translation>
 <translation id="5449588825071916739">Alle Tabs als Lesezeichen speichern</translation>
@@ -7486,6 +7487,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6557290421156335491">Meine Verknüpfungen</translation>
 <translation id="6560061709899140565">Andere Streamingsitzungen einblenden</translation>
 <translation id="6560151649238390891">Vorschlag eingefügt</translation>
+<translation id="656065428026159829">Mehr anzeigen</translation>
 <translation id="6561726789132298588">Eingabe</translation>
 <translation id="6562117348069327379">Systemprotokolle im Downloadverzeichnis speichern.</translation>
 <translation id="656293578423618167">Der Dateipfad oder Dateiname ist zu lang. Verwende bitte einen kürzeren Namen oder einen anderen Speicherort.</translation>
@@ -9453,6 +9455,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8022466874160067884">Geben Sie Ihr Google-Konto und Ihr Passwort ein</translation>
 <translation id="8023133589013344428">Sprachen in den Chrome OS Flex-Einstellungen verwalten</translation>
 <translation id="8023801379949507775">Erweiterungen jetzt aktualisieren</translation>
+<translation id="8024161440284949905">Mit diesen Tabs fortfahren</translation>
 <translation id="8025151549289123443">Sperrbildschirm und Anmeldung</translation>
 <translation id="8025291188699172126">Informationen zu Updates</translation>
 <translation id="8026471514777758216">Alle meine Geräte</translation>
@@ -10075,7 +10078,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8470513973197838199">Gespeicherte Passwörter für <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Websites verwenden normalerweise USB-Geräte für Funktionen wie das Drucken eines Dokuments oder das Speichern auf einem Speichergerät</translation>
 <translation id="8471959340398751476">Rabatte sind deaktiviert. Du kannst diese im Anpassungsmenü aktivieren.</translation>
-<translation id="8472563193954285009">{COUNT,plural, =0{Alle Passwörter sind eindeutig}=1{{COUNT} wiederverwendetes Passwort}other{{COUNT} wiederverwendete Passwörter}}</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{Alle Passwörter sind eindeutig}=1{{COUNT} mehrfach verwendetes Passwort}other{{COUNT} mehrfach verwendete Passwörter}}</translation>
 <translation id="8472623782143987204">Hardwaregestützt</translation>
 <translation id="8473540203671727883">Text unter dem Mauszeiger vorlesen</translation>
 <translation id="8473863474539038330">Adressen und andere Daten</translation>
@@ -10907,7 +10910,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9076523132036239772">Deine E-Mail-Adresse bzw. dein Passwort konnte nicht bestätigt werden. Stelle zunächst eine Netzwerkverbindung her.</translation>
 <translation id="9076821103818989526">Seitenleiste</translation>
 <translation id="9076977315710973122">SMB-Freigabe</translation>
-<translation id="907779190626433918">Verwende unterschiedliche Passwörter für jede Website oder App. Falls jemand Zugriff auf ein wiederverwendetes Passwort erlangt, kann er sich damit auch in deinen anderen Konten anmelden.</translation>
+<translation id="907779190626433918">Verwende unterschiedliche Passwörter für jede Website oder App. Falls jemand Zugriff auf ein mehrfach verwendetes Passwort erlangt, kann er sich damit auch in deinen anderen Konten anmelden.</translation>
 <translation id="9078193189520575214">Änderungen werden übernommen…</translation>
 <translation id="9078316009970372699">Instant Tethering deaktivieren</translation>
 <translation id="9078546160009814724">Nutzername: <ph name="USERNAME" /></translation>

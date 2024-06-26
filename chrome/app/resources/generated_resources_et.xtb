@@ -4120,6 +4120,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="3978325380690188371">Nakkeklahvid pole saadaval, kui ChromeVox on sisse lülitatud</translation>
 <translation id="3979395879372752341">Lisati uus laiendus (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Luba <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Peida teksti vahekaardid</translation>
 <translation id="3981058120448670012">Läheduses olevatele seadmetele nähtav nimega <ph name="DEVICE_NAME" /> (<ph name="REMAINING_TIME" />) …</translation>
 <translation id="3981760180856053153">Sisestati vale salvestamistüüp.</translation>
 <translation id="3982375475032951137">Seadistage brauser vaid mõne lihtsa sammuga</translation>
@@ -7499,6 +7500,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6557290421156335491">Minu otseteed</translation>
 <translation id="6560061709899140565">Kuva muud ülekandeseansid</translation>
 <translation id="6560151649238390891">Soovitus on sisestatud</translation>
+<translation id="656065428026159829">Kuva rohkem</translation>
 <translation id="6561726789132298588">sisestusklahv</translation>
 <translation id="6562117348069327379">Süsteemilogid salvestatakse kataloogi Allalaadimised.</translation>
 <translation id="656293578423618167">Faili tee või nimi on liiga pikk. Salvestage lühema nimega või muusse asukohta.</translation>
@@ -9466,6 +9468,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8022466874160067884">Sisestage oma Google'i konto ja parool</translation>
 <translation id="8023133589013344428">Keelte haldamine Chrome OS Flexi seadetes</translation>
 <translation id="8023801379949507775">Värskenda laiendusi kohe</translation>
+<translation id="8024161440284949905">Jätka nende vahekaartidega</translation>
 <translation id="8025151549289123443">Lukustuskuva ja sisselogimine</translation>
 <translation id="8025291188699172126">Värskenduste kohta</translation>
 <translation id="8026471514777758216">Kõigis seadmetes</translation>

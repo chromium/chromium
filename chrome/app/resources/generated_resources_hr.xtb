@@ -4118,6 +4118,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="3978325380690188371">Ljepljive tipke nisu dostupne kada je uključen ChromeVox</translation>
 <translation id="3979395879372752341">Dodan je novi nastavak (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Omogući <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Sakrij ove kartice</translation>
 <translation id="3981058120448670012">Vidljiv uređajima u blizini pod nazivom <ph name="DEVICE_NAME" /> <ph name="REMAINING_TIME" />...</translation>
 <translation id="3981760180856053153">Unesena je nevažeća vrsta spremanja.</translation>
 <translation id="3982375475032951137">Postavite preglednik u nekoliko jednostavnih koraka</translation>
@@ -7493,6 +7494,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6557290421156335491">Moji prečaci</translation>
 <translation id="6560061709899140565">Prikazivanje drugih sesija emitiranja</translation>
 <translation id="6560151649238390891">Prijedlog je umetnut</translation>
+<translation id="656065428026159829">Prikaži više</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Zapisnici sustava pohranjuju se u direktorij Preuzimanja.</translation>
 <translation id="656293578423618167">Putanja ili naziv datoteke predugački su. Spremite datoteku pod kraćim nazivom ili na neku drugu lokaciju.</translation>
@@ -9464,6 +9466,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8022466874160067884">Unesite Google račun i zaporku</translation>
 <translation id="8023133589013344428">Upravljajte jezicima u postavkama ChromeOS Flexa</translation>
 <translation id="8023801379949507775">Ažuriraj proširenja sada</translation>
+<translation id="8024161440284949905">Nastavite s ovim karticama</translation>
 <translation id="8025151549289123443">Zaključani zaslon i prijava</translation>
 <translation id="8025291188699172126">O ažuriranjima</translation>
 <translation id="8026471514777758216">Svi vaši uređaji</translation>

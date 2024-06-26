@@ -4114,6 +4114,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="3978325380690188371">Lepljivi tasteri nisu dostupni kada je ChromeVox uključen</translation>
 <translation id="3979395879372752341">Dodat je novi dodatak (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Omogući <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Sakrij ove kartice</translation>
 <translation id="3981058120448670012">Vidljivo uređajima u blizini kao <ph name="DEVICE_NAME" /> <ph name="REMAINING_TIME" />...</translation>
 <translation id="3981760180856053153">Unet je nevažeći tip za čuvanje.</translation>
 <translation id="3982375475032951137">Podesite pregledač u nekoliko jednostavnih koraka</translation>
@@ -7492,6 +7493,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6557290421156335491">Moje prečice</translation>
 <translation id="6560061709899140565">Prikaži druge sesije prebacivanja</translation>
 <translation id="6560151649238390891">Predlog je umetnut</translation>
+<translation id="656065428026159829">Prikaži još</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Skladištenje evidencija sistema u direktorijumu Preuzimanja.</translation>
 <translation id="656293578423618167">Putanja ili naziv datoteke su predugački. Sačuvajte sa kraćim nazivom ili na drugoj lokaciji.</translation>
@@ -9463,6 +9465,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8022466874160067884">Unesite Google nalog i lozinku</translation>
 <translation id="8023133589013344428">Upravljajte jezicima u podešavanjima Chrome OS Flex-a</translation>
 <translation id="8023801379949507775">Ažuriraj dodatke</translation>
+<translation id="8024161440284949905">Nastavite sa ovim karticama</translation>
 <translation id="8025151549289123443">Zaključani ekran i prijavljivanje</translation>
 <translation id="8025291188699172126">O ažuriranjima</translation>
 <translation id="8026471514777758216">Svi vaši uređaji</translation>

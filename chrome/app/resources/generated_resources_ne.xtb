@@ -4111,6 +4111,7 @@
 <translation id="3978325380690188371">ChromeVox अन भएका बेला स्टिकी कीहरू उपलब्ध हुँदैनन्</translation>
 <translation id="3979395879372752341">नयाँ विस्तार थिपियो (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> लाई सक्षम बनाउनुहोस्</translation>
+<translation id="398095528354975981">यी ट्याबहरू लुकाउनुहोस्</translation>
 <translation id="3981058120448670012"><ph name="REMAINING_TIME" /> सम्म नजिकैका यन्त्रहरूमा <ph name="DEVICE_NAME" /> का रूपमा देखिने...</translation>
 <translation id="3981760180856053153">अवैध बचत प्रकार प्रविष्ट भयो।</translation>
 <translation id="3982375475032951137">केही सरल चरणमार्फत आफ्नो ब्राउजर सेटअप गर्नुहोस्</translation>
@@ -7489,6 +7490,7 @@
 <translation id="6557290421156335491">मेरा सर्टकटहरू</translation>
 <translation id="6560061709899140565">कास्ट गरिरहेका अन्य सेसनसम्बन्धी जानकारी देखाउनुहोस्</translation>
 <translation id="6560151649238390891">सुझाव गरिएको इमोजी प्रयोग गरियो</translation>
+<translation id="656065428026159829">थप हेर्नुहोस्</translation>
 <translation id="6561726789132298588">प्रविष्टि गर्नुहोस्</translation>
 <translation id="6562117348069327379">सिस्टम लगहरू डाउनलोड नामक डिरेक्टरीमा भण्डारण गर्नुहोस्।</translation>
 <translation id="656293578423618167">फाइलको बाटो वा नाम निकै लामो छ । कृपया छोटो नाम दिएर वा अर्को स्थानमा बचत गर्नुहोस् ।</translation>
@@ -9454,6 +9456,7 @@
 <translation id="8022466874160067884">आफ्नो Google खाता र पासवर्ड हाल्नुहोस्</translation>
 <translation id="8023133589013344428">ChromeOS Flex का सेटिङमा गई भाषाहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="8023801379949507775">एक्स्टेन्सनहरूलाई अहिले नै अपडेट गर्नुहोस्</translation>
+<translation id="8024161440284949905">यी ट्याबहरू प्रयोग गरी जारी राख्नुहोस्</translation>
 <translation id="8025151549289123443">लक स्क्रिन र साइन इन</translation>
 <translation id="8025291188699172126">अपडेटका बारेमा जानकारी</translation>
 <translation id="8026471514777758216">तपाईंका सबै डिभाइसहरू</translation>

@@ -4126,6 +4126,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3978325380690188371">Функцията за фиксирани клавиши не е налице, когато екранният четец ChromeVox е включен</translation>
 <translation id="3979395879372752341">Бе добавено ново разширение (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Активиране на <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Скриване на тези раздели</translation>
 <translation id="3981058120448670012">Видимо като <ph name="DEVICE_NAME" /> за устройства в близост за <ph name="REMAINING_TIME" />...</translation>
 <translation id="3981760180856053153">Въведен е невалиден тип запазване.</translation>
 <translation id="3982375475032951137">Настройте браузъра си в няколко лесни стъпки</translation>
@@ -7506,6 +7507,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6557290421156335491">Моите преки пътища</translation>
 <translation id="6560061709899140565">Показване на другите сесии на предаване</translation>
 <translation id="6560151649238390891">Предложението бе вмъкнато</translation>
+<translation id="656065428026159829">Вижте още</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Запазване на системните регистрационни файлове в директорията „Изтегляния“.</translation>
 <translation id="656293578423618167">Пътят или името на файла са твърде дълги.  Моля, запазете файла с по-кратко име или на друго място.</translation>
@@ -9473,6 +9475,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8022466874160067884">Въведете профила си в Google и паролата за него</translation>
 <translation id="8023133589013344428">Управление на езиците в настройките на ChromeOS Flex</translation>
 <translation id="8023801379949507775">Актуализирайте разширенията сега</translation>
+<translation id="8024161440284949905">Продължаване с тези раздели</translation>
 <translation id="8025151549289123443">Заключен екран и влизане в профила</translation>
 <translation id="8025291188699172126">Информация за актуализациите</translation>
 <translation id="8026471514777758216">Всички ваши устройства</translation>

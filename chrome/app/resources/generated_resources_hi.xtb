@@ -4129,6 +4129,7 @@
 <translation id="3978325380690188371">ChromeVox के चालू होने पर, स्टिकी बटन की सुविधा उपलब्ध नहीं होती</translation>
 <translation id="3979395879372752341">नया एक्सटेंशन जोड़ा गया (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> चालू करें</translation>
+<translation id="398095528354975981">इन टैब को छिपाएं</translation>
 <translation id="3981058120448670012"><ph name="REMAINING_TIME" /> तक आस-पास के डिवाइस को <ph name="DEVICE_NAME" /> के तौर पर दिखेगा...</translation>
 <translation id="3981760180856053153">सेव करने का गलत तरीका दर्ज किया गया.</translation>
 <translation id="3982375475032951137">कुछ आसान चरणों में अपना ब्राउज़र सेट करें</translation>
@@ -7507,6 +7508,7 @@
 <translation id="6557290421156335491">मेरे शॉर्टकट</translation>
 <translation id="6560061709899140565">अन्य कास्ट सेशन की जानकारी दिखाएं</translation>
 <translation id="6560151649238390891">सुझाव डाला गया</translation>
+<translation id="656065428026159829">ज़्यादा देखें</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">सिस्टम लॉग, डाउनलोड डायरेक्ट्री में सेव करें.</translation>
 <translation id="656293578423618167">फ़ाइल पाथ या नाम बहुत बड़ा है.  कृपया छोटे नाम के साथ या किसी दूसरी जगह पर सेव करें.</translation>
@@ -9474,6 +9476,7 @@
 <translation id="8022466874160067884">अपना Google खाता और पासवर्ड डालें</translation>
 <translation id="8023133589013344428">ChromeOS Flex की सेटिंग में भाषाओं को मैनेज करें</translation>
 <translation id="8023801379949507775">एक्सटेंशन अभी अपडेट करें</translation>
+<translation id="8024161440284949905">इन टैब के साथ जारी रखें</translation>
 <translation id="8025151549289123443">लॉक स्क्रीन और साइन-इन</translation>
 <translation id="8025291188699172126">अपडेट के बारे में जानकारी</translation>
 <translation id="8026471514777758216">सभी डिवाइसों के लिए</translation>

@@ -4131,6 +4131,7 @@
 <translation id="3978325380690188371">ChromeVox가 사용 설정된 경우 고정키를 사용할 수 없음</translation>
 <translation id="3979395879372752341">새 확장 프로그램이 추가됨(<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> 사용</translation>
+<translation id="398095528354975981">탭 숨기기</translation>
 <translation id="3981058120448670012"><ph name="REMAINING_TIME" /> 동안 주변 기기에 <ph name="DEVICE_NAME" />(으)로 표시됩니다.</translation>
 <translation id="3981760180856053153">잘못된 저장 유형을 입력했습니다.</translation>
 <translation id="3982375475032951137">몇 단계 만에 간단하게 브라우저를 설정하세요.</translation>
@@ -7509,6 +7510,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6557290421156335491">내 바로가기</translation>
 <translation id="6560061709899140565">다른 전송 세션 표시</translation>
 <translation id="6560151649238390891">추천 그림 이모티콘 삽입됨</translation>
+<translation id="656065428026159829">더보기</translation>
 <translation id="6561726789132298588">입력</translation>
 <translation id="6562117348069327379">시스템 로그를 다운로드 디렉터리에 저장합니다.</translation>
 <translation id="656293578423618167">파일 경로 또는 이름이 너무 깁니다. 짧은 이름으로 변경하거나 다른 위치에 저장하세요.</translation>
@@ -9476,6 +9478,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8022466874160067884">Google 계정 및 비밀번호 입력</translation>
 <translation id="8023133589013344428">ChromeOS Flex 설정에서 언어 관리</translation>
 <translation id="8023801379949507775">지금 확장 프로그램 업데이트</translation>
+<translation id="8024161440284949905">이 탭으로 계속</translation>
 <translation id="8025151549289123443">잠금 화면 및 로그인</translation>
 <translation id="8025291188699172126">업데이트 정보</translation>
 <translation id="8026471514777758216">모든 기기</translation>

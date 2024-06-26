@@ -4129,6 +4129,7 @@
 <translation id="3978325380690188371">ChromeVox চালু থাকলে, স্টিকি কী উপলভ্য হবে না</translation>
 <translation id="3979395879372752341">নতুন এক্সটেনশন যোগ করা হয়েছে (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> সক্ষম করুন</translation>
+<translation id="398095528354975981">এইসব ট্যাব লুকান</translation>
 <translation id="3981058120448670012">কাছাকাছি থাকা ডিভাইসগুলিতে, <ph name="REMAINING_TIME" />-এর জন্য <ph name="DEVICE_NAME" /> হিসেবে দেখা যাবে...</translation>
 <translation id="3981760180856053153">ভুল সেভ করার ধরণ লেখা হয়েছে৷</translation>
 <translation id="3982375475032951137">কয়েকটি সহজ ধাপে আপনার ব্রাউজার সেট-আপ করুন</translation>
@@ -7512,6 +7513,7 @@
 <translation id="6557290421156335491">আমার শর্টকাট</translation>
 <translation id="6560061709899140565">অন্যান্য কাস্ট সেশন দেখুন</translation>
 <translation id="6560151649238390891">সাজেশন যোগ করা হয়েছে</translation>
+<translation id="656065428026159829">আরও দেখুন</translation>
 <translation id="6561726789132298588">লিখুন</translation>
 <translation id="6562117348069327379">ডাউনলোড ডিরেক্টরিতে সিস্টেম লগ সেভ করুন।</translation>
 <translation id="656293578423618167">ফাইল পাথ অথবা নাম অত্যন্ত বড়৷ অনুগ্রহ করে একটি সংক্ষিপ্ত নামে বা অন্য কোনো স্থানে সেভণ করুন৷</translation>
@@ -9480,6 +9482,7 @@
 <translation id="8022466874160067884">আপনার Google অ্যাকাউন্ট ও পাসওয়ার্ড লিখুন</translation>
 <translation id="8023133589013344428">ChromeOS Flex সেটিংসে ভাষা ম্যানেজ করুন</translation>
 <translation id="8023801379949507775">এক্সটেনশগুলি এখনই আপডেট করুন</translation>
+<translation id="8024161440284949905">এইসব ট্যাবের মাধ্যমে চালিয়ে যান</translation>
 <translation id="8025151549289123443">লক স্ক্রিন ও সাইন-ইন</translation>
 <translation id="8025291188699172126">আপডেট সম্পর্কে</translation>
 <translation id="8026471514777758216">আপনার সব ডিভাইস</translation>

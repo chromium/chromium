@@ -4115,6 +4115,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="3978325380690188371">Las teclas persistentes no están disponibles cuando ChromeVox está activado</translation>
 <translation id="3979395879372752341">Nueva extensión añadida (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Habilitar <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Ocultar estas pestañas</translation>
 <translation id="3981058120448670012">Visible para los dispositivos cercanos con el nombre <ph name="DEVICE_NAME" /> durante <ph name="REMAINING_TIME" />...</translation>
 <translation id="3981760180856053153">Tipo de almacenamiento no válido</translation>
 <translation id="3982375475032951137">Configura tu navegador con unos sencillos pasos</translation>
@@ -7493,6 +7494,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6557290421156335491">Mis accesos directos</translation>
 <translation id="6560061709899140565">Mostrar otras sesiones de envío</translation>
 <translation id="6560151649238390891">Sugerencia insertada</translation>
+<translation id="656065428026159829">Ver más</translation>
 <translation id="6561726789132298588">intro</translation>
 <translation id="6562117348069327379">Almacena registros del sistema en el directorio Descargas.</translation>
 <translation id="656293578423618167">La ruta o el nombre del archivo es demasiado largo. Especifica un nombre más corto o guarda el archivo en otra ubicación.</translation>
@@ -9460,6 +9462,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8022466874160067884">Introduce tu cuenta de Google y tu contraseña</translation>
 <translation id="8023133589013344428">Gestionar idiomas en los ajustes de ChromeOS Flex</translation>
 <translation id="8023801379949507775">Actualizar extensiones ahora</translation>
+<translation id="8024161440284949905">Continuar con estas pestañas</translation>
 <translation id="8025151549289123443">Pantalla de bloqueo e inicio de sesión</translation>
 <translation id="8025291188699172126">Información sobre actualizaciones</translation>
 <translation id="8026471514777758216">Todos tus dispositivos</translation>
