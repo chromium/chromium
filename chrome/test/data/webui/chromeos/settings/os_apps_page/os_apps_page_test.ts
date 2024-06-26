@@ -6,7 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 import 'chrome://os-settings/os_settings.js';
 
 import {ParentalControlsDialogAction, SettingsAndroidAppsSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {AndroidAppsBrowserProxyImpl, appNotificationHandlerMojom, CrDialogElement, createRouterForTesting, CrLinkRowElement, OsSettingsAppsPageElement, OsSettingsRoutes, Router, routes, routesMojom, setAppNotificationProviderForTesting, settingMojom, SettingsDropdownMenuElement} from 'chrome://os-settings/os_settings.js';
+import {AndroidAppsBrowserProxyImpl, appNotificationHandlerMojom, CrDialogElement, createRouterForTesting, CrLinkRowElement, OsSettingsAppsPageElement, OsSettingsRoutes, Router, routes, routesMojom, setAppNotificationProviderForTesting, setAppParentalControlsProviderForTesting, settingMojom, SettingsDropdownMenuElement} from 'chrome://os-settings/os_settings.js';
 import {Permission} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {createBoolPermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -20,6 +20,7 @@ import {FakeMetricsPrivate} from '../fake_metrics_private.js';
 import {clearBody, hasStringProperty} from '../utils.js';
 
 import {FakeAppNotificationHandler} from './app_notifications_page/fake_app_notification_handler.js';
+import {FakeAppParentalControlsHandler} from './app_parental_controls_page/fake_app_parental_controls_handler.js';
 import {TestAndroidAppsBrowserProxy} from './test_android_apps_browser_proxy.js';
 
 const {Readiness} = appNotificationHandlerMojom;
@@ -447,6 +448,9 @@ suite('AppsPageTests', () => {
           `Clicking set up and creating a PIN sets up parental controls and
            navigates to the subpage`,
           async () => {
+            const handler = new FakeAppParentalControlsHandler();
+            setAppParentalControlsProviderForTesting(handler);
+
             const parentalControlsRow = queryParentalControlsRow();
             // Wait for the row to become visible.
             assertTrue(!!parentalControlsRow);
@@ -513,6 +517,9 @@ suite('AppsPageTests', () => {
           `Clicking the subpage arrow when parental controls are enabled and
            entering the correct PIN navigates to the subpage`,
           async () => {
+            const handler = new FakeAppParentalControlsHandler();
+            setAppParentalControlsProviderForTesting(handler);
+
             const parentalControlsRow = queryParentalControlsRow();
             // Wait for the row to become visible.
             assertTrue(!!parentalControlsRow);
@@ -619,6 +626,9 @@ suite('AppsPageTests', () => {
              entering an incorrect PIN surfaces an error and does not navigate
              to the subpage`,
           async () => {
+            const handler = new FakeAppParentalControlsHandler();
+            setAppParentalControlsProviderForTesting(handler);
+
             const parentalControlsRow = queryParentalControlsRow();
             // Wait for the row to become visible.
             assertTrue(!!parentalControlsRow);
@@ -720,6 +730,9 @@ suite('AppsPageTests', () => {
           `Toggling parental controls off and entering the correct PIN resets
              parental controls`,
           async () => {
+            const handler = new FakeAppParentalControlsHandler();
+            setAppParentalControlsProviderForTesting(handler);
+
             const parentalControlsRow = queryParentalControlsRow();
             // Wait for the row to become visible.
             assertTrue(!!parentalControlsRow);
@@ -828,6 +841,9 @@ suite('AppsPageTests', () => {
       test(
           'Searching parental controls deep links to parental controls row',
           async () => {
+            const handler = new FakeAppParentalControlsHandler();
+            setAppParentalControlsProviderForTesting(handler);
+
             const parentalControlsSettingId =
                 settingMojom.Setting.kAppParentalControls.toString();
             const params = new URLSearchParams();

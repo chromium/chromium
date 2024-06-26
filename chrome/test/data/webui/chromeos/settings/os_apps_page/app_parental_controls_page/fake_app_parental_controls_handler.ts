@@ -17,7 +17,7 @@ export class FakeAppParentalControlsHandler extends TestBrowserProxy implements
   private observer_: AppParentalControlsObserverRemoteType|null = null;
 
   constructor() {
-    super(['getApps', 'updateApp', 'addObserver']);
+    super(['getApps', 'updateApp', 'addObserver', 'onControlsDisabled']);
   }
 
   getApps(): Promise<{apps: App[]}> {
