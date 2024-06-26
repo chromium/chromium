@@ -24,6 +24,10 @@
 @property(nonatomic) id<SaveCardInfobarModalOverlayMediatorDelegate>
     save_card_delegate;
 
+// Shows success confirmation in the modal else dismisses the modal if card save
+// is not successful.
+- (void)creditCardUploadCompleted:(BOOL)card_saved;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OVERLAYS_INFOBAR_MODAL_SAVE_CARD_SAVE_CARD_INFOBAR_MODAL_OVERLAY_MEDIATOR_H_

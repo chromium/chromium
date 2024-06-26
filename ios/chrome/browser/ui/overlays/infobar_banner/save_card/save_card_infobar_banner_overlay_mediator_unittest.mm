@@ -24,6 +24,8 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
+using testing::_;
+
 // Test fixture for SaveCardInfobarBannerOverlayMediator.
 class SaveCardInfobarBannerOverlayMediatorTest : public PlatformTest {
  public:
@@ -86,8 +88,9 @@ TEST_F(SaveCardInfobarBannerOverlayMediatorTest, PresentModalWhenUploadOn) {
 TEST_F(SaveCardInfobarBannerOverlayMediatorTest, PresentModalWhenUploadOff) {
   InitInfobar(false);
 
-  EXPECT_CALL(*delegate_, UpdateAndAccept(delegate_->cardholder_name(),
-                                          delegate_->expiration_date_month(),
-                                          delegate_->expiration_date_year()));
+  EXPECT_CALL(*delegate_,
+              UpdateAndAccept(delegate_->cardholder_name(),
+                              delegate_->expiration_date_month(),
+                              delegate_->expiration_date_year(), _));
   [mediator_ bannerInfobarButtonWasPressed:nil];
 }

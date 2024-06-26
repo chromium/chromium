@@ -95,6 +95,12 @@
   }
 }
 
+#pragma mark - Public
+
+- (void)creditCardUploadCompleted:(BOOL)card_saved {
+  // TODO(crbug.com/339887700): Implement showing confirmation result.
+}
+
 #pragma mark - OverlayRequestMediator
 
 + (const OverlayRequestSupport*)requestSupport {
@@ -109,9 +115,13 @@
   autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
       self.saveCardDelegate;
   InfoBarIOS* infobar = GetOverlayRequestInfobar(self.request);
+
+  __weak __typeof__(self) weakSelf = self;
   infobar->set_accepted(delegate->UpdateAndAccept(
       base::SysNSStringToUTF16(cardholderName), base::SysNSStringToUTF16(month),
-      base::SysNSStringToUTF16(year)));
+      base::SysNSStringToUTF16(year), base::BindOnce(^(BOOL card_saved) {
+        [weakSelf creditCardUploadCompleted:card_saved];
+      })));
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
 
 #import "base/feature_list.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/common/features.h"
 
 namespace autofill {
@@ -14,6 +15,27 @@ AutofillSaveCardInfoBarDelegateIOS::AutofillSaveCardInfoBarDelegateIOS(
     std::unique_ptr<AutofillSaveCardDelegate> common_delegate)
     : AutofillSaveCardInfoBarDelegateMobile(std::move(ui_info),
                                             std::move(common_delegate)) {}
+
+AutofillSaveCardInfoBarDelegateIOS::~AutofillSaveCardInfoBarDelegateIOS() {
+  // By convention, ensure all pending callbacks have been run.
+
+  // Presence of `credit_card_upload_completion_callback_` indicates that
+  // card upload has not completed. Thus
+  // `credit_card_upload_completion_callback_` should be called with
+  // `card_saved` as `NO` before destructing if still present.
+  if (credit_card_upload_completion_callback_) {
+    std::move(credit_card_upload_completion_callback_)
+        .Run(/*card_saved=*/false);
+  }
+
+  // Presence of `on_confirmation_closed_callback_` indicates that the
+  // action, that should have run on closing the save card confirmation,
+  // is still pending. Thus `on_confirmation_closed_callback_` should be
+  // called before destructing if still present.
+  if (on_confirmation_closed_callback_) {
+    (*std::exchange(on_confirmation_closed_callback_, std::nullopt)).Run();
+  }
+}
 
 bool AutofillSaveCardInfoBarDelegateIOS::ShouldExpire(
     const NavigationDetails& details) const {
@@ -28,13 +50,30 @@ bool AutofillSaveCardInfoBarDelegateIOS::ShouldExpire(
 bool AutofillSaveCardInfoBarDelegateIOS::UpdateAndAccept(
     std::u16string cardholder_name,
     std::u16string expiration_date_month,
-    std::u16string expiration_date_year) {
+    std::u16string expiration_date_year,
+    base::OnceCallback<void(bool card_saved)>
+        credit_card_upload_completion_callback) {
   AutofillClient::UserProvidedCardDetails user_provided_details;
   user_provided_details.cardholder_name = cardholder_name;
   user_provided_details.expiration_date_month = expiration_date_month;
   user_provided_details.expiration_date_year = expiration_date_year;
+  credit_card_upload_completion_callback_ =
+      std::move(credit_card_upload_completion_callback);
   delegate()->OnUiUpdatedAndAccepted(user_provided_details);
   return true;
+}
+
+void AutofillSaveCardInfoBarDelegateIOS::CreditCardUploadCompleted(
+    bool card_saved,
+    std::optional<autofill::payments::PaymentsAutofillClient::
+                      OnConfirmationClosedCallback>
+        on_confirmation_closed_callback) {
+  on_confirmation_closed_callback_ = std::move(on_confirmation_closed_callback);
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation) &&
+      credit_card_upload_completion_callback_) {
+    std::move(credit_card_upload_completion_callback_).Run(card_saved);
+  }
 }
 
 }  // namespace autofill

@@ -30,12 +30,16 @@ class MockAutofillSaveCardInfoBarDelegateMobile
       const AccountInfo& displayed_target_account);
   ~MockAutofillSaveCardInfoBarDelegateMobile() override;
 
-  MOCK_METHOD3(UpdateAndAccept,
-               bool(std::u16string cardholder_name,
-                    std::u16string expiration_date_month,
-                    std::u16string expiration_date_year));
-  MOCK_METHOD1(OnLegalMessageLinkClicked, void(GURL url));
-  MOCK_METHOD0(InfoBarDismissed, void());
+  MOCK_METHOD(bool,
+              UpdateAndAccept,
+              (std::u16string cardholder_name,
+               std::u16string expiration_date_month,
+               std::u16string expiration_date_year,
+               base::OnceCallback<void(bool card_saved)>
+                   credit_card_upload_completion_callback),
+              (override));
+  MOCK_METHOD(void, OnLegalMessageLinkClicked, (GURL url), (override));
+  MOCK_METHOD(void, InfoBarDismissed, (), (override));
 };
 
 class MockAutofillSaveCardInfoBarDelegateMobileFactory {

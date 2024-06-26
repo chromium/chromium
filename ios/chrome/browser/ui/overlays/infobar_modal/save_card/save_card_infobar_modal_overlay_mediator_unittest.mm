@@ -28,6 +28,8 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
+using ::testing::A;
+
 @interface FakeSaveCardMediatorDelegate
     : NSObject <SaveCardInfobarModalOverlayMediatorDelegate>
 @property(nonatomic, assign) GURL pendingURLToLoad;
@@ -157,7 +159,8 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest, MainAction) {
   EXPECT_CALL(*delegate_,
               UpdateAndAccept(base::SysNSStringToUTF16(cardholderName),
                               base::SysNSStringToUTF16(month),
-                              base::SysNSStringToUTF16(year)));
+                              base::SysNSStringToUTF16(year),
+                              A<base::OnceCallback<void(BOOL card_saved)>>()));
   OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ saveCardWithCardholderName:cardholderName
                         expirationMonth:month
@@ -225,7 +228,8 @@ TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
   EXPECT_CALL(*delegate_,
               UpdateAndAccept(base::SysNSStringToUTF16(cardholderName),
                               base::SysNSStringToUTF16(month),
-                              base::SysNSStringToUTF16(year)));
+                              base::SysNSStringToUTF16(year),
+                              A<base::OnceCallback<void(BOOL card_saved)>>()));
   [mediator_ saveCardWithCardholderName:cardholderName
                         expirationMonth:month
                          expirationYear:year];
