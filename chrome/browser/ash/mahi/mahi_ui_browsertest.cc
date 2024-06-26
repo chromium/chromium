@@ -22,6 +22,7 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
@@ -41,8 +42,10 @@
 #include "ui/base/clipboard/clipboard_non_backed.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_utils.h"
@@ -319,6 +322,86 @@ IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuClickedSummary) {
   const ui::ClipboardData* data = clipboard->GetClipboardData(&data_dst);
   ASSERT_TRUE(data);
   EXPECT_EQ(data->text(), base::UTF16ToASCII(summary_text));
+}
+
+IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuQuestionSent) {
+  EXPECT_FALSE(FindWidgetWithName(MahiPanelWidget::GetName()));
+
+  // Open the Mahi menu by mouse right click on the web contents.
+  event_generator().MoveMouseTo(chrome_test_utils::GetActiveWebContents(this)
+                                    ->GetViewBounds()
+                                    .CenterPoint());
+  event_generator().ClickRightButton();
+  views::Widget* const mahi_menu_widget = FindWidgetWithNameAndWaitIfNeeded(
+      chromeos::mahi::MahiMenuView::GetWidgetName());
+  ASSERT_TRUE(mahi_menu_widget);
+
+  const views::View* const textfield =
+      mahi_menu_widget->GetContentsView()->GetViewByID(
+          chromeos::mahi::ViewID::kTextfield);
+  ASSERT_TRUE(textfield);
+
+  // Ensure focus on `textfield`.
+  event_generator().MoveMouseTo(textfield->GetBoundsInScreen().CenterPoint());
+  event_generator().ClickLeftButton();
+
+  // Type `question_text`.
+  const std::u16string question_text(u"question");
+  for (char16_t c : question_text) {
+    event_generator().PressAndReleaseKey(
+        static_cast<ui::KeyboardCode>(ui::VKEY_A + c - u'a'));
+  }
+
+  ui::ScopedAnimationDurationScaleMode zero_duration(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  const views::View* question_submit_button =
+      mahi_menu_widget->GetContentsView()->GetViewByID(
+          chromeos::mahi::ViewID::kSubmitQuestionButton);
+  ASSERT_TRUE(question_submit_button);
+
+  // Mouse click on `question_submit_button`.
+  event_generator().MoveMouseTo(
+      question_submit_button->GetBoundsInScreen().CenterPoint());
+  event_generator().ClickLeftButton();
+
+  // The answer could be loaded before the Mahi menu is closed. Therefore,
+  // record Mahi UI updates during waiting.
+  UiUpdateRecorder update_recorder(GetMahiUiController());
+
+  WaitUntilMahiMenuClosed(mahi_menu_widget);
+
+  // Check the existence of the Mahi panel.
+  views::Widget* panel_widget =
+      FindWidgetWithNameAndWaitIfNeeded(MahiPanelWidget::GetName());
+  ASSERT_TRUE(panel_widget);
+
+  // Wait until answer is loaded, if needed.
+  if (!update_recorder.HasUpdate(MahiUiUpdateType::kAnswerLoaded)) {
+    WaitUntilUiUpdateReceived(MahiUiUpdateType::kAnswerLoaded);
+  }
+
+  // Verify that `question_answer_view` is visible.
+  auto* const question_answer_view =
+      panel_widget->GetContentsView()->GetViewByID(
+          mahi_constants::ViewId::kQuestionAnswerView);
+  ASSERT_TRUE(question_answer_view);
+  EXPECT_TRUE(question_answer_view->GetVisible());
+
+  // Verify the question label.
+  ASSERT_EQ(2u, question_answer_view->children().size());
+  EXPECT_EQ(views::AsViewClass<views::Label>(
+                question_answer_view->children()[0]->GetViewByID(
+                    mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel))
+                ->GetText(),
+            question_text);
+
+  // Verify the answer label.
+  EXPECT_EQ(views::AsViewClass<views::Label>(
+                question_answer_view->children()[1]->GetViewByID(
+                    mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel))
+                ->GetText(),
+            u"Fake answer");
 }
 
 }  // namespace ash
