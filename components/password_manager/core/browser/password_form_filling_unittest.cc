@@ -147,7 +147,7 @@ class PasswordFormFillingTest : public testing::Test {
   PasswordForm saved_match_;
   PasswordForm psl_saved_match_;
   scoped_refptr<PasswordFormMetricsRecorder> metrics_recorder_;
-  std::vector<const PasswordForm> federated_matches_;
+  const std::vector<PasswordForm> federated_matches_;
   MockWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
   testing::NiceMock<MockPasswordFeatureManager> feature_manager_;
 };
@@ -511,7 +511,7 @@ TEST_F(PasswordFormFillingTest, NoFillOnPageloadInCrossOriginIframe) {
           Return(Origin::Create(GURL("https://another_website.com"))));
 
   std::vector<PasswordForm> best_matches = {saved_match_};
-  std::vector<const PasswordForm> federated_matches = {};
+  const std::vector<PasswordForm> federated_matches = {};
 
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches,
