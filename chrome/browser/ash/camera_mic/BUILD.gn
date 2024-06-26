@@ -1,0 +1,63 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("camera_mic") {
+  sources = [
+    "vm_camera_mic_manager.cc",
+    "vm_camera_mic_manager.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chromeos/ash/components/audio",
+    "//components/keyed_service/core",
+    "//media/capture:capture_lib",
+    "//ui/message_center/public/cpp",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/settings/public/constants:mojom",
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/app/vector_icons",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//media/capture/video/chromeos/mojom:cros_camera_shared",
+    "//media/capture/video/chromeos/mojom:cros_camera_shared_cpp_sources",
+    "//media/capture/video/chromeos/public",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "vm_camera_mic_manager_unittest.cc" ]
+
+  deps = [
+    "//ash",
+    "//ash:test_support",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/camera_mic",
+    "//chrome/test:test_support",
+    "//components/account_id",
+    "//components/prefs:test_support",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/display:display_manager_test_api",
+    "//ui/message_center",
+  ]
+}

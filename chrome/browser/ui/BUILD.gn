@@ -4070,6 +4070,7 @@ static_library("ui") {
     public_deps += [
       "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/accessibility/service",
+      "//chrome/browser/ash/camera_mic",
       "//chrome/browser/ash/usb",
       "//chrome/browser/ui/webui/ash/crostini_installer:mojo_bindings",
       "//chrome/browser/ui/webui/ash/emoji:mojo_bindings",
@@ -4086,6 +4087,7 @@ static_library("ui") {
       "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/apps",
       "//chrome/browser/ash/base",
+      "//chrome/browser/ash/camera_mic",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/customization",
       "//chrome/browser/ash/eche_app",
