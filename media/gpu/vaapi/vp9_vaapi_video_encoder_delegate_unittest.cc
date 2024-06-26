@@ -466,7 +466,13 @@ void VP9VaapiVideoEncoderDelegateTest::
   EXPECT_EQ(encoder_->PrepareEncodeJob(*encode_job.get()),
             VaapiVideoEncoderDelegate::PrepareEncodeJobResult::kSuccess);
 
-  // TODO(hiroh): Test for encoder_->reference_frames_.
+  const std::bitset<kDefaultMaxNumRefFrames> refresh_frame_flags(
+      picture->frame_hdr->refresh_frame_flags);
+  for (size_t i = 0; i < kDefaultMaxNumRefFrames; ++i) {
+    if (refresh_frame_flags[i]) {
+      EXPECT_EQ(encoder_->reference_frames_.GetFrame(i), picture);
+    }
+  }
 
   constexpr size_t kDefaultEncodedFrameSize = 123456;
   // For BitrateControlUpdate sequence.
