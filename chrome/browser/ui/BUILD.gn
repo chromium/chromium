@@ -3816,6 +3816,7 @@ static_library("ui") {
       "//chrome/browser/ash/attestation",
       "//chrome/browser/ash/base",
       "//chrome/browser/ash/borealis:borealis_installer_types_mojom",
+      "//chrome/browser/ash/bruschetta",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/crostini:crostini_installer_types_mojom",

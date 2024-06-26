@@ -12,14 +12,6 @@ source_set("usb") {
     "cros_usb_detector.h",
   ]
 
-  deps = [
-    "//chrome/app:generated_resources",
-    "//chromeos/ash/components/dbus",
-    "//chromeos/constants",
-    "//components/vector_icons",
-    "//services/device/public/cpp/usb",
-  ]
-
   public_deps = [
     "//ash/components/arc:arc_base_utils",
     "//ash/constants",
@@ -37,6 +29,15 @@ source_set("usb") {
     "//ui/base",
     "//ui/chromeos/styles:cros_tokens_color_mappings",
   ]
+
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ash/bruschetta",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/constants",
+    "//components/vector_icons",
+    "//services/device/public/cpp/usb",
+  ]
 }
 
 source_set("unit_tests") {
@@ -46,6 +47,7 @@ source_set("unit_tests") {
 
   deps = [
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/bruschetta",
     "//chrome/test:test_support",
     "//chromeos/ash/components/disks:test_support",
   ]

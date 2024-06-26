@@ -5331,6 +5331,7 @@ static_library("browser") {
       "//chrome/browser/ash/attestation",
       "//chrome/browser/ash/bluetooth",
       "//chrome/browser/ash/borealis:borealis_installer_types_mojom",
+      "//chrome/browser/ash/bruschetta",
       "//chrome/browser/ash/cert_provisioning",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/cryptauth",
@@ -5534,6 +5535,8 @@ static_library("browser") {
       "//chrome/browser/ash/apps",
       "//chrome/browser/ash/attestation",
       "//chrome/browser/ash/bluetooth",
+      "//chrome/browser/ash/bruschetta",
+      "//chrome/browser/ash/cert_provisioning",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/cryptauth",
       "//chrome/browser/ash/customization",
@@ -5558,7 +5561,6 @@ static_library("browser") {
       "//chrome/browser/ash/trusted_vault",
       "//chrome/browser/ash/usb",
       "//chrome/browser/ash/wallpaper_handlers",
-      "//chrome/browser/ash/cert_provisioning",
     ]
 
     if (is_chrome_branded) {
