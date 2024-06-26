@@ -91,7 +91,6 @@ AvatarMenu::Item::Item(size_t menu_index,
                        const gfx::Image& icon)
     : icon(icon),
       active(false),
-      signed_in(false),
       signin_required(false),
       menu_index(menu_index),
       profile_path(profile_path) {}

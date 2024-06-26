@@ -54,10 +54,6 @@ class AvatarMenu :
     // when not signed in.
     std::u16string username;
 
-    // Whether or not the current profile is signed in. If true, |sync_state| is
-    // expected to be the email of the signed in user.
-    bool signed_in;
-
     // Whether or not the current profile requires sign-in before use.
     bool signin_required;
 
