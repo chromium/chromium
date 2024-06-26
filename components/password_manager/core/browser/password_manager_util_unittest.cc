@@ -179,9 +179,6 @@ class PasswordManagerUtilTest : public testing::Test {
   void EnableSyncForTestAccount() {
     sync_service_.GetUserSettings()->SetSelectedTypes(
         /*sync_everything=*/false, {syncer::UserSelectableType::kPasswords});
-    AccountInfo account_info;
-    account_info.email = "test@gmail.com";
-    sync_service_.SetAccountInfo(account_info);
   }
 
   void DisableSyncFeature() {

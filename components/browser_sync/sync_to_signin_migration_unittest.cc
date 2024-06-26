@@ -177,7 +177,7 @@ TEST_F(SyncToSigninMigrationTest, SyncStatusPrefsUnset) {
 TEST_F(SyncToSigninMigrationTest, SyncTransport) {
   // There's no Sync consent, but otherwise everything is active (running in
   // transport mode).
-  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetSignedInWithoutSyncFeature();
   ASSERT_EQ(sync_service_.GetTransportState(),
             syncer::SyncService::TransportState::ACTIVE);
 
@@ -508,10 +508,7 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncStatusPrefsUnset) {
 
 TEST_P(SyncToSigninMigrationMetricsTest, NotSignedIn) {
   // There's no signed-in user.
-  sync_service_.SetAccountInfo(CoreAccountInfo());
-  sync_service_.SetHasSyncConsent(false);
-  sync_service_.SetTransportState(
-      syncer::SyncService::TransportState::DISABLED);
+  sync_service_.SetSignedOut();
   ASSERT_TRUE(sync_service_.GetActiveDataTypes().empty());
 
   // Save the above state to prefs.
@@ -545,7 +542,7 @@ TEST_P(SyncToSigninMigrationMetricsTest, NotSignedIn) {
 TEST_P(SyncToSigninMigrationMetricsTest, SyncTransport) {
   // There's no Sync consent, but otherwise everything is active (running in
   // transport mode).
-  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetSignedInWithoutSyncFeature();
   ASSERT_EQ(sync_service_.GetTransportState(),
             syncer::SyncService::TransportState::ACTIVE);
   ASSERT_TRUE(sync_service_.GetActiveDataTypes().HasAll(

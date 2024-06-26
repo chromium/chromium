@@ -41,7 +41,7 @@ SyncUsernameTestBase::SyncUsernameTestBase() {
   // IdentityManager, until FakeSigninAs() is invoked.
   CHECK(!identity_test_env_.identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSignin));
-  sync_service_.SetAccountInfo(CoreAccountInfo());
+  sync_service_.SetSignedOut();
 }
 
 SyncUsernameTestBase::~SyncUsernameTestBase() = default;
@@ -66,9 +66,11 @@ void SyncUsernameTestBase::FakeSigninAs(const std::string& email,
   } else {
     CoreAccountInfo account =
         identity_test_env_.MakePrimaryAccountAvailable(email, consent_level);
-    sync_service_.SetAccountInfo(account);
-    sync_service_.SetHasSyncConsent(consent_level ==
-                                    signin::ConsentLevel::kSync);
+    if (consent_level == signin::ConsentLevel::kSync) {
+      sync_service_.SetSignedInWithSyncFeatureOn(account);
+    } else {
+      sync_service_.SetSignedInWithoutSyncFeature(account);
+    }
   }
 }
 

@@ -69,8 +69,6 @@ namespace autofill {
 
 namespace {
 
-constexpr char kPrimaryAccountEmail[] = "syncuser@example.com";
-
 using testing::Pointee;
 
 const base::Time kArbitraryTime = base::Time::FromSecondsSinceUnixEpoch(25);
@@ -143,16 +141,6 @@ class PaymentsDataManagerHelper : public PersonalDataManagerTestBase {
 
   PaymentsDataManager& payments_data_manager() {
     return *payments_data_manager_;
-  }
-
-  bool TurnOnSyncFeature() {
-    sync_service_.SetHasSyncConsent(true);
-    if (!sync_service_.IsSyncFeatureEnabled()) {
-      return false;
-    }
-    payments_data_manager().OnStateChanged(&sync_service_);
-    return payments_data_manager()
-        .IsSyncFeatureEnabledForPaymentsServerMetrics();
   }
 
   // Adds three local cards to the `payments_data_manager_`. The three cards are
@@ -1462,7 +1450,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest, SwitchServerStorages) {
   ASSERT_EQ(1U, payments_data_manager().GetServerCreditCards().size());
 
   // Switch to persistent storage.
-  sync_service_.SetHasSyncConsent(true);
+  sync_service_.SetSignedInWithSyncFeatureOn();
   payments_data_manager().OnStateChanged(&sync_service_);
   WaitForOnPaymentsDataChanged();
 
@@ -1483,7 +1471,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest, SwitchServerStorages) {
 
   // Switch back to the account storage, and verify that we are back to the
   // original card.
-  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetSignedInWithoutSyncFeature();
   payments_data_manager().OnStateChanged(&sync_service_);
   WaitForOnPaymentsDataChanged();
 
@@ -1605,7 +1593,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
 TEST_F(PaymentsDataManagerTest, KeepExistingLocalDataOnSignIn) {
   // Sign out.
   identity_test_env_.ClearPrimaryAccount();
-  sync_service_.SetAccountInfo(CoreAccountInfo());
+  sync_service_.SetSignedOut();
   EXPECT_TRUE(sync_service_.GetAccountInfo().IsEmpty());
   EXPECT_EQ(0U, payments_data_manager().GetCreditCards().size());
 
@@ -1622,16 +1610,15 @@ TEST_F(PaymentsDataManagerTest, KeepExistingLocalDataOnSignIn) {
   EXPECT_EQ(1U, payments_data_manager().GetCreditCards().size());
 
   // Sign in.
-  identity_test_env_.MakePrimaryAccountAvailable("test@gmail.com",
-                                                 signin::ConsentLevel::kSync);
-  sync_service_.SetAccountInfo(
-      identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kSync));
-  sync_service_.SetHasSyncConsent(true);
+  AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSync);
+  sync_service_.SetSignedInWithSyncFeatureOn(account);
   EXPECT_TRUE(
       sync_service_.IsSyncFeatureEnabled() &&
       sync_service_.GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA));
-  ASSERT_TRUE(TurnOnSyncFeature());
+  payments_data_manager().OnStateChanged(&sync_service_);
+  ASSERT_TRUE(
+      payments_data_manager().IsSyncFeatureEnabledForPaymentsServerMetrics());
 
   // Check saved local card should be not lost.
   EXPECT_EQ(1U, payments_data_manager().GetCreditCards().size());
@@ -2616,11 +2603,11 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
 
   // Set that the user enabled the sync feature. Check that the function now
   // returns false.
-  sync_service_.SetHasSyncConsent(true);
+  sync_service_.SetSignedInWithSyncFeatureOn();
   EXPECT_FALSE(payments_data_manager().ShouldShowCardsFromAccountOption());
 
   // Re-disable the sync feature. Check that the function now returns true.
-  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetSignedInWithoutSyncFeature();
   EXPECT_TRUE(payments_data_manager().ShouldShowCardsFromAccountOption());
 
   // Set a null sync service. Check that the function now returns false.
@@ -2683,11 +2670,11 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
 
   // Set that the user enabled the sync feature. Check that the function still
   // returns false.
-  sync_service_.SetHasSyncConsent(true);
+  sync_service_.SetSignedInWithSyncFeatureOn();
   EXPECT_FALSE(payments_data_manager().ShouldShowCardsFromAccountOption());
 
   // Re-disable the sync feature. Check that the function still returns false.
-  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetSignedInWithoutSyncFeature();
   EXPECT_FALSE(payments_data_manager().ShouldShowCardsFromAccountOption());
 
   // Set a null sync service. Check that the function still returns false.
@@ -2733,22 +2720,20 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
   // Check that the sync state is |SignedOut| when the account info is empty.
   {
     identity_test_env_.ClearPrimaryAccount();
-    sync_service_.SetAccountInfo(CoreAccountInfo());
-    sync_service_.SetHasSyncConsent(false);
+    sync_service_.SetSignedOut();
     EXPECT_EQ(AutofillMetrics::PaymentsSigninState::kSignedOut,
               payments_data_manager().GetPaymentsSigninStateForMetrics());
   }
 #endif
 
   // Simulate that the user has enabled the sync feature.
-  AccountInfo primary_account_info;
-  primary_account_info.email = kPrimaryAccountEmail;
-  sync_service_.SetAccountInfo(primary_account_info);
-  sync_service_.SetHasSyncConsent(true);
-// MakePrimaryAccountAvailable is not supported on CrOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  identity_test_env_.MakePrimaryAccountAvailable(primary_account_info.email,
-                                                 signin::ConsentLevel::kSync);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // MakePrimaryAccountAvailable is not supported on CrOS.
+  sync_service_.SetSignedInWithSyncFeatureOn();
+#else
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      "syncuser@example.com", signin::ConsentLevel::kSync);
+  sync_service_.SetSignedInWithSyncFeatureOn(account_info);
 #endif
 
   // Check that the sync state is |SignedInAndSyncFeature| if the sync feature
@@ -2774,8 +2759,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest, OnUserAcceptedUpstreamOffer) {
   CoreAccountInfo active_info =
       identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
           signin::ConsentLevel::kSignin);
-  sync_service_.SetAccountInfo(active_info);
-  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetSignedInWithoutSyncFeature(active_info);
 
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
@@ -2827,8 +2811,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest, OnUserAcceptedUpstreamOffer) {
   // kSignedOut
   ///////////////////////////////////////////////////////////
   identity_test_env_.ClearPrimaryAccount();
-  sync_service_.SetAccountInfo(CoreAccountInfo());
-  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetSignedOut();
   {
     EXPECT_TRUE(sync_service_.GetAccountInfo().IsEmpty());
 
@@ -2845,8 +2828,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest, OnUserAcceptedUpstreamOffer) {
   ///////////////////////////////////////////////////////////
   identity_test_env_.MakePrimaryAccountAvailable(active_info.email,
                                                  signin::ConsentLevel::kSync);
-  sync_service_.SetAccountInfo(active_info);
-  sync_service_.SetHasSyncConsent(true);
+  sync_service_.SetSignedInWithSyncFeatureOn(active_info);
   {
     EXPECT_TRUE(sync_service_.IsSyncFeatureEnabled());
 
