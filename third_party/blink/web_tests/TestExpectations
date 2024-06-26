@@ -7579,5 +7579,7 @@ crbug.com/348717753 [ Mac13 ] virtual/fenced-frame-mparch/wpt_internal/fenced_fr
 # Gardener 2024-06-18
 crbug.com/347991519 wpt_internal/scheduler/task-signal-any-memory-abort-2.any.html [ Failure Pass ]
 
+crbug.com/348486001 [ Win11-arm64 ] virtual/prerender2-fallback-prefetch-spec-rules-prefetch/http/tests/inspector-protocol/prefetch/request-will-be-sent-redirect-cross-site.https.js [ Failure ]
+
 # The overlapping navigation behavior is flaky.
 crbug.com/348101805 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/cross-document-traversal-cross-document-nav.html [ Failure Pass ]
