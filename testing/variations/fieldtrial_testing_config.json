@@ -6497,23 +6497,6 @@
                     ]
                 },
                 {
-                    "name": "EnabledEarlyDiscardAggressiveGradient_20240605",
-                    "params": {
-                        "CompleteStallMs": "700",
-                        "MaxLastVisibleDurationSeconds": "3600",
-                        "MinLastVisibleDurationSeconds": "300",
-                        "PartialStallMs": "20"
-                    },
-                    "enable_features": [
-                        "CrOSLateBootDiscardStaleAtModeratePressure",
-                        "CrOSLateBootOverrideLmkdPsiDefaults"
-                    ],
-                    "disable_features": [
-                        "CrOSLateBootPsiAdjustAvailable",
-                        "CrOSLockMainProgramText"
-                    ]
-                },
-                {
                     "name": "EnabledAvailableAdjustmentPsi_20240605",
                     "enable_features": [
                         "CrOSLateBootPsiAdjustAvailable"
