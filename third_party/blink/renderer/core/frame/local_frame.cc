@@ -1601,7 +1601,8 @@ void LocalFrame::SetLayoutAndTextZoomFactors(float layout_zoom_factor,
   layout_zoom_factor_ = layout_zoom_factor;
   text_zoom_factor_ = text_zoom_factor;
 
-  if (!RuntimeEnabledFeatures::StandardizedBrowserZoomEnabled()) {
+  if (!RuntimeEnabledFeatures::StandardizedBrowserZoomEnabled(
+          GetDocument()->GetExecutionContext())) {
     // Zoom factor will not be propagated via style resolution, it must be
     // propagated here.
     for (Frame* child = Tree().FirstChild(); child;

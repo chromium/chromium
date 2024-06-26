@@ -4385,6 +4385,7 @@ enum WebFeature {
   kV8PointerEvent_PersistentDeviceId_AttributeGetter = 5016,
   kDelegatedInkExpectedImprovement = 5017,
   kCSSSelectorNthChildOfSelector = 5018,
+  kStandardizedBrowserZoom = 5019,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

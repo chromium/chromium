@@ -493,7 +493,8 @@ void StyleCascade::AnalyzeInterpolations() {
 // [1] https://drafts.csswg.org/css-cascade/#defaulting
 // [2] https://drafts.csswg.org/css-cascade/#defaulting-keywords
 void StyleCascade::AddExplicitDefaults() {
-  if (RuntimeEnabledFeatures::StandardizedBrowserZoomEnabled() &&
+  if (RuntimeEnabledFeatures::StandardizedBrowserZoomEnabled(
+          state_.GetDocument().GetExecutionContext()) &&
       effective_zoom_changed_) {
     // These inherited properties can contain lengths:
     //
