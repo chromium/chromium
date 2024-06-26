@@ -30,7 +30,7 @@ class ChromeReportingConnectorTestCase(ChromeEnterpriseTestCase):
     """Get file from GCS bucket"""
     path = "gs://%s/%s" % (self.gsbucket, path)
     cmd = r'gsutil cat ' + path
-    return self.RunCommand(self.win_config['dc'], cmd).rstrip().decode()
+    return self.RunCommand(self.win_config['client'], cmd).rstrip().decode()
 
   def InstallBrowserAndEnableUITest(self):
     """Install chrome on machine and enable ui test.

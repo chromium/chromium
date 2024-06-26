@@ -241,7 +241,7 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
     """Get file from GCS bucket"""
     path = "gs://%s/%s" % (self.gsbucket, path)
     cmd = r'gsutil cat ' + path
-    return self.RunCommand(self.win_config['dc'], cmd).rstrip().decode()
+    return self.RunCommand(self.win_config['client'], cmd).rstrip().decode()
 
   def InstallWebDriver(self, instance_name):
     self.RunCommand(instance_name, r'md -Force c:\temp')
