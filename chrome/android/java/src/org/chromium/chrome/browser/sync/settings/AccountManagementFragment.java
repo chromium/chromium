@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.sync.settings;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.UserManager;
@@ -55,6 +56,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
 import java.util.List;
@@ -350,7 +352,12 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         manageYourGoogleAccountPreference.setLayoutResource(
                 R.layout.account_management_account_row);
         manageYourGoogleAccountPreference.setTitle(R.string.manage_your_google_account);
-        manageYourGoogleAccountPreference.setIcon(R.drawable.ic_google_services_48dp);
+        Drawable googleServicesIcon =
+                UiUtils.getTintedDrawable(
+                        getContext(),
+                        R.drawable.ic_google_services_48dp,
+                        R.color.default_icon_color_tint_list);
+        manageYourGoogleAccountPreference.setIcon(googleServicesIcon);
         manageYourGoogleAccountPreference.setOnPreferenceClickListener(
                 SyncSettingsUtils.toOnClickListener(
                         this,

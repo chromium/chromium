@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.settings;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -71,6 +72,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.HashMap;
@@ -360,11 +362,18 @@ public class MainSettings extends ChromeBaseSettingsFragment
     // to ensure the correct color is set for SurfaceColorDrawable.
     // See https://crbug.com/349112129.
     private void updateGoogleServicePreference() {
+        ChromeBasePreference googleServicePreference = findPreference(PREF_GOOGLE_SERVICES);
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            ChromeBasePreference googleServicePreference = findPreference(PREF_GOOGLE_SERVICES);
             googleServicePreference.setIcon(R.drawable.ic_google_services_48dp_with_bg);
             googleServicePreference.setViewId(R.id.account_management_google_services_row);
+        } else {
+            Drawable googleServicesIcon =
+                    UiUtils.getTintedDrawable(
+                            getContext(),
+                            R.drawable.ic_google_services_48dp,
+                            R.color.default_icon_color_tint_list);
+            googleServicePreference.setIcon(googleServicesIcon);
         }
     }
 

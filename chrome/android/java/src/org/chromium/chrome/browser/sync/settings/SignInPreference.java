@@ -160,7 +160,7 @@ public class SignInPreference extends Preference
                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
             setTitle(R.string.signin_settings_title);
             setSummary(R.string.settings_signin_disabled_by_administrator);
-            setIcon(R.drawable.ic_business_small_disabled_with_bg);
+            setIcon(R.drawable.ic_business_small_with_bg);
         } else {
             setTitle(R.string.sync_promo_turn_on_sync);
             setSummary(R.string.sign_in_to_chrome_disabled_summary);

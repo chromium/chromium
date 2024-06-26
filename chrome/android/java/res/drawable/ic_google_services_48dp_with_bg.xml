@@ -16,7 +16,6 @@ found in the LICENSE file.
         android:drawable="@drawable/oval_surface_1" />
     <item
         android:drawable="@drawable/ic_google_services_48dp"
-        android:gravity="center"
-        android:height="44dp"
-        android:width="44dp" />
+        android:height="48dp"
+        android:width="48dp" />
 </layer-list>
