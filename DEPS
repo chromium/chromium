@@ -4689,7 +4689,7 @@ deps = {
 
   'src/components/autofill/core/browser/form_parsing/internal_resources': {
       'url': Var('chrome_git') + '/chrome/components/autofill_regex_patterns.git' + '@' +
-        '5201218396a23397b2c6ef57faee770d88df7293',
+        '60c4779e43cb79fdede87574796ae130dbda3f67',
       'condition': 'checkout_src_internal',
   },
 
@@ -4748,7 +4748,7 @@ deps = {
 
   'src/components/test/data/autofill/heuristics-json/internal': {
       'url': Var('chrome_git') + '/chrome/test/autofill/structured_forms.git' + '@' +
-        '6f92743cb3c940325a2c20c23595cfd1d5cc148c',
+        'f6cb82a8db5f81d1afc518027bffdd5d1476b7d5',
       'condition': 'checkout_chromium_autofill_test_dependencies',
   },
 

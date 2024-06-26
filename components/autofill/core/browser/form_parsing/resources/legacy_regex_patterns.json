@@ -830,6 +830,15 @@
         "form_control_types": ["INPUT_TEXT", "SELECT_ONE", "SELECT_LIST", "INPUT_SEARCH"]
       }
     ],
+    "fr": [
+      {
+        "positive_pattern": "\\bpays\\b",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "form_control_types": ["INPUT_TEXT", "SELECT_ONE", "SELECT_LIST", "INPUT_SEARCH"]
+      }
+    ],
     "id": [
       {
         "positive_pattern": "negara",
