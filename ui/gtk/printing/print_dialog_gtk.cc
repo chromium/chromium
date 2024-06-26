@@ -411,7 +411,7 @@ void PrintDialogGtk::ShowDialog(
   if (parent_view)
     parent_view->AddObserver(this);
   if (gtk::GtkCheckVersion(4)) {
-    gtk_window_set_hide_on_close(GTK_WINDOW(dialog_), true);
+    gtk_window_set_hide_on_close(GTK_WINDOW(dialog_.get()), true);
   } else {
     g_signal_connect(dialog_, "delete-event",
                      G_CALLBACK(gtk_widget_hide_on_delete), nullptr);
@@ -435,15 +435,15 @@ void PrintDialogGtk::ShowDialog(
       GTK_PRINT_CAPABILITY_GENERATE_PDF | GTK_PRINT_CAPABILITY_PAGE_SET |
       GTK_PRINT_CAPABILITY_COPIES | GTK_PRINT_CAPABILITY_COLLATE |
       GTK_PRINT_CAPABILITY_REVERSE);
-  gtk_print_unix_dialog_set_manual_capabilities(GTK_PRINT_UNIX_DIALOG(dialog_),
-                                                cap);
-  gtk_print_unix_dialog_set_embed_page_setup(GTK_PRINT_UNIX_DIALOG(dialog_),
-                                             TRUE);
-  gtk_print_unix_dialog_set_support_selection(GTK_PRINT_UNIX_DIALOG(dialog_),
-                                              TRUE);
-  gtk_print_unix_dialog_set_has_selection(GTK_PRINT_UNIX_DIALOG(dialog_),
+  gtk_print_unix_dialog_set_manual_capabilities(
+      GTK_PRINT_UNIX_DIALOG(dialog_.get()), cap);
+  gtk_print_unix_dialog_set_embed_page_setup(
+      GTK_PRINT_UNIX_DIALOG(dialog_.get()), TRUE);
+  gtk_print_unix_dialog_set_support_selection(
+      GTK_PRINT_UNIX_DIALOG(dialog_.get()), TRUE);
+  gtk_print_unix_dialog_set_has_selection(GTK_PRINT_UNIX_DIALOG(dialog_.get()),
                                           has_selection);
-  gtk_print_unix_dialog_set_settings(GTK_PRINT_UNIX_DIALOG(dialog_),
+  gtk_print_unix_dialog_set_settings(GTK_PRINT_UNIX_DIALOG(dialog_.get()),
                                      gtk_settings_);
   // Unretained is safe since we own `signal_`.
   signal_ = ScopedGSignal(
@@ -451,7 +451,7 @@ void PrintDialogGtk::ShowDialog(
       base::BindRepeating(&PrintDialogGtk::OnResponse, base::Unretained(this)));
   gtk_widget_show(dialog_);
 
-  gtk::GtkUi::GetPlatform()->ShowGtkWindow(GTK_WINDOW(dialog_));
+  gtk::GtkUi::GetPlatform()->ShowGtkWindow(GTK_WINDOW(dialog_.get()));
 }
 
 void PrintDialogGtk::PrintDocument(const printing::MetafilePlayer& metafile,
@@ -518,17 +518,17 @@ void PrintDialogGtk::OnResponse(GtkWidget* dialog, int response_id) {
       if (gtk_settings_) {
         g_object_unref(gtk_settings_.ExtractAsDangling());
       }
-      gtk_settings_ =
-          gtk_print_unix_dialog_get_settings(GTK_PRINT_UNIX_DIALOG(dialog_));
+      gtk_settings_ = gtk_print_unix_dialog_get_settings(
+          GTK_PRINT_UNIX_DIALOG(dialog_.get()));
 
       printer_ = WrapGObject(gtk_print_unix_dialog_get_selected_printer(
-          GTK_PRINT_UNIX_DIALOG(dialog_)));
+          GTK_PRINT_UNIX_DIALOG(dialog_.get())));
 
       if (page_setup_) {
         g_object_unref(page_setup_.ExtractAsDangling());
       }
-      page_setup_ =
-          gtk_print_unix_dialog_get_page_setup(GTK_PRINT_UNIX_DIALOG(dialog_));
+      page_setup_ = gtk_print_unix_dialog_get_page_setup(
+          GTK_PRINT_UNIX_DIALOG(dialog_.get()));
       g_object_ref(page_setup_);
 
       // Handle page ranges.

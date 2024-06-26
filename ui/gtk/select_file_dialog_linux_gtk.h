@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/glib/scoped_gsignal.h"
 #include "ui/gtk/gtk_util.h"
 #include "ui/shell_dialogs/select_file_dialog_linux.h"
@@ -141,9 +142,7 @@ class SelectFileDialogLinuxGtk : public ui::SelectFileDialogLinux,
 
   // Only used on GTK3 since GTK4 provides its own preview.
   // The GtkImage widget for showing previews of selected images.
-  // This field is not a raw_ptr<> because of a static_cast not related by
-  // inheritance.
-  RAW_PTR_EXCLUSION GtkWidget* preview_ = nullptr;
+  raw_ptr<GtkWidget> preview_ = nullptr;
 
   base::flat_map<GtkWidget*, DialogState> dialogs_;
 };

@@ -12,7 +12,6 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "remoting/base/string_resources.h"
@@ -48,10 +47,8 @@ class DisconnectWindowGtk : public HostWindow {
   // Used to disconnect the client session.
   base::WeakPtr<ClientSessionControl> client_session_control_;
 
-  // These fields are not a raw_ptr<> because of a static_cast not related by
-  // inheritance.
-  RAW_PTR_EXCLUSION GtkWidget* disconnect_window_;
-  RAW_PTR_EXCLUSION GtkWidget* message_;
+  raw_ptr<GtkWidget> disconnect_window_;
+  raw_ptr<GtkWidget> message_;
   raw_ptr<GtkWidget> button_;
 
   // Used to distinguish resize events from other types of "configure-event"
@@ -157,7 +154,7 @@ void DisconnectWindowGtk::Start(
 
   // Create the window.
   disconnect_window_ = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  GtkWindow* window = GTK_WINDOW(disconnect_window_);
+  GtkWindow* window = GTK_WINDOW(disconnect_window_.get());
 
   auto connect = [&](auto* sender, const char* detailed_signal, auto receiver) {
     // Unretained() is safe since DisconnectWindowGtk will own the
@@ -167,7 +164,8 @@ void DisconnectWindowGtk::Start(
         base::BindRepeating(receiver, base::Unretained(this)));
   };
 
-  connect(disconnect_window_, "delete-event", &DisconnectWindowGtk::OnDelete);
+  connect(disconnect_window_.get(), "delete-event",
+          &DisconnectWindowGtk::OnDelete);
   gtk_window_set_title(window,
                        l10n_util::GetStringUTF8(IDS_PRODUCT_NAME).c_str());
   gtk_window_set_resizable(window, FALSE);
@@ -188,7 +186,7 @@ void DisconnectWindowGtk::Start(
 #if !GTK_CHECK_VERSION(3, 90, 0)
   gtk_widget_set_app_paintable(disconnect_window_, TRUE);
 #endif
-  connect(disconnect_window_, "draw", &DisconnectWindowGtk::OnDraw);
+  connect(disconnect_window_.get(), "draw", &DisconnectWindowGtk::OnDraw);
 
   // Handle window resizing, to regenerate the background pixmap and window
   // shape bitmap.  The stored width & height need to be initialized here
@@ -196,14 +194,14 @@ void DisconnectWindowGtk::Start(
   // window would be remembered, preventing the generation of bitmaps for the
   // new window).
   current_height_ = current_width_ = 0;
-  connect(disconnect_window_, "configure-event",
+  connect(disconnect_window_.get(), "configure-event",
           &DisconnectWindowGtk::OnConfigure);
 
   // Handle mouse events to allow the user to drag the window around.
 #if !GTK_CHECK_VERSION(3, 90, 0)
   gtk_widget_set_events(disconnect_window_, GDK_BUTTON_PRESS_MASK);
 #endif
-  connect(disconnect_window_, "button-press-event",
+  connect(disconnect_window_.get(), "button-press-event",
           &DisconnectWindowGtk::OnButtonPress);
 
   // All magic numbers taken from screen shots provided by UX.
@@ -251,7 +249,7 @@ void DisconnectWindowGtk::Start(
   PangoAttrList* attributes = pango_attr_list_new();
   PangoAttribute* text_color = pango_attr_foreground_new(0, 0, 0);
   pango_attr_list_insert(attributes, text_color);
-  gtk_label_set_attributes(GTK_LABEL(message_), attributes);
+  gtk_label_set_attributes(GTK_LABEL(message_.get()), attributes);
   pango_attr_list_unref(attributes);
 
 #if !GTK_CHECK_VERSION(3, 90, 0)
@@ -271,7 +269,7 @@ void DisconnectWindowGtk::Start(
   std::u16string username =
       base::UTF8ToUTF16(client_jid.substr(0, client_jid.find('/')));
   gtk_label_set_text(
-      GTK_LABEL(message_),
+      GTK_LABEL(message_.get()),
       l10n_util::GetStringFUTF8(IDS_MESSAGE_SHARED, username).c_str());
   gtk_window_present(window);
 }
@@ -321,8 +319,9 @@ gboolean DisconnectWindowGtk::OnButtonPress(GtkWidget* widget,
                                             GdkEventButton* event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  gtk_window_begin_move_drag(GTK_WINDOW(disconnect_window_), event->button,
-                             event->x_root, event->y_root, event->time);
+  gtk_window_begin_move_drag(GTK_WINDOW(disconnect_window_.get()),
+                             event->button, event->x_root, event->y_root,
+                             event->time);
   return FALSE;
 }
 

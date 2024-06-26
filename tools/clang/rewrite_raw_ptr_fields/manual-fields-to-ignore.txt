@@ -33,18 +33,6 @@ views::test::(anonymous namespace)::UIControlsDesktopX11::x_display_
 viz::SkiaOutputDeviceX11::display_
 x11::Connection::display_
 
-# Populated manually - static_cast not related by inheritance.
-gtk::GtkKeyBindingsHandler::fake_window_
-gtk::GtkKeyBindingsHandler::handler_
-gtk::SelectFileDialogLinuxGtk::preview_
-remoting::(anonymous namespace)::DisconnectWindowGtk::disconnect_window_
-remoting::(anonymous namespace)::DisconnectWindowGtk::message_
-remoting::(anonymous namespace)::GtkFileChooserOnUiThread::file_dialog_
-remoting::(anonymous namespace)::It2MeConfirmationDialogLinux::confirmation_window_
-remoting::ContinueWindowGtk::continue_window_
-ui::AXPlatformNodeAuraLinux::atk_hyperlink_
-PrintDialogGtk::dialog_
-
 # Populated manually, because of in-out-arg usage.
 blink::PaintController::IdAsHashKey::client
 ui::AXPlatformNodeAuraLinux::atk_object_

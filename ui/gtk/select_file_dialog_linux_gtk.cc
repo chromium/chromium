@@ -665,7 +665,7 @@ void SelectFileDialogLinuxGtk::OnUpdatePreview(GtkWidget* chooser) {
                                                        kPreviewHeight, nullptr);
   g_free(filename);
   if (pixbuf) {
-    gtk_image_set_from_pixbuf(GTK_IMAGE(preview_), pixbuf);
+    gtk_image_set_from_pixbuf(GTK_IMAGE(preview_.get()), pixbuf);
     g_object_unref(pixbuf);
   }
   gtk_file_chooser_set_preview_widget_active(GTK_FILE_CHOOSER(chooser),
