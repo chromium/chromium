@@ -67,7 +67,6 @@
   E(kActionSavePage, IDC_SAVE_PAGE) \
   E(kActionEmailPageLocation, IDC_EMAIL_PAGE_LOCATION) \
   E(kActionBasicPrint, IDC_BASIC_PRINT) \
-  E(kActionSaveCreditCardForPage, IDC_SAVE_CREDIT_CARD_FOR_PAGE) \
   E(kActionManagePasswordsForPage, IDC_MANAGE_PASSWORDS_FOR_PAGE) \
   E(kActionWindowMuteSite, IDC_WINDOW_MUTE_SITE) \
   E(kActionWindowPinTab, IDC_WINDOW_PIN_TAB) \
@@ -88,7 +87,6 @@
   E(kActionVirtualCardEnroll, IDC_VIRTUAL_CARD_ENROLL) \
   E(kActionFollow, IDC_FOLLOW) \
   E(kActionUnfollow, IDC_UNFOLLOW) \
-  E(kActionSaveIbanForPage, IDC_SAVE_IBAN_FOR_PAGE) \
   E(kActionAutofillMandatoryReauth, IDC_AUTOFILL_MANDATORY_REAUTH) \
   E(kActionProfileMenuInAppMenu, IDC_PROFILE_MENU_IN_APP_MENU) \
   E(kActionPasswordsAndAutofillMenu, IDC_PASSWORDS_AND_AUTOFILL_MENU) \
@@ -575,6 +573,9 @@
   E(kActionTaskManager, IDC_TASK_MANAGER) \
   E(kActionDevTools, IDC_DEV_TOOLS) \
   E(kActionShowChromeLabs, IDC_SHOW_CHROME_LABS) \
+  E(kActionSaveCreditCardForPage, IDC_SAVE_CREDIT_CARD_FOR_PAGE) \
+  E(kActionSaveIbanForPage, IDC_SAVE_IBAN_FOR_PAGE) \
+  E(kActionShowPaymentsBubbleOrPage) \
 
 #define CHROME_ACTION_IDS \
     CHROME_COMMON_ACTION_IDS \

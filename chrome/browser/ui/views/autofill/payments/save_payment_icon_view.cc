@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -32,13 +33,13 @@ SavePaymentIconView::SavePaymentIconView(
     IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
     PageActionIconView::Delegate* page_action_icon_delegate,
     int command_id)
-    : PageActionIconView(command_updater,
-                         command_id,
-                         icon_label_bubble_delegate,
-                         page_action_icon_delegate,
-                         command_id == IDC_SAVE_CREDIT_CARD_FOR_PAGE
-                             ? "SaveCard"
-                             : "SaveIban") {
+    : PageActionIconView(
+          command_updater,
+          command_id,
+          icon_label_bubble_delegate,
+          page_action_icon_delegate,
+          command_id == IDC_SAVE_CREDIT_CARD_FOR_PAGE ? "SaveCard" : "SaveIban",
+          kActionShowPaymentsBubbleOrPage) {
   if (command_id == IDC_SAVE_CREDIT_CARD_FOR_PAGE) {
     SetID(VIEW_ID_SAVE_CREDIT_CARD_BUTTON);
   } else {

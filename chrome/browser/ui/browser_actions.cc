@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/autofill/address_bubbles_icon_controller.h"
+#include "chrome/browser/ui/autofill/autofill_bubble_base.h"
+#include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
@@ -368,6 +370,34 @@ void BrowserActions::InitializeBrowserActions() {
           IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
           IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
           vector_icons::kLocationOnChromeRefreshIcon)
+          .SetEnabled(!is_guest_session)
+          .Build());
+
+  root_action_item_->AddChild(
+      ChromeMenuAction(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                auto hide_bubble = [&browser](int command_id) -> bool {
+                  auto* controller = autofill::SavePaymentIconController::Get(
+                      browser->tab_strip_model()->GetActiveWebContents(),
+                      command_id);
+                  if (controller && controller->GetPaymentBubbleView()) {
+                    controller->GetPaymentBubbleView()->Hide();
+                    return true;
+                  }
+                  return false;
+                };
+                const bool bubble_hidden =
+                    hide_bubble(IDC_SAVE_CREDIT_CARD_FOR_PAGE) ||
+                    hide_bubble(IDC_SAVE_IBAN_FOR_PAGE);
+                if (!bubble_hidden) {
+                  chrome::ShowPaymentMethods(browser);
+                }
+              },
+              base::Unretained(browser)),
+          kActionShowPaymentsBubbleOrPage, IDS_PAYMENT_METHOD_SUBMENU_OPTION,
+          IDS_PAYMENT_METHOD_SUBMENU_OPTION, kCreditCardChromeRefreshIcon)
           .SetEnabled(!is_guest_session)
           .Build());
 }

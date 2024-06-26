@@ -269,6 +269,8 @@ std::string ToolbarController::GetActionNameFromElementIdentifier(
           {kActionSendTabToSelf, "PinnedSendTabToSelfButton"},
           {kActionShowAddressesBubbleOrPage,
            "PinnedShowAddressesBubbleOrPageButton"},
+          {kActionShowPaymentsBubbleOrPage,
+           "PinnedShowPaymentsBubbleOrPageButton"},
           {kActionShowTranslate, "PinnedShowTranslateButton"},
           {kActionSidePanelShowBookmarks, "PinnedShowBookmarkSidePanelButton"},
           {kActionSidePanelShowReadAnything,

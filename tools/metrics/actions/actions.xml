@@ -44373,6 +44373,8 @@ should be able to be added at any place in this file.
       label="Pinned show bookmark side panel button"/>
   <suffix name="PinnedShowHistorySidePanelButton"
       label="Pinned show history side panel button"/>
+  <suffix name="PinnedShowPaymentsBubbleOrPageButton"
+      label="Pinned show payments bubble or page button"/>
   <suffix name="PinnedShowReadAnythingSidePanelButton"
       label="Pinned show read anything side panel button"/>
   <suffix name="PinnedShowReadingListSidePanelButton"
