@@ -471,21 +471,8 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
     wgpu::SharedFenceVkSemaphoreSyncFDExportInfo sync_fd_export_info;
     export_info.nextInChain = &sync_fd_export_info;
 
-    // If Dawn read the texture, ensure that its fence is added to the set of
-    // fences that the ScopedAHB uses to determine when the underlying buffer
-    // can be reused.
-    // If Dawn *didn't* read the texture during the access, it will return 2
-    // fences: the fence that this instance gave it in BeginAccess() (which Dawn
-    // didn't consume), and a fence that Dawn created in EndAccess(). In that
-    // case there is no need to add either fence to the ScopedAHB's set of
-    // fences that determine when the underlying buffer can be reused. Any other
-    // consumer of the underlying buffer will get the buffer in a new ScopedAHB
-    // via StreamTextureSII, and that ScopedAHB would have its own copy of the
-    // fence that determines when the buffer can be read.
-    // TODO(crbug.com/dawn/2454): If we want to preserve this optimization after
-    // Dawn returns a single fence in this case, we could save the initial fence
-    // and do comparison on it here.
-    if (end_access_desc.fenceCount == 1u) {
+    if (end_access_desc.fenceCount) {
+      CHECK(end_access_desc.fenceCount == 1u);
       end_access_desc.fences[0].ExportInfo(&export_info);
 
       // Dawn will close its FD when `end_access_desc` falls out of scope, and
