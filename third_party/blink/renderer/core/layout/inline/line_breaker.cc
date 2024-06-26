@@ -2966,7 +2966,8 @@ void LineBreaker::HandleAtomicInline(const InlineItem& item,
 
   const LayoutUnit remaining_width = RemainingAvailableWidth();
   bool ignore_overflow_if_negative_margin = false;
-  if (state_ == LineBreakState::kContinue && remaining_width < 0) {
+  if (state_ == LineBreakState::kContinue && remaining_width < 0 &&
+      (!parent_breaker_ || auto_wrap_)) {
     const unsigned item_index = current_.item_index;
     DCHECK_EQ(item_index, static_cast<unsigned>(&item - Items().begin()));
     HandleOverflow(line_info);
@@ -3452,6 +3453,9 @@ LineInfo LineBreaker::CreateSubLineInfo(
   // available_width_.
   sub_line_breaker.OverrideAvailableWidth(limit);
   sub_line_breaker.NextLine(&sub_line_info);
+  if (disallow_auto_wrap) {
+    CHECK(sub_line_breaker.IsAtEnd());
+  }
   return sub_line_info;
 }
 

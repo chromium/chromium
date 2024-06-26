@@ -301,7 +301,10 @@ class CORE_EXPORT LineBreaker {
   LayoutUnit RemainingAvailableWidth() const {
     return AvailableWidthToFit() - position_;
   }
-  bool CanFitOnLine() const { return position_ <= AvailableWidthToFit(); }
+  bool CanFitOnLine() const {
+    return (parent_breaker_ && !auto_wrap_) ||
+           position_ <= AvailableWidthToFit();
+  }
   void UpdateAvailableWidth();
 
   // True if the current line is hyphenated.
