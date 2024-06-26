@@ -447,6 +447,11 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         mTab.didChangeCloseSignalInterceptStatus();
     }
 
+    @Override
+    public boolean isTrustedWebActivity(WebContents webContents) {
+        return mDelegate.isTrustedWebActivity(webContents);
+    }
+
     @NativeMethods
     interface Natives {
         void onRendererUnresponsive(WebContents webContents);

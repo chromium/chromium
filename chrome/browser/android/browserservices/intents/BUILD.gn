@@ -25,6 +25,7 @@ android_library("java") {
     "//chrome/browser/android/content:java",
     "//chrome/browser/android/intents:java",
     "//chrome/browser/flags:java",
+    "//components/embedder_support/android:util_java",
     "//components/webapps/browser/android:java",
     "//content/public/android:content_main_dex_java",
     "//services/device/public/mojom:mojom_java",

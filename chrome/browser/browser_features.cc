@@ -15,6 +15,14 @@
 
 namespace features {
 
+#if BUILDFLAG(IS_ANDROID)
+// Kill switch for allowing TWAs to autoplay with sound without requiring a user
+// gesture to unlock, for parity with PWAs.
+BASE_FEATURE(kAllowUnmutedAutoplayForTWA,
+             "AllowUnmutedAutoplayForTWA",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // This is used to enable an experiment for modifying confidence cutoff of
 // prerender and preconnect for autocomplete action predictor.
 BASE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff,

@@ -507,6 +507,11 @@ void TabAndroid::SetDevToolsAgentHost(
   devtools_host_ = std::move(host);
 }
 
+bool TabAndroid::IsTrustedWebActivity() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_TabImpl_isTrustedWebActivity(env, weak_java_tab_.get(env));
+}
+
 base::android::ScopedJavaLocalRef<jobject> JNI_TabImpl_FromWebContents(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents) {

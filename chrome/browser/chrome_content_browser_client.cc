@@ -994,7 +994,16 @@ blink::mojom::AutoplayPolicy GetAutoplayPolicyForWebContents(
     // allow autoplay within the iframe. Only allow a nesting of single depth.
     result = blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#else   // !BUILDFLAG(IS_ANDROID)
+  // TWAs don't require a user gesture for unmuted autoplay.
+  if (base::FeatureList::IsEnabled(features::kAllowUnmutedAutoplayForTWA)) {
+    if (auto* delegate = TabAndroid::FromWebContents(web_contents)) {
+      if (delegate->IsTrustedWebActivity()) {
+        result = blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
+      }
+    }
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   return result;
 }
 

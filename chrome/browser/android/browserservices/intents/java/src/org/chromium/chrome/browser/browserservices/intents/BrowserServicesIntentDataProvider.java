@@ -29,12 +29,14 @@ import androidx.browser.trusted.sharing.ShareData;
 import androidx.browser.trusted.sharing.ShareTarget;
 
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.device.mojom.ScreenOrientationLockType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /** Base class for model classes which parse incoming intent for customization data. */
 public abstract class BrowserServicesIntentDataProvider {
@@ -421,8 +423,17 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
-     * @return ISO 639 code of target language the page should be translated to.
-     * This method requires native.
+     * @return All origins associated with a TrustedWebActivity client app, including the initially
+     *     loaded origin.
+     */
+    @Nullable
+    public Set<Origin> getAllTrustedWebActivityOrigins() {
+        return null;
+    }
+
+    /**
+     * @return ISO 639 code of target language the page should be translated to. This method
+     *     requires native.
      */
     public @Nullable String getTranslateLanguage() {
         return null;

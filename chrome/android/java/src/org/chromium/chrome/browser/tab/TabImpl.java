@@ -2237,6 +2237,13 @@ class TabImpl implements Tab {
         }
     }
 
+    @CalledByNative
+    @Override
+    public boolean isTrustedWebActivity() {
+        if (getWebContents() == null) return false;
+        return mWebContentsDelegate.isTrustedWebActivity(getWebContents());
+    }
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {

@@ -410,4 +410,9 @@ public interface Tab extends TabLifecycle {
      *     page transitions.
      */
     boolean isDisplayingBackForwardAnimation();
+
+    /**
+     * @return True if we have a WebContents that's navigated to a trusted origin of a TWA.
+     */
+    boolean isTrustedWebActivity();
 }

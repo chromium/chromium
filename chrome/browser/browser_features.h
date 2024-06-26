@@ -18,6 +18,9 @@ namespace features {
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kAllowUnmutedAutoplayForTWA);
+#endif  // BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff);
 BASE_DECLARE_FEATURE(kBookmarksTreeView);
 BASE_DECLARE_FEATURE(kBookmarkTriggerForPrerender2);

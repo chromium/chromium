@@ -58,11 +58,13 @@ import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
+import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalIntentsFeatures;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
@@ -142,6 +144,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         private final Activity mActivity;
         private final @ActivityType int mActivityType;
         private final @Nullable String mWebApkScopeUrl;
+        private final @Nullable BrowserServicesIntentDataProvider mIntentDataProvider;
         private final @DisplayMode.EnumType int mDisplayMode;
         private final MultiWindowUtils mMultiWindowUtils;
         private final boolean mShouldEnableEmbeddedMediaExperience;
@@ -153,6 +156,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 Activity activity,
                 @ActivityType int activityType,
                 @Nullable String webApkScopeUrl,
+                @Nullable BrowserServicesIntentDataProvider intentDataProvider,
                 @DisplayMode.EnumType int displayMode,
                 MultiWindowUtils multiWindowUtils,
                 boolean shouldEnableEmbeddedMediaExperience,
@@ -178,6 +182,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             mActivity = activity;
             mActivityType = activityType;
             mWebApkScopeUrl = webApkScopeUrl;
+            mIntentDataProvider = intentDataProvider;
             mDisplayMode = displayMode;
             mMultiWindowUtils = multiWindowUtils;
             mShouldEnableEmbeddedMediaExperience = shouldEnableEmbeddedMediaExperience;
@@ -198,6 +203,21 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         @Override
         protected boolean shouldEnableEmbeddedMediaExperience() {
             return mShouldEnableEmbeddedMediaExperience;
+        }
+
+        @Override
+        public boolean isTrustedWebActivity(WebContents webContents) {
+            // Note that `shouldIgnore` simply checks if `webContents` has an origin that the TWA
+            // considers to be trusted.  This is a weaker check than `verify()`, but is also
+            // synchronous.  For now, this is a good trade since we're only used for deciding if
+            // unmuted autoplay should be allowed without a user gesture.
+            GURL url = webContents.getLastCommittedUrl();
+            return url != null
+                    && mIntentDataProvider != null
+                    && mIntentDataProvider.isTrustedWebActivity()
+                    && mIntentDataProvider
+                            .getAllTrustedWebActivityOrigins()
+                            .contains(Origin.create(url.getSpec()));
         }
 
         @Override
@@ -232,6 +252,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     private final boolean mIsOpenedByChrome;
     private final @ActivityType int mActivityType;
     @Nullable private final String mWebApkScopeUrl;
+    private final @Nullable BrowserServicesIntentDataProvider mIntentDataProvider;
     private final @DisplayMode.EnumType int mDisplayMode;
     private final boolean mShouldEnableEmbeddedMediaExperience;
     private final BrowserControlsVisibilityDelegate mBrowserStateVisibilityDelegate;
@@ -263,6 +284,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
      * @param isOpenedByChrome Whether the CustomTab was originally opened by Chrome.
      * @param webApkScopeUrl The URL of the WebAPK web manifest scope. Null if the delegate is not
      *     for a WebAPK.
+     * @param intentDataProvider Used to verify if an origin is trusted for TWAs.
      * @param displayMode The activity's display mode.
      * @param shouldEnableEmbeddedMediaExperience Whether embedded media experience is enabled.
      * @param visibilityDelegate The delegate that handles browser control visibility associated
@@ -291,6 +313,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             boolean shouldHideBrowserControls,
             boolean isOpenedByChrome,
             @Nullable String webApkScopeUrl,
+            @Nullable BrowserServicesIntentDataProvider intentDataProvider,
             @DisplayMode.EnumType int displayMode,
             boolean shouldEnableEmbeddedMediaExperience,
             BrowserControlsVisibilityDelegate visibilityDelegate,
@@ -315,6 +338,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         mShouldHideBrowserControls = shouldHideBrowserControls;
         mIsOpenedByChrome = isOpenedByChrome;
         mWebApkScopeUrl = webApkScopeUrl;
+        mIntentDataProvider = intentDataProvider;
         mDisplayMode = displayMode;
         mShouldEnableEmbeddedMediaExperience = shouldEnableEmbeddedMediaExperience;
         mBrowserStateVisibilityDelegate = visibilityDelegate;
@@ -363,6 +387,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 intentDataProvider.shouldEnableUrlBarHiding(),
                 intentDataProvider.isOpenedByChrome(),
                 getWebApkScopeUrl(intentDataProvider),
+                intentDataProvider,
                 getDisplayMode(intentDataProvider),
                 intentDataProvider.shouldEnableEmbeddedMediaExperience(),
                 visibilityDelegate,
@@ -394,6 +419,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 null,
                 false,
                 false,
+                null,
                 null,
                 DisplayMode.BROWSER,
                 false,
@@ -449,6 +475,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                         mActivity,
                         mActivityType,
                         mWebApkScopeUrl,
+                        mIntentDataProvider,
                         mDisplayMode,
                         mMultiWindowUtils,
                         mShouldEnableEmbeddedMediaExperience,

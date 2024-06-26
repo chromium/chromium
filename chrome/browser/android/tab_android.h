@@ -136,6 +136,8 @@ class TabAndroid : public TabAndroidDataProvider,
   bool IsCustomTab();
   bool IsHidden();
 
+  bool IsTrustedWebActivity();
+
   // Observers -----------------------------------------------------------------
 
   // Adds/Removes an Observer.

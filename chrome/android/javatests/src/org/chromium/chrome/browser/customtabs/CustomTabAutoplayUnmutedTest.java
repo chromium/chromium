@@ -62,7 +62,9 @@ public final class CustomTabAutoplayUnmutedTest {
                 mActivityType, mActivityTestRule, testPageUrl);
         WebContents webContents = mActivityTestRule.getActivity().getActivityTab().getWebContents();
         String result = JavaScriptUtils.runJavascriptWithAsyncResult(webContents, "tryPlayback()");
-        boolean expectUnmutedAutoplay = (mActivityType == ActivityType.WEB_APK);
+        boolean expectUnmutedAutoplay =
+                (mActivityType == ActivityType.WEB_APK
+                        || mActivityType == ActivityType.TRUSTED_WEB_ACTIVITY);
         assertEquals(expectUnmutedAutoplay, result.equals("true"));
     }
 }

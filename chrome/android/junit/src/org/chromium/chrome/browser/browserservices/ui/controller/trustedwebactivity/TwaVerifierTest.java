@@ -36,6 +36,7 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 
 import java.util.Collections;
+import java.util.HashSet;
 
 /** Tests for {@link TwaVerifier}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -60,8 +61,10 @@ public class TwaVerifierTest {
         MockitoAnnotations.initMocks(this);
 
         when(mIntentDataProvider.getUrlToLoad()).thenReturn(INITIAL_URL);
-        when(mIntentDataProvider.getTrustedWebActivityAdditionalOrigins())
-                .thenReturn(Collections.singletonList(ADDITIONAL_ORIGIN));
+        HashSet<Origin> trustedOrigins = new HashSet<Origin>();
+        Collections.addAll(
+                trustedOrigins, Origin.create(INITIAL_URL), Origin.create(ADDITIONAL_ORIGIN));
+        when(mIntentDataProvider.getAllTrustedWebActivityOrigins()).thenReturn(trustedOrigins);
 
         when(mOriginVerifierFactory.create(anyString(), anyInt(), any(), any()))
                 .thenReturn(mOriginVerifier);

@@ -21,7 +21,6 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -128,22 +127,12 @@ public class TwaVerifier implements Verifier, DestroyObserver {
         // mIntentDataProvider.getUrlToLoad requires native to be loaded.
 
         if (mPendingOrigins == null) {
-            mPendingOrigins = new HashSet<>();
-
-            Origin initialOrigin = Origin.create(mIntentDataProvider.getUrlToLoad());
-            if (initialOrigin != null) mPendingOrigins.add(initialOrigin);
-
-            List<String> additionalOrigins =
-                    mIntentDataProvider.getTrustedWebActivityAdditionalOrigins();
-
-            if (additionalOrigins != null) {
-                for (String originAsString : additionalOrigins) {
-                    Origin origin = Origin.create(originAsString);
-                    if (origin == null) continue;
-
-                    mPendingOrigins.add(origin);
-                }
-            }
+            Set<Origin> trustedOrigins = mIntentDataProvider.getAllTrustedWebActivityOrigins();
+            // This should not be null, since there should be at least one trusted origin for the
+            // TWA's url.
+            assert (trustedOrigins != null && trustedOrigins.size() > 0);
+            // Make a copy of the list since we modify it.
+            mPendingOrigins = new HashSet(trustedOrigins);
         }
 
         return mPendingOrigins;
