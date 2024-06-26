@@ -255,13 +255,13 @@ std::tuple<v8::ScriptCompiler::CompileOptions,
            v8::ScriptCompiler::NoCacheReason>
 V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions cache_options,
                                const ClassicScript& classic_script,
-                               bool might_generate_compile_hints,
-                               bool can_use_compile_hints) {
-  return GetCompileOptions(cache_options, classic_script.CacheHandler(),
-                           classic_script.SourceText().length(),
-                           classic_script.SourceLocationType(),
-                           classic_script.SourceUrl(),
-                           might_generate_compile_hints, can_use_compile_hints);
+                               bool might_generate_crowdsourced_compile_hints,
+                               bool can_use_crowdsourced_compile_hints) {
+  return GetCompileOptions(
+      cache_options, classic_script.CacheHandler(),
+      classic_script.SourceText().length(), classic_script.SourceLocationType(),
+      classic_script.SourceUrl(), might_generate_crowdsourced_compile_hints,
+      can_use_crowdsourced_compile_hints);
 }
 
 std::tuple<v8::ScriptCompiler::CompileOptions,
@@ -272,14 +272,14 @@ V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions cache_options,
                                size_t source_text_length,
                                ScriptSourceLocationType source_location_type,
                                const KURL& url,
-                               bool might_generate_compile_hints,
-                               bool can_use_compile_hints) {
+                               bool might_generate_crowdsourced_compile_hints,
+                               bool can_use_crowdsourced_compile_hints) {
   static const int kMinimalCodeLength = 1024;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
 
   auto no_code_cache_compile_options = v8::ScriptCompiler::kNoCompileOptions;
 
-  if (might_generate_compile_hints && url.ProtocolIsInHTTPFamily()) {
+  if (might_generate_crowdsourced_compile_hints) {
     DCHECK(base::FeatureList::IsEnabled(features::kProduceCompileHints2));
 
     // If we end up compiling the script without forced eager compilation, we'll
@@ -297,7 +297,7 @@ V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions cache_options,
     // cached scripts (especially if they've been eagerly compiled by a
     // ServiceWorker) and omitting cached scripts would deteriorate the data.
     no_code_cache_compile_options = v8::ScriptCompiler::kProduceCompileHints;
-  } else if (url.ProtocolIsInHTTPFamily() && can_use_compile_hints) {
+  } else if (can_use_crowdsourced_compile_hints) {
     // This doesn't need to be gated behind a runtime flag, because there won't
     // be any data unless the v8_compile_hints::kConsumeCompileHints
     // flag is on.
@@ -359,9 +359,10 @@ V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions cache_options,
   if (cache_handler->IsServedFromCacheStorage())
     cache_options = mojom::blink::V8CacheOptions::kCodeWithoutHeatCheck;
 
-  // Call FeatureList::IsEnabled only once.
-  static bool local_compile_hints_enabled =
-      base::FeatureList::IsEnabled(features::kLocalCompileHints);
+  bool local_compile_hints_enabled =
+      base::FeatureList::IsEnabled(features::kLocalCompileHints) &&
+      !might_generate_crowdsourced_compile_hints &&
+      !can_use_crowdsourced_compile_hints;
 
   switch (cache_options) {
     case mojom::blink::V8CacheOptions::kDefault:

@@ -147,6 +147,45 @@ TEST_F(CompileHintsForStreamingTest, ConsumeCrowdsourcedHint) {
   EXPECT_TRUE(compile_hints_for_streaming->GetCompileHintCallbackData());
 }
 
+TEST_F(CompileHintsForStreamingTest, PreferCrowdsourcedHints) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+  Page* page = web_view_helper.GetWebView()->GetPage();
+
+  auto* crowdsourced_compile_hints_producer =
+      &page->GetV8CrowdsourcedCompileHintsProducer();
+  auto* crowdsourced_compile_hints_consumer =
+      &page->GetV8CrowdsourcedCompileHintsConsumer();
+  Vector<int64_t> dummy_data(kBloomFilterInt32Count / 2);
+  crowdsourced_compile_hints_consumer->SetData(dummy_data.data(),
+                                               dummy_data.size());
+
+  const uint32_t kCacheTagCompileHints = 2;
+  const uint64_t kDummyTag = 1;
+  Vector<uint8_t> local_dummy_data(100);
+  scoped_refptr<CachedMetadata> metadata =
+      CachedMetadata::Create(kCacheTagCompileHints, local_dummy_data.data(),
+                             local_dummy_data.size(), kDummyTag);
+
+  base::HistogramTester histogram_tester;
+  auto builder = CompileHintsForStreaming::Builder(
+      crowdsourced_compile_hints_producer, crowdsourced_compile_hints_consumer,
+      KURL("https://example.com/"));
+
+  auto compile_hints_for_streaming = std::move(builder).Build(metadata);
+
+  // We prefer crowdsourced hints over local hints, if both are available.
+  histogram_tester.ExpectUniqueSample(
+      kStatusHistogram, Status::kConsumeCrowdsourcedCompileHintsStreaming, 1);
+
+  ASSERT_TRUE(compile_hints_for_streaming);
+  EXPECT_EQ(compile_hints_for_streaming->compile_options(),
+            v8::ScriptCompiler::kConsumeCompileHints);
+  EXPECT_EQ(compile_hints_for_streaming->GetCompileHintCallback(),
+            &V8CrowdsourcedCompileHintsConsumer::CompileHintCallback);
+  EXPECT_TRUE(compile_hints_for_streaming->GetCompileHintCallbackData());
+}
+
 TEST_F(CompileHintsForStreamingTest, ProduceCrowdsourcedHint) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kForceProduceCompileHints);

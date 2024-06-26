@@ -123,6 +123,7 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
     v8::ScriptOrigin origin,
     v8::ScriptCompiler::CompileOptions compile_options,
     v8::ScriptCompiler::NoCacheReason no_cache_reason,
+    bool can_use_crowdsourced_compile_hints,
     std::optional<inspector_compile_script_event::V8ConsumeCacheResult>*
         cache_result) {
   v8::Local<v8::String> code = V8String(isolate, classic_script.SourceText());
@@ -156,70 +157,77 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
     return script;
   }
 
-  static bool local_compile_hints =
-      base::FeatureList::IsEnabled(features::kLocalCompileHints);
-  static bool consume_crowdsourced_compile_hints =
-      base::FeatureList::IsEnabled(features::kConsumeCompileHints);
   switch (compile_options) {
     case v8::ScriptCompiler::kConsumeCompileHints: {
-      // For now, we can only consume local or crowdsourced compile hints, but
-      // not both at the same time.
-      // TODO(chromium:1495723): Enable consuming both at the same time.
-      if (local_compile_hints) {
+      // We can only consume local or crowdsourced compile hints, but
+      // not both at the same time. If the page has crowdsourced compile hints,
+      // we won't generate local compile hints, so won't ever have them.
+      // We'd only have both local and crowdsourced compile hints available in
+      // special cases, e.g., if crowdsourced compile hints were temporarily
+      // unavailable, we generated local compile hints, and during the next page
+      // load we have both available.
+
+      // TODO(40286622): Enable using crowdsourced compile hints and augmenting
+      // them with local compile hints. 1) Enable consuming compile hints and at
+      // the same time, producing compile hints for functions which were still
+      // lazy and 2) enable consuming both kind of compile hints at the same
+      // time.
+      if (can_use_crowdsourced_compile_hints) {
         base::UmaHistogramEnumeration(
             v8_compile_hints::kStatusHistogram,
             v8_compile_hints::Status::
-                kConsumeLocalCompileHintsClassicNonStreaming);
-        CachedMetadataHandler* cache_handler = classic_script.CacheHandler();
-        CHECK(cache_handler);
-        scoped_refptr<CachedMetadata> cached_metadata =
-            V8CodeCache::GetCachedMetadataForCompileHints(cache_handler);
-        v8_compile_hints::V8LocalCompileHintsConsumer
-            v8_local_compile_hints_consumer(cached_metadata.get());
-        if (v8_local_compile_hints_consumer.IsRejected()) {
-          cache_handler->ClearCachedMetadata(
-              ExecutionContext::GetCodeCacheHostFromContext(execution_context),
-              CachedMetadataHandler::kClearPersistentStorage);
-          // Compile without compile hints.
-          v8::ScriptCompiler::Source source(code, origin);
-          return v8::ScriptCompiler::Compile(
-              script_state->GetContext(), &source,
-              v8::ScriptCompiler::kNoCompileOptions, no_cache_reason);
-        }
+                kConsumeCrowdsourcedCompileHintsClassicNonStreaming);
+
+        // Based on how `can_use_crowdsourced_compile_hints` in CompileScript is
+        // computed, we must get a non-null LocalDOMWindow and LocalFrame here.
+        LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(execution_context);
+        CHECK(window);
+        LocalFrame* frame = window->GetFrame();
+        CHECK(frame);
+        Page* page = frame->GetPage();
+        CHECK(page);
+        // This ptr keeps the data alive during v8::ScriptCompiler::Compile.
+        std::unique_ptr<v8_compile_hints::V8CrowdsourcedCompileHintsConsumer::
+                            DataAndScriptNameHash>
+            compile_hint_data =
+                page->GetV8CrowdsourcedCompileHintsConsumer()
+                    .GetDataWithScriptNameHash(v8_compile_hints::ScriptNameHash(
+                        origin.ResourceName(), script_state->GetContext(),
+                        isolate));
         v8::ScriptCompiler::Source source(
             code, origin,
-            v8_compile_hints::V8LocalCompileHintsConsumer::GetCompileHint,
-            &v8_local_compile_hints_consumer);
+            &v8_compile_hints::V8CrowdsourcedCompileHintsConsumer::
+                CompileHintCallback,
+            compile_hint_data.get());
         return v8::ScriptCompiler::Compile(script_state->GetContext(), &source,
                                            compile_options, no_cache_reason);
       }
+      // No crowdsourced compile hints; compile with local compile hints.
+      CHECK(base::FeatureList::IsEnabled(features::kLocalCompileHints));
       base::UmaHistogramEnumeration(
           v8_compile_hints::kStatusHistogram,
           v8_compile_hints::Status::
-              kConsumeCrowdsourcedCompileHintsClassicNonStreaming);
-      CHECK(consume_crowdsourced_compile_hints);
-      // No local compile hints; compile with crowdsourced compile hints.
-      // Based on how `can_use_compile_hints` in CompileScript is computed, we
-      // must get a non-null LocalDOMWindow and LocalFrame here.
-      LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(execution_context);
-      CHECK(window);
-      LocalFrame* frame = window->GetFrame();
-      CHECK(frame);
-      Page* page = frame->GetPage();
-      CHECK(page);
-      // This ptr keeps the data alive during v8::ScriptCompiler::Compile.
-      std::unique_ptr<v8_compile_hints::V8CrowdsourcedCompileHintsConsumer::
-                          DataAndScriptNameHash>
-          compile_hint_data =
-              page->GetV8CrowdsourcedCompileHintsConsumer()
-                  .GetDataWithScriptNameHash(v8_compile_hints::ScriptNameHash(
-                      origin.ResourceName(), script_state->GetContext(),
-                      isolate));
+              kConsumeLocalCompileHintsClassicNonStreaming);
+      CachedMetadataHandler* cache_handler = classic_script.CacheHandler();
+      CHECK(cache_handler);
+      scoped_refptr<CachedMetadata> cached_metadata =
+          V8CodeCache::GetCachedMetadataForCompileHints(cache_handler);
+      v8_compile_hints::V8LocalCompileHintsConsumer
+          v8_local_compile_hints_consumer(cached_metadata.get());
+      if (v8_local_compile_hints_consumer.IsRejected()) {
+        cache_handler->ClearCachedMetadata(
+            ExecutionContext::GetCodeCacheHostFromContext(execution_context),
+            CachedMetadataHandler::kClearPersistentStorage);
+        // Compile without compile hints.
+        v8::ScriptCompiler::Source source(code, origin);
+        return v8::ScriptCompiler::Compile(
+            script_state->GetContext(), &source,
+            v8::ScriptCompiler::kNoCompileOptions, no_cache_reason);
+      }
       v8::ScriptCompiler::Source source(
           code, origin,
-          &v8_compile_hints::V8CrowdsourcedCompileHintsConsumer::
-              CompileHintCallback,
-          compile_hint_data.get());
+          v8_compile_hints::V8LocalCompileHintsConsumer::GetCompileHint,
+          &v8_local_compile_hints_consumer);
       return v8::ScriptCompiler::Compile(script_state->GetContext(), &source,
                                          compile_options, no_cache_reason);
     }
@@ -307,7 +315,8 @@ v8::MaybeLocal<v8::Script> V8ScriptRunner::CompileScript(
     const ClassicScript& classic_script,
     v8::ScriptOrigin origin,
     v8::ScriptCompiler::CompileOptions compile_options,
-    v8::ScriptCompiler::NoCacheReason no_cache_reason) {
+    v8::ScriptCompiler::NoCacheReason no_cache_reason,
+    bool can_use_crowdsourced_compile_hints) {
   v8::Isolate* isolate = script_state->GetIsolate();
   if (classic_script.SourceText().length() >= v8::String::kMaxLength) {
     V8ThrowException::ThrowError(isolate, "Source file too large.");
@@ -327,14 +336,15 @@ v8::MaybeLocal<v8::Script> V8ScriptRunner::CompileScript(
 
   if (!*TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(kTraceEventCategoryGroup)) {
     return CompileScriptInternal(isolate, script_state, classic_script, origin,
-                                 compile_options, no_cache_reason, nullptr);
+                                 compile_options, no_cache_reason,
+                                 can_use_crowdsourced_compile_hints, nullptr);
   }
 
   std::optional<inspector_compile_script_event::V8ConsumeCacheResult>
       cache_result;
-  v8::MaybeLocal<v8::Script> script =
-      CompileScriptInternal(isolate, script_state, classic_script, origin,
-                            compile_options, no_cache_reason, &cache_result);
+  v8::MaybeLocal<v8::Script> script = CompileScriptInternal(
+      isolate, script_state, classic_script, origin, compile_options,
+      no_cache_reason, can_use_crowdsourced_compile_hints, &cache_result);
   TRACE_EVENT_END1(
       kTraceEventCategoryGroup, "v8.compile", "data",
       [&](perfetto::TracedValue context) {
@@ -385,7 +395,7 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
         code, origin);
   } else {
     switch (compile_options) {
-      // TODO(chromium:1406506): Compile hints for modules.
+      // TODO(40286622): Compile hints for modules.
       case v8::ScriptCompiler::kProduceCompileHints:
       case v8::ScriptCompiler::kConsumeCompileHints:
         compile_options = v8::ScriptCompiler::kNoCompileOptions;
@@ -597,21 +607,24 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
     V8CodeCache::ProduceCacheOptions produce_cache_options;
     v8::ScriptCompiler::NoCacheReason no_cache_reason;
     Page* page = frame != nullptr ? frame->GetPage() : nullptr;
-    bool might_generate_compile_hints =
-        page ? page->GetV8CrowdsourcedCompileHintsProducer().MightGenerateData()
-             : false;
-    bool can_use_compile_hints =
-        page != nullptr && page->MainFrame() == frame &&
+    bool is_http = classic_script->SourceUrl().ProtocolIsInHTTPFamily();
+    bool might_generate_crowdsourced_compile_hints =
+        is_http && page != nullptr &&
+        page->GetV8CrowdsourcedCompileHintsProducer().MightGenerateData();
+    bool can_use_crowdsourced_compile_hints =
+        is_http && page != nullptr && page->MainFrame() == frame &&
         page->GetV8CrowdsourcedCompileHintsConsumer().HasData();
     std::tie(compile_options, produce_cache_options, no_cache_reason) =
         V8CodeCache::GetCompileOptions(
             execution_context->GetV8CacheOptions(), *classic_script,
-            might_generate_compile_hints, can_use_compile_hints);
+            might_generate_crowdsourced_compile_hints,
+            can_use_crowdsourced_compile_hints);
 
     v8::ScriptOrigin origin = classic_script->CreateScriptOrigin(isolate);
     v8::MaybeLocal<v8::Value> maybe_result;
     if (V8ScriptRunner::CompileScript(script_state, *classic_script, origin,
-                                      compile_options, no_cache_reason)
+                                      compile_options, no_cache_reason,
+                                      can_use_crowdsourced_compile_hints)
             .ToLocal(&script)) {
       DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(
           TRACE_DISABLED_BY_DEFAULT("devtools.target-rundown"),
@@ -678,11 +691,10 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
         // We can produce both crowdsourced and local compile hints at the
         // same time.
 #if BUILDFLAG(PRODUCE_V8_COMPILE_HINTS)
-        // TODO(chromium:1406506): Add a compile hints solution for workers.
-        // TODO(chromium:1406506): Add a compile hints solution for fenced
-        // frames.
-        // TODO(chromium:1406506): Add a compile hints solution for
-        // out-of-process iframes.
+        // TODO(40286622): Add a compile hints solution for workers.
+        // TODO(40286622): Add a compile hints solution for fenced frames.
+        // TODO(40286622): Add a compile hints solution for out-of-process
+        // iframes.
         page->GetV8CrowdsourcedCompileHintsProducer().RecordScript(
             frame, execution_context, script, script_state);
 #endif  // BUILDFLAG(ENABLE_V8_COMPILE_HINTS)

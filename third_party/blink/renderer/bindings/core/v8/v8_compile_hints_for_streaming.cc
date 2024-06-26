@@ -42,6 +42,24 @@ CompileHintsForStreaming::Builder::Build(
   if (might_generate_crowdsourced_compile_hints_) {
     return std::make_unique<CompileHintsForStreaming>(base::PassKey<Builder>());
   }
+  // We can only consume local or crowdsourced compile hints, but
+  // not both at the same time. If the page has crowdsourced compile hints,
+  // we won't generate local compile hints, so won't ever have them.
+  // We'd only have both local and crowdsourced compile hints available in
+  // special cases, e.g., if crowdsourced compile hints were temporarily
+  // unavailable, we generated local compile hints, and during the next page
+  // load we have both available.
+
+  // TODO(40286622): Enable using crowdsourced compile hints and
+  // augmenting them with local compile hints. 1) Enable consuming compile hints
+  // and at the same time, producing compile hints for functions which were
+  // still lazy and 2) enable consuming both kind of compile hints at the same
+  // time.
+  if (crowdsourced_compile_hint_callback_data_) {
+    return std::make_unique<CompileHintsForStreaming>(
+        std::move(crowdsourced_compile_hint_callback_data_),
+        base::PassKey<Builder>());
+  }
   if (LocalCompileHintsEnabled() && cached_metadata) {
     auto local_compile_hints_consumer =
         std::make_unique<v8_compile_hints::V8LocalCompileHintsConsumer>(
@@ -51,22 +69,13 @@ CompileHintsForStreaming::Builder::Build(
                                     Status::kNoCompileHintsStreaming);
       return nullptr;
     }
-    // For now, we can only consume local or crowdsourced compile hints, but
-    // not both at the same time.
-    // TODO(chromium:1495723): Enable consuming both at the same time.
-
-    // TODO(1495723): It's not clear what we should do if the resource is
+    // TODO(40286622): It's not clear what we should do if the resource is
     // not hot but we have compile hints. 1) Consume compile hints and
     // produce new ones (currently not possible in the API) and combine both
     // compile hints. 2) Ignore existing compile hints (we're anyway not
     // creating the code cache yet) and produce new ones.
     return std::make_unique<CompileHintsForStreaming>(
         std::move(local_compile_hints_consumer), base::PassKey<Builder>());
-  }
-  if (crowdsourced_compile_hint_callback_data_) {
-    return std::make_unique<CompileHintsForStreaming>(
-        std::move(crowdsourced_compile_hint_callback_data_),
-        base::PassKey<Builder>());
   }
   if (LocalCompileHintsEnabled()) {
     // For producing a local compile hints.
