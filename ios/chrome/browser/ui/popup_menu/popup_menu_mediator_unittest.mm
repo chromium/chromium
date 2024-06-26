@@ -10,8 +10,8 @@
 #import "base/memory/scoped_refptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/default_clock.h"
+#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_utils.h"
-#import "components/bookmarks/browser/core_bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
@@ -553,7 +553,7 @@ TEST_F(PopupMenuMediatorTest, TestBookmarksToolsMenuButtons) {
   EXPECT_TRUE(HasItem(consumer, kToolsMenuEditBookmark, /*enabled=*/YES));
 
   // `RemoveAllUserBookmarks()` requires that the underlying model is loaded.
-  // There is currently no clean way to achieve this using CoreBookmarkModel,
+  // There is currently no clean way to achieve this using BookmarkModel,
   // so a workaround is to ensure that the account bookmarks have also loaded,
   // as the test fixture takes care of waiting for the local-or-syncable ones.
   WaitForLegacyBookmarkModelToLoad(

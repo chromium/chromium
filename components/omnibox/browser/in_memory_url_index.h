@@ -37,7 +37,7 @@ class SequencedTaskRunner;
 }
 
 namespace bookmarks {
-class CoreBookmarkModel;
+class BookmarkModel;
 }
 
 namespace history {
@@ -73,7 +73,7 @@ class InMemoryURLIndex : public KeyedService,
                          public base::trace_event::MemoryDumpProvider {
  public:
   // `history_service` may be null during unit testing.
-  InMemoryURLIndex(bookmarks::CoreBookmarkModel* bookmark_model,
+  InMemoryURLIndex(bookmarks::BookmarkModel* bookmark_model,
                    history::HistoryService* history_service,
                    TemplateURLService* template_url_service,
                    const base::FilePath& history_dir,
@@ -187,7 +187,7 @@ class InMemoryURLIndex : public KeyedService,
   const SchemeSet& scheme_allowlist() { return scheme_allowlist_; }
 
   // The BookmarkModel; may be null when testing.
-  raw_ptr<bookmarks::CoreBookmarkModel> bookmark_model_;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 
   // The HistoryService; may be null when testing.
   raw_ptr<history::HistoryService> history_service_;

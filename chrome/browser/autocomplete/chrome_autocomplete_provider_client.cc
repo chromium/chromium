@@ -196,8 +196,7 @@ ChromeAutocompleteProviderClient::GetTopSites() {
   return TopSitesFactory::GetForProfile(profile_);
 }
 
-bookmarks::CoreBookmarkModel*
-ChromeAutocompleteProviderClient::GetBookmarkModel() {
+bookmarks::BookmarkModel* ChromeAutocompleteProviderClient::GetBookmarkModel() {
   return BookmarkModelFactory::GetForBrowserContext(profile_);
 }
 

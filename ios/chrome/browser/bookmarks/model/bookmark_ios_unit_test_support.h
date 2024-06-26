@@ -22,7 +22,7 @@ class PrefService;
 
 namespace bookmarks {
 class BookmarkNode;
-class CoreBookmarkModel;
+class BookmarkModel;
 class ManagedBookmarkService;
 }  // namespace bookmarks
 
@@ -65,7 +65,7 @@ class BookmarkIOSUnitTestSupport : public PlatformTest {
   // Bookmark model for the account storage.
   raw_ptr<LegacyBookmarkModel> account_bookmark_model_;
   // Bookmark model providing a merged view.
-  raw_ptr<bookmarks::CoreBookmarkModel> bookmark_model_;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
   raw_ptr<PrefService> pref_service_;
 };

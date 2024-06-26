@@ -28,9 +28,9 @@
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_undo_provider.h"
-#include "components/bookmarks/browser/core_bookmark_model.h"
 #include "components/bookmarks/browser/uuid_index.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -73,8 +73,8 @@ struct TitledUrlMatch;
 //
 // `MoveToOtherModelWithNewNodeIdsAndUuids` affects two instances, and assumes
 // that both instances are `BookmarkModel`, not some subclasses.
-class BookmarkModel : public CoreBookmarkModel,
-                      public BookmarkUndoProvider,
+class BookmarkModel : public BookmarkUndoProvider,
+                      public KeyedService,
                       public base::SupportsUserData {
  public:
   // `client` must not be null.
@@ -100,7 +100,10 @@ class BookmarkModel : public CoreBookmarkModel,
       const base::FilePath& profile_path);
 
   // Returns true if the model finished loading.
-  bool loaded() const override;
+  bool loaded() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return loaded_;
+  }
 
   // Returns the object responsible for tracking loading.
   scoped_refptr<ModelLoader> model_loader();
@@ -204,7 +207,7 @@ class BookmarkModel : public CoreBookmarkModel,
   // Observers are only notified when all nodes have been removed. There is no
   // notification for individual node removals. `location` is used for logging
   // purposes and investigations.
-  void RemoveAllUserBookmarks(const base::Location& location) override;
+  void RemoveAllUserBookmarks(const base::Location& location);
 
   // Moves `node` to `new_parent` and inserts it at the given `index`.
   //
@@ -271,14 +274,13 @@ class BookmarkModel : public CoreBookmarkModel,
   // TODO(crbug.com/346918509): Remove this function once the migration of iOS
   // to a single BookmarkModel instance is complete, as callers can invoke
   // `GetNodesByURL()` instead.
-  size_t GetNodeCountByURL(const GURL& url) const override;
+  size_t GetNodeCountByURL(const GURL& url) const;
 
   // Same as `GetNodesByURL()` but it only returns the titles.
   // TODO(crbug.com/346918509): Remove this function once the migration of iOS
   // to a single BookmarkModel instance is complete, as callers can invoke
   // `GetNodesByURL()` instead.
-  std::vector<std::u16string_view> GetNodeTitlesByURL(
-      const GURL& url) const override;
+  std::vector<std::u16string_view> GetNodeTitlesByURL(const GURL& url) const;
 
   // Enum determining a subset of bookmark nodes within a BookmarkModel for the
   // purpose of issuing UUID-based lookups. It is needed because, in some
@@ -341,12 +343,12 @@ class BookmarkModel : public CoreBookmarkModel,
   bool HasNoUserCreatedBookmarksOrFolders() const;
 
   // Returns true if the specified URL is bookmarked.
-  bool IsBookmarked(const GURL& url) const override;
+  bool IsBookmarked(const GURL& url) const;
 
   // Return the set of bookmarked urls and their titles. This returns the unique
   // set of URLs. For example, if two bookmarks reference the same URL only one
   // entry is added not matter the titles are same or not.
-  [[nodiscard]] std::vector<UrlAndTitle> GetUniqueUrls() const override;
+  [[nodiscard]] std::vector<UrlAndTitle> GetUniqueUrls() const;
 
   // Returns the type of `folder` as represented in metrics.
   metrics::BookmarkFolderTypeForUMA GetFolderType(
@@ -423,13 +425,13 @@ class BookmarkModel : public CoreBookmarkModel,
   void ClearLastUsedTimeInRange(const base::Time delete_begin,
                                 const base::Time delete_end);
 
-  // Returns up to `max_count_hint` bookmarks containing each term from `query`
-  // in either the title, URL, or the titles of ancestors. `matching_algorithm`
+  // Returns up to `max_count` bookmarks containing each term from `query` in
+  // either the title, URL, or the titles of ancestors. `matching_algorithm`
   // determines the algorithm used by QueryParser internally to parse `query`.
   [[nodiscard]] std::vector<TitledUrlMatch> GetBookmarksMatching(
       const std::u16string& query,
-      size_t max_count_hint,
-      query_parser::MatchingAlgorithm matching_algorithm) const override;
+      size_t max_count,
+      query_parser::MatchingAlgorithm matching_algorithm) const;
 
   // Disables the persistence to disk, useful during testing to speed up
   // testing.

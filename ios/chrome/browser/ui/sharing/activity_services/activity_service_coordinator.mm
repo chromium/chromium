@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/sharing/activity_services/activity_service_coordinator.h"
 
-#import "components/bookmarks/browser/core_bookmark_model.h"
+#import <LinkPresentation/LinkPresentation.h>
+
+#import "components/bookmarks/browser/bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
@@ -34,8 +36,6 @@
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
-
-#import <LinkPresentation/LinkPresentation.h>
 
 namespace {
 
@@ -92,7 +92,7 @@ constexpr CGFloat kAppIconPointSize = 80;
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   self.incognito = browserState->IsOffTheRecord();
-  bookmarks::CoreBookmarkModel* bookmarkModel =
+  bookmarks::BookmarkModel* bookmarkModel =
       ios::BookmarkModelFactory::GetForBrowserState(browserState);
   id<BookmarksCommands> bookmarksHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BookmarksCommands);

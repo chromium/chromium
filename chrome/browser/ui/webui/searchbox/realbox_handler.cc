@@ -80,7 +80,7 @@ class RealboxOmniboxClient final : public OmniboxClient {
   bool IsPasteAndGoEnabled() const override;
   SessionID GetSessionID() const override;
   PrefService* GetPrefs() override;
-  bookmarks::CoreBookmarkModel* GetBookmarkModel() override;
+  bookmarks::BookmarkModel* GetBookmarkModel() override;
   AutocompleteControllerEmitter* GetAutocompleteControllerEmitter() override;
   TemplateURLService* GetTemplateURLService() override;
   const AutocompleteSchemeClassifier& GetSchemeClassifier() const override;
@@ -170,7 +170,7 @@ PrefService* RealboxOmniboxClient::GetPrefs() {
   return profile_->GetPrefs();
 }
 
-bookmarks::CoreBookmarkModel* RealboxOmniboxClient::GetBookmarkModel() {
+bookmarks::BookmarkModel* RealboxOmniboxClient::GetBookmarkModel() {
   return BookmarkModelFactory::GetForBrowserContext(profile_);
 }
 

@@ -242,7 +242,7 @@ bool MatchHasSideTypeAndRenderType(
 
 std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
     const AutocompleteResult& result,
-    bookmarks::CoreBookmarkModel* bookmark_model,
+    bookmarks::BookmarkModel* bookmark_model,
     const omnibox::GroupConfigMap& suggestion_groups_map) {
   std::vector<searchbox::mojom::AutocompleteMatchPtr> matches;
   int line = 0;
@@ -438,7 +438,7 @@ CreateSuggestionGroupsMap(
 searchbox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
     const std::u16string& input,
     const AutocompleteResult& result,
-    bookmarks::CoreBookmarkModel* bookmark_model,
+    bookmarks::BookmarkModel* bookmark_model,
     PrefService* prefs) {
   return searchbox::mojom::AutocompleteResult::New(
       input,

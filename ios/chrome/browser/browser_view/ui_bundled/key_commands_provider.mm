@@ -613,7 +613,7 @@ using base::UserMetricsAction;
   }
 
   const GURL& url = currentWebState->GetLastCommittedURL();
-  bookmarks::CoreBookmarkModel* bookmarkModel =
+  bookmarks::BookmarkModel* bookmarkModel =
       ios::BookmarkModelFactory::GetForBrowserState(
           _browser->GetBrowserState());
   return bookmarkModel->IsBookmarked(url);

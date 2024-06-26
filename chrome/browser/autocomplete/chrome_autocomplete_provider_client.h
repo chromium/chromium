@@ -57,7 +57,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   history_embeddings::HistoryEmbeddingsService* GetHistoryEmbeddingsService()
       override;
   scoped_refptr<history::TopSites> GetTopSites() override;
-  bookmarks::CoreBookmarkModel* GetBookmarkModel() override;
+  bookmarks::BookmarkModel* GetBookmarkModel() override;
   history::URLDatabase* GetInMemoryDatabase() override;
   InMemoryURLIndex* GetInMemoryURLIndex() override;
   TemplateURLService* GetTemplateURLService() override;

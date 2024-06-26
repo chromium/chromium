@@ -24,7 +24,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "components/bookmarks/browser/core_bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/history_embeddings/history_embeddings_features.h"
@@ -86,7 +86,7 @@
 
 constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
 
-using bookmarks::CoreBookmarkModel;
+using bookmarks::BookmarkModel;
 using metrics::OmniboxEventProto;
 using omnibox::mojom::NavigationPredictor;
 
@@ -2622,8 +2622,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
           deviation_char_in_hostname);
     }
 
-    CoreBookmarkModel* bookmark_model =
-        controller_->client()->GetBookmarkModel();
+    BookmarkModel* bookmark_model = controller_->client()->GetBookmarkModel();
     if (bookmark_model && bookmark_model->IsBookmarked(destination_url)) {
       controller_->client()->OnBookmarkLaunched();
     }

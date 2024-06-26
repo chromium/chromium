@@ -41,7 +41,7 @@ bool OmniboxClient::IsDefaultSearchProviderEnabled() const {
   return true;
 }
 
-bookmarks::CoreBookmarkModel* OmniboxClient::GetBookmarkModel() {
+bookmarks::BookmarkModel* OmniboxClient::GetBookmarkModel() {
   return nullptr;
 }
 

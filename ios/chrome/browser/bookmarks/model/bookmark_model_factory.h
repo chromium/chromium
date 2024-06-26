@@ -8,13 +8,13 @@
 #include <memory>
 
 #include "base/no_destructor.h"
-// TODO(crbug.com/346918509): Use forward declaration instead once
-// CoreBookmarkModel is removed. In the meantime, it is useful to avoid multiple
-// files having to include bookmark_model.h temporarily.
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
 class ChromeBrowserState;
+
+namespace bookmarks {
+class BookmarkModel;
+}  // namespace bookmarks
 
 namespace ios {
 

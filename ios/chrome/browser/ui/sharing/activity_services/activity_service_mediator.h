@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/ui/sharing/sharing_scenario.h"
 
 namespace bookmarks {
-class CoreBookmarkModel;
+class BookmarkModel;
 }
 
 @protocol BookmarksCommands;
@@ -44,7 +44,7 @@ class WebNavigationBrowserAgent;
                bookmarksHandler:(id<BookmarksCommands>)bookmarksHandler
             qrGenerationHandler:(id<QRGenerationCommands>)qrGenerationHandler
                     prefService:(PrefService*)prefService
-                  bookmarkModel:(bookmarks::CoreBookmarkModel*)bookmarkModel
+                  bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
              baseViewController:(UIViewController*)baseViewController
                 navigationAgent:(WebNavigationBrowserAgent*)agent
         readingListBrowserAgent:

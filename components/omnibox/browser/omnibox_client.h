@@ -32,7 +32,7 @@ struct AutocompleteMatch;
 struct OmniboxLog;
 
 namespace bookmarks {
-class CoreBookmarkModel;
+class BookmarkModel;
 }
 
 namespace gfx {
@@ -101,7 +101,7 @@ class OmniboxClient {
       omnibox::mojom::NavigationPredictor navigation_predictor) {}
 
   virtual PrefService* GetPrefs() = 0;
-  virtual bookmarks::CoreBookmarkModel* GetBookmarkModel();
+  virtual bookmarks::BookmarkModel* GetBookmarkModel();
   virtual AutocompleteControllerEmitter* GetAutocompleteControllerEmitter() = 0;
   virtual TemplateURLService* GetTemplateURLService();
   virtual const AutocompleteSchemeClassifier& GetSchemeClassifier() const = 0;

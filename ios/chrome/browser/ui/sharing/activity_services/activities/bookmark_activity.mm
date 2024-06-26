@@ -6,7 +6,7 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "components/bookmarks/browser/core_bookmark_model.h"
+#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
@@ -26,7 +26,7 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 // Whether or not the page is bookmarked.
 @property(nonatomic, assign) BOOL bookmarked;
 // The bookmark model used to validate if a page was bookmarked.
-@property(nonatomic, assign) bookmarks::CoreBookmarkModel* bookmarkModel;
+@property(nonatomic, assign) bookmarks::BookmarkModel* bookmarkModel;
 // The URL of the page to be bookmarked.
 @property(nonatomic, assign) GURL URL;
 // The title of the page to be bookmarked.
@@ -41,7 +41,7 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 
 - (instancetype)initWithURL:(const GURL&)URL
                       title:(NSString*)title
-              bookmarkModel:(bookmarks::CoreBookmarkModel*)bookmarkModel
+              bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                     handler:(id<BookmarksCommands>)handler
                 prefService:(PrefService*)prefService {
   self = [super init];

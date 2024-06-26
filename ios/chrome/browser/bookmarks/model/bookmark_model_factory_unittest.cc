@@ -10,7 +10,6 @@
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/browser/core_bookmark_model.h"
 #include "components/bookmarks/browser/url_and_title.h"
 #include "components/bookmarks/common/bookmark_constants.h"
 #include "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"

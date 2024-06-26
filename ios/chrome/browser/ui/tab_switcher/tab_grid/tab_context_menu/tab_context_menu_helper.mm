@@ -6,7 +6,7 @@
 
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
-#import "components/bookmarks/browser/core_bookmark_model.h"
+#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
@@ -341,7 +341,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 
 // Returns `YES` if the tab `item` is already bookmarked.
 - (BOOL)isTabItemBookmarked:(TabItem*)item {
-  bookmarks::CoreBookmarkModel* bookmarkModel =
+  bookmarks::BookmarkModel* bookmarkModel =
       ios::BookmarkModelFactory::GetForBrowserState(_browserState);
   return item && bookmarkModel->IsBookmarked(item.URL);
 }

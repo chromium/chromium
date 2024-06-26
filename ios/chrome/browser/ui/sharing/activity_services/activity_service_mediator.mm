@@ -51,7 +51,7 @@
 
 @property(nonatomic, assign) PrefService* prefService;
 
-@property(nonatomic, assign) bookmarks::CoreBookmarkModel* bookmarkModel;
+@property(nonatomic, assign) bookmarks::BookmarkModel* bookmarkModel;
 
 @property(nonatomic, weak) UIViewController* baseViewController;
 
@@ -71,7 +71,7 @@
                bookmarksHandler:(id<BookmarksCommands>)bookmarksHandler
             qrGenerationHandler:(id<QRGenerationCommands>)qrGenerationHandler
                     prefService:(PrefService*)prefService
-                  bookmarkModel:(bookmarks::CoreBookmarkModel*)bookmarkModel
+                  bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
              baseViewController:(UIViewController*)baseViewController
                 navigationAgent:(WebNavigationBrowserAgent*)navigationAgent
         readingListBrowserAgent:

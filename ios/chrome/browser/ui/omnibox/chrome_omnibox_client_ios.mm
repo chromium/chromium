@@ -94,7 +94,7 @@ PrefService* ChromeOmniboxClientIOS::GetPrefs() {
   return browser_state_->GetPrefs();
 }
 
-bookmarks::CoreBookmarkModel* ChromeOmniboxClientIOS::GetBookmarkModel() {
+bookmarks::BookmarkModel* ChromeOmniboxClientIOS::GetBookmarkModel() {
   return ios::BookmarkModelFactory::GetForBrowserState(browser_state_);
 }
 

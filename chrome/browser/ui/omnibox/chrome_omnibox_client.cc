@@ -165,7 +165,7 @@ PrefService* ChromeOmniboxClient::GetPrefs() {
   return profile_->GetPrefs();
 }
 
-bookmarks::CoreBookmarkModel* ChromeOmniboxClient::GetBookmarkModel() {
+bookmarks::BookmarkModel* ChromeOmniboxClient::GetBookmarkModel() {
   return BookmarkModelFactory::GetForBrowserContext(profile_);
 }
 

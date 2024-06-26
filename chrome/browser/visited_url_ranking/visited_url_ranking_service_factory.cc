@@ -19,7 +19,6 @@
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/browser/core_bookmark_model.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history_clusters/core/config.h"
 #include "components/keyed_service/core/keyed_service.h"

@@ -34,7 +34,7 @@ class OnDeviceTailModelService;
 struct ProviderStateService;
 
 namespace bookmarks {
-class CoreBookmarkModel;
+class BookmarkModel;
 }
 
 namespace history {
@@ -85,7 +85,7 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   virtual history_embeddings::HistoryEmbeddingsService*
   GetHistoryEmbeddingsService();
   virtual scoped_refptr<history::TopSites> GetTopSites() = 0;
-  virtual bookmarks::CoreBookmarkModel* GetBookmarkModel() = 0;
+  virtual bookmarks::BookmarkModel* GetBookmarkModel() = 0;
   virtual history::URLDatabase* GetInMemoryDatabase() = 0;
   virtual InMemoryURLIndex* GetInMemoryURLIndex() = 0;
   virtual TemplateURLService* GetTemplateURLService() = 0;

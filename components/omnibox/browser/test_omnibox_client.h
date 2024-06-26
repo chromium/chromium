@@ -74,7 +74,7 @@ class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
                const AutocompleteMatch& match,
                const AutocompleteMatch& alternative_nav_match,
                IDNA2008DeviationCharacter deviation_char_in_hostname));
-  MOCK_METHOD(bookmarks::CoreBookmarkModel*, GetBookmarkModel, ());
+  MOCK_METHOD(bookmarks::BookmarkModel*, GetBookmarkModel, ());
   MOCK_METHOD(PrefService*, GetPrefs, ());
 
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;

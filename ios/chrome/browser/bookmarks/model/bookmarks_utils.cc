@@ -7,8 +7,8 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
-#include "components/bookmarks/browser/core_bookmark_model.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
@@ -45,7 +45,7 @@ LegacyBookmarkModel* GetBookmarkModelForType(
 const int64_t kLastUsedBookmarkFolderNone = -1;
 
 bool AreAllAvailableBookmarkModelsLoaded(ChromeBrowserState* browser_state) {
-  bookmarks::CoreBookmarkModel* model =
+  bookmarks::BookmarkModel* model =
       ios::BookmarkModelFactory::GetForBrowserState(browser_state);
   CHECK(model);
   return model->loaded();
@@ -53,7 +53,7 @@ bool AreAllAvailableBookmarkModelsLoaded(ChromeBrowserState* browser_state) {
 
 bool RemoveAllUserBookmarksIOS(ChromeBrowserState* browser_state,
                                const base::Location& location) {
-  bookmarks::CoreBookmarkModel* bookmark_model =
+  bookmarks::BookmarkModel* bookmark_model =
       ios::BookmarkModelFactory::GetForBrowserState(browser_state);
 
   if (!bookmark_model->loaded()) {

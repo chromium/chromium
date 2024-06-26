@@ -13,7 +13,7 @@
 #include "components/visited_url_ranking/public/url_visit_aggregates_transformer.h"
 
 namespace bookmarks {
-class CoreBookmarkModel;
+class BookmarkModel;
 }
 
 namespace visited_url_ranking {
@@ -22,7 +22,7 @@ class BookmarksURLVisitAggregatesTransformer
     : public URLVisitAggregatesTransformer {
  public:
   explicit BookmarksURLVisitAggregatesTransformer(
-      bookmarks::CoreBookmarkModel* core_bookmark_model);
+      bookmarks::BookmarkModel* bookmark_model);
   ~BookmarksURLVisitAggregatesTransformer() override = default;
 
   // Disallow copy/assign.
@@ -40,7 +40,7 @@ class BookmarksURLVisitAggregatesTransformer
                  OnTransformCallback callback) override;
 
  private:
-  const raw_ptr<bookmarks::CoreBookmarkModel> core_bookmark_model_;
+  const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };
 
 }  // namespace visited_url_ranking

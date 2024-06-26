@@ -9,15 +9,15 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "components/bookmarks/browser/core_bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 
 namespace visited_url_ranking {
 
 BookmarksURLVisitAggregatesTransformer::BookmarksURLVisitAggregatesTransformer(
-    bookmarks::CoreBookmarkModel* core_bookmark_model)
-    : core_bookmark_model_(core_bookmark_model) {
-  CHECK(core_bookmark_model);
+    bookmarks::BookmarkModel* bookmark_model)
+    : bookmark_model_(bookmark_model) {
+  CHECK(bookmark_model);
 }
 
 void BookmarksURLVisitAggregatesTransformer::Transform(
@@ -27,7 +27,7 @@ void BookmarksURLVisitAggregatesTransformer::Transform(
   for (auto& url_visit_aggregate : aggregates) {
     std::set<const GURL*> urls = url_visit_aggregate.GetAssociatedURLs();
     for (const auto* url : urls) {
-      if (core_bookmark_model_->IsBookmarked(*url)) {
+      if (bookmark_model_->IsBookmarked(*url)) {
         url_visit_aggregate.bookmarked = true;
         continue;
       }
