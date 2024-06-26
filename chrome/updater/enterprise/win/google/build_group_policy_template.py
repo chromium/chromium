@@ -10,7 +10,7 @@
 
 For example:
 ```
-python3 chrome/updater/win/enterprise/build_group_policy_template.py
+python3 chrome/updater/enterprise/win/google/build_group_policy_template.py
   --updater_admx_file UpdaterAdmx/updater.admx
   --updater_adml_file UpdaterAdmx/en-US/updater.adml
 ```
