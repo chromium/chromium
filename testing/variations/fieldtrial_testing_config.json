@@ -21193,6 +21193,7 @@
                 {
                     "name": "Enabled_Dogfood",
                     "enable_features": [
+                        "DeleteStaleLocalStorageOnStartup",
                         "DeleteStaleSessionCookiesOnStartup"
                     ]
                 }

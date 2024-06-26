@@ -101,6 +101,11 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   // is already opened, |callback| is invoked immediately.
   void SetDatabaseOpenCallbackForTesting(base::OnceClosure callback);
 
+  void OverrideDeleteStaleStorageAreasDelayForTesting(
+      const base::TimeDelta& delay);
+
+  void ForceFakeOpenStorageAreaForTesting(const blink::StorageKey& storage_key);
+
  private:
   friend class DOMStorageBrowserTest;
 
@@ -141,6 +146,12 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   void GetStatistics(size_t* total_cache_size, size_t* unused_area_count);
   void OnCommitResult(leveldb::Status status);
 
+  // These clear stale storage areas (not read/written to within 400 days) from
+  // the database. See crbug.com/40281870 for more info.
+  void DeleteStaleStorageAreas();
+  void OnGotMetaDataToDeleteStaleStorageAreas(
+      std::vector<DomStorageDatabase::KeyValuePair> data);
+
   const base::FilePath directory_;
 
   enum ConnectionState {
@@ -180,6 +191,11 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   mojo::Receiver<mojom::LocalStorageControl> control_receiver_{this};
 
   base::OnceClosure shutdown_complete_callback_;
+
+  // We need to delay deleting stale storage areas until after any session
+  // restore has taken place, otherwise we might fail to record current usage.
+  // See crbug.com/40281870 for more info.
+  base::TimeDelta delete_stale_storage_areas_delay_{base::Minutes(1)};
 
   base::WeakPtrFactory<LocalStorageImpl> weak_ptr_factory_{this};
 };

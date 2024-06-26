@@ -12,6 +12,8 @@ source_set("storage") {
     "dom_storage/dom_storage_constants.h",
     "dom_storage/dom_storage_database.cc",
     "dom_storage/dom_storage_database.h",
+    "dom_storage/features.cc",
+    "dom_storage/features.h",
     "dom_storage/local_storage_impl.cc",
     "dom_storage/local_storage_impl.h",
     "dom_storage/session_storage_area_impl.cc",

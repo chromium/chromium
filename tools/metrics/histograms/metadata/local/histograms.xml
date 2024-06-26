@@ -310,6 +310,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LocalStorage.StaleStorageAreasDeletedOnStartupCount"
+    units="areas" expires_after="2024-12-01">
+  <owner>arichiv@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records the amount of stale (400 days since last access or write) storage
+    areas deleted on LocalStorageImpl initialization (profile load).
+
+    Emitted after successful attempt to delete stale storage areas.
+
+    See crbug.com/40281870 for more info.
+  </summary>
+</histogram>
+
+<histogram name="LocalStorage.StaleStorageAreasDeletedOnStartupSuccess"
+    enum="BooleanSuccess" expires_after="2024-12-01">
+  <owner>arichiv@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records the success of clearing stale (400 days since last access or write)
+    storage areas on LocalStorageImpl initialization (profile load).
+
+    Emitted after attempt to delete stale storage areas occurs.
+
+    See crbug.com/40281870 for more info.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

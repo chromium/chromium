@@ -23,10 +23,6 @@
 
 namespace storage {
 
-BASE_FEATURE(kCoalesceStorageAreaCommits,
-             "CoalesceStorageAreaCommits",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // static
 std::unique_ptr<AsyncDomStorageDatabase> AsyncDomStorageDatabase::OpenDirectory(
     const base::FilePath& directory,
