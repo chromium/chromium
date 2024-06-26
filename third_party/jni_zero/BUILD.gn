@@ -69,8 +69,6 @@ if (enable_java_templates && is_android) {
   import("//build/config/android/rules.gni")
 
   android_library("jni_zero_java") {
-    supports_android = true
-    deps = [ "//build/android:build_java" ]
     sources = [
       "java/src/org/jni_zero/AccessedByNative.java",
       "java/src/org/jni_zero/CalledByNative.java",
