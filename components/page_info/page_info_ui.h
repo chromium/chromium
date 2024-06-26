@@ -221,6 +221,9 @@ class PageInfoUI {
   static std::u16string PermissionTooltipUiString(
       ContentSettingsType type,
       const std::optional<url::Origin>& requesting_origin);
+  // Returns a tooltip for a subpage button for permission |type|.
+  static std::u16string PermissionSubpageButtonTooltipString(
+      ContentSettingsType type);
 
   static base::span<const PermissionUIInfo>
   GetContentSettingsUIInfoForTesting();

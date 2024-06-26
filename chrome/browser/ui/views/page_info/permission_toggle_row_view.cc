@@ -210,8 +210,8 @@ void PermissionToggleRowView::InitForUserSource(
             },
             base::Unretained(this)),
         vector_icons::kLaunchIcon);
-    subpage_button->SetTooltipText(l10n_util::GetStringUTF16(
-        IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_BUTTON_TOOLTIP));
+    subpage_button->SetTooltipText(
+        PageInfoUI::PermissionSubpageButtonTooltipString(permission_.type));
     views::InstallCircleHighlightPathGenerator(subpage_button.get());
     subpage_button->SetMinimumImageSize({icon_size, icon_size});
     subpage_button->SetFlipCanvasOnPaintForRTLUI(false);
@@ -234,8 +234,8 @@ void PermissionToggleRowView::InitForUserSource(
             },
             base::Unretained(this)),
         vector_icons::kSubmenuArrowIcon);
-    subpage_button->SetTooltipText(l10n_util::GetStringUTF16(
-        IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_BUTTON_TOOLTIP));
+    subpage_button->SetTooltipText(
+        PageInfoUI::PermissionSubpageButtonTooltipString(permission_.type));
     views::InstallCircleHighlightPathGenerator(subpage_button.get());
     subpage_button->SetMinimumImageSize({icon_size, icon_size});
     subpage_button->SetFlipCanvasOnPaintForRTLUI(false);

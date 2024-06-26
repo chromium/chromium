@@ -659,6 +659,14 @@ std::u16string PageInfoUI::PermissionTooltipUiString(
 }
 
 // static
+std::u16string PageInfoUI::PermissionSubpageButtonTooltipString(
+    ContentSettingsType type) {
+  return l10n_util::GetStringFUTF16(
+      IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_BUTTON_TOOLTIP,
+      PageInfoUI::PermissionTypeToUIStringMidSentence(type));
+}
+
+// static
 base::span<const PageInfoUI::PermissionUIInfo>
 PageInfoUI::GetContentSettingsUIInfoForTesting() {
   return GetContentSettingsUIInfo();

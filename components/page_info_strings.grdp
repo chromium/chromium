@@ -705,8 +705,8 @@
   </message>
 
   <!-- Permissions subpage -->
-  <message name="IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_BUTTON_TOOLTIP" desc="The label of the button to open the Permissions subpage for a specific permission in Page Info bubble.">
-    Show permission details
+  <message name="IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_BUTTON_TOOLTIP" desc="The tooltip/accessibility text of the button to open a Permissions subpage for a specific permission in Page Info bubble, if such a subpage is supported.">
+    Show <ph name="PERMISSION_NAME">$1<ex>location</ex></ph> permission details
   </message>
   <message name="IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_MANAGE_BUTTON" desc="The text on the button, that opens settings page for the permission, in permission's subpage in page info bubble.">
     Manage
