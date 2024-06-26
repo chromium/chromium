@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -37,38 +38,21 @@ bool CanUseOptimizationGuide(Profile* profile) {
          OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
 }
 
-void OnLogResults(Profile* profile,
-                  std::unique_ptr<optimization_guide::ModelQualityLogEntry>
-                      model_quality_log_entry,
-                  const TabOrganizationSession* session) {
-  if (!model_quality_log_entry) {
-    return;
+void OnLogResults(
+    Profile* profile,
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry,
+    const TabOrganizationSession* session) {
+  if (log_entry && session->request() && session->request()->response() &&
+      session->request()->response()->organizations.size() > 0 &&
+      session->tab_organizations().size() > 0) {
+    optimization_guide::proto::TabOrganizationQuality* quality =
+        log_entry
+            ->quality_data<optimization_guide::TabOrganizationFeatureTypeMap>();
+
+    AddSessionDetailsToQuality(quality, session);
   }
 
-  OptimizationGuideKeyedService* optimization_guide_keyed_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  if (!optimization_guide_keyed_service) {
-    return;
-  }
-
-  if (!session->request() || !session->request()->response() ||
-      session->request()->response()->organizations.size() == 0 ||
-      session->tab_organizations().size() == 0) {
-    if (model_quality_log_entry) {
-      optimization_guide_keyed_service->UploadModelQualityLogs(
-          std::move(model_quality_log_entry));
-    }
-    return;
-  }
-
-  optimization_guide::proto::TabOrganizationQuality* quality =
-      model_quality_log_entry
-          ->quality_data<optimization_guide::TabOrganizationFeatureTypeMap>();
-
-  AddSessionDetailsToQuality(quality, session);
-
-  optimization_guide_keyed_service->UploadModelQualityLogs(
-      std::move(model_quality_log_entry));
+  optimization_guide::ModelQualityLogEntry::Upload(std::move(log_entry));
 }
 
 void OnTabOrganizationModelExecutionResult(
@@ -77,20 +61,9 @@ void OnTabOrganizationModelExecutionResult(
     TabOrganizationRequest::BackendFailureCallback on_failure,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
-  OptimizationGuideKeyedService* optimization_guide_keyed_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-
-  if (!optimization_guide_keyed_service) {
-    std::move(on_failure).Run();
-    return;
-  }
-
   if (!result.has_value()) {
     // TODO(b/322206302): remove this when this is fixed in the ModelQualityLogEntry API
-    if (log_entry) {
-      optimization_guide_keyed_service->UploadModelQualityLogs(
-          std::move(log_entry));
-    }
+    optimization_guide::ModelQualityLogEntry::Upload(std::move(log_entry));
     std::move(on_failure).Run();
     return;
   }
@@ -99,10 +72,7 @@ void OnTabOrganizationModelExecutionResult(
       optimization_guide::proto::TabOrganizationResponse>(result.value());
 
   if (!response) {
-    if (log_entry) {
-      optimization_guide_keyed_service->UploadModelQualityLogs(
-          std::move(log_entry));
-    }
+    optimization_guide::ModelQualityLogEntry::Upload(std::move(log_entry));
     std::move(on_failure).Run();
     return;
   }
