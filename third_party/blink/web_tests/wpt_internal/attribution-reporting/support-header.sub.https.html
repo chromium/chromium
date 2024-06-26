@@ -38,7 +38,7 @@ const expected_support =
     searchParams.get('expected-support') === null ? undefined : searchParams.get('expected-support');
 
 promise_test(async t => {
-  await registerAttributionSrc({
+  registerAttributionSrc({
     method: 'variant',
     extraQueryParams: {'store-request': 'true'},
   });

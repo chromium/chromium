@@ -10,12 +10,12 @@
 <script>
 attribution_reporting_promise_test(async t => {
   const source = {
-      source_event_id: generateSourceEventId(),
-      debug_reporting: true,
-      destination: 'https://{{host}}',
-      max_event_level_reports: 0,
-    };
-  await registerAttributionSrc({
+    source_event_id: generateSourceEventId(),
+    debug_reporting: true,
+    destination: 'https://{{host}}',
+    max_event_level_reports: 0,
+  };
+  registerAttributionSrc({
     cookie: attributionDebugCookie,
     source,
     method: 'a',

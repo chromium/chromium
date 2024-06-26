@@ -36,7 +36,7 @@ attribution_reporting_promise_test(async t => {
       'x': ['y', 'z'],
     }
   };
-  await registerAttributionSrc({
+  registerAttributionSrc({
     source,
     method: 'open',
     cookie: attributionDebugCookie,
@@ -57,7 +57,7 @@ attribution_reporting_promise_test(async t => {
     debug_reporting: true,
   };
 
-  await registerAttributionSrc({
+  registerAttributionSrc({
     trigger,
   });
 
@@ -70,7 +70,7 @@ attribution_reporting_promise_test(async t => {
 
   trigger.aggregatable_deduplication_keys = inputJSON.aggregatable_deduplication_keys;
 
-  await registerAttributionSrc({
+  registerAttributionSrc({
     trigger,
     cookie: attributionDebugCookie,
   });

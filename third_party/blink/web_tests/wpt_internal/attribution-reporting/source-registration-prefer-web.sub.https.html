@@ -27,7 +27,7 @@ attribution_reporting_promise_test(async t => {
     destination: 'https://{{host}}',
     debug_reporting: true,
   };
-  const sourceType = await registerAttributionSrc({
+  const sourceType = registerAttributionSrc({
     source,
     method: 'variant',
     reportingOrigin,
@@ -46,7 +46,7 @@ attribution_reporting_promise_test(async t => {
 
   await waitForSourceToBeRegistered(source.source_event_id, reportingOrigin);
 
-  await registerAttributionSrc({
+  registerAttributionSrc({
     trigger: {
       event_trigger_data: [{}],
     },

@@ -15,7 +15,7 @@ attribution_reporting_promise_test(async t => {
       destination: 'https://{{host}}',
       max_event_level_reports: 2,
     };
-  await registerAttributionSrc({
+  registerAttributionSrc({
     cookie: attributionDebugCookie,
     source,
     method: 'a',
@@ -47,7 +47,7 @@ attribution_reporting_promise_test(async t => {
   assert_equals(reports[0].trigger_data, '3');
   assert_equals(reports[1].trigger_data, '4');
 
-  await registerAttributionSrc({
+  registerAttributionSrc({
     trigger: {
       event_trigger_data: [{
         trigger_data: '5'

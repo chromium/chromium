@@ -34,7 +34,7 @@ attribution_reporting_promise_test(async t => {
     destination: 'https://{{host}}',
     filter_data: inputJSON.source_filter_data,
   };
-  await registerAttributionSrc({
+  registerAttributionSrc({
     source,
     method: inputJSON.method === undefined ? 'open' : inputJSON.method,
     cookie: attributionDebugCookie,
@@ -46,7 +46,7 @@ attribution_reporting_promise_test(async t => {
   if (input === 'filters_lookback_window') {
     await new Promise(resolve => setTimeout(resolve, 2000));
   }
-  await registerAttributionSrc({
+  registerAttributionSrc({
     trigger: {
       event_trigger_data: inputJSON.event_trigger_data,
       debug_reporting: inputJSON.debug_reporting,
