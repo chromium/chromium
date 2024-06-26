@@ -334,7 +334,7 @@
     },
     {
       name: "AriaRowColIndexText",
-      status: "experimental",
+      status: "stable",
     },
     // See https://crbug.com/40150299, and
     // https://github.com/whatwg/dom/issues/1255.
