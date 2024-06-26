@@ -66,14 +66,10 @@ if (is_ios || is_android || is_chromeos ||
   # work for other hosts obviously.
   assert(!is_win || host_os == "win")
   _tests_launcher_toolchain = host_system_allocator_toolchain
-  _tests_launcher_toolchain_has_exe_suffix = host_os == "win"
   _symupload_toolchain = host_system_allocator_toolchain
-  _symupload_toolchain_has_exe_suffix = host_os == "win"
 } else {
   _tests_launcher_toolchain = default_system_allocator_toolchain
-  _tests_launcher_toolchain_has_exe_suffix = current_os == "win"
   _symupload_toolchain = host_system_allocator_toolchain
-  _symupload_toolchain_has_exe_suffix = host_os == "win"
 }
 
 # Copies an executable target to the root directory of the current toolchain.
@@ -86,7 +82,7 @@ template("copy_exe") {
   copy(target_name) {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "public_deps" ])
     public_deps = [ invoker.target ]
-    if (invoker.has_exe_suffix) {
+    if (is_win) {
       _exe = ".exe"
     } else {
       _exe = ""
@@ -386,15 +382,12 @@ if (!is_win) {
     # The default toolchain builds the system-allocator binaries, which are
     # placed in the output dir of the default toolchain.
     copy_exe("microdump_stackwalk") {
-      has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
       target = ":$target_name($_tests_launcher_toolchain)"
     }
     copy_exe("minidump_stackwalk") {
-      has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
       target = ":$target_name($_tests_launcher_toolchain)"
     }
     copy_exe("minidump_dump") {
-      has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
       target = ":$target_name($_tests_launcher_toolchain)"
     }
   }
@@ -547,11 +540,9 @@ if (is_mac) {
     # The default toolchain builds the system-allocator binaries, which are
     # placed in the output dir of the default toolchain.
     copy_exe("dump_syms") {
-      has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
       target = ":$target_name($_tests_launcher_toolchain)"
     }
     copy_exe("symupload") {
-      has_exe_suffix = _symupload_toolchain_has_exe_suffix
       target = ":$target_name($_symupload_toolchain)"
     }
   }
@@ -560,11 +551,9 @@ if (is_mac) {
 if (is_ios) {
   if (current_toolchain == default_toolchain) {
     copy_exe("dump_syms") {
-      has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
       target = ":$target_name($_tests_launcher_toolchain)"
     }
     copy_exe("symupload") {
-      has_exe_suffix = _symupload_toolchain_has_exe_suffix
       target = ":$target_name($_symupload_toolchain)"
     }
   }
@@ -677,11 +666,9 @@ if (is_linux || is_chromeos || is_android) {
     # The default toolchain builds the system-allocator binaries, which are
     # placed in the output dir of the default toolchain.
     copy_exe("dump_syms") {
-      has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
       target = ":$target_name($_tests_launcher_toolchain)"
     }
     copy_exe("symupload") {
-      has_exe_suffix = _symupload_toolchain_has_exe_suffix
       target = ":$target_name($_symupload_toolchain)"
     }
   }
@@ -938,21 +925,17 @@ if (is_linux || is_chromeos || is_android) {
     # built for the target machine, not the test-launcher machine.
     copy_exe("linux_dumper_unittest_helper") {
       testonly = true
-      has_exe_suffix = false
       target = ":$target_name($default_system_allocator_toolchain)"
     }
 
     copy_exe("generate_test_dump") {
       testonly = true
-      has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
       target = ":$target_name($_tests_launcher_toolchain)"
     }
     copy_exe("minidump-2-core") {
-      has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
       target = ":$target_name($_tests_launcher_toolchain)"
     }
     copy_exe("core-2-minidump") {
-      has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
       target = ":$target_name($_tests_launcher_toolchain)"
     }
   }
@@ -1115,15 +1098,12 @@ if (is_win) {
     # The default toolchain builds the system-allocator binaries, which are
     # placed in the output dir of the default toolchain.
     copy_exe("google_converter") {
-      has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
       target = ":$target_name($_tests_launcher_toolchain)"
     }
     copy_exe("symupload") {
-      has_exe_suffix = _symupload_toolchain_has_exe_suffix
       target = ":$target_name($_symupload_toolchain)"
     }
     copy_exe("dump_syms") {
-      has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
       target = ":$target_name($_tests_launcher_toolchain)"
     }
   }
