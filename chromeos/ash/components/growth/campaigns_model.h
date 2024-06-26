@@ -52,7 +52,8 @@ enum class BuiltInImage {
   kG1 = 1,
   kSparkRebuy = 2,
   kSpark1PApp = 3,
-  kMaxValue = kSpark1PApp
+  kSparkV2 = 4,
+  kMaxValue = kSparkV2
 };
 
 // Supported window anchor element.
