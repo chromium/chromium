@@ -17140,6 +17140,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_LENS_OVERLAY_CURSOR_TOOLTIP_LIVE_PAGE_MESSAGE" desc="Text that is shown in the Lens Overlay tooltip that appears beneath the cursor. Informs the user to click to exit Google Lens.">
       Click to exit Google Lens
     </message>
+    <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_MESSAGE" desc="Text
+    that is shown in the CTRL+F dialog next to the Google Lens button. Informs the user to click
+    to search anything on the page via Google Lens.">
+      Search anything on this page
+    </message>
+    <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_LABEL" desc="Label
+    for the Google Lens button in the CTRL+F dialog.">
+      Google Lens
+    </message>
     <message name="IDS_LENS_SEND_FEEDBACK" desc="Text that is shown in the more options menu to open the feedback dialog.">
       Send feedback
     </message>

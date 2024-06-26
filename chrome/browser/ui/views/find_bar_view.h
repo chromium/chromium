@@ -135,8 +135,7 @@ class FindBarView : public views::BoxLayoutView,
   raw_ptr<views::ImageButton> find_previous_button_;
   raw_ptr<views::ImageButton> find_next_button_;
   raw_ptr<views::ImageButton> close_button_;
-  raw_ptr<views::Separator> lens_button_separator_;
-  raw_ptr<views::MdTextButton> lens_button_;
+  raw_ptr<views::BoxLayoutView> lens_entrypoint_container_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, FindBarView, views::BoxLayoutView)
