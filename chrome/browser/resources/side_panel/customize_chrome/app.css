@@ -35,10 +35,15 @@ sp-heading {
 }
 
 #toolbarButton {
-  display: flex;
-  justify-content: space-between;
-  padding-right: 16px;
   border: none;
+  display: flex;
+  height: 48px;
+  justify-content: space-between;
+  padding: 8px 16px;
+}
+
+#toolbar-customization-heading {
+  padding: 0;
 }
 
 customize-chrome-appearance,

@@ -7848,7 +7848,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Shortcuts
       </message>
       <message name="IDS_NTP_CUSTOMIZE_MENU_TOOLBAR_LABEL" desc="The label for the option to customize toolbar icons in the customization menu on the New Tab Page. This is a button which opens a panel for customizing toolbar icons when clicked.">
-        Toolbar Icons
+        Toolbar
       </message>
       <message name="IDS_NTP_CUSTOMIZE_MENU_MODULES_LABEL" desc="The label for the modules option in the customization menu on the New Tab Page.">
         Cards
@@ -8228,10 +8228,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_SIGNED_OUT_TITLE" desc="The title of the message displayed when a wallpaper search request rejected because the user is signed out.">
         Please sign in to continue.
       </message>
+      <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CHOOSE_ICONS_LABEL" desc="Label for the description of the functionality of the section of Customize Chrome for selecting toolbar icons.">
+        Choose what buttons show in the toolbar
+      </message>
       <if expr="use_titlecase">
-        <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CHOOSE_ICONS_HEADER" desc="Header for the section of Customize Chrome for selecting toolbar icons.">
-          Choose Your Toolbar Icons
-        </message>
         <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CATEGORY_NAVIGATION" desc="The label for the category of actions that involve navigation, such as the home button or opening a new incognito window.">
           Navigation
         </message>
@@ -8249,9 +8249,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
       </if>
       <if expr="not use_titlecase">
-        <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CHOOSE_ICONS_HEADER" desc="Header for the section of Customize Chrome for selecting toolbar icons.">
-          Choose your toolbar icons
-        </message>
         <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CATEGORY_NAVIGATION" desc="The label for the category of actions that involve navigation, such as the home button or opening a new incognito window.">
           Navigation
         </message>

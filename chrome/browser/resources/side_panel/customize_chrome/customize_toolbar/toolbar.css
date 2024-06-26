@@ -10,7 +10,14 @@
  * #css_wrapper_metadata_end */
 
 .sp-card {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
   padding: var(--sp-card-padding);
+}
+
+#pinningSelectionCard {
+  padding: 16px 16px;
 }
 
 .sp-card sp-heading {
@@ -20,11 +27,20 @@
 .toggle-container {
   align-items: center;
   display: flex;
+  gap: 16px;
   justify-content: flex-start;
 }
 
 .choose-icons-row {
   margin: 16px 0;
+}
+
+.sp-card > :first-child {
+  margin-top: 0;
+}
+
+.sp-card > :last-child {
+  margin-bottom: 0;
 }
 
 .toggle-title {
@@ -33,9 +49,9 @@
 }
 
 .toggle-icon {
-  height: 20px;
+  height: 16px;
   object-fit: fill;
-  width: 20px;
+  width: 16px;
 }
 
 #resetToDefaultButton {
@@ -47,4 +63,13 @@
   height: 20px;
   object-fit: fill;
   width: 20px;
+}
+
+.intro-text {
+  color: var(--cr-secondary-text-color);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 20px;
+  text-align: center;
+  padding: 0 0 8px;
 }
