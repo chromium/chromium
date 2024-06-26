@@ -6,8 +6,6 @@
 
 #include <optional>
 
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -115,15 +113,8 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
   const auto& object = paint_layer_.GetLayoutObject();
   if (UNLIKELY(object.NeedsLayout() &&
                !object.ChildLayoutBlockedByDisplayLock())) {
-    // Skip if we need layout. This should never happen. See crbug.com/1423308.
-
-    // Record whether the LayoutView exists and if it needs layout.
-    LayoutView* view = object.GetFrameView()->GetLayoutView();
-    SCOPED_CRASH_KEY_BOOL("Crbug1423308", "ViewExists", !!view);
-    SCOPED_CRASH_KEY_BOOL("Crbug1423308", "ViewNeedsLayout",
-                          view && view->NeedsLayout());
-    base::debug::DumpWithoutCrashing();
-
+    // Skip if we need layout. This should never happen. See crbug.com/1423308
+    // and crbug.com/330051489.
     return kFullyPainted;
   }
 
