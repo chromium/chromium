@@ -30,11 +30,11 @@ const base::FeatureParam<int> kPassageExtractionMaxWordsPerAggregatePassage(
 const base::FeatureParam<int> kSearchQueryMinimumWordCount(
     &kHistoryEmbeddings,
     "SearchQueryMinimumWordCount",
-    3);
+    1);
 const base::FeatureParam<int> kSearchPassageMinimumWordCount(
     &kHistoryEmbeddings,
     "SearchPassageMinimumWordCount",
-    5);
+    2);
 
 const base::FeatureParam<int> kSearchResultItemCount(&kHistoryEmbeddings,
                                                      "SearchResultItemCount",
@@ -47,11 +47,12 @@ const base::FeatureParam<bool> kAtKeywordAcceleration(&kHistoryEmbeddings,
 const base::FeatureParam<double> kContentVisibilityThreshold(
     &kHistoryEmbeddings,
     "ContentVisibilityThreshold",
-    0.5);
+    0);
 
+// See comment at `history_embeddings::GetScoreThreshold()`.
 const base::FeatureParam<double> kSearchScoreThreshold(&kHistoryEmbeddings,
                                                        "SearchScoreThreshold",
-                                                       0.9);
+                                                       -1);
 
 const base::FeatureParam<bool> kUseMlAnswerer(&kHistoryEmbeddings,
                                               "UseMlAnswerer",
