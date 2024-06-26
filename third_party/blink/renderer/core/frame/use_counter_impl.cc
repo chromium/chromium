@@ -174,10 +174,16 @@ void UseCounterImpl::AddObserver(Observer* observer) {
 
 void UseCounterImpl::Count(const UseCounterFeature& feature,
                            const LocalFrame* source_frame) {
-  // Features can be accessed only while replaying, e.g. window.devicePixelRatio
-  // is accessed for reporting to the recorder.
+  // Some features might get accessed on divergent paths.
+  // E.g. window.devicePixelRatio.
   if (recordreplay::AreEventsDisallowed("UseCounterImpl::Count"))
     return;
+
+  REPLAY_ASSERT("[TT-366-1467] UseCounterImpl::Count %d %u %d %d",
+                !!source_frame,
+                mute_count_,
+                feature.type(),
+                feature.value());
 
   if (!source_frame)
     return;
