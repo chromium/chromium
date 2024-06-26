@@ -2724,9 +2724,6 @@ extern const char kSecurePaymentConfirmationAndroidDescription[];
 extern const char kShareCustomActionsInCCTName[];
 extern const char kShareCustomActionsInCCTDescription[];
 
-extern const char kShowNtpAtStartupAndroidName[];
-extern const char kShowNtpAtStartupAndroidDescription[];
-
 extern const char kSendTabToSelfV2Name[];
 extern const char kSendTabToSelfV2Description[];
 
@@ -2741,9 +2738,6 @@ extern const char kSmartZoomDescription[];
 
 extern const char kSmartSuggestionForLargeDownloadsName[];
 extern const char kSmartSuggestionForLargeDownloadsDescription[];
-
-extern const char kStartSurfaceAndroidName[];
-extern const char kStartSurfaceAndroidDescription[];
 
 extern const char kFeedPositionAndroidName[];
 extern const char kFeedPositionAndroidDescription[];

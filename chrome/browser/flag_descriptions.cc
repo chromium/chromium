@@ -4588,10 +4588,6 @@ const char kShareCustomActionsInCCTName[] = "Custom Actions in CCT";
 const char kShareCustomActionsInCCTDescription[] =
     "Display share custom actions Chrome Custom Tabs.";
 
-const char kShowNtpAtStartupAndroidName[] = "Show a NewTabPage at startup";
-const char kShowNtpAtStartupAndroidDescription[] =
-    "Enable showing a NewTabPage at startup after leaving Chrome for a while.";
-
 const char kSecurePaymentConfirmationAndroidName[] =
     "Secure Payment Confirmation on Android";
 const char kSecurePaymentConfirmationAndroidDescription[] =
@@ -4622,11 +4618,6 @@ const char kSmartSuggestionForLargeDownloadsName[] =
     "Smart suggestion for large downloads";
 const char kSmartSuggestionForLargeDownloadsDescription[] =
     "Smart suggestion that offers download locations for large files.";
-
-const char kStartSurfaceAndroidName[] = "Start Surface";
-const char kStartSurfaceAndroidDescription[] =
-    "Enable showing the start surface when launching Chrome via the "
-    "launcher.";
 
 const char kFeedPositionAndroidName[] = "Feed Position";
 const char kFeedPositionAndroidDescription[] =

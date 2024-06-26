@@ -3846,11 +3846,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-show-ntp-at-startup",
-    "owners": ["clank-start@chromium.org","hanxi@chromium.org","xinyiji@chromium.org"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-signed-out-view-demotion",
     "owners": [ "sczs@chromium.org", "tinazwang@chromium.org" ],
     "expiry_milestone": 135
@@ -3901,11 +3896,6 @@
     "name": "enable-standard-device-bound-session-credentials",
     "owners": [ "chlily@chromium.org",  "kristianm@chromium.org"],
     "expiry_milestone": 132
-  },
-  {
-    "name": "enable-start-surface",
-    "owners": [ "hanxi@chromium.org", "wychen@chromium.org" ],
-    "expiry_milestone": 140
   },
   {
     "name": "enable-start-surface-return-time",

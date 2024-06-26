@@ -2509,43 +2509,6 @@ const FeatureEntry::FeatureVariation
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kStartSurfaceAndroid_CandidateA[] = {
-    {"open_ntp_instead_of_start", "false"},
-    {"open_start_as_homepage", "true"}};
-
-const FeatureEntry::FeatureParam kStartSurfaceAndroid_CandidateA_SyncCheck[] = {
-    {"open_ntp_instead_of_start", "false"},
-    {"open_start_as_homepage", "true"},
-    {"check_sync_before_show_start_at_startup", "true"}};
-
-const FeatureEntry::FeatureParam
-    kStartSurfaceAndroid_CandidateA_SigninPromoTimeLimit[] = {
-        {"open_ntp_instead_of_start", "false"},
-        {"open_start_as_homepage", "true"},
-        {"sign_in_promo_show_since_last_background_limit_ms", "30000"}};
-
-const FeatureEntry::FeatureParam kStartSurfaceAndroid_CandidateB[] = {
-    {"open_ntp_instead_of_start", "true"}};
-
-const FeatureEntry::FeatureParam
-    kStartSurfaceAndroid_CandidateB_AlwaysShowIncognito[] = {
-        {"hide_switch_when_no_incognito_tabs", "false"}};
-
-const FeatureEntry::FeatureVariation kStartSurfaceAndroidVariations[] = {
-    {"Candidate A", kStartSurfaceAndroid_CandidateA,
-     std::size(kStartSurfaceAndroid_CandidateA), nullptr},
-    {"Candidate A + Sync check", kStartSurfaceAndroid_CandidateA_SyncCheck,
-     std::size(kStartSurfaceAndroid_CandidateA_SyncCheck), nullptr},
-    {"Candidate A + Sign in promo backgrounded time limit",
-     kStartSurfaceAndroid_CandidateA_SigninPromoTimeLimit,
-     std::size(kStartSurfaceAndroid_CandidateA_SigninPromoTimeLimit), nullptr},
-    {"Candidate B", kStartSurfaceAndroid_CandidateB,
-     std::size(kStartSurfaceAndroid_CandidateB), nullptr},
-    {"Candidate B + Always show Incognito icon",
-     kStartSurfaceAndroid_CandidateB_AlwaysShowIncognito,
-     std::size(kStartSurfaceAndroid_CandidateB_AlwaysShowIncognito), nullptr},
-};
-
 const FeatureEntry::FeatureParam kLogoPolish_large[] = {
     {"polish_logo_size_large", "true"},
     {"polish_logo_size_medium", "false"}};
@@ -7347,12 +7310,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNavBarColorMatchesTabBackgroundDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kNavBarColorMatchesTabBackground)},
 
-    {"enable-start-surface", flag_descriptions::kStartSurfaceAndroidName,
-     flag_descriptions::kStartSurfaceAndroidDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kStartSurfaceAndroid,
-                                    kStartSurfaceAndroidVariations,
-                                    "ChromeStart")},
-
     {"enable-feed-position-on-ntp", flag_descriptions::kFeedPositionAndroidName,
      flag_descriptions::kFeedPositionAndroidDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kFeedPositionAndroid,
@@ -7406,11 +7363,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"search-in-cct", flag_descriptions::kSearchInCCTName,
      flag_descriptions::kSearchInCCTDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSearchInCCT)},
-
-    {"enable-show-ntp-at-startup",
-     flag_descriptions::kShowNtpAtStartupAndroidName,
-     flag_descriptions::kShowNtpAtStartupAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kShowNtpAtStartupAndroid)},
 
     {"enable-search-resumption-module",
      flag_descriptions::kSearchResumptionModuleAndroidName,
