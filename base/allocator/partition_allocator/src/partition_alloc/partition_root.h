@@ -369,8 +369,11 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   int16_t global_empty_slot_span_ring_size
       PA_GUARDED_BY(internal::PartitionRootLock(this)) =
           internal::kDefaultEmptySlotSpanRingSize;
-  unsigned int purge_next_bucket_index
+  uint16_t purge_generation PA_GUARDED_BY(internal::PartitionRootLock(this)) =
+      0;
+  uint16_t purge_next_bucket_index
       PA_GUARDED_BY(internal::PartitionRootLock(this)) = 0;
+  static_assert(kNumBuckets < std::numeric_limits<uint16_t>::max());
 
   // Integrity check = ~reinterpret_cast<uintptr_t>(this).
   uintptr_t inverted_self = 0;

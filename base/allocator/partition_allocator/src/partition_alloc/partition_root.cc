@@ -1512,10 +1512,14 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
 }
 
 void PartitionRoot::PurgeMemory(int flags) {
+  auto start = now_maybe_overridden_for_testing();
+  unsigned int local_purge_generation, local_purge_next_bucket_index;
+
   {
     ::partition_alloc::internal::ScopedGuard guard{
         internal::PartitionRootLock(this)};
-    auto start = now_maybe_overridden_for_testing();
+    local_purge_next_bucket_index = purge_next_bucket_index;
+    local_purge_generation = purge_generation;
 
 #if PA_BUILDFLAG(USE_STARSCAN)
     // Avoid purging if there is PCScan task currently scheduled. Since pcscan
@@ -1535,43 +1539,70 @@ void PartitionRoot::PurgeMemory(int flags) {
         return;
       }
     }
-    if (flags & PurgeFlags::kDiscardUnusedSystemPages) {
-      for (unsigned int bucket_index = purge_next_bucket_index;
-           bucket_index < internal::kNumBuckets; bucket_index++) {
-        Bucket& bucket = buckets[bucket_index];
-        if (bucket.slot_size == internal::kInvalidBucketSize) {
-          continue;
-        }
+  }
 
-        // Don't do the most expensive operation except for the largest buckets,
-        // where the cost of doing so is lower, and gains are likely higher.
-        size_t min_bucket_size_to_purge =
-            (flags & PurgeFlags::kLimitDuration)
-                ? internal::MinConservativePurgeableSlotSize()
-                : internal::MinPurgeableSlotSize();
-        if (bucket.slot_size >= min_bucket_size_to_purge) {
-          internal::PartitionPurgeBucket(this, &bucket);
-        } else {
-          if (sort_smaller_slot_span_free_lists_) {
-            bucket.SortSmallerSlotSpanFreeLists();
-          }
-        }
+  if (flags & PurgeFlags::kDiscardUnusedSystemPages) {
+    // Don't do the most expensive operation except for the largest buckets,
+    // where the cost of doing so is lower, and gains are likely higher,
+    // except in two cases
+    // - We don't care about reclaim duration
+    // - It's been a long time (16 walks through the entire bucket list)
+    //
+    // Note that in the latter case, we still limit total reclaim duration.
+    size_t min_bucket_size_to_purge =
+        internal::MinConservativePurgeableSlotSize();
+    if (!(flags & PurgeFlags::kLimitDuration) || !local_purge_generation) {
+      min_bucket_size_to_purge = internal::MinPurgeableSlotSize();
+    }
 
-        // Do it at the end, as the actions above change the status of slot
-        // spans (e.g. empty -> decommitted).
-        bucket.MaintainActiveList();
+    for (unsigned int bucket_index = local_purge_next_bucket_index;
+         bucket_index < internal::kNumBuckets; bucket_index++) {
+      // Only acquire the lock for a single iteration, so that if there is a
+      // waiter blocked on it, it can steal it from us before the next
+      // one.
+      ::partition_alloc::internal::ScopedGuard guard{
+          internal::PartitionRootLock(this)};
 
-        if (sort_active_slot_spans_) {
-          bucket.SortActiveSlotSpans();
-        }
-        if (flags & PurgeFlags::kLimitDuration &&
-            (now_maybe_overridden_for_testing() - start > kMaxPurgeDuration)) {
-          // Pick up where we stopped next time.
-          purge_next_bucket_index = (bucket_index + 1) % kNumBuckets;
-          return;
+      Bucket& bucket = buckets[bucket_index];
+      if (bucket.slot_size == internal::kInvalidBucketSize) {
+        continue;
+      }
+
+      if (bucket.slot_size >= min_bucket_size_to_purge) {
+        internal::PartitionPurgeBucket(this, &bucket);
+      } else {
+        if (sort_smaller_slot_span_free_lists_) {
+          bucket.SortSmallerSlotSpanFreeLists();
         }
       }
+
+      // Do it at the end, as the actions above change the status of slot
+      // spans (e.g. empty -> decommitted).
+      bucket.MaintainActiveList();
+
+      if (sort_active_slot_spans_) {
+        bucket.SortActiveSlotSpans();
+      }
+      // Checking at the end to make sure we make progress by processing at
+      // least one bucket.
+      if (flags & PurgeFlags::kLimitDuration &&
+          (now_maybe_overridden_for_testing() - start > kMaxPurgeDuration)) {
+        // Pick up where we stopped next time.
+        purge_next_bucket_index = (bucket_index + 1) % kNumBuckets;
+        return;
+      }
+    }
+
+    {
+      ::partition_alloc::internal::ScopedGuard guard{
+          internal::PartitionRootLock(this)};
+      // In theory, these may have been modified since we last read them into
+      // the local variables at the beginning of the function. This should not
+      // happen (since Purge() runs on a single thread), and also does not
+      // matter since we just want to make sure to not do too much work and to
+      // make some progress.
       purge_next_bucket_index = 0;
+      purge_generation = (purge_generation + 1) % 16;
     }
   }
 }
