@@ -20,6 +20,7 @@ source_set("customization") {
     "//ash",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/net",
     "//chrome/browser/profiles",
     "//chrome/common",
     "//chromeos/ash/components/system",
@@ -57,5 +58,6 @@ source_set("unit_tests") {
   deps = [
     ":customization",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/net",
   ]
 }

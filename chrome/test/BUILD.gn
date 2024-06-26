@@ -898,6 +898,7 @@ static_library("test_support") {
       "//ash/constants",
       "//chrome/browser/ash:print_job_info_proto",
       "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/net",
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/ui/ash/system_web_apps",
       "//chromeos/ash/components/attestation:test_support",
@@ -4528,6 +4529,7 @@ if (!is_android) {
       ]
       deps += [
         "//chrome/browser/ash/mahi",
+        "//chrome/browser/ash/net",
         "//chromeos/printing:test_support",
         "//components/global_media_controls:test_support",
       ]
@@ -11688,6 +11690,7 @@ if (!is_android && !is_chromeos_device) {
           "//chrome/browser/ash/accessibility:test_support",
           "//chrome/browser/ash/app_restore",
           "//chrome/browser/ash/crosapi",
+          "//chrome/browser/ash/net",
           "//chrome/browser/ash/system_web_apps/test_support",
           "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
           "//chrome/test/base/ash/interactive:interactive_ui_tests",
@@ -12251,6 +12254,7 @@ source_set("sync_integration_test_support") {
       "//ash/components/arc:arc_test_support",
       "//ash/components/arc/mojom",
       "//chrome/browser/ash:test_support",
+      "//chrome/browser/ash/net",
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chromeos/ash/components/network/portal_detector",
       "//chromeos/printing",

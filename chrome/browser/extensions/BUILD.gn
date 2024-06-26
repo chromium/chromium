@@ -1247,6 +1247,7 @@ source_set("extensions") {
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
       "//chrome/browser/ash/customization",
+      "//chrome/browser/ash/net",
       "//chrome/browser/ash/system_web_apps/apps",
       "//chrome/browser/devtools",
       "//chrome/browser/nearby_sharing/common",
@@ -1311,6 +1312,7 @@ source_set("extensions") {
       "//chrome/browser/ash/bruschetta",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/customization",
+      "//chrome/browser/ash/net",
       "//chrome/browser/ash/system_web_apps/apps",
     ]
 
