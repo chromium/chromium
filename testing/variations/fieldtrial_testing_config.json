@@ -6145,6 +6145,21 @@
             ]
         }
     ],
+    "CrOSAudioHfpMicSrToggle": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240625",
+                    "enable_features": [
+                        "AudioHFPMicSRToggle"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSBluetoothA2dpAacCodec": [
         {
             "platforms": [
