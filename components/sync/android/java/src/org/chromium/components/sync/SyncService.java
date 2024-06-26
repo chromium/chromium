@@ -14,7 +14,6 @@ import org.chromium.base.Callback;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 
-import java.util.Date;
 import java.util.Set;
 
 /**
@@ -173,20 +172,13 @@ public interface SyncService {
     public void removeSyncStateChangedListener(SyncStateChangedListener listener);
 
     /**
-     * Returns the actual passphrase type being used for encryption. The sync engine must be
-     * running (isEngineInitialized() returns true) before calling this function.
-     * <p/>
-     * This method should only be used if you want to know the raw value. For checking whether
-     * we should ask the user for a passphrase, use isPassphraseRequiredForPreferredDataTypes().
+     * Returns the actual passphrase type being used for encryption. The sync engine must be running
+     * (isEngineInitialized() returns true) before calling this function.
+     *
+     * <p>This method should only be used if you want to know the raw value. For checking whether we
+     * should ask the user for a passphrase, use isPassphraseRequiredForPreferredDataTypes().
      */
     public @PassphraseType int getPassphraseType();
-
-    /**
-     * Returns the time the current explicit passphrase was set (if any). Null if no explicit
-     * passphrase is in use, or no time is available.
-     */
-    // TODO(crbug.com/40944114): Remove this method since no usage exists anymore.
-    public @Nullable Date getExplicitPassphraseTime();
 
     /**
      * Checks if sync is currently set to use a custom passphrase (or the similar -and legacy-

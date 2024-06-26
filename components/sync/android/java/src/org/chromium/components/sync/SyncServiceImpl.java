@@ -21,7 +21,6 @@ import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -303,16 +302,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
             throw new IllegalArgumentException();
         }
         return passphraseType;
-    }
-
-    @Override
-    public @Nullable Date getExplicitPassphraseTime() {
-        mThreadChecker.assertOnValidThread();
-        assert mSyncServiceAndroidBridge != 0;
-        assert isEngineInitialized();
-        long timeInMilliseconds =
-                SyncServiceImplJni.get().getExplicitPassphraseTime(mSyncServiceAndroidBridge);
-        return timeInMilliseconds != 0 ? new Date(timeInMilliseconds) : null;
     }
 
     @Override

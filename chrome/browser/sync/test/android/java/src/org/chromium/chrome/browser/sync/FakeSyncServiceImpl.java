@@ -19,7 +19,6 @@ import org.chromium.components.sync.SyncServiceImpl;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-import java.util.Date;
 import java.util.Set;
 
 /**
@@ -285,12 +284,6 @@ public class FakeSyncServiceImpl implements SyncService {
     @Override
     public int getPassphraseType() {
         return mDelegate.getPassphraseType();
-    }
-
-    @Nullable
-    @Override
-    public Date getExplicitPassphraseTime() {
-        return mDelegate.getExplicitPassphraseTime();
     }
 
     @Override
