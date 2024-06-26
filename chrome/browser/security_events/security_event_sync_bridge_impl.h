@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/security_events/security_event_sync_bridge.h"
 #include "components/sync/model/model_type_change_processor.h"
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/model_type_store_with_in_memory_cache.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 
 class SecurityEventSyncBridgeImpl : public SecurityEventSyncBridge,
@@ -51,26 +51,14 @@ class SecurityEventSyncBridgeImpl : public SecurityEventSyncBridge,
                                    delete_metadata_change_list) override;
 
  private:
-  void OnStoreCreated(const std::optional<syncer::ModelError>& error,
-                      std::unique_ptr<syncer::ModelTypeStore> store);
-
-  void OnReadData(
-      DataCallback callback,
+  void OnStoreLoaded(
       const std::optional<syncer::ModelError>& error,
-      std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records,
-      std::unique_ptr<syncer::ModelTypeStore::IdList> missing_id_list);
+      std::unique_ptr<syncer::ModelTypeStoreWithInMemoryCache> store,
+      std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
-  void OnReadAllData(
-      DataCallback callback,
-      const std::optional<syncer::ModelError>& error,
-      std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records);
+  void OnStoreCommit(const std::optional<syncer::ModelError>& error);
 
-  void OnReadAllMetadata(const std::optional<syncer::ModelError>& error,
-                         std::unique_ptr<syncer::MetadataBatch> metadata_batch);
-
-  void OnCommit(const std::optional<syncer::ModelError>& error);
-
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  std::unique_ptr<syncer::ModelTypeStoreWithInMemoryCache> store_;
 
   base::WeakPtrFactory<SecurityEventSyncBridgeImpl> weak_ptr_factory_{this};
 };

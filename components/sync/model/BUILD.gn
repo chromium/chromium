@@ -40,6 +40,8 @@ static_library("model") {
     "model_type_store_service.h",
     "model_type_store_service_impl.cc",
     "model_type_store_service_impl.h",
+    "model_type_store_with_in_memory_cache.cc",
+    "model_type_store_with_in_memory_cache.h",
     "model_type_sync_bridge.cc",
     "model_type_sync_bridge.h",
     "mutable_data_batch.cc",
