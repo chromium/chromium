@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/video_capture/device_factory_impl.h"
+#include "services/video_capture/public/cpp/features.h"
 #include "services/video_capture/testing_controls_impl.h"
 #include "services/video_capture/video_source_provider_impl.h"
 #include "services/video_capture/virtual_device_enabled_device_factory.h"
@@ -257,6 +258,12 @@ VideoCaptureServiceImpl::VideoCaptureServiceImpl(
     media::CameraAppDeviceBridgeImpl::GetInstance()->SetUITaskRunner(
         ui_task_runner_);
 #endif
+#if BUILDFLAG(IS_WIN)
+    if (base::FeatureList::IsEnabled(
+            features::kWinCameraMonitoringInVideoCaptureService)) {
+      InitializeDeviceMonitor();
+    }
+#endif
 }
 
 VideoCaptureServiceImpl::~VideoCaptureServiceImpl() {
@@ -428,6 +435,16 @@ void VideoCaptureServiceImpl::InitializeDeviceMonitor() {
       base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::TaskPriority::USER_VISIBLE}));
   video_capture_device_monitor_mac_->StartMonitoring();
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  CHECK(base::FeatureList::IsEnabled(
+      features::kWinCameraMonitoringInVideoCaptureService));
+  if (video_capture_system_message_window_win_) {
+    return;
+  }
+  video_capture_system_message_window_win_ =
+      std::make_unique<media::SystemMessageWindowWin>();
 #endif
 }
 

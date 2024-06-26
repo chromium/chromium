@@ -154,6 +154,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
+#include "services/video_capture/public/cpp/features.h"
 #include "skia/ext/event_tracer_impl.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "skia/ext/skia_memory_dump_provider.h"
@@ -1375,7 +1376,10 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
   }
 
 #if BUILDFLAG(IS_WIN)
-  system_message_window_ = std::make_unique<media::SystemMessageWindowWin>();
+  if (!base::FeatureList::IsEnabled(
+          video_capture::features::kWinCameraMonitoringInVideoCaptureService)) {
+    system_message_window_ = std::make_unique<media::SystemMessageWindowWin>();
+  }
 #elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
   device_monitor_linux_ = std::make_unique<media::DeviceMonitorLinux>();
 #endif

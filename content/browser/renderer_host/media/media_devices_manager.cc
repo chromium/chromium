@@ -43,6 +43,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/mojom/device_notifications.mojom.h"
+#include "services/video_capture/public/cpp/features.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 
@@ -651,11 +652,14 @@ void MediaDevicesManager::StartMonitoring() {
     RegisterVideoCaptureDevicesChangedObserver();
 #endif
 #if BUILDFLAG(IS_WIN)
-  if (switches::IsMediaFoundationCameraUsageMonitoringEnabled() &&
-      !base::FeatureList::IsEnabled(
-          features::kRunVideoCaptureServiceInBrowserProcess)) {
-    RegisterVideoCaptureDevicesChangedObserver();
-  }
+    if ((base::FeatureList::IsEnabled(
+             video_capture::features::
+                 kWinCameraMonitoringInVideoCaptureService) ||
+         switches::IsMediaFoundationCameraUsageMonitoringEnabled()) &&
+        !base::FeatureList::IsEnabled(
+            features::kRunVideoCaptureServiceInBrowserProcess)) {
+      RegisterVideoCaptureDevicesChangedObserver();
+    }
 #endif
 }
 

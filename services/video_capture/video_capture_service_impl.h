@@ -36,6 +36,10 @@
 #include "media/device_monitors/device_monitor_mac.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "media/device_monitors/system_message_window_win.h"
+#endif
+
 namespace video_capture {
 
 class VirtualDeviceEnabledDeviceFactory;
@@ -95,6 +99,10 @@ class VideoCaptureServiceImpl : public mojom::VideoCaptureService {
 
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<media::DeviceMonitorMac> video_capture_device_monitor_mac_;
+#endif
+#if BUILDFLAG(IS_WIN)
+  std::unique_ptr<media::SystemMessageWindowWin>
+      video_capture_system_message_window_win_;
 #endif
 
   mojo::Receiver<mojom::VideoCaptureService> receiver_;
