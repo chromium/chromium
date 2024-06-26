@@ -226,6 +226,10 @@ inline constexpr char kCrashReasonFeedbackDisplayedURL[] =
     "https://support.google.com/chrome?p=e_awsnap_rl";
 #endif
 
+// "Learn more" URL for the inactive tabs appearance setting.
+inline constexpr char kDiscardRingTreatmentLearnMoreUrl[] =
+    "https://support.google.com/chrome?p=performance_personalization";
+
 // "Learn more" URL for the "Do not track" setting in the privacy section.
 inline constexpr char16_t kDoNotTrackLearnMoreURL[] =
 #if BUILDFLAG(IS_CHROMEOS_ASH)

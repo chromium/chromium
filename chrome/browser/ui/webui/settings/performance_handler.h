@@ -50,10 +50,7 @@ class PerformanceHandler : public SettingsPageUIHandler,
    * that it is ready to receive updates for future battery status changes.
    */
   void HandleGetDeviceHasBattery(const base::Value::List& args);
-  void HandleOpenBatterySaverFeedbackDialog(const base::Value::List& args);
-  void HandleOpenMemorySaverFeedbackDialog(const base::Value::List& args);
-  void HandleOpenSpeedFeedbackDialog(const base::Value::List& args);
-  void HandleOpenFeedbackDialog(const std::string category_tag);
+  void HandleOpenFeedbackDialog(const base::Value::List& args);
   void HandleValidateTabDiscardExceptionRule(const base::Value::List& args);
 };
 

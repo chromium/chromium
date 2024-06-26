@@ -1348,8 +1348,14 @@
   <message name="IDS_SETTINGS_PERFORMANCE_DISCARD_RING_TREATMENT_ENABLED_LABEL" desc="Label for a performance settings toggle that controls whether the inactive tab UI is shown">
     Inactive tabs appearance
   </message>
-  <message name="IDS_SETTINGS_PERFORMANCE_DISCARD_RING_TREATMENT_ENABLED_DESCRIPTION" desc="Label for a performance settings toggle description that controls whether the inactive tab UI is shown">
-    A dotted circle appears around site icons.
+  <message name="IDS_SETTINGS_PERFORMANCE_DISCARD_RING_TREATMENT_ENABLED_DESCRIPTION_WITH_LEARN_LINK" desc="Label for a performance settings toggle description that controls whether the inactive tab UI is shown. Also contains a link to the help center article.">
+    A dotted circle appears around site icons. <ph name="BEGIN_LINK">&lt;a href="#" aria-description="$1"&gt;</ph>Learn more about inactive tabs<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_TAB_HOVER_PREVIEW_CARD_LINK_TITLE" desc="Title for the link row that points to tab hover preview card apperance settings.">
+    Tab hover preview card appearance
+  </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_TAB_HOVER_PREVIEW_CARD_LINK_SUBTITLE" desc="Subtitle for the link row that points to tab hover preview card apperance settings.">
+    Choose to show memory usage and images in the tab hover preview card
   </message>
 
   <!-- Languages Page -->

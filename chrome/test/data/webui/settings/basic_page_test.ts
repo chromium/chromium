@@ -425,6 +425,10 @@ suite('Performance', () => {
     return page.shadowRoot!.querySelector('#performanceSettingsSection');
   }
 
+  function queryMemorySettingsSection(): SettingsSectionElement|null {
+    return page.shadowRoot!.querySelector('#memorySettingsSection');
+  }
+
   function queryBatterySettingsSection(): SettingsSectionElement|null {
     return page.shadowRoot!.querySelector('#batterySettingsSection');
   }
@@ -455,6 +459,10 @@ suite('Performance', () => {
     assertEquals(
         queryPerformanceSettingsSection()!.shadowRoot!.querySelector('h2')
             ?.innerText,
+        loadTimeData.getString('performancePageTitle'));
+    assertEquals(
+        queryMemorySettingsSection()!.shadowRoot!.querySelector('h2')
+            ?.innerText,
         loadTimeData.getString('memoryPageTitle'));
     assertEquals(
         queryBatterySettingsSection()!.shadowRoot!.querySelector('h2')
@@ -472,14 +480,17 @@ suite('Performance', () => {
     flush();
 
     assertTrue(
+        !!queryPerformanceSettingsSection(),
+        'Performance section should exist with default page visibility');
+    assertTrue(
+        !!queryMemorySettingsSection(),
+        'Memory section should exist with default page visibility');
+    assertTrue(
         !!queryBatterySettingsSection(),
         'Battery section should exist with default page visibility');
     assertTrue(
         !!querySpeedSettingsSection(),
         'Speed section should exist with default page visibility');
-    assertTrue(
-        !!queryPerformanceSettingsSection(),
-        'Performance section should exist with default page visibility');
 
     // Set the visibility of the pages under test to "false".
     page.pageVisibility = Object.assign(pageVisibility || {}, {
@@ -488,14 +499,17 @@ suite('Performance', () => {
     flush();
 
     assertFalse(
+        !!queryPerformanceSettingsSection(),
+        'Performance section should not exist when visibility is false');
+    assertFalse(
+        !!queryMemorySettingsSection(),
+        'Memory section should not exist when visibility is false');
+    assertFalse(
         !!queryBatterySettingsSection(),
         'Battery section should not exist when visibility is false');
     assertFalse(
         !!querySpeedSettingsSection(),
         'Speed section should not exist when visibility is false');
-    assertFalse(
-        !!queryPerformanceSettingsSection(),
-        'Performance section should not exist when visibility is false');
   });
 
   test('performanceVisibilityTestDeviceHasBattery', async function() {

@@ -33,18 +33,8 @@ void PerformanceHandler::RegisterMessages() {
       base::BindRepeating(&PerformanceHandler::HandleGetDeviceHasBattery,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "openBatterySaverFeedbackDialog",
-      base::BindRepeating(
-          &PerformanceHandler::HandleOpenBatterySaverFeedbackDialog,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "openMemorySaverFeedbackDialog",
-      base::BindRepeating(
-          &PerformanceHandler::HandleOpenMemorySaverFeedbackDialog,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "openSpeedFeedbackDialog",
-      base::BindRepeating(&PerformanceHandler::HandleOpenSpeedFeedbackDialog,
+      "openPerformanceFeedbackDialog",
+      base::BindRepeating(&PerformanceHandler::HandleOpenFeedbackDialog,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "validateTabDiscardExceptionRule",
@@ -125,23 +115,11 @@ void PerformanceHandler::HandleGetDeviceHasBattery(
                                        ->DeviceHasBattery()));
 }
 
-void PerformanceHandler::HandleOpenBatterySaverFeedbackDialog(
-    const base::Value::List& args) {
-  HandleOpenFeedbackDialog("performance_battery");
-}
-
-void PerformanceHandler::HandleOpenMemorySaverFeedbackDialog(
-    const base::Value::List& args) {
-  HandleOpenFeedbackDialog("performance_tabs");
-}
-
-void PerformanceHandler::HandleOpenSpeedFeedbackDialog(
-    const base::Value::List& args) {
-  HandleOpenFeedbackDialog("performance_speed");
-}
-
 void PerformanceHandler::HandleOpenFeedbackDialog(
-    const std::string category_tag) {
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const std::string category_tag = args[0].GetString();
+
   Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   DCHECK(browser);
   std::string unused;

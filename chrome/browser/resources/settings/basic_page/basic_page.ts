@@ -21,6 +21,7 @@ import '../controls/settings_idle_load.js';
 import '../on_startup_page/on_startup_page.js';
 import '../people_page/people_page.js';
 import '../performance_page/battery_page.js';
+import '../performance_page/memory_page.js';
 import '../performance_page/performance_page.js';
 import '../performance_page/speed_page.js';
 import '../reset_page/reset_profile_banner.js';
@@ -55,7 +56,7 @@ import type {LanguageHelper, LanguagesModel} from '../languages_page/languages_t
 // </if>
 import type {PageVisibility} from '../page_visibility.js';
 import type {PerformanceBrowserProxy} from '../performance_page/performance_browser_proxy.js';
-import {PerformanceBrowserProxyImpl} from '../performance_page/performance_browser_proxy.js';
+import {PerformanceBrowserProxyImpl, PerformanceFeedbackCategory} from '../performance_page/performance_browser_proxy.js';
 import {PrivacyGuideAvailabilityMixin} from '../privacy_page/privacy_guide/privacy_guide_availability_mixin.js';
 import type {PrivacyGuideBrowserProxy} from '../privacy_page/privacy_guide/privacy_guide_browser_proxy.js';
 import {MAX_PRIVACY_GUIDE_PROMO_IMPRESSION, PrivacyGuideBrowserProxyImpl} from '../privacy_page/privacy_guide/privacy_guide_browser_proxy.js';
@@ -358,19 +359,28 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         this.showPage_(visibility);
   }
 
+  private onSendPerformanceFeedbackClick_(e: Event) {
+    e.stopPropagation();
+    this.performanceBrowserProxy_.openFeedbackDialog(
+        PerformanceFeedbackCategory.NOTIFICATIONS);
+  }
+
   private onSendMemorySaverFeedbackClick_(e: Event) {
     e.stopPropagation();
-    this.performanceBrowserProxy_.openMemorySaverFeedbackDialog();
+    this.performanceBrowserProxy_.openFeedbackDialog(
+        PerformanceFeedbackCategory.TABS);
   }
 
   private onSendBatterySaverFeedbackClick_(e: Event) {
     e.stopPropagation();
-    this.performanceBrowserProxy_.openBatterySaverFeedbackDialog();
+    this.performanceBrowserProxy_.openFeedbackDialog(
+        PerformanceFeedbackCategory.BATTERY);
   }
 
   private onSendSpeedFeedbackClick_(e: Event) {
     e.stopPropagation();
-    this.performanceBrowserProxy_.openSpeedFeedbackDialog();
+    this.performanceBrowserProxy_.openFeedbackDialog(
+        PerformanceFeedbackCategory.SPEED);
   }
   // </if>
 }

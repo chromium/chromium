@@ -678,37 +678,49 @@ IN_PROC_BROWSER_TEST_F(SettingsLanguagePageTest, MetricsBrowser) {
 
 using SettingsPerformancePageTest = SettingsBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(SettingsPerformancePageTest, Controls) {
-  RunTest("settings/performance_page_test.js",
-          "runMochaSuite('PerformancePage')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsPerformancePageTest, ExceptionList) {
+IN_PROC_BROWSER_TEST_F(SettingsPerformancePageTest, TabDiscardExceptionList) {
   RunTest("settings/performance_page_test.js",
           "runMochaSuite('TabDiscardExceptionList')");
 }
 
-class SettingsPerformancePageImprovementsTest : public SettingsBrowserTest {
+class SettingsPerformancePageDiscardIndicatorTest : public SettingsBrowserTest {
  protected:
-  SettingsPerformancePageImprovementsTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {performance_manager::features::kMemorySaverModeAggressiveness,
-         performance_manager::features::kDiscardRingImprovements},
-        {});
+  SettingsPerformancePageDiscardIndicatorTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        performance_manager::features::kDiscardRingImprovements);
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SettingsPerformancePageImprovementsTest, Controls) {
+IN_PROC_BROWSER_TEST_F(SettingsPerformancePageDiscardIndicatorTest,
+                       DiscardIndicator) {
   RunTest("settings/performance_page_test.js",
-          "runMochaSuite('PerformancePageImprovements')");
+          "runMochaSuite('DiscardIndicator')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPerformancePageImprovementsTest, ExceptionList) {
-  RunTest("settings/performance_page_test.js",
-          "runMochaSuite('TabDiscardExceptionList')");
+using SettingsMemoryPageTest = SettingsBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(SettingsMemoryPageTest, MemorySaver) {
+  RunTest("settings/memory_page_test.js", "runMochaSuite('MemorySaver')");
+}
+
+class SettingsMemoryPageAggressivenessTest : public SettingsBrowserTest {
+ protected:
+  SettingsMemoryPageAggressivenessTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        performance_manager::features::kMemorySaverModeAggressiveness);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsMemoryPageAggressivenessTest,
+                       MemorySaverAggressiveness) {
+  RunTest("settings/memory_page_test.js",
+          "runMochaSuite('MemorySaverAggressiveness')");
 }
 
 class SettingsPersonalizationOptionsTest : public SettingsBrowserTest {

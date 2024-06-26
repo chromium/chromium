@@ -2,31 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://settings/lazy_load.js';
 import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {CrCollapseElement, CrIconButtonElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
+import type {CrIconButtonElement} from 'chrome://settings/lazy_load.js';
 import type {ExceptionEditDialogElement, ExceptionEntryElement, ExceptionListElement, ExceptionTabbedAddDialogElement, SettingsCheckboxListEntryElement, SettingsPerformancePageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {convertDateToWindowsEpoch, DISCARD_RING_PREF, MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF, MEMORY_SAVER_MODE_PREF, MemorySaverModeAggressiveness, MemorySaverModeExceptionListAction, MemorySaverModeState, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
+import {convertDateToWindowsEpoch, DISCARD_RING_PREF, MemorySaverModeExceptionListAction, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
 import {TestPerformanceMetricsProxy} from './test_performance_metrics_proxy.js';
-
-const memorySaverModeMockPrefs = {
-  high_efficiency_mode: {
-    state: {
-      type: chrome.settingsPrivate.PrefType.NUMBER,
-      value: MemorySaverModeState.DISABLED,
-    },
-    aggressiveness: {
-      type: chrome.settingsPrivate.PrefType.NUMBER,
-      value: MemorySaverModeAggressiveness.MEDIUM,
-    },
-  },
-};
 
 const discardRingStateMockPrefs = {
   discard_ring_treatment: {
@@ -59,76 +45,15 @@ function tabDiscardingMockPrefs(): Record<
   };
 }
 
-suite('PerformancePage', function() {
+suite('DiscardIndicator', function() {
   let performancePage: SettingsPerformancePageElement;
   let performanceMetricsProxy: TestPerformanceMetricsProxy;
-
-  setup(function() {
-    performanceMetricsProxy = new TestPerformanceMetricsProxy();
-    PerformanceMetricsProxyImpl.setInstance(performanceMetricsProxy);
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    performancePage = document.createElement('settings-performance-page');
-    performancePage.set('prefs', {
-      performance_tuning: {
-        ...memorySaverModeMockPrefs,
-        ...discardRingStateMockPrefs,
-        ...tabDiscardingMockPrefs(),
-      },
-    });
-    document.body.appendChild(performancePage);
-    flush();
-  });
-
-  test('testMemorySaverModeEnabled', function() {
-    performancePage.setPrefValue(
-        MEMORY_SAVER_MODE_PREF, MemorySaverModeState.ENABLED);
-    assertTrue(performancePage.$.toggleButton.checked);
-  });
-
-  test('testMemorySaverModeDisabled', function() {
-    performancePage.setPrefValue(
-        MEMORY_SAVER_MODE_PREF, MemorySaverModeState.DISABLED);
-    assertFalse(performancePage.$.toggleButton.checked);
-  });
-
-  test('testMemorySaverModeChangeState', async function() {
-    performancePage.setPrefValue(
-        MEMORY_SAVER_MODE_PREF, MemorySaverModeState.DISABLED);
-
-    performancePage.$.toggleButton.click();
-    let state = await performanceMetricsProxy.whenCalled(
-        'recordMemorySaverModeChanged');
-    assertEquals(state, MemorySaverModeState.ENABLED);
-    assertEquals(
-        performancePage.getPref(MEMORY_SAVER_MODE_PREF).value,
-        MemorySaverModeState.ENABLED);
-
-    performanceMetricsProxy.reset();
-    performancePage.$.toggleButton.click();
-    state = await performanceMetricsProxy.whenCalled(
-        'recordMemorySaverModeChanged');
-    assertEquals(state, MemorySaverModeState.DISABLED);
-    assertEquals(
-        performancePage.getPref(MEMORY_SAVER_MODE_PREF).value,
-        MemorySaverModeState.DISABLED);
-  });
-});
-
-suite('PerformancePageImprovements', function() {
-  let performancePage: SettingsPerformancePageElement;
-  let performanceMetricsProxy: TestPerformanceMetricsProxy;
-  let conservativeButton: HTMLElement;
-  let mediumButton: HTMLElement;
-  let aggressiveButton: HTMLElement;
-  let radioGroup: SettingsRadioGroupElement;
-  let radioGroupCollapse: CrCollapseElement;
   let discardRingTreatmentToggleButton: SettingsToggleButtonElement;
 
   /**
-   * Used to get elements form the performance page that may or may not exist,
+   * Used to get elements from the performance page that may or may not exist,
    * such as those inside a dom-if.
-   * TODO(charlesmeng): remove once MemorySaverModeAggressiveness flag is
+   * TODO(charlesmeng): remove once DiscardRingImprovements flag is
    * cleaned up, since elements can then be selected with $ interface
    */
   function getPerformancePageElement<T extends HTMLElement = HTMLElement>(
@@ -139,33 +64,15 @@ suite('PerformancePageImprovements', function() {
     return el;
   }
 
-  async function testMemorySaverModeChangeState(
-      button: HTMLElement, expectedState: MemorySaverModeState,
-      expectedAggressiveness: MemorySaverModeAggressiveness) {
-    performanceMetricsProxy.reset();
-    button.click();
-    const state = await performanceMetricsProxy.whenCalled(
-        'recordMemorySaverModeChanged');
-    assertEquals(state, expectedState);
-    assertEquals(
-        performancePage.getPref(MEMORY_SAVER_MODE_PREF).value, expectedState);
-    const aggressiveness = await performanceMetricsProxy.whenCalled(
-        'recordMemorySaverModeAggressivenessChanged');
-    assertEquals(aggressiveness, expectedAggressiveness);
-    assertEquals(
-        performancePage.getPref(MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF).value,
-        expectedAggressiveness);
-  }
-
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     performanceMetricsProxy = new TestPerformanceMetricsProxy();
     PerformanceMetricsProxyImpl.setInstance(performanceMetricsProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     performancePage = document.createElement('settings-performance-page');
     performancePage.set('prefs', {
       performance_tuning: {
-        ...memorySaverModeMockPrefs,
         ...discardRingStateMockPrefs,
         ...tabDiscardingMockPrefs(),
       },
@@ -173,84 +80,8 @@ suite('PerformancePageImprovements', function() {
     document.body.appendChild(performancePage);
     flush();
 
-    conservativeButton = getPerformancePageElement('conservativeButton');
-    mediumButton = getPerformancePageElement('mediumButton');
-    aggressiveButton = getPerformancePageElement('aggressiveButton');
-    radioGroup = getPerformancePageElement('radioGroup');
-    radioGroupCollapse = getPerformancePageElement('radioGroupCollapse');
     discardRingTreatmentToggleButton =
         getPerformancePageElement('discardRingTreatmentToggleButton');
-  });
-
-  test('testMemorySaverModeDisabled', function() {
-    performancePage.setPrefValue(
-        MEMORY_SAVER_MODE_PREF, MemorySaverModeState.DISABLED);
-    assertFalse(performancePage.$.toggleButton.checked);
-    assertFalse(radioGroupCollapse.opened);
-  });
-
-  test('testMemorySaverModeEnabled', function() {
-    performancePage.setPrefValue(
-        MEMORY_SAVER_MODE_PREF, MemorySaverModeState.ENABLED);
-    assertTrue(performancePage.$.toggleButton.checked);
-    assertTrue(radioGroupCollapse.opened);
-    assertEquals(
-        String(MemorySaverModeAggressiveness.MEDIUM), radioGroup.selected);
-  });
-
-  test('testMemorySaverModeStateChanges', async function() {
-    performancePage.setPrefValue(
-        MEMORY_SAVER_MODE_PREF, MemorySaverModeState.DISABLED);
-    performancePage.setPrefValue(
-        MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF,
-        MemorySaverModeAggressiveness.MEDIUM);
-
-    testMemorySaverModeChangeState(
-        performancePage.$.toggleButton, MemorySaverModeState.ENABLED,
-        MemorySaverModeAggressiveness.MEDIUM);
-
-    testMemorySaverModeChangeState(
-        aggressiveButton, MemorySaverModeState.ENABLED,
-        MemorySaverModeAggressiveness.AGGRESSIVE);
-
-    testMemorySaverModeChangeState(
-        conservativeButton, MemorySaverModeState.ENABLED,
-        MemorySaverModeAggressiveness.CONSERVATIVE);
-
-    testMemorySaverModeChangeState(
-        mediumButton, MemorySaverModeState.ENABLED,
-        MemorySaverModeAggressiveness.MEDIUM);
-
-    testMemorySaverModeChangeState(
-        performancePage.$.toggleButton, MemorySaverModeState.DISABLED,
-        MemorySaverModeAggressiveness.MEDIUM);
-  });
-
-  test('testMemorySaverModeAggressiveness', function() {
-    function assertMemorySaverModeAggressivenessPolicyIndicatorExists(
-        mode: MemorySaverModeAggressiveness, el: HTMLElement) {
-      performancePage.setPrefValue(MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF, mode);
-      flush();
-      assertTrue(!!el.shadowRoot!.querySelector('cr-policy-pref-indicator'));
-    }
-
-    performancePage.setPrefValue(
-        MEMORY_SAVER_MODE_PREF, MemorySaverModeState.ENABLED);
-    performancePage.set(`prefs.${MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF}`, {
-      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
-      type: chrome.settingsPrivate.PrefType.NUMBER,
-      value: MemorySaverModeAggressiveness.MEDIUM,
-    });
-
-    assertMemorySaverModeAggressivenessPolicyIndicatorExists(
-        MemorySaverModeAggressiveness.CONSERVATIVE, conservativeButton);
-
-    assertMemorySaverModeAggressivenessPolicyIndicatorExists(
-        MemorySaverModeAggressiveness.MEDIUM, mediumButton);
-
-    assertMemorySaverModeAggressivenessPolicyIndicatorExists(
-        MemorySaverModeAggressiveness.AGGRESSIVE, aggressiveButton);
   });
 
   test('testDiscardTingTreatmentChangeState', async function() {
@@ -280,13 +111,14 @@ suite('TabDiscardExceptionList', function() {
   });
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     performanceBrowserProxy = new TestPerformanceBrowserProxy();
     PerformanceBrowserProxyImpl.setInstance(performanceBrowserProxy);
 
     performanceMetricsProxy = new TestPerformanceMetricsProxy();
     PerformanceMetricsProxyImpl.setInstance(performanceMetricsProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     performancePage = document.createElement('settings-performance-page');
     performancePage.set('prefs', {
       performance_tuning: tabDiscardingMockPrefs(),

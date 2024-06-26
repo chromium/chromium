@@ -79,32 +79,46 @@
         <template is="dom-if"
             if="[[showPage_(pageVisibility.performance)]]"
             restamp>
+          <settings-section page-title="$i18n{performancePageTitle}"
+              section="performance" id="performanceSettingsSection"
+<if expr="_google_chrome">
+              show-send-feedback-button
+              on-send-feedback="onSendPerformanceFeedbackClick_"
+</if>
+              >
+            <settings-performance-page prefs="{{prefs}}">
+            </settings-performance-page>
+          </settings-section>
           <settings-section page-title="$i18n{memoryPageTitle}"
+              section="memory" nest-under-section="performance"
+              id="memorySettingsSection"
 <if expr="_google_chrome">
               show-send-feedback-button
               on-send-feedback="onSendMemorySaverFeedbackClick_"
 </if>
-              section="performance" id="performanceSettingsSection">
-            <settings-performance-page prefs="{{prefs}}">
-            </settings-performance-page>
+              >
+            <settings-memory-page prefs="{{prefs}}">
+            </settings-memory-page>
           </settings-section>
           <settings-section page-title="$i18n{batteryPageTitle}"
               section="battery" nest-under-section="performance"
+              id="batterySettingsSection" hidden="[[!showBatterySettings_]]"
 <if expr="_google_chrome">
               show-send-feedback-button
               on-send-feedback="onSendBatterySaverFeedbackClick_"
 </if>
-              id="batterySettingsSection" hidden="[[!showBatterySettings_]]">
+              >
             <settings-battery-page prefs="{{prefs}}">
             </settings-battery-page>
           </settings-section>
           <settings-section page-title="$i18n{speedPageTitle}"
               section="speed" nest-under-section="performance"
+              id="speedSettingsSection"
 <if expr="_google_chrome">
               show-send-feedback-button
               on-send-feedback="onSendSpeedFeedbackClick_"
 </if>
-              id="speedSettingsSection">
+              >
             <settings-speed-page prefs="{{prefs}}"></settings-speed-page>
           </settings-section>
         </template>

@@ -848,10 +848,18 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PERFORMANCE_PRELOAD_TOGGLE_SUMMARY},
       {"discardRingTreatmentEnabledLabel",
        IDS_SETTINGS_PERFORMANCE_DISCARD_RING_TREATMENT_ENABLED_LABEL},
-      {"discardRingTreatmentEnabledDescription",
-       IDS_SETTINGS_PERFORMANCE_DISCARD_RING_TREATMENT_ENABLED_DESCRIPTION},
+      {"tabHoverPreviewCardLinkTitle",
+       IDS_SETTINGS_PERFORMANCE_TAB_HOVER_PREVIEW_CARD_LINK_TITLE},
+      {"tabHoverPreviewCardLinkSubtitle",
+       IDS_SETTINGS_PERFORMANCE_TAB_HOVER_PREVIEW_CARD_LINK_SUBTITLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddString(
+      "discardRingTreatmentEnabledDescriptionWithLearnLink",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_PERFORMANCE_DISCARD_RING_TREATMENT_ENABLED_DESCRIPTION_WITH_LEARN_LINK,
+          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
 
   html_source->AddBoolean(
       "memorySaverShowRecommendedBadge",
@@ -907,6 +915,8 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
           IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_HELP,
           chrome::kMemorySaverModeTabDiscardingHelpUrl));
 
+  html_source->AddString("discardRingTreatmentLearnMoreUrl",
+                         chrome::kDiscardRingTreatmentLearnMoreUrl);
   html_source->AddString("memorySaverLearnMoreUrl",
                          chrome::kMemorySaverModeLearnMoreUrl);
   html_source->AddString("batterySaverLearnMoreUrl",

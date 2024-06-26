@@ -77,9 +77,10 @@ export {SettingsPeoplePageElement} from './people_page/people_page.js';
 export {MAX_SIGNIN_PROMO_IMPRESSION, SettingsSyncAccountControlElement} from './people_page/sync_account_control.js';
 // </if>
 export {BATTERY_SAVER_MODE_PREF, SettingsBatteryPageElement} from './performance_page/battery_page.js';
+export {MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF, MEMORY_SAVER_MODE_PREF, SettingsMemoryPageElement} from './performance_page/memory_page.js';
 export {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from './performance_page/performance_browser_proxy.js';
 export {BatterySaverModeState, MemorySaverModeAggressiveness, MemorySaverModeExceptionListAction, MemorySaverModeState, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_page/performance_metrics_proxy.js';
-export {DISCARD_RING_PREF, MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF, MEMORY_SAVER_MODE_PREF, SettingsPerformancePageElement} from './performance_page/performance_page.js';
+export {DISCARD_RING_PREF, SettingsPerformancePageElement} from './performance_page/performance_page.js';
 export {SpeedPageElement} from './performance_page/speed_page.js';
 export {ExceptionEditDialogElement} from './performance_page/tab_discard/exception_edit_dialog.js';
 export {ExceptionEntryElement} from './performance_page/tab_discard/exception_entry.js';
