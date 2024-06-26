@@ -824,8 +824,12 @@ void AppShimManager::OnShimProcessConnectedForRegisterOnly(
   if (found_app != apps_.end()) {
     AppState* app_state = found_app->second.get();
     if (app_state->IsMultiProfile()) {
-      DCHECK(!app_state->profiles.empty());
-      profile_state = app_state->profiles.begin()->second.get();
+      // While generally `profiles` should never be empty, sometimes we keep
+      // alive app shims even when no profiles have windows open for the app
+      // (for example when we have a pending notification permission request).
+      if (!app_state->profiles.empty()) {
+        profile_state = app_state->profiles.begin()->second.get();
+      }
     } else {
       auto found_profile = app_state->profiles.find(profile);
       if (found_profile != app_state->profiles.end()) {
