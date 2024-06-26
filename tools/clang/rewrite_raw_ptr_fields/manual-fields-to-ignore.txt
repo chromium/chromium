@@ -8,31 +8,6 @@
 # There is no need to specify template arguments:
 #     my_namespace::my_subnamespace::MyTemplate::my_field_
 
-# Populated manually - the rewriter has trouble appending |.get()| inside macros
-# that work with |XDisplay*|.
-extensions::GlobalShortcutListenerX11::x_display_
-ui::VisualPickerGlx::display_
-media::(anonymous namespace)::UserInputMonitorLinuxCore::x_record_display_
-media::cast::test::LinuxOutputWindow::display_
-remoting::(anonymous namespace)::InputInjectorX11::Core::display_
-remoting::(anonymous namespace)::LocalHotkeyInputMonitorX11::Core::x_record_display_
-remoting::(anonymous namespace)::LocalMouseInputMonitorX11::Core::x_record_display_
-remoting::ClipboardX11::display_
-remoting::XServerClipboard::display_
-Simulator::display_
-ui::ClipboardX11::X11Details::x_display_
-ui::SelectionRequestorTest::x_display_
-ui::X11EventSource::display_
-ui::X11MenuRegistrar::xdisplay_
-ui::X11WorkspaceHandler::xdisplay_
-ui::XDisplayManager::xdisplay_
-ui::XOSExchangeDataProvider::x_display_
-ui::XVisualManager::display_
-ui::XWindow::xdisplay_
-views::test::(anonymous namespace)::UIControlsDesktopX11::x_display_
-viz::SkiaOutputDeviceX11::display_
-x11::Connection::display_
-
 # Populated manually, because of in-out-arg usage.
 blink::PaintController::IdAsHashKey::client
 ui::AXPlatformNodeAuraLinux::atk_object_
