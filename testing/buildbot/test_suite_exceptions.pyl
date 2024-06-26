@@ -3470,6 +3470,12 @@
           'shards': 4,
         },
       },
+      # shadow Win10 Tests x64
+      'linux-win-cross-rel': {
+        'swarming': {
+          'shards': 4,
+        },
+      },
     },
     'remove_from': [
       'Win11 Tests x64',
