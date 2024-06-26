@@ -663,6 +663,10 @@ void ViewAccessibility::SetIsSelected(bool selected) {
   data_.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, selected);
 }
 
+void ViewAccessibility::SetIsMultiselectable(bool multiselectable) {
+  SetState(ax::mojom::State::kMultiselectable, multiselectable);
+}
+
 void ViewAccessibility::SetIsIgnored(bool is_ignored) {
   if (is_ignored == should_be_ignored_) {
     return;

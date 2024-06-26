@@ -237,6 +237,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   void SetIsSelected(bool selected);
 
+  void SetIsMultiselectable(bool multiselectable);
+
   void SetIsHovered(bool is_hovered);
   bool GetIsHovered() const;
 
