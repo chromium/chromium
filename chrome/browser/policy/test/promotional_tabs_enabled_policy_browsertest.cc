@@ -47,7 +47,9 @@ namespace policy {
 // Base class for testing the policy.
 class PromotionalTabsEnabledPolicyTest
     : public PolicyTest,
-      public testing::WithParamInterface<PolicyTest::BooleanPolicy> {
+      public testing::WithParamInterface<
+          std::pair</*PromotionalTabsEnabledPolicy*/ PolicyTest::BooleanPolicy,
+                    /*PromotionsEnabledPolicy*/ PolicyTest::BooleanPolicy>> {
  public:
   PromotionalTabsEnabledPolicyTest(const PromotionalTabsEnabledPolicyTest&) =
       delete;
@@ -84,10 +86,17 @@ class PromotionalTabsEnabledPolicyTest
                  nullptr);
 
     // Apply the policy setting under test.
-    if (GetParam() != BooleanPolicy::kNotConfigured) {
+    if (GetParam().first != BooleanPolicy::kNotConfigured) {
       policies.Set(key::kPromotionalTabsEnabled, POLICY_LEVEL_MANDATORY,
                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                   base::Value(GetParam() == BooleanPolicy::kTrue), nullptr);
+                   base::Value(GetParam().first == BooleanPolicy::kTrue),
+                   nullptr);
+    }
+    if (GetParam().second != BooleanPolicy::kNotConfigured) {
+      policies.Set(key::kPromotionsEnabled, POLICY_LEVEL_MANDATORY,
+                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                   base::Value(GetParam().second == BooleanPolicy::kTrue),
+                   nullptr);
     }
 
     UpdateProviderPolicy(policies);
@@ -131,9 +140,14 @@ IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWelcomeTest, RunTest) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     PromotionalTabsEnabledPolicyWelcomeTest,
-    ::testing::Values(PolicyTest::BooleanPolicy::kNotConfigured,
-                      PolicyTest::BooleanPolicy::kFalse,
-                      PolicyTest::BooleanPolicy::kTrue));
+    testing::ValuesIn(std::vector<std::pair<PolicyTest::BooleanPolicy,
+                                            PolicyTest::BooleanPolicy>>{
+        {PolicyTest::BooleanPolicy::kNotConfigured,
+         PolicyTest::BooleanPolicy::kNotConfigured},
+        {PolicyTest::BooleanPolicy::kFalse, PolicyTest::BooleanPolicy::kFalse},
+        {PolicyTest::BooleanPolicy::kTrue, PolicyTest::BooleanPolicy::kTrue},
+        {PolicyTest::BooleanPolicy::kFalse,
+         PolicyTest::BooleanPolicy::kTrue}}));
 
 // Tests that the PromotionalTabsEnabled policy properly suppresses the What's
 // New page.
@@ -207,33 +221,37 @@ IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWhatsNewTest,
   TabStripModel* tab_strip = browser()->tab_strip_model();
   ASSERT_GE(tab_strip->count(), 1);
   const auto& url = tab_strip->GetWebContentsAt(0)->GetLastCommittedURL();
-  switch (GetParam()) {
-    case BooleanPolicy::kFalse:
-      // Only the NTP should show.
-      EXPECT_EQ(tab_strip->count(), 1);
-      if (url.possibly_invalid_spec() != chrome::kChromeUINewTabURL)
-        EXPECT_PRED2(search::IsNTPOrRelatedURL, url, browser()->profile());
-      break;
-    case BooleanPolicy::kNotConfigured:
-    case BooleanPolicy::kTrue:
-      EXPECT_EQ(tab_strip->count(), 2);
-      // Whats's New should show and be the active tab.
-      EXPECT_EQ(url.possibly_invalid_spec(), chrome::kChromeUIWhatsNewURL);
-      EXPECT_EQ(0, tab_strip->active_index());
-      // The second tab should be the NTP.
-      const auto& url_tab1 =
-          tab_strip->GetWebContentsAt(1)->GetLastCommittedURL();
-      EXPECT_EQ(url_tab1.possibly_invalid_spec(), chrome::kChromeUINewTabURL);
-      break;
+  bool promotions_disabled = (GetParam().first == BooleanPolicy::kFalse) ||
+                             (GetParam().first == BooleanPolicy::kFalse);
+  if (promotions_disabled) {
+    // Only the NTP should show.
+    EXPECT_EQ(tab_strip->count(), 1);
+    if (url.possibly_invalid_spec() != chrome::kChromeUINewTabURL) {
+      EXPECT_PRED2(search::IsNTPOrRelatedURL, url, browser()->profile());
+    }
+  } else {
+    EXPECT_EQ(tab_strip->count(), 2);
+    // Whats's New should show and be the active tab.
+    EXPECT_EQ(url.possibly_invalid_spec(), chrome::kChromeUIWhatsNewURL);
+    EXPECT_EQ(0, tab_strip->active_index());
+    // The second tab should be the NTP.
+    const auto& url_tab1 =
+        tab_strip->GetWebContentsAt(1)->GetLastCommittedURL();
+    EXPECT_EQ(url_tab1.possibly_invalid_spec(), chrome::kChromeUINewTabURL);
   }
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     PromotionalTabsEnabledPolicyWhatsNewTest,
-    ::testing::Values(PolicyTest::BooleanPolicy::kNotConfigured,
-                      PolicyTest::BooleanPolicy::kFalse,
-                      PolicyTest::BooleanPolicy::kTrue));
+    testing::ValuesIn(std::vector<std::pair<PolicyTest::BooleanPolicy,
+                                            PolicyTest::BooleanPolicy>>{
+        {PolicyTest::BooleanPolicy::kNotConfigured,
+         PolicyTest::BooleanPolicy::kNotConfigured},
+        {PolicyTest::BooleanPolicy::kFalse, PolicyTest::BooleanPolicy::kFalse},
+        {PolicyTest::BooleanPolicy::kTrue, PolicyTest::BooleanPolicy::kTrue},
+        {PolicyTest::BooleanPolicy::kFalse,
+         PolicyTest::BooleanPolicy::kTrue}}));
 
 // Tests that What's New doesn't show up regardless of the policy if the version
 // is not greater than the one in |prefs::kLastWhatsNewVersion|.
@@ -275,7 +293,12 @@ IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWhatsNewInvalidTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     PromotionalTabsEnabledPolicyWhatsNewInvalidTest,
-    ::testing::Values(PolicyTest::BooleanPolicy::kNotConfigured,
-                      PolicyTest::BooleanPolicy::kFalse,
-                      PolicyTest::BooleanPolicy::kTrue));
+    testing::ValuesIn(std::vector<std::pair<PolicyTest::BooleanPolicy,
+                                            PolicyTest::BooleanPolicy>>{
+        {PolicyTest::BooleanPolicy::kNotConfigured,
+         PolicyTest::BooleanPolicy::kNotConfigured},
+        {PolicyTest::BooleanPolicy::kFalse, PolicyTest::BooleanPolicy::kFalse},
+        {PolicyTest::BooleanPolicy::kTrue, PolicyTest::BooleanPolicy::kTrue},
+        {PolicyTest::BooleanPolicy::kFalse,
+         PolicyTest::BooleanPolicy::kTrue}}));
 }  // namespace policy

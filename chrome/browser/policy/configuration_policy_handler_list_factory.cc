@@ -681,9 +681,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPrinterTypeDenyList,
     prefs::kPrinterTypeDenyList,
     base::Value::Type::LIST },
-  { key::kPromotionalTabsEnabled,
-    prefs::kPromotionalTabsEnabled,
-    base::Value::Type::BOOLEAN },
   { key::kPromptOnMultipleMatchingCertificates,
     prefs::kPromptOnMultipleMatchingCertificates,
     base::Value::Type::BOOLEAN },
@@ -2373,6 +2370,13 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           key::kUserContextAwareAccessSignalsAllowlist,
           enterprise_connectors::kUserContextAwareAccessSignalsAllowlistPref,
           chrome_schema));
+  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
+      std::make_unique<SimplePolicyHandler>(key::kPromotionalTabsEnabled,
+                                            prefs::kPromotionsEnabled,
+                                            base::Value::Type::BOOLEAN),
+      std::make_unique<SimplePolicyHandler>(key::kPromotionsEnabled,
+                                            prefs::kPromotionsEnabled,
+                                            base::Value::Type::BOOLEAN)));
 
   handlers->AddHandler(std::make_unique<GuestModePolicyHandler>());
   handlers->AddHandler(std::make_unique<headless::HeadlessModePolicyHandler>());

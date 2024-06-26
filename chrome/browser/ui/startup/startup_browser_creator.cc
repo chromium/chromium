@@ -911,7 +911,7 @@ void StartupBrowserCreator::ClearLaunchedProfilesForTesting() {
 // static
 void StartupBrowserCreator::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kPromotionalTabsEnabled, true);
+  registry->RegisterBooleanPref(prefs::kPromotionsEnabled, true);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(prefs::kCommandLineFlagSecurityWarningsEnabled,
                                 true);

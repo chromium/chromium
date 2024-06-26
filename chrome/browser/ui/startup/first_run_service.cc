@@ -108,8 +108,8 @@ enum class PolicyEffect {
 
 PolicyEffect ComputeDevicePolicyEffect(Profile& profile) {
   const PrefService* const local_state = g_browser_process->local_state();
-  if (!local_state->GetBoolean(prefs::kPromotionalTabsEnabled)) {
-    // Corresponding policy: PromotionalTabsEnabled=false
+  if (!local_state->GetBoolean(prefs::kPromotionsEnabled)) {
+    // Corresponding policy: PromotionsEnabled=false
     return PolicyEffect::kDisabled;
   }
 

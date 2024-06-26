@@ -2287,10 +2287,10 @@ inline constexpr char kCommandLineFlagSecurityWarningsEnabled[] =
     "browser.command_line_flag_security_warnings_enabled";
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Pref name for the policy controlling presentation of full-tab promotional
-// and/or educational content.
-inline constexpr char kPromotionalTabsEnabled[] =
-    "browser.promotional_tabs_enabled";
+// Pref name for controlling presentation of promotions, including full-tab
+// promotional and/or educational content.
+// This preference replaces browser.promotional_tabs_enabled.
+inline constexpr char kPromotionsEnabled[] = "browser.promotions_enabled";
 
 // Boolean that specifies whether or not showing the unsupported OS warning is
 // suppressed. False by default. Controlled by the SuppressUnsupportedOSWarning

@@ -1,0 +1,59 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "default for promotions enabled=true",
+        "policies": {},
+        "prefs": {
+          "browser.promotions_enabled": {
+            "location": "local_state",
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "PromotionsEnabled": false
+        },
+        "prefs": {
+          "browser.promotions_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "PromotionsEnabled": true
+        },
+        "prefs": {
+          "browser.promotions_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "notes": "PromotionsEnabled and deprecated PromotionalTabsEnabled both true",
+        "policies": {
+          "PromotionsEnabled": true,
+          "PromotionalTabsEnabled": true
+        },
+        "prefs": {
+          "browser.promotions_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

@@ -2143,6 +2143,7 @@ chromium-metrics-reviews@google.com.
   <int value="1277" label="DefaultJavaScriptOptimizerSetting"/>
   <int value="1278" label="JavaScriptOptimizerAllowedForSites"/>
   <int value="1279" label="JavaScriptOptimizerBlockedForSites"/>
+  <int value="1280" label="PromotionsEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

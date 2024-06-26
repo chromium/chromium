@@ -368,24 +368,26 @@ StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
 
   // Presentation of promotional and/or educational tabs may be controlled via
   // administrative policy.
-  bool promotional_tabs_enabled = true;
-  const PrefService::Preference* enabled_pref = nullptr;
+  bool promotions_enabled = true;
+  const PrefService::Preference* promotions_enabled_pref = nullptr;
   PrefService* local_state = g_browser_process->local_state();
-  if (local_state)
-    enabled_pref = local_state->FindPreference(prefs::kPromotionalTabsEnabled);
-  if (enabled_pref && enabled_pref->IsManaged()) {
+  if (local_state) {
+    promotions_enabled_pref =
+        local_state->FindPreference(prefs::kPromotionsEnabled);
+  }
+  if (promotions_enabled_pref && promotions_enabled_pref->IsManaged()) {
     // Presentation is managed; obey the policy setting.
-    promotional_tabs_enabled = enabled_pref->GetValue()->GetBool();
+    promotions_enabled = promotions_enabled_pref->GetValue()->GetBool();
   } else {
     // Presentation is not managed. Infer an intent to disable if any value for
     // the RestoreOnStartup policy is mandatory or recommended.
-    promotional_tabs_enabled =
+    promotions_enabled =
         !SessionStartupPref::TypeIsManaged(profile_->GetPrefs()) &&
         !SessionStartupPref::TypeHasRecommendedValue(profile_->GetPrefs());
   }
 
   const bool whats_new_enabled =
-      whats_new::ShouldShowForState(local_state, promotional_tabs_enabled);
+      whats_new::ShouldShowForState(local_state, promotions_enabled);
 
   auto* privacy_sandbox_service =
       PrivacySandboxServiceFactory::GetForProfile(profile_);
@@ -406,9 +408,8 @@ StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
 
   auto result = DetermineStartupTabs(
       StartupTabProviderImpl(), process_startup, is_incognito_or_guest,
-      is_post_crash_launch, has_incompatible_applications,
-      promotional_tabs_enabled, whats_new_enabled,
-      privacy_sandbox_dialog_required);
+      is_post_crash_launch, has_incompatible_applications, promotions_enabled,
+      whats_new_enabled, privacy_sandbox_dialog_required);
   StartupTabs tabs = std::move(result.tabs);
 
   // Return immediately if we start an async restore, since the remainder of
@@ -475,7 +476,7 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
     bool is_incognito_or_guest,
     bool is_post_crash_launch,
     bool has_incompatible_applications,
-    bool promotional_tabs_enabled,
+    bool promotions_enabled,
     bool whats_new_enabled,
     bool privacy_sandbox_dialog_required) {
   StartupTabs tabs =
@@ -525,7 +526,7 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
     // Whether a first run experience was or will be shown as part of this
     // startup.
     bool has_first_run_experience = false;
-    if (promotional_tabs_enabled) {
+    if (promotions_enabled) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
       if (is_first_run_ == chrome::startup::IsFirstRun::kYes) {
         // We just showed the first run experience in the Desktop FRE window.

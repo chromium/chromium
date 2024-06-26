@@ -1,0 +1,32 @@
+caption: Enable showing promotional content
+default: true
+desc: |-
+  Setting the policy to True or leaving it unset lets <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> show users product promotional content.
+
+  Setting the policy to False prevents <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> from showing product promotional content.
+
+  Setting the policy controls the presentation of promotional content, including the welcome pages that help users sign in to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>, set <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> as users' default browser, or otherwise inform them of product features.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- fuchsia
+items:
+- caption: Enable showing promotional content
+  value: true
+- caption: Disable showing promotional content
+  value: false
+owners:
+- grt@chromium.org
+- rbpotter@chromium.org
+- davidbienvenu@chromium.org
+- jessemckenna@google.com
+- chrome-windows-seakir@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome.*:128-
+- chrome_os:128-
+tags: []
+type: main
