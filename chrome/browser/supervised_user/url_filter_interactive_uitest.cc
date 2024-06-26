@@ -31,8 +31,7 @@ class UrlFilterUiTest : public InteractiveFamilyLiveTest {
  public:
   UrlFilterUiTest()
       : InteractiveFamilyLiveTest(
-            /*extra_enabled_hosts=*/std::vector<std::string>(
-                {"example.com", "bestgore.com"})) {}
+            /*extra_enabled_hosts=*/{"example.com", "bestgore.com"}) {}
 
  protected:
   auto ParentOpensControlListPage(ui::ElementIdentifier kParentTab,
