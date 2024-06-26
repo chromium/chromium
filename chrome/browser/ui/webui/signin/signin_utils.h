@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_UTILS_H_
 
 #include <string>
+#include <variant>
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
