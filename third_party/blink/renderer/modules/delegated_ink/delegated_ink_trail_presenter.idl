@@ -10,5 +10,5 @@
     [CallWith=ScriptState, RaisesException] void updateInkTrailStartPoint(PointerEvent evt, InkTrailStyle style);
 
     readonly attribute Element? presentationArea;
-    readonly attribute unsigned long expectedImprovement;
+    [DeprecateAs=DelegatedInkExpectedImprovement] readonly attribute unsigned long expectedImprovement;
 };

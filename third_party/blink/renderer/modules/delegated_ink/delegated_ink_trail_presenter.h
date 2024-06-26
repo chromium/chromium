@@ -45,7 +45,7 @@ class MODULES_EXPORT DelegatedInkTrailPresenter : public ScriptWrappable {
  private:
   Member<Element> presentation_area_;
   Member<LocalFrame> local_frame_;
-  uint32_t expected_improvement_;
+  uint32_t expected_improvement_ = 0;
   base::TimeTicks last_delegated_ink_metadata_timestamp_;
 };
 
