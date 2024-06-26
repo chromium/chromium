@@ -495,27 +495,45 @@ void StyleCascade::AnalyzeInterpolations() {
 void StyleCascade::AddExplicitDefaults() {
   if (RuntimeEnabledFeatures::StandardizedBrowserZoomEnabled() &&
       effective_zoom_changed_) {
-    // TODO(crbug.com/40946858): Generate a list from json5.
-    //
-    // At a glance, these inherited properties can contain lengths:
+    // These inherited properties can contain lengths:
     //
     //   -webkit-border-horizontal-spacing
     //   -webkit-border-vertical-spacing
     //   -webkit-text-stroke-width
     //   letter-spacing
     //   line-height
-    //   list-style-image
+    //   list-style-image *
+    //   stroke-dasharray
     //   stroke-dashoffset
-    //   stroke-width
+    //   stroke-width **
     //   text-indent
     //   text-shadow
     //   text-underline-offset
     //   word-spacing
     //
-    // (And maybe more).
+    // * list-style-image need not be recomputed on zoom change because list
+    // image marker is sized to 1em and font-size is already correctly zoomed.
+    //
+    // ** stroke-width gets special handling elsewhere.
     map_.Add(CSSPropertyID::kLetterSpacing,
              CascadePriority(CascadeOrigin::kNone));
     map_.Add(CSSPropertyID::kLineHeight, CascadePriority(CascadeOrigin::kNone));
+    map_.Add(CSSPropertyID::kStrokeDasharray,
+             CascadePriority(CascadeOrigin::kNone));
+    map_.Add(CSSPropertyID::kStrokeDashoffset,
+             CascadePriority(CascadeOrigin::kNone));
+    map_.Add(CSSPropertyID::kTextIndent, CascadePriority(CascadeOrigin::kNone));
+    map_.Add(CSSPropertyID::kTextShadow, CascadePriority(CascadeOrigin::kNone));
+    map_.Add(CSSPropertyID::kTextUnderlineOffset,
+             CascadePriority(CascadeOrigin::kNone));
+    map_.Add(CSSPropertyID::kWebkitTextStrokeWidth,
+             CascadePriority(CascadeOrigin::kNone));
+    map_.Add(CSSPropertyID::kWebkitBorderHorizontalSpacing,
+             CascadePriority(CascadeOrigin::kNone));
+    map_.Add(CSSPropertyID::kWebkitBorderVerticalSpacing,
+             CascadePriority(CascadeOrigin::kNone));
+    map_.Add(CSSPropertyID::kWordSpacing,
+             CascadePriority(CascadeOrigin::kNone));
   }
 }
 

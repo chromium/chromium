@@ -3627,6 +3627,7 @@
       style_builder_custom_functions: ["value"],
       keywords: ["none"],
       invalidate: ["layout", "paint"],
+      affected_by_zoom: true,
     },
     {
       name: "list-style-position",
@@ -5239,6 +5240,7 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       invalidate: ["paint", "stroke"],
+      affected_by_zoom: true,
     },
     {
       name: "stroke-dashoffset",
@@ -5253,6 +5255,7 @@
       converter: "ConvertLength",
       typedom_types: ["Length", "Percentage"],
       invalidate: ["paint"],
+      affected_by_zoom: true,
     },
     {
       name: "stroke-linecap",
@@ -5324,6 +5327,7 @@
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       invalidate: ["layout", "paint"],
+      affected_by_zoom: true,
     },
     {
       name: "table-layout",
@@ -5563,6 +5567,7 @@
       typedom_types: ["Length", "Percentage"],
       valid_for_page_context: true,
       invalidate: ["layout", "paint"],
+      affected_by_zoom: true,
     },
     {
       name: "text-overflow",
@@ -5600,6 +5605,7 @@
       valid_for_formatted_text_run: true,
       valid_for_page_context: true,
       invalidate: ["layout", "paint"],
+      affected_by_zoom: true,
     },
     {
       name: "text-size-adjust",
@@ -5682,6 +5688,7 @@
       valid_for_highlight: true,
       valid_for_page_context: true,
       invalidate: ["text-decoration"],
+      affected_by_zoom: true,
     },
     {
       name: "text-underline-position",
@@ -6045,6 +6052,7 @@
       converter: "ConvertComputedLength<short>",
       valid_for_first_letter: true,
       invalidate: ["layout", "paint"],
+      affected_by_zoom: true,
     },
     {
       name: "-webkit-border-image",
@@ -6068,6 +6076,7 @@
       converter: "ConvertComputedLength<short>",
       valid_for_first_letter: true,
       invalidate: ["layout", "paint"],
+      affected_by_zoom: true,
     },
     // For valid values of box-align see
     // http://www.w3.org/TR/2009/WD-css3-flexbox-20090723/#alignment
@@ -6666,6 +6675,7 @@
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       invalidate: ["layout", "paint"],
+      affected_by_zoom: true,
     },
     {
       name: "-webkit-transform-origin-x",
@@ -6847,6 +6857,7 @@
       valid_for_marker: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      affected_by_zoom: true,
     },
     {
       name: "z-index",
