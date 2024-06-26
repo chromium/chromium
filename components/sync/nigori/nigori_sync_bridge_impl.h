@@ -81,7 +81,8 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
       std::optional<EntityData> data) override;
   std::optional<ModelError> ApplyIncrementalSyncChanges(
       std::optional<EntityData> data) override;
-  std::unique_ptr<EntityData> GetData() override;
+  std::unique_ptr<EntityData> GetDataForCommit() override;
+  std::unique_ptr<EntityData> GetDataForDebugging() override;
   void ApplyDisableSyncChanges() override;
 
   const CryptographerImpl& GetCryptographerImplForTesting() const;
@@ -147,6 +148,8 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   // them already and |passphrase_type| isn't KEYSTORE_PASSPHRASE. This
   // function only updates local state and doesn't trigger a commit.
   void MaybePopulateKeystoreKeysIntoCryptographer();
+
+  std::unique_ptr<EntityData> GetDataImpl();
 
   const std::unique_ptr<NigoriLocalChangeProcessor> processor_;
   const std::unique_ptr<NigoriStorage> storage_;

@@ -885,34 +885,14 @@ std::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
   return std::nullopt;
 }
 
-std::unique_ptr<EntityData> NigoriSyncBridgeImpl::GetData() {
+std::unique_ptr<EntityData> NigoriSyncBridgeImpl::GetDataForCommit() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetDataImpl();
+}
 
-  NigoriSpecifics specifics;
-  if (!pending_local_commit_queue_.empty()) {
-    NigoriState changed_state = state_.Clone();
-    bool success =
-        pending_local_commit_queue_.front()->TryApply(&changed_state);
-    DCHECK(success);
-    specifics = changed_state.ToSpecificsProto();
-  } else {
-    specifics = state_.ToSpecificsProto();
-  }
-
-  if (specifics.passphrase_type() == NigoriSpecifics::UNKNOWN) {
-    // Bridge never received NigoriSpecifics from the server. This line should
-    // be reachable only from processor's GetAllNodesForDebugging().
-    DCHECK(!state_.cryptographer->CanEncrypt());
-    DCHECK(!state_.pending_keys.has_value());
-    return nullptr;
-  }
-
-  DCHECK(IsValidNigoriSpecifics(specifics));
-
-  auto entity_data = std::make_unique<EntityData>();
-  *entity_data->specifics.mutable_nigori() = std::move(specifics);
-  entity_data->name = kNigoriNonUniqueName;
-  return entity_data;
+std::unique_ptr<EntityData> NigoriSyncBridgeImpl::GetDataForDebugging() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetDataImpl();
 }
 
 void NigoriSyncBridgeImpl::ApplyDisableSyncChanges() {
@@ -1055,7 +1035,7 @@ void NigoriSyncBridgeImpl::PutNextApplicablePendingLocalCommit() {
     bool success = pending_local_commit_queue_.front()->TryApply(&tmp_state);
     if (success) {
       // This particular commit applies cleanly.
-      processor_->Put(GetData());
+      processor_->Put(GetDataForCommit());
       break;
     }
 
@@ -1082,6 +1062,38 @@ void NigoriSyncBridgeImpl::MaybePopulateKeystoreKeysIntoCryptographer() {
     state_.cryptographer->EmplaceKey(keystore_key,
                                      KeyDerivationParams::CreateForPbkdf2());
   }
+}
+
+std::unique_ptr<EntityData> NigoriSyncBridgeImpl::GetDataImpl() {
+  // TODO(crbug.com/349558370): some DCHECKs() are not legit for
+  // GetDataForDebugging() calling side. Some additional CHECKs() can be applied
+  // for GetDataForCommit() codepath. Pass the parameter like `is_for_commit`
+  // and adjust checks.
+  NigoriSpecifics specifics;
+  if (!pending_local_commit_queue_.empty()) {
+    NigoriState changed_state = state_.Clone();
+    bool success =
+        pending_local_commit_queue_.front()->TryApply(&changed_state);
+    DCHECK(success);
+    specifics = changed_state.ToSpecificsProto();
+  } else {
+    specifics = state_.ToSpecificsProto();
+  }
+
+  if (specifics.passphrase_type() == NigoriSpecifics::UNKNOWN) {
+    // Bridge never received NigoriSpecifics from the server. This line should
+    // be reachable only from processor's GetAllNodesForDebugging().
+    DCHECK(!state_.cryptographer->CanEncrypt());
+    DCHECK(!state_.pending_keys.has_value());
+    return nullptr;
+  }
+
+  DCHECK(IsValidNigoriSpecifics(specifics));
+
+  auto entity_data = std::make_unique<EntityData>();
+  *entity_data->specifics.mutable_nigori() = std::move(specifics);
+  entity_data->name = kNigoriNonUniqueName;
+  return entity_data;
 }
 
 }  // namespace syncer

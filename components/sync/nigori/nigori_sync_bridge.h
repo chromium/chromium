@@ -35,8 +35,12 @@ class NigoriSyncBridge {
   virtual std::optional<ModelError> ApplyIncrementalSyncChanges(
       std::optional<EntityData> data) = 0;
 
-  // Retrieve Nigori sync data.
-  virtual std::unique_ptr<EntityData> GetData() = 0;
+  // Retrieve Nigori sync data. Used only to commit the data.
+  virtual std::unique_ptr<EntityData> GetDataForCommit() = 0;
+
+  // Retrieve Nigori sync data. Used for getting data in Sync Node Browser of
+  // chrome://sync-internals.
+  virtual std::unique_ptr<EntityData> GetDataForDebugging() = 0;
 
   // Informs the bridge that sync has been disabed. The bridge is responsible
   // for deleting all data and metadata upon disabling sync.
