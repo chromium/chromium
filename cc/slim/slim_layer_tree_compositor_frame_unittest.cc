@@ -2508,6 +2508,29 @@ TEST_F(SlimLayerTreeCompositorFrameTest, OffsetTagVisibleRect) {
   }
 }
 
+TEST_F(SlimLayerTreeCompositorFrameTest, OffsetTagNoEmbeddedSurface) {
+  layer_tree_->set_background_color(SkColors::kTransparent);
+
+  auto root_layer = Layer::Create();
+  layer_tree_->SetRoot(root_layer);
+
+  auto surface_layer = SurfaceLayer::Create();
+  surface_layer->SetBounds(viewport_.size());
+  surface_layer->SetIsDrawable(true);
+
+  root_layer->AddChild(surface_layer);
+
+  const auto offset_tag = viz::OffsetTag::CreateRandom();
+  const viz::OffsetTagConstraints constraints(-30, 30, -30, 30);
+  surface_layer->RegisterOffsetTag(offset_tag, constraints);
+
+  const viz::CompositorFrame frame = ProduceFrame();
+
+  // Since `surface_layer` doesn't have a SurfaceId set no OffsetTagDefinition
+  // is added.
+  EXPECT_THAT(frame.metadata.offset_tag_definitions, testing::IsEmpty());
+}
+
 TEST_F(SlimLayerTreeCompositorFrameTest, OffsetTagClipping) {
   layer_tree_->set_background_color(SkColors::kTransparent);
 

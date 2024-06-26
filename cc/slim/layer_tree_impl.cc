@@ -496,8 +496,14 @@ void LayerTreeImpl::GenerateCompositorFrame(
     out_frame.metadata.referenced_surfaces.emplace_back(range);
   }
   for (auto& [tag, layer] : registered_offset_tags_) {
-    out_frame.metadata.offset_tag_definitions.push_back(
-        layer->GetOffsetTagDefinition(tag));
+    // Only add OffsetTagDefinitions if the SurfaceLayer they are registered to
+    // embed something. There is no way to provide an offset value without an
+    // embedded viz::Surface to look the value up from.
+    // TODO(b/334144355): Don't tag quads if no definition is added.
+    if (layer->surface_id().is_valid()) {
+      out_frame.metadata.offset_tag_definitions.push_back(
+          layer->GetOffsetTagDefinition(tag));
+    }
   }
   out_frame.metadata.display_transform_hint = display_transform_hint_;
 
