@@ -4530,6 +4530,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/ash/mahi",
         "//chrome/browser/ash/net",
+        "//chrome/browser/ash/notifications",
         "//chromeos/printing:test_support",
         "//components/global_media_controls:test_support",
       ]

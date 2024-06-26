@@ -50,6 +50,7 @@ static_library("net") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/net/dns_over_https",
+    "//chrome/browser/ash/notifications",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
     "//chrome/common",
