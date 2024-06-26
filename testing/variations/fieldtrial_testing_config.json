@@ -5142,6 +5142,7 @@
                     "name": "Enabled",
                     "params": {
                         "endpoint-url": "https://lensfrontend-pa.googleapis.com/v1/crupload",
+                        "omnibox-entry-point": "false",
                         "select-text-over-region-trigger-threshold": "0.1",
                         "text-vertical-margin": "12",
                         "use-oauth-for-requests": "true"
