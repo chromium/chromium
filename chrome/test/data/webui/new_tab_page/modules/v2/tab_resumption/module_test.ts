@@ -35,6 +35,7 @@ function createSampleTab(
         urlKey: '',
         title: 'Test Tab Title',
         timestamp: Date.now(),
+        trainingRequestId: 0,
         relativeTime: {microseconds: BigInt(0)},
         relativeTimeText: '0 seconds ago',
       },

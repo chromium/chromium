@@ -21,4 +21,7 @@ interface PageHandler {
 
   // Restores a single entry that was dismissed.
   RestoreTab(history.mojom.Tab tab);
+
+  // Records the action taken on a tab.
+  RecordActivatedAction(string url_key, int64 visit_request_id);
 };

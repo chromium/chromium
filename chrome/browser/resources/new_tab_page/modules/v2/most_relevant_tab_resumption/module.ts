@@ -178,6 +178,10 @@ private shouldShowDeviceIcon_:
           buckets: 50,
         },
         Number(e.model.item.relativeTime.microseconds / 1000n));
+
+    const tab = this.tabs[e.model.index];
+    MostRelevantTabResumptionProxyImpl.getInstance()
+        .handler.recordActivatedAction(tab.urlKey, tab.trainingRequestId);
   }
 
   private computeDomain_(tab: Tab): string {
