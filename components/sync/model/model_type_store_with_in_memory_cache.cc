@@ -8,12 +8,15 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
+#include "components/sync/protocol/security_event_specifics.pb.h"
 
 namespace syncer {
 
 // static
-void ModelTypeStoreWithInMemoryCache::CreateAndLoad(
+template <typename Entry>
+void ModelTypeStoreWithInMemoryCache<Entry>::CreateAndLoad(
     OnceModelTypeStoreFactory store_factory,
     ModelType type,
     CreateCallback callback) {
@@ -27,7 +30,7 @@ void ModelTypeStoreWithInMemoryCache::CreateAndLoad(
       [](CreateCallback callback,
          std::unique_ptr<syncer::ModelTypeStore> underlying_store,
          const std::optional<ModelError>& error,
-         std::unique_ptr<RecordList> data_records,
+         std::unique_ptr<ModelTypeStoreBase::RecordList> data_records,
          std::unique_ptr<MetadataBatch> metadata_batch) {
         if (error) {
           std::move(callback).Run(error, nullptr, nullptr);
@@ -60,31 +63,39 @@ void ModelTypeStoreWithInMemoryCache::CreateAndLoad(
   std::move(store_factory).Run(type, std::move(on_store_created));
 }
 
-ModelTypeStoreWithInMemoryCache::ModelTypeStoreWithInMemoryCache(
+template <typename Entry>
+ModelTypeStoreWithInMemoryCache<Entry>::ModelTypeStoreWithInMemoryCache(
     std::unique_ptr<ModelTypeStore> underlying_store,
-    std::unique_ptr<RecordList> data_records)
+    std::unique_ptr<ModelTypeStoreBase::RecordList> data_records)
     : underlying_store_(std::move(underlying_store)) {
-  for (Record& record : *data_records) {
-    in_memory_data_[std::move(record.id)] = std::move(record.value);
+  for (ModelTypeStoreBase::Record& record : *data_records) {
+    Entry entry;
+    if (entry.ParseFromString(record.value)) {
+      in_memory_data_[std::move(record.id)] = std::move(entry);
+    }
   }
 }
 
-ModelTypeStoreWithInMemoryCache::~ModelTypeStoreWithInMemoryCache() = default;
+template <typename Entry>
+ModelTypeStoreWithInMemoryCache<Entry>::~ModelTypeStoreWithInMemoryCache() =
+    default;
 
-std::unique_ptr<ModelTypeStoreBase::WriteBatch>
-ModelTypeStoreWithInMemoryCache::CreateWriteBatch() {
-  return std::make_unique<WriteBatchWrapper>(
+template <typename Entry>
+std::unique_ptr<typename ModelTypeStoreWithInMemoryCache<Entry>::WriteBatch>
+ModelTypeStoreWithInMemoryCache<Entry>::CreateWriteBatch() {
+  return std::make_unique<WriteBatchImpl>(
       underlying_store_->CreateWriteBatch());
 }
 
-void ModelTypeStoreWithInMemoryCache::CommitWriteBatch(
+template <typename Entry>
+void ModelTypeStoreWithInMemoryCache<Entry>::CommitWriteBatch(
     std::unique_ptr<WriteBatch> write_batch,
     CallbackWithResult callback) {
-  std::unique_ptr<WriteBatchWrapper> write_batch_wrapper =
-      base::WrapUnique(static_cast<WriteBatchWrapper*>(write_batch.release()));
+  std::unique_ptr<WriteBatchImpl> write_batch_impl =
+      base::WrapUnique(static_cast<WriteBatchImpl*>(write_batch.release()));
 
-  std::map<std::string, std::optional<std::string>> changes =
-      write_batch_wrapper->ExtractChanges();
+  std::map<std::string, std::optional<Entry>> changes =
+      write_batch_impl->ExtractChanges();
   for (auto& [id, update] : changes) {
     if (update.has_value()) {
       in_memory_data_[id] = *update;
@@ -94,51 +105,69 @@ void ModelTypeStoreWithInMemoryCache::CommitWriteBatch(
   }
 
   underlying_store_->CommitWriteBatch(
-      WriteBatchWrapper::ExtractUnderlying(std::move(write_batch_wrapper)),
+      WriteBatchImpl::ExtractUnderlying(std::move(write_batch_impl)),
       std::move(callback));
 }
 
-void ModelTypeStoreWithInMemoryCache::DeleteAllDataAndMetadata(
+template <typename Entry>
+void ModelTypeStoreWithInMemoryCache<Entry>::DeleteAllDataAndMetadata(
     CallbackWithResult callback) {
   in_memory_data_.clear();
   underlying_store_->DeleteAllDataAndMetadata(std::move(callback));
 }
 
-ModelTypeStoreWithInMemoryCache::WriteBatchWrapper::WriteBatchWrapper(
-    std::unique_ptr<WriteBatch> underlying_batch)
+template <typename Entry>
+ModelTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::WriteBatchImpl(
+    std::unique_ptr<ModelTypeStoreBase::WriteBatch> underlying_batch)
     : underlying_batch_(std::move(underlying_batch)) {}
 
-ModelTypeStoreWithInMemoryCache::WriteBatchWrapper::~WriteBatchWrapper() =
+template <typename Entry>
+ModelTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::~WriteBatchImpl() =
     default;
 
 // static
+template <typename Entry>
 std::unique_ptr<ModelTypeStoreBase::WriteBatch>
-ModelTypeStoreWithInMemoryCache::WriteBatchWrapper::ExtractUnderlying(
-    std::unique_ptr<WriteBatchWrapper> wrapper) {
+ModelTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::ExtractUnderlying(
+    std::unique_ptr<WriteBatchImpl> wrapper) {
   return std::move(wrapper->underlying_batch_);
 }
 
-void ModelTypeStoreWithInMemoryCache::WriteBatchWrapper::WriteData(
+template <typename Entry>
+void ModelTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::WriteData(
     const std::string& id,
-    const std::string& value) {
-  underlying_batch_->WriteData(id, value);
-  changes_[id] = value;
+    Entry value) {
+  underlying_batch_->WriteData(id, value.SerializeAsString());
+  changes_[id] = std::move(value);
 }
 
-void ModelTypeStoreWithInMemoryCache::WriteBatchWrapper::DeleteData(
+template <typename Entry>
+void ModelTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::DeleteData(
     const std::string& id) {
   underlying_batch_->DeleteData(id);
   changes_[id] = std::nullopt;
 }
 
-MetadataChangeList*
-ModelTypeStoreWithInMemoryCache::WriteBatchWrapper::GetMetadataChangeList() {
+template <typename Entry>
+MetadataChangeList* ModelTypeStoreWithInMemoryCache<
+    Entry>::WriteBatchImpl::GetMetadataChangeList() {
   return underlying_batch_->GetMetadataChangeList();
 }
 
-std::map<std::string, std::optional<std::string>>
-ModelTypeStoreWithInMemoryCache::WriteBatchWrapper::ExtractChanges() {
+template <typename Entry>
+void ModelTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::
+    TakeMetadataChangesFrom(std::unique_ptr<MetadataChangeList> mcl) {
+  static_cast<InMemoryMetadataChangeList*>(mcl.get())->TransferChangesTo(
+      GetMetadataChangeList());
+}
+
+template <typename Entry>
+std::map<std::string, std::optional<Entry>>
+ModelTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::ExtractChanges() {
   return std::move(changes_);
 }
+
+// Explicit instantiations for all required entry types.
+template class ModelTypeStoreWithInMemoryCache<sync_pb::SecurityEventSpecifics>;
 
 }  // namespace syncer

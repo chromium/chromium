@@ -51,14 +51,16 @@ class SecurityEventSyncBridgeImpl : public SecurityEventSyncBridge,
                                    delete_metadata_change_list) override;
 
  private:
-  void OnStoreLoaded(
-      const std::optional<syncer::ModelError>& error,
-      std::unique_ptr<syncer::ModelTypeStoreWithInMemoryCache> store,
-      std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+  using StoreWithCache =
+      syncer::ModelTypeStoreWithInMemoryCache<sync_pb::SecurityEventSpecifics>;
+
+  void OnStoreLoaded(const std::optional<syncer::ModelError>& error,
+                     std::unique_ptr<StoreWithCache> store,
+                     std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
   void OnStoreCommit(const std::optional<syncer::ModelError>& error);
 
-  std::unique_ptr<syncer::ModelTypeStoreWithInMemoryCache> store_;
+  std::unique_ptr<StoreWithCache> store_;
 
   base::WeakPtrFactory<SecurityEventSyncBridgeImpl> weak_ptr_factory_{this};
 };

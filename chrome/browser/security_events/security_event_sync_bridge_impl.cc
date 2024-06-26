@@ -5,6 +5,7 @@
 #include "chrome/browser/security_events/security_event_sync_bridge_impl.h"
 
 #include <array>
+#include <memory>
 #include <set>
 #include <utility>
 #include <vector>
@@ -52,7 +53,7 @@ SecurityEventSyncBridgeImpl::SecurityEventSyncBridgeImpl(
     syncer::OnceModelTypeStoreFactory store_factory,
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
     : syncer::ModelTypeSyncBridge(std::move(change_processor)) {
-  syncer::ModelTypeStoreWithInMemoryCache::CreateAndLoad(
+  StoreWithCache::CreateAndLoad(
       std::move(store_factory), syncer::SECURITY_EVENTS,
       base::BindOnce(&SecurityEventSyncBridgeImpl::OnStoreLoaded,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -71,9 +72,9 @@ void SecurityEventSyncBridgeImpl::RecordSecurityEvent(
 
   std::string storage_key = GetStorageKeyFromSpecifics(specifics);
 
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+  std::unique_ptr<StoreWithCache::WriteBatch> write_batch =
       store_->CreateWriteBatch();
-  write_batch->WriteData(storage_key, specifics.SerializeAsString());
+  write_batch->WriteData(storage_key, specifics);
 
   change_processor()->Put(storage_key, ToEntityData(std::move(specifics)),
                           write_batch->GetMetadataChangeList());
@@ -109,7 +110,7 @@ std::optional<syncer::ModelError>
 SecurityEventSyncBridgeImpl::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+  std::unique_ptr<StoreWithCache::WriteBatch> write_batch =
       store_->CreateWriteBatch();
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     DCHECK_EQ(syncer::EntityChange::ACTION_DELETE, change->type());
@@ -127,19 +128,12 @@ SecurityEventSyncBridgeImpl::ApplyIncrementalSyncChanges(
 void SecurityEventSyncBridgeImpl::GetDataForCommit(StorageKeyList storage_keys,
                                                    DataCallback callback) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
-  const std::map<std::string, std::string>& in_memory_data =
+  const std::map<std::string, sync_pb::SecurityEventSpecifics>& in_memory_data =
       store_->in_memory_data();
   for (const std::string& storage_key : storage_keys) {
     auto it = in_memory_data.find(storage_key);
     if (it != in_memory_data.end()) {
-      sync_pb::SecurityEventSpecifics specifics;
-      if (specifics.ParseFromString(it->second)) {
-        batch->Put(it->first, ToEntityData(std::move(specifics)));
-      } else {
-        change_processor()->ReportError(
-            {FROM_HERE, "Failed deserializing security events."});
-        return;
-      }
+      batch->Put(it->first, ToEntityData(it->second));
     }
   }
   std::move(callback).Run(std::move(batch));
@@ -148,16 +142,8 @@ void SecurityEventSyncBridgeImpl::GetDataForCommit(StorageKeyList storage_keys,
 void SecurityEventSyncBridgeImpl::GetAllDataForDebugging(
     DataCallback callback) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
-  for (const auto& [storage_key, serialized_specifics] :
-       store_->in_memory_data()) {
-    sync_pb::SecurityEventSpecifics specifics;
-    if (specifics.ParseFromString(serialized_specifics)) {
-      batch->Put(storage_key, ToEntityData(specifics));
-    } else {
-      change_processor()->ReportError(
-          {FROM_HERE, "Failed deserializing security events."});
-      return;
-    }
+  for (const auto& [storage_key, specifics] : store_->in_memory_data()) {
+    batch->Put(storage_key, ToEntityData(specifics));
   }
   std::move(callback).Run(std::move(batch));
 }
@@ -181,7 +167,7 @@ void SecurityEventSyncBridgeImpl::ApplyDisableSyncChanges(
 
 void SecurityEventSyncBridgeImpl::OnStoreLoaded(
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStoreWithInMemoryCache> store,
+    std::unique_ptr<StoreWithCache> store,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   if (error) {
     change_processor()->ReportError(*error);
