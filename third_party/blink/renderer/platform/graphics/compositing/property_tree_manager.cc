@@ -131,13 +131,7 @@ bool PropertyTreeManager::DirectlyUpdateScrollOffsetTransform(
   auto* cc_scroll_node = scroll_tree.Node(
       scroll_node->CcNodeId(property_trees->sequence_number()));
   if (!cc_scroll_node ||
-      scroll_tree.ShouldRealizeScrollsOnMain(*cc_scroll_node) ||
-      // Raster-inducing scrolls may affect hit test regions etc. which need
-      // PaintArtifactCompositor::Update() to update.
-      // TODO(crbug.com/346830803): Revisit this if we can make hit test
-      // regions under scrollers not depending on the scroll offset.
-      // At least we can skip layerization.
-      scroll_tree.CanRealizeScrollsOnPendingTree(*cc_scroll_node)) {
+      scroll_tree.ShouldRealizeScrollsOnMain(*cc_scroll_node)) {
     return false;
   }
 

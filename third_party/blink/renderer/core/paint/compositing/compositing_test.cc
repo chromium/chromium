@@ -2324,6 +2324,13 @@ TEST_P(CompositingSimTest, ImplSideScrollSkipsCommit) {
       gfx::PointF(0, 10),
       GetPropertyTrees()->scroll_tree().current_scroll_offset(element_id));
 
+  UpdateAllLifecyclePhasesExceptPaint();
+  // The scroll offset change should be directly updated, and the direct update
+  // should not schedule commit because the scroll offset is the same as the
+  // current cc scroll offset.
+  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_FALSE(Compositor().LayerTreeHost()->CommitRequested());
+
   // Update just the blink lifecycle because a full frame would clear the bit
   // for whether a commit was requested.
   UpdateAllLifecyclePhases();
@@ -2334,6 +2341,58 @@ TEST_P(CompositingSimTest, ImplSideScrollSkipsCommit) {
 
   // A full commit is not needed.
   EXPECT_FALSE(Compositor().LayerTreeHost()->CommitRequested());
+}
+
+TEST_P(CompositingSimTest, RasterInducingScrollSkipsCommit) {
+  InitializeWithHTML(R"HTML(
+    <div id='scroller' style='overflow: scroll; width: 100px; height: 100px'>
+      <div style='height: 1000px'></div>
+    </div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  auto* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  auto* scrollable_area = scroller->GetLayoutBox()->GetScrollableArea();
+  auto element_id = scrollable_area->GetScrollElementId();
+
+  EXPECT_FALSE(Compositor().LayerTreeHost()->CommitRequested());
+
+  // Simulate the scroll update with scroll delta from impl-side.
+  cc::CompositorCommitData commit_data;
+  commit_data.scrolls.emplace_back(element_id, gfx::Vector2dF(0, 10),
+                                   std::nullopt);
+  Compositor().LayerTreeHost()->ApplyCompositorChanges(&commit_data);
+  EXPECT_EQ(gfx::PointF(0, 10), scrollable_area->ScrollPosition());
+  EXPECT_EQ(
+      gfx::PointF(0, 10),
+      GetPropertyTrees()->scroll_tree().current_scroll_offset(element_id));
+
+  UpdateAllLifecyclePhasesExceptPaint();
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    // The scroll offset change should be directly updated, and the direct
+    // update should not schedule commit because the scroll offset is the same
+    // as the current cc scroll offset.
+    EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+    EXPECT_FALSE(Compositor().LayerTreeHost()->CommitRequested());
+  } else {
+    EXPECT_TRUE(paint_artifact_compositor()->NeedsUpdate());
+    EXPECT_TRUE(Compositor().LayerTreeHost()->CommitRequested());
+  }
+
+  // Update just the blink lifecycle because a full frame would clear the bit
+  // for whether a commit was requested.
+  UpdateAllLifecyclePhases();
+
+  // A main frame is needed to call UpdateLayers which updates property trees,
+  // re-calculating cached to/from-screen transforms.
+  EXPECT_TRUE(Compositor().LayerTreeHost()->RequestedMainFramePending());
+
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    // A full commit is not needed.
+    EXPECT_FALSE(Compositor().LayerTreeHost()->CommitRequested());
+  } else {
+    EXPECT_TRUE(Compositor().LayerTreeHost()->CommitRequested());
+  }
 }
 
 TEST_P(CompositingSimTest, ImplSideScrollUnpaintedSkipsCommit) {

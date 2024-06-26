@@ -39,6 +39,24 @@ int LocalPixelDistanceToExpand(
   return scale * pixel_distance_to_expand;
 }
 
+bool CanExpandForScroll(const ScrollPaintPropertyNode& scroll) {
+  // kNotPreferred is used for selects/inputs which don't benefit from
+  // composited scrolling.
+  if (scroll.GetCompositedScrollingPreference() ==
+      CompositedScrollingPreference::kNotPreferred) {
+    return false;
+  }
+  if (RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled() &&
+      !scroll.UserScrollable()) {
+    return false;
+  }
+  if (scroll.ContentsRect().width() <= scroll.ContainerRect().width() &&
+      scroll.ContentsRect().height() <= scroll.ContainerRect().height()) {
+    return false;
+  }
+  return true;
+}
+
 }  // anonymous namespace
 
 bool CullRect::Intersects(const gfx::Rect& rect) const {
@@ -94,28 +112,17 @@ std::pair<bool, bool> CullRect::ApplyScrollTranslation(
   if (disable_expansion) {
     return {false, false};
   }
-  // kNotPreferred is used for selects/inputs which don't benefit from
-  // composited scrolling.
-  if (scroll->GetCompositedScrollingPreference() ==
-      CompositedScrollingPreference::kNotPreferred) {
-    return {false, false};
-  }
-  if (RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled() &&
-      !scroll->UserScrollable()) {
+  if (!CanExpandForScroll(*scroll)) {
     return {false, false};
   }
 
   gfx::Rect contents_rect = scroll->ContentsRect();
-  int scroll_range_x = contents_rect.width() - container_rect.width();
-  int scroll_range_y = contents_rect.height() - container_rect.height();
-  if (scroll_range_x <= 0 && scroll_range_y <= 0) {
-    return {false, false};
-  }
-
   // Expand the cull rect for scrolling contents for composited scrolling.
   std::pair<bool, bool> expanded{true, true};
   int outset = LocalPixelDistanceToExpand(root_transform, scroll_translation);
   if (RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()) {
+    int scroll_range_x = contents_rect.width() - container_rect.width();
+    int scroll_range_y = contents_rect.height() - container_rect.height();
     if (scroll_range_x <= 0) {
       rect_.Outset(gfx::Outsets::VH(outset, 0));
       expanded.first = false;
@@ -416,7 +423,8 @@ bool CullRect::ChangedEnough(
 bool CullRect::HasScrolledEnough(
     const gfx::Vector2dF& delta,
     const TransformPaintPropertyNode& scroll_translation) {
-  if (!scroll_translation.ScrollNode()) {
+  if (!scroll_translation.ScrollNode() ||
+      !CanExpandForScroll(*scroll_translation.ScrollNode())) {
     return !delta.IsZero();
   }
   if (std::abs(delta.x()) < kChangedEnoughMinimumDistance &&

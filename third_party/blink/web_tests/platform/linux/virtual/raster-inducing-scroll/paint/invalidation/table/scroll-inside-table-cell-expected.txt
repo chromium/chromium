@@ -4,10 +4,7 @@
       "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
-      "backgroundColor": "#FF0000",
-      "invalidations": [
-        [314, 114, 435, 450]
-      ]
+      "backgroundColor": "#FF0000"
     },
     {
       "name": "HorizontalScrollbar",
