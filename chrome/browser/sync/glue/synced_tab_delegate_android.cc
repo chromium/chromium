@@ -23,7 +23,7 @@ SyncedTabDelegateAndroid::SyncedTabDelegateAndroid(
 SyncedTabDelegateAndroid::~SyncedTabDelegateAndroid() = default;
 
 SessionID SyncedTabDelegateAndroid::GetWindowId() const {
-  return tab_android_data_provider_->window_id();
+  return tab_android_data_provider_->GetWindowId();
 }
 
 SessionID SyncedTabDelegateAndroid::GetSessionId() const {

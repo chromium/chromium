@@ -77,7 +77,7 @@ class TabAndroid : public TabAndroidDataProvider,
   ~TabAndroid() override;
 
   // TabAndroidDataProvider
-  SessionID window_id() const override;
+  SessionID GetWindowId() const override;
   int GetAndroidId() const override;
   std::unique_ptr<WebContentsStateByteBuffer> GetWebContentsByteBuffer()
       override;

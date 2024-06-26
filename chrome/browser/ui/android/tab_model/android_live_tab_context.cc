@@ -202,7 +202,8 @@ sessions::LiveTabContext* AndroidLiveTabContext::FindContextForWebContents(
     return nullptr;
   }
 
-  TabModel* model = TabModelList::FindTabModelWithId(tab_android->window_id());
+  TabModel* model =
+      TabModelList::FindTabModelWithId(tab_android->GetWindowId());
 
   return model ? model->GetLiveTabContext() : nullptr;
 }

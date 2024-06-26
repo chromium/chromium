@@ -13,7 +13,7 @@
 class TabAndroidDataProvider {
  public:
   // Return specific id information regarding this tab.
-  virtual SessionID window_id() const = 0;
+  virtual SessionID GetWindowId() const = 0;
 
   // Returns the tab id generated/tracked by logic in Java.
   virtual int GetAndroidId() const = 0;

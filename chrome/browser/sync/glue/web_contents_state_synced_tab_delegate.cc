@@ -41,7 +41,7 @@ WebContentsStateSyncedTabDelegate::Create(
 }
 
 SessionID WebContentsStateSyncedTabDelegate::GetWindowId() const {
-  return tab_android_data_provider_->window_id();
+  return tab_android_data_provider_->GetWindowId();
 }
 
 SessionID WebContentsStateSyncedTabDelegate::GetSessionId() const {

@@ -156,7 +156,7 @@ TabAndroid::~TabAndroid() {
   Java_TabImpl_clearNativePtr(env, weak_java_tab_.get(env));
 }
 
-SessionID TabAndroid::window_id() const {
+SessionID TabAndroid::GetWindowId() const {
   return session_window_id_;
 }
 
