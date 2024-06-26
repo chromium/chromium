@@ -58,6 +58,10 @@ class ModelQualityLogsUploaderService {
   void SetUrlLoaderFactoryForTesting(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
+ protected:
+  virtual void UploadFinalizedLog(std::unique_ptr<proto::LogAiDataRequest> log,
+                                  UserVisibleFeatureKey feature);
+
  private:
   friend class ModelQualityLogsUploaderServiceTest;
   friend class ModelQualityLogEntry;

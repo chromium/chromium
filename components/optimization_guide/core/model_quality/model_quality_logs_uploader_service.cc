@@ -245,8 +245,14 @@ void ModelQualityLogsUploaderService::UploadModelQualityLogs(
         perf_class);
   }
 
+  UploadFinalizedLog(std::move(log_ai_data_request), feature);
+}
+
+void ModelQualityLogsUploaderService::UploadFinalizedLog(
+    std::unique_ptr<proto::LogAiDataRequest> log,
+    UserVisibleFeatureKey feature) {
   std::string serialized_logs;
-  log_ai_data_request->SerializeToString(&serialized_logs);
+  log->SerializeToString(&serialized_logs);
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = model_quality_logs_uploader_service_url_;
