@@ -56,13 +56,18 @@ class DesktopMediaPickerViewsTestApi {
   views::View* GetSelectedListView();
   DesktopMediaListController* GetSelectedController();
 
+  const DesktopMediaPaneView* GetActivePane() const;
+  DesktopMediaPaneView* GetActivePane();
+
+#if BUILDFLAG(IS_MAC)
+  void OnPermissionUpdate(bool has_permission);
+#endif
+
  private:
   const views::View* GetSourceAtIndex(size_t index) const;
   views::View* GetSourceAtIndex(size_t index);
   const views::TableView* GetTableView() const;
   views::TableView* GetTableView();
-  const DesktopMediaPaneView* GetActivePane() const;
-  DesktopMediaPaneView* GetActivePane();
 
   raw_ptr<DesktopMediaPickerViews> picker_;
 };

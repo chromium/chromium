@@ -43,6 +43,10 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 using content::DesktopMediaID;
 
 namespace views {
@@ -469,6 +473,50 @@ TEST_P(DesktopMediaPickerViewsTest, OkButtonEnabledDuringAcceptSpecific) {
   GetPickerDialogView()->AcceptSpecificSource(fake_id);
   EXPECT_EQ(fake_id, WaitForPickerDone());
 }
+
+#if BUILDFLAG(IS_MAC)
+TEST_P(DesktopMediaPickerViewsTest, OnPermissionUpdateWithPermissions) {
+  if (base::mac::MacOSMajorVersion() < 13) {
+    GTEST_SKIP()
+        << "ScreenCapturePermissionChecker only created for MacOS 13 and later";
+  }
+
+  test_api_.OnPermissionUpdate(true);
+
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
+  EXPECT_TRUE(test_api_.GetActivePane()->IsContentPaneVisible());
+  EXPECT_FALSE(test_api_.GetActivePane()->IsPermissionPaneVisible());
+
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWindow);
+  EXPECT_TRUE(test_api_.GetActivePane()->IsContentPaneVisible());
+  EXPECT_FALSE(test_api_.GetActivePane()->IsPermissionPaneVisible());
+
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWebContents);
+  EXPECT_TRUE(test_api_.GetActivePane()->IsContentPaneVisible());
+  EXPECT_FALSE(test_api_.GetActivePane()->IsPermissionPaneVisible());
+}
+
+TEST_P(DesktopMediaPickerViewsTest, OnPermissionUpdateWithoutPermissions) {
+  if (base::mac::MacOSMajorVersion() < 13) {
+    GTEST_SKIP()
+        << "ScreenCapturePermissionChecker only created for MacOS 13 and later";
+  }
+
+  test_api_.OnPermissionUpdate(false);
+
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
+  EXPECT_FALSE(test_api_.GetActivePane()->IsContentPaneVisible());
+  EXPECT_TRUE(test_api_.GetActivePane()->IsPermissionPaneVisible());
+
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWindow);
+  EXPECT_FALSE(test_api_.GetActivePane()->IsContentPaneVisible());
+  EXPECT_TRUE(test_api_.GetActivePane()->IsPermissionPaneVisible());
+
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWebContents);
+  EXPECT_TRUE(test_api_.GetActivePane()->IsContentPaneVisible());
+  EXPECT_FALSE(test_api_.GetActivePane()->IsPermissionPaneVisible());
+}
+#endif
 
 class DesktopMediaPickerViewsPerTypeTest
     : public DesktopMediaPickerViewsTestBase,
