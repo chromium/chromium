@@ -2074,18 +2074,21 @@ bool ChromeContentBrowserClient::ShouldAllowProcessPerSiteForMultipleMainFrames(
   return true;
 }
 
-bool ChromeContentBrowserClient::ShouldUseSpareRenderProcessHost(
+std::optional<
+    content::ContentBrowserClient::SpareProcessRefusedByEmbedderReason>
+ChromeContentBrowserClient::ShouldUseSpareRenderProcessHost(
     content::BrowserContext* browser_context,
     const GURL& site_url) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (!profile)
-    return false;
+  if (!profile) {
+    return SpareProcessRefusedByEmbedderReason::NoProfile;
+  }
 
   // Returning false here will ensure existing Top Chrome WebUI renderers are
   // considered for process reuse over the spare renderer.
   if (IsTopChromeWebUIURL(site_url) &&
       !ShouldUseSpareRenderProcessHostForTopChromePage(profile)) {
-    return false;
+    return SpareProcessRefusedByEmbedderReason::TopFrameChromeWebUI;
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -2093,16 +2096,21 @@ bool ChromeContentBrowserClient::ShouldUseSpareRenderProcessHost(
   // passing switches::kInstantProcess to the renderer process when it
   // launches.  A spare process is launched earlier, before it is known which
   // navigation will use it, so it lacks this flag.
-  if (search::ShouldAssignURLToInstantRenderer(site_url, profile))
-    return false;
+  if (search::ShouldAssignURLToInstantRenderer(site_url, profile)) {
+    // The NTP page chrome://new-tab-page and chrome://new-tab-page-third-party
+    // are using WebUI and will not use instant renderer.
+    // The only usecase is chrome-search:// URLs.
+    return SpareProcessRefusedByEmbedderReason::InstantRendererForNewTabPage;
+  }
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  return ChromeContentBrowserClientExtensionsPart::
-      ShouldUseSpareRenderProcessHost(profile, site_url);
-#else
-  return true;
+  if (!ChromeContentBrowserClientExtensionsPart::
+          ShouldUseSpareRenderProcessHost(profile, site_url)) {
+    return SpareProcessRefusedByEmbedderReason::ExtensionProcess;
+  }
 #endif
+  return std::nullopt;
 }
 
 bool ChromeContentBrowserClient::DoesSiteRequireDedicatedProcess(

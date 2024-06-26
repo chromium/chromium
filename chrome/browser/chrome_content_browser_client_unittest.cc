@@ -35,7 +35,9 @@
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/common/chrome_features.h"
@@ -1473,4 +1475,41 @@ TEST_F(DisableWebAuthnWithBrokenCertsTest, IgnoreCertificateErrorsFlag) {
   simulator->Commit();
   EXPECT_TRUE(client.IsSecurityLevelAcceptableForWebAuthn(
       main_rfh(), url::Origin::Create(url)));
+}
+
+TEST_F(ChromeContentBrowserClientTest, ShouldUseSpareRenderProcessHost) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kTopChromeWebUIUsesSpareRenderer);
+  using SpareProcessRefusedByEmbedderReason =
+      content::ContentBrowserClient::SpareProcessRefusedByEmbedderReason;
+  ChromeContentBrowserClient browser_client;
+
+  // Standard web URL
+  EXPECT_FALSE(browser_client.ShouldUseSpareRenderProcessHost(
+      &profile_, GURL("https://www.example.com")));
+
+  // No profile
+  EXPECT_EQ(SpareProcessRefusedByEmbedderReason::NoProfile,
+            browser_client.ShouldUseSpareRenderProcessHost(
+                nullptr, GURL("https://www.example.com")));
+
+  // Chrome top UI URL
+  EXPECT_EQ(SpareProcessRefusedByEmbedderReason::TopFrameChromeWebUI,
+            browser_client.ShouldUseSpareRenderProcessHost(
+                &profile_, GURL("chrome://test.top-chrome")));
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Chrome-search URL
+  EXPECT_EQ(SpareProcessRefusedByEmbedderReason::InstantRendererForNewTabPage,
+            browser_client.ShouldUseSpareRenderProcessHost(
+                &profile_, GURL("chrome-search://test")));
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Extension URL
+  EXPECT_EQ(SpareProcessRefusedByEmbedderReason::ExtensionProcess,
+            browser_client.ShouldUseSpareRenderProcessHost(
+                &profile_, GURL("chrome-extension://test-extension/")));
+#endif
 }

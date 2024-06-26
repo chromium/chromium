@@ -199,24 +199,26 @@ IN_PROC_BROWSER_TEST_F(
 
   // Initially there will be no top chrome pages and the client should return
   // true for using the spare renderer.
-  EXPECT_TRUE(client()->ShouldUseSpareRenderProcessHost(browser()->profile(),
-                                                        top_chrome_url));
+  EXPECT_FALSE(client()->ShouldUseSpareRenderProcessHost(browser()->profile(),
+                                                         top_chrome_url));
 
   // Navigate to a top chrome URL.
   navigate_browser(top_chrome_url);
 
   // The browser now hosts a top chrome page and the client should return false
   // for using the spare renderer.
-  EXPECT_FALSE(client()->ShouldUseSpareRenderProcessHost(browser()->profile(),
-                                                         top_chrome_url));
+  EXPECT_EQ(client()->ShouldUseSpareRenderProcessHost(browser()->profile(),
+                                                      top_chrome_url),
+            content::ContentBrowserClient::SpareProcessRefusedByEmbedderReason::
+                TopFrameChromeWebUI);
 
   // Navigate away from the top chrome page.
   navigate_browser(non_top_chrome_url);
 
   // There will no longer be any top chrome pages hosted by the browser and the
   // client should return true for using the spare renderer.
-  EXPECT_TRUE(client()->ShouldUseSpareRenderProcessHost(browser()->profile(),
-                                                        top_chrome_url));
+  EXPECT_FALSE(client()->ShouldUseSpareRenderProcessHost(browser()->profile(),
+                                                         top_chrome_url));
 }
 
 // Helper class to mark "https://ntp.com/" as an isolated origin.

@@ -310,6 +310,21 @@ class CONTENT_EXPORT ContentBrowserClient {
                               const ClipboardPasteData& data,
                               std::optional<std::u16string> replacement_data)>;
 
+  // Records the detailed reason for ShouldUseSpareRenderProcessHost returning
+  // .
+  //
+  // LINT.IfChange(SpareProcessRefusedByEmbedderReason)
+  enum class SpareProcessRefusedByEmbedderReason {
+    DefaultDisabled = 0,
+    NoProfile = 1,
+    TopFrameChromeWebUI = 2,
+    InstantRendererForNewTabPage = 3,
+    ExtensionProcess = 4,
+    JitDisabled = 5,
+    kMaxValue = JitDisabled,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:SpareProcessRefusedByEmbedderReason)
+
   virtual ~ContentBrowserClient() = default;
 
   // Allows the embedder to set any number of custom BrowserMainParts
@@ -413,7 +428,9 @@ class CONTENT_EXPORT ContentBrowserClient {
       BrowserContext* context);
 
   // Returns whether a spare RenderProcessHost should be used for navigating to
-  // the specified site URL.
+  // the specified site URL. If the spare render process can be used, the
+  // function will return an empty value. Otherwise the detailed reason will be
+  // returned.
   //
   // Using the spare RenderProcessHost is advisable, because it can improve
   // performance of a navigation that requires a new process.  On the other
@@ -422,8 +439,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // ContentBrowserClient::AppendExtraCommandLineSwitches and add some cmdline
   // switches at navigation time (and this won't work for the spare, because the
   // spare RenderProcessHost is launched ahead of time).
-  virtual bool ShouldUseSpareRenderProcessHost(BrowserContext* browser_context,
-                                               const GURL& site_url);
+  virtual std::optional<SpareProcessRefusedByEmbedderReason>
+  ShouldUseSpareRenderProcessHost(BrowserContext* browser_context,
+                                  const GURL& site_url);
 
   // Returns true if site isolation should be enabled for |effective_site_url|.
   // This call allows the embedder to supplement the site isolation policy

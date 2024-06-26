@@ -1240,6 +1240,17 @@ void ExpectSpareProcessMaybeTakeActionBucket(
       testing::ElementsAre(base::Bucket(static_cast<int>(expected_action), 1)));
 }
 
+using SpareProcessRefusedByEmbedderReason =
+    content::ContentBrowserClient::SpareProcessRefusedByEmbedderReason;
+void ExpectSpareProcessRefusedByEmbedderReason(
+    const base::HistogramTester& histograms,
+    SpareProcessRefusedByEmbedderReason reason) {
+  EXPECT_THAT(
+      histograms.GetAllSamples(
+          "BrowserRenderProcessHost.SpareProcessRefusedByEmbedderReason"),
+      testing::ElementsAre(base::Bucket(static_cast<int>(reason), 1)));
+}
+
 TEST_F(SpareRenderProcessHostUnitTest, TestRendererTaken) {
   RenderProcessHost::WarmupSpareRenderProcessHost(browser_context());
   ASSERT_EQ(1U, rph_factory_.GetProcesses()->size());
@@ -1303,6 +1314,62 @@ TEST_F(SpareRenderProcessHostUnitTest, TestRendererNotTaken) {
     EXPECT_EQ(1U, rph_factory_.GetProcesses()->size());
     EXPECT_EQ(nullptr, new_spare);
   }
+}
+
+// A mock ContentBrowserClient that returns the
+// SpareProcessRefusedByEmbedderReason as set by the user.
+class SpareProcessRejectBrowserClient : public ContentBrowserClient {
+ public:
+  SpareProcessRejectBrowserClient() = default;
+
+  SpareProcessRejectBrowserClient(const SpareProcessRejectBrowserClient&) =
+      delete;
+  SpareProcessRejectBrowserClient& operator=(
+      const SpareProcessRejectBrowserClient&) = delete;
+
+  void SetSpareProcessRefuseReason(SpareProcessRefusedByEmbedderReason reason) {
+    refuse_reason_ = reason;
+  }
+
+  std::optional<SpareProcessRefusedByEmbedderReason>
+  ShouldUseSpareRenderProcessHost(BrowserContext* browser_context,
+                                  const GURL& site_url) override {
+    return refuse_reason_;
+  }
+
+ private:
+  SpareProcessRefusedByEmbedderReason refuse_reason_ =
+      SpareProcessRefusedByEmbedderReason::DefaultDisabled;
+};
+
+TEST_F(SpareRenderProcessHostUnitTest,
+       TestSpareProcessRefusedByEmbedderReason) {
+  RenderProcessHost::WarmupSpareRenderProcessHost(browser_context());
+  ASSERT_EQ(1U, rph_factory_.GetProcesses()->size());
+  RenderProcessHost* spare_rph =
+      RenderProcessHostImpl::GetSpareRenderProcessHostForTesting();
+  EXPECT_EQ(spare_rph, rph_factory_.GetProcesses()->at(0).get());
+  std::vector<SpareProcessRefusedByEmbedderReason> test_reasons = {
+      SpareProcessRefusedByEmbedderReason::DefaultDisabled,
+      SpareProcessRefusedByEmbedderReason::NoProfile,
+      SpareProcessRefusedByEmbedderReason::TopFrameChromeWebUI,
+      SpareProcessRefusedByEmbedderReason::InstantRendererForNewTabPage,
+      SpareProcessRefusedByEmbedderReason::ExtensionProcess,
+      SpareProcessRefusedByEmbedderReason::JitDisabled,
+  };
+  SpareProcessRejectBrowserClient test_client;
+  ContentBrowserClient* regular_client =
+      SetBrowserClientForTesting(&test_client);
+
+  for (auto reason : test_reasons) {
+    base::HistogramTester histograms;
+    test_client.SetSpareProcessRefuseReason(reason);
+    SiteInstanceImpl::Create(GetBrowserContext())->GetProcess();
+    ExpectSpareProcessRefusedByEmbedderReason(histograms, reason);
+    PruneDeadRenderProcessHosts();
+    RenderProcessHost::WarmupSpareRenderProcessHost(browser_context());
+  }
+  SetBrowserClientForTesting(regular_client);
 }
 
 TEST_F(SpareRenderProcessHostUnitTest, SpareMissing) {

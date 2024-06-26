@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/memory_pressure_monitor.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -133,9 +134,11 @@ SpareRenderProcessHostManager::MaybeTakeSpareRenderProcessHost(
   // process-per-site scenarios + to work correctly even if
   // ShouldUseSpareRenderProcessHost starts covering non-process-per-site
   // scenarios).
-  bool embedder_allows_spare_usage =
-      GetContentClient()->browser()->ShouldUseSpareRenderProcessHost(
-          browser_context, site_instance->GetSiteInfo().site_url());
+  std::optional<ContentBrowserClient::SpareProcessRefusedByEmbedderReason>
+      refuse_reason =
+          GetContentClient()->browser()->ShouldUseSpareRenderProcessHost(
+              browser_context, site_instance->GetSiteInfo().site_url());
+  bool embedder_allows_spare_usage = !refuse_reason.has_value();
 
   // The spare RenderProcessHost always launches with JIT enabled, so if JIT
   // is disabled for the site then it's not possible to use this as the JIT
@@ -143,6 +146,13 @@ SpareRenderProcessHostManager::MaybeTakeSpareRenderProcessHost(
   if (GetContentClient()->browser()->IsJitDisabledForSite(
           browser_context, site_instance->GetSiteInfo().process_lock_url())) {
     embedder_allows_spare_usage = false;
+    refuse_reason =
+        ContentBrowserClient::SpareProcessRefusedByEmbedderReason::JitDisabled;
+  }
+  if (refuse_reason.has_value()) {
+    base::UmaHistogramEnumeration(
+        "BrowserRenderProcessHost.SpareProcessRefusedByEmbedderReason",
+        refuse_reason.value());
   }
 
   // Do not use spare renderer if running an experiment to run SkiaFontManager.

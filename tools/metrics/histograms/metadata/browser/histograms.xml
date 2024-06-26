@@ -1215,6 +1215,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BrowserRenderProcessHost.SpareProcessRefusedByEmbedderReason"
+    enum="SpareProcessMaybeTakeAction" expires_after="2024-11-03">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the detailed reason if the spare process cannot be taken because of
+    RefusedByEmbedder.
+  </summary>
+</histogram>
+
 <histogram name="BrowserRenderProcessHost.SpareProcessStartupTime" units="ms"
     expires_after="2024-11-03">
   <owner>kerenzhu@chromium.org</owner>

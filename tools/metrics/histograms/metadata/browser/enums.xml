@@ -381,6 +381,19 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="RefusedForPdfContent"/>
 </enum>
 
+<!-- LINT.IfChange(SpareProcessRefusedByEmbedderReason) -->
+
+<enum name="SpareProcessRefusedByEmbedderReason">
+  <int value="0" label="DefaultDisabled"/>
+  <int value="1" label="NoProfile"/>
+  <int value="2" label="TopFrameChromeWebUI"/>
+  <int value="3" label="InstantRendererForNewTabPage"/>
+  <int value="4" label="ExtensionProcess"/>
+  <int value="5" label="JitDisabled"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/public/browser/content_browser_client.h:SpareProcessRefusedByEmbedderReason) -->
+
 <enum name="SupportToolWebUIActionType">
   <summary>
     Actions that the user can take on Support Tool WebUI (chrome://support-tool)
