@@ -1376,19 +1376,10 @@ bool CrabbyAVIFImageDecoder::GetGainmapInfoAndData(
         return false;
       }
 
-      float min_log2 =
+      const float min_log2 =
           FractionToFloat(metadata.gainMapMinN[i], metadata.gainMapMinD[i]);
-      float max_log2 =
+      const float max_log2 =
           FractionToFloat(metadata.gainMapMaxN[i], metadata.gainMapMaxD[i]);
-      if (base_is_hdr != metadata.backwardDirection) {
-        // When base_is_hdr != metadata.backwardDirection, it means that the
-        // gain map was computed as log2(HDR/SDR) instead of log2(SDR/HDR).
-        // But log2(1/x) = -log2(x) so we just need to negate the min/max values
-        // which are used to scale the gain map.
-        // Note that we no longer have min<max but Skia does not check this.
-        min_log2 *= -1.0f;
-        max_log2 *= -1.0f;
-      }
       out_gainmap_info.fGainmapRatioMin[i] = std::exp2(min_log2);
       out_gainmap_info.fGainmapRatioMax[i] = std::exp2(max_log2);
 
