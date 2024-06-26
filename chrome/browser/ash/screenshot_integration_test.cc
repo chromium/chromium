@@ -63,7 +63,9 @@ class ScreenshotIntegrationTest : public MixinBasedInProcessBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(Vulkan, ScreenshotIntegrationTest, testing::Bool());
 
-IN_PROC_BROWSER_TEST_P(ScreenshotIntegrationTest, AverageColor) {
+// TODO(b/349252684): Sometimes fails with "CRTC not found. Is the screen on?"
+// despite the code below that turns on the screen.
+IN_PROC_BROWSER_TEST_P(ScreenshotIntegrationTest, DISABLED_AverageColor) {
   if (skip_test_) {
     GTEST_SKIP() << "Skipping test because target doesn't support Vulkan.";
   }
