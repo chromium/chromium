@@ -6922,25 +6922,16 @@
 
     'chromeos_reven_vmlab_tests_no_gtests': {
       'chromeos_chrome_all_tast_tests': {
-        'mixins': [
-          'experiments',
-        ],
         'variants': [
           'CROS_RELEASE_LKGM',
         ],
       },
       'chromeos_chrome_criticalstaging_tast_tests': {
-        'mixins': [
-          'experiments',
-        ],
         'variants': [
           'CROS_RELEASE_LKGM',
         ],
       },
       'chromeos_chrome_disabled_tast_tests': {
-        'mixins': [
-          'experiments',
-        ],
         'variants': [
           'CROS_RELEASE_LKGM',
         ],

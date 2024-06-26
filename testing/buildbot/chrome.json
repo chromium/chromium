@@ -2257,7 +2257,6 @@
         "autotest_name": "tast.chrome-from-gcs",
         "cros_board": "reven-vmtest",
         "dut_pool": "vmlab",
-        "experiment_percentage": 100,
         "name": "chrome_all_tast_tests RELEASE_LKGM",
         "run_cft": true,
         "shard_level_retries_on_ctp": 1,
