@@ -7568,3 +7568,8 @@ crbug.com/325323464 [ Win ] http/tests/navigation/back-to-redirect-with-frame.ph
 
 # Gardener 2024-06-10
 crbug.com/346219035 [ Linux ] http/tests/loading/preload-image-src.html [ Failure ]
+
+# Branch gardener 2024-06-26
+crbug.com/346794458 [ Mac ] external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
+crbug.com/346794458 [ Mac ] external/wpt/permissions-policy/permissions-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
+
