@@ -185,11 +185,20 @@ TEST_F(ArcActivationNecessityCheckerTest, AppIsInstalled) {
   package_info->package_name = "com.example.third_party_app";
   app_instance_->SendPackageAdded(std::move(package_info));
 
+  std::vector<mojom::AppInfoPtr> fake_apps_;
+  mojom::AppInfoPtr app_info = mojom::AppInfo::New(
+      base::StringPrintf("Fake App"),
+      base::StringPrintf("com.example.third_party_app"),
+      base::StringPrintf("fake.app.activity"), false /* sticky */);
+  fake_apps_.emplace_back(std::move(app_info));
+  app_instance_->SendRefreshAppList(fake_apps_);
+  base::RunLoop().RunUntilIdle();
+
   base::test::TestFuture<bool> future;
   checker_->Check(future.GetCallback());
   EXPECT_TRUE(future.Get());
   histogram_tester.ExpectUniqueSample(
-      "Arc.ArcOnDemandV2.ActivationShouldBeDelayed", false, 1);
+      "Arc.ArcOnDemandV2.ActivationShouldBeDelayed", true, 1);
 }
 
 TEST_F(ArcActivationNecessityCheckerTest, NoNeedToActivate) {
