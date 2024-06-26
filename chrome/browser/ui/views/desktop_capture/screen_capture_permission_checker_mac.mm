@@ -43,14 +43,17 @@ ScreenCapturePermissionCheckerMac::MaybeCreate(
   if (base::FeatureList::IsEnabled(
           kDesktopCapturePermissionCheckerKillSwitch) &&
       base::mac::MacOSMajorVersion() >= 13) {
-    return std::make_unique<ScreenCapturePermissionCheckerMac>(callback);
+    return std::make_unique<ScreenCapturePermissionCheckerMac>(
+        callback, base::BindRepeating(&ui::IsScreenCaptureAllowed));
   }
   return nullptr;
 }
 
 ScreenCapturePermissionCheckerMac::ScreenCapturePermissionCheckerMac(
-    base::RepeatingCallback<void(bool)> callback)
-    : callback_(callback) {
+    base::RepeatingCallback<void(bool)> callback,
+    base::RepeatingCallback<bool()> is_screen_capture_allowed)
+    : callback_(callback),
+      is_screen_capture_allowed_(std::move(is_screen_capture_allowed)) {
   OnRecurrentPermissionCheck();
 
   if (!base::FeatureList::IsEnabled(kDesktopCapturePermissionChecker)) {
@@ -79,7 +82,7 @@ void ScreenCapturePermissionCheckerMac::OnRecurrentPermissionCheck() {
   has_pending_task_ = true;
 
   sequenced_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&ui::IsScreenCaptureAllowed),
+      FROM_HERE, is_screen_capture_allowed_,
       base::BindOnce(&ScreenCapturePermissionCheckerMac::OnPermissionUpdate,
                      weak_factory_.GetWeakPtr()));
 }

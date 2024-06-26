@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_SCREEN_CAPTURE_PERMISSION_CHECKER_MAC_H_
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_SCREEN_CAPTURE_PERMISSION_CHECKER_MAC_H_
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/desktop_capture/screen_capture_permission_checker.h"
+
+BASE_DECLARE_FEATURE(kDesktopCapturePermissionChecker);
 
 class ScreenCapturePermissionCheckerMac
     : public ScreenCapturePermissionChecker {
@@ -17,8 +20,10 @@ class ScreenCapturePermissionCheckerMac
   static std::unique_ptr<ScreenCapturePermissionCheckerMac> MaybeCreate(
       base::RepeatingCallback<void(bool)> callback);
 
-  explicit ScreenCapturePermissionCheckerMac(
-      base::RepeatingCallback<void(bool)> callback);
+  ScreenCapturePermissionCheckerMac(
+      base::RepeatingCallback<void(bool)> callback,
+      base::RepeatingCallback<bool()> is_screen_capture_allowed);
+
   ~ScreenCapturePermissionCheckerMac() override;
 
   void Stop() override;
@@ -33,6 +38,8 @@ class ScreenCapturePermissionCheckerMac
       base::ThreadPool::CreateSequencedTaskRunner({});
   base::RepeatingCallback<void(bool)> callback_;
   base::RepeatingTimer timer_;
+
+  base::RepeatingCallback<bool()> is_screen_capture_allowed_;
   base::WeakPtrFactory<ScreenCapturePermissionCheckerMac> weak_factory_{this};
 };
 

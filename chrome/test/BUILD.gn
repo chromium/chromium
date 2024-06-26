@@ -10494,6 +10494,7 @@ test("unit_tests") {
         "../browser/media_galleries/mac/mtp_device_delegate_impl_mac_unittest.mm",
         "../browser/ui/views/accelerator_table_unittest_mac.mm",
         "../browser/ui/views/desktop_capture/desktop_media_permission_pane_view_mac_unittest.mm",
+        "../browser/ui/views/desktop_capture/screen_capture_permission_checker_mac_unittest.mm",
         "../browser/ui/views/frame/browser_non_client_frame_view_mac_unittest.mm",
       ]
     }
