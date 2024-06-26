@@ -101,7 +101,7 @@ class PLATFORM_EXPORT BudgetPool {
 
   const char* name_;  // NOT OWNED
 
-  HashSet<TaskQueueThrottler*> associated_throttlers_;
+  HashSet<TaskQueueThrottler*, WTF::MemberHashRecordReplayRegisteredPointerId<TaskQueueThrottler>> associated_throttlers_;
   bool is_enabled_;
 };
 

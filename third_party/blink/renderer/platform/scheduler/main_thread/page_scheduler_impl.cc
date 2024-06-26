@@ -220,8 +220,6 @@ PageSchedulerImpl::BreakLinkages() {
 constexpr base::TimeDelta PageSchedulerImpl::kRecentAudioDelay;
 
 void PageSchedulerImpl::SetPageVisible(bool page_visible) {
-  recordreplay::Assert("[RUN-1436] PageSchedulerImpl::SetPageVisible %d", page_visible);
-
   PageVisibilityState page_visibility = page_visible
                                             ? PageVisibilityState::kVisible
                                             : PageVisibilityState::kHidden;
