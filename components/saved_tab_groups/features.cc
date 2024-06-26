@@ -48,6 +48,13 @@ BASE_FEATURE(kTabGroupSyncUno,
              "TabGroupSyncUno",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature flag specific to Desktop platforms. When enabled, desktop platforms
+// will use the TabGroupSyncService. When disabled, desktop platforms will
+// continue to use SavedTabGroupKeyedService.
+BASE_FEATURE(kTabGroupSyncServiceDesktopMigration,
+             "TabGroupSyncServiceDesktopMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature flag on Android to control migration from Java SharedPrefs to
 // ModelTypeStore.
 BASE_FEATURE(kMigrationFromJavaSharedPrefs,
@@ -84,6 +91,10 @@ bool IsTabGroupsSaveV2Enabled() {
 
 bool IsTabGroupsSaveUIUpdateEnabled() {
   return base::FeatureList::IsEnabled(kTabGroupsSaveUIUpdate);
+}
+
+bool IsTabGroupSyncServiceDesktopMigrationEnabled() {
+  return base::FeatureList::IsEnabled(kTabGroupSyncServiceDesktopMigration);
 }
 
 bool IsMigrationFromJavaSharedPrefsEnabled() {

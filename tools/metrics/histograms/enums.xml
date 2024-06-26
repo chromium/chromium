@@ -20767,6 +20767,7 @@ from previous Chrome versions.
   <int value="99128921"
       label="SyncOnlySeparateUserDisplayModeForCrOS:disabled"/>
   <int value="99177659" label="OmniboxUICuesForSearchHistoryMatches:disabled"/>
+  <int value="99502850" label="TabGroupSyncServiceDesktopMigration:enabled"/>
   <int value="99660832" label="DockedMagnifierResizing:enabled"/>
   <int value="101253756" label="RequestDesktopSiteDefaults:disabled"/>
   <int value="101364236" label="ParentAccessJelly:enabled"/>
@@ -24795,6 +24796,7 @@ from previous Chrome versions.
   <int value="1816939624" label="DeskProfiles:enabled"/>
   <int value="1817312143" label="num-raster-threads"/>
   <int value="1817420759" label="CpuAffinityRestrictToLittleCores:disabled"/>
+  <int value="1818473884" label="TabGroupSyncServiceDesktopMigration:disabled"/>
   <int value="1818829958" label="IdentityDisc:enabled"/>
   <int value="1819536169" label="disable-cast-streaming-hw-encoding"/>
   <int value="1820317896" label="NTPShowGoogleGInOmnibox:disabled"/>

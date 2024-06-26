@@ -3454,6 +3454,13 @@ const char kTabGroupsSaveUIUpdateName[] = "Tab Groups Save UI Update";
 const char kTabGroupsSaveUIUpdateDescription[] =
     "Enables saved tab group pinning, everything menu and bookmarks bar change";
 
+const char kTabGroupSyncServiceDesktopMigrationId[] =
+    "tab-group-sync-service-desktop-migration";
+const char kTabGroupSyncServiceDesktopMigrationName[] =
+    "Tab Group Sync Service Desktop Migration";
+const char kTabGroupSyncServiceDesktopMigrationDescription[] =
+    "Enables use of the TabGroupSyncService. This is a backend only change.";
+
 const char kTabHoverCardImagesName[] = "Tab Hover Card Images";
 const char kTabHoverCardImagesDescription[] =
     "Shows a preview image in tab hover cards, if tab hover cards are enabled.";

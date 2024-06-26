@@ -8305,6 +8305,11 @@
     "expiry_milestone": 132
   },
   {
+    "name": "tab-group-sync-service-desktop-migration",
+    "owners": [ "chrome-desktop-ui-sea@google.com", "dljames@chromium.org", "dpenning@chromium.org" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "tab-groups-in-grid",
     "owners": [ "alionadangla@chromium.org", "lpromero@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 130

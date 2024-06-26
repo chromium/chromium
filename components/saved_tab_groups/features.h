@@ -23,6 +23,8 @@ BASE_DECLARE_FEATURE(kTabGroupsSaveUIUpdate);
 
 BASE_DECLARE_FEATURE(kTabGroupSyncUno);
 
+BASE_DECLARE_FEATURE(kTabGroupSyncServiceDesktopMigration);
+
 BASE_DECLARE_FEATURE(kMigrationFromJavaSharedPrefs);
 
 BASE_DECLARE_FEATURE(kAlwaysAcceptServerDataInModel);
@@ -36,6 +38,8 @@ BASE_DECLARE_FEATURE(kDeferMediaLoadInBackgroundTab);
 extern bool IsTabGroupsSaveV2Enabled();
 
 extern bool IsTabGroupsSaveUIUpdateEnabled();
+
+extern bool IsTabGroupSyncServiceDesktopMigrationEnabled();
 
 extern bool IsMigrationFromJavaSharedPrefsEnabled();
 

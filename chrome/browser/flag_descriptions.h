@@ -2015,6 +2015,10 @@ extern const char kTabGroupsSaveUIUpdateId[];
 extern const char kTabGroupsSaveUIUpdateName[];
 extern const char kTabGroupsSaveUIUpdateDescription[];
 
+extern const char kTabGroupSyncServiceDesktopMigrationId[];
+extern const char kTabGroupSyncServiceDesktopMigrationName[];
+extern const char kTabGroupSyncServiceDesktopMigrationDescription[];
+
 extern const char kTabHoverCardImagesName[];
 extern const char kTabHoverCardImagesDescription[];
 
