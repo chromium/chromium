@@ -98,6 +98,7 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
       LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
+      Profile* profile,
       lens::LensOverlayInvocationSource invocation_source,
       bool use_dark_mode)
       : LensOverlayQueryController(full_image_callback,
@@ -106,6 +107,7 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
                                    thumbnail_created_callback,
                                    variations_client,
                                    identity_manager,
+                                   profile,
                                    invocation_source,
                                    use_dark_mode) {}
   ~LensOverlayQueryControllerMock() override = default;
@@ -120,7 +122,8 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
       lens::LensOverlayServerRequest request_data,
       base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
           fetcher_created_callback,
-      EndpointFetcherCallback endpoint_fetcher_callback) override {
+      EndpointFetcherCallback endpoint_fetcher_callback,
+      std::optional<uint64_t> gen204_identifier) override {
     lens::LensOverlayServerResponse fake_server_response;
     if (request_data.has_objects_request()) {
       sent_objects_request_.CopyFrom(request_data.objects_request());
@@ -211,7 +214,7 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
       full_image_response_future.GetRepeatingCallback(), base::NullCallback(),
       base::NullCallback(), base::NullCallback(),
       profile()->GetVariationsClient(),
-      IdentityManagerFactory::GetForProfile(profile()),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
       /*use_dark_mode=*/false);
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
@@ -268,7 +271,7 @@ TEST_F(LensOverlayQueryControllerTest,
       interaction_data_response_future.GetRepeatingCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       profile()->GetVariationsClient(),
-      IdentityManagerFactory::GetForProfile(profile()),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
       /*use_dark_mode=*/false);
   query_controller.fake_objects_response_.mutable_cluster_info()
@@ -369,7 +372,7 @@ TEST_F(LensOverlayQueryControllerTest,
       interaction_data_response_future.GetRepeatingCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       profile()->GetVariationsClient(),
-      IdentityManagerFactory::GetForProfile(profile()),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
       /*use_dark_mode=*/false);
   query_controller.fake_objects_response_.mutable_cluster_info()
@@ -487,7 +490,7 @@ TEST_F(LensOverlayQueryControllerTest,
       interaction_data_response_future.GetRepeatingCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       profile()->GetVariationsClient(),
-      IdentityManagerFactory::GetForProfile(profile()),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
       /*use_dark_mode=*/false);
   query_controller.fake_objects_response_.mutable_cluster_info()
@@ -595,7 +598,7 @@ TEST_F(LensOverlayQueryControllerTest,
       interaction_data_response_future.GetRepeatingCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       profile()->GetVariationsClient(),
-      IdentityManagerFactory::GetForProfile(profile()),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
       /*use_dark_mode=*/false);
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
@@ -646,7 +649,7 @@ TEST_F(LensOverlayQueryControllerTest,
       interaction_data_response_future.GetRepeatingCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       profile()->GetVariationsClient(),
-      IdentityManagerFactory::GetForProfile(profile()),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
       /*use_dark_mode=*/false);
   query_controller.fake_objects_response_.mutable_cluster_info()
