@@ -30,12 +30,6 @@ std::pair<ukm::SourceId, url::Origin> GetNavigationInfoForContents(
                         main_frame->GetLastCommittedOrigin());
 }
 
-int GetNumDisplays() {
-  auto* screen = display::Screen::GetScreen();
-  DCHECK(screen);
-  return screen->GetNumDisplays();
-}
-
 extensions::ExtensionIdSet GetExtensionsThatRanContentScriptsInWebContents(
     content::WebContents* contents) {
   content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
@@ -184,24 +178,26 @@ void TabUsageScenarioTracker::OnMediaEffectivelyFullscreenChanged(
     bool is_fullscreen) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const int num_displays = GetNumDisplays();
+  if (!last_num_displays_.has_value()) {
+    last_num_displays_ = GetNumDisplays();
+  }
 
+  // Use `last_num_displays_` instead of `GetNumDisplays()` below, to let
+  // `OnNumDisplaysChanged()` handle changes in the number of displays.
   if (is_fullscreen) {
     auto [it, inserted] =
         contents_playing_video_fullscreen_.insert(web_contents);
     if (inserted && contents_playing_video_fullscreen_.size() == 1U &&
-        num_displays == 1) {
+        last_num_displays_.value() == 1) {
       usage_scenario_data_store_->OnFullScreenVideoStartsOnSingleMonitor();
     }
   } else {
     auto num_removed = contents_playing_video_fullscreen_.erase(web_contents);
     if (num_removed == 1U && contents_playing_video_fullscreen_.empty() &&
-        num_displays == 1) {
+        last_num_displays_.value() == 1) {
       usage_scenario_data_store_->OnFullScreenVideoEndsOnSingleMonitor();
     }
   }
-
-  last_num_displays_ = num_displays;
 }
 
 void TabUsageScenarioTracker::OnMediaDestroyed(
@@ -292,6 +288,12 @@ void TabUsageScenarioTracker::OnDisplaysRemoved(const display::Displays&) {
   OnNumDisplaysChanged();
 }
 
+int TabUsageScenarioTracker::GetNumDisplays() {
+  auto* screen = display::Screen::GetScreen();
+  DCHECK(screen);
+  return screen->GetNumDisplays();
+}
+
 void TabUsageScenarioTracker::OnTabBecameHidden(
     VisibleTabsMap::iterator* visible_tab_iter) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -360,26 +362,23 @@ void TabUsageScenarioTracker::InsertContentsInMapOfVisibleTabs(
 void TabUsageScenarioTracker::OnNumDisplaysChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (contents_playing_video_fullscreen_.empty())
-    return;
-
   // Multiple displays can be added or removed before OnDisplayAdded and
-  // OnDidRemoveDisplays are dispatched. It is therefore impossible to make any
-  // assumption about the new number of displays when this is invoked.
-
-  // `last_num_displays_` is set when `contents_playing_video_fullscreen_`
-  // becomes non-empty.
-  //
-  // TODO(crbug.com/40206265): Change CHECK to DCHECK in September 2022 after
-  // confirming that there are no crash reports.
-  CHECK(last_num_displays_.has_value());
+  // OnDidRemoveDisplays are dispatched. It is therefore incorrect to assume
+  // that the number of displays has increased / decreased compared to
+  // `last_num_displays_` following a call to OnDisplayAdded/ OnDisplaysRemoved.
 
   const int num_displays = GetNumDisplays();
 
-  if (num_displays == 1 && last_num_displays_ != 1) {
-    usage_scenario_data_store_->OnFullScreenVideoStartsOnSingleMonitor();
-  } else if (num_displays != 1 && last_num_displays_ == 1) {
-    usage_scenario_data_store_->OnFullScreenVideoEndsOnSingleMonitor();
+  if (!contents_playing_video_fullscreen_.empty()) {
+    // `last_num_displays_` is set when `contents_playing_video_fullscreen_`
+    // becomes non-empty.
+    CHECK(last_num_displays_.has_value());
+
+    if (num_displays == 1 && last_num_displays_ != 1) {
+      usage_scenario_data_store_->OnFullScreenVideoStartsOnSingleMonitor();
+    } else if (num_displays != 1 && last_num_displays_ == 1) {
+      usage_scenario_data_store_->OnFullScreenVideoEndsOnSingleMonitor();
+    }
   }
 
   last_num_displays_ = num_displays;
