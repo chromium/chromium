@@ -29,6 +29,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/i18n/string_search.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/dynamic_annotations.h"
@@ -61,6 +62,28 @@ struct SameSizeAsStringImpl {
 
 ASSERT_SIZE(StringImpl, SameSizeAsStringImpl);
 
+std::u16string ToU16String(const LChar* chars, const wtf_size_t length) {
+  std::u16string s;
+  s.reserve(length);
+
+  for (wtf_size_t i = 0U; i < length; ++i) {
+    s.push_back(chars[i]);
+  }
+
+  return s;
+}
+
+std::u16string ToU16String(const UChar* chars, const wtf_size_t length) {
+  return std::u16string(chars, length);
+}
+
+std::u16string ToU16String(const StringView& s) {
+  if (s.Is8Bit()) {
+    return ToU16String(s.Characters8(), s.length());
+  }
+
+  return ToU16String(s.Characters16(), s.length());
+}
 }  // namespace
 
 void* StringImpl::operator new(size_t size) {
@@ -1129,6 +1152,29 @@ bool StringImpl::StartsWithIgnoringCase(const StringView& prefix) const {
   }
   return DeprecatedEqualIgnoringCase(Characters16(), prefix.Characters16(),
                                      prefix.length());
+}
+
+bool StringImpl::StartsWithIgnoringCaseAndAccents(
+    const StringView& prefix) const {
+  std::u16string s = ToU16String();
+  std::u16string p = ::WTF::ToU16String(prefix);
+  size_t match_index = 1U;
+
+  if (base::i18n::StringSearchIgnoringCaseAndAccents(
+          p, s, &match_index,
+          /*match_length=*/nullptr)) {
+    return match_index == 0U;
+  }
+
+  return false;
+}
+
+std::u16string StringImpl::ToU16String() const {
+  if (Is8Bit()) {
+    return ::WTF::ToU16String(Characters8(), length());
+  }
+
+  return ::WTF::ToU16String(Characters16(), length());
 }
 
 bool StringImpl::StartsWithIgnoringASCIICase(const StringView& prefix) const {

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2012 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -395,6 +395,25 @@ TEST(StringTest, FindWithCallback) {
       WTF::BindRepeating(&TestMatcher::IsTarget, WTF::Unretained(&matcher));
   EXPECT_EQ(WTF::kNotFound, test_string1.Find(callback));
   EXPECT_EQ(1U, test_string2.Find(callback));
+}
+
+TEST(StringTest, StartsWithIgnoringCaseAndAccents) {
+  EXPECT_TRUE(String(u"ÎÑŢÉRÑÅŢÎÖÑÅĻÎŽÅŢÎÖÑ")
+                  .StartsWithIgnoringCaseAndAccents(String("international")));
+}
+
+TEST(StringTest, StartsWithIgnoringCaseAndAccents8Bit) {
+  EXPECT_TRUE(String("PuPpY").StartsWithIgnoringCaseAndAccents(String("pup")));
+}
+
+TEST(StringTest, StartsWithIgnoringCaseAndAccentsExpanding) {
+  EXPECT_TRUE(
+      String(u"Straße").StartsWithIgnoringCaseAndAccents(String("STRASS")));
+}
+
+TEST(StringTest, StartsWithIgnoringCaseAndAccentsSuffixDiff) {
+  EXPECT_FALSE(
+      String("Donkey").StartsWithIgnoringCaseAndAccents(String("Donka")));
 }
 
 }  // namespace WTF

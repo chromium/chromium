@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/html/forms/type_ahead.h"
 
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
@@ -97,18 +98,31 @@ int TypeAhead::HandleEvent(const KeyboardEvent& event,
     int index = (selected < 0 ? 0 : selected) + search_start_offset;
     index %= option_count;
 
-    // Compute a case-folded copy of the prefix string before beginning the
-    // search for a matching element. This code uses foldCase to work around the
-    // fact that String::startWith does not fold non-ASCII characters. This code
-    // can be changed to use startWith once that is fixed.
-    String prefix_with_case_folded(prefix.FoldCase());
-    for (int i = 0; i < option_count; ++i, index = (index + 1) % option_count) {
-      // Fold the option string and check if its prefix is equal to the folded
-      // prefix.
-      String text = data_source_->OptionAtIndex(index);
-      if (StripLeadingWhiteSpace(text).FoldCase().StartsWith(
-              prefix_with_case_folded))
-        return index;
+    if (RuntimeEnabledFeatures::SelectTypeToSearchIgnoreAccentsEnabled()) {
+      for (int i = 0; i < option_count;
+           ++i, index = (index + 1) % option_count) {
+        String text =
+            StripLeadingWhiteSpace(data_source_->OptionAtIndex(index));
+        if (text.StartsWithIgnoringCaseAndAccents(prefix)) {
+          return index;
+        }
+      }
+    } else {
+      // Compute a case-folded copy of the prefix string before beginning the
+      // search for a matching element. This code uses foldCase to work around
+      // the fact that String::startWith does not fold non-ASCII characters.
+      // This code can be changed to use startWith once that is fixed.
+      String prefix_with_case_folded(prefix.FoldCase());
+      for (int i = 0; i < option_count;
+           ++i, index = (index + 1) % option_count) {
+        // Fold the option string and check if its prefix is equal to the folded
+        // prefix.
+        String text = data_source_->OptionAtIndex(index);
+        if (StripLeadingWhiteSpace(text).FoldCase().StartsWith(
+                prefix_with_case_folded)) {
+          return index;
+        }
+      }
     }
   }
 

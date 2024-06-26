@@ -3577,6 +3577,14 @@
       status: "stable",
     },
     {
+      // If enabled, the type to search in a select element will ignore accents.
+      // This should land in M128, and can be cleaned up (assuming no problems)
+      // after M130.
+      // https://crbug.com/349089079
+      name: "SelectTypeToSearchIgnoreAccents",
+      status: "stable",
+    },
+    {
       name: "SendBeaconThrowForBlobWithNonSimpleType",
       public: true,
       status: "stable",

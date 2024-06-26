@@ -433,6 +433,7 @@ class WTF_EXPORT StringImpl {
   bool StartsWith(UChar) const;
   bool StartsWith(const StringView&) const;
   bool StartsWithIgnoringCase(const StringView&) const;
+  bool StartsWithIgnoringCaseAndAccents(const StringView&) const;
   bool StartsWithIgnoringASCIICase(const StringView&) const;
 
   bool EndsWith(UChar) const;
@@ -588,6 +589,8 @@ class WTF_EXPORT StringImpl {
   // Calculates the kContainsOnlyAscii and kIsLowerAscii flags. Returns
   // a bitfield with those 2 values.
   unsigned ComputeASCIIFlags() const;
+
+  std::u16string ToU16String() const;
 
 #if DCHECK_IS_ON()
   std::string AsciiForDebugging() const;

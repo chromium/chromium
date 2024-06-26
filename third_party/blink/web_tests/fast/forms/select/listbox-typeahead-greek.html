@@ -43,7 +43,10 @@ node.focus();
 var base = 0x03B1;
 for (var i = base; i <= 0x03C9; i++) {
   test(() => {
-    // We don't have to send U+03C2 (Greek Small Letter Final Sigma).
+    // We can skip U+03C2 (`ς` - Greek Small Letter Final Sigma) because there
+    // are 2 lower case Sigma letters in the Greek alphabet, based on the
+    // position of the letter in the word. `ς` (0x03C2) for final position in
+    // word, `σ` (0x03C3) for the other positions.
     if (i != 0x03C2) {
         // Send a key event consisting of a Greek small character.
         eventSender.keyDown(String.fromCharCode(i));
