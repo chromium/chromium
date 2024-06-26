@@ -1397,6 +1397,15 @@
       </message>
       <message name="IDS_CHROMEOS_NETWORK_ERROR_NOT_REGISTERED" desc="Network error details in notifications: NOT_REGISTERED. Error when a connect attempt fails because the modem is not registered.">
         Modem not registered
+        </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_SUSPECT_INACTIVE_SIM" desc="Network error details in notifications: NOT_REGISTERED. Error when a connect attempt fails due to inactive SIM.">
+        Your SIM card or eSIM profile may be deactivated. Try replacing your SIM card or switching eSIM profiles.
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_SUSPECT_SUBSCRIPTION_ERROR" desc="Network error details in notifications: NOT_REGISTERED. Error when a connect attempt fails due to subscription error.">
+        Your mobile data plan may be expired. Contact your carrier for support.
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_SUSPECT_MODEM_DISALLOWED" desc="Network error details in notifications: NOT_REGISTERED. Error when a connect attempt fails because the modem is not allowed by carrier.">
+        Your modem isn’t allowed to connect by your carrier. Contact your carrier for more details.
       </message>
       <message name="IDS_CHROMEOS_NETWORK_ERROR_WRONG_STATE" desc="Network error details in notifications: NOT_REGISTERED. Error when a connect attempt fails because the modem is in a busy state.">
         Device is busy
