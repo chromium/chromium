@@ -210,7 +210,7 @@ private shouldShowDeviceIcon_:
   }
 
   private computeFaviconSize_(): number {
-    return 18;
+    return 24;
   }
 
   private computeShouldShowDeviceName_(tab: Tab): boolean {
