@@ -576,6 +576,8 @@ void Preferences::RegisterProfilePrefs(
       prefs::kSuggestedContentEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
+  registry->RegisterBooleanPref(prefs::kMagicBoostEnabled, true);
+
   registry->RegisterBooleanPref(prefs::kHmrEnabled, true);
 
   registry->RegisterIntegerPref(

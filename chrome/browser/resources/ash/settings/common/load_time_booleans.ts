@@ -108,6 +108,10 @@ export function isQuickAnswersSupported(): boolean {
   return loadTimeData.getBoolean('isQuickAnswersSupported');
 }
 
+export function isMagicBoostFeatureEnabled(): boolean {
+  return loadTimeData.getBoolean('isMagicBoostFeatureEnabled');
+}
+
 export function isMahiEnabled(): boolean {
   return loadTimeData.getBoolean('isMahiEnabled');
 }

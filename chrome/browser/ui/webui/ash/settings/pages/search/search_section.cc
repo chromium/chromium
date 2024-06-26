@@ -302,8 +302,15 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       ash::features::IsOsSettingsRevampWayfindingEnabled();
 
   webui::LocalizedString kLocalizedStrings[] = {
+      {"enableMagicBoost", IDS_OS_SETTINGS_ENABLE_MAGIC_BOOST},
+      {"enableMagicBoostDesc", IDS_OS_SETTINGS_ENABLE_MAGIC_BOOST_DESCRIPTION},
       {"enableMahi", IDS_OS_SETTINGS_ENABLE_MAHI},
       {"enableMahiDesc", IDS_OS_SETTINGS_ENABLE_MAHI_DESCRIPTION},
+      {"enableHelpMeRead", IDS_OS_SETTINGS_ENABLE_HELP_ME_READ},
+      {"enableHelpMeReadDesc", IDS_OS_SETTINGS_ENABLE_HELP_ME_READ_DESCRIPTION},
+      {"enableHelpMeWrite", IDS_OS_SETTINGS_ENABLE_HELP_ME_WRITE},
+      {"enableHelpMeWriteDesc",
+       IDS_OS_SETTINGS_ENABLE_HELP_ME_WRITE_DESCRIPTION},
       {"osSearchEngineLabel", kIsRevampEnabled
                                   ? IDS_OS_SETTINGS_REVAMP_SEARCH_ENGINE_LABEL
                                   : IDS_OS_SETTINGS_SEARCH_ENGINE_LABEL},
@@ -320,10 +327,17 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
+  html_source->AddString("orcaLearnMoreUrl",
+                         chrome::kOrcaSuggestionLearnMoreURL);
+
   html_source->AddBoolean("isQuickAnswersSupported", IsQuickAnswersSupported());
   html_source->AddBoolean(
       "isMahiEnabled",
-      chromeos::MahiManager::IsSupportedWithCorrectFeatureKey());
+      chromeos::MahiManager::IsSupportedWithCorrectFeatureKey() &&
+          !chromeos::features::IsMagicBoostEnabled());
+
+  html_source->AddBoolean("isMagicBoostFeatureEnabled",
+                          chromeos::features::IsMagicBoostEnabled());
 
   const bool is_assistant_allowed = IsAssistantAllowed();
   html_source->AddBoolean("isAssistantAllowed", is_assistant_allowed);

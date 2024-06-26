@@ -1020,6 +1020,24 @@
    <message name="IDS_SETTINGS_SEARCH_AND_ASSISTANT" desc="Name of the settings page which displays search engine and assistant preferences on ChromeOS.">
     Search and Assistant
   </message>
+  <message name="IDS_OS_SETTINGS_ENABLE_MAGIC_BOOST" desc="The label of the toggle to enable/disable Magic Boost in ChromeOS settings.">
+    Use Google AI to get help reading and writing
+  </message>
+  <message name="IDS_OS_SETTINGS_ENABLE_MAGIC_BOOST_DESCRIPTION" desc="The description of the toggle to enable/disable Magic Boost in ChromeOS settings.">
+    Right-click to write with more confidence, summarize content, get definitions, and more. Currently has limited availability.
+  </message>
+  <message name="IDS_OS_SETTINGS_ENABLE_HELP_ME_READ" desc="The label of the toggle to enable/disable Help Me Read in ChromeOS settings.">
+    Help me read
+  </message>
+  <message name="IDS_OS_SETTINGS_ENABLE_HELP_ME_READ_DESCRIPTION" desc="The description of the toggle to enable/disable Help Me Read in ChromeOS settings.">
+    Summarize content or ask follow-up questions.
+  </message>
+  <message name="IDS_OS_SETTINGS_ENABLE_HELP_ME_WRITE" desc="The label of the toggle to enable/disable Help Me Write in ChromeOS settings.">
+    Help me write
+  </message>
+  <message name="IDS_OS_SETTINGS_ENABLE_HELP_ME_WRITE_DESCRIPTION" desc="The description of the toggle to enable/disable Help Me Write in ChromeOS settings.">
+    Create a draft or refine existing work.
+  </message>
 
   <!-- Search subpage (OS settings) -->
   <message name="IDS_SETTINGS_SEARCH_SUBPAGE_TITLE" desc="Name of the settings subpage for Search.">

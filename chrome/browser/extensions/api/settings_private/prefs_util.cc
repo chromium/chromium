@@ -878,6 +878,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[ash::kRevenEnableDeviceHWDataUsage] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kHmrEnabled] = settings_api::PrefType::kBoolean;
+  (*s_allowlist)[ash::prefs::kMagicBoostEnabled] =
+      settings_api::PrefType::kBoolean;
 
   // Bluetooth & Internet settings.
   (*s_allowlist)[ash::kAllowBluetooth] = settings_api::PrefType::kBoolean;

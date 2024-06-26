@@ -47,6 +47,9 @@ inline constexpr char kEmojiSuggestionEnabled[] =
 inline constexpr char kEmojiSuggestionEnterpriseAllowed[] =
     "assistive_input.emoji_suggestion.enterprise_allowed";
 
+// A boolean pref of whether MagicBoost is enabled.
+inline constexpr char kMagicBoostEnabled[] = "settings.magic_boost_enabled";
+
 // A boolean pref of whether orca is enabled.
 inline constexpr char kOrcaEnabled[] = "assistive_input.orca_enabled";
 
