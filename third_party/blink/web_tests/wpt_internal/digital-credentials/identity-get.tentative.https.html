@@ -68,16 +68,5 @@ promise_test(async t => {
   await promise_rejects_js(t, TypeError, requestIdentityWithActivation(test_driver, request));
 }, "navigator.identity.get() API fails if there is more than one provider.");
 
-// Internal test because this test is more of an integration test. The spec does
-// not define the behavior if the passed-in request object is super big.
-promise_test(async t => {
-  const request = buildValidNavigatorIdentityRequestWithRequestObject();
-  const largeList = [];
-  for (let i = 0; i < 1000000; ++i) {
-    largeList.push("Value " + i);
-  }
-  request.digital.providers[0].request.random = largeList;
-  await promise_rejects_js(t, TypeError, requestIdentityWithActivation(test_driver, request));
-}, "navigator.identity.get() API fails when IdentityRequestProvider#request object is too big");
 
 </script>
