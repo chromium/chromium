@@ -118,6 +118,10 @@ class BoundSessionCookieControllerImpl
   std::vector<chrome::mojom::BoundSessionRequestThrottledHandler::
                   HandleRequestBlockedOnCookieCallback>
       resume_blocked_requests_;
+  // Single cookie rotation retry before releasing the first batch of throttled
+  // requests on transient errors.
+  // Reset on cookie rotation success.
+  size_t cookie_rotation_retries_on_transient_error_ = 0;
   // Used to schedule preemptive cookie refresh.
   base::OneShotTimer preemptive_cookie_refresh_timer_;
   // Used to release blocked requests after a timeout.

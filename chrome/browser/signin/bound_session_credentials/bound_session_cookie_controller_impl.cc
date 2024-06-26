@@ -29,6 +29,7 @@
 
 namespace {
 using Result = BoundSessionRefreshCookieFetcher::Result;
+constexpr size_t kMaxRetrialsForThrottledRequestsOnTransientError = 1u;
 
 void RecordNumberOfSuccessiveTimeoutIfAny(size_t successive_timeout) {
   if (successive_timeout == 0) {
@@ -285,7 +286,9 @@ void BoundSessionCookieControllerImpl::StartCookieRefresh() {
 void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(
     BoundSessionRefreshCookieFetcher::Result result) {
   CHECK(!cached_sec_session_challenge_response_.has_value());
-  if (BoundSessionRefreshCookieFetcher::IsTransientError(result)) {
+  bool is_transient_error =
+      BoundSessionRefreshCookieFetcher::IsTransientError(result);
+  if (is_transient_error) {
     // In case of server transient error or network error, try to reuse the
     // challenge response if there is one on the next cookie rotation request.
     // Note: The challenge might be expired by the time the cached response is
@@ -299,20 +302,32 @@ void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(
                   refresh_cookie_fetcher_->IsChallengeReceived());
   refresh_cookie_fetcher_.reset();
 
-  chrome::mojom::ResumeBlockedRequestsTrigger trigger =
-      result == BoundSessionRefreshCookieFetcher::Result::kSuccess
-          ? chrome::mojom::ResumeBlockedRequestsTrigger::
-                kCookieRefreshFetchSuccess
-          : chrome::mojom::ResumeBlockedRequestsTrigger::
-                kCookieRefreshFetchFailure;
+  if (cookie_rotation_retries_on_transient_error_ <
+          kMaxRetrialsForThrottledRequestsOnTransientError &&
+      is_transient_error && !resume_blocked_requests_.empty()) {
+    // On transient error, retry the cookie refresh before releasing
+    // throttled requests. Do not retry preemptive refreshes.
+    cookie_rotation_retries_on_transient_error_++;
+    StartCookieRefresh();
+    return;
+  }
+
   // Resume blocked requests regardless of the result.
   // `SetCookieExpirationTimeAndNotify()` should be called around the same time
   // as `OnCookieRefreshFetched()` if the fetch was successful.
-  ResumeBlockedRequests(trigger);
+
+  if (result == BoundSessionRefreshCookieFetcher::Result::kSuccess) {
+    ResumeBlockedRequests(chrome::mojom::ResumeBlockedRequestsTrigger::
+                              kCookieRefreshFetchSuccess);
+    cookie_rotation_retries_on_transient_error_ = 0;
+    return;
+  }
+
+  ResumeBlockedRequests(
+      chrome::mojom::ResumeBlockedRequestsTrigger::kCookieRefreshFetchFailure);
 
   // Persistent errors result in session termination.
   // Transient errors have no impact on future requests.
-
   if (BoundSessionRefreshCookieFetcher::IsPersistentError(result)) {
     delegate_->OnPersistentErrorEncountered(this);
     // `this` should be deleted.
