@@ -200,11 +200,6 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         // tabs that may have been archived previously.
         if (ChromeFeatureList.sAndroidTabDeclutter.isEnabled()) {
             mArchivedTabModelOrchestrator.maybeBeginDeclutter();
-            // Flag which archives all but the active tab for testing purposes.
-            if (ChromeFeatureList.sAndroidTabDeclutterArchiveAllButActiveTab.isEnabled()) {
-                mArchivedTabModelOrchestrator.archiveAllButActiveTab(
-                        mTabModelSelector.getModel(false));
-            }
         } else {
             mArchivedTabModelOrchestrator.maybeRescueArchivedTabs(
                     mTabCreatorManager.getTabCreator(/* incognito= */ false));

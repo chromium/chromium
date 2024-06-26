@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabArchiver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -35,13 +34,10 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.ui.base.WindowAndroid;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -236,27 +232,17 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         assert ChromeFeatureList.sAndroidTabDeclutter.isEnabled();
         assert mTabArchiver != null;
         mTabArchiver.initDeclutter();
+
+        int archiveTimeHours = mTabArchiveSettings.getArchiveTimeDeltaHours();
+        if (ChromeFeatureList.sAndroidTabDeclutterArchiveAllButActiveTab.isEnabled()) {
+            mTabArchiveSettings.setArchiveTimeDeltaHours(0);
+        }
         runDeclutterAndScheduleNext();
+        if (ChromeFeatureList.sAndroidTabDeclutterArchiveAllButActiveTab.isEnabled()) {
+            mTabArchiveSettings.setArchiveTimeDeltaHours(archiveTimeHours);
+        }
 
         mDeclutterInitializationCalled = true;
-    }
-
-    /** Archives all but the active tab from the given {@link TabModel}, ignores tab groups. */
-    public void archiveAllButActiveTab(TabModel tabModel) {
-        if (mArchiveAllButActiveCalled) return;
-
-        int activeTabId = TabModelUtils.getCurrentTabId(tabModel);
-        List<Tab> tabsToArchive = new ArrayList<>();
-        for (int i = 0; i < tabModel.getCount(); i++) {
-            Tab tab = tabModel.getTabAt(i);
-            if (activeTabId == tab.getId()) continue;
-            if (tab.getTabGroupId() != null) continue;
-            tabsToArchive.add(tab);
-        }
-
-        for (Tab tab : tabsToArchive) {
-            mTabArchiver.archiveAndRemoveTab(tabModel, tab);
-        }
     }
 
     /**
