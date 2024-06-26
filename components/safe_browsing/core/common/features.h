@@ -248,9 +248,6 @@ BASE_DECLARE_FEATURE(kStrictDownloadTimeout);
 // Specifies the duration of the timeout, in milliseconds.
 extern const base::FeatureParam<int> kStrictDownloadTimeoutMilliseconds;
 
-// Enables suspicious site detection for real time URL lookups.
-BASE_DECLARE_FEATURE(kSuspiciousSiteDetectionRTLookups);
-
 // Controls the daily quota for the suspicious site trigger.
 BASE_DECLARE_FEATURE(kSuspiciousSiteTriggerQuotaFeature);
 

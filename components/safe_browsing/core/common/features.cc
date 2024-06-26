@@ -309,10 +309,6 @@ constexpr base::FeatureParam<int> kStrictDownloadTimeoutMilliseconds{
     &kStrictDownloadTimeout, "TimeoutMilliseconds",
     /*default_value=*/7000};
 
-BASE_FEATURE(kSuspiciousSiteDetectionRTLookups,
-             "SuspiciousSiteDetectionRTLookups",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSuspiciousSiteTriggerQuotaFeature,
              "SafeBrowsingSuspiciousSiteTriggerQuota",
              base::FEATURE_ENABLED_BY_DEFAULT);

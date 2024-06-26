@@ -3958,11 +3958,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-suspicious-site-detection-rt-lookups",
-    "owners": [ "skrakowi@chromium.org", "chrome-counter-abuse-alerts@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "enable-system-entropy",
     "owners": [ "mjackson@microsoft.com", "dmurph@chromium.org" ],
     "expiry_milestone": 125

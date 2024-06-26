@@ -1362,11 +1362,6 @@ const char kEnableSearchEngineChoiceDescription[] =
     "also enables the new UI for the search engine settings page on both "
     "Desktop and Android.";
 
-const char kEnableSuspiciousSiteDetectionRTLookupsName[] =
-    "Suspicious site detection RT lookups";
-const char kEnableSuspiciousSiteDetectionRTLookupsDescription[] =
-    "Enables suspicious site detection for real time URL lookups.";
-
 const char kEnableNetworkLoggingToFileName[] = "Enable network logging to file";
 const char kEnableNetworkLoggingToFileDescription[] =
     "Enables network logging to a file named netlog.json in the user data "

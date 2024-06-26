@@ -788,9 +788,6 @@ extern const char kEnableRedInterstitialFaceliftDescription[];
 extern const char kEnableSearchEngineChoiceName[];
 extern const char kEnableSearchEngineChoiceDescription[];
 
-extern const char kEnableSuspiciousSiteDetectionRTLookupsName[];
-extern const char kEnableSuspiciousSiteDetectionRTLookupsDescription[];
-
 extern const char kEnableFencedFramesName[];
 extern const char kEnableFencedFramesDescription[];
 

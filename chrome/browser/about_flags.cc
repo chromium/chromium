@@ -9022,12 +9022,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection)},
 
-    {"enable-suspicious-site-detection-rt-lookups",
-     flag_descriptions::kEnableSuspiciousSiteDetectionRTLookupsName,
-     flag_descriptions::kEnableSuspiciousSiteDetectionRTLookupsDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(safe_browsing::kSuspiciousSiteDetectionRTLookups)},
-
     {"enable-tailored-security-retry-for-sync-users",
      flag_descriptions::kTailoredSecurityRetryForSyncUsersName,
      flag_descriptions::kTailoredSecurityRetryForSyncUsersDescription, kOsAll,

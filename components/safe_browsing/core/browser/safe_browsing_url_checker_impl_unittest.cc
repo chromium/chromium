@@ -838,8 +838,6 @@ TEST_F(SafeBrowsingUrlCheckerTest,
 
 TEST_F(SafeBrowsingUrlCheckerTest,
        CheckUrl_UrlRealTimeEnabled_SuspiciousSiteDetection) {
-  scoped_feature_list_.InitAndEnableFeature(
-      safe_browsing::kSuspiciousSiteDetectionRTLookups);
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,

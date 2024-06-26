@@ -267,9 +267,7 @@ void UrlRealTimeMechanism::OnHashDatabaseCompleteCheckResultInternal(
 
 void UrlRealTimeMechanism::MaybePerformSuspiciousSiteDetection(
     RTLookupResponse::ThreatInfo::VerdictType rt_verdict_type) {
-  if (rt_verdict_type == RTLookupResponse::ThreatInfo::SUSPICIOUS &&
-      base::FeatureList::IsEnabled(
-          safe_browsing::kSuspiciousSiteDetectionRTLookups)) {
+  if (rt_verdict_type == RTLookupResponse::ThreatInfo::SUSPICIOUS) {
     url_checker_delegate_->NotifySuspiciousSiteDetected(web_contents_getter_);
   }
 }
