@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -267,6 +268,31 @@ void ContentSubresourceFilterThrottleManager::DidFinishInFrameNavigation(
       !navigation_handle->IsWaitingToCommit() &&
       !base::Contains(ad_frames_, frame_tree_node_id)) {
     EnsureFrameAdEvidence(navigation_handle).set_is_complete();
+
+    // TODO(crbug.com/342351452): Remove these temporary crash keys once rare
+    // CHECK hit is fixed.
+    SCOPED_CRASH_KEY_STRING1024(
+        "bug342351452", "navigation-url",
+        navigation_handle->GetURL().possibly_invalid_spec());
+    SCOPED_CRASH_KEY_STRING256(
+        "bug342351452", "navigation-error-code",
+        net::ErrorToString(navigation_handle->GetNetErrorCode()));
+    SCOPED_CRASH_KEY_BOOL("bug342351452", "navigation-has-committed",
+                          navigation_handle->HasCommitted());
+    SCOPED_CRASH_KEY_STRING1024(
+        "bug342351452", "last-committed-url",
+        frame_host->GetLastCommittedURL().possibly_invalid_spec());
+    SCOPED_CRASH_KEY_BOOL(
+        "bug342351452", "ad-evidence-is-complete",
+        EnsureFrameAdEvidence(navigation_handle).is_complete());
+    SCOPED_CRASH_KEY_NUMBER(
+        "bug342351452", "ad-evidence-latest-result",
+        static_cast<int>(EnsureFrameAdEvidence(navigation_handle)
+                             .latest_filter_list_result()));
+    SCOPED_CRASH_KEY_NUMBER(
+        "bug342351452", "ad-evidence-most-result",
+        static_cast<int>(EnsureFrameAdEvidence(navigation_handle)
+                             .most_restrictive_filter_list_result()));
 
     // Initial synchronous navigations to about:blank should only be tagged by
     // the renderer. Currently, an aborted initial load to a URL matching the
