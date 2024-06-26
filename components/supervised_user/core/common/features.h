@@ -95,6 +95,11 @@ BASE_DECLARE_FEATURE(
     kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS);
 #endif
 
+// Updates the ListFamilyMembers service to fetch family account info for
+// accounts with the relevant capability rather than just for supervised
+// accounts.
+BASE_DECLARE_FEATURE(kFetchListFamilyMembersWithCapability);
+
 // Returns whether local parent approvals on Family Link user's device are
 // enabled.
 // Local web approvals are only available when refreshed version of web

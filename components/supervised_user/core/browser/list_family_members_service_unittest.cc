@@ -5,9 +5,11 @@
 #include "components/supervised_user/core/browser/list_family_members_service.h"
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -65,6 +67,48 @@ TEST_F(ListFamilyMembersServiceTest, FamilyFlowsFromFetcherToPreferences) {
       "user_child@gmail.com", signin::ConsentLevel::kSignin);
   AccountCapabilitiesTestMutator mutator(&primary_account.capabilities);
   mutator.set_is_subject_to_parental_controls(true);
+  mutator.set_can_fetch_family_member_info(false);
+  identity_test_env_.UpdateAccountInfoForAccount(primary_account);
+  test_list_family_members_service_->Init();
+
+  // Perform the sequence of obtaining an access token, simulating response and
+  // verifying the result.
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Max());
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  SimulateResponseForPendingRequest("username_hoh");
+  ASSERT_EQ(0, test_url_loader_factory_.NumPending());
+  EXPECT_EQ(hoh_username, "username_hoh");
+
+  test_list_family_members_service_->Shutdown();
+}
+
+TEST_F(ListFamilyMembersServiceTest,
+       FamilyFlowsFromFetcherToPreferencesWithFetchCapability) {
+  base::test::ScopedFeatureList feature_list(
+      supervised_user::kFetchListFamilyMembersWithCapability);
+  // Mock of supervised_user::FamilyPreferencesService::SetFamily, taking the
+  // list family response from fetches. We check if the response is correct at
+  // the last step with `hoh_username`.
+  std::string hoh_username;
+  auto extract_hoh_display_name_from_response = base::BindLambdaForTesting(
+      [&](const kidsmanagement::ListMembersResponse& response) {
+        ASSERT_FALSE(response.members().empty());
+        ASSERT_EQ("", hoh_username);
+        hoh_username = response.members().at(0).profile().display_name();
+      });
+
+  // Subscribe to the mock method.
+  base::CallbackListSubscription subscription =
+      test_list_family_members_service_->SubscribeToSuccessfulFetches(
+          extract_hoh_display_name_from_response);
+
+  // Test the `fetcher_`.
+  AccountInfo primary_account = identity_test_env_.MakePrimaryAccountAvailable(
+      "user_child@gmail.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&primary_account.capabilities);
+  mutator.set_is_subject_to_parental_controls(false);
+  mutator.set_can_fetch_family_member_info(true);
   identity_test_env_.UpdateAccountInfoForAccount(primary_account);
   test_list_family_members_service_->Init();
 

@@ -88,7 +88,18 @@ void ListFamilyMembersService::OnExtendedAccountInfoUpdated(
   if (info.account_id != auth_account_id) {
     return;
   }
-  switch (info.capabilities.is_subject_to_parental_controls()) {
+
+  signin::Tribool can_start_fetch = signin::Tribool::kUnknown;
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kFetchListFamilyMembersWithCapability)) {
+    can_start_fetch = info.capabilities.can_fetch_family_member_info();
+  } else {
+    // The default fetcher only retrieves Family account info from accounts
+    // subject to parental controls.
+    can_start_fetch = info.capabilities.is_subject_to_parental_controls();
+  }
+
+  switch (can_start_fetch) {
     case signin::Tribool::kTrue: {
       StartRepeatedFetch();
       break;
