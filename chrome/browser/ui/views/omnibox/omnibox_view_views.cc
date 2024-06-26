@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/omnibox/clipboard_utils.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -521,6 +522,7 @@ void OmniboxViewViews::ExecuteCommand(int command_id, int event_flags) {
       model()->PasteAndGo(GetClipboardText(/*notify_if_restricted=*/true));
       return;
     case IDC_SHOW_FULL_URLS:
+    case IDC_SHOW_GOOGLE_LENS_SHORTCUT:
     case IDC_EDIT_SEARCH_ENGINES:
       location_bar_view_->command_updater()->ExecuteCommand(command_id);
       return;
@@ -1451,9 +1453,11 @@ bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
                GetClipboardText(/*notify_if_restricted=*/false));
   }
 
-  // Menu item is only shown when it is valid.
-  if (command_id == IDC_SHOW_FULL_URLS)
+  // These menu items are only shown when they are valid.
+  if (command_id == IDC_SHOW_FULL_URLS ||
+      command_id == IDC_SHOW_GOOGLE_LENS_SHORTCUT) {
     return true;
+  }
 
   return Textfield::IsCommandIdEnabled(command_id) ||
          (location_bar_view_ &&
@@ -1838,12 +1842,22 @@ void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
     menu_contents->AddCheckItemWithStringId(IDC_SHOW_FULL_URLS,
                                             IDS_CONTEXT_MENU_SHOW_FULL_URLS);
   }
+
+  if (LensOverlayController::IsEnabled(location_bar_view_->profile())) {
+    menu_contents->AddCheckItemWithStringId(
+        IDC_SHOW_GOOGLE_LENS_SHORTCUT,
+        IDS_CONTEXT_MENU_SHOW_GOOGLE_LENS_SHORTCUT);
+  }
 }
 
 bool OmniboxViewViews::IsCommandIdChecked(int id) const {
   if (id == IDC_SHOW_FULL_URLS) {
     return location_bar_view_->profile()->GetPrefs()->GetBoolean(
         omnibox::kPreventUrlElisionsInOmnibox);
+  }
+  if (id == IDC_SHOW_GOOGLE_LENS_SHORTCUT) {
+    return location_bar_view_->profile()->GetPrefs()->GetBoolean(
+        omnibox::kShowGoogleLensShortcut);
   }
   return false;
 }

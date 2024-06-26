@@ -9320,6 +9320,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(lens::features::kLensRegionSearchStaticPage)},
 #endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"enable-lens-overlay", flag_descriptions::kLensOverlayName,
+     flag_descriptions::kLensOverlayDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(lens::features::kLensOverlay)},
+#endif
+
     {"enable-lens-image-translate", flag_descriptions::kLensImageTranslateName,
      flag_descriptions::kLensImageTranslateDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kEnableImageTranslate)},

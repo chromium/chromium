@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/managed_ui.h"
@@ -50,10 +51,6 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
@@ -61,6 +58,10 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -821,7 +822,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       OpenFeedbackDialog(browser_, feedback::kFeedbackSourceBrowserCommand);
       break;
     case IDC_SHOW_SEARCH_COMPANION:
-      SidePanelUI::GetSidePanelUIForBrowser(browser_)->Show(
+      browser_->GetFeatures().side_panel_ui()->Show(
           SidePanelEntryId::kSearchCompanion, SidePanelOpenTrigger::kAppMenu);
       break;
 #endif
@@ -833,6 +834,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
     case IDC_SHOW_FULL_URLS:
       ToggleShowFullURLs(browser_);
+      break;
+    case IDC_SHOW_GOOGLE_LENS_SHORTCUT:
+      ToggleShowGoogleLensShortcut(browser_);
       break;
     case IDC_PROFILING_ENABLED:
       content::Profiling::Toggle();
@@ -848,7 +852,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ShowBookmarkManager(browser_->GetBrowserForOpeningWebUi());
       break;
     case IDC_SHOW_BOOKMARK_SIDE_PANEL:
-      SidePanelUI::GetSidePanelUIForBrowser(browser_)->Show(
+      browser_->GetFeatures().side_panel_ui()->Show(
           SidePanelEntryId::kBookmarks, SidePanelOpenTrigger::kAppMenu);
       break;
     case IDC_SHOW_APP_MENU:
@@ -862,7 +866,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ShowHistory(browser_->GetBrowserForOpeningWebUi());
       break;
     case IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL:
-      SidePanelUI::GetSidePanelUIForBrowser(browser_)->Show(
+      browser_->GetFeatures().side_panel_ui()->Show(
           SidePanelEntryId::kHistoryClusters, SidePanelOpenTrigger::kAppMenu);
       break;
     case IDC_SHOW_DOWNLOADS:
@@ -883,7 +887,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_PERFORMANCE:
       if (base::FeatureList::IsEnabled(
               performance_manager::features::kPerformanceControlsSidePanel)) {
-        SidePanelUI::GetSidePanelUIForBrowser(browser_)->Show(
+        browser_->GetFeatures().side_panel_ui()->Show(
             SidePanelEntryId::kPerformance, SidePanelOpenTrigger::kAppMenu);
       } else {
         ShowSettingsSubPage(browser_->GetBrowserForOpeningWebUi(),
@@ -1068,13 +1072,13 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
 
     case IDC_READING_LIST_MENU_SHOW_UI:
-      SidePanelUI::GetSidePanelUIForBrowser(browser_)->Show(
+      browser_->GetFeatures().side_panel_ui()->Show(
           SidePanelEntryId::kReadingList, SidePanelOpenTrigger::kAppMenu);
       break;
 
     case IDC_SHOW_READING_MODE_SIDE_PANEL: {
       // Yes. This is a separate feature from the reading list.
-      SidePanelUI::GetSidePanelUIForBrowser(browser_)->Show(
+      browser_->GetFeatures().side_panel_ui()->Show(
           SidePanelEntryId::kReadAnything, SidePanelOpenTrigger::kAppMenu);
       break;
     }
@@ -1512,6 +1516,7 @@ void BrowserCommandController::UpdateSharedCommandsForIncognitoAvailability(
       extension_service && extension_service->extensions_enabled();
 
   command_updater->UpdateCommandEnabled(IDC_SHOW_FULL_URLS, true);
+  command_updater->UpdateCommandEnabled(IDC_SHOW_GOOGLE_LENS_SHORTCUT, true);
 
   // Bookmark manager and settings page/subpages are forced to open in normal
   // mode. For this reason we disable these commands when incognito is forced.

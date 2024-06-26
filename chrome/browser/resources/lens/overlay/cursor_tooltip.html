@@ -23,8 +23,8 @@
   }
 </style>
 <div id="cursorTooltipContainer"
-    class$="[[getHiddenCursorClass(isPointerInside,
-            canShowTooltipFromPrefs, tooltipHidden, isNoneType)]]">
+    class$="[[getHiddenCursorClass(currentTooltip, isPointerInsideViewport,
+            canShowTooltipFromPrefs, forceTooltipHidden)]]">
   <div id="cursorTooltip">
     <span class="tooltip-text">[[tooltipMessage]]</span>
   </div>

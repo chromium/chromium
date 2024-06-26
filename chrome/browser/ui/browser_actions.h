@@ -13,6 +13,7 @@ namespace actions {
 class ActionItem;
 }  // namespace actions
 
+// Actions that a user can take that are scoped to a browser window.
 class BrowserActions {
  public:
   explicit BrowserActions(Browser& browser);
@@ -24,9 +25,10 @@ class BrowserActions {
 
   actions::ActionItem* root_action_item() const { return root_action_item_; }
 
- private:
+  // Initialization is separate from construction to allow more precise timing.
   void InitializeBrowserActions();
 
+ private:
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   const raw_ref<Browser> browser_;
 };

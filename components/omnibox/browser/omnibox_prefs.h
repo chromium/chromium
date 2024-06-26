@@ -77,6 +77,10 @@ inline constexpr char kKeywordSpaceTriggeringEnabled[] =
 inline constexpr char kSuggestionGroupVisibility[] =
     "omnibox.suggestionGroupVisibility";
 
+// Boolean that specifies whether to show the LensOverlay entry point.
+inline constexpr char kShowGoogleLensShortcut[] =
+    "omnibox.show_google_lens_shortcut";
+
 // Boolean that specifies whether to always show full URLs in the omnibox.
 inline constexpr char kPreventUrlElisionsInOmnibox[] =
     "omnibox.prevent_url_elisions";

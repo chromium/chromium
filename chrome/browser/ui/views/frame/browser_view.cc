@@ -71,6 +71,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -83,7 +84,6 @@
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/sync/one_click_signin_links_delegate_impl.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -147,6 +147,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_rounded_corner.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "chrome/browser/ui/views/sync/one_click_signin_dialog_view.h"
@@ -968,9 +969,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   side_panel_rounded_corner_ =
       AddChildView(std::make_unique<SidePanelRoundedCorner>(this));
 
-  SidePanelUI::SetSidePanelUIForBrowser(
-      browser_.get(), std::make_unique<SidePanelCoordinator>(this));
-
   // InfoBarContainer needs to be added as a child here for drop-shadow, but
   // needs to come after toolbar in focus order (see EnsureFocusOrder()).
   infobar_container_ =
@@ -1010,9 +1008,13 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   UpdateFullscreenAllowedFromPolicy(CanFullscreen());
 
   WebUIContentsPreloadManager::GetInstance()->WarmupForBrowser(browser_.get());
+
+  browser_->GetFeatures().InitPostBrowserViewConstruction(this);
 }
 
 BrowserView::~BrowserView() {
+  browser_->GetFeatures().TearDownPreBrowserViewDestruction();
+
   // Destroy the top controls slide controller first as it depends on the
   // tabstrip model and the browser frame.
   top_controls_slide_controller_.reset();
@@ -1059,10 +1061,6 @@ BrowserView::~BrowserView() {
   // Child views maintain PrefMember attributes that point to
   // OffTheRecordProfile's PrefService which gets deleted by ~Browser.
   RemoveAllChildViews();
-
-  // `SidePanelUI::RemoveSidePanelUIForBrowser()` deletes the
-  // SidePanelCoordinator.
-  SidePanelUI::RemoveSidePanelUIForBrowser(browser());
 }
 
 // static

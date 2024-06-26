@@ -4,6 +4,8 @@
 
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/common/webui_url_constants.h"
@@ -21,7 +23,7 @@ class ReadAnythingMochaBrowserTest : public WebUIMochaBrowserTest {
   }
 
   void RunSidePanelTest(const std::string& file, const std::string& trigger) {
-    auto* side_panel_ui = SidePanelUI::GetSidePanelUIForBrowser(browser());
+    auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
     side_panel_ui->Show(SidePanelEntryId::kReadAnything);
     auto* web_contents =
         side_panel_ui->GetWebContentsForTest(SidePanelEntryId::kReadAnything);

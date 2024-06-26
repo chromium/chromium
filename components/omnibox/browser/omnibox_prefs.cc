@@ -49,6 +49,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       kKeywordSpaceTriggeringEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      kShowGoogleLensShortcut, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(omnibox::kShowGeminiIPH, true);
   registry->RegisterBooleanPref(
       omnibox::kShowFeaturedEnterpriseSiteSearchIPHPrefName, true);

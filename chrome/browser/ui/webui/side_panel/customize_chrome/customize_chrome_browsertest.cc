@@ -6,6 +6,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_tab_helper.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
@@ -83,8 +84,7 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
                        ContextualCustomizeChromeSidePanel) {
-  SidePanelUI::GetSidePanelUIForBrowser(browser())
-      ->DisableAnimationsForTesting();
+  browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
   // The Customize Chrome side panel should be contextual, opening on one tab
   // should not open it on other tabs.
   AppendTab(browser(), GURL(chrome::kChromeUINewTabURL));
@@ -106,8 +106,7 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
                        HideCustomizeChromeSidePanel) {
-  SidePanelUI::GetSidePanelUIForBrowser(browser())
-      ->DisableAnimationsForTesting();
+  browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
   auto* customize_chrome_tab_helper = GetTabHelper(browser());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUINewTabURL)));

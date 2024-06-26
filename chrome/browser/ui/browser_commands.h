@@ -230,6 +230,7 @@ void OpenFeedbackDialog(Browser* browser,
                         const std::string& category_tag = std::string());
 void ToggleBookmarkBar(Browser* browser);
 void ToggleShowFullURLs(Browser* browser);
+void ToggleShowGoogleLensShortcut(Browser* browser);
 void ShowAppMenu(Browser* browser);
 void ShowAvatarMenu(Browser* browser);
 void OpenUpdateChromeDialog(Browser* browser);

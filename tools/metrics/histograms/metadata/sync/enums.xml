@@ -295,6 +295,7 @@ chromium-metrics-reviews@google.com.
   <int value="72" label="FacilitatedPaymentsPix"/>
   <int value="73" label="SyncableTabGroups"/>
   <int value="74" label="AutoPinNewTabGroups"/>
+  <int value="75" label="ShowGoogleLensShortcut"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->

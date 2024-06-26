@@ -17,9 +17,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
-#include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_utils.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
@@ -27,8 +30,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -82,7 +83,6 @@ actions::ActionItem::ActionItemBuilder SidePanelAction(
 }  // namespace
 
 BrowserActions::BrowserActions(Browser& browser) : browser_(browser) {
-  BrowserActions::InitializeBrowserActions();
 }
 
 BrowserActions::~BrowserActions() {
@@ -172,9 +172,27 @@ void BrowserActions::InitializeBrowserActions() {
   }
 
   if (LensOverlayController::IsEnabled(profile)) {
-    actions::ActionItem::InvokeActionCallback callback =
-        lens::LensOverlaySidePanelCoordinator::CreateSidePanelActionCallback(
-            browser);
+    actions::ActionItem::InvokeActionCallback callback = base::BindRepeating(
+        [](base::WeakPtr<Browser> browser, actions::ActionItem* item,
+           actions::ActionInvocationContext context) {
+          if (!browser) {
+            return;
+          }
+
+          LensOverlayController* controller = browser->GetActiveTabInterface()
+                                                  ->GetTabFeatures()
+                                                  ->lens_overlay_controller();
+
+          // Toggle the Lens overlay. There's no need to show or hide the side
+          // panel as the overlay controller will handle that.
+          if (controller->IsOverlayShowing()) {
+            controller->CloseUIAsync(
+                lens::LensOverlayDismissalSource::kToolbar);
+          } else {
+            controller->ShowUI(lens::LensOverlayInvocationSource::kToolbar);
+          }
+        },
+        browser->AsWeakPtr());
     const gfx::VectorIcon& icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         vector_icons::kGoogleLensMonochromeLogoIcon;

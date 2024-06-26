@@ -39,9 +39,8 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
-#include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/view_observer.h"
 
 namespace lens {
 class LensOverlayQueryController;
@@ -82,7 +81,8 @@ class LensOverlayController : public LensSearchboxClient,
                               public lens::mojom::LensSidePanelPageHandler,
                               public content::WebContentsDelegate,
                               public FullscreenObserver,
-                              public SidePanelViewStateObserver {
+                              public SidePanelViewStateObserver,
+                              public views::ViewObserver {
  public:
   LensOverlayController(tabs::TabInterface* tab,
                         variations::VariationsClient* variations_client,
@@ -106,6 +106,8 @@ class LensOverlayController : public LensSearchboxClient,
     std::string search_query_text_;
     // The selected region for this query, if any.
     lens::mojom::CenterRotatedBoxPtr selected_region_;
+    // The selected region bitmap for this query, if any.
+    SkBitmap selected_region_bitmap_;
     // The selected text for this query, if any.
     std::optional<std::pair<int, int>> selected_text_;
     // The data URI of the thumbnail in the searchbox.
@@ -114,6 +116,8 @@ class LensOverlayController : public LensSearchboxClient,
     std::map<std::string, std::string> additional_search_query_params_;
     // The url that the search query loaded into the results frame.
     GURL search_query_url_;
+    // The multimodal selection type of the current multimodal request, if any.
+    lens::LensOverlaySelectionType multimodal_selection_type_;
   };
 
   // Returns whether the lens overlay feature is enabled.
@@ -267,11 +271,11 @@ class LensOverlayController : public LensSearchboxClient,
   // WebContents.
   const content::WebContents* tab_contents() { return tab_->GetContents(); }
 
-  // Testing helper method for checking widget.
-  views::Widget* GetOverlayWidgetForTesting();
+  // Testing helper method for checking view housing our overlay.
+  views::View* GetOverlayViewForTesting();
 
-  // Resizes the overlay UI. Used when the window size changes.
-  void ResetUIBounds();
+  // Testing helper method for checking web view.
+  views::WebView* GetOverlayWebViewForTesting();
 
   // Creates the glue that allows the WebUIController for a WebView to look up
   // the LensOverlayController.
@@ -334,6 +338,16 @@ class LensOverlayController : public LensSearchboxClient,
       int selection_start_index,
       int selection_end_index);
 
+  // Testing function to issue a searchbox request.
+  void IssueSearchBoxRequestForTesting(
+      const std::string& search_box_text,
+      AutocompleteMatchType::Type match_type,
+      bool is_zero_prefix_suggestion,
+      std::map<std::string, std::string> additional_query_params);
+
+  // Gets string for invocation source enum, used for logging metrics.
+  std::string GetInvocationSourceString();
+
   // Gets the WebContents housed in the side panel for testing.
   content::WebContents* GetSidePanelWebContentsForTesting();
 
@@ -387,6 +401,11 @@ class LensOverlayController : public LensSearchboxClient,
   lens::LensSearchBubbleController*
   get_lens_search_bubble_controller_for_testing() {
     return search_bubble_controller_.get();
+  }
+
+  lens::LensOverlayQueryController*
+  get_lens_overlay_query_controller_for_testing() {
+    return lens_overlay_query_controller_.get();
   }
 
  protected:
@@ -460,6 +479,13 @@ class LensOverlayController : public LensSearchboxClient,
     // query.
     lens::mojom::CenterRotatedBoxPtr selected_region_;
 
+    // The selected region bitmap. This should only be set if the user opened
+    // the overlay with a pending region bitmap. Stored so that it can be used
+    // for multiple requests, such as if the user changes the text query without
+    // changing the region. Cleared if the user makes a text-only or object
+    // selection query.
+    SkBitmap selected_region_bitmap_;
+
     // A pair representing the start and end selection indexes for the currently
     // selected text. This needs to be an optional since std::pair will
     // initialize with default values.
@@ -509,21 +535,12 @@ class LensOverlayController : public LensSearchboxClient,
   void AddBoundingBoxesToInitializationData(
       const std::vector<gfx::Rect>& bounds);
 
-  // Called when the UI needs to create the overlay widget.
-  void ShowOverlayWidget();
+  // Called when the UI needs to show the overlay via a view that is a child of
+  // the tab contents view.
+  void ShowOverlay();
 
   // Backgrounds the UI by hiding the overlay.
   void BackgroundUI();
-
-  // Sets the corner radii on the overlay WebUI view.
-  void SetWebViewCornerRadii(const gfx::RoundedCornersF& radii);
-
-  // Computes the new corner radius values for when the side panel is open. The
-  // values never need to be set back to their original values because our
-  // overlay is tied to the side panel. If the side panel closes, so does our
-  // overlay and therefore setting the corner radii back is a no-op if the side
-  // panel closes.
-  void UpdateCornerRadiusForSidePanel();
 
   // Closes the overlay UI and sets state to kOff. This method is the final
   // cleanup of closing the overlay UI. This resets all state internal to the
@@ -548,9 +565,6 @@ class LensOverlayController : public LensSearchboxClient,
   // before its creation.
   void InitializeOverlayUI(const OverlayInitializationData& init_data);
 
-  // Creates InitParams for the overlay widget based on the window bounds.
-  views::Widget::InitParams CreateWidgetInitParams();
-
   // Called when the UI needs to create the view to show in the overlay.
   std::unique_ptr<views::View> CreateViewForOverlay();
 
@@ -562,6 +576,9 @@ class LensOverlayController : public LensSearchboxClient,
 
   // FullscreenObserver:
   void OnFullscreenStateChanged() override;
+
+  // ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override;
 
   // Overridden from LensSearchboxClient:
   const GURL& GetPageURL() const override;
@@ -614,6 +631,8 @@ class LensOverlayController : public LensSearchboxClient,
   void CloseRequestedByOverlayBackgroundClick() override;
   void CloseRequestedByOverlayEscapeKeyPress() override;
   void FeedbackRequestedByOverlay() override;
+  void GetOverlayInvocationSource(
+      GetOverlayInvocationSourceCallback callback) override;
   void InfoRequestedByOverlay(
       ui::mojom::ClickModifiersPtr click_modifiers) override;
   // TODO: rename this to IssueRegionSearchRequest.
@@ -680,23 +699,19 @@ class LensOverlayController : public LensSearchboxClient,
   // Tracks the internal state machine.
   State state_ = State::kOff;
 
-// The initial web view corner radii depending on the OS.
-#if BUILDFLAG(IS_MAC)
-  gfx::RoundedCornersF initial_corner_radii_ = {0, 0, 10, 10};
-#else
-  gfx::RoundedCornersF initial_corner_radii_ = {0, 0, 0, 0};
-#endif
-
   // Controller for showing the page screenshot permission bubble.
   std::unique_ptr<lens::LensPermissionBubbleController>
       permission_bubble_controller_;
 
   // Pointer to the WebViews that are being glued by this class. Only used to
-  // clean up stale pointers. Only valid while `overlay_widget_` is showing.
+  // clean up stale pointers. Only valid while `overlay_view_` is showing.
   std::vector<views::WebView*> glued_webviews_;
 
   // The assembly data needed for the overlay to be created and shown.
   std::unique_ptr<OverlayInitializationData> initialization_data_;
+
+  // Invocation source for the lens overlay.
+  lens::LensOverlayInvocationSource invocation_source_;
 
   // A pending url to be loaded in the side panel. Needed when the side
   // panel is not bound at the time of a text request.
@@ -728,8 +743,14 @@ class LensOverlayController : public LensSearchboxClient,
   // selection this will contain an empty string. Returned by GetThumbnail().
   std::string selected_region_thumbnail_uri_;
 
+  // The multimodal selection type of the current multimodal request. If the
+  // user is not currently viewing results for a multimodal query, this will be
+  // set to UNKNOWN_SELECTION_TYPE.
+  lens::LensOverlaySelectionType multimodal_selection_type_ =
+      lens::UNKNOWN_SELECTION_TYPE;
+
   // Connections to and from the overlay WebUI. Only valid while
-  // `overlay_widget_` is showing, and after the WebUI has started executing JS
+  // `overlay_view_` is showing, and after the WebUI has started executing JS
   // and has bound the connection.
   mojo::Receiver<lens::mojom::LensPageHandler> receiver_{this};
   mojo::Remote<lens::mojom::LensPage> page_;
@@ -742,7 +763,7 @@ class LensOverlayController : public LensSearchboxClient,
   mojo::Remote<lens::mojom::LensSidePanelPage> side_panel_page_;
 
   // Observer for the WebContents of the associated tab. Only valid while the
-  // overlay widget is showing.
+  // overlay view is showing.
   std::unique_ptr<UnderlyingWebContentsObserver> tab_contents_observer_;
 
   // Query controller.
@@ -786,6 +807,10 @@ class LensOverlayController : public LensSearchboxClient,
   base::ScopedObservation<FullscreenController, FullscreenObserver>
       fullscreen_observation_{this};
 
+  // Observer to check when the content web view bounds change.
+  base::ScopedObservation<views::View, views::ViewObserver>
+      tab_contents_view_observer_{this};
+
   // Searchbox handler for passing in image and text selections. The handler is
   // null if the WebUI containing the searchbox has not been initialized yet,
   // like in the case of side panel opening. In addition, the handler may be
@@ -808,12 +833,11 @@ class LensOverlayController : public LensSearchboxClient,
   std::unique_ptr<lens::LensOverlaySidePanelCoordinator>
       results_side_panel_coordinator_;
 
-  // Pointer to the overlay widget.
-  views::UniqueWidgetPtr overlay_widget_;
-  // Pointer to the web view within the overlay widget if it exists.
+  // Pointer to the view that houses our overlay as a child of the tab
+  // contents web view.
+  raw_ptr<views::View> overlay_view_;
+  // Pointer to the web view within the overlay view if it exists.
   raw_ptr<views::WebView> overlay_web_view_;
-  // Stores the session ID for the window of the widget on creation.
-  std::optional<const SessionID> overlay_widget_window_session_id_;
 
   // Owns the search bubble that shows over the overlay, before the side panel
   // is showing.

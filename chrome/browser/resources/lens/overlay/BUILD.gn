@@ -32,6 +32,7 @@ build_webui("build_overlay") {
     "learn_more.svg",
     "lens_overlay.html",
     "side_panel/side_panel.html",
+    "sparkles.svg",
   ]
 
   if (is_chrome_branded) {

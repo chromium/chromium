@@ -12,12 +12,13 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_resize_area.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/common/pref_names.h"
@@ -488,9 +489,10 @@ void SidePanel::OnResize(int resize_amount, bool done_resizing) {
 
 void SidePanel::RecordMetricsIfResized() {
   if (did_resize_) {
-    std::optional<SidePanelEntry::Id> id =
-        SidePanelUI::GetSidePanelUIForBrowser(browser_view_->browser())
-            ->GetCurrentEntryId();
+    std::optional<SidePanelEntry::Id> id = browser_view_->browser()
+                                               ->GetFeatures()
+                                               .side_panel_ui()
+                                               ->GetCurrentEntryId();
     if (!id.has_value()) {
       return;
     }
@@ -570,6 +572,9 @@ void SidePanel::UpdateVisibility() {
       animation_.Hide();
     }
   } else {
+    // Set the animation value so that it accurately reflects what state the
+    // side panel should be in for layout.
+    animation_.Reset(should_be_open ? 1 : 0);
     SetVisible(should_be_open);
   }
 }

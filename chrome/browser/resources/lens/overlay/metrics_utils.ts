@@ -23,7 +23,11 @@ export enum UserAction {
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayUserAction)
 
-export function recordLensOverlayInteraction(interaction: UserAction) {
+export function recordLensOverlayInteraction(
+    invocationSource: string, interaction: UserAction) {
   chrome.metricsPrivate.recordEnumerationValue(
       'Lens.Overlay.Overlay.UserAction', interaction, UserAction.MAX_VALUE + 1);
+  chrome.metricsPrivate.recordEnumerationValue(
+      `Lens.Overlay.Overlay.ByEntryPoint.${invocationSource}.UserAction`,
+      interaction, UserAction.MAX_VALUE + 1);
 }

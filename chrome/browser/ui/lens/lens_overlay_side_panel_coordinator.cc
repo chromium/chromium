@@ -4,19 +4,19 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_dismissal_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_web_view.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_untrusted_ui.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -37,6 +37,7 @@
 namespace lens {
 
 namespace {
+
 bool IsSiteTrusted(const GURL& url) {
   if (google_util::IsGoogleDomainUrl(
           url, google_util::ALLOW_SUBDOMAIN,
@@ -57,17 +58,18 @@ bool IsSiteTrusted(const GURL& url) {
   return false;
 }
 
+SidePanelUI* GetSidePanelUI(LensOverlayController* controller) {
+  return controller->GetTabInterface()
+      ->GetBrowserWindowInterface()
+      ->GetFeatures()
+      .side_panel_ui();
+}
+
 }  // namespace
 
 LensOverlaySidePanelCoordinator::LensOverlaySidePanelCoordinator(
-    Browser* browser,
-    LensOverlayController* lens_overlay_controller,
-    SidePanelUI* side_panel_ui,
-    content::WebContents* web_contents)
-    : tab_browser_(browser),
-      lens_overlay_controller_(lens_overlay_controller),
-      side_panel_ui_(side_panel_ui),
-      tab_web_contents_(web_contents->GetWeakPtr()) {}
+    LensOverlayController* lens_overlay_controller)
+    : lens_overlay_controller_(lens_overlay_controller) {}
 
 LensOverlaySidePanelCoordinator::~LensOverlaySidePanelCoordinator() {
   // If the coordinator is destroyed before the web view, clear the reference
@@ -77,7 +79,8 @@ LensOverlaySidePanelCoordinator::~LensOverlaySidePanelCoordinator() {
     side_panel_web_view_ = nullptr;
   }
 
-  auto* registry = SidePanelRegistry::Get(GetTabWebContents());
+  auto* registry = SidePanelRegistry::Get(
+      lens_overlay_controller_->GetTabInterface()->GetContents());
   CHECK(registry);
 
   // Remove the side panel entry observer if it is present.
@@ -92,32 +95,10 @@ LensOverlaySidePanelCoordinator::~LensOverlaySidePanelCoordinator() {
       SidePanelEntry::Key(SidePanelEntry::Id::kLensOverlayResults));
 }
 
-// static
-actions::ActionItem::InvokeActionCallback
-LensOverlaySidePanelCoordinator::CreateSidePanelActionCallback(
-    Browser* browser) {
-  return base::BindRepeating(
-      [](Browser* browser, actions::ActionItem* item,
-         actions::ActionInvocationContext context) {
-        LensOverlayController* controller =
-            LensOverlayController::GetController(
-                browser->tab_strip_model()->GetActiveWebContents());
-        DCHECK(controller);
-
-        // Toggle the Lens overlay. There's no need to show or hide the side
-        // panel as the overlay controller will handle that.
-        if (controller->IsOverlayShowing()) {
-          controller->CloseUIAsync(lens::LensOverlayDismissalSource::kToolbar);
-        } else {
-          controller->ShowUI(lens::LensOverlayInvocationSource::kToolbar);
-        }
-      },
-      browser);
-}
-
 void LensOverlaySidePanelCoordinator::RegisterEntryAndShow() {
   RegisterEntry();
-  side_panel_ui_->Show(SidePanelEntry::Id::kLensOverlayResults);
+  GetSidePanelUI(lens_overlay_controller_)
+      ->Show(SidePanelEntry::Id::kLensOverlayResults);
   lens_overlay_controller_->NotifyResultsPanelOpened();
 }
 
@@ -150,8 +131,9 @@ LensOverlaySidePanelCoordinator::GetSidePanelWebContents() {
 }
 
 bool LensOverlaySidePanelCoordinator::IsEntryShowing() {
-  return side_panel_ui_->IsSidePanelEntryShowing(
-      SidePanelEntry::Key(SidePanelEntry::Id::kLensOverlayResults));
+  return GetSidePanelUI(lens_overlay_controller_)
+      ->IsSidePanelEntryShowing(
+          SidePanelEntry::Key(SidePanelEntry::Id::kLensOverlayResults));
 }
 
 // This method is called when the WebContents wants to open a link in a new
@@ -224,15 +206,11 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
   if (!lens::IsValidSearchResultsUrl(navigation_handle->GetURL()) &&
       lens::GetSearchResultsUrlFromRedirectUrl(navigation_handle->GetURL())
           .is_empty()) {
-    auto params =
-        content::OpenURLParams::FromNavigationHandle(navigation_handle);
-    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-    Browser* browser = chrome::FindBrowserWithTab(GetTabWebContents());
-    if (!browser) {
-      return;
-    }
     navigation_handle->SetSilentlyIgnoreErrors();
-    browser->OpenURL(params, /*navigation_handle_callback=*/{});
+    lens_overlay_controller_->GetTabInterface()
+        ->GetBrowserWindowInterface()
+        ->OpenURL(navigation_handle->GetURL(),
+                  WindowOpenDisposition::NEW_FOREGROUND_TAB);
     return;
   }
 
@@ -255,21 +233,14 @@ void LensOverlaySidePanelCoordinator::DOMContentLoaded(
 
 void LensOverlaySidePanelCoordinator::OpenURLInBrowser(
     const content::OpenURLParams& params) {
-  auto* controller = LensOverlayController::GetController(GetTabWebContents());
-  if (!controller) {
-    return;
-  }
-
-  auto* browser_window =
-      controller->GetTabInterface()->GetBrowserWindowInterface();
-  if (!browser_window) {
-    return;
-  }
-  browser_window->OpenURL(params.url, params.disposition);
+  lens_overlay_controller_->GetTabInterface()
+      ->GetBrowserWindowInterface()
+      ->OpenURL(params.url, params.disposition);
 }
 
 void LensOverlaySidePanelCoordinator::RegisterEntry() {
-  auto* registry = SidePanelRegistry::Get(GetTabWebContents());
+  auto* registry = SidePanelRegistry::Get(
+      lens_overlay_controller_->GetTabInterface()->GetContents());
   CHECK(registry);
 
   // If the entry is already registered, don't register it again.
@@ -299,7 +270,10 @@ LensOverlaySidePanelCoordinator::CreateLensOverlayResultsView() {
   // TODO(b/328295358): Change task manager string ID in view creation when
   // available.
   auto view = std::make_unique<LensOverlaySidePanelWebView>(
-      tab_browser_->profile(), this);
+      lens_overlay_controller_->GetTabInterface()
+          ->GetContents()
+          ->GetBrowserContext(),
+      this);
   view->SetProperty(views::kElementIdentifierKey,
                     LensOverlayController::kOverlaySidePanelWebViewId);
   side_panel_web_view_ = view.get();
@@ -316,12 +290,6 @@ LensOverlaySidePanelCoordinator::CreateLensOverlayResultsView() {
 
 GURL LensOverlaySidePanelCoordinator::GetOpenInNewTabUrl() {
   return GURL();
-}
-
-content::WebContents* LensOverlaySidePanelCoordinator::GetTabWebContents() {
-  content::WebContents* tab_contents = tab_web_contents_.get();
-  CHECK(tab_contents);
-  return tab_contents;
 }
 
 }  // namespace lens

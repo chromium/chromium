@@ -3380,7 +3380,7 @@
   },
     {
     "name": "enable-lens-overlay",
-    "owners": [ "stkhapugin@chromium.org" ],
+    "owners": [ "stkhapugin@chromium.org", "jdonnelly@chromium.org", "lens-chrome@google.com" ],
     "expiry_milestone": 135
   },
   {

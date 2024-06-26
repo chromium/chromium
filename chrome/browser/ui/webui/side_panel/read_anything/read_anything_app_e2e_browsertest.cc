@@ -8,6 +8,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
@@ -106,7 +107,7 @@ class ReadAnythingAppE2ETest : public InProcessBrowserTest {
         browser(), GURL(chrome::kChromeUIUntrustedReadAnythingSidePanelURL)));
 
     // Get the side panel entry registry.
-    auto* side_panel_ui = SidePanelUI::GetSidePanelUIForBrowser(browser());
+    auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
     auto* side_panel_web_contents =
         side_panel_ui->GetWebContentsForTest(SidePanelEntryId::kReadAnything);
     EXPECT_TRUE(side_panel_web_contents);

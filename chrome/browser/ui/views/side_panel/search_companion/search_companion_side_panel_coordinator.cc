@@ -17,16 +17,17 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_tab_helper.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_tab_helper.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -114,8 +115,8 @@ bool SearchCompanionSidePanelCoordinator::IsSupported(
 
 bool SearchCompanionSidePanelCoordinator::Show(
     SidePanelOpenTrigger side_panel_open_trigger) {
-  SidePanelUI::GetSidePanelUIForBrowser(&GetBrowser())
-      ->Show(SidePanelEntry::Id::kSearchCompanion, side_panel_open_trigger);
+  GetBrowser().GetFeatures().side_panel_ui()->Show(
+      SidePanelEntry::Id::kSearchCompanion, side_panel_open_trigger);
   return true;
 }
 
@@ -125,9 +126,9 @@ void SearchCompanionSidePanelCoordinator::ShowLens(
   auto* companion_tab_helper = companion::CompanionTabHelper::FromWebContents(
       browser_->tab_strip_model()->GetActiveWebContents());
   companion_tab_helper->OpenContextualLensView(url_params);
-  SidePanelUI::GetSidePanelUIForBrowser(&GetBrowser())
-      ->Show(SidePanelEntry::Id::kSearchCompanion,
-             SidePanelOpenTrigger::kLensContextMenu);
+  GetBrowser().GetFeatures().side_panel_ui()->Show(
+      SidePanelEntry::Id::kSearchCompanion,
+      SidePanelOpenTrigger::kLensContextMenu);
 }
 
 BrowserView* SearchCompanionSidePanelCoordinator::GetBrowserView() const {

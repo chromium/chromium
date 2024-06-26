@@ -807,8 +807,9 @@ void LocationBarView::Layout(PassKey) {
 
   // Perform layout.
   int entry_width = width();
-  leading_decorations.LayoutPass1(&entry_width);
-  trailing_decorations.LayoutPass1(&entry_width);
+  const int reserved_width = omnibox_view_->GetMinimumSize().width();
+  leading_decorations.LayoutPass1(&entry_width, reserved_width);
+  trailing_decorations.LayoutPass1(&entry_width, reserved_width);
   leading_decorations.LayoutPass2(&entry_width);
   trailing_decorations.LayoutPass2(&entry_width);
 

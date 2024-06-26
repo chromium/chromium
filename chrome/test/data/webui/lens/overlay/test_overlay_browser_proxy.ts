@@ -24,6 +24,7 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
       'addBackgroundBlur',
       'closeSearchBubble',
       'feedbackRequestedByOverlay',
+      'getOverlayInvocationSource',
       'infoRequestedByOverlay',
       'issueLensRequest',
       'issueTextSelectionRequest',
@@ -57,6 +58,11 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
 
   feedbackRequestedByOverlay() {
     this.methodCalled('feedbackRequestedByOverlay');
+  }
+
+  getOverlayInvocationSource(): Promise<{invocationSource: string}> {
+    this.methodCalled('getOverlayInvocationSource');
+    return Promise.resolve({invocationSource: 'AppMenu'});
   }
 
   infoRequestedByOverlay(clickModifiers: ClickModifiers) {

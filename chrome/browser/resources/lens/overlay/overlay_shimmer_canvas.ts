@@ -4,6 +4,7 @@
 
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
@@ -77,6 +78,10 @@ const CURSOR_STATE_TRANSITION_DURATION = 1000;
 // The time it takes in MS to transition the shimmer circles to overlay one
 // another rather than follow their wiggles.
 const CURSOR_STATE_INITIAL_FOCUS_DURATION = 750;
+const CURSOR_FADE_OUT_STATE_OPACITY_PERCENT = 0;
+// The transition duration for the fade out animation into the cursor state.
+const CURSOR_FADE_OUT_TRANSITION_DURATION = 150;
+const CURSOR_FADE_OUT_EASING_FUNCTION = new CubicBezier(0, 0, 1, 1);
 
 // REGION SELECTION STATE CONSTANTS: These are the values that are only applied
 // when the shimmer is focusing on a selected region. In the region selection
@@ -91,6 +96,11 @@ const REGION_SELECTION_STATE_CENTER_Y_AMPLITUDE_PERCENT = 40;
 // selection state.
 const REGION_SELECTION_TRANSITION_DURATION = 750;
 
+// The opacity of the sparkles. The sparkles opacity also is dictated by the
+// circle pixel opacity below it. Meaning, the true opacity value is
+// SPARKLES_OPACITY * CIRCLE_OPACITY.
+const SPARKLES_OPACITY = 1;
+
 // Specifies the current animation state of the shader canvas.
 enum ShimmerState {
   NONE = 0,
@@ -101,6 +111,7 @@ enum ShimmerState {
   CURSOR = 5,
   TRANSITION_TO_REGION = 6,
   REGION = 7,
+  TRANSITION_FADE_OUT_TO_CURSOR = 8,
 }
 
 // An interface representing the current values of a circle on the canvas.
@@ -190,6 +201,7 @@ function createCircleGradient(
 export interface OverlayShimmerCanvasElement {
   $: {
     shaderCanvas: HTMLCanvasElement,
+    sparklesSvg: SVGImageElement,
   };
 }
 
@@ -273,11 +285,25 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
   private regionWidth: number;
   private regionHeight: number;
 
+  // The sparkles pattern used for rendering the sparkling animation. Created
+  // when the sparkles PNG is loaded in. Null otherwise.
+  private sparklesPattern: CanvasPattern|null = null;
+  // A randomized value every 100ms to transform the sparkles to create
+  // movement.
+  private sparklesOffset: number = 0;
+  // The ID of the setInterval call that updates the sparklesOffset.
+  private sparklesIntervalId?: number;
+  // Whether the sparkles are enabled or not.
+  private enableSparkles: boolean =
+      loadTimeData.getBoolean('enableShimmerSparkles');
+
   // The current shimmer state.
   private shimmerState: ShimmerState = ShimmerState.NONE;
   // The start time of the current animation. When undefined, it will be set at
   // next draw if there is an animiation needed.
   private animationStartTime?: number = undefined;
+  // Whether the last transition was given time to finish.
+  private didLastTransitionFinish = true;
 
   override ready() {
     super.ready();
@@ -314,6 +340,27 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
         id => assert(
             BrowserProxyImpl.getInstance().callbackRouter.removeListener(id)));
     this.listenerIds = [];
+
+    // Stop updating the sparkles if they are currently updating.
+    if (this.sparklesIntervalId) {
+      clearInterval(this.sparklesIntervalId);
+      this.sparklesIntervalId = undefined;
+    }
+  }
+
+  private onSparklesLoad() {
+    // If the flag to enable sparkles is off, ignore the SVG loading in which
+    // will cause skip initializing sparklesPattern so no sparkles appear.
+    if (!this.enableSparkles) {
+      return;
+    }
+
+    this.sparklesPattern =
+        this.context.createPattern(this.$.sparklesSvg, 'repeat');
+
+    this.sparklesIntervalId = setInterval(() => {
+      this.sparklesOffset = Math.round(Math.random() * 500);
+    }, 100);
   }
 
   /** Starts the invocation animation into the steady state. */
@@ -377,6 +424,7 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
     this.resetCanvasPixelRatioIfNeeded();
 
     this.drawCircles(timeMs);
+    this.drawSparkles();
     requestAnimationFrame(this.stepAnimation.bind(this));
   }
 
@@ -479,10 +527,18 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
         this.cursorCenter = {x: centerX * 100, y: centerY * 100};
 
         // Only start the animation if the circles haven't already transitioned
-        // to the cursor state.
-        if (this.shimmerState !== ShimmerState.TRANSITION_TO_CURSOR &&
+        // to the cursor state from the steady state.
+        if (this.shimmerState !== ShimmerState.TRANSITION_FADE_OUT_TO_CURSOR &&
+            this.shimmerState !== ShimmerState.TRANSITION_TO_CURSOR &&
             this.shimmerState !== ShimmerState.CURSOR) {
-          this.setTransitionState(ShimmerState.TRANSITION_TO_CURSOR);
+          // The shimmer should only transition to the cursor if the previous
+          // controller was the steady state. Otherwise, we want the shimmer to
+          // fade out in place.
+          const transitionState =
+              currentShimmerController === ShimmerControlRequester.NONE ?
+              ShimmerState.TRANSITION_TO_CURSOR :
+              ShimmerState.TRANSITION_FADE_OUT_TO_CURSOR;
+          this.setTransitionState(transitionState);
         }
         break;
       default:
@@ -562,6 +618,31 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
     // If the last transition update resulted in a completed animation, clean up
     // an leftover animation state.
     this.finishAnimationIfNeeded(elapsed);
+  }
+
+  // Draws sparkles on the canvas using circles as an alpha mask.
+  private drawSparkles(): void {
+    if (!this.sparklesPattern) {
+      return;
+    }
+
+    // Update the sparkles position to use across the circles.
+    this.sparklesPattern!.setTransform(new DOMMatrixReadOnly().translate(
+        this.sparklesOffset, this.sparklesOffset));
+
+    this.context.save();
+
+    // Draw a path over the entire canvas.
+    this.context.beginPath();
+    this.context.rect(0, 0, this.canvasWidth, this.canvasHeight);
+    this.context.closePath();
+
+    this.context.globalCompositeOperation = 'source-atop';
+    this.context.globalAlpha = SPARKLES_OPACITY;
+    this.context.fillStyle = this.sparklesPattern;
+    this.context.fill();
+
+    this.context.restore();
   }
 
   // Checks the set canvas size and if it has changed, resets it on the canvas.
@@ -706,9 +787,18 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
 
   private createStartKeyframeFromCircle(circle: ShimmerCircle):
       ShimmerAnimationKeyframe {
+    const centerPoint = {x: circle.center.x, y: circle.center.y};
+    // When fading in, the circles should use the region position unless the
+    // last transition did not finish (thus leaving circles visible elsewhere on
+    // the screen).
+    if (this.didLastTransitionFinish &&
+        this.shimmerState === ShimmerState.TRANSITION_TO_REGION) {
+      centerPoint.x = this.regionCenter.x;
+      centerPoint.y = this.regionCenter.y;
+    }
     return {
       blur: circle.blur,
-      center: {x: circle.center.x, y: circle.center.y},
+      center: centerPoint,
       centerXAmpPercent: circle.centerXAmpPercent,
       centerYAmpPercent: circle.centerYAmpPercent,
       radius: circle.radius,
@@ -737,8 +827,11 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
       // instance member of this component to track that end.
       keyframe.centerXAmpPercent = CURSOR_STATE_CENTER_X_AMPLITUDE_PERCENT;
       keyframe.centerYAmpPercent = CURSOR_STATE_CENTER_Y_AMPLITUDE_PERCENT;
-      keyframe.radius = CURSOR_STATE_RADIUS_PERCENT;
       keyframe.radiusAmpPercent = CURSOR_STATE_RADIUS_AMPLITUDE_PERCENT;
+      keyframe.radius = CURSOR_STATE_RADIUS_PERCENT;
+    } else if (
+        this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_CURSOR) {
+      keyframe.opacity = CURSOR_FADE_OUT_STATE_OPACITY_PERCENT;
     } else if (this.shimmerState === ShimmerState.TRANSITION_TO_REGION) {
       // The centerX and centerY can change in between key frames, so we use an
       // instance member of this component to track that end.
@@ -760,7 +853,8 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
   private isShimmerInTransitionState(): boolean {
     return this.shimmerState === ShimmerState.TRANSITION_TO_REGION ||
         this.shimmerState === ShimmerState.TRANSITION_TO_STEADY_STATE ||
-        this.shimmerState === ShimmerState.TRANSITION_TO_CURSOR;
+        this.shimmerState === ShimmerState.TRANSITION_TO_CURSOR ||
+        this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_CURSOR;
   }
 
   private setCurrentAnimationStartTimeIfNeeded(currentTimeMs: number) {
@@ -781,11 +875,17 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
   private getEasingFunctionForCurrentState(): CubicBezier {
     if (this.shimmerState === ShimmerState.TRANSITION_TO_STEADY_STATE) {
       return STEADY_STATE_EASING_FUNCTION;
+    } else if (
+        this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_CURSOR) {
+      return CURSOR_FADE_OUT_EASING_FUNCTION;
     }
     return INTERACTION_STATE_EASING_FUNCTION;
   }
 
   private setTransitionState(state: ShimmerState) {
+    if (this.isShimmerInTransitionState()) {
+      this.didLastTransitionFinish = false;
+    }
     this.animationStartTime = undefined;
     this.shimmerState = state;
   }
@@ -794,14 +894,22 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
     if (this.shimmerState === ShimmerState.TRANSITION_TO_STEADY_STATE &&
         elapsed >= STEADY_STATE_TRANSITION_DURATION) {
       this.shimmerState = ShimmerState.STEADY_STATE;
+      this.didLastTransitionFinish = true;
     } else if (
         this.shimmerState === ShimmerState.TRANSITION_TO_REGION &&
         elapsed >= REGION_SELECTION_TRANSITION_DURATION) {
       this.shimmerState = ShimmerState.REGION;
+      this.didLastTransitionFinish = true;
     } else if (
         this.shimmerState === ShimmerState.TRANSITION_TO_CURSOR &&
         elapsed >= CURSOR_STATE_TRANSITION_DURATION) {
       this.shimmerState = ShimmerState.CURSOR;
+      this.didLastTransitionFinish = true;
+    } else if (
+        this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_CURSOR &&
+        elapsed >= CURSOR_FADE_OUT_TRANSITION_DURATION) {
+      this.shimmerState = ShimmerState.CURSOR;
+      this.didLastTransitionFinish = true;
     }
   }
 
@@ -813,6 +921,9 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
       return REGION_SELECTION_TRANSITION_DURATION;
     } else if (this.shimmerState === ShimmerState.TRANSITION_TO_CURSOR) {
       return CURSOR_STATE_INITIAL_FOCUS_DURATION;
+    } else if (
+        this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_CURSOR) {
+      return CURSOR_FADE_OUT_TRANSITION_DURATION;
     }
     return 0;
   }

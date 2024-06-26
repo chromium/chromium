@@ -18,9 +18,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container_view_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_actions_bar_bubble_views.h"
 #include "chrome/common/pref_names.h"
@@ -1026,7 +1027,7 @@ void ExtensionsToolbarContainer::UpdateControlsVisibility() {
 }
 
 void ExtensionsToolbarContainer::CloseSidePanelButtonPressed() {
-  SidePanelUI::GetSidePanelUIForBrowser(browser_)->Close();
+  browser_->GetFeatures().side_panel_ui()->Close();
 }
 
 void ExtensionsToolbarContainer::UpdateToolbarActionHoverCard(

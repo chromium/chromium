@@ -7714,6 +7714,16 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Always show full URLs
         </message>
       </if>
+      <if expr="use_titlecase">
+        <message name="IDS_CONTEXT_MENU_SHOW_GOOGLE_LENS_SHORTCUT" desc="In Title Case: The text label of the omnibox context menu option to show the 'Search with Google Lens' shortcut button">
+          Always Show Google Lens Shortcut
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_CONTEXT_MENU_SHOW_GOOGLE_LENS_SHORTCUT" desc="The text label of the omnibox context menu option to show the 'Search with Google Lens' shortcut button">
+          Always show Google Lens shortcut
+        </message>
+      </if>
 
       <!-- NTP -->
       <message name="IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD" desc="The text displayed in the fakebox (on the New Tab page) when it is empty, Google is the default search engine, and the Material Design UI is enabled.">
@@ -17070,8 +17080,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Send feedback for search with Lens
     </message>
     <!-- Lens Permission bubble dialog-->
-    <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_CLOSE_BUTTON" desc="Text on the close button in the dialog for choosing not to allow the sending of the Lens screenshot to Google.">
-      Close
+    <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_CANCEL_BUTTON" desc="Text on the cancel button in the dialog for choosing not to allow the sending of the Lens screenshot to Google.">
+      Cancel
     </message>
     <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_CONTINUE_BUTTON" desc="Text on the continue button in the dialog for choosing to allow the sending of the Lens screenshot to Google.">
       Continue

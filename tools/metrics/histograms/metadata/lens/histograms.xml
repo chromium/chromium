@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="InvocationSources">
+  <variant name="AppMenu"/>
+  <variant name="ContentAreaContextMenuImage"/>
+  <variant name="ContentAreaContextMenuPage"/>
+  <variant name="FindInPage"/>
+  <variant name="Omnibox"/>
+  <variant name="Toolbar"/>
+  <variant name="Unknown"/>
+</variants>
+
 <histogram name="Lens.ImageClassification.ClassificationTime.EarlyTerminatedMs"
     units="ms" expires_after="2022-07-31">
   <owner>yusuyoutube@google.com</owner>
@@ -108,6 +118,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Lens.Overlay.Overlay.ByInvocationSource.{InvocationSource}.UserAction"
+    enum="LensOverlayUserAction" expires_after="2025-05-06">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>mercerd@google.com</owner>
+  <summary>
+    Recorded each time the user interacts with the Lens Overlay, enumerated by
+    those actions and sliced by invocation source.
+  </summary>
+  <token key="InvocationSource" variants="InvocationSources"/>
+</histogram>
+
 <histogram name="Lens.Overlay.Overlay.UserAction" enum="LensOverlayUserAction"
     expires_after="2025-05-06">
   <owner>jdonnelly@chromium.org</owner>
@@ -116,6 +138,32 @@ chromium-metrics-reviews@google.com.
     Recorded each time the user interacts with the Lens Overlay, enumerated by
     those actions.
   </summary>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.PermissionBubble.ByInvocationSource.{InvocationSource}.Shown"
+    enum="BooleanShown" expires_after="2025-05-06">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>mercerd@google.com</owner>
+  <summary>
+    Recorded each time the Lens Permission Bubble is requested to be shown
+    sliced by invocation source.'Shown' is recorded when the Lens Permission
+    Bubble is successfully shown. 'Not Shown' is recorded when the Lens
+    Permission Bubble is already showing.
+  </summary>
+  <token key="InvocationSource" variants="InvocationSources"/>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.PermissionBubble.ByInvocationSource.{InvocationSource}.UserAction"
+    enum="LensPermissionBubbleUserAction" expires_after="2025-05-06">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>mercerd@google.com</owner>
+  <summary>
+    Recorded each time the user interacts with the Lens Permission Bubble,
+    enumerated by those actions and sliced by invocation source.
+  </summary>
+  <token key="InvocationSource" variants="InvocationSources"/>
 </histogram>
 
 <histogram name="Lens.Overlay.PermissionBubble.Shown" enum="BooleanShown"

@@ -2125,6 +2125,7 @@ static_library("browser") {
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/actions:actions",
     "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/color:mixers",
     "//chrome/browser/ui/tabs",

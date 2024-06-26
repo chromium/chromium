@@ -17,6 +17,7 @@ import {findWordsInRegion} from './find_words_in_region.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import {bestHit} from './hit.js';
+import {INVOCATION_SOURCE} from './lens_overlay_app.js';
 import {recordLensOverlayInteraction, UserAction} from './metrics_utils.js';
 import type {CursorData, DetectedTextContextMenuData, SelectedTextContextMenuData} from './selection_overlay.js';
 import {CursorType} from './selection_utils.js';
@@ -56,6 +57,12 @@ function getTextSeparator(word: Word): string {
   return (word.textSeparator !== null && word.textSeparator !== undefined) ?
       word.textSeparator :
       ' ';
+}
+
+// Returns true if index is in the range [start, end]. End index may be lesser
+// than start index.
+function isInRange(index: number, start: number, end: number): boolean {
+  return (index >= start && index <= end) || (index >= end && index <= start);
 }
 
 export interface TextLayerElement {
@@ -249,6 +256,20 @@ export class TextLayerElement extends PolymerElement {
     return true;
   }
 
+  handleRightClick(event: PointerEvent) {
+    // If the user right-clicks a highlighted word, restore the selected text
+    // context menu.
+    const wordIndex = this.wordIndexFromPoint(event.clientX, event.clientY);
+    if (wordIndex !== null &&
+        isInRange(
+            wordIndex, this.selectionStartIndex, this.selectionEndIndex)) {
+      this.dispatchEvent(new CustomEvent('restore-selected-text-context-menu', {
+        bubbles: true,
+        composed: true,
+      }));
+    }
+  }
+
   handleDragGesture(event: GestureEvent) {
     const imageBounds = this.getBoundingClientRect();
     const normalizedX = (event.clientX - imageBounds.left) / imageBounds.width;
@@ -291,7 +312,7 @@ export class TextLayerElement extends PolymerElement {
     // On selection complete, send the selected text to C++.
     BrowserProxyImpl.getInstance().handler.issueTextSelectionRequest(
         highlightedText, this.selectionStartIndex, this.selectionEndIndex);
-    recordLensOverlayInteraction(UserAction.TEXT_SELECTION);
+    recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.TEXT_SELECTION);
   }
 
   selectAndSendWords(selectionStartIndex: number, selectionEndIndex: number) {

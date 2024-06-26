@@ -11,7 +11,12 @@
 #include "components/lens/lens_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
+#include "third_party/lens_server_proto/lens_overlay_knowledge_intent_query.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_knowledge_query.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_stickiness_signals.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_translate_stickiness_signals.pb.h"
 #include "third_party/omnibox_proto/search_context.pb.h"
+#include "third_party/zlib/google/compression_utils.h"
 #include "url/gurl.h"
 
 namespace lens {
@@ -52,11 +57,7 @@ inline constexpr char kLensModeParameterUnimodalValue[] = "un";
 inline constexpr char kLensModeParameterMultimodalValue[] = "mu";
 
 // Parameters to trigger the Translation One-box.
-inline constexpr char kCtxslTransParameterKey[] = "ctxsl_trans";
-inline constexpr char kCtxslTransParameterValue[] = "1";
-inline constexpr char kTliteSourceLanguageParameterKey[] = "tlitesl";
-inline constexpr char kTliteTargetLanguageParameterKey[] = "tlitetl";
-inline constexpr char kTliteQueryParameterKey[] = "tlitetxt";
+inline constexpr char kSrpStickinessSignalKey[] = "stick";
 
 // Query parameter for the invocation source.
 inline constexpr char kInvocationSourceParameterKey[] = "source";
@@ -70,8 +71,17 @@ inline constexpr char kInvocationSourceToolbarIcon[] = "chrome.cr.tbic";
 inline constexpr char kInvocationSourceOmniboxIcon[] = "chrome.cr.obic";
 
 // The url query param for the viewport width and height.
-constexpr char kViewportWidthQueryParamKey[] = "biw";
-constexpr char kViewportHeightQueryParamKey[] = "bih";
+inline constexpr char kViewportWidthQueryParamKey[] = "biw";
+inline constexpr char kViewportHeightQueryParamKey[] = "bih";
+
+// Query parameters that can be appended by GWS to the URL after a redirect.
+inline constexpr char kXSRFTokenQueryParamKey[] = "sxsrf";
+inline constexpr char kSecActQueryParamKey[] = "sec_act";
+
+// The list of query parameters to ignore when comparing search URLs.
+inline constexpr std::string kIgnoredSearchUrlQueryParameters[] = {
+    kViewportWidthQueryParamKey, kViewportHeightQueryParamKey,
+    kXSRFTokenQueryParamKey, kSecActQueryParamKey};
 
 // Query parameter for dark mode.
 inline constexpr char kDarkModeParameterKey[] = "cs";
@@ -105,14 +115,30 @@ GURL AppendUrlParamsFromMap(
 void AppendTranslateParamsToMap(std::map<std::string, std::string>& params,
                                 const std::string& query,
                                 const std::string& content_language) {
-  params[kCtxslTransParameterKey] = kCtxslTransParameterValue;
-  params[kTliteQueryParameterKey] = query;
-  auto content_language_synonym = content_language;
-  language::ToTranslateLanguageSynonym(&content_language_synonym);
-  params[kTliteSourceLanguageParameterKey] = content_language_synonym;
-  auto locale = g_browser_process->GetApplicationLocale();
-  language::ToTranslateLanguageSynonym(&locale);
-  params[kTliteTargetLanguageParameterKey] = locale;
+  lens::StickinessSignals stickiness_signals;
+  stickiness_signals.set_id_namespace(lens::StickinessSignals::TRANSLATE_LITE);
+  auto* intent_query = stickiness_signals.mutable_interpretation()
+                           ->mutable_message_set_extension()
+                           ->mutable_intent_query();
+  intent_query->set_name("Translate");
+  intent_query->mutable_signals()
+      ->mutable_translate_stickiness_signals()
+      ->set_translate_suppress_echo_for_sticky(false);
+  auto* text_argument = intent_query->add_argument();
+  text_argument->set_name("Text");
+  text_argument->mutable_value()->mutable_simple_value()->set_string_value(
+      query);
+
+  std::string serialized_proto;
+  stickiness_signals.SerializeToString(&serialized_proto);
+  std::string compressed_proto;
+  compression::GzipCompress(serialized_proto, &compressed_proto);
+  std::string stickiness_signal_value;
+  base::Base64UrlEncode(compressed_proto,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &stickiness_signal_value);
+
+  params[kSrpStickinessSignalKey] = stickiness_signal_value;
 }
 
 GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,
@@ -334,21 +360,11 @@ GURL GetSearchResultsUrlFromRedirectUrl(const GURL& url) {
   return GURL();
 }
 
-GURL RemoveUrlViewportParams(const GURL& url) {
+GURL RemoveIgnoredSearchURLParameters(const GURL& url) {
   GURL processed_url = url;
-  std::string actual_viewport_width;
-  bool has_viewport_width = net::GetValueForKeyInQuery(
-      url, kViewportWidthQueryParamKey, &actual_viewport_width);
-  std::string actual_viewport_height;
-  bool has_viewport_height = net::GetValueForKeyInQuery(
-      GURL(url), kViewportHeightQueryParamKey, &actual_viewport_height);
-  if (has_viewport_width) {
+  for (std::string query_param : kIgnoredSearchUrlQueryParameters) {
     processed_url = net::AppendOrReplaceQueryParameter(
-        processed_url, kViewportWidthQueryParamKey, std::nullopt);
-  }
-  if (has_viewport_height) {
-    processed_url = net::AppendOrReplaceQueryParameter(
-        processed_url, kViewportHeightQueryParamKey, std::nullopt);
+        processed_url, query_param, std::nullopt);
   }
   return processed_url;
 }

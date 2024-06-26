@@ -7,11 +7,17 @@
 #include "base/base64url.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "components/lens/lens_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/lens_server_proto/lens_overlay_knowledge_intent_query.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_knowledge_query.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_stickiness_signals.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_translate_stickiness_signals.pb.h"
 #include "third_party/omnibox_proto/search_context.pb.h"
+#include "third_party/zlib/google/compression_utils.h"
 
 namespace lens {
 
@@ -66,6 +72,37 @@ class LensOverlayUrlBuilderTest : public testing::Test {
  protected:
   base::test::ScopedFeatureList feature_list_;
 };
+
+TEST_F(LensOverlayUrlBuilderTest, AppendTranslateParamsToMap) {
+  std::string query = "test";
+  std::map<std::string, std::string> params;
+
+  lens::AppendTranslateParamsToMap(params, query, "auto");
+
+  lens::StickinessSignals expected_proto;
+  expected_proto.set_id_namespace(lens::StickinessSignals::TRANSLATE_LITE);
+  auto* intent_query = expected_proto.mutable_interpretation()
+                           ->mutable_message_set_extension()
+                           ->mutable_intent_query();
+  intent_query->set_name("Translate");
+  intent_query->mutable_signals()
+      ->mutable_translate_stickiness_signals()
+      ->set_translate_suppress_echo_for_sticky(false);
+  auto* text_argument = intent_query->add_argument();
+  text_argument->set_name("Text");
+  text_argument->mutable_value()->mutable_simple_value()->set_string_value(
+      "test");
+
+  std::string compressed_proto;
+  ASSERT_TRUE(base::Base64UrlDecode(
+      params["stick"], base::Base64UrlDecodePolicy::DISALLOW_PADDING,
+      &compressed_proto));
+  std::string serialized_proto;
+  ASSERT_TRUE(compression::GzipUncompress(compressed_proto, &serialized_proto));
+  lens::StickinessSignals stickiness_signals;
+  ASSERT_TRUE(stickiness_signals.ParseFromString(serialized_proto));
+  EXPECT_THAT(stickiness_signals, base::test::EqualsProto(expected_proto));
+}
 
 TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURL) {
   std::string text_query = "Apples";
@@ -497,19 +534,19 @@ TEST_F(LensOverlayUrlBuilderTest, IsValidSearchURLInvalidURL) {
   EXPECT_FALSE(lens::IsValidSearchResultsUrl(GURL()));
 }
 
-TEST_F(LensOverlayUrlBuilderTest, RemoveViewportParamFromURL) {
+TEST_F(LensOverlayUrlBuilderTest, RemoveIgnoredSearchURLParameters) {
   std::string text_query = "Apples";
   std::string viewport_width = "400";
   std::string viewport_height = "500";
-  std::string initial_url =
-      base::StringPrintf("%s?q=%s&gsc=1&hl=%s&biw=%s&bih=%s",
-                         kResultsSearchBaseUrl, text_query.c_str(), kLanguage,
-                         viewport_width.c_str(), viewport_height.c_str());
+  std::string initial_url = base::StringPrintf(
+      "%s?q=%s&gsc=1&hl=%s&biw=%s&bih=%s&sec_act=1&sxsrf=token",
+      kResultsSearchBaseUrl, text_query.c_str(), kLanguage,
+      viewport_width.c_str(), viewport_height.c_str());
   std::string expected_url =
       base::StringPrintf("%s?q=%s&gsc=1&hl=%s", kResultsSearchBaseUrl,
                          text_query.c_str(), kLanguage);
 
-  EXPECT_EQ(lens::RemoveUrlViewportParams(GURL(initial_url)),
+  EXPECT_EQ(lens::RemoveIgnoredSearchURLParameters(GURL(initial_url)),
             GURL(expected_url));
 }
 

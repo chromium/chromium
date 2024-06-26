@@ -12,7 +12,6 @@ import './strings.m.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 
-import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
@@ -22,6 +21,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {getFallbackTheme} from './color_utils.js';
 import {type CursorTooltipData, CursorTooltipType} from './cursor_tooltip.js';
+import {INVOCATION_SOURCE} from './lens_overlay_app.js';
 import {recordLensOverlayInteraction, UserAction} from './metrics_utils.js';
 import type {ObjectLayerElement} from './object_layer.js';
 import type {OverlayShimmerElement} from './overlay_shimmer.js';
@@ -82,7 +82,6 @@ export interface DetectedTextContextMenuData {
 export interface SelectionOverlayElement {
   $: {
     backgroundImage: HTMLImageElement,
-    copyToast: CrToastElement,
     cursor: HTMLElement,
     detectedTextContextMenu: HTMLElement,
     initialFlashScrim: HTMLDivElement,
@@ -247,6 +246,12 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
           this.contentLanguage = e.detail.contentLanguage;
           this.textSelectionStartIndex = e.detail.selectionStartIndex;
           this.textSelectionEndIndex = e.detail.selectionEndIndex;
+        });
+    this.eventTracker_.add(
+        document, 'restore-selected-text-context-menu', () => {
+          // show-selected-text-context-menu must be triggered first so that
+          // instance variables are set.
+          this.showSelectedTextContextMenu = true;
         });
     this.eventTracker_.add(
         document, 'show-detected-text-context-menu', (e: CustomEvent) => {
@@ -460,6 +465,11 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       return;
     }
 
+    if (event.button === 2 /* right button */) {
+      this.$.textSelectionLayer.handleRightClick(event);
+      return;
+    }
+
     this.dispatchEvent(new CustomEvent(
         'selection-overlay-clicked', {bubbles: true, composed: true}));
     this.addDragListeners();
@@ -618,12 +628,11 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         this.shadowRoot!.elementsFromPoint(event.clientX, event.clientY);
     // Do not intercept events that should go to the following elements.
     if (elementsAtPoint.includes(this.$.selectedTextContextMenu) ||
-        elementsAtPoint.includes(this.$.detectedTextContextMenu) ||
-        elementsAtPoint.includes(this.$.copyToast)) {
+        elementsAtPoint.includes(this.$.detectedTextContextMenu)) {
       return true;
     }
-    // Ignore multi touch events and none left click events.
-    return !event.isPrimary || event.button !== 0;
+    // Ignore multi touch events and non-left/right click events.
+    return !event.isPrimary || (event.button !== 0 && event.button !== 2);
   }
 
   // Returns whether the current gesture event is a drag.
@@ -650,21 +659,12 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
   private async handleCopy() {
     navigator.clipboard.writeText(this.highlightedText);
-    recordLensOverlayInteraction(UserAction.COPY_TEXT);
-    if (this.$.copyToast.open) {
-      // If toast already open, wait after hiding so that animation is
-      // smoother.
-      await this.$.copyToast.hide();
-      setTimeout(() => {
-        this.$.copyToast.show();
-      }, 100);
-    } else {
-      this.$.copyToast.show();
-    }
-  }
-
-  private onHideToastClick() {
-    this.$.copyToast.hide();
+    recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.COPY_TEXT);
+    this.dispatchEvent(new CustomEvent('text-copied', {
+      bubbles: true,
+      composed: true,
+    }));
+    this.showSelectedTextContextMenu = false;
   }
 
   private handleSelectText() {
@@ -677,7 +677,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     BrowserProxyImpl.getInstance().handler.issueTranslateSelectionRequest(
         this.highlightedText, this.contentLanguage,
         this.textSelectionStartIndex, this.textSelectionEndIndex);
-    recordLensOverlayInteraction(UserAction.TRANSLATE_TEXT);
+    this.showSelectedTextContextMenu = false;
+    recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.TRANSLATE_TEXT);
   }
 
   // Make the cursor disappear over the context menu, as if leaving the overlay.
@@ -725,8 +726,16 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     return this.showDetectedTextContextMenu;
   }
 
+  getShowSelectedTextContextMenuForTesting() {
+    return this.showSelectedTextContextMenu;
+  }
+
   handleSelectTextForTesting() {
     this.handleSelectText();
+  }
+
+  handleTranslateForTesting() {
+    this.handleTranslate();
   }
 }
 

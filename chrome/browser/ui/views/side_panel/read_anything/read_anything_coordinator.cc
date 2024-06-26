@@ -18,13 +18,14 @@
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller_utils.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_tab_helper.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_container_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_web_view.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_tab_helper.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
@@ -472,7 +473,7 @@ void ReadAnythingCoordinator::OnBrowserSetLastActive(Browser* browser) {
   // This code is called as part of a screen2x data generation workflow, where
   // the browser is opened by a CLI and the read-anything side panel is
   // automatically opened.
-  auto* side_panel_ui = SidePanelUI::GetSidePanelUIForBrowser(browser);
+  auto* side_panel_ui = browser->GetFeatures().side_panel_ui();
   if (side_panel_ui->GetCurrentEntryId() != SidePanelEntryId::kReadAnything) {
     side_panel_ui->Show(SidePanelEntryId::kReadAnything);
   }

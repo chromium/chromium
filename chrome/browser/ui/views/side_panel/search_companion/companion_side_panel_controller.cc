@@ -11,14 +11,15 @@
 #include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_tab_helper.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_tab_helper.h"
 #include "chrome/browser/ui/views/side_panel/companion_side_panel_web_view.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_page_handler.h"
@@ -319,7 +320,7 @@ void CompanionSidePanelController::DidOpenRequestedURL(
 
     // If a new tab was opened, open companion side panel in it.
     if (!open_in_current_tab && tab_web_contents) {
-      SidePanelUI::GetSidePanelUIForBrowser(browser)->Show(
+      browser->GetFeatures().side_panel_ui()->Show(
           SidePanelEntry::Id::kSearchCompanion,
           SidePanelOpenTrigger::kOpenedInNewTabFromSidePanel);
     }

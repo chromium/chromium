@@ -32,21 +32,32 @@
 namespace lens {
 namespace {
 
-void LogShown(bool shown) {
+void LogShown(bool shown, std::string invocation_source) {
   base::UmaHistogramBoolean("Lens.Overlay.PermissionBubble.Shown", shown);
+  const auto histogram_name =
+      "Lens.Overlay.PermissionBubble.ByInvocationSource." + invocation_source +
+      ".Shown";
+  base::UmaHistogramBoolean(histogram_name, shown);
 }
 
-void LogUserAction(LensPermissionBubbleController::UserAction user_action) {
+void LogUserAction(LensPermissionBubbleController::UserAction user_action,
+                   std::string invocation_source) {
   base::UmaHistogramEnumeration("Lens.Overlay.PermissionBubble.UserAction",
                                 user_action);
+  const auto histogram_name =
+      "Lens.Overlay.PermissionBubble.ByInvocationSource." + invocation_source +
+      ".UserAction";
+  base::UmaHistogramEnumeration(histogram_name, user_action);
 }
 
 }  // namespace
 
 LensPermissionBubbleController::LensPermissionBubbleController(
     BrowserWindowInterface* browser_window_interface,
-    PrefService* pref_service)
-    : browser_window_interface_(browser_window_interface),
+    PrefService* pref_service,
+    std::string invocation_source)
+    : invocation_source_(invocation_source),
+      browser_window_interface_(browser_window_interface),
       pref_service_(pref_service) {}
 
 LensPermissionBubbleController::~LensPermissionBubbleController() {
@@ -64,10 +75,10 @@ void LensPermissionBubbleController::RequestPermission(
     if (!dialog_widget_->IsVisible()) {
       dialog_widget_->Show();
     }
-    LogShown(false);
+    LogShown(false, invocation_source_);
     return;
   }
-  LogShown(true);
+  LogShown(true, invocation_source_);
 
   // Observe pref changes. Reset the pref observer in case this method called
   // several times in succession.
@@ -116,7 +127,7 @@ LensPermissionBubbleController::CreateLensPermissionDialogModel() {
               weak_ptr_factory_.GetWeakPtr()),
           ui::DialogModel::Button::Params()
               .SetLabel(l10n_util::GetStringUTF16(
-                  IDS_LENS_PERMISSION_BUBBLE_DIALOG_CLOSE_BUTTON))
+                  IDS_LENS_PERMISSION_BUBBLE_DIALOG_CANCEL_BUTTON))
               .SetId(kLensPermissionDialogCancelButtonElementId)
               .SetStyle(ui::ButtonStyle::kTonal))
       .SetCloseActionCallback(base::BindOnce(
@@ -131,7 +142,7 @@ bool LensPermissionBubbleController::HasOpenDialogWidget() {
 
 void LensPermissionBubbleController::OnHelpCenterLinkClicked(
     const ui::Event& event) {
-  LogUserAction(UserAction::kLinkOpened);
+  LogUserAction(UserAction::kLinkOpened, invocation_source_);
   browser_window_interface_->OpenURL(
       GURL(lens::features::GetLensOverlayHelpCenterURL()),
       ui::DispositionFromEventFlags(event.flags(),
@@ -139,20 +150,20 @@ void LensPermissionBubbleController::OnHelpCenterLinkClicked(
 }
 
 void LensPermissionBubbleController::OnPermissionDialogAccept() {
-  LogUserAction(UserAction::kAcceptButtonPressed);
+  LogUserAction(UserAction::kAcceptButtonPressed, invocation_source_);
   pref_service_->SetBoolean(prefs::kLensSharingPageScreenshotEnabled, true);
   dialog_widget_ = nullptr;
 }
 
 void LensPermissionBubbleController::OnPermissionDialogCancel() {
-  LogUserAction(UserAction::kCancelButtonPressed);
+  LogUserAction(UserAction::kCancelButtonPressed, invocation_source_);
   dialog_widget_ = nullptr;
 }
 
 void LensPermissionBubbleController::OnPermissionDialogClose() {
   if (dialog_widget_->closed_reason() ==
       views::Widget::ClosedReason::kEscKeyPressed) {
-    LogUserAction(UserAction::kEscKeyPressed);
+    LogUserAction(UserAction::kEscKeyPressed, invocation_source_);
   }
   dialog_widget_ = nullptr;
 }

@@ -295,9 +295,11 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
   }
 }
 
-SidePanelCoordinator::~SidePanelCoordinator() {
-  browser_view_->browser()->tab_strip_model()->RemoveObserver(this);
-  view_state_observers_.Clear();
+SidePanelCoordinator::~SidePanelCoordinator() = default;
+
+void SidePanelCoordinator::TearDownPreBrowserViewDestruction() {
+  extensions_model_observation_.Reset();
+  pinned_model_observation_.Reset();
 }
 
 // static

@@ -590,6 +590,8 @@ Browser::Browser(const CreateParams& params)
       overscroll_pref_manager_(std::make_unique<OverscrollPrefManager>(this))
 #endif
 {
+  browser_actions_->InitializeBrowserActions();
+
   if (!profile_->IsOffTheRecord()) {
     profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
         params.profile->GetOriginalProfile(),
