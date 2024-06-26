@@ -18740,6 +18740,7 @@
                     "name": "Enabled",
                     "params": {
                         "RichAutocompletionAutocompleteShortcutTextMinChar": "3",
+                        "RichAutocompletionAutocompleteTitlesMinChar": "3",
                         "RichAutocompletionParam": "TextField"
                     },
                     "enable_features": [
