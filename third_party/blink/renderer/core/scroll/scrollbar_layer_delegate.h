@@ -8,6 +8,7 @@
 #include "cc/input/scrollbar.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace blink {
 
@@ -29,6 +30,8 @@ class CORE_EXPORT ScrollbarLayerDelegate : public cc::Scrollbar {
   bool IsSolidColor() const override;
   SkColor4f GetSolidColor() const override;
   bool IsOverlay() const override;
+  bool IsFluent() const override;
+  bool IsRunningWebTest() const override;
   bool IsFluentOverlayScrollbarMinimalMode() const override;
   bool SupportsDragSnapBack() const override;
   bool JumpOnTrackClick() const override;
@@ -48,6 +51,8 @@ class CORE_EXPORT ScrollbarLayerDelegate : public cc::Scrollbar {
   void PaintPart(cc::PaintCanvas* canvas,
                  cc::ScrollbarPart part,
                  const gfx::Rect& rect) override;
+  void ClearThumbNeedsRepaint() override;
+  SkColor4f FluentThumbColor() const override;
 
   bool UsesNinePatchThumbResource() const override;
   gfx::Size NinePatchThumbCanvasSize() const override;

@@ -965,6 +965,8 @@ class FluentOverlayScrollbarLayerTreeHostImplTest
     UIResourceBitmap bitmap(gfx::Size(1, 1), true);
     host_impl_->CreateUIResource(ui_resource_id, bitmap);
     scrollbar->set_track_ui_resource_id(ui_resource_id);
+    scrollbar->SetFluentThumbColor(SkColor4f::FromColor(SK_ColorRED));
+    scrollbar->set_is_web_test(true);
     UpdateDrawProperties(host_impl_->active_tree());
 
     return scrollbar;
@@ -987,9 +989,11 @@ class FluentOverlayScrollbarOpacityLayerTreeHostImplTest
     if (expected_opacity == 0.f) {
       // If the opacity of the track is expected to be zero, the layer code
       // makes an early return and doesn't append the track's quads.
-      viz::DrawQuad* track_quad = *(render_pass->quad_list.BackToFrontBegin());
-      EXPECT_EQ(track_quad, nullptr);
+      // Verify that there is only one quad (the thumb's) appended to the render
+      // pass.
+      EXPECT_EQ(render_pass->quad_list.size(), 1u);
     } else {
+      EXPECT_EQ(render_pass->quad_list.size(), 2u);
       EXPECT_FLOAT_EQ(expected_opacity,
                       render_pass->shared_quad_state_list.back()->opacity);
     }

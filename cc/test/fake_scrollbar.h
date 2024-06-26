@@ -25,6 +25,8 @@ class FakeScrollbar : public Scrollbar {
   bool IsSolidColor() const override;
   SkColor4f GetSolidColor() const override;
   bool IsOverlay() const override;
+  bool IsFluent() const override;
+  bool IsRunningWebTest() const override;
   bool IsFluentOverlayScrollbarMinimalMode() const override;
   bool HasThumb() const override;
   gfx::Rect ThumbRect() const override;
@@ -41,6 +43,8 @@ class FakeScrollbar : public Scrollbar {
   void PaintPart(PaintCanvas* canvas,
                  ScrollbarPart part,
                  const gfx::Rect& rect) override;
+  void ClearThumbNeedsRepaint() override;
+  SkColor4f FluentThumbColor() const override;
   bool UsesNinePatchThumbResource() const override;
   gfx::Size NinePatchThumbCanvasSize() const override;
   gfx::Rect NinePatchThumbAperture() const override;
@@ -57,6 +61,7 @@ class FakeScrollbar : public Scrollbar {
   }
   void set_is_solid_color(bool b) { is_solid_color_ = b; }
   void set_is_overlay(bool b) { is_overlay_ = b; }
+  void set_is_fluent(bool b) { is_fluent_ = b; }
   void set_uses_nine_patch_thumb_resource(bool b) {
     uses_nine_patch_thumb_resource_ = b;
   }
@@ -86,6 +91,7 @@ class FakeScrollbar : public Scrollbar {
   bool is_solid_color_ = false;
   SkColor4f solid_color_ = SkColors::kWhite;
   bool is_overlay_ = false;
+  bool is_fluent_ = false;
   bool uses_nine_patch_thumb_resource_ = false;
   gfx::Size thumb_size_{5, 10};
   float thumb_opacity_ = 1;

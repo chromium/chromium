@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/memory/ptr_util.h"
+#include "cc/input/scrollbar.h"
 #include "cc/input/scrollbar_animation_controller.h"
 #include "cc/layers/layer.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -82,6 +83,9 @@ void PaintedScrollbarLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   scrollbar_layer->set_thumb_ui_resource_id(thumb_ui_resource_id_);
 
   scrollbar_layer->SetScrollbarPaintedOpacity(painted_opacity_);
+  if (fluent_thumb_color_.has_value()) {
+    scrollbar_layer->SetFluentThumbColor(fluent_thumb_color_.value());
+  }
 }
 
 float PaintedScrollbarLayerImpl::OverlayScrollbarOpacity() const {
@@ -98,14 +102,51 @@ bool PaintedScrollbarLayerImpl::WillDraw(
 void PaintedScrollbarLayerImpl::AppendQuads(
     viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data) {
-  bool premultipled_alpha = true;
-  bool flipped = false;
-  bool nearest_neighbor = false;
-  gfx::PointF uv_top_left(0.f, 0.f);
-  gfx::PointF uv_bottom_right(1.f, 1.f);
+  AppendThumbQuads(render_pass, append_quads_data);
+  AppendTrackQuads(render_pass, append_quads_data);
+}
 
+void PaintedScrollbarLayerImpl::AppendThumbQuads(
+    viz::CompositorRenderPass* render_pass,
+    AppendQuadsData* append_quads_data) const {
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
+  if (IsFluentScrollbarEnabled()) {
+    const gfx::Rect thumb_rect = ComputeThumbQuadRect();
+    if (thumb_rect.IsEmpty()) {
+      return;
+    }
+
+    CHECK(fluent_thumb_color_.has_value());
+    gfx::MaskFilterInfo rounded_corners_mask =
+        draw_properties().mask_filter_info;
+    // Web tests draw the thumb as a square to avoid issues that come with the
+    // differences in calculation of anti-aliasing and rounding in different
+    // platforms.
+    if (!is_web_test()) {
+      const int rounded_corner_radius =
+          orientation() == ScrollbarOrientation::kHorizontal
+              ? thumb_rect.height()
+              : thumb_rect.width();
+      rounded_corners_mask = gfx::MaskFilterInfo(
+          gfx::RRectF(gfx::RectF(thumb_rect), rounded_corner_radius));
+      rounded_corners_mask.ApplyTransform(
+          draw_properties().target_space_transform);
+    }
+    shared_quad_state->SetAll(
+        draw_properties().target_space_transform, thumb_rect, thumb_rect,
+        rounded_corners_mask, /*clip=*/std::nullopt, /*contents_opaque=*/false,
+        draw_properties().opacity, /*blend=*/SkBlendMode::kSrcOver,
+        GetSortingContextId(), static_cast<uint32_t>(id()),
+        /*fast_rounded_corner=*/true);
+    auto* thumb_quad =
+        render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
+    thumb_quad->SetNew(shared_quad_state, thumb_rect, thumb_rect,
+                       fluent_thumb_color_.value(),
+                       /*anti_aliasing_off=*/false);
+    ValidateQuadResources(thumb_quad);
+    return;
+  }
 
   // The thumb sqs must be non-opaque so that the track will not be occluded in
   // viz by the thumb's 'quad_layer_rect'.
@@ -126,20 +167,27 @@ void PaintedScrollbarLayerImpl::AppendQuads(
   viz::ResourceId thumb_resource_id =
       layer_tree_impl()->ResourceIdForUIResource(thumb_ui_resource_id_);
 
-  if (thumb_resource_id && !visible_thumb_quad_rect.IsEmpty()) {
-    bool needs_blending = true;
-
-    shared_quad_state->opacity *= painted_opacity_;
-    auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
-    quad->SetNew(shared_quad_state, scaled_thumb_quad_rect,
-                 scaled_visible_thumb_quad_rect, needs_blending,
-                 thumb_resource_id, premultipled_alpha, uv_top_left,
-                 uv_bottom_right, SkColors::kTransparent, flipped,
-                 nearest_neighbor, /*secure_output_only=*/false,
-                 gfx::ProtectedVideoType::kClear);
-    ValidateQuadResources(quad);
+  if (!thumb_resource_id || visible_thumb_quad_rect.IsEmpty()) {
+    return;
   }
 
+  shared_quad_state->opacity *= painted_opacity_;
+  auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
+  quad->SetNew(shared_quad_state, scaled_thumb_quad_rect,
+               scaled_visible_thumb_quad_rect, /*needs_blending=*/true,
+               thumb_resource_id, /*premultiplied=*/true,
+               /*top_left=*/gfx::PointF(0.f, 0.f),
+               /*bottom_right=*/gfx::PointF(1.f, 1.f),
+               /*background=*/SkColors::kTransparent,
+               /*flipped=*/false,
+               /*nearest=*/false, /*secure_output=*/false,
+               /*video_type=*/gfx::ProtectedVideoType::kClear);
+  ValidateQuadResources(quad);
+}
+
+void PaintedScrollbarLayerImpl::AppendTrackQuads(
+    viz::CompositorRenderPass* render_pass,
+    AppendQuadsData* append_quads_data) const {
   if (IsFluentOverlayScrollbarEnabled() &&
       thumb_thickness_scale_factor() <= GetIdleThicknessScale() &&
       !has_find_in_page_tickmarks()) {
@@ -153,37 +201,42 @@ void PaintedScrollbarLayerImpl::AppendQuads(
   viz::ResourceId track_resource_id =
       layer_tree_impl()->ResourceIdForUIResource(track_ui_resource_id_);
 
-  if (track_resource_id && !visible_track_quad_rect.IsEmpty()) {
-    viz::SharedQuadState* track_shared_quad_state =
-        render_pass->CreateAndAppendSharedQuadState();
-    PopulateScaledSharedQuadState(track_shared_quad_state,
-                                  internal_contents_scale_, contents_opaque());
-    if (IsFluentOverlayScrollbarEnabled()) {
-      // Scale the opacity value linearly in function of the current thumb
-      // thickness. When thickness scale factor is kIdleThickness, then the
-      // track's opacity should be zero. When the thickness scale factor reaches
-      // its maximum value (1.f), then the opacity of the tracks should reach
-      // it's maximum value (1.f).
-      CHECK_GE(thumb_thickness_scale_factor(), GetIdleThicknessScale());
-      CHECK_LE(thumb_thickness_scale_factor(), 1.f);
-      const float scaled_opacity =
-          (thumb_thickness_scale_factor() - GetIdleThicknessScale()) /
-          (1.f - GetIdleThicknessScale());
-      track_shared_quad_state->opacity *= scaled_opacity;
-    }
-    gfx::Rect scaled_track_quad_rect(internal_content_bounds_);
-    gfx::Rect scaled_visible_track_quad_rect = gfx::ScaleToEnclosingRect(
-        visible_track_quad_rect, internal_contents_scale_);
-    bool needs_blending = !contents_opaque();
-    auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
-    quad->SetNew(track_shared_quad_state, scaled_track_quad_rect,
-                 scaled_visible_track_quad_rect, needs_blending,
-                 track_resource_id, premultipled_alpha, uv_top_left,
-                 uv_bottom_right, SkColors::kTransparent, flipped,
-                 nearest_neighbor, /*secure_output_only=*/false,
-                 gfx::ProtectedVideoType::kClear);
-    ValidateQuadResources(quad);
+  if (!track_resource_id || visible_track_quad_rect.IsEmpty()) {
+    return;
   }
+
+  viz::SharedQuadState* track_shared_quad_state =
+      render_pass->CreateAndAppendSharedQuadState();
+  PopulateScaledSharedQuadState(track_shared_quad_state,
+                                internal_contents_scale_, contents_opaque());
+  if (IsFluentOverlayScrollbarEnabled()) {
+    // Scale the opacity value linearly in function of the current thumb
+    // thickness. When thickness scale factor is kIdleThickness, then the
+    // track's opacity should be zero. When the thickness scale factor reaches
+    // its maximum value (1.f), then the opacity of the tracks should reach
+    // it's maximum value (1.f).
+    CHECK_GE(thumb_thickness_scale_factor(), GetIdleThicknessScale());
+    CHECK_LE(thumb_thickness_scale_factor(), 1.f);
+    const float scaled_opacity =
+        (thumb_thickness_scale_factor() - GetIdleThicknessScale()) /
+        (1.f - GetIdleThicknessScale());
+    track_shared_quad_state->opacity *= scaled_opacity;
+  }
+  gfx::Rect scaled_track_quad_rect(internal_content_bounds_);
+  gfx::Rect scaled_visible_track_quad_rect = gfx::ScaleToEnclosingRect(
+      visible_track_quad_rect, internal_contents_scale_);
+  bool needs_blending = !contents_opaque();
+  auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
+  quad->SetNew(track_shared_quad_state, scaled_track_quad_rect,
+               scaled_visible_track_quad_rect, needs_blending,
+               track_resource_id, /*premultiplied=*/true,
+               /*top_left=*/gfx::PointF(0.f, 0.f),
+               /*bottom_right=*/gfx::PointF(1.f, 1.f),
+               /*background=*/SkColors::kTransparent,
+               /*flipped=*/false,
+               /*nearest=*/false, /*secure_output=*/false,
+               /*video_type=*/gfx::ProtectedVideoType::kClear);
+  ValidateQuadResources(quad);
 }
 
 gfx::Rect PaintedScrollbarLayerImpl::GetEnclosingVisibleRectInTargetSpace()
@@ -269,6 +322,14 @@ void PaintedScrollbarLayerImpl::SetSupportsDragSnapBack(
   if (supports_drag_snap_back_ == supports_drag_snap_back)
     return;
   supports_drag_snap_back_ = supports_drag_snap_back;
+  NoteLayerPropertyChanged();
+}
+
+void PaintedScrollbarLayerImpl::SetFluentThumbColor(SkColor4f thumb_color) {
+  if (fluent_thumb_color_ == thumb_color) {
+    return;
+  }
+  fluent_thumb_color_ = thumb_color;
   NoteLayerPropertyChanged();
 }
 

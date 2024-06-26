@@ -68,6 +68,7 @@ class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerBase {
 
  private:
   gfx::Size LayerSizeToContentSize(const gfx::Size& layer_size) const;
+  bool UpdateThumbIfNeeded();
 
   template <typename T>
   bool UpdateProperty(T value, T* prop) {
@@ -98,9 +99,12 @@ class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerBase {
   ProtectedSequenceReadable<float> painted_opacity_;
   ProtectedSequenceReadable<bool> has_thumb_;
   ProtectedSequenceReadable<bool> jump_on_track_click_;
+  ProtectedSequenceReadable<std::optional<SkColor4f>> fluent_thumb_color_;
 
   const bool supports_drag_snap_back_;
   const bool is_overlay_;
+  const bool is_fluent_;
+  const bool is_web_test_;
 
   ProtectedSequenceReadable<std::unique_ptr<ScopedUIResource>> track_resource_;
   ProtectedSequenceReadable<std::unique_ptr<ScopedUIResource>> thumb_resource_;

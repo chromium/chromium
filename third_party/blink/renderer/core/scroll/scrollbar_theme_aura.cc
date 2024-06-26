@@ -336,7 +336,8 @@ void ScrollbarThemeAura::PaintThumb(GraphicsContext& gc,
 }
 
 WebThemeEngine::ScrollbarThumbExtraParams
-ScrollbarThemeAura::BuildScrollbarThumbExtraParams(const Scrollbar& scrollbar) {
+ScrollbarThemeAura::BuildScrollbarThumbExtraParams(
+    const Scrollbar& scrollbar) const {
   WebThemeEngine::ScrollbarThumbExtraParams scrollbar_thumb;
 
   if (scrollbar.ScrollbarThumbColor().has_value()) {

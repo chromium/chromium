@@ -40,6 +40,7 @@ void ScrollbarLayerImplBase::PushPropertiesTo(LayerImpl* layer) {
   ScrollbarLayerImplBase* scrollbar_layer = ToScrollbarLayer(layer);
   scrollbar_layer->SetHasFindInPageTickmarks(has_find_in_page_tickmarks_);
   scrollbar_layer->set_is_overlay_scrollbar(is_overlay_scrollbar_);
+  scrollbar_layer->set_is_web_test(is_web_test_);
   scrollbar_layer->SetScrollElementId(scroll_element_id());
 }
 
