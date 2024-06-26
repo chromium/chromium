@@ -21,6 +21,7 @@
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
+#include "components/sync/protocol/sharing_message_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
@@ -214,6 +215,10 @@ const char* ProtoEnumToString(
 
 const char* ProtoEnumToString(
     sync_pb::CookieSpecifics::CookieSourceType source_type);
+
+const char* ProtoEnumToString(
+    sync_pb::SharingMessageSpecifics::ChannelConfiguration::
+        ChimeChannelConfiguration::ChimeChannelType channel_type);
 
 }  // namespace syncer
 

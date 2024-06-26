@@ -60,6 +60,7 @@
 #include "components/sync/protocol/tab_group_attribution_metadata.pb.h"
 #include "components/sync/protocol/theme_specifics.pb.h"
 #include "components/sync/protocol/typed_url_specifics.pb.h"
+#include "components/sync/protocol/unencrypted_sharing_message.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "components/sync/protocol/user_consent_specifics.pb.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
@@ -1249,6 +1250,21 @@ VISIT_PROTO_FIELDS(const sync_pb::SearchEngineSpecifics& proto) {
   VISIT(starter_pack_id);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::SendTabToSelfPush& proto) {
+  VISIT(title);
+  VISIT(text);
+  VISIT_REP(icon);
+  VISIT(favicon);
+  VISIT(destination_url);
+  VISIT(placeholder_title);
+  VISIT(placeholder_body);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::SendTabToSelfPush::Image& proto) {
+  VISIT(url);
+  VISIT(alt_text);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::SendTabToSelfSpecifics& proto) {
   VISIT(guid);
   VISIT(title);
@@ -1322,6 +1338,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SharingMessageSpecifics& proto) {
   VISIT(message_id);
   VISIT(channel_configuration);
   VISIT_BYTES(payload);
+  VISIT(unencrypted_payload);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SharingMessageSpecifics::
@@ -1331,10 +1348,19 @@ VISIT_PROTO_FIELDS(const sync_pb::SharingMessageSpecifics::
   VISIT(priority);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::SharingMessageSpecifics::
+                       ChannelConfiguration::ChimeChannelConfiguration& proto) {
+  VISIT_BYTES(device_token);
+  VISIT_ENUM(channel_type);
+  VISIT(type_id);
+  VISIT(representative_target_id);
+}
+
 VISIT_PROTO_FIELDS(
     const sync_pb::SharingMessageSpecifics::ChannelConfiguration& proto) {
   VISIT(fcm);
   VISIT_BYTES(server);
+  VISIT(chime);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SyncCycleCompletedEventInfo& proto) {
@@ -1500,6 +1526,11 @@ VISIT_PROTO_FIELDS(const sync_pb::TypedUrlSpecifics& proto) {
   VISIT(hidden);
   VISIT_REP(visits);
   VISIT_REP(visit_transitions);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::UnencryptedSharingMessage& proto) {
+  VISIT(sender_guid);
+  VISIT(sender_device_name);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::UniquePosition& proto) {

@@ -73,6 +73,7 @@ sync_protocol_sources = [
   "test.proto",
   "theme_specifics.proto",
   "typed_url_specifics.proto",
+  "unencrypted_sharing_message.proto",
   "unique_position.proto",
   "user_consent_specifics.proto",
   "user_consent_types.proto",

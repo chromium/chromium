@@ -994,6 +994,24 @@ const char* ProtoEnumToString(
   return "";
 }
 
+const char* ProtoEnumToString(
+    sync_pb::SharingMessageSpecifics::ChannelConfiguration::
+        ChimeChannelConfiguration::ChimeChannelType channel_type) {
+  ASSERT_ENUM_BOUNDS(sync_pb::SharingMessageSpecifics::ChannelConfiguration::
+                         ChimeChannelConfiguration,
+                     ChimeChannelType, CHANNEL_TYPE_UNSPECIFIED, APPLE_PUSH);
+  switch (channel_type) {
+    ENUM_CASE(sync_pb::SharingMessageSpecifics::ChannelConfiguration::
+                  ChimeChannelConfiguration,
+              CHANNEL_TYPE_UNSPECIFIED);
+    ENUM_CASE(sync_pb::SharingMessageSpecifics::ChannelConfiguration::
+                  ChimeChannelConfiguration,
+              APPLE_PUSH);
+  }
+  NOTREACHED_IN_MIGRATION();
+  return "";
+}
+
 #undef ASSERT_ENUM_BOUNDS
 #undef ENUM_CASE
 
