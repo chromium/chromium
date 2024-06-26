@@ -1768,10 +1768,10 @@ BASE_FEATURE(kMediaLogToConsole,
 
 BASE_FEATURE(kLibvpxUseChromeThreads,
              "LibvpxUseChromeThreads",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLibaomUseChromeThreads,
              "LibaomUseChromeThreads",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
 // Controls whether to use D3D12 video decoder instead of D3D11 when supported.
