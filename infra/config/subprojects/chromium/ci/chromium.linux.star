@@ -75,6 +75,8 @@ ci.builder(
             "cast_receiver",
             "remoteexec",
             "minimal_symbols",
+            "linux",
+            "x64",
         ],
     ),
     # TODO(crbug.com/332735845): Garden this once stabilized.
@@ -118,6 +120,7 @@ ci.builder(
             "remoteexec",
             "arm64",
             "minimal_symbols",
+            "linux",
         ],
     ),
     # TODO(crbug.com/332735845): Garden this once stabilized.
@@ -139,6 +142,8 @@ ci.builder(
             "release_builder",
             "remoteexec",
             "minimal_symbols",
+            "linux",
+            "x64",
         ],
     ),
     ssd = True,
@@ -161,9 +166,11 @@ ci.builder(
     name = "Deterministic Linux (dbg)",
     executable = "recipe:swarming/deterministic_build",
     gn_args = {
-        "local": "debug_builder",
+        "local": gn_args.config(
+            configs = ["debug_builder", "linux", "x64"],
+        ),
         "reclient": gn_args.config(
-            configs = ["debug_builder", "remoteexec"],
+            configs = ["debug_builder", "remoteexec", "linux", "x64"],
         ),
     },
     cores = 32,
@@ -190,7 +197,12 @@ ci.builder(
         build_gs_bucket = "chromium-linux-archive",
     ),
     gn_args = gn_args.config(
-        configs = ["release_builder", "remoteexec"],
+        configs = [
+            "release_builder",
+            "remoteexec",
+            "linux",
+            "x64",
+        ],
     ),
     gardener_rotations = args.ignore_default(None),
     tree_closing = False,
@@ -234,6 +246,8 @@ ci.builder(
             "release_builder",
             "remoteexec",
             "devtools_do_typecheck",
+            "linux",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -270,6 +284,8 @@ ci.builder(
             "gpu_tests",
             "debug_builder",
             "remoteexec",
+            "linux",
+            "x64",
         ],
     ),
     targets = targets.bundle(
@@ -314,6 +330,7 @@ ci.builder(
             "remoteexec",
             "linux_wayland",
             "ozone_headless",
+            "x64",
         ],
     ),
     targets = targets.bundle(
@@ -570,7 +587,12 @@ ci.builder(
         build_gs_bucket = "chromium-linux-archive",
     ),
     gn_args = gn_args.config(
-        configs = ["release_builder", "remoteexec"],
+        configs = [
+            "release_builder",
+            "remoteexec",
+            "linux",
+            "x64",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "release",
@@ -600,7 +622,12 @@ ci.builder(
         build_gs_bucket = "chromium-linux-archive",
     ),
     gn_args = gn_args.config(
-        configs = ["release_builder_blink", "remoteexec"],
+        configs = [
+            "release_builder_blink",
+            "remoteexec",
+            "linux",
+            "x64",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "bfcache",
@@ -634,6 +661,8 @@ ci.builder(
             "release_builder",
             "remoteexec",
             "extended_tracing",
+            "linux",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -669,6 +698,8 @@ ci.builder(
             "release_builder",
             "minimal_symbols",
             "no_clang",
+            "linux",
+            "x64",
         ],
     ),
     # Focal is needed for better C++20 support. See crbug.com/1284275.
@@ -706,6 +737,8 @@ ci.builder(
             "chrome_with_codecs",
             "release_builder",
             "remoteexec",
+            "linux",
+            "x64",
         ],
     ),
     tree_closing = False,

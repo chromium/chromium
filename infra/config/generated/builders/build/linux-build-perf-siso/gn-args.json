@@ -10,6 +10,8 @@
         "is_debug": false,
         "proprietary_codecs": true,
         "symbol_level": 0,
+        "target_cpu": "x64",
+        "target_os": "linux",
         "use_clang_coverage": true,
         "use_reclient": false,
         "use_remoteexec": true,
@@ -26,6 +28,8 @@
         "is_debug": false,
         "proprietary_codecs": true,
         "symbol_level": 0,
+        "target_cpu": "x64",
+        "target_os": "linux",
         "use_clang_coverage": true,
         "use_remoteexec": true,
         "use_siso": true

@@ -5,6 +5,8 @@
         "is_component_build": true,
         "is_debug": true,
         "symbol_level": 1,
+        "target_cpu": "x64",
+        "target_os": "linux",
         "use_siso": true
       }
     },
@@ -13,6 +15,8 @@
         "is_component_build": true,
         "is_debug": true,
         "symbol_level": 1,
+        "target_cpu": "x64",
+        "target_os": "linux",
         "use_remoteexec": true,
         "use_siso": true
       }
