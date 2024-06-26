@@ -449,7 +449,9 @@ export class WebSocketServer {
   #getMapperOptions(capabilities: any): MapperOptions {
     const acceptInsecureCerts =
       capabilities?.alwaysMatch?.acceptInsecureCerts ?? false;
-    return {acceptInsecureCerts};
+    const unhandledPromptBehavior =
+      capabilities?.alwaysMatch?.unhandledPromptBehavior ?? undefined;
+    return {acceptInsecureCerts, unhandledPromptBehavior};
   }
 
   #getChromeOptions(capabilities: any): ChromeOptions {

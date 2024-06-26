@@ -19,7 +19,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {BiDiModule} from '../../../protocol/chromium-bidi.js';
-import type {ChromiumBidi} from '../../../protocol/protocol.js';
+import type {ChromiumBidi, Session} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/Deferred.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import {LogType} from '../../../utils/log.js';
@@ -45,6 +45,7 @@ export class CdpTarget {
   readonly #networkStorage: NetworkStorage;
 
   readonly #unblocked = new Deferred<Result<void>>();
+  readonly #unhandledPromptBehavior?: Session.UserPromptHandler;
   readonly #acceptInsecureCerts: boolean;
   readonly #logger: LoggerFn | undefined;
 
@@ -65,6 +66,7 @@ export class CdpTarget {
     browsingContextStorage: BrowsingContextStorage,
     networkStorage: NetworkStorage,
     acceptInsecureCerts: boolean,
+    unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn
   ): CdpTarget {
     const cdpTarget = new CdpTarget(
@@ -77,6 +79,7 @@ export class CdpTarget {
       browsingContextStorage,
       networkStorage,
       acceptInsecureCerts,
+      unhandledPromptBehavior,
       logger
     );
 
@@ -101,6 +104,7 @@ export class CdpTarget {
     browsingContextStorage: BrowsingContextStorage,
     networkStorage: NetworkStorage,
     acceptInsecureCerts: boolean,
+    unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn
   ) {
     this.#id = targetId;
@@ -112,6 +116,7 @@ export class CdpTarget {
     this.#networkStorage = networkStorage;
     this.#browsingContextStorage = browsingContextStorage;
     this.#acceptInsecureCerts = acceptInsecureCerts;
+    this.#unhandledPromptBehavior = unhandledPromptBehavior;
     this.#logger = logger;
   }
 
@@ -214,6 +219,7 @@ export class CdpTarget {
         this.#realmStorage,
         frame.url,
         undefined,
+        this.#unhandledPromptBehavior,
         this.#logger
       );
     }

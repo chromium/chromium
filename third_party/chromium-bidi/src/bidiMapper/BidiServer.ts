@@ -17,7 +17,7 @@
 
 import type {CdpClient} from '../cdp/CdpClient';
 import type {CdpConnection} from '../cdp/CdpConnection.js';
-import type {Browser, ChromiumBidi} from '../protocol/protocol.js';
+import type {Browser, ChromiumBidi, Session} from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {type LoggerFn, LogType} from '../utils/log.js';
 import {ProcessingQueue} from '../utils/ProcessingQueue.js';
@@ -43,6 +43,7 @@ type BidiServerEvent = {
 
 export type MapperOptions = {
   acceptInsecureCerts: boolean;
+  unhandledPromptBehavior?: Session.UserPromptHandler;
 };
 
 export class BidiServer extends EventEmitter<BidiServerEvent> {
@@ -109,6 +110,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       this.#preloadScriptStorage,
       options?.acceptInsecureCerts ?? false,
       defaultUserContextId,
+      options?.unhandledPromptBehavior,
       logger
     );
     this.#commandProcessor = new CommandProcessor(

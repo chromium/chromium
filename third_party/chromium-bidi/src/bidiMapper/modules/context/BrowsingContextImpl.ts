@@ -25,6 +25,7 @@ import {
   NoSuchElementException,
   NoSuchHistoryEntryException,
   Script,
+  type Session,
   UnableToCaptureScreenException,
   UnknownErrorException,
   UnsupportedOperationException,
@@ -90,6 +91,7 @@ export class BrowsingContextImpl {
 
   // Set when the user prompt is opened. Required to provide the type in closing event.
   #lastUserPromptType?: BrowsingContext.UserPromptType;
+  readonly #unhandledPromptBehavior?: Session.UserPromptHandler;
 
   private constructor(
     id: BrowsingContext.BrowsingContext,
@@ -101,6 +103,7 @@ export class BrowsingContextImpl {
     realmStorage: RealmStorage,
     url: string,
     originalOpener?: string,
+    unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn
   ) {
     this.#cdpTarget = cdpTarget;
@@ -110,6 +113,7 @@ export class BrowsingContextImpl {
     this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
     this.#realmStorage = realmStorage;
+    this.#unhandledPromptBehavior = unhandledPromptBehavior;
     this.#logger = logger;
     this.#url = url;
 
@@ -126,6 +130,7 @@ export class BrowsingContextImpl {
     realmStorage: RealmStorage,
     url: string,
     originalOpener?: string,
+    unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn
   ): BrowsingContextImpl {
     const context = new BrowsingContextImpl(
@@ -138,6 +143,7 @@ export class BrowsingContextImpl {
       realmStorage,
       url,
       originalOpener,
+      unhandledPromptBehavior,
       logger
     );
 
@@ -611,13 +617,14 @@ export class BrowsingContextImpl {
       const promptType = BrowsingContextImpl.#getPromptType(params.type);
       // Set the last prompt type to provide it in closing event.
       this.#lastUserPromptType = promptType;
+      const promptHandler = this.#getPromptHandler(promptType);
       this.#eventManager.registerEvent(
         {
           type: 'event',
           method: ChromiumBidi.BrowsingContext.EventNames.UserPromptOpened,
           params: {
             context: this.id,
-            handler: this.#getPromptHandler(),
+            handler: promptHandler,
             type: promptType,
             message: params.message,
             ...(params.type === 'prompt'
@@ -627,6 +634,19 @@ export class BrowsingContextImpl {
         },
         this.id
       );
+
+      switch (promptHandler) {
+        // Based on `unhandledPromptBehavior`, check if the prompt should be handled
+        // automatically (`accept`, `dismiss`) or wait for the user to do it.
+        case 'accept':
+          void this.handleUserPrompt(true);
+          break;
+        case 'dismiss':
+          void this.handleUserPrompt(false);
+          break;
+        case 'ignore':
+          break;
+      }
     });
   }
 
@@ -645,9 +665,36 @@ export class BrowsingContextImpl {
     }
   }
 
-  #getPromptHandler(): 'accept' | 'dismiss' | 'ignore' {
-    // TODO: implement.
-    return 'ignore';
+  #getPromptHandler(
+    promptType: BrowsingContext.UserPromptType
+  ): 'accept' | 'dismiss' | 'ignore' {
+    const defaultPromptHandler = 'dismiss';
+    switch (promptType) {
+      case BrowsingContext.UserPromptType.Alert:
+        return (
+          this.#unhandledPromptBehavior?.alert ??
+          this.#unhandledPromptBehavior?.default ??
+          defaultPromptHandler
+        );
+      case BrowsingContext.UserPromptType.Beforeunload:
+        return (
+          this.#unhandledPromptBehavior?.beforeUnload ??
+          this.#unhandledPromptBehavior?.default ??
+          defaultPromptHandler
+        );
+      case BrowsingContext.UserPromptType.Confirm:
+        return (
+          this.#unhandledPromptBehavior?.confirm ??
+          this.#unhandledPromptBehavior?.default ??
+          defaultPromptHandler
+        );
+      case BrowsingContext.UserPromptType.Prompt:
+        return (
+          this.#unhandledPromptBehavior?.prompt ??
+          this.#unhandledPromptBehavior?.default ??
+          defaultPromptHandler
+        );
+    }
   }
 
   #documentChanged(loaderId?: Protocol.Network.LoaderId) {
@@ -857,12 +904,10 @@ export class BrowsingContextImpl {
     }
   }
 
-  async handleUserPrompt(
-    params: BrowsingContext.HandleUserPromptParameters
-  ): Promise<void> {
+  async handleUserPrompt(accept?: boolean, userText?: string): Promise<void> {
     await this.#cdpTarget.cdpClient.sendCommand('Page.handleJavaScriptDialog', {
-      accept: params.accept ?? true,
-      promptText: params.userText,
+      accept: accept ?? true,
+      promptText: userText,
     });
   }
 

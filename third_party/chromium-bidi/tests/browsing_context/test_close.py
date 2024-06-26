@@ -13,10 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pytest
-from syrupy.filters import paths
+from anys import ANY_DICT, ANY_STR
 from test_helpers import (AnyExtending, execute_command, get_tree, goto_url,
-                          read_JSON_message, send_JSON_command, subscribe,
-                          wait_for_event)
+                          read_JSON_message, send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
@@ -54,8 +53,15 @@ async def test_browsingContext_close(websocket, context_id):
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize('capabilities', [{
+    'unhandledPromptBehavior': {
+        'default': 'ignore'
+    }
+}],
+                         indirect=True)
+@pytest.mark.parametrize("accept", [True, False])
 async def test_browsingContext_close_prompt(websocket, context_id, html,
-                                            snapshot):
+                                            accept):
     await subscribe(websocket, [
         "browsingContext.userPromptOpened", "browsingContext.contextDestroyed"
     ])
@@ -72,7 +78,7 @@ async def test_browsingContext_close_prompt(websocket, context_id, html,
     await goto_url(websocket, context_id, url)
 
     # We need to interact with the page to trigger "beforeunload"
-    result = await execute_command(
+    await execute_command(
         websocket, {
             "method": "script.evaluate",
             "params": {
@@ -85,7 +91,7 @@ async def test_browsingContext_close_prompt(websocket, context_id, html,
             }
         })
 
-    command_id = await send_JSON_command(
+    close_command_id = await send_JSON_command(
         websocket, {
             "method": "browsingContext.close",
             "params": {
@@ -103,28 +109,162 @@ async def test_browsingContext_close_prompt(websocket, context_id, html,
             "context": context_id,
             "message": "",
             "type": "beforeunload",
-            "handler": "ignore"
+            "handler": "ignore",
         }
     }
 
-    await send_JSON_command(
+    handle_command_id = await send_JSON_command(
         websocket, {
             "method": "browsingContext.handleUserPrompt",
             "params": {
                 "context": context_id,
+                "accept": accept
             }
         })
 
-    # Assert "browsingContext.contextDestroyed"" event emitted.
-    response = await wait_for_event(websocket,
-                                    "browsingContext.contextDestroyed")
-    assert response == snapshot(exclude=paths("params.context"))
-    assert response['params']['context'] == context_id
+    if accept:
+        # The expected order of the events:
+        # 1. Handle command response.
+        # 2. ContextDestroyed event.
+        # 3. Close command response.
+        resp = await read_JSON_message(websocket)
+        assert resp == {
+            "type": "success",
+            "id": handle_command_id,
+            "result": {}
+        }
 
+        resp = await read_JSON_message(websocket)
+        assert resp == {
+            'method': 'browsingContext.contextDestroyed',
+            'params': {
+                'context': context_id,
+                'children': None,
+                'originalOpener': None,
+                'parent': None,
+                # Url-encoded `url`.
+                'url': ANY_STR,
+                'userContext': 'default',
+            },
+            'type': 'event',
+        }
+
+        resp = await read_JSON_message(websocket)
+        assert resp == {
+            "type": "success",
+            "id": close_command_id,
+            "result": {}
+        }
+
+    else:
+        # Only handle command response is expected.
+        # TODO: should the close command response with an error?
+        resp = await read_JSON_message(websocket)
+        assert resp == {
+            "type": "success",
+            "id": handle_command_id,
+            "result": {}
+        }
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('capabilities', [{
+    'unhandledPromptBehavior': {
+        'default': 'ignore'
+    }
+}],
+                         indirect=True)
+# @pytest.mark.parametrize("accept", [True])
+@pytest.mark.parametrize("accept", [True, False])
+async def test_browsingContext_navigate_prompt(websocket, context_id, html,
+                                               accept, example_url):
+    await subscribe(websocket, ["browsingContext.userPromptOpened"])
+
+    url = html("""
+        <script>
+            window.addEventListener('beforeunload', event => {
+                event.returnValue = 'Leave?';
+                event.preventDefault();
+            });
+        </script>
+        """)
+
+    await goto_url(websocket, context_id, url)
+
+    # We need to interact with the page to trigger "beforeunload"
+    await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "document.body.click()",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": False,
+                "userActivation": True
+            }
+        })
+
+    navigate_command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url,
+                "context": context_id,
+                "wait": "complete"
+            }
+        })
+
+    # Assert "browsingContext.userPromptOpened" event emitted.
     resp = await read_JSON_message(websocket)
-    assert resp == {"type": "success", "id": command_id, "result": {}}
+    assert resp == {
+        'type': 'event',
+        "method": "browsingContext.userPromptOpened",
+        "params": {
+            "context": context_id,
+            "message": "",
+            "type": "beforeunload",
+            "handler": "ignore",
+        }
+    }
 
-    result = await get_tree(websocket)
+    handle_command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.handleUserPrompt",
+            "params": {
+                "context": context_id,
+                "accept": accept
+            }
+        })
 
-    # Assert context is closed.
-    assert result == {'contexts': []}
+    if accept:
+        resp = await read_JSON_message(websocket)
+        assert resp == {
+            "type": "success",
+            "id": handle_command_id,
+            "result": {}
+        }
+
+        resp = await read_JSON_message(websocket)
+        assert resp == {
+            "type": "success",
+            "id": navigate_command_id,
+            "result": ANY_DICT
+        }
+    else:
+        # Navigation expected to fail.
+        resp = await read_JSON_message(websocket)
+        assert resp == AnyExtending({
+            'error': 'unknown error',
+            'id': navigate_command_id,
+            'message': 'net::ERR_ABORTED',
+            'stacktrace': ANY_STR,
+            'type': 'error',
+        })
+        # Navigation expected to fail.
+        resp = await read_JSON_message(websocket)
+        assert resp == {
+            "type": "success",
+            "id": handle_command_id,
+            "result": {}
+        }

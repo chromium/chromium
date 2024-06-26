@@ -221,7 +221,7 @@ export class BrowsingContextProcessor {
   ): Promise<EmptyResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     try {
-      await context.handleUserPrompt(params);
+      await context.handleUserPrompt(params.accept, params.userText);
     } catch (error: any) {
       // Heuristically determine the error
       // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/page_handler.cc;l=1085?q=%22No%20dialog%20is%20showing%22&ss=chromium

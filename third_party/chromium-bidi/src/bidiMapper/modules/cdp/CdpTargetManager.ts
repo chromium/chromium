@@ -18,7 +18,7 @@ import type Protocol from 'devtools-protocol';
 
 import type {CdpClient} from '../../../cdp/CdpClient.js';
 import type {CdpConnection} from '../../../cdp/CdpConnection.js';
-import type {Browser} from '../../../protocol/protocol.js';
+import type {Browser, Session} from '../../../protocol/protocol.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import {
   BrowsingContextImpl,
@@ -54,6 +54,7 @@ export class CdpTargetManager {
 
   readonly #defaultUserContextId: Browser.UserContext;
   readonly #logger?: LoggerFn;
+  readonly #unhandledPromptBehavior?: Session.UserPromptHandler;
 
   constructor(
     cdpConnection: CdpConnection,
@@ -66,6 +67,7 @@ export class CdpTargetManager {
     preloadScriptStorage: PreloadScriptStorage,
     acceptInsecureCerts: boolean,
     defaultUserContextId: Browser.UserContext,
+    unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn
   ) {
     this.#acceptInsecureCerts = acceptInsecureCerts;
@@ -78,6 +80,7 @@ export class CdpTargetManager {
     this.#networkStorage = networkStorage;
     this.#realmStorage = realmStorage;
     this.#defaultUserContextId = defaultUserContextId;
+    this.#unhandledPromptBehavior = unhandledPromptBehavior;
     this.#logger = logger;
 
     this.#setEventListeners(browserCdpClient);
@@ -130,6 +133,7 @@ export class CdpTargetManager {
         // later.
         'about:blank',
         undefined,
+        this.#unhandledPromptBehavior,
         this.#logger
       );
     }
@@ -189,6 +193,7 @@ export class CdpTargetManager {
             // TODO: check who to deal with non-null creator and its `creatorOrigin`.
             targetInfo.url === '' ? 'about:blank' : targetInfo.url,
             targetInfo.openerFrameId ?? targetInfo.openerId,
+            this.#unhandledPromptBehavior,
             this.#logger
           );
         }
@@ -252,6 +257,7 @@ export class CdpTargetManager {
       this.#browsingContextStorage,
       this.#networkStorage,
       this.#acceptInsecureCerts,
+      this.#unhandledPromptBehavior,
       this.#logger
     );
 
