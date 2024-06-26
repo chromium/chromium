@@ -15,7 +15,7 @@
             }
         },
         "crossbench": {
-            "jetstream_2.1": {
+            "jetstream_2.2": {
                 "display_name": "jetstream2.crossbench",
                 "arguments": []
             },
@@ -31,10 +31,10 @@
     },
     "extra_infos": {
         "num_stories": 7,
-        "predicted_min_shard_time": 640,
+        "predicted_min_shard_time": 1041.0,
         "predicted_min_shard_index": 0,
-        "predicted_max_shard_time": 640,
+        "predicted_max_shard_time": 1041.0,
         "predicted_max_shard_index": 0,
-        "shard #0": 640
+        "shard #0": 1041.0
     }
 }

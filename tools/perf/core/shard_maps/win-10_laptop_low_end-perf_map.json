@@ -19,7 +19,7 @@
             }
         },
         "crossbench": {
-            "jetstream_2.1": {
+            "jetstream_2.2": {
                 "display_name": "jetstream2.crossbench",
                 "arguments": []
             },
@@ -47,7 +47,7 @@
             }
         },
         "crossbench": {
-            "jetstream_2.1": {
+            "jetstream_2.2": {
                 "display_name": "jetstream2.crossbench",
                 "arguments": []
             },
@@ -59,7 +59,7 @@
     },
     "2": {
         "crossbench": {
-            "jetstream_2.1": {
+            "jetstream_2.2": {
                 "display_name": "jetstream2.crossbench",
                 "arguments": []
             },
@@ -82,7 +82,7 @@
     },
     "3": {
         "crossbench": {
-            "jetstream_2.1": {
+            "jetstream_2.2": {
                 "display_name": "jetstream2.crossbench",
                 "arguments": []
             },
@@ -105,7 +105,7 @@
     },
     "4": {
         "crossbench": {
-            "jetstream_2.1": {
+            "jetstream_2.2": {
                 "display_name": "jetstream2.crossbench",
                 "arguments": []
             },

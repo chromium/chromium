@@ -375,7 +375,7 @@ def _crossbench_motionmark1_3(estimated_runtime=360):
 
 def _crossbench_jetstream2_1(estimated_runtime=180):
   return CrossbenchConfig('jetstream2.crossbench',
-                          'jetstream_2.1',
+                          'jetstream_2.2',
                           estimated_runtime=estimated_runtime)
 
 
