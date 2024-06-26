@@ -228,14 +228,16 @@
             </div>
           </template>
           <div slot="noSelectionCollapse">
-            <settings-toggle-button id="safeBrowsingReportingToggle"
+            <template is="dom-if" if="[[!hideExtendedReportingRadioButton_]]">
+              <settings-toggle-button id="safeBrowsingReportingToggle"
                 pref="{{prefs.safebrowsing.scout_reporting_enabled}}"
                 label="$i18n{safeBrowsingStandardReportingLabel}"
                 sub-label="$i18n{safeBrowsingEnableExtendedReportingDesc}"
                 on-change="onSafeBrowsingExtendedReportingChange_"
                 disabled="[[getDisabledExtendedSafeBrowsing_(
                               prefs.generated.safe_browsing.*)]]">
-            </settings-toggle-button>
+              </settings-toggle-button>
+            </template>
             <settings-toggle-button id="passwordsLeakToggle"
                 label="[[getPasswordsLeakToggleLabel_(
                         enableFriendlierSafeBrowsingSettings_)]]"

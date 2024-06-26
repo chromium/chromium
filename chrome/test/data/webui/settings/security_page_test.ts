@@ -273,6 +273,7 @@ suite('FlagsDisabled', function() {
       enableHashPrefixRealTimeLookups: false,
       enableHttpsFirstModeNewSettings: false,
       enableCertManagementUIV2: false,
+      extendedReportingRemovePrefDependency: false,
     });
     resetRouterForTesting();
   });
@@ -290,6 +291,9 @@ suite('FlagsDisabled', function() {
     page = document.createElement('settings-security-page');
     page.prefs = pagePrefs();
     document.body.appendChild(page);
+
+    page.$.safeBrowsingEnhanced.updateCollapsed();
+    page.$.safeBrowsingStandard.updateCollapsed();
     flush();
   });
 
@@ -461,6 +465,108 @@ suite('FlagsDisabled', function() {
     flush();
     assertEquals(lockedSubLabel, toggle.subLabel);
   });
+
+  // TODO(crbug.com/349439367): Remove the test once
+  // kExtendedReportingRemovePrefDependency is fully launched.
+  test('LogSafeBrowsingExtendedToggle', async function() {
+    const safeBrowsingReportingToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#safeBrowsingReportingToggle');
+    assertTrue(!!safeBrowsingReportingToggle);
+    page.$.safeBrowsingStandard.click();
+    flush();
+
+    safeBrowsingReportingToggle.click();
+    const result =
+        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
+    assertEquals(PrivacyElementInteractions.IMPROVE_SECURITY, result);
+  });
+
+  // TODO(crbug.com/349439367): Remove the test once
+  // kExtendedReportingRemovePrefDependency is fully launched.
+  test('safeBrowsingReportingToggle', async () => {
+    page.$.safeBrowsingStandard.click();
+    await microtasksFinished();
+    assertEquals(
+        SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
+
+    const safeBrowsingReportingToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#safeBrowsingReportingToggle');
+    assertTrue(!!safeBrowsingReportingToggle);
+    assertFalse(safeBrowsingReportingToggle.disabled);
+    assertTrue(safeBrowsingReportingToggle.checked);
+
+    // This could also be set to disabled, anything other than standard.
+    page.$.safeBrowsingEnhanced.click();
+    await microtasksFinished();
+    assertEquals(
+        SafeBrowsingSetting.ENHANCED, page.prefs.generated.safe_browsing.value);
+    flush();
+    assertTrue(safeBrowsingReportingToggle.disabled);
+    assertTrue(safeBrowsingReportingToggle.checked);
+    assertTrue(page.prefs.safebrowsing.scout_reporting_enabled.value);
+
+    page.$.safeBrowsingStandard.click();
+    await microtasksFinished();
+    assertEquals(
+        SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
+    flush();
+    assertFalse(safeBrowsingReportingToggle.disabled);
+    assertTrue(safeBrowsingReportingToggle.checked);
+  });
+
+  // TODO(crbug.com/349439367): Remove the test once
+  // kExtendedReportingRemovePrefDependency is fully launched.
+  test('noControlSafeBrowsingReportingInEnhanced', async () => {
+    const safeBrowsingReportingToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#safeBrowsingReportingToggle');
+    assertTrue(!!safeBrowsingReportingToggle);
+    page.$.safeBrowsingStandard.click();
+    assertFalse(safeBrowsingReportingToggle.disabled);
+    page.$.safeBrowsingEnhanced.click();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+
+    assertTrue(safeBrowsingReportingToggle.disabled);
+  });
+
+  // TODO(crbug.com/349439367): Remove the test once
+  // kExtendedReportingRemovePrefDependency is fully launched.
+  test('noControlSafeBrowsingReportingInDisabled', async function() {
+    const safeBrowsingReportingToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#safeBrowsingReportingToggle');
+    assertTrue(!!safeBrowsingReportingToggle);
+    page.$.safeBrowsingStandard.click();
+    await microtasksFinished();
+
+    assertFalse(safeBrowsingReportingToggle.disabled);
+    page.$.safeBrowsingDisabled.click();
+    await microtasksFinished();
+
+    // Previously selected option must remain opened.
+    assertTrue(page.$.safeBrowsingStandard.expanded);
+
+    await clickConfirmOnDisableSafebrowsingDialog(page);
+
+    assertTrue(safeBrowsingReportingToggle.disabled);
+  });
+
+  // TODO(crbug.com/349439367): Remove the test once
+  // kExtendedReportingRemovePrefDependency is fully launched.
+  test(
+      'safeBrowsingReportingToggleVisibleWhenExtendedReportingNotDeprecated',
+      async function() {
+        // The safeBrowsingReportingToggle should be visible if the extended
+        // reporting deprecation flag is not enabled.
+        page.$.safeBrowsingStandard.click();
+        flush();
+
+        await microtasksFinished();
+        assertTrue(page.$.safeBrowsingStandard.expanded);
+        assertTrue(isChildVisible(page, '#safeBrowsingReportingToggle'));
+      });
 });
 
 // Separate test suite for tests specifically related to Safe Browsing controls.
@@ -535,45 +641,6 @@ suite('SafeBrowsing', function() {
     page.set('prefs.profile.password_manager_leak_detection.value', false);
     flush();
     assertEquals(defaultSubLabel, toggle.subLabel);
-  });
-
-  test('LogSafeBrowsingExtendedToggle', async function() {
-    page.$.safeBrowsingStandard.click();
-    flush();
-
-    page.$.safeBrowsingReportingToggle.click();
-    const result =
-        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
-    assertEquals(PrivacyElementInteractions.IMPROVE_SECURITY, result);
-  });
-
-  test('safeBrowsingReportingToggle', async () => {
-    page.$.safeBrowsingStandard.click();
-    await microtasksFinished();
-    assertEquals(
-        SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
-
-    const safeBrowsingReportingToggle = page.$.safeBrowsingReportingToggle;
-    assertFalse(safeBrowsingReportingToggle.disabled);
-    assertTrue(safeBrowsingReportingToggle.checked);
-
-    // This could also be set to disabled, anything other than standard.
-    page.$.safeBrowsingEnhanced.click();
-    await microtasksFinished();
-    assertEquals(
-        SafeBrowsingSetting.ENHANCED, page.prefs.generated.safe_browsing.value);
-    flush();
-    assertTrue(safeBrowsingReportingToggle.disabled);
-    assertTrue(safeBrowsingReportingToggle.checked);
-    assertTrue(page.prefs.safebrowsing.scout_reporting_enabled.value);
-
-    page.$.safeBrowsingStandard.click();
-    await microtasksFinished();
-    assertEquals(
-        SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
-    flush();
-    assertFalse(safeBrowsingReportingToggle.disabled);
-    assertTrue(safeBrowsingReportingToggle.checked);
   });
 
   test(
@@ -691,15 +758,6 @@ suite('SafeBrowsing', function() {
         SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
   });
 
-  test('noControlSafeBrowsingReportingInEnhanced', async () => {
-    page.$.safeBrowsingStandard.click();
-    assertFalse(page.$.safeBrowsingReportingToggle.disabled);
-    page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
-
-    assertTrue(page.$.safeBrowsingReportingToggle.disabled);
-  });
-
   test('noValueChangeSafeBrowsingReportingInEnhanced', async () => {
     page.$.safeBrowsingStandard.click();
     const previous = page.prefs.safebrowsing.scout_reporting_enabled.value;
@@ -709,22 +767,6 @@ suite('SafeBrowsing', function() {
 
     assertTrue(
         page.prefs.safebrowsing.scout_reporting_enabled.value === previous);
-  });
-
-  test('noControlSafeBrowsingReportingInDisabled', async function() {
-    page.$.safeBrowsingStandard.click();
-    await microtasksFinished();
-
-    assertFalse(page.$.safeBrowsingReportingToggle.disabled);
-    page.$.safeBrowsingDisabled.click();
-    await microtasksFinished();
-
-    // Previously selected option must remain opened.
-    assertTrue(page.$.safeBrowsingStandard.expanded);
-
-    await clickConfirmOnDisableSafebrowsingDialog(page);
-
-    assertTrue(page.$.safeBrowsingReportingToggle.disabled);
   });
 
   test('noValueChangeSafeBrowsingReportingInDisabled', async function() {
@@ -1075,6 +1117,24 @@ suite('SafeBrowsing', function() {
     assertFalse(
         page.getPref('safebrowsing.esb_opt_in_with_friendlier_settings').value);
   });
+
+  test(
+      'SafeBrowsingReportingToggleNotVisibleWhenExtendedReportingDeprecated',
+      async function() {
+        // The safeBrowsingReportingToggle should not be visible if the extended
+        // reporting deprecation flag is enabled.
+        loadTimeData.overrideValues(
+            {'extendedReportingRemovePrefDependency': true});
+        resetRouterForTesting();
+
+        await resetPage();
+        page.$.safeBrowsingStandard.click();
+
+        await microtasksFinished();
+        assertTrue(page.$.safeBrowsingStandard.expanded);
+
+        assertFalse(isChildVisible(page, '#safeBrowsingReportingToggle'));
+      });
 });
 
 async function clickCancelOnDisableSafebrowsingDialog(

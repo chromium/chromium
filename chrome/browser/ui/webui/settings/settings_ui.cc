@@ -425,6 +425,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(features::kGetTheMostOutOfChrome));
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+  html_source->AddBoolean(
+      "extendedReportingRemovePrefDependency",
+      base::FeatureList::IsEnabled(
+          safe_browsing::kExtendedReportingRemovePrefDependency));
+
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));
 
