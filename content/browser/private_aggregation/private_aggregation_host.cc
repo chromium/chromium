@@ -8,7 +8,6 @@
 
 #include <bit>
 #include <iterator>
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -125,6 +124,10 @@ struct PrivateAggregationHost::ReceiverContext {
   // schedule the timeout task. This should be nullptr iff no timeout is
   // specified by the client.
   std::unique_ptr<base::OneShotTimer> timeout_timer;
+
+  // Tracks the duration of time that the mojo pipe has been open. Used for
+  // duration measurement to ensure each pipe is being closed appropriately.
+  base::ElapsedTimer pipe_duration_timer;
 };
 
 PrivateAggregationHost::PrivateAggregationHost(
@@ -155,13 +158,10 @@ PrivateAggregationHost::~PrivateAggregationHost() {
     RecordTimeoutResultHistogram(TimeoutResult::kStillScheduledOnShutdown);
   }
 
-  if (pipe_duration_timers_.empty()) {
-    return;
-  }
-  for (auto& [id, elapsed_timer] : pipe_duration_timers_) {
+  for (const auto& [id, context_ptr] : receiver_set_.GetAllContexts()) {
     base::UmaHistogramLongTimes(
         "PrivacySandbox.PrivateAggregation.Host.PipeOpenDurationOnShutdown",
-        elapsed_timer.Elapsed());
+        context_ptr->pipe_duration_timer.Elapsed());
   }
 }
 
@@ -233,9 +233,6 @@ bool PrivateAggregationHost::BindNewReceiver(
         base::BindOnce(&PrivateAggregationHost::OnTimeoutBeforeDisconnect,
                        base::Unretained(this), id));
   }
-
-  auto emplace_result = pipe_duration_timers_.emplace(id, base::ElapsedTimer());
-  CHECK(emplace_result.second);  // The ID should not already be present.
 
   return true;
 }
@@ -445,7 +442,6 @@ void PrivateAggregationHost::CloseCurrentPipe(PipeResult pipe_result) {
 
   mojo::ReceiverId current_receiver = receiver_set_.current_receiver();
   receiver_set_.Remove(current_receiver);
-  pipe_duration_timers_.erase(current_receiver);
 }
 
 void PrivateAggregationHost::OnTimeoutBeforeDisconnect(mojo::ReceiverId id) {
@@ -459,12 +455,9 @@ void PrivateAggregationHost::OnTimeoutBeforeDisconnect(mojo::ReceiverId id) {
       TimeoutResult::kOccurredBeforeRemoteDisconnection);
 
   receiver_set_.Remove(id);
-  pipe_duration_timers_.erase(id);
 }
 
 void PrivateAggregationHost::OnReceiverDisconnected() {
-  pipe_duration_timers_.erase(receiver_set_.current_receiver());
-
   ReceiverContext& current_context = receiver_set_.current_context();
   if (!current_context.timeout_timer) {
     SendReportOnTimeoutOrDisconnect(current_context,

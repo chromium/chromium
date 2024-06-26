@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include <map>
 #include <optional>
 #include <string>
 #include <vector>
@@ -186,11 +185,6 @@ class CONTENT_EXPORT PrivateAggregationHost
 
   mojo::ReceiverSet<blink::mojom::PrivateAggregationHost, ReceiverContext>
       receiver_set_;
-
-  // A map containing a timer tracking the duration of time that each mojo pipe
-  // has been open. Used for duration measurement to ensure they are being
-  // closed appropriately.
-  std::map<mojo::ReceiverId, base::ElapsedTimer> pipe_duration_timers_;
 
   // The number of open pipes where a timeout was specified.
   int pipes_with_timeout_count_ = 0;
