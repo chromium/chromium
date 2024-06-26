@@ -125,7 +125,6 @@ public class TabResumptionTileContainerView extends LinearLayout {
                         loadLocalTabSingle(
                                 this,
                                 entry,
-                                recencyMs,
                                 urlImageProvider,
                                 suggestionClickCallbackWithLogging,
                                 clickInfo);
@@ -137,8 +136,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
                 TabResumptionTileView tileView =
                         (TabResumptionTileView)
                                 LayoutInflater.from(getContext()).inflate(layoutId, this, false);
-                allTilesTexts +=
-                        loadTileTexts(entry, recencyMs, isSingle, tileView, useSalientImage);
+                allTilesTexts += loadTileTexts(entry, isSingle, tileView);
                 loadTileUrlImage(
                         entry,
                         urlImageProvider,
@@ -156,55 +154,36 @@ public class TabResumptionTileContainerView extends LinearLayout {
 
     /** Renders and returns the texts of a {@link TabResumptionTileView}. */
     private String loadTileTexts(
-            SuggestionEntry entry,
-            long recencyMs,
-            boolean isSingle,
-            TabResumptionTileView tileView,
-            boolean useSalientImage) {
+            SuggestionEntry entry, boolean isSingle, TabResumptionTileView tileView) {
         Resources res = getContext().getResources();
         String domainUrl = TabResumptionModuleUtils.getDomainUrl(entry.url);
-        String recencyString = TabResumptionModuleUtils.getRecencyString(getResources(), recencyMs);
         if (isSingle) {
             // Single Local Tab suggestion is handled by #loadLocalTabSingle().
             assert !entry.isLocalTab();
+            boolean isHistory = entry.type == SuggestionEntryType.HISTORY;
             String appChipText =
-                    tileView.maybeShowAppChip(mPackageManager, entry.type, entry.appId);
+                    isHistory
+                            ? tileView.maybeShowAppChip(mPackageManager, entry.type, entry.appId)
+                            : null;
             String postInfoText =
-                    entry.type == SuggestionEntryType.HISTORY
-                            ? res.getString(
-                                    R.string.tab_resumption_module_single_post_info,
-                                    domainUrl,
-                                    recencyString)
+                    isHistory
+                            ? domainUrl
                             : res.getString(
-                                    R.string.tab_resumption_module_multi_info_with_url,
+                                    R.string.tab_resumption_module_domain_url_and_device_name,
                                     domainUrl,
-                                    entry.sourceName,
-                                    recencyString);
+                                    entry.sourceName);
             return tileView.setSuggestionTextsSingle(null, appChipText, entry.title, postInfoText);
         }
 
         String infoText;
         if (entry.isLocalTab()) {
-            infoText =
-                    useSalientImage
-                            ? res.getString(
-                                    R.string.tab_resumption_module_multi_info_local_with_url,
-                                    domainUrl,
-                                    recencyString)
-                            : res.getString(
-                                    R.string.tab_resumption_module_multi_info_local, recencyString);
+            infoText = domainUrl;
         } else {
             infoText =
-                    useSalientImage
-                            ? res.getString(
-                                    R.string.tab_resumption_module_multi_info_with_url,
-                                    domainUrl,
-                                    entry.sourceName,
-                                    recencyString)
-                            : res.getString(
-                                    R.string.tab_resumption_module_multi_info,
-                                    entry.sourceName,
-                                    recencyString);
+                    res.getString(
+                            R.string.tab_resumption_module_domain_url_and_device_name,
+                            domainUrl,
+                            entry.sourceName);
         }
         return tileView.setSuggestionTextsMulti(entry.title, infoText);
     }
@@ -213,13 +192,11 @@ public class TabResumptionTileContainerView extends LinearLayout {
     private String loadLocalTabSingle(
             ViewGroup parentView,
             SuggestionEntry localTabEntry,
-            long recencyMs,
             UrlImageProvider urlImageProvider,
             SuggestionClickCallback suggestionClickCallback,
             @ClickInfo int clickInfo) {
         assert localTabEntry.isLocalTab();
         Resources res = getContext().getResources();
-        String recencyString = TabResumptionModuleUtils.getRecencyString(getResources(), recencyMs);
         LocalTileView tileView =
                 (LocalTileView)
                         LayoutInflater.from(getContext())
@@ -227,12 +204,8 @@ public class TabResumptionTileContainerView extends LinearLayout {
                                         R.layout.tab_resumption_module_local_tile_layout,
                                         this,
                                         false);
-        String postInfoText =
-                res.getString(
-                        R.string.tab_resumption_module_single_post_info,
-                        TabResumptionModuleUtils.getDomainUrl(localTabEntry.url),
-                        recencyString);
-        tileView.setUrl(postInfoText);
+        String domainUrl = TabResumptionModuleUtils.getDomainUrl(localTabEntry.url);
+        tileView.setUrl(domainUrl);
         tileView.setTitle(localTabEntry.title);
         urlImageProvider.fetchImageForUrl(
                 localTabEntry.url,
@@ -252,7 +225,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
         parentView.addView(tileView);
         return localTabEntry.title
                 + TabResumptionTileView.SEPARATE_COMMA
-                + postInfoText
+                + domainUrl
                 + TabResumptionTileView.SEPARATE_PERIOD;
     }
 
