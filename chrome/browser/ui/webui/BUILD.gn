@@ -83,6 +83,7 @@ source_set("configs") {
       "//chrome/browser/ash/net/network_health",
       "//chrome/browser/ash/net/rollback_network_config",
       "//chrome/browser/ash/os_feedback",
+      "//chrome/browser/ash/shimless_rma",
       "//chrome/browser/ash/system_web_apps/apps/camera_app",
       "//chrome/browser/ash/system_web_apps/apps/media_app",
       "//chrome/browser/ash/system_web_apps/apps/personalization_app",

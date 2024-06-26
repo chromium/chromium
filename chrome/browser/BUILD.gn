@@ -5367,6 +5367,7 @@ static_library("browser") {
       "//chrome/browser/ash/privacy_hub",
       "//chrome/browser/ash/quick_pair",
       "//chrome/browser/ash/sharesheet",
+      "//chrome/browser/ash/shimless_rma",
       "//chrome/browser/ash/smart_reader",
       "//chrome/browser/ash/sync",
       "//chrome/browser/ash/system_web_apps",
@@ -5546,6 +5547,7 @@ static_library("browser") {
     allow_circular_includes_from += [
       "//chrome/browser/ash",
       "//chrome/browser/ash/accessibility",
+      "//chrome/browser/ash/shimless_rma",
       "//chrome/browser/ash/accessibility/live_caption",
       "//chrome/browser/ash/accessibility/service",
       "//chrome/browser/ash/assistant",

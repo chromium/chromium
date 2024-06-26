@@ -125,7 +125,10 @@ source_set("permissions") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash" ]
+    deps += [
+      "//chrome/browser/ash",
+      "//chrome/browser/ash/shimless_rma",
+    ]
   }
 
   if (is_mac) {
