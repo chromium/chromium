@@ -739,6 +739,12 @@
   "system.storage.getAvailableCapacity": {
     "channel": "dev"
   },
+  // The test API also has custom checks in the bindings system which only make
+  // it available if specific command line flags are used:
+  //  - "extension-test-api-on-web-pages" for web_page contexts.
+  //  - "test-type=" for the other contexts listed here (set automatically in
+  //    browser, ui and gpu tests by the test harness).
+
   "test": [{
     "channel": "stable",
     "extension_types": "all",
