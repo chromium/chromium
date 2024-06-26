@@ -392,6 +392,43 @@ suite('PaymentsSectionCardDialogs', function() {
     }
   });
 
+  test('verifyOnlyValidCardNumbersAllowed_userChangesFocus', async function() {
+    loadTimeData.overrideValues({
+      requireValidLocalCards: true,
+    });
+
+    const creditCard = createCreditCardEntry();
+    const creditCardDialog = createCreditCardDialog(creditCard);
+
+    await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
+
+    const numberInput =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+            '#numberInput');
+    assertTrue(!!numberInput, 'Precondition failed: numberInput should exist.');
+
+    const saveButton =
+        creditCardDialog.shadowRoot!.querySelector<CrButtonElement>(
+            '#saveButton');
+    assertTrue(!!saveButton, 'Precondition failed: saveButton should exist.');
+
+    // This number is too short, but no error should be shown for that until the
+    // user focuses another element (i.e. blurs the numberInput).
+    const cardNumber = '3333';
+    await simulateInput(numberInput, cardNumber);
+    flush();
+    assertFalse(numberInput.invalid, `Expected ${cardNumber} to be valid`);
+    assertTrue(
+        saveButton!.disabled,
+        `Expected save button to be disabled for ${cardNumber}`);
+
+
+    // Now blur the input, which should cause an error to be shown.
+    numberInput.blur();
+    assertTrue(
+        numberInput.invalid, `Expected ${cardNumber} to be invalid after blur`);
+  });
+
   test('verifyNotEditedEntryAfterCancel', async function() {
     const creditCard = createCreditCardEntry();
     let creditCardDialog = createCreditCardDialog(creditCard);

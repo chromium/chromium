@@ -144,6 +144,7 @@ export class SettingsCreditCardEditDialogElement extends
       sanitizedCardNumber_: {
         type: String,
         computed: 'sanitizeCardNumber_(rawCardNumber_)',
+        observer: 'onSanitizedCardNumberChanged_',
       },
 
       /** Whether the current nickname input is invalid. */
@@ -155,7 +156,7 @@ export class SettingsCreditCardEditDialogElement extends
       /** Whether the current card number field is invalid. */
       cardNumberValidationState_: {
         type: CardNumberValidationState,
-        computed: 'computeCardNumberValidationState_(sanitizedCardNumber_)',
+        value: false,
       },
 
       /**
@@ -288,6 +289,11 @@ export class SettingsCreditCardEditDialogElement extends
         'save-credit-card',
         {bubbles: true, composed: true, detail: this.creditCard}));
     this.close();
+  }
+
+  private onSanitizedCardNumberChanged_() {
+    this.cardNumberValidationState_ = this.computeCardNumberValidationState_(
+        this.sanitizedCardNumber_, /*isBlur=*/ false);
   }
 
   private onNumberInputBlurred_(event: Event) {
