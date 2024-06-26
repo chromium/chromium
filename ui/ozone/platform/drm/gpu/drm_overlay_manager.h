@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/lru_cache.h"
 #include "base/threading/thread_checker.h"
@@ -67,6 +68,12 @@ class DrmOverlayManager : public OverlayManagerOzone {
   // swap.
   void OnSwapBuffersComplete(gfx::SwapResult swap_result);
 
+  // Should be called by the overlay processor once it gets hardware
+  // capabilities.
+  void SetSupportedBufferFormats(
+      gfx::AcceleratedWidget widget,
+      base::flat_set<gfx::BufferFormat> supported_buffer_formats);
+
  protected:
   // Sends a request to see if overlay configuration will work. Implementations
   // should call UpdateCacheForOverlayCandidates() with the response.
@@ -83,6 +90,11 @@ class DrmOverlayManager : public OverlayManagerOzone {
   // Perform basic validation to see if |candidate| is a valid request.
   bool CanHandleCandidate(const OverlaySurfaceCandidate& candidate,
                           gfx::AcceleratedWidget widget) const;
+
+  // Checks if gfx::BufferFormat that overlay candidate requires is supported
+  // by hardware.
+  bool IsBufferFormatSupported(gfx::BufferFormat required_overlay_buffer_format,
+                               gfx::AcceleratedWidget widget) const;
 
   // Updates the MRU cache for overlay configuration |candidates| with |status|.
   void UpdateCacheForOverlayCandidates(
@@ -117,6 +129,9 @@ class DrmOverlayManager : public OverlayManagerOzone {
 
   std::map<gfx::AcceleratedWidget, HardwareCapabilitiesCallback>
       hardware_capabilities_callbacks_;
+
+  base::flat_map<gfx::AcceleratedWidget, base::flat_set<gfx::BufferFormat>>
+      per_widget_overlay_supported_buffer_formats_;
 
   THREAD_CHECKER(thread_checker_);
 };

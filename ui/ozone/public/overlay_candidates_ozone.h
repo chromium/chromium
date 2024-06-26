@@ -45,6 +45,13 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlayCandidatesOzone {
   // swap.
   virtual void OnSwapBuffersComplete(gfx::SwapResult swap_result) {}
 
+  // Invoked once the overlay processor receives hardware capabilities. This
+  // allows to set supported buffer formats in the overlay manager, which can
+  // make a decision whether an overlay candidate is overlay-capable as early as
+  // possible.
+  virtual void SetSupportedBufferFormats(
+      base::flat_set<gfx::BufferFormat> supported_buffer_formats) {}
+
   virtual ~OverlayCandidatesOzone();
 };
 

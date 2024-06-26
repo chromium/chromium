@@ -19,6 +19,9 @@ constexpr gfx::AcceleratedWidget kSecondaryWidget = 2;
 
 class TestDrmOverlayManager : public DrmOverlayManager {
  public:
+  explicit TestDrmOverlayManager(
+      bool allow_sync_and_real_buffer_page_flip_testing)
+      : DrmOverlayManager(allow_sync_and_real_buffer_page_flip_testing) {}
   TestDrmOverlayManager() : DrmOverlayManager(false) {}
   ~TestDrmOverlayManager() override = default;
 
@@ -37,7 +40,15 @@ class TestDrmOverlayManager : public DrmOverlayManager {
   std::vector<OverlayStatus> SendOverlayValidationRequestSync(
       const std::vector<OverlaySurfaceCandidate>& candidates,
       gfx::AcceleratedWidget widget) override {
-    return {};
+    requests_.push_back(candidates);
+    std::vector<OverlayStatus> status;
+    status.reserve(candidates.size());
+    for (size_t i = 0; i < candidates.size(); i++) {
+      status.emplace_back(candidates[i].overlay_handled
+                              ? OverlayStatus::OVERLAY_STATUS_ABLE
+                              : OverlayStatus::OVERLAY_STATUS_NOT);
+    }
+    return status;
   }
   void GetHardwareCapabilities(
       gfx::AcceleratedWidget widget,
@@ -66,11 +77,24 @@ OverlaySurfaceCandidate CreateCandidate(const gfx::Rect& rect,
   return candidate;
 }
 
+class DrmOverlayManagerTest : public testing::Test {
+ public:
+  DrmOverlayManagerTest() = default;
+
+  void SetUp() override {
+    manager.SetSupportedBufferFormats(kPrimaryWidget,
+                                      {gfx::BufferFormat::YUV_420_BIPLANAR});
+    manager.SetSupportedBufferFormats(kSecondaryWidget,
+                                      {gfx::BufferFormat::YUV_420_BIPLANAR});
+  }
+
+ protected:
+  TestDrmOverlayManager manager;
+};
+
 }  // namespace
 
-TEST(DrmOverlayManagerTest, CacheLogic) {
-  TestDrmOverlayManager manager;
-
+TEST_F(DrmOverlayManagerTest, CacheLogic) {
   // Candidates for output surface and single-on-top quad.
   std::vector<OverlaySurfaceCandidate> candidates = {
       CreateCandidate(gfx::Rect(0, 0, 100, 100), 0),
@@ -114,9 +138,7 @@ TEST(DrmOverlayManagerTest, CacheLogic) {
 }
 
 // Tests that the crop rect changing will make a new request.
-TEST(DrmOverlayManagerTest, CropRectCacheLogic) {
-  TestDrmOverlayManager manager;
-
+TEST_F(DrmOverlayManagerTest, CropRectCacheLogic) {
   // Candidates fo single-on-top quad.
   std::vector<OverlaySurfaceCandidate> candidates = {
       CreateCandidate(gfx::Rect(0, 0, 100, 100), 0)};
@@ -166,9 +188,7 @@ TEST(DrmOverlayManagerTest, CropRectCacheLogic) {
   EXPECT_FALSE(candidates.back().overlay_handled);
 }
 
-TEST(DrmOverlayManagerTest, DifferentWidgetCache) {
-  TestDrmOverlayManager manager;
-
+TEST_F(DrmOverlayManagerTest, DifferentWidgetCache) {
   // Candidates for output surface and single-on-top quad.
   std::vector<OverlaySurfaceCandidate> candidates = {
       CreateCandidate(gfx::Rect(0, 0, 100, 100), 0),
@@ -197,9 +217,7 @@ TEST(DrmOverlayManagerTest, DifferentWidgetCache) {
   EXPECT_EQ(manager.requests().size(), 0u);
 }
 
-TEST(DrmOverlayManagerTest, MultipleWidgetCacheSupport) {
-  TestDrmOverlayManager manager;
-
+TEST_F(DrmOverlayManagerTest, MultipleWidgetCacheSupport) {
   // Candidates for output surface and single-on-top quad.
   std::vector<OverlaySurfaceCandidate> candidates = {
       CreateCandidate(gfx::Rect(0, 0, 100, 100), 0),
@@ -244,9 +262,7 @@ TEST(DrmOverlayManagerTest, MultipleWidgetCacheSupport) {
   EXPECT_EQ(manager.requests().size(), 0u);
 }
 
-TEST(DrmOverlayManagerTest, DifferentWidgetsSameCandidatesAreDistinct) {
-  TestDrmOverlayManager manager;
-
+TEST_F(DrmOverlayManagerTest, DifferentWidgetsSameCandidatesAreDistinct) {
   // Candidates for output surface and single-on-top quad.
   std::vector<OverlaySurfaceCandidate> candidates = {
       CreateCandidate(gfx::Rect(0, 0, 100, 100), 0),
@@ -261,9 +277,7 @@ TEST(DrmOverlayManagerTest, DifferentWidgetsSameCandidatesAreDistinct) {
   EXPECT_EQ(manager.requests().size(), 0u);
 }
 
-TEST(DrmOverlayManagerTest, NonIntegerDisplayRect) {
-  TestDrmOverlayManager manager;
-
+TEST_F(DrmOverlayManagerTest, NonIntegerDisplayRect) {
   // Candidates for output surface and single-on-top quad.
   std::vector<OverlaySurfaceCandidate> candidates = {
       CreateCandidate(gfx::Rect(0, 0, 100, 100), 0),
@@ -282,9 +296,7 @@ TEST(DrmOverlayManagerTest, NonIntegerDisplayRect) {
   manager.CheckOverlaySupport(&candidates, kPrimaryWidget);
 }
 
-TEST(DrmOverlayManagerTest, RequiredOverlayMultiDisplay) {
-  TestDrmOverlayManager manager;
-
+TEST_F(DrmOverlayManagerTest, RequiredOverlayMultiDisplay) {
   // Primary has a requirement, secondary does not, should only make a request
   // on the primary.
   std::vector<OverlaySurfaceCandidate> candidates1 = {
@@ -319,8 +331,7 @@ TEST(DrmOverlayManagerTest, RequiredOverlayMultiDisplay) {
   EXPECT_EQ(manager.requests().size(), 1u);
 }
 
-TEST(DrmOverlayManagerTest, ObservingHardwareCapabilities) {
-  TestDrmOverlayManager manager;
+TEST_F(DrmOverlayManagerTest, ObservingHardwareCapabilities) {
   manager.num_planes_response_ = 2;
 
   int primary_calls = 0;
@@ -365,9 +376,7 @@ TEST(DrmOverlayManagerTest, ObservingHardwareCapabilities) {
   EXPECT_EQ(secondary_calls, 4);
 }
 
-TEST(DrmOverlayManagerTest, SingleClipRectUnderlaySupport) {
-  TestDrmOverlayManager manager;
-
+TEST_F(DrmOverlayManagerTest, SingleClipRectUnderlaySupport) {
   // Candidates for output surface and underlay quad.
   std::vector<OverlaySurfaceCandidate> candidates = {
       CreateCandidate(gfx::Rect(0, 0, 100, 100), 0),
@@ -393,9 +402,7 @@ TEST(DrmOverlayManagerTest, SingleClipRectUnderlaySupport) {
   EXPECT_FALSE(manager.requests()[0][1].overlay_handled);
 }
 
-TEST(DrmOverlayManagerTest, MultiClipRectUnderlaySupport) {
-  TestDrmOverlayManager manager;
-
+TEST_F(DrmOverlayManagerTest, MultiClipRectUnderlaySupport) {
   // Two underlay quads who's |display_rect| overlap. The order here is
   // important; even though the -2 underlay comes first in the list it will be
   // occluded by the -1 underlay and when -1 clipped the -2 underlay should
@@ -426,6 +433,63 @@ TEST(DrmOverlayManagerTest, MultiClipRectUnderlaySupport) {
   EXPECT_EQ(manager.requests().size(), 1u);
   EXPECT_TRUE(manager.requests()[0][1].overlay_handled);
   EXPECT_TRUE(manager.requests()[0][2].overlay_handled);
+}
+
+TEST_F(DrmOverlayManagerTest, SupportedBufferFormat) {
+  // Make the manager to use sync testing for convenience.
+  TestDrmOverlayManager manager(true);
+  manager.SetSupportedBufferFormats(
+      kPrimaryWidget,
+      {gfx::BufferFormat::BGRA_8888, gfx::BufferFormat::RGBA_8888});
+  manager.SetSupportedBufferFormats(kSecondaryWidget,
+                                    {gfx::BufferFormat::YUV_420_BIPLANAR});
+
+  std::vector<OverlaySurfaceCandidate> candidates = {
+      CreateCandidate(gfx::Rect(0, 0, 150, 150), -1),
+      CreateCandidate(gfx::Rect(0, 0, 100, 100), 0),
+      CreateCandidate(gfx::Rect(10, 10, 20, 20), 1)};
+  candidates[0].format = gfx::BufferFormat::RGBA_8888;
+  candidates[1].format = gfx::BufferFormat::YUV_420_BIPLANAR;
+  candidates[2].format = gfx::BufferFormat::BGRA_8888;
+
+  // Primary widget supports BGRA/RGBA only.
+  manager.CheckOverlaySupport(&candidates, kPrimaryWidget);
+  EXPECT_TRUE(candidates[0].overlay_handled);
+  EXPECT_FALSE(candidates[1].overlay_handled);
+  EXPECT_TRUE(candidates[2].overlay_handled);
+  EXPECT_EQ(manager.requests().size(), 1u);
+
+  auto reset_candidates = [](std::vector<OverlaySurfaceCandidate>& candidates) {
+    for (auto& candidate : candidates) {
+      candidate.overlay_handled = false;
+    }
+  };
+
+  manager.requests().clear();
+  reset_candidates(candidates);
+
+  // Secondary widget supports N12 only.
+  manager.CheckOverlaySupport(&candidates, kSecondaryWidget);
+  EXPECT_FALSE(candidates[0].overlay_handled);
+  EXPECT_TRUE(candidates[1].overlay_handled);
+  EXPECT_FALSE(candidates[2].overlay_handled);
+  EXPECT_EQ(manager.requests().size(), 1u);
+
+  manager.requests().clear();
+  reset_candidates(candidates);
+
+  // Make primary widget support more buffer formats.
+  manager.SetSupportedBufferFormats(
+      kPrimaryWidget,
+      {gfx::BufferFormat::YUV_420_BIPLANAR, gfx::BufferFormat::BGRA_8888,
+       gfx::BufferFormat::RGBA_8888});
+
+  // Primary widget supports BGRA/RGBA and NV12 now.
+  manager.CheckOverlaySupport(&candidates, kPrimaryWidget);
+  EXPECT_TRUE(candidates[0].overlay_handled);
+  EXPECT_TRUE(candidates[1].overlay_handled);
+  EXPECT_TRUE(candidates[2].overlay_handled);
+  EXPECT_EQ(manager.requests().size(), 1u);
 }
 
 }  // namespace ui

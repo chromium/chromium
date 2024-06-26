@@ -36,6 +36,8 @@ class DrmOverlayCandidates : public OverlayCandidatesOzone {
       HardwareCapabilitiesCallback receive_callback) override;
   void RegisterOverlayRequirement(bool requires_overlay) override;
   void OnSwapBuffersComplete(gfx::SwapResult swap_result) override;
+  void SetSupportedBufferFormats(
+      base::flat_set<gfx::BufferFormat> supported_buffer_formats) override;
 
  private:
   const raw_ptr<DrmOverlayManager> overlay_manager_;  // Not owned.

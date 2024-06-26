@@ -346,7 +346,8 @@ void DrmThread::GetHardwareCapabilities(
       device_manager_->GetDrmDevice(widget)->plane_manager();
 
   if (!hdc || !plane_manager) {
-    HardwareCapabilities hardware_capabilities{.is_valid = false};
+    HardwareCapabilities hardware_capabilities;
+    hardware_capabilities.is_valid = false;
     std::move(receive_callback).Run(hardware_capabilities);
     return;
   }
@@ -361,7 +362,8 @@ void DrmThread::GetHardwareCapabilities(
   } else {
     // If there are multiple CRTCs for this widget we shouldn't rely on overlays
     // working.
-    HardwareCapabilities hardware_capabilities{.is_valid = false};
+    HardwareCapabilities hardware_capabilities;
+    hardware_capabilities.is_valid = false;
     std::move(receive_callback).Run(hardware_capabilities);
   }
 }

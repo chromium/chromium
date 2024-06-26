@@ -416,6 +416,10 @@ void OverlayProcessorOzone::ReceiveHardwareCapabilities(
         std::min(max_overlays_supported, max_overlays_config_);
     has_independent_cursor_plane_ =
         hardware_capabilities.has_independent_cursor_plane;
+
+    DCHECK(overlay_candidates_);
+    overlay_candidates_->SetSupportedBufferFormats(
+        std::move(hardware_capabilities.supported_buffer_formats));
   } else {
     // Default to attempting 1 overlay if we get an invalid response.
     max_overlays_considered_ = 1;

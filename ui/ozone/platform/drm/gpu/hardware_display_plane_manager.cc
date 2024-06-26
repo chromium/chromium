@@ -19,8 +19,10 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/display/display_features.h"
 #include "ui/display/types/display_color_management.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
@@ -551,22 +553,34 @@ void HardwareDisplayPlaneManager::ResetModesetStateForCrtc(uint32_t crtc_id) {
 HardwareCapabilities HardwareDisplayPlaneManager::GetHardwareCapabilities(
     uint32_t crtc_id) {
   std::optional<std::string> driver = drm_->GetDriverName();
-  if (!driver.has_value())
-    return {.is_valid = false};
-
   HardwareCapabilities hc;
-  hc.is_valid = true;
-  hc.num_overlay_capable_planes = base::ranges::count_if(
-      planes_, [crtc_id](const std::unique_ptr<HardwareDisplayPlane>& plane) {
-        return plane->type() != DRM_PLANE_TYPE_CURSOR &&
-               plane->CanUseForCrtcId(crtc_id);
+  if (!driver.has_value()) {
+    hc.is_valid = false;
+    return hc;
+  }
+
+  base::ranges::for_each(
+      planes_, [crtc_id, &num_overlay_planes = hc.num_overlay_capable_planes,
+                &buffer_formats = hc.supported_buffer_formats](
+                   const std::unique_ptr<HardwareDisplayPlane>& plane) {
+        if (plane->type() != DRM_PLANE_TYPE_CURSOR &&
+            plane->CanUseForCrtcId(crtc_id)) {
+          num_overlay_planes++;
+          for (const auto& format : plane->supported_formats()) {
+            if (ui::IsValidBufferFormat(format)) {
+              buffer_formats.emplace(GetBufferFormatFromFourCCFormat(format));
+            }
+          }
+        }
       });
+
   // While AMD advertises a cursor plane, it's actually a "fake" plane that the
   // display hardware blits to the topmost plane at presentation time. If that
   // topmost plane is scaled/translated (e.g. video), the cursor will then be
   // transformed along with it, leading to an incorrect cursor location in the
   // final presentation. For more info, see b/194335274.
   hc.has_independent_cursor_plane = *driver != "amdgpu" && *driver != "radeon";
+  hc.is_valid = true;
   return hc;
 }
 
