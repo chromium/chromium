@@ -1,8 +1,8 @@
 create {
   source {
     url {
-      download_url: "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r510928.tar.gz"
-      version: "clang-r510928"
+      download_url: "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r522817.tar.gz"
+      version: "clang-r522817"
       extension: ".gz"
     }
     patch_version: "cr1"
