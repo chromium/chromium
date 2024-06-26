@@ -1,0 +1,18 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+dictionary RTCRtpSendOptions {
+  DOMHighResTimeStamp sendTime;
+};
+
+enum RTCRtpUnsentReason {
+  "overuse",
+  "transport-unavailable",
+};
+
+[Exposed=(Window,Worker), RuntimeEnabled=RTCRtpTransport]
+interface RTCRtpSendStream {
+  [CallWith=ScriptState] Promise<RTCRtpSendResult> sendRtp(RTCRtpPacketInit packet, RTCRtpSendOptions options);
+};
+

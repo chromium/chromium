@@ -8004,6 +8004,15 @@ interface RTCRtpReceiver
     method getSynchronizationSources
     setter jitterBufferTarget
     setter playoutDelayHint
+interface RTCRtpSendResult
+    attribute @@toStringTag
+    getter sent
+    getter unsent
+    method constructor
+interface RTCRtpSendStream
+    attribute @@toStringTag
+    method constructor
+    method sendRtp
 interface RTCRtpSender
     static method getCapabilities
     attribute @@toStringTag
@@ -8015,9 +8024,16 @@ interface RTCRtpSender
     method createEncodedStreams
     method getParameters
     method getStats
+    method replaceSendStreams
     method replaceTrack
     method setParameters
     method setStreams
+interface RTCRtpSent
+    attribute @@toStringTag
+    getter ackId
+    getter size
+    getter time
+    method constructor
 interface RTCRtpTransceiver
     attribute @@toStringTag
     getter currentDirection

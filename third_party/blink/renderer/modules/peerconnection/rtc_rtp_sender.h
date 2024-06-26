@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_set_parameter_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_send_stream.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -101,6 +102,11 @@ class RTCRtpSender final : public ScriptWrappable,
   void set_streams(MediaStreamVector streams);
   void set_transceiver(RTCRtpTransceiver*);
   void set_transport(RTCDtlsTransport*);
+
+  ScriptPromise<HeapVector<Member<RTCRtpSendStream>>> replaceSendStreams() {
+    // TODO(crbug.com/345101934): Implement me.
+    return {};
+  }
 
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() override;
