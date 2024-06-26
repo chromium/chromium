@@ -136,8 +136,6 @@ crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_Encode_camera_* [
 crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_TexImage2d_camera [ Failure ]
 crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_copyTo_camera [ Failure ]
 
-# Skia graphite failures
-crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_3 [ RetryOnFailure ]
 
 # finder:enable-unused
 
@@ -151,21 +149,9 @@ crbug.com/1507162 [ chromeos chromeos-board-volteer ] WebCodecs_EncodingRateCont
 crbug.com/1466102 [ nvidia-0x2184 nvidia_lt_31.0.15.4601 win ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_* [ Failure ]
 crbug.com/1517101 [ win amd-0x7340 ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_* [ Failure ]
 
-crbug.com/326356910 [ chromeos chromeos-board-volteer ] WebCodecs_Encode_hw_decoder_av01.0.04M.08_prefer-software [ Failure ]
-crbug.com/326356910 [ chromeos chromeos-board-volteer ] WebCodecs_Encode_hw_decoder_avc1.42001E_prefer-hardware [ Failure ]
-crbug.com/326356910 [ chromeos chromeos-board-volteer ] WebCodecs_Encode_hw_decoder_avc1.42001E_prefer-software [ Failure ]
-crbug.com/326356910 [ chromeos chromeos-board-volteer ] WebCodecs_Encode_hw_decoder_avc1.64001E_prefer-hardware [ Failure ]
-crbug.com/326356910 [ chromeos chromeos-board-volteer ] WebCodecs_Encode_hw_decoder_avc1.64001E_prefer-software [ Failure ]
-crbug.com/326356910 [ chromeos chromeos-board-volteer ] WebCodecs_Encode_hw_decoder_vp09.00.10.08_prefer-software [ Failure ]
-crbug.com/326356910 [ chromeos chromeos-board-volteer ] WebCodecs_Encode_hw_decoder_vp8_prefer-software [ Failure ]
-crbug.com/326356910 [ chromeos chromeos-board-volteer ] WebCodecs_FrameSizeChange_av01.0.04M.08_hw_decoder [ Failure ]
 crbug.com/326356910 [ chromeos chromeos-board-volteer ] WebCodecs_FrameSizeChange_avc1.42001E_hw_decoder [ Failure ]
-crbug.com/326356910 [ chromeos chromeos-board-volteer ] WebCodecs_FrameSizeChange_vp09.00.10.08_hw_decoder [ Failure ]
-crbug.com/326356910 [ chromeos chromeos-board-volteer ] WebCodecs_FrameSizeChange_vp8_hw_decoder [ Failure ]
-crbug.com/326356910 [ chromeos chromeos-board-volteer ] WebCodecs_copyTo_hw_decoder [ Failure ]
 
 crbug.com/333426465 [ win intel-0x4680 ] WebCodecs_PerFrameQpEncoding_offscreen_avc1.42001E_prefer-hardware [ Failure ]
-crbug.com/333426465 [ win intel-0x4680 ] WebCodecs_SVC_vp09.00.10.08_prefer-hardware_layers_2 [ Failure ]
 
 crbug.com/337665165 [ angle-d3d11 graphite-disabled nvidia-0x2184 nvidia_lt_31.0.15.4601 passthrough release win ] WebCodecs_ContentHint_avc1.42001E_text [ Failure ]
 crbug.com/337665165 [ angle-d3d11 graphite-disabled nvidia-0x2184 nvidia_lt_31.0.15.4601 passthrough release win ] WebCodecs_ContentHint_avc1.42001E_motion [ Failure ]
