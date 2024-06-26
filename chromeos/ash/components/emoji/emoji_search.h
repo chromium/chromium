@@ -38,13 +38,18 @@ class EmojiSearch {
 
   [[nodiscard]] EmojiSearchResult SearchEmoji(std::string_view query);
 
+  bool SetEmojiLanguage(std::string_view language_code);
+
   std::vector<std::string> AllResultsForTesting(const std::string& query);
 
  private:
   std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>> emojis_;
   std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>> emoticons_;
   std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>> symbols_;
+
+  std::optional<std::string> curr_language_code_;
 };
+
 }  // namespace emoji
 
 #endif  // CHROMEOS_ASH_COMPONENTS_EMOJI_EMOJI_SEARCH_H_

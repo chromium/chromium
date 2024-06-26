@@ -36,6 +36,12 @@ EmojiSearchProxy::EmojiSearchProxy(
   search_ = std::make_unique<emoji::EmojiSearch>();
 }
 
+void EmojiSearchProxy::SetEmojiLanguage(const std::string& language_code,
+                                        SetEmojiLanguageCallback callback) {
+  CHECK(search_);
+  std::move(callback).Run(search_->SetEmojiLanguage(language_code));
+}
+
 EmojiSearchProxy::~EmojiSearchProxy() {}
 
 void EmojiSearchProxy::SearchEmoji(const std::string& query,

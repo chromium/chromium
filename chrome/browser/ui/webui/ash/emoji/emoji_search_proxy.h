@@ -23,6 +23,9 @@ class EmojiSearchProxy : public emoji_search::mojom::EmojiSearch {
   void SearchEmoji(const std::string& query,
                    SearchEmojiCallback callback) override;
 
+  void SetEmojiLanguage(const std::string& language_code,
+                        SetEmojiLanguageCallback callback) override;
+
  private:
   mojo::Receiver<emoji_search::mojom::EmojiSearch> receiver_;
   std::unique_ptr<emoji::EmojiSearch> search_;
