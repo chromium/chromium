@@ -400,7 +400,7 @@ bool HEVCInputBufferFragmentSplitter::AdvanceFrameFragment(const uint8_t* data,
         return true;
       }
     }
-    *endpos = (nalu.data + nalu.size) - data;
+    *endpos = (nalu.data + base::checked_cast<size_t>(nalu.size)) - data;
   }
   NOTREACHED_NORETURN();
 }
