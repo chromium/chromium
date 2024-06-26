@@ -448,7 +448,7 @@
   "input": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],
-    "platforms": ["chromeos", "win", "linux"]
+    "platforms": ["chromeos"]
   },
   "imageLoaderPrivate": [{
     "channel": "stable",

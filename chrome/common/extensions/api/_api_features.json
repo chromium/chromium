@@ -601,7 +601,8 @@
   },
   "input.ime": {
     "dependencies": ["permission:input"],
-    "contexts": ["privileged_extension"]
+    "contexts": ["privileged_extension"],
+    "platforms": ["chromeos"]
   },
   "inputMethodPrivate": [{
     "dependencies": ["permission:inputMethodPrivate"],
