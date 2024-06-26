@@ -15,8 +15,10 @@
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "services/webnn/error.h"
+#include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/webnn_buffer_impl.h"
@@ -185,7 +187,7 @@ webnn::BatchNormalizationAttributes ConvertToBatchNormalizationAttributes(
 
 template <typename Conv2dAttributesType>
 Conv2dAttributesType ConvertToConv2dAttributes(
-    const webnn::mojom::ContextProperties& context_properties,
+    const webnn::ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const webnn::mojom::Conv2d& conv2d,
     std::optional<OperandDescriptor> bias_operand) {
@@ -205,15 +207,14 @@ Conv2dAttributesType ConvertToConv2dAttributes(
 
   // Convert groups, input layout and bias.
   attributes_base.groups = conv2d.groups;
-  attributes_base.input_layout =
-      MojoInputOperandLayoutToComponent(context_properties.conv2d_input_layout);
+  attributes_base.input_layout = context_properties.conv2d_input_layout;
   attributes_base.bias_operand = std::move(bias_operand);
 
   return std::move(attributes_base);
 }
 
 webnn::Conv2dAttributes ConvertToConv2dAttributes(
-    const webnn::mojom::ContextProperties& context_properties,
+    const webnn::ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const webnn::mojom::Conv2d& conv2d,
     std::optional<OperandDescriptor> bias_operand) {
@@ -222,11 +223,11 @@ webnn::Conv2dAttributes ConvertToConv2dAttributes(
           context_properties, id_to_operand_map, conv2d,
           std::move(bias_operand));
   switch (context_properties.conv2d_input_layout) {
-    case webnn::mojom::InputOperandLayout::kChannelsFirst:
+    case webnn::InputOperandLayout::kNchw:
       // "channelsFirst": [batches, input_channels, height, width]
       component_attributes.filter_layout = Conv2dFilterOperandLayout::kOihw;
       break;
-    case webnn::mojom::InputOperandLayout::kChannelsLast:
+    case webnn::InputOperandLayout::kNhwc:
       // "channelsLast": [batches, height, width, input_channels]
       // For regular conv2d, ohwi filter layout is expected by default.
       // For depthwise conv2d, ihwo filter layout is expected by default.
@@ -316,7 +317,7 @@ webnn::LstmCellAttributes ConvertToLstmCellAttributes(
 }
 
 webnn::ConvTranspose2dAttributes ConvertToConvTranspose2dAttributes(
-    const webnn::mojom::ContextProperties& context_properties,
+    const webnn::ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const webnn::mojom::Conv2d& conv2d,
     std::optional<OperandDescriptor> bias_operand) {
@@ -330,14 +331,14 @@ webnn::ConvTranspose2dAttributes ConvertToConvTranspose2dAttributes(
   CHECK_EQ(output->descriptor.Rank(), 4u);
   webnn::Size2d<uint32_t> output_sizes;
   switch (context_properties.conv2d_input_layout) {
-    case webnn::mojom::InputOperandLayout::kChannelsFirst:
+    case webnn::InputOperandLayout::kNchw:
       // "channelsFirst": [batches, input_channels, height, width]
       output_sizes.height = output->descriptor.shape()[2];
       output_sizes.width = output->descriptor.shape()[3];
       component_attributes.filter_layout =
           ConvTranspose2dFilterOperandLayout::kIohw;
       break;
-    case webnn::mojom::InputOperandLayout::kChannelsLast:
+    case webnn::InputOperandLayout::kNhwc:
       // "channelsLast": [batches, height, width, input_channels]
       output_sizes.height = output->descriptor.shape()[1];
       output_sizes.width = output->descriptor.shape()[2];
@@ -507,11 +508,10 @@ webnn::SliceAttributes ConvertToSliceAttributes(
 }
 
 template <typename Operation>
-bool ValidateUnaryOperation(
-    const IdToOperandMap& id_to_operand_map,
-    const Operation& operation,
-    const webnn::DataTypeConstraintSet& input_constraint,
-    base::flat_set<uint64_t>& processed_operands) {
+bool ValidateUnaryOperation(const IdToOperandMap& id_to_operand_map,
+                            const Operation& operation,
+                            const webnn::SupportedDataTypes& input_constraint,
+                            base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(operation.input_operand_id)) {
     return false;
   }
@@ -645,8 +645,7 @@ bool ValidateClamp(const IdToOperandMap& id_to_operand_map,
                    const mojom::Clamp& clamp,
                    base::flat_set<uint64_t>& processed_operands) {
   if (!ValidateUnaryOperation(id_to_operand_map, clamp,
-                              DataTypeConstraintSet::All(),
-                              processed_operands)) {
+                              SupportedDataTypes::All(), processed_operands)) {
     return false;
   }
   if (!ValidateClampAttributes(clamp)) {
@@ -691,7 +690,7 @@ bool ValidateConcat(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-bool ValidateConv2d(const mojom::ContextProperties& context_properties,
+bool ValidateConv2d(const ContextProperties& context_properties,
                     const IdToOperandMap& id_to_operand_map,
                     const mojom::Conv2d& conv2d,
                     base::flat_set<uint64_t>& processed_operands) {
@@ -845,7 +844,7 @@ bool ValidateElu(const IdToOperandMap& id_to_operand_map,
 
 static constexpr auto kUnaryOperatorConstraints =
     base::MakeFixedFlatMap<mojom::ElementWiseUnary::Kind,
-                           webnn::DataTypeConstraintSet>({
+                           webnn::SupportedDataTypes>({
         {mojom::ElementWiseUnary::Kind::kAbs,
          DataTypeConstraint::kFloat16To32Int8To32},
         {mojom::ElementWiseUnary::Kind::kCeil, DataTypeConstraint::kFloat},
@@ -858,8 +857,7 @@ static constexpr auto kUnaryOperatorConstraints =
         {mojom::ElementWiseUnary::Kind::kSin, DataTypeConstraint::kFloat},
         {mojom::ElementWiseUnary::Kind::kTan, DataTypeConstraint::kFloat},
         {mojom::ElementWiseUnary::Kind::kLogicalNot, {OperandDataType::kUint8}},
-        {mojom::ElementWiseUnary::Kind::kIdentity,
-         DataTypeConstraintSet::All()},
+        {mojom::ElementWiseUnary::Kind::kIdentity, SupportedDataTypes::All()},
         {mojom::ElementWiseUnary::Kind::kSqrt, DataTypeConstraint::kFloat},
         {mojom::ElementWiseUnary::Kind::kErf, DataTypeConstraint::kFloat},
         {mojom::ElementWiseUnary::Kind::kReciprocal,
@@ -913,7 +911,8 @@ bool ValidateExpand(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-bool ValidateGather(const IdToOperandMap& id_to_operand_map,
+bool ValidateGather(const ContextProperties& context_properties,
+                    const IdToOperandMap& id_to_operand_map,
                     const mojom::Gather& gather,
                     base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(gather.input_operand_id) ||
@@ -931,7 +930,7 @@ bool ValidateGather(const IdToOperandMap& id_to_operand_map,
   }
 
   auto validated_output = ValidateGatherAndInferOutput(
-      input->descriptor, indices->descriptor, gather.axis);
+      context_properties, input->descriptor, indices->descriptor, gather.axis);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1889,7 +1888,7 @@ GetOperandNamesAndDescriptorsFromIds(
   return names_to_descriptors;
 }
 
-bool ValidateOperation(const mojom::ContextProperties& context_properties,
+bool ValidateOperation(const ContextProperties& context_properties,
                        const IdToOperandMap& id_to_operand_map,
                        const mojom::Operation& operation,
                        base::flat_set<uint64_t>& processed_operands) {
@@ -1925,8 +1924,8 @@ bool ValidateOperation(const mojom::ContextProperties& context_properties,
       return ValidateExpand(id_to_operand_map, *operation.get_expand(),
                             processed_operands);
     case mojom::Operation::Tag::kGather:
-      return ValidateGather(id_to_operand_map, *operation.get_gather(),
-                            processed_operands);
+      return ValidateGather(context_properties, id_to_operand_map,
+                            *operation.get_gather(), processed_operands);
     case mojom::Operation::Tag::kGelu:
       return ValidateUnaryOperation(id_to_operand_map, *operation.get_gelu(),
                                     DataTypeConstraint::kFloat,
@@ -2117,7 +2116,7 @@ WebNNGraphImpl::WebNNGraphImpl(WebNNContextImpl* context,
 WebNNGraphImpl::~WebNNGraphImpl() = default;
 
 bool WebNNGraphImpl::ValidateGraph(
-    const mojom::ContextProperties& context_properties,
+    const ContextProperties& context_properties,
     const mojom::GraphInfo& graph_info) {
   // The input operands of graph can be empty.
   if (graph_info.id_to_operand_map.empty() || graph_info.operations.empty() ||

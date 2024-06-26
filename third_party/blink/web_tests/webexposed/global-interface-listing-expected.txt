@@ -5892,6 +5892,7 @@ interface MLContext
     method constructor
     method createBuffer
     method dispatch
+    method opSupportLimits
     method readBuffer
     method writeBuffer
 interface MLGraph

@@ -9,6 +9,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "services/webnn/public/cpp/webnn_errors.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 
 namespace webnn {
@@ -248,27 +249,6 @@ std::string OpKindToString(mojom::Reduce::Kind kind) {
   }
 }
 
-std::string DataTypeToString(OperandDataType type) {
-  switch (type) {
-    case OperandDataType::kFloat32:
-      return "float32";
-    case OperandDataType::kFloat16:
-      return "float16";
-    case OperandDataType::kInt32:
-      return "int32";
-    case OperandDataType::kUint32:
-      return "uint32";
-    case OperandDataType::kInt8:
-      return "int8";
-    case OperandDataType::kUint8:
-      return "uint8";
-    case OperandDataType::kInt64:
-      return "int64";
-    case OperandDataType::kUint64:
-      return "uint64";
-  }
-}
-
 std::string GetOpName(const mojom::Operation& op) {
   const mojom::Operation::Tag& tag = op.which();
   switch (tag) {
@@ -304,21 +284,10 @@ std::string NotSupportedArgumentTypeError(std::string_view op_name,
                        " for ", op_name, " argument ", argument_name, "."});
 }
 
-std::string NotSupportedConstantTypeError(OperandDataType type) {
-  return base::StrCat(
-      {"Unsupported data type ", DataTypeToString(type), " for constant."});
-}
-
 std::string NotSupportedInputArgumentTypeError(std::string_view op_name,
                                                OperandDataType type) {
   return base::StrCat({"Unsupported data type ", DataTypeToString(type),
                        " for ", op_name, " argument input."});
-}
-
-std::string NotSupportedInputTypeError(std::string_view input_name,
-                                       OperandDataType type) {
-  return base::StrCat({"Unsupported data type ", DataTypeToString(type),
-                       " for input operand ", input_name});
 }
 
 std::string NotSupportedOptionTypeError(std::string_view op_name,

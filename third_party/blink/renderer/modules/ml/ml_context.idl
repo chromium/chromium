@@ -19,6 +19,21 @@ dictionary MLComputeResult {
   MLNamedArrayBufferViews outputs;
 };
 
+dictionary MLOpSupportLimits {
+  MLSupportLimits input;
+  MLSupportLimits constant;
+  MLGatherSupportLimits gather;
+};
+
+dictionary MLGatherSupportLimits {
+  MLSupportLimits input;
+  MLSupportLimits indices;
+};
+
+dictionary MLSupportLimits {
+    sequence<DOMString> dataTypes;
+};
+
 typedef record<DOMString, MLBuffer> MLNamedBuffers;
 
 [
@@ -78,4 +93,8 @@ typedef record<DOMString, MLBuffer> MLNamedBuffers;
     RaisesException
   ] void dispatch(
       MLGraph graph, MLNamedBuffers inputs, MLNamedBuffers outputs);
+  [
+    RuntimeEnabled=MachineLearningNeuralNetwork,
+    CallWith=ScriptState
+  ] MLOpSupportLimits opSupportLimits();
 };

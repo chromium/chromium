@@ -35,7 +35,9 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "mojo/public/cpp/base/big_buffer.h"
-#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/supported_data_types.h"
+#include "services/webnn/public/cpp/webnn_errors.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_utils.h"
 #include "third_party/coremltools/mlmodel/format/FeatureTypes.pb.h"
@@ -561,10 +563,9 @@ std::string GetCoreMLNameFromOutput(std::string_view output_name) {
 
 // static
 base::expected<std::unique_ptr<GraphBuilderCoreml::Result>, mojom::ErrorPtr>
-GraphBuilderCoreml::CreateAndBuild(
-    const mojom::GraphInfo& graph_info,
-    mojom::ContextPropertiesPtr context_properties,
-    const base::FilePath& working_directory) {
+GraphBuilderCoreml::CreateAndBuild(const mojom::GraphInfo& graph_info,
+                                   ContextProperties context_properties,
+                                   const base::FilePath& working_directory) {
   // Use a random string for the model package directory, because MLModel
   // compileModelAtURL creates a folder directly in the NSTemporaryDirectory
   // with the name of the .mlmodel file. Using a random string will avoid any
@@ -584,15 +585,33 @@ GraphBuilderCoreml::CreateAndBuild(
 }
 
 // static
-mojom::ContextPropertiesPtr GraphBuilderCoreml::GetContextProperties() {
-  return mojom::ContextProperties::New(
-      /*conv2d_input_layout=*/mojom::InputOperandLayout::kChannelsFirst);
+ContextProperties GraphBuilderCoreml::GetContextProperties() {
+  static constexpr SupportedDataTypes kFloatsAndInt32{OperandDataType::kFloat16,
+                                                      OperandDataType::kFloat32,
+                                                      OperandDataType::kInt32};
+
+  // Note that INT16, and UINT16 is also supported by CoreML, but WebNN
+  // does not have corresponding types. See docs here:
+  // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS17.scatter_gather.gather
+  static constexpr SupportedDataTypes kGatherInputSupportedDataTypes{
+      OperandDataType::kFloat32, OperandDataType::kFloat16,
+      OperandDataType::kInt32, OperandDataType::kInt8, OperandDataType::kUint8};
+  static constexpr SupportedDataTypes kGatherIndicesSupportedDataTypes{
+      OperandDataType::kInt32, OperandDataType::kInt8, OperandDataType::kUint8};
+
+  // TODO: crbug.com/345271830 - specify data types for all parameters.
+  return ContextProperties(
+      {InputOperandLayout::kNchw,
+       /*input_supported_data_types=*/kFloatsAndInt32,
+       /*constant_supported_data_types=*/kFloatsAndInt32,
+       /*gather_input_supported_data_types=*/kGatherInputSupportedDataTypes,
+       /*gather_indices_supported_data_types=*/
+       kGatherIndicesSupportedDataTypes});
 }
 
-GraphBuilderCoreml::GraphBuilderCoreml(
-    const mojom::GraphInfo& graph_info,
-    mojom::ContextPropertiesPtr context_properties,
-    base::FilePath ml_package_dir)
+GraphBuilderCoreml::GraphBuilderCoreml(const mojom::GraphInfo& graph_info,
+                                       ContextProperties context_properties,
+                                       base::FilePath ml_package_dir)
     : graph_info_(graph_info),
       context_properties_(std::move(context_properties)),
       internal_operand_id_(
@@ -1581,40 +1600,10 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGather(
   const OperandInfo& indices_operand_info =
       GetOperandInfo(operation.indices_operand_id);
 
-  // Note that INT16, and UINT16 is also supported by CoreML, but WebNN
-  // does not have corresponding types. See docs here:
-  // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS17.scatter_gather.gather
-  static constexpr auto kSupportedGatherOpsTypes =
-      base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
-          {CoreML::Specification::MILSpec::DataType::FLOAT32,
-           CoreML::Specification::MILSpec::DataType::FLOAT16,
-           CoreML::Specification::MILSpec::DataType::INT8,
-           CoreML::Specification::MILSpec::DataType::INT32,
-           CoreML::Specification::MILSpec::DataType::UINT8});
-  if (!kSupportedGatherOpsTypes.contains(input_operand_info.mil_data_type)) {
-    return NewNotSupportedError(NotSupportedInputArgumentTypeError(
-        ops::kGather,
-        MILDataTypeToOperandType(input_operand_info.mil_data_type)));
-  }
-
-  CHECK(indices_operand_info.mil_data_type ==
-            CoreML::Specification::MILSpec::DataType::INT32 ||
-        indices_operand_info.mil_data_type ==
-            CoreML::Specification::MILSpec::DataType::UINT32 ||
-        indices_operand_info.mil_data_type ==
-            CoreML::Specification::MILSpec::DataType::INT64);
-
-  // TODO: crbug.com/338640913 - figure out what data type should be allowed for
-  // WebNN.
-  static constexpr auto kSupportedGatherIndicesTypes =
-      base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
-          {CoreML::Specification::MILSpec::DataType::INT8,
-           CoreML::Specification::MILSpec::DataType::INT32,
-           CoreML::Specification::MILSpec::DataType::UINT8});
-  if (!kSupportedGatherIndicesTypes.contains(
-          indices_operand_info.mil_data_type)) {
-    return NewNotSupportedError("Unsupported indices datatype.");
-  }
+  CHECK(context_properties_.gather_input_supported_data_types.Has(
+      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
+  CHECK(context_properties_.gather_indices_supported_data_types.Has(
+      MILDataTypeToOperandType(indices_operand_info.mil_data_type)));
 
   static constexpr char kParamIndices[] = "indices";
   static constexpr char kParamValidateIndices[] = "validate_indices";
@@ -2451,11 +2440,7 @@ GraphBuilderCoreml::PopulateConstantOpFromOperand(
     CoreML::Specification::MILSpec::Operation& op) {
   CoreML::Specification::MILSpec::DataType mil_data_type =
       GetOperandInfo(constant_id).mil_data_type;
-  // DLOG(ERROR) << " constant name " << GetOperand(constant_id).name.value();
-  if (!kFloatsAndInt32DataTypes.contains(mil_data_type)) {
-    return NewNotSupportedError(
-        NotSupportedConstantTypeError(MILDataTypeToOperandType(mil_data_type)));
-  }
+  CHECK(kFloatsAndInt32DataTypes.contains(mil_data_type));
 
   op.set_type(kOpConstTypeName);
   PopulateNamedValueType(constant_id, *op.add_outputs());
@@ -2490,11 +2475,15 @@ GraphBuilderCoreml::PopulateFeatureDescription(
     case OperandDataType::kUint64:
     case OperandDataType::kInt8:
     case OperandDataType::kUint8:
-      CHECK(operand.name);
-      // CoreML only supports limited data types as input/output for a
-      // model. Within the model wider set of data types are supported.
-      return NewNotSupportedError(NotSupportedInputTypeError(
-          operand.name.value(), operand.descriptor.data_type()));
+      if (operand.kind == mojom::Operand::Kind::kInput) {
+        NOTREACHED_NORETURN() << "Unsupported input data type";
+      } else {
+        // TODO: crbug.com/345271830 - Move output validation to blink.
+        return NewNotSupportedError(
+            base::StrCat({"Unsupported data type ",
+                          DataTypeToString(operand.descriptor.data_type()),
+                          " for output."}));
+      }
   }
   // FeatureDescriptions are about input and output features, WebNN allows
   // scalar operands to have empty dimensions. At the input and output layers

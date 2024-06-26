@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/buildflags.h"
 #include "services/webnn/error.h"
+#include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
@@ -282,11 +283,11 @@ void WebNNContextProviderImpl::CreateWebNNContext(
     return;
   }
 
-  mojom::ContextPropertiesPtr properties = context_impl->properties().Clone();
+  ContextProperties context_properties = context_impl->properties();
   impls_.push_back(base::WrapUnique<WebNNContextImpl>(context_impl));
 
-  auto success = mojom::CreateContextSuccess::New(std::move(remote),
-                                                  std::move(properties));
+  auto success = mojom::CreateContextSuccess::New(
+      std::move(remote), std::move(context_properties));
   std::move(callback).Run(
       mojom::CreateContextResult::NewSuccess(std::move(success)));
 }

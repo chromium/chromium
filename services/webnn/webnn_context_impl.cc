@@ -9,6 +9,7 @@
 
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/error.h"
+#include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/webnn_buffer_impl.h"
@@ -20,10 +21,10 @@ namespace webnn {
 WebNNContextImpl::WebNNContextImpl(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
-    mojom::ContextPropertiesPtr properties)
+    ContextProperties properties)
     : receiver_(this, std::move(receiver)),
       context_provider_(context_provider),
-      properties_(std::move(properties)) {
+      properties_(IntersectWithBaseProperties(std::move(properties))) {
   CHECK(context_provider_);
   // Safe to use base::Unretained because the context_provider_ owns this class
   // that won't be destroyed until this callback executes.
@@ -40,7 +41,7 @@ void WebNNContextImpl::OnConnectionError() {
 void WebNNContextImpl::CreateGraph(
     mojom::GraphInfoPtr graph_info,
     mojom::WebNNContext::CreateGraphCallback callback) {
-  if (!WebNNGraphImpl::ValidateGraph(*properties_, *graph_info)) {
+  if (!WebNNGraphImpl::ValidateGraph(properties_, *graph_info)) {
     receiver_.ReportBadMessage(kBadMessageInvalidGraph);
     return;
   }
@@ -111,6 +112,16 @@ base::optional_ref<WebNNBufferImpl> WebNNContextImpl::GetWebNNBufferImpl(
     return std::nullopt;
   }
   return it->get();
+}
+
+ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
+    ContextProperties backend_context_properties) {
+  // Only intersects for ones that have limits defined in the specification.
+  // For ones that has no limit, no need to intersect with
+  // `SupportedDataTypes::All()`.
+  backend_context_properties.gather_indices_supported_data_types.RetainAll(
+      DataTypeConstraint::kGatherOperatorIndexDataTypes);
+  return backend_context_properties;
 }
 
 }  // namespace webnn

@@ -564,8 +564,15 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
         std::make_unique<FakeWebNNContext>(*helper_),
         blink_remote.InitWithNewPipeAndPassReceiver());
 
+    webnn::ContextProperties context_properties{
+        webnn::InputOperandLayout::kNchw,
+        /*input_supported_data_types=*/webnn::SupportedDataTypes::All(),
+        /*constant_supported_data_types=*/webnn::SupportedDataTypes::All(),
+        /*gather_input_supported_data_types=*/webnn::SupportedDataTypes::All(),
+        /*gather_indices_supported_data_types=*/
+        webnn::SupportedDataTypes::All()};
     auto success = blink_mojom::CreateContextSuccess::New(
-        std::move(blink_remote), blink_mojom::ContextProperties::New());
+        std::move(blink_remote), std::move(context_properties));
     std::move(callback).Run(
         blink_mojom::CreateContextResult::NewSuccess(std::move(success)));
   }

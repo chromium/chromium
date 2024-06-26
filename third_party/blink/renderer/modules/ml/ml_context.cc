@@ -5,12 +5,21 @@
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 
 #include "base/notreached.h"
+#include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/supported_data_types.h"
+#include "services/webnn/public/cpp/webnn_errors.h"
 #include "services/webnn/public/mojom/features.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_data_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gather_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_op_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_support_limits.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
@@ -52,6 +61,18 @@ ConvertBlinkPowerPreferenceToMojo(
       return webnn::mojom::blink::CreateContextOptions::PowerPreference::
           kHighPerformance;
   }
+}
+
+MLSupportLimits* SupportedDataTypesToSupportLimits(
+    const webnn::SupportedDataTypes& supported_data_types) {
+  MLSupportLimits* support_limits = MLSupportLimits::Create();
+  Vector<String> data_types;
+  for (auto data_type : supported_data_types) {
+    data_types.push_back(webnn::DataTypeToString(data_type));
+  }
+
+  support_limits->setDataTypes(data_types);
+  return support_limits;
 }
 
 }  // namespace
@@ -244,6 +265,22 @@ void MLContext::CreateWebNNBuffer(
   // Use `WebNNContext` to create `WebNNBuffer` message pipe.
   remote_context_->CreateBuffer(std::move(receiver), std::move(buffer_info),
                                 buffer_handle);
+}
+
+const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
+  MLOpSupportLimits* op_support_limits = MLOpSupportLimits::Create();
+  op_support_limits->setInput(SupportedDataTypesToSupportLimits(
+      properties_.input_supported_data_types));
+  op_support_limits->setConstant(SupportedDataTypesToSupportLimits(
+      properties_.constant_supported_data_types));
+  MLGatherSupportLimits* gather = MLGatherSupportLimits::Create();
+  gather->setInput(SupportedDataTypesToSupportLimits(
+      properties_.gather_input_supported_data_types));
+  gather->setIndices(SupportedDataTypesToSupportLimits(
+      properties_.gather_indices_supported_data_types));
+  op_support_limits->setGather(gather);
+
+  return op_support_limits;
 }
 
 MLBuffer* MLContext::createBuffer(ScriptState* script_state,

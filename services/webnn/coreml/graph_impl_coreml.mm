@@ -154,7 +154,7 @@ mojo_base::BigBuffer ExtractMaybeNonContiguousOutput(
 void GraphImplCoreml::CreateAndBuild(
     mojom::GraphInfoPtr graph_info,
     mojom::CreateContextOptionsPtr context_options,
-    mojom::ContextPropertiesPtr context_properties,
+    ContextProperties context_properties,
     WebNNContextImpl::CreateGraphImplCallback callback) {
   auto current_runner = base::SequencedTaskRunner::GetCurrentDefault();
   base::ThreadPool::PostTask(
@@ -171,7 +171,7 @@ void GraphImplCoreml::CreateAndBuild(
 void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
     mojom::GraphInfoPtr graph_info,
     mojom::CreateContextOptionsPtr context_options,
-    mojom::ContextPropertiesPtr context_properties,
+    ContextProperties context_properties,
     scoped_refptr<base::SequencedTaskRunner> originating_sequence,
     WebNNContextImpl::CreateGraphImplCallback callback) {
   CHECK(graph_info);

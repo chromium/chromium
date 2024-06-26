@@ -15,6 +15,7 @@
 #include "base/memory/stack_allocated.h"
 #include "base/numerics/checked_math.h"
 #include "base/types/expected.h"
+#include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
@@ -124,10 +125,10 @@ class GraphBuilderCoreml {
   // Returns unexpected if it fails.
   [[nodiscard]] static base::expected<std::unique_ptr<Result>, mojom::ErrorPtr>
   CreateAndBuild(const mojom::GraphInfo& graph_info,
-                 mojom::ContextPropertiesPtr context_properties,
+                 ContextProperties context_properties,
                  const base::FilePath& working_directory);
 
-  static mojom::ContextPropertiesPtr GetContextProperties();
+  static ContextProperties GetContextProperties();
 
   GraphBuilderCoreml(const GraphBuilderCoreml&) = delete;
   GraphBuilderCoreml& operator=(const GraphBuilderCoreml&) = delete;
@@ -136,7 +137,7 @@ class GraphBuilderCoreml {
 
  private:
   GraphBuilderCoreml(const mojom::GraphInfo& graph_info,
-                     mojom::ContextPropertiesPtr context_properties,
+                     ContextProperties context_properties,
                      base::FilePath ml_package_dir);
 
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> BuildCoreMLModel();
@@ -367,7 +368,7 @@ class GraphBuilderCoreml {
   // passed into `CreateAndBuild()` is valid for as long as `this` exists.
   base::raw_ref<const mojom::GraphInfo> graph_info_;
 
-  mojom::ContextPropertiesPtr context_properties_;
+  const ContextProperties context_properties_;
 
   // Used to generate unique names for internal operands generated for WebNN
   // operations that need to be decomposed into multiple CoreML operations.

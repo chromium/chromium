@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
+#include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
@@ -35,7 +36,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
 
   WebNNContextImpl(mojo::PendingReceiver<mojom::WebNNContext> receiver,
                    WebNNContextProviderImpl* context_provider,
-                   mojom::ContextPropertiesPtr properties);
+                   ContextProperties properties);
 
   WebNNContextImpl(const WebNNContextImpl&) = delete;
   WebNNContextImpl& operator=(const WebNNContextImpl&) = delete;
@@ -53,7 +54,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   base::optional_ref<WebNNBufferImpl> GetWebNNBufferImpl(
       const base::UnguessableToken& handle);
 
-  const mojom::ContextProperties& properties() { return *properties_; }
+  // Get context properties with op support limits that are intersection
+  // between WebNN generic limits and backend specific limits.
+  static ContextProperties IntersectWithBaseProperties(
+      ContextProperties backend_context_properties);
+
+  const ContextProperties& properties() { return properties_; }
 
  protected:
   void OnConnectionError();
@@ -90,7 +96,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // Owns this object.
   raw_ptr<WebNNContextProviderImpl> context_provider_;
 
-  mojom::ContextPropertiesPtr properties_;
+  const ContextProperties properties_;
 
   // BufferImpls must be stored on the context to allow the WebNN service to
   // identify and use them from the renderer process in MLContext operations.

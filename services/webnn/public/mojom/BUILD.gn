@@ -34,10 +34,20 @@ mojom_component("mojom") {
           cpp = "::webnn::OperandDescriptor"
           default_constructible = false
         },
+        {
+          mojom = "webnn.mojom.SupportedDataTypes"
+          cpp = "::webnn::SupportedDataTypes"
+        },
+        {
+          mojom = "webnn.mojom.ContextProperties"
+          cpp = "::webnn::ContextProperties"
+        },
       ]
       traits_headers = [
         "buffer_usage_mojom_traits.h",
         "operand_descriptor_mojom_traits.h",
+        "context_properties_mojom_traits.h",
+        "supported_data_types_mojom_traits.h",
       ]
       traits_public_deps = [ ":webnn_mojom_traits" ]
     },
@@ -66,7 +76,10 @@ component("webnn_mojom_traits") {
 source_set("tests") {
   testonly = true
 
-  sources = [ "operand_descriptor_mojom_traits_unittest.cc" ]
+  sources = [
+    "context_properties_mojom_traits_unittest.cc",
+    "operand_descriptor_mojom_traits_unittest.cc",
+  ]
 
   deps = [
     ":mojom",

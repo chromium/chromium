@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] [where] Throw if the data types of input and other do not match
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint8 for input operand condition, must be one of [float32, float16, int32]."
+[FAIL] [where] Throw if the shapes of input and other are not broadcastable
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint8 for input operand condition, must be one of [float32, float16, int32]."
+[FAIL] [where] Throw if the condition shape is not broadcastable
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint8 for input operand condition, must be one of [float32, float16, int32]."
+[FAIL] [where] Test building where with 2-D condition, 2-D input and 2-D other using broadcast
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint8 for input operand condition, must be one of [float32, float16, int32]."
+[FAIL] [where] Test building where with 2-D condition, 2-D input and 3-D other using broadcast
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint8 for input operand condition, must be one of [float32, float16, int32]."
+[FAIL] [where] Test building where with 3-D condition, 3-D input and 2-D other using broadcast
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint8 for input operand condition, must be one of [float32, float16, int32]."
+[FAIL] [where] Test building where with 4-D condition, 3-D input and 2-D other using broadcast
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint8 for input operand condition, must be one of [float32, float16, int32]."
+[FAIL] [where] throw if condition is from another builder
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint8 for input operand condition, must be one of [float32, float16, int32]."
+[FAIL] [where] throw if input is from another builder
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint8 for input operand condition, must be one of [float32, float16, int32]."
+[FAIL] [where] throw if other is from another builder
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint8 for input operand condition, must be one of [float32, float16, int32]."
+Harness: the test ran to completion.
+

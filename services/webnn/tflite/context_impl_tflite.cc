@@ -5,27 +5,24 @@
 #include "services/webnn/tflite/context_impl_tflite.h"
 
 #include "base/types/expected_macros.h"
+#include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-shared.h"
 #include "services/webnn/tflite/buffer_impl_tflite.h"
+#include "services/webnn/tflite/graph_builder_tflite.h"
 #include "services/webnn/tflite/graph_impl_tflite.h"
+#include "services/webnn/webnn_context_impl.h"
+#include "services/webnn/webnn_graph_impl.h"
 
 namespace webnn::tflite {
-
-namespace {
-
-mojom::ContextPropertiesPtr GetProperties() {
-  return mojom::ContextProperties::New(
-      /*conv2d_input_layout=*/mojom::InputOperandLayout::kChannelsLast);
-}
-
-}  // namespace
 
 ContextImplTflite::ContextImplTflite(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
     mojom::CreateContextOptionsPtr options)
-    : WebNNContextImpl(std::move(receiver), context_provider, GetProperties()),
+    : WebNNContextImpl(std::move(receiver),
+                       context_provider,
+                       GraphBuilderTflite::GetContextProperties()),
       options_(std::move(options)) {}
 
 ContextImplTflite::~ContextImplTflite() = default;

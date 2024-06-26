@@ -1187,6 +1187,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method createBuffer
 [Worker]     method dispatch
+[Worker]     method opSupportLimits
 [Worker]     method readBuffer
 [Worker]     method writeBuffer
 [Worker] interface MLGraph

@@ -37,7 +37,7 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
   static void CreateAndBuild(
       mojom::GraphInfoPtr graph_info,
       mojom::CreateContextOptionsPtr context_options,
-      mojom::ContextPropertiesPtr context_properties,
+      ContextProperties context_properties,
       WebNNContextImpl::CreateGraphImplCallback callback);
 
   GraphImplCoreml(const GraphImplCoreml&) = delete;
@@ -79,7 +79,7 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
   static void CreateAndBuildOnBackgroundThread(
       mojom::GraphInfoPtr graph_info,
       mojom::CreateContextOptionsPtr context_options,
-      mojom::ContextPropertiesPtr context_properties,
+      ContextProperties context_properties,
       scoped_refptr<base::SequencedTaskRunner> originating_sequence,
       WebNNContextImpl::CreateGraphImplCallback callback);
 

@@ -12,36 +12,28 @@
 #include "base/containers/enum_set.h"
 #include "base/containers/span.h"
 #include "base/types/expected.h"
+#include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace webnn {
 
-using DataTypeConstraintSet = base::EnumSet<OperandDataType,
-                                            OperandDataType::kMinValue,
-                                            OperandDataType::kMaxValue>;
-
 namespace DataTypeConstraint {
 
-static constexpr DataTypeConstraintSet kFloat = {OperandDataType::kFloat32,
-                                                 OperandDataType::kFloat16};
+static constexpr SupportedDataTypes kFloat = {OperandDataType::kFloat32,
+                                              OperandDataType::kFloat16};
 
-static constexpr DataTypeConstraintSet kFloat16To32Int8To32 = {
+static constexpr SupportedDataTypes kFloat16To32Int8To32 = {
     OperandDataType::kFloat32, OperandDataType::kFloat16,
     OperandDataType::kInt32, OperandDataType::kInt8};
 
-static constexpr DataTypeConstraintSet kGatherOperatorIndexDataTypes = {
+static constexpr SupportedDataTypes kGatherOperatorIndexDataTypes = {
     OperandDataType::kInt32, OperandDataType::kUint32, OperandDataType::kInt64};
 
 }  // namespace DataTypeConstraint
 
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
-    DataTypeConstraintToString(const DataTypeConstraintSet& constraint_set);
-
-// Represents the `MLInputOperandLayout` that specifies the layout format of
-// the input tensor. N is the batch, C is input channels, H is height and W is
-// the width of the tensor.
-enum class InputOperandLayout { kNchw, kNhwc };
+    DataTypeConstraintToString(const SupportedDataTypes& constraint_set);
 
 // Represents the `MLConv2dFilterOperandLayout` that specifies the layout format
 // of the filter tensor. O is output channels, I is input channels / groups, H
@@ -467,7 +459,8 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gather
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateGatherAndInferOutput(const OperandDescriptor& input,
+    ValidateGatherAndInferOutput(const ContextProperties& context_properties,
+                                 const OperandDescriptor& input,
                                  const OperandDescriptor& indices,
                                  const uint32_t axis);
 

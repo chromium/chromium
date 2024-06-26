@@ -9,6 +9,7 @@
 #include "services/webnn/tflite/context_impl_tflite.h"
 #include "services/webnn/tflite/graph_builder_tflite.h"
 #include "services/webnn/tflite/graph_impl_cros.h"
+#include "services/webnn/webnn_context_impl.h"
 
 namespace webnn::tflite {
 

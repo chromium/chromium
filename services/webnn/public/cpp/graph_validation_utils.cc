@@ -19,7 +19,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/supported_data_types.h"
+#include "services/webnn/public/cpp/webnn_errors.h"
 
 namespace webnn {
 
@@ -287,9 +290,8 @@ base::expected<void, std::string> ValidateRecurrentNetworkOperand(
 
 }  // namespace
 
-
 std::string DataTypeConstraintToString(
-    const DataTypeConstraintSet& constraint_set) {
+    const SupportedDataTypes& constraint_set) {
   std::vector<std::string> data_types;
   data_types.reserve(constraint_set.size());
   for (auto data_type : constraint_set) {
@@ -1058,6 +1060,7 @@ base::expected<OperandDescriptor, std::string> ValidateResample2dAndInferOutput(
 }
 
 base::expected<OperandDescriptor, std::string> ValidateGatherAndInferOutput(
+    const ContextProperties& context_properties,
     const OperandDescriptor& input,
     const OperandDescriptor& indices,
     const uint32_t axis) {
@@ -1071,13 +1074,19 @@ base::expected<OperandDescriptor, std::string> ValidateGatherAndInferOutput(
         "tensor.");
   }
 
-  if (!DataTypeConstraint::kGatherOperatorIndexDataTypes.Has(
+  if (!context_properties.gather_input_supported_data_types.Has(
+          input.data_type())) {
+    return base::unexpected(NotSupportedInputArgumentTypeError(
+        ops::kGather, input.data_type(),
+        context_properties.gather_input_supported_data_types));
+  }
+
+  static constexpr char kIndicesParam[] = "indices";
+  if (!context_properties.gather_indices_supported_data_types.Has(
           indices.data_type())) {
-    return base::unexpected(base::StringPrintf(
-        "The indices type must be one of the %s types.",
-        DataTypeConstraintToString(
-            DataTypeConstraint::kGatherOperatorIndexDataTypes)
-            .c_str()));
+    return base::unexpected(NotSupportedArgumentTypeError(
+        ops::kGather, kIndicesParam, indices.data_type(),
+        context_properties.gather_indices_supported_data_types));
   }
 
   // TODO(crbug.com/325598628): Remove this checked math once input ranks are

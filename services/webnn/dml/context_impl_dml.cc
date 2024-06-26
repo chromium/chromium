@@ -19,6 +19,7 @@
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom.h"
+#include "services/webnn/webnn_context_impl.h"
 
 namespace webnn::dml {
 
@@ -26,9 +27,18 @@ namespace {
 
 using Microsoft::WRL::ComPtr;
 
-mojom::ContextPropertiesPtr GetProperties() {
-  return mojom::ContextProperties::New(
-      /*conv2d_input_layout=*/mojom::InputOperandLayout::kChannelsFirst);
+ContextProperties GetProperties() {
+  static constexpr SupportedDataTypes kGatherIndicesSupportedDataTypes{
+      OperandDataType::kInt32, OperandDataType::kUint32,
+      OperandDataType::kInt64, OperandDataType::kUint64};
+
+  // TODO: crbug.com/345271830 - specify data types for all parameters.
+  return ContextProperties{
+      InputOperandLayout::kNchw,
+      /*input_supported_data_types=*/SupportedDataTypes::All(),
+      /*constant_supported_data_types=*/SupportedDataTypes::All(),
+      /*gather_input_supported_data_types=*/SupportedDataTypes::All(),
+      /*gather_indices_supported_data_types=*/kGatherIndicesSupportedDataTypes};
 }
 
 }  // namespace

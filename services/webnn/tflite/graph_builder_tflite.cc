@@ -16,7 +16,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
+#include "services/webnn/public/cpp/webnn_errors.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_utils.h"
@@ -237,9 +239,14 @@ GraphBuilderTflite::CreateAndBuild(const mojom::GraphInfo& graph_info) {
 }
 
 // static
-mojom::ContextPropertiesPtr GraphBuilderTflite::GetContextProperties() {
-  return mojom::ContextProperties::New(
-      /*conv2d_input_layout=*/mojom::InputOperandLayout::kChannelsLast);
+ContextProperties GraphBuilderTflite::GetContextProperties() {
+  // TODO: crbug.com/345271830 - specify data types for all parameters.
+  return ContextProperties(
+      {InputOperandLayout::kNhwc,
+       /*input_supported_data_types=*/SupportedDataTypes::All(),
+       /*constant_supported_data_types=*/SupportedDataTypes::All(),
+       /*gather_input_supported_data_types=*/SupportedDataTypes::All(),
+       /*gather_indices_supported_data_types=*/SupportedDataTypes::All()});
 }
 
 GraphBuilderTflite::GraphBuilderTflite(const mojom::GraphInfo& graph_info)

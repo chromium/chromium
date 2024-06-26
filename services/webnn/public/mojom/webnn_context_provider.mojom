@@ -60,6 +60,26 @@ struct CreateContextOptions {
 // provided.
 struct ContextProperties {
   InputOperandLayout conv2d_input_layout;
+
+  // Represents limits exposed through `MLContext::opSupportLimits()`.
+  // Keep the order as the same as build methods of `MLGraphBuilder`, for
+  // operator with multiple parameters, maintain the parameter positions order.
+  SupportedDataTypes input_supported_data_types;
+  SupportedDataTypes constant_supported_data_types;
+
+  SupportedDataTypes gather_input_supported_data_types;
+  SupportedDataTypes gather_indices_supported_data_types;
+};
+
+struct SupportedDataTypes {
+  bool float32;
+  bool float16;
+  bool int32;
+  bool uint32;
+  bool int64;
+  bool uint64;
+  bool int8;
+  bool uint8;
 };
 
 // Represents a successful call to `WebNNContextProvider::CreateWebNNContext`.

@@ -352,15 +352,24 @@ OperationPtr CreateSoftplus(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewSoftplus(std::move(softplus_mojo));
 }
 
-blink_mojom::InputOperandLayout BlinkInputOperandLayoutToMojo(
+webnn::mojom::InputOperandLayout BlinkInputOperandLayoutToMojo(
     blink::V8MLInputOperandLayout::Enum type) {
   switch (type) {
     case blink::V8MLInputOperandLayout::Enum::kNchw:
-      return blink_mojom::InputOperandLayout::kChannelsFirst;
+      return webnn::mojom::InputOperandLayout::kChannelsFirst;
     case blink::V8MLInputOperandLayout::Enum::kNhwc:
-      return blink_mojom::InputOperandLayout::kChannelsLast;
+      return webnn::mojom::InputOperandLayout::kChannelsLast;
   }
-  NOTREACHED_NORETURN();
+}
+
+webnn::InputOperandLayout BlinkInputOperandLayoutToNative(
+    blink::V8MLInputOperandLayout::Enum type) {
+  switch (type) {
+    case blink::V8MLInputOperandLayout::Enum::kNchw:
+      return webnn::InputOperandLayout::kNchw;
+    case blink::V8MLInputOperandLayout::Enum::kNhwc:
+      return webnn::InputOperandLayout::kNhwc;
+  }
 }
 
 constexpr std::array<uint32_t, 4> kNchwToNhwcPermutation = {0u, 2u, 3u, 1u};
@@ -368,8 +377,8 @@ constexpr std::array<uint32_t, 4> kNhwcToNchwPermutation = {0u, 3u, 1u, 2u};
 
 std::optional<base::span<const uint32_t>> GetConv2DInputPermutation(
     blink::V8MLInputOperandLayout input_layout,
-    const webnn::mojom::blink::ContextProperties& context_properties) {
-  if (BlinkInputOperandLayoutToMojo(input_layout.AsEnum()) ==
+    const webnn::ContextProperties& context_properties) {
+  if (BlinkInputOperandLayoutToNative(input_layout.AsEnum()) ==
       context_properties.conv2d_input_layout) {
     return std::nullopt;
   }
@@ -377,19 +386,19 @@ std::optional<base::span<const uint32_t>> GetConv2DInputPermutation(
   switch (input_layout.AsEnum()) {
     case blink::V8MLInputOperandLayout::Enum::kNchw:
       CHECK_EQ(context_properties.conv2d_input_layout,
-               blink_mojom::InputOperandLayout::kChannelsLast);
+               webnn::InputOperandLayout::kNhwc);
       return kNchwToNhwcPermutation;
     case blink::V8MLInputOperandLayout::Enum::kNhwc:
       CHECK_EQ(context_properties.conv2d_input_layout,
-               blink_mojom::InputOperandLayout::kChannelsFirst);
+               webnn::InputOperandLayout::kNchw);
       return kNhwcToNchwPermutation;
   }
 }
 
 std::optional<base::span<const uint32_t>> GetConv2DOutputPermutation(
     blink::V8MLInputOperandLayout input_layout,
-    const blink_mojom::ContextProperties& context_properties) {
-  if (BlinkInputOperandLayoutToMojo(input_layout.AsEnum()) ==
+    const webnn::ContextProperties& context_properties) {
+  if (BlinkInputOperandLayoutToNative(input_layout.AsEnum()) ==
       context_properties.conv2d_input_layout) {
     return std::nullopt;
   }
@@ -400,21 +409,21 @@ std::optional<base::span<const uint32_t>> GetConv2DOutputPermutation(
   switch (input_layout.AsEnum()) {
     case blink::V8MLInputOperandLayout::Enum::kNchw:
       CHECK_EQ(context_properties.conv2d_input_layout,
-               blink_mojom::InputOperandLayout::kChannelsLast);
+               webnn::InputOperandLayout::kNhwc);
       return kNhwcToNchwPermutation;
     case blink::V8MLInputOperandLayout::Enum::kNhwc:
       CHECK_EQ(context_properties.conv2d_input_layout,
-               blink_mojom::InputOperandLayout::kChannelsFirst);
+               webnn::InputOperandLayout::kNchw);
       return kNchwToNhwcPermutation;
   }
 }
 
 std::optional<base::span<const uint32_t>> GetConv2DFilterPermutation(
-    blink_mojom::InputOperandLayout input_layout,
+    webnn::InputOperandLayout input_layout,
     bool depthwise,
     blink::V8MLConv2dFilterOperandLayout filter_layout) {
   switch (input_layout) {
-    case blink_mojom::InputOperandLayout::kChannelsFirst:
+    case webnn::InputOperandLayout::kNchw:
       // Mojo expects the OIHW layout.
       switch (filter_layout.AsEnum()) {
         case blink::V8MLConv2dFilterOperandLayout::Enum::kOihw:
@@ -427,7 +436,7 @@ std::optional<base::span<const uint32_t>> GetConv2DFilterPermutation(
           return base::span({3u, 0u, 1u, 2u});
       }
       break;
-    case blink_mojom::InputOperandLayout::kChannelsLast:
+    case webnn::InputOperandLayout::kNhwc:
       if (depthwise) {
         // Mojo expects the IHWO layout.
         switch (filter_layout.AsEnum()) {
@@ -458,10 +467,10 @@ std::optional<base::span<const uint32_t>> GetConv2DFilterPermutation(
 }
 
 std::optional<base::span<const uint32_t>> GetConvTranspose2DFilterPermutation(
-    blink_mojom::InputOperandLayout input_layout,
+    webnn::InputOperandLayout input_layout,
     blink::V8MLConvTranspose2dFilterOperandLayout filter_layout) {
   switch (input_layout) {
-    case blink_mojom::InputOperandLayout::kChannelsFirst:
+    case webnn::InputOperandLayout::kNchw:
       // Mojo expects IOHW layout.
       switch (filter_layout.AsEnum()) {
         case blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kIohw:
@@ -472,7 +481,7 @@ std::optional<base::span<const uint32_t>> GetConvTranspose2DFilterPermutation(
           return base::span({3u, 0u, 1u, 2u});
       }
       break;
-    case blink_mojom::InputOperandLayout::kChannelsLast:
+    case webnn::InputOperandLayout::kNhwc:
       // Mojo expects OHWI layout.
       switch (filter_layout.AsEnum()) {
         case blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kIohw:
@@ -623,7 +632,7 @@ bool IsDepthwiseConv2d(const MLOperator* conv2d) {
 template <typename MLConv2dOptionsType>
 std::optional<String> SerializeConv2dOperation(
     const OperandToIdMap& operand_to_id_map,
-    const webnn::mojom::blink::ContextProperties& context_properties,
+    const webnn::ContextProperties& context_properties,
     const MLOperator* conv2d,
     blink_mojom::GraphInfo* graph_info) {
   auto conv2d_mojo = blink_mojom::Conv2d::New();
@@ -1422,7 +1431,7 @@ uint64_t NextOperandId(const webnn::mojom::blink::GraphInfo& graph_info) {
 // TODO(crbug.com/1504405): Use a lookup table to simplifie the switch logic.
 std::optional<String> SerializeMojoOperation(
     const HeapHashMap<Member<const MLOperand>, uint64_t>& operand_to_id_map,
-    const webnn::mojom::blink::ContextProperties& context_properties,
+    const webnn::ContextProperties& context_properties,
     const MLOperator* op,
     webnn::mojom::blink::GraphInfo* graph_info) {
   switch (op->Kind()) {

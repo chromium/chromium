@@ -6,8 +6,11 @@
 
 #import <CoreML/CoreML.h>
 
+#include "services/webnn/coreml/graph_builder_coreml.h"
 #include "services/webnn/coreml/graph_impl_coreml.h"
+#include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 
 namespace webnn::coreml {
@@ -26,7 +29,7 @@ ContextImplCoreml::~ContextImplCoreml() = default;
 void ContextImplCoreml::CreateGraphImpl(mojom::GraphInfoPtr graph_info,
                                         CreateGraphImplCallback callback) {
   GraphImplCoreml::CreateAndBuild(std::move(graph_info), options_.Clone(),
-                                  properties().Clone(), std::move(callback));
+                                  properties(), std::move(callback));
 }
 
 std::unique_ptr<WebNNBufferImpl> ContextImplCoreml::CreateBufferImpl(

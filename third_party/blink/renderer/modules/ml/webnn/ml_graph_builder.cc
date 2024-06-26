@@ -14,6 +14,7 @@
 #include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/webnn_errors.h"
 #include "services/webnn/public/mojom/features.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
@@ -549,7 +550,7 @@ MLOperand* BuildUnaryOperator(
     MLGraphBuilder* builder,
     ExceptionState& exception_state,
     webnn::mojom::blink::Operation::Tag kind,
-    const webnn::DataTypeConstraintSet& data_type_constraint,
+    const webnn::SupportedDataTypes& data_type_constraint,
     const MLOperand* input,
     const bindings::DictionaryBase* options = nullptr) {
   // The output tensor of unary operator has the same data type and dimensions
@@ -574,7 +575,7 @@ MLOperand* BuildElementWiseUnaryOperator(
     MLGraphBuilder* builder,
     ExceptionState& exception_state,
     webnn::mojom::blink::ElementWiseUnary::Kind kind,
-    const webnn::DataTypeConstraintSet& data_type_constraint,
+    const webnn::SupportedDataTypes& data_type_constraint,
     const MLOperand* input) {
   // The output tensor of unary operator has the same data type and dimensions
   // as its input tensor.
@@ -739,7 +740,7 @@ DetermineGraphConstraintsFromOutputs(const MLNamedOperands& named_outputs) {
 
 base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
     const MLNamedOperands& named_outputs,
-    const webnn::mojom::blink::ContextProperties& context_properties) {
+    const webnn::ContextProperties& context_properties) {
   // The `GraphInfo` represents an entire information of WebNN graph.
   auto graph_info = webnn::mojom::blink::GraphInfo::New();
 
@@ -855,6 +856,15 @@ MLOperand* MLGraphBuilder::input(String name,
     exception_state.ThrowTypeError(input_operand.error());
     return nullptr;
   }
+
+  if (!ml_context_->GetProperties().input_supported_data_types.Has(
+          input_operand.value()->DataType())) {
+    exception_state.ThrowTypeError(String(webnn::NotSupportedInputTypeError(
+        input_operand.value()->Name().Utf8(), input_operand.value()->DataType(),
+        ml_context_->GetProperties().input_supported_data_types)));
+    return nullptr;
+  }
+
   return input_operand.value();
 }
 
@@ -880,6 +890,14 @@ MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
         "The buffer view byte length (%zu) doesn't match the "
         "expected byte length (%zu).",
         buffer_view->byteLength(), descriptor.PackedByteLength()));
+    return nullptr;
+  }
+
+  if (!ml_context_->GetProperties().constant_supported_data_types.Has(
+          descriptor.data_type())) {
+    exception_state.ThrowTypeError(String(webnn::NotSupportedConstantTypeError(
+        descriptor.data_type(),
+        ml_context_->GetProperties().constant_supported_data_types)));
     return nullptr;
   }
 
@@ -975,9 +993,9 @@ MLOperand* MLGraphBuilder::clamp(const MLOperand* input,
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-clamp, the output tensor of
   // clamp has the same data type and dimensions as its input.
-  return BuildUnaryOperator(
-      this, exception_state, webnn::mojom::blink::Operation::Tag::kClamp,
-      webnn::DataTypeConstraintSet::All(), input, options);
+  return BuildUnaryOperator(this, exception_state,
+                            webnn::mojom::blink::Operation::Tag::kClamp,
+                            webnn::SupportedDataTypes::All(), input, options);
 }
 
 MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
@@ -1095,7 +1113,7 @@ BUILD_ELEMENTWISE_UNARY_OP(tan, kTan, webnn::DataTypeConstraint::kFloat)
 BUILD_ELEMENTWISE_UNARY_OP(erf, kErf, webnn::DataTypeConstraint::kFloat)
 BUILD_ELEMENTWISE_UNARY_OP(identity,
                            kIdentity,
-                           webnn::DataTypeConstraintSet::All())
+                           webnn::SupportedDataTypes::All())
 BUILD_ELEMENTWISE_UNARY_OP(logicalNot,
                            kLogicalNot,
                            {webnn::OperandDataType::kUint8})
@@ -1220,7 +1238,8 @@ MLOperand* MLGraphBuilder::gather(const MLOperand* input,
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
       webnn::ValidateGatherAndInferOutput(
-          input->Descriptor(), indices->Descriptor(), options->axis()));
+          ml_context_->GetProperties(), input->Descriptor(),
+          indices->Descriptor(), options->axis()));
 
   auto* gather = MakeGarbageCollected<MLOperator>(
       this, webnn::mojom::blink::Operation::Tag::kGather,

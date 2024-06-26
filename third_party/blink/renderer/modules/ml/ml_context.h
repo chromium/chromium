@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_ML_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_ML_CONTEXT_H_
 
+#include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -30,6 +31,7 @@ class MLBuffer;
 class MLBufferDescriptor;
 class MLComputeResult;
 class MLContextOptions;
+class MLOpSupportLimits;
 
 class MODULES_EXPORT MLContext : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -73,9 +75,8 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   void LogConsoleWarning(const String& message);
 
   ML* GetML();
-  const webnn::mojom::blink::ContextProperties& GetProperties() {
-    return *properties_;
-  }
+
+  const webnn::ContextProperties& GetProperties() { return properties_; }
 
   void Trace(Visitor* visitor) const override;
 
@@ -141,6 +142,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                              webnn::mojom::blink::WebNNBuffer> receiver,
                          webnn::mojom::blink::BufferInfoPtr buffer_info,
                          const base::UnguessableToken& buffer_handle);
+  const MLOpSupportLimits* opSupportLimits(ScriptState* script_state);
 
  private:
   // The callback of creating `WebNNContext` mojo interface from WebNN Service.
@@ -178,7 +180,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   // The `WebNNContext` is a initialized context that can be used by the
   // hardware accelerated OS machine learning API.
   HeapMojoRemote<webnn::mojom::blink::WebNNContext> remote_context_;
-  webnn::mojom::blink::ContextPropertiesPtr properties_;
+  webnn::ContextProperties properties_;
 };
 
 }  // namespace blink
