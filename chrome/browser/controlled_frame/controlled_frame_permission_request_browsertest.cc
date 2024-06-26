@@ -5,17 +5,25 @@
 #include <set>
 #include <string>
 
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/controlled_frame/controlled_frame_test_base.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "url/origin.h"
+
+using testing::StartsWith;
 
 namespace controlled_frame {
 
@@ -44,7 +52,7 @@ struct PermissionRequestTestParam {
   std::string expected_result;
 };
 
-std::vector<PermissionRequestTestParam> kTestParams{
+const std::vector<PermissionRequestTestParam> kTestParams{
     {.name = "Succeeds",
      .calls_allow = true,
      .has_policy_feature = true,
@@ -56,25 +64,25 @@ std::vector<PermissionRequestTestParam> kTestParams{
      .has_policy_feature = true,
      .matches_policy_origin = true,
      .has_embedder_content_setting = true,
-     .expected_result = "FAIL: NotAllowedError: Permission denied"},
+     .expected_result = "FAIL"},
     {.name = "FailsBecauseNoPermissionPolicy",
      .calls_allow = true,
      .has_policy_feature = false,
      .matches_policy_origin = true,
      .has_embedder_content_setting = true,
-     .expected_result = "FAIL: NotAllowedError: Invalid state"},
+     .expected_result = "FAIL"},
     {.name = "FailsBecausePolicyOriginMismatch",
      .calls_allow = true,
      .has_policy_feature = true,
      .matches_policy_origin = false,
      .has_embedder_content_setting = true,
-     .expected_result = "FAIL: NotAllowedError: Invalid state"},
+     .expected_result = "FAIL"},
     {.name = "FailsBecauseNoEmbedderContentSettings",
      .calls_allow = true,
      .has_policy_feature = true,
      .matches_policy_origin = true,
      .has_embedder_content_setting = false,
-     .expected_result = "FAIL: NotAllowedError: Invalid state"},
+     .expected_result = "FAIL"},
 };
 }  // namespace
 
@@ -96,7 +104,7 @@ class ControlledFramePermissionRequestTest
       content::RenderFrameHost* app_frame,
       const std::string& expected_permission_name,
       bool allow_permission) {
-    const std::string& handle_request_str = allow_permission ? "allow" : "deny";
+    const std::string handle_request_str = allow_permission ? "allow" : "deny";
     EXPECT_EQ("SUCCESS",
               content::EvalJs(app_frame, content::JsReplace(
                                              R"(
@@ -124,6 +132,7 @@ class ControlledFramePermissionRequestTest
     if (!test_param.has_policy_feature && test_case.policy_features.empty()) {
       return;
     }
+
     // If the permission has no dependent embedder content setting, then skip
     // the true negative embedder content settings test cases.
     if (!test_param.has_embedder_content_setting &&
@@ -160,19 +169,26 @@ class ControlledFramePermissionRequestTest
     SetUpPermissionRequestEventListener(app_frame, test_case.permission_name,
                                         test_param.calls_allow);
 
-    if (test_param.has_embedder_content_setting) {
-      // TODO(b/344910997): set embedder content settings.
+    for (const auto& content_settings_type :
+         test_case.embedder_content_settings_type) {
+      HostContentSettingsMapFactory::GetForProfile(profile())
+          ->SetContentSettingDefaultScope(
+              url_info.origin().GetURL(), url_info.origin().GetURL(),
+              content_settings_type,
+              test_param.has_embedder_content_setting
+                  ? ContentSetting::CONTENT_SETTING_ALLOW
+                  : ContentSetting::CONTENT_SETTING_BLOCK);
     }
 
-    EXPECT_EQ(test_param.expected_result,
-              content::EvalJs(controlled_frame, test_case.test_script));
+    EXPECT_THAT(content::EvalJs(controlled_frame, test_case.test_script)
+                    .ExtractString(),
+                StartsWith(test_param.expected_result));
   }
 };
 
 IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Camera) {
   PermissionRequestTestCase test_case;
-  test_case.test_script = content::JsReplace(
-      R"(
+  test_case.test_script = R"(
     (async function() {
       const constraints = { video: true };
       try {
@@ -186,7 +202,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Camera) {
         return 'FAIL: ' + err.name + ': ' + err.message;
       }
     })();
-  )");
+  )";
   test_case.permission_name = "media";
   test_case.policy_features.insert(
       {blink::mojom::PermissionsPolicyFeature::kCamera});
@@ -198,8 +214,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Camera) {
 
 IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Microphone) {
   PermissionRequestTestCase test_case;
-  test_case.test_script = content::JsReplace(
-      R"(
+  test_case.test_script = R"(
     (async function() {
       const constraints = { audio: true };
       try {
@@ -213,11 +228,44 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Microphone) {
         return 'FAIL: ' + err.name + ': ' + err.message;
       }
     })();
-  )");
+  )";
   test_case.permission_name = "media";
   test_case.policy_features.insert(
       {blink::mojom::PermissionsPolicyFeature::kMicrophone});
   // TODO(b/344910997): Add embedder content settings.
+
+  PermissionRequestTestParam test_param = GetParam();
+  RunTestAndVerify(test_case, test_param);
+}
+
+IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Geolocation) {
+  device::ScopedGeolocationOverrider overrider(/*latitude=*/1, /*longitude=*/2);
+
+  PermissionRequestTestCase test_case;
+  test_case.test_script = R"(
+    (async function() {
+      try {
+        return await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              resolve('SUCCESS');
+            },
+            (error) => {
+              const errorMessage = 'FAIL: ' + error.code + error.message;
+              resolve(errorMessage);
+            }
+          );
+        });
+      } catch (err) {
+        return 'FAIL: ' + err.name + ': ' + err.message;
+      }
+    })();
+  )";
+  test_case.permission_name = "geolocation";
+  test_case.policy_features.insert(
+      {blink::mojom::PermissionsPolicyFeature::kGeolocation});
+  test_case.embedder_content_settings_type.insert(
+      {ContentSettingsType::GEOLOCATION});
 
   PermissionRequestTestParam test_param = GetParam();
   RunTestAndVerify(test_case, test_param);

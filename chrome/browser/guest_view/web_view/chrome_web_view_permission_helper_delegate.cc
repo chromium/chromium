@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/common/buildflags.h"
+#include "components/guest_view/browser/guest_view_base.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
@@ -19,6 +20,9 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
@@ -165,7 +169,8 @@ void ChromeWebViewPermissionHelperDelegate::RequestGeolocationPermission(
   WebViewPermissionHelper::PermissionResponseCallback permission_callback =
       base::BindOnce(&ChromeWebViewPermissionHelperDelegate::
                          OnGeolocationPermissionResponse,
-                     weak_factory_.GetWeakPtr(), user_gesture,
+                     weak_factory_.GetWeakPtr(),
+                     url::Origin::Create(requesting_frame), user_gesture,
                      base::BindOnce(&CallbackWrapper, std::move(callback)));
   web_view_permission_helper()->RequestPermission(
       WEB_VIEW_PERMISSION_TYPE_GEOLOCATION, std::move(request_info),
@@ -173,6 +178,7 @@ void ChromeWebViewPermissionHelperDelegate::RequestGeolocationPermission(
 }
 
 void ChromeWebViewPermissionHelperDelegate::OnGeolocationPermissionResponse(
+    const url::Origin& requesting_origin,
     bool user_gesture,
     base::OnceCallback<void(blink::mojom::PermissionStatus)> callback,
     bool allow,
@@ -182,6 +188,20 @@ void ChromeWebViewPermissionHelperDelegate::OnGeolocationPermissionResponse(
   if (!allow || !web_view_guest()->attached()) {
     std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
     return;
+  }
+
+  // Controlled Frame embedders also have permissions policy. Permission can
+  // only be granted if the embedder's permissions policy allows for the
+  // requesting origin.
+  if (web_view_guest()->IsOwnedByControlledFrameEmbedder()) {
+    const blink::PermissionsPolicy* permissions_policy =
+        web_view_guest()->embedder_rfh()->GetPermissionsPolicy();
+    if (!permissions_policy->IsFeatureEnabledForOrigin(
+            blink::mojom::PermissionsPolicyFeature::kGeolocation,
+            requesting_origin)) {
+      std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
+      return;
+    }
   }
 
   web_view_guest()
