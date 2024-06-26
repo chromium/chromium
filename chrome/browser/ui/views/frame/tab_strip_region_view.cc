@@ -392,19 +392,26 @@ bool TabStripRegionView::GetDropFormats(
 }
 
 void TabStripRegionView::OnDragEntered(const ui::DropTargetEvent& event) {
-  DCHECK(TabDragController::IsSystemDragAndDropSessionRunning());
+  CHECK(TabDragController::IsSystemDragAndDropSessionRunning());
   TabDragController::OnSystemDragAndDropUpdated(event);
 }
 
 int TabStripRegionView::OnDragUpdated(const ui::DropTargetEvent& event) {
-  DCHECK(TabDragController::IsSystemDragAndDropSessionRunning());
-  TabDragController::OnSystemDragAndDropUpdated(event);
-  return ui::DragDropTypes::DRAG_MOVE;
+  // This can be false because we can still receive drag events after
+  // TabDragController is destroyed due to the asynchronous nature of the
+  // platform DnD.
+  if (TabDragController::IsSystemDragAndDropSessionRunning()) {
+    TabDragController::OnSystemDragAndDropUpdated(event);
+    return ui::DragDropTypes::DRAG_MOVE;
+  }
+  return ui::DragDropTypes::DRAG_NONE;
 }
 
 void TabStripRegionView::OnDragExited() {
-  DCHECK(TabDragController::IsSystemDragAndDropSessionRunning());
-  TabDragController::OnSystemDragAndDropExited();
+  // See comment in OnDragUpdated().
+  if (TabDragController::IsSystemDragAndDropSessionRunning()) {
+    TabDragController::OnSystemDragAndDropExited();
+  }
 }
 
 void TabStripRegionView::ChildPreferredSizeChanged(views::View* child) {
