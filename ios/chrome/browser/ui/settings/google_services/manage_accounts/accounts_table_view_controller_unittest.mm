@@ -44,25 +44,6 @@ std::unique_ptr<KeyedService> CreateTestSyncService(
   return std::make_unique<syncer::TestSyncService>();
 }
 
-void SetSyncStateFeatureActive(const CoreAccountInfo& account,
-                               syncer::TestSyncService* sync_service) {
-  sync_service->SetAccountInfo(account);
-  sync_service->SetHasSyncConsent(true);
-  sync_service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
-  sync_service->SetDisableReasons({});
-  sync_service->SetInitialSyncFeatureSetupComplete(true);
-  ASSERT_TRUE(sync_service->IsSyncFeatureEnabled());
-}
-
-void SetSyncStateTransportActive(const CoreAccountInfo& account,
-                                 syncer::TestSyncService* sync_service) {
-  sync_service->SetAccountInfo(account);
-  sync_service->SetHasSyncConsent(false);
-  sync_service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
-  sync_service->SetDisableReasons({});
-  ASSERT_FALSE(sync_service->IsSyncFeatureEnabled());
-}
-
 }  // namespace
 
 class AccountsTableViewControllerTest
@@ -237,7 +218,7 @@ TEST_F(AccountsTableViewControllerTest, DontHoldPassphraseError) {
   account.email = email;
   account.gaia = gaia_id;
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
-  SetSyncStateTransportActive(account, test_sync_service());
+  test_sync_service()->SetSignedInWithoutSyncFeature(account);
   test_sync_service()->GetUserSettings()->SetPassphraseRequired();
 
   CreateController();
@@ -269,7 +250,7 @@ TEST_F(AccountsTableViewControllerTest,
   account.email = email;
   account.gaia = gaia_id;
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
-  SetSyncStateFeatureActive(account, test_sync_service());
+  test_sync_service()->SetSignedInWithSyncFeatureOn(account);
   ASSERT_FALSE(test_sync_service()->GetUserSettings()->IsPassphraseRequired());
 
   CreateController();

@@ -422,16 +422,9 @@ TEST_F(BookmarkIOSUtilsUnitTest, IsAccountBookmarkStorageOptedIn) {
   EXPECT_FALSE(
       bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(&sync_service));
 
-  // Sign-in.
-  CoreAccountInfo account;
-  account.gaia = "gaia_id";
-  account.email = "email@test.com";
-  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
-  sync_service.SetAccountInfo(account);
-
   // If sync-the-feature is on, including bookmarks,
   // `IsAccountBookmarkStorageOptedIn()` should always return false.
-  sync_service.SetHasSyncConsent(true);
+  sync_service.SetSignedInWithSyncFeatureOn();
   sync_service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true, /*types=*/syncer::UserSelectableTypeSet());
   EXPECT_FALSE(
@@ -446,7 +439,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, IsAccountBookmarkStorageOptedIn) {
 
   // If sync-the-feature is off and the account storage is enabled,
   // `IsAccountBookmarkStorageOptedIn()` should return true.
-  sync_service.SetHasSyncConsent(false);
+  sync_service.SetSignedInWithoutSyncFeature();
   sync_service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true, /*types=*/syncer::UserSelectableTypeSet());
   EXPECT_TRUE(

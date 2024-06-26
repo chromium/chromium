@@ -52,9 +52,7 @@ class CWVSyncControllerTest : public PlatformTest {
     pref_service_.registry()->RegisterDictionaryPref(
         autofill::prefs::kAutofillSyncTransportOptIn);
 
-    // Change the default transport state to be disabled.
-    sync_service_.SetTransportState(
-        syncer::SyncService::TransportState::DISABLED);
+    sync_service_.SetSignedOut();
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -74,10 +72,7 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentity) {
              gaiaID:base::SysUTF8ToNSString(account_info.gaia)];
 
   // Preconfigure TestSyncService as if it was enabled in transport mode.
-  sync_service_.SetInitialSyncFeatureSetupComplete(false);
-  sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
-  sync_service_.SetIsUsingExplicitPassphrase(false);
-  sync_service_.SetAccountInfo(account_info);
+  sync_service_.SetSignedInWithoutSyncFeature();
 
   CWVSyncController* sync_controller = [[CWVSyncController alloc]
       initWithSyncService:&sync_service_
@@ -150,6 +145,7 @@ TEST_F(CWVSyncControllerTest, PassphraseNeeded) {
       initWithSyncService:&sync_service_
           identityManager:identity_test_environment_.identity_manager()
               prefService:&pref_service_];
+  sync_service_.SetSignedInWithoutSyncFeature();
   ASSERT_FALSE(sync_service_.GetUserSettings()->IsPassphraseRequired());
   EXPECT_FALSE(sync_controller.passphraseNeeded);
   sync_service_.SetPassphraseRequired();
@@ -161,7 +157,8 @@ TEST_F(CWVSyncControllerTest, TrustedVaultKeysRequired) {
       initWithSyncService:&sync_service_
           identityManager:identity_test_environment_.identity_manager()
               prefService:&pref_service_];
-  sync_service_.SetTrustedVaultKeyRequired(false);
+  sync_service_.SetSignedInWithoutSyncFeature();
+  ASSERT_FALSE(sync_service_.GetUserSettings()->IsTrustedVaultKeyRequired());
   EXPECT_FALSE(sync_controller.trustedVaultKeysRequired);
   sync_service_.SetTrustedVaultKeyRequired(true);
   EXPECT_TRUE(sync_controller.trustedVaultKeysRequired);
@@ -194,10 +191,9 @@ TEST_F(CWVSyncControllerTest, DelegateDidStartAndStopSync) {
   OCMExpect([delegate syncControllerDidUpdateState:sync_controller]);
   OCMExpect([delegate syncControllerDidStopSync:sync_controller]);
   OCMExpect([delegate syncControllerDidUpdateState:sync_controller]);
-  sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service_.SetSignedInWithoutSyncFeature();
   sync_service_.FireStateChanged();
-  sync_service_.SetTransportState(
-      syncer::SyncService::TransportState::DISABLED);
+  sync_service_.SetSignedOut();
   sync_service_.FireStateChanged();
 
   [delegate verify];
