@@ -107,7 +107,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   void UpdateWithMediaArtwork(const gfx::ImageSkia& image) override;
   void UpdateWithChapterArtwork(int index,
                                 const gfx::ImageSkia& image) override {}
-  void UpdateWithFavicon(const gfx::ImageSkia& icon) override {}
+  void UpdateWithFavicon(const gfx::ImageSkia& icon) override;
   void UpdateWithVectorIcon(const gfx::VectorIcon* vector_icon) override {}
   void UpdateWithMuteStatus(bool mute) override {}
   void UpdateWithVolume(float volume) override {}
@@ -121,6 +121,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
 
   // Helper functions for testing:
   views::ImageView* GetArtworkViewForTesting();
+  views::ImageView* GetFaviconViewForTesting();
   views::Label* GetSourceLabelForTesting();
   views::Label* GetTitleLabelForTesting();
   views::Label* GetArtistLabelForTesting();
@@ -198,6 +199,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   base::ObserverList<MediaItemUIObserver> observers_;
 
   raw_ptr<views::ImageView> artwork_view_ = nullptr;
+  raw_ptr<views::ImageView> favicon_view_ = nullptr;
   raw_ptr<views::Label> source_label_ = nullptr;
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::Label> artist_label_ = nullptr;

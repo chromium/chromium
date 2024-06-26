@@ -34,12 +34,12 @@ constexpr gfx::Insets kInfoColumnInsets = gfx::Insets::TLBR(4, 0, 0, 0);
 
 constexpr int kBackgroundCornerRadius = 8;
 constexpr int kArtworkCornerRadius = 8;
+constexpr int kFaviconCornerRadius = 2;
 
 constexpr int kBackgroundSeparator = 16;
 constexpr int kArtworkRowSeparator = 16;
 constexpr int kMediaInfoSeparator = 8;
-constexpr int kSourceRowSeparator = 16;
-constexpr int kSourceRowButtonContainerSeparator = 8;
+constexpr int kSourceRowSeparator = 8;
 constexpr int kMetadataRowSeparator = 16;
 constexpr int kMetadataColumnSeparator = 4;
 constexpr int kProgressRowSeparator = 4;
@@ -50,6 +50,7 @@ constexpr int kMediaActionButtonIconSize = 18;
 constexpr float kFocusRingHaloInset = -3.0f;
 
 constexpr gfx::Size kArtworkSize = gfx::Size(80, 80);
+constexpr gfx::Size kFaviconSize = gfx::Size(14, 14);
 constexpr gfx::Size kPlayPauseButtonSize = gfx::Size(48, 48);
 constexpr gfx::Size kMediaActionButtonSize = gfx::Size(20, 20);
 
@@ -95,6 +96,9 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
   artwork_view_ =
       artwork_row->AddChildView(std::make_unique<views::ImageView>());
   artwork_view_->SetPreferredSize(kArtworkSize);
+  artwork_view_->SetClipPath(
+      SkPath().addRoundRect(RectToSkRect(gfx::Rect(kArtworkSize)),
+                            kArtworkCornerRadius, kArtworkCornerRadius));
   artwork_view_->SetVisible(false);
 
   // |info_column| inside |artwork_row| right to the |artwork_view| holds the
@@ -106,44 +110,42 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
   info_column->SetBetweenChildSpacing(kMediaInfoSeparator);
   artwork_row->SetFlexForView(info_column, 1);
 
-  // |source_row| inside |info_column| holds the |source_label_container| and
-  // |source_row_button_container|.
+  // |source_row| inside |info_column| holds the media favicon view, media
+  // source label, start casting button and picture-in-picture button.
   auto* source_row =
       info_column->AddChildView(std::make_unique<views::BoxLayoutView>());
   source_row->SetBetweenChildSpacing(kSourceRowSeparator);
-  auto* source_label_container =
-      source_row->AddChildView(std::make_unique<views::BoxLayoutView>());
-  source_row->SetFlexForView(source_label_container, 1);
+  source_row->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  // |source_label_container| inside |source_row| holds the media source label.
-  source_label_ =
-      source_label_container->AddChildView(std::make_unique<views::Label>(
-          std::u16string(), views::style::CONTEXT_LABEL,
-          views::style::STYLE_BODY_5));
+  // Create the media favicon view.
+  favicon_view_ =
+      source_row->AddChildView(std::make_unique<views::ImageView>());
+  favicon_view_->SetPreferredSize(kFaviconSize);
+  favicon_view_->SetClipPath(
+      SkPath().addRoundRect(RectToSkRect(gfx::Rect(kFaviconSize)),
+                            kFaviconCornerRadius, kFaviconCornerRadius));
+
+  // Create the media source label.
+  source_label_ = source_row->AddChildView(std::make_unique<views::Label>(
+      std::u16string(), views::style::CONTEXT_LABEL,
+      views::style::STYLE_BODY_5));
   source_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   source_label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
   source_label_->SetElideBehavior(gfx::ELIDE_HEAD);
   source_label_->SetEnabledColorId(
       media_color_theme_.secondary_foreground_color_id);
-
-  // |source_row_button_container| inside |source_row| holds the start casting
-  // button and picture-in-picture button.
-  auto* source_row_button_container =
-      source_row->AddChildView(std::make_unique<views::BoxLayoutView>());
-  source_row_button_container->SetBetweenChildSpacing(
-      kSourceRowButtonContainerSeparator);
+  source_row->SetFlexForView(source_label_, 1);
 
   // Create the start casting button.
   start_casting_button_ = CreateMediaActionButton(
-      source_row_button_container, kEmptyMediaActionButtonId,
-      vector_icons::kCastIcon,
+      source_row, kEmptyMediaActionButtonId, vector_icons::kCastIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SHOW_DEVICE_LIST);
   start_casting_button_->SetVisible(false);
 
   // Create the picture-in-picture button.
   picture_in_picture_button_ = CreateMediaActionButton(
-      source_row_button_container,
-      static_cast<int>(MediaSessionAction::kEnterPictureInPicture),
+      source_row, static_cast<int>(MediaSessionAction::kEnterPictureInPicture),
       vector_icons::kPictureInPictureAltIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_ENTER_PIP);
 
@@ -434,14 +436,19 @@ void MediaItemUIUpdatedView::UpdateWithMediaArtwork(
     artwork_view_->SetImageSize(
         ScaleImageSizeToFitView(image.size(), kArtworkSize));
     artwork_view_->SetImage(ui::ImageModel::FromImageSkia(image));
-
-    // Draw the image with rounded corners.
-    auto path = SkPath().addRoundRect(
-        RectToSkRect(gfx::Rect(kArtworkSize.width(), kArtworkSize.height())),
-        kArtworkCornerRadius, kArtworkCornerRadius);
-    artwork_view_->SetClipPath(path);
   }
-  SchedulePaint();
+}
+
+void MediaItemUIUpdatedView::UpdateWithFavicon(const gfx::ImageSkia& icon) {
+  if (icon.isNull()) {
+    favicon_view_->SetImage(ui::ImageModel::FromVectorIcon(
+        vector_icons::kGlobeIcon,
+        media_color_theme_.primary_foreground_color_id, kFaviconSize.width()));
+  } else {
+    favicon_view_->SetImageSize(
+        ScaleImageSizeToFitView(icon.size(), kFaviconSize));
+    favicon_view_->SetImage(ui::ImageModel::FromImageSkia(icon));
+  }
 }
 
 void MediaItemUIUpdatedView::UpdateDeviceSelectorVisibility(bool visible) {
@@ -700,6 +707,10 @@ void MediaItemUIUpdatedView::UpdateCastingState() {
 
 views::ImageView* MediaItemUIUpdatedView::GetArtworkViewForTesting() {
   return artwork_view_;
+}
+
+views::ImageView* MediaItemUIUpdatedView::GetFaviconViewForTesting() {
+  return favicon_view_;
 }
 
 views::Label* MediaItemUIUpdatedView::GetSourceLabelForTesting() {

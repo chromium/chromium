@@ -97,6 +97,7 @@ aggregate_vector_icons("components_vector_icons") {
     "forward_10.icon",
     "forward_arrow.icon",
     "forward_arrow_chrome_refresh.icon",
+    "globe.icon",
     "google_color.icon",
     "gpp_maybe.icon",
     "groups.icon",

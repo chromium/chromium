@@ -243,9 +243,23 @@ TEST_F(MediaItemUIUpdatedViewTest, UpdateWithMediaArtwork) {
   image.allocN32Pixels(10, 10);
   view()->UpdateWithMediaArtwork(gfx::ImageSkia::CreateFrom1xBitmap(image));
   EXPECT_TRUE(view()->GetArtworkViewForTesting()->GetVisible());
+  EXPECT_TRUE(view()->GetArtworkViewForTesting()->GetImageModel().IsImage());
 
   view()->UpdateWithMediaArtwork(gfx::ImageSkia());
   EXPECT_FALSE(view()->GetArtworkViewForTesting()->GetVisible());
+}
+
+TEST_F(MediaItemUIUpdatedViewTest, UpdateWithFavicon) {
+  EXPECT_TRUE(view()->GetFaviconViewForTesting()->GetImageModel().IsEmpty());
+
+  SkBitmap image;
+  image.allocN32Pixels(10, 10);
+  view()->UpdateWithFavicon(gfx::ImageSkia::CreateFrom1xBitmap(image));
+  EXPECT_TRUE(view()->GetFaviconViewForTesting()->GetImageModel().IsImage());
+
+  view()->UpdateWithFavicon(gfx::ImageSkia());
+  EXPECT_TRUE(
+      view()->GetFaviconViewForTesting()->GetImageModel().IsVectorIcon());
 }
 
 TEST_F(MediaItemUIUpdatedViewTest, MediaActionButtonPressed) {
