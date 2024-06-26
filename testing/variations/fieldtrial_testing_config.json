@@ -16211,6 +16211,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "IPH_PerformanceInterventionDialogFeature",
                         "PerformanceIntervention"
                     ]
                 }
