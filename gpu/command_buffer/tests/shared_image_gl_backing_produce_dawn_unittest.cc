@@ -79,9 +79,8 @@ class SharedImageGLBackingProduceDawnTest : public WebGPUTest {
 };
 
 // Tests using Associate/DissociateMailbox to share an image with Dawn.
-// For simplicity of the test the image is shared between a Dawn device and
-// itself: we render to it using the Dawn device, then re-associate it to a
-// Dawn texture and read back the values that were written.
+// We render to the `SharedImage` via GL, re-associate it to a Dawn texture,
+// and read back the values that were written.
 TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
   if (ShouldSkipTest())
     return;
@@ -96,13 +95,14 @@ TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
 
   // Create the shared image
   SharedImageInterface* sii = gl_context_->GetSharedImageInterface();
-  scoped_refptr<gpu::ClientSharedImage> shared_image =
-      sii->CreateSharedImage({viz::SinglePlaneFormat::kRGBA_8888,
-                              {1, 1},
-                              gfx::ColorSpace::CreateSRGB(),
-                              SHARED_IMAGE_USAGE_GLES2_WRITE,
-                              "TestLabel"},
-                             kNullSurfaceHandle);
+  scoped_refptr<gpu::ClientSharedImage> shared_image = sii->CreateSharedImage(
+      {viz::SinglePlaneFormat::kRGBA_8888,
+       {1, 1},
+       gfx::ColorSpace::CreateSRGB(),
+       SharedImageUsageSet(
+           {SHARED_IMAGE_USAGE_GLES2_WRITE, SHARED_IMAGE_USAGE_WEBGPU_READ}),
+       "TestLabel"},
+      kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
   gl()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
   GLuint texture = gl()->CreateAndTexStorage2DSharedImageCHROMIUM(
