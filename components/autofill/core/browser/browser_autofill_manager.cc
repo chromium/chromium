@@ -1181,7 +1181,7 @@ SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
 
   // Don't send suggestions or track forms that should not be parsed.
   const bool got_autofillable_form =
-      form_structure && form_structure->ShouldBeParsed();
+      form_structure && form_structure->ShouldBeParsed() && autofill_field;
 
   if (!ShouldShowSuggestionsForAutocompleteUnrecognizedFields(trigger_source) &&
       got_autofillable_form &&
@@ -1255,7 +1255,14 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  GetCachedFormAndField(form, field, &form_structure, &autofill_field);
+  // We cannot early-return here because GetCachedFormAndField() yields nullptr
+  // even if there it finds a FormStructure but its `autofill_count()` is 0. In
+  // such cases, we still need to offer Autocomplete. Therefore, the code below,
+  // including called functions, must handle `form_structure == nullptr` and
+  // `autofill_field == nullptr`.
+  std::ignore =
+      GetCachedFormAndField(form, field, &form_structure, &autofill_field);
+
   if (form_structure) {
     AutofillMetrics::LogParsedFormUntilInteractionTiming(
         base::TimeTicks::Now() - form_structure->form_parsed_timestamp());
@@ -1629,7 +1636,15 @@ void BrowserAutofillManager::FillOrPreviewField(
     std::optional<FieldType> field_type_used) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  GetCachedFormAndField(form, field, &form_structure, &autofill_field);
+  // We cannot early-return here because GetCachedFormAndField() yields nullptr
+  // even if there it finds a FormStructure but its `autofill_count()` is 0. In
+  // such cases, we still need to offer Autocomplete. Therefore, the code below,
+  // including called functions, must handle `form_structure == nullptr` and
+  // `autofill_field == nullptr`.
+  // TODO: crbug.com/40232021 - Look into removing the `autofill_count() > 0`
+  // condition from.
+  std::ignore =
+      GetCachedFormAndField(form, field, &form_structure, &autofill_field);
   form_filler_->FillOrPreviewField(action_persistence, action_type, form, field,
                                    form_structure, autofill_field, value, type,
                                    field_type_used);
@@ -1667,8 +1682,7 @@ void BrowserAutofillManager::OnDidFillAddressFormFillingSuggestion(
     AutofillTriggerSource trigger_source) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  GetCachedFormAndField(form, field, &form_structure, &autofill_field);
-  if (!form_structure || !autofill_field) {
+  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
     return;
   }
   address_form_event_logger_->OnDidFillFormFillingSuggestion(

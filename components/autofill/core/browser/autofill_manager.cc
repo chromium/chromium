@@ -511,6 +511,12 @@ bool AutofillManager::GetCachedFormAndField(
     FormStructure** form_structure,
     AutofillField** autofill_field) const {
   FormStructure* cached_form = FindCachedFormById(form.global_id());
+  // TODO: crbug.com/40232021 - Look into removing the `autofill_count() == 0`
+  // disjunct. Because it is inconvenient that some code needs to tolerate null
+  // FormStructures and/or AutofillFields because for Autocomplete still needs
+  // to work if `autofill_count() == 0`. See
+  // BrowserAutofillManager::AskForValuesToFillImpl() and
+  // BrowserAutofillManager::FillOrPreviewField().
   if (!cached_form || cached_form->autofill_count() == 0) {
     return false;
   }
