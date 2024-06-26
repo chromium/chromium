@@ -20,6 +20,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.not;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -404,6 +405,38 @@ public final class SafetyHubTest {
         }
     }
 
+    @Test
+    @MediumTest
+    public void testPreferenceExpand() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        new SafeBrowsingBridge(ProfileManager.getLastUsedRegularProfile())
+                                .setSafeBrowsingState(SafeBrowsingState.NO_SAFE_BROWSING));
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify the safe browsing module is displaying the no protection state.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        onView(withText(safeBrowsingTitle)).check(matches(isDisplayed()));
+
+        // The module should be expanded in it's initial state.
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+        verifySummaryNextToTextVisibility(safeBrowsingTitle, true);
+
+        // Click on collapse button.
+        clickOnExpandButtonNextToText(safeBrowsingTitle);
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, false);
+        verifySummaryNextToTextVisibility(safeBrowsingTitle, false);
+
+        // Click on expand button.
+        clickOnExpandButtonNextToText(safeBrowsingTitle);
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+        verifySummaryNextToTextVisibility(safeBrowsingTitle, true);
+    }
+
     private void clickOnButtonNextToText(String text) {
         onViewWaiting(allOf(withId(R.id.button), withParent(hasSibling(withChild(withText(text))))))
                 .perform(click());
@@ -423,6 +456,27 @@ public final class SafetyHubTest {
                                 withId(R.id.secondary_button),
                                 withParent(hasSibling(withChild(withChild(withText(text)))))))
                 .perform(click());
+    }
+
+    private void clickOnExpandButtonNextToText(String text) {
+        onViewWaiting(
+                        allOf(
+                                withId(R.id.checkable_image_view),
+                                hasSibling(withChild(withText(text)))))
+                .perform(click());
+    }
+
+    private void verifyButtonsNextToTextVisibility(String text, boolean visible) {
+        onView(
+                        allOf(
+                                withId(R.id.buttons_container),
+                                hasSibling(withChild(withChild(withText(text))))))
+                .check(matches(visible ? isDisplayed() : not(isDisplayed())));
+    }
+
+    private void verifySummaryNextToTextVisibility(String text, boolean visible) {
+        onView(allOf(withId(android.R.id.summary), hasSibling(withText(text))))
+                .check(matches(visible ? isDisplayed() : not(isDisplayed())));
     }
 
     static View getRootViewSanitized(int text) {

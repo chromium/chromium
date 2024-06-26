@@ -7,8 +7,16 @@ package org.chromium.chrome.browser.safety_hub;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.transition.ChangeBounds;
+import android.transition.Fade;
+import android.transition.Transition;
+import android.transition.TransitionManager;
+import android.transition.TransitionSet;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -27,6 +35,7 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
     private View.OnClickListener mSecondaryButtonClickListener;
     private boolean mExpanded = true;
     private Drawable mDrawable;
+    private PreferenceViewHolder mHolder;
 
     public SafetyHubExpandablePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -69,12 +78,49 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
         expandButton.setImageDrawable(mDrawable);
         expandButton.setChecked(mExpanded);
         expandButton.setOnClickListener((v) -> setExpanded(!isExpanded()));
+
+        ViewGroup buttonsContainer = (ViewGroup) holder.findViewById(R.id.buttons_container);
+        assert buttonsContainer != null;
+        buttonsContainer.setVisibility(isExpanded() ? View.VISIBLE : View.GONE);
+
+        TextView summary = (TextView) holder.findViewById(android.R.id.summary);
+        assert summary != null;
+        summary.setVisibility(getSummary() != null && isExpanded() ? View.VISIBLE : View.GONE);
+
+        mHolder = holder;
     }
 
     void setExpanded(boolean expanded) {
         if (mExpanded == expanded) return;
         mExpanded = expanded;
+        onExpandedChanged();
         notifyChanged();
+    }
+
+    private void onExpandedChanged() {
+        if (mHolder == null) return;
+        Transition transition = createExpandCollapseTransition();
+
+        LinearLayout preferenceLayout = (LinearLayout) mHolder.itemView;
+
+        // Begin a transition, all layout changes after this call will be animated, onBindViewHolder
+        // will be called next with the layout changes. The animation starts at the next frame.
+        TransitionManager.beginDelayedTransition(preferenceLayout, transition);
+    }
+
+    private Transition createExpandCollapseTransition() {
+        TransitionSet transitionSet = new TransitionSet();
+        transitionSet.setOrdering(TransitionSet.ORDERING_TOGETHER);
+
+        // This transition animates the fade in/out of the summary & buttons.
+        Fade fade = new Fade();
+
+        // This transition animates the height change when the preference expands/collapse, the
+        // transition happens implicitly when the summary & buttons appear/disappear.
+        ChangeBounds changeBounds = new ChangeBounds();
+
+        transitionSet.addTransition(changeBounds).addTransition(fade);
+        return transitionSet;
     }
 
     boolean isExpanded() {
