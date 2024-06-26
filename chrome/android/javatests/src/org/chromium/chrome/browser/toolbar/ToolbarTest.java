@@ -267,7 +267,7 @@ public class ToolbarTest {
         // Set the screen width bucket and trigger an configuration change to force toggle tab strip
         // visibility. This is an test only strategy, as we don't want to actually change the
         // configuration which might result in an activity restart.
-        TabStripTransitionCoordinator.setMinScreenWidthForTesting(10000);
+        TabStripTransitionCoordinator.setHeightTransitionThresholdForTesting(10000);
         TestThreadUtils.runOnUiThreadBlocking(
                 () ->
                         tabStripCallback.onConfigurationChanged(
@@ -288,7 +288,7 @@ public class ToolbarTest {
                                         .getStatusBarColorWithoutStatusIndicator(),
                                 Matchers.equalTo(activity.getToolbarManager().getPrimaryColor())));
 
-        TabStripTransitionCoordinator.setMinScreenWidthForTesting(1);
+        TabStripTransitionCoordinator.setHeightTransitionThresholdForTesting(1);
         TestThreadUtils.runOnUiThreadBlocking(
                 () ->
                         tabStripCallback.onConfigurationChanged(

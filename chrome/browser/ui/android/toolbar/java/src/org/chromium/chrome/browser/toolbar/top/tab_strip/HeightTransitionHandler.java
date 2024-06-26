@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.top.tab_strip;
 
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -37,6 +38,9 @@ import org.chromium.ui.resources.dynamics.DynamicResourceReadyOnceCallback;
  */
 class HeightTransitionHandler {
     private static final String TAG = "DTCStripTransition";
+
+    // Minimum width (in dp) of the screen for the tab strip to be shown.
+    private static final int TRANSITION_THRESHOLD_DP = 412;
 
     private final ObserverList<TabStripHeightObserver> mTabStripHeightObservers =
             new ObserverList<>();
@@ -140,10 +144,11 @@ class HeightTransitionHandler {
         mTabStripHeightObservers.removeObserver(observer);
     }
 
-    void updateTabStripTransitionThreshold(int threshold) {
-        mTabStripTransitionThreshold = threshold;
+    void updateTabStripTransitionThreshold(DisplayMetrics displayMetrics) {
+        mTabStripTransitionThreshold =
+                ViewUtils.dpToPx(displayMetrics, getScreenWidthThresholdDp());
 
-        if (TabStripTransitionCoordinator.sMinScreenWidthForTesting != null) {
+        if (TabStripTransitionCoordinator.sHeightTransitionThresholdForTesting != null) {
             requestTransition();
         }
     }
@@ -166,13 +171,7 @@ class HeightTransitionHandler {
         // created hidden after theme changes. See crbug.com/1511599.
         if (mTabStripWidth <= 0 || controlContainerView().getHeight() == 0) return;
 
-        boolean showTabStrip;
-        // We will always show the tab strip when the desktop windowing mode is changing. This
-        // assumes that the change does not re-open Chrome in a window with a width smaller than the
-        // transition threshold.
-        // TODO(crbug.com/342641516): Support starting a small-width desktop window with the strip
-        // hidden.
-        showTabStrip = mTabStripWidth >= mTabStripTransitionThreshold || mForceUpdateHeight;
+        boolean showTabStrip = mTabStripWidth >= mTabStripTransitionThreshold;
         if (showTabStrip == mTabStripVisible && !mForceUpdateHeight) {
             // Do not transition if visibility does not change, unless we are changing the desktop
             // windowing mode, when we want to continue the transition to update the tab strip top
@@ -244,7 +243,8 @@ class HeightTransitionHandler {
         if (mIsDestroyed) return;
 
         mTabStripVisible = show;
-        int newHeight = show ? calculateTabStripHeight() : 0;
+        // Use a non-zero height when |mForceUpdateHeight| is set.
+        int newHeight = show || mForceUpdateHeight ? calculateTabStripHeight() : 0;
 
         // TODO(crbug.com/41484284): Maybe handle mid-progress pivots for browser controls.
         if (mTransitionFinishedObserver != null) {
@@ -316,7 +316,8 @@ class HeightTransitionHandler {
 
         // Change the height when we change the margin, to reflect the actual
         // tab strip height. Check the height to make sure this is only called once.
-        int height = mTabStripVisible ? calculateTabStripHeight() : 0;
+        // Use a non-zero height when |mForceUpdateHeight| is set.
+        int height = mTabStripVisible || mForceUpdateHeight ? calculateTabStripHeight() : 0;
         if (mTabStripHeight == height) return;
         mTabStripHeight = height;
 
@@ -411,7 +412,7 @@ class HeightTransitionHandler {
 
         assert mTabStripTransitionDelegateSupplier.get() != null
                 : "TabStripTransitionDelegate should be available.";
-        mTabStripTransitionDelegateSupplier.get().onTransitionFinished();
+        mTabStripTransitionDelegateSupplier.get().onHeightTransitionFinished();
 
         if (measureControlContainer) remeasureControlContainer();
     }
@@ -442,5 +443,13 @@ class HeightTransitionHandler {
     private void recordTabStripTransitionFinished(boolean finished) {
         RecordHistogram.recordBooleanHistogram(
                 "Android.DynamicTopChrome.TabStripTransition.Finished", finished);
+    }
+
+    /** Get the min screen width (in dp) required for the tab strip to become visible. */
+    private static int getScreenWidthThresholdDp() {
+        if (TabStripTransitionCoordinator.sHeightTransitionThresholdForTesting != null) {
+            return TabStripTransitionCoordinator.sHeightTransitionThresholdForTesting;
+        }
+        return TRANSITION_THRESHOLD_DP;
     }
 }

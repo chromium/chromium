@@ -10,6 +10,7 @@ import static org.mockito.Mockito.doAnswer;
 
 import static org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator.INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW;
 
+import android.content.ComponentCallbacks;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
@@ -24,6 +25,7 @@ import androidx.test.filters.MediumTest;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,6 +52,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet;
+import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -132,6 +135,51 @@ public class AppHeaderCoordinatorBrowserTest {
                             stripLayoutHelperManager.getHeight() * density,
                             Matchers.equalTo((float) mTestAppHeaderHeight));
                 });
+    }
+
+    @Test
+    @MediumTest
+    public void testToggleTabStripVisibilityInDesktopWindow() {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        triggerDesktopWindowingModeChange(activity, true);
+
+        ComponentCallbacks tabStripCallback =
+                activity.getToolbarManager().getTabStripTransitionCoordinator();
+        Assert.assertNotNull("Tab strip transition callback is null.", tabStripCallback);
+
+        // Set the strip width threshold and trigger a configuration change to force tab strip
+        // visibility. This is a test only strategy, as we don't want to actually change the
+        // configuration which might result in an activity restart.
+
+        // A very large strip width threshold should hide the strip by adding the scrim.
+        TabStripTransitionCoordinator.setFadeTransitionThresholdForTesting(10000);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        tabStripCallback.onConfigurationChanged(
+                                activity.getResources().getConfiguration()));
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                "Tab strip scrim should be visible.",
+                                activity.getLayoutManager()
+                                        .getStripLayoutHelperManager()
+                                        .isStripScrimVisibleForTesting(),
+                                Matchers.equalTo(true)));
+
+        // A very small strip width threshold value should show the strip by removing the scrim.
+        TabStripTransitionCoordinator.setFadeTransitionThresholdForTesting(1);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        tabStripCallback.onConfigurationChanged(
+                                activity.getResources().getConfiguration()));
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                "Tab strip scrim should not be visible.",
+                                activity.getLayoutManager()
+                                        .getStripLayoutHelperManager()
+                                        .isStripScrimVisibleForTesting(),
+                                Matchers.equalTo(false)));
     }
 
     @Test

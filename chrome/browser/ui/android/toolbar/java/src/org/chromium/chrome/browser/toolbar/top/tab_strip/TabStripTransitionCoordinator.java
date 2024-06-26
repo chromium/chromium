@@ -27,18 +27,16 @@ import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider.AppHeaderObserver;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.TokenHolder;
 
 /** Class used to manage tab strip visibility and height updates. */
 public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHeaderObserver {
-    static Integer sMinScreenWidthForTesting;
+    static Integer sHeightTransitionThresholdForTesting;
+    static Integer sFadeTransitionThresholdForTesting;
 
     // Delay to kickoff the transition to avoid frame drops while application is too busy when the
     // configuration changed.
     private static final int TRANSITION_DELAY_MS = 200;
-
-    private static final int DEFAULT_DTC_THRESHOLD_DP = 412;
 
     /** Observes height of tab strip that could change during run time. */
     // TODO(crbug.com/41481630): Rework the observer interface.
@@ -61,8 +59,19 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
          */
         default void onHeightChanged(int newHeight) {}
 
-        /** Notify when the tab strip transition is completed by the browser controls. */
-        default void onTransitionFinished() {}
+        /** Notify when the tab strip height transition is completed by the browser controls. */
+        default void onHeightTransitionFinished() {}
+
+        /**
+         * Called when the tab strip visibility needs to be updated by updating the tab strip scrim
+         * in-place.
+         *
+         * @param startOpacity The scrim opacity at the start of the transition.
+         * @param endOpacity The scrim opacity at the end of the transition.
+         * @param durationMs The duration of the transition animation, in ms.
+         */
+        default void onFadeTransitionRequested(
+                float startOpacity, float endOpacity, int durationMs) {}
     }
 
     private final CallbackController mCallbackController = new CallbackController();
@@ -98,8 +107,9 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
     private TabObscuringHandler.Observer mTabObscuringHandlerObserver;
     private @Nullable Runnable mLayoutTransitionTask;
 
+    // TODO (crbug.com/345849359): Create a base handler class to hold common members.
     private final HeightTransitionHandler mHeightTransitionHandler;
-    private final ScrimTransitionHandler mScrimTransitionHandler;
+    private final FadeTransitionHandler mFadeTransitionHandler;
 
     /**
      * Create the coordinator to manage transitions to show / hide the tab strip.
@@ -135,7 +145,8 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
                         mCallbackController,
                         mHandler,
                         tabStripTransitionDelegateSupplier);
-        mScrimTransitionHandler = new ScrimTransitionHandler();
+        mFadeTransitionHandler =
+                new FadeTransitionHandler(tabStripTransitionDelegateSupplier, mCallbackController);
 
         mTabStripReservedTopPadding =
                 controlContainerView()
@@ -295,21 +306,22 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
         // Block new request for transitions as long as there's any token left.
         if (mDeferTransitionTokenHolder.hasTokens()) return;
 
-        if (!AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider)
-                || mForceUpdateHeight) {
+        boolean isInDesktopWindow =
+                AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider);
+        if (!isInDesktopWindow || mForceUpdateHeight) {
             mHeightTransitionHandler.requestTransition();
             // Reset internal state after use.
             mForceUpdateHeight = false;
-        } else {
-            mScrimTransitionHandler.requestTransition();
+        }
+        if (isInDesktopWindow) {
+            mFadeTransitionHandler.requestTransition();
         }
     }
 
     private void updateTabStripTransitionThreshold() {
         DisplayMetrics displayMetrics = controlContainerView().getResources().getDisplayMetrics();
-        int threshold = ViewUtils.dpToPx(displayMetrics, getScreenWidthThresholdDp());
-
-        mHeightTransitionHandler.updateTabStripTransitionThreshold(threshold);
+        mHeightTransitionHandler.updateTabStripTransitionThreshold(displayMetrics);
+        mFadeTransitionHandler.updateTabStripTransitionThreshold(displayMetrics);
     }
 
     private View controlContainerView() {
@@ -339,6 +351,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
         mTabStripWidth = width;
         mTopPadding = topPadding;
         mHeightTransitionHandler.setTabStripSize(width, topPadding);
+        mFadeTransitionHandler.setTabStripSize(width);
 
         AppHeaderUtils.recordDesktopWindowModeStateEnumHistogram(
                 mDesktopWindowStateProvider,
@@ -356,21 +369,25 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
         mHandler.postDelayed(mLayoutTransitionTask, TRANSITION_DELAY_MS);
     }
 
-    /** Get the min screen width required in DP for the tab strip to become visible. */
-    private static int getScreenWidthThresholdDp() {
-        if (sMinScreenWidthForTesting != null) return sMinScreenWidthForTesting;
-        return DEFAULT_DTC_THRESHOLD_DP;
-    }
-
     // Testing methods.
 
     /**
-     * Set the test override that the min screen size for the tab strip to become visible.
+     * Set the tab strip height transition threshold for testing.
      *
-     * @param screenWidthForTesting Screen size in required for tab strip to become visible.
+     * @param transitionThresholdForTesting Threshold for the tab strip to become visible.
      */
-    public static void setMinScreenWidthForTesting(int screenWidthForTesting) {
-        sMinScreenWidthForTesting = screenWidthForTesting;
-        ResettersForTesting.register(() -> sMinScreenWidthForTesting = null);
+    public static void setHeightTransitionThresholdForTesting(int transitionThresholdForTesting) {
+        sHeightTransitionThresholdForTesting = transitionThresholdForTesting;
+        ResettersForTesting.register(() -> sHeightTransitionThresholdForTesting = null);
+    }
+
+    /**
+     * Set the tab strip fade transition threshold for testing.
+     *
+     * @param transitionThresholdForTesting Threshold for the tab strip to become visible.
+     */
+    public static void setFadeTransitionThresholdForTesting(int transitionThresholdForTesting) {
+        sFadeTransitionThresholdForTesting = transitionThresholdForTesting;
+        ResettersForTesting.register(() -> sFadeTransitionThresholdForTesting = null);
     }
 }

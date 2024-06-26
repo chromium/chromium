@@ -111,8 +111,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarSceneLayer.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/ViewShiftingActionBarDelegate.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/VisibleUrlText.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/tab_strip/FadeTransitionHandler.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/tab_strip/HeightTransitionHandler.java",
-    "java/src/org/chromium/chrome/browser/toolbar/top/tab_strip/ScrimTransitionHandler.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/tab_strip/TabStripTransitionCoordinator.java",
   ]
 
