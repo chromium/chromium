@@ -142,6 +142,7 @@ public class SyncTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
+    @DisabledTest(message = "https://crbug.com/334124078")
     public void testIsSyncingUnencryptedUrlsWhileUsingTrustedVaultPassprhase() {
         mSyncTestRule.getFakeServerHelper().setTrustedVaultNigori(new byte[] {1, 2, 3, 4});
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
