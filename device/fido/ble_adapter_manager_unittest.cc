@@ -4,15 +4,17 @@
 
 #include "device/fido/ble_adapter_manager.h"
 
-#include <map>
 #include <memory>
+#include <string>
 #include <string_view>
 #include <utility>
 
-#include "base/functional/callback_helpers.h"
+#include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -21,7 +23,6 @@
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
-#include "device/fido/test_callback_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -238,10 +239,10 @@ TEST_F(FidoBleAdapterManagerTest, RequestBluetoothPermissionAllowed) {
   SetAdapterPermissions(BluetoothAdapter::PermissionStatus::kAllowed);
   EXPECT_CALL(*adapter(), IsPowered).WillOnce(::testing::Return(true));
 
-  test::ValueCallbackReceiver<BleStatus> callback;
-  fake_request_handler_->RequestBluetoothPermission(callback.callback());
-  callback.WaitForCallback();
-  EXPECT_EQ(callback.value(), BleStatus::kOn);
+  base::test::TestFuture<BleStatus> future;
+  fake_request_handler_->RequestBluetoothPermission(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get(), BleStatus::kOn);
 }
 
 TEST_F(FidoBleAdapterManagerTest, RequestBluetoothPermissionDenied) {
@@ -249,10 +250,10 @@ TEST_F(FidoBleAdapterManagerTest, RequestBluetoothPermissionDenied) {
   SetAdapterPermissions(BluetoothAdapter::PermissionStatus::kDenied);
   EXPECT_CALL(*adapter(), IsPowered).Times(0);
 
-  test::ValueCallbackReceiver<BleStatus> callback;
-  fake_request_handler_->RequestBluetoothPermission(callback.callback());
-  callback.WaitForCallback();
-  EXPECT_EQ(callback.value(), BleStatus::kPermissionDenied);
+  base::test::TestFuture<BleStatus> future;
+  fake_request_handler_->RequestBluetoothPermission(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get(), BleStatus::kPermissionDenied);
 }
 
 // Tests that if the Bluetooth API happens to report the OS permission status as
@@ -264,10 +265,10 @@ TEST_F(FidoBleAdapterManagerTest,
   SetAdapterPermissions(BluetoothAdapter::PermissionStatus::kUndetermined);
   EXPECT_CALL(*adapter(), IsPowered).WillOnce(::testing::Return(true));
 
-  test::ValueCallbackReceiver<BleStatus> callback;
-  fake_request_handler_->RequestBluetoothPermission(callback.callback());
-  callback.WaitForCallback();
-  EXPECT_EQ(callback.value(), BleStatus::kOn);
+  base::test::TestFuture<BleStatus> future;
+  fake_request_handler_->RequestBluetoothPermission(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get(), BleStatus::kOn);
 }
 
 }  // namespace device

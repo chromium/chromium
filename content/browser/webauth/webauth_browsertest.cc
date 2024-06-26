@@ -4,26 +4,31 @@
 
 #include <stdint.h>
 
+#include <cstring>
 #include <memory>
+#include <string>
 #include <string_view>
+#include <tuple>
+#include <utility>
 #include <vector>
 
-#include "base/base64.h"
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/json/json_reader.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/values.h"
+#include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/cbor/reader.h"
 #include "content/browser/payments/stub_payment_credential.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -50,23 +55,22 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/fake_network_url_loader_factory.h"
-#include "crypto/sha2.h"
-#include "crypto/signature_verifier.h"
-#include "device/base/features.h"
 #include "device/fido/fake_fido_discovery.h"
 #include "device/fido/features.h"
-#include "device/fido/fido_discovery_factory.h"
+#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
-#include "device/fido/hid/fake_hid_impl_for_testing.h"
-#include "device/fido/mock_fido_device.h"
-#include "device/fido/p256_public_key.h"
-#include "device/fido/public_key.h"
-#include "device/fido/test_callback_receiver.h"
+#include "device/fido/public_key_credential_params.h"
+#include "device/fido/virtual_fido_device.h"
 #include "device/fido/virtual_fido_device_factory.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
@@ -87,16 +91,15 @@ using blink::mojom::GetAssertionAuthenticatorResponsePtr;
 using blink::mojom::MakeCredentialAuthenticatorResponsePtr;
 using blink::mojom::WebAuthnDOMExceptionDetailsPtr;
 
-using TestCreateCallbackReceiver =
-    device::test::StatusAndValuesCallbackReceiver<
-        AuthenticatorStatus,
-        MakeCredentialAuthenticatorResponsePtr,
-        WebAuthnDOMExceptionDetailsPtr>;
+using TestCreateFuture =
+    base::test::TestFuture<AuthenticatorStatus,
+                           MakeCredentialAuthenticatorResponsePtr,
+                           WebAuthnDOMExceptionDetailsPtr>;
 
-using TestGetCallbackReceiver = device::test::StatusAndValuesCallbackReceiver<
-    AuthenticatorStatus,
-    GetAssertionAuthenticatorResponsePtr,
-    WebAuthnDOMExceptionDetailsPtr>;
+using TestGetFuture =
+    base::test::TestFuture<AuthenticatorStatus,
+                           GetAssertionAuthenticatorResponsePtr,
+                           WebAuthnDOMExceptionDetailsPtr>;
 
 constexpr char kOkMessage[] = "OK";
 
@@ -767,10 +770,10 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
       base::BindLambdaForTesting(
           [&](device::VirtualFidoDevice* device) { return false; });
 
-  TestCreateCallbackReceiver create_callback_receiver;
+  TestCreateFuture create_future;
   authenticator()->MakeCredential(BuildBasicCreateOptions(),
-                                  create_callback_receiver.callback());
-  ASSERT_FALSE(create_callback_receiver.was_called());
+                                  create_future.GetCallback());
+  ASSERT_FALSE(create_future.IsReady());
   EXPECT_TRUE(
       NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title2.html")));
   WaitForConnectionError();
@@ -779,11 +782,11 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
   // navigator.credentials.create({publicKey: ...}) again.
   ConnectToAuthenticator();
   InjectVirtualFidoDeviceFactory();
-  TestCreateCallbackReceiver create_callback_receiver2;
+  TestCreateFuture create_future2;
   authenticator()->MakeCredential(BuildBasicCreateOptions(),
-                                  create_callback_receiver2.callback());
-  create_callback_receiver2.WaitForCallback();
-  EXPECT_EQ(create_callback_receiver2.status(), AuthenticatorStatus::SUCCESS);
+                                  create_future2.GetCallback());
+  EXPECT_TRUE(create_future2.Wait());
+  EXPECT_EQ(std::get<0>(create_future2.Get()), AuthenticatorStatus::SUCCESS);
 }
 
 // Tests that no crash occurs when the implementation is destroyed with a
@@ -796,10 +799,10 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
       base::BindLambdaForTesting(
           [&](device::VirtualFidoDevice* device) { return false; });
 
-  TestGetCallbackReceiver get_callback_receiver;
+  TestGetFuture get_future;
   authenticator()->GetAssertion(BuildBasicGetOptions(),
-                                get_callback_receiver.callback());
-  ASSERT_FALSE(get_callback_receiver.was_called());
+                                get_future.GetCallback());
+  ASSERT_FALSE(get_future.IsReady());
   EXPECT_TRUE(
       NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title2.html")));
   WaitForConnectionError();
@@ -808,11 +811,11 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
   // navigator.credentials.get({publicKey: ...}) again.
   ConnectToAuthenticator();
   InjectVirtualFidoDeviceFactory();
-  TestGetCallbackReceiver get_callback_receiver2;
+  TestGetFuture get_future2;
   authenticator()->GetAssertion(BuildBasicGetOptions(),
-                                get_callback_receiver2.callback());
-  get_callback_receiver2.WaitForCallback();
-  EXPECT_EQ(get_callback_receiver2.status(),
+                                get_future2.GetCallback());
+  EXPECT_TRUE(get_future2.Wait());
+  EXPECT_EQ(std::get<0>(get_future2.Get()),
             AuthenticatorStatus::NOT_ALLOWED_ERROR);
 }
 
@@ -847,11 +850,11 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
     SCOPED_TRACE(AttestationCallbackBehaviorToString(behavior));
 
     InjectVirtualFidoDeviceFactory();
-    TestCreateCallbackReceiver create_callback_receiver;
+    TestCreateFuture create_future;
     auto options = BuildBasicCreateOptions();
     options->attestation = device::AttestationConveyancePreference::kDirect;
     authenticator()->MakeCredential(std::move(options),
-                                    create_callback_receiver.callback());
+                                    create_future.GetCallback());
     bool attestation_callback_was_invoked = false;
     test_state()->attestation_prompt_callback_ = base::BindLambdaForTesting(
         [&](base::OnceCallback<void(bool)> callback) {
@@ -887,11 +890,11 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
       NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title2.html")));
 
   InjectVirtualFidoDeviceFactory();
-  TestCreateCallbackReceiver create_callback_receiver;
+  TestCreateFuture create_future;
   authenticator()->MakeCredential(BuildBasicCreateOptions(),
-                                  create_callback_receiver.callback());
-  create_callback_receiver.WaitForCallback();
-  EXPECT_EQ(create_callback_receiver.status(), AuthenticatorStatus::SUCCESS);
+                                  create_future.GetCallback());
+  EXPECT_TRUE(create_future.Wait());
+  EXPECT_EQ(std::get<0>(create_future.Get()), AuthenticatorStatus::SUCCESS);
 }
 
 // Tests that a navigator.credentials.create({publicKey: ...}) issued at the
@@ -900,13 +903,13 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
                        CreatePublicKeyCredentialRacingWithNavigation) {
   InjectVirtualFidoDeviceFactory();
 
-  TestCreateCallbackReceiver create_callback_receiver;
+  TestCreateFuture create_future;
   auto request_options = BuildBasicCreateOptions();
 
   ClosureExecutorBeforeNavigationCommit executor(
       shell()->web_contents(), base::BindLambdaForTesting([&]() {
         authenticator()->MakeCredential(std::move(request_options),
-                                        create_callback_receiver.callback());
+                                        create_future.GetCallback());
       }));
 
   EXPECT_TRUE(
@@ -916,11 +919,11 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
   // The next active document should be able to successfully call
   // navigator.credentials.create({publicKey: ...}) again.
   ConnectToAuthenticator();
-  TestCreateCallbackReceiver create_callback_receiver2;
+  TestCreateFuture create_future2;
   authenticator()->MakeCredential(BuildBasicCreateOptions(),
-                                  create_callback_receiver2.callback());
-  create_callback_receiver2.WaitForCallback();
-  EXPECT_EQ(AuthenticatorStatus::SUCCESS, create_callback_receiver2.status());
+                                  create_future2.GetCallback());
+  EXPECT_TRUE(create_future2.Wait());
+  EXPECT_EQ(AuthenticatorStatus::SUCCESS, std::get<0>(create_future2.Get()));
 }
 
 // Regression test for https://crbug.com/818219.
@@ -932,16 +935,16 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
       base::BindLambdaForTesting(
           [&](device::VirtualFidoDevice* device) { return false; });
 
-  TestCreateCallbackReceiver callback_receiver_1;
-  TestCreateCallbackReceiver callback_receiver_2;
+  TestCreateFuture future_1;
+  TestCreateFuture future_2;
   authenticator()->MakeCredential(BuildBasicCreateOptions(),
-                                  callback_receiver_1.callback());
+                                  future_1.GetCallback());
   authenticator()->MakeCredential(BuildBasicCreateOptions(),
-                                  callback_receiver_2.callback());
-  callback_receiver_2.WaitForCallback();
+                                  future_2.GetCallback());
+  EXPECT_TRUE(future_2.Wait());
 
-  EXPECT_EQ(AuthenticatorStatus::PENDING_REQUEST, callback_receiver_2.status());
-  EXPECT_FALSE(callback_receiver_1.was_called());
+  EXPECT_EQ(AuthenticatorStatus::PENDING_REQUEST, std::get<0>(future_2.Get()));
+  EXPECT_FALSE(future_1.IsReady());
 }
 
 // Regression test for https://crbug.com/818219.
@@ -953,16 +956,14 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
       base::BindLambdaForTesting(
           [&](device::VirtualFidoDevice* device) { return false; });
 
-  TestGetCallbackReceiver callback_receiver_1;
-  TestGetCallbackReceiver callback_receiver_2;
-  authenticator()->GetAssertion(BuildBasicGetOptions(),
-                                callback_receiver_1.callback());
-  authenticator()->GetAssertion(BuildBasicGetOptions(),
-                                callback_receiver_2.callback());
-  callback_receiver_2.WaitForCallback();
+  TestGetFuture future_1;
+  TestGetFuture future_2;
+  authenticator()->GetAssertion(BuildBasicGetOptions(), future_1.GetCallback());
+  authenticator()->GetAssertion(BuildBasicGetOptions(), future_2.GetCallback());
+  EXPECT_TRUE(future_2.Wait());
 
-  EXPECT_EQ(AuthenticatorStatus::PENDING_REQUEST, callback_receiver_2.status());
-  EXPECT_FALSE(callback_receiver_1.was_called());
+  EXPECT_EQ(AuthenticatorStatus::PENDING_REQUEST, std::get<0>(future_2.Get()));
+  EXPECT_FALSE(future_1.IsReady());
 }
 
 // WebAuthJavascriptClientBrowserTest -----------------------------------------
@@ -1954,12 +1955,12 @@ IN_PROC_BROWSER_TEST_F(WebAuthBrowserCtapTest, TestMakeCredential) {
     auto* virtual_device_factory = InjectVirtualFidoDeviceFactory();
     virtual_device_factory->SetSupportedProtocol(protocol);
 
-    TestCreateCallbackReceiver create_callback_receiver;
+    TestCreateFuture create_future;
     authenticator()->MakeCredential(BuildBasicCreateOptions(),
-                                    create_callback_receiver.callback());
+                                    create_future.GetCallback());
 
-    create_callback_receiver.WaitForCallback();
-    EXPECT_EQ(AuthenticatorStatus::SUCCESS, create_callback_receiver.status());
+    EXPECT_TRUE(create_future.Wait());
+    EXPECT_EQ(AuthenticatorStatus::SUCCESS, std::get<0>(create_future.Get()));
   }
 }
 
@@ -1982,13 +1983,13 @@ IN_PROC_BROWSER_TEST_F(WebAuthBrowserCtapTest,
             device::test_data::kCtap2MakeCredentialCredentialId),
         make_credential_request->relying_party.id));
 
-    TestCreateCallbackReceiver create_callback_receiver;
+    TestCreateFuture create_future;
     authenticator()->MakeCredential(std::move(make_credential_request),
-                                    create_callback_receiver.callback());
+                                    create_future.GetCallback());
 
-    create_callback_receiver.WaitForCallback();
+    EXPECT_TRUE(create_future.Wait());
     EXPECT_EQ(AuthenticatorStatus::CREDENTIAL_EXCLUDED,
-              create_callback_receiver.status());
+              std::get<0>(create_future.Get()));
   }
 }
 
@@ -2002,11 +2003,11 @@ IN_PROC_BROWSER_TEST_F(WebAuthBrowserCtapTest, TestGetAssertion) {
             device::test_data::kTestGetAssertionCredentialId),
         get_assertion_request_params->relying_party_id));
 
-    TestGetCallbackReceiver get_callback_receiver;
+    TestGetFuture get_future;
     authenticator()->GetAssertion(std::move(get_assertion_request_params),
-                                  get_callback_receiver.callback());
-    get_callback_receiver.WaitForCallback();
-    EXPECT_EQ(AuthenticatorStatus::SUCCESS, get_callback_receiver.status());
+                                  get_future.GetCallback());
+    EXPECT_TRUE(get_future.Wait());
+    EXPECT_EQ(AuthenticatorStatus::SUCCESS, std::get<0>(get_future.Get()));
   }
 }
 
@@ -2017,12 +2018,12 @@ IN_PROC_BROWSER_TEST_F(WebAuthBrowserCtapTest,
     virtual_device_factory->SetSupportedProtocol(protocol);
     auto get_assertion_request_params = BuildBasicGetOptions();
 
-    TestGetCallbackReceiver get_callback_receiver;
+    TestGetFuture get_future;
     authenticator()->GetAssertion(std::move(get_assertion_request_params),
-                                  get_callback_receiver.callback());
-    get_callback_receiver.WaitForCallback();
+                                  get_future.GetCallback());
+    EXPECT_TRUE(get_future.Wait());
     EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR,
-              get_callback_receiver.status());
+              std::get<0>(get_future.Get()));
   }
 }
 
@@ -2073,11 +2074,11 @@ IN_PROC_BROWSER_TEST_F(WebAuthBrowserCtapTest,
           device::test_data::kTestGetAssertionCredentialId),
       get_assertion_request_params->relying_party_id));
 
-  TestGetCallbackReceiver get_callback_receiver;
+  TestGetFuture get_future;
   authenticator()->GetAssertion(std::move(get_assertion_request_params),
-                                get_callback_receiver.callback());
-  get_callback_receiver.WaitForCallback();
-  EXPECT_EQ(AuthenticatorStatus::SUCCESS, get_callback_receiver.status());
+                                get_future.GetCallback());
+  EXPECT_TRUE(get_future.Wait());
+  EXPECT_EQ(AuthenticatorStatus::SUCCESS, std::get<0>(get_future.Get()));
 
   EXPECT_THAT(logger->log(), testing::ElementsAre("www.acme.com"));
 }
@@ -2093,12 +2094,12 @@ IN_PROC_BROWSER_TEST_F(WebAuthBrowserCtapTest,
   blink::mojom::PublicKeyCredentialRequestOptionsPtr
       get_assertion_request_params = BuildBasicGetOptions();
 
-  TestGetCallbackReceiver get_callback_receiver;
+  TestGetFuture get_future;
   authenticator()->GetAssertion(std::move(get_assertion_request_params),
-                                get_callback_receiver.callback());
-  get_callback_receiver.WaitForCallback();
+                                get_future.GetCallback());
+  EXPECT_TRUE(get_future.Wait());
   EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR,
-            get_callback_receiver.status());
+            std::get<0>(get_future.Get()));
 
   EXPECT_TRUE(logger->log().empty());
 }

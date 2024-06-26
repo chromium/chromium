@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <tuple>
-
 #include "chrome/browser/webauthn/local_credential_management_win.h"
 
-#include "base/run_loop.h"
+#include <cstdint>
+#include <optional>
+#include <vector>
+
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
-#include "device/fido/test_callback_receiver.h"
+#include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/win/fake_webauthn_api.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,22 +31,22 @@ class LocalCredentialManagementTest : public testing::Test {
   void SetUp() override { api_.set_supports_silent_discovery(true); }
 
   bool HasCredentials() {
-    device::test::TestCallbackReceiver<bool> callback;
-    local_cred_man_.HasCredentials(callback.callback());
+    base::test::TestFuture<bool> future;
+    local_cred_man_.HasCredentials(future.GetCallback());
 
-    callback.WaitForCallback();
-    return std::get<0>(callback.TakeResult());
+    EXPECT_TRUE(future.Wait());
+    return future.Get();
   }
 
   std::optional<std::vector<device::DiscoverableCredentialMetadata>>
   Enumerate() {
-    device::test::TestCallbackReceiver<
+    base::test::TestFuture<
         std::optional<std::vector<device::DiscoverableCredentialMetadata>>>
-        callback;
-    local_cred_man_.Enumerate(callback.callback());
+        future;
+    local_cred_man_.Enumerate(future.GetCallback());
 
-    callback.WaitForCallback();
-    return std::get<0>(callback.TakeResult());
+    EXPECT_TRUE(future.Wait());
+    return future.Get();
   }
 
   // A `BrowserTaskEnvironment` needs to be in-scope in order to create a

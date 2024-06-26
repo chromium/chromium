@@ -4,20 +4,35 @@
 
 #include "device/fido/credential_management_handler.h"
 
+#include <algorithm>
+#include <cstdint>
 #include <memory>
+#include <optional>
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
 
+#include "base/check_op.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "device/fido/credential_management.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
+#include "device/fido/large_blob.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "device/fido/test_callback_receiver.h"
+#include "device/fido/virtual_ctap2_device.h"
+#include "device/fido/virtual_fido_device.h"
 #include "device/fido/virtual_fido_device_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,7 +59,7 @@ class CredentialManagementHandlerTest : public ::testing::Test {
         &virtual_device_factory_,
         base::flat_set<FidoTransportProtocol>{
             FidoTransportProtocol::kUsbHumanInterfaceDevice},
-        ready_callback_.callback(),
+        ready_future_.GetCallback(),
         base::BindRepeating(&CredentialManagementHandlerTest::GetPIN,
                             base::Unretained(this)),
         finished_callback_.callback());
@@ -59,7 +74,7 @@ class CredentialManagementHandlerTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  test::TestCallbackReceiver<> ready_callback_;
+  base::test::TestFuture<void> ready_future_;
   test::StatusAndValuesCallbackReceiver<
       CtapDeviceResponseCode,
       std::optional<std::vector<AggregatedEnumerateCredentialsResponse>>,
@@ -91,7 +106,7 @@ TEST_F(CredentialManagementHandlerTest, TestDeleteCredentials) {
       kCredentialID, rp, user));
 
   auto handler = MakeHandler();
-  ready_callback_.WaitForCallback();
+  ASSERT_TRUE(ready_future_.Wait());
 
   handler->GetCredentials(get_credentials_callback_.callback());
   get_credentials_callback_.WaitForCallback();
@@ -155,7 +170,7 @@ TEST_F(CredentialManagementHandlerTest, TestGarbageCollectLargeBlob_Startup) {
   virtual_device_factory_.mutable_state()->registrations.clear();
 
   auto handler = MakeHandler();
-  ready_callback_.WaitForCallback();
+  EXPECT_TRUE(ready_future_.Wait());
   EXPECT_EQ(virtual_device_factory_.mutable_state()->large_blob,
             empty_large_blob);
 }
@@ -178,7 +193,7 @@ TEST_F(CredentialManagementHandlerTest, TestGarbageCollectLargeBlob_Delete) {
       virtual_device_factory_.mutable_state()->large_blob;
 
   auto handler = MakeHandler();
-  ready_callback_.WaitForCallback();
+  EXPECT_TRUE(ready_future_.Wait());
 
   PublicKeyCredentialRpEntity rp(kRPID, kRPName);
   PublicKeyCredentialUserEntity user(fido_parsing_utils::Materialize(kUserID),
@@ -224,7 +239,7 @@ TEST_F(CredentialManagementHandlerTest,
       virtual_device_factory_.mutable_state()->large_blob;
 
   auto handler = MakeHandler();
-  ready_callback_.WaitForCallback();
+  EXPECT_TRUE(ready_future_.Wait());
 
   PublicKeyCredentialRpEntity rp(kRPID, kRPName);
   PublicKeyCredentialUserEntity user(fido_parsing_utils::Materialize(kUserID),
@@ -277,7 +292,7 @@ TEST_F(CredentialManagementHandlerTest, TestUpdateUserInformation) {
       kCredentialID, rp, user));
 
   auto handler = MakeHandler();
-  ready_callback_.WaitForCallback();
+  EXPECT_TRUE(ready_future_.Wait());
 
   PublicKeyCredentialUserEntity updated_user(
       fido_parsing_utils::Materialize(kUserID), "bobbyr@example.com",
@@ -358,7 +373,7 @@ TEST_F(CredentialManagementHandlerTest,
           base::StrCat({display_name, kTruncatedUTF8}))));
 
   auto handler = MakeHandler();
-  ready_callback_.WaitForCallback();
+  EXPECT_TRUE(ready_future_.Wait());
   handler->GetCredentials(get_credentials_callback_.callback());
   get_credentials_callback_.WaitForCallback();
 
@@ -407,7 +422,7 @@ TEST_F(CredentialManagementHandlerTest, EnumerateCredentialsMultipleRPs) {
   }
 
   auto handler = MakeHandler();
-  ready_callback_.WaitForCallback();
+  EXPECT_TRUE(ready_future_.Wait());
 
   handler->GetCredentials(get_credentials_callback_.callback());
   get_credentials_callback_.WaitForCallback();
