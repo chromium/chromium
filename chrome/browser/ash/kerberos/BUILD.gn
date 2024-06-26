@@ -1,0 +1,65 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("kerberos") {
+  sources = [
+    "kerberos_credentials_manager.cc",
+    "kerberos_credentials_manager.h",
+    "kerberos_credentials_manager_factory.cc",
+    "kerberos_credentials_manager_factory.h",
+    "kerberos_ticket_expiry_notification.cc",
+    "kerberos_ticket_expiry_notification.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/settings/public/constants:mojom",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/authpolicy",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chromeos/ash/components/dbus/kerberos",
+    "//chromeos/ash/components/dbus/kerberos:kerberos_proto",
+    "//chromeos/components/onc",
+    "//chromeos/strings:strings_grit",
+    "//components/keyed_service/core",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/user_manager",
+    "//dbus",
+    "//net",
+    "//ui/base",
+    "//ui/message_center",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "kerberos_credentials_manager_unittest.cc",
+    "kerberos_ticket_expiry_notification_test.cc",
+  ]
+
+  deps = [
+    ":kerberos",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/authpolicy",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/kerberos",
+    "//components/user_manager",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
