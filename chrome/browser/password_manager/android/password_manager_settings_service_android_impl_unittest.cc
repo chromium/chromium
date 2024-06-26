@@ -91,7 +91,6 @@ class PasswordManagerSettingsServiceAndroidImplBaseTest : public testing::Test {
  private:
   void RegisterPrefs();
 
-  CoreAccountInfo sync_account_info_;
   TestingPrefServiceSimple test_pref_service_;
   std::unique_ptr<PasswordManagerSettingsServiceAndroidImpl> settings_service_;
   syncer::TestSyncService test_sync_service_;
@@ -104,8 +103,9 @@ class PasswordManagerSettingsServiceAndroidImplBaseTest : public testing::Test {
 PasswordManagerSettingsServiceAndroidImplBaseTest::
     PasswordManagerSettingsServiceAndroidImplBaseTest() {
   RegisterPrefs();
-  sync_account_info_.email = kTestAccount;
-  test_sync_service_.SetAccountInfo(sync_account_info_);
+  CoreAccountInfo sync_account_info;
+  sync_account_info.email = kTestAccount;
+  test_sync_service_.SetSignedInWithSyncFeatureOn(sync_account_info);
 }
 
 PasswordManagerSettingsServiceAndroidImplBaseTest::

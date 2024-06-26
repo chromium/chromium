@@ -184,33 +184,22 @@ TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnLocalCredentials) {
 
 TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnPasswordSyncState) {
   Init();
-  CoreAccountInfo account;
-  account.email = "account@gmail.com";
-  account.gaia = "account";
-  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
-
-  sync_service()->SetAccountInfo(account);
-  sync_service()->SetHasSyncConsent(false);
-  sync_service()->SetDisableReasons({});
-  sync_service()->SetTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
-  sync_service()->GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet());
+  sync_service()->SetSignedInWithoutSyncFeature();
+  sync_service()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, false);
 
   EXPECT_EQ(controller()->GetPasswordSyncState(),
             ManagePasswordsBubbleController::SyncState::kNotActive);
 
-  sync_service()->GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kPasswords});
+  sync_service()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, true);
   ASSERT_FALSE(sync_service()->IsSyncFeatureEnabled());
 
   EXPECT_EQ(
       controller()->GetPasswordSyncState(),
       ManagePasswordsBubbleController::SyncState::kActiveWithAccountPasswords);
 
-  sync_service()->SetHasSyncConsent(true);
+  sync_service()->SetSignedInWithSyncFeatureOn();
   ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
 
   EXPECT_EQ(controller()->GetPasswordSyncState(),

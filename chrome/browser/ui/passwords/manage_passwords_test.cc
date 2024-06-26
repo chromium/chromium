@@ -210,41 +210,27 @@ void ManagePasswordsTest::SetupMovingPasswords() {
 
 void ManagePasswordsTest::ConfigurePasswordSync(
     SyncConfiguration configuration) {
-  // Some tests (such as move password to account) require a signed in users.
-  // Make sure there is always one.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->profile());
-  AccountInfo info = signin::MakePrimaryAccountAvailable(
-      identity_manager, "test@email.com",
-      configuration == SyncConfiguration::kSyncing
-          ? signin::ConsentLevel::kSync
-          : signin::ConsentLevel::kSignin);
-
   syncer::TestSyncService* sync_service = static_cast<syncer::TestSyncService*>(
       SyncServiceFactory::GetForProfile(browser()->profile()));
-  sync_service->SetAccountInfo(info);
-  sync_service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
-
   switch (configuration) {
-    case SyncConfiguration::kNotSyncing:
-      sync_service->SetHasSyncConsent(false);
-      sync_service->GetUserSettings()->SetSelectedTypes(
-          /*sync_everything=*/false,
-          /*types=*/syncer::UserSelectableTypeSet());
+    case SyncConfiguration::kNotSyncing: {
+      sync_service->SetSignedOut();
       break;
-    case SyncConfiguration::kSyncing:
-      sync_service->SetHasSyncConsent(true);
-      sync_service->GetUserSettings()->SetSelectedTypes(
-          /*sync_everything=*/false,
-          /*types=*/{syncer::UserSelectableType::kPasswords});
+    }
+    case SyncConfiguration::kSyncing: {
+      AccountInfo info = signin::MakePrimaryAccountAvailable(
+          identity_manager, "test@email.com", signin::ConsentLevel::kSync);
+      sync_service->SetSignedInWithSyncFeatureOn(info);
       break;
-    case SyncConfiguration::kAccountStorageOnly:
-      sync_service->SetLocalSyncEnabled(false);
-      sync_service->SetHasSyncConsent(false);
-
-      sync_service->GetUserSettings()->SetSelectedTypes(
-          /* sync_everything = */ true, {});
+    }
+    case SyncConfiguration::kAccountStorageOnly: {
+      AccountInfo info = signin::MakePrimaryAccountAvailable(
+          identity_manager, "test@email.com", signin::ConsentLevel::kSignin);
+      sync_service->SetSignedInWithoutSyncFeature(info);
       break;
+    }
   }
 }
 

@@ -24,15 +24,13 @@ using base::StartsWith;
 //  - bool : when true, the test is setup for RTL interfaces.
 class PasswordBubbleBrowserTest
     : public SupportsTestDialog<ManagePasswordsTest>,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<std::tuple<SyncConfiguration, bool>> {
  public:
   PasswordBubbleBrowserTest() = default;
   ~PasswordBubbleBrowserTest() override = default;
 
   void ShowUi(const std::string& name) override {
-    ConfigurePasswordSync(std::get<0>(GetParam())
-                              ? SyncConfiguration::kSyncing
-                              : SyncConfiguration::kNotSyncing);
+    ConfigurePasswordSync(std::get<0>(GetParam()));
     base::i18n::SetRTLForTesting(std::get<1>(GetParam()));
     if (StartsWith(name, "PendingPasswordBubble",
                    base::CompareCase::SENSITIVE)) {
@@ -102,8 +100,8 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_MoreToFixState) {
 
 IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest,
                        InvokeUi_MoveToAccountStoreBubble) {
-  // This test isn't relevant for sync'ing users.
-  if (std::get<0>(GetParam())) {
+  // This test is only relevant for account storage users.
+  if (std::get<0>(GetParam()) != SyncConfiguration::kAccountStorageOnly) {
     return;
   }
   ShowAndVerifyUi();
@@ -119,6 +117,10 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, AlertAccessibleEvent) {
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PasswordBubbleBrowserTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PasswordBubbleBrowserTest,
+    testing::Combine(testing::Values(SyncConfiguration::kNotSyncing,
+                                     SyncConfiguration::kAccountStorageOnly,
+                                     SyncConfiguration::kSyncing),
+                     testing::Bool()));

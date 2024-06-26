@@ -253,8 +253,8 @@ class MockEnclaveManager : public EnclaveManagerInterface {
  public:
   MockEnclaveManager() = default;
   ~MockEnclaveManager() override = default;
-  MockEnclaveManager(const EnclaveManager&) = delete;
-  MockEnclaveManager(const EnclaveManager&&) = delete;
+  MockEnclaveManager(const MockEnclaveManager&) = delete;
+  MockEnclaveManager& operator=(const MockEnclaveManager&) = delete;
 
   MOCK_METHOD(void, Unenroll, (Callback), (override));
   MOCK_METHOD(bool, is_registered, (), (const override));
@@ -285,14 +285,7 @@ void SetUpSyncInTransportMode(Profile* profile) {
               [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
                 return std::make_unique<syncer::TestSyncService>();
               })));
-  CoreAccountInfo account;
-  account.email = "foo@gmail.com";
-  account.gaia = "foo";
-  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
-  sync_service->SetAccountInfo(account);
-  sync_service->SetDisableReasons({});
-  sync_service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
-  sync_service->SetHasSyncConsent(false);
+  sync_service->SetSignedInWithoutSyncFeature();
   ASSERT_FALSE(sync_service->IsSyncFeatureEnabled());
 }
 
@@ -432,7 +425,7 @@ class PasswordsPrivateDelegateImplTest : public WebAppTest {
     return web_contents;
   }
 
-  syncer::TestSyncService* SyncService();
+  syncer::TestSyncService* sync_service();
 
  protected:
   raw_ptr<extensions::TestEventRouter, DanglingUntriaged> event_router_ =
@@ -523,7 +516,7 @@ PasswordsPrivateDelegateImplTest::GetCredentials(
   return result;
 }
 
-syncer::TestSyncService* PasswordsPrivateDelegateImplTest::SyncService() {
+syncer::TestSyncService* PasswordsPrivateDelegateImplTest::sync_service() {
   return static_cast<syncer::TestSyncService*>(
       SyncServiceFactory::GetForProfile(profile()));
 }
@@ -2220,7 +2213,7 @@ TEST_F(PasswordsPrivateDelegateImplFetchFamilyMembersTest,
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, GetCredentialGroups_SyncOn) {
-  SyncService()->SetHasSyncConsent(true);
+  sync_service()->SetSignedInWithSyncFeatureOn();
 
   auto delegate = CreateDelegate();
 

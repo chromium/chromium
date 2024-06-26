@@ -136,8 +136,7 @@ class DevToolsUIBindingsSyncInfoTest : public testing::Test {
 };
 
 TEST_F(DevToolsUIBindingsSyncInfoTest, SyncDisabled) {
-  sync_service_->SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN});
+  sync_service_->SetSignedOut();
 
   base::Value::Dict info =
       DevToolsUIBindings::GetSyncInformationForProfile(&profile_);
@@ -160,7 +159,7 @@ TEST_F(DevToolsUIBindingsSyncInfoTest, PreferencesNotSynced) {
 TEST_F(DevToolsUIBindingsSyncInfoTest, ImageAlwaysProvided) {
   AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
       "sync@devtools.dev", signin::ConsentLevel::kSync);
-  sync_service_->SetAccountInfo(account_info);
+  sync_service_->SetSignedInWithSyncFeatureOn(account_info);
 
   EXPECT_TRUE(account_info.account_image.IsEmpty());
 

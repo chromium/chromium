@@ -342,7 +342,7 @@ class PromoCardInWebTest : public PromoCardBaseTest {
 };
 
 TEST_F(PromoCardInWebTest, NoPromoIfNotSyncing) {
-  sync_service()->SetHasSyncConsent(false);
+  sync_service()->SetSignedOut();
   ASSERT_FALSE(sync_service()->IsSyncFeatureEnabled());
 
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
@@ -357,7 +357,6 @@ TEST_F(PromoCardInWebTest, NoPromoIfNotSyncing) {
 }
 
 TEST_F(PromoCardInWebTest, PromoIsShownWhenSyncing) {
-  sync_service()->SetLocalSyncEnabled(false);
   ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
 
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
@@ -369,7 +368,6 @@ TEST_F(PromoCardInWebTest, PromoIsShownWhenSyncing) {
 }
 
 TEST_F(PromoCardInWebTest, ShouldShowPromoFirstThreeTimes) {
-  sync_service()->SetLocalSyncEnabled(false);
   ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
 
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
@@ -389,7 +387,6 @@ TEST_F(PromoCardInWebTest, ShouldShowPromoFirstThreeTimes) {
 TEST_F(PromoCardInWebTest, PromoNotShownAfterDismiss) {
   base::HistogramTester histogram_tester;
 
-  sync_service()->SetLocalSyncEnabled(false);
   ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
 
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),

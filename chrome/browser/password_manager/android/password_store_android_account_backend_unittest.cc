@@ -228,7 +228,7 @@ class PasswordStoreAndroidAccountBackendTest : public testing::Test {
         /*sync_everything=*/false, {syncer::UserSelectableType::kPasswords});
     AccountInfo account_info;
     account_info.email = kTestAccount;
-    sync_service_.SetAccountInfo(account_info);
+    sync_service_.SetSignedInWithSyncFeatureOn(account_info);
   }
 
   void DisableSyncFeature() {

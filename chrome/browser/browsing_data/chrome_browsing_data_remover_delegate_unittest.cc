@@ -977,12 +977,7 @@ std::unique_ptr<KeyedService> BuildSyncService(
     content::BrowserContext* context) {
   // Build with sync disabled by default.
   auto service = std::make_unique<syncer::TestSyncService>();
-  service->SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN});
-  service->SetAccountInfo({});
-  service->SetTransportState(syncer::SyncService::TransportState::DISABLED);
-  service->GetUserSettings()->ClearInitialSyncFeatureSetupComplete();
-  service->SetHasSyncConsent(false);
+  service->SetSignedOut();
   return service;
 }
 
@@ -4126,20 +4121,10 @@ class ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest
   }
 
   void OptInToAccountStorage() {
-    CoreAccountInfo account;
-    account.email = "name@account.com";
-    account.gaia = "name";
-    account.account_id = CoreAccountId::FromGaiaId(account.gaia);
-    sync_service()->SetDisableReasons({});
-    sync_service()->SetAccountInfo(account);
-    sync_service()->SetTransportState(
-        syncer::SyncService::TransportState::ACTIVE);
 #if BUILDFLAG(IS_ANDROID)
-    sync_service()->SetHasSyncConsent(true);
-    sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete();
+    sync_service()->SetSignedInWithSyncFeatureOn();
 #else
-    sync_service()->SetHasSyncConsent(false);
-    sync_service()->GetUserSettings()->ClearInitialSyncFeatureSetupComplete();
+    sync_service()->SetSignedInWithoutSyncFeature();
 #endif
     ASSERT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
         GetProfile()->GetPrefs(), sync_service()));
