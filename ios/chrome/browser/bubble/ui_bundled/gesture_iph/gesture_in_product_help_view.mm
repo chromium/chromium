@@ -674,8 +674,8 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
   _blurredSuperview.translatesAutoresizingMaskIntoConstraints = NO;
   _blurredSuperview.clipsToBounds = YES;
   [_blurredSuperview addSubview:blurredBackgroundImageView];
-  blurredBackgroundImageView.frame =
-      [_blurredSuperview convertRect:superview.bounds fromView:superview];
+  blurredBackgroundImageView.frame = [self convertRect:superview.bounds
+                                              fromView:superview];
 
   [self insertSubview:_blurredSuperview atIndex:0];
   AddSameConstraints(_blurredSuperview, self);
