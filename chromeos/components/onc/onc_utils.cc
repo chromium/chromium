@@ -784,6 +784,45 @@ void ExpandStringsInNetworks(const VariableExpander& variable_expander,
   }
 }
 
+void FillInCellularCustomAPNListField(
+    base::Value::Dict& cellular_fields,
+    const base::Value::List* custom_apn_list) {
+  if (cellular_fields.Find(::onc::cellular::kCustomAPNList)) {
+    NET_LOG(DEBUG) << "kCustomAPNList found, skipping";
+    return;
+  }
+
+  NET_LOG(DEBUG) << "Filling in kCustomAPNList with "
+                 << custom_apn_list->DebugString();
+  cellular_fields.Set(::onc::cellular::kCustomAPNList,
+                      custom_apn_list->Clone());
+}
+
+void FillInCellularCustomAPNListFieldsInOncObject(
+    const OncValueSignature& signature,
+    base::Value::Dict& onc_object,
+    const base::Value::List* custom_apn_list) {
+  if (&signature == &kCellularSignature) {
+    FillInCellularCustomAPNListField(onc_object, custom_apn_list);
+  }
+
+  for (auto it : onc_object) {
+    if (!it.second.is_dict()) {
+      continue;
+    }
+
+    const OncFieldSignature* field_signature =
+        GetFieldSignature(signature, it.first);
+    if (!field_signature) {
+      continue;
+    }
+
+    FillInCellularCustomAPNListFieldsInOncObject(
+        *field_signature->value_signature, it.second.GetDict(),
+        custom_apn_list);
+  }
+}
+
 void FillInHexSSIDFieldsInOncObject(const OncValueSignature& signature,
                                     base::Value::Dict& onc_object) {
   if (&signature == &kWiFiSignature)

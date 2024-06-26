@@ -50,6 +50,7 @@
 #include "chromeos/ash/components/network/text_message_suppression_state.h"
 #include "chromeos/ash/components/sync_wifi/network_eligibility_checker.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-shared.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -2712,6 +2713,16 @@ void CrosNetworkConfig::SetPropertiesInternal(const std::string& guid,
                                               base::Value::Dict onc,
                                               SetPropertiesCallback callback) {
   NET_LOG(DEBUG) << "Configuring properties for " << guid << ": " << onc;
+
+  if (features::IsApnRevampAndAllowApnModificationPolicyEnabled()) {
+    if (const base::Value::List* existing_custom_apn_list =
+            NetworkHandler::Get()->network_metadata_store()->GetCustomApnList(
+                guid)) {
+      chromeos::onc::FillInCellularCustomAPNListFieldsInOncObject(
+          chromeos::onc::kNetworkConfigurationSignature, onc,
+          existing_custom_apn_list);
+    }
+  }
 
   int callback_id = callback_id_++;
   set_properties_callbacks_[callback_id] = std::move(callback);

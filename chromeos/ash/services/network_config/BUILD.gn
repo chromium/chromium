@@ -25,6 +25,7 @@ static_library("network_config") {
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/sync_wifi:network_eligibility_checker",
     "//chromeos/ash/components/system",
+    "//chromeos/components/onc",
     "//chromeos/services/network_config/public/cpp",
     "//components/captive_portal/core",
     "//components/device_event_log",

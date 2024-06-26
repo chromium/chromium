@@ -2116,6 +2116,57 @@ TEST_F(CrosNetworkConfigTest, SetProperties) {
             wifi->eap->subject_alt_name_match->active_value[0]->value);
 }
 
+TEST_F(CrosNetworkConfigTest, FillInCustomAPNList) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(/*enabled_features=*/
+                                       {features::kApnRevamp,
+                                        features::kAllowApnModificationPolicy},
+                                       /*disabled_features=*/{});
+
+  TestApnData test_apn1;
+  test_apn1.access_point_name = kCellularTestApn1;
+  test_apn1.name = kCellularTestApnName1;
+  test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault};
+  test_apn1.onc_state = ::onc::cellular_apn::kStateEnabled;
+  test_apn1.id = "apn_id_1";
+
+  auto populated_apn_list = base::Value::List().Append(test_apn1.AsOncApn());
+
+  NetworkHandler::Get()->network_metadata_store()->SetCustomApnList(
+      kCellularGuid, populated_apn_list.Clone());
+
+  std::string service_path = helper()->ConfigureService(base::StringPrintf(
+      kTestApnCellularShillDictFmt, kCellularGuid, shill::kStateIdle,
+      kCellularTestIccid, NetworkProfileHandler::GetSharedProfilePath().c_str(),
+      CreateApnShillDict().c_str()));
+
+  std::optional<base::Value::List> shill_custom_apns =
+      helper()->GetServiceListProperty(service_path,
+                                       shill::kCellularCustomApnListProperty);
+  ASSERT_FALSE(shill_custom_apns.has_value());
+
+  auto config = mojom::ConfigProperties::New();
+  auto cellular_config = mojom::CellularConfigProperties::New();
+  auto new_roaming = mojom::RoamingProperties::New();
+  new_roaming->allow_roaming = false;
+  cellular_config->roaming = std::move(new_roaming);
+  config->type_config = mojom::NetworkTypeConfigProperties::NewCellular(
+      std::move(cellular_config));
+  SetProperties(kCellularGuid, std::move(config));
+
+  shill_custom_apns = helper()->GetServiceListProperty(
+      service_path, shill::kCellularCustomApnListProperty);
+
+  ASSERT_TRUE(shill_custom_apns.has_value());
+  EXPECT_EQ(1u, shill_custom_apns->size());
+  const std::string* apn_name =
+      shill_custom_apns->front().GetDict().FindString(shill::kApnNameProperty);
+  EXPECT_EQ(kCellularTestApnName1, *apn_name);
+  const std::string* apn_type =
+      shill_custom_apns->front().GetDict().FindString(shill::kApnTypesProperty);
+  EXPECT_EQ(shill::kApnTypeDefault, *apn_type);
+}
+
 TEST_F(CrosNetworkConfigTest, CustomAPN) {
   SetupAPNList();
   // Verify that setting APN to an entry that already exists in apn list
