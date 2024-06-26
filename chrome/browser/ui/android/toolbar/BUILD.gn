@@ -274,7 +274,6 @@ android_resources("java_resources") {
     "java/res/drawable/toolbar_button_highlight_layer_list.xml",
     "java/res/drawable/toolbar_button_ripple.xml",
     "java/res/drawable/toolbar_menu_button_ripple.xml",
-    "java/res/drawable/toolbar_tab_switcher_button_ripple.xml",
     "java/res/layout/adaptive_toolbar_header_preference.xml",
     "java/res/layout/bottom_control_container.xml",
     "java/res/layout/control_container.xml",

@@ -52,9 +52,7 @@ found in the LICENSE file.
 
         <org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton
             android:id="@+id/tab_switcher_button"
-            style="@style/ToolbarButton"
-            android:background="@drawable/toolbar_tab_switcher_button_ripple"
-            android:paddingStart="@dimen/toolbar_tab_switcher_button_padding"
+            style="@style/ToolbarHoverableButton"
             android:layout_gravity="top"
             android:contentDescription="@string/accessibility_toolbar_btn_tabswitcher_toggle_default"
             app:menuMaxWidth="@dimen/tab_switcher_menu_width"
