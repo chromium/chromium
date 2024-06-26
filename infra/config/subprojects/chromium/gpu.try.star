@@ -316,13 +316,12 @@ gpu_linux_builder(
 )
 
 def gpu_mac_builder(*, name, **kwargs):
+    kwargs["cpu"] = kwargs.get("cpu", None)
     return try_.builder(
         name = name,
         builder_group = "tryserver.chromium.mac",
         builderless = True,
         cores = None,
-        # Builders can run on either Intel or Apple Silicon hadware.
-        cpu = None,
         os = os.MAC_ANY,
         ssd = None,
         **kwargs
@@ -386,6 +385,7 @@ gpu_mac_builder(
     ],
     gn_args = "ci/GPU FYI Mac arm64 Builder",
     pool = "luci.chromium.gpu.mac.arm64.apple.m1.try",
+    cpu = cpu.ARM64,
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
