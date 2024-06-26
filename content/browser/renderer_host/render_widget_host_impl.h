@@ -607,8 +607,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // caller to do so manually.
   void EnsureReadyForSyntheticGestures(base::OnceClosure on_ready);
 
-  void TakeSyntheticGestureController(RenderWidgetHostImpl* host);
-
   // Update the composition node of the renderer (or WebKit).
   // WebKit has a special node (a composition node) for input method to change
   // its text without affecting any other DOM nodes. When the input method

@@ -67,10 +67,6 @@ class CONTENT_EXPORT SyntheticGestureController {
 
   void EnsureRendererInitialized(base::OnceClosure on_completed);
 
-  void UpdateSyntheticGestureTarget(
-      std::unique_ptr<SyntheticGestureTarget> gesture_target,
-      Delegate* delegate);
-
   // Returns true if the current gesture requires the RenderWidgetHost to be
   // visible in order to correctly dispatch events to it and the RWH is
   // currently hidden.
