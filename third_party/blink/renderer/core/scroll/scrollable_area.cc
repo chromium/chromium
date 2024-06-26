@@ -237,9 +237,7 @@ ScrollOffset ScrollableArea::ResolveScrollDelta(
     step.Scale(page_scale_factor);
 
     gfx::Vector2dF pixel_delta =
-        cc::ScrollUtils::ResolveScrollPercentageToPixels(
-            delta, step, viewport, /* clamp_delta_to_one= */
-            !RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
+        cc::ScrollUtils::ResolveScrollPercentageToPixels(delta, step, viewport);
 
     // Rescale back to rootframe coordinates.
     pixel_delta.Scale(1 / page_scale_factor);
