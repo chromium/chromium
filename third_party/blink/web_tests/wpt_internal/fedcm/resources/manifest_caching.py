@@ -1,8 +1,7 @@
 import importlib
 import time
 
-error_checker = importlib.import_module(
-    "credential-management.support.fedcm.request-params-check")
+error_checker = importlib.import_module("fedcm.support.request-params-check")
 
 last_load_time_key = "abff7d6a-e997-4afa-9281-09a34595eaad"
 
