@@ -354,7 +354,7 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
     client().set_page_visibility(1, true);
   }
 
-  void ApplyStrokeWithMousePoints(
+  void ApplyStrokeWithMouseAtPoints(
       const gfx::PointF& mouse_down_point,
       base::span<const gfx::PointF> mouse_move_points,
       const gfx::PointF& mouse_up_point,
@@ -390,7 +390,7 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
         CreateSetAnnotationModeMessage(annotation_mode_enabled)));
     EXPECT_EQ(annotation_mode_enabled, ink_module().enabled());
 
-    ApplyStrokeWithMousePoints(
+    ApplyStrokeWithMouseAtPoints(
         kMouseDownLocation, base::span_from_ref(kMouseMoveLocation),
         kMouseUpLocation,
         /*expect_mouse_events_handled=*/annotation_mode_enabled);
@@ -498,7 +498,7 @@ TEST_F(PdfInkModuleStrokeTest, StrokeOutsidePage) {
 
   // A stroke that starts outside of any page does not generate a stroke, even
   // if it crosses into a page.
-  ApplyStrokeWithMousePoints(
+  ApplyStrokeWithMouseAtPoints(
       kTwoPageVerticalLayoutPointOutsidePages,
       base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage0),
       kTwoPageVerticalLayoutPoint3InsidePage0,
@@ -515,7 +515,7 @@ TEST_F(PdfInkModuleStrokeTest, StrokeInsidePages) {
   EXPECT_TRUE(ink_module().GetStrokesInputPositionsForTesting().empty());
 
   // A stroke in the first page generates a stroke only for that page.
-  ApplyStrokeWithMousePoints(
+  ApplyStrokeWithMouseAtPoints(
       kTwoPageVerticalLayoutPoint1InsidePage0,
       base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage0),
       kTwoPageVerticalLayoutPoint3InsidePage0,
@@ -527,7 +527,7 @@ TEST_F(PdfInkModuleStrokeTest, StrokeInsidePages) {
               ElementsAre(Pair(0, testing::SizeIs(1))));
 
   // A stroke in the second page generates a stroke only for that page.
-  ApplyStrokeWithMousePoints(
+  ApplyStrokeWithMouseAtPoints(
       kTwoPageVerticalLayoutPoint1InsidePage1,
       base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage1),
       kTwoPageVerticalLayoutPoint3InsidePage1,
@@ -550,7 +550,7 @@ TEST_F(PdfInkModuleStrokeTest, StrokeAcrossPages) {
 
   // A stroke that starts in first page and ends in the second page only
   // generates one stroke in the first page.
-  ApplyStrokeWithMousePoints(
+  ApplyStrokeWithMouseAtPoints(
       kTwoPageVerticalLayoutPoint1InsidePage0,
       base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage1),
       kTwoPageVerticalLayoutPoint3InsidePage1,
@@ -575,10 +575,10 @@ TEST_F(PdfInkModuleStrokeTest, StrokePageExitAndRentry) {
       gfx::PointF(10.0f, 5.0f), gfx::PointF(10.0f, 0.0f),
       gfx::PointF(15.0f, 0.0f), gfx::PointF(15.0f, 5.0f),
       gfx::PointF(15.0f, 10.0f)};
-  ApplyStrokeWithMousePoints(kTwoPageVerticalLayoutPoint1InsidePage0,
-                             kStrokeMoves,
-                             kTwoPageVerticalLayoutPoint3InsidePage0,
-                             /*expect_mouse_events_handled=*/true);
+  ApplyStrokeWithMouseAtPoints(kTwoPageVerticalLayoutPoint1InsidePage0,
+                               kStrokeMoves,
+                               kTwoPageVerticalLayoutPoint3InsidePage0,
+                               /*expect_mouse_events_handled=*/true);
 
   const PdfInkModule::DocumentStrokeInputPointsMap document_strokes_positions =
       ink_module().GetStrokesInputPositionsForTesting();
