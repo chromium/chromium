@@ -36,6 +36,12 @@ js_files = [
   "paper-spinner/paper-spinner-styles.js",
 ]
 
+# Also needed on LaCros for Print Preview. Remove once CrOS Print Preview
+# launches.
+if (is_chromeos) {
+  js_files += [ "iron-fit-behavior/iron-fit-behavior.js" ]
+}
+
 if (is_chromeos_ash) {
   js_files += [
     "iron-a11y-announcer/iron-a11y-announcer.js",
@@ -43,7 +49,6 @@ if (is_chromeos_ash) {
     "iron-collapse/iron-collapse.js",
     "iron-dropdown/iron-dropdown.js",
     "iron-dropdown/iron-dropdown-scroll-manager.js",
-    "iron-fit-behavior/iron-fit-behavior.js",
     "iron-location/iron-location.js",
     "iron-location/iron-query-params.js",
     "iron-overlay-behavior/iron-focusables-helper.js",
@@ -195,7 +200,6 @@ ts_library("library") {
     "components-chromium/iron-a11y-keys-behavior/iron-a11y-keys-behavior.d.ts",
     "components-chromium/iron-a11y-keys/iron-a11y-keys.d.ts",
     "components-chromium/iron-behaviors/iron-control-state.d.ts",
-    "components-chromium/iron-fit-behavior/iron-fit-behavior.d.ts",
     "components-chromium/iron-flex-layout/iron-flex-layout-classes.d.ts",
     "components-chromium/iron-icon/iron-icon.d.ts",
     "components-chromium/iron-iconset-svg/iron-iconset-svg.d.ts",
@@ -265,13 +269,19 @@ ts_library("library") {
     "components-chromium/polymer/polymer-legacy.d.ts",
   ]
 
+  # Also needed on LaCros for Print Preview. Remove once CrOS Print Preview
+  # launches.
+  if (is_chromeos) {
+    definitions +=
+        [ "components-chromium/iron-fit-behavior/iron-fit-behavior.d.ts" ]
+  }
+
   if (is_chromeos_ash) {
     definitions += [
       "components-chromium/iron-a11y-announcer/iron-a11y-announcer.d.ts",
       "components-chromium/iron-collapse/iron-collapse.d.ts",
       "components-chromium/iron-dropdown/iron-dropdown.d.ts",
       "components-chromium/iron-dropdown/iron-dropdown-scroll-manager.d.ts",
-      "components-chromium/iron-fit-behavior/iron-fit-behavior.d.ts",
       "components-chromium/iron-location/iron-location.d.ts",
       "components-chromium/iron-location/iron-query-params.d.ts",
       "components-chromium/iron-overlay-behavior/iron-focusables-helper.d.ts",
