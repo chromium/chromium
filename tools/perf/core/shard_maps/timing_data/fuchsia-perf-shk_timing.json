@@ -24,11 +24,11 @@
         "name": "media.mobile/video.html?src=foodmarket_720p30fps.mp4"
     },
     {
-        "duration": "24.0",
+        "duration": "23.0",
         "name": "media.mobile/video.html?src=tulip2.m4a&type=audio"
     },
     {
-        "duration": "24.0",
+        "duration": "23.0",
         "name": "media.mobile/video.html?src=tulip2.mp3&type=audio"
     },
     {
@@ -44,7 +44,7 @@
         "name": "media.mobile/video.html?src=tulip2.mp4&busyjs"
     },
     {
-        "duration": "26.0",
+        "duration": "25.0",
         "name": "media.mobile/video.html?src=tulip2.ogg&type=audio"
     },
     {
@@ -52,7 +52,7 @@
         "name": "media.mobile/video.html?src=tulip2.ogg&type=audio&seek"
     },
     {
-        "duration": "26.0",
+        "duration": "25.0",
         "name": "media.mobile/video.html?src=tulip2.vp9.webm"
     },
     {
@@ -60,15 +60,15 @@
         "name": "media.mobile/video.html?src=tulip2.vp9.webm&background"
     },
     {
-        "duration": "26.0",
+        "duration": "25.0",
         "name": "media.mobile/video.html?src=tulip2.vp9.webm_WiFi"
     },
     {
-        "duration": "350.0",
+        "duration": "352.0",
         "name": "speedometer2/Speedometer2"
     },
     {
-        "duration": "519.0",
+        "duration": "507.0",
         "name": "speedometer3/Speedometer3"
     }
 ]

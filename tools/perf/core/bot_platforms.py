@@ -960,13 +960,13 @@ LACROS_X86_PERF = PerfPlatform('lacros-x86-perf', '', _LACROS_BENCHMARK_CONFIGS,
 FUCHSIA_PERF_NELSON = PerfPlatform('fuchsia-perf-nsn',
                                    '',
                                    _FUCHSIA_PERF_NELSON_BENCHMARK_CONFIGS,
-                                   2,
+                                   3,
                                    'fuchsia',
                                    is_fyi=True)
 FUCHSIA_PERF_SHERLOCK = PerfPlatform('fuchsia-perf-shk',
                                      '',
                                      _FUCHSIA_PERF_SHERLOCK_BENCHMARK_CONFIGS,
-                                     2,
+                                     3,
                                      'fuchsia',
                                      is_fyi=True)
 
