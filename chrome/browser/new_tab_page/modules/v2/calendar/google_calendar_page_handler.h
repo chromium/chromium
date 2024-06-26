@@ -31,8 +31,7 @@ class GoogleCalendarPageHandler
       mojo::PendingReceiver<ntp::calendar::mojom::GoogleCalendarPageHandler>
           handler,
       Profile* profile,
-      std::unique_ptr<google_apis::RequestSender> sender,
-      google_apis::calendar::CalendarApiUrlGenerator url_generator);
+      std::unique_ptr<google_apis::RequestSender> sender);
   GoogleCalendarPageHandler(
       mojo::PendingReceiver<ntp::calendar::mojom::GoogleCalendarPageHandler>
           handler,

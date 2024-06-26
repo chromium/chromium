@@ -146,23 +146,19 @@ GoogleCalendarPageHandler::GoogleCalendarPageHandler(
     mojo::PendingReceiver<ntp::calendar::mojom::GoogleCalendarPageHandler>
         handler,
     Profile* profile,
-    std::unique_ptr<google_apis::RequestSender> sender,
-    google_apis::calendar::CalendarApiUrlGenerator url_generator)
+    std::unique_ptr<google_apis::RequestSender> sender)
     : handler_(this, std::move(handler)),
       profile_(profile),
       pref_service_(profile_->GetPrefs()),
-      sender_(std::move(sender)),
-      url_generator_(std::move(url_generator)) {}
+      sender_(std::move(sender)) {}
 
 GoogleCalendarPageHandler::GoogleCalendarPageHandler(
     mojo::PendingReceiver<ntp::calendar::mojom::GoogleCalendarPageHandler>
         handler,
     Profile* profile)
-    : GoogleCalendarPageHandler(
-          std::move(handler),
-          std::move(profile),
-          MakeSender(profile),
-          google_apis::calendar::CalendarApiUrlGenerator()) {}
+    : GoogleCalendarPageHandler(std::move(handler),
+                                std::move(profile),
+                                MakeSender(profile)) {}
 
 GoogleCalendarPageHandler::~GoogleCalendarPageHandler() = default;
 
@@ -191,9 +187,10 @@ void GoogleCalendarPageHandler::GetEvents(GetEventsCallback callback) {
             base::BindOnce(&GoogleCalendarPageHandler::OnRequestComplete,
                            base::Unretained(this), std::move(callback)),
             /*start_time=*/base::Time::Now(),
-            /*end_time=*/base::Time::Now() + base::Hours(12),
+            /*end_time=*/base::Time::Now() +
+                ntp_features::kNtpCalendarModuleWindowLengthParam.Get(),
             /*event_types=*/event_types,
-            /*experiment=*/"ntp-calendar",
+            ntp_features::kNtpCalendarModuleExperimentParam.Get(),
             /*order_by=*/"startTime"));
   }
 }

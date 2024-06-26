@@ -4,6 +4,8 @@
 
 #include "components/search/ntp_features.h"
 
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
@@ -538,10 +540,18 @@ const char kNtpTabResumptionModuleVisibilityThresholdDataParam[] =
     "NtpTabResumptionModuleVisibilityThresholdDataParam";
 const char kWallpaperSearchHatsDelayParam[] = "WallpaperSearchHatsDelayParam";
 
+const base::FeatureParam<std::string> kNtpCalendarModuleExperimentParam(
+    &ntp_features::kNtpCalendarModule,
+    "NtpCalendarModuleMaxExperimentParam",
+    "ntp-calendar");
 const base::FeatureParam<int> kNtpCalendarModuleMaxEventsParam(
     &ntp_features::kNtpCalendarModule,
     "NtpCalendarModuleMaxEventsParam",
     6);
+const base::FeatureParam<base::TimeDelta> kNtpCalendarModuleWindowLengthParam(
+    &ntp_features::kNtpCalendarModule,
+    "NtpCalendarModuleWindowLengthParam",
+    base::Hours(12));
 const base::FeatureParam<bool> kNtpRealboxCr23ExpandedStateBgMatchesOmnibox(
     &ntp_features::kRealboxCr23Theming,
     "kNtpRealboxCr23ExpandedStateBgMatchesOmnibox",

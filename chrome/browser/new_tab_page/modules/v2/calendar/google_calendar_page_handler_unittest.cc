@@ -125,20 +125,31 @@ class GoogleCalendarPageHandlerTest : public testing::Test {
   }
 
   std::unique_ptr<GoogleCalendarPageHandler> CreateHandlerWithTestData(
+      GURL request_url,
       const std::string& test_data) {
-    google_apis::calendar::CalendarApiUrlGenerator url_generator;
-    url_generator.SetBaseUrlForTesting("https://foo.com/");
-    std::vector<google_apis::calendar::EventType> event_types = {
-        google_apis::calendar::EventType::kDefault};
-    SetUpEventsResponse(
-        url_generator.GetCalendarEventListUrl(
-            "primary", base::Time::Now(), base::Time::Now() + base::Hours(12),
-            true, 1, 2500, event_types, "ntp-calendar", "startTime"),
-        test_data);
+    SetUpEventsResponse(request_url, test_data);
     return std::make_unique<GoogleCalendarPageHandler>(
         mojo::PendingReceiver<
             ntp::calendar::mojom::GoogleCalendarPageHandler>(),
-        profile_.get(), MakeRequestSender(), std::move(url_generator));
+        profile_.get(), MakeRequestSender());
+  }
+
+  std::unique_ptr<GoogleCalendarPageHandler> CreateHandlerWithTestData(
+      const std::string& test_data) {
+    google_apis::calendar::CalendarApiUrlGenerator url_generator;
+    std::vector<google_apis::calendar::EventType> event_types = {
+        google_apis::calendar::EventType::kDefault};
+    return CreateHandlerWithTestData(
+        url_generator.GetCalendarEventListUrl(
+            /*calendar_id=*/"primary",
+            /*start_time=*/base::Time::Now(),
+            /*end_time=*/base::Time::Now() + base::Hours(12),
+            /*single_events=*/true,
+            /*max_attendees=*/1,
+            /*max_results=*/2500, event_types,
+            /*experiment=*/"ntp-calendar",
+            /*order_by=*/"startTime"),
+        test_data);
   }
 
   void SetUpEventsResponse(GURL request_url, const std::string& response) {
@@ -328,7 +339,10 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
 
 TEST_F(GoogleCalendarPageHandlerTest, GetEventsWithFeatureParams) {
   base::FieldTrialParams params;
+  params[ntp_features::kNtpCalendarModuleExperimentParam.name] =
+      "test_experiment_param";
   params[ntp_features::kNtpCalendarModuleMaxEventsParam.name] = "3";
+  params[ntp_features::kNtpCalendarModuleWindowLengthParam.name] = "8h";
   feature_list().Reset();
   feature_list().InitAndEnableFeatureWithParameters(
       ntp_features::kNtpCalendarModule, params);
@@ -342,11 +356,27 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEventsWithFeatureParams) {
             response = std::move(events);
           }));
 
+  // Setting the request url here tests that the feature params are working
+  // properly. If they are not, the url loader won't intercept the call.
+  // This has to match the same values passed by the handler.
+  google_apis::calendar::CalendarApiUrlGenerator url_generator;
+  std::vector<google_apis::calendar::EventType> event_types = {
+      google_apis::calendar::EventType::kDefault};
   std::string json;
   bool data_success = CreateEventsJson(&json);
   ASSERT_TRUE(data_success);
   std::unique_ptr<GoogleCalendarPageHandler> handler =
-      CreateHandlerWithTestData(std::move(json));
+      CreateHandlerWithTestData(
+          url_generator.GetCalendarEventListUrl(
+              /*calendar_id=*/"primary",
+              /*start_time=*/base::Time::Now(),
+              /*end_time=*/base::Time::Now() + base::Hours(8),
+              /*single_events=*/true,
+              /*max_attendees*/ 1,
+              /*max_results*/ 2500, event_types,
+              /*experiment=*/"test_experiment_param",
+              /*order_by=*/"startTime"),
+          json);
 
   base::RunLoop run_loop;
   handler->GetEvents(
