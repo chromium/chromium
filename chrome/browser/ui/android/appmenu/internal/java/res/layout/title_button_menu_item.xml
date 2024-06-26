@@ -16,7 +16,7 @@ found in the LICENSE file.
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:app="http://schemas.android.com/apk/res-auto"
               android:layout_width="match_parent"
-              android:layout_height="?android:attr/listPreferredItemHeightSmall"
+              android:layout_height="wrap_content"
               android:gravity="center_vertical"
               android:orientation="horizontal">
 
@@ -24,16 +24,16 @@ found in the LICENSE file.
         android:id="@+id/title"
         style="@style/AppMenuItemTextViewWithCompoundDrawables"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
         android:paddingStart="16dp"
-        android:background="?attr/listChoiceBackgroundIndicator"/>
+        android:minHeight="?android:attr/listPreferredItemHeightSmall" />
 
     <!-- Checkbox.  Paddings account for built-in padding from the Android resource. -->
     <org.chromium.chrome.browser.ui.appmenu.AppMenuItemIcon
         android:id="@+id/checkbox"
         android:layout_width="56dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="?attr/listChoiceBackgroundIndicator"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
@@ -49,7 +49,7 @@ found in the LICENSE file.
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/button"
         android:layout_width="56dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="?attr/listChoiceBackgroundIndicator"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
