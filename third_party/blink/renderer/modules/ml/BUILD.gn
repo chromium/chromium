@@ -26,6 +26,8 @@ blink_modules_sources("ml") {
     "webnn/ml_activation.h",
     "webnn/ml_buffer.cc",
     "webnn/ml_buffer.h",
+    "webnn/ml_constant_operand.cc",
+    "webnn/ml_constant_operand.h",
     "webnn/ml_error.cc",
     "webnn/ml_error.h",
     "webnn/ml_graph.cc",

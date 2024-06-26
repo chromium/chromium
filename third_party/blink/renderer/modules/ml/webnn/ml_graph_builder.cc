@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_constant_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_error.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.h"
@@ -783,9 +784,9 @@ base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
           graph_info->id_to_operand_map.insert(
               operand_id,
               mojo::ConvertTo<webnn::mojom::blink::OperandPtr>(operand.Get()));
-          //  Build the map of constant operands for this graph with the id.
-          graph_info->constant_id_to_buffer_map.insert(operand_id,
-                                                       operand->Bytes());
+          // Build the map of constant operands for this graph with the id.
+          graph_info->constant_id_to_buffer_map.insert(
+              operand_id, operand->AsConstantOperand()->Bytes());
           operand_to_id_map.insert(operand, operand_id);
           break;
         }
@@ -860,13 +861,30 @@ MLOperand* MLGraphBuilder::input(String name,
 MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
                                     NotShared<DOMArrayBufferView> buffer_view,
                                     ExceptionState& exception_state) {
-  auto constant_operand = MLOperand::ValidateAndCreateConstant(
-      this, desc->dataType().AsEnum(), desc->dimensions(), buffer_view.Get());
-  if (!constant_operand.has_value()) {
-    exception_state.ThrowTypeError(constant_operand.error());
+  CHECK(buffer_view);
+
+  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
+      webnn::OperandDescriptor descriptor,
+      webnn::OperandDescriptor::Create(
+          FromBlinkDataType(desc->dataType().AsEnum()), desc->dimensions()));
+
+  if (GetArrayBufferViewType(descriptor.data_type()) !=
+      buffer_view->GetType()) {
+    exception_state.ThrowTypeError(
+        "The buffer view type doesn't match the operand data type.");
     return nullptr;
   }
-  return constant_operand.value();
+
+  if (descriptor.PackedByteLength() != buffer_view->byteLength()) {
+    exception_state.ThrowTypeError(String::Format(
+        "The buffer view byte length (%zu) doesn't match the "
+        "expected byte length (%zu).",
+        buffer_view->byteLength(), descriptor.PackedByteLength()));
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<MLConstantOperand>(
+      this, std::move(descriptor), Vector<uint8_t>(buffer_view->ByteSpan()));
 }
 
 MLOperand* MLGraphBuilder::argMin(const MLOperand* input,

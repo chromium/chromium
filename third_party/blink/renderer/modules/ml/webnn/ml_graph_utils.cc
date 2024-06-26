@@ -207,6 +207,30 @@ MLNamedArrayBufferViews* CreateNamedArrayBufferViews(
   return target_views;
 }
 
+DOMArrayBufferView::ViewType GetArrayBufferViewType(
+    webnn::OperandDataType data_type) {
+  switch (data_type) {
+    case webnn::OperandDataType::kFloat32:
+      return DOMArrayBufferView::ViewType::kTypeFloat32;
+    case webnn::OperandDataType::kFloat16:
+      // Using Uint16Array for float16 is a workaround of WebNN spec issue:
+      // https://github.com/webmachinelearning/webnn/issues/127
+      return DOMArrayBufferView::ViewType::kTypeUint16;
+    case webnn::OperandDataType::kInt32:
+      return DOMArrayBufferView::ViewType::kTypeInt32;
+    case webnn::OperandDataType::kUint32:
+      return DOMArrayBufferView::ViewType::kTypeUint32;
+    case webnn::OperandDataType::kInt64:
+      return DOMArrayBufferView::ViewType::kTypeBigInt64;
+    case webnn::OperandDataType::kUint64:
+      return DOMArrayBufferView::ViewType::kTypeBigUint64;
+    case webnn::OperandDataType::kInt8:
+      return DOMArrayBufferView::ViewType::kTypeInt8;
+    case webnn::OperandDataType::kUint8:
+      return DOMArrayBufferView::ViewType::kTypeUint8;
+  }
+}
+
 Vector<uint32_t> CreateDefaultPermutation(const wtf_size_t rank) {
   Vector<uint32_t> default_permutation(rank);
   for (wtf_size_t i = 0; i < rank; ++i) {

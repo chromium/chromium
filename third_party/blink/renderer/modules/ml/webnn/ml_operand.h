@@ -7,13 +7,10 @@
 
 #include <optional>
 
-#include "base/containers/span.h"
 #include "base/types/expected.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
-#include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -21,13 +18,11 @@
 
 namespace blink {
 
+class MLConstantOperand;
 class MLGraphBuilder;
 class MLOperator;
 
-DOMArrayBufferView::ViewType GetArrayBufferViewType(
-    webnn::OperandDataType data_type);
-
-class MODULES_EXPORT MLOperand final : public ScriptWrappable {
+class MODULES_EXPORT MLOperand : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -39,11 +34,6 @@ class MODULES_EXPORT MLOperand final : public ScriptWrappable {
       V8MLOperandDataType::Enum data_type,
       Vector<uint32_t> dimensions,
       String name);
-  static base::expected<MLOperand*, String> ValidateAndCreateConstant(
-      MLGraphBuilder* builder,
-      V8MLOperandDataType::Enum data_type,
-      Vector<uint32_t> dimensions,
-      const DOMArrayBufferView* array_buffer_view);
   // Similar to the methods above, but since we're passed `descriptor` we can
   // skip the validation.
   static MLOperand* CreateOutput(MLGraphBuilder* builder,
@@ -66,7 +56,6 @@ class MODULES_EXPORT MLOperand final : public ScriptWrappable {
   MLGraphBuilder* Builder() const;
   webnn::mojom::blink::Operand::Kind Kind() const;
   const String& Name() const;
-  base::span<const uint8_t> Bytes() const;
   const MLOperator* Operator() const;
 
   // Convenience methods for accessing native types, which avoid a copy
@@ -90,7 +79,9 @@ class MODULES_EXPORT MLOperand final : public ScriptWrappable {
   V8MLOperandDataType dataType() const;
   Vector<uint32_t> shape() const;
 
- private:
+  MLConstantOperand const* AsConstantOperand() const;
+
+ protected:
   Member<MLGraphBuilder> builder_;
 
   const webnn::mojom::blink::Operand::Kind kind_;
@@ -103,9 +94,6 @@ class MODULES_EXPORT MLOperand final : public ScriptWrappable {
   // https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-input, only input operand
   // is created with a name.
   String name_;
-  // Bytes associated with a constant operand. See
-  // https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-constant.
-  Vector<uint8_t> constant_bytes_;
   // The operator that produces the output operand. Only output operand has an
   // operator that produces the operand by an operator build method of
   // MLGraphBuilder interface.

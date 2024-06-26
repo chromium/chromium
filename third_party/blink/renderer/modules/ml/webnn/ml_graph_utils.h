@@ -65,6 +65,9 @@ MODULES_EXPORT DOMArrayBufferView* CreateArrayBufferView(
 MODULES_EXPORT MLNamedArrayBufferViews* CreateNamedArrayBufferViews(
     std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>> views_info);
 
+MODULES_EXPORT DOMArrayBufferView::ViewType GetArrayBufferViewType(
+    webnn::OperandDataType data_type);
+
 // Create a default permutation vector [rank - 1, ..., 0].
 Vector<uint32_t> CreateDefaultPermutation(const wtf_size_t rank);
 
