@@ -69,6 +69,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/record_replay_events.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 
 namespace blink {
 namespace {
@@ -732,16 +733,38 @@ bool EventTarget::dispatchEventForBindings(Event* event,
       event->type() == event_type_names::kMousemove)
     ) {
       auto* mouseEvent = DynamicTo<MouseEvent>(event);
-      size_t x = (size_t)std::round(mouseEvent->clientX());
-      size_t y = (size_t)std::round(mouseEvent->clientY());
-      recordreplay::OnMouseEvent(event->type().Utf8().c_str(), x, y, true);
+      double x = 0, y = 0;
+      
+      if (const LocalDOMWindow* window = ExecutingWindow()) {
+        if (const LocalFrame* frame = window->GetFrame()) {
+          if (frame->GetPage()) {
+            x = mouseEvent->pageX();
+            y = mouseEvent->pageY();
+
+            if (!x && !y) {
+              if (auto* element = DynamicTo<Element>(ToNode())) {
+                auto* rect = element->getBoundingClientRect();
+                x = rect->x() + rect->width() / 2;
+                y = rect->y() + rect->height() / 2;
+              }
+            }
+
+            gfx::PointF pos(x, y);
+            gfx::PointF rootPos = frame->View()->ConvertToRootFrame(pos);
+            x = rootPos.x();
+            y = rootPos.y();
+          }
+        } 
+      }
+      recordreplay::OnMouseEvent(event->type().Utf8().c_str(), (size_t)std::round(x), (size_t)std::round(y), true);
     } else if (event->IsKeyboardEvent() &&
       (event->type() == event_type_names::kKeydown ||
       event->type() == event_type_names::kKeyup ||
       event->type() == event_type_names::kKeypress)
     ) {
+      auto* keyEvent = DynamicTo<KeyboardEvent>(event);
       recordreplay::OnKeyEvent(event->type().Utf8().c_str(),
-                               DynamicTo<KeyboardEvent>(event)->key().Utf8().c_str(),
+                               keyEvent->key().Utf8().c_str(),
                                true);
     }
   }
