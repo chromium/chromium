@@ -52,7 +52,6 @@ public class EdgeToEdgeControllerImpl
     private final ObserverList<EdgeToEdgePadAdjuster> mPadAdjusters = new ObserverList<>();
     private final ObserverList<ChangeObserver> mEdgeChangeObservers = new ObserverList<>();
     private final @NonNull TabObserver mTabObserver;
-    private final @Nullable TotallyEdgeToEdge mTotallyEdgeToEdge;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     /** Multiplier to convert from pixels to DPs. */
@@ -116,10 +115,6 @@ public class EdgeToEdgeControllerImpl
                         updateWebContentsObserver(tab);
                     }
                 };
-        mTotallyEdgeToEdge =
-                TotallyEdgeToEdge.isEnabled()
-                        ? new TotallyEdgeToEdge(browserControlsStateProvider, this::maybeDrawToEdge)
-                        : null;
         mInsetObserver = mWindowAndroid.getInsetObserver();
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mBrowserControlsStateProvider.addObserver(this);
@@ -241,8 +236,7 @@ public class EdgeToEdgeControllerImpl
      * EdgeToEdgeUtils#shouldDrawToEdge(Tab)}
      */
     private void maybeDrawToEdge() {
-        Log.v(TAG, "maybeDrawToEdge? totally: %s", totallyToEdge());
-        drawToEdge(shouldDrawToEdge(mCurrentTab) || totallyToEdge());
+        drawToEdge(shouldDrawToEdge(mCurrentTab));
     }
 
     /**
@@ -252,15 +246,7 @@ public class EdgeToEdgeControllerImpl
      * @param value A new {@link ViewportFitType} value being applied now.
      */
     private void maybeDrawToEdge(@ViewportFitType int value) {
-        Log.v(TAG, "maybeDrawToEdge? totally: %s", totallyToEdge());
-        drawToEdge(shouldDrawToEdge(mCurrentTab, value) || totallyToEdge());
-    }
-
-    /**
-     * @return if we should draw totally to the edge now.
-     */
-    private boolean totallyToEdge() {
-        return mTotallyEdgeToEdge != null && mTotallyEdgeToEdge.shouldDrawToEdge();
+        drawToEdge(shouldDrawToEdge(mCurrentTab, value));
     }
 
     /**
@@ -377,7 +363,6 @@ public class EdgeToEdgeControllerImpl
         }
         if (mCurrentTab != null) mCurrentTab.removeObserver(mTabObserver);
         mTabSupplierObserver.destroy();
-        if (mTotallyEdgeToEdge != null) mTotallyEdgeToEdge.destroy();
         if (mInsetObserver != null) {
             mInsetObserver.removeInsetsConsumer(mWindowInsetsConsumer);
             mInsetObserver = null;

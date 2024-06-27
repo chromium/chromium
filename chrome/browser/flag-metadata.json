@@ -8503,11 +8503,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "totally-edge-to-edge",
-    "owners": ["donnd@chromium.org", "twellington@chromium.org", "edge-to-edge@chromium.org"],
-    "expiry_milestone": 128
-  },
-  {
     "name": "touch-drag-and-context-menu",
     "owners": [ "wenyufu@chromium.org", "clank-app-team@google.com" ],
     "expiry_milestone": 134

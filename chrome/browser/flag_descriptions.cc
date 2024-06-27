@@ -4696,11 +4696,6 @@ const char kDelayTempStripRemovalDescription[] =
     "By delaying the removal of the placeholder tab strip, we mitigate the "
     "jank seen as tabs are being restored on startup.";
 
-const char kTotallyEdgeToEdgeName[] = "Totally Edge To Edge exploration";
-const char kTotallyEdgeToEdgeDescription[] =
-    "An exploration of further ideas to activate Edge To Edge. Requires "
-    "DrawCutoutEdgeToEdge and DrawEdgeToEdge to also be enabled.";
-
 const char kTouchDragAndContextMenuName[] =
     "Simultaneous touch drag and context menu";
 const char kTouchDragAndContextMenuDescription[] =

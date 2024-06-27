@@ -27,7 +27,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -46,7 +45,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Unit tests for {@link BottomControlsMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures({ChromeFeatureList.TOTALLY_EDGE_TO_EDGE})
 public class BottomControlsMediatorTest {
 
     private static final int DEFAULT_HEIGHT = 80;
