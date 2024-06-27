@@ -39,6 +39,14 @@ BASE_FEATURE(kLocationProviderManager,
              "LocationProviderManager",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Enables crash key logging for USB device open operations on ChromeOS. See
+// crbug.com/332722607. Can be disabled as a kill switch if needed.
+BASE_FEATURE(kUsbDeviceLinuxOpenCrashKey,
+             "UsbDeviceLinuxOpenCrashKey",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 const base::FeatureParam<device::mojom::LocationProviderManagerMode>::Option
     location_provider_manager_mode_options[] = {
         {device::mojom::LocationProviderManagerMode::kNetworkOnly,

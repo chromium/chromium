@@ -119,6 +119,10 @@ static_library("usb") {
       "usb_device_linux.cc",
       "usb_device_linux.h",
     ]
+    deps += [
+      "//components/crash/core/common:crash_key",
+      "//services/device/public/cpp:device_features",
+    ]
   }
 
   if (use_udev) {
