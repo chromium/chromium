@@ -325,6 +325,11 @@ bool WidgetInputHandlerManager::HandleInputEvent(
   widget_->input_handler().HandleInputEvent(event, std::move(metrics),
                                             std::move(blink_callback));
 
+  if (!widget_) {
+    // The `HandleInputEvent()` call above might result in deletion of
+    // `widget_`.
+    return true;
+  }
   // TODO(szager): Should this be limited to discrete input events by
   // conditioning on (!scheduler::PendingUserInput::IsContinuousEventType())?
   widget_->LayerTreeHost()->proxy()->SetInputResponsePending();
