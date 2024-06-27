@@ -232,9 +232,14 @@ extern const char kWallpaperSearchHatsDelayParam[];
 extern const base::FeatureParam<std::string> kNtpCalendarModuleExperimentParam;
 // Parameter determining the number of events to show on the calendar module.
 extern const base::FeatureParam<int> kNtpCalendarModuleMaxEventsParam;
-// Parameter determining the time from now to show events from.
+// Parameter determining the time delta from now for the end of the event
+// window.
 extern const base::FeatureParam<base::TimeDelta>
-    kNtpCalendarModuleWindowLengthParam;
+    kNtpCalendarModuleWindowEndDeltaParam;
+// Parameter determining the time delta from now for the start of the event
+// window.
+extern const base::FeatureParam<base::TimeDelta>
+    kNtpCalendarModuleWindowStartDeltaParam;
 // Parameter determining the background color of the expanded state realbox.
 extern const base::FeatureParam<bool>
     kNtpRealboxCr23ExpandedStateBgMatchesOmnibox;

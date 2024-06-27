@@ -142,7 +142,7 @@ class GoogleCalendarPageHandlerTest : public testing::Test {
     return CreateHandlerWithTestData(
         url_generator.GetCalendarEventListUrl(
             /*calendar_id=*/"primary",
-            /*start_time=*/base::Time::Now(),
+            /*start_time=*/base::Time::Now() - base::Minutes(15),
             /*end_time=*/base::Time::Now() + base::Hours(12),
             /*single_events=*/true,
             /*max_attendees=*/1,
@@ -342,7 +342,8 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEventsWithFeatureParams) {
   params[ntp_features::kNtpCalendarModuleExperimentParam.name] =
       "test_experiment_param";
   params[ntp_features::kNtpCalendarModuleMaxEventsParam.name] = "3";
-  params[ntp_features::kNtpCalendarModuleWindowLengthParam.name] = "8h";
+  params[ntp_features::kNtpCalendarModuleWindowEndDeltaParam.name] = "8h";
+  params[ntp_features::kNtpCalendarModuleWindowStartDeltaParam.name] = "30m";
   feature_list().Reset();
   feature_list().InitAndEnableFeatureWithParameters(
       ntp_features::kNtpCalendarModule, params);
@@ -369,7 +370,7 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEventsWithFeatureParams) {
       CreateHandlerWithTestData(
           url_generator.GetCalendarEventListUrl(
               /*calendar_id=*/"primary",
-              /*start_time=*/base::Time::Now(),
+              /*start_time=*/base::Time::Now() + base::Minutes(30),
               /*end_time=*/base::Time::Now() + base::Hours(8),
               /*single_events=*/true,
               /*max_attendees*/ 1,

@@ -548,10 +548,15 @@ const base::FeatureParam<int> kNtpCalendarModuleMaxEventsParam(
     &ntp_features::kNtpCalendarModule,
     "NtpCalendarModuleMaxEventsParam",
     6);
-const base::FeatureParam<base::TimeDelta> kNtpCalendarModuleWindowLengthParam(
+const base::FeatureParam<base::TimeDelta> kNtpCalendarModuleWindowEndDeltaParam(
     &ntp_features::kNtpCalendarModule,
-    "NtpCalendarModuleWindowLengthParam",
+    "NtpCalendarModuleWindowEndDeltaParam",
     base::Hours(12));
+const base::FeatureParam<base::TimeDelta>
+    kNtpCalendarModuleWindowStartDeltaParam(
+        &ntp_features::kNtpCalendarModule,
+        "NtpCalendarModuleWindowStartDeltaParam",
+        base::Minutes(-15));
 const base::FeatureParam<bool> kNtpRealboxCr23ExpandedStateBgMatchesOmnibox(
     &ntp_features::kRealboxCr23Theming,
     "kNtpRealboxCr23ExpandedStateBgMatchesOmnibox",

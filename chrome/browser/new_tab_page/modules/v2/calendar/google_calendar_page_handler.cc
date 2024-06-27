@@ -186,9 +186,10 @@ void GoogleCalendarPageHandler::GetEvents(GetEventsCallback callback) {
             sender_.get(), url_generator_,
             base::BindOnce(&GoogleCalendarPageHandler::OnRequestComplete,
                            base::Unretained(this), std::move(callback)),
-            /*start_time=*/base::Time::Now(),
+            /*start_time=*/base::Time::Now() +
+                ntp_features::kNtpCalendarModuleWindowStartDeltaParam.Get(),
             /*end_time=*/base::Time::Now() +
-                ntp_features::kNtpCalendarModuleWindowLengthParam.Get(),
+                ntp_features::kNtpCalendarModuleWindowEndDeltaParam.Get(),
             /*event_types=*/event_types,
             ntp_features::kNtpCalendarModuleExperimentParam.Get(),
             /*order_by=*/"startTime"));
