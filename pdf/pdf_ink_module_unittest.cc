@@ -240,7 +240,7 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
   ASSERT_TRUE(brush);
 
   const InkBrush& ink_brush = brush->GetInkBrush();
-  EXPECT_EQ(SkColorSetRGB(10, 255, 50), ink_brush.GetColorForTesting());
+  EXPECT_EQ(SkColorSetRGB(10, 255, 50), ink_brush.GetColor());
   EXPECT_EQ(8.0f, ink_brush.GetSize());
   EXPECT_EQ(1.0f, ink_brush.GetOpacityForTesting());
 }
@@ -261,7 +261,7 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
   ASSERT_TRUE(brush);
 
   const InkBrush& ink_brush = brush->GetInkBrush();
-  EXPECT_EQ(SkColorSetRGB(240, 133, 0), ink_brush.GetColorForTesting());
+  EXPECT_EQ(SkColorSetRGB(240, 133, 0), ink_brush.GetColor());
   EXPECT_EQ(4.5f, ink_brush.GetSize());
   EXPECT_EQ(0.4f, ink_brush.GetOpacityForTesting());
 }
@@ -282,7 +282,7 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
   ASSERT_TRUE(brush);
 
   const InkBrush& ink_brush = brush->GetInkBrush();
-  EXPECT_EQ(SkColorSetRGB(0, 0, 0), ink_brush.GetColorForTesting());
+  EXPECT_EQ(SkColorSetRGB(0, 0, 0), ink_brush.GetColor());
   EXPECT_EQ(4.5f, ink_brush.GetSize());
   EXPECT_EQ(1.0f, ink_brush.GetOpacityForTesting());
 }
@@ -304,7 +304,7 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageSizeZeroTranslation) {
   ASSERT_TRUE(brush);
 
   const InkBrush& ink_brush = brush->GetInkBrush();
-  EXPECT_EQ(SkColorSetRGB(255, 255, 255), ink_brush.GetColorForTesting());
+  EXPECT_EQ(SkColorSetRGB(255, 255, 255), ink_brush.GetColor());
   EXPECT_EQ(1.0f, ink_brush.GetSize());
   EXPECT_EQ(0.4f, ink_brush.GetOpacityForTesting());
 }
@@ -325,7 +325,7 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageSizeOneTranslation) {
   ASSERT_TRUE(brush);
 
   const InkBrush& ink_brush = brush->GetInkBrush();
-  EXPECT_EQ(SkColorSetRGB(255, 255, 255), ink_brush.GetColorForTesting());
+  EXPECT_EQ(SkColorSetRGB(255, 255, 255), ink_brush.GetColor());
   EXPECT_EQ(8.0f, ink_brush.GetSize());
   EXPECT_EQ(0.4f, ink_brush.GetOpacityForTesting());
 }

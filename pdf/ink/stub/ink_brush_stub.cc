@@ -39,7 +39,7 @@ float InkBrushStub::GetSize() const {
   return size_;
 }
 
-SkColor InkBrushStub::GetColorForTesting() const {
+SkColor InkBrushStub::GetColor() const {
   return color_;
 }
 
