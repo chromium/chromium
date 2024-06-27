@@ -147,8 +147,8 @@ PdfInkModule::GetStrokesInputPositionsForTesting() const {
       stroke_points.reserve(input_batch.Size());
       for (size_t i = 0; i < input_batch.Size(); ++i) {
         InkStrokeInput stroke_input = input_batch.Get(i);
-        stroke_points.emplace_back(stroke_input.position_x,
-                                   stroke_input.position_y);
+        stroke_points.emplace_back(stroke_input.position.x,
+                                   stroke_input.position.y);
       }
       all_strokes_points[page_index].push_back(std::move(stroke_points));
     }
@@ -213,8 +213,7 @@ bool PdfInkModule::StartStroke(const gfx::PointF& position) {
   // Start of the first segment of a stroke.
   StrokeInputSegment segment;
   segment.push_back({
-      .position_x = page_position.x(),
-      .position_y = page_position.y(),
+      .position = InkPoint{page_position.x(), page_position.y()},
       .elapsed_time_seconds = 0,
   });
   state.inputs.push_back(std::move(segment));
@@ -262,8 +261,7 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position) {
 
   base::TimeDelta time_diff = base::Time::Now() - state.start_time.value();
   state.inputs.back().push_back({
-      .position_x = page_position.x(),
-      .position_y = page_position.y(),
+      .position = InkPoint{page_position.x(), page_position.y()},
       .elapsed_time_seconds = static_cast<float>(time_diff.InSecondsF()),
   });
 

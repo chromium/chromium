@@ -35,6 +35,7 @@ source_set("interface") {
     "ink_in_progress_stroke.h",
     "ink_intersects.h",
     "ink_modeled_shape_view.h",
+    "ink_point.h",
     "ink_rect.h",
     "ink_skia_renderer.h",
     "ink_stroke.h",
