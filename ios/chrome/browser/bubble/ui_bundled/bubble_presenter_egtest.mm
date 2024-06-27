@@ -7,7 +7,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/feature_engagement/public/feature_constants.h"
-#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view_egtest_utils.h"
@@ -17,7 +16,6 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
-#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/base_earl_grey_test_case_app_interface.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -33,43 +31,12 @@ id<GREYMatcher> BottomToolbar() {
   return grey_kindOfClassName(@"SecondaryToolbarView");
 }
 
-// Verify that histogram for IPH dismissal is emitted once with the correct
-// value.
-void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
-  NSString* dismissalHistogramName =
-      base::SysUTF8ToNSString(kUMAGesturalIPHDismissalReason);
-  NSError* error = [MetricsAppInterface expectCount:1
-                                          forBucket:static_cast<int>(reason)
-                                       forHistogram:dismissalHistogramName];
-  if (!error) {
-    error = [MetricsAppInterface expectTotalCount:1
-                                     forHistogram:dismissalHistogramName];
-  }
-  GREYAssertNil(error, error.description);
-}
-
 }  // namespace
 
 @interface BubblePresenterTestCase : ChromeTestCase
 @end
 
 @implementation BubblePresenterTestCase
-
-// Relaunch the app as a Safari switcher with IPH demo mode for `feature`.
-- (void)relaunchWithIPHFeatureForSafariSwitcher:(NSString*)feature {
-  // Enable the flag to ensure the IPH triggers.
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.iph_feature_enabled = base::SysNSStringToUTF8(feature);
-  config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
-  // Force the conditions that allow the iph to show.
-  config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
-  config.additional_args.push_back("SyncedAndFirstDevice");
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
-}
 
 // Open a random url from omnibox. `isAfterNewAppLaunch` is used for deciding
 // whether the step of tapping the fake omnibox is needed.
@@ -90,8 +57,14 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
 
 #pragma mark - Tests
 
+- (void)setUp {
+  [super setUp];
+  MakeFirstRunRecent();
+}
+
 - (void)tearDown {
   [BaseEarlGreyTestCaseAppInterface enableFastAnimation];
+  ResetFirstRunRecency();
   [super tearDown];
 }
 
@@ -103,8 +76,8 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
 #define MAYBE_testNewTabIPH testNewTabIPH
 #endif
 - (void)MAYBE_testNewTabIPH {
-  [self relaunchWithIPHFeatureForSafariSwitcher:
-            @"IPH_iOSNewTabToolbarItemFeature"];
+  RelaunchWithIPHFeature(@"IPH_iOSNewTabToolbarItemFeature",
+                         /*safari_switcher=*/YES);
   [self openURLFromOmniboxWithIsAfterNewAppLaunch:YES];
 
   [ChromeEarlGrey
@@ -121,8 +94,8 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
 #define MAYBE_testTabGridIPH testTabGridIPH
 #endif
 - (void)MAYBE_testTabGridIPH {
-  [self relaunchWithIPHFeatureForSafariSwitcher:
-            @"IPH_iOSTabGridToolbarItemFeature"];
+  RelaunchWithIPHFeature(@"IPH_iOSTabGridToolbarItemFeature",
+                         /*safari_switcher=*/YES);
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey waitForMainTabCount:2];
   [ChromeEarlGrey
@@ -142,7 +115,8 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
 #endif
 - (void)
     MAYBE_testPullToRefreshIPHAfterReloadFromOmniboxAndDisappearsAfterNavigation {
-  [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSPullToRefreshFeature"];
+  RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
+                         /*safari_switcher=*/YES);
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -153,18 +127,12 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
   [ChromeEarlGrey loadURL:destinationUrl2];
   [ChromeEarlGreyUI focusOmnibox];
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
-  BOOL appearance = HasGestureIPHAppeared();
-  {
-    // Disable scoped synchronization to tap button.
-    ScopedSynchronizationDisabler sync_disabler;
-    GREYAssertTrue(
-        appearance,
-        @"Pull to refresh IPH did not appear after reloading from omnibox.");
-    [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
-  }
-  appearance = HasGestureIPHAppeared();
-  GREYAssertFalse(
-      appearance,
+  AssertGestureIPHVisibleWithDismissAction(
+      @"Pull to refresh IPH did not appear after reloading from omnibox.", ^{
+        [[EarlGrey selectElementWithMatcher:BackButton()]
+            performAction:grey_tap()];
+      });
+  AssertGestureIPHInvisible(
       @"Pull to refresh IPH still showed after user navigates to another page");
 }
 
@@ -174,7 +142,8 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (no reload in context menu)");
   }
-  [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSPullToRefreshFeature"];
+  RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
+                         /*safari_switcher=*/YES);
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -186,24 +155,21 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
   [ChromeEarlGrey loadURL:destinationUrl2];
   // Reload using context menu.
   [ChromeEarlGreyUI reload];
-  BOOL appearance = HasGestureIPHAppeared();
-  {
-    // Disable scoped synchronization.
-    ScopedSynchronizationDisabler sync_disabler;
-    GREYAssertTrue(appearance, @"Pull to refresh IPH did not appear "
-                               @"after reloading from context menu.");
-    // Side swipe on the toolbar.
-    [[EarlGrey selectElementWithMatcher:BottomToolbar()]
-        performAction:grey_swipeSlowInDirection(kGREYDirectionRight)];
-  }
-  appearance = HasGestureIPHAppeared();
-  GREYAssertFalse(appearance,
-                  @"Pull to refresh IPH did not dismiss after changing tab.");
+  AssertGestureIPHVisibleWithDismissAction(
+      @"Pull to refresh IPH did not appear after reloading from context menu.",
+      ^{
+        // Side swipe on the toolbar.
+        [[EarlGrey selectElementWithMatcher:BottomToolbar()]
+            performAction:grey_swipeSlowInDirection(kGREYDirectionRight)];
+      });
+  AssertGestureIPHInvisible(
+      @"Pull to refresh IPH did not dismiss after changing tab.");
 }
 
 // Tests that the pull-to-refresh IPH is NOT attempted when page loading fails.
 - (void)testPullToRefreshIPHShouldDisappearOnEnteringTabGrid {
-  [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSPullToRefreshFeature"];
+  RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
+                         /*safari_switcher=*/YES);
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -211,31 +177,24 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
   [ChromeEarlGrey loadURL:destinationUrl];
   [ChromeEarlGreyUI focusOmnibox];
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
-  BOOL appearance = HasGestureIPHAppeared();
-  {
-    // Disable scoped synchronization to tap button.
-    ScopedSynchronizationDisabler sync_disabler;
-    GREYAssertTrue(
-        appearance,
-        @"Pull to refresh IPH did not appear after reloading from omnibox.");
-    [ChromeEarlGreyUI openTabGrid];
-  }
-  appearance = HasGestureIPHAppeared();
-  GREYAssertFalse(
-      appearance,
+  AssertGestureIPHVisibleWithDismissAction(
+      @"Pull to refresh IPH did not appear after reloading from omnibox.", ^{
+        [ChromeEarlGreyUI openTabGrid];
+      });
+  AssertGestureIPHInvisible(
       @"Pull to refresh IPH still visible after going to tab grid.");
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
       performAction:grey_tap()];
-  appearance = HasGestureIPHAppeared();
-  GREYAssertFalse(appearance, @"Pull to refresh IPH still visible after going "
-                              @"to tab grid and coming back.");
+  AssertGestureIPHInvisible(@"Pull to refresh IPH still visible after going to "
+                            @"tab grid and coming back.");
   ExpectHistogramEmittedForIPHDismissal(
       IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView);
 }
 
 // Tests that the pull-to-refresh IPH is NOT attempted when page loading fails.
 - (void)testPullToRefreshIPHShouldNotShowOnPageLoadFail {
-  [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSPullToRefreshFeature"];
+  RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
+                         /*safari_switcher=*/YES);
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -246,9 +205,8 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
                  @"Server did not shut down.");
   [ChromeEarlGreyUI focusOmnibox];
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
-  BOOL appearance = HasGestureIPHAppeared();
-  GREYAssertFalse(appearance,
-                  @"Pull to refresh IPH still appeared despite loading fails.");
+  AssertGestureIPHInvisible(
+      @"Pull to refresh IPH still appeared despite loading fails.");
 }
 
 // Tests that the swipe back/forward IPH is attempted on navigation, and
@@ -262,7 +220,7 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
   testSwipeBackForwardIPHShowsOnNavigationAndHidesOnNavigation
 #endif
 - (void)MAYBE_testSwipeBackForwardIPHShowsOnNavigationAndHidesOnNavigation {
-  [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSSwipeBackForward"];
+  RelaunchWithIPHFeature(@"IPH_iOSSwipeBackForward", /*safari_switcher=*/NO);
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -272,19 +230,12 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
   [ChromeEarlGrey loadURL:destinationUrl1];
   [ChromeEarlGrey loadURL:destinationUrl2];
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
-  BOOL appearance = HasGestureIPHAppeared();
-  {
-    // Disable scoped synchronization to tap button.
-    ScopedSynchronizationDisabler sync_disabler;
-    GREYAssertTrue(
-        appearance,
-        @"Swipe back/forward IPH did not appear after tapping back button.");
-    [[EarlGrey selectElementWithMatcher:ForwardButton()]
-        performAction:grey_tap()];
-  }
-  appearance = HasGestureIPHAppeared();
-  GREYAssertFalse(
-      appearance,
+  AssertGestureIPHVisibleWithDismissAction(
+      @"Swipe back/forward IPH did not appear after tapping back button.", ^{
+        [[EarlGrey selectElementWithMatcher:ForwardButton()]
+            performAction:grey_tap()];
+      });
+  AssertGestureIPHInvisible(
       @"Swipe back/forward IPH still appeared after user left the page.");
   ExpectHistogramEmittedForIPHDismissal(
       IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView);
@@ -293,7 +244,8 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
 // Tests that the pull-to-refresh IPH would be dismissed with the reason
 // `kSwipedAsInstructedByGestureIPH` when the user pulls down on the IPH.
 - (void)testPullToRefreshPerformAction {
-  [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSPullToRefreshFeature"];
+  RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
+                         /*safari_switcher=*/YES);
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   // Trigger pull-to-refresh IPH.
@@ -305,19 +257,12 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
   [ChromeEarlGrey loadURL:destinationUrl2];
   [ChromeEarlGreyUI focusOmnibox];
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
-  BOOL appearance = HasGestureIPHAppeared();
-  {
-    // Disable scoped synchronization to tap button.
-    ScopedSynchronizationDisabler sync_disabler;
-    GREYAssertTrue(
-        appearance,
-        @"Pull to refresh IPH did not appear after reloading from omnibox.");
-    // Swipe down.
-    SwipeIPHInDirection(kGREYDirectionDown, /*edge_swipe=*/NO);
-  }
-  appearance = HasGestureIPHAppeared();
-  GREYAssertFalse(
-      appearance,
+  AssertGestureIPHVisibleWithDismissAction(
+      @"Pull to refresh IPH did not appear after reloading from omnibox.", ^{
+        // Swipe down.
+        SwipeIPHInDirection(kGREYDirectionDown, /*edge_swipe=*/NO);
+      });
+  AssertGestureIPHInvisible(
       @"Pull to refresh IPH should be dismissed after swiping down.");
   ExpectHistogramEmittedForIPHDismissal(
       IPHDismissalReasonType::kSwipedAsInstructedByGestureIPH);
@@ -331,8 +276,8 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
   // Single direction swipe IPH takes 9s, while bi-direction swipe IPH takes
   // 12s; use a fixed wait time between the two to distinguish between the two
   // kinds of swipe IPHs.
-  const base::TimeDelta waitTime = base::Seconds(11.5);
-  [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSSwipeBackForward"];
+  const base::TimeDelta waitTime = base::Seconds(11);
+  RelaunchWithIPHFeature(@"IPH_iOSSwipeBackForward", /*safari_switcher=*/NO);
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -344,35 +289,30 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
 
   // Go back to destination URL 1.
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
+  // Wait while animation runs.
   {
-    // Wait while animation runs.
     ScopedSynchronizationDisabler sync_disabler;
     base::test::ios::SpinRunLoopWithMinDelay(waitTime);
   }
-  BOOL appearance = HasGestureIPHAppeared();
-  GREYAssertTrue(
-      appearance,
-      @"Bi-directional swipe back/forward IPH should still be visible.");
-
-  [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSSwipeBackForward"];
+  AssertGestureIPHVisibleWithDismissAction(
+      @"Bi-directional swipe back/forward IPH should still be visible.", nil);
+  RelaunchWithIPHFeature(@"IPH_iOSSwipeBackForward", /*safari_switcher=*/NO);
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
   // Go forward to destination URL 2.
   [[EarlGrey selectElementWithMatcher:ForwardButton()]
       performAction:grey_tap()];
+  // Wait while animation runs.
   {
-    // Wait while animation runs.
     ScopedSynchronizationDisabler sync_disabler;
     base::test::ios::SpinRunLoopWithMinDelay(waitTime);
   }
-  appearance = HasGestureIPHAppeared();
-  GREYAssertFalse(
-      appearance,
+  AssertGestureIPHInvisible(
       @"One directional swipe back/forward IPH should not be visible.");
 }
 
 // Tests that opening a new tab hides the swipe back/forward IPH.
 - (void)testSwipeBackForwardIPHHidesOnNewTabOpening {
-  [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSSwipeBackForward"];
+  RelaunchWithIPHFeature(@"IPH_iOSSwipeBackForward", /*safari_switcher=*/NO);
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -382,18 +322,11 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
   [ChromeEarlGrey loadURL:destinationUrl1];
   [ChromeEarlGrey loadURL:destinationUrl2];
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
-  BOOL appearance = HasGestureIPHAppeared();
-  {
-    // Disable scoped synchronization to tap button during animation.
-    ScopedSynchronizationDisabler sync_disabler;
-    GREYAssertTrue(
-        appearance,
-        @"Swipe back/forward IPH did not appear after tapping back button.");
-    [ChromeEarlGrey openNewTab];
-  }
-  appearance = HasGestureIPHAppeared();
-  GREYAssertFalse(
-      appearance,
+  AssertGestureIPHVisibleWithDismissAction(
+      @"Swipe back/forward IPH did not appear after tapping back button.", ^{
+        [ChromeEarlGrey openNewTab];
+      });
+  AssertGestureIPHInvisible(
       @"Swipe back/forward IPH still appeared after user opens a new tab.");
   ExpectHistogramEmittedForIPHDismissal(
       IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView);
@@ -403,7 +336,7 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
 // `kSwipedAsInstructedByGestureIPH` when the user swipes the page in the
 // correct direction.
 - (void)testSwipeBackForwardPerformAction {
-  [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSSwipeBackForward"];
+  RelaunchWithIPHFeature(@"IPH_iOSSwipeBackForward", /*safari_switcher=*/NO);
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -413,25 +346,19 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
   [ChromeEarlGrey loadURL:destinationUrl1];
   [ChromeEarlGrey loadURL:destinationUrl2];
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
-  BOOL appearance = HasGestureIPHAppeared();
-  {
-    // Disable scoped synchronization to tap button.
-    ScopedSynchronizationDisabler sync_disabler;
-    GREYAssertTrue(appearance,
-                   @"Swipe back/forward IPH did not appear after going back.");
-    // Swipe left on the right edge to go forward.
-    SwipeIPHInDirection(kGREYDirectionLeft, /*edge_swipe=*/YES);
-  }
-  appearance = HasGestureIPHAppeared();
-  GREYAssertFalse(appearance, @"Swipe back/forward IPH should be dismissed "
-                              @"after swiping in the right direction.");
+  AssertGestureIPHVisibleWithDismissAction(
+      @"Swipe back/forward IPH did not appear after going back.", ^{
+        SwipeIPHInDirection(kGREYDirectionLeft, /*edge_swipe=*/YES);
+      });
+  AssertGestureIPHInvisible(@"Swipe back/forward IPH should be dismissed after "
+                            @"swiping in the right direction.");
   ExpectHistogramEmittedForIPHDismissal(
       IPHDismissalReasonType::kSwipedAsInstructedByGestureIPH);
 }
 
 // Tests that the swipe back/forward IPH would NOT show if the page load fails.
 - (void)testSwipeBackForwardDoesNotShowWhenPageFails {
-  [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSSwipeBackForward"];
+  RelaunchWithIPHFeature(@"IPH_iOSSwipeBackForward", /*safari_switcher=*/NO);
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -446,9 +373,7 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
   GREYAssertTrue(self.testServer->ShutdownAndWaitUntilComplete(),
                  @"Server did not shut down.");
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
-  BOOL appearance = HasGestureIPHAppeared();
-  GREYAssertFalse(
-      appearance,
+  AssertGestureIPHInvisible(
       @"Swipe back/forward IPH should not be visible when page fails to load.");
 }
 
@@ -458,8 +383,8 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
   }
-  [self relaunchWithIPHFeatureForSafariSwitcher:
-            @"IPH_iOSSwipeToolbarToChangeTab"];
+  RelaunchWithIPHFeature(@"IPH_iOSSwipeToolbarToChangeTab",
+                         /*safari_switcher=*/NO);
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -474,17 +399,16 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
       performAction:grey_tap()];
-  BOOL appearance = HasGestureIPHAppeared();
-  GREYAssertFalse(appearance,
-                  @"Toolbar swipe IPH should not be visible when the "
-                  @"user switches to an non-adjacent tab.");
+  AssertGestureIPHInvisible(@"Toolbar swipe IPH should not be visible when the "
+                            @"user switches to an non-adjacent tab.");
   // Switch to adjacent tab.
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(1)]
       performAction:grey_tap()];
-  appearance = HasGestureIPHAppeared();
-  GREYAssertTrue(appearance, @"Toolbar swipe IPH should be visible when the "
-                             @"user switches to an adjacent tab.");
+  AssertGestureIPHVisibleWithDismissAction(
+      @"Toolbar swipe IPH should be visible when the user switches to an "
+      @"adjacent tab.",
+      nil);
 }
 
 // Tests that the toolbar swipe IPH would be dismissed with the reason
@@ -493,8 +417,8 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
   }
-  [self relaunchWithIPHFeatureForSafariSwitcher:
-            @"IPH_iOSSwipeToolbarToChangeTab"];
+  RelaunchWithIPHFeature(@"IPH_iOSSwipeToolbarToChangeTab",
+                         /*safari_switcher=*/NO);
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -509,18 +433,13 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
       performAction:grey_tap()];
-  BOOL appearance = HasGestureIPHAppeared();
-  {
-    // Disable scoped synchronization to tap button during animation.
-    ScopedSynchronizationDisabler sync_disabler;
-    GREYAssertTrue(appearance, @"Toolbar swipe IPH should be visible when the "
-                               @"user switches to an adjacent tab.");
-  }
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.5));
-  TapDismissButton();
-  appearance = HasGestureIPHAppeared();
-  GREYAssertFalse(
-      appearance,
+  AssertGestureIPHVisibleWithDismissAction(
+      @"Toolbar swipe IPH should be visible when the user switches to an "
+      @"adjacent tab.",
+      ^{
+        TapDismissButton();
+      });
+  AssertGestureIPHInvisible(
       @"IPH still displaying after the user taps the \"dismiss\" button.");
   ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType::kTappedClose);
 }
@@ -532,8 +451,8 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
   }
-  [self relaunchWithIPHFeatureForSafariSwitcher:
-            @"IPH_iOSSwipeToolbarToChangeTab"];
+  RelaunchWithIPHFeature(@"IPH_iOSSwipeToolbarToChangeTab",
+                         /*safari_switcher=*/NO);
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -548,34 +467,32 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
       performAction:grey_tap()];
-  BOOL appearance = HasGestureIPHAppeared();
-  {
-    // Disable scoped synchronization to tap button during animation.
-    ScopedSynchronizationDisabler sync_disabler;
-    GREYAssertTrue(appearance, @"Toolbar swipe IPH should be visible when the "
-                               @"user switches to an adjacent tab.");
-    [ChromeEarlGrey
-        waitForUIElementToAppearWithMatcher:grey_allOf(BottomToolbar(),
-                                                       grey_interactable(),
-                                                       nil)];
-    // Swipe the toolbar.
-    [[EarlGrey selectElementWithMatcher:BottomToolbar()]
-        performAction:grey_swipeSlowInDirection(kGREYDirectionRight)];
-  }
-  appearance = HasGestureIPHAppeared();
-  {
-    // Disable scoped synchronization to tap button during animation.
-    ScopedSynchronizationDisabler sync_disabler;
-    GREYAssertTrue(appearance,
-                   @"Toolbar swipe IPH should NOT be dismissed after "
-                   @"swipe in the wrong direction.");
-    // Swipe the toolbar.
-    [[EarlGrey selectElementWithMatcher:BottomToolbar()]
-        performAction:grey_swipeSlowInDirection(kGREYDirectionLeft)];
-  }
-  appearance = HasGestureIPHAppeared();
-  GREYAssertFalse(appearance, @"Toolbar swipe IPH should be dismissed after "
-                              @"swipe in the right direction.");
+  AssertGestureIPHVisibleWithDismissAction(
+      @"Toolbar swipe IPH should be visible when the user switches to an "
+      @"adjacent tab.",
+      ^{
+        // Swipe the toolbar in the wrong direction after it appears.
+        [ChromeEarlGrey
+            waitForUIElementToAppearWithMatcher:grey_allOf(BottomToolbar(),
+                                                           grey_interactable(),
+                                                           nil)];
+        [[EarlGrey selectElementWithMatcher:BottomToolbar()]
+            performAction:grey_swipeSlowInDirection(kGREYDirectionRight)];
+      });
+  AssertGestureIPHVisibleWithDismissAction(
+      @"Toolbar swipe IPH should NOT be dismissed after swipe in the wrong "
+      @"direction.",
+      ^{
+        [ChromeEarlGrey
+            waitForUIElementToAppearWithMatcher:grey_allOf(BottomToolbar(),
+                                                           grey_interactable(),
+                                                           nil)];
+        // Swipe the toolbar in the right direction.
+        [[EarlGrey selectElementWithMatcher:BottomToolbar()]
+            performAction:grey_swipeSlowInDirection(kGREYDirectionLeft)];
+      });
+  AssertGestureIPHInvisible(@"Toolbar swipe IPH should be dismissed after "
+                            @"swipe in the right direction.");
   ExpectHistogramEmittedForIPHDismissal(
       IPHDismissalReasonType::kSwipedAsInstructedByGestureIPH);
 }
@@ -586,8 +503,8 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
   }
-  [self relaunchWithIPHFeatureForSafariSwitcher:
-            @"IPH_iOSSwipeToolbarToChangeTab"];
+  RelaunchWithIPHFeature(@"IPH_iOSSwipeToolbarToChangeTab",
+                         /*safari_switcher=*/NO);
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -609,10 +526,9 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
       performAction:grey_tap()];
-  BOOL appearance = HasGestureIPHAppeared();
-  GREYAssertFalse(appearance,
-                  @"Toolbar swipe IPH should not be visible when the "
-                  @"user switches to an adjacent tab after changing page.");
+  AssertGestureIPHInvisible(
+      @"Toolbar swipe IPH should not be visible when the "
+      @"user switches to an adjacent tab after changing page.");
 }
 
 // Tests that the toolbar swipe IPH would be dismissed with the reason
@@ -622,8 +538,8 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
   }
-  [self relaunchWithIPHFeatureForSafariSwitcher:
-            @"IPH_iOSSwipeToolbarToChangeTab"];
+  RelaunchWithIPHFeature(@"IPH_iOSSwipeToolbarToChangeTab",
+                         /*safari_switcher=*/NO);
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -641,21 +557,20 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
       performAction:grey_tap()];
-  BOOL appearance = HasGestureIPHAppeared();
-  {
-    // Disable scoped synchronization to tap button during animation.
-    ScopedSynchronizationDisabler sync_disabler;
-    GREYAssertTrue(appearance, @"Toolbar swipe IPH should be visible when the "
-                               @"user switches to an adjacent tab.");
-    [ChromeEarlGrey
-        waitForUIElementToAppearWithMatcher:grey_allOf(BackButton(),
-                                                       grey_interactable(),
-                                                       nil)];
-    [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
-  }
-  appearance = HasGestureIPHAppeared();
-  GREYAssertFalse(appearance, @"Toolbar swipe IPH should be dismissed after "
-                              @"leaving the page.");
+  // Checks visibility and tap "back" button to dismiss the IPH.
+  AssertGestureIPHVisibleWithDismissAction(
+      @"Toolbar swipe IPH should be visible when the user switches to an "
+      @"adjacent tab.",
+      ^{
+        [ChromeEarlGrey
+            waitForUIElementToAppearWithMatcher:grey_allOf(BackButton(),
+                                                           grey_interactable(),
+                                                           nil)];
+        [[EarlGrey selectElementWithMatcher:BackButton()]
+            performAction:grey_tap()];
+      });
+  AssertGestureIPHInvisible(
+      @"Toolbar swipe IPH should be dismissed after leaving the page.");
   ExpectHistogramEmittedForIPHDismissal(
       IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView);
 }

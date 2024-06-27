@@ -261,6 +261,7 @@ source_set("eg2_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/model:bookmark_model_type",
     "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/bubble/ui_bundled:constants",
     "//ios/chrome/browser/bubble/ui_bundled/gesture_iph:constants",
     "//ios/chrome/browser/bubble/ui_bundled/gesture_iph:test_utils",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
