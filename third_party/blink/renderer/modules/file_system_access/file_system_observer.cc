@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_manager.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_change_record.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_handle.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_observation_collection.h"
 #include "third_party/blink/renderer/modules/file_system_access/storage_manager_file_system_access.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -65,7 +66,6 @@ FileSystemObserver::FileSystemObserver(
     mojo::PendingRemote<mojom::blink::FileSystemAccessObserverHost> host_remote)
     : execution_context_(context),
       callback_(callback),
-      observer_receivers_(this, context),
       host_remote_(context) {
   host_remote_.Bind(std::move(host_remote),
                     execution_context_->GetTaskRunner(TaskType::kStorage));
@@ -152,9 +152,8 @@ void FileSystemObserver::DidObserve(
     return;
   }
 
-  observer_receivers_.Add(
-      std::move(observer_receiver),
-      execution_context_->GetTaskRunner(TaskType::kStorage));
+  FileSystemObservationCollection::From(execution_context_)
+      ->AddObservation(this, std::move(observer_receiver));
 
   resolver->Resolve();
 }
@@ -175,11 +174,15 @@ void FileSystemObserver::unobserve(FileSystemHandle* handle) {
   // which observer (if any) corresponds to `handle` without hopping to the
   // browser to validate `handle`.
   host_remote_->Unobserve(handle->Transfer());
+  // TODO(https://crbug.com/321980469): Remove observation corresponding to
+  // `handle` from the FileSystemObservationCollection. As part of this, we
+  // should also remove this observer if it has no more observations.
 }
 
 void FileSystemObserver::disconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  observer_receivers_.Clear();
+  FileSystemObservationCollection::From(execution_context_)
+      ->RemoveObserver(this);
 }
 
 void FileSystemObserver::OnFileChanges(
@@ -208,7 +211,6 @@ void FileSystemObserver::OnFileChanges(
 void FileSystemObserver::Trace(Visitor* visitor) const {
   visitor->Trace(execution_context_);
   visitor->Trace(callback_);
-  visitor->Trace(observer_receivers_);
   visitor->Trace(host_remote_);
   ScriptWrappable::Trace(visitor);
 }

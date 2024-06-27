@@ -6,14 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_OBSERVER_H_
 
 #include "base/files/file.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_observer.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_observer_host.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_observer_callback.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
@@ -21,8 +19,7 @@ class ExecutionContext;
 class FileSystemHandle;
 class FileSystemObserverObserveOptions;
 
-class FileSystemObserver : public ScriptWrappable,
-                           public mojom::blink::FileSystemAccessObserver {
+class FileSystemObserver : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -43,9 +40,8 @@ class FileSystemObserver : public ScriptWrappable,
   void unobserve(FileSystemHandle* handle);
   void disconnect();
 
-  // blink::mojom::blink::FileSystemAccessObserver
-  void OnFileChanges(WTF::Vector<mojom::blink::FileSystemAccessChangePtr>
-                         mojo_changes) override;
+  void OnFileChanges(
+      WTF::Vector<mojom::blink::FileSystemAccessChangePtr> mojo_changes);
 
   void Trace(Visitor* visitor) const override;
 
@@ -71,12 +67,6 @@ class FileSystemObserver : public ScriptWrappable,
   Member<V8FileSystemObserverCallback> callback_;
 
   // TODO(https://crbug.com/1019297): Add a queue of records.
-
-  // Each observer connection corresponds to a file system watch set up by
-  // calling `observe()`.
-  HeapMojoReceiverSet<mojom::blink::FileSystemAccessObserver,
-                      FileSystemObserver>
-      observer_receivers_;
 
   HeapMojoRemote<mojom::blink::FileSystemAccessObserverHost> host_remote_;
 };

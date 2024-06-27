@@ -1073,7 +1073,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
          "};"
          START_OBSERVING_FILE(TestFileSystemType::kLocal)
          "self.entry = file;"
-         "self.obs = observer;"
       "})()";
   // clang-format on
   EXPECT_TRUE(ExecJs(shell(), script));
@@ -1156,7 +1155,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
          "self.promise = promise;"
          "self.promiseResolve = promiseResolve;"
          START_OBSERVING_FILE(TestFileSystemType::kLocal)
-         "self.obs = observer;"
       "})()";
   // clang-format on
   EXPECT_TRUE(ExecJs(shell(), script));
@@ -1215,7 +1213,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
          "self.promise = promise;"
          "self.promiseResolve = promiseResolve;"
          START_OBSERVING_FILE(TestFileSystemType::kLocal)
-         "self.obs = observer;"
       "})()";
   // clang-format on
   EXPECT_TRUE(ExecJs(shell(), script));
