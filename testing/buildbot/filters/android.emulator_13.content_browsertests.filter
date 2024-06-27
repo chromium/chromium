@@ -27,7 +27,6 @@
 -OpenCodec/WebRtcMediaRecorderTest.StartAndDataAvailable/2
 
 # crbug.com/338082561
--ViewTransitionBrowserTest.OwnershipTransferredToNewRenderer
 -ViewTransitionBrowserTest.NavigationCancelledAfterScreenshot
 -ViewTransitionBrowserTest.NavigationCancelledBeforeScreenshot
 
