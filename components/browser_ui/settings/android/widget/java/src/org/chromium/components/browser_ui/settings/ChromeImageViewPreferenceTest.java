@@ -21,7 +21,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +29,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.settings.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /** Tests of {@link ChromeImageViewPreference}. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -40,10 +38,6 @@ public class ChromeImageViewPreferenceTest {
     private static final String SUMMARY = "This is a summary.";
     private static final int DRAWABLE_RES = R.drawable.ic_folder_blue_24dp;
     private static final int CONTENT_DESCRIPTION_RES = R.string.ok;
-
-    @ClassRule
-    public static final DisableAnimationsTestRule disableAnimationsRule =
-            new DisableAnimationsTestRule();
 
     @Rule
     public final BlankUiTestActivitySettingsTestRule mSettingsRule =

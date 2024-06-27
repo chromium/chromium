@@ -55,7 +55,6 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.url.GURL;
 
@@ -78,9 +77,6 @@ public class BookmarkFolderPickerRenderTest {
                     new ParameterSet().value(false, false).name("CompactRow_NightModeDisabled"));
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Rule
-    public final DisableAnimationsTestRule mDisableAnimationsRule = new DisableAnimationsTestRule();
 
     @Rule
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =

@@ -77,7 +77,6 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.ui.test.util.UiDisableIf;
 
@@ -91,8 +90,6 @@ import java.util.List;
 public class OmniboxPedalsTest {
     public static @ClassRule ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
-    public static @ClassRule DisableAnimationsTestRule sDisableAnimationsRule =
-            new DisableAnimationsTestRule();
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     public @Rule JniMocker mJniMocker = new JniMocker();
     private @Mock OmniboxActionJni mOmniboxActionJni;

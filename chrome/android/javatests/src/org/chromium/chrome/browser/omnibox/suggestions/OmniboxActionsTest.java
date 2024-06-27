@@ -45,7 +45,6 @@ import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionJni;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,8 +62,6 @@ import java.util.List;
 public class OmniboxActionsTest {
     public static @ClassRule ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
-    public static @ClassRule DisableAnimationsTestRule sDisableAnimationsRule =
-            new DisableAnimationsTestRule();
     public @Rule JniMocker mJniMocker = new JniMocker();
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock AutocompleteController.Natives mAutocompleteControllerJniMock;

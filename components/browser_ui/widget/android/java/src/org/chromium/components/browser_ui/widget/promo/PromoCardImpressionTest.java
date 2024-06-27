@@ -27,7 +27,6 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.concurrent.TimeoutException;
 
@@ -38,9 +37,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class PromoCardImpressionTest {
-    @ClassRule
-    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
-
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);

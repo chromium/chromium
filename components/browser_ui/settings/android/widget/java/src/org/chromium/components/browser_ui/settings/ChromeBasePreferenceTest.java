@@ -25,7 +25,6 @@ import com.google.common.collect.ImmutableList;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,16 +33,11 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.settings.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /** Tests of {@link ChromeBasePreference}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class ChromeBasePreferenceTest {
-    @ClassRule
-    public static final DisableAnimationsTestRule disableAnimationsRule =
-            new DisableAnimationsTestRule();
-
     @Rule
     public final BlankUiTestActivitySettingsTestRule mSettingsRule =
             new BlankUiTestActivitySettingsTestRule();

@@ -65,15 +65,11 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ModalDialogButtonSpec;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /** Tests for {@link ModalDialogView}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class ModalDialogViewTest {
-    @ClassRule
-    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
-
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);

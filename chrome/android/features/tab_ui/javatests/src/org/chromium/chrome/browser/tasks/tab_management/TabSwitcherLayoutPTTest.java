@@ -32,6 +32,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.base.test.util.TestAnimations.EnableAnimations;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -54,7 +55,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -253,7 +253,7 @@ public class TabSwitcherLayoutPTTest {
 
     @Test
     @MediumTest
-    @DisableAnimationsTestRule.EnsureAnimationsOn
+    @EnableAnimations
     public void testTabToGridAndBack_NoReset() {
         PageStation page = mInitialStateRule.startOnBlankPage();
         page =
@@ -264,7 +264,7 @@ public class TabSwitcherLayoutPTTest {
 
     @Test
     @MediumTest
-    @DisableAnimationsTestRule.EnsureAnimationsOn
+    @EnableAnimations
     public void testTabToGridAndBack_SoftCleanup() {
         PageStation page = mInitialStateRule.startOnBlankPage();
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
@@ -287,7 +287,7 @@ public class TabSwitcherLayoutPTTest {
 
     @Test
     @MediumTest
-    @DisableAnimationsTestRule.EnsureAnimationsOn
+    @EnableAnimations
     public void testTabToGridAndBack_SoftCleanup_Ntp() {
         WebPageStation page = mInitialStateRule.startOnBlankPage();
         NewTabPageStation ntp = page.openRegularTabAppMenu().openNewTab();
@@ -311,7 +311,7 @@ public class TabSwitcherLayoutPTTest {
 
     @Test
     @MediumTest
-    @DisableAnimationsTestRule.EnsureAnimationsOn
+    @EnableAnimations
     public void testTabToGridAndBack_HardCleanup() {
         PageStation page = mInitialStateRule.startOnBlankPage();
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
@@ -335,7 +335,7 @@ public class TabSwitcherLayoutPTTest {
 
     @Test
     @MediumTest
-    @DisableAnimationsTestRule.EnsureAnimationsOn
+    @EnableAnimations
     public void testTabToGridAndBack_NoCoordinator() {
         PageStation page = mInitialStateRule.startOnBlankPage();
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();

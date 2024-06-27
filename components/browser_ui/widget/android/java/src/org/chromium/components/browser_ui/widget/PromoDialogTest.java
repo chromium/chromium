@@ -31,7 +31,6 @@ import org.chromium.components.browser_ui.widget.PromoDialog.DialogParams;
 import org.chromium.components.browser_ui.widget.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.concurrent.Callable;
 
@@ -39,9 +38,6 @@ import java.util.concurrent.Callable;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class PromoDialogTest {
-    @ClassRule
-    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
-
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);

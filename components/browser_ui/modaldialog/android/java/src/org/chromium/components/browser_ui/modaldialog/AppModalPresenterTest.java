@@ -56,7 +56,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.concurrent.TimeoutException;
 
@@ -64,9 +63,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class AppModalPresenterTest {
-    @ClassRule
-    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
-
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);

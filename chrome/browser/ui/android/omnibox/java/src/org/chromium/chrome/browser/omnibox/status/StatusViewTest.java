@@ -38,6 +38,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.base.test.util.TestAnimations.EnableAnimations;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -47,7 +48,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.lang.reflect.InvocationTargetException;
@@ -299,7 +299,7 @@ public class StatusViewTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     @Feature({"Omnibox"})
-    @DisableAnimationsTestRule.EnsureAnimationsOn
+    @EnableAnimations
     public void testStatusViewAnimation_noConcurrentAnimation()
             throws ExecutionException,
                     InterruptedException,

@@ -25,7 +25,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,7 +48,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.webapps.R;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /** Test the showing of the PWA Restore Bottom Sheet dialog. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -63,10 +61,6 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Rule
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
-
-    @ClassRule
-    public static DisableAnimationsTestRule sDisableAnimationsRule =
-            new DisableAnimationsTestRule();
 
     private static @DisplayStage int sFlagValueMissing = DisplayStage.UNKNOWN_STATUS;
 

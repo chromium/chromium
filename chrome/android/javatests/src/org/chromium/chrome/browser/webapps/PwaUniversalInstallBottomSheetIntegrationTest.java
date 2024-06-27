@@ -26,7 +26,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,7 +47,6 @@ import org.chromium.components.webapps.AppType;
 import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.pwa_universal_install.PwaUniversalInstallBottomSheetCoordinator;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /** Test the showing of the PWA Universal Install Bottom Sheet dialog. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -59,10 +57,6 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     @Rule
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
-
-    @ClassRule
-    public static DisableAnimationsTestRule sDisableAnimationsRule =
-            new DisableAnimationsTestRule();
 
     private static final String TAG = "PwaUniInstallIntegrTest";
 

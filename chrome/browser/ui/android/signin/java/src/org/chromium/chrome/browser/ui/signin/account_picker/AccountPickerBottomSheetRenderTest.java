@@ -546,11 +546,9 @@ public class AccountPickerBottomSheetRenderTest {
                 });
         CriteriaHelper.pollUiThread(
                 bottomSheetView.findViewById(R.id.account_picker_signin_spinner_view)::isShown);
-        // Currently the ProgressBar animation cannot be disabled on android-marshmallow-arm64-rel
-        // bot with DisableAnimationsTestRule, we hide the ProgressBar manually here to enable
-        // checks of other elements on the screen.
-        // TODO(crbug.com/40144184): Delete this line and use DisableAnimationsTestRule
-        //  once DisableAnimationsTestRule is fixed.
+        // Currently the ProgressBar animation cannot be disabled with animations disabled.
+        // Hide the ProgressBar manually here to enable checks of other elements on the screen.
+        // TODO(crbug.com/40144184): Delete this line.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     bottomSheetView

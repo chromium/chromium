@@ -28,15 +28,11 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.browser_ui.widget.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /** Unit tests for {@link RadioButtonWithDescriptionAndAuxButton}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class RadioButtonWithDescriptionAndAuxButtonTest {
-    @ClassRule
-    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
-
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);

@@ -57,7 +57,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.ViewUtils;
@@ -88,9 +87,6 @@ public class RestoreTabsUiRenderTest {
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Rule public JniMocker jniMocker = new JniMocker();
-
-    @Rule
-    public final DisableAnimationsTestRule mDisableAnimationsRule = new DisableAnimationsTestRule();
 
     @Mock ForeignSessionHelper.Natives mForeignSessionHelperJniMock;
     @Mock FaviconHelper.Natives mFaviconHelperJniMock;

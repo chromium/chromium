@@ -49,7 +49,6 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.concurrent.ExecutionException;
 
@@ -59,10 +58,6 @@ import java.util.concurrent.ExecutionException;
 public class MessageBannerViewTest {
     private static final String PRIMARY_BUTTON_TEXT = "PrimaryButtonText";
     private static final String SECONDARY_BUTTON_MENU_TEXT = "SecondaryActionText";
-
-    @ClassRule
-    public static DisableAnimationsTestRule sDisableAnimationsRule =
-            new DisableAnimationsTestRule();
 
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =

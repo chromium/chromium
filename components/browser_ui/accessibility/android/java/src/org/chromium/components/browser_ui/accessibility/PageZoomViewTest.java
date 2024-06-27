@@ -50,7 +50,6 @@ import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /** Unit tests for the PageZoom view and view binder. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -61,10 +60,6 @@ import org.chromium.ui.test.util.DisableAnimationsTestRule;
 })
 @Batch(Batch.PER_CLASS)
 public class PageZoomViewTest {
-    @ClassRule
-    public static DisableAnimationsTestRule sDisableAnimationsRule =
-            new DisableAnimationsTestRule();
-
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);

@@ -41,7 +41,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.RenderTestRule.Component;
 
 import java.time.Clock;
@@ -49,8 +48,6 @@ import java.time.Clock;
 /** Render tests for {@link TabGroupRowView}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class TabGroupRowViewRenderTest {
-    @Rule
-    public final DisableAnimationsTestRule mDisableAnimationsRule = new DisableAnimationsTestRule();
 
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =

@@ -55,7 +55,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /** Instrumentation tests for the secondary menu functionality of TranslateMessage. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -93,10 +92,6 @@ public final class TranslateMessageSecondaryMenuTest {
                     /* hasCheckmark= */ false,
                     /* overflowMenuItemId= */ 3,
                     /* languageCode= */ "lang3");
-
-    @ClassRule
-    public static DisableAnimationsTestRule sDisableAnimationsRule =
-            new DisableAnimationsTestRule();
 
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =

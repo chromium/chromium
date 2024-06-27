@@ -18,7 +18,6 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,7 +45,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.RenderTestRule.Component;
 
 import java.util.Arrays;
@@ -76,10 +74,6 @@ public class PasswordMigrationWarningRenderTest {
     private BottomSheetController mBottomSheetController;
     private PasswordMigrationWarningView mView;
     private PropertyModel mModel;
-
-    @ClassRule
-    public static DisableAnimationsTestRule sDisableAnimationsRule =
-            new DisableAnimationsTestRule();
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();

@@ -60,7 +60,6 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /** Non-render tests for {@link BookmarkSearchBoxRow}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -81,9 +80,6 @@ public class BookmarkSearchBoxRowTest {
             }
         };
     }
-
-    @Rule
-    public final DisableAnimationsTestRule mDisableAnimationsRule = new DisableAnimationsTestRule();
 
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =

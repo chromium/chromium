@@ -6,7 +6,6 @@ package org.chromium.ui.test.util;
 
 import androidx.test.runner.lifecycle.Stage;
 
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
@@ -27,10 +26,6 @@ public class BlankUiTestActivityTestCase {
     private final BaseActivityTestRule<? extends BlankUiTestActivity> mActivityTestRule;
 
     // Disable animations to reduce flakiness.
-    @ClassRule
-    public static final DisableAnimationsTestRule disableAnimationsRule =
-            new DisableAnimationsTestRule();
-
     @Rule public final TestRule ruleChain;
 
     /** Default constructor that creates a {@link BlankUiTestActivity} as expected. */

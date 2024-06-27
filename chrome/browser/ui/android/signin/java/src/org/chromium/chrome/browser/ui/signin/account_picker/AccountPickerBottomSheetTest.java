@@ -1504,11 +1504,10 @@ public class AccountPickerBottomSheetTest {
     private void assertSignInProceeded(View bottomSheetView) {
         // TODO(crbug.com/40144708): Check AccountPickerDelegate.signIn() is called
         // after solving AsyncTask wait problem in espresso
-        // Currently the ProgressBar animation cannot be disabled on android-marshmallow-arm64-rel
-        // bot with DisableAnimationsTestRule, we hide the ProgressBar manually here to enable
+        // Currently the ProgressBar animation cannot be disabled. Hide the ProgressBar manually
+        // here to enable
         // checks of other elements on the screen.
-        // TODO(crbug.com/40144184): Delete this line once DisableAnimationsTestRule is
-        // fixed.
+        // TODO(crbug.com/40144184): Delete this line.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     bottomSheetView

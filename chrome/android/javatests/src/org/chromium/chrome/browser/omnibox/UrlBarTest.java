@@ -48,7 +48,6 @@ import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.Clipboard;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.List;
@@ -71,8 +70,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class UrlBarTest {
     public static @ClassRule ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
-    public static @ClassRule DisableAnimationsTestRule sIsableAnimationsRule =
-            new DisableAnimationsTestRule();
     private UrlBar mUrlBar;
     private OmniboxTestUtils mOmnibox;
 

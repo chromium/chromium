@@ -14,7 +14,6 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +36,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.RenderTestRule.Component;
 
 import java.util.Arrays;
@@ -63,10 +61,6 @@ public class PostPasswordMigrationSheetRenderTest {
     private BottomSheetController mBottomSheetController;
     private PostPasswordMigrationSheetView mView;
     private PropertyModel mModel;
-
-    @ClassRule
-    public static DisableAnimationsTestRule sDisableAnimationsRule =
-            new DisableAnimationsTestRule();
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();

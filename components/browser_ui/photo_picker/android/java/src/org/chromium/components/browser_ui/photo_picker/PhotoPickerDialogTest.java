@@ -34,6 +34,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.base.test.util.TestAnimations.EnableAnimations;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -46,7 +47,6 @@ import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.PhotoPickerListener;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.File;
@@ -63,9 +63,6 @@ public class PhotoPickerDialogTest extends BlankUiTestActivityTestCase
                 DecoderServiceHost.DecoderStatusCallback,
                 PickerVideoPlayer.VideoPlaybackStatusCallback,
                 AnimationListener {
-    @Rule
-    public DisableAnimationsTestRule mDisableAnimationsTestRule = new DisableAnimationsTestRule();
-
     // The timeout (in seconds) to wait for the decoder service to be ready.
     private static final long WAIT_TIMEOUT_SECONDS = 30L;
     private static final long VIDEO_TIMEOUT_SECONDS = 10L;
@@ -685,7 +682,7 @@ public class PhotoPickerDialogTest extends BlankUiTestActivityTestCase
 
     @Test
     @LargeTest
-    @DisableAnimationsTestRule.EnsureAnimationsOn
+    @EnableAnimations
     @MinAndroidSdkLevel(Build.VERSION_CODES.O) // Video is only supported on O+.
     @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1092104")
     @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/1092104")

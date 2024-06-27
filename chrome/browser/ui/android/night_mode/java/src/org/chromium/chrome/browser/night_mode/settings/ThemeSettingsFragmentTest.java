@@ -20,7 +20,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,15 +48,11 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayou
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /** Tests for ThemeSettingsFragment. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @DisableFeatures(DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
 public class ThemeSettingsFragmentTest {
-    @ClassRule
-    public static final DisableAnimationsTestRule disableAnimationsRule =
-            new DisableAnimationsTestRule();
 
     @Rule
     public BlankUiTestActivitySettingsTestRule mSettingsTestRule =

@@ -176,9 +176,7 @@ public class OmniboxTestUtils {
     /**
      * Check that the Omnibox reaches the expected focus state.
      *
-     * Note: this is known to cause issues with tests that run animations.
-     * In the event you are running into flakes that concentrate around this call, please consider
-     * adding DisableAnimationsTestRule to your test suite.
+     * <p>Note: this is known to cause issues with tests that run animations.
      *
      * @param active Whether the Omnibox is expected to have focus or not.
      */

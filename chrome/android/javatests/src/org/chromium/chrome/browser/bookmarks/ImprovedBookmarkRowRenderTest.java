@@ -53,7 +53,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.NightModeTestUtils;
 
 import java.io.IOException;
@@ -74,9 +73,6 @@ public class ImprovedBookmarkRowRenderTest {
                     new ParameterSet().value(true, false).name("VisualRow_NightModeDisabled"),
                     new ParameterSet().value(false, true).name("CompactRow_NightModeEnabled"),
                     new ParameterSet().value(false, false).name("CompactRow_NightModeDisabled"));
-
-    @Rule
-    public final DisableAnimationsTestRule mDisableAnimationsRule = new DisableAnimationsTestRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

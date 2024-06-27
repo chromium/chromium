@@ -80,7 +80,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.accessibility.AccessibilityState;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
 
@@ -104,9 +103,6 @@ public class ReadingListTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Rule
-    public final DisableAnimationsTestRule mDisableAnimationsRule = new DisableAnimationsTestRule();
 
     private static final String TEST_PAGE_TITLE_GOOGLE = "The Google";
     private static final int TEST_PORT = 12345;

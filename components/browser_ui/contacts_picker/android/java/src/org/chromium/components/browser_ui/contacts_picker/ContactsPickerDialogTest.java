@@ -53,7 +53,6 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.nio.ByteBuffer;
@@ -67,10 +66,6 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 public class ContactsPickerDialogTest
         implements ContactsPickerListener, SelectionObserver<ContactDetails> {
-    @ClassRule
-    public static DisableAnimationsTestRule mDisableAnimationsTestRule =
-            new DisableAnimationsTestRule();
-
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);

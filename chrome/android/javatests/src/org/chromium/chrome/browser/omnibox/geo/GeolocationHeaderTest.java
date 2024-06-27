@@ -36,7 +36,6 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /** Tests for GeolocationHeader and GeolocationTracker. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -45,8 +44,6 @@ import org.chromium.ui.test.util.DisableAnimationsTestRule;
 public class GeolocationHeaderTest {
     public @ClassRule static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
-    public @ClassRule static DisableAnimationsTestRule disableAnimationsRule =
-            new DisableAnimationsTestRule();
     public @Rule BlankCTATabInitialStateRule mInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, true);
 

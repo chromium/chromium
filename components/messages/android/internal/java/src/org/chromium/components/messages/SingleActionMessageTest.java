@@ -41,7 +41,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /** Tests for {@link SingleActionMessage}. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -52,10 +51,6 @@ import org.chromium.ui.test.util.DisableAnimationsTestRule;
     MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION
 })
 public class SingleActionMessageTest {
-    @ClassRule
-    public static DisableAnimationsTestRule sDisableAnimationsRule =
-            new DisableAnimationsTestRule();
-
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
