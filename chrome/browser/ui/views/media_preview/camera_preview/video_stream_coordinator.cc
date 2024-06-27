@@ -72,6 +72,8 @@ void VideoStreamCoordinator::ConnectToDevice(
             device_info.descriptor.device_id);
 
     video_frame_handler_->StartHandlingFrames(/*delegate=*/this);
+
+    video_stream_request_time_ = base::TimeTicks::Now();
   }
 }
 
@@ -90,6 +92,13 @@ void VideoStreamCoordinator::OnCameraVideoFrame(
   if (!video_stream_start_time_) {
     video_stream_start_time_ = base::TimeTicks::Now();
     video_stream_total_frames_ = 0;
+
+    CHECK(video_stream_request_time_);
+    const auto preview_delay_time =
+        *video_stream_start_time_ - *video_stream_request_time_;
+    media_preview_metrics::RecordPreviewDelayTime(metrics_context_,
+                                                  preview_delay_time);
+    video_stream_request_time_.reset();
   }
   video_stream_total_frames_++;
 }
