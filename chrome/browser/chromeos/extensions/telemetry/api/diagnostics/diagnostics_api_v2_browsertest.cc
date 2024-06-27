@@ -1220,16 +1220,9 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
                        CreateLedLitUpRoutineSuccess) {
-  base::test::TestFuture<void> led_routine_created;
+  base::test::TestFuture<void> routine_created_future;
   fake_service().SetOnCreateRoutineCalled(
-      base::BindLambdaForTesting([this, &led_routine_created]() {
-        auto* control = fake_service().GetCreatedRoutineControlForRoutineType(
-            crosapi::TelemetryDiagnosticRoutineArgument::Tag::kLedLitUp);
-        ASSERT_TRUE(control);
-        if (control) {
-          led_routine_created.SetValue();
-        }
-      }));
+      routine_created_future.GetRepeatingCallback());
 
   OpenAppUiAndMakeItSecure();
 
@@ -1260,7 +1253,9 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
     ]);
   )");
 
-  EXPECT_TRUE(led_routine_created.Wait());
+  EXPECT_TRUE(routine_created_future.Wait());
+  EXPECT_TRUE(fake_service().GetCreatedRoutineControlForRoutineType(
+      crosapi::TelemetryDiagnosticRoutineArgument::Tag::kLedLitUp));
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
