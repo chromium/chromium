@@ -101,11 +101,11 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  DCHECK(base::FeatureList::IsEnabled(kEnableLensOverlay));
+  CHECK(base::FeatureList::IsEnabled(kEnableLensOverlay));
   [super start];
 
   Browser* browser = self.browser;
-  DCHECK(browser);
+  CHECK(browser, kLensOverlayNotFatalUntil);
 
   [browser->GetCommandDispatcher()
       startDispatchingToTarget:self
@@ -113,9 +113,9 @@
 }
 
 - (void)stop {
-  Browser* browser = self.browser;
-  DCHECK(browser);
-  [browser->GetCommandDispatcher() stopDispatchingToTarget:self];
+  if (Browser* browser = self.browser) {
+    [browser->GetCommandDispatcher() stopDispatchingToTarget:self];
+  }
 
   [super stop];
 }

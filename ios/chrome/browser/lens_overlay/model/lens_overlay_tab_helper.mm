@@ -10,7 +10,7 @@
 
 LensOverlayTabHelper::LensOverlayTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
-  DCHECK(base::FeatureList::IsEnabled(kEnableLensOverlay));
+  CHECK(base::FeatureList::IsEnabled(kEnableLensOverlay));
   web_state->AddObserver(this);
 }
 
@@ -24,7 +24,7 @@ LensOverlayTabHelper::~LensOverlayTabHelper() {
 #pragma mark - WebStateObserver
 
 void LensOverlayTabHelper::WasShown(web::WebState* web_state) {
-  DCHECK_EQ(web_state, web_state_);
+  CHECK_EQ(web_state, web_state_, kLensOverlayNotFatalUntil);
 
   if (is_showing_lens_overlay_) {
     [commands_handler_ showLensUI:YES];
@@ -32,7 +32,7 @@ void LensOverlayTabHelper::WasShown(web::WebState* web_state) {
 }
 
 void LensOverlayTabHelper::WasHidden(web::WebState* web_state) {
-  DCHECK_EQ(web_state, web_state_);
+  CHECK_EQ(web_state, web_state_, kLensOverlayNotFatalUntil);
 
   if (is_showing_lens_overlay_) {
     [commands_handler_ hideLensUI:YES];
@@ -40,7 +40,7 @@ void LensOverlayTabHelper::WasHidden(web::WebState* web_state) {
 }
 
 void LensOverlayTabHelper::WebStateDestroyed(web::WebState* web_state) {
-  DCHECK_EQ(web_state, web_state_);
+  CHECK_EQ(web_state, web_state_, kLensOverlayNotFatalUntil);
 
   if (is_showing_lens_overlay_) {
     [commands_handler_ destroyLensUI:NO];
