@@ -20,7 +20,7 @@ namespace content {
 class RenderFrameHostImpl;
 class WebContentsImpl;
 
-// Handles changes to Safe Area Insets by monitoring
+// Handles changes to Safe Area Insets (SAI) by monitoring
 // navigations within a `WebContents` and hosting a connection
 // to Blink. See the base class `SafeAreaInsetsHost` for context.
 
@@ -31,6 +31,13 @@ class WebContentsImpl;
 // associated RFH and updates the owning `WebContents` when it changes.
 // Note that subframes may acquire fullscreen so the viewport-fit from that
 // frame may change the insets.
+//
+// This class ensures there will be only one frame that receives the current
+// SAI, with this rule:
+//  * When a fullscreen frame exists, the fullscreen frame will take the SAI
+//  * When no fullscreen frame exists, the primary main frame will take the SAI
+//  * When the frame that takes SAI changes, the SAI in the previous frame will
+//    be reset.
 class CONTENT_EXPORT SafeAreaInsetsHostImpl : public SafeAreaInsetsHost {
  public:
   explicit SafeAreaInsetsHostImpl(WebContentsImpl*);
@@ -65,6 +72,8 @@ class CONTENT_EXPORT SafeAreaInsetsHostImpl : public SafeAreaInsetsHost {
                            blink::mojom::ViewportFit value);
 
  private:
+  friend class TestSafeAreaInsetsHostImpl;
+
   // Checks if the active `RenderFrameHost` has changed, and notifies
   // Blink about the current safe area, and WebContents observers if needed.
   void MaybeActiveRenderFrameHostChanged();
@@ -81,6 +90,14 @@ class CONTENT_EXPORT SafeAreaInsetsHostImpl : public SafeAreaInsetsHost {
   // Stores the `RenderFrameHost` being displayed in fullscreen, and is
   // `nullptr` when not in fullscreen.
   base::WeakPtr<RenderFrameHostImpl> fullscreen_rfh_;
+
+  // Stores the current active `RenderFrameHost` that received the safe area
+  // insets. This could be either the `current_rfh`, or `fullscreen_rfh_`
+  // if in fullscreen mode. Caching this to keep track when the active
+  // `RenderFrameHost` changes. Should only be accessed in
+  // `MaybeActiveRenderFrameHostChanged()`; other code should use
+  // `ActiveRenderFrameHost()` instead.
+  base::WeakPtr<RenderFrameHostImpl> active_rfh_;
 
   // Stores the viewport-fit value that's active for this WebContents.
   blink::mojom::ViewportFit active_value_ = blink::mojom::ViewportFit::kAuto;

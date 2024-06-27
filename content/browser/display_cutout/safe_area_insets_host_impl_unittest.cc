@@ -21,8 +21,6 @@
 
 namespace content {
 
-namespace {
-
 class TestSafeAreaInsetsHostImpl : public SafeAreaInsetsHostImpl {
  public:
   explicit TestSafeAreaInsetsHostImpl(WebContentsImpl* web_contents_impl)
@@ -42,6 +40,8 @@ class TestSafeAreaInsetsHostImpl : public SafeAreaInsetsHostImpl {
   bool did_send_safe_area() { return safe_area_insets_.has_value(); }
   gfx::Insets safe_area_insets() { return safe_area_insets_.value(); }
 
+  RenderFrameHost* active_rfh() { return ActiveRenderFrameHost(); }
+
  protected:
   // Send the safe area insets to a `RenderFrameHost`.
   void SendSafeAreaToFrame(RenderFrameHost* rfh, gfx::Insets insets) override {
@@ -52,8 +52,6 @@ class TestSafeAreaInsetsHostImpl : public SafeAreaInsetsHostImpl {
  private:
   std::optional<gfx::Insets> safe_area_insets_;
 };
-
-}  // namespace
 
 class SafeAreaInsetsHostImplTest : public RenderViewHostTestHarness {
  protected:
@@ -186,6 +184,33 @@ TEST_F(SafeAreaInsetsHostImplTest, GetValueOrDefault_ExpiredRfh) {
   EXPECT_EQ(blink::mojom::ViewportFit::kAuto,
             test_safe_area_insets_host()->GetValueOrDefault(null_rfh.get()))
       << "Passing in a null pointer should return kAuto instead of crashing.";
+}
+
+TEST_F(SafeAreaInsetsHostImplTest, ActiveFrameInFullscreen) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kDrawCutoutEdgeToEdge},
+      /*disabled_features=*/{});
+
+  ResetSafeAreaTracking();
+  NavigateToCover();
+  ExpectCover();
+
+  auto* subframe = static_cast<RenderFrameHostImpl*>(
+      RenderFrameHostTester::For(main_rfh())->AppendChild("subframe"));
+  test_safe_area_insets_host()->DidAcquireFullscreen(subframe);
+
+  EXPECT_EQ(subframe, test_safe_area_insets_host()->active_rfh());
+  EXPECT_EQ(42, test_safe_area_insets_host()->safe_area_insets().top())
+      << "The Display Cutout should have caused a non-zero top inset";
+
+  // Exit fullscreen from sub frame.
+  ResetSafeAreaTracking();
+  test_safe_area_insets_host()->DidExitFullscreen();
+
+  EXPECT_EQ(main_rfh(), test_safe_area_insets_host()->active_rfh());
+  EXPECT_EQ(42, test_safe_area_insets_host()->safe_area_insets().top())
+      << "The Display Cutout should have caused a non-zero top inset";
 }
 
 }  // namespace content

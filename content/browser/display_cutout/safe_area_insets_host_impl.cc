@@ -91,6 +91,15 @@ void SafeAreaInsetsHostImpl::ViewportFitChangedForFrame(
 }
 
 void SafeAreaInsetsHostImpl::MaybeActiveRenderFrameHostChanged() {
+  base::WeakPtr<RenderFrameHostImpl> new_active_rfh =
+      fullscreen_rfh_ ? fullscreen_rfh_ : current_rfh_;
+
+  if (active_rfh_.get() && new_active_rfh.get() != active_rfh_.get()) {
+    // Reset the SAI for the previous active frame.
+    SendSafeAreaToFrame(active_rfh_.get(), gfx::Insets());
+  }
+  active_rfh_ = new_active_rfh;
+
   blink::mojom::ViewportFit new_value =
       GetValueOrDefault(ActiveRenderFrameHost());
   if (new_value != active_value_) {
@@ -102,7 +111,7 @@ void SafeAreaInsetsHostImpl::MaybeActiveRenderFrameHostChanged() {
 }
 
 RenderFrameHostImpl* SafeAreaInsetsHostImpl::ActiveRenderFrameHost() {
-  return (fullscreen_rfh_ ? fullscreen_rfh_ : current_rfh_).get();
+  return active_rfh_.get();
 }
 
 blink::mojom::ViewportFit SafeAreaInsetsHostImpl::GetValueOrDefault(
