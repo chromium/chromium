@@ -5857,6 +5857,7 @@ if (is_chromeos_lacros) {
       "//chrome/browser/web_applications/app_service:test_support",
       "//chrome/test/media_router/access_code_cast:access_code_cast_integration_base",
       "//chromeos/components/kcer",
+      "//chromeos/components/magic_boost/public/cpp:cpp",
       "//chromeos/components/mahi/public/cpp",
       "//chromeos/crosapi/cpp:cpp",
       "//chromeos/crosapi/cpp:test_support",

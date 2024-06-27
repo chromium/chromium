@@ -344,6 +344,12 @@ void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
     return;
   }
 
+  // Needs to be initialized before `read_write_cards_manager_`. This is because
+  // `QuickAnswersState` needs `MagicBoostState` to be initialized before it is
+  // constructed.
+  magic_boost_state_lacros_ =
+      std::make_unique<chromeos::MagicBoostStateLacros>();
+
   read_write_cards_manager_ =
       std::make_unique<chromeos::ReadWriteCardsManagerImpl>();
 

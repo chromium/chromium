@@ -143,6 +143,10 @@ enum PrefPath {
   [MinVersion=21] kUserMicrophoneAllowed = 50,
   // M128: ash::prefs::kHmrEnabled
   [MinVersion=22] kHmrEnabled = 51,
+  // M128: prefs::kHMRConsentStatus
+  [MinVersion=23] kHMRConsentStatus = 52,
+  // M128: prefs::kHMRConsentWindowDismissCount
+  [MinVersion=23] kHMRConsentWindowDismissCount = 53,
 };
 
 // Information about who or what is controlling a particular pref. This is used

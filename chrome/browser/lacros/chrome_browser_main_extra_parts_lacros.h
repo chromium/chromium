@@ -9,6 +9,7 @@
 
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/chromeos/smart_reader/smart_reader_client_impl.h"
+#include "chrome/browser/lacros/magic_boost_state_lacros.h"
 #include "chrome/browser/lacros/sync/sync_crosapi_manager_lacros.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 
@@ -190,6 +191,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
   // Handles WebAuthn request id generation.
   std::unique_ptr<WebAuthnRequestRegistrarLacros>
       webauthn_request_registrar_lacros_;
+
+  // Handles prefs related to magic boost.
+  std::unique_ptr<chromeos::MagicBoostStateLacros> magic_boost_state_lacros_;
 
   // Handles read write cards requests from the Lacros browser.
   std::unique_ptr<chromeos::ReadWriteCardsManager> read_write_cards_manager_;

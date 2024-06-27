@@ -77,6 +77,10 @@ std::string_view GetProfilePrefNameForPref(mojom::PrefPath path) {
           {mojom::PrefPath::kUserCameraAllowed, ash::prefs::kUserCameraAllowed},
           {mojom::PrefPath::kUserMicrophoneAllowed,
            ash::prefs::kUserMicrophoneAllowed},
+          {mojom::PrefPath::kHMRConsentStatus, ash::prefs::kHMRConsentStatus},
+          {mojom::PrefPath::kHMRConsentWindowDismissCount,
+           ash::prefs::kHMRConsentWindowDismissCount},
+
       });
   auto pref_name = kProfilePrefPathToName.find(path);
   DCHECK(pref_name != kProfilePrefPathToName.end());
@@ -307,7 +311,9 @@ std::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kAccessibilityReducedAnimationsEnabled:
     case mojom::PrefPath::kHmrEnabled:
     case mojom::PrefPath::kUserCameraAllowed:
-    case mojom::PrefPath::kUserMicrophoneAllowed: {
+    case mojom::PrefPath::kUserMicrophoneAllowed:
+    case mojom::PrefPath::kHMRConsentStatus:
+    case mojom::PrefPath::kHMRConsentWindowDismissCount: {
       if (!profile_prefs_registrar_) {
         LOG(WARNING) << "Primary profile is not yet initialized";
         return std::nullopt;

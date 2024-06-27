@@ -59,7 +59,7 @@ bool QuickAnswersState::IsEligibleAs(
 }
 
 QuickAnswersState::QuickAnswersState() {
-  DCHECK(!g_quick_answers_state);
+  CHECK(!g_quick_answers_state);
   g_quick_answers_state = this;
 }
 
