@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.test;
 
-import android.content.Context;
 
-import androidx.test.core.app.ApplicationProvider;
 
 import org.hamcrest.Matchers;
 import org.junit.rules.TestRule;
@@ -27,12 +25,6 @@ import java.util.concurrent.TimeoutException;
 
 /** Custom TestRule for MultiActivity Tests. */
 public class MultiActivityTestRule implements TestRule {
-    Context mContext;
-
-    public Context getContext() {
-        return mContext;
-    }
-
     public void waitForFullLoad(final ChromeActivity activity, final String expectedTitle)
             throws TimeoutException {
         waitForTabCreation(activity);
@@ -63,23 +55,13 @@ public class MultiActivityTestRule implements TestRule {
         newTabCreatorHelper.waitForCallback(0);
     }
 
-    private void ruleSetUp() {
-        mContext = ApplicationProvider.getApplicationContext();
-        ChromeApplicationTestUtils.setUp(mContext);
-    }
-
-    private void ruleTearDown() {
-        ChromeApplicationTestUtils.tearDown(mContext);
-    }
-
     @Override
     public Statement apply(final Statement base, Description desc) {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                ruleSetUp();
+                ChromeApplicationTestUtils.setUp();
                 base.evaluate();
-                ruleTearDown();
             }
         };
     }

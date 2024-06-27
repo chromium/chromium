@@ -15,11 +15,9 @@ import android.widget.FrameLayout;
 import android.widget.RemoteViews;
 import android.widget.TextView;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -96,16 +94,11 @@ public class SearchWidgetProviderTest {
 
     @Before
     public void setUp() {
-        ChromeApplicationTestUtils.setUp(ApplicationProvider.getApplicationContext());
+        ChromeApplicationTestUtils.setUp();
 
         mContext = new TestContext();
         mDelegate = new TestDelegate(mContext);
         SearchWidgetProvider.setActivityDelegateForTest(mDelegate);
-    }
-
-    @After
-    public void tearDown() {
-        ChromeApplicationTestUtils.tearDown(ApplicationProvider.getApplicationContext());
     }
 
     /**
