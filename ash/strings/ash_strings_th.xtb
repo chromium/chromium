@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">เปิดใช้แป้นพิมพ์บนหน้าจออยู่</translation>
 <translation id="1749109475624620922">กำหนดหน้าต่าง <ph name="WINDOW_TITLE" /> ให้ทุกเดสก์แล้ว</translation>
 <translation id="1750088060796401187">เปิดได้ <ph name="MAX_DESK_LIMIT" /> เดสก์เท่านั้น นำออก 1 เดสก์เพื่อเปิดเดสก์ใหม่</translation>
+<translation id="1751335846119670066">ช่วยฉันอ่าน</translation>
 <translation id="1755408179247123630">เปิดฟีเจอร์เลือกเพื่อให้อ่านใช่ไหม</translation>
 <translation id="1755556344721611131">แอปการวินิจฉัย</translation>
 <translation id="1756833229520115364">บันทึกเทมเพลตไม่ได้ มีหน้าต่างหรือแท็บมากเกินไป</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">ตั้งค่าการดูรูปภาพ สื่อ และการแจ้งเตือนล่าสุดของโทรศัพท์</translation>
 <translation id="1787955149152357925">ปิด</translation>
 <translation id="1796561540704213354">เว็บไซต์จะรวมหน้าเว็บที่คุณเคยเข้าชมและหน้าเว็บที่เคยเปิด</translation>
+<translation id="179842970735685253">ข้อกำหนดในการให้บริการของ Google</translation>
 <translation id="181103072419391116">ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="1816896987747843206">การดำเนินการนี้ช่วยให้แอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องได้</translation>
 <translation id="1823873187264960516">อีเทอร์เน็ต: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">ประเภทงานของชั้นเรียน</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">โปรดคำนึงถึงสิ่งต่อไปนี้</translation>
 <translation id="3139188263101386725">ใช้แป้นพิมพ์ลัดที่อัปเดต</translation>
 <translation id="3139942575505304791">เดสก์ที่ 1</translation>
 <translation id="315116470104423982">เน็ตมือถือ</translation>
@@ -956,6 +959,7 @@
 <translation id="4585337515783392668">หยุดแคสต์ไปยังเครื่องรับที่ไม่รู้จัก</translation>
 <translation id="4596144739579517758">ธีมมืดปิดอยู่</translation>
 <translation id="4596442969149038771"><ph name="USER" /> แชร์เมื่อ</translation>
+<translation id="4610493115106525653">เอาต์พุตดี</translation>
 <translation id="4611292653554630842">ลงชื่อเข้าสู่ระบบ</translation>
 <translation id="462160925400706389">เชื่อมต่อ <ph name="NAME" /> แล้ว</translation>
 <translation id="4623167406982293031">ยืนยันบัญชี</translation>
@@ -1113,6 +1117,7 @@
 <translation id="5121628974188116412">ไปที่ด้านล่างสุดของหน้า</translation>
 <translation id="5122517996953421795">ตัวอย่าง <ph name="DESK_NAME" /> เดสก์ที่ไม่ได้ใช้งาน</translation>
 <translation id="5136175204352732067">เชื่อมต่อกับแป้นพิมพ์อื่นแล้ว</translation>
+<translation id="5140105873789567560">คุณต้องมีอายุอย่างน้อย 18 ปีจึงจะใช้ฟีเจอร์ช่วยฉันเขียนและช่วยฉันอ่านได้</translation>
 <translation id="5144005092084035179">เปลี่ยนอินพุตเสียงไหม</translation>
 <translation id="5147567197700016471">ปลดล็อกแล้ว</translation>
 <translation id="5150070631291639005">การตั้งค่าความเป็นส่วนตัว</translation>
@@ -1553,6 +1558,7 @@
 <translation id="6696025732084565524">แป้มพิมพ์ที่ถอดได้ต้องได้รับอัปเดตที่สำคัญ</translation>
 <translation id="6697913454192220372">เพิ่มเดสก์ใหม่</translation>
 <translation id="6700713906295497288">ปุ่มเมนู IME</translation>
+<translation id="6704375469818246414">คุณภาพอาจแตกต่างกันไปเมื่อใช้ Generative AI</translation>
 <translation id="6706742084323792866">ปักหมุดแป้นพิมพ์</translation>
 <translation id="6710213216561001401">ก่อนหน้า</translation>
 <translation id="6723839937902243910">พลังงาน</translation>
@@ -1820,9 +1826,11 @@
 <translation id="7726391492136714301">ดูการแจ้งเตือนและแอปในโทรศัพท์</translation>
 <translation id="7727952505535211425">เปิดเว็บไซต์ในแถบที่อยู่ในแท็บใหม่</translation>
 <translation id="7742327441377685481">ไม่มีการแจ้งเตือน</translation>
+<translation id="774736258792760908">เมื่อเปิดฟีเจอร์ช่วยฉันเขียนและช่วยฉันอ่าน ระบบจะส่งข้อความที่ป้อนและเนื้อหาเอกสารไปยังเซิร์ฟเวอร์ AI ของ Google เพื่อสร้างคำแนะนำในการเขียน สร้างข้อมูลสรุป ตอบคำถาม และปรับปรุงผลิตภัณฑ์โดยเป็นไปตาม<ph name="LINK_TO_SERVICE_TERMS" /> อย่าระบุสิ่งที่เป็นเรื่องส่วนตัว ข้อมูลที่ละเอียดอ่อน หรือข้อมูลที่เป็นความลับ</translation>
 <translation id="7748275671948949022">ไฮไลต์ปุ่ม Launcher บนแถบ</translation>
 <translation id="7749443890790263709">มีพื้นที่ทำงานครบตามจำนวนสูงสุดแล้ว</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">คุณปิดฟีเจอร์ช่วยฉันเขียนและช่วยฉันอ่านได้ทุกเมื่อในการตั้งค่า <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">เลือกเพื่อให้อ่าน</translation>
 <translation id="7769299611924763557">GIF จะพร้อมใช้งานในไม่ช้า</translation>
 <translation id="7773536009433685931">เปิด Wi-Fi แทน</translation>
@@ -1831,6 +1839,7 @@
 <translation id="7781829728241885113">เมื่อวานนี้</translation>
 <translation id="7787212146956232129">ตั้งค่าอุปกรณ์อินพุตและเอาต์พุตแล้ว โปรดเปลี่ยนที่การตั้งค่า</translation>
 <translation id="7792590255364786396">มองเห็นได้</translation>
+<translation id="7793389284006812057">Generative AI เป็นเวอร์ชันทดลอง อยู่ในช่วงการพัฒนาขั้นต้น และขณะนี้พร้อมให้บริการแบบจํากัด</translation>
 <translation id="7796735576426975947">การแจ้งเตือนใหม่ซ่อนอยู่</translation>
 <translation id="7798302898096527229">กด Search หรือ Shift เพื่อยกเลิก</translation>
 <translation id="780301667611848630">ไม่ ขอบคุณ</translation>
@@ -1985,6 +1994,7 @@
 <translation id="8331351032546853669">การดาวน์โหลดรอดำเนินการ</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">เอาต์พุตไม่ดี</translation>
 <translation id="8345019317483336363">เลือกหน้าต่าง <ph name="WINDOW_TITLE" /> ไว้</translation>
 <translation id="8349826889576450703">Launcher</translation>
 <translation id="8349964124165471584">เปิดลิงก์ในหน้าต่างใหม่</translation>

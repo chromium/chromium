@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">Дэлгэцэн дээрх гарыг идэвхжүүлсэн байна</translation>
 <translation id="1749109475624620922"><ph name="WINDOW_TITLE" /> цонхыг бүх дэлгэцэд оноосон</translation>
 <translation id="1750088060796401187">Зөвхөн <ph name="MAX_DESK_LIMIT" /> дэлгэцийг зөвшөөрсөн. Шинэ дэлгэц нээхийн тулд дэлгэц хасна уу.</translation>
+<translation id="1751335846119670066">Надад уншихад тусал</translation>
 <translation id="1755408179247123630">Ярихаар сонгохыг асаах уу?</translation>
 <translation id="1755556344721611131">Оношилгооны апп</translation>
 <translation id="1756833229520115364">Загварыг хадгалж чадсангүй. Хэт олон цонх эсвэл таб байна.</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">Утасныхаа саяхны зураг, медиа болон мэдэгдлүүдийг харахыг тохируулах</translation>
 <translation id="1787955149152357925">Унтраалттай</translation>
 <translation id="1796561540704213354">Таны зочилсон хуудас болон нээлттэй хуудаснуудыг оруулсан вебсайтууд</translation>
+<translation id="179842970735685253">Google-н үйлчилгээний нөхцөл</translation>
 <translation id="181103072419391116">Дохионы хүч <ph name="SIGNAL_STRENGTH" />, таны администратор удирддаг</translation>
 <translation id="1816896987747843206">Энэ нь камерын зөвшөөрөлтэй бүх апп болон вебсайтад камерын хандалтыг зөвшөөрнө</translation>
 <translation id="1823873187264960516">Этернет: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Ангийн ажлыг харах</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Анхаарвал зохих цөөн хэдэн зүйл</translation>
 <translation id="3139188263101386725">Шинэчилсэн товчлол ашиглана уу</translation>
 <translation id="3139942575505304791">Дэлгэц 1</translation>
 <translation id="315116470104423982">Гар утасны дата</translation>
@@ -962,6 +965,7 @@
 <translation id="4585337515783392668">Үл мэдэгдэх хүлээн авагч руу дамжуулахаа зогсоох</translation>
 <translation id="4596144739579517758">Бараан загвар унтраалттай байна</translation>
 <translation id="4596442969149038771"><ph name="USER" /> хуваалцсан</translation>
+<translation id="4610493115106525653">Сайн гаралт</translation>
 <translation id="4611292653554630842">Нэвтрэх</translation>
 <translation id="462160925400706389"><ph name="NAME" /> холбогдсон</translation>
 <translation id="4623167406982293031">Бүртгэлийг бататгах</translation>
@@ -1119,6 +1123,7 @@
 <translation id="5121628974188116412">Хуудасны доод хэсэгт очих</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" />-н урьдчилан үзэлт. Идэвхгүй дэлгэц.</translation>
 <translation id="5136175204352732067">Өөр гар холбосон</translation>
+<translation id="5140105873789567560">Надад бичихэд тусал болон Надад уншихад тусал онцлогийг ашиглахын тулд та дор хаяж 18 настай байх ёстой.</translation>
 <translation id="5144005092084035179">Аудио оролтыг сэлгэх үү?</translation>
 <translation id="5147567197700016471">Түгжээг тайлсан</translation>
 <translation id="5150070631291639005">Нууцлалын тохиргоо</translation>
@@ -1559,6 +1564,7 @@
 <translation id="6696025732084565524">Та салгах боломжтой гараа зайлшгүй шинэчлэх шаардлагатай байна</translation>
 <translation id="6697913454192220372">Шинэ дэлгэц нэмэх</translation>
 <translation id="6700713906295497288">IME цэсийн товчлуур</translation>
+<translation id="6704375469818246414">Үүсгэгч ХОУ-ыг ашиглах үед чанар ялгаатай байж болно.</translation>
 <translation id="6706742084323792866">ПИН оруулах гар</translation>
 <translation id="6710213216561001401">Өмнөх</translation>
 <translation id="6723839937902243910">Эрчим хүч</translation>
@@ -1826,9 +1832,11 @@
 <translation id="7726391492136714301">Утасныхаа мэдэгдлүүд болон аппуудыг хараарай</translation>
 <translation id="7727952505535211425">Хаяг оруулах хэсэг дэх вебсайтыг шинэ табд нээх</translation>
 <translation id="7742327441377685481">Мэдэгдэл алга</translation>
+<translation id="774736258792760908">Та Надад бичихэд тусал болон Надад уншихад тусал онцлогийг асаах үед оролтын текст, баримт бичгийн контентыг бичвэрийн зөвлөмж үүсгэх, хураангуй үүсгэх, асуултад хариулах, бүтээгдэхүүнийг сайжруулахын тулд <ph name="LINK_TO_SERVICE_TERMS" />-н дагуу Google AI-н серверт илгээдэг. Ямар нэг хувийн, эмзэг, нууцлалтай мэдээлэл бүү оруулаарай.</translation>
 <translation id="7748275671948949022">Тавиур дээрх Эхлүүлэгчийн товчлуурыг тодруулах</translation>
 <translation id="7749443890790263709">Дэлгэцийн тоо хамгийн дээд хэмжээнд хүрлээ.</translation>
 <translation id="7749958366403230681">Шуурхай түлхүүр 4</translation>
+<translation id="7759183637555564029">Та Надад бичихэд тусал болон Надад уншихад тусал онцлогийг Тохиргоонд хүссэн үедээ унтраах боломжтой. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Ярихаар-сонгох</translation>
 <translation id="7769299611924763557">Таны GIF удахгүй бэлэн болно</translation>
 <translation id="7773536009433685931">Оронд нь Wi-Fi-г асаах</translation>
@@ -1837,6 +1845,7 @@
 <translation id="7781829728241885113">Өчигдөр</translation>
 <translation id="7787212146956232129">Оролт, гаралтын төхөөрөмжүүдийг тохируулсан. Өөрчлөхийн тулд Тохиргоо руу очно уу.</translation>
 <translation id="7792590255364786396">Харагдана</translation>
+<translation id="7793389284006812057">Үүсгэгч ХОУ нь туршилтынх, мөн хөгжүүлэлтийн эхэн шатандаа байгаа бөгөөд боломжтой байдал нь одоогоор хязгаарлагдмал байна.</translation>
 <translation id="7796735576426975947">Шинэ мэдэгдлийг нуусан</translation>
 <translation id="7798302898096527229">Цуцлахын тулд Search эсвэл Shift товчлуурыг дарна уу.</translation>
 <translation id="780301667611848630">Үгүй, баярлалаа</translation>
@@ -1991,6 +2000,7 @@
 <translation id="8331351032546853669">Таталт хүлээгдэж байна</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Муу гаралт</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> цонх сонгосон</translation>
 <translation id="8349826889576450703">эхлүүлэгч</translation>
 <translation id="8349964124165471584">Холбоосыг шинэ цонхонд нээх</translation>

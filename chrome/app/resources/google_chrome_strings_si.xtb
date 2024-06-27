@@ -5,6 +5,8 @@
 <translation id="1026101648481255140">ස්ථාපනය නැවත ආරම්භ කරන්න</translation>
 <translation id="102763973188675173">Google Chrome අභිරුචිකරණය සහ පාලනය කරන්න. යාවත්කාලීන ලද හැකිය.</translation>
 <translation id="1028061813283459617">එය ඔබේ Google ගිණුම තුළ තබා ගන්නා අතර මෙම උපාංගයෙන් පමණක් බ්‍රවුස් කිරීමේ දත්ත මැකීමට, <ph name="BEGIN_LINK" />Chrome වෙතින් වරන්න<ph name="END_LINK" />.</translation>
+<translation id="1042270987544905725">Chrome පුරනය වීමේ සංවාදය වැසීමට ක්ලික් කරන්න</translation>
+<translation id="1059838145689930908">මෙම දිගුව <ph name="USER_EMAIL_ADDRESS" /> ලෙස භාවිතා කිරීමට, Chrome වෙත පුරන්න.</translation>
 <translation id="1065672644894730302">ඔබේ තේරීම් කියවිය නොහැක.
 
 ඇතැම් විශේෂාංගයන් නොපැවතිය හැකි අතර තේරීම් වල සිදුකරන වෙනස්ක්ම් නොසුරැකෙනු ඇත.</translation>
@@ -372,6 +374,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="6291089322031436445">Chrome Dev යෙදුම්</translation>
 <translation id="6291549208091401781">ඔබේ පරිගණකය මත සියලුම පරිශීලකයින් සඳහා Google Chrome දැනටමත් ස්ථාපනය කර ඇත.</translation>
 <translation id="6319856120645568262">ඔබේ වටපිටාව සිතියම් කිරීමට සහ ඔබේ අත් හඹා යාමට Chrome හට අවසරය අවශ්‍ය ය</translation>
+<translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" දිගුවට ඔබ Chrome වෙත පුරනය වීමට අවශ්‍යයි</translation>
 <translation id="6326175484149238433">Chrome වෙතින් ඉවත් කරන්න</translation>
 <translation id="6327105987658262776">යාවත්කාලීනයක් නොමැත.</translation>
 <translation id="6360449101159168105">මෙම පටිත්ත අක්‍රියව තිබෙන අතරේ, Chrome වේගවත්ව තබා ගැනීම සඳහා මතකය නිදහස් කරන ලදි. ඔබට මෙම අඩවිය අක්‍රිය වීමෙන් සැම විට බැහැර කිරීමට තෝරා ගත හැක.</translation>
@@ -464,6 +467,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="7655455401911432608">ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය, මෙම උපාංගයේ Chrome භාවිතයෙන් ඔබ පිවිසි අඩවිවල වාර්තාවක්.</translation>
 <translation id="7661924425853052955">ඔබ මෑත පැමිණ නැත. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, සහ තව <ph name="COUNT" /> ක් ඉවත් කළා</translation>
 <translation id="7668816516367091728">ලිපින තීරුවෙන් රජුව පරිවර්තනය, ගණන් කිරීම, සහ තවත් ඒවා වැනි කාර්යභාර ඉටු කරන්න</translation>
+<translation id="7670287553302121848">Chrome ගිණුමට නැවත සත්‍යාපනය අවශ්‍යයි</translation>
 <translation id="769538538642757151">ඕනෑම දෙයකට ඔබේ සමාලෝචනය අවශ්‍ය නම් Chrome ඔබට දන්වනු ඇත</translation>
 <translation id="7747138024166251722">ස්ථාපකයට තාවකාලික නාමාවලියක් තැනිය නොහැකි විය. කරුණාකර හිස් ඉඩ හා මෘදුකාංග ස්ථාපනයට හිස් තැටි ඉඩ පිරික්සන්න.</translation>
 <translation id="7761834446675418963">ක්‍රෝම් විවෘත කිරීමට ඔබේ නම ක්ලික් කර ගවේෂණය අරඹන්න.</translation>

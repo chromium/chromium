@@ -89,6 +89,7 @@
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> ଦିନ ପୂର୍ବେ ସକ୍ରିୟ ଥିଲା</translation>
 <translation id="1390418506739274310">Chromeରେ ଲିଙ୍କ ଖୋଲୁଥିବା ଅନ୍ୟ ଆପ୍ସରୁ ଇତିହାସ ଆପଣ ଦେଖିପାରନ୍ତି। ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ବ୍ରାଉଜିଂ ଇତିହାସର ଅନ୍ୟ ପ୍ରକାରଗୁଡ଼ିକ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />ରେ ଥାଇପାରେ।</translation>
 <translation id="13931502444227376">ଜାରି ରଖିବାକୁ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ଏହି ସାଇଟ ସହ ଆପଣଙ୍କ ନାମ, ଇମେଲ ଠିକଣା ଏବଂ ପ୍ରୋଫାଇଲ ଛବିକୁ ସେୟାର କରିବ। ଏହି ସାଇଟର <ph name="BEGIN_LINK1" />ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK1" />କୁ ଦେଖନ୍ତୁ।</translation>
+<translation id="139752016751285248">ମୂଲ୍ୟ ଇନସାଇଟ୍ସ ବଟମ ସିଟ ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ଖୋଲାଯାଇଛି</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="1398057416966591719">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ <ph name="BEGIN_LINK1" />କେଉଁ Chrome ଡାଟାକୁ ସେଭ କରାଯିବ ତାହା ଆପଣ ପରିଚାଳନା<ph name="END_LINK1" /> କରିପାରିବେ।
 
@@ -179,6 +180,7 @@
 <translation id="1877073879466606884">ଆପଣ ସାଇନ ଇନ କରିଥିବା ପ୍ରୋଫାଇଲ ଏକ ପରିଚାଳିତ ପ୍ରୋଫାଇଲ ଅଟେ। ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ରିମୋଟ ଭାବେ ଆପଣଙ୍କର ପ୍ରୋଫାଇଲ ସେଟିଂସରେ ପରିବର୍ତ୍ତନ କରିପାରିବେ, ରିପୋର୍ଟିଂ ମାଧ୍ୟମରେ ବ୍ରାଉଜର ବିଷୟରେ ସୂଚନାକୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ଏବଂ ଅନ୍ୟ ଜରୁରୀ ଟାସ୍କଗୁଡ଼ିକୁ କରିପାରିବେ।</translation>
 <translation id="1883903952484604915">ମୋ ଫାଇଲ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="189358972401248634">ଅନ୍ୟ ଭାଷାଗୁଡ଼ିକ</translation>
+<translation id="1899175549411605574">ମୂଲ୍ୟ ଇନସାଇଟ୍ସ ବଟମ ସିଟ</translation>
 <translation id="1900260903084164610">ଜାରି ରଖି ଆପଣ <ph name="BEGIN_TOS_LINK" />ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_TOS_LINK" />ରେ ସମ୍ମତ ହୁଅନ୍ତି।</translation>
 <translation id="1904580727789512086">ଆପଣ ଭିଜିଟ କରିଥିବା URLଗୁଡ଼ିକ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ ହୋଇଥାଏ</translation>
 <translation id="1910950723001426294">ସେୟାରିଂ ବିକଳ୍ପଗୁଡ଼ିକର ତାଲିକା ବନ୍ଦ ଅଛି।</translation>
@@ -520,6 +522,7 @@
 <translation id="3587596251841506391">ୱେବରେ ସୁରକ୍ଷାକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
 <translation id="3597179440835065298">ଉନ୍ନତ ପରାମର୍ଶ ପାଆନ୍ତୁ</translation>
 <translation id="3602290021589620013">ପ୍ରିଭ୍ୟୁ</translation>
+<translation id="3614126103057878858">ମୂଲ୍ୟ ଇନସାଇଟଗୁଡ଼ିକ</translation>
 <translation id="3616113530831147358">ଅଡିଓ</translation>
 <translation id="3622349720008044802">ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1ଟି ସାଇଟ}other{+ #ଟି ସାଇଟ}}</translation>
@@ -529,6 +532,7 @@
 <translation id="3637744895182738742">ଯଦି ଆପଣଙ୍କ ପାସଫ୍ରେଜକୁ ଆପଣ ଭୁଲି ଯାଇଛନ୍ତି କିମ୍ବା ଏହି ସେଟିଂକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଚାହାଁନ୍ତି, ତେବେ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chrome ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="3674208116086565128">Google ଆପର ହୋମ ଟାବକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="368329460027487650">ସାଇନ ଆଉଟ କରାଯାଇଛି। ସାଇନ ଇନ କରିବାକୁ ବିକଳ୍ପଗୁଡ଼ିକୁ ଖୋଲେ।</translation>
+<translation id="3684540848053703310">ମୂଲ୍ୟ ଇନସାଇଟ୍ସ ବଟମ ସିଟ ବନ୍ଦ ଅଛି</translation>
 <translation id="3687645719033307815">ଆପଣ ଏହି ପୃଷ୍ଠାର ଏକ ପ୍ରିଭ୍ୟୁ ଦେଖୁଛନ୍ତି</translation>
 <translation id="3690369331356918524">ଯଦି ଡାଟା ଚୋରି ଯୋଗୁଁ ପାସୱାର୍ଡଗୁଡ଼ିକ ବିପଦରେ ପଡ଼ିଯାଏ, ତେବେ ଆପଣଙ୍କୁ ଚେତାବନୀ ଦେଇଥାଏ</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> ଡାଉନ୍‌ଲୋଡ୍ ବିଫଳ ହୋଇଛି କାରଣ ଷ୍ଟୋରେଜ୍ ଲୋକେସନ୍ ପହଞ୍ଚଯୋଗ୍ୟ ନୁହେଁ।</translation>

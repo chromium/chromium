@@ -825,6 +825,7 @@
 <translation id="5190835502935405962">ແຖບບຸກມາກສ໌</translation>
 <translation id="519530786644929958">ດາວໂຫຼດບໍ່ສຳເລັດ ແລະ ບໍ່ສາມາດລອງໃໝ່ໄດ້.</translation>
 <translation id="5197255632782567636">ອິນ​ເຕີ​ເນັດ</translation>
+<translation id="5205197603258285592">ບັນທຶກຮູບໃນ...</translation>
 <translation id="5211488077761630279">ອະນຸຍາດໃຫ້ "<ph name="SITE_NAME" />" ໃຊ້ <ph name="PERMISSION" /> ຂອງທ່ານບໍ?</translation>
 <translation id="5219295696240154694">ຊ່ວຍປັບປຸງຄວາມປອດໄພຢູ່ເວັັບສຳລັບທຸກຄົນ</translation>
 <translation id="5220945116117011963">ສ້າງນັດໝາຍປະຕິທິນຈາກວັນທີ</translation>
@@ -1525,6 +1526,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8556590991644167667">{count,plural, =1{ທ່ານໄດ້ປິດ {count} ຄຳເຕືອນໄວ້ແລ້ວ}other{ທ່ານໄດ້ປິດ {count} ຄຳເຕືອນໄວ້ແລ້ວ}}</translation>
 <translation id="8560253818350321773">ສະແດງລາຍການທີ່ໃຊ້ເລື້ອຍໆກ່ອນ.</translation>
 <translation id="8569721750632860947">ທ່ານຕ້ອງການເພີ່ມ URL ໃດໃສ່ລາຍຊື່ການອ່ານຂອງທ່ານ?</translation>
+<translation id="8570765991595769633">ປັບແຕ່ງບັດ</translation>
 <translation id="8577056989960190117">ຕື່ມຂໍ້ມູນປີທີ່ໝົດອາຍຸເປັນ <ph name="YEAR" /> ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="8588404856427128947">ປິດ</translation>
 <translation id="8591976964826315682">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
@@ -1664,6 +1666,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="948048872540558976">ສ້າງແຖບໃໝ່</translation>
 <translation id="952218985181984374">{count,plural, =1{ບັນທຶກບຸກມາກໄວ້ແລ້ວ}other{ບັນທຶກບຸກມາກ {count} ລາຍການໄວ້ແລ້ວ}}</translation>
 <translation id="952704832371081537">ຍົກເລີກ</translation>
+<translation id="955587716023217544">ແກ້ໄຂລາຍຊື່ບັນຊີ</translation>
 <translation id="959066944189734975">ທ່ານກຳລັງຕິດຕາມ <ph name="CHANNEL_NAME" /> ຢູ່</translation>
 <translation id="96615566463761848">ສະແດງການແນະນຳແຖບຈາກອຸປະກອນອື່ນ</translation>
 <translation id="973493300226275298">ຕິດຕາມລາຄາຜະລິດຕະພັນໃນທົ່ວຮ້ານຄ້າອອນລາຍ. ທ່ານຈະໄດ້ຮັບແຈ້ງເຕືອນເມື່ອລາຄາຫຼຸດລົງ.</translation>

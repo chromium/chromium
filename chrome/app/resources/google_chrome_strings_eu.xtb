@@ -5,6 +5,8 @@
 <translation id="1026101648481255140">Berrekin instalazioari</translation>
 <translation id="102763973188675173">Pertsonalizatu eta kontrolatu Google Chrome. Eguneratze bat erabilgarri dago.</translation>
 <translation id="1028061813283459617">Zure arakatze-datuak gailu honetatik soilik ezabatzeko, baina Google-ko kontuko arakatze-datuak gordetzeko, <ph name="BEGIN_LINK" />amaitu saioa Chrome-n<ph name="END_LINK" />.</translation>
+<translation id="1042270987544905725">Chrome-n saioa hasteko leihoa ixteko, sakatu hau</translation>
+<translation id="1059838145689930908">Luzapen hau <ph name="USER_EMAIL_ADDRESS" /> gisa erabiltzeko, hasi saioa Chrome-n.</translation>
 <translation id="1065672644894730302">Ezin dira zure hobespenak irakurri.
 
 Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak ez dira aldatuko.</translation>
@@ -372,6 +374,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6291089322031436445">Chrome Dev aplikazioak</translation>
 <translation id="6291549208091401781">Ordenagailuko erabiltzaile guztientzat dago instalatuta Google Chrome.</translation>
 <translation id="6319856120645568262">Chrome-k zure inguruaren mapa bat sortzeko eta zure eskuen jarraipena egiteko baimenak behar ditu</translation>
+<translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" luzapenak Chrome-n saioa has dezazun behar du</translation>
 <translation id="6326175484149238433">Kendu Chrome-tik</translation>
 <translation id="6327105987658262776">Ez dago eguneratzerik erabilgarri.</translation>
 <translation id="6360449101159168105">Fitxa inaktibo zegoen bitartean, memorian tokia egin da Chrome-k bizkor funtzionatzen jarrai dezan. Webgune hau inoiz ez inaktibo ezartzea aukera dezakezu.</translation>
@@ -464,6 +467,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="7655455401911432608">Zure arakatze-historia eta gailu hau erabili bitartean Chrome-ren bidez bisitatutako webguneen erregistro bat.</translation>
 <translation id="7661924425853052955">Azkenaldian ez duzu bisitatu webgune hau. Chrome-k <ph name="PERMISSION_1" /> eta <ph name="PERMISSION_2" /> erabiltzeko baimenak eta beste <ph name="COUNT" /> baimen kendu dizkio.</translation>
 <translation id="7668816516367091728">Itzuli testua, kalkulatu eta egin beste gauza asko helbide-barratik bertatik</translation>
+<translation id="7670287553302121848">Berriro autentifikatu behar da Chrome-ko kontua</translation>
 <translation id="769538538642757151">Chrome-k jakinaraziko dizu ezerk zure berrikuspena behar badu</translation>
 <translation id="7747138024166251722">Instalatzaileak ezin izan du sortu behin behineko direktoriorik. Softwarea instalatzeko, egiaztatu diskoan duzun espazio librea eta baimena.</translation>
 <translation id="7761834446675418963">Sakatu zure izena Chrome irekitzeko eta arakatzen hasteko.</translation>

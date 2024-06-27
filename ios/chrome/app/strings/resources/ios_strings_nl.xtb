@@ -825,6 +825,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="5190835502935405962">Bookmarkbalk</translation>
 <translation id="519530786644929958">Downloaden is mislukt en kan niet opnieuw worden geprobeerd.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205197603258285592">Afbeelding opslaan in...</translation>
 <translation id="5211488077761630279">Toestaan dat <ph name="SITE_NAME" /> je <ph name="PERMISSION" /> gebruikt?</translation>
 <translation id="5219295696240154694">Helpen om het internet voor iedereen veiliger te maken</translation>
 <translation id="5220945116117011963">Agenda-afspraken maken op basis van datums</translation>
@@ -1525,6 +1526,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8556590991644167667">{count,plural, =1{Je hebt {count} waarschuwing gesloten}other{Je hebt {count} waarschuwingen gesloten}}</translation>
 <translation id="8560253818350321773">Toon veelgebruikte items eerst.</translation>
 <translation id="8569721750632860947">Welke URL wil je toevoegen aan je leeslijst?</translation>
+<translation id="8570765991595769633">Kaarten aanpassen</translation>
 <translation id="8577056989960190117">Het vervaljaar <ph name="YEAR" /> automatisch invullen</translation>
 <translation id="8588404856427128947">Uit</translation>
 <translation id="8591976964826315682">Cookies van derden blokkeren in incognitomodus</translation>
@@ -1664,6 +1666,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="948048872540558976">Nieuw tabblad maken</translation>
 <translation id="952218985181984374">{count,plural, =1{Bookmark opgeslagen}other{{count} bookmarks opgeslagen}}</translation>
 <translation id="952704832371081537">Annuleren</translation>
+<translation id="955587716023217544">Accountlijst bewerken</translation>
 <translation id="959066944189734975">Je volgt <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Suggesties voor tabbladen van andere apparaten tonen</translation>
 <translation id="973493300226275298">Volg de prijs van een product in online winkels. Je krijgt meldingen als de prijs daalt.</translation>

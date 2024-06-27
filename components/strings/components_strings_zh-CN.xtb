@@ -26,6 +26,7 @@
 <translation id="1050038467049342496">关闭其他应用</translation>
 <translation id="1053959602163383901">您已选择在使用 <ph name="PROVIDER_ORIGIN" /> 的网站上通过一种身份验证器服务来验证身份。此提供商可能已存储您的付款方式信息，不过您可以<ph name="LINK_TEXT" />相应信息。</translation>
 <translation id="1055184225775184556">撤消添加(&amp;U)</translation>
+<translation id="105642538515333723">您可以输入先前浏览网页时所看到的任何短语或详细信息，例如“舒适的步行鞋”</translation>
 <translation id="1056898198331236512">警告</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 中玩《Dino Run》游戏</translation>
 <translation id="1058479211578257048">正在保存银行卡…</translation>
@@ -41,6 +42,7 @@
 <translation id="1070901266639972381">夜间</translation>
 <translation id="1073690811593784042">玻璃（彩色）</translation>
 <translation id="1074497978438210769">不安全</translation>
+<translation id="1074779248866616641">结果</translation>
 <translation id="1075364221219156102">使用通行密钥</translation>
 <translation id="1080116354587839789">适合窗口宽度</translation>
 <translation id="1081061862829655580">纸匣 19</translation>
@@ -64,6 +66,7 @@
 <translation id="1118429183611783760">吸尘器与地板护理</translation>
 <translation id="1122714970786750095">电子与电气</translation>
 <translation id="1123753900084781868">暂时无法使用实时字幕功能</translation>
+<translation id="1125453215844207206">无标签的图片。正在提取文本，由 Google AI 赋能</translation>
 <translation id="1125573121925420732">网站在更新其安全设置期间可能会经常显示警告。此问题应该很快就会得到改进。</translation>
 <translation id="112840717907525620">策略缓存良好</translation>
 <translation id="1131264053432022307">您复制的图片</translation>
@@ -402,6 +405,7 @@
 <translation id="1719838434204287058">24 x 30 英寸</translation>
 <translation id="1720941539803966190">关闭教程</translation>
 <translation id="1721424275792716183">标有“*”的字段均是必填字段</translation>
+<translation id="1723505128907434375">书签已保存。</translation>
 <translation id="1725591448053514783">You 6 信封</translation>
 <translation id="1727613060316725209">证书有效</translation>
 <translation id="1728677426644403582">您正在查看网页的源代码</translation>
@@ -965,6 +969,7 @@
 <translation id="2824775600643448204">地址和搜索栏</translation>
 <translation id="2826760142808435982">该连接使用 <ph name="CIPHER" /> 进行加密和身份验证，并使用 <ph name="KX" /> 作为密钥交换机制。</translation>
 <translation id="2833637280516285136">谈话类广播节目</translation>
+<translation id="2837891525090413132">可以请求锁定和使用您的键盘</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> 想使用其保存的与您相关的信息</translation>
 <translation id="2839032553903800133">已阻止显示通知</translation>
 <translation id="2839501879576190149">您要访问的是虚假网站</translation>
@@ -1070,6 +1075,7 @@
 <translation id="3041612393474885105">证书信息</translation>
 <translation id="3045769629416806687">极限运动</translation>
 <translation id="305162504811187366">Chrome 远程桌面历史记录，包括时间戳、主机和客户端会话 ID</translation>
+<translation id="3052868890529250114">您通常可以安全地连接到网站，但目前 Chrome 无法使用安全连接。攻击者可能会试图对您的网络连接进行窃听或修改。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />降价 <ph name="PRICE_DROP" /></translation>
 <translation id="3054512251683174387">Chrome 会自动删除保留时长超过 4 周的主题。随着您继续浏览，某个主题可能会再次出现在列表中。您还可屏蔽不希望 Chrome 与网站分享的主题。详细了解如何在 Chrome 中管理广告隐私权设置。</translation>
 <translation id="3061707000357573562">修补服务</translation>
@@ -1267,6 +1273,7 @@
 <translation id="342781501876943858">如果您在其他网站上重复使用了您的密码，Chromium 建议您重置该密码。</translation>
 <translation id="3428151540071562330">一个或多个 DnsOverHttpsTemplates 服务器模板 URI 无效，因此不会被使用。</translation>
 <translation id="3428789896412418755">已分组的历史记录</translation>
+<translation id="3430206873883193118">您正在尝试访问的网站上的攻击者可能会诱使您安装软件或泄露某些信息，例如您的密码、手机号码或信用卡号码。Chrome 强烈建议您返回到安全的浏览环境。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">关闭页面</translation>
 <translation id="3433111389595862568">协作与会议软件</translation>
 <translation id="3433144818443565002">语音与视频聊天</translation>
@@ -1362,6 +1369,7 @@
 <translation id="3585455899094692781">使用和移动可用的摄像头（<ph name="CAMERAS_COUNT" /> 个）</translation>
 <translation id="3586833803451155175">湿膜</translation>
 <translation id="3586931643579894722">隐藏详细信息</translation>
+<translation id="3587725436724465984">贵组织已将 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 列为可能违反相关政策的网站。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">中间</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />，<ph name="DOMAIN" />，<ph name="TIME" /></translation>
 <translation id="3600492954573979888">“管理 Google 隐私设置”按钮，激活它即可访问您的 Google 账号隐私设置</translation>
@@ -1371,6 +1379,7 @@
 <translation id="3608932978122581043">送纸方向</translation>
 <translation id="3610142117915544498">如果想在下次购物时更快捷地付款，请将您的付款卡信息、姓名和账单邮寄地址保存到您的 Google 账号中</translation>
 <translation id="3612660594051121194">长途大巴与铁路</translation>
+<translation id="3614001939154393113">攻击者可能会试图从 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 窃取您的信息（例如：密码、消息或信用卡信息）。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">大小：2</translation>
 <translation id="361438452008624280">列表条目“<ph name="LANGUAGE_ID" />”：语言未知或不受支持。</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可从 Chrome 设置中运行安全检查</translation>
@@ -1520,6 +1529,7 @@
 <translation id="3880456882942693779">艺术与娱乐</translation>
 <translation id="3880589673277376494">互联网与电信</translation>
 <translation id="3881478300875776315">隐藏部分行</translation>
+<translation id="3883437137686353397">您通常可以安全地连接到此网站，但目前 Chrome 无法使用安全连接。攻击者可能会试图对您的网络连接进行窃听或修改。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3883500545751229739">侵扰性广告</translation>
 <translation id="3884278016824448484">设备标识符存在冲突</translation>
 <translation id="388632593194507180">检测到正被监控</translation>
@@ -1647,6 +1657,7 @@
 <translation id="4140905530744469899">个人资料 ID：</translation>
 <translation id="4142935452406587478">纸匣 10</translation>
 <translation id="4148925816941278100">American Express</translation>
+<translation id="4149757165376323512">您之所以会看到此警告，是因为该网站不支持 HTTPS 且您已加入 Google 的高级保护计划。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4150099059797363385">中式 #4 信封</translation>
 <translation id="4151403195736952345">使用全局默认设置（检测）</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{第 1 页}other{第 {COUNT} 页}}</translation>
@@ -2170,6 +2181,7 @@
 <translation id="514704532284964975"><ph name="URL" /> 想在您点按手机时查看和更改 NFC 设备上的信息</translation>
 <translation id="5147633291963801297">在侧边栏中查看降价信息</translation>
 <translation id="5148809049217731050">正面朝上</translation>
+<translation id="5148889558173091794">贵组织已屏蔽 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />，因为该网站违反了相关政策。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5157504274688344097">大卖场与百货公司</translation>
 <translation id="5158275234811857234">封面</translation>
 <translation id="5159010409087891077">在新的无痕式窗口中打开网页 (⇧⌘N)</translation>
@@ -2452,6 +2464,7 @@
 <translation id="5689516760719285838">位置信息</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates 值不相关，因此不会被使用，除非 DnsOverHttpsMode 政策设为“<ph name="SECURE_DNS_MODE_AUTOMATIC" />”或“<ph name="SECURE_DNS_MODE_SECURE" />”。</translation>
 <translation id="5691848789297492617">保存的卡片已全屏打开。</translation>
+<translation id="5692655638459249302">您正在尝试访问的网站上的攻击者可能会安装有害软件，以窃取或删除某些信息，例如您的密码、照片、消息或信用卡号码。Chrome 强烈建议您返回到安全的浏览环境。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">使用 Windows Hello 验证并完成您的购买交易？</translation>
 <translation id="5699628521141772782">乳制品和鸡蛋</translation>
 <translation id="5700761515355162635">已允许使用第三方 Cookie</translation>
@@ -2746,6 +2759,7 @@
 <translation id="6284449872909111707">短信与即时通讯</translation>
 <translation id="6284517535531159884">变体版本种子类型</translation>
 <translation id="6287197303017372967">使用导航功能查询前往目的地的精细路线指导。</translation>
+<translation id="6288521565586608304">您正在尝试访问的网站上的攻击者可能会诱使您安装影响浏览体验的有害软件，例如，更改您的主页或在您访问的网站上展示额外的广告。Chrome 强烈建议您返回到安全的浏览环境，以免造成损害。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">发现了折扣</translation>
 <translation id="6289939620939689042">页面颜色</translation>
 <translation id="6292819926564202163">您在 Chrome 中使用的搜索引擎</translation>
@@ -2779,6 +2793,7 @@
 <translation id="634500758737709758">路线</translation>
 <translation id="6348220984832452017">使用中的变体</translation>
 <translation id="6349101878882523185">安装“<ph name="APP_NAME" />”</translation>
+<translation id="6351398281531821890">查看</translation>
 <translation id="6351658970066645919">删除浏览数据</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{无}=1{1 个密码（用于 <ph name="DOMAIN_LIST" />，已同步）}=2{2 个密码（用于 <ph name="DOMAIN_LIST" />，已同步）}other{# 个密码（用于 <ph name="DOMAIN_LIST" />，已同步）}}</translation>
 <translation id="6355392890578844978">此浏览器并未由某个公司或其他组织管理。此设备上的活动可能在接受 Chromium 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -2840,6 +2855,7 @@
 <translation id="6433797564277305076">从现在开始，您可使用设备解锁更快速地确认银行卡信息</translation>
 <translation id="643917412048333145">连衣裙</translation>
 <translation id="6440503408713884761">已忽略</translation>
+<translation id="6440534369669992497">您可以输入先前浏览网页时所记得的任何短语或详细信息，例如“舒适的步行鞋”。按 <ph name="SHORTCUT" /> 即可搜索。</translation>
 <translation id="6443406338865242315">您已安装的扩展程序和插件</translation>
 <translation id="6444329331928531170">退休与养老金</translation>
 <translation id="6446608382365791566">添加更多信息</translation>
@@ -3111,6 +3127,7 @@
 <translation id="6978722349058177832">如果您与他人共用此设备，在您每次使用自动填充功能付款时，Chromium 都会要求您进行验证</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
 <translation id="6979440798594660689">静音（默认）</translation>
+<translation id="6984270784814146224">无标签的图片。正在提取文本，由 Google AI 赋能</translation>
 <translation id="6987806006823772670">信封（涂布纸）</translation>
 <translation id="6989763994942163495">显示高级设置...</translation>
 <translation id="6996312675313362352">始终翻译<ph name="ORIGINAL_LANGUAGE" />内容</translation>
@@ -3122,6 +3139,7 @@
 <translation id="7006930604109697472">仍然发送</translation>
 <translation id="7010658264061801199">餐饮</translation>
 <translation id="7012363358306927923">中国银联</translation>
+<translation id="7013835112918108252">可以请求锁定和使用您的鼠标</translation>
 <translation id="7014042602717177828">车载音响</translation>
 <translation id="7014741021609395734">缩放级别</translation>
 <translation id="7016992613359344582">这些费用可能只收取一次，也可能会周期性收取，而且可能不易察觉。</translation>
@@ -3136,6 +3154,7 @@
 <translation id="7031646650991750659">您已安装的 Google Play 应用</translation>
 <translation id="7035705295266423040">银行想要验证您的身份</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可管理您的 Google 账号隐私设置</translation>
+<translation id="7042616127917168121">优化结果</translation>
 <translation id="7043552168914147882">隔页纸</translation>
 <translation id="7044081119134178347">这次可以使用摄像头</translation>
 <translation id="7048095965575426564">欧洲 Fanfold</translation>
@@ -3178,6 +3197,7 @@
 <translation id="7112327784801341716">看到的不是您的最新信息？请让银行更新您的信息。</translation>
 <translation id="7116334367957017155">您尚未保存任何地址。请添加地址，以便在各种 Google 产品中使用。</translation>
 <translation id="7118618213916969306">搜索剪贴板上的网址：<ph name="SHORT_URL" /></translation>
+<translation id="7118852830504022370">您之所以会看到此警告，是因为该网站不支持 HTTPS。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">电视剧</translation>
 <translation id="7119371694555167493">复制超时</translation>
 <translation id="7119414471315195487">关闭其他标签页或程序</translation>
@@ -4098,6 +4118,7 @@
 <translation id="882338992931677877">手动插槽</translation>
 <translation id="8830320733681313421">Hagaki Postcard</translation>
 <translation id="8833007469711500369">洗衣机和烘干机</translation>
+<translation id="8834962751196791179">您之所以会看到此警告，是因为该网站不支持 HTTPS 且您处于无痕模式。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">科幻与奇幻电视节目</translation>
 <translation id="883848425547221593">其他书签</translation>
 <translation id="8842351563145134519">付款方式列表已半屏显示，轻触即可填充。</translation>

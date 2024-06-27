@@ -26,6 +26,7 @@
 <translation id="1050038467049342496">關閉其他應用程式</translation>
 <translation id="1053959602163383901">您已選擇透過驗證器裝置在使用 <ph name="PROVIDER_ORIGIN" /> 的網站進行驗證。此供應商可能已儲存您的付款方法相關資料，您可以 <ph name="LINK_TEXT" />。</translation>
 <translation id="1055184225775184556">復原新增(&amp;U)</translation>
+<translation id="105642538515333723">你可以輸入先前瀏覽網頁時看到的任何字詞或細節，例如「舒適的運動鞋」</translation>
 <translation id="1056898198331236512">警告</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以玩 Chrome 恐龍遊戲</translation>
 <translation id="1058479211578257048">正在儲存卡…</translation>
@@ -41,6 +42,7 @@
 <translation id="1070901266639972381">晚上</translation>
 <translation id="1073690811593784042">玻璃 (彩色)</translation>
 <translation id="1074497978438210769">不安全</translation>
+<translation id="1074779248866616641">結果</translation>
 <translation id="1075364221219156102">使用密鑰</translation>
 <translation id="1080116354587839789">縮放至符合畫面寬度</translation>
 <translation id="1081061862829655580">紙匣 19</translation>
@@ -64,6 +66,7 @@
 <translation id="1118429183611783760">吸塵機和地板護理</translation>
 <translation id="1122714970786750095">電子及電機產品</translation>
 <translation id="1123753900084781868">目前無法使用即時字幕</translation>
+<translation id="1125453215844207206">未標示的圖片。系統正在採用 Google AI 技術擷取文字</translation>
 <translation id="1125573121925420732">在網站進行安全性更新時，可能會經常看到警告。我們會盡快改善此問題。</translation>
 <translation id="112840717907525620">政策快取正確</translation>
 <translation id="1131264053432022307">您複製的圖片</translation>
@@ -402,6 +405,7 @@
 <translation id="1719838434204287058">24 x 30 吋</translation>
 <translation id="1720941539803966190">閂教學課程</translation>
 <translation id="1721424275792716183">* 為必填欄位</translation>
+<translation id="1723505128907434375">已儲存書籤。</translation>
 <translation id="1725591448053514783">You 6 信封</translation>
 <translation id="1727613060316725209">憑證有效</translation>
 <translation id="1728677426644403582">您正在查看網頁的原始碼</translation>
@@ -965,6 +969,7 @@
 <translation id="2824775600643448204">網址與搜尋列</translation>
 <translation id="2826760142808435982">連線採用 <ph name="CIPHER" /> 加密，並設有 <ph name="KX" /> 金鑰交換機制。</translation>
 <translation id="2833637280516285136">清談電台節目</translation>
+<translation id="2837891525090413132">可要求鎖定及使用鍵盤</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> 要求使用與你相關的既有資料</translation>
 <translation id="2839032553903800133">已封鎖通知</translation>
 <translation id="2839501879576190149">您將要瀏覽假網站</translation>
@@ -1070,6 +1075,7 @@
 <translation id="3041612393474885105">憑證資料</translation>
 <translation id="3045769629416806687">極限運動</translation>
 <translation id="305162504811187366">Chrome 遠端桌面記錄，包括時間戳記、主機和用戶端工作階段 ID</translation>
+<translation id="3052868890529250114">你通常可經由安全連線前往網站，但 Chrome 目前無法使用安全連線。攻擊者可能會試圖監視或修改你的網絡連線。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> 降價 <ph name="PRICE_DROP" /></translation>
 <translation id="3054512251683174387">Chrome 會自動刪除超過 4 星期的主題。在您瀏覽同時，清單中可能會再次出現特定主題。您亦可封鎖不希望 Chrome 與網站分享的主題。進一步瞭解如何在 Chrome 中管理廣告私隱權。</translation>
 <translation id="3061707000357573562">修補服務</translation>
@@ -1269,6 +1275,7 @@
 <translation id="342781501876943858">如果您已在其他網站上重用密碼，Chromium 建議您重設密碼。</translation>
 <translation id="3428151540071562330">一或多個 DnsOverHttpsTemplates 伺服器範本 URI 無效，因此系統不會採用這些伺服器範本 URI。</translation>
 <translation id="3428789896412418755">分類記錄</translation>
+<translation id="3430206873883193118">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會誘騙你安裝軟件或提供資料，例如密碼、電話號碼或信用卡號碼等資料。Chrome 強烈建議你不要瀏覽這類網站。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">關閉頁面</translation>
 <translation id="3433111389595862568">協作和會議軟件</translation>
 <translation id="3433144818443565002">語音和視像通話</translation>
@@ -1364,6 +1371,7 @@
 <translation id="3585455899094692781">使用及移動可存取的攝錄機 (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">濕膜</translation>
 <translation id="3586931643579894722">隱藏詳情</translation>
+<translation id="3587725436724465984">你的機構已將 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 識別為可能違反政策的網站。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">中間</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />，<ph name="DOMAIN" />，<ph name="TIME" /></translation>
 <translation id="3600492954573979888">管理 Google 私隱設定按鈕，啟動之後就可以去 Google 帳戶私隱設定</translation>
@@ -1373,6 +1381,7 @@
 <translation id="3608932978122581043">送紙方向</translation>
 <translation id="3610142117915544498">只要將付款卡、姓名和帳單地址儲存至 Google 帳戶中，下次就能更快完成付款程序</translation>
 <translation id="3612660594051121194">長途巴士和鐵路</translation>
+<translation id="3614001939154393113">攻擊者可能會試圖透過 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 竊取你的資料 (例如密碼、訊息或信用卡資料)。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">粗幼：2</translation>
 <translation id="361438452008624280">清單項目「<ph name="LANGUAGE_ID" />」：不明或不支援的語言。</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度執行安全檢查</translation>
@@ -1523,6 +1532,7 @@
 <translation id="3880456882942693779">藝術及娛樂</translation>
 <translation id="3880589673277376494">互聯網及電訊公司</translation>
 <translation id="3881478300875776315">顯示較少行</translation>
+<translation id="3883437137686353397">你通常可經由安全連線前往此網站，但 Chrome 目前無法使用安全連線。攻擊者可能會試圖監視或修改你的網絡連線。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3883500545751229739">滋擾性廣告</translation>
 <translation id="3884278016824448484">裝置識別碼發生衝突</translation>
 <translation id="388632593194507180">偵測到監控</translation>
@@ -1650,6 +1660,7 @@
 <translation id="4140905530744469899">設定檔 ID：</translation>
 <translation id="4142935452406587478">紙匣 10</translation>
 <translation id="4148925816941278100">American Express</translation>
+<translation id="4149757165376323512">此網站不支援 HTTPS，且你目前已加入 Google 的「進階保護計劃」，因此系統顯示此警告訊息。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4150099059797363385">Chinese #4 信封</translation>
 <translation id="4151403195736952345">使用全域預設值 (偵測)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{第 1 頁}other{第 {COUNT} 頁}}</translation>
@@ -2173,6 +2184,7 @@
 <translation id="514704532284964975"><ph name="URL" /> 希望查看和變更您透過手機在 NFC 裝置上輕按的資料</translation>
 <translation id="5147633291963801297">在側面板中查看降價資訊</translation>
 <translation id="5148809049217731050">正面朝上</translation>
+<translation id="5148889558173091794">由於 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 違反政策，因此已被你的機構封鎖。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5157504274688344097">大型零售商和百貨公司</translation>
 <translation id="5158275234811857234">封面</translation>
 <translation id="5159010409087891077">在新無痕式視窗中開啟網頁 (⇧⌘N)</translation>
@@ -2455,6 +2467,7 @@
 <translation id="5689516760719285838">位置</translation>
 <translation id="569000877158168851">除非 DnsOverHttpsMode 政策設定為 <ph name="SECURE_DNS_MODE_AUTOMATIC" /> 或 <ph name="SECURE_DNS_MODE_SECURE" />，否則 DnsOverHttpsTemplates 的值不相關，系統也不會使用該值。</translation>
 <translation id="5691848789297492617">儲存付款卡宜家顯示喺成個畫面。</translation>
+<translation id="5692655638459249302">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會在你的裝置上安裝有害軟件，以竊取或刪除密碼、相片、訊息或信用卡號碼等資料。Chrome 強烈建議你不要瀏覽這類網站。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">要使用 Windows Hello 驗證並完成購買嗎？</translation>
 <translation id="5699628521141772782">奶製品和雞蛋</translation>
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
@@ -2750,6 +2763,7 @@
 <translation id="6284449872909111707">短訊和即時通訊</translation>
 <translation id="6284517535531159884">種子類型變化版本</translation>
 <translation id="6287197303017372967">使用導航功能即時規劃前往目的地的路線。</translation>
+<translation id="6288521565586608304">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會誘騙你安裝有害軟件，影響你的瀏覽方式，例如變更首頁，或在你瀏覽的網站上顯示額外廣告。Chrome 強烈建議你不要瀏覽這個網站，避免受攻擊。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">已找到折扣</translation>
 <translation id="6289939620939689042">頁面顏色</translation>
 <translation id="6292819926564202163">你的 Chrome 搜尋引擎設定</translation>
@@ -2783,6 +2797,7 @@
 <translation id="634500758737709758">規劃路線</translation>
 <translation id="6348220984832452017">使用中的變化版本</translation>
 <translation id="6349101878882523185">安裝「<ph name="APP_NAME" />」</translation>
+<translation id="6351398281531821890">查看</translation>
 <translation id="6351658970066645919">刪除瀏覽資料</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{無}=1{有 1 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}=2{有 2 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}other{有 # 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}}</translation>
 <translation id="6355392890578844978">此瀏覽器未受任何公司或其他機構管理。此裝置上的活動可透過 Chromium 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -2844,6 +2859,7 @@
 <translation id="6433797564277305076">現在就開始使用裝置解鎖功能，加快確認付款卡</translation>
 <translation id="643917412048333145">裙</translation>
 <translation id="6440503408713884761">已略過</translation>
+<translation id="6440534369669992497">你可以輸入先前瀏覽網頁時看到的任何字詞或細節 (例如「舒適健走鞋」)，再按下 <ph name="SHORTCUT" /> 鍵即可搜尋。</translation>
 <translation id="6443406338865242315">您已安裝的擴充程式和外掛程式</translation>
 <translation id="6444329331928531170">退休和退休金</translation>
 <translation id="6446608382365791566">新增更多資料</translation>
@@ -3115,6 +3131,7 @@
 <translation id="6978722349058177832">如共用此裝置，Chromium 可在每次透過自動填入功能付款時要求你驗證身分</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
 <translation id="6979440798594660689">靜音 (預設)</translation>
+<translation id="6984270784814146224">未標示的圖片。系統正在採用 Google AI 技術擷取文字</translation>
 <translation id="6987806006823772670">信封 (塗布紙)</translation>
 <translation id="6989763994942163495">顯示進階設定…</translation>
 <translation id="6996312675313362352">一律翻譯<ph name="ORIGINAL_LANGUAGE" /></translation>
@@ -3126,6 +3143,7 @@
 <translation id="7006930604109697472">仍要傳送</translation>
 <translation id="7010658264061801199">飲食</translation>
 <translation id="7012363358306927923">中國銀聯</translation>
+<translation id="7013835112918108252">可要求鎖定及使用滑鼠</translation>
 <translation id="7014042602717177828">汽車音響</translation>
 <translation id="7014741021609395734">縮放比例</translation>
 <translation id="7016992613359344582">這些費用可能是一次性或會重複收取，而收費時亦可能難以察覺。</translation>
@@ -3140,6 +3158,7 @@
 <translation id="7031646650991750659">您已安裝的 Google Play 應用程式</translation>
 <translation id="7035705295266423040">銀行要驗證你的身分</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以管理 Google 帳戶私隱設定</translation>
+<translation id="7042616127917168121">修正搜尋結果</translation>
 <translation id="7043552168914147882">隔頁紙</translation>
 <translation id="7044081119134178347">呢次批准用相機</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
@@ -3182,6 +3201,7 @@
 <translation id="7112327784801341716">目前的資料不正確嗎？請通知銀行更新。</translation>
 <translation id="7116334367957017155">你未儲存任何地址。新增地址以便在 Google 產品上使用。</translation>
 <translation id="7118618213916969306">搵剪貼簿網址 <ph name="SHORT_URL" /></translation>
+<translation id="7118852830504022370">此網站不支援 HTTPS，因此瀏覽器顯示此警告訊息。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">電視劇</translation>
 <translation id="7119371694555167493">複製逾時</translation>
 <translation id="7119414471315195487">關閉其他分頁或程式</translation>
@@ -4101,6 +4121,7 @@
 <translation id="882338992931677877">手動插槽</translation>
 <translation id="8830320733681313421">Hagaki 明信片</translation>
 <translation id="8833007469711500369">洗衣機及乾衣機</translation>
+<translation id="8834962751196791179">此網站不支援 HTTPS，且你目前處於無痕模式，因此系統顯示此警告訊息。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">科幻和奇幻電視節目</translation>
 <translation id="883848425547221593">其他書籤</translation>
 <translation id="8842351563145134519">㩒一下先可以填嘅付款方法，宜家顯示喺畫面下半部。</translation>

@@ -216,6 +216,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1747827819627189109">Skärmen på tangentbordet har aktiverats</translation>
 <translation id="1749109475624620922">Fönstret <ph name="WINDOW_TITLE" /> har tilldelats alla skrivbord</translation>
 <translation id="1750088060796401187">Bara <ph name="MAX_DESK_LIMIT" /> skrivbord tillåts. Ta bort ett skrivbord om du vill öppna ett nytt.</translation>
+<translation id="1751335846119670066">Hjälp mig läsa</translation>
 <translation id="1755408179247123630">Vill du aktivera Textuppläsning?</translation>
 <translation id="1755556344721611131">Appen Diagnostik</translation>
 <translation id="1756833229520115364">Det gick inte att spara mallen. För många fönster eller flikar.</translation>
@@ -227,6 +228,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="178347895271755507">Ställ in visning av de senaste bilderna, mediefilerna och aviseringarna på telefonen</translation>
 <translation id="1787955149152357925">Av</translation>
 <translation id="1796561540704213354">Webbplatser, inklusive sidor som du har besökt och öppna sidor</translation>
+<translation id="179842970735685253">Googles användarvillkor</translation>
 <translation id="181103072419391116">Signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>
 <translation id="1816896987747843206">Detta ger kameraåtkomst för alla appar och webbplatser med kamerabehörighet</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Typ av klassuppgifter</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Några saker att tänka på</translation>
 <translation id="3139188263101386725">Använd det uppdaterade kortkommandot</translation>
 <translation id="3139942575505304791">Skrivbord 1</translation>
 <translation id="315116470104423982">Mobildata</translation>
@@ -961,6 +964,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4585337515783392668">Sluta casta till en okänd mottagare</translation>
 <translation id="4596144739579517758">Mörkt tema är av</translation>
 <translation id="4596442969149038771">Delad av <ph name="USER" /></translation>
+<translation id="4610493115106525653">Bra output</translation>
 <translation id="4611292653554630842">Logga in</translation>
 <translation id="462160925400706389"><ph name="NAME" /> har anslutits</translation>
 <translation id="4623167406982293031">Verifiera konto</translation>
@@ -1118,6 +1122,7 @@ Du kan även använda kortkommandot. Markera först text och tryck sedan på <ph
 <translation id="5121628974188116412">Till längst ned på sidan</translation>
 <translation id="5122517996953421795">Förhandsgranskning av <ph name="DESK_NAME" />. Inaktivt skrivbord.</translation>
 <translation id="5136175204352732067">Ett annat tangentbord har anslutits</translation>
+<translation id="5140105873789567560">Du måste vara minst 18 år för att använda Hjälp mig skriva och Hjälp mig läsa.</translation>
 <translation id="5144005092084035179">Vill du byta ljudingång?</translation>
 <translation id="5147567197700016471">Olåst</translation>
 <translation id="5150070631291639005">Integritetsinställningar</translation>
@@ -1558,6 +1563,7 @@ Nyligen installerad</translation>
 <translation id="6696025732084565524">Det behövs en viktig uppdatering till ditt frånkopplingsbara tangentbord</translation>
 <translation id="6697913454192220372">Lägg till nytt skrivbord</translation>
 <translation id="6700713906295497288">IME-menyknapp</translation>
+<translation id="6704375469818246414">Kvaliteten kan variera när du använder generativ AI.</translation>
 <translation id="6706742084323792866">Fäst tangentbord</translation>
 <translation id="6710213216561001401">Föregående</translation>
 <translation id="6723839937902243910">Batteri</translation>
@@ -1825,9 +1831,11 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7726391492136714301">Visa telefonens aviseringar och appar</translation>
 <translation id="7727952505535211425">Öppna webbplatsen i adressfältet i en ny flik</translation>
 <translation id="7742327441377685481">Inga aviseringar</translation>
+<translation id="774736258792760908">När du aktiverar Hjälp mig skriva och Hjälp mig läsa skickas textinput och dokumentinnehåll till Googles AI-servrar för att generera skrivförslag, generera sammanfattningar, svara på frågor och förbättra produkten, i enlighet med <ph name="LINK_TO_SERVICE_TERMS" />. Ange inget som är personligt, känsligt eller konfidentiellt.</translation>
 <translation id="7748275671948949022">Markera appstartarknappen på hyllan</translation>
 <translation id="7749443890790263709">Det högsta tillåtna antalet skrivbord har uppnåtts.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Du kan stänga av Hjälp mig skriva och Hjälp mig läsa när som helst i inställningarna. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Textuppläsning</translation>
 <translation id="7769299611924763557">Giffen är snart redo</translation>
 <translation id="7773536009433685931">Aktivera wifi i stället</translation>
@@ -1836,6 +1844,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7781829728241885113">Igår</translation>
 <translation id="7787212146956232129">Ingångar och utgångar har konfigurerats. Du kan ändra detta i inställningarna</translation>
 <translation id="7792590255364786396">Synliga</translation>
+<translation id="7793389284006812057">Generativ AI är experimentell, under utveckling och har för närvarande begränsad tillgänglighet.</translation>
 <translation id="7796735576426975947">En ny avisering har dolts</translation>
 <translation id="7798302898096527229">Avbryt genom att trycka på söktangenten eller Skift.</translation>
 <translation id="780301667611848630">Nej tack</translation>
@@ -1990,6 +1999,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8331351032546853669">Nedladdning väntar</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Dålig output</translation>
 <translation id="8345019317483336363">Fönstret <ph name="WINDOW_TITLE" /> har valts</translation>
 <translation id="8349826889576450703">start</translation>
 <translation id="8349964124165471584">Öppna länken i ett nytt fönster</translation>

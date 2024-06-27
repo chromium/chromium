@@ -26,6 +26,7 @@
 <translation id="1050038467049342496">Tutup apl lain</translation>
 <translation id="1053959602163383901">Anda memilih untuk mengesahkan dengan peranti pengesah pada laman web yang menggunakan <ph name="PROVIDER_ORIGIN" />. Pembekal ini mungkin telah menyimpan maklumat tentang kaedah pembayaran anda, yang boleh anda <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Buat Asal Tambahkan</translation>
+<translation id="105642538515333723">Anda boleh memasukkan sebarang frasa atau butiran yang anda ingat daripada halaman yang anda semak imbas pada masa lalu, seperti "kasut berjalan yang selesa"</translation>
 <translation id="1056898198331236512">Amaran</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab kemudian Enter untuk bermain permainan Dino Run dalam Chrome</translation>
 <translation id="1058479211578257048">Menyimpan kad...</translation>
@@ -968,6 +969,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2824775600643448204">Bar alamat dan carian</translation>
 <translation id="2826760142808435982">Sambungan disulitkan dan disahkan menggunakan <ph name="CIPHER" /> dan menggunakan <ph name="KX" /> sebagai mekanisme pertukaran kunci.</translation>
 <translation id="2833637280516285136">Radio Bual</translation>
+<translation id="2837891525090413132">Boleh meminta untuk mengunci dan menggunakan papan kekunci anda</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> mahu menggunakan maklumat yang disimpan tentang anda</translation>
 <translation id="2839032553903800133">Pemberitahuan disekat</translation>
 <translation id="2839501879576190149">Tapak palsu di hadapan</translation>
@@ -1157,7 +1159,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3209034400446768650">Halaman mungkin mengenakan bayaran berbentuk wang</translation>
 <translation id="3212581601480735796">Aktiviti anda pada <ph name="HOSTNAME" /> sedang dipantau</translation>
 <translation id="3215092763954878852">Tidak dapat menggunakan WebAuthn</translation>
-<translation id="3215311088819828484">Hasil dikemaskinikan</translation>
 <translation id="3216313131063488104">Biru</translation>
 <translation id="3218181027817787318">Relatif</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Kemaskinian diperlukan sekarang}=2{Kemaskinian diperlukan menjelang esok}other{Kemaskinian diperlukan dalam masa # hari}}</translation>
@@ -2860,6 +2861,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6433797564277305076">Sahkan kad anda dengan lebih cepat dengan menggunakan buka kunci peranti mulai sekarang</translation>
 <translation id="643917412048333145">Gaun</translation>
 <translation id="6440503408713884761">Diabaikan</translation>
+<translation id="6440534369669992497">Anda boleh memasukkan sebarang frasa atau butiran yang anda ingat daripada halaman yang anda semak imbas pada masa lalu, seperti "kasut berjalan yang selesa". <ph name="SHORTCUT" /> untuk membuat carian.</translation>
 <translation id="6443406338865242315">Sambungan dan pemalam yang telah anda pasang</translation>
 <translation id="6444329331928531170">Persaraan &amp; Pencen</translation>
 <translation id="6446608382365791566">Tambahkan maklumat lanjut</translation>
@@ -3143,6 +3145,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7006930604109697472">Hantar sahaja</translation>
 <translation id="7010658264061801199">Makanan &amp; Minuman</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013835112918108252">Boleh meminta untuk mengunci dan menggunakan tetikus anda</translation>
 <translation id="7014042602717177828">Audio Kereta</translation>
 <translation id="7014741021609395734">Tahap zum</translation>
 <translation id="7016992613359344582">Caj ini mungkin caj sekali atau caj berulang dan mungkin tidak ketara.</translation>

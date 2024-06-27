@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">Էկրանի ստեղնաշարը միացված է</translation>
 <translation id="1749109475624620922">«<ph name="WINDOW_TITLE" />» պատուհանը նշանակվեց բոլոր աշխատասեղաններին։</translation>
 <translation id="1750088060796401187">Աշխատասեղանների առավելագույն թիվը (<ph name="MAX_DESK_LIMIT" />) լրացել է։ Հեռացրեք որևէ աշխատասեղան՝ նորը բացելու համար։</translation>
+<translation id="1751335846119670066">Օգնիր ինձ կարդալ</translation>
 <translation id="1755408179247123630">Միացնե՞լ «Ընտրեք և լսեք» գործառույթը</translation>
 <translation id="1755556344721611131">«Դիագնոստիկա» հավելված</translation>
 <translation id="1756833229520115364">Չհաջողվեց պահել ձևանմուշը։ Չափազանց շատ պատուհաններ կամ ներդիրներ կան։</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">Կարգավորել հեռախոսի վերջին լուսանկարների, մեդիաֆայլերի և ծանուցումների դիտումը</translation>
 <translation id="1787955149152357925">Անջատված է</translation>
 <translation id="1796561540704213354">Վեբ կայքերը՝ ներառյալ էջերը, որոնք այցելել եք, և բացված էջերը</translation>
+<translation id="179842970735685253">Google-ի օգտագործման պայմանների</translation>
 <translation id="181103072419391116">Ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="1816896987747843206">Սա հասանելի է դարձնում տեսախցիկը բոլոր հավելվածներին և կայքերին, որոնք ունեն տեսախցիկի օգտագործման թույլտվություն</translation>
 <translation id="1823873187264960516">Ethernet՝ <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Դասարանային աշխատանքի տեսակ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Մի քանի բան, որ պետք է հիշել</translation>
 <translation id="3139188263101386725">Օգտագործեք թարմացված դյուրանցումը</translation>
 <translation id="3139942575505304791">Աշխատասեղան 1</translation>
 <translation id="315116470104423982">Բջջային կապի տվյալներ</translation>
@@ -961,6 +964,7 @@
 <translation id="4585337515783392668">Դադարեցնել հեռարձակումը անհայտ սարքին</translation>
 <translation id="4596144739579517758">Մուգ թեման անջատված է</translation>
 <translation id="4596442969149038771"><ph name="USER" /> օգտատերը կիսվել է</translation>
+<translation id="4610493115106525653">Լավ արդյունք</translation>
 <translation id="4611292653554630842">Մուտք</translation>
 <translation id="462160925400706389"><ph name="NAME" /> սարքը միացած է</translation>
 <translation id="4623167406982293031">Հաստատել հաշիվը</translation>
@@ -1118,6 +1122,7 @@
 <translation id="5121628974188116412">Անցնել էջի ներքև</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" />-ի նախադիտում։ Աշխատասեղանն ակտիվ չէ։</translation>
 <translation id="5136175204352732067">Այլ ստեղնաշար է միացվել</translation>
+<translation id="5140105873789567560">Տեքստագրիչ և «Օգնիր ինձ կարդալ» գործառույթներից օգտվելու համար դուք պետք է առնվազն 18 տարեկան լինեք։</translation>
 <translation id="5144005092084035179">Փոխե՞լ աուդիո մուտքը</translation>
 <translation id="5147567197700016471">Ապակողպվեց</translation>
 <translation id="5150070631291639005">Գաղտնիության կարգավորումներ</translation>
@@ -1558,6 +1563,7 @@
 <translation id="6696025732084565524">Անհրաժեշտ է թարմացնել արտաքին ստեղնաշարը</translation>
 <translation id="6697913454192220372">Ավելացնել նոր աշխատասեղան</translation>
 <translation id="6700713906295497288">IME ընտրացանկի կոճակ</translation>
+<translation id="6704375469818246414">Գեներատիվ արհեստական բանականությունն օգտագործելիս որակը կարող է տարբերվել։</translation>
 <translation id="6706742084323792866">Ամրացնել ստեղնաշարը</translation>
 <translation id="6710213216561001401">Նախորդը</translation>
 <translation id="6723839937902243910">Սնուցում</translation>
@@ -1825,9 +1831,11 @@
 <translation id="7726391492136714301">Դիտել հեռախոսի ծանուցումները և հավելվածները</translation>
 <translation id="7727952505535211425">Բացել կայքը հասցեագոտում՝ նոր ներդիրում</translation>
 <translation id="7742327441377685481">Ծանուցումներ չկան</translation>
+<translation id="774736258792760908">Երբ միացնում եք Տեքստագրիչ և «Օգնիր ինձ կարդալ» գործառույթները, մուտքագրված տեքստը և փաստաթղթի բովանդակությունը ուղարկվում են Google AI-ի սերվերներ՝ ամփոփագրեր և գրելու առաջարկներ ստեղծելու, հարցերին պատասխանելու և պրոդուկտը բարելավելու համար՝ համաձայն <ph name="LINK_TO_SERVICE_TERMS" />։ Մի՛ ներառեք անձնական, զգայուն կամ կոնֆիդենցիալ տեղեկություններ։</translation>
 <translation id="7748275671948949022">Առանձնացնել գործարկիչի կոճակը դարակում</translation>
 <translation id="7749443890790263709">Աշխատասեղանների առավելագույն թույլատրելի քանակը լրացել է:</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Տեքստագրիչ և «Օգնիր ինձ կարդալ» գործառույթները ցանկացած պահի կարող եք Կարգավորումներում անջատել։ <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Ընտրեք և լսեք</translation>
 <translation id="7769299611924763557">GIF ֆայլը շուտով պատրաստ կլինի</translation>
 <translation id="7773536009433685931">Միացնել Wi-Fi-ը</translation>
@@ -1836,6 +1844,7 @@
 <translation id="7781829728241885113">Երեկ</translation>
 <translation id="7787212146956232129">Ներածման և արտածման սարքերը կարգավորված են։ Փոխելու համար անցեք Կարգավորումներ։</translation>
 <translation id="7792590255364786396">Տեսանելի է</translation>
+<translation id="7793389284006812057">Գեներատիվ արհեստական բանականությունը փորձարկման ու մշակման վաղ փուլում է և ներկայումս ունի սահմանափակ հասանելիություն։</translation>
 <translation id="7796735576426975947">Նոր ծանուցումները թաքցված են</translation>
 <translation id="7798302898096527229">Չեղարկելու համար սեղմեք Search կամ Shift:</translation>
 <translation id="780301667611848630">Ոչ</translation>
@@ -1990,6 +1999,7 @@
 <translation id="8331351032546853669">Ներբեռնումն առկախ է</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Վատ արդյունք</translation>
 <translation id="8345019317483336363">Ընտրված է «<ph name="WINDOW_TITLE" />» պատուհանը</translation>
 <translation id="8349826889576450703">գործարկիչ</translation>
 <translation id="8349964124165471584">Բացել հղումը նոր պատուհանում</translation>

@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Attivo <ph name="LAST_UPDATED" /> giorni fa</translation>
 <translation id="1390418506739274310">Potresti vedere la cronologia di altre app che aprono link in Chrome. Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione all'indirizzo <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo nome, il tuo indirizzo email e l'immagine del tuo profilo con questo sito. Vedi i <ph name="BEGIN_LINK1" />Termini di servizio<ph name="END_LINK1" /> di questo sito.</translation>
+<translation id="139752016751285248">Riquadro inferiore di approfondimenti sul prezzo aperto a schermo intero</translation>
 <translation id="1397811292916898096">Cerca con <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Puoi <ph name="BEGIN_LINK1" />gestire quali dati di Chrome salvare<ph name="END_LINK1" /> nel tuo Account Google.
 
@@ -179,6 +180,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1877073879466606884">Il profilo a cui hai eseguito l'accesso è un profilo gestito. L'amministratore può apportare modifiche alle impostazioni del profilo da remoto, analizzare le informazioni sul browser tramite i report ed eseguire altre attività necessarie.</translation>
 <translation id="1883903952484604915">I miei file</translation>
 <translation id="189358972401248634">Altre lingue</translation>
+<translation id="1899175549411605574">Riquadro inferiore di approfondimenti sul prezzo</translation>
 <translation id="1900260903084164610">Se continui, accetti i <ph name="BEGIN_TOS_LINK" />Termini di servizio<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Gli URL che visiti vengono salvati nel tuo Account Google</translation>
 <translation id="1910950723001426294">L'elenco di opzioni di condivisione è chiuso.</translation>
@@ -530,6 +532,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3637744895182738742">Se dimentichi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Chrome nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Vai alla home page dell'app Google</translation>
 <translation id="368329460027487650">Account disconnesso. Consente di aprire le opzioni per accedere.</translation>
+<translation id="3684540848053703310">Riquadro inferiore di approfondimenti sul prezzo chiuso</translation>
 <translation id="3687645719033307815">È visualizzata un'anteprima di questa pagina</translation>
 <translation id="3690369331356918524">Ricevi un avviso se le password sono esposte a violazione dei dati</translation>
 <translation id="3692944402865947621">Download di <ph name="FILE_NAME" /> non riuscito perché non è possibile trovare il percorso di archiviazione.</translation>

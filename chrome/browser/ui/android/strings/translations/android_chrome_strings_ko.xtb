@@ -89,6 +89,7 @@
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" />일 전 동기화됨</translation>
 <translation id="1390418506739274310">Chrome에서 링크를 열어 다른 앱의 방문 기록을 볼 수 있습니다. Google 계정의 내 활동(<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />)에는 방문 기록이 다른 형식으로 남아 있을 수도 있습니다.</translation>
 <translation id="13931502444227376">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 이름, 이메일 주소, 프로필 사진을 이 사이트와 공유해야 합니다. 사이트의 <ph name="BEGIN_LINK1" />서비스 약관<ph name="END_LINK1" />을 확인하세요.</translation>
+<translation id="139752016751285248">가격 정보 하단 시트가 전체 높이로 열림</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />에서 검색</translation>
 <translation id="1398057416966591719">Google 계정에 <ph name="BEGIN_LINK1" />저장되는 Chrome 데이터를 관리<ph name="END_LINK1" />할 수 있습니다.
 
@@ -179,6 +180,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1877073879466606884">로그인한 프로필이 관리 프로필입니다. 관리자는 프로필 설정을 원격으로 변경하고, 보고를 통해 브라우저에 관한 정보를 분석하고, 기타 필요한 작업을 수행할 수 있습니다.</translation>
 <translation id="1883903952484604915">내 파일</translation>
 <translation id="189358972401248634">다른 언어</translation>
+<translation id="1899175549411605574">가격 정보 하단 시트</translation>
 <translation id="1900260903084164610">계속하면 <ph name="BEGIN_TOS_LINK" />서비스 약관<ph name="END_TOS_LINK" />에 동의하는 것으로 간주됩니다.</translation>
 <translation id="1904580727789512086">내가 방문한 URL이 Google 계정에 저장됩니다.</translation>
 <translation id="1910950723001426294">공유 옵션 목록이 닫혔습니다.</translation>
@@ -520,6 +522,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3587596251841506391">웹 보안 개선에 참여</translation>
 <translation id="3597179440835065298">추천 기능 개선하기</translation>
 <translation id="3602290021589620013">미리보기</translation>
+<translation id="3614126103057878858">가격 정보</translation>
 <translation id="3616113530831147358">오디오</translation>
 <translation id="3622349720008044802">창 관리</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{외 사이트 1개}other{외 사이트 #개}}</translation>
@@ -529,6 +532,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3637744895182738742">암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
 <translation id="3674208116086565128">Google 앱 홈으로 이동</translation>
 <translation id="368329460027487650">로그아웃했습니다. 로그인 옵션을 엽니다.</translation>
+<translation id="3684540848053703310">가격 정보 하단 시트가 닫힘</translation>
 <translation id="3687645719033307815">페이지의 미리보기를 보는 중입니다.</translation>
 <translation id="3690369331356918524">데이터 유출로 인해 비밀번호가 노출된 경우 알립니다.</translation>
 <translation id="3692944402865947621">저장 위치에 연결할 수 없어 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>

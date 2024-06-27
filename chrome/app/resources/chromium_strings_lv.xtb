@@ -79,6 +79,8 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="2329088755516916767">Ja šis iestatījums ir ieslēgts, pārlūkā Chromium tiek iepriekš ielādētas lapas, tādējādi paātrinot pārlūkošanu un meklēšanu.</translation>
 <translation id="2343156876103232566">Lai nosūtītu numuru no šejienes uz savu Android tālruni, abās ierīcēs pierakstieties pārlūkā Chromium.</translation>
 <translation id="2359808026110333948">Turpināt</translation>
+<translation id="2361918034042471035">Paplašinājums “<ph name="EXTENSION_NAME" />” pieprasa, lai jūs pierakstītos pārlūkā Chromium</translation>
+<translation id="2374216753258219393">Lai izmantotu šo paplašinājumu kontā <ph name="USER_EMAIL_ADDRESS" />, pierakstieties pārlūkā Chromium.</translation>
 <translation id="2384373936468275798">Chromium OS nevarēja sinhronizēt jūsu datus, jo jūsu konta pierakstīšanās informācija ir novecojusi.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Vismaz viens Chromium paplašinājums piekļuva 1 HID ierīcei}=1{Vismaz viens Chromium paplašinājums piekļūst 1 HID ierīcei}zero{Vismaz viens Chromium paplašinājums piekļūst # HID ierīcēm}one{Vismaz viens Chromium paplašinājums piekļūst # HID ierīcei}other{Vismaz viens Chromium paplašinājums piekļūst # HID ierīcēm}}</translation>
 <translation id="2401032172288869980">Pārlūkam Chromium ir nepieciešama atļauja izmantot kameru un mikrofonu šajā vietnē.</translation>
@@ -242,9 +244,11 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="4893347770495441059">Atkārtoti palaist, lai atjauninātu &amp;Chromium</translation>
 <translation id="4942295735032723435">Lai saņemtu turpmākus Chromium atjauninājumus, nepieciešama operētājsistēma macOS 11 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium darbojas fona režīmā.</translation>
+<translation id="494490797786467921">Noklikšķiniet, lai aizvērtu Chromium pierakstīšanās dialoglodziņu</translation>
 <translation id="4987820182225656817">Viesi var izmantot Chromium, neatstājot nekādas pēdas.</translation>
 <translation id="4994636714258228724">Pievienot savu kontu pārlūkā Chromium</translation>
 <translation id="5114678101347489141">Chromium pēta jaunas funkcijas, kas ļauj vietnēm nodrošināt tādas pašas pārlūkošanas iespējas, izmantojot mazāk informācijas.</translation>
+<translation id="5187123684706427865">Chromium kontam nepieciešama atkārtota autentifikācija</translation>
 <translation id="5224391634244552924">Nav saglabātu paroļu. Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>
 <translation id="5231355151045086930">Izrakstīšanās no Chromium</translation>
 <translation id="5252179775517634216">Lietotājs <ph name="EXISTING_USER" /> jau ir pierakstījies šajā Chromium profilā. Tādējādi tiks izveidots jauns Chromium profils lietotājam <ph name="USER_EMAIL_ADDRESS" />.</translation>

@@ -216,6 +216,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1747827819627189109">Klawiatura ekranowa włączona</translation>
 <translation id="1749109475624620922">Okno <ph name="WINDOW_TITLE" /> zostało przypisane do wszystkich biurek</translation>
 <translation id="1750088060796401187">Dopuszczalna liczba biurek to <ph name="MAX_DESK_LIMIT" />. Jeśli chcesz otworzyć nowe, usuń jedno z dotychczasowych.</translation>
+<translation id="1751335846119670066">Pomóż mi w czytaniu</translation>
 <translation id="1755408179247123630">Włączyć funkcję Przeczytaj na głos?</translation>
 <translation id="1755556344721611131">Aplikacja diagnostyczna</translation>
 <translation id="1756833229520115364">Nie udało się zapisać szablonu. Zbyt wiele okien lub kart.</translation>
@@ -227,6 +228,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="178347895271755507">Skonfiguruj wyświetlanie najnowszych zdjęć, plików multimedialnych i powiadomień z telefonu</translation>
 <translation id="1787955149152357925">Wyłączono</translation>
 <translation id="1796561540704213354">Strony internetowe, w tym strony odwiedzone i otwarte</translation>
+<translation id="179842970735685253">Warunkami korzystania z usług Google</translation>
 <translation id="181103072419391116">Siła sygnału: <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>
 <translation id="1816896987747843206">Spowoduje to przyznanie dostępu do aparatu wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z niego</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3122464029669770682">Procesor</translation>
 <translation id="3125690294288312932">Typ zadania</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Warto pamiętać</translation>
 <translation id="3139188263101386725">Użyj zaktualizowanego skrótu</translation>
 <translation id="3139942575505304791">Biurko 1</translation>
 <translation id="315116470104423982">Mobilna transmisja danych</translation>
@@ -961,6 +964,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="4585337515783392668">Zakończ przesyłanie do nieznanego odbiornika</translation>
 <translation id="4596144739579517758">Ciemny motyw jest wyłączony</translation>
 <translation id="4596442969149038771">Udostępniony przez: <ph name="USER" /></translation>
+<translation id="4610493115106525653">Dobre wyniki</translation>
 <translation id="4611292653554630842">Zaloguj się</translation>
 <translation id="462160925400706389">Połączono: <ph name="NAME" /></translation>
 <translation id="4623167406982293031">Zweryfikuj konto</translation>
@@ -1118,6 +1122,7 @@ Możesz też użyć skrótu klawiszowego. Zaznacz tekst, a potem naciśnij <ph 
 <translation id="5121628974188116412">Przejdź na dół strony</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> – podgląd. Biurko nieaktywne.</translation>
 <translation id="5136175204352732067">Podłączono inną klawiaturę</translation>
+<translation id="5140105873789567560">Aby korzystać z funkcji Pomóż mi w pisaniu i Pomóż mi w czytaniu, musisz mieć ukończone 18 lat.</translation>
 <translation id="5144005092084035179">Przełączyć wejście audio?</translation>
 <translation id="5147567197700016471">Odblokowano</translation>
 <translation id="5150070631291639005">Ustawienia prywatności</translation>
@@ -1557,6 +1562,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6696025732084565524">Odłączana klawiatura wymaga krytycznej aktualizacji</translation>
 <translation id="6697913454192220372">Dodaj nowe biurko</translation>
 <translation id="6700713906295497288">Przycisk menu IME</translation>
+<translation id="6704375469818246414">W przypadku użycia generatywnej AI jakość może być różna.</translation>
 <translation id="6706742084323792866">Przypnij klawiaturę</translation>
 <translation id="6710213216561001401">Poprzedni</translation>
 <translation id="6723839937902243910">Zasilanie</translation>
@@ -1824,9 +1830,11 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7726391492136714301">Zobacz powiadomienia i aplikacje z telefonu</translation>
 <translation id="7727952505535211425">Otwórz stronę z paska adresu w nowej karcie</translation>
 <translation id="7742327441377685481">Brak powiadomień</translation>
+<translation id="774736258792760908">Gdy włączysz funkcje Pomóż mi w pisaniu i Pomóż mi w czytaniu, wpisany tekst i zawartość dokumentu będą wysyłane na serwery AI od Google w celu generowania propozycji tekstu, tworzenia podsumowań, odpowiadania na pytania i ulepszania usługi zgodnie z <ph name="LINK_TO_SERVICE_TERMS" />. Nie podawaj żadnych danych osobowych, poufnych ani wrażliwych.</translation>
 <translation id="7748275671948949022">Podświetl przycisk Menu z aplikacjami na półce</translation>
 <translation id="7749443890790263709">Osiągnięto maksymalną liczbę biurek.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Funkcje Pomóż mi w pisaniu i Pomóż mi w czytaniu możesz w każdej chwili wyłączyć w Ustawieniach. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Przeczytaj na głos</translation>
 <translation id="7769299611924763557">Twój GIF będzie wkrótce gotowy</translation>
 <translation id="7773536009433685931">W zamian włącz Wi-Fi</translation>
@@ -1835,6 +1843,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7781829728241885113">Wczoraj</translation>
 <translation id="7787212146956232129">Urządzenia wejściowe i wyjściowe są ustawione. Możesz to zmienić w Ustawieniach.</translation>
 <translation id="7792590255364786396">Widoczne</translation>
+<translation id="7793389284006812057">Generatywna AI to funkcja eksperymentalna, która znajduje się we wczesnej fazie rozwoju i obecnie jest dostępna z ograniczeniami.</translation>
 <translation id="7796735576426975947">Nowe powiadomienie zostało ukryte</translation>
 <translation id="7798302898096527229">Aby anulować, naciśnij Szukaj lub Shift.</translation>
 <translation id="780301667611848630">Nie, dziękuję</translation>
@@ -1989,6 +1998,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8331351032546853669">Pobieranie oczekuje</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Złe wyniki</translation>
 <translation id="8345019317483336363">Wybrano okno <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">program uruchamiający</translation>
 <translation id="8349964124165471584">Otwórz link w nowym oknie</translation>

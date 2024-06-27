@@ -81,6 +81,8 @@
 <translation id="2329088755516916767">Қосылса, Chromium беттерді алдын ала жүктейді, осылайша браузерді пайдалану және іздеу әрекеті тез жүреді.</translation>
 <translation id="2343156876103232566">Нөмірді осы жерден Android телефонына жіберу үшін екі құрылғыда да Chromium браузеріне кіріңіз.</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
+<translation id="2361918034042471035">"<ph name="EXTENSION_NAME" />" кеңейтімін қолдану үшін Chromium-ге кіруіңіз керек</translation>
+<translation id="2374216753258219393">Бұл кеңейтімді <ph name="USER_EMAIL_ADDRESS" /> ретінде пайдалану үшін Chromium-ге кіріңіз.</translation>
 <translation id="2384373936468275798">ChromiumOS деректеріңізді синхрондай алмады, себебі аккаунтыңызға кіру мәліметтері ескірген.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 HID құрылғысын бір немесе бірнеше Chromium кеңейтімі пайдаланды}=1{1 HID құрылғысын бір немесе бірнеше Chromium кеңейтімі пайдаланып жатыр}other{# HID құрылғысын бір немесе бірнеше Chromium кеңейтімі пайдаланып жатыр}}</translation>
 <translation id="2401032172288869980">Chromium бұл сайт үшін камера мен микрофонды пайдалануға рұқсат сұрайды.</translation>
@@ -244,9 +246,11 @@
 <translation id="4893347770495441059">&amp;Chromium-ді жаңарту үшін қайта іске қосу</translation>
 <translation id="4942295735032723435">Chromium-нің жаңа нұсқаларын алып тұру үшін macOS 11 не одан кейінгі операциялық жүйе керек болады. Бұл компьютерде macOS 10.15 нұсқасы орнатылған.</translation>
 <translation id="4943838377383847465">Chromium фондық режимде.</translation>
+<translation id="494490797786467921">Chromium-ге кірудің диалогтік терезесін жабу үшін басыңыз.</translation>
 <translation id="4987820182225656817">Қонақтар Chromium қолданбасын ешқандай дерек қалдырмай пайдалана алады.</translation>
 <translation id="4994636714258228724">Chromium жүйесіне өзіңізді қосу</translation>
 <translation id="5114678101347489141">Chromium жаңа функцияларды зерттеп жатыр. Олардың көмегімен сайттарды аз ақпаратпен де бұрынғыдай пайдалана беруге болады.</translation>
+<translation id="5187123684706427865">Chromium аккаунтын қайта аутентификациялау қажет.</translation>
 <translation id="5224391634244552924">Ешқандай құпия сөз сақталмаған. Құпия сөздер сақталған кезде, Chromium оларды тексере алады.</translation>
 <translation id="5231355151045086930">Chromium жүйесінен шығу</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> бұл Chromium профиліне кіріп қойған. <ph name="USER_EMAIL_ADDRESS" /> үшін жаңа Chromium профилі жасалады.</translation>

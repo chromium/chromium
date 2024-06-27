@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">PUK kod xato</translation>
 <translation id="4057991113334098539">Faollashtirilmoqda...</translation>
 <translation id="4092890906744441904">Irland</translation>
+<translation id="4101601646343868113">Mobil tarmoq hisobiga kiring va mobil internet tarifi yoniqligini tasdiqlang</translation>
 <translation id="4124731372776320263">1 ta Drive fayli sinxronlanmoqda</translation>
 <translation id="4124935795427217608">Bir shoxli ot</translation>
 <translation id="4131235941541910880">Elementlarni boshqa jildga olish uchun chiqitdon kerak emas</translation>
@@ -603,6 +604,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5625294776298156701">Tamil (Tamil99 klaviaturasi)</translation>
 <translation id="5633226425545095130">Bu fayl koʻchirilsa, u <ph name="DESTINATION_NAME" /> jildiga ruxsati bor barcha foydalanuvchilarga ulashiladi.</translation>
 <translation id="5649768706273821470">Tinglash</translation>
+<translation id="5650895901941743674">APN konfiguratsiyasini tekshiring</translation>
 <translation id="5669691691057771421">Yangi PIN kodni kiriting</translation>
 <translation id="5678784840044122290">Linux ilovasi terminal ichida ham ishlaydi, shuningdek, Launcherda ham ikonkasi chiqadi.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Arxiv yoki virtual disk uzilmadi<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8600173386174225982">Fayllar roʻyxati uchun saralash shakli eskizlarga almashdi.</translation>
 <translation id="8601932370724196034">Crostini tasvir fayli</translation>
 <translation id="8609695766746872526">Island</translation>
+<translation id="8630384863424041081">SIM karta PIN kodini yoki aloqa operatori taqdim etgan standart PIN kodni kiriting. Yordam uchun aloqa operatoriga murojaat qiling.</translation>
 <translation id="863903787380594467">PIN kod xato. Sizda <ph name="RETRIES" /> ta urinish qoldi.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
 <translation id="8656407365183407932">Oflayn fayllar olib tashlandi</translation>

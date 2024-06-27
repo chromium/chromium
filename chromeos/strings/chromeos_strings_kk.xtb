@@ -102,6 +102,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> бұл пайдаланушыны басқарады және параметрлер мен пайдаланушы әрекеттерін қашықтан бақылай алады.</translation>
 <translation id="150962533380566081">PUK коды жарамсыз.</translation>
 <translation id="1510238584712386396">Іске қосу құрылғысы</translation>
+<translation id="1514446283880973949">Сенімді түрде жазыңыз, мазмұнды қорытындылаңыз, анықтамалар алыңыз және т.б.</translation>
 <translation id="1515129336378114413">браузердің негізгі экраны</translation>
 <translation id="1526389707933164996">Скринсейвер анимациясы</translation>
 <translation id="152892567002884378">Дыбысты арттыру</translation>
@@ -1287,6 +1288,7 @@
 <translation id="8167413449582155132">Google AI технологиясымен жасалған фон</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">жағажай</translation>
+<translation id="819278132617411009">Өнімділікті арттыру үшін Google AI пайдаланыңыз</translation>
 <translation id="8206859287963243715">Ұялы</translation>
 <translation id="8208861521865154048">Бонустар</translation>
 <translation id="8226628635270268143">Өзіңізге ұнайтын фотосуреттер мен альбомдарды таңдау</translation>
@@ -1333,6 +1335,7 @@
 <translation id="8431300646573772016">ChromeOS жаңалықтары</translation>
 <translation id="843568408673868420">Интернет байланысы</translation>
 <translation id="844521431886043384">DNS реттелмеген.</translation>
+<translation id="8456200178779628126">Оқуға және жазуға көмек алу үшін Google AI пайдаланыңыз</translation>
 <translation id="8456761643544401578">Автоматты қараңғы режим</translation>
 <translation id="8461329675984532579">Жергілікті провайдер аты</translation>
 <translation id="8475690821716466388">WiFi желісі WEP PSK әлсіз протоколымен қорғалған.</translation>
@@ -1459,6 +1462,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> үшін билетті жаңарту</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-бет сканерленуде</translation>
 <translation id="9111102763498581341">Құлпын ашу</translation>
+<translation id="9122492456897874028">Мазмұнды қорытындылаңыз, анықтамалар алыңыз және т.б.</translation>
 <translation id="9122602430962285795">Қайта қосылу үшін "Параметрлер" бетіне өтіңіз.</translation>
 <translation id="9122865513525855321">дзен</translation>
 <translation id="9126720536733509015">Бірнеше бетті бір PDF файлына сақтау</translation>

@@ -5,6 +5,8 @@
 <translation id="1026101648481255140">Atsākt instalēšanu</translation>
 <translation id="102763973188675173">Pielāgojiet un pārvaldiet pārlūku Google Chrome. Ir pieejams atjauninājums.</translation>
 <translation id="1028061813283459617">Lai dzēstu pārlūkošanas datus tikai no šīs ierīces, taču paturētu tos Google kontā, <ph name="BEGIN_LINK" />izrakstieties no Chrome<ph name="END_LINK" />.</translation>
+<translation id="1042270987544905725">Noklikšķiniet, lai aizvērtu Chrome pierakstīšanās dialoglodziņu</translation>
+<translation id="1059838145689930908">Lai izmantotu šo paplašinājumu kontā <ph name="USER_EMAIL_ADDRESS" />, pierakstieties pārlūkā Chrome.</translation>
 <translation id="1065672644894730302">Jūsu preferences nevar nolasīt. Dažas funkcijas var nebūt pieejamas, un preferenču izmaiņas netiks saglabātas</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> iepriekš izmantoja Chrome</translation>
 <translation id="110877069173485804">Šis ir jūsu pārlūks Chrome</translation>
@@ -368,6 +370,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6291089322031436445">Chrome Dev lietotnes</translation>
 <translation id="6291549208091401781">Pārlūks Google Chrome jau ir instalēts visiem jūsu datora lietotājiem.</translation>
 <translation id="6319856120645568262">Pārlūkam Chrome ir nepieciešama atļauja jūsu apkārtnes kartēšanai un roku kustību izsekošanai</translation>
+<translation id="6321592572353357376">Paplašinājums “<ph name="EXTENSION_NAME" />” pieprasa, lai jūs pierakstītos pārlūkā Chrome</translation>
 <translation id="6326175484149238433">Noņemt no pārlūka Chrome</translation>
 <translation id="6327105987658262776">Atjauninājums nav pieejams.</translation>
 <translation id="6360449101159168105">Kamēr šī cilne nebija aktīva, tika atbrīvota atmiņa pārlūka Chrome ātrākai darbībai. Varat izvēlēties vienmēr saglabāt šo vietni aktīvu.</translation>
@@ -460,6 +463,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="7655455401911432608">Jūsu pārlūkošanas vēsture, kurā tiek reģistrētas vietnes, ko šajā ierīcē apmeklējat ar pārlūku Chrome.</translation>
 <translation id="7661924425853052955">Pēdējā laikā neesat apmeklējis šo vietni. Pārlūkā Chrome tika noņemtas šādas atļaujas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> (un vēl <ph name="COUNT" /> atļaujas)</translation>
 <translation id="7668816516367091728">Veiciet tādus uzdevumus kā tulkošana, aprēķināšana un citas darbības tieši adreses joslā.</translation>
+<translation id="7670287553302121848">Chrome kontam ir nepieciešama atkārtota autentifikācija</translation>
 <translation id="769538538642757151">Ja kaut kas būs jāpārskata, saņemsiet Chrome paziņojumu</translation>
 <translation id="7747138024166251722">Instalētājam neizdevās izveidot pagaidu katalogu. Lūdzu, pārbaudiet, vai diskā pietiek vietas un vai ir atļauja instalēt programmatūru.</translation>
 <translation id="7761834446675418963">Noklikšķiniet uz sava vārda, lai atvērtu pārlūku Chrome un sāktu pārlūkošanu.</translation>

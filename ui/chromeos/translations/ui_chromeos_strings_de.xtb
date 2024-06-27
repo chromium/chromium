@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Falscher PUK</translation>
 <translation id="4057991113334098539">Wird aktiviert...</translation>
 <translation id="4092890906744441904">Irisch</translation>
+<translation id="4101601646343868113">Melde dich in deinem Mobilfunknetz an und überprüfe, ob dein Tarif für mobile Daten aktiv ist</translation>
 <translation id="4124731372776320263">1 Drive-Datei wird synchronisiert</translation>
 <translation id="4124935795427217608">Einhorn</translation>
 <translation id="4131235941541910880">Verschiebe nicht benötigte Elemente in den Papierkorb</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Tamil mit Tamil99-Tastatur</translation>
 <translation id="5633226425545095130">Wenn du dieses Element verschiebst, wird es für alle Personen freigegeben, die den freigegebenen Ordner „<ph name="DESTINATION_NAME" />“ sehen können.</translation>
 <translation id="5649768706273821470">Anhören</translation>
+<translation id="5650895901941743674">APN‑Konfiguration prüfen</translation>
 <translation id="5669691691057771421">Neue PIN eingeben</translation>
 <translation id="5678784840044122290">Die Linux-Anwendung ist in deinem Terminal verfügbar. Möglicherweise siehst du auch ein Symbol in deinem Launcher.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Die Verbindung zu einem Archiv oder einem virtuellen Datenträger kann nicht getrennt werden<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Die Dateiliste wird jetzt in der Miniaturansicht angezeigt.</translation>
 <translation id="8601932370724196034">Crostini-Bilddatei</translation>
 <translation id="8609695766746872526">Isländisch</translation>
+<translation id="8630384863424041081">Gib die PIN deiner SIM‑Karte oder die Standard‑PIN ein, die du von deinem Mobilfunkanbieter erhalten hast. Wenn du weitere Unterstützung benötigst, kontaktiere deinen Mobilfunkanbieter.</translation>
 <translation id="863903787380594467">Falsche PIN. Du hast noch <ph name="RETRIES" /> Versuche.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Port</translation>
 <translation id="8656407365183407932">Deine Offlinedateien mussten entfernt werden</translation>

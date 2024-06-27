@@ -81,6 +81,8 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="2329088755516916767">Keď je táto možnosť zapnutá, Chromium prednačíta stránky, takže prehliadanie a vyhľadávanie bude rýchlejšie.</translation>
 <translation id="2343156876103232566">Ak chcete odtiaľto odoslať číslo do svojho telefónu s Androidom, prihláste sa v oboch zariadeniach do prehliadača Chromium.</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
+<translation id="2361918034042471035">Rozšírenie <ph name="EXTENSION_NAME" /> žiada, aby ste sa prihlásili do prehliadača Chromium</translation>
+<translation id="2374216753258219393">Ak chcete používať toto rozšírenie ako <ph name="USER_EMAIL_ADDRESS" />, prihláste sa do prehliadača Chromium.</translation>
 <translation id="2384373936468275798">Systému Chromium OS sa nepodarilo synchronizovať vaše údaje, pretože vaše prihlasovacie údaje účtu sú zastarané.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{K 1 zariadeniu s ľudským rozhraním malo prístup jedno alebo viac rozšírení pre prehliadač Chromium}=1{K 1 zariadeniu s ľudským rozhraním má prístup jedno alebo viac rozšírení pre prehliadač Chromium}few{K # zariadeniam s ľudským rozhraním má prístup jedno alebo viac rozšírení pre prehliadač Chromium}many{# HID devices are being accessed by one or more Chromium extensions}other{K # zariadeniam s ľudským rozhraním má prístup jedno alebo viac rozšírení pre prehliadač Chromium}}</translation>
 <translation id="2401032172288869980">Chromium vyžaduje pre tento web povolený prístup ku kamere aj mikrofónu</translation>
@@ -244,9 +246,11 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="4893347770495441059">Znova spustiť a aktualizovať Chromium</translation>
 <translation id="4942295735032723435">Ak chcete dostávať budúce aktualizácie prehliadača Chromium, musíte používať systém macOS 11 alebo novší. V tomto počítači používate macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium je v režime na pozadí.</translation>
+<translation id="494490797786467921">Kliknutím zavriete dialógové okno prihlásenia do prehliadača Chromium</translation>
 <translation id="4987820182225656817">Hostia môžu používať prehliadač Chromium bez toho, aby po sebe zanechali akékoľvek informácie.</translation>
 <translation id="4994636714258228724">Pridajte si účet do prehliadača Chromium</translation>
 <translation id="5114678101347489141">Chromium skúma nové funkcie, ktoré umožňujú webom zobraziť rovnaké prostredie prehliadania s využitím menšieho množstva vašich údajov</translation>
+<translation id="5187123684706427865">Účet Chromium vyžaduje opätovné overenie</translation>
 <translation id="5224391634244552924">Žiadne uložené heslá. Chromium môže skontrolovať heslá, keď ich uložíte.</translation>
 <translation id="5231355151045086930">Odhlásenie sa z prehliadača Chromium</translation>
 <translation id="5252179775517634216">Používateľ <ph name="EXISTING_USER" /> je už do tohto profilu prehliadača Chromium prihlásený. Týmto sa vytvorí nový profil prehliadača Chromium pre <ph name="USER_EMAIL_ADDRESS" /></translation>

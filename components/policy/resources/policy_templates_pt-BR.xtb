@@ -3310,6 +3310,7 @@ Se for definida, o <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> não p
 
        Por padrão, todas as extensões são permitidas. Mas, se você proibiu extensões por meio de uma política, use a lista de extensões permitidas para mudar essa política.</translation>
 <translation id="3501606938635483637">Os atalhos de teclados internacionais são associados ao glifo das teclas, não ao local delas.</translation>
+<translation id="3501850499442915474">O provedor de <ph name="UIA_NAME" /> será ativado ou desativado pelo framework de variações.</translation>
 <translation id="3502438748205582075">Desativar o Kerberos</translation>
 <translation id="3502555714327823858">Permitir todos os modos duplex</translation>
 <translation id="350443680860256679">Configurar ARC</translation>
@@ -3956,6 +3957,7 @@ Os recursos da IA generativa do DevTools incluem:
       Quando esta configuração estiver ativada, o <ph name="PRODUCT_NAME" /> vai verificar os certificados do servidor usando o verificador integrado de certificados.
       Quando ela estiver desativada, o <ph name="PRODUCT_NAME" /> vai verificar os certificados do servidor usando o verificador legado disponibilizado pela plataforma, a menos que a <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> esteja ativada.
       Quando esta configuração não for definida, tanto o verificador de certificados integrado quanto o legado vão poder ser usados.</translation>
+<translation id="3997496219154877791">Desativar a integração do Lens</translation>
 <translation id="3997519162482760140">URLs que terão acesso a dispositivos de captura de vídeo em páginas de login SAML</translation>
 <translation id="4004523942550416237">Não mostrar o fluxo do Voice Match do Google Assistente durante a configuração inicial</translation>
 <translation id="4007646377576030214"> Esta política foi suspensa na versão M87 e foi removida na M89. Use a <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> para configurar alertas de privacidade de sessões de visitante gerenciadas.
@@ -4023,6 +4025,38 @@ Comportamento antigo e legado: em "beforeunload", chamar "event.preventDefault()
 <translation id="4052529125939620019">Carregar a extensão do componente do CryptoToken na inicialização</translation>
 <translation id="4053157306171963473">Desativar relatórios sobre o horário das atividades do dispositivo</translation>
 <translation id="4056910949759281379">Desativar o protocolo SPDY</translation>
+<translation id="4057113125482566814">Ativa o provedor do framework de acessibilidade de <ph name="UIA_NAME" /> no
+<ph name="PRODUCT_NAME" /> para uso por ferramentas
+de acessibilidade.
+
+O
+<ph name="PRODUCT_NAME" /> é compatível com a política por um período de transição de
+um ano para permitir que administradores corporativos controlem a implantação
+do provedor de acessibilidade de <ph name="UIA_NAME" /> do navegador. A acessibilidade e outras ferramentas que usam o
+framework de acessibilidade do <ph name="UIA_NAME" /> para interoperar
+com o navegador podem exigir atualizações para funcionar corretamente com o provedor de
+<ph name="UIA_NAME" /> do navegador. Os administradores podem usar a política para
+desativar temporariamente o provedor de <ph name="UIA_NAME" /> do navegador (voltando ao
+comportamento antigo) enquanto trabalham com os fornecedores para atualizar as ferramentas
+afetadas.
+
+Quando a política é definida como falsa, o <ph name="PRODUCT_NAME" />
+ativa apenas o provedor de <ph name="MSAA_NAME" />. A acessibilidade e outras
+ferramentas que usam o novo framework de <ph name="UIA_NAME" /> para interoperar
+com o navegador vão se comunicar com ele por um paliativo de compatibilidade no
+<ph name="MS_WIN_NAME" />.
+
+Quando definida como verdadeira, o <ph name="PRODUCT_NAME" />
+ativa o provedor de <ph name="UIA_NAME" />, além do
+provedor <ph name="MSAA_NAME" />.
+A acessibilidade e outras ferramentas que usam o framework mais recente
+de <ph name="UIA_NAME" /> para interoperar com o navegador vão
+se comunicar diretamente com ele.
+
+Quando não definido, o framework de variações no <ph name="PRODUCT_NAME" /> é usado para ativar ou desativar
+o provedor.
+
+A compatibilidade com essa configuração de política vai terminar no <ph name="PRODUCT_NAME" /> 136.</translation>
 <translation id="4057442294431066708">Esta política controla a opção de atalho selecionada para remapear eventos para
 F11/F12 na subpágina de remapeamento de teclas. Essas configurações se aplicam apenas a
 teclados ChromeOS e serão desativadas por padrão se a política não for definida.</translation>
@@ -5039,6 +5073,7 @@ Se a política for definida como "false", o comportamento padrão será usado.</
 <translation id="4874982543810021567">Bloquear o WebUSB nesses sites</translation>
 <translation id="4876805738539874299">Versão máxima de SSL ativada</translation>
 <translation id="4877305769899044884">Luz de fundo padrão do teclado</translation>
+<translation id="4886138258823889910">Ativar o provedor do framework de acessibilidade de <ph name="UIA_NAME" /> para o navegador no Windows</translation>
 <translation id="4886783562285047261">Se a política for definida como "Ativada", o <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> forçará o registro e impedirá o processo de inicialização do <ph name="PRODUCT_NAME" /> em caso de erro.
 
       Se ela for definida como "Desativada" ou não for definida, o <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> será opcional e não impedirá o processo de inicialização do <ph name="PRODUCT_NAME" /> em caso de erro.
@@ -5173,6 +5208,10 @@ da versão do ChromeOS ou do dispositivo) serão sempre exibidas ou ocultas na t
 <translation id="4970855112942626932">Desativar login no navegador</translation>
 <translation id="4974091268178043378">Modo de cor do ChromeOS</translation>
 <translation id="4978533099939732984">Sempre mostrar alertas de pouco espaço em disco</translation>
+<translation id="4979614740553442831">Esta política controla a disponibilidade da integração do Lens no app Galeria no <ph name="PRODUCT_OS_NAME" />
+
+Quando a política é ativada ou deixada sem definição, os usuários podem usar o Lens para pesquisar seleções de mídia que eles estão visualizando no app Galeria.
+Quando a política é desativada, o recurso também é.</translation>
 <translation id="4979714585847741269">Se a política for ativada, apps da Web de quiosque vão poder abrir outra janela de navegador, que pode ser colocada na mesma tela ou em uma tela diferente. Para abrir uma nova janela, o app da Web precisa chamar a função JavaScript <ph name="OPEN_NEW_WINDOW_JS" />.
 
       Se a política for desativada ou deixada sem definição, um app da Web de quiosque só vai poder usar a janela principal do navegador e não poderá abrir uma nova. Chamadas de funções JavaScript para abrir uma nova janela vão ser ignoradas.</translation>
@@ -6239,6 +6278,7 @@ Se a política não for definida, isso será funcionalmente equivalente a defini
 <translation id="5814301096961727113">Definir estado padrão da resposta falada na tela de login</translation>
 <translation id="5815129011704381141">Reinicializar automaticamente após a atualização</translation>
 <translation id="5815990343032461023">Comportamento legado: os apps do Chrome para quiosque serão atualizados pelo sistema de extensão usando o URL de atualização do manifesto de extensão e armazenando o gerenciador em cache com o URL definido na política</translation>
+<translation id="5816688024515869030">Desativar o provedor de <ph name="UIA_NAME" />.</translation>
 <translation id="5828008775808363753">Não abrir o navegador na inicialização</translation>
 <translation id="582857022372205358">Ativar impressão duplex de borda curta</translation>
 <translation id="5830196507442186669">Permitir que dispositivos usem a <ph name="BOREALIS_NAME" /> no <ph name="PRODUCT_OS_NAME" /></translation>
@@ -7338,7 +7378,7 @@ Se deixada sem definição, a frequência padrão de 15 minutos será usada.</tr
 
       Especifique um hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> vinculando o nome do algoritmo dele, uma barra e a codificação Base64 desse algoritmo de hash aplicado ao <ph name="SUBJECT_PUBLIC_KEY_INFO" /> codificado por DER do certificado especificado. O formato de codificação Base64 corresponde ao de uma impressão digital SPKI. O único algoritmo de hash reconhecido é sha256, enquanto os outros são ignorados.
 
-      Deixar esta política sem definição significa que se os certificados que precisam ser divulgados via Transparência dos certificados não o forem, o <ph name="PRODUCT_NAME" /> não confiará nesses certificados.
+      Deixar esta política sem definição significa que, se os certificados que precisam ser divulgados via Transparência dos certificados não o forem, o <ph name="PRODUCT_NAME" /> não confiará nesses certificados.
 
       Esta política foi removida na versão 128 do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6556586932263358975">Permitir o bloqueio da tela</translation>
@@ -8313,6 +8353,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       Se a política for definida como <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> (valor 3), por padrão, o usuário receberá um aviso quando a permissão para posicionamento de janelas for solicitada. Se o usuário conceder a permissão, ela vai ampliar a capacidade dos sites de ver informações sobre as telas do dispositivo e usar essas informações para abrir e posicionar janelas ou solicitar a tela cheia em locais específicos.
 
       Se a política for deixada sem definição, a <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> será aplicada, mas o usuário poderá mudar essa configuração.</translation>
+<translation id="7238335422094660594">Ativar o provedor de <ph name="UIA_NAME" />.</translation>
 <translation id="7244600351241637530">Se esta configuração for ativada, os usuários que já ativaram o recurso Seu smartphone vão poder ver e baixar fotos e vídeos do smartphone pelo ChromeOS.
 
       Se a configuração estiver desativada, os usuários não vão ter permissão para usar o recurso. Se a política <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" /> estiver desativada, os usuários também não vão ter permissão para usar o recurso.
@@ -10245,6 +10286,7 @@ o esquema https.</translation>
 <translation id="8757552286070680084">Configuração do DTC wilco</translation>
 <translation id="8758831693895931466">Permite a inscrição obrigatória no gerenciamento em nuvem</translation>
 <translation id="8759829385824155666">Permitir tipos de criptografia Kerberos</translation>
+<translation id="8765401957266318536">Ativar a integração do Lens / app Galeria no <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8766308369516978190">Se a política for ativada, o usuário vai poder usar o <ph name="ASSISTANT_PRODUCT_NAME" /> na Web, por exemplo, para acelerar compras e mudar senhas. O uso do <ph name="ASSISTANT_PRODUCT_NAME" /> exige consentimento extra do usuário, e o <ph name="ASSISTANT_PRODUCT_NAME" /> só vai ser executado se o usuário consentir, mesmo que a política esteja ativada.
 
       Se a política for desativada, o usuário não vai poder usar o <ph name="ASSISTANT_PRODUCT_NAME" /> na Web.
@@ -10297,6 +10339,7 @@ Para informações detalhadas sobre padrões de URL válidos, consulte https://c
 <translation id="8806478127647484805">Impedir que usuários encerrem processos no gerenciador de tarefas do Chrome</translation>
 <translation id="8807274441692477185">Não mostrar a tela de direção de rolagem do touchpad durante o login</translation>
 <translation id="8807313206348471682">Exibir a caixa de diálogo para confirmação de saída</translation>
+<translation id="8807728576820212213">Ativar a integração do Lens</translation>
 <translation id="8809082103104823938">Suporte a GIFs no seletor de emojis</translation>
 <translation id="8812091410765157924">Permitir que os pop-ups abertos direcionados a <ph name="BLANK_PAGE_NAME" /> interajam com a página que solicitou a abertura do pop-up caso ela aceite essa interação explicitamente</translation>
 <translation id="8816370949847593408">A execução de apps do Chrome pode ser bloqueada, dependendo do status da descontinuação.</translation>

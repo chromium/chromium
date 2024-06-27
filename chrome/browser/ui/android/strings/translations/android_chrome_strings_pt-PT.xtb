@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Ativo há <ph name="LAST_UPDATED" /> dias</translation>
 <translation id="1390418506739274310">Pode ver o histórico de outras apps que abrem links no Chrome. A sua Conta Google pode ter outras formas do histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Para continuar, o fornecedor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai partilhar o seu nome, endereço de email e imagem do perfil com este site. Consulte os <ph name="BEGIN_LINK1" />termos de utilização<ph name="END_LINK1" /> deste site.</translation>
+<translation id="139752016751285248">Secção inferior das estatísticas de preços aberta à altura total</translation>
 <translation id="1397811292916898096">Pesquisar com o <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Pode <ph name="BEGIN_LINK1" />gerir que dados do Chrome são guardados<ph name="END_LINK1" /> na sua Conta Google.
 
@@ -179,6 +180,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="1877073879466606884">O perfil no qual tem sessão iniciada é um perfil gerido. O administrador pode alterar as definições do perfil remotamente, analisar informações sobre o navegador através de relatórios e realizar outras tarefas necessárias.</translation>
 <translation id="1883903952484604915">Os meus ficheiros</translation>
 <translation id="189358972401248634">Outros idiomas</translation>
+<translation id="1899175549411605574">Secção inferior das estatísticas de preço</translation>
 <translation id="1900260903084164610">Ao continuar, aceita os <ph name="BEGIN_TOS_LINK" />Termos de Utilização<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Os URLs que visita são guardados na sua Conta Google</translation>
 <translation id="1910950723001426294">A lista de opções de partilha está fechada.</translation>
@@ -530,6 +532,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3637744895182738742">Se se esquecer da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Aceda à página inicial da app Google</translation>
 <translation id="368329460027487650">Sessão terminada. Abre as opções para iniciar sessão.</translation>
+<translation id="3684540848053703310">Secção inferior das estatísticas de preço fechada</translation>
 <translation id="3687645719033307815">Está a ver uma pré-visualização desta página.</translation>
 <translation id="3690369331356918524">Envia-lhe um aviso se as palavras-passe forem expostas numa violação de dados.</translation>
 <translation id="3692944402865947621">A transferência de <ph name="FILE_NAME" /> falhou porque o local de armazenamento está fora do alcance.</translation>

@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Последние действия: <ph name="LAST_UPDATED" /> дн. назад</translation>
 <translation id="1390418506739274310">Вы можете видеть историю из приложений, которые открывают ссылки в Chrome. В вашем аккаунте Google также могут храниться другие данные истории браузера. Вы найдете их на странице <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваше имя, адрес электронной почты и фото профиля. Ознакомьтесь с <ph name="BEGIN_LINK1" />условиями предоставления услуг<ph name="END_LINK1" /> этого сайта.</translation>
+<translation id="139752016751285248">Нижний экран с информацией о ценах открыт полностью</translation>
 <translation id="1397811292916898096">Поиск в <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Вы можете <ph name="BEGIN_LINK1" />выбрать, какие данные Chrome будут сохраняться<ph name="END_LINK1" /> в аккаунте Google.
 
@@ -179,6 +180,7 @@
 <translation id="1877073879466606884">Вы используете управляемый профиль. Администратор может удаленно изменять настройки профиля, анализировать отчеты с информацией о браузере и выполнять другие задачи.</translation>
 <translation id="1883903952484604915">Скачанные</translation>
 <translation id="189358972401248634">Другие языки</translation>
+<translation id="1899175549411605574">Нижний экран с информацией о ценах</translation>
 <translation id="1900260903084164610">Продолжая, вы принимаете <ph name="BEGIN_TOS_LINK" />Условия использования<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">URL посещаемых сайтов сохраняются в аккаунте Google.</translation>
 <translation id="1910950723001426294">Список способов отправки закрыт.</translation>
@@ -520,6 +522,7 @@
 <translation id="3587596251841506391">Помогать Google делать Интернет безопаснее</translation>
 <translation id="3597179440835065298">Более подходящие подсказки</translation>
 <translation id="3602290021589620013">Предварительный просмотр</translation>
+<translation id="3614126103057878858">Информация о ценах</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3622349720008044802">Управление окнами</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{и ещё 1 сайт}one{и ещё # сайт}few{и ещё # сайта}many{и ещё # сайтов}other{и ещё # сайта}}</translation>
@@ -529,6 +532,7 @@
 <translation id="3637744895182738742">Если вы забыли кодовую фразу или хотите ее изменить, <ph name="BEGIN_LINK" />удалите данные Chrome из аккаунта<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Открыть главную страницу приложения Google</translation>
 <translation id="368329460027487650">Выполнен выход. Открывает окно с вариантами входа.</translation>
+<translation id="3684540848053703310">Нижний экран с информацией о ценах закрыт</translation>
 <translation id="3687645719033307815">Эта страница показывается в режиме предварительного просмотра.</translation>
 <translation id="3690369331356918524">Сообщает, если пароли были раскрыты в результате утечки данных.</translation>
 <translation id="3692944402865947621">Не удалось скачать файл <ph name="FILE_NAME" />, так как хранилище недоступно.</translation>

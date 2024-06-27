@@ -216,6 +216,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1747827819627189109">Bildschirmtastatur aktiviert</translation>
 <translation id="1749109475624620922">Fenster „<ph name="WINDOW_TITLE" />“ wird allen Desktops zugeordnet</translation>
 <translation id="1750088060796401187">Es sind maximal <ph name="MAX_DESK_LIMIT" /> Desktops zulässig. Entferne einen Desktop, um einen neuen zu öffnen.</translation>
+<translation id="1751335846119670066">Leseübersicht</translation>
 <translation id="1755408179247123630">Funktion „Vorlesen“ aktivieren?</translation>
 <translation id="1755556344721611131">Diagnose-App</translation>
 <translation id="1756833229520115364">Vorlage konnte nicht gespeichert werden. Zu viele Fenster oder Tabs.</translation>
@@ -227,6 +228,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="178347895271755507">Anzeige der letzten Fotos, Medien und Benachrichtigungen auf deinem Smartphone einrichten</translation>
 <translation id="1787955149152357925">Aus</translation>
 <translation id="1796561540704213354">Websites, einschließlich besuchter und derzeit geöffneter Seiten</translation>
+<translation id="179842970735685253">Google-Nutzungsbedingungen</translation>
 <translation id="181103072419391116">Signalstärke bei <ph name="SIGNAL_STRENGTH" />, von deinem Administrator verwaltet</translation>
 <translation id="1816896987747843206">Dies erlaubt den Kamerazugriff für alle Apps und Websites mit Kameraberechtigung</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Kursaufgabentyp</translation>
 <translation id="3126026824346185272">Strg</translation>
+<translation id="3134486240968249588">Wichtige Hinweise</translation>
 <translation id="3139188263101386725">Aktualisierte Tastenkombination verwenden</translation>
 <translation id="3139942575505304791">Desktop 1</translation>
 <translation id="315116470104423982">Mobile Daten</translation>
@@ -961,6 +964,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4585337515783392668">Streaming an unbekannten Empfänger beenden</translation>
 <translation id="4596144739579517758">Dunkles Design ist deaktiviert</translation>
 <translation id="4596442969149038771">Von <ph name="USER" /> geteilt</translation>
+<translation id="4610493115106525653">Gute Ausgabe</translation>
 <translation id="4611292653554630842">Anmelden</translation>
 <translation id="462160925400706389"><ph name="NAME" /> verbunden</translation>
 <translation id="4623167406982293031">Konto bestätigen</translation>
@@ -1118,6 +1122,7 @@ Du kannst auch die entsprechende Tastenkombination verwenden. Markiere dazu zuer
 <translation id="5121628974188116412">Zum Seitenende springen</translation>
 <translation id="5122517996953421795">Vorschau für <ph name="DESK_NAME" />. Inaktiver Desktop.</translation>
 <translation id="5136175204352732067">Andere Tastatur angeschlossen</translation>
+<translation id="5140105873789567560">Du musst mindestens 18 Jahre alt sein, um die Funktionen „Formuliere für mich“ und „Leseübersicht“ nutzen zu können.</translation>
 <translation id="5144005092084035179">Audioeingabe wechseln?</translation>
 <translation id="5147567197700016471">Entsperrt</translation>
 <translation id="5150070631291639005">Datenschutzeinstellungen</translation>
@@ -1558,6 +1563,7 @@ Neuinstallation</translation>
 <translation id="6696025732084565524">Wichtiges Update für deine abnehmbare Tastatur</translation>
 <translation id="6697913454192220372">Neuen Desktop hinzufügen</translation>
 <translation id="6700713906295497288">IME-Menüschaltfläche</translation>
+<translation id="6704375469818246414">Die Qualität kann bei der Verwendung von generativer KI variieren.</translation>
 <translation id="6706742084323792866">Tastatur anpinnen</translation>
 <translation id="6710213216561001401">Zurück</translation>
 <translation id="6723839937902243910">Leistung</translation>
@@ -1825,9 +1831,11 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7726391492136714301">Benachrichtigungen und Apps von deinem Smartphone abrufen</translation>
 <translation id="7727952505535211425">Website in Adressleiste auf neuem Tab öffnen</translation>
 <translation id="7742327441377685481">Keine Benachrichtigungen</translation>
+<translation id="774736258792760908">Wenn du „Formuliere für mich“ und „Leseübersicht“ aktivierst, werden der eingegebene Text und der Dokumentinhalt an Google AI-Server gesendet, um gemäß den <ph name="LINK_TO_SERVICE_TERMS" /> Vorschläge für Formulierungen zu generieren, Zusammenfassungen zu erstellen, Fragen zu beantworten und das Produkt zu verbessern. Gib keine persönlichen, sensiblen oder vertraulichen Informationen an.</translation>
 <translation id="7748275671948949022">Launcher-Schaltfläche in der Ablage hervorheben</translation>
 <translation id="7749443890790263709">Maximale Anzahl von Arbeitsbereichen erreicht.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Du kannst „Formuliere für mich“ und „Leseübersicht“ jederzeit in den Einstellungen deaktivieren. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Vorlesen</translation>
 <translation id="7769299611924763557">Die GIF-Datei ist gleich bereit</translation>
 <translation id="7773536009433685931">Stattdessen WLAN aktivieren</translation>
@@ -1836,6 +1844,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7781829728241885113">Gestern</translation>
 <translation id="7787212146956232129">Eingabe- und Ausgabegeräte sind festgelegt. Gehe zu den Einstellungen, um Änderungen vorzunehmen.</translation>
 <translation id="7792590255364786396">Sichtbar</translation>
+<translation id="7793389284006812057">Generative KI ist experimentell, befindet sich noch in einem frühen Entwicklungsstadium und ist derzeit nur eingeschränkt verfügbar.</translation>
 <translation id="7796735576426975947">Neue Benachrichtigung ausgeblendet</translation>
 <translation id="7798302898096527229">Drücke die Such-Taste oder Umschalttaste, um die Aktivierung aufzuheben.</translation>
 <translation id="780301667611848630">Nein danke</translation>
@@ -1990,6 +1999,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8331351032546853669">Download ausstehend</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" />   <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Schlechte Ausgabe</translation>
 <translation id="8345019317483336363">Fenster „<ph name="WINDOW_TITLE" />“ ausgewählt</translation>
 <translation id="8349826889576450703">Suche</translation>
 <translation id="8349964124165471584">Link in neuem Fenster öffnen</translation>

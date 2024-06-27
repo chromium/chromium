@@ -89,6 +89,7 @@
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> gün əvvəl aktiv olub</translation>
 <translation id="1390418506739274310">Chrome-da keçidləri açan digər tətbiqlərin tarixçəsinə baxa bilərsiniz. <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> ünvanında Google Hesabının başqa brauzer tarixçəsi formaları ola bilər.</translation>
 <translation id="13931502444227376">Davam etmək üçün <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ad, e-poçt ünvanı və profil şəklinizi bu sayt ilə paylaşacaq. Bu saytın <ph name="BEGIN_LINK1" />xidmət şərtlərinə<ph name="END_LINK1" /> baxın.</translation>
+<translation id="139752016751285248">Qiymət statistikası üzrə aşağı vərəq tam boyda açıldı</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ilə axtarın</translation>
 <translation id="1398057416966591719">Google Hesabında <ph name="BEGIN_LINK1" />yadda saxlanan Chrome datasını idarə edə bilərsiniz<ph name="END_LINK1" />.
 
@@ -179,6 +180,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="1877073879466606884">Daxil olduğunuz profil idarə olunan profildir. Administrator profil ayarlarına uzaqdan dəyişiklik edə, hesabat vasitəsilə brauzer haqqında məlumatları təhlil edə və digər zəruri tapşırıqları yerinə yetirə bilər.</translation>
 <translation id="1883903952484604915">Fayllarım</translation>
 <translation id="189358972401248634">Digər dillərdə</translation>
+<translation id="1899175549411605574">Qiymət statistikası üzrə aşağı vərəq</translation>
 <translation id="1900260903084164610">Davam etməklə, <ph name="BEGIN_TOS_LINK" />Xidmət Şərtləri<ph name="END_TOS_LINK" /> ilə razılaşırsınız.</translation>
 <translation id="1904580727789512086">Ziyarət etdiyiniz keçidlər Google Hesabınızda saxlanılır</translation>
 <translation id="1910950723001426294">Paylaşım seçimlərinin siyahısı bağlıdır.</translation>
@@ -530,6 +532,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3637744895182738742">Parol ifadəsini unutsanız, yaxud bu ayarı dəyişmək istəsəniz, <ph name="BEGIN_LINK" />hesabda Chrome datasını silin<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Google tətbiqi Home-a keçin</translation>
 <translation id="368329460027487650">Çıxılıb. Giriş seçimlərini açır.</translation>
+<translation id="3684540848053703310">Qiymət statistikası üzrə aşağı vərəq bağlandı</translation>
 <translation id="3687645719033307815">Bu səhifənin önizləməsinə baxırsınız</translation>
 <translation id="3690369331356918524">Data pozulması halında parolların ələ keçirilib-keçirilmədiyini Sizə bildirir</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> endirməsi alınmadı çünki yaddaş məkanı əlçatan deyil.</translation>

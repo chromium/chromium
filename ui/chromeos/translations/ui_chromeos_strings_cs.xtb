@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Nesprávný kód PUK</translation>
 <translation id="4057991113334098539">Aktivace...</translation>
 <translation id="4092890906744441904">irština</translation>
+<translation id="4101601646343868113">Přihlaste se do mobilní sítě a zkontrolujte, zda je váš mobilní datový tarif aktivní</translation>
 <translation id="4124731372776320263">Synchronizace 1 souboru na Disku</translation>
 <translation id="4124935795427217608">Jednorožec</translation>
 <translation id="4131235941541910880">Nepotřebné položky přesuňte do koše</translation>
@@ -602,6 +603,7 @@
 <translation id="5625294776298156701">tamilština s klávesnicí Tamil99</translation>
 <translation id="5633226425545095130">Když tuto položku přesunete, budete ji sdílet s každým, kdo může zobrazit sdílenou složku <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Poslechnout si</translation>
+<translation id="5650895901941743674">Zkontrolujte konfiguraci APN</translation>
 <translation id="5669691691057771421">Zadejte nový PIN</translation>
 <translation id="5678784840044122290">Aplikace pro Linux bude k dispozici v Terminálu a může se pro ni také zobrazovat ikona ve Spouštěči.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Odpojení od archivu nebo virtuálního disku nelze provést<ph name="END_BOLD" />
@@ -1007,6 +1009,7 @@
 <translation id="8600173386174225982">Seznam souborů se změnil na zobrazení miniatur.</translation>
 <translation id="8601932370724196034">Soubor obrazu Crostini</translation>
 <translation id="8609695766746872526">islandština</translation>
+<translation id="8630384863424041081">Zadejte PIN své SIM karty nebo výchozí PIN, který vám poskytl operátor. Se žádostí o podporu se obraťte na svého operátora.</translation>
 <translation id="863903787380594467">Nesprávný PIN. Počet zbývajících pokusů: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
 <translation id="8656407365183407932">Vaše offline soubory musely být odstraněny</translation>

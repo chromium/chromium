@@ -102,6 +102,7 @@
 <translation id="1499900233129743732">このユーザーは <ph name="MANAGER" /> によって管理されています。設定の管理とユーザー アクティビティの監視がリモートで行われることがあります。</translation>
 <translation id="150962533380566081">無効な PUK です。</translation>
 <translation id="1510238584712386396">ランチャー</translation>
+<translation id="1514446283880973949">確実な文章を作成したり、内容を要約したり、定義を取得したりできます</translation>
 <translation id="1515129336378114413">ブラウザのホーム</translation>
 <translation id="1526389707933164996">スクリーン セーバーのアニメーション</translation>
 <translation id="152892567002884378">音量を上げる</translation>
@@ -1287,6 +1288,7 @@
 <translation id="8167413449582155132">Google AI による背景</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">ビーチ</translation>
+<translation id="819278132617411009">Google AI を使用して生産性を高める</translation>
 <translation id="8206859287963243715">携帯電話</translation>
 <translation id="8208861521865154048">特典</translation>
 <translation id="8226628635270268143">お気に入りの写真やアルバムを選択してください</translation>
@@ -1333,6 +1335,7 @@
 <translation id="8431300646573772016">Chrome OS の最新情報</translation>
 <translation id="843568408673868420">インターネット接続</translation>
 <translation id="844521431886043384">DNS が設定されていません</translation>
+<translation id="8456200178779628126">Google AI による文書作成や読み取りのサポートを使用する</translation>
 <translation id="8456761643544401578">ダークモードを自動的に設定する</translation>
 <translation id="8461329675984532579">ホーム プロバイダ名</translation>
 <translation id="8475690821716466388">Wi-Fi ネットワークで安全性の低いプロトコル WEP PSK が使用されています</translation>
@@ -1459,6 +1462,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> のチケットを更新してください</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> ページ目をスキャンしています</translation>
 <translation id="9111102763498581341">ロック解除</translation>
+<translation id="9122492456897874028">コンテンツの要約、定義の取得など</translation>
 <translation id="9122602430962285795">再接続するには　[設定] に移動します</translation>
 <translation id="9122865513525855321">禅</translation>
 <translation id="9126720536733509015">複数のページを保存して 1 つの PDF にまとめる</translation>

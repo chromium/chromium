@@ -26,6 +26,7 @@
 <translation id="1050038467049342496">他のアプリを終了する</translation>
 <translation id="1053959602163383901"><ph name="PROVIDER_ORIGIN" /> を使用するウェブサイトで認証システム デバイスによる確認を行うよう選択しています。このプロバイダにお支払い方法に関する情報が保存されている可能性があります。その場合、<ph name="LINK_TEXT" /> を行うことができます。</translation>
 <translation id="1055184225775184556">追加の取り消し（&amp;U）</translation>
+<translation id="105642538515333723">「快適なウォーキング シューズ」など、過去に閲覧したページについて覚えているフレーズや詳細を入力できます。</translation>
 <translation id="1056898198331236512">警告</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome で Dino Run ゲームをプレイできます</translation>
 <translation id="1058479211578257048">カードを保存しています...</translation>
@@ -41,6 +42,7 @@
 <translation id="1070901266639972381">夜間</translation>
 <translation id="1073690811593784042">ガラス（カラー）</translation>
 <translation id="1074497978438210769">保護されていない通信</translation>
+<translation id="1074779248866616641">結果</translation>
 <translation id="1075364221219156102">パスキーを使用する</translation>
 <translation id="1080116354587839789">ウィンドウ幅に合わせる</translation>
 <translation id="1081061862829655580">トレイ 19</translation>
@@ -967,6 +969,7 @@
 <translation id="2824775600643448204">アドレス検索バー</translation>
 <translation id="2826760142808435982">接続は <ph name="CIPHER" /> を使用して暗号化および認証されており、<ph name="KX" /> が鍵交換メカニズムとして使用されています。</translation>
 <translation id="2833637280516285136">ラジオのトーク番組</translation>
+<translation id="2837891525090413132">キーボードのロックと使用を要求できます</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> から、保存したあなたに関する情報の使用を求められています</translation>
 <translation id="2839032553903800133">通知をブロック中</translation>
 <translation id="2839501879576190149">偽のサイトにアクセスしようとしています</translation>
@@ -2857,6 +2860,7 @@
 <translation id="6433797564277305076">今後はデバイスのロック解除を使用して、カードの確認をより迅速に行います</translation>
 <translation id="643917412048333145">ドレス</translation>
 <translation id="6440503408713884761">除外されました</translation>
+<translation id="6440534369669992497">「快適なウォーキング シューズ」など、過去に閲覧したページについて覚えているフレーズや詳細を入力できます。<ph name="SHORTCUT" /> キーで検索します。</translation>
 <translation id="6443406338865242315">インストールした拡張機能とプラグイン</translation>
 <translation id="6444329331928531170">老後、年金</translation>
 <translation id="6446608382365791566">他の情報を追加</translation>
@@ -3140,6 +3144,7 @@
 <translation id="7006930604109697472">このまま送信</translation>
 <translation id="7010658264061801199">食品、飲料</translation>
 <translation id="7012363358306927923">中国銀聯</translation>
+<translation id="7013835112918108252">マウスのロックと使用を要求できます</translation>
 <translation id="7014042602717177828">カーオーディオ</translation>
 <translation id="7014741021609395734">ズームレベル</translation>
 <translation id="7016992613359344582">料金の請求は 1 回限りの場合も繰り返し行われる場合もあり、課金されたかどうかわからないこともあります。</translation>
@@ -3154,6 +3159,7 @@
 <translation id="7031646650991750659">インストールした Google Play アプリ</translation>
 <translation id="7035705295266423040">カード発行会社が本人確認を求めています</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押して、Google アカウントのプライバシー設定を管理します</translation>
+<translation id="7042616127917168121">結果を絞り込む</translation>
 <translation id="7043552168914147882">タブストック</translation>
 <translation id="7044081119134178347">一時的にカメラを許可しました</translation>
 <translation id="7048095965575426564">欧州ファンフォールド</translation>

@@ -243,6 +243,7 @@ Se il criterio viene impostato su Attivato, gli utenti possono utilizzare l'hard
 <translation id="1165923723751466821">Consenti gli accessi come ospite al browser e gli accessi ai profili</translation>
 <translation id="117059611145966538">Server di stampa esterni</translation>
 <translation id="117080706484659953">Consenti il rilevamento dell'ambito dei criteri su <ph name="MAC_OS_NAME" /></translation>
+<translation id="1171065405328282754">Consenti la ricerca nella cronologia basata sull'AI e migliora i modelli di AI</translation>
 <translation id="1171106901454883937">Attiva i report sulle informazioni relative alla versione del dispositivo</translation>
 <translation id="1173493742686115032">Attiva <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> in tutte le pagine web</translation>
 <translation id="1177567780207290133">La configurazione del criterio consente di controllare il filtro di URL di SafeSites, che utilizza l'API Google Safe Search per classificare gli URL come pornografici o meno.
@@ -852,6 +853,7 @@ attivazione dall'utente per chiamare questa API.</translation>
 <translation id="1659406551862245683">Il comportamento predefinito di ridimensionamento della tastiera virtuale viene modificato per ridimensionare l'area visibile del layout</translation>
 <translation id="166427968280387991">Server proxy</translation>
 <translation id="1670638264428789878">Attiva insiemi di siti web correlati</translation>
+<translation id="1671405606278443620">Impostazioni per la ricerca nella cronologia basata sull'AI</translation>
 <translation id="1673097259557436886">Comunica sempre ai siti web che non è stato salvato alcun metodo di pagamento</translation>
 <translation id="1674287836076801014">SAML</translation>
 <translation id="1675002386741412210">Supportato su:</translation>
@@ -1952,6 +1954,7 @@ Se si verifica un errore durante il tentativo di ottenere e mostrare l'immagine,
 <translation id="2439733504887695659">Attiva la possibilità di ignorare gli avvisi relativi alle password compromesse per le credenziali inserite</translation>
 <translation id="2446244536806499267">Non considerare l'utente inattivo durante la riproduzione di audio</translation>
 <translation id="2452225615952836461">Metodi di richiesta sempre in maiuscolo</translation>
+<translation id="2453660971158808971">Non consentire la ricerca nella cronologia basata sull'AI</translation>
 <translation id="2454228136871844693">Ottimizza per aumentare la stabilità.</translation>
 <translation id="2455033019778127130">Usa il comportamento predefinito del browser, mostra i TdS e attende l'accettazione dell'utente</translation>
 <translation id="2460127623195247744">Questo criterio è deprecato. Utilizza il criterio "<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />".
@@ -3251,6 +3254,7 @@ Se questo criterio viene configurato, <ph name="DEVELOPER_TOOLS_AVAILABILITY_POL
 
        Per impostazione predefinita, tutte le estensioni sono consentite. Se invece non hai consentito estensioni tramite criterio, utilizza l'elenco delle estensioni consentite per modificare il criterio.</translation>
 <translation id="3501606938635483637">Le scorciatoie da tastiera internazionali sono mappate al glifo dei tasti e non alla posizione del tasto sulla tastiera.</translation>
+<translation id="3501850499442915474">Il provider di <ph name="UIA_NAME" /> verrà attivato o disattivato tramite il framework delle varianti.</translation>
 <translation id="3502438748205582075">Disattiva Kerberos</translation>
 <translation id="3502555714327823858">Consenti tutte le modalità fronte/retro</translation>
 <translation id="350443680860256679">Configura ARC</translation>
@@ -3869,6 +3873,7 @@ Le funzionalità di AI generativa di DevTools includono quanto segue.
       Se questa impostazione viene attivata, <ph name="PRODUCT_NAME" /> verifica i certificati dei server mediante lo strumento di verifica dei certificati integrato.
       Se viene disattivata, <ph name="PRODUCT_NAME" /> verifica i certificati del server mediante lo strumento di verifica dei certificati precedente fornito dalla piattaforma, a meno che non sia attivo il criterio <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />.
       Se non viene configurata, potrebbe essere utilizzato lo strumento di verifica dei certificati integrato o quello precedente.</translation>
+<translation id="3997496219154877791">Disattiva l'integrazione di Lens</translation>
 <translation id="3997519162482760140">URL a cui verrà concesso l'accesso ai dispositivi di acquisizione video su pagine di accesso SAML</translation>
 <translation id="4004523942550416237">Non mostrare il flusso Voice Match dell'Assistente Google durante la configurazione iniziale</translation>
 <translation id="4007646377576030214"> Tieni presente che questo criterio è stato deprecato nella versione M87 e verrà rimosso nella versione M89. Utilizza invece <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> per configurare gli avvisi sulla privacy delle sessioni Ospite gestite.
@@ -3936,6 +3941,18 @@ Vecchio comportamento precedente: in "beforeunload", la chiamata di "event.preve
 <translation id="4052529125939620019">Carica l'estensione del componente CryptoToken all'avvio</translation>
 <translation id="4053157306171963473">Disattiva i report sul tempo di attività del dispositivo</translation>
 <translation id="4056910949759281379">Disabilita protocollo SPDY</translation>
+<translation id="4057113125482566814">Consente di attivare il provider del framework di accessibilità di <ph name="UIA_NAME" /> in <ph name="PRODUCT_NAME" /> per l'utilizzo da parte degli strumenti di accessibilità.
+
+Questo criterio è supportato in <ph name="PRODUCT_NAME" /> per un periodo di transizione di un anno in modo da consentire agli amministratori aziendali di controllare il deployment del provider del framework di accessibilità di <ph name="UIA_NAME" /> del browser. Gli strumenti di accessibilità e gli altri strumenti che utilizzano il framework di accessibilità di <ph name="UIA_NAME" /> per interoperare con il browser potrebbero richiedere aggiornamenti per funzionare correttamente con il provider di <ph name="UIA_NAME" /> del browser. Gli amministratori possono utilizzare questo criterio per disattivare temporaneamente il provider di <ph name="UIA_NAME" /> del browser (ripristinando il comportamento precedente) mentre collaborano con i fornitori per fornire aggiornamenti agli strumenti interessati.
+
+Se il criterio viene impostato su false, <ph name="PRODUCT_NAME" /> attiva solo il relativo provider <ph name="MSAA_NAME" />. Gli strumenti di accessibilità e gli altri strumenti che utilizzano il framework di accessibilità di <ph name="UIA_NAME" /> più recente per interoperare con il browser comunicheranno con quest'ultimo tramite uno shim di compatibilità in <ph name="MS_WIN_NAME" />.
+
+Se il criterio viene impostato su true, <ph name="PRODUCT_NAME" /> attiva il proprio provider di <ph name="UIA_NAME" /> oltre al provider <ph name="MSAA_NAME" />.
+Gli strumenti di accessibilità e gli altri strumenti che utilizzano il framework di accessibilità di <ph name="UIA_NAME" /> più recente per interoperare con il browser comunicano direttamente con quest'ultimo.
+
+Se il criterio non viene configurato, il framework delle varianti in <ph name="PRODUCT_NAME" /> viene utilizzato per attivare o disattivare il provider.
+
+Il supporto di questa impostazione dei criteri terminerà con <ph name="PRODUCT_NAME" /> 136.</translation>
 <translation id="4057442294431066708">Questo criterio consente di stabilire l'opzione della scorciatoia selezionata per la rimappatura degli eventi a
 F11/F12 nella pagina secondaria per rimappare i tasti. Queste impostazioni si applicano solo alle
 tastiere di ChromeOS e sono disattivate per impostazione predefinita se il criterio non viene configurato.</translation>
@@ -4923,6 +4940,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="4874982543810021567">Blocca WebUSB su questi siti</translation>
 <translation id="4876805738539874299">Versione SSL massima abilitata</translation>
 <translation id="4877305769899044884">Colore della retroilluminazione predefinita della tastiera predefinito</translation>
+<translation id="4886138258823889910">Attiva il provider del framework di accessibilità di <ph name="UIA_NAME" /> del browser su Windows</translation>
 <translation id="4886783562285047261">L'impostazione del criterio su Attivato impone la registrazione a <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> e blocca il processo di avvio di <ph name="PRODUCT_NAME" /> in caso di esito negativo.
 
       Se il criterio viene impostato su Disattivato o non viene impostato, <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> diventa facoltativo e non blocca il processo di avvio di <ph name="PRODUCT_NAME" /> in caso di esito negativo.
@@ -5058,6 +5076,10 @@ La disattivazione della decodifica video con accelerazione hardware non è consi
 <translation id="4970855112942626932">Disattiva accesso al browser</translation>
 <translation id="4974091268178043378">Modalità colore di ChromeOS</translation>
 <translation id="4978533099939732984">Mostra sempre gli avvisi relativi allo spazio su disco in esaurimento</translation>
+<translation id="4979614740553442831">Questo criterio controlla la disponibilità dell'integrazione di Lens nell'app Galleria su <ph name="PRODUCT_OS_NAME" />.
+
+Se il criterio viene attivato o se non viene configurato, gli utenti possono usare Lens per cercare selezioni di contenuti multimediali che stanno visualizzando nell'app Galleria.
+La disattivazione del criterio disattiva anche la funzionalità.</translation>
 <translation id="4979714585847741269">Se il criterio viene impostato su Attivato, un'app web kiosk può aprire un'altra finestra del browser che può essere posizionata sulla stessa schermata o su un'altra. Per aprire una nuova finestra, l'app web deve chiamare la funzione JavaScript di <ph name="OPEN_NEW_WINDOW_JS" />.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, un'app web kiosk può usare solo la finestra principale del browser e non può aprire una nuova finestra. Le chiamate a qualsiasi funzione JavaScript per l'apertura di una nuova finestra verranno ignorate.</translation>
@@ -6101,6 +6123,7 @@ Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph n
 <translation id="5814301096961727113">Impostazione stato predefinito della lettura vocale nella schermata di accesso</translation>
 <translation id="5815129011704381141">Riavvia automaticamente dopo l'aggiornamento</translation>
 <translation id="5815990343032461023">Comportamento precedente: le app di Chrome Kiosk verranno aggiornate dal sistema di estensione utilizzando l'URL di aggiornamento dal manifest dell'estensione, nonché memorizzando nella cache il gestore usando l'URL di aggiornamento dal criterio</translation>
+<translation id="5816688024515869030">Disattiva il provider di <ph name="UIA_NAME" />.</translation>
 <translation id="5828008775808363753">Non aprire il browser all'avvio</translation>
 <translation id="582857022372205358">Attiva la stampa fronte/retro su lato corto</translation>
 <translation id="5830196507442186669">Consenti ai dispositivi di usare <ph name="BOREALIS_NAME" /> su <ph name="PRODUCT_OS_NAME" /></translation>
@@ -6897,6 +6920,17 @@ Se il criterio non viene configurato, significa che <ph name="PRODUCT_OS_NAME" /
       Se il criterio non viene configurato per un sito, il criterio di <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> viene applicato al sito, se configurato, altrimenti l'autorizzazione seguirà le impostazioni predefinite del browser e consentirà agli utenti di scegliere se concedere o meno l'autorizzazione per ciascun sito.</translation>
 <translation id="6383774771168138899">Configura il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Attiva la visualizzazione delle pagine di risultati del motore di ricerca predefinito in un riquadro laterale del browser.</translation>
+<translation id="6385379259912525880">La funzionalità di ricerca nella cronologia basata sull'AI consente agli utenti di effettuare ricerche nella loro cronologia di navigazione in base ai contenuti della pagina, non solo al titolo e all'URL.
+
+0 = Attiva la funzionalità per gli utenti e invia i dati pertinenti a Google per contribuire ad addestrare o migliorare i modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output e materiali originali. Possono essere esaminati da persone al solo scopo di migliorare i modelli di AI.
+
+1 = Attiva la funzionalità per gli utenti, ma non invia dati a Google per addestrare o migliorare i modelli di AI.
+
+2 = Disattiva la funzionalità.
+
+Se il criterio non viene configurato, il comportamento predefinito è 0 per gli utenti regolari e 2 per gli utenti gestiti su <ph name="PRODUCT_OS_NAME" />.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6394350458541421998">La norma non è più supportata a partire dalla versione 29 di <ph name="PRODUCT_OS_NAME" />. Utilizza la norma PresentationScreenDimDelayScale.</translation>
 <translation id="6396956366662970339">Consente di specificare se un modello di ricarica adattiva può sospendere la procedura di ricarica per prolungare la durata della batteria.
 
@@ -8120,6 +8154,7 @@ Nota importante: le pianificazioni impostate da questo criterio potrebbero non e
       Se il criterio viene impostato su <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> (valore 3), per impostazione predefinita viene mostrata all'utente la richiesta di autorizzazione per il posizionamento delle finestre. Se l'utente concede l'autorizzazione, i siti potranno vedere le informazioni relative alle schermate del dispositivo e utilizzare quelle informazioni per aprire e posizionare le finestre oppure per richiedere lo schermo interno su schermate specifiche.
 
       Se il criterio non viene configurato, si applica il criterio <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" />, ma gli utenti possono cambiare l'impostazione.</translation>
+<translation id="7238335422094660594">Attiva il provider di <ph name="UIA_NAME" />.</translation>
 <translation id="7244600351241637530">Se questa impostazione viene attivata, gli utenti che hanno già attivato Phone Hub possono visualizzare e scaricare su ChromeOS foto e video recenti acquisiti sul proprio telefono.
 
       Se viene disattivata, gli utenti non possono usare questa funzionalità. Gli utenti non possono usare questa funzionalità anche se viene disattivato il criterio <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" />.
@@ -8391,6 +8426,7 @@ Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph n
       Se non viene configurato, la schermata introduttiva di <ph name="FEATURE_NAME" /> verrà ignorata per gli utenti gestiti a livello aziendale e mostrata per gli utenti non gestiti.</translation>
 <translation id="7469554574977894907">Attiva suggerimenti di ricerca</translation>
 <translation id="747275827471712187">Ripristina il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedente per i cookie su questi siti</translation>
+<translation id="747517124419659622">Consenti la ricerca nella cronologia basata sull'AI senza migliorare i modelli di AI</translation>
 <translation id="7476030153540156377">Scegli se attivare o meno la funzionalità di protezione IP di <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="7476158778585368567">Consente di segnalare i processi di stampa di un dispositivo.
 
@@ -10005,6 +10041,7 @@ lo schema HTTPS.</translation>
 <translation id="8757552286070680084">Configurazione di DTC wilco</translation>
 <translation id="8758831693895931466">Attiva la registrazione alla gestione del cloud obbligatoria</translation>
 <translation id="8759829385824155666">Tipi di crittografia Kerberos consentiti</translation>
+<translation id="8765401957266318536">Attiva l'integrazione di Lens nell'app Galleria su <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8766308369516978190">Se il criterio viene impostato su Attivato, gli utenti possono usare <ph name="ASSISTANT_PRODUCT_NAME" /> sul Web, ad esempio per velocizzare i pagamenti e modificare le password. L'utilizzo di <ph name="ASSISTANT_PRODUCT_NAME" /> richiede il consenso aggiuntivo dell'utente e <ph name="ASSISTANT_PRODUCT_NAME" /> verrà eseguito solo se gli utenti scelgono di fornire questo consenso, anche se il criterio è impostato su Attivato.
 
       Se il criterio viene impostato su Disattivato, gli utenti non possono usare <ph name="ASSISTANT_PRODUCT_NAME" /> sul Web.
@@ -10057,6 +10094,7 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cl
 <translation id="8806478127647484805">Impedisci agli utenti di terminare i processi con il Task Manager di Chrome</translation>
 <translation id="8807274441692477185">Non visualizzare la schermata della direzione di scorrimento sul touchpad durante l'accesso</translation>
 <translation id="8807313206348471682">Mostra la finestra di dialogo di conferma di disconnessione</translation>
+<translation id="8807728576820212213">Attiva l'integrazione di Lens</translation>
 <translation id="8809082103104823938">Supporto delle GIF nel selettore di emoji</translation>
 <translation id="8812091410765157924">Consenti ai popup aperti con una destinazione <ph name="BLANK_PAGE_NAME" /> di interagire con la pagina che ha aperto il popup soltanto se la pagina di apertura attiva esplicitamente questa interazione</translation>
 <translation id="8816370949847593408">Potrebbe non essere consentita l'esecuzione delle app di Chrome, in base allo stato del ritiro graduale.</translation>

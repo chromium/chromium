@@ -5,6 +5,8 @@
 <translation id="1026101648481255140">Jätka installimist</translation>
 <translation id="102763973188675173">Kohandage ja juhtige Google Chrome'i. Saadaval on värskendus.</translation>
 <translation id="1028061813283459617">Sirvimisandmete kustutamiseks ainult sellest seadmest, kuid jättes need oma Google'i kontole alles, <ph name="BEGIN_LINK" />logige Chrome'ist välja<ph name="END_LINK" />.</translation>
+<translation id="1042270987544905725">Klõpsake, et Chrome'i sisselogimise dialoog sulgeda</translation>
+<translation id="1059838145689930908">Selle laienduse kasutamiseks kasutajana <ph name="USER_EMAIL_ADDRESS" /> logige Chrome'i sisse.</translation>
 <translation id="1065672644894730302">Teie eelistusi ei saa lugeda. Mõned funktsioonid ei pruugi saadaval olla ja eelistuste muudatusi ei salvestata.</translation>
 <translation id="1088300314857992706">Kasutaja <ph name="USER_EMAIL_ADDRESS" /> kasutas varem Chrome'i</translation>
 <translation id="110877069173485804">See on teie Chrome</translation>
@@ -368,6 +370,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6291089322031436445">Chrome Devi rakendused</translation>
 <translation id="6291549208091401781">Google Chrome on arvutisse kõigi kasutajate jaoks juba installitud.</translation>
 <translation id="6319856120645568262">Chrome vajab teie ümbruse kaardistamiseks ja teie käte jälgimiseks luba</translation>
+<translation id="6321592572353357376">Laiendus „<ph name="EXTENSION_NAME" />“ soovib, et logiksite Chrome'i sisse</translation>
 <translation id="6326175484149238433">Eemalda Chrome'ist</translation>
 <translation id="6327105987658262776">Ühtegi uuendust ei ole saadaval.</translation>
 <translation id="6360449101159168105">Ajal, mil see vaheleht oli inaktiivne, vabastati mälu, et Chrome oleks jätkuvalt kiire. Soovi korral võite selle saidi inaktiivseks muutumise alati välistada.</translation>
@@ -460,6 +463,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="7655455401911432608">Teie sirvimisajalugu, selles seadmes Chrome'iga külastatud saitide andmed.</translation>
 <translation id="7661924425853052955">Te pole hiljuti külastanud. Chrome eemaldas <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="COUNT" /></translation>
 <translation id="7668816516367091728">Tehke selliseid toiminguid nagu tõlkimine, arvutamine ja palju muud otse aadressiribal</translation>
+<translation id="7670287553302121848">Chrome’i konto vajab uuesti autentimist</translation>
 <translation id="769538538642757151">Chrome annab teile teada, kui midagi tuleb üle vaadata</translation>
 <translation id="7747138024166251722">Installija ei suutnud luua ajutist kataloogi. Palun kontrollige vaba kettaruumi ja tarkvara installimise loa olemasolu.</translation>
 <translation id="7761834446675418963">Chrome'i avamiseks ja sirvimise alustamiseks klõpsake oma nimel.</translation>

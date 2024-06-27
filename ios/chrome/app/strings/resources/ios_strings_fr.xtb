@@ -814,6 +814,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5150492518600715772">Envoyer sur votre appareil</translation>
 <translation id="5157638238828697074">Un problème est survenu. Impossible d'ouvrir l'appli.</translation>
 <translation id="5168414296986405587">Conçu pour iPadOS</translation>
+<translation id="5169725654005786900">Action en cours</translation>
 <translation id="5173088371991956744">La synchronisation doit confirmer votre identité</translation>
 <translation id="5173493422621051500">Utiliser le clavier</translation>
 <translation id="5176312250994681348">Conserver le mot de passe récent</translation>
@@ -848,6 +849,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5327753393331509826">Recevez des notifications sur les contenus</translation>
 <translation id="5329451663851195956">Faites glisser l'écran vers le bas pour actualiser.</translation>
 <translation id="5333148247954006827">Changer de profil</translation>
+<translation id="5338512273860059533">Connexion en cours.</translation>
 <translation id="5339316356165661760">Activer la synchronisation</translation>
 <translation id="5343472494710226394">Actualités, sports et contenus basés sur vos centres d'intérêt.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Suivre ce colis ?}one{Suivre {COUNT} colis ?}other{Suivre {COUNT} colis ?}}</translation>

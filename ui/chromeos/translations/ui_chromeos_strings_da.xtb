@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">PUK-koden er forkert</translation>
 <translation id="4057991113334098539">Aktiverer...</translation>
 <translation id="4092890906744441904">Irsk</translation>
+<translation id="4101601646343868113">Log ind på dit mobilnetværk, og bekræft, at dit mobildataabonnement er aktivt</translation>
 <translation id="4124731372776320263">Synkroniserer 1 Drev-fil</translation>
 <translation id="4124935795427217608">Enhjørning</translation>
 <translation id="4131235941541910880">Flyt overflødige elementer til papirkurven</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Tamil med Tamil99-tastatur</translation>
 <translation id="5633226425545095130">Hvis du flytter dette element, deles det med alle, der kan se den delte mappe "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Lyt</translation>
+<translation id="5650895901941743674">Tjek din APN-konfiguration</translation>
 <translation id="5669691691057771421">Angiv ny pinkode</translation>
 <translation id="5678784840044122290">Linux-appen er tilgængelig i din terminal, og der vises muligvis også et ikon for appen på din appliste.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Forbindelsen til et arkiv eller en virtuel disk kan ikke afbrydes<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Der blev skiftet til miniaturevisning for listen med filer.</translation>
 <translation id="8601932370724196034">Crostini-billedfil</translation>
 <translation id="8609695766746872526">Islandsk</translation>
+<translation id="8630384863424041081">Indtast PIN-koden til dit SIM-kort eller standard-PIN-koden fra dit mobilselskab Kontakt dit mobilselskab for at få hjælp.</translation>
 <translation id="863903787380594467">Forkert pinkode. Du har <ph name="RETRIES" /> forsøg tilbage.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
 <translation id="8656407365183407932">Det var nødvendigt at fjerne dine offlinefiler</translation>

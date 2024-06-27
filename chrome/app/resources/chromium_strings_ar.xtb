@@ -77,6 +77,8 @@
 <translation id="2329088755516916767">‏عند تفعيل هذا الإعداد، يحمِّل Chromium الصفحات مسبقًا لزيادة سرعة التصفّح والبحث.</translation>
 <translation id="2343156876103232566">‏لإرسال رقم من هذا الجهاز إلى جهازك الذي يعمل بنظام التشغيل Android، يُرجى تسجيل الدخول إلى Chromium على الجهازَين.</translation>
 <translation id="2359808026110333948">متابعة</translation>
+<translation id="2361918034042471035">‏تطلب منك الإضافة "<ph name="EXTENSION_NAME" />" تسجيل الدخول إلى Chromium</translation>
+<translation id="2374216753258219393">‏لاستخدام هذه الإضافة على الحساب <ph name="USER_EMAIL_ADDRESS" />، عليك تسجيل الدخول إلى Chromium.</translation>
 <translation id="2384373936468275798">‏تعذّر على نظام التشغيل Chromium مزامنة بياناتك لأن تفاصيل تسجيل الدخول إلى حسابك قديمة.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{‏كانت إضافة واحدة أو أكثر من إضافات Chromium تصل إلى جهاز HID واحد}=1{‏تصل إضافة واحدة أو أكثر من إضافات Chromium إلى جهاز HID واحد}two{‏تصل إضافة واحدة أو أكثر من إضافات Chromium إلى جهازَي HID}few{‏تصل إضافة واحدة أو أكثر من إضافات Chromium إلى # أجهزة HID}many{‏تصل إضافة واحدة أو أكثر من إضافات Chromium إلى # جهاز HID}other{‏تصل إضافة واحدة أو أكثر من إضافات Chromium إلى # جهاز HID}}</translation>
 <translation id="2401032172288869980">‏يحتاج Chromium إلى إذن للوصول إلى الكاميرا والميكروفون من أجل هذا الموقع الإلكتروني.</translation>
@@ -240,9 +242,11 @@
 <translation id="4893347770495441059">‏إعادة تشغيل متصفِّح Chromium لتحديثه</translation>
 <translation id="4942295735032723435">‏للحصول على تحديثات Chromium في المستقبل، يجب استخدام جهاز يعمل بنظام التشغيل macOS 11 أو إصدار أحدث. ويعمل هذا الكمبيوتر بنظام التشغيل macOS 10.15.</translation>
 <translation id="4943838377383847465">‏Chromium في وضع الخلفية.</translation>
+<translation id="494490797786467921">‏انقر لإغلاق مربّع حوار تسجيل الدخول إلى Chromium</translation>
 <translation id="4987820182225656817">‏يمكن للضيف استخدام Chromium بدون أن يترك أي أثر وراءه.</translation>
 <translation id="4994636714258228724">‏إضافة نفسك إلى Chromium</translation>
 <translation id="5114678101347489141">‏يعمل Chromium على استكشاف ميزات جديدة تتيح للمواقع الإلكترونية توفير تجربة التصفّح نفسها باستخدام قدر أقل من بياناتك.</translation>
+<translation id="5187123684706427865">‏يتطلب حساب Chromium إعادة المصادقة</translation>
 <translation id="5224391634244552924">‏ما مِن كلمات مرور محفوظة. لا يستطيع Chromium التحقُّق من كلمات المرور إلا عند حفظها.</translation>
 <translation id="5231355151045086930">‏الخروج من Chromium</translation>
 <translation id="5252179775517634216">‏سبَق تسجيل دخول <ph name="EXISTING_USER" /> إلى هذا الملف الشخصي على Chromium. سيؤدي هذا الإجراء إلى إنشاء ملف شخصي جديد على Chromium لحساب <ph name="USER_EMAIL_ADDRESS" />.</translation>

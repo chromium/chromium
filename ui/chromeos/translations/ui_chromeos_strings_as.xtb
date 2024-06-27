@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">ভুল PUK</translation>
 <translation id="4057991113334098539">সক্ৰিয় কৰি থকা হৈছে...</translation>
 <translation id="4092890906744441904">আইৰিশ্ব</translation>
+<translation id="4101601646343868113">আপোনাৰ ম’বাইল নেটৱৰ্কত ছাইন ইন কৰক আৰু আপোনাৰ ম’বাইল ডেটাৰ আঁচনি সক্ৰিয় হৈ থকাটো নিশ্চিত কৰক</translation>
 <translation id="4124731372776320263">১ টা Driveৰ ফাইল ছিংক কৰি থকা হৈছে</translation>
 <translation id="4124935795427217608">এশিঙিয়া ঘোঁৰা</translation>
 <translation id="4131235941541910880">আপোনাক নলগা বস্তুসমূহ ট্ৰেশ্বলৈ নিয়ক</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Tamil99 কীব’ৰ্ডৰ সৈতে তামিল</translation>
 <translation id="5633226425545095130">এই বস্তুটো ইয়াৰ পৰা নিয়াটোৱে এইটোক শ্বেয়াৰ কৰা ফ'ল্ডাৰ '<ph name="DESTINATION_NAME" />' চাব পৰা সকলো লোকৰ সৈতে শ্বেয়াৰ কৰিব।</translation>
 <translation id="5649768706273821470">শুনক</translation>
+<translation id="5650895901941743674">আপোনাৰ এপিএনৰ কনফিগাৰেশ্বন পৰীক্ষা কৰক</translation>
 <translation id="5669691691057771421">নতুন পিন দিয়ক</translation>
 <translation id="5678784840044122290">Linux এপ্লিকেশ্বন আপোনাৰ টার্মিনেলৰ ভিতৰত উপলব্ধ হ'ব আৰু আপোনাৰ লঞ্চাৰতো এখন আইকন দেখুৱাব পাৰে।</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />আৰ্কাইভ বা ভাৰ্চুৱেল ডিস্কৰ পৰা সংযোগ বিচ্ছিনন্ন কৰিব পৰা নাই<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">ফাইলৰ সূচীখন থাম্বনেইল ভিউ ম'ডলৈ সলনি কৰা হৈছে।</translation>
 <translation id="8601932370724196034">Crostini প্ৰতিচ্ছবিৰ ফাইল</translation>
 <translation id="8609695766746872526">আইচলেণ্ডীয়</translation>
+<translation id="8630384863424041081">আপোনাৰ ছিম কাৰ্ডৰ পিন বা আপোনাৰ বাহকে প্ৰদান কৰা ডিফ’ল্ট পিনটো দিয়ক। সহায়ৰ বাবে আপোনাৰ বাহকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="863903787380594467">ভুল পিন। আপোনাৰ <ph name="RETRIES" /> টা প্ৰয়াস বাকী আছে।</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - প’ৰ্ট</translation>
 <translation id="8656407365183407932">আপোনাৰ অফলাইন ফাইলসমূহ আঁতৰাবলগীয়া হ’ল</translation>

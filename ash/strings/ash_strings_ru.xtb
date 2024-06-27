@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">Экранная клавиатура включена</translation>
 <translation id="1749109475624620922">Окно "<ph name="WINDOW_TITLE" />" назначено всем рабочим столам.</translation>
 <translation id="1750088060796401187">Достигнуто максимальное количество рабочих столов (<ph name="MAX_DESK_LIMIT" />). Удалите рабочий стол, чтобы открыть новый.</translation>
+<translation id="1751335846119670066">Help me read</translation>
 <translation id="1755408179247123630">Включить озвучивание при нажатии?</translation>
 <translation id="1755556344721611131">Приложение "Диагностика"</translation>
 <translation id="1756833229520115364">Не удалось сохранить шаблон. Слишком много окон или вкладок.</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">Настроить просмотр недавних фотографий, медиафайлов и уведомлений с телефона</translation>
 <translation id="1787955149152357925">Отключено</translation>
 <translation id="1796561540704213354">Сайты, включая открытые и посещенные вами страницы</translation>
+<translation id="179842970735685253">Условиями использования Google</translation>
 <translation id="181103072419391116">Уровень сигнала – <ph name="SIGNAL_STRENGTH" />, под управлением администратора</translation>
 <translation id="1816896987747843206">Доступ к камере получат все приложения и сайты с разрешением "Камера".</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">Процессор</translation>
 <translation id="3125690294288312932">Тип задания</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Важная информация</translation>
 <translation id="3139188263101386725">Воспользуйтесь обновленным сочетанием клавиш</translation>
 <translation id="3139942575505304791">Рабочий стол 1</translation>
 <translation id="315116470104423982">Мобильный интернет</translation>
@@ -961,6 +964,7 @@
 <translation id="4585337515783392668">Остановить трансляцию на неизвестное устройство</translation>
 <translation id="4596144739579517758">Тёмная тема отключена</translation>
 <translation id="4596442969149038771">Пользователь <ph name="USER" /> поделился файлом</translation>
+<translation id="4610493115106525653">Хороший результат</translation>
 <translation id="4611292653554630842">Войти</translation>
 <translation id="462160925400706389">Подключено устройство "<ph name="NAME" />"</translation>
 <translation id="4623167406982293031">Подтвердите, что это ваш аккаунт.</translation>
@@ -1118,6 +1122,7 @@
 <translation id="5121628974188116412">Перейти к нижней части экрана</translation>
 <translation id="5122517996953421795">Предпросмотр неактивного рабочего стола "<ph name="DESK_NAME" />".</translation>
 <translation id="5136175204352732067">Подключена другая клавиатура</translation>
+<translation id="5140105873789567560">Чтобы пользоваться генератором текстов и функцией Help me read, вам должно быть не менее 18 лет.</translation>
 <translation id="5144005092084035179">Переключиться на другой аудиовход?</translation>
 <translation id="5147567197700016471">Устройство разблокировано.</translation>
 <translation id="5150070631291639005">Настройки конфиденциальности</translation>
@@ -1558,6 +1563,7 @@
 <translation id="6696025732084565524">Необходимо обновить внешнюю клавиатуру</translation>
 <translation id="6697913454192220372">Добавить рабочий стол</translation>
 <translation id="6700713906295497288">Кнопка меню редактора методов ввода</translation>
+<translation id="6704375469818246414">Качество результатов генеративного ИИ может различаться.</translation>
 <translation id="6706742084323792866">Клавиатура для ввода PIN-кода</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="6723839937902243910">Питание</translation>
@@ -1825,9 +1831,11 @@
 <translation id="7726391492136714301">Просмотр уведомлений и приложений с телефона</translation>
 <translation id="7727952505535211425">Открыть сайт из адресной строки в новой вкладке</translation>
 <translation id="7742327441377685481">Уведомлений нет.</translation>
+<translation id="774736258792760908">Когда генератор текстов и функция Help me read включены, введенный текст и содержимое документа отправляется на серверы ИИ от Google. Там эти данные используются для генерации ответов на вопросы, кратких пересказов и подсказок по написанию текстов, а также для улучшения продукта в соответствии с <ph name="LINK_TO_SERVICE_TERMS" />. Не указывайте персональные и конфиденциальные данные.</translation>
 <translation id="7748275671948949022">Выделить кнопку запуска на панели запуска</translation>
 <translation id="7749443890790263709">Достигнуто максимально допустимое количество рабочих столов.</translation>
 <translation id="7749958366403230681">Клавиша ExpressKey 4</translation>
+<translation id="7759183637555564029">Отключить генератор текстов и функцию Help me read можно в любое время в настройках. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Озвучивание при нажатии</translation>
 <translation id="7769299611924763557">Файл GIF скоро будет готов</translation>
 <translation id="7773536009433685931">Включить Wi-Fi</translation>
@@ -1836,6 +1844,7 @@
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7787212146956232129">Устройства ввода и вывода установлены. Параметры можно задать в настройках.</translation>
 <translation id="7792590255364786396">Подсказка видна</translation>
+<translation id="7793389284006812057">Генеративный искусственный интеллект – экспериментальная технология, которая находится на раннем этапе разработки и пока доступна с ограничениями.</translation>
 <translation id="7796735576426975947">Новые уведомления скрыты</translation>
 <translation id="7798302898096527229">Для отмены нажмите SEARCH или SHIFT.</translation>
 <translation id="780301667611848630">Нет, спасибо</translation>
@@ -1990,6 +1999,7 @@
 <translation id="8331351032546853669">Ожидание скачивания</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Плохой результат</translation>
 <translation id="8345019317483336363">Выбрано окно "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="8349826889576450703">Launcher</translation>
 <translation id="8349964124165471584">Открыть ссылку в новом окне</translation>

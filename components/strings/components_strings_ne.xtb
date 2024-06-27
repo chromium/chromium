@@ -26,6 +26,7 @@
 <translation id="1050038467049342496">अन्य एपहरू बन्द गर्नुहोस्</translation>
 <translation id="1053959602163383901">तपाईंले <ph name="PROVIDER_ORIGIN" /> प्रयोग गर्ने वेबसाइटहरूमा प्रमाणीकरण गर्ने डिभाइसमार्फत पुष्टि गर्ने विकल्प छनौट गर्नुभएको छ। यो प्रदायकले तपाईंको भुक्तानी विधिसम्बन्धी जानकारी भण्डारण गरेको हुन सक्छ, तपाईं सो जानकारी <ph name="LINK_TEXT" /> गर्न सक्नुहुन्छ।</translation>
 <translation id="1055184225775184556">&amp;पूर्वस्थितिमा फर्काउनुहोस् थप्नुहोस्</translation>
+<translation id="105642538515333723">तपाईं आफूले विगतमा ब्राउज गरेका पेजमा भएका कुनै पनि वाक्यांश वा विवरण (जस्तै, हिँड्दा लगाइने आरामदायी जुत्ता) हाल्न सक्नुहुन्छ</translation>
 <translation id="1056898198331236512">चेतावनी</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं Chrome मा Dino Run गेम खेल्न चाहनुहुन्छ भने ट्याब थिच्नुहोस् अनि इन्टर थिच्नुहोस्</translation>
 <translation id="1058479211578257048">कार्डहरू सुरक्षित गर्दै...</translation>
@@ -41,6 +42,7 @@
 <translation id="1070901266639972381">राति</translation>
 <translation id="1073690811593784042">ग्लास (रङ्गीन)</translation>
 <translation id="1074497978438210769">सुरक्षित छैन</translation>
+<translation id="1074779248866616641">परिणाम</translation>
 <translation id="1075364221219156102">कुनै पासकी प्रयोग गर्नुहोस्</translation>
 <translation id="1080116354587839789">चौडाइमा फिट गर्नुहोस्</translation>
 <translation id="1081061862829655580">ट्रे १९</translation>
@@ -967,6 +969,7 @@
 <translation id="2824775600643448204">ठेगाना र खोज पट्टी</translation>
 <translation id="2826760142808435982">यो जडान गुप्तलेख गरिएको र <ph name="CIPHER" /> प्रयोग गर्दै प्रमाणीकरण गरिएको छ र कुञ्जी साट्ने प्रक्रियाको रूपमा <ph name="KX" /> प्रयोग गर्छ।</translation>
 <translation id="2833637280516285136">रेडियो कुराकानी</translation>
+<translation id="2837891525090413132">यसले तपाईंको किबोर्ड लक गरी प्रयोग गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> ले तपाईंका बारेमा सेभ गरिएको जानकारी प्रयोग गर्ने अनुमति माग्दै छ</translation>
 <translation id="2839032553903800133">सूचनाहरूलाई रोक लगाइयो</translation>
 <translation id="2839501879576190149">तपाईं जान लाग्नुभएको साइट नक्कली साइट हो</translation>
@@ -2855,6 +2858,7 @@
 <translation id="6433797564277305076">अबदेखि डिभाइस अनलक प्रयोग गरेर आफ्ना कार्डहरू अझ चाँडो पुष्टि गर्नुहोस्</translation>
 <translation id="643917412048333145">पोसाकहरू</translation>
 <translation id="6440503408713884761">उपेक्षित</translation>
+<translation id="6440534369669992497">तपाईं आफूले विगतमा ब्राउज गरेका पेजमा भएका कुनै पनि वाक्यांश वा विवरण (जस्तै, हिँड्दा लगाइने आरामदायी जुत्ता) हाल्न सक्नुहुन्छ। खोज्न <ph name="SHORTCUT" /> थिच्नुहोस्।</translation>
 <translation id="6443406338865242315">तपाईंले स्थापना गर्नुभएका विस्तार र प्लगइनहरू</translation>
 <translation id="6444329331928531170">सेवानिवृत्ति तथा पेन्सन</translation>
 <translation id="6446608382365791566">थप जानकारी थप्नुहोस्</translation>
@@ -3138,6 +3142,7 @@
 <translation id="7006930604109697472">जे भए पनि पठाउनुहोस्</translation>
 <translation id="7010658264061801199">खाना तथा पेय पदार्थ</translation>
 <translation id="7012363358306927923">चीन UnionPay</translation>
+<translation id="7013835112918108252">यसले तपाईंको माउस लक गरी प्रयोग गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="7014042602717177828">कार अडियो</translation>
 <translation id="7014741021609395734">जुमको स्तर</translation>
 <translation id="7016992613359344582">यी शुल्कहरू एक पटक तिरे पुग्ने वा बारम्बार तिर्नु पर्ने हुन सक्छन् र यस सम्बन्धमा स्पष्टता नहुन पनि सक्छ।</translation>
@@ -3152,6 +3157,7 @@
 <translation id="7031646650991750659">तपाईंले स्थापना गर्नुभएका Google Play एपहरू</translation>
 <translation id="7035705295266423040">तपाईंको बैंकले तपाईंको पहिचान पुष्टि गर्न चाहन्छ</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं आफ्नो Google खाताका गोपनीयतासम्बन्धी सेटिङ मिलाउन चाहनुहुन्छ भने ट्याब थिच्नुहोस् अनि इन्टर थिच्नुहोस्</translation>
+<translation id="7042616127917168121">परिणाम परिष्कृत गर्नुहोस्</translation>
 <translation id="7043552168914147882">ट्याब स्टक</translation>
 <translation id="7044081119134178347">अहिले क्यामेरा प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="7048095965575426564">European Fanfold</translation>

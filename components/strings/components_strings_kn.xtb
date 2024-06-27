@@ -26,6 +26,7 @@
 <translation id="1050038467049342496">ಇತರ ಅಪ್ಲಿಕೇಶನ್‍ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="1053959602163383901">ನೀವು <ph name="PROVIDER_ORIGIN" /> ಬಳಸುವ ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ ದೃಢೀಕರಣ ಸಾಧನವೊಂದರ ಮೂಲಕ ದೃಢೀಕರಿಸುವ ಆಯ್ಕೆಯನ್ನು ಮಾಡಿದ್ದೀರಿ. ಈ ಪೂರೈಕೆದಾರರು ನಿಮ್ಮ ಪಾವತಿ ವಿಧಾನದ ಕುರಿತು ಮಾಹಿತಿಯನ್ನು ಸಂಗ್ರಹಿಸಿಟ್ಟಿರಬಹುದು, ನೀವು ಅದನ್ನು <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;ಸೇರಿಸುವುದನ್ನು ರದ್ದುಗೊಳಿಸಿ</translation>
+<translation id="105642538515333723">ನೀವು ಹಿಂದೆ ಬ್ರೌಸ್ ಮಾಡಿದ ಪುಟಗಳಿಂದ "ಆರಾಮದಾಯಕ ವಾಕಿಂಗ್ ಬೂಟುಗಳು" ನಂತಹ ಯಾವುದೇ ನುಡಿಗಟ್ಟುಗಳು ಅಥವಾ ವಿವರಗಳನ್ನು ನೀವು ನಮೂದಿಸಬಹುದು</translation>
 <translation id="1056898198331236512">ಎಚ್ಚರಿಕೆ</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ಒತ್ತಿ ನಂತರ Chrome ನಲ್ಲಿ Dino Run ಗೇಮ್ ಪ್ಲೇ ಮಾಡಲು Enter ಒತ್ತಿ</translation>
 <translation id="1058479211578257048">ಕಾರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
@@ -41,6 +42,7 @@
 <translation id="1070901266639972381">ರಾತ್ರಿ</translation>
 <translation id="1073690811593784042">ಗ್ಲಾಸ್ (ಬಣ್ಣದ)</translation>
 <translation id="1074497978438210769">ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
+<translation id="1074779248866616641">ಫಲಿತಾಂಶ</translation>
 <translation id="1075364221219156102">ಪಾಸ್‌ಕೀ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="1080116354587839789">ಅಗಲಕ್ಕೆ ಹೊಂದಿಸಿ</translation>
 <translation id="1081061862829655580">ಟ್ರೇ 19</translation>
@@ -561,7 +563,7 @@
 <translation id="2029735183873159415">ಪೂರ್ವಜರು ಮತ್ತು ವಂಶಾವಳಿ</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ಪ್ರಾಕ್ಸಿ ಮತ್ತು ಫೈರ್‌ವಾಲ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">ಶಾರ್ಟ್‌ಕಟ್ <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> ದಿಂದ ವ್ಯಾಖ್ಯಾನಿಸಲಾದ ಡೀಫಾಲ್ಟ್ ಹುಡುಕಾಟ ಪೂರೈಕೆದಾರರ ಕೀವರ್ಡ್‌ನಂತೆಯೇ ಇರುವಂತಿಲ್ಲ:<ph name="SHORTCUT_NAME" /></translation>
-<translation id="2034971124472263449">ಹೇಗಾದರೂ ಉಳಿಸಿ</translation>
+<translation id="2034971124472263449">ಹೇಗಾದರೂ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="2036514476578229158">ಈ ಸೈಟ್‌ಗೆ ಭೇಟಿ ನೀಡಲು ನೀವು ಅನುಮತಿಯನ್ನು ವಿನಂತಿಸಿದ್ದೀರಿ. ನಿಮ್ಮ ಪೋಷಕರು Family Link ನಲ್ಲಿ ಪ್ರತ್ಯುತ್ತರ ನೀಡಬಹುದು.</translation>
 <translation id="2036983605131262583">ಪರ್ಯಾಯ ರೋಲ್</translation>
 <translation id="2040463897538655645">ತೆಗೆದುಹಾಕಬಹುದಾದ ಸಂಗ್ರಹಣೆ</translation>
@@ -967,6 +969,7 @@
 <translation id="2824775600643448204">ವಿಳಾಸ ಹಾಗೂ ಹುಡುಕಾಟ ಪಟ್ಟಿ</translation>
 <translation id="2826760142808435982"><ph name="CIPHER" /> ಬಳಸಿಕೊಂಡು ಸಂಪರ್ಕವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ ಮತ್ತು ದೃಢೀಕರಿಸಲಾಗಿದೆ ಮತ್ತು <ph name="KX" /> ಅನ್ನು ಕೀ ವಿನಿಮಯ ಯಾಂತ್ರಿಕತೆಯಂತೆ ಬಳಸುತ್ತದೆ.</translation>
 <translation id="2833637280516285136">ಮಾತನಾಡುವ ರೇಡಿಯೊ</translation>
+<translation id="2837891525090413132">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಅನ್ನು ಲಾಕ್ ಮಾಡಲು ಮತ್ತು ಬಳಸಲು ಕೇಳಬಹುದು</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> ನಿಮ್ಮ ಬಗ್ಗೆ ಸೇವ್ ಮಾಡಿದ ಮಾಹಿತಿಯನ್ನು ಬಳಸಲು ಬಯಸುತ್ತಿದೆ</translation>
 <translation id="2839032553903800133">ಅಧಿಸೂಚನೆಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="2839501879576190149">ನಕಲಿ ಸೈಟ್ ಮುಂದಿದೆ</translation>
@@ -1270,7 +1273,7 @@
 <translation id="342781501876943858">ನೀವು ಇತರ ಸೈಟ್‌ಗಳಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಮರುಬಳಕೆ ಮಾಡಿದ್ದಲ್ಲಿ Chromium ನಿಮ್ಮ ಪಾಸವರ್ಡ್ ಅನ್ನು ಮರುಹೊಂದಿಸಲು ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
 <translation id="3428151540071562330">ಒಂದು ಅಥವಾ ಹೆಚ್ಚಿನ DnsOverHttpsTemplates ಸರ್ವರ್ ಟೆಂಪ್ಲೇಟ್ URI ಗಳು ಅಮಾನ್ಯವಾಗಿವೆ ಮತ್ತು ಅವುಗಳನ್ನು ಬಳಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="3428789896412418755">ಗುಂಪು ಮಾಡಿದ ಇತಿಹಾಸ</translation>
-<translation id="3430206873883193118">ನೀವು ಭೇಟಿ ನೀಡಿಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರುವ ಸೈಟ್‌ಗೆ ಆಕ್ರಮಣಕಾರರು ಸಾಫ್ಟ್‌ವೇರ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್‌, ಫೋನ್ ಅಥವಾ ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಯಂತಹ ವಿಷಯಗಳನ್ನು ಬಹಿರಂಗಪಡಿಸುವಂತೆ ಕೋರಿ ನಿಮ್ಮನ್ನು ಮೋಸಗೊಳಿಸಬಹುದು. ಸುರಕ್ಷತೆಗೆ ಹಿಂತಿರುಗಲು Chrome ಬಲವಾಗಿ ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ. <ph name="BEGIN_LEARN_MORE_LINK" />ಈ ಎಚ್ಚರಿಕೆಯ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="3430206873883193118">ನೀವು ಭೇಟಿ ನೀಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರುವ ಸೈಟ್‌ಗೆ ಆಕ್ರಮಣಕಾರರು ಸಾಫ್ಟ್‌ವೇರ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್‌, ಫೋನ್ ಅಥವಾ ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಯಂತಹ ವಿಷಯಗಳನ್ನು ಬಹಿರಂಗಪಡಿಸುವಂತೆ ಕೋರಿ ನಿಮ್ಮನ್ನು ಮೋಸಗೊಳಿಸಬಹುದು. ಸುರಕ್ಷತೆಗೆ ಹಿಂತಿರುಗಲು Chrome ಬಲವಾಗಿ ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ. <ph name="BEGIN_LEARN_MORE_LINK" />ಈ ಎಚ್ಚರಿಕೆಯ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">ಪುಟವನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="3433111389595862568">ಕೊಲಬೊರೇಶನ್ ಮತ್ತು ಕಾನ್ಫರೆನ್ಸಿಂಗ್ ಸಾಫ್ಟ್‌ವೇರ್</translation>
 <translation id="3433144818443565002">ಧ್ವನಿ ಮತ್ತು ವೀಡಿಯೊ ಚಾಟ್</translation>
@@ -2853,6 +2856,7 @@
 <translation id="6433797564277305076">ಇನ್ನು ಮುಂದೆ, ಸಾಧನದ ಅನ್‌ಲಾಕ್ ಬಳಸುವ ಮೂಲಕ ನಿಮ್ಮ ಕಾರ್ಡ್‌ಗಳನ್ನು ವೇಗವಾಗಿ ದೃಢೀಕರಿಸಿ</translation>
 <translation id="643917412048333145">ಉಡುಪುಗಳು</translation>
 <translation id="6440503408713884761">ನಿರ್ಲಕ್ಷಿಸಲಾಗಿದೆ</translation>
+<translation id="6440534369669992497">ನೀವು ಹಿಂದೆ ಬ್ರೌಸ್ ಮಾಡಿದ ಪುಟಗಳಿಂದ "ಆರಾಮದಾಯಕ ವಾಕಿಂಗ್ ಶೂಗಳು" ನಂತಹ ಯಾವುದೇ ನುಡಿಗಟ್ಟುಗಳು ಅಥವಾ ವಿವರಗಳನ್ನು ನೀವು ನಮೂದಿಸಬಹುದು. ಹುಡುಕಾಟ ಮಾಡಲು <ph name="SHORTCUT" />.</translation>
 <translation id="6443406338865242315">ನೀವು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿರುವ ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು ಮತ್ತು ಪ್ಲಗ್‌ಇನ್‌ಗಳು</translation>
 <translation id="6444329331928531170">ನಿವೃತ್ತಿ ಮತ್ತು ಪಿಂಚಣಿ</translation>
 <translation id="6446608382365791566">ಇನ್ನಷ್ಟು ಮಾಹಿತಿಯನ್ನು ಸೇರಿಸಿ</translation>
@@ -3137,6 +3141,7 @@
 <translation id="7006930604109697472">ಹೇಗಾದರೂ ಕಳುಹಿಸಿ</translation>
 <translation id="7010658264061801199">ಆಹಾರ ಮತ್ತು ಪಾನೀಯ</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013835112918108252">ನಿಮ್ಮ ಮೌಸ್ ಅನ್ನು ಲಾಕ್ ಮಾಡಲು ಮತ್ತು ಬಳಸಲು ಕೇಳಬಹುದು</translation>
 <translation id="7014042602717177828">ಕಾರು ಆಡಿಯೋ</translation>
 <translation id="7014741021609395734">ಝೂಮ್ ಮಟ್ಟ</translation>
 <translation id="7016992613359344582">ಇವುಗಳು ಒಂದು ಬಾರಿ ಪಾವತಿಸುವಂತಹ ಶುಲ್ಕಗಳಾಗಿರಬಹುದು, ಮರುಕಳಿಸುವ ಶುಲ್ಕಗಳಾಗಿರಬಹುದು ಅಥವಾ ಸ್ಪಷ್ಟವಾಗಿಲ್ಲದೇ ಇರಬಹುದು.</translation>
@@ -3151,6 +3156,7 @@
 <translation id="7031646650991750659">ನೀವು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿರುವ Google Play ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="7035705295266423040">ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ಇದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನಿಮ್ಮ Google ಖಾತೆಯ ಗೌಪ್ಯತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
+<translation id="7042616127917168121">ಫಲಿತಾಂಶಗಳನ್ನು ರೀಫೈನ್ ಮಾಡಿ</translation>
 <translation id="7043552168914147882">ಟ್ಯಾಬ್ ಸ್ಟಾಕ್</translation>
 <translation id="7044081119134178347">ಈ ಬಾರಿ ಕ್ಯಾಮರಾವನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
@@ -4308,6 +4314,7 @@
 <translation id="920643408853370361">ಪ್ರಯಾಣ ವಿಮೆ</translation>
 <translation id="9207861905230894330">ಲೇಖನವನ್ನು ಸೇರಿಸಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="9210825002219699214">ವಿಮಾನ ಪ್ರಯಾಣ</translation>
+<translation id="9211461151375991073">ಹುಡುಕಲು @ ನಮೂದಿಸಿ <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">ಗೋಚರತೆಯನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="9215416866750762878">ಈ ಸೈಟ್‌ಗೆ ಸುರಕ್ಷಿತವಾಗಿ ಸಂಪರ್ಕಿಸುವ Chromeನ ಕಾರ್ಯವನ್ನು ಅಪ್ಲಿಕೇಶನ್‌ ಸ್ಥಗಿತಗೊಳಿಸಿದೆ</translation>
 <translation id="92178312226016010">ನೀವು ಈ ಉತ್ಪನ್ನವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುತ್ತಿದ್ದೀರಿ.</translation>

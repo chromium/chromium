@@ -79,6 +79,8 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="2329088755516916767">Chromium, bu ayar açıkken sayfaları önceden yükleyerek internette gezinme ve arama işlemlerini hızlandırır.</translation>
 <translation id="2343156876103232566">Buradan Android telefonunuza numara göndermek için iki cihazdan da Chromium'da oturum açın.</translation>
 <translation id="2359808026110333948">Devam</translation>
+<translation id="2361918034042471035">"<ph name="EXTENSION_NAME" />" uzantısı, Chromium'da oturum açmanızı istiyor</translation>
+<translation id="2374216753258219393">Bu uzantıyı <ph name="USER_EMAIL_ADDRESS" /> olarak kullanmak için Chromium'da oturum açın.</translation>
 <translation id="2384373936468275798">Hesap oturum açma ayrıntılarınız güncel olmadığından ChromiumOS, verilerinizi senkronize edemedi.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Bir veya daha fazla Chromium uzantısı, 1 insan arabirim cihazına erişiyordu}=1{Bir veya daha fazla Chromium uzantısı, 1 insan arabirim cihazına erişiyor}other{Bir veya daha fazla Chromium uzantısı, # insan arabirim cihazına erişiyor}}</translation>
 <translation id="2401032172288869980">Bu site için Chromium'un kamera ve mikrofon izinlerine ihtiyacı var</translation>
@@ -240,9 +242,11 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="4893347770495441059">&amp;Chromium'u Güncellemek İçin Yeniden Başlat</translation>
 <translation id="4942295735032723435">Gelecekteki Chromium güncellemelerini almak için macOS 11 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar macOS 10.15 kullanıyor.</translation>
 <translation id="4943838377383847465">Chromium arka plan modunda.</translation>
+<translation id="494490797786467921">Chromium'da oturum açma iletişim kutusunu kapatmak için tıklayın</translation>
 <translation id="4987820182225656817">Misafirler Chromium'u geride hiçbir şey bırakmadan kullanabilir.</translation>
 <translation id="4994636714258228724">Kendinizi Chromium'a ekleyin</translation>
 <translation id="5114678101347489141">Chromium, sitelerin daha az veri kullanarak aynı tarama deneyimini sunmasını sağlayan yeni özellikleri keşfediyor</translation>
+<translation id="5187123684706427865">Chromium hesabı için yeniden kimlik doğrulama gerekiyor</translation>
 <translation id="5224391634244552924">Kaydedilen şifre yok. Chromium, kaydetmeniz halinde şifrelerinizi kontrol edebilir.</translation>
 <translation id="5231355151045086930">Chromium oturumunu kapatın</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> kullanıcısının oturumu halihazırda bu Chromium profilinde açık. Bu işlem, <ph name="USER_EMAIL_ADDRESS" /> için yeni bir Chromium profili oluşturacak</translation>

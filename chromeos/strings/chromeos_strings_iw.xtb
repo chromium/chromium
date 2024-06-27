@@ -102,6 +102,7 @@
 <translation id="1499900233129743732">המשתמש הזה מנוהל על ידי <ph name="MANAGER" />. הדומיין הזה עשוי לנהל מרחוק את ההגדרות ולעקוב אחר פעילות המשתמש.</translation>
 <translation id="150962533380566081">‏PUK לא חוקי.</translation>
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
+<translation id="1514446283880973949">חוסכים התלבטויות כשכותבים, מקבלים סיכומים של תוכן והגדרות של מונחים ועוד</translation>
 <translation id="1515129336378114413">דף הבית של הדפדפן</translation>
 <translation id="1526389707933164996">אנימציה של שומר המסך</translation>
 <translation id="152892567002884378">הגברת עוצמת הקול</translation>
@@ -1287,6 +1288,7 @@
 <translation id="8167413449582155132">‏הרקע מבוסס על AI מבית Google</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">חוף</translation>
+<translation id="819278132617411009">‏אפשר להשתמש ב-AI מבית Google כדי לשפר את הפרודוקטיביות</translation>
 <translation id="8206859287963243715">סלולארי</translation>
 <translation id="8208861521865154048">הטבות</translation>
 <translation id="8226628635270268143">בחירת התמונות והאלבומים האהובים עליך</translation>
@@ -1333,6 +1335,7 @@
 <translation id="8431300646573772016">‏מה חדש ב-ChromeOS</translation>
 <translation id="843568408673868420">חיבור לאינטרנט</translation>
 <translation id="844521431886043384">‏לא הוגדר DNS</translation>
+<translation id="8456200178779628126">‏אפשר להשתמש ב-AI מבית Google כדי לקבל עזרה בקריאה וכתיבה</translation>
 <translation id="8456761643544401578">מצב כהה אוטומטי</translation>
 <translation id="8461329675984532579">שם ספק ביתי</translation>
 <translation id="8475690821716466388">‏רשת ה-Wi-Fi מאובטחת בפרוטוקול WEP PSK חלש</translation>
@@ -1459,6 +1462,7 @@
 <translation id="910415269708673980">רענון הכרטיס עבור <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">מתבצעת סריקה של עמוד <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">ביטול נעילה</translation>
+<translation id="9122492456897874028">סיכום של תוכן, קבלת הגדרות ועוד</translation>
 <translation id="9122602430962285795">כדי להתחבר מחדש, צריך לעבור להגדרות</translation>
 <translation id="9122865513525855321">זן</translation>
 <translation id="9126720536733509015">‏שמירת מספר דפים בקובץ PDF אחד</translation>

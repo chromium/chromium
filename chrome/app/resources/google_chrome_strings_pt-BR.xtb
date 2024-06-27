@@ -5,6 +5,8 @@
 <translation id="1026101648481255140">Retomar instalação</translation>
 <translation id="102763973188675173">Personalize e controle o Google Chrome. Uma atualização está disponível.</translation>
 <translation id="1028061813283459617">Para excluir apenas os dados de navegação deste dispositivo e mantê-los na sua Conta do Google, <ph name="BEGIN_LINK" />saia do Chrome<ph name="END_LINK" />.</translation>
+<translation id="1042270987544905725">Clique para fechar a caixa de diálogo de login do Chrome</translation>
+<translation id="1059838145689930908">Para usar essa extensão com a conta <ph name="USER_EMAIL_ADDRESS" />, faça login no Chrome.</translation>
 <translation id="1065672644894730302">Não foi possível ler suas preferências. Alguns recursos podem não estar disponíveis e as alterações nas preferências não serão salvas.</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> estava usando o Chrome anteriormente</translation>
 <translation id="110877069173485804">Este é seu Chrome</translation>
@@ -365,6 +367,7 @@
 <translation id="6291089322031436445">Apps do Chrome Dev</translation>
 <translation id="6291549208091401781">O Google Chrome já está instalado para todos os usuários do seu computador.</translation>
 <translation id="6319856120645568262">O Chrome precisa de permissão para mapear o ambiente ao seu redor e acompanhar suas mãos</translation>
+<translation id="6321592572353357376">A extensão "<ph name="EXTENSION_NAME" />" quer que você faça login no Chrome</translation>
 <translation id="6326175484149238433">Remover do Google Chrome</translation>
 <translation id="6327105987658262776">Nenhuma atualização disponível.</translation>
 <translation id="6360449101159168105">Enquanto esta guia estava inativa, a memória foi liberada para manter o Chrome rápido. Você pode optar por sempre excluir este site do status de inatividade.</translation>
@@ -457,6 +460,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7655455401911432608">Seu histórico de navegação, um registro de sites visitados usando o Chrome neste dispositivo.</translation>
 <translation id="7661924425853052955">Você não visitou os sites recentemente. O Chrome removeu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="COUNT" /></translation>
 <translation id="7668816516367091728">Traduza, calcule e faça muito mais diretamente da barra de endereço</translation>
+<translation id="7670287553302121848">A conta do Chrome precisa ser autenticada de novo</translation>
 <translation id="769538538642757151">O Chrome vai informar se algo precisar ser revisado</translation>
 <translation id="7747138024166251722">O instalador não conseguiu criar um diretório temporário. Verifique se há espaço livre em disco e se há permissão para a instalação de software.</translation>
 <translation id="7761834446675418963">Clique no seu nome para abrir o Chrome e começar a navegar.</translation>

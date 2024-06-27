@@ -89,6 +89,7 @@
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> kun oldin onlayn edi</translation>
 <translation id="1390418506739274310">Havolalarni Chrome orqali ochadigan boshqa ilovalar tarixini koʻrish mumkin. Google hisobingiz orqali bajargan internetdagi faoliyatingizni <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> orqali koʻrishingiz mumkin.</translation>
 <translation id="13931502444227376">Davom etish uchun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ism, email manzil va profil rasmingizni bu sayt bilan ulashadi. Bu saytning <ph name="BEGIN_LINK1" />xizmat shartlari<ph name="END_LINK1" />.</translation>
+<translation id="139752016751285248">Quyi ekrandagi narxlar statistikasi toʻliq hajmda ochildi</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> orqali qidirish</translation>
 <translation id="1398057416966591719">Google hisobida <ph name="BEGIN_LINK1" />saqlangan Chrome maʼlumotlarini boshqarish<ph name="END_LINK1" /> mumkin.
 
@@ -179,6 +180,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="1877073879466606884">Siz boshqariladigan profildan kirgansiz. Administrator profil sozlamalarini masofadan oʻzgartirishi, brauzer maʼlumotlaridan iborat hisobotlarni tahlil qilishi hamda boshqa vazifalarni bajarishi mumkin.</translation>
 <translation id="1883903952484604915">Fayllarim</translation>
 <translation id="189358972401248634">Boshqa tillar</translation>
+<translation id="1899175549411605574">Quyi ekrandagi narxlar statistikasi</translation>
 <translation id="1900260903084164610">Davom etish orqali siz <ph name="BEGIN_TOS_LINK" />xizmat shartlariga<ph name="END_TOS_LINK" /> rozilik bildirasiz</translation>
 <translation id="1904580727789512086">Tashrif qilingan URL manzillar Google hisobingizda saqlanadi</translation>
 <translation id="1910950723001426294">Ruxsat parametrlari roʻyxati yopildi.</translation>
@@ -520,6 +522,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="3587596251841506391">Himoyani oshirishga yordam bering</translation>
 <translation id="3597179440835065298">Yaxshiroq takliflar oling</translation>
 <translation id="3602290021589620013">Razm solish</translation>
+<translation id="3614126103057878858">Narxlarni bilish</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Oynalarni boshqarish</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 ta sayt}other{+ # ta sayt}}</translation>
@@ -529,6 +532,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="3637744895182738742">Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini oʻchiring<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Google ilovasida bosh sahifani ochish</translation>
 <translation id="368329460027487650">Hisobdan chiqqansiz. Kirish uchun parametrlar ochiladi.</translation>
+<translation id="3684540848053703310">Quyi ekrandagi narxlar statistikasi yopildi</translation>
 <translation id="3687645719033307815">Shu sahifaga razm solyapsiz</translation>
 <translation id="3690369331356918524">Parollaringiz oshkor etilganda xabar olasiz</translation>
 <translation id="3692944402865947621">Xotira topilmaganligi uchun <ph name="FILE_NAME" /> yuklab olinmadi.</translation>

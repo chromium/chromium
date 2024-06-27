@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">Экранная клавіятура ўключана</translation>
 <translation id="1749109475624620922">Акно "<ph name="WINDOW_TITLE" />" прызначана для ўсіх працоўных сталоў</translation>
 <translation id="1750088060796401187">Дазволеная колькасць сталоў – <ph name="MAX_DESK_LIMIT" />. Каб адкрыць новы стол, выдаліце адзін з папярэдніх.</translation>
+<translation id="1751335846119670066">Дапамога з чытаннем</translation>
 <translation id="1755408179247123630">Уключыць функцыю "Чытаць уголас"?</translation>
 <translation id="1755556344721611131">Праграма для дыягностыкі</translation>
 <translation id="1756833229520115364">Не ўдалося захаваць шаблон: акон або ўкладак занадта шмат.</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">Наладзіць прагляд нядаўніх фота, медыяфайлаў і апавяшчэнняў з тэлефона</translation>
 <translation id="1787955149152357925">Выключана</translation>
 <translation id="1796561540704213354">Вэб-сайты, у тым ліку наведаныя і адкрытыя вамі старонкі</translation>
+<translation id="179842970735685253">Умовы выкарыстання Google</translation>
 <translation id="181103072419391116">Магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />; сетка знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="1816896987747843206">Доступ да камеры атрымаюць усе праграмы і вэб-сайты, якія маюць дазвол выкарыстоўваць камеру</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">Працэсар</translation>
 <translation id="3125690294288312932">Тып задання</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Што трэба помніць</translation>
 <translation id="3139188263101386725">Карыстайцеся новым спалучэннем клавіш</translation>
 <translation id="3139942575505304791">Стол 1</translation>
 <translation id="315116470104423982">Мабільная перадача даных</translation>
@@ -961,6 +964,7 @@
 <translation id="4585337515783392668">Спыніць трансляцыю невядомаму атрымальніку</translation>
 <translation id="4596144739579517758">Цёмная тэма выключана</translation>
 <translation id="4596442969149038771">Карыстальнік <ph name="USER" /> абагуліў файл</translation>
+<translation id="4610493115106525653">Добры вынік</translation>
 <translation id="4611292653554630842">Увайсці</translation>
 <translation id="462160925400706389"><ph name="NAME" />: падключана</translation>
 <translation id="4623167406982293031">Пацвердзіць уліковы запіс</translation>
@@ -1118,6 +1122,7 @@
 <translation id="5121628974188116412">Перайсці ў ніз старонкі</translation>
 <translation id="5122517996953421795">Перадпрагляд працоўнага стала "<ph name="DESK_NAME" />". Неактыўны працоўны стол.</translation>
 <translation id="5136175204352732067">Падключана іншая клавіятура</translation>
+<translation id="5140105873789567560">Функцыі "Дапамога з напісаннем" і "Дапамога з чытаннем" даступны карыстальнікам ва ўзросце ад 18 гадоў.</translation>
 <translation id="5144005092084035179">Пераключыць аўдыяўваход?</translation>
 <translation id="5147567197700016471">Прылада разблакіравана</translation>
 <translation id="5150070631291639005">Налады прыватнасці</translation>
@@ -1558,6 +1563,7 @@
 <translation id="6696025732084565524">Патрабуецца крытычнае абнаўленне для здымнай клавіятуры</translation>
 <translation id="6697913454192220372">Дадаць новы працоўны стол</translation>
 <translation id="6700713906295497288">Кнопка меню рэдактара метадаў уводу</translation>
+<translation id="6704375469818246414">Выкарыстанне генератыўнага штучнага інтэлекту можа даваць розныя па якасці вынікі.</translation>
 <translation id="6706742084323792866">Замацаваць клавіятуру</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="6723839937902243910">Кнопка сілкавання</translation>
@@ -1825,9 +1831,11 @@
 <translation id="7726391492136714301">Прагляд апавяшчэнняў і праграм з тэлефона на прыладзе</translation>
 <translation id="7727952505535211425">Адкрыць вэб-сайт з адраснага радка ў новай укладцы</translation>
 <translation id="7742327441377685481">Апавяшчэнняў няма</translation>
+<translation id="774736258792760908">Калі вы ўключаеце функцыі "Дапамога з напісаннем" і "Дапамога з чытаннем", уведзены тэкст і змест дакумента адпраўляюцца на серверы штучнага інтэлекту ад Google. <ph name="LINK_TO_SERVICE_TERMS" /> рэгулююць, як на аснове гэтых даных ствараюцца прапановы, падсумаванні тэкстаў і адказы на пытанні, а таксама выконваецца паляпшэнне прадукту. Пры выкарыстанні гэтых функцый не ўключайце ў тэксты асабістую і канфідэнцыяльную інфармацыю.</translation>
 <translation id="7748275671948949022">Вылучыць кнопку Панэлі запуску на панэлі доступу</translation>
 <translation id="7749443890790263709">Дасягнута максімальная колькасць сталоў.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Функцыі "Дапамога з напісаннем" і "Дапамога з чытаннем" можна ў любы час выключыць у Наладах. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Чытаць уголас</translation>
 <translation id="7769299611924763557">Файл GIF будзе неўзабаве гатовы</translation>
 <translation id="7773536009433685931">Уключыць Wi-Fi</translation>
@@ -1836,6 +1844,7 @@
 <translation id="7781829728241885113">Учора</translation>
 <translation id="7787212146956232129">Прылады ўводу і вываду ўжо наладжаны. Каб змяніць іх, перайдзіце ў налады.</translation>
 <translation id="7792590255364786396">Бачныя</translation>
+<translation id="7793389284006812057">Генератыўны штучны інтэлект – гэта эксперыментальная функцыя, якая знаходзіцца на раннім этапе распрацоўкі і пакуль даступная не ўсім.</translation>
 <translation id="7796735576426975947">Новае апавяшчэнне схавана</translation>
 <translation id="7798302898096527229">Каб скасаваць, націсніце "Пошук" або "Shift".</translation>
 <translation id="780301667611848630">Не, дзякуй</translation>
@@ -1990,6 +1999,7 @@
 <translation id="8331351032546853669">Чакаецца спампоўванне</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Дрэнны вынік</translation>
 <translation id="8345019317483336363">Выбрана акно "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="8349826889576450703">праграма запуску</translation>
 <translation id="8349964124165471584">Адкрыць спасылку ў новым акне</translation>

@@ -26,6 +26,7 @@
 <translation id="1050038467049342496">ሌሎች መተግበሪያዎችን ይዝጉ</translation>
 <translation id="1053959602163383901"><ph name="PROVIDER_ORIGIN" />ን በሚጠቀሙ ድር ጣቢያዎች ላይ በአረጋጋጭ መሣሪያ ማረጋገጥን መርጠዋል። ይህ አቅራቢ ስለእርስዎ የመክፈያ ዘዴ መረጃ አከማችቶ ሊሆን ይችላል። እርስዎ ይህንን <ph name="LINK_TEXT" /> ይችላሉ።</translation>
 <translation id="1055184225775184556">&amp;አክልን ቀልብስ</translation>
+<translation id="105642538515333723">ከዚህ ቀደም ካሰሷቸው ገጾች ላይ የሚያስታውሷቸውን ማናቸውንም ሐረጎች ወይም ዝርዝሮች ማስገባት ይችላሉ፣ ለምሳሌ «ምቹ መራመጃ ጫማዎች»</translation>
 <translation id="1056898198331236512">ማስጠንቀቂያ</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ በChrome ውስጥ የDino አሂድ ጨዋታ ለመጫወት ትርን ከዚያ አስገባን ይጫኑ</translation>
 <translation id="1058479211578257048">ካርዶችን በማቀመጥ ላይ...</translation>
@@ -41,6 +42,7 @@
 <translation id="1070901266639972381">ማታ</translation>
 <translation id="1073690811593784042">መስታወት (የተቀለመ)</translation>
 <translation id="1074497978438210769">ደህንነቱ አልተጠበቀም</translation>
+<translation id="1074779248866616641">ውጤት</translation>
 <translation id="1075364221219156102">የይለፍ ቁልፍን ይጠቀሙ</translation>
 <translation id="1080116354587839789">ከስፋቱ ጋር አመጣጥን</translation>
 <translation id="1081061862829655580">መሳቢያ 19</translation>
@@ -608,7 +610,7 @@
 <translation id="2108755909498034140">ኮምፒውተርዎን ዳግም ያስጀምሩት</translation>
 <translation id="2111166930115883695">ለመጫወት ክፍተትን ይጫኑ</translation>
 <translation id="2112529237938317174">የፈቃድ ዝርዝሮችን አሳይ</translation>
-<translation id="2113977810652731515">ካርታ</translation>
+<translation id="2113977810652731515">ካርድ</translation>
 <translation id="2114841414352855701">በ<ph name="POLICY_NAME" /> ስለተሻረ ችላ ተብሏል።</translation>
 <translation id="2118132148597630479">ሲ5 ፖስታ</translation>
 <translation id="2119505898009119320">ለዚህ ተሰጥቷል፦ <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
@@ -967,6 +969,7 @@
 <translation id="2824775600643448204">የአድራሻ እና ፍለጋ አሞሌ</translation>
 <translation id="2826760142808435982">ግንኙነቱ የተመሰጠረ እና <ph name="CIPHER" />ን በመጠቀም የተረጋገጠ ነው፣ እና <ph name="KX" />ን እንደ የቁልፍ መቀያየሪያ ስልት ይጠቀምበታል።</translation>
 <translation id="2833637280516285136">የንግግር ሬዲዮ</translation>
+<translation id="2837891525090413132">የእርስዎን ቁልፍ ሰሌዳ ለመቆለፍ ወይም ለመጠቀም መጠየቅ ይችላል</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> ስለ እርስዎ ያስቀመጡትን መረጃ መጠቀም ይፈልጋሉ</translation>
 <translation id="2839032553903800133">ማሳወቂያዎች ታግደዋል</translation>
 <translation id="2839501879576190149">የውሸት ጣቢያ ከፊት አለ</translation>
@@ -2856,6 +2859,7 @@
 <translation id="6433797564277305076">ከአሁን በኋላ የመሣሪያ መክፈቻን በመጠቀም በበለጠ ፍጥነት ካርዶችዎን ያረጋግጡ</translation>
 <translation id="643917412048333145">ቀሚሶች</translation>
 <translation id="6440503408713884761">የተተወ</translation>
+<translation id="6440534369669992497">ከዚህ ቀደም ካሰሷቸው ገጾች ላይ የሚያስታውሷቸውን ማናቸውንም ሐረጎች ወይም ዝርዝሮች ማስገባት ይችላሉ፣ ለምሳሌ «ምቹ መራመጃ ጫማዎች»። ለመፈለግ <ph name="SHORTCUT" /></translation>
 <translation id="6443406338865242315">የትኛዎቹ ቅጥያዎች እና ተሰኪዎች ናቸው እርስዎ የጫኑት</translation>
 <translation id="6444329331928531170">ጡረታ እና የጡረታ አበል</translation>
 <translation id="6446608382365791566">ተጨማሪ መረጃ ያክሉ</translation>
@@ -3139,6 +3143,7 @@
 <translation id="7006930604109697472">ለማንኛውም ላክ</translation>
 <translation id="7010658264061801199">ምግብ እና መጠጥ</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013835112918108252">የእርስዎን መዳፊት ለመቆለፍ ወይም ለመጠቀም መጠየቅ ይችላል</translation>
 <translation id="7014042602717177828">የመኪና ውስጥ ኦዲዮ</translation>
 <translation id="7014741021609395734">የማጉላት ደረጃ</translation>
 <translation id="7016992613359344582">እነዚህ ክፍያዎች የአንድ ጊዜ ወይም ተደጋጋሚ፣ እና የማያስታውቁ ሊሆኑ ይችላሉ።</translation>
@@ -3153,6 +3158,7 @@
 <translation id="7031646650991750659">የትኛዎቹን የGoogle Play መተግበሪያዎች እንደጫኑ</translation>
 <translation id="7035705295266423040">ባንክዎ እርስዎ መሆንዎን ማረጋገጥ ይፈልጋል</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ የGoogle መለያ ግላዊነት ቅንብሮችን ለማስተዳደር ትርን ከዚያ አስገባን ይጫኑ</translation>
+<translation id="7042616127917168121">ውጤቶችን አጥራ</translation>
 <translation id="7043552168914147882">የትር ክምችት</translation>
 <translation id="7044081119134178347">ካሜራ ለዚህ ጊዜ ይፈቀዳል</translation>
 <translation id="7048095965575426564">የአውሮፓ ፋንፎልድ</translation>

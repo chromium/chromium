@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Aktivan prije <ph name="LAST_UPDATED" /> dana</translation>
 <translation id="1390418506739274310">Možete vidjeti historiju iz drugih aplikacija koje otvaraju linkove u Chromeu. Vaš Google račun može imati druge oblike historije pregledanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Da nastavite, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će dijeliti vaše ime i prezime, adresu e-pošte, adresu i sliku profila s ovom web lokacijom. Pogledajte <ph name="BEGIN_LINK1" />Uslove korištenja usluge<ph name="END_LINK1" /> ove web lokacije.</translation>
+<translation id="139752016751285248">Donja tabela uvida u cijene je otvorena u punoj visini</translation>
 <translation id="1397811292916898096">Pretražite pomoću proizvoda <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Možete <ph name="BEGIN_LINK1" />upravljati podacima Chromea koji se pohranjuju<ph name="END_LINK1" /> na Google račun.
 
@@ -179,6 +180,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="1877073879466606884">Profil na koji ste prijavljeni je upravljani profil. Administrator može daljinski mijenjati postavke profila, analizirati informacije o pregledniku putem izvještavanja i obavljati druge potrebne zadatke.</translation>
 <translation id="1883903952484604915">Moji fajlovi</translation>
 <translation id="189358972401248634">Drugi jezici</translation>
+<translation id="1899175549411605574">Donja tabela uvida u cijene</translation>
 <translation id="1900260903084164610">Ako nastavite, pristajete na <ph name="BEGIN_TOS_LINK" />Uslove korištenja usluge<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">URL-ovi koje posjećujete pohranjuju se na vaš Google račun</translation>
 <translation id="1910950723001426294">Lista opcija dijeljenja je zatvorena.</translation>
@@ -530,6 +532,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3637744895182738742">Ako ste zaboravili pristupni izraz ili želite promijeniti ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea na računu<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Odlazak na početnu stranicu u aplikaciji Google</translation>
 <translation id="368329460027487650">Odjavljeni ste. Otvara opcije za prijavu.</translation>
+<translation id="3684540848053703310">Donja tabela uvida u cijene je zatvorena</translation>
 <translation id="3687645719033307815">Prikazan vam je pregled ove stranice</translation>
 <translation id="3690369331356918524">Upozorava vas ako su lozinke izložene prilikom narušavanja podataka</translation>
 <translation id="3692944402865947621">Preuzimanje fajla <ph name="FILE_NAME" /> nije uspjelo jer je lokacija arhiviranja nedostupna.</translation>

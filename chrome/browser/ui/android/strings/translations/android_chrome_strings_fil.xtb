@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Aktibo <ph name="LAST_UPDATED" /> (na) araw ang nakalipas</translation>
 <translation id="1390418506739274310">Puwede mong makita ang history mula sa iba pang app na nagbubukas ng mga link sa Chrome. Posibleng may iba pang uri ng history ng pag-browse ang iyong Google Account sa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Para magpatuloy, ibabahagi ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ang iyong pangalan, email address, at larawan sa profile sa site na ito. Tingnan ang <ph name="BEGIN_LINK1" />mga tuntunin ng serbisyo<ph name="END_LINK1" /> ng site na ito.</translation>
+<translation id="139752016751285248">Binuksan nang buo ang bottom sheet ng mga insight sa presyo</translation>
 <translation id="1397811292916898096">Maghanap gamit ang <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Puwede mong <ph name="BEGIN_LINK1" />pamahalaan kung anong data ng Chrome ang nase-save<ph name="END_LINK1" /> sa iyong Google Account.
 
@@ -179,6 +180,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="1877073879466606884">Naka-sign in ka sa isang pinapamahalaang profile. Puwedeng remote na gumawa ng mga pagbabago sa mga setting ng profile mo, magsuri ng impormasyon tungkol sa browser sa pamamagitan ng pag-uulat, at gumawa ng iba pang kinakailangang gawain ang iyong administrator.</translation>
 <translation id="1883903952484604915">Aking Mga File</translation>
 <translation id="189358972401248634">Iba pang mga wika</translation>
+<translation id="1899175549411605574">Bottom sheet ng mga insight sa presyo</translation>
 <translation id="1900260903084164610">Sa pamamagitan ng pagpapatuloy, sumasang-ayon ka sa <ph name="BEGIN_TOS_LINK" />Mga Tuntunin ng Serbisyo<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Naka-save sa iyong Google Account ang mga URL na iyong binibisita</translation>
 <translation id="1910950723001426294">Nakasara ang listahan ng mga opsyon sa pagbabahagi.</translation>
@@ -530,6 +532,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3637744895182738742">Kung nakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Pumunta sa Home sa Google App</translation>
 <translation id="368329460027487650">Naka-sign out. Magbubukas ng mga opsyon sa pag-sign in.</translation>
+<translation id="3684540848053703310">Isinara ang bottom sheet ng mga insight sa presyo</translation>
 <translation id="3687645719033307815">Tinitingnan mo ang preview ng page na ito</translation>
 <translation id="3690369331356918524">Babalaan ka kung mae-expose ang mga password sa isang paglabag sa data</translation>
 <translation id="3692944402865947621">Hindi na-download ang <ph name="FILE_NAME" /> dahil hindi maabot ang lokasyon ng storage.</translation>

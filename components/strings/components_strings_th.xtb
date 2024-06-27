@@ -26,6 +26,7 @@
 <translation id="1050038467049342496">ปิดแอปอื่นๆ</translation>
 <translation id="1053959602163383901">คุณเลือกยืนยันด้วยอุปกรณ์ Authenticator ในเว็บไซต์ที่ใช้ <ph name="PROVIDER_ORIGIN" /> ผู้ให้บริการนี้อาจจัดเก็บข้อมูลเกี่ยวกับวิธีการชำระเงินของคุณไว้แล้ว โดยคุณ<ph name="LINK_TEXT" />ได้</translation>
 <translation id="1055184225775184556">&amp;เลิกทำการเพิ่ม</translation>
+<translation id="105642538515333723">คุณสามารถป้อนคำหรือรายละเอียดที่จำได้จากหน้าเว็บที่เคยเรียกดู เช่น "รองเท้าใส่เดินสบายๆ"</translation>
 <translation id="1056898198331236512">คำเตือน</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อเล่นเกมไดโนเสาร์วิ่งใน Chrome</translation>
 <translation id="1058479211578257048">กำลังบันทึกบัตร...</translation>
@@ -968,6 +969,7 @@
 <translation id="2824775600643448204">ที่อยู่และแถบค้นหา</translation>
 <translation id="2826760142808435982">การเชื่อมต่อถูกเข้ารหัสและรับรองความถูกต้องโดยใช้ <ph name="CIPHER" /> และใช้ <ph name="KX" /> เป็นกลไกการแลกเปลี่ยนคีย์</translation>
 <translation id="2833637280516285136">รายการวิทยุ</translation>
+<translation id="2837891525090413132">ขอล็อกและใช้แป้นพิมพ์ของคุณได้</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> ต้องการใช้ข้อมูลที่บันทึกไว้เกี่ยวกับตัวคุณ</translation>
 <translation id="2839032553903800133">การแจ้งเตือนถูกบล็อก</translation>
 <translation id="2839501879576190149">ระวังเว็บไซต์หลอกลวง</translation>
@@ -1157,7 +1159,6 @@
 <translation id="3209034400446768650">อาจมีการเรียกเก็บเงินในหน้านี้</translation>
 <translation id="3212581601480735796">มีการตรวจสอบกิจกรรมที่คุณทำใน <ph name="HOSTNAME" /></translation>
 <translation id="3215092763954878852">ใช้ WebAuthn ไม่ได้</translation>
-<translation id="3215311088819828484">อัปเดตผลลัพธ์แล้ว</translation>
 <translation id="3216313131063488104">บลูส์</translation>
 <translation id="3218181027817787318">Relative</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{ต้องอัปเดตเลย}=2{ต้องอัปเดตภายในวันพรุ่งนี้}other{ต้องอัปเดตภายใน # วัน}}</translation>
@@ -2858,6 +2859,7 @@
 <translation id="6433797564277305076">ยืนยันบัตรได้เร็วขึ้นโดยใช้การปลดล็อกอุปกรณ์จากนี้ไป</translation>
 <translation id="643917412048333145">ชุดกระโปรง</translation>
 <translation id="6440503408713884761">ละเว้น</translation>
+<translation id="6440534369669992497">คุณสามารถป้อนคำหรือรายละเอียดที่จำได้จากหน้าเว็บที่เคยเรียกดู เช่น "รองเท้าใส่เดินสบายๆ" <ph name="SHORTCUT" /> เพื่อค้นหา</translation>
 <translation id="6443406338865242315">ส่วนขยายและปลั๊กอินที่คุณติดตั้ง</translation>
 <translation id="6444329331928531170">การเกษียณอายุและบำนาญ</translation>
 <translation id="6446608382365791566">เพิ่มข้อมูลเพิ่มเติม</translation>
@@ -3141,6 +3143,7 @@
 <translation id="7006930604109697472">ส่งเลย</translation>
 <translation id="7010658264061801199">อาหารและเครื่องดื่ม</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013835112918108252">ขอล็อกและใช้เมาส์ของคุณได้</translation>
 <translation id="7014042602717177828">เครื่องเสียงติดรถยนต์</translation>
 <translation id="7014741021609395734">ระดับการซูม</translation>
 <translation id="7016992613359344582">การเรียกเก็บเงินเหล่านี้อาจเกิดขึ้นครั้งเดียวหรือเป็นเกิดขึ้นซ้ำๆ และอาจไม่แสดงอย่างชัดแจ้ง</translation>

@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Ակտիվ է եղել <ph name="LAST_UPDATED" /> օր առաջ</translation>
 <translation id="1390418506739274310">Դուք կարող եք տեսնել պատմությունը այլ հավելվածներից, որոնք հղումներ են բացում Chrome-ում։ Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր, որոնք կարող եք գտնել <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> էջում։</translation>
 <translation id="13931502444227376">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունը կփոխանցի ձեր անունը, էլ․ հասցեն և պրոֆիլի նկարը այս կայքին։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK1" />օգտագործման պայմաններին<ph name="END_LINK1" />։</translation>
+<translation id="139752016751285248">Գների վիճակագրության ներքևի էկրանը բացված է ամբողջությամբ</translation>
 <translation id="1397811292916898096">Որոնում <ph name="PRODUCT_NAME" />-ում</translation>
 <translation id="1398057416966591719">Ձեր Google հաշվում կարող եք <ph name="BEGIN_LINK1" />կառավարել, թե Chrome-ի ինչ տվյալներ պահվեն<ph name="END_LINK1" />։
 
@@ -179,6 +180,7 @@
 <translation id="1877073879466606884">Պրոֆիլը, որը մուտք եք գործել, կառավարվող է։ Ձեր ադմինիստրատորը կարող է հեռակա կարգով փոխել պրոֆիլի կարգավորումները, վերլուծել դիտարկիչի մասին տեղեկությունները հաշվետվությունների միջոցով և կատարել այլ անհրաժեշտ առաջադրանքներ։</translation>
 <translation id="1883903952484604915">Իմ ֆայլերը</translation>
 <translation id="189358972401248634">Այլ լեզուներ</translation>
+<translation id="1899175549411605574">Գների վիճակագրության ներքևի էկրան</translation>
 <translation id="1900260903084164610">Շարունակելով՝ դուք ընդունում եք <ph name="BEGIN_TOS_LINK" />Օգտագործման պայմանները<ph name="END_TOS_LINK" />։</translation>
 <translation id="1904580727789512086">Ձեր այցելած կայքերի հղումները պահվում են ձեր Google հաշվում</translation>
 <translation id="1910950723001426294">Կիսվելու տարբերակների ցանկը փակված է։</translation>
@@ -520,6 +522,7 @@
 <translation id="3587596251841506391">Օգնեք բարելավել անվտանգությունը</translation>
 <translation id="3597179440835065298">Ստացեք ավելի լավ առաջարկներ</translation>
 <translation id="3602290021589620013">Նախադիտում</translation>
+<translation id="3614126103057878858">Գների վիճակագրությունը</translation>
 <translation id="3616113530831147358">Աուդիո</translation>
 <translation id="3622349720008044802">Կառավարել պատուհանները</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 կայք}one{+ # կայք}other{+ # կայք}}</translation>
@@ -529,6 +532,7 @@
 <translation id="3637744895182738742">Եթե մոռացել եք ձեր անցաբառը կամ ուզում եք փոխել այս կարգավորումը, <ph name="BEGIN_LINK" />ջնջեք Chrome-ի տվյալները ձեր հաշվում<ph name="END_LINK" />։</translation>
 <translation id="3674208116086565128">Բացել Google հավելվածի «Գլխավոր էջ» ներդիրը</translation>
 <translation id="368329460027487650">Դուք դուրս եք եկել հաշվից։ Բացում է մուտք գործելու եղանակները։</translation>
+<translation id="3684540848053703310">Գների վիճակագրության ներքևի էկրանը փակված է</translation>
 <translation id="3687645719033307815">Դուք նախադիտում եք այս էջը</translation>
 <translation id="3690369331356918524">Զգուշացնել, եթե տվյալների արտահոսքի արդյունքում իմ գաղտնաբառերը հայտնի դառնան կողմնակի անձանց</translation>
 <translation id="3692944402865947621">Չհաջողվեց ներբեռնել «<ph name="FILE_NAME" />» ֆայլը, քանի որ պահեստն անհասանելի է։</translation>

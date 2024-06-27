@@ -825,6 +825,7 @@
 <translation id="5190835502935405962">બુકમાર્ક બાર</translation>
 <translation id="519530786644929958">ડાઉનલોડ કરવામાં નિષ્ફ્ળતા મળી અને ફરી પ્રયાસ કરી શકાય નહીં.</translation>
 <translation id="5197255632782567636">ઇન્ટરનેટ</translation>
+<translation id="5205197603258285592">છબી આમાં સાચવો...</translation>
 <translation id="5211488077761630279">"<ph name="SITE_NAME" />"ને તમારા <ph name="PERMISSION" />નો ઉપયોગ કરવાની મંજૂરી આપીએ?</translation>
 <translation id="5219295696240154694">વેબ પરની દરેક વ્યક્તિ માટે સુરક્ષાને બહેતર બનાવવા સહાય કરો</translation>
 <translation id="5220945116117011963">તારીખ દ્વારા કૅલેન્ડર ઇવેન્ટ બનાવો</translation>
@@ -1525,6 +1526,7 @@
 <translation id="8556590991644167667">{count,plural, =1{તમે {count} ચેતવણી છોડી દીધી}one{તમે {count} ચેતવણી છોડી દીધી}other{તમે {count} ચેતવણી છોડી દીધી}}</translation>
 <translation id="8560253818350321773">પહેલા વારંવાર ઉપયોગમાં લેવામાં આવતી આઇટમ બતાવો.</translation>
 <translation id="8569721750632860947">તમે તમારા વાંચન સૂચિમાં કયું URL ઉમેરવા માગો છો?</translation>
+<translation id="8570765991595769633">કાર્ડ કસ્ટમાઇઝ કરો</translation>
 <translation id="8577056989960190117">સમયસમાપ્તિનું વર્ષ <ph name="YEAR" /> ઑટોમૅટિક રીતે ભરાય</translation>
 <translation id="8588404856427128947">બંધ</translation>
 <translation id="8591976964826315682">ત્રીજા પક્ષની કુકીને છૂપા મોડમાં બ્લૉક કરો</translation>
@@ -1664,6 +1666,7 @@
 <translation id="948048872540558976">નવું ટૅબ બનાવો</translation>
 <translation id="952218985181984374">{count,plural, =1{બુકમાર્ક સાચવ્યું}one{{count} બુકમાર્ક સાચવ્યું}other{{count} બુકમાર્ક સાચવ્યા}}</translation>
 <translation id="952704832371081537">રદ કરો</translation>
+<translation id="955587716023217544">એકાઉન્ટની સૂચિમાં ફેરફાર કરો</translation>
 <translation id="959066944189734975">તમે <ph name="CHANNEL_NAME" />ને ફૉલો કરી રહ્યાં છો</translation>
 <translation id="96615566463761848">અન્ય ડિવાઇસમાંથી ટૅબ માટેના સૂચનો બતાવો</translation>
 <translation id="973493300226275298">તમામ ઑનલાઇન સ્ટોર પર કોઈ પ્રોડક્ટની કિંમત ટ્રૅક કરો. જ્યારે પણ કિંમતમાં ઘટાડો થાય, ત્યારે તમે અલર્ટ મેળવશો.</translation>

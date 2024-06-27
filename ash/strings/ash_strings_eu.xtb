@@ -216,6 +216,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1747827819627189109">Pantailako teklatua gaitu egin da</translation>
 <translation id="1749109475624620922">Lan-eremu guztiei esleitu zaie <ph name="WINDOW_TITLE" /> leihoa</translation>
 <translation id="1750088060796401187"><ph name="MAX_DESK_LIMIT" /> lan-eremu erabil daitezke gehienez. Kendu lan-eremu bat beste bat ireki ahal izateko.</translation>
+<translation id="1751335846119670066">Irakurtzeko laguntza</translation>
 <translation id="1755408179247123630">Hautatu ozen irakurtzeko aktibatu nahi duzu?</translation>
 <translation id="1755556344721611131">Diagnostikoen aplikazioa</translation>
 <translation id="1756833229520115364">Ezin izan da gorde txantiloia. Leiho edo fitxa gehiegi daude.</translation>
@@ -227,6 +228,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="178347895271755507">Konfiguratu telefonoko azkenaldiko argazkiak, multimedia-elementuak eta jakinarazpenak ikusteko aukera</translation>
 <translation id="1787955149152357925">Desaktibatuta</translation>
 <translation id="1796561540704213354">Bisitatu dituzun orrialdeak eta irekitako orriak dituzten webguneak</translation>
+<translation id="179842970735685253">Google-ren Zerbitzu-baldintzak</translation>
 <translation id="181103072419391116">Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua.</translation>
 <translation id="1816896987747843206">Kamera erabiltzeko baimena daukaten aplikazio eta webgune guztiek kamera atzitu ahal izango dute</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3122464029669770682">PUZ</translation>
 <translation id="3125690294288312932">Ikasgelako lan mota</translation>
 <translation id="3126026824346185272">Ktrl</translation>
+<translation id="3134486240968249588">Kontuan hartzeko gauza batzuk</translation>
 <translation id="3139188263101386725">Erabili eguneratutako lasterbidea</translation>
 <translation id="3139942575505304791">1. lan-eremua</translation>
 <translation id="315116470104423982">Datu-konexioa</translation>
@@ -962,6 +965,7 @@ Gailu bat dago konektatuta.</translation>
 <translation id="4585337515783392668">Utzi hargailu ezezagun batera igortzeari</translation>
 <translation id="4596144739579517758">Desaktibatuta dago gai iluna.</translation>
 <translation id="4596442969149038771"><ph name="USER" /> erabiltzaileak partekatua</translation>
+<translation id="4610493115106525653">Emaitza ona</translation>
 <translation id="4611292653554630842">Hasi saioa</translation>
 <translation id="462160925400706389"><ph name="NAME" /> konektatuta</translation>
 <translation id="4623167406982293031">Egiaztatu kontua</translation>
@@ -1119,6 +1123,7 @@ Lasterbide hau ere erabil dezakezu: lehenengo, nabarmendu testua, eta, ondoren, 
 <translation id="5121628974188116412">Joan orriaren behealdera</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> lan-eremuaren aurrebista. Lan-eremu inaktiboa.</translation>
 <translation id="5136175204352732067">Beste teklatu bat konektatu duzu</translation>
+<translation id="5140105873789567560">Gutxienez 18 urte izan behar dituzu idazteko eta irakurtzeko laguntza erabiltzeko.</translation>
 <translation id="5144005092084035179">Audio-sarrera aldatu nahi duzu?</translation>
 <translation id="5147567197700016471">Desblokeatuta</translation>
 <translation id="5150070631291639005">Pribatutasun-ezarpenak</translation>
@@ -1559,6 +1564,7 @@ Berriki instalatu da</translation>
 <translation id="6696025732084565524">Bereiz daitekeen teklatuak ezinbesteko eguneratze bat behar du</translation>
 <translation id="6697913454192220372">Gehitu lan-eremu bat</translation>
 <translation id="6700713906295497288">IME menu-botoia</translation>
+<translation id="6704375469818246414">Baliteke kalitatea beti bera ez izatea AA generatiboa erabiltzean.</translation>
 <translation id="6706742084323792866">Ainguratu teklatua</translation>
 <translation id="6710213216561001401">Aurrekoa</translation>
 <translation id="6723839937902243910">Bateria</translation>
@@ -1826,9 +1832,11 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7726391492136714301">Ikusi telefonoko jakinarazpenak eta aplikazioak</translation>
 <translation id="7727952505535211425">Ireki helbide-barrako webgunea beste fitxa batean</translation>
 <translation id="7742327441377685481">Ez dago jakinarazpenik</translation>
+<translation id="774736258792760908">Idazteko laguntza eta Irakurtzeko laguntza aktibatzean, idatzitako testua eta dokumentuaren edukia Google-ren AAren zerbitzarietara bidaltzen dira idazketarako iradokizunak eta laburpenak sortzeko, galderei erantzuteko eta produktua hobetzeko, <ph name="LINK_TO_SERVICE_TERMS" /> gordeta. Ez sartu pertsonala, kontuzkoa edo isilpekoa den informaziorik.</translation>
 <translation id="7748275671948949022">Nabarmendu Exekutatzeko tresnaren botoia apalean</translation>
 <translation id="7749443890790263709">Gehieneko lan-eremuen kopurura iritsi zara.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Idazteko laguntza eta Irakurtzeko laguntza desaktibatzeko, joan ezarpenetara. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Hautatu ozen irakurtzeko</translation>
 <translation id="7769299611924763557">GIFa laster egongo da prest</translation>
 <translation id="7773536009433685931">Horren ordez, aktibatu wifia</translation>
@@ -1837,6 +1845,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7781829728241885113">Atzo</translation>
 <translation id="7787212146956232129">Sarrera- eta irteera-gailuak ezarrita daude. Aldatzeko, joan ezarpenetara.</translation>
 <translation id="7792590255364786396">Ikusgai</translation>
+<translation id="7793389284006812057">AA generatiboa esperimentala da, garapen-zikloaren fase goiztiar batean dago eta, oraingoz, erabilgarritasun mugatua du.</translation>
 <translation id="7796735576426975947">Beste jakinarazpen bat ezkutatu da</translation>
 <translation id="7798302898096527229">Bertan behera uzteko, sakatu Bilatu edo Maius.</translation>
 <translation id="780301667611848630">Ez, eskerrik asko</translation>
@@ -1991,6 +2000,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8331351032546853669">Deskarga zain</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Emaitza txarra</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> leihoa dago hautatuta</translation>
 <translation id="8349826889576450703">abiarazlea</translation>
 <translation id="8349964124165471584">Ireki esteka beste leiho batean</translation>

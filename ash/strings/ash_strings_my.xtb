@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">မျက်နှာပြင် ပေါ်က ကီးဘုတ် ဖွင့်ထား</translation>
 <translation id="1749109475624620922"><ph name="WINDOW_TITLE" /> ဝင်းဒိုးကို အခြားမျက်နှာပြင်နေရာအားလုံးအား သတ်မှတ်ပေးထားသည်</translation>
 <translation id="1750088060796401187">မျက်နှာပြင်နေရာ <ph name="MAX_DESK_LIMIT" /> ခုသာ ခွင့်ပြုထားသည်။ မျက်နှာပြင်နေရာအသစ် ဖွင့်ရန် တစ်ခုကို ဖယ်ရှားပါ။</translation>
+<translation id="1751335846119670066">ကူဖတ်ပေးပါ</translation>
 <translation id="1755408179247123630">‘စကားပြော ရွေးရန်’ ကို ဖွင့်မလား။</translation>
 <translation id="1755556344721611131">Diagnostics အက်ပ်</translation>
 <translation id="1756833229520115364">နမူနာပုံစံကို သိမ်း၍မရပါ။ ဝင်ဒိုး (သို့) တဘ် များလွန်းနေသည်။</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">သင့်ဖုန်းရှိ မကြာသေးမီက ဓာတ်ပုံ၊ မီဒီယာနှင့် အကြောင်းကြားချက်များ ကြည့်ရှုမှုအတွက် စနစ်ထည့်သွင်းရန်</translation>
 <translation id="1787955149152357925">ပိတ်</translation>
 <translation id="1796561540704213354">သင်ဝင်ကြည့်ထားသော စာမျက်နှာများနှင့် ဖွင့်ထားသော စာမျက်နှာများ ပါဝင်သော ဝဘ်ဆိုက်များ</translation>
+<translation id="179842970735685253">Google ၏ ဝန်ဆောင်မှုစည်းမျဉ်းများ</translation>
 <translation id="181103072419391116">လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားပါသည်</translation>
 <translation id="1816896987747843206">၎င်းက ကင်မရာခွင့်ပြုချက်ပါသည့် အက်ပ်နှင့် ဝဘ်ဆိုက်အားလုံးကို ကင်မရာသုံးခွင့်ပြုသည်</translation>
 <translation id="1823873187264960516">အီသာနက်− <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">အတန်းတွင်းသင်ခန်းစာ အမျိုးအစား</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">သိထားရမည့် အရာအချို့</translation>
 <translation id="3139188263101386725">အပ်ဒိတ်လုပ်ထားသော ဖြတ်လမ်းလင့်ခ် သုံးပါ</translation>
 <translation id="3139942575505304791">စာရေးခုံ ၁</translation>
 <translation id="315116470104423982">မိုဘိုင်း ဒေတာ</translation>
@@ -961,6 +964,7 @@
 <translation id="4585337515783392668">အမည်မသိ လက်ခံစက်သို့ ကာ့စ်လုပ်ခြင်း ရပ်တန့်ရန်</translation>
 <translation id="4596144739579517758">အမှောင်နောက်ခံ ပိတ်ထားသည်</translation>
 <translation id="4596442969149038771"><ph name="USER" /> က မျှဝေထားသည်</translation>
+<translation id="4610493115106525653">ထုတ်လုပ်ချက် ကောင်းသည်</translation>
 <translation id="4611292653554630842">အကောင့်ထဲဝင်ရန်</translation>
 <translation id="462160925400706389"><ph name="NAME" /> ချိတ်ဆက်ပြီးပြီ</translation>
 <translation id="4623167406982293031">အကောင့်ကို အတည်ပြုရန်</translation>
@@ -1118,6 +1122,7 @@
 <translation id="5121628974188116412">စာမျက်နှာ၏ အောက်ဆုံးသို့ သွားရန်</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> အစမ်းပြကွက်။ အသုံးမပြုသည့် မျက်နှာပြင်။</translation>
 <translation id="5136175204352732067">မတူညီသည့် ကီးဘုတ်ကို ချိတ်ဆက်ထားသည်</translation>
+<translation id="5140105873789567560">‘ကူရေးပေးပါ’ နှင့် ‘ကူဖတ်ပေးပါ’ တို့ကိုသုံးရန် သင့်အသက် ၁၈ နှစ် အနည်းဆုံးရှိရမည်။</translation>
 <translation id="5144005092084035179">အသံဝင်မည့် ကိရိယာ ပြောင်းမလား။</translation>
 <translation id="5147567197700016471">လော့ခ်ဖွင့်လိုက်သည်</translation>
 <translation id="5150070631291639005">ကိုယ်ရေးအချက်အလက်လုံခြုံမှု ဆက်တင်များ</translation>
@@ -1558,6 +1563,7 @@
 <translation id="6696025732084565524">သင်၏ ဖြုတ်လွယ်တပ်လွယ်ကီးဘုတ်အတွက် အရေးကြီးသည့်အပ်ဒိတ် လိုအပ်နေသည်</translation>
 <translation id="6697913454192220372">မျက်နှာပြင်အသစ် ထည့်ရန်</translation>
 <translation id="6700713906295497288">IME မီနူးခလုတ်</translation>
+<translation id="6704375469818246414">ထုတ်လုပ်မှု AI သုံးသောအခါ အရည်အသွေး ကွဲပြားနိုင်သည်။</translation>
 <translation id="6706742084323792866">ပင်နံပါတ် ကီးဘုတ်</translation>
 <translation id="6710213216561001401">အရင်</translation>
 <translation id="6723839937902243910">ပါဝါ</translation>
@@ -1825,9 +1831,11 @@
 <translation id="7726391492136714301">သင့်ဖုန်း၏ အကြောင်းကြားချက်နှင့် အက်ပ်များကို ကြည့်နိုင်သည်</translation>
 <translation id="7727952505535211425">လိပ်စာဘားရှိ ဝဘ်ဆိုက်ကို တဘ်အသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="7742327441377685481">အကြောင်းကြားချက် မရှိပါ</translation>
+<translation id="774736258792760908">‘ကူရေးပေးပါ’ နှင့် ‘ကူဖတ်ပေးပါ’ တို့ကို ဖွင့်ထားသောအခါ အရေးအသား အကြံပြုချက်များ၊ အနှစ်ချုပ်များ ထုတ်လုပ်ပေးရန်၊ မေးခွန်းများ ဖြေရန်နှင့် ထုတ်ကုန် ပိုကောင်းစေရန်အတွက် ထည့်သွင်းသည့်စာသားနှင့် မှတ်တမ်းအကြောင်းအရာတို့ကို <ph name="LINK_TO_SERVICE_TERMS" /> နှင့်အညီ Google AI ဆာဗာများသို့ပို့သည်။ ကိုယ်ရေးကိုယ်တာ၊ သတိထားရမည့် (သို့) လျှို့ဝှက်အချက်အလက်များကို မထည့်ပါနှင့်။</translation>
 <translation id="7748275671948949022">စင်ပေါ်တွင် Launcher ခလုတ်ကို မြင်သာအောင်လုပ်ရန်</translation>
 <translation id="7749443890790263709">အများဆုံးသတ်မှတ်ထားသည့် စားပွဲအရေအတွက် ပြည့်သွားပါပြီ။</translation>
 <translation id="7749958366403230681">ExpressKey ၄</translation>
+<translation id="7759183637555564029">‘ကူရေးပေးပါ’ နှင့် ‘ကူဖတ်ပေးပါ’ တို့ကို ဆက်တင်များတွင် အချိန်မရွေး ပိတ်နိုင်သည်။ <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">စကားပြော-ရွေးရန်</translation>
 <translation id="7769299611924763557">သင်၏ GIF မကြာမီ အသင့်ဖြစ်ပါမည်</translation>
 <translation id="7773536009433685931">၎င်းအစား WiFi ဖွင့်ရန်</translation>
@@ -1836,6 +1844,7 @@
 <translation id="7781829728241885113">မနေ့က</translation>
 <translation id="7787212146956232129">အသံအဝင်အထွက် ကိရိယာများ သတ်မှတ်ထားသည်။ ပြောင်းရန် ဆက်တင်များသို့ သွားပါ။</translation>
 <translation id="7792590255364786396">မြင်နိုင်သည်</translation>
+<translation id="7793389284006812057">ထုတ်လုပ်မှု AI ကို အစောပိုင်း စမ်းသပ်ရေးဆွဲနေဆဲဖြစ်ပြီး လောလောဆယ်တွင် ရနိုင်မှု အကန့်အသတ်ရှိသည်။</translation>
 <translation id="7796735576426975947">အကြောင်းကြားချက်အသစ် ဖျောက်ထားသည်</translation>
 <translation id="7798302898096527229">ပယ်ဖျက်ရန် Search သို့မဟုတ် Shift ခလုတ်ကို နှိပ်ပါ။</translation>
 <translation id="780301667611848630">မလိုပါ</translation>
@@ -1990,6 +1999,7 @@
 <translation id="8331351032546853669">ဒေါင်းလုဒ် ဆိုင်းငံ့ထားသည်</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">ထုတ်လုပ်ချက် မကောင်းပါ</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ဝင်းဒိုးကို ရွေးထားသည်</translation>
 <translation id="8349826889576450703">Launcher</translation>
 <translation id="8349964124165471584">ဝင်းဒိုးအသစ်တွင် လင့်ခ်ဖွင့်ရန်</translation>

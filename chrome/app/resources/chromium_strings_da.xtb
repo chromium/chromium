@@ -79,6 +79,8 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="2329088755516916767">Når indstillingen er aktiveret, forudindlæser Chromium sider, hvilket gør det hurtigere at browse og søge.</translation>
 <translation id="2343156876103232566">Hvis du vil sende et nummer fra denne enhed til din Android-telefon, skal du logge ind på Chromium på begge enheder.</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
+<translation id="2361918034042471035">Udvidelsen "<ph name="EXTENSION_NAME" />" vil have dig til at logge ind i Chromium</translation>
+<translation id="2374216753258219393">Log ind i Chromium for at bruge denne udvidelse som <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2384373936468275798">Chromium OS kunne ikke synkronisere dine data, fordi loginoplysningerne til din konto er forældede.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{En eller flere Chromium-udvidelser havde adgang til 1 HID-enhed}=1{En eller flere Chromium-udvidelser har adgang til 1 HID-enhed}one{En eller flere Chromium-udvidelser har adgang til # HID-enhed}other{En eller flere Chromium-udvidelser har adgang til # HID-enheder}}</translation>
 <translation id="2401032172288869980">Chromium skal have adgangstilladelse til kamera og mikrofon for at bruge dette website</translation>
@@ -242,9 +244,11 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="4893347770495441059">Genstart og opdater &amp;Chromium</translation>
 <translation id="4942295735032723435">Hvis du vil have fremtidige Chromium-opdateringer, skal du have macOS 11 eller nyere. Denne computer anvender macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium kører i baggrunden.</translation>
+<translation id="494490797786467921">Klik for at lukke dialogboksen til login i Chromium</translation>
 <translation id="4987820182225656817">Gæster kan bruge Chromium uden at efterlade noget.</translation>
 <translation id="4994636714258228724">Tilføj dig selv i Chromium</translation>
 <translation id="5114678101347489141">Chromium afprøver nye funktioner, der giver websites mulighed for at levere den samme browseroplevelse med færre af dine data</translation>
+<translation id="5187123684706427865">Chromium-kontoen kræver fornyet godkendelse</translation>
 <translation id="5224391634244552924">Der er ingen gemte adgangskoder. Chromium kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="5231355151045086930">Log ud af Chromium</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> er allerede logget ind på denne Chromium-profil. Denne handling vil oprette en ny Chromium-profil til <ph name="USER_EMAIL_ADDRESS" /></translation>

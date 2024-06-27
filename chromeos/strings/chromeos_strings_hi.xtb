@@ -102,6 +102,7 @@
 <translation id="1499900233129743732">इस उपयोगकर्ता को <ph name="MANAGER" /> प्रबंधित करता है और यह किसी दूसरी जगह पर होते हुए भी सेटिंग को प्रबंधित कर सकता है. साथ ही, यह उपयोगकर्ता की गतिविधि पर नज़र रख सकता है.</translation>
 <translation id="150962533380566081">गलत पीयूके.</translation>
 <translation id="1510238584712386396">लॉन्चर</translation>
+<translation id="1514446283880973949">पूरे आत्मविश्वास के साथ लिखें. साथ ही, कॉन्टेंट के बारे में खास जानकारी, परिभाषाएं वगैरह पाएं</translation>
 <translation id="1515129336378114413">ब्राउज़र का होम पेज</translation>
 <translation id="1526389707933164996">स्क्रीन सेवर का ऐनिमेशन</translation>
 <translation id="152892567002884378">वॉल्यूम बढ़ाएं</translation>
@@ -1287,6 +1288,7 @@
 <translation id="8167413449582155132">Google के एआई की मदद से तैयार किया गया कैमरा बैकग्राउंड</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">समुद्र तट</translation>
+<translation id="819278132617411009">अपनी प्रॉडक्टिविटी बढ़ाने के लिए, Google के एआई का इस्तेमाल करें</translation>
 <translation id="8206859287963243715">सेलुलर</translation>
 <translation id="8208861521865154048">फ़ायदे</translation>
 <translation id="8226628635270268143">अपनी पसंदीदा फ़ोटो और एल्बम चुनें</translation>
@@ -1333,6 +1335,7 @@
 <translation id="8431300646573772016">ChromeOS में नया क्या है</translation>
 <translation id="843568408673868420">इंटरनेट कनेक्टिविटी</translation>
 <translation id="844521431886043384">डीएनएस सेट अप नहीं किया गया है</translation>
+<translation id="8456200178779628126">पढ़ने और लिखने में मदद पाने के लिए, Google के एआई का इस्तेमाल करें</translation>
 <translation id="8456761643544401578">अपने-आप गहरे रंग वाला मोड</translation>
 <translation id="8461329675984532579">'होम' पर सेवाएं देने वाली कंपनी का नाम</translation>
 <translation id="8475690821716466388">यह वाई-फ़ाई नेटवर्क एक कमज़ोर प्रोटोकॉल WEP PSK से सुरक्षित है</translation>
@@ -1459,6 +1462,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> के लिए टिकट रीफ़्रेश करें</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> को स्कैन किया जा रहा है</translation>
 <translation id="9111102763498581341">अनलॉक करें</translation>
+<translation id="9122492456897874028">कॉन्टेंट के बारे में खास जानकारी, परिभाषाएं वगैरह पाएं</translation>
 <translation id="9122602430962285795">फिर से कनेक्ट करने के लिए, सेटिंग पर जाएं</translation>
 <translation id="9122865513525855321">ज़ेन</translation>
 <translation id="9126720536733509015">सारे पेज सेव करके एक PDF बना लें</translation>

@@ -5,6 +5,8 @@
 <translation id="1026101648481255140">Parhau i Osod</translation>
 <translation id="102763973188675173">Personoleiddio a rheoli Google Chrome. Mae diweddariad ar gael.</translation>
 <translation id="1028061813283459617">I ddileu data pori o'r ddyfais hon yn unig, tra'n eu cadw yn eich Cyfrif Google, <ph name="BEGIN_LINK" />allgofnodwch o Chrome<ph name="END_LINK" />.</translation>
+<translation id="1042270987544905725">Cliciwch i gau'r deialog mewngofnodi Chrome</translation>
+<translation id="1059838145689930908">I ddefnyddio'r estyniad hwn fel <ph name="USER_EMAIL_ADDRESS" />, mewngofnodwch i Chrome.</translation>
 <translation id="1065672644894730302">Ni ellir darllen eich dewisiadau.
 
 Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiadau yn cael eu cadw.</translation>
@@ -373,6 +375,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6291089322031436445">Apiau Chrome Dev</translation>
 <translation id="6291549208091401781">Mae Google Chrome eisoes wedi'i osod ar gyfer pob defnyddiwr ar eich cyfrifiadur.</translation>
 <translation id="6319856120645568262">Mae angen caniatâd ar Chrome i fapio'ch amgylchoedd ac olrhain eich dwylo</translation>
+<translation id="6321592572353357376">Mae'r estyniad "<ph name="EXTENSION_NAME" />" eisiau i chi fewngofnodi i Chrome</translation>
 <translation id="6326175484149238433">Tynnu o Chrome</translation>
 <translation id="6327105987658262776">Nid oes diweddariad ar gael.</translation>
 <translation id="6360449101159168105">Tra bod y tab hwn yn anweithredol, rhyddhawyd cof i gadw Chrome yn gyflym. Gallwch ddewis gwahardd y wefan hon rhag bod yn anactif bob amser.</translation>
@@ -465,6 +468,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="7655455401911432608">Eich hanes pori, cofnod o wefannau rydych wedi ymweld â nhw drwy ddefnyddio Chrome ar y ddyfais hon.</translation>
 <translation id="7661924425853052955">Nid ydych wedi ymweld yn ddiweddar. Mae Chrome wedi tynnu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="COUNT" /> arall</translation>
 <translation id="7668816516367091728">Perfformio tasgau fel cyfieithu, cyfrifo, ac yn fwy uniongyrchol o'r bar cyfeiriad</translation>
+<translation id="7670287553302121848">Mae angen ail-ddilysu'r cyfrif Chrome</translation>
 <translation id="769538538642757151">Bydd Chrome yn rhoi gwybod i chi os oes angen i chi adolygu unrhyw beth</translation>
 <translation id="7747138024166251722">Ni allai'r gosodwr greu cyfeiriadur dros dro. Gwnewch yn siŵr bod gennych ddigon o le storio ar gael a bod gennych y caniatâd i osod meddalwedd.</translation>
 <translation id="7761834446675418963">Cliciwch eich enw i agor Chrome ac i ddechrau pori.</translation>

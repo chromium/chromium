@@ -26,6 +26,7 @@
 <translation id="1050038467049342496">Uždarykite kitas programas</translation>
 <translation id="1053959602163383901">Svetainėse, kuriose naudojama <ph name="PROVIDER_ORIGIN" />, pasirinkote patvirtinti naudodami autentifikavimo priemonės įrenginį. Šis teikėjas galėjo išsaugoti informaciją apie jūsų mokėjimo metodą, ir galite <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Anuliuoti pridėjimą</translation>
+<translation id="105642538515333723">Galite įvesti bet kokias frazes ar išsamią informaciją, kurią prisimenate iš anksčiau naršytų puslapių, pvz., „patogūs vaikščiojimo batai“</translation>
 <translation id="1056898198331236512">Įspėjimas</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, jei norite žaisti žaidimą „Dino Run“ naršyklėje „Chrome“.</translation>
 <translation id="1058479211578257048">Išsaugomos kortelės...</translation>
@@ -968,6 +969,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2824775600643448204">Adreso ir paieškos juosta</translation>
 <translation id="2826760142808435982">Ryšys užšifruotas ir tapatybė nustatyta naudojant <ph name="CIPHER" />. <ph name="KX" /> naudojamas kaip pagrindinis mainų mechanizmas.</translation>
 <translation id="2833637280516285136">Pokalbių radijas</translation>
+<translation id="2837891525090413132">Gali paprašyti užrakinti ir naudoti klaviatūrą</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> nori naudoti savo išsaugotą informaciją apie jus</translation>
 <translation id="2839032553903800133">Pranešimai užblokuoti</translation>
 <translation id="2839501879576190149">Ketinate apsilankyti netikroje svetainėje</translation>
@@ -1158,7 +1160,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3209034400446768650">Puslapyje galite būti apmokestinti</translation>
 <translation id="3212581601480735796">Jūsų veikla <ph name="HOSTNAME" /> stebima</translation>
 <translation id="3215092763954878852">Nepavyko naudoti „WebAuthn“</translation>
-<translation id="3215311088819828484">Rezultatas atnaujintas</translation>
 <translation id="3216313131063488104">Bliuzas</translation>
 <translation id="3218181027817787318">Santykinis</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Atnaujinti reikia dabar}=2{Atnaujinti reikia iki rytojaus}one{Atnaujinti reikia per # dieną}few{Atnaujinti reikia per # dienas}many{Atnaujinti reikia per # dienos}other{Atnaujinti reikia per # dienų}}</translation>
@@ -2860,6 +2861,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6433797564277305076">Nuo šiol patvirtinkite korteles sparčiau naudodami įrenginio atrakinimo funkciją</translation>
 <translation id="643917412048333145">Suknelės</translation>
 <translation id="6440503408713884761">Nepaisoma</translation>
+<translation id="6440534369669992497">Galite įvesti bet kokias frazes ar išsamią informaciją, kurią prisimenate iš anksčiau naršytų puslapių, pvz., „patogūs vaikščiojimo batai“. <ph name="SHORTCUT" />, kad galėtumėte ieškoti.</translation>
 <translation id="6443406338865242315">Kuriuos plėtinius ir papildinius įdiegėte</translation>
 <translation id="6444329331928531170">Atsistatydinimas ir pensija</translation>
 <translation id="6446608382365791566">Daugiau informacijos pridėjimas</translation>
@@ -3143,6 +3145,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="7006930604109697472">Vis tiek siųsti</translation>
 <translation id="7010658264061801199">Maistas ir gėrimai</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013835112918108252">Gali paprašyti užrakinti ir naudoti pelę</translation>
 <translation id="7014042602717177828">Automobilių garso įranga</translation>
 <translation id="7014741021609395734">Mastelio keitimo lygis</translation>
 <translation id="7016992613359344582">Šie mokesčiai gali būti vienkartiniai arba pasikartojantys ir gali būti neaiškūs.</translation>

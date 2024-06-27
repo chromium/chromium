@@ -102,6 +102,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> menaxhon këtë përdorues dhe mund të menaxhojë në distancë cilësimet dhe të monitorojë aktivitetin e përdoruesit.</translation>
 <translation id="150962533380566081">Kodi PUK i pavlefshëm.</translation>
 <translation id="1510238584712386396">Nisësi</translation>
+<translation id="1514446283880973949">Shkruaj me më shumë besim, përmblidh përmbajtjen, merr përkufizime etj.</translation>
 <translation id="1515129336378114413">faqja kryesore e shfletuesit</translation>
 <translation id="1526389707933164996">Animacioni i mbrojtësit të ekranit</translation>
 <translation id="152892567002884378">Rrit volumin</translation>
@@ -1287,6 +1288,7 @@
 <translation id="8167413449582155132">Sfondi i mundësuar nga IA-ja e Google</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">plazh</translation>
+<translation id="819278132617411009">Përdor IA-në e Google për të qenë më produktiv</translation>
 <translation id="8206859287963243715">Rrjeti celular</translation>
 <translation id="8208861521865154048">Avantazhet</translation>
 <translation id="8226628635270268143">Zgjidh fotografitë dhe albumet e tua të preferuara</translation>
@@ -1333,6 +1335,7 @@
 <translation id="8431300646573772016">Të rejat me ChromeOS</translation>
 <translation id="843568408673868420">Lidhshmëria e internetit</translation>
 <translation id="844521431886043384">DNS-ja nuk është konfiguruar</translation>
+<translation id="8456200178779628126">Përdor IA-në e Google për të marrë ndihmë për të lexuarit dhe të shkruarit</translation>
 <translation id="8456761643544401578">Modalitet i errët automatik</translation>
 <translation id="8461329675984532579">Emri i ofruesit të rrjetit bazë</translation>
 <translation id="8475690821716466388">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP PSK</translation>
@@ -1459,6 +1462,7 @@
 <translation id="910415269708673980">Rifresko biletën për <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Po skanon faqen <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Shkyç</translation>
+<translation id="9122492456897874028">Përmblidh përmbajtjen, merr përkufizime etj.</translation>
 <translation id="9122602430962285795">Për t'u rilidhur, shko te "Cilësimet"</translation>
 <translation id="9122865513525855321">zen</translation>
 <translation id="9126720536733509015">Ruaj shumë faqe në një skedar PDF</translation>

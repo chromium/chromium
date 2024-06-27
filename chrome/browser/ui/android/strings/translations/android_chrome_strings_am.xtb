@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">ገባሪ ከ<ph name="LAST_UPDATED" /> ቀናት በፊት</translation>
 <translation id="1390418506739274310">በChrome ውስጥ አገናኞችን ከሚከፍቱ ሌሎች መተግበሪያዎች ታሪክን ማየት ይችላሉ። የእርስዎ Google መለያ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> ላይ ሌሎች የአሰሳ ታሪክ ዓይነቶች ሊኖረው ይችላል።</translation>
 <translation id="13931502444227376">ለመቀጠል <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> የእርስዎን ስም፣ ኢሜይል አድራሻ እና የመገለጫ ሥዕል ለዚህ ጣቢያ ያጋራል። የዚህን ጣቢያ <ph name="BEGIN_LINK1" />የአገልግሎት ውል<ph name="END_LINK1" /> ይመልከቱ።</translation>
+<translation id="139752016751285248">የዋጋ ግንዛቤዎች የግርጌ ሉህ በሙሉ ቁመት ተከፍቷል</translation>
 <translation id="1397811292916898096">በ<ph name="PRODUCT_NAME" /> ይፈልጉ</translation>
 <translation id="1398057416966591719">በGoogle መለያዎ ውስጥ <ph name="BEGIN_LINK1" />ምን ዓይነት የChrome ውሂብ እንደሚቀመጥ ማስተዳደር<ph name="END_LINK1" /> ይችላሉ።
 
@@ -179,6 +180,7 @@
 <translation id="1877073879466606884">እርስዎ የገቡበት መገለጫ የሚተዳደር መገለጫ ነው። አስተዳዳሪዎ በመገለጫዎ ቅንብሮች ላይ በርቀት ለውጦችን ማድረግ፣ ሪፖርት በማድረግ ስለአሳሹ መረጃን መተንተን እና ሌሎች አስፈላጊ ተግባራትን ማከናወን ይችላል።</translation>
 <translation id="1883903952484604915">የእኔ ፋይሎች</translation>
 <translation id="189358972401248634">ሌሎች ቋንቋዎች</translation>
+<translation id="1899175549411605574">የዋጋ ግንዛቤዎች የግርጌ ሉህ</translation>
 <translation id="1900260903084164610">በመቀጠል፣ በ<ph name="BEGIN_TOS_LINK" />የአገልግሎት ውል<ph name="END_TOS_LINK" /> ይስማማሉ።</translation>
 <translation id="1904580727789512086">የሚጎበኟቸው ዩአርኤሎች በGoogle መለያዎ ላይ ይቀመጣሉ።</translation>
 <translation id="1910950723001426294">የማጋሪያ አማራጮች ዝርዝር ተዘግቷል።</translation>
@@ -530,6 +532,7 @@
 <translation id="3637744895182738742">የይለፍ ሐረግዎን ከረሱ ወይም ይህን ቅንብር መለወጥ ከፈለጉ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChrome ውሂብ ይሰርዙ<ph name="END_LINK" />።</translation>
 <translation id="3674208116086565128">ወደ የGoogle መተግበሪያ መነሻ ሂድ</translation>
 <translation id="368329460027487650">ዘግተው ወጥተዋል። በመለያ ለመግባት አማራጮችን ይክፈቱ።</translation>
+<translation id="3684540848053703310">የዋጋ ግንዛቤዎች የግርጌ ሉህ ተዘግቷል</translation>
 <translation id="3687645719033307815">የዚህን ገፅ ቅድመ-ዕይታ በማየት ላይ ነዎት</translation>
 <translation id="3690369331356918524">የይለፍ ቃላት በውሂብ ደንብ ጥሰት ተጋላጭ ከሆኑ ያስጠነቅቀዎታል</translation>
 <translation id="3692944402865947621">የማከማቻ ቦታው የማይገኝ ስለሆነ <ph name="FILE_NAME" />ን ማውረድ አልተሳካም።</translation>

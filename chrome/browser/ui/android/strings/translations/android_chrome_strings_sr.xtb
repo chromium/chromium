@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Последња активност: пре <ph name="LAST_UPDATED" /> дан/а</translation>
 <translation id="1390418506739274310">Можете да видите историју из других апликација које отварају линкове у Chrome-у. Google налог може да има друге облике историје прегледања на <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Да бисте наставили, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ће делити ваше име, имејл адресу и слику профила са овим сајтом. Погледајте <ph name="BEGIN_LINK1" />Услове коришћења услуге<ph name="END_LINK1" /> за овај сајт.</translation>
+<translation id="139752016751285248">Доња табела са увидима у цене је отворена преко целог екрана</translation>
 <translation id="1397811292916898096">Претражите помоћу: <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Можете да <ph name="BEGIN_LINK1" />управљате тиме који Chrome подаци се чувају<ph name="END_LINK1" /> на Google налогу.
 
@@ -179,6 +180,7 @@
 <translation id="1877073879466606884">Профил на који сте пријављени је профил којим се управља. Администратор може даљински да уноси промене у подешавања профила, да анализира информације о прегледачу помоћу извештавања и обавља друге неопходне задатке.</translation>
 <translation id="1883903952484604915">Моје датотеке</translation>
 <translation id="189358972401248634">Други језици</translation>
+<translation id="1899175549411605574">Доња табела са увидима у цене</translation>
 <translation id="1900260903084164610">Ако наставите, прихватате <ph name="BEGIN_TOS_LINK" />Услове коришћења услуге<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">URL-ови које посећујете се чувају на Google налогу</translation>
 <translation id="1910950723001426294">Листа опција за дељење је затворена.</translation>
@@ -530,6 +532,7 @@
 <translation id="3637744895182738742">Ако сте заборавили приступну фразу или желите да промените ово подешавање, <ph name="BEGIN_LINK" />избришите Chrome податке на налогу<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Иди на почетну страницу апликације Google</translation>
 <translation id="368329460027487650">Одјављени сте. Отвара опције за пријављивање.</translation>
+<translation id="3684540848053703310">Доња табела са увидима у цене је затворена</translation>
 <translation id="3687645719033307815">Прегледате ову страницу</translation>
 <translation id="3690369331356918524">Упозорава вас ако су лозинке откривене при упаду у податке</translation>
 <translation id="3692944402865947621">Преузимање датотеке <ph name="FILE_NAME" /> није успело зато што локација меморијског простора није доступна.</translation>

@@ -102,6 +102,7 @@
 <translation id="1499900233129743732">Mae <ph name="MANAGER" /> yn rheoli'r defnyddiwr hwn ac mae'n bosib y bydd yn rheoli gosodiadau o bell ac yn monitro gweithgarwch y defnyddiwr.</translation>
 <translation id="150962533380566081">PUK annilys.</translation>
 <translation id="1510238584712386396">Lansiwr</translation>
+<translation id="1514446283880973949">Ysgrifennu gyda mwy o hyder, crynhoi cynnwys, cael diffiniadau a rhagor</translation>
 <translation id="1515129336378114413">hafan y porwr</translation>
 <translation id="1526389707933164996">Animeiddiad arbedwr sgrîn</translation>
 <translation id="152892567002884378">Codi'r sain</translation>
@@ -1287,6 +1288,7 @@
 <translation id="8167413449582155132">Cefndir wedi'i bweru gan AI Google</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">traeth</translation>
+<translation id="819278132617411009">Defnyddio Google AI i fod yn fwy cynhyrchiol</translation>
 <translation id="8206859287963243715">Symudol</translation>
 <translation id="8208861521865154048">Manteision</translation>
 <translation id="8226628635270268143">Dewiswch eich hoff luniau ac albymau</translation>
@@ -1333,6 +1335,7 @@
 <translation id="8431300646573772016">Diweddariadau ChromeOS</translation>
 <translation id="843568408673868420">Cysylltedd Rhyngrwyd</translation>
 <translation id="844521431886043384">Nid yw'r DNS wedi'i osod</translation>
+<translation id="8456200178779628126">Defnyddio Google AI i gael help i ddarllen ac ysgrifennu</translation>
 <translation id="8456761643544401578">Modd tywyll awtomatig</translation>
 <translation id="8461329675984532579">Enw'r darparwr hafan</translation>
 <translation id="8475690821716466388">Diogelir y rhwydwaith Wi-Fi gyda'r protocol gwan WEP PSK</translation>
@@ -1459,6 +1462,7 @@
 <translation id="910415269708673980">Adnewyddu'r tocyn ar gyfer <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Wrthi'n sganio'r dudalen <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Datgloi</translation>
+<translation id="9122492456897874028">Crynhoi cynnwys, cael diffiniadau a rhagor</translation>
 <translation id="9122602430962285795">I ailgysylltu, ewch i'r Gosodiadau</translation>
 <translation id="9122865513525855321">zen</translation>
 <translation id="9126720536733509015">Cadw mwy nag un ddogfen i un PDF</translation>

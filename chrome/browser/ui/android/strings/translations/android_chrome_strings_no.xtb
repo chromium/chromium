@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Aktiv for <ph name="LAST_UPDATED" /> dager siden</translation>
 <translation id="1390418506739274310">Du kan se loggen fra andre apper som åpner linker i Chrome. Det kan hende Google-kontoen din har andre typer nettleserlogger på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">For at du skal kunne fortsette, må <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dele navnet ditt, e-postadressen din og profilbildet ditt med dette nettstedet. Se <ph name="BEGIN_LINK1" />vilkårene for bruk<ph name="END_LINK1" /> av dette nettstedet.</translation>
+<translation id="139752016751285248">Bunnark med prisinnsikt er åpnet i full høyde</translation>
 <translation id="1397811292916898096">Søk med <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Du kan <ph name="BEGIN_LINK1" />administrere hvilke Chrome-data som lagres<ph name="END_LINK1" /> i Google-kontoen din.
 
@@ -179,6 +180,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1877073879466606884">Profilen du er logget på, er en administrert profil. Administratoren din kan gjøre endringer i profilinnstillingene dine eksternt, analysere informasjon om nettleseren gjennom rapportering og utføre andre nødvendige oppgaver.</translation>
 <translation id="1883903952484604915">Mine filer</translation>
 <translation id="189358972401248634">Andre språk</translation>
+<translation id="1899175549411605574">Bunnark med prisinnsikt</translation>
 <translation id="1900260903084164610">Ved å fortsette godtar du <ph name="BEGIN_TOS_LINK" />vilkårene for bruk<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Nettadressene du besøker, lagres i Google-kontoen din</translation>
 <translation id="1910950723001426294">Listen over delingsalternativer er lukket.</translation>
@@ -520,6 +522,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3587596251841506391">Bidra til å gjøre nettet sikrere</translation>
 <translation id="3597179440835065298">Få bedre forslag</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
+<translation id="3614126103057878858">Prisstatistikk</translation>
 <translation id="3616113530831147358">Lyd</translation>
 <translation id="3622349720008044802">Administrer vinduer</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 nettsted}other{+ # nettsteder}}</translation>
@@ -529,6 +532,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3637744895182738742">Hvis du har glemt passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Gå til startsiden for Google-appen</translation>
 <translation id="368329460027487650">Logget av. Åpner alternativer for pålogging.</translation>
+<translation id="3684540848053703310">Bunnark med prisinnsikt er lukket</translation>
 <translation id="3687645719033307815">Du ser på en forhåndsvisning av denne siden</translation>
 <translation id="3690369331356918524">Advarer deg hvis passord blir avdekket i databrudd</translation>
 <translation id="3692944402865947621">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt fordi lagringsstedet ikke kan nås.</translation>

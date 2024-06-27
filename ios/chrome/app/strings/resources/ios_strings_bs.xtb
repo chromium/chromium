@@ -825,6 +825,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="5190835502935405962">Traka oznaka</translation>
 <translation id="519530786644929958">Preuzimanje nije uspjelo i ne može se ponoviti.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205197603258285592">Sačuvaj sliku u…</translation>
 <translation id="5211488077761630279">Dozvoliti web lokaciji "<ph name="SITE_NAME" />" da koristi <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Pomozite nam da poboljšamo sigurnost na webu za sve</translation>
 <translation id="5220945116117011963">Kreirajte događaje u kalendaru iz datuma</translation>
@@ -1525,6 +1526,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8556590991644167667">{count,plural, =1{Odbacili ste {count} upozorenje}one{Odbacili ste {count} upozorenje}few{Odbacili ste {count} upozorenja}other{Odbacili ste {count} upozorenja}}</translation>
 <translation id="8560253818350321773">Prvo prikažite često korištene stavke.</translation>
 <translation id="8569721750632860947">Koji URL želite dodati na listu za čitanje?</translation>
+<translation id="8570765991595769633">Prilagodite kartice</translation>
 <translation id="8577056989960190117">Automatski popunite godinu isteka <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Isključeno</translation>
 <translation id="8591976964826315682">Blokiraj kolačiće trećih strana u anonimnom načinu rada</translation>
@@ -1664,6 +1666,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="948048872540558976">Kreiranje nove kartice</translation>
 <translation id="952218985181984374">{count,plural, =1{Oznaka je sačuvana}one{Sačuvana je {count} oznaka}few{Sačuvane su {count} oznake}other{Sačuvano je {count} oznaka}}</translation>
 <translation id="952704832371081537">Otkaži</translation>
+<translation id="955587716023217544">Uredite listu računa</translation>
 <translation id="959066944189734975">Pratite kanal <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Prikažite prijedloge za kartice s drugih uređaja</translation>
 <translation id="973493300226275298">Pratite cijenu proizvoda u online trgovinama. Dobit ćete upozorenja kada padnu cijene.</translation>

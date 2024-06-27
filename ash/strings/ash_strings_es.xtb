@@ -216,6 +216,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1747827819627189109">Teclado en pantalla habilitado</translation>
 <translation id="1749109475624620922">Ventana <ph name="WINDOW_TITLE" /> asignada a todos los escritorios</translation>
 <translation id="1750088060796401187">Solo se permiten <ph name="MAX_DESK_LIMIT" /> escritorios. Elimina un escritorio para abrir uno nuevo.</translation>
+<translation id="1751335846119670066">Ayúdame a leer</translation>
 <translation id="1755408179247123630">¿Activar Enunciar selección?</translation>
 <translation id="1755556344721611131">Aplicación Diagnóstico</translation>
 <translation id="1756833229520115364">No se ha podido guardar la plantilla. Hay demasiadas ventanas o pestañas.</translation>
@@ -227,6 +228,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="178347895271755507">Configurar la visualización de las fotos, el contenido multimedia y las notificaciones recientes de tu teléfono</translation>
 <translation id="1787955149152357925">No</translation>
 <translation id="1796561540704213354">Sitios web, incluidas las páginas que has visitado y las páginas abiertas</translation>
+<translation id="179842970735685253">Términos del Servicio de Google</translation>
 <translation id="181103072419391116">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, gestionada por el administrador</translation>
 <translation id="1816896987747843206">Esto permite que accedan a la cámara todas las aplicaciones y sitios web con el permiso de cámara</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -265,7 +267,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">El escritorio y las ventanas se han quitado. Pulsa Control + Z para deshacer la acción.</translation>
 <translation id="1972950159383891558">Hola, <ph name="USERNAME" />:</translation>
-<translation id="1977686871076551563">Modo Invertir colores habilitado. Vuelve a pulsar <ph name="ACCELERATOR" /> para desactivarlo.</translation>
+<translation id="1977686871076551563">Modo Inversión de colores habilitado. Vuelve a pulsar <ph name="ACCELERATOR" /> para desactivarlo.</translation>
 <translation id="1978498689038657292">Introducción de texto</translation>
 <translation id="1980808257969311265">Unirse a <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Mostrar semana anterior</translation>
@@ -552,6 +554,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Tipo de trabajo de clase</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Cuestiones que debes tener en cuenta</translation>
 <translation id="3139188263101386725">Usar el acceso directo actualizado</translation>
 <translation id="3139942575505304791">Escritorio 1</translation>
 <translation id="315116470104423982">Redes móviles</translation>
@@ -962,6 +965,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4585337515783392668">Dejar de enviar contenido a un receptor desconocido</translation>
 <translation id="4596144739579517758">Tema oscuro está desactivado</translation>
 <translation id="4596442969149038771"><ph name="USER" /> lo ha compartido</translation>
+<translation id="4610493115106525653">Buenos resultados</translation>
 <translation id="4611292653554630842">Iniciar sesión</translation>
 <translation id="462160925400706389"><ph name="NAME" /> conectado</translation>
 <translation id="4623167406982293031">Verificar cuenta</translation>
@@ -1119,6 +1123,7 @@ También puedes usar la combinación de teclas. Primero, selecciona el texto y, 
 <translation id="5121628974188116412">Ir a la parte inferior de la página</translation>
 <translation id="5122517996953421795">Vista previa de <ph name="DESK_NAME" />. Escritorio inactivo.</translation>
 <translation id="5136175204352732067">Se ha conectado otro teclado</translation>
+<translation id="5140105873789567560">Debes tener al menos 18 años para usar Ayúdame a escribir y Ayúdame a leer.</translation>
 <translation id="5144005092084035179">¿Cambiar entrada de audio?</translation>
 <translation id="5147567197700016471">Desbloqueado</translation>
 <translation id="5150070631291639005">Configuración de privacidad</translation>
@@ -1559,6 +1564,7 @@ Nueva instalación</translation>
 <translation id="6696025732084565524">Tu teclado independiente necesita una actualización crítica</translation>
 <translation id="6697913454192220372">Añadir nuevo escritorio</translation>
 <translation id="6700713906295497288">Botón de menú de IME</translation>
+<translation id="6704375469818246414">La calidad puede variar al usar IA generativa.</translation>
 <translation id="6706742084323792866">Fijar teclado</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6723839937902243910">Encendido</translation>
@@ -1826,9 +1832,11 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="7726391492136714301">Consulta las notificaciones y aplicaciones de tu teléfono</translation>
 <translation id="7727952505535211425">Abrir el sitio web de la barra de direcciones en una pestaña nueva</translation>
 <translation id="7742327441377685481">No hay notificaciones</translation>
+<translation id="774736258792760908">Cuando activas Ayúdame a escribir y Ayúdame a leer, el texto de entrada y el contenido del documento se envían a los servidores de la IA de Google para generar sugerencias de escritura y resúmenes, responder preguntas y mejorar el producto, de acuerdo con los <ph name="LINK_TO_SERVICE_TERMS" />. No incluyas información personal, sensible ni confidencial.</translation>
 <translation id="7748275671948949022">Destacar el botón del menú de aplicaciones en la estantería</translation>
 <translation id="7749443890790263709">Has alcanzado el número máximo de escritorios.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Puedes desactivar Ayúdame a escribir y Ayúdame a leer en cualquier momento desde Ajustes. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Enunciar selección</translation>
 <translation id="7769299611924763557">Tu GIF estará listo en breve</translation>
 <translation id="7773536009433685931">Activar Wi‐Fi en su lugar</translation>
@@ -1837,6 +1845,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="7781829728241885113">Ayer</translation>
 <translation id="7787212146956232129">Se han definido los dispositivos de entrada y salida. Ve a Configuración para cambiarlos.</translation>
 <translation id="7792590255364786396">Visible</translation>
+<translation id="7793389284006812057">La IA generativa es experimental, se encuentra en sus primeras fases de desarrollo y, por el momento, tiene una disponibilidad limitada.</translation>
 <translation id="7796735576426975947">Nueva notificación oculta</translation>
 <translation id="7798302898096527229">Pulsa la tecla de búsqueda o Mayús para cancelarlo.</translation>
 <translation id="780301667611848630">No, gracias</translation>
@@ -1991,6 +2000,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8331351032546853669">Descarga pendiente</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Malos resultados</translation>
 <translation id="8345019317483336363">Ventana <ph name="WINDOW_TITLE" /> seleccionada</translation>
 <translation id="8349826889576450703">menú de aplicaciones</translation>
 <translation id="8349964124165471584">Abrir enlace en una ventana nueva</translation>

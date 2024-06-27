@@ -216,6 +216,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1747827819627189109">Opskerm-sleutelbord geaktiveer</translation>
 <translation id="1749109475624620922">Venster <ph name="WINDOW_TITLE" /> is aan alle lesenaars toegewys</translation>
 <translation id="1750088060796401187">Net <ph name="MAX_DESK_LIMIT" /> lessenaars word toegelaat. Verwyder 'n lessenaar om 'n nuwe een oop te maak.</translation>
+<translation id="1751335846119670066">Help My Lees</translation>
 <translation id="1755408179247123630">Skakel Hardoplees aan?</translation>
 <translation id="1755556344721611131">Diagnostiekprogram</translation>
 <translation id="1756833229520115364">Kon nie templaat stoor nie. Te veel vensters of oortjies.</translation>
@@ -227,6 +228,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="178347895271755507">Stel jou foon op om jou onlangse foto’s, media en kennisgewings te bekyk</translation>
 <translation id="1787955149152357925">Af</translation>
 <translation id="1796561540704213354">Webwerwe insluitend bladsye wat jy besoek het en oop bladsye</translation>
+<translation id="179842970735685253">Google se diensbepalings</translation>
 <translation id="181103072419391116">Seinsterkte <ph name="SIGNAL_STRENGTH" />, deur jou administrateur bestuur</translation>
 <translation id="1816896987747843206">Dit gee kameratoegang vir alle apps en webwerwe met die kameratoestemming</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Klaswerktipe</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">’n Paar goed om in gedagte te hou</translation>
 <translation id="3139188263101386725">Gebruik die opgedateerde kortpad</translation>
 <translation id="3139942575505304791">Lessenaar 1</translation>
 <translation id="315116470104423982">Mobiele data</translation>
@@ -962,6 +965,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4585337515783392668">Hou op om op 'n onbekende ontvanger uit te saai</translation>
 <translation id="4596144739579517758">Donkertema is af</translation>
 <translation id="4596442969149038771"><ph name="USER" /> het gedeel</translation>
+<translation id="4610493115106525653">Goeie invoer</translation>
 <translation id="4611292653554630842">Meld aan</translation>
 <translation id="462160925400706389"><ph name="NAME" /> is gekoppel</translation>
 <translation id="4623167406982293031">Verifieer rekening</translation>
@@ -1119,6 +1123,7 @@ Jy kan ook die kortpadsleutels gebruik. Merk eers die teks en druk dan <ph name=
 <translation id="5121628974188116412">Gaan na onderkant van bladsy</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" />-voorskou. Onaktiewe lessenaar.</translation>
 <translation id="5136175204352732067">Ander sleutelbord is gekoppel</translation>
+<translation id="5140105873789567560">Jy moet minstens 18 jaar oud wees om Help My Skryf en Help My Lees te gebruik.</translation>
 <translation id="5144005092084035179">Wissel oudio-invoer?</translation>
 <translation id="5147567197700016471">Ontsluit</translation>
 <translation id="5150070631291639005">Privaatheidinstellings</translation>
@@ -1559,6 +1564,7 @@ Nuwe installasie</translation>
 <translation id="6696025732084565524">Jou ontkoppelbare sleutelbord moet dringend opgedateer word</translation>
 <translation id="6697913454192220372">Voeg nuwe lessenaar by</translation>
 <translation id="6700713906295497288">IME-kieslysknoppie</translation>
+<translation id="6704375469818246414">Gehalte kan verskil wanneer generatiewe AI gebruik word.</translation>
 <translation id="6706742084323792866">Speld sleutelbord vas</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="6723839937902243910">Intensiteit</translation>
@@ -1826,9 +1832,11 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="7726391492136714301">Bekyk jou foon se kennisgewings en programme</translation>
 <translation id="7727952505535211425">Maak die webwerf in die adresbalk in ’n nuwe oortjie oop</translation>
 <translation id="7742327441377685481">Geen kennisgewings nie</translation>
+<translation id="774736258792760908">Wanneer jy Help My Skryf en Help My Lees aanskakel, word die invoerteks en dokumentinhoud na Google AI-bedieners toe gestuur om skryfvoorstelle te genereer, opsommings te genereer, vrae te beantwoord, en die produk te verbeter, onderworpe aan <ph name="LINK_TO_SERVICE_TERMS" />. Moenie enigiets insluit wat persoonlik, sensitief of vertroulik is nie.</translation>
 <translation id="7748275671948949022">Merk lanseerderknoppie op rak</translation>
 <translation id="7749443890790263709">Maksimum aantal lessenaars is bereik.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Jy kan enige tyd Help My Skryf en Help My Lees in Instellings afskakel. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Hardoplees</translation>
 <translation id="7769299611924763557">Jou GIF sal binnekort gereed wees</translation>
 <translation id="7773536009433685931">Skakel eerder wi-fi aan</translation>
@@ -1837,6 +1845,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="7781829728241885113">Gister</translation>
 <translation id="7787212146956232129">Invoer- en uitvoertoestelle is gestel. Gaan na Instellings om te verander.</translation>
 <translation id="7792590255364786396">Sigbaar</translation>
+<translation id="7793389284006812057">Generatiewe AI is eksperimenteel, in vroeë ontwikkeling, en het tans beperkte beskikbaarheid.</translation>
 <translation id="7796735576426975947">Nuwe kennisgewing is versteek</translation>
 <translation id="7798302898096527229">Druk Search of Shift om te kanselleer.</translation>
 <translation id="780301667611848630">Nee, dankie</translation>
@@ -1991,6 +2000,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8331351032546853669">Aflaai hangende</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Swak uitvoer</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" />-venster gekies</translation>
 <translation id="8349826889576450703">lanseerder</translation>
 <translation id="8349964124165471584">Maak skakel in nuwe venster oop</translation>

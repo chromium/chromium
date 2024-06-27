@@ -216,6 +216,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1747827819627189109">Schermtoetsenbord staat aan</translation>
 <translation id="1749109475624620922">Venster <ph name="WINDOW_TITLE" /> is toegewezen aan alle bureaus</translation>
 <translation id="1750088060796401187">Er zijn maar <ph name="MAX_DESK_LIMIT" /> bureaus toegestaan. Verwijder een om een nieuw bureau toe te voegen.</translation>
+<translation id="1751335846119670066">Help me met lezen</translation>
 <translation id="1755408179247123630">Selecteer om voor te lezen aanzetten?</translation>
 <translation id="1755556344721611131">App Diagnostische gegevens</translation>
 <translation id="1756833229520115364">Kan de template niet opslaan. Te veel vensters of tabbladen.</translation>
@@ -227,6 +228,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="178347895271755507">De weergave van recente foto's, media en meldingen van je telefoon instellen</translation>
 <translation id="1787955149152357925">Uit</translation>
 <translation id="1796561540704213354">Websites, waaronder pagina's die je hebt bezocht en geopende pagina's</translation>
+<translation id="179842970735685253">Servicevoorwaarden van Google</translation>
 <translation id="181103072419391116">Signaalsterkte <ph name="SIGNAL_STRENGTH" />, beheerd door je beheerder</translation>
 <translation id="1816896987747843206">Hiermee geef je alle apps en websites met camerarechten toegang tot de camera</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Type schoolwerk</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Een paar punten om rekening mee te houden</translation>
 <translation id="3139188263101386725">De geüpdatete sneltoets gebruiken</translation>
 <translation id="3139942575505304791">Bureau 1</translation>
 <translation id="315116470104423982">Mobiele data</translation>
@@ -961,6 +964,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4585337515783392668">Casten naar een onbekende ontvanger stopzetten</translation>
 <translation id="4596144739579517758">Donker thema staat uit</translation>
 <translation id="4596442969149038771">Gedeeld door <ph name="USER" /></translation>
+<translation id="4610493115106525653">Goede uitvoer</translation>
 <translation id="4611292653554630842">Inloggen</translation>
 <translation id="462160925400706389"><ph name="NAME" /> gekoppeld</translation>
 <translation id="4623167406982293031">Account verifiëren</translation>
@@ -1118,6 +1122,7 @@ Je kunt ook de sneltoets gebruiken. Markeer eerst de tekst en druk dan op <ph na
 <translation id="5121628974188116412">Naar onderkant van pagina gaan</translation>
 <translation id="5122517996953421795">Voorbeeld van <ph name="DESK_NAME" />. Inactief bureau.</translation>
 <translation id="5136175204352732067">Ander toetsenbord aangesloten</translation>
+<translation id="5140105873789567560">Je moet 18 jaar of ouder zijn om Help me met schrijven en Help me met lezen te gebruiken.</translation>
 <translation id="5144005092084035179">Audio-invoer wisselen?</translation>
 <translation id="5147567197700016471">Ontgrendeld</translation>
 <translation id="5150070631291639005">Privacyinstellingen</translation>
@@ -1558,6 +1563,7 @@ Nieuwe installatie</translation>
 <translation id="6696025732084565524">Je afneembare toetsenbord heeft een essentiële update nodig</translation>
 <translation id="6697913454192220372">Nieuw bureau toevoegen</translation>
 <translation id="6700713906295497288">IME-menuknop</translation>
+<translation id="6704375469818246414">De kwaliteit kan variëren als je generatieve AI gebruikt.</translation>
 <translation id="6706742084323792866">Toetsenbord vastzetten</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="6723839937902243910">Voeding</translation>
@@ -1825,9 +1831,11 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7726391492136714301">Meldingen en apps van je telefoon bekijken</translation>
 <translation id="7727952505535211425">De website in de adresbalk openen in een nieuw tabblad</translation>
 <translation id="7742327441377685481">Geen meldingen</translation>
+<translation id="774736258792760908">Als je Help me met schrijven en Help me met lezen aanzet, wordt de ingevoerde tekst en de documentcontent naar de servers van de AI van Google gestuurd om schrijfsuggesties te genereren, samenvattingen te maken, vragen te beantwoorden en het product te verbeteren, in overeenstemming met <ph name="LINK_TO_SERVICE_TERMS" />. Voeg geen persoonlijke, gevoelige of vertrouwelijke informatie toe.</translation>
 <translation id="7748275671948949022">Launcher-knop op de plank markeren</translation>
 <translation id="7749443890790263709">Maximum aantal bureaus bereikt.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Je kunt Help me met schrijven en Help me met lezen op elk moment uitzetten via Instellingen. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Selecteer om voor te lezen</translation>
 <translation id="7769299611924763557">Je gif is bijna klaar</translation>
 <translation id="7773536009433685931">Wifi aanzetten</translation>
@@ -1836,6 +1844,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7781829728241885113">Gisteren</translation>
 <translation id="7787212146956232129">Invoer- en uitvoerapparaten zijn ingesteld. Ga naar Instellingen voor wijzigingen.</translation>
 <translation id="7792590255364786396">Zichtbaar</translation>
+<translation id="7793389284006812057">Generatieve AI is experimenteel en in een vroege ontwikkelingsfase, en is op dit moment beperkt beschikbaar.</translation>
 <translation id="7796735576426975947">Nieuwe melding verborgen</translation>
 <translation id="7798302898096527229">Druk op Zoeken of Shift om te annuleren.</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
@@ -1990,6 +1999,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8331351032546853669">Download in behandeling</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Slechte uitvoer</translation>
 <translation id="8345019317483336363">Venster <ph name="WINDOW_TITLE" /> geselecteerd</translation>
 <translation id="8349826889576450703">launcher</translation>
 <translation id="8349964124165471584">Link openen in een nieuw venster</translation>

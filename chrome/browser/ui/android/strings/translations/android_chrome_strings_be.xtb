@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Апошнія дзеянні: <ph name="LAST_UPDATED" /> сут таму</translation>
 <translation id="1390418506739274310">Вы можаце бачыць гісторыю з іншых праграм, спасылкі з якіх адкрываюцца ў Chrome. На сайце <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> размешчаны іншыя формы запісу гісторыі прагляду сайтаў для вашага Уліковага запісу Google.</translation>
 <translation id="13931502444227376">Каб працягнуць, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> абагуліць ваша імя, адрас электроннай пошты і відарыс профілю з гэтым сайтам. Азнаёмцеся з <ph name="BEGIN_LINK1" />умовамі выкарыстання<ph name="END_LINK1" /> сайта.</translation>
+<translation id="139752016751285248">Ніжні аркуш са статыстыкай цэн адкрыўся на ўсю вышыню</translation>
 <translation id="1397811292916898096">Шукаць з дапамогай <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Ва Уліковым запісе Google можна <ph name="BEGIN_LINK1" />выбраць, якія даныя з Chrome будуць захоўвацца<ph name="END_LINK1" />.
 
@@ -179,6 +180,7 @@
 <translation id="1877073879466606884">Профіль, у які вы ўвайшлі, знаходзіцца пад кіраваннем. Адміністратар можа аддалена змяняць налады профілю, аналізаваць інфармацыю пра браўзер з дапамогай водгукаў і выконваць іншыя неабходныя задачы.</translation>
 <translation id="1883903952484604915">Мае файлы</translation>
 <translation id="189358972401248634">Іншыя мовы</translation>
+<translation id="1899175549411605574">Ніжні аркуш са статыстыкай цэн</translation>
 <translation id="1900260903084164610">Працягваючы, вы прымаеце <ph name="BEGIN_TOS_LINK" />Умовы выкарыстання<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">URL-адрасы, якія вы наведвалі, захоўваюцца ва Уліковы запіс Google</translation>
 <translation id="1910950723001426294">Спіс варыянтаў абагульвання закрыты.</translation>
@@ -530,6 +532,7 @@
 <translation id="3637744895182738742">Калі вы забылі фразу-пароль або хочаце змяніць гэту наладу, <ph name="BEGIN_LINK" />выдаліце даныя Chrome з уліковага запісу<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Перайсці на галоўны экран праграмы Google</translation>
 <translation id="368329460027487650">Выкананы выхад. Адкрываюцца параметры для ўваходу.</translation>
+<translation id="3684540848053703310">Ніжні аркуш са статыстыкай цэн закрыўся</translation>
 <translation id="3687645719033307815">Вам паказваецца перадпрагляд гэтай старонкі</translation>
 <translation id="3690369331356918524">Папярэджвае вас у выпадку, калі пры ўцечцы даных былі раскрыты паролі</translation>
 <translation id="3692944402865947621">Не ўдалося спампаваць файл "<ph name="FILE_NAME" />": месца захоўвання недаступнае.</translation>

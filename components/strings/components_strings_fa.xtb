@@ -26,6 +26,7 @@
 <translation id="1050038467049342496">برنامه‌های دیگر را ببندید</translation>
 <translation id="1053959602163383901">قبلاً انتخاب کرده‌اید در وب‌سایت‌هایی که از <ph name="PROVIDER_ORIGIN" /> استفاده می‌کنند درستی‌سنجی با دستگاه اصالت‌سنجی انجام شود. این ارائه‌دهنده ممکن است اطلاعات روش پرداختتان را ذخیره کرده باشد، که می‌توانید <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;واگرد افزودن</translation>
+<translation id="105642538515333723">می‌توانید از صفحه‌هایی که قبلاً مرور کرده‌اید هر عبارت یا جزئیاتی را که به‌خاطر می‌آورید وارد کنید، مثلاً «کفش پیاده‌روی راحت»</translation>
 <translation id="1056898198331236512">اخطار</translation>
 <translation id="1058344460600311577">‏<ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای بازی کردن بازی دویدن دایناسور در Chrome، کلید «جهش» و سپس کلید «ورود» را فشار دهید</translation>
 <translation id="1058479211578257048">درحال ذخیره‌سازی کارت‌ها...</translation>
@@ -41,6 +42,7 @@
 <translation id="1070901266639972381">شب</translation>
 <translation id="1073690811593784042">شیشه (رنگی)</translation>
 <translation id="1074497978438210769">امن نیست</translation>
+<translation id="1074779248866616641">نتیجه</translation>
 <translation id="1075364221219156102">استفاده از «گذرکلید»</translation>
 <translation id="1080116354587839789">متناسب با پهنا</translation>
 <translation id="1081061862829655580">سینی ۱۹</translation>
@@ -967,6 +969,7 @@
 <translation id="2824775600643448204">نوار جستجو و آدرس</translation>
 <translation id="2826760142808435982">اتصال با استفاده از <ph name="CIPHER" /> رمزگذاری و راستی‌آزمایی شده است و از <ph name="KX" /> به عنوان مکانیسم تبادل کلید استفاده می‌کند.</translation>
 <translation id="2833637280516285136">رادیو بحث و گفتگو</translation>
+<translation id="2837891525090413132">می‌تواند برای قفل کردن و استفاده از صفحه‌کلید درخواست دهد</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> می‌خواهد از اطلاعاتی که درباره شما ذخیره کرده است استفاده کند</translation>
 <translation id="2839032553903800133">اعلان‌ها مسدود شدند</translation>
 <translation id="2839501879576190149">سایت پیش رو جعلی است</translation>
@@ -2857,6 +2860,7 @@
 <translation id="6433797564277305076">ازاین‌پس، بااستفاده از باز کردن قفل دستگاه، کارت‌هایتان را سریع‌تر به‌تأیید برسانید</translation>
 <translation id="643917412048333145">لباس</translation>
 <translation id="6440503408713884761">نادیده گرفته شد</translation>
+<translation id="6440534369669992497">می‌توانید از صفحه‌هایی که قبلاً مرور کرده‌اید هر عبارت یا جزئیاتی را که به‌خاطر می‌آورید وارد کنید، مثلاً «کفش پیاده‌روی راحت». برای جستجو <ph name="SHORTCUT" /> را فشار دهید.</translation>
 <translation id="6443406338865242315">افزونه‌ها و افزایه‌هایی که نصب کرده‌اید</translation>
 <translation id="6444329331928531170">بازنشستگی و مستمری</translation>
 <translation id="6446608382365791566">افزودن اطلاعات بیشتر</translation>
@@ -3140,6 +3144,7 @@
 <translation id="7006930604109697472">در هر حال فرستاده شود</translation>
 <translation id="7010658264061801199">غذا و نوشیدنی</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013835112918108252">می‌تواند برای قفل کردن و استفاده از موشواره درخواست دهد</translation>
 <translation id="7014042602717177828">تجهیزات صوتی خودرو</translation>
 <translation id="7014741021609395734">سطح بزرگ‌نمایی</translation>
 <translation id="7016992613359344582">ممکن است این هزینه‌ها یک‌باره یا تکرارشونده باشند و واضح نباشند.</translation>
@@ -3154,6 +3159,7 @@
 <translation id="7031646650991750659">‏برنامه‌های Google Play که نصب کرده‌اید</translation>
 <translation id="7035705295266423040">بانک شما می‌خواهد هویتتان را تأیید کند</translation>
 <translation id="7038063300915481831">‏<ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت تنظیمات حریم خصوصی «حساب Google» خود، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
+<translation id="7042616127917168121">پالایش نتایج</translation>
 <translation id="7043552168914147882">دسته برگ</translation>
 <translation id="7044081119134178347">دوربین این بار مجاز شد</translation>
 <translation id="7048095965575426564">تاشوی اروپایی</translation>

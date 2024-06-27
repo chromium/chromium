@@ -12,7 +12,7 @@
 <translation id="113122355610423240">Chromium és el navegador predeterminat</translation>
 <translation id="1131805035311359397">Per comprovar si les teves contrasenyes estan protegides contra violacions de les dades i contra altres problemes de seguretat, <ph name="BEGIN_LINK" />inicia la sessió a Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Fes clic al menú de Chromium</translation>
-<translation id="1185134272377778587">Quant a Chromium</translation>
+<translation id="1185134272377778587">Sobre Chromium</translation>
 <translation id="1188705220418984327">Per compartir la finestra, permet que Chromium gravi la pantalla a Preferències del sistema.</translation>
 <translation id="1203500561924088507">T'agraïm la instal·lació. Has de reiniciar el navegador abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1262876892872089030">Mentre aquesta pestanya estava inactiva, s'ha alliberat memòria perquè Chromium funcioni sempre de pressa. Pots optar per excloure sempre aquest lloc web d'estar inactiu.</translation>
@@ -79,6 +79,8 @@
 <translation id="2329088755516916767">Quan aquesta opció està activada, Chromium precarrega les pàgines perquè la navegació i la cerca siguin més ràpides.</translation>
 <translation id="2343156876103232566">Per enviar un número d'aquí al teu telèfon Android, inicia la sessió a Chromium en tots dos dispositius.</translation>
 <translation id="2359808026110333948">Continua</translation>
+<translation id="2361918034042471035">L'extensió "<ph name="EXTENSION_NAME" />" vol que iniciïs la sessió a Chromium</translation>
+<translation id="2374216753258219393">Per utilitzar aquesta extensió com a <ph name="USER_EMAIL_ADDRESS" />, inicia la sessió a Chromium.</translation>
 <translation id="2384373936468275798">Chromium OS no ha pogut sincronitzar les teves dades perquè la informació d'inici de sessió del teu compte no està actualitzada.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Una o més extensions de Chromium estaven accedint a 1 dispositiu d'interfície humana}=1{Una o més extensions de Chromium estan accedint a 1 dispositiu d'interfície humana}other{Una o més extensions de Chromium estan accedint a # dispositius d'interfície humana}}</translation>
 <translation id="2401032172288869980">Chromium necessita permís d'accés a la càmera i al micròfon per a aquest lloc web</translation>
@@ -242,9 +244,11 @@
 <translation id="4893347770495441059">Reinicia per actualitzar &amp;Chromium</translation>
 <translation id="4942295735032723435">Per obtenir actualitzacions de Chromium en un futur, necessitaràs macOS 11 o una versió posterior. Aquest ordinador utilitza macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium està en mode de segon pla.</translation>
+<translation id="494490797786467921">Fes clic per tancar el quadre de diàleg d'inici de sessió de Chromium</translation>
 <translation id="4987820182225656817">Els convidats poden utilitzar Chromium sense deixar-hi rastre.</translation>
 <translation id="4994636714258228724">Afegeix-me a Chromium</translation>
 <translation id="5114678101347489141">Chromium està explorant noves funcions que permetin als llocs web oferir la mateixa experiència de navegació utilitzant menys informació teva</translation>
+<translation id="5187123684706427865">El compte de Chromium requereix una reautenticació</translation>
 <translation id="5224391634244552924">No hi ha cap contrasenya desada. Chromium pot comprovar les teves contrasenyes quan les deses.</translation>
 <translation id="5231355151045086930">Tanca la sessió de Chromium</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> ja té la sessió iniciada en aquest perfil de Chromium. Es crearà un perfil de Chromium nou per a <ph name="USER_EMAIL_ADDRESS" />.</translation>

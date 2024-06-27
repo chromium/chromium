@@ -79,6 +79,8 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="2329088755516916767">Wenn diese Option aktiviert ist, lädt Chromium Seiten vorab, um das Surfen und die Suche zu beschleunigen.</translation>
 <translation id="2343156876103232566">Wenn du eine Nummer von diesem Gerät an dein Android-Smartphone senden möchtest, musst du dich auf beiden Geräten in Chromium anmelden.</translation>
 <translation id="2359808026110333948">Weiter</translation>
+<translation id="2361918034042471035">Die Erweiterung „<ph name="EXTENSION_NAME" />“ fordert dich auf, dich in Chromium anzumelden</translation>
+<translation id="2374216753258219393">Wenn du diese Erweiterung als <ph name="USER_EMAIL_ADDRESS" /> verwenden möchtest, musst du dich in Chromium anmelden.</translation>
 <translation id="2384373936468275798">Chromium OS konnte deine Daten nicht synchronisieren, da die Anmeldedaten deines Kontos veraltet sind.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Auf 1 HID-Gerät wurde von mindestens einer Chromium-Erweiterung zugegriffen}=1{Auf 1 HID-Gerät wird von mindestens einer Chromium-Erweiterung zugegriffen}other{Auf # HID-Geräte wird von mindestens einer Chromium-Erweiterung zugegriffen}}</translation>
 <translation id="2401032172288869980">Chromium benötigt die Kamera- und Mikrofonberechtigungen für diese Website</translation>
@@ -242,9 +244,11 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="4893347770495441059">Neu starten, um &amp;Chromium zu aktualisieren</translation>
 <translation id="4942295735032723435">Du benötigst macOS 11 oder höher, um zukünftige Chromium-Updates zu erhalten. Auf diesem Computer wird macOS 10.15 ausgeführt.</translation>
 <translation id="4943838377383847465">Chromium wird im Hintergrundmodus ausgeführt.</translation>
+<translation id="494490797786467921">Klicken, um Dialogfeld zur Anmeldung in Chromium zu schließen</translation>
 <translation id="4987820182225656817">Gastnutzer können Chromium verwenden, ohne Daten zu hinterlassen.</translation>
 <translation id="4994636714258228724">Mich zu Chromium hinzufügen</translation>
 <translation id="5114678101347489141">In Chromium werden neue Funktionen ausprobiert, mit denen Websites bei gleichbleibender Nutzererfahrung beim Surfen weniger Nutzerdaten verwenden</translation>
+<translation id="5187123684706427865">Chromium-Konto muss noch einmal authentifiziert werden</translation>
 <translation id="5224391634244552924">Keine gespeicherten Passwörter. Chromium kann deine Passwörter prüfen, wenn du sie speicherst.</translation>
 <translation id="5231355151045086930">Von Chromium abmelden</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> ist bereits in diesem Chromium-Profil angemeldet. Dadurch wird ein neues Chromium-Profil für <ph name="USER_EMAIL_ADDRESS" /> erstellt.</translation>

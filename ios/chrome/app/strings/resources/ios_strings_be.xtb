@@ -825,6 +825,7 @@
 <translation id="5190835502935405962">Панэль закладак</translation>
 <translation id="519530786644929958">Збой спампоўвання. Паўтарыць спробу нельга.</translation>
 <translation id="5197255632782567636">Інтэрнэт</translation>
+<translation id="5205197603258285592">Захаваць выяву ў...</translation>
 <translation id="5211488077761630279">Дазволіць сайту <ph name="SITE_NAME" /> выкарыстоўваць <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Дапамажыце павысіць бяспеку ў інтэрнэце для кожнага</translation>
 <translation id="5220945116117011963">Стварэнне падзей у календары на падставе дат</translation>
@@ -1525,6 +1526,7 @@
 <translation id="8556590991644167667">{count,plural, =1{Вы адхілілі {count} папярэджанне}one{Вы адхілілі {count} папярэджанне}few{Вы адхілілі {count} папярэджанні}many{Вы адхілілі {count} папярэджанняў}other{Вы адхілілі {count} папярэджання}}</translation>
 <translation id="8560253818350321773">Спачатку паказваць элементы, якія часта выкарыстоўваюцца.</translation>
 <translation id="8569721750632860947">Які URL-адрас вы хочаце дадаць у Спіс на прагляд?</translation>
+<translation id="8570765991595769633">Наладзіць карткі</translation>
 <translation id="8577056989960190117">Аўтаматычна запоўніць год заканчэння тэрміну дзеяння <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Выключаны</translation>
 <translation id="8591976964826315682">Блакіраваць староннія файлы cookie у рэжыме інкогніта</translation>
@@ -1664,6 +1666,7 @@
 <translation id="948048872540558976">Стварыць новую ўкладку</translation>
 <translation id="952218985181984374">{count,plural, =1{Закладка захавана}one{{count} закладка захавана}few{{count} закладкі захаваны}many{{count} закладак захавана}other{{count} закладкі захаваны}}</translation>
 <translation id="952704832371081537">Скасаваць</translation>
+<translation id="955587716023217544">Рэдагаваць спіс уліковых запісаў</translation>
 <translation id="959066944189734975">Вы падпісаны на канал "<ph name="CHANNEL_NAME" />"</translation>
 <translation id="96615566463761848">Паказваць прапановы ўкладак з іншых прылад</translation>
 <translation id="973493300226275298">Адсочвайце цэны на тавары ў інтэрнэт-крамах. Пры зніжэнні цаны вы будзеце атрымліваць абвесткі.</translation>

@@ -81,6 +81,8 @@
 <translation id="2329088755516916767">‏آن ہونے پر، Chromium صفحات کو پہلے سے لوڈ کرتا ہے جو براؤزنگ اور تلاش کو تیز تر بناتا ہے۔</translation>
 <translation id="2343156876103232566">‏یہاں سے اپنے Android فون پر نمبر بھیجنے کے لیے، دونوں آلات پر Chromium میں سائن ان کریں۔</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
+<translation id="2361918034042471035">‏ایکسٹینشن "<ph name="EXTENSION_NAME" />" چاہتی ہے کہ آپ Chromium میں سائن ان کریں</translation>
+<translation id="2374216753258219393">‏اس ایکسٹینشن کو بطور <ph name="USER_EMAIL_ADDRESS" /> استعمال کرنے کیلئے، Chromium میں سائن ان کریں۔</translation>
 <translation id="2384373936468275798">‏ChromeOS آپ کے اکاؤنٹ کی سائن ان تفصیلات پرانی ہونے کی وجہ سے آپ کے ڈیٹا کی مطابقت پذیری نہیں کر سکا۔</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{‏1 HID آلہ تک ایک یا ایک سے زیادہ Chromium ایکسٹینشنز کے ذریعے رسائی حاصل کی جا رہی تھی}=1{‏1 HID آلہ تک ایک یا ایک سے زیادہ Chromium ایکسٹینشنز کے ذریعے رسائی حاصل کی جا رہی ہے}other{‏# HID آلات تک ایک یا ایک سے زیادہ Chromium ایکسٹینشنز کے ذریعے رسائی حاصل کی جا رہی ہے}}</translation>
 <translation id="2401032172288869980">‏Chromium کو اس سائٹ کے لیے کیمرے اور مائیکروفون کی اجازتیں درکار ہیں</translation>
@@ -244,9 +246,11 @@
 <translation id="4893347770495441059">‏Chromium&amp; کو اپ ڈیٹ کرنے کیلئے بند کر کے دوبارہ چلائیں</translation>
 <translation id="4942295735032723435">‏مستقبل میں Chromium اپ ڈیٹس حاصل کرنے کے لیے آپ کو macOS 11 یا اس کے بعد کے ورژن کی ضرورت ہوگی۔ یہ کمپیوٹر macOS 10.15 کا استعمال کر رہا ہے۔</translation>
 <translation id="4943838377383847465">‏Chromium پس منظر وضع میں ہے۔</translation>
+<translation id="494490797786467921">‏‫Chromium سائن ان ڈائیلاگ بند کرنے کیلئے کلک کریں</translation>
 <translation id="4987820182225656817">‏مہمان کسی چیز کو پیچھے چھوڑے بغیر Chromium کو استعمال کر سکتے ہیں۔</translation>
 <translation id="4994636714258228724">‏خود کو Chromium میں شامل کریں</translation>
 <translation id="5114678101347489141">‏Chromium نئی خصوصیات کو دریافت کر رہا ہے جو سائٹس کو آپ کی کم معلومات کا استعمال کر کے وہی براؤزنگ تجربہ فراہم کرنے کی اجازت دیتا ہے</translation>
+<translation id="5187123684706427865">‏‫Chromium اکاؤنٹ میں دوبارہ تصدیق درکار ہے</translation>
 <translation id="5224391634244552924">‏کوئی محفوظ کردہ پاس ورڈ نہیں۔ جب آپ پاس ورڈز کو محفوظ کرتے ہیں تو Chromium انہیں چیک کر سکتا ہے۔</translation>
 <translation id="5231355151045086930">‏Chromium سے سائن آؤٹ کریں</translation>
 <translation id="5252179775517634216">‏<ph name="EXISTING_USER" /> اس Chromium پروفائل میں پہلے سے سائن ان ہے۔ اس سے <ph name="USER_EMAIL_ADDRESS" /> کیلئے ایک نئی Chromium پروفائل تخلیق ہو جائے گی</translation>

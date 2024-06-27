@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">ଅନ୍ ସ୍କ୍ରିନ୍ କୀ'ବୋର୍ଡକୁ ସକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="1749109475624620922">ସମସ୍ତ ଡେସ୍କ ପାଇଁ ୱିଣ୍ଡୋ <ph name="WINDOW_TITLE" /> ଆସାଇନ କରାଯାଇଛି</translation>
 <translation id="1750088060796401187">କେବଳ <ph name="MAX_DESK_LIMIT" />ଟି ଡେସ୍କକୁ ଅନୁମତି ଦିଆଯାଇଛି। ଏକ ନୂଆ ଡେସ୍କ ଖୋଲିବାକୁ ଗୋଟିଏ ଡେସ୍କକୁ କାଢ଼ନ୍ତୁ।</translation>
+<translation id="1751335846119670066">ମୋତେ ପଢ଼ିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
 <translation id="1755408179247123630">ସିଲେକ୍ଟ-ଟୁ-ସ୍ପିକକୁ ଚାଲୁ କରିବେ?</translation>
 <translation id="1755556344721611131">Diagnostics ଆପ</translation>
 <translation id="1756833229520115364">ଟେମ୍ପଲେଟକୁ ସେଭ କରାଯାଇପାରିଲା ନାହିଁ। ଅନେକଗୁଡ଼ିଏ ୱିଣ୍ଡୋ କିମ୍ବା ଟାବ।</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">ଆପଣଙ୍କ ଫୋନର ବର୍ତ୍ତମାନର ଫଟୋ, ମିଡିଆ ଏବଂ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଭ୍ୟୁ କରିବା ସେଟ ଅପ କରନ୍ତୁ</translation>
 <translation id="1787955149152357925">ବନ୍ଦ ଅଛି</translation>
 <translation id="1796561540704213354">ଆପଣ ଭିଜିଟ କରିଥିବା ପୃଷ୍ଠା ଏବଂ ଖୋଲା ଥିବା ପୃଷ୍ଠା ସମେତ ୱେବସାଇଟଗୁଡ଼ିକ</translation>
+<translation id="179842970735685253">Googleର ସେବାର ସର୍ତ୍ତାବଳୀ</translation>
 <translation id="181103072419391116">ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="1816896987747843206">ଏହା କେମେରା ଅନୁମତି ଥିବା ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟ ପାଇଁ କେମେରା ଆକ୍ସେସକୁ ଅନୁମତି ଦିଏ</translation>
 <translation id="1823873187264960516">ଇଥର୍ନେଟ୍: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">କ୍ଲାସୱାର୍କର ପ୍ରକାର</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">ମନେ ରଖିବା ପାଇଁ କିଛି ବିଷୟ</translation>
 <translation id="3139188263101386725">ଅପଡେଟ ହୋଇଥିବା ସର୍ଟକଟ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="3139942575505304791">ଡେସ୍କ 1</translation>
 <translation id="315116470104423982">ମୋବାଇଲ୍ ଡାଟା</translation>
@@ -961,6 +964,7 @@
 <translation id="4585337515783392668">ଏକ ଅଜଣା ରିସିଭର୍‌ରେ କାଷ୍ଟିଂ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="4596144739579517758">ଗାଢ଼ ଥିମ୍ ବନ୍ଦ ଅଛି</translation>
 <translation id="4596442969149038771"><ph name="USER" /> ସେୟାର କରିଛନ୍ତି</translation>
+<translation id="4610493115106525653">ଭଲ ଆଉଟପୁଟ</translation>
 <translation id="4611292653554630842">ଲଗ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="462160925400706389"><ph name="NAME" /> କନେକ୍ଟ କରାଯାଇଛି</translation>
 <translation id="4623167406982293031">ଆକାଉଣ୍ଟ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
@@ -1118,6 +1122,7 @@
 <translation id="5121628974188116412">ପୃଷ୍ଠାର ତଳଭାଗକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> ପ୍ରିଭ୍ୟୁ। ନିଷ୍କ୍ରିୟ ଡେସ୍କ।</translation>
 <translation id="5136175204352732067">ଅଲଗା କୀବୋର୍ଡ ସଂଯୁକ୍ତ ହୋ‍ଇଛି</translation>
+<translation id="5140105873789567560">'ମୋତେ ଲେଖିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ' ଏବଂ 'ମୋତେ ପଢ଼ିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ' ବ୍ୟବହାର କରିବାକୁ ଆପଣଙ୍କ ବୟସ ଅତି କମରେ 18 ବର୍ଷ ହୋଇଥିବା ଆବଶ୍ୟକ।</translation>
 <translation id="5144005092084035179">ଅଡିଓ ଇନପୁଟ ସୁଇଚ କରିବେ?</translation>
 <translation id="5147567197700016471">ଅନଲକ୍ କରାଯାଇଛି</translation>
 <translation id="5150070631291639005">ଗୋପନୀୟତା ସେଟିଂସ</translation>
@@ -1557,6 +1562,7 @@
 <translation id="6696025732084565524">ଆପଣଙ୍କର ଅଲଗା ହୋ‍ଇପାରୁଥିବା କୀବୋର୍ଡରେ ଏକ ମହତ୍ତ୍ୱପୂର୍ଣ୍ଣ ଅପ୍‌ଡେଟ୍‌ ଆବଶ୍ୟକ</translation>
 <translation id="6697913454192220372">ନୂଆ ଡେସ୍କ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6700713906295497288">IME ମେନୁ ବଟନ୍</translation>
+<translation id="6704375469818246414">ଜେନେରେଟିଭ AI ବ୍ୟବହାର କରିବା ସମୟରେ ଗୁଣବତ୍ତା ଭିନ୍ନ ହୋଇପାରେ।</translation>
 <translation id="6706742084323792866">କୀବୋର୍ଡ ପିନ କରନ୍ତୁ</translation>
 <translation id="6710213216561001401">ପୂର୍ବବର୍ତ୍ତୀ</translation>
 <translation id="6723839937902243910">ପାୱର୍</translation>
@@ -1824,9 +1830,11 @@
 <translation id="7726391492136714301">ଆପଣଙ୍କ ଫୋନର ବିଜ୍ଞପ୍ତି ଏବଂ ଆପ୍ସକୁ ଦେଖନ୍ତୁ</translation>
 <translation id="7727952505535211425">ଏକ ନୂଆ ଟାବରେ ଥିବା ଠିକଣା ବାରରେ ୱେବସାଇଟ ଖୋଲନ୍ତୁ</translation>
 <translation id="7742327441377685481">କୌଣସି ବିଜ୍ଞପ୍ତି ନାହିଁ</translation>
+<translation id="774736258792760908">ଯେତେବେଳେ ଆପଣ 'ମୋତେ ଲେଖିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ' ଏବଂ 'ମୋତେ ପଢ଼ିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ'କୁ ଚାଲୁ କରନ୍ତି, <ph name="LINK_TO_SERVICE_TERMS" /> ଅନୁଯାୟୀ ଲେଖିବା ପରାମର୍ଶ ଜେନେରେଟ କରିବା, ସାରାଂଶ ଜେନେରେଟ କରିବା, ପ୍ରଶ୍ନର ଉତ୍ତର ଦେବା ଏବଂ ପ୍ରଡକ୍ଟକୁ ଉନ୍ନତ କରିବା ପାଇଁ Google AI ସର୍ଭରକୁ ଇନପୁଟ ଟେକ୍ସଟ ଓ ଡକ୍ୟୁମେଣ୍ଟ ବିଷୟବସ୍ତୁ ପଠାଯାଏ। କୌଣସି ବ୍ୟକ୍ତିଗତ, ସମ୍ବେଦନଶୀଳ କିମ୍ବା ଗୋପନୀୟ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ।</translation>
 <translation id="7748275671948949022">ସେଲ୍ଫରେ ଲଞ୍ଚର ବଟନକୁ ହାଇଲାଇଟ କରନ୍ତୁ</translation>
 <translation id="7749443890790263709">ସର୍ବାଧିକ ସଂଖ୍ୟକ ଡେସ୍କରେ ପହଞ୍ଚିଯାଇଛି।</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">ଆପଣ ଯେ କୌଣସି ସମୟରେ ସେଟିଂସରେ 'ମୋତେ ଲେଖିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ' ଏବଂ 'ମୋତେ ପଢ଼ିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ'କୁ ବନ୍ଦ କରିପାରିବେ। <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">ସିଲେକ୍ଟ-ଟୁ-ସ୍ପିକ୍</translation>
 <translation id="7769299611924763557">ଆପଣଙ୍କ GIF ଖୁବ ଶୀଘ୍ର ପ୍ରସ୍ତୁତ ହୋଇଯିବ</translation>
 <translation id="7773536009433685931">ଏହା ପରିବର୍ତ୍ତେ ୱାଇଫାଇକୁ ଚାଲୁ କରନ୍ତୁ</translation>
@@ -1835,6 +1843,7 @@
 <translation id="7781829728241885113">ଗତକଲି</translation>
 <translation id="7787212146956232129">ଇନପୁଟ ଓ ଆଉଟପୁଟ ଡିଭାଇସଗୁଡ଼ିକ ସେଟ କରାଯାଇଛି। ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ସେଟିଂସକୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="7792590255364786396">ଦୃଶ୍ୟମାନ</translation>
+<translation id="7793389284006812057">ଜେନେରେଟିଭ AI ପରୀକ୍ଷାମୂଳକ ଅଟେ, ଏହା ଡେଭେଲପମେଣ୍ଟର ପ୍ରାରମ୍ଭିକ ପର୍ଯ୍ୟାୟରେ ଅଛି ଏବଂ ବର୍ତ୍ତମାନ ଏହାର ଉପଲବ୍ଧତା ସୀମିତ ଅଟେ।</translation>
 <translation id="7796735576426975947">ନୂଆ ବିଜ୍ଞପ୍ତି ଲୁକ୍କାୟିତ ଅଛି</translation>
 <translation id="7798302898096527229">ବାତିଲ୍‌ କରିବାକୁ Search କିମ୍ବା Shift ଦବାନ୍ତୁ।</translation>
 <translation id="780301667611848630">ନା, ଧନ୍ୟବାଦ</translation>
@@ -1989,6 +1998,7 @@
 <translation id="8331351032546853669">ଡାଉନଲୋଡ ବାକି ଅଛି</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">ଖରାପ ଆଉଟପୁଟ</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ୱିଣ୍ଡୋକୁ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="8349826889576450703">ଲଞ୍ଚର</translation>
 <translation id="8349964124165471584">ନୂଆ ୱିଣ୍ଡୋରେ ଲିଙ୍କ ଖୋଲନ୍ତୁ</translation>

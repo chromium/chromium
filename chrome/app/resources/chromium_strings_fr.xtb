@@ -80,6 +80,8 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="2329088755516916767">Lorsque cette option est activée, Chromium précharge les pages, ce qui accélère la navigation et la recherche.</translation>
 <translation id="2343156876103232566">Pour envoyer un numéro d'ici vers votre téléphone Android, connectez-vous à Chromium sur les deux appareils.</translation>
 <translation id="2359808026110333948">Continuer</translation>
+<translation id="2361918034042471035">L'extension <ph name="EXTENSION_NAME" /> vous demande de vous connecter à Chromium</translation>
+<translation id="2374216753258219393">Pour utiliser cette extension en tant que <ph name="USER_EMAIL_ADDRESS" />, connectez-vous à Chromium.</translation>
 <translation id="2384373936468275798">Impossible de synchroniser vos données dans Chromium OS, car les informations de connexion de votre compte ne sont plus à jour.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Une ou plusieurs extensions Chromium ont accédé à 1 appareil HID}=1{Une ou plusieurs extensions Chromium accèdent à 1 appareil HID}one{Une ou plusieurs extensions Chromium accèdent à # appareil HID}other{Une ou plusieurs extensions Chromium accèdent à # appareils HID}}</translation>
 <translation id="2401032172288869980">Chromium a besoin de l'autorisation d'accéder au micro et à la caméra pour ce site</translation>
@@ -243,9 +245,11 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="4893347770495441059">Relancer et mettre à jour &amp;Chromium</translation>
 <translation id="4942295735032723435">Vous devez disposer de macOS 11 ou d'une version ultérieure pour recevoir les futures mises à jour de Chromium. macOS 10.15 est installé sur cet ordinateur.</translation>
 <translation id="4943838377383847465">Chromium est exécuté en mode arrière-plan</translation>
+<translation id="494490797786467921">Cliquer pour fermer la boîte de dialogue de connexion Chromium</translation>
 <translation id="4987820182225656817">Les invités peuvent utiliser Chromium sans laisser aucune trace.</translation>
 <translation id="4994636714258228724">Ajouter un utilisateur à Chromium</translation>
 <translation id="5114678101347489141">Chromium développe de nouvelles fonctionnalités qui permettent aux sites de proposer la même expérience de navigation en utilisant moins d'infos personnelles</translation>
+<translation id="5187123684706427865">Le compte Chromium nécessite une réauthentification</translation>
 <translation id="5224391634244552924">Aucun mot de passe enregistré. Chromium ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>
 <translation id="5231355151045086930">Se déconnecter de Chromium</translation>
 <translation id="5252179775517634216">L'utilisateur <ph name="EXISTING_USER" /> est déjà connecté à ce profil Chromium. Cela va créer un profil Chromium pour <ph name="USER_EMAIL_ADDRESS" /></translation>

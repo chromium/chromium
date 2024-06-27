@@ -81,6 +81,8 @@
 <translation id="2329088755516916767">ሲበራ፣ Chromium ገጾችን በቅድሚያ በመጫን አሰሳን እና ፍለጋን እንዲፈጥን ያደርጋል።</translation>
 <translation id="2343156876103232566">አንድ ቁጥር ከዚህ ወደ የእርስዎ Android ስልክ ለመላክ በሁለቱም መሣሪያዎች ላይ በመለያ ወደ Chromium ይግቡ።</translation>
 <translation id="2359808026110333948">ቀጥል</translation>
+<translation id="2361918034042471035">ቅጥያው «<ph name="EXTENSION_NAME" />» ወደ በመለያ Chromium እንዲገቡ ይፈልጋል</translation>
+<translation id="2374216753258219393">እንደ <ph name="USER_EMAIL_ADDRESS" /> ሆነው ይህን ቅጥያ ለመጠቀም በመለያ ወደ Chromium ይግቡ።</translation>
 <translation id="2384373936468275798">የመለያ መግቢያ ዝርዝሮችዎ ጊዜ ያለፈባቸው ስለሆኑ ChromiumOS ውሂብዎን ማስመር አልቻለም።</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 የኤችአይዲ መሣሪያ በአንድ ወይም ከዚያ በላይ በሆኑ የChromium ቅጥያዎች እየተደረሰበት ነበር}=1{1 የኤችአይዲ መሣሪያ በአንድ ወይም ከዚያ በላይ በሆኑ የChromium ቅጥያዎች እየተደረሰበት ነው}one{# የኤችአይዲ መሣሪያ በአንድ ወይም ከዚያ በላይ በሆኑ የChromium ቅጥያዎች እየተደረሰበት ነው}other{# የኤችአይዲ መሣሪያዎች በአንድ ወይም ከዚያ በላይ በሆኑ የChromium ቅጥያዎች እየተደረሰባቸው ነው}}</translation>
 <translation id="2401032172288869980">Chromium ለዚህ ጣቢያ የካሜራ እና የማይክሮፎን ፈቃዶች ያስፈልጉታል</translation>
@@ -244,9 +246,11 @@
 <translation id="4893347770495441059">&amp;Chromiumን ለማዘመን ዳግም ያስነሱት</translation>
 <translation id="4942295735032723435">የወደፊት የChromium ዝማኔዎችን ለማግኘት macOS 11 ወይም ከዚያ በላይ ያስፈልግዎታል። ይህ ኮምፒውተር macOS 10.15 እየተጠቀመ ነው።</translation>
 <translation id="4943838377383847465">Chromium በጀርባ ሁነታ ላይ ነው።</translation>
+<translation id="494490797786467921">የChromium የመለያ መግቢያ መገናኛን ለመዝጋት ጠቅ ያድርጉ</translation>
 <translation id="4987820182225656817">እንግዳዎች ማንኛውንም ነገር ወደኋላ ሳይተዉ Chromium መጠቀም ይችላሉ።</translation>
 <translation id="4994636714258228724">እራስዎን በChromium ላይ ያክሉ</translation>
 <translation id="5114678101347489141">Chromium ጣቢያዎች ያነሰ መረጃዎን ተጠቅመው ተመሳሳይ የአሰሳ ተሞክሮ እንዲያቀርቡ የሚያስችሏቸውን አዳዲስ ባህሪያትን እያሰሰ ነው።</translation>
+<translation id="5187123684706427865">የChromium መለያ ዳግም ማረጋገጥ ያስፈልገዋል</translation>
 <translation id="5224391634244552924">ምንም የተቀመጡ የይለፍ ቃላት የሉም። እርስዎ የይለፍ ቃላትዎን ሲያስቀምጧቸው Chromium መፈተሽ ይችላል።</translation>
 <translation id="5231355151045086930">ከChromium ዘግተው ይውጡ</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> አስቀድመው ወደዚህ የChromium መገለጫ ገብተዋል። ይህ አዲስ የChromium መገለጫ ለ<ph name="USER_EMAIL_ADDRESS" /> ይፈጥራል</translation>

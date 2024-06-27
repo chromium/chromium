@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">चुकीचा PUK</translation>
 <translation id="4057991113334098539">सक्रिय करीत आहे...</translation>
 <translation id="4092890906744441904">आयरिश</translation>
+<translation id="4101601646343868113">तुमच्या मोबाइल नेटवर्कमध्ये साइन इन करा आणि तुमचा मोबाइल डेटा प्लॅन अ‍ॅक्टिव्ह असल्याचे कन्फर्म करा</translation>
 <translation id="4124731372776320263">१ Drive फाइल सिंक करत आहे</translation>
 <translation id="4124935795427217608">युनिकॉर्न</translation>
 <translation id="4131235941541910880">तुम्हाला नको असलेले आयटम हे ट्रॅश मध्ये हलवा</translation>
@@ -603,6 +604,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5625294776298156701">Tamil99 कीबोर्डसह तमिळ</translation>
 <translation id="5633226425545095130">हा आयटम हलवल्याने, शेअर केलेले '<ph name="DESTINATION_NAME" />' हे फोल्डर पाहू शकणाऱ्या प्रत्येकासोबत तो शेअर होईल.</translation>
 <translation id="5649768706273821470">ऐका</translation>
+<translation id="5650895901941743674">APN कॉन्फिगरेशन तपासा</translation>
 <translation id="5669691691057771421">नवीन पिन एंटर करा</translation>
 <translation id="5678784840044122290">तुमच्या टर्मिनलमध्ये Linux ॲप्लिकेशन उपलब्ध असेल आणि तुमच्या लॉंचरमध्ये आयकन देखील दिसू शकेल.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />संग्रहण किंवा आभासी डिस्कमधून डिस्कनेक्ट करू शकत नाही<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8600173386174225982">फाइल सूची थंबनेल व्ह्यूमध्ये बदलली गेली आहे.</translation>
 <translation id="8601932370724196034">Crostini इमेज फाइल</translation>
 <translation id="8609695766746872526">आइसलँडिक</translation>
+<translation id="8630384863424041081">तुमच्या सिम कार्डचा पिन किंवा तुमच्या वाहकाने दिलेला डीफॉल्ट पिन एंटर करा. सपोर्टसाठी तुमच्या वाहकाशी संपर्क साधा.</translation>
 <translation id="863903787380594467">चुकीचा पिन. तुमच्याकडे <ph name="RETRIES" /> प्रयत्न शिल्लक आहेत.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - पोर्ट</translation>
 <translation id="8656407365183407932">तुमच्या ऑफलाइन फाइल काढून टाकाव्या लागतील</translation>

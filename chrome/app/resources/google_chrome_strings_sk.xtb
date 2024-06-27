@@ -5,6 +5,8 @@
 <translation id="1026101648481255140">Pokračovať v inštalácii</translation>
 <translation id="102763973188675173">Prispôsobte si Google Chrome a ovládajte ho. K dispozícii je aktualizácia.</translation>
 <translation id="1028061813283459617">Ak chcete odstrániť dáta prehliadania iba z tohto zariadenia a vo svojom účte Google ich ponechať, <ph name="BEGIN_LINK" />odhláste sa z Chromu<ph name="END_LINK" />.</translation>
+<translation id="1042270987544905725">Kliknutím zavriete dialógové okno prihlásenia do Chromu</translation>
+<translation id="1059838145689930908">Ak chcete používať toto rozšírenie ako <ph name="USER_EMAIL_ADDRESS" />, prihláste sa do Chromu.</translation>
 <translation id="1065672644894730302">Vaše predvoľby sa nedajú načítať.
 
 Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách sa neuložia.</translation>
@@ -371,6 +373,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6291089322031436445">Aplikácie pre Chrome vo verzii pre vývojárov</translation>
 <translation id="6291549208091401781">Google Chrome už majú nainštalovaný všetci používatelia na vašom počítači.</translation>
 <translation id="6319856120645568262">Chrome potrebuje povolenie mapovať vaše okolie a sledovať vaše ruky</translation>
+<translation id="6321592572353357376">Rozšírenie <ph name="EXTENSION_NAME" /> žiada, aby ste sa prihlásili do Chromu</translation>
 <translation id="6326175484149238433">Odstrániť z Chromu</translation>
 <translation id="6327105987658262776">K dispozícii nie je žiadna aktualizácia.</translation>
 <translation id="6360449101159168105">Keď bola táto karta neaktívna, bola uvoľnená pamäť, aby Chrome zostal rýchly. Môžete nastaviť, aby bol tento web vždy vylúčený z nečinnosti.</translation>
@@ -463,6 +466,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="7655455401911432608">Vaša história prehliadania, teda záznam webov, ktoré ste navštívili pomocou Chromu v tomto zariadení.</translation>
 <translation id="7661924425853052955">Tento web ste v poslednom čase nenavštívili. Chrome odstránil povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a ďalšie (<ph name="COUNT" />).</translation>
 <translation id="7668816516367091728">Vykonávajte úlohy, napríklad preklad, výpočty a ďalšie, priamo na paneli s adresou</translation>
+<translation id="7670287553302121848">Účet Chrome vyžaduje opätovné overenie</translation>
 <translation id="769538538642757151">Ak bude potrebné niečo skontrolovať, Chrome vás upozorní</translation>
 <translation id="7747138024166251722">Inštalátor nemohol vytvoriť dočasný priečinok. Skontrolujte úroveň zaplnenia disku a povolenie na inštaláciu softvéru.</translation>
 <translation id="7761834446675418963">Ak chcete otvoriť prehliadač Chrome a začať prehliadať, kliknite na svoje meno.</translation>

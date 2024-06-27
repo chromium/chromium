@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">PUK incorrecto</translation>
 <translation id="4057991113334098539">Activando...</translation>
 <translation id="4092890906744441904">Irlandés</translation>
+<translation id="4101601646343868113">Inicia sesión en tu red móvil y confirma que tu plan de datos móviles esté activo</translation>
 <translation id="4124731372776320263">Sincronizando 1 archivo de Drive</translation>
 <translation id="4124935795427217608">Unicornio</translation>
 <translation id="4131235941541910880">Mueve los elementos que no necesites a la papelera</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Tamil con teclado Tamil99</translation>
 <translation id="5633226425545095130">Si mueves este elemento, se compartirá con todos los usuarios que puedan ver la carpeta compartida "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Escuchar</translation>
+<translation id="5650895901941743674">Comprueba tu configuración de APN</translation>
 <translation id="5669691691057771421">Introducir el nuevo PIN</translation>
 <translation id="5678784840044122290">La aplicación de Linux estará disponible en tu terminal y también es posible que se te muestre un icono en el menú de aplicaciones.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />No se puede desconectar de un archivo o disco virtual<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">La lista de archivos ha cambiado a la vista de miniaturas.</translation>
 <translation id="8601932370724196034">Archivo de imagen de Crostini</translation>
 <translation id="8609695766746872526">Islandés</translation>
+<translation id="8630384863424041081">Introduce el PIN de tu tarjeta SIM o el PIN predeterminado proporcionado por tu operador. Ponte en contacto con tu operador si necesitas asistencia.</translation>
 <translation id="863903787380594467">PIN incorrecto. Te quedan <ph name="RETRIES" /> intentos.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> (puerto)</translation>
 <translation id="8656407365183407932">Se han tenido que eliminar tus archivos sin conexión</translation>

@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">በማያ ገፅ ላይ የቁልፍ ሰሌዳ ነቅቷል</translation>
 <translation id="1749109475624620922">መስኮት <ph name="WINDOW_TITLE" /> ለሁሉም ዴስኮች ተመድቧል</translation>
 <translation id="1750088060796401187"><ph name="MAX_DESK_LIMIT" /> ዴስኮች ብቻ ተፈቅደዋል። አዲስ ለመክፈት ዴስክን ያስወግዱ።</translation>
+<translation id="1751335846119670066">እንዳነብ እርዳኝ</translation>
 <translation id="1755408179247123630">ለመናገር ምረጥ የሚለው ይብራ?</translation>
 <translation id="1755556344721611131">የምርመራ መተግበሪያ</translation>
 <translation id="1756833229520115364">ቅንብር ደንብን ማስቀመጥ አልተቻለም። በጣም ብዙ መስኮቶች ወይም ትሮች።</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ እና ማሳወቂያዎች ዕይታን ያዋቅሩ</translation>
 <translation id="1787955149152357925">አጥፋ</translation>
 <translation id="1796561540704213354">የጎበኟቸውን ገፆች እና የተከፈቱ ገፆችን የሚያካትቱ ድር ጣቢያዎች</translation>
+<translation id="179842970735685253">የGoogle የአገልግሎት ውል</translation>
 <translation id="181103072419391116">የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />፣ በየእርስዎ አስተዳዳሪ የሚተዳደር</translation>
 <translation id="1816896987747843206">ይህ የካሜራ ፈቃድ ላላቸው ሁሉም መተግበሪያዎች እና ድር ጣቢያዎች የካሜራ መዳረሻ ይፈቅዳል</translation>
 <translation id="1823873187264960516">ኤተርኔት፦ <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">ሲፒዩ</translation>
 <translation id="3125690294288312932">የክፍል ሥራ ዓይነት</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">ማስታወስ ያለብዎት ጥቂት ነገሮች</translation>
 <translation id="3139188263101386725">የተዘመነውን አቋራጭ ይክፈቱ</translation>
 <translation id="3139942575505304791">ዴስክ 1</translation>
 <translation id="315116470104423982">የተንቀሳቃሽ ስልክ ውሂብ</translation>
@@ -961,6 +964,7 @@
 <translation id="4585337515783392668">ወደ ያልታወቀ ተቀባይ cast ማድረግን አስቁም</translation>
 <translation id="4596144739579517758">ጠቆር ያለ ገጽታ ጠፍቷል</translation>
 <translation id="4596442969149038771">በ<ph name="USER" /> የተጋራ</translation>
+<translation id="4610493115106525653">ጥሩ ውጤት</translation>
 <translation id="4611292653554630842">ግባ</translation>
 <translation id="462160925400706389"><ph name="NAME" /> ተገናኝቷል</translation>
 <translation id="4623167406982293031">መለያን ያረጋግጡ</translation>
@@ -1118,6 +1122,7 @@
 <translation id="5121628974188116412">ወደ ገጹ ግርጌ ይሂዱ</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> ቅድመ ዕይታ። የቦዘነ ዴስክ።</translation>
 <translation id="5136175204352732067">የተለየ የቁልፍ ሰሌዳ ተገናኝቷል</translation>
+<translation id="5140105873789567560">እንድጽፍ እርዳኝ እና እንዳነብ እርዳኝን ለመጠቀም ቢያንስ 18 ዓመት የሞላዎት መሆን አለብዎት።</translation>
 <translation id="5144005092084035179">የኦዲዮ ግብዓት ይቀየር?</translation>
 <translation id="5147567197700016471">ተከፍቷል</translation>
 <translation id="5150070631291639005">የግላዊነት ቅንብሮች</translation>
@@ -1558,6 +1563,7 @@
 <translation id="6696025732084565524">የእርስዎ ተነቃይ የቁልፍ ሰሌዳ ወሳኝ የሆነ ዝማኔ ያስፈልገዋል</translation>
 <translation id="6697913454192220372">አዲስ ዴስክ ያክሉ</translation>
 <translation id="6700713906295497288">የIME ምናሌ አዝራር</translation>
+<translation id="6704375469818246414">AI አመንጪን ሲጠቀሙ ጥራት ሊለያይ ይችላል።</translation>
 <translation id="6706742084323792866">ተሰኪ ቁልፍ ሰሌዳ</translation>
 <translation id="6710213216561001401">ቀዳሚ</translation>
 <translation id="6723839937902243910">ኃይል</translation>
@@ -1826,9 +1832,11 @@
 <translation id="7726391492136714301">የስልክዎን ማሳወቂያዎች እና መተግበሪያዎች ይመልከቱ</translation>
 <translation id="7727952505535211425">ድር ጣቢያውን በአድራሻ አሞሌው ውስጥ በአዲስ ትር ውስጥ ይክፈቱ</translation>
 <translation id="7742327441377685481">ምንም ማሳወቂያዎች የሉም</translation>
+<translation id="774736258792760908">እንድጽፍ እርዳኝ እና እንዳነብ እርዳኝን ሲያበሩ፣ የመጻፍ ጥቆማዎችን ለማመንጨት፣ ማጠቃለያዎች ለማመንጨት፣ ጥያቄዎችን ለመመለስ፣ እና በ<ph name="LINK_TO_SERVICE_TERMS" /> ተገዥ የሆነውን ምርት ለማሻሻል፣ የግብዓት ጽሑፉ እና የሰነድ ይዘት ወደ Google AI አገልጋዮች ይላካል። ግላዊ፣ አደገኛ ወይም ምሥጢራዊ የሆነ ነገር አያካትቱ።</translation>
 <translation id="7748275671948949022">የማስጀመሪያ አዝራርን በመደርደሪያ ላይ አድምቅ</translation>
 <translation id="7749443890790263709">የተደረሰባቸው የዴስኮች ከፍተኛ ብዛት።</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">በማንኛውም ጊዜ በቅንብሮች ውስጥ እንድጽፍ እርዳኝ እና እንዳነብ እርዳኝን ማጥፋት ይችላሉ። <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">ለመናገር-ይምረጡ</translation>
 <translation id="7769299611924763557">የእርስዎ GIF በቅርቡ ዝግጁ ይሆናል</translation>
 <translation id="7773536009433685931">በምትኩ WiFiን ያብሩ</translation>
@@ -1837,6 +1845,7 @@
 <translation id="7781829728241885113">ትናንት</translation>
 <translation id="7787212146956232129">የግብዓት እና የውጽዓት መሣሪያዎች ተቀናብረዋል። ለመቀየር ወደ ቅንብሮች ይሂዱ።</translation>
 <translation id="7792590255364786396">የሚታይ</translation>
+<translation id="7793389284006812057">AI አመንጪ በሙከራ ደረጃ ላይ ያለ፣ በቅድመ ልማት ላይ ያለ እና በአሁኑ ጊዜ ውስን ተደራሽነት ያለው ነው።</translation>
 <translation id="7796735576426975947">አዲስ ማሳወቂያ ተደብቋል</translation>
 <translation id="7798302898096527229">ለመሰረዝ Search ወይም Shift ይጫኑ።</translation>
 <translation id="780301667611848630">አይ፣ አመሰግናለሁ</translation>
@@ -1991,6 +2000,7 @@
 <translation id="8331351032546853669">ማውረድ በመጠባበቅ ላይ</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">መጥፎ ውጤት</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> መስኮት ተመርጧል</translation>
 <translation id="8349826889576450703">ማስጀመሪያ</translation>
 <translation id="8349964124165471584">አገናኝን በአዲስ መስኮት ውስጥ ይክፈቱ</translation>

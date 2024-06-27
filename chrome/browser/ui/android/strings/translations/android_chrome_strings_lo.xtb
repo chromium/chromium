@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">ເປີດໃຊ້ເມື່ອ <ph name="LAST_UPDATED" /> ມື້ກ່ອນ</translation>
 <translation id="1390418506739274310">ທ່ານອາດເຫັນປະຫວັດຈາກແອັບອື່ນໆທີ່ເປີດລິ້ງໃນ Chrome. ບັນຊີ Google ຂອງທ່ານອາດມີປະຫວັດການທ່ອງເວັບຮູບແບບອື່ນໆຢູ່ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">ເພື່ອສືບຕໍ່, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ຈະແບ່ງປັນຊື່, ທີ່ຢູ່ອີເມວ ແລະ ຮູບໂປຣໄຟລ໌ຂອງທ່ານໃຫ້ກັບເວັບໄຊນີ້. ເບິ່ງ <ph name="BEGIN_LINK1" />ຂໍ້ກຳນົດບໍລິການ<ph name="END_LINK1" /> ຂອງເວັບໄຊນີ້.</translation>
+<translation id="139752016751285248">ຊີດລຸ່ມສຸດຂໍ້ມູນເຈາະເລິກດ້ານລາຄາເປີດຢູ່ແບບເຕັມໜ້າ</translation>
 <translation id="1397811292916898096">ຊອກຫາດ້ວຍ <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">ທ່ານສາມາດ <ph name="BEGIN_LINK1" />ຈັດການວ່າຈະບັນທຶກຂໍ້ມູນ Chrome ໃດ<ph name="END_LINK1" /> ໃສ່ໃນບັນຊີ Google ຂອງທ່ານໄດ້.
 
@@ -179,6 +180,7 @@
 <translation id="1877073879466606884">ໂປຣໄຟລ໌ທີ່ທ່ານເຂົ້າສູ່ລະບົບເປັນໂປຣໄຟລ໌ທີ່ມີການຈັດການ. ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສາມາດປ່ຽນແປງການຕັ້ງຄ່າໂປຣໄຟລ໌ຂອງທ່ານຈາກໄລຍະໄກ, ວິເຄາະຂໍ້ມູນກ່ຽວກັບໂປຣແກຣມທ່ອງເວັບຜ່ານການລາຍງານ ແລະ ດຳເນີນການອື່ນໆທີ່ຈຳເປັນໄດ້.</translation>
 <translation id="1883903952484604915">ໄຟລ໌ຂອງຂ້ອຍ</translation>
 <translation id="189358972401248634">​ພາ​ສາ​ອື່ນໆ</translation>
+<translation id="1899175549411605574">ຊີດລຸ່ມສຸດຂໍ້ມູນເຈາະເລິກດ້ານລາຄາ</translation>
 <translation id="1900260903084164610">ໂດຍການດຳເນີນການຕໍ່, ແມ່ນຖືວ່າທ່ານຍອມຮັບ <ph name="BEGIN_TOS_LINK" />ຂໍ້ກຳນົດບໍລິການ<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">URL ທີ່ທ່ານເຂົ້ານັ້ນຖືກບັນທຶກໄປໃສ່ບັນຊີ Google ທ່ານແລ້ວ</translation>
 <translation id="1910950723001426294">ປິດລາຍຊື່ຂອງຕົວເລືອກການແບ່ງປັນແລ້ວ.</translation>
@@ -530,6 +532,7 @@
 <translation id="3637744895182738742">ຫາກທ່ານລືມລະຫັດຜ່ານຂອງທ່ານ ຫຼື ຕ້ອງການປ່ຽນການຕັ້ງຄ່ານີ້, ໃຫ້ <ph name="BEGIN_LINK" />ລຶບຂໍ້ມູນ Chrome ໃນບັນຊີຂອງທ່ານ<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">ເຂົ້າໄປໜ້າຫຼັກຂອງແອັບ Google</translation>
 <translation id="368329460027487650">ອອກຈາກລະບົບແລ້ວ. ເປີດຕົວເລືອກເພື່ອເຂົ້າສູ່ລະບົບ.</translation>
+<translation id="3684540848053703310">ຊີດລຸ່ມສຸດຂໍ້ມູນເຈາະເລິກດ້ານລາຄາປິດຢູ່</translation>
 <translation id="3687645719033307815">ທ່ານກຳລັງເບິ່ງຕົວຢ່າງຂອງໜ້ານີ້</translation>
 <translation id="3690369331356918524">ເຕືອນບອກທ່ານຖ້າລະຫັດຜ່ານຮົ່ວໄຫຼໃນການລະເມີດຂໍ້ມູນ</translation>
 <translation id="3692944402865947621">ການດາວໂຫຼດ <ph name="FILE_NAME" /> ບໍ່ສຳເລັດ ເນື່ອງຈາກບໍ່ສາມາດຕິດຕໍ່ຫາບ່ອນຈັດເກັບຂໍ້ມູນໄດ້.</translation>

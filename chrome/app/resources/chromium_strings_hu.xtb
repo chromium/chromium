@@ -79,6 +79,8 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="2329088755516916767">Ha be van kapcsolva ez a beállítás, a Chromium előre betölti az oldalakat, ami felgyorsítja a böngészést és a keresést.</translation>
 <translation id="2343156876103232566">Ha innen szeretne számot küldeni Android-telefonjára, jelentkezzen be a Chromiumba mindkét eszközén.</translation>
 <translation id="2359808026110333948">Tovább</translation>
+<translation id="2361918034042471035">A(z) „<ph name="EXTENSION_NAME" />” bővítmény arra kéri, hogy jelentkezzen be a Chromiumba</translation>
+<translation id="2374216753258219393">Ha ezt a bővítményt a(z) <ph name="USER_EMAIL_ADDRESS" /> fiókban szeretné használni, jelentkezzen be a Chromiumba.</translation>
 <translation id="2384373936468275798">A ChromiumOS nem tudta szinkronizálni az adatokat, mert a fiók bejelentkezési adatai elavultak.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Valamelyik (akár több is) Chromium-bővítmény hozzáfért 1 HID-eszközhöz}=1{Valamelyik (akár több is) Chromium-bővítmény éppen hozzáfér 1 HID-eszközhöz}other{Valamelyik (akár több is) Chromium-bővítmény éppen hozzáfér # HID-eszközhöz}}</translation>
 <translation id="2401032172288869980">A Chromiumnak kamera- és mikrofonhasználati engedélyre van szüksége ehhez a webhelyhez</translation>
@@ -242,9 +244,11 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="4893347770495441059">Indítsa újra a Chromium frissítéshez</translation>
 <translation id="4942295735032723435">Ha a jövőben Chromium-frissítéseket szeretne kapni, akkor a macOS 11-es vagy újabb verziójára lesz szüksége. Ezen a számítógépen a macOS 10.15 fut.</translation>
 <translation id="4943838377383847465">A Chromium háttérmódban van.</translation>
+<translation id="494490797786467921">Kattintson a Chromium bejelentkezési párbeszédpaneljének bezárásához</translation>
 <translation id="4987820182225656817">A vendégek úgy használhatják a Chromiumot, hogy nem hagynak hátra semmit.</translation>
 <translation id="4994636714258228724">Adja hozzá magát a Chromiumban</translation>
 <translation id="5114678101347489141">A Chromium olyan funkciók fejlesztésén dolgozik, amelyek ugyanazt a böngészési élményt nyújtják a személyes adatok kisebb mértékű felhasználása mellett.</translation>
+<translation id="5187123684706427865">A Chromium-fiókot újból hitelesíteni kell</translation>
 <translation id="5224391634244552924">Nincsenek mentett jelszavak. A Chromium képes a jelszavak ellenőrzésére, ha Ön elmenti őket.</translation>
 <translation id="5231355151045086930">Kijelentkezés a Chromiumból</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> már be van jelentkezve ebbe a Chromium-profilba. Ezzel új Chromium-profilt hoz létre a(z) <ph name="USER_EMAIL_ADDRESS" /> fiókhoz.</translation>

@@ -66,12 +66,12 @@
 <translation id="4159784952369912983">बैंगनी</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब वाले टैब ग्रुप को बड़ा करें. इसका नाम <ph name="TITLE_OF_GROUP" /> है.}one{<ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को बड़ा करें. इसका नाम <ph name="TITLE_OF_GROUP" /> है.}other{<ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को बड़ा करें. इसका नाम <ph name="TITLE_OF_GROUP" /> है.}}</translation>
 <translation id="427987768447457592">नया टैब ग्रुप</translation>
-<translation id="4338724047016295066">इस्तेमाल नहीं किए जा रहे टैब अपने-आप बंद हो जाएंगे. उन्हें इतिहास वाले सेक्शन में कभी भी देखा जा सकता है.</translation>
+<translation id="4338724047016295066">इनऐक्टिव टैब अपने-आप बंद हो जाएंगे. उन्हें इतिहास वाले सेक्शन में कभी भी देखा जा सकता है.</translation>
 <translation id="4371591986692297148">चालू नहीं है</translation>
 <translation id="4460014764210899310">ग्रुप से अलग करें</translation>
 <translation id="4648718555153979859">यहां पर आपके टैब एक ग्रुप में रखे जाते हैं</translation>
 <translation id="4686942373615810936">अभी-अभी बनाया गया</translation>
-<translation id="47070857600201406">{DAY_COUNT,plural, =1{1 दिन बाद बंद करें}one{<ph name="DAY_COUNT_MANY" /> दिन बाद बंद करें}other{<ph name="DAY_COUNT_MANY" /> दिनों बाद बंद करें}}</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{1 दिन बाद बंद हो जाएंगे}one{<ph name="DAY_COUNT_MANY" /> दिन बाद बंद हो जाएंगे}other{<ph name="DAY_COUNT_MANY" /> दिनों बाद बंद हो जाएंगे}}</translation>
 <translation id="4777866634702576038">टैब ग्रुप मिटाना है?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> समीक्षा)}one{(<ph name="REVIEWS_COUNT_MANY" /> समीक्षा)}other{(<ph name="REVIEWS_COUNT_MANY" /> समीक्षाएं)}}</translation>
 <translation id="4850886885716139402">देखें</translation>

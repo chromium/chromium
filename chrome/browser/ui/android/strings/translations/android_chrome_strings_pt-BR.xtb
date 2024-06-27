@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Ativado há <ph name="LAST_UPDATED" /> dias</translation>
 <translation id="1390418506739274310">É possível que o histórico de outros apps que abrem links no Chrome seja mostrado. Sua Conta do Google pode ter outras formas de histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu nome, endereço de e-mail e foto do perfil com esse site. Veja os <ph name="BEGIN_LINK1" />Termos de Serviço<ph name="END_LINK1" /> desse site.</translation>
+<translation id="139752016751285248">A página inferior de informações de preço está aberta no tamanho máximo</translation>
 <translation id="1397811292916898096">Pesquisar com o <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Você pode <ph name="BEGIN_LINK1" />gerenciar quais dados do Chrome são salvos<ph name="END_LINK1" /> na sua Conta do Google.
 
@@ -179,6 +180,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="1877073879466606884">O perfil em que você fez login é gerenciado. O administrador pode fazer mudanças nas configurações do seu perfil remotamente, analisar informações sobre o navegador com relatórios e realizar outras tarefas necessárias.</translation>
 <translation id="1883903952484604915">Meus arquivos</translation>
 <translation id="189358972401248634">Outros idiomas</translation>
+<translation id="1899175549411605574">Página inferior de informações de preço</translation>
 <translation id="1900260903084164610">Ao continuar, você concorda com os <ph name="BEGIN_TOS_LINK" />Termos de Serviço<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Os URLs que você acessa ficam armazenados na sua Conta do Google</translation>
 <translation id="1910950723001426294">A lista de opções de compartilhamento está fechada.</translation>
@@ -530,6 +532,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3637744895182738742">Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Acessar a página inicial do Google app</translation>
 <translation id="368329460027487650">Conta desconectada. Abre as opções para fazer login.</translation>
+<translation id="3684540848053703310">A página inferior de insights de preço foi fechada</translation>
 <translation id="3687645719033307815">Esta é uma visualização dessa página</translation>
 <translation id="3690369331356918524">Avisa caso suas senhas sejam expostas em uma violação de dados</translation>
 <translation id="3692944402865947621">Falha no download do arquivo <ph name="FILE_NAME" /> porque não foi possível acessar o local do armazenamento.</translation>

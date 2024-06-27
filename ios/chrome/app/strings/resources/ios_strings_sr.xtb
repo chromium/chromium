@@ -825,6 +825,7 @@
 <translation id="5190835502935405962">Трака са обележивачима</translation>
 <translation id="519530786644929958">Неуспело преузимање. Не можете да поновите.</translation>
 <translation id="5197255632782567636">Интернет</translation>
+<translation id="5205197603258285592">Сачувај слику у...</translation>
 <translation id="5211488077761630279">Желите да дозволите да <ph name="SITE_NAME" /> користи дозволу <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Побољшајте безбедност на вебу за свакога</translation>
 <translation id="5220945116117011963">Правите догађаје у календару од датума</translation>
@@ -1413,6 +1414,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8023878949384262191">Проширује одељак.</translation>
 <translation id="8027581147000338959">Отвори у новом прозору</translation>
 <translation id="8032569120109842252">Пратите</translation>
+<translation id="8035412398498507358">Слике</translation>
 <translation id="8040207962129315716">Питај ме сваки пут</translation>
 <translation id="8041089156583427627">Пошаљи повратне информације</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Историја претраге<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />други облици активности<ph name="END_LINK" /> могу да буду сачувани на Google налогу када сте пријављени. Можете да их избришете у било ком тренутку.</translation>
@@ -1525,6 +1527,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8556590991644167667">{count,plural, =1{Одбацили сте {count} упозорење}one{Одбацили сте {count} упозорење}few{Одбацили сте {count} упозорења}other{Одбацили сте {count} упозорења}}</translation>
 <translation id="8560253818350321773">Прво прикажи често коришћене ставке.</translation>
 <translation id="8569721750632860947">Који URL желите да додате на листу за читање?</translation>
+<translation id="8570765991595769633">Прилагоди картице</translation>
 <translation id="8577056989960190117">Аутоматски попуните годину истека <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Искључено</translation>
 <translation id="8591976964826315682">Блокирајте колачиће трећих страна у режиму без архивирања</translation>
@@ -1664,6 +1667,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="948048872540558976">Направите нову картицу</translation>
 <translation id="952218985181984374">{count,plural, =1{Обележивач је сачуван}one{{count} обележивач је сачуван}few{{count} обележивача су сачувана}other{{count} обележивача је сачувано}}</translation>
 <translation id="952704832371081537">Откажи</translation>
+<translation id="955587716023217544">Измени листу налога</translation>
 <translation id="959066944189734975">Пратите <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Прикажите предлоге картица са других уређаја</translation>
 <translation id="973493300226275298">Пратите цену производа у различитим онлајн продавницама. Добијаћете обавештења када цена падне.</translation>

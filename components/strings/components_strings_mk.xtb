@@ -26,6 +26,7 @@
 <translation id="1050038467049342496">Затворете ги другите апликации</translation>
 <translation id="1053959602163383901">Избравте да потврдите со уред за автентикација на веб-страници кои користат <ph name="PROVIDER_ORIGIN" />. Давателов на услуги можеби ги зачувал податоците за вашиот начин на плаќање и можете <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Врати додавање</translation>
+<translation id="105642538515333723">Може да ги внесете кои било фрази или детали што ги памтите од страниците што сте ги прелистувале во минатото, како „удобни чевли за пешачење“</translation>
 <translation id="1056898198331236512">Предупредување</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да ја играте играта „Трчање на диносаурусот“ во Chrome</translation>
 <translation id="1058479211578257048">Се зачувуваат картички…</translation>
@@ -41,6 +42,7 @@
 <translation id="1070901266639972381">Вечер</translation>
 <translation id="1073690811593784042">Стакло (во боја)</translation>
 <translation id="1074497978438210769">Не е безбедно</translation>
+<translation id="1074779248866616641">Резултат</translation>
 <translation id="1075364221219156102">Користете криптографски клуч</translation>
 <translation id="1080116354587839789">Приспособете на ширината</translation>
 <translation id="1081061862829655580">Фиока 19</translation>
@@ -967,6 +969,7 @@
 <translation id="2824775600643448204">Лента за адреса и за пребарување</translation>
 <translation id="2826760142808435982">Поврзувањето е шифрирано и автентицирано со употреба на <ph name="CIPHER" /> и користи <ph name="KX" /> како клучен механизам за размена.</translation>
 <translation id="2833637280516285136">Радиоемисии со разговори</translation>
+<translation id="2837891525090413132">Може да побара да ја заклучи и користи тастатурата</translation>
 <translation id="2838682941130655229">Сајтот <ph name="EMBEDDED_URL" /> сака да ги користи податоците што ги зачувал за вас</translation>
 <translation id="2839032553903800133">Известувањата се блокирани</translation>
 <translation id="2839501879576190149">Пред вас е лажен сајт</translation>
@@ -2857,6 +2860,7 @@
 <translation id="6433797564277305076">Отсега, потврдувајте ги картичките побрзо со отклучување уред</translation>
 <translation id="643917412048333145">Фустани</translation>
 <translation id="6440503408713884761">Игнориран</translation>
+<translation id="6440534369669992497">Може да ги внесете кои било фрази или детали што ги памтите од страниците што сте ги прелистувале во минатото, како „удобни чевли за пешачење“. Притиснете <ph name="SHORTCUT" /> за да пребарате.</translation>
 <translation id="6443406338865242315">кои екстензии и приклучоци ги имате инсталирано</translation>
 <translation id="6444329331928531170">Пензионирање и пензија</translation>
 <translation id="6446608382365791566">Додајте повеќе информации</translation>
@@ -3140,6 +3144,7 @@
 <translation id="7006930604109697472">Сепак испрати</translation>
 <translation id="7010658264061801199">Храна и пијалаци</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013835112918108252">Може да побара да го заклучи и користи глувчето</translation>
 <translation id="7014042602717177828">Аудиоопрема за автомобили</translation>
 <translation id="7014741021609395734">Ниво на зумирање</translation>
 <translation id="7016992613359344582">Овие трошоци може да бидат еднократни или повторливи и може нема да бидат очигледни.</translation>
@@ -3154,6 +3159,7 @@
 <translation id="7031646650991750659">кои апликации од Google Play сте ги инсталирале</translation>
 <translation id="7035705295266423040">Вашата банка сака да го потврди вашиот идентитет</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да управувате со поставките за приватност на вашата сметка на Google</translation>
+<translation id="7042616127917168121">Рафинирајте ги резултатите</translation>
 <translation id="7043552168914147882">Пакет хартија</translation>
 <translation id="7044081119134178347">Камерата е дозволена овој пат</translation>
 <translation id="7048095965575426564">Европски на преклопување</translation>

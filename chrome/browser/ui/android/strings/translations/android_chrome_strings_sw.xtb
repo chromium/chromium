@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Ilitumika siku <ph name="LAST_UPDATED" /> zilizopita</translation>
 <translation id="1390418506739274310">Unaweza kuona historia kutoka kwenye programu zingine zinazofungua viungo kwenye Chrome. Huenda Akaunti yako ya Google ikawa na aina nyingine za historia ya kuvinjari kwenye <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Ili uendelee, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> itashiriki jina, anwani ya barua pepe, pamoja na picha yako ya wasifu na tovuti hii. Angalia <ph name="BEGIN_LINK1" />sheria na masharti<ph name="END_LINK1" />ya tovuti hii.</translation>
+<translation id="139752016751285248">Safu ya chini ya maarifa ya bei imefunguliwa katika skrini nzima</translation>
 <translation id="1397811292916898096">Tafuta kwa <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Unaweza <ph name="BEGIN_LINK1" />kudhibiti data ya Chrome inayohifadhiwa<ph name="END_LINK1" /> katika Akaunti yako ya Google.
 
@@ -179,6 +180,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="1877073879466606884">Umetumia wasifu unaodhibitiwa kuingia katika akaunti. Msimamizi wako anaweza kufanya mabadiliko kwenye mipangilio ya wasifu wako akiwa mbali, kuchanganua taarifa kuhusu kivinjari kupitia kuripoti na kufanya majukumu mengine muhimu.</translation>
 <translation id="1883903952484604915">Faili Zangu</translation>
 <translation id="189358972401248634">Lugha zingine</translation>
+<translation id="1899175549411605574">Safu ya chini ya maarifa ya bei</translation>
 <translation id="1900260903084164610">Kwa kuendelea, unakubali <ph name="BEGIN_TOS_LINK" />Sheria na Masharti<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">URL unazotembelea huhifadhiwa kwenye Akaunti yako ya Google</translation>
 <translation id="1910950723001426294">Orodha ya chaguo za kushiriki imefungwa.</translation>
@@ -520,6 +522,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3587596251841506391">Tusaidie kuboresha usalama kwenye wavuti</translation>
 <translation id="3597179440835065298">Pata mapendekezo bora</translation>
 <translation id="3602290021589620013">Hakiki</translation>
+<translation id="3614126103057878858">Maarifa ya bei</translation>
 <translation id="3616113530831147358">Sauti</translation>
 <translation id="3622349720008044802">Dhibiti madirisha</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{Tovuti zaidi ya 1}other{Tovuti zaidi ya #}}</translation>
@@ -529,6 +532,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3637744895182738742">Ikiwa ulisahau kauli yako ya siri au ungependa kubadilisha mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kwenye akaunti yako<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Nenda kwenye Ukurasa wa Mwanzo wa Programu ya Google</translation>
 <translation id="368329460027487650">Umeondoka kwenye akaunti. Hufungua chaguo za kuingia katika akaunti.</translation>
+<translation id="3684540848053703310">Safu ya chini ya maarifa ya bei imefungwa</translation>
 <translation id="3687645719033307815">Unaangalia onyesho la kukagua ukurasa huu</translation>
 <translation id="3690369331356918524">Hukuonya iwapo manenosiri yamefichuliwa katika tukio la ufichuzi haramu wa data</translation>
 <translation id="3692944402865947621">Imeshindwa kupakua <ph name="FILE_NAME" /> kwa sababu haikupata eneo la kuhifadhi.</translation>

@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Nepareizs PUK kods</translation>
 <translation id="4057991113334098539">Notiek aktivizācija...</translation>
 <translation id="4092890906744441904">Īru</translation>
+<translation id="4101601646343868113">Pierakstieties savā mobilajā tīklā un apstipriniet, ka mobilo datu plāns ir aktīvs</translation>
 <translation id="4124731372776320263">Notiek 1 Diska faila sinhronizēšana</translation>
 <translation id="4124935795427217608">Vienradzis</translation>
 <translation id="4131235941541910880">Varat pārvietot nevajadzīgus vienumus uz atkritni</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Tamilu, ar Tamil99 tastatūru</translation>
 <translation id="5633226425545095130">Pārvietojot šo failu, tas tiks kopīgots ar ikvienu, kas var skatīt kopīgoto mapi “<ph name="DESTINATION_NAME" />”.</translation>
 <translation id="5649768706273821470">Klausīties</translation>
+<translation id="5650895901941743674">Pārbaudiet savu APN konfigurāciju</translation>
 <translation id="5669691691057771421">Ievadiet jauno PIN.</translation>
 <translation id="5678784840044122290">Linux lietojumprogramma būs pieejama jūsu terminālī, un programmā Palaidējs var būt redzama arī tās ikona.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nevar pārtraukt savienojumu ar arhīvu vai virtuālo disku<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Failu saraksts ir mainīts uz sīktēlu skatu.</translation>
 <translation id="8601932370724196034">Crostini attēla fails</translation>
 <translation id="8609695766746872526">Islandiešu</translation>
+<translation id="8630384863424041081">Ievadiet SIM kartes PIN vai noklusējuma PIN, ko nodrošina mobilo sakaru operators. Sazinieties ar savu mobilo sakaru operatoru, lai saņemtu palīdzību.</translation>
 <translation id="863903787380594467">Nepareizs PIN. Atlikuši <ph name="RETRIES" /> mēģinājumi.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> — ports</translation>
 <translation id="8656407365183407932">Bija jānoņem jūsu bezsaistes faili</translation>

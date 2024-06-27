@@ -102,6 +102,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> এই ব্যবহারকারীকে ম্যানেজ করে এবং তার ফলে এটি হয়ত অন্য জায়গা থেকে সেটিংস ম্যানেজ করতে এবং ব্যবহারকারীর অ্যাক্টিভিটির উপর নজর রাখতে পারে।</translation>
 <translation id="150962533380566081">ভুল PUK।</translation>
 <translation id="1510238584712386396">লঞ্চার</translation>
+<translation id="1514446283880973949">আরও আত্মবিশ্বাসের সাথে লিখুন, কন্টেন্ট সংক্ষিপ্ত করুন, সংজ্ঞা দেখুন এবং আরও অনেক কিছুতে সাহায্য পান</translation>
 <translation id="1515129336378114413">ব্রাউজার হোম</translation>
 <translation id="1526389707933164996">স্ক্রিন সেভার অ্যানিমেশন</translation>
 <translation id="152892567002884378">ভলিউম বাড়ান</translation>
@@ -1287,6 +1288,7 @@
 <translation id="8167413449582155132">Google AI দ্বারা পরিচালিত ব্যাকগ্রাউন্ড</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">বিচ</translation>
+<translation id="819278132617411009">আরও প্রোডাক্টিভ হয়ে উঠতে Google AI ব্যবহার করুন</translation>
 <translation id="8206859287963243715">সেলুলার</translation>
 <translation id="8208861521865154048">বিশেষ সুবিধা</translation>
 <translation id="8226628635270268143">আপনার পছন্দের ফটো ও অ্যালবাম বাছুন</translation>
@@ -1333,6 +1335,7 @@
 <translation id="8431300646573772016">ChromeOS-এ নতুন কী আছে</translation>
 <translation id="843568408673868420">ইন্টারনেট কানেক্টিভিটি</translation>
 <translation id="844521431886043384">DNS সেট আপ করা হয়নি</translation>
+<translation id="8456200178779628126">পড়তে ও লিখতে Google AI-এর থেকে সহায়তা নিন</translation>
 <translation id="8456761643544401578">অটোমেটিক 'ডার্ক মোড'</translation>
 <translation id="8461329675984532579">হোম পরিষেবা প্রদানকারীর নাম</translation>
 <translation id="8475690821716466388">দুর্বল WEP PSK প্রোটোকল ব্যবহার করে ওয়াই-ফাই নেটওয়ার্ক সুরক্ষিত করা হয়েছে</translation>
@@ -1459,6 +1462,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />-এর টিকিট রিফ্রেশ করুন</translation>
 <translation id="9106415115617144481">স্ক্যান করা পৃষ্ঠা <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">আনলক</translation>
+<translation id="9122492456897874028">কন্টেন্টের সারসংক্ষেপ লিখুন, সংজ্ঞা দেখুন এবং আরও অনেক কাজে সাহায্য পান</translation>
 <translation id="9122602430962285795">আবার কানেক্ট করতে, সেটিংস বিকল্পে যান</translation>
 <translation id="9122865513525855321">জেন</translation>
 <translation id="9126720536733509015">একাধিক পৃষ্ঠা সেভ করে একটি পিডিএফ ফাইল তৈরি করুন</translation>

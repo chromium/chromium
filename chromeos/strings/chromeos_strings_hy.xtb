@@ -102,6 +102,7 @@
 <translation id="1499900233129743732">Այս օգտատերը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինս նաև կարող է հեռակա կառավարել կարգավորումներն ու վերահսկել օգտատիրոջ գործողությունները։</translation>
 <translation id="150962533380566081">Անվավեր PUK:</translation>
 <translation id="1510238584712386396">Գործարկիչ</translation>
+<translation id="1514446283880973949">Գրեք ավելի վստահ, ամփոփեք բովանդակությունը, ստացեք սահմանումներ և ավելին</translation>
 <translation id="1515129336378114413">դիտարկիչի գլխավոր էջ</translation>
 <translation id="1526389707933164996">Էրանապահի համար շարժանկար</translation>
 <translation id="152892567002884378">Բարձրացնել ձայնը</translation>
@@ -1287,6 +1288,7 @@
 <translation id="8167413449582155132">Ֆոն՝ ստեղծված Google AI տեխնոլոգիաների հիման վրա</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">լողափ</translation>
+<translation id="819278132617411009">Օգտագործեք Google AI-ը՝ ավելի արդյունավետ լինելու համար</translation>
 <translation id="8206859287963243715">Բջջային</translation>
 <translation id="8208861521865154048">Բոնուսներ</translation>
 <translation id="8226628635270268143">Ընտրեք ձեր սիրած լուսանկարներն ու ալբոմները</translation>
@@ -1333,6 +1335,7 @@
 <translation id="8431300646573772016">Ինչն է ChromeOS-ում նոր</translation>
 <translation id="843568408673868420">Ինտերնետ կապ</translation>
 <translation id="844521431886043384">DNS-ը կարգավորված չէ</translation>
+<translation id="8456200178779628126">Օգտագործեք Google AI-ը՝ կարդալու և գրելու հետ կապված օգնություն ստանալու համար</translation>
 <translation id="8456761643544401578">Ավոտմատ մուգ ռեժիմ</translation>
 <translation id="8461329675984532579">Տան ծառայությունների մատակարարի անունը</translation>
 <translation id="8475690821716466388">Wi-Fi ցանցը պաշտպանված է WEP PSK թույլ հաղորդակարգով</translation>
@@ -1459,6 +1462,7 @@
 <translation id="910415269708673980">Թարմացրեք <ph name="PRINCIPAL_NAME" /> հաշվի տոմսը</translation>
 <translation id="9106415115617144481">Սկանավորվում է էջ <ph name="PAGE_NUMBER" />-ը</translation>
 <translation id="9111102763498581341">Ապակողպել</translation>
+<translation id="9122492456897874028">Ամփոփեք բովանդակությունը, ստացեք սահմանումներ և ավելին</translation>
 <translation id="9122602430962285795">Նորից միանալու համար անցեք Կարգավորումներ</translation>
 <translation id="9122865513525855321">ձեն</translation>
 <translation id="9126720536733509015">Պահեք մի քանի էջ մեկ PDF ֆայլում</translation>

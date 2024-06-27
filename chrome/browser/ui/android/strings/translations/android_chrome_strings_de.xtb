@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Vor <ph name="LAST_UPDATED" /> Tagen aktiv</translation>
 <translation id="1390418506739274310">Möglicherweise siehst du den Verlauf von anderen Apps, die Links in Chrome öffnen. Unter <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> sind möglicherweise weitere Arten von Browserverlaufsdaten für dein Google-Konto gespeichert.</translation>
 <translation id="13931502444227376"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> teilt zum Fortfahren deinen Namen, deine E-Mail-Adresse und dein Profilbild mit dieser Website. Die Nutzungsbedingungen der Website <ph name="BEGIN_LINK1" />findest du hier<ph name="END_LINK1" />.</translation>
+<translation id="139752016751285248">Preisinformationen am unteren Rand vollständig geöffnet</translation>
 <translation id="1397811292916898096">Mit <ph name="PRODUCT_NAME" /> suchen</translation>
 <translation id="1398057416966591719">Du kannst in deinem Google-Konto <ph name="BEGIN_LINK1" />festlegen, welche Chrome-Daten gespeichert werden<ph name="END_LINK1" />.
 
@@ -179,6 +180,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1877073879466606884">Das Profil, in dem du angemeldet bist, ist ein verwaltetes Profil. Dein Administrator kann deine Profileinstellungen per Fernzugriff ändern, Informationen über den Browser durch Berichte analysieren und andere notwendige Aufgaben ausführen.</translation>
 <translation id="1883903952484604915">Meine Dateien</translation>
 <translation id="189358972401248634">Sonstige Sprachen</translation>
+<translation id="1899175549411605574">Preisinformationen am unteren Rand</translation>
 <translation id="1900260903084164610">Wenn du fortfährst, akzeptierst du damit die <ph name="BEGIN_TOS_LINK" />Nutzungsbedingungen<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Die von dir besuchten URLs werden in deinem Google-Konto gespeichert</translation>
 <translation id="1910950723001426294">Die Liste der Freigabeoptionen ist geschlossen.</translation>
@@ -520,6 +522,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3587596251841506391">Dabei helfen, das Web sicherer zu machen</translation>
 <translation id="3597179440835065298">Bessere Vorschläge erhalten</translation>
 <translation id="3602290021589620013">Vorschau</translation>
+<translation id="3614126103057878858">Preisinformationen</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Fenster verwalten</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{und 1 weitere Website}other{und # weitere Websites}}</translation>
@@ -529,6 +532,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3637744895182738742">Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chrome-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Zur Startseite der Google App</translation>
 <translation id="368329460027487650">Abgemeldet. Anmeldeoptionen werden geöffnet.</translation>
+<translation id="3684540848053703310">Preisinformationen am unteren Rand geschlossen</translation>
 <translation id="3687645719033307815">Du siehst eine Vorschau dieser Seite</translation>
 <translation id="3690369331356918524">Warnt dich, wenn Passwörter durch eine Datenpanne preisgegeben worden sind</translation>
 <translation id="3692944402865947621">Download von <ph name="FILE_NAME" /> fehlgeschlagen, weil der Speicherort nicht erreichbar ist.</translation>

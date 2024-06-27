@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Rangt PUK-númer</translation>
 <translation id="4057991113334098539">Virkjar...</translation>
 <translation id="4092890906744441904">Írska</translation>
+<translation id="4101601646343868113">Skráðu þig inn í farsímakerfið og staðfestu að þú sért með virka gagnaáskrift</translation>
 <translation id="4124731372776320263">Samstillir 1 Drive-skrá</translation>
 <translation id="4124935795427217608">Einhyrningur</translation>
 <translation id="4131235941541910880">Færðu óþörf atriði í ruslið</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Tamíl með Tamil99-lyklaborði</translation>
 <translation id="5633226425545095130">Tilfærslu á þessu atriði er deilt með öllum sem hafa aðgang að samnýttu möppunni „<ph name="DESTINATION_NAME" />“.</translation>
 <translation id="5649768706273821470">Hlusta</translation>
+<translation id="5650895901941743674">Athugaðu stillingar aðgangsstaðarins</translation>
 <translation id="5669691691057771421">Sláðu inn nýtt PIN-númer</translation>
 <translation id="5678784840044122290">Linux-forritið verður tiltækt í gegnum skipanalínu og einnig gæti tákn birst í ræsiforritinu.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Ekki hægt að aftengjast geymslu eða sýndardiski<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Skráalista var breytt í smámyndayfirlit.</translation>
 <translation id="8601932370724196034">Crostini-myndskrá</translation>
 <translation id="8609695766746872526">Íslenska</translation>
+<translation id="8630384863424041081">Sláðu inn PIN-númer SIM-kortsins þíns eða sjálfgefið PIN-númer frá símafyrirtækinu þínu. Hafðu samband við símafyrirtækið þitt til að fá aðstoð.</translation>
 <translation id="863903787380594467">Rangt PIN-númer. <ph name="RETRIES" /> tilraunir eru eftir.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – gátt</translation>
 <translation id="8656407365183407932">Fjarlægja þurfti skrárnar þínar sem eru ekki á netinu</translation>

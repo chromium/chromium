@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Fel PUK-kod</translation>
 <translation id="4057991113334098539">Aktiverar...</translation>
 <translation id="4092890906744441904">iriska</translation>
+<translation id="4101601646343868113">Logga in på ditt mobilnätverk och bekräfta att ditt mobildataabonnemang är aktivt</translation>
 <translation id="4124731372776320263">Synkroniserar 1 fil på Drive</translation>
 <translation id="4124935795427217608">Enhörning</translation>
 <translation id="4131235941541910880">Lägg objekt som inte behövs i papperskorgen</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">tamilskt tangentbord (Tamil99)</translation>
 <translation id="5633226425545095130">Om du flyttar det här objektet delas det med alla som har åtkomst till den delade mappen <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Lyssna</translation>
+<translation id="5650895901941743674">Kontrollera din APN-konfiguration</translation>
 <translation id="5669691691057771421">Ange en ny pinkod</translation>
 <translation id="5678784840044122290">Linux-programmet blir tillgängligt via terminalen och det kan också finnas en ikon för det i startprogrammet.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Det gick inte att koppla från ett arkiv eller en virtuell hårddisk<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Fillistan har ändrats till miniatyrvy.</translation>
 <translation id="8601932370724196034">Bildfil för Crostini</translation>
 <translation id="8609695766746872526">isländska</translation>
+<translation id="8630384863424041081">Ange pinkoden för SIM-kortet eller standardpinkoden från operatören. Kontakta mobiloperatören för support.</translation>
 <translation id="863903787380594467">Fel pinkod. Du har <ph name="RETRIES" /> försök kvar.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Port</translation>
 <translation id="8656407365183407932">Dina offlinefiler togs bort</translation>

@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Active <ph name="LAST_UPDATED" /> days ago</translation>
 <translation id="1390418506739274310">You may see the history from other apps that open links in Chrome. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email address and profile picture with this site. See this site's <ph name="BEGIN_LINK1" />Terms of Service<ph name="END_LINK1" />.</translation>
+<translation id="139752016751285248">Price insights bottom sheet opened at full height</translation>
 <translation id="1397811292916898096">Search with <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">You can <ph name="BEGIN_LINK1" />manage what Chrome data is saved<ph name="END_LINK1" /> in your Google Account.
 
@@ -179,6 +180,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1877073879466606884">The profile that you're signed in to is a managed profile. Your administrator can make changes to your profile settings remotely, analyse information about the browser through reporting and perform other necessary tasks.</translation>
 <translation id="1883903952484604915">My files</translation>
 <translation id="189358972401248634">Other languages</translation>
+<translation id="1899175549411605574">Price insights bottom sheet</translation>
 <translation id="1900260903084164610">By continuing, you agree to the <ph name="BEGIN_TOS_LINK" />Terms of Service<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">The URLs that you visit are saved to your Google Account</translation>
 <translation id="1910950723001426294">List of sharing options is closed.</translation>
@@ -530,6 +532,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3637744895182738742">If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your account<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Go to Google app home</translation>
 <translation id="368329460027487650">Signed out. Opens options to sign in.</translation>
+<translation id="3684540848053703310">Price insights bottom sheet closed</translation>
 <translation id="3687645719033307815">You are viewing a preview of this page</translation>
 <translation id="3690369331356918524">Warns you if passwords are exposed in a data breach</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> download failed because storage location is not reachable.</translation>

@@ -79,6 +79,8 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="2329088755516916767">Kui see on sisse lülitatud, eellaadib Chromium lehed ning see muudab sirvimise ja otsimise kiiremaks.</translation>
 <translation id="2343156876103232566">Numbri saatmiseks siit Android-telefoni logige mõlemas seadmes Chromiumi sisse.</translation>
 <translation id="2359808026110333948">Jätka</translation>
+<translation id="2361918034042471035">Laiendus „<ph name="EXTENSION_NAME" />“ soovib, et logiksite Chromiumisse sisse</translation>
+<translation id="2374216753258219393">Selle laienduse kasutamiseks kasutajana <ph name="USER_EMAIL_ADDRESS" /> logige Chromiumi sisse.</translation>
 <translation id="2384373936468275798">Chromium OS ei saanud andmeid sünkroonida, sest teie konto sisselogimisandmed on aegunud.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Üks või mitu Chromiumi laiendust kasutasid juurdepääsu ühele HID-seadmele}=1{Üks või mitu Chromiumi laiendust pääsevad juurde ühele HID-seadmele}other{Üks või mitu Chromiumi laiendust pääsevad juurde # HID-seadmele}}</translation>
 <translation id="2401032172288869980">Chromium vajab selle saidi puhul kaamera ja mikrofoni kasutamise luba</translation>
@@ -242,9 +244,11 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="4893347770495441059">Taaskäivitage &amp;Chromiumi värskendamiseks</translation>
 <translation id="4942295735032723435">Chromiumi tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi macOS 11 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium on taustarežiimis.</translation>
+<translation id="494490797786467921">Klõpsake, et Chromiumi sisselogimise dialoog sulgeda</translation>
 <translation id="4987820182225656817">Külastajad saavad kasutada Chromiumi jälgi jätmata.</translation>
 <translation id="4994636714258228724">Lisa Chromiumi</translation>
 <translation id="5114678101347489141">Chromium katsetab uusi funktsioone, mis võimaldaksid saitidel pakkuda väiksema teabemahu juures samasugust sirvimiskogemust</translation>
+<translation id="5187123684706427865">Chromiumi konto vajab uuesti autentimist</translation>
 <translation id="5224391634244552924">Salvestatud paroole ei ole. Chromium saab teie paroole kontrollida, kui olete need salvestanud.</translation>
 <translation id="5231355151045086930">Chromiumist väljalogimine</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> on juba sellele Chromiumi profiilile sisse logitud. See loob konto <ph name="USER_EMAIL_ADDRESS" /> jaoks uue Chromiumi profiili.</translation>

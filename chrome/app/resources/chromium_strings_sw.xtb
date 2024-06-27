@@ -81,6 +81,8 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="2329088755516916767">Chromium ikiwashwa, huwa inapakia mapema kurasa, hali inayofanya shughuli za utafutaji na kuvinjari ziwe za haraka zaidi.</translation>
 <translation id="2343156876103232566">Ili uweze kutuma namba kwa simu yako ya Android kutoka hapa, ingia katika akaunti kwenye Chromium ukitumia vifaa vyote viwili.</translation>
 <translation id="2359808026110333948">Endelea</translation>
+<translation id="2361918034042471035">Kiendelezi cha "<ph name="EXTENSION_NAME" />" kinakuhitaji uingie katika Chromium</translation>
+<translation id="2374216753258219393">Ili utumie kiendelezi hiki ukitumia <ph name="USER_EMAIL_ADDRESS" />, ingia katika Chromium.</translation>
 <translation id="2384373936468275798">Mfumo wa Uendeshaji wa Chromium haukusawazisha data yako kwa sababu maelezo ya kuingia katika akaunti yako yamepitwa na wakati.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Kiendelezi kimoja au zaidi cha Chromium kilikuwa kinafikia kifaa 1 cha HID}=1{Kiendelezi kimoja au zaidi cha Chromium kinafikia kifaa 1 cha HID}other{Kiendelezi kimoja au zaidi cha Chromium kinafikia vifaa # vya HID}}</translation>
 <translation id="2401032172288869980">Chromium inahitaji ruhusa ya kufikia kamera na maikrofoni kwa ajili ya tovuti hii</translation>
@@ -244,9 +246,11 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="4893347770495441059">Fungua tena ili Usasishe &amp;Chromium</translation>
 <translation id="4942295735032723435">Utahitaji toleo la macOS 11 au toleo jipya zaidi ili upate masasisho ya Chromium ya siku zijazo. Kompyuta hii inatumia toleo la macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium iko katika hali ya chini chini.</translation>
+<translation id="494490797786467921">Bofya ili ufunge kidirisha cha kuingia katika Chromium</translation>
 <translation id="4987820182225656817">Walioalikwa wanaweza kutumia Chromium bila kuacha kitu chochote nyuma.</translation>
 <translation id="4994636714258228724">Jiongeze kwenye Chrome</translation>
 <translation id="5114678101347489141">Chromium inachunguza vipengele vipya vinavyoruhusu tovuti zikupatie hali ileile ya kuvinjari kwa kutumia taarifa zako chache</translation>
+<translation id="5187123684706427865">Akaunti ya Chromium inahitaji kuthibitisha upya</translation>
 <translation id="5224391634244552924">Hakuna manenosiri yaliyohifadhiwa. Chromium inaweza kukagua manenosiri yako ukiyahifadhi.</translation>
 <translation id="5231355151045086930">Ondoka kwenye Chromium</translation>
 <translation id="5252179775517634216">Tayari <ph name="EXISTING_USER" /> ameingia katika akaunti kwenye wasifu huu kwenye Chromium. Hatua hii itafungua wasifu mpya wa <ph name="USER_EMAIL_ADDRESS" /> kwenye Chromium</translation>

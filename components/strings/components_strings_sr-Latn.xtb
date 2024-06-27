@@ -26,6 +26,7 @@
 <translation id="1050038467049342496">Zatvorite druge aplikacije</translation>
 <translation id="1053959602163383901">Odabrali ste da se verifikujete pomoću uređaja za potvrdu identiteta na veb-sajtovima koji koriste <ph name="PROVIDER_ORIGIN" />. Ovaj dobavljač je možda sačuvao informacije o načinu plaćanja, za koji možete da <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Opozovi dodavanje</translation>
+<translation id="105642538515333723">Možete da unesete bilo koju frazu ili detalje kojih se sećate sa stranica koje ste pregledali u prošlosti, na primer „udobne cipele za hodanje“</translation>
 <translation id="1056898198331236512">Upozorenje</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste igrali igru Dinosaurus u Chrome-u</translation>
 <translation id="1058479211578257048">Kartice se čuvaju...</translation>
@@ -968,6 +969,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2824775600643448204">Traka za adresu i pretragu</translation>
 <translation id="2826760142808435982">Veza je šifrovana i njena autentičnost je potvrđena pomoću <ph name="CIPHER" /> i koristi <ph name="KX" /> kao mehanizam za razmenu šifara.</translation>
 <translation id="2833637280516285136">Radio-emisije sa gostima</translation>
+<translation id="2837891525090413132">Može da traži da zaključa i koristi tastaturu</translation>
 <translation id="2838682941130655229">Veb-sajt <ph name="EMBEDDED_URL" /> želi da koristi informacije koje je sačuvao o vama</translation>
 <translation id="2839032553903800133">Obaveštenja su blokirana</translation>
 <translation id="2839501879576190149">Sajt na koji želite da odete je lažan</translation>
@@ -1016,7 +1018,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2941112035454246133">Nizak</translation>
 <translation id="2941878205777356567">Koverta 23×30 cm</translation>
 <translation id="2941952326391522266">Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; njegov bezbednosni sertifikat je sa domena <ph name="DOMAIN2" />. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
-<translation id="2942492342931589800">Za opuštanje</translation>
+<translation id="2942492342931589800">Neformalno</translation>
 <translation id="2942515540157583425">IT i tehnički poslovi</translation>
 <translation id="2943895734390379394">Vreme otpremanja:</translation>
 <translation id="2948083400971632585">Na stranici Podešavanja možete da onemogućite sve proksije konfigurisane za vezu.</translation>
@@ -1157,7 +1159,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3209034400446768650">Stranica može da naplaćuje</translation>
 <translation id="3212581601480735796">Vaše aktivnosti na <ph name="HOSTNAME" /> se prate</translation>
 <translation id="3215092763954878852">Korišćenje veb-standarda WebAuthn nije uspelo</translation>
-<translation id="3215311088819828484">Rezultat je ažuriran</translation>
 <translation id="3216313131063488104">Bluz</translation>
 <translation id="3218181027817787318">Relativno</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Ažuriranje mora da se obavi odmah}=2{Ažuriranje mora da se obavi do sutra}one{Ažuriranje mora da se obavi u roku od # dana}few{Ažuriranje mora da se obavi u roku od # dana}other{Ažuriranje mora da se obavi u roku od # dana}}</translation>
@@ -2858,6 +2859,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6433797564277305076">Od sada brže potvrđujte kartice uz otključavanje uređaja</translation>
 <translation id="643917412048333145">Haljine</translation>
 <translation id="6440503408713884761">Zanemareno</translation>
+<translation id="6440534369669992497">Možete da unesete bilo koju frazu ili detalje kojih se sećate sa stranica koje ste pregledali u prošlosti, na primer „udobne cipele za hodanje“. <ph name="SHORTCUT" /> da biste pretraživali.</translation>
 <translation id="6443406338865242315">dodatke i dodatne komponenta koje ste instalirali</translation>
 <translation id="6444329331928531170">Penzionisanje</translation>
 <translation id="6446608382365791566">Dodajte još informacija</translation>
@@ -3141,6 +3143,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="7006930604109697472">Ipak pošalji</translation>
 <translation id="7010658264061801199">Hrana i piće</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013835112918108252">Može da traži da zaključa i koristi miš</translation>
 <translation id="7014042602717177828">Audio oprema za automobile</translation>
 <translation id="7014741021609395734">Nivo zumiranja</translation>
 <translation id="7016992613359344582">Te naplate mogu da budu jednokratne ili periodične i možda nisu odmah vidljive.</translation>

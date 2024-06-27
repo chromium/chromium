@@ -814,6 +814,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5150492518600715772">Enviar al dispositivo</translation>
 <translation id="5157638238828697074">Se produjo un error. No se pudo abrir la aplicación.</translation>
 <translation id="5168414296986405587">Diseñado para iPadOS</translation>
+<translation id="5169725654005786900">Acción en curso…</translation>
 <translation id="5173088371991956744">La Sincronización necesita verificar tu identidad</translation>
 <translation id="5173493422621051500">Usar teclado</translation>
 <translation id="5176312250994681348">Conservar la contraseña reciente</translation>
@@ -824,6 +825,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5190835502935405962">Barra de favoritos</translation>
 <translation id="519530786644929958">Se produjo un error en la descarga y no se puede reintentar.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205197603258285592">Guardar imagen en…</translation>
 <translation id="5211488077761630279">¿Quieres permitir que "<ph name="SITE_NAME" />" use tu <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Ayuda a mejorar la seguridad en la Web para todos los usuarios</translation>
 <translation id="5220945116117011963">Crea eventos de calendario a partir de fechas</translation>
@@ -848,6 +850,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5327753393331509826">Recibe notificaciones de contenido</translation>
 <translation id="5329451663851195956">Desliza hacia abajo si quieres actualizar la pestaña.</translation>
 <translation id="5333148247954006827">Cambia a otro perfil</translation>
+<translation id="5338512273860059533">Acceso en curso.</translation>
 <translation id="5339316356165661760">Activar la sincronización</translation>
 <translation id="5343472494710226394">Noticias, deportes y contenido según tus intereses.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{¿Quieres realizar el seguimiento de este paquete?}other{¿Quieres realizar el seguimiento de {COUNT} paquetes?}}</translation>
@@ -1523,6 +1526,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8556590991644167667">{count,plural, =1{Descartaste {count} advertencia}other{Descartaste {count} advertencias}}</translation>
 <translation id="8560253818350321773">Muestra primero los elementos que se usan con frecuencia.</translation>
 <translation id="8569721750632860947">¿Qué URL te gustaría agregar a tu Lista de lectura?</translation>
+<translation id="8570765991595769633">Personalizar tarjetas</translation>
 <translation id="8577056989960190117">Autocompletar el año de vencimiento <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Apagada</translation>
 <translation id="8591976964826315682">Bloquear cookies de terceros en modo Incógnito</translation>
@@ -1662,6 +1666,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="948048872540558976">Crear una pestaña nueva</translation>
 <translation id="952218985181984374">{count,plural, =1{Se guardó el favorito}other{Se guardaron {count} favoritos}}</translation>
 <translation id="952704832371081537">Cancelar</translation>
+<translation id="955587716023217544">Editar lista de cuentas</translation>
 <translation id="959066944189734975">Sigues a <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Mostrar sugerencias de pestañas de otros dispositivos</translation>
 <translation id="973493300226275298">Sigue el precio de un producto en diferentes tiendas en línea. Recibirás alertas cuando haya descuentos.</translation>

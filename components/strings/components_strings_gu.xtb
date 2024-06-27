@@ -26,6 +26,7 @@
 <translation id="1050038467049342496">અન્ય ઍપ્લિકેશનો બંધ કરો</translation>
 <translation id="1053959602163383901">તમે <ph name="PROVIDER_ORIGIN" />નો ઉપયોગ કરતી વેબસાઇટ પર કોઈ પ્રમાણકર્તા ડિવાઇસ વડે ચકાસણી કરવાનું પસંદ કર્યું છે. આ પ્રદાતાએ તમારી ચુકવણી પદ્ધતિ વિશેની માહિતી કદાચ સ્ટોર કરી હોઈ શકે છે, જેને તમે <ph name="LINK_TEXT" /> કરી શકો છો.</translation>
 <translation id="1055184225775184556">&amp;ઉમેરવું પૂર્વવત્ કરો</translation>
+<translation id="105642538515333723">ભૂતકાળમાં તમે બ્રાઉઝ કરેલા પેજમાંથી તમને યાદ હોય તેવા કોઈપણ શબ્દ સમૂહો અથવા વિગતો તમે દાખલ કરી શકો છો, જેમ કે "આરામદાયક ચાલવાના શૂઝ"</translation>
 <translation id="1056898198331236512">ચેતવણી</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeમાં Dino Run ગેમ રમવા માટે, પહેલાં Tab પછી Enter કી દબાવો</translation>
 <translation id="1058479211578257048">કાર્ડ સાચવી રહ્યાં છીએ…</translation>
@@ -968,6 +969,7 @@
 <translation id="2824775600643448204">સરનામું અને શોધ બાર</translation>
 <translation id="2826760142808435982">કનેક્શન <ph name="CIPHER" />નો ઉપયોગ કરીને એન્ક્રિપ્ટ અને પ્રમાણિત કરેલુંં છે અને મુખ્ય એક્સચેન્જ મેકેનિઝ્મ તરીકે <ph name="KX" />નો ઉપયોગ કરે છે.</translation>
 <translation id="2833637280516285136">ટૉક રેડિયો</translation>
+<translation id="2837891525090413132">લૉક કરવા માટે પૂછી શકે છે અને તમારા કીબોર્ડનો ઉપયોગ કરી શકે છે</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" />, તેમના દ્વારા તમારા વિશે સાચવવામાં આવેલી માહિતીનો ઉપયોગ કરવા માગે છે</translation>
 <translation id="2839032553903800133">નોટિફિકેશનને બ્લૉક કરેલાં છે</translation>
 <translation id="2839501879576190149">આગળ નકલી સાઇટ છે</translation>
@@ -1157,7 +1159,6 @@
 <translation id="3209034400446768650">પેજ કદાચ નાણાં વસૂલી શકે છે</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> પરની તમારી પ્રવૃત્તિનું નિરીક્ષણ કરવામાં આવી રહ્યું છે</translation>
 <translation id="3215092763954878852">WebAuthnનો ઉપયોગ કરી શક્યાં નથી</translation>
-<translation id="3215311088819828484">પરિણામ અપડેટ કર્યું</translation>
 <translation id="3216313131063488104">બ્લૂઝ</translation>
 <translation id="3218181027817787318">સંબંધિત</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{હમણાં અપડેટ જરૂરી છે}=2{આવતીકાલ સુધીમાં અપડેટ જરૂરી છે}one{# દિવસની અંદર અપડેટ જરૂરી છે}other{# દિવસની અંદર અપડેટ જરૂરી છે}}</translation>
@@ -2859,6 +2860,7 @@
 <translation id="6433797564277305076">હવેથી ડિવાઇસ અનલૉક કરવાની સુવિધાનો ઉપયોગ કરીને તમારા કાર્ડ વધુ ઝડપથી કન્ફર્મ કરો</translation>
 <translation id="643917412048333145">પોશાક</translation>
 <translation id="6440503408713884761">અવગણી</translation>
+<translation id="6440534369669992497">ભૂતકાળમાં તમે બ્રાઉઝ કરેલા પેજમાંથી તમને યાદ હોય તેવા કોઈપણ શબ્દ સમૂહો અથવા વિગતો તમે દાખલ કરી શકો છો, જેમ કે "આરામદાયક ચાલવાના શૂઝ". શોધવા માટેનો <ph name="SHORTCUT" />.</translation>
 <translation id="6443406338865242315">તમે કયા એક્સ્ટેંશન અને પ્લગ-ઇન ઇન્સ્ટૉલ કર્યા છે</translation>
 <translation id="6444329331928531170">રિટાયર્મેંન્ટ અને પેન્શન</translation>
 <translation id="6446608382365791566">વધુ માહિતી ઉમેરો</translation>
@@ -3142,6 +3144,7 @@
 <translation id="7006930604109697472">કોઈપણ રીતે મોકલો</translation>
 <translation id="7010658264061801199">ભોજન અને પીણાં</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013835112918108252">લૉક કરવા માટે પૂછી શકે છે અને તમારા માઉસનો ઉપયોગ કરી શકે છે</translation>
 <translation id="7014042602717177828">કાર ઑડિઓ</translation>
 <translation id="7014741021609395734">ઝૂમ લેવલ</translation>
 <translation id="7016992613359344582">આ શુલ્ક એક-સમયનું અથવા પુનરાવર્તિત હોઈ શકે છે અને કદાચ દેખીતા શુલ્ક ન પણ હોય.</translation>

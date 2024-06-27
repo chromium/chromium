@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Activo hace <ph name="LAST_UPDATED" /> días</translation>
 <translation id="1390418506739274310">Es posible que veas el historial de otras apps que abren vínculos en Chrome. Es posible que tu Cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu nombre, dirección de correo electrónico y foto de perfil con este sitio. Consulta las <ph name="BEGIN_LINK1" />condiciones del servicio<ph name="END_LINK1" /> del sitio.</translation>
+<translation id="139752016751285248">La hoja inferior de información sobre precios está abierta en su totalidad</translation>
 <translation id="1397811292916898096">Buscar con <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Puedes <ph name="BEGIN_LINK1" />administrar qué datos de Chrome se guardan<ph name="END_LINK1" /> en tu Cuenta de Google.
 
@@ -179,6 +180,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1877073879466606884">El perfil al que accediste es un perfil administrado. El administrador puede realizar cambios en la configuración de tu perfil de forma remota, analizar información sobre el navegador a través de informes y realizar otras tareas necesarias.</translation>
 <translation id="1883903952484604915">Mis archivos</translation>
 <translation id="189358972401248634">Otros idiomas</translation>
+<translation id="1899175549411605574">Hoja inferior de la información sobre precios</translation>
 <translation id="1900260903084164610">Si continúas, aceptas las <ph name="BEGIN_TOS_LINK" />Condiciones del Servicio<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Las URL que visitas se guardan en tu Cuenta de Google</translation>
 <translation id="1910950723001426294">La lista de opciones para compartir está cerrada.</translation>
@@ -520,6 +522,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3587596251841506391">Ayuda a mejorar la seguridad en la Web</translation>
 <translation id="3597179440835065298">Obtén mejores sugerencias</translation>
 <translation id="3602290021589620013">Vista previa</translation>
+<translation id="3614126103057878858">Información sobre precios</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Administrar ventanas</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 sitio}other{+ # sitios}}</translation>
@@ -529,6 +532,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3637744895182738742">Si olvidaste tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Ir a la página principal de la app de Google</translation>
 <translation id="368329460027487650">Saliste de tu cuenta. Abre las opciones de acceso.</translation>
+<translation id="3684540848053703310">La hoja inferior de información sobre precios está cerrada</translation>
 <translation id="3687645719033307815">Estás viendo una vista previa de esta página</translation>
 <translation id="3690369331356918524">Te advierte si quedan expuestas las contraseñas ante una violación de la seguridad de los datos.</translation>
 <translation id="3692944402865947621">Falló la descarga de <ph name="FILE_NAME" /> porque no se puede acceder a la ubicación del almacenamiento.</translation>

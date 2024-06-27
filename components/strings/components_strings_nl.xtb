@@ -26,6 +26,7 @@
 <translation id="1050038467049342496">Andere apps sluiten</translation>
 <translation id="1053959602163383901">Je hebt ervoor gekozen om te verifiëren met een authenticator-apparaat op websites die <ph name="PROVIDER_ORIGIN" /> gebruiken. Deze provider heeft misschien informatie over je betaalmethode opgeslagen. Hiervoor kun je <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Toevoegen ongedaan maken</translation>
+<translation id="105642538515333723">Je kunt zinnen of details invoeren die je je herinnert van pagina's die je in het verleden hebt doorzocht, zoals 'comfortabele wandelschoenen'.</translation>
 <translation id="1056898198331236512">Waarschuwing</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om de Dino Run-game in Chrome te spelen</translation>
 <translation id="1058479211578257048">Passen opslaan...</translation>
@@ -968,6 +969,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2824775600643448204">Adres- en zoekbalk</translation>
 <translation id="2826760142808435982">De verbinding is gecodeerd en geverifieerd met <ph name="CIPHER" /> en gebruikt <ph name="KX" /> als mechanisme voor sleuteluitwisseling.</translation>
 <translation id="2833637280516285136">Talkradio</translation>
+<translation id="2837891525090413132">Kan vragen om je toetsenbord te vergrendelen en te gebruiken</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> wil de informatie gebruiken die over jou is opgeslagen</translation>
 <translation id="2839032553903800133">Meldingen geblokkeerd</translation>
 <translation id="2839501879576190149">Nepsite gedetecteerd</translation>
@@ -1154,7 +1156,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3209034400446768650">Pagina kan geld in rekening brengen</translation>
 <translation id="3212581601480735796">Je activiteit op <ph name="HOSTNAME" /> wordt gecontroleerd</translation>
 <translation id="3215092763954878852">Kan WebAuthn niet gebruiken</translation>
-<translation id="3215311088819828484">Resultaat geüpdatet</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relatief</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Update nu vereist}=2{Update uiterlijk morgen vereist}other{Update binnen # dagen vereist}}</translation>
@@ -2853,6 +2854,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6433797564277305076">Bevestig je kaarten sneller door vanaf nu apparaatontgrendeling te gebruiken</translation>
 <translation id="643917412048333145">Jurken</translation>
 <translation id="6440503408713884761">Genegeerd</translation>
+<translation id="6440534369669992497">Je kunt zinnen of details invoeren die je je herinnert van pagina's die je in het verleden hebt doorzocht, zoals 'comfortabele wandelschoenen'. <ph name="SHORTCUT" /> om te zoeken.</translation>
 <translation id="6443406338865242315">Welke extensies en plug-ins je hebt geïnstalleerd</translation>
 <translation id="6444329331928531170">Pensioen en pensionering</translation>
 <translation id="6446608382365791566">Meer informatie toevoegen</translation>
@@ -3136,6 +3138,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="7006930604109697472">Toch sturen</translation>
 <translation id="7010658264061801199">Eten en drinken</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013835112918108252">Kan vragen om je muis te vergrendelen en te gebruiken</translation>
 <translation id="7014042602717177828">Auto-audio</translation>
 <translation id="7014741021609395734">Zoomniveau</translation>
 <translation id="7016992613359344582">Dit kunnen eenmalige of terugkerende kosten zijn die misschien niet duidelijk worden aangegeven.</translation>

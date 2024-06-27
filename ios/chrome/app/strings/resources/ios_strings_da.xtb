@@ -814,6 +814,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5150492518600715772">Send til din enhed</translation>
 <translation id="5157638238828697074">Noget gik galt. Appen kunne ikke åbnes.</translation>
 <translation id="5168414296986405587">Udviklet til iPadOS</translation>
+<translation id="5169725654005786900">Handlingen er i gang…</translation>
 <translation id="5173088371991956744">Synkronisering skal verificere din identitet</translation>
 <translation id="5173493422621051500">Brug tastatur</translation>
 <translation id="5176312250994681348">Behold den seneste adgangskode</translation>
@@ -824,6 +825,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5190835502935405962">Bogmærkelinje</translation>
 <translation id="519530786644929958">Downloaden mislykkedes og kan ikke gentages.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205197603258285592">Gem billede i…</translation>
 <translation id="5211488077761630279">Vil du tillade, at "<ph name="SITE_NAME" />" bruger <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Vær med til at forbedre sikkerheden for alle på nettet</translation>
 <translation id="5220945116117011963">Opret kalenderbegivenheder ud fra datoer</translation>
@@ -848,6 +850,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5327753393331509826">Få indholdsnotifikationer</translation>
 <translation id="5329451663851195956">Træk nedad for at opdatere.</translation>
 <translation id="5333148247954006827">Skift til en anden profil</translation>
+<translation id="5338512273860059533">Login er i gang.</translation>
 <translation id="5339316356165661760">Aktivér synkronisering</translation>
 <translation id="5343472494710226394">Nyheder, sport og indhold baseret på dine interesser.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Vil du spore denne pakke?}one{Vil du spore {COUNT} pakke?}other{Vil du spore {COUNT} pakker?}}</translation>
@@ -1523,6 +1526,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8556590991644167667">{count,plural, =1{Du har afvist {count} advarsel}one{Du har afvist {count} advarsel}other{Du har afvist {count} advarsler}}</translation>
 <translation id="8560253818350321773">Vis ofte benyttede elementer først.</translation>
 <translation id="8569721750632860947">Hvilken webadresse vil du føje til din læseliste?</translation>
+<translation id="8570765991595769633">Tilpas kort</translation>
 <translation id="8577056989960190117">Udfyld automatisk udløbsåret <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Fra</translation>
 <translation id="8591976964826315682">Bloker tredjepartscookies i inkognito</translation>
@@ -1662,6 +1666,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="948048872540558976">Opret ny fane</translation>
 <translation id="952218985181984374">{count,plural, =1{Bogmærket er gemt}one{{count} bogmærke er gemt}other{{count} bogmærker er gemt}}</translation>
 <translation id="952704832371081537">Annuller</translation>
+<translation id="955587716023217544">Rediger kontoliste</translation>
 <translation id="959066944189734975">Du følger <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Vis faneforslag fra andre enheder</translation>
 <translation id="973493300226275298">Hold øje med prisen på et produkt i netbutikker. Du får underretninger, når prisen falder.</translation>

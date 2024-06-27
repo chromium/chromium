@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">ਔਨ-ਸਕ੍ਰੀਨ ਕੀ-ਬੋਰਡ ਸਮਰਥਿਤ</translation>
 <translation id="1749109475624620922">ਵਿੰਡੋ <ph name="WINDOW_TITLE" /> ਨੂੰ ਸਾਰੇ ਡੈਸਕਾਂ ਦੇ ਜ਼ਿੰਮੇ ਲਗਾਇਆ ਗਿਆ ਹੈ</translation>
 <translation id="1750088060796401187">ਸਿਰਫ਼ <ph name="MAX_DESK_LIMIT" /> ਡੈਸਕਾਂ ਦੀ ਇਜਾਜ਼ਤ ਹੈ। ਨਵਾਂ ਡੈਸਕ ਖੋਲ੍ਹਣ ਲਈ ਪਹਿਲਾਂ ਤੋਂ ਮੌਜੂਦ ਡੈਸਕ ਹਟਾਓ।</translation>
+<translation id="1751335846119670066">ਪੜ੍ਹਨ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ</translation>
 <translation id="1755408179247123630">ਕੀ 'ਚੁਣੋ ਅਤੇ ਸੁਣੋ' ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1755556344721611131">ਤਸ਼ਖੀਸੀ ਐਪ</translation>
 <translation id="1756833229520115364">ਟੈਮਪਲੇਟ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਬਹੁਤ ਸਾਰੀਆਂ ਵਿੰਡੋਆਂ ਜਾਂ ਟੈਬਾਂ ਹਨ।</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ, ਮੀਡੀਆ ਅਤੇ ਸੂਚਨਾਵਾਂ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="1787955149152357925">ਬੰਦ ਹੈ</translation>
 <translation id="1796561540704213354">ਵੈੱਬਸਾਈਟਾਂ ਦੀ ਸ਼੍ਰੇਣੀ ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਗਏ ਪੰਨੇ ਅਤੇ ਖੋਲ੍ਹੇ ਗਏ ਪੰਨੇ ਦਿਖਾਏ ਜਾਂਦੇ ਹਨ</translation>
+<translation id="179842970735685253">Google ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮ</translation>
 <translation id="181103072419391116">ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="1816896987747843206">ਇਸ ਨਾਲ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਹੈ</translation>
 <translation id="1823873187264960516">ਈਥਰਨੈੱਟ: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">ਕਲਾਸਵਰਕ ਦੀ ਕਿਸਮ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">ਧਿਆਨ ਵਿੱਚ ਰੱਖਣ ਵਾਲੀਆਂ ਕੁਝ ਗੱਲਾਂ</translation>
 <translation id="3139188263101386725">ਅੱਪਡੇਟ ਕੀਤੇ ਸ਼ਾਰਟਕੱਟ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="3139942575505304791">ਡੈਸਕ 1</translation>
 <translation id="315116470104423982">ਮੋਬਾਈਲ ਡਾਟਾ</translation>
@@ -961,6 +964,7 @@
 <translation id="4585337515783392668">ਕਿਸੇ ਅਗਿਆਤ ਪ੍ਰਾਪਤਕਰਤਾ 'ਤੇ ਕਾਸਟ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="4596144739579517758">ਗੂੜ੍ਹਾ ਥੀਮ ਬੰਦ ਹੈ।</translation>
 <translation id="4596442969149038771"><ph name="USER" /> ਨੇ ਸਾਂਝਾ ਕੀਤਾ</translation>
+<translation id="4610493115106525653">ਵਧੀਆ ਆਊਟਪੁੱਟ</translation>
 <translation id="4611292653554630842">ਲੌਗ ਇਨ ਕਰੋ</translation>
 <translation id="462160925400706389"><ph name="NAME" /> ਕਨੈਕਟ ਹੈ</translation>
 <translation id="4623167406982293031">ਖਾਤੇ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
@@ -1119,6 +1123,7 @@
 <translation id="5121628974188116412">ਪੰਨੇ ਦੇ ਹੇਠਾਂ ਜਾਓ</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> ਦੀ ਪੂਰਵ-ਝਲਕ। ਅਕਿਰਿਆਸ਼ੀਲ ਡੈਸਕ।</translation>
 <translation id="5136175204352732067">ਵੱਖਰਾ ਕੀ-ਬੋਰਡ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="5140105873789567560">'ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਅਤੇ 'ਪੜ੍ਹਨ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਵਰਤਣ ਲਈ ਤੁਹਾਡੀ ਉਮਰ ਘੱਟੋ-ਘੱਟ 18 ਸਾਲ ਹੋਣੀ ਲਾਜ਼ਮੀ ਹੈ।</translation>
 <translation id="5144005092084035179">ਕੀ ਆਡੀਓ ਇਨਪੁੱਟ ਨੂੰ ਸਵਿੱਚ ਕਰਨਾ ਹੈ?</translation>
 <translation id="5147567197700016471">Chromebook ਅਣਲਾਕ ਹੋ ਗਈ</translation>
 <translation id="5150070631291639005">ਪਰਦੇਦਾਰੀ ਸੈਟਿੰਗਾਂ</translation>
@@ -1559,6 +1564,7 @@
 <translation id="6696025732084565524">ਤੁਹਾਡੇ ਵੱਖ ਹੋਣਯੋਗ ਕੀ-ਬੋਰਡ ਨੂੰ ਅਤਿ ਜ਼ਰੂਰੀ ਅੱਪਡੇਟ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="6697913454192220372">ਨਵਾਂ ਡੈਸਕ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6700713906295497288">IME ਮੀਨੂ ਬਟਨ</translation>
+<translation id="6704375469818246414">ਜਨਰੇਟਿਵ AI ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਸਮੇਂ ਕੁਆਲਿਟੀ ਵੱਖ-ਵੱਖ ਹੋ ਸਕਦੀ ਹੈ।</translation>
 <translation id="6706742084323792866">ਕੀ-ਬੋਰਡ ਨੂੰ ਪਿੰਨ ਕਰੋ</translation>
 <translation id="6710213216561001401">ਪਿਛਲਾ</translation>
 <translation id="6723839937902243910">ਪਾਵਰ</translation>
@@ -1826,9 +1832,11 @@
 <translation id="7726391492136714301">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਅਤੇ ਐਪਾਂ ਦੇਖੋ</translation>
 <translation id="7727952505535211425">ਵੈੱਬਸਾਈਟ ਨੂੰ ਨਵੀਂ ਟੈਬ ਦੀ ਪਤਾ ਬਾਰ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="7742327441377685481">ਕੋਈ ਸੂਚਨਾ ਨਹੀਂ</translation>
+<translation id="774736258792760908">ਜਦੋਂ ਤੁਸੀਂ 'ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਅਤੇ 'ਪੜ੍ਹਨ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਚਾਲੂ ਕਰਦੇ ਹੋ, ਤਾਂ ਇਨਪੁੱਟ ਲਿਖਤ ਅਤੇ ਦਸਤਾਵੇਜ਼ ਸਮੱਗਰੀ Google AI ਸਰਵਰਾਂ ਨੂੰ ਭੇਜੀ ਜਾਂਦੀ ਹੈ, ਤਾਂ ਜੋ ਲਿਖਣ ਸੰਬੰਧੀ ਸੁਝਾਅ, ਸਾਰਾਂਸ਼ ਤਿਆਰ ਕੀਤੇ ਜਾ ਸਕਣ, ਸਵਾਲਾਂ ਦੇ ਜਵਾਬ ਦਿੱਤੇ ਜਾ ਸਕਣ ਅਤੇ ਉਤਪਾਦ ਨੂੰ ਬਿਹਤਰ ਬਣਾਇਆ ਜਾ ਸਕੇ, ਜੋ <ph name="LINK_TO_SERVICE_TERMS" />ਦੇ ਅਧੀਨ ਹੈ। ਕੋਈ ਵੀ ਨਿੱਜੀ, ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਂ ਗੁਪਤ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਨਾ ਕਰੋ।</translation>
 <translation id="7748275671948949022">ਸ਼ੈਲਫ 'ਤੇ ਲਾਂਚਰ ਬਟਨ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="7749443890790263709">ਡੈਸਕਾਂ ਦੀ ਅਧਿਕਤਮ ਸੰਖਿਆ ਪੂਰੀ ਹੋ ਗਈ।</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">ਤੁਸੀਂ ਕਿਸੇ ਵੇਲੇ ਵੀ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ 'ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਅਤੇ 'ਪੜ੍ਹਨ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">ਚੁਣੋ ਅਤੇ ਸੁਣੋ</translation>
 <translation id="7769299611924763557">ਤੁਹਾਡੇ GIF ਨੂੰ ਜਲਦ ਹੀ ਤਿਆਰ ਕੀਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="7773536009433685931">ਇਸਦੀ ਬਜਾਏ WiFi ਚਾਲੂ ਕਰੋ</translation>
@@ -1837,6 +1845,7 @@
 <translation id="7781829728241885113">ਕੱਲ੍ਹ</translation>
 <translation id="7787212146956232129">ਇਨਪੁੱਟ ਅਤੇ ਆਊਟਪੁੱਟ ਡੀਵਾਈਸਾਂ ਨੂੰ ਸੈੱਟ ਕੀਤਾ ਗਿਆ ਹੈ। ਤਬਦੀਲੀ ਕਰਨ ਲਈ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
 <translation id="7792590255364786396">ਦਿਖਣਯੋਗ</translation>
+<translation id="7793389284006812057">ਜਨਰੇਟਿਵ AI ਪ੍ਰਯੋਗਮਈ ਹੈ, ਸ਼ੁਰੂਆਤੀ ਵਿਕਾਸ ਵਿੱਚ ਹੈ ਅਤੇ ਫ਼ਿਲਹਾਲ ਇਸਦੀ ਉਪਲਬਧਤਾ ਸੀਮਤ ਹੈ।</translation>
 <translation id="7796735576426975947">ਨਵੀਂ ਸੂਚਨਾ ਲੁਕੀ ਹੋਈ ਹੈ</translation>
 <translation id="7798302898096527229">ਰੱਦ ਕਰਨ ਲਈ Search ਜਾਂ Shift ਦਬਾਓ।</translation>
 <translation id="780301667611848630">ਨਹੀਂ ਧੰਨਵਾਦ</translation>
@@ -1991,6 +2000,7 @@
 <translation id="8331351032546853669">ਡਾਊਨਲੋਡ ਵਿਚਾਰ-ਅਧੀਨ ਹੈ</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">ਖਰਾਬ ਆਊਟਪੁੱਟ</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ਵਿੰਡੋ ਨੂੰ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="8349826889576450703">ਲਾਂਚਰ</translation>
 <translation id="8349964124165471584">ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>

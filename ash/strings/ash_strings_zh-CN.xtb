@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">屏幕键盘已启用</translation>
 <translation id="1749109475624620922">已将窗口“<ph name="WINDOW_TITLE" />”分配至所有桌面</translation>
 <translation id="1750088060796401187">最多只允许打开 <ph name="MAX_DESK_LIMIT" /> 个桌面。若要打开一个新桌面，请先移除一个已打开的桌面。</translation>
+<translation id="1751335846119670066">帮我读</translation>
 <translation id="1755408179247123630">开启随选朗读？</translation>
 <translation id="1755556344721611131">“诊断”应用</translation>
 <translation id="1756833229520115364">无法保存模板。窗口或标签页过多。</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">设置查看手机中的近期照片、媒体内容和通知</translation>
 <translation id="1787955149152357925">关闭</translation>
 <translation id="1796561540704213354">一系列网站，包含您访问过的网页和打开的网页</translation>
+<translation id="179842970735685253">Google 的服务条款</translation>
 <translation id="181103072419391116">信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
 <translation id="1816896987747843206">如果您开启摄像头，即意味着允许所有具有摄像头使用权限的应用和网站使用摄像头</translation>
 <translation id="1823873187264960516">以太网：<ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">课业类型</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">需要注意的事项</translation>
 <translation id="3139188263101386725">使用更新后的快捷键</translation>
 <translation id="3139942575505304791">桌面 1</translation>
 <translation id="315116470104423982">移动数据</translation>
@@ -960,6 +963,7 @@
 <translation id="4585337515783392668">停止投放至不明接收器</translation>
 <translation id="4596144739579517758">深色主题已关闭</translation>
 <translation id="4596442969149038771"><ph name="USER" />分享过</translation>
+<translation id="4610493115106525653">输出质量良好</translation>
 <translation id="4611292653554630842">登录</translation>
 <translation id="462160925400706389">已连接到“<ph name="NAME" />”</translation>
 <translation id="4623167406982293031">验证账号</translation>
@@ -1117,6 +1121,7 @@
 <translation id="5121628974188116412">转到网页底部</translation>
 <translation id="5122517996953421795">“<ph name="DESK_NAME" />”预览。非活动桌面。</translation>
 <translation id="5136175204352732067">所连接的键盘已不是原来的那个</translation>
+<translation id="5140105873789567560">您必须年满 18 周岁，才能使用“帮我写”和“帮我读”功能。</translation>
 <translation id="5144005092084035179">要切换音频输入设备吗？</translation>
 <translation id="5147567197700016471">已解锁</translation>
 <translation id="5150070631291639005">隐私设置</translation>
@@ -1556,6 +1561,7 @@
 <translation id="6696025732084565524">您的可拆卸式键盘需要安装一项重要更新</translation>
 <translation id="6697913454192220372">添加新桌面</translation>
 <translation id="6700713906295497288">IME 菜单按钮</translation>
+<translation id="6704375469818246414">使用生成式 AI 时，输出质量可能会有所不同。</translation>
 <translation id="6706742084323792866">PIN 码键盘</translation>
 <translation id="6710213216561001401">上一项</translation>
 <translation id="6723839937902243910">电源</translation>
@@ -1823,9 +1829,11 @@
 <translation id="7726391492136714301">查看您手机上的通知和应用</translation>
 <translation id="7727952505535211425">在新标签页中打开地址栏中的网站</translation>
 <translation id="7742327441377685481">无通知</translation>
+<translation id="774736258792760908">开启“帮我写”和“帮我读”功能后，系统会将输入文本和文档内容发送到 Google AI 服务器，以根据 <ph name="LINK_TO_SERVICE_TERMS" />生成写作建议、总结内容、回答问题并改进产品。请勿包含任何个人、敏感或机密信息。</translation>
 <translation id="7748275671948949022">突出显示任务栏上的启动器按钮</translation>
 <translation id="7749443890790263709">已达到桌面数量上限。</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">您可以随时在“设置”中关闭“帮我写”和“帮我读”功能。<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">随选朗读</translation>
 <translation id="7769299611924763557">您的 GIF 很快便能就绪</translation>
 <translation id="7773536009433685931">改为开启 Wi-Fi</translation>
@@ -1834,6 +1842,7 @@
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7787212146956232129">输入和输出设备均已设置。如需更改，请前往“设置”。</translation>
 <translation id="7792590255364786396">可见</translation>
+<translation id="7793389284006812057">生成式 AI 尚处于早期开发实验阶段，目前仅面向部分用户推出。</translation>
 <translation id="7796735576426975947">已隐藏新通知</translation>
 <translation id="7798302898096527229">按搜索键或按 Shift 键可取消。</translation>
 <translation id="780301667611848630">不用了，谢谢</translation>
@@ -1988,6 +1997,7 @@
 <translation id="8331351032546853669">待下载</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">输出质量不佳</translation>
 <translation id="8345019317483336363">已选择‘<ph name="WINDOW_TITLE" />’窗口</translation>
 <translation id="8349826889576450703">启动器</translation>
 <translation id="8349964124165471584">在新窗口中打开链接</translation>

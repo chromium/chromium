@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Неверный PUK-код.</translation>
 <translation id="4057991113334098539">Активация...</translation>
 <translation id="4092890906744441904">Ирландский</translation>
+<translation id="4101601646343868113">Подключитесь к мобильной сети и подтвердите, что ваш тарифный план активен</translation>
 <translation id="4124731372776320263">Синхронизация 1 файла на Диске…</translation>
 <translation id="4124935795427217608">Единорог</translation>
 <translation id="4131235941541910880">Перемещайте ненужные объекты в корзину.</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Тамильский, раскладка Tamil99</translation>
 <translation id="5633226425545095130">Если вы переместите этот объект, то его увидят все пользователи, у которых есть доступ к общей папке "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Прослушать</translation>
+<translation id="5650895901941743674">проверьте настройки точки доступа.</translation>
 <translation id="5669691691057771421">Введите новый PIN-код</translation>
 <translation id="5678784840044122290">Приложение Linux будет доступно в терминале. Кроме того, на панель запуска мог быть добавлен значок.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Не удалось отключиться от архива или электронного диска<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Файлы отображаются в виде значков.</translation>
 <translation id="8601932370724196034">Графический файл Crostini</translation>
 <translation id="8609695766746872526">Исландский</translation>
+<translation id="8630384863424041081">Введите PIN-код SIM-карты или PIN-код по умолчанию, предоставленный оператором связи. Если вам нужна помощь, обратитесь к оператору.</translation>
 <translation id="863903787380594467">Неверный PIN-код. Осталось попыток: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – порт</translation>
 <translation id="8656407365183407932">Доступ к файлам в офлайн-режиме закрыт</translation>

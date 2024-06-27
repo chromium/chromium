@@ -825,6 +825,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5190835502935405962">Panel so záložkami</translation>
 <translation id="519530786644929958">Súbor sa nestiahol. Pokus sa nedá zopakovať.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205197603258285592">Uložiť obrázok v aplikácii</translation>
 <translation id="5211488077761630279">Chcete povoliť webu <ph name="SITE_NAME" /> používať povolenie <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Pomôžte zlepšiť zabezpečenie na internete pre všetkých</translation>
 <translation id="5220945116117011963">Vytvorenie udalostí v kalendári z dátumov</translation>
@@ -1525,6 +1526,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8556590991644167667">{count,plural, =1{Zavreli ste {count} upozornenie}few{Zavreli ste {count} upozornenia}many{You dismissed {count} warnings}other{Zavreli ste {count} upozornení}}</translation>
 <translation id="8560253818350321773">Zobrazujte si často používané položky ako prvé.</translation>
 <translation id="8569721750632860947">Ktorú webovú adresu chcete pridať do svojho čitateľského zoznamu?</translation>
+<translation id="8570765991595769633">Prispôsobiť karty</translation>
 <translation id="8577056989960190117">Automaticky doplniť rok vypršania <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Vypnúť</translation>
 <translation id="8591976964826315682">Blokovať súbory cookie tretích strán v režime inkognito</translation>
@@ -1664,6 +1666,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="948048872540558976">Vytvoriť novú kartu</translation>
 <translation id="952218985181984374">{count,plural, =1{Záložka bola uložená}few{Boli uložené {count} záložky}many{{count} Bookmarks saved}other{Bolo uložených {count} záložiek}}</translation>
 <translation id="952704832371081537">Zrušiť</translation>
+<translation id="955587716023217544">Upraviť zoznam účtov</translation>
 <translation id="959066944189734975">Sledujete kanál <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Zobrazovať návrhy kariet z iných zariadení</translation>
 <translation id="973493300226275298">Sledujte cenu výrobku v internetových obchodoch. Keď klesne, dostanete upozornenie.</translation>

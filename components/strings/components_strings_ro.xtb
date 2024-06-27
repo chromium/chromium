@@ -26,6 +26,7 @@
 <translation id="1050038467049342496">închide celelalte aplicații;</translation>
 <translation id="1053959602163383901">Ai ales să confirmi folosind un dispozitiv de autentificare pe site-urile care folosesc <ph name="PROVIDER_ORIGIN" />. Este posibil ca acest furnizor să fi stocat informații despre metoda de plată, pe care le poți <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Anulați adăugarea</translation>
+<translation id="105642538515333723">Poți introduce orice expresii sau detalii pe care ți le amintești din paginile pe care le-ai răsfoit în trecut, cum ar fi „pantofi comozi de mers”</translation>
 <translation id="1056898198331236512">Avertisment</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a juca jocul Dino Run în Chrome</translation>
 <translation id="1058479211578257048">Se salvează cardurile…</translation>
@@ -968,6 +969,7 @@
 <translation id="2824775600643448204">Bara de adrese și de căutare</translation>
 <translation id="2826760142808435982">Conexiunea este criptată și autentificată utilizând <ph name="CIPHER" /> și folosește <ph name="KX" /> ca mecanism de schimb al cheii.</translation>
 <translation id="2833637280516285136">Discuții radiofonice</translation>
+<translation id="2837891525090413132">Poate solicita blocarea și folosirea tastaturii</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> dorește să folosească informațiile pe care le salvează despre tine</translation>
 <translation id="2839032553903800133">Notificările au fost blocate</translation>
 <translation id="2839501879576190149">Urmează un site fals</translation>
@@ -1157,7 +1159,6 @@
 <translation id="3209034400446768650">Pagina poate percepe o taxă</translation>
 <translation id="3212581601480735796">Activitatea ta de pe <ph name="HOSTNAME" /> este monitorizată</translation>
 <translation id="3215092763954878852">Nu s-a putut folosi WebAuthn</translation>
-<translation id="3215311088819828484">Rezultatul a fost actualizat</translation>
 <translation id="3216313131063488104">Nuanțe de albastru</translation>
 <translation id="3218181027817787318">Relativă</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Actualizarea este necesară acum}=2{Actualizarea este necesară până mâine}few{Actualizarea este necesară în termen de # zile}other{Actualizarea este necesară în termen de # de zile}}</translation>
@@ -2859,6 +2860,7 @@
 <translation id="6433797564277305076">Confirmă-ți cardurile mai rapid, folosind deblocarea dispozitivului de acum înainte</translation>
 <translation id="643917412048333145">Rochii</translation>
 <translation id="6440503408713884761">Ignorat</translation>
+<translation id="6440534369669992497">Poți introduce orice expresii sau detalii pe care ți le amintești din paginile pe care le-ai răsfoit în trecut, cum ar fi „pantofi comozi de mers”. <ph name="SHORTCUT" /> pentru a căuta.</translation>
 <translation id="6443406338865242315">extensiile și pluginurile instalate,</translation>
 <translation id="6444329331928531170">Pensionare și pensie</translation>
 <translation id="6446608382365791566">Adaugă mai multe informații</translation>
@@ -3142,6 +3144,7 @@
 <translation id="7006930604109697472">Trimite oricum</translation>
 <translation id="7010658264061801199">Mâncare și băutură</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013835112918108252">Poate solicita blocarea și folosirea mouse-ului</translation>
 <translation id="7014042602717177828">Echipamente audio pentru mașini</translation>
 <translation id="7014741021609395734">Nivel de zoom</translation>
 <translation id="7016992613359344582">Aceste costuri pot fi unice sau recurente și ascunse.</translation>

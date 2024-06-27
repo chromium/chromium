@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Napačna koda PUK</translation>
 <translation id="4057991113334098539">Aktiviranje ...</translation>
 <translation id="4092890906744441904">irščina</translation>
+<translation id="4101601646343868113">Prijavite se v svoje mobilno omrežje in preverite, ali je vaš paket za prenos podatkov v mobilnem omrežju aktiven</translation>
 <translation id="4124731372776320263">Sinhroniziranje 1 datoteke v Googlu Drive</translation>
 <translation id="4124935795427217608">Samorog</translation>
 <translation id="4131235941541910880">Nepotrebne elemente premaknite v smetnjak.</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">tamilščina s tipkovnico Tamil99</translation>
 <translation id="5633226425545095130">Če boste premaknili ta element, bo deljen z vsemi osebami, ki jim je vidna deljena mapa »<ph name="DESTINATION_NAME" />«.</translation>
 <translation id="5649768706273821470">Poslušajte</translation>
+<translation id="5650895901941743674">Preverite konfiguracijo APN-ja</translation>
 <translation id="5669691691057771421">Vnos nove kode PIN</translation>
 <translation id="5678784840044122290">Aplikacija za Linux bo na voljo v terminalu in morda bo zanjo tudi prikazana ikona v zaganjalniku.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Ni mogoče prekiniti povezave z arhivom ali navideznim diskom<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Seznam datotek je spremenjen na pogled sličic.</translation>
 <translation id="8601932370724196034">Slikovna datoteka za Crostini</translation>
 <translation id="8609695766746872526">islandščina</translation>
+<translation id="8630384863424041081">Vnesite kodo PIN za kartico SIM ali privzeto kodo PIN, ki jo zagotovi vaš operater. Za podporo se obrnite na operaterja.</translation>
 <translation id="863903787380594467">Napačna koda PIN. Imate še toliko poskusov: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – vrata</translation>
 <translation id="8656407365183407932">Datoteke brez povezave je bilo treba odstraniti</translation>

@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Actiu fa <ph name="LAST_UPDATED" /> dies</translation>
 <translation id="1390418506739274310">És possible que vegis l'historial d'altres aplicacions que obren enllaços a Chrome. A <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> trobaràs altres maneres d'explorar l'historial de navegació del teu Compte de Google.</translation>
 <translation id="13931502444227376">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà el teu nom, la teva adreça electrònica i la teva foto de perfil amb aquest lloc web. Consulta les <ph name="BEGIN_LINK1" />condicions del servei<ph name="END_LINK1" /> d'aquest lloc web.</translation>
+<translation id="139752016751285248">Full inferior d'estadístiques de preus obert a alçada completa</translation>
 <translation id="1397811292916898096">Cerca amb <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Pots <ph name="BEGIN_LINK1" />gestionar quines dades de Chrome es desen<ph name="END_LINK1" /> al teu Compte de Google.
 
@@ -179,6 +180,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="1877073879466606884">El perfil en què tens la sessió iniciada és un perfil gestionat. L'administrador pot fer canvis a la configuració del perfil de manera remota, analitzar informació sobre el navegador mitjançant informes i dur a terme altres tasques necessàries.</translation>
 <translation id="1883903952484604915">Els meus fitxers</translation>
 <translation id="189358972401248634">Altres idiomes</translation>
+<translation id="1899175549411605574">Full inferior d'estadístiques de preus</translation>
 <translation id="1900260903084164610">En continuar, acceptes les <ph name="BEGIN_TOS_LINK" />condicions del servei<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Els URL que visites es desen al teu Compte de Google</translation>
 <translation id="1910950723001426294">La llista d'opcions de compartició està tancada.</translation>
@@ -520,6 +522,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3587596251841506391">Millora la seguretat al web</translation>
 <translation id="3597179440835065298">Obtén suggeriments millors</translation>
 <translation id="3602290021589620013">Previsualitza</translation>
+<translation id="3614126103057878858">Estadístiques de preus</translation>
 <translation id="3616113530831147358">Àudio</translation>
 <translation id="3622349720008044802">Gestiona les finestres</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 lloc web}other{+ # llocs web}}</translation>
@@ -529,6 +532,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3637744895182738742">Si has oblidat la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Ves a l'inici de l'aplicació Google</translation>
 <translation id="368329460027487650">Has tancat la sessió. Obre les opcions per iniciar la sessió.</translation>
+<translation id="3684540848053703310">Full inferior d'estadístiques de preus tancat</translation>
 <translation id="3687645719033307815">Estàs veient una previsualització d'aquesta pàgina</translation>
 <translation id="3690369331356918524">T'avisa si les contrasenyes queden exposades a causa d'una violació de les dades.</translation>
 <translation id="3692944402865947621">No s'ha pogut baixar <ph name="FILE_NAME" /> perquè no es pot trobar la ubicació d'emmagatzematge.</translation>

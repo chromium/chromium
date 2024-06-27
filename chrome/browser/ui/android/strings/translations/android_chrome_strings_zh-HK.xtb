@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">曾於 <ph name="LAST_UPDATED" /> 天前在線</translation>
 <translation id="1390418506739274310">你可查看透過其他應用程式在 Chrome 中開啟連結的記錄。你的 Google 帳戶在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的瀏覽記錄。</translation>
 <translation id="13931502444227376">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享您的姓名、電郵地址和個人檔案相片。請參閱此網站的《<ph name="BEGIN_LINK1" />服務條款<ph name="END_LINK1" />》。</translation>
+<translation id="139752016751285248">價格分析資料頁底面板宜家顯示喺成個畫面</translation>
 <translation id="1397811292916898096">使用 <ph name="PRODUCT_NAME" /> 搜尋內容</translation>
 <translation id="1398057416966591719">你可前往 Google 帳戶<ph name="BEGIN_LINK1" />管理要儲存哪些 Chrome 資料<ph name="END_LINK1" />。
 
@@ -179,6 +180,7 @@
 <translation id="1877073879466606884">你已登入受管設定檔。管理員可遠端變更你的設定檔設定、透過報告分析瀏覽器相關資料，以及執行其他必要工作。</translation>
 <translation id="1883903952484604915">我的檔案</translation>
 <translation id="189358972401248634">其他語言</translation>
+<translation id="1899175549411605574">價格分析資料頁底面板</translation>
 <translation id="1900260903084164610">繼續即表示您同意《<ph name="BEGIN_TOS_LINK" />服務條款<ph name="END_TOS_LINK" />》。</translation>
 <translation id="1904580727789512086">系統會將您瀏覽的網址儲存至 Google 帳戶</translation>
 <translation id="1910950723001426294">閂咗分享選項清單。</translation>
@@ -520,6 +522,7 @@
 <translation id="3587596251841506391">協助改善網絡安全</translation>
 <translation id="3597179440835065298">取得更貼近需要的建議</translation>
 <translation id="3602290021589620013">預覽</translation>
+<translation id="3614126103057878858">價格分析資料</translation>
 <translation id="3616113530831147358">音效檔案</translation>
 <translation id="3622349720008044802">管理視窗</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 個網站}other{+ # 個網站}}</translation>
@@ -529,6 +532,7 @@
 <translation id="3637744895182738742">如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="3674208116086565128">開啟 Google 應用程式主畫面</translation>
 <translation id="368329460027487650">已登出。開啟登入選項。</translation>
+<translation id="3684540848053703310">價格分析資料頁底面板閂咗</translation>
 <translation id="3687645719033307815">您正在預覽此網頁的預覽畫面</translation>
 <translation id="3690369331356918524">密碼因資料外洩而被洩露時接收警告</translation>
 <translation id="3692944402865947621">無法存取儲存位置，因此無法下載 <ph name="FILE_NAME" />。</translation>

@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Aktivan prije <ph name="LAST_UPDATED" /> dana</translation>
 <translation id="1390418506739274310">Možete vidjeti povijest iz drugih aplikacija koje otvaraju veze u Chromeu. Na vašem Google računu možda postoje drugi oblici povijesti pregledavanja na stranici <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> podijelit će vaše ime, e-adresu i profilnu sliku s ovom web-lokacijom. Pogledajte <ph name="BEGIN_LINK1" />uvjete pružanja usluge<ph name="END_LINK1" /> ove web-lokacije.</translation>
+<translation id="139752016751285248">Donja tablica s uvidima u cijene otvorena u punoj visini</translation>
 <translation id="1397811292916898096">Pretraživanje pomoću usluge <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Možete <ph name="BEGIN_LINK1" />upravljati time koji će se podaci iz Chromea spremati<ph name="END_LINK1" /> na vaš Google račun.
 
@@ -179,6 +180,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="1877073879466606884">Profil na koji ste prijavljeni upravljani je profil. Vaš administrator može daljinski unositi izmjene u postavke vašeg profila, analizirati podatke o pregledniku putem izvješćivanja i izvršavati druge potrebne zadatke.</translation>
 <translation id="1883903952484604915">Moje datoteke</translation>
 <translation id="189358972401248634">Drugi jezici</translation>
+<translation id="1899175549411605574">Donja tablica s uvidima u cijene</translation>
 <translation id="1900260903084164610">Nastavkom upotrebe prihvaćate <ph name="BEGIN_TOS_LINK" />uvjete pružanja usluge<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">URL-ovi koje posjećujete spremaju se na vaš Google račun</translation>
 <translation id="1910950723001426294">Popis opcija za dijeljenje je zatvoren.</translation>
@@ -530,6 +532,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3637744895182738742">Ako ste zaboravili šifru ili želite promijeniti tu postavku, <ph name="BEGIN_LINK" />izbrišite Chromeove podatke na računu<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Otvorite početnu stranicu aplikacije Google</translation>
 <translation id="368329460027487650">Odjavljeno. Otvara opcije za prijavu.</translation>
+<translation id="3684540848053703310">Donja tablica s uvidima u cijene zatvorena</translation>
 <translation id="3687645719033307815">Gledate pregled ove stranice</translation>
 <translation id="3690369331356918524">Upozorava ako su zaporke ugrožene zbog povrede podataka</translation>
 <translation id="3692944402865947621">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspjelo jer lokacija pohrane nije dostupna.</translation>

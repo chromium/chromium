@@ -5,6 +5,8 @@
 <translation id="1026101648481255140">설치 다시 시작</translation>
 <translation id="102763973188675173">Chrome을 맞춤설정하고 제어하세요. 업데이트가 출시되었습니다.</translation>
 <translation id="1028061813283459617">이 기기에서만 인터넷 사용 기록을 삭제하고 Google 계정에서는 유지하려면 <ph name="BEGIN_LINK" />Chrome에서 로그아웃<ph name="END_LINK" />하세요.</translation>
+<translation id="1042270987544905725">클릭하여 Chrome 로그인 대화상자 닫기</translation>
+<translation id="1059838145689930908"><ph name="USER_EMAIL_ADDRESS" /> 계정으로 이 확장 프로그램을 사용하려면 Chrome에 로그인하세요.</translation>
 <translation id="1065672644894730302">환경설정을 읽을 수 없습니다.
 
 일부 기능을 사용할 수 없으며 환경설정의 변경사항이 저장되지 않습니다.</translation>
@@ -373,6 +375,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6291089322031436445">Chrome 개발자 앱</translation>
 <translation id="6291549208091401781">컴퓨터에 Chrome이 이미 설치되어 있으며 모든 사용자가 사용할 수 있습니다.</translation>
 <translation id="6319856120645568262">Chrome에서 주변 환경을 매핑하고 손을 추적하려면 권한이 필요합니다</translation>
+<translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" 확장 프로그램에서 Chrome 로그인을 요청합니다</translation>
 <translation id="6326175484149238433">Chrome에서 삭제</translation>
 <translation id="6327105987658262776">사용 가능한 업데이트가 없습니다.</translation>
 <translation id="6360449101159168105">이 탭이 비활성 상태인 동안 Chrome의 속도를 빠르게 유지하기 위해 메모리를 확보했습니다. 이 사이트가 비활성 상태가 되지 않도록 항상 제외할 수 있습니다.</translation>
@@ -465,6 +468,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7655455401911432608">이 기기에서 Chrome을 사용해 방문한 사이트의 기록인 방문 기록이 사용됩니다.</translation>
 <translation id="7661924425853052955">최근에 사이트를 방문하지 않았습니다. Chrome에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 권한 <ph name="COUNT" />개를 삭제했습니다.</translation>
 <translation id="7668816516367091728">주소 표시줄에서 바로 번역, 계산 등의 작업을 수행하세요.</translation>
+<translation id="7670287553302121848">Chrome 계정에 재인증이 필요함</translation>
 <translation id="769538538642757151">검토가 필요한 사항이 있으면 Chrome에서 알려 드립니다.</translation>
 <translation id="7747138024166251722">설치 프로그램이 임시 디렉터리를 만들지 못했습니다. 디스크 공간 및 설치 권한을 확인해 보세요.</translation>
 <translation id="7761834446675418963">Chrome을 열고 탐색을 시작하려면 내 이름을 클릭하세요.</translation>

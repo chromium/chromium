@@ -825,6 +825,7 @@
 <translation id="5190835502935405962">የዕልባቶች አሞሌ</translation>
 <translation id="519530786644929958">ማውረድ አልተሳካም እና እንደገና መሞከር አይቻልም።</translation>
 <translation id="5197255632782567636">በይነመረብ</translation>
+<translation id="5205197603258285592">ምስል አስቀምጥ በ...</translation>
 <translation id="5211488077761630279">የእርስዎን <ph name="PERMISSION" /> እንዲጠቀም «<ph name="SITE_NAME" />» ይፈቀድለት?</translation>
 <translation id="5219295696240154694">ድር ላይ ለሁሉም ሰው ደህንነት ለማሻሻል ያግዙ</translation>
 <translation id="5220945116117011963">ከቀናት ላይ የቀን መቁጠሪያ ክስተቶችን ይፍጠሩ</translation>
@@ -1525,6 +1526,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8556590991644167667">{count,plural, =1{{count} ማስጠንቀቂያ አሰናብተዋል}one{{count} ማስጠንቀቂያ አሰናብተዋል}other{{count} ማስጠንቀቂያዎች አሰናብተዋል}}</translation>
 <translation id="8560253818350321773">መጀመሪያ ጥቅም ላይ የዋሉ ንጥሎችን ያሳያል።</translation>
 <translation id="8569721750632860947">ወደ የንባብ ዝርዝርዎ ምን ዩአርኤል ማከል ይፈልጋሉ?</translation>
+<translation id="8570765991595769633">ካርዶችን ያብጁ</translation>
 <translation id="8577056989960190117">የአገልግሎት ማብቂያ ዓመቱን <ph name="YEAR" /> በራስ-ሙላ</translation>
 <translation id="8588404856427128947">ጠፍቷል</translation>
 <translation id="8591976964826315682">ማንነትን በማያሳውቅ ሁነታ ላይ የሦስተኛ ወገን ኩኪዎችን ያግዱ</translation>
@@ -1664,6 +1666,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="948048872540558976">አዲስ ትር ፍጠር</translation>
 <translation id="952218985181984374">{count,plural, =1{ዕልባት ተቀምጧል}one{{count} ዕልባት ተቀምጧል}other{{count} ዕልባቶች ተቀምጠዋል}}</translation>
 <translation id="952704832371081537">ይቅር</translation>
+<translation id="955587716023217544">የመለያ ዝርዝርን ያርትዑ</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" />ን እየተከተሉ ነው</translation>
 <translation id="96615566463761848">ከሌሎች መሣሪያዎች የትር ጥቆማዎችን አሳይ</translation>
 <translation id="973493300226275298">በመላው የመስመር ላይ መደብሮች ላይ የአንድን ምርት ዋጋ ይከታተሉ። ዋጋው በሚቀንበት ጊዜ ማንቂያዎች ይደርሱዎታል።</translation>

@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Väärä PUK-koodi</translation>
 <translation id="4057991113334098539">Aktivoidaan...</translation>
 <translation id="4092890906744441904">iiri</translation>
+<translation id="4101601646343868113">Kirjaudu mobiiliverkkoon ja varmista, että mobiilidatapaketti on aktiivinen</translation>
 <translation id="4124731372776320263">Synkronoidaan 1 Drive-tiedosto</translation>
 <translation id="4124935795427217608">Yksisarvinen</translation>
 <translation id="4131235941541910880">Siirrä tarpeettomat kohteet roskakoriin</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">tamil, tamil99-näppäimistö</translation>
 <translation id="5633226425545095130">Kun tämä siirretään, se jaetaan kaikille, jotka voivat nähdä jaetun kansion "<ph name="DESTINATION_NAME" />"</translation>
 <translation id="5649768706273821470">Kuuntele</translation>
+<translation id="5650895901941743674">Tarkista APN-määritykset</translation>
 <translation id="5669691691057771421">Anna uusi PIN-koodi</translation>
 <translation id="5678784840044122290">Linux-sovellus on saatavilla terminaalissa. Käynnistysohjelmassa saattaa myös näkyä kuvake.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Arkiston tai virtuaalilevyn yhteyden katkaisu epäonnistui<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Tiedostot näkyvät nyt pikkukuvina.</translation>
 <translation id="8601932370724196034">Crostini-kuvatiedosto</translation>
 <translation id="8609695766746872526">islanti</translation>
+<translation id="8630384863424041081">Lisää SIM-kortin PIN-koodi tai operaattorin antama oletusarvoinen PIN-koodi. Pyydä tukea operaattoriltasi.</translation>
 <translation id="863903787380594467">Väärä PIN-koodi. Sinulla on <ph name="RETRIES" /> yritystä jäljellä.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – portti</translation>
 <translation id="8656407365183407932">Offline-tiedostot oli poistettava</translation>

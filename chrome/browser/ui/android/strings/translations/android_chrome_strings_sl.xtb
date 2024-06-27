@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Aktivna pred toliko dnevi: <ph name="LAST_UPDATED" /></translation>
 <translation id="1390418506739274310">Morda bo prikazana zgodovina drugih aplikacij, ki odpirajo povezave v Chromu. V računu Google so morda druge vrste zgodovine brskanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Če želite nadaljevati, bo ponudnik <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delil vaše ime, e-poštni naslov in profilno sliko s tem spletnim mestom. Oglejte si <ph name="BEGIN_LINK1" />pogoje storitve<ph name="END_LINK1" /> tega spletnega mesta.</translation>
+<translation id="139752016751285248">Razdelek na dnu zaslona z vpogledi v cene, odprt v polni višini</translation>
 <translation id="1397811292916898096">Iskanje z iskalnikom <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">V računu Google lahko <ph name="BEGIN_LINK1" />upravljate, kateri podatki v Chromu se shranjujejo<ph name="END_LINK1" />.
 
@@ -179,6 +180,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="1877073879466606884">Profil, v katerega ste prijavljeni, je upravljani profil. Skrbnik lahko na daljavo spreminja nastavitve profila, analizira podatke o brskalniku prek poročanja in izvaja druga potrebna opravila.</translation>
 <translation id="1883903952484604915">Moje datoteke</translation>
 <translation id="189358972401248634">Drugi jeziki</translation>
+<translation id="1899175549411605574">Razdelek na dnu zaslona z vpogledi v cene</translation>
 <translation id="1900260903084164610">Z nadaljevanjem se strinjate s <ph name="BEGIN_TOS_LINK" />pogoji storitve<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">URL-ji, ki jih obiščete, se shranijo v račun Google.</translation>
 <translation id="1910950723001426294">Seznam možnosti deljenja z drugimi je zaprt.</translation>
@@ -520,6 +522,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3587596251841506391">Izboljšanje varnosti v spletu</translation>
 <translation id="3597179440835065298">Prejmite boljše predloge</translation>
 <translation id="3602290021589620013">Predogled</translation>
+<translation id="3614126103057878858">Vpogled v cene</translation>
 <translation id="3616113530831147358">Zvok</translation>
 <translation id="3622349720008044802">Upravljanje oken</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{in še 1 spletno mesto}one{in še # spletno mesto}two{in še # spletni mesti}few{in še # spletna mesta}other{in še # spletnih mest}}</translation>
@@ -529,6 +532,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3637744895182738742">Če ste pozabili geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chroma v računu<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Odpiranje začetne strani aplikacije Google</translation>
 <translation id="368329460027487650">Odjavljen. Odpre možnosti za prijavo.</translation>
+<translation id="3684540848053703310">Zaprt razdelek na dnu zaslona z vpogledi v cene</translation>
 <translation id="3687645719033307815">Ogledujete si predogled te strani</translation>
 <translation id="3690369331356918524">Posvari, če so gesla razkrita zaradi podatkovne kršitve</translation>
 <translation id="3692944402865947621">Prenos datoteke <ph name="FILE_NAME" /> ni uspel, ker prostor za shranjevanje ni dosegljiv.</translation>

@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">PUK буруу байна</translation>
 <translation id="4057991113334098539">Идэвхжүүлж байна...</translation>
 <translation id="4092890906744441904">Ирланд</translation>
+<translation id="4101601646343868113">Хөдөлгөөнт холбооны сүлжээндээ нэвтрээд, хөдөлгөөнт төхөөрөмжийн дата багцаа идэвхтэй болохыг баталгаажуулна уу</translation>
 <translation id="4124731372776320263">1 Драйвын файлыг синк хийж байна</translation>
 <translation id="4124935795427217608">Ганц эвэртэй морь</translation>
 <translation id="4131235941541910880">Хэрэггүй зүйлсээ хогийн сав руу зөөнө үү</translation>
@@ -601,6 +602,7 @@
 <translation id="5625294776298156701">Tamil99 гартай тамил</translation>
 <translation id="5633226425545095130">Энэ зүйлийг зөөснөөр үүнийг '<ph name="DESTINATION_NAME" />' хуваалцсан фолдерыг харах боломжтой бүх хүнтэй хуваалцана.</translation>
 <translation id="5649768706273821470">Сонсох</translation>
+<translation id="5650895901941743674">APN-н тохируулгаа шалгана уу</translation>
 <translation id="5669691691057771421">Шинэ ПИН оруулна уу</translation>
 <translation id="5678784840044122290">Linux апп таны Терминалд боломжтой болохоос гадна таны Эхлүүлэгчид дүрс тэмдэг харуулж болзошгүй.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Архив эсвэл виртуал дискнээс салгах боломжгүй байна<ph name="END_BOLD" />
@@ -1006,6 +1008,7 @@
 <translation id="8600173386174225982">Файлын жагсаалтыг өнгөц зургаар харах горимд шилжүүлэв.</translation>
 <translation id="8601932370724196034">Crostini зургийн файл</translation>
 <translation id="8609695766746872526">Исланд</translation>
+<translation id="8630384863424041081">SIM картын ПИН эсвэл оператор компанийнхаа өгсөн өгөгдмөл ПИН-ээ оруулна уу. Тусламж авах бол оператор компанитайгаа холбогдоно уу.</translation>
 <translation id="863903787380594467">ПИН буруу байна. Танд <ph name="RETRIES" /> оролдлого үлдлээ.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Порт</translation>
 <translation id="8656407365183407932">Таны офлайн файлуудыг хасах шаардлагатай байсан</translation>

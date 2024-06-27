@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">अन-स्क्रिन किबोर्ड सक्षम गरियो</translation>
 <translation id="1749109475624620922">सबै डेस्कमा "<ph name="WINDOW_TITLE" />" विन्डो असाइन गरिएको छ।</translation>
 <translation id="1750088060796401187">बढीमा <ph name="MAX_DESK_LIMIT" /> वटा डेस्क मात्र खोल्न मिल्छ। तपाईं नयाँ डेस्क खोल्न चाहनुहुन्छ भने कुनै डेस्क हटाउनुहोस्।</translation>
+<translation id="1751335846119670066">मलाई पढ्न मद्दत गर्नुहोस्</translation>
 <translation id="1755408179247123630">सेलेक्ट टु स्पिक अन गर्ने हो?</translation>
 <translation id="1755556344721611131">डाइग्नोस्टिक्स एप</translation>
 <translation id="1756833229520115364">टेम्प्लेट सेभ गर्न सकिएन। अत्यन्त धेरै विन्डो वा ट्याबहरू सेभ गरिएका छन्।</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">आफ्नो फोनमा भएका हालसालैका फोटो, मिडिया तथा सूचनाहरू हेर्ने सुविधा सेटअप गर्नुहोस्</translation>
 <translation id="1787955149152357925">अफ छ</translation>
 <translation id="1796561540704213354">तपाईंले हेर्नुभएका पेज र हाल खोलिएका पेजलगायतका वेबसाइटहरू</translation>
+<translation id="179842970735685253">Google का सेवाका सर्तहरू</translation>
 <translation id="181103072419391116">सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
 <translation id="1816896987747843206">यसले क्यामेरा प्रयोग गर्ने अनुमति भएका सबै एप तथा वेबसाइटहरूलाई क्यामेरा प्रयोग गर्ने अनुमति दिन्छ</translation>
 <translation id="1823873187264960516">इथरनेट: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">कक्षाकार्यको प्रकार</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">ध्यान दिनु पर्ने केही कुराहरू</translation>
 <translation id="3139188263101386725">अपडेट गरिएको सर्टकट प्रयोग गर्नुहोस्</translation>
 <translation id="3139942575505304791">डेस्क १</translation>
 <translation id="315116470104423982">मोबाइल डाटा</translation>
@@ -961,6 +964,7 @@
 <translation id="4585337515783392668">कुनै अज्ञात प्रापकमा casting गर्न छाड्नुहोस्</translation>
 <translation id="4596144739579517758">अँध्यारो थिम अफ छ</translation>
 <translation id="4596442969149038771"><ph name="USER" /> ले सेयर गर्नुभएकाले</translation>
+<translation id="4610493115106525653">आउटपुट राम्रो छ</translation>
 <translation id="4611292653554630842">लग इन गर्नुहोस्</translation>
 <translation id="462160925400706389"><ph name="NAME" /> कनेक्ट गरियो</translation>
 <translation id="4623167406982293031">खाता पुष्टि गर्नुहोस्</translation>
@@ -1118,6 +1122,7 @@
 <translation id="5121628974188116412">पृष्ठको फेदमा जानुहोस्‌</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> को प्रिभ्यू। निष्क्रिय डेस्क।</translation>
 <translation id="5136175204352732067">भिन्न किबोर्ड जडान गरियो</translation>
+<translation id="5140105873789567560">तपाईं कम्तीमा १८ वर्ष पुग्नुभएको छ भने मात्र तपाईं "मलाई लेख्न मद्दत गर्नुहोस्" र "मलाई पढ्न मद्दत गर्नुहोस्" प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="5144005092084035179">अडियो इनपुट बदल्ने हो?</translation>
 <translation id="5147567197700016471">अनलक गरिएको छ</translation>
 <translation id="5150070631291639005">गोपनीयतासम्बन्धी सेटिङ</translation>
@@ -1558,6 +1563,7 @@
 <translation id="6696025732084565524">तपाईंको अलग्याउन मिल्ने किबोर्डलाई महत्त्वपूर्ण अद्यावधिक आवश्यक छ</translation>
 <translation id="6697913454192220372">नयाँ डेस्क हाल्नुहोस्</translation>
 <translation id="6700713906295497288">IME सम्बन्धी मेनुको बटन</translation>
+<translation id="6704375469818246414">जेनेरेटिभ AI प्रयोग गर्दा यसले दिने जानकारीको गुणस्तर फरक हुन सक्छ।</translation>
 <translation id="6706742084323792866">किबोर्ड पिन गर्नुहोस्</translation>
 <translation id="6710213216561001401">अघिल्लो</translation>
 <translation id="6723839937902243910">पावर</translation>
@@ -1825,9 +1831,11 @@
 <translation id="7726391492136714301">आफ्नो फोनका सूचना तथा एपहरू हेर्नुहोस्</translation>
 <translation id="7727952505535211425">एड्रेस बारमा हालिएको वेबसाइट नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="7742327441377685481">कुनै पनि सूचना छैन</translation>
+<translation id="774736258792760908">तपाईंले "मलाई लेख्न मद्दत गर्नुहोस्" र "मलाई पढ्न मद्दत गर्नुहोस्" अन गर्दा लेखनसम्बन्धी सुझाव दिने, सारांश बनाउने, प्रश्नहरूको जवाफ दिने र उत्पादनको गुणस्तर सुधार गर्ने प्रयोजनका लागि इन्पुट टेक्स्ट र डकुमेन्टमा भएको सामग्री <ph name="LINK_TO_SERVICE_TERMS" /> बमोजिम Google AI का सर्भरहरूमा पठाइन्छन्। कुनै पनि व्यक्तिगत, संवेदनशील वा गोप्य जानकारी नहाल्नुहोस्।</translation>
 <translation id="7748275671948949022">सेल्फमा भएको लन्चर बटन हाइलाइट गर्नुहोस्</translation>
 <translation id="7749443890790263709">डेस्कको अधिकतम सङ्ख्या पुगेको छ।</translation>
 <translation id="7749958366403230681">ExpressKey ४</translation>
+<translation id="7759183637555564029">तपाईं जुनसुकै बेला सेटिङमा गई "मलाई लेख्न मद्दत गर्नुहोस्" र "मलाई पढ्न मद्दत गर्नुहोस्" अफ गर्न सक्नुहुन्छ। <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">सेलेक्ट टु स्पिक</translation>
 <translation id="7769299611924763557">तपाईंको GIF चाँडै नै तयार हुने छ</translation>
 <translation id="7773536009433685931">बरु Wi-Fi अन गर्नुहोस्</translation>
@@ -1836,6 +1844,7 @@
 <translation id="7781829728241885113">हिजो</translation>
 <translation id="7787212146956232129">इनपुट र आउटपुट डिभाइसहरू सेट गरिएका छन्। बदल्न सेटिङमा जानुहोस्।</translation>
 <translation id="7792590255364786396">हेर्न मिल्छ</translation>
+<translation id="7793389284006812057">जेनेरेटिभ AI परीक्षणकै क्रममा छ, पूर्ण रूपमा तयार भइसकेको छैन र हाल सीमित रूपमा उपलब्ध छ।</translation>
 <translation id="7796735576426975947">नयाँ सूचना लुकाइएको छ</translation>
 <translation id="7798302898096527229">रद्द गर्न Search वा Shift बटनमा थिच्नुहोस्।</translation>
 <translation id="780301667611848630">पर्दैन, धन्यवाद</translation>
@@ -1990,6 +1999,7 @@
 <translation id="8331351032546853669">डाउनलोड गर्न बाँकी छ</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">आउटपुट खराब छ</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> नामक विन्डो चयन गरियो</translation>
 <translation id="8349826889576450703">लन्चर</translation>
 <translation id="8349964124165471584">यो लिंक नयाँ विन्डोमा खोल्नुहोस्</translation>

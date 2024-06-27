@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Poslednja aktivnost: pre <ph name="LAST_UPDATED" /> dan/a</translation>
 <translation id="1390418506739274310">Možete da vidite istoriju iz drugih aplikacija koje otvaraju linkove u Chrome-u. Google nalog može da ima druge oblike istorije pregledanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će deliti vaše ime, imejl adresu i sliku profila sa ovim sajtom. Pogledajte <ph name="BEGIN_LINK1" />Uslove korišćenja usluge<ph name="END_LINK1" /> za ovaj sajt.</translation>
+<translation id="139752016751285248">Donja tabela sa uvidima u cene je otvorena preko celog ekrana</translation>
 <translation id="1397811292916898096">Pretražite pomoću: <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Možete da <ph name="BEGIN_LINK1" />upravljate time koji Chrome podaci se čuvaju<ph name="END_LINK1" /> na Google nalogu.
 
@@ -179,6 +180,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="1877073879466606884">Profil na koji ste prijavljeni je profil kojim se upravlja. Administrator može daljinski da unosi promene u podešavanja profila, da analizira informacije o pregledaču pomoću izveštavanja i obavlja druge neophodne zadatke.</translation>
 <translation id="1883903952484604915">Moje datoteke</translation>
 <translation id="189358972401248634">Drugi jezici</translation>
+<translation id="1899175549411605574">Donja tabela sa uvidima u cene</translation>
 <translation id="1900260903084164610">Ako nastavite, prihvatate <ph name="BEGIN_TOS_LINK" />Uslove korišćenja usluge<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">URL-ovi koje posećujete se čuvaju na Google nalogu</translation>
 <translation id="1910950723001426294">Lista opcija za deljenje je zatvorena.</translation>
@@ -530,6 +532,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3637744895182738742">Ako ste zaboravili pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome podatke na nalogu<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Idi na početnu stranicu aplikacije Google</translation>
 <translation id="368329460027487650">Odjavljeni ste. Otvara opcije za prijavljivanje.</translation>
+<translation id="3684540848053703310">Donja tabela sa uvidima u cene je zatvorena</translation>
 <translation id="3687645719033307815">Pregledate ovu stranicu</translation>
 <translation id="3690369331356918524">Upozorava vas ako su lozinke otkrivene pri upadu u podatke</translation>
 <translation id="3692944402865947621">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspelo zato što lokacija memorijskog prostora nije dostupna.</translation>

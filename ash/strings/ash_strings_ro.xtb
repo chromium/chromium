@@ -216,6 +216,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1747827819627189109">Tastatură pe ecran activată</translation>
 <translation id="1749109475624620922">Fereastra <ph name="WINDOW_TITLE" /> a fost atribuită tuturor desktopurilor</translation>
 <translation id="1750088060796401187">Doar <ph name="MAX_DESK_LIMIT" /> desktopuri permise. Elimină un desktop ca să deschizi unul nou.</translation>
+<translation id="1751335846119670066">Ajută-mă să citesc</translation>
 <translation id="1755408179247123630">Activezi Selectează și ascultă?</translation>
 <translation id="1755556344721611131">Aplicația Diagnosticare</translation>
 <translation id="1756833229520115364">Nu s-a putut salva șablonul. Prea multe ferestre sau file.</translation>
@@ -227,6 +228,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="178347895271755507">Configurează afișarea fotografiilor, a elementelor media și a notificărilor recente ale telefonului</translation>
 <translation id="1787955149152357925">Dezactivată</translation>
 <translation id="1796561540704213354">Site-urile, inclusiv paginile pe care le-ai accesat și paginile deschise</translation>
+<translation id="179842970735685253">Termenii și condițiile Google</translation>
 <translation id="181103072419391116">Puterea semnalului: <ph name="SIGNAL_STRENGTH" />, gestionată de administratorul tău</translation>
 <translation id="1816896987747843206">Astfel, accesul la cameră este permis pentru toate aplicațiile și site-urile care au permisiunea adecvată</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Tipul activității la curs</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Câteva lucruri de reținut</translation>
 <translation id="3139188263101386725">Folosește comanda rapidă actualizată</translation>
 <translation id="3139942575505304791">Desktop 1</translation>
 <translation id="315116470104423982">Date mobile</translation>
@@ -961,6 +964,7 @@ Un dispozitiv conectat.</translation>
 <translation id="4585337515783392668">Nu mai proiecta pe un receiver necunoscut</translation>
 <translation id="4596144739579517758">Tema întunecată este dezactivată</translation>
 <translation id="4596442969149038771"><ph name="USER" /> a distribuit</translation>
+<translation id="4610493115106525653">Rezultate bune</translation>
 <translation id="4611292653554630842">Conectează-te</translation>
 <translation id="462160925400706389"><ph name="NAME" /> s-a conectat</translation>
 <translation id="4623167406982293031">Confirmă contul</translation>
@@ -1118,6 +1122,7 @@ Poți folosi și comanda rapidă de la tastatură. Mai întâi, evidențiază te
 <translation id="5121628974188116412">Navighează la sfârșitul paginii</translation>
 <translation id="5122517996953421795">Previzualizare pentru <ph name="DESK_NAME" />. Desktop inactiv.</translation>
 <translation id="5136175204352732067">Altă tastatură conectată</translation>
+<translation id="5140105873789567560">Trebuie să ai cel puțin 18 ani pentru a folosi funcțiile Ajută-mă să scriu și Ajută-mă să citesc.</translation>
 <translation id="5144005092084035179">Schimbi intrarea audio?</translation>
 <translation id="5147567197700016471">Deblocat</translation>
 <translation id="5150070631291639005">Setări de confidențialitate</translation>
@@ -1558,6 +1563,7 @@ Instalare nouă</translation>
 <translation id="6696025732084565524">Tastatura detașabilă necesită o actualizare esențială</translation>
 <translation id="6697913454192220372">Adaugă un nou desktop</translation>
 <translation id="6700713906295497288">Butonul de meniu IME</translation>
+<translation id="6704375469818246414">Calitatea poate varia când folosești AI generativ.</translation>
 <translation id="6706742084323792866">Fixează tastatura</translation>
 <translation id="6710213216561001401">Înapoi</translation>
 <translation id="6723839937902243910">Alimentare</translation>
@@ -1825,9 +1831,11 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7726391492136714301">Vezi notificările și aplicațiile telefonului</translation>
 <translation id="7727952505535211425">Deschide site-ul în bara de adrese într-o filă nouă</translation>
 <translation id="7742327441377685481">Nicio notificare</translation>
+<translation id="774736258792760908">Când activezi funcția Ajută-mă să scriu și Ajută-mă să citesc, textul introdus și conținutul documentului se trimit la serverele Google AI pentru a genera sugestii de scriere sau rezumate, a răspunde la întrebări și a îmbunătăți produsul, în conformitate cu <ph name="LINK_TO_SERVICE_TERMS" />. Nu include conținut personal, sensibil sau confidențial.</translation>
 <translation id="7748275671948949022">Evidențiază butonul Lansator de pe raft</translation>
 <translation id="7749443890790263709">S-a atins numărul maxim de desktopuri.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Poți dezactiva oricând funcția Ajută-mă să scriu și Ajută-mă să citesc din Setări. <ph name="LINK_TO_LEARN_MORE" />,</translation>
 <translation id="7768784765476638775">Selectează și ascultă</translation>
 <translation id="7769299611924763557">GIF-ul va fi gata în curând</translation>
 <translation id="7773536009433685931">Activează conexiunea Wi-Fi</translation>
@@ -1836,6 +1844,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7781829728241885113">Ieri</translation>
 <translation id="7787212146956232129">Dispozitivele de intrare și de ieșire sunt setate. Accesează Setările pentru a le modifica.</translation>
 <translation id="7792590255364786396">Vizibil</translation>
+<translation id="7793389284006812057">AI generativ este o funcție experimentală, în primele etape de dezvoltare și, momentan, are disponibilitate limitată.</translation>
 <translation id="7796735576426975947">Notificare nouă ascunsă</translation>
 <translation id="7798302898096527229">Apasă pe tasta de căutare sau pe Shift pentru a anula.</translation>
 <translation id="780301667611848630">Nu, mulțumesc</translation>
@@ -1990,6 +1999,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8331351032546853669">Descărcare în așteptare</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Rezultate slabe</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> fereastră selectată</translation>
 <translation id="8349826889576450703">lansator</translation>
 <translation id="8349964124165471584">Deschide linkul într-o fereastră nouă</translation>

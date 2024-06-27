@@ -840,7 +840,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1607139524282324606">Girişi silin</translation>
 <translation id="1607499585984539560">İstifadəçi domen ilə əlaqəli deyil</translation>
 <translation id="1608668830839595724">Seçilmiş elementlər üçün daha çox əməliyyat</translation>
-<translation id="1608698493373028805">Bu artırma tezliklə dəstəklənməyə bilər</translation>
 <translation id="1610272688494140697">Tətbiq Ayarları</translation>
 <translation id="161042844686301425">Firuzəyi</translation>
 <translation id="1611432201750675208">Cihazınız kilidlidir</translation>
@@ -1038,6 +1037,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1750172676754093297">Təhlükəsizlik açarında saxlanılan barmaq izi yoxdur</translation>
 <translation id="1750238553597293878">Google Hesabında parollardan istifadəyə davam edin</translation>
 <translation id="1751262127955453661">Siz bu sayt üzrə bütün tabları bağlayanadək <ph name="ORIGIN" /> <ph name="FOLDERNAME" /> qovluğundakı faylları redaktə edə biləcək</translation>
+<translation id="1751335846119670066">Oxumağa kömək et</translation>
 <translation id="17513872634828108">Panelləri açın</translation>
 <translation id="175196451752279553">Bağlanmış Paneli yenidən açın</translation>
 <translation id="1753067873202720523">Aktiv olan zaman Chromebook'unuz qidalana bilməz.</translation>
@@ -1308,6 +1308,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_CONTAINER" /> konteyner forma növü <ph name="ARCHITECTURE_DEVICE" /> cihazı ilə import edilə bilməz. Bu konteyneri fərqli cihaza bərpa edə, yaxud onu Fayl tətbiqində açaraq konteyner şəklin daxilindəki faylları əldə edə bilərsiniz.</translation>
 <translation id="1938320257168860255">Xəta oldu. Telefonunuzun yaxınlıqda olduğuna, kiliddən çıxarılmış olduğuna, Bluetooth və Wi-Fi'ın aktiv olduğuna əmin olun.</translation>
 <translation id="1938351510777341717">Xarici Əmr</translation>
+<translation id="1940221956626514677">Alətlər panelini fərdiləşdirin</translation>
 <translation id="1940546824932169984">Qoşulmuş cihazlar</translation>
 <translation id="1941410638996203291">Başlama vaxtı: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Versiya: <ph name="APP_VERSION" /></translation>
@@ -1417,7 +1418,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
     Digər cihazlardakı tətbiqlər və ya kontent təsirə məruz qalmır.</translation>
 <translation id="2018189721942291407">Qeydiyyat barədə əmin deyilsiniz?</translation>
 <translation id="2018352199541442911">Üzr istəyirik, xarici yaddaş cihazınız hazırda dəstəklənmir.</translation>
-<translation id="2018796023998975363">Bənzər tabları qruplaşdıran tab qrupu təklifləri alacaqsınız. Tab, başlıq və qruplar Google-a göndərilir və bu funksiyanı təkmilləşdirmək üçün insanlar tərəfindən nəzərdən keçirilə bilər.</translation>
 <translation id="2019718679933488176">Audionu yeni paneldə açın</translation>
 <translation id="2020183425253392403">Şəbəkə ünvan ayarlarını göstərin</translation>
 <translation id="2020225359413970060">Faylı skanlayın</translation>
@@ -1459,6 +1459,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2048254245884707305">Zərərli proqram yoxlanır...</translation>
 <translation id="2048554637254265991">Konteyner menecerini başladarkən xəta oldu. Yenidən sınayın.</translation>
 <translation id="2048653237708779538">Əməliyyat əlçatan deyil</translation>
+<translation id="2049021651258469175">Google Hesabından əldə edilən parol və s. məlumatları da istifadə edə və yadda saxlaya biləcəksiniz.</translation>
 <translation id="204914487372604757">Qısayol yaradın</translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2051266530792296582">Google Parol Meneceri bu veb-sayt üçün güclü parol yaratdı</translation>
@@ -2046,6 +2047,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2459706890611560967"><ph name="DEVICE_NAME" /> cihazında tab yayımını bərpa edin</translation>
 <translation id="2460356425461033301">Brauzer elementlərini yedəkləyin və istənilən cihazda istifadə edin</translation>
 <translation id="2460482211073772897">Digər qovluqlarda</translation>
+<translation id="2460826998961521840">Google Hesabında yadda saxlanmış giriş açarlarından istifadə etmək üçün</translation>
 <translation id="2461550163693930491">Saytlara paylaşılan tabları sürüşdürüb zumlamaq icazəsi verməyin</translation>
 <translation id="2461593638794842577">Parolları yalnız bu cihazda yadda saxlamaq üçün bu ayarı söndürə bilərsiniz</translation>
 <translation id="2462332841984057083">Steam ayarlanır. Ayarlamanın tamamlanmasını gözləyin.</translation>
@@ -2153,7 +2155,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2532198298278778531">ChromeOS Flex ayarlarında güvənli DNS'i idarə edin</translation>
 <translation id="2532589005999780174">Yüksək kontrast rejimi</translation>
 <translation id="2533649878691950253">Adətən icazə vermədiyiniz üçün bu saytın dəqiq yerinizi bilməsi bloklanıb</translation>
-<translation id="2533657586475297323">Tab qrupu təklifləri haqqında ətraflı məlumat</translation>
 <translation id="253434972992662860">Durdurun</translation>
 <translation id="253498598929009420">Sayt ekrandakı kontenti görə biləcək</translation>
 <translation id="253557089021624350">İstifadə edilən artırma sayı</translation>
@@ -2371,6 +2372,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="270516211545221798">Taçped sürəti</translation>
 <translation id="2705736684557713153">Ekranın aşağısına sürüşdürün. Görünürsə, cəld modemi aktiv edin. Görünmürsə, artıq ayarlanıb.</translation>
 <translation id="2706304388244371417">Google Diskə yedəkləyin. İstənilən vaxt asanlıqla datanı bərpa edin və ya cihazı dəyişin. Bu yedəkləməyə tətbiq datası daxildir. Yedəklər Google-a yüklənir və Google Hesab parolu ilə şifrələnir. <ph name="BEGIN_LINK1" />Yedəkləmə haqqında ətraflı məlumat əldə edin<ph name="BEGIN_LINK1_END" />Ətraflı məlumat<ph name="END_LINK1" /></translation>
+<translation id="2706462751667573066">Yuxarı</translation>
 <translation id="2707024448553392710">Komponent endirilir</translation>
 <translation id="270921614578699633">Ortam Bitdi</translation>
 <translation id="2709516037105925701">Avtomatik doldurma</translation>
@@ -3438,6 +3440,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3497501929010263034">USB cihazı təmin edən: <ph name="VENDOR_NAME" /> (məhsul <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Doodle Paylaşın</translation>
 <translation id="3497915391670770295">Cihazlarınıza göndərin</translation>
+<translation id="3498138244916757538">Mikrofon ayarına edilən dəyişiklik üçün <ph name="SPECIFIC_NAME" /> söndürülməlidir. Davam etmək üçün söndürün: <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="3499091376302796297">Saytlara nəzər saldıqca onların səhifə kontenti cihazda şifrələnmiş formada yadda saxlanır.</translation>
 <translation id="3500417806337761827">Paylaşım əlavə edərkən xəta baş verdi. Hazırda həddindən çox SMB paylaşımı əlavə edilib.</translation>
 <translation id="3500764001796099683">Təcrid edilmiş veb-tətbiqləri aktivləşdirin</translation>
@@ -4266,7 +4269,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4089235344645910861">Ayar yadda saxlandı. Sinxronizasiya başladı.</translation>
 <translation id="4089817585533500276">shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">Doğrulanmış Girişi Aktiv edin</translation>
-<translation id="4090947011087001172"><ph name="SITE" /> üçün sayt icazələri sıfırlansın?</translation>
 <translation id="4091307190120921067">Seçilmiş tətbiqlər ayarlamadan sonra quraşdırılacaq. Araşdırın tətbiqində daha sonra digər tövsiyələrə baxın.</translation>
 <translation id="4092636882861724179">Yadda saxlanmış parollara burada baxa və idarə edə bilərsiniz: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="4092709865241032354">Google Parol Menecerinin giriş məlumatlarını yadda saxlaması üçün bu sayt üzrə istifadəçi adı əlavə edin</translation>
@@ -5323,6 +5325,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4892328231620815052">Hazır olduqda Əlfəcinlər və siyahılar bölməsində oxu siyahısını tapa bilərsiniz</translation>
 <translation id="489258173289528622">Batareyadan istifadə edilən zaman cihaz fəaliyyətsiz qaldıqda ediləcək əməliyyat</translation>
 <translation id="4892811427319351753"><ph name="EXTENSION_TYPE_PARAMETER" /> artırmasını aktiv etmək mümkün deyil</translation>
+<translation id="4892981359753171125">Üz ilə idarəetmə</translation>
 <translation id="4893073099212494043">Növbəti sözün proqnozunu aktivləşdirin</translation>
 <translation id="4893336867552636863">Brauzinq datanızı bu cihazdan həmişəlik siləcək.</translation>
 <translation id="4893454800196085005">Yaxşı - DVD</translation>
@@ -5477,6 +5480,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5021750053540820849">Hələ yenilənməyib</translation>
 <translation id="5022206631034207923">Kilid ekranı, nizamlayıcılar</translation>
 <translation id="5024511550058813796">Bütün sinxronlaşdırılmış cihazlarınızda tarixçəniz olacaq, beləliklə, gördüyünüz işə davam edə bilərsiniz</translation>
+<translation id="5024992827689317672">Data silindi</translation>
 <translation id="5026492829171796515">Google hesabı əlavə etmək üçün daxil olun</translation>
 <translation id="5026806129670917316">Wi-Fi şəbəkəsini aktiv edin</translation>
 <translation id="5026874946691314267">Bunu bir daha göstərməyin</translation>
@@ -5702,7 +5706,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5187641678926990264">&amp;Səhifəni tətbiq kimi quraşdırın...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188648870018555788">Məkandan istifadə. Məkan icazəsi olan ChromeOS, habelə Android tətbiq, veb-sayt və xidmətlərinə cihaz məkanından istifadə etmək icazəsi verin. Məkan Dəqiqliyi Android tətbiq və xidmətləri üçün daha dəqiq məkan təmin edir. Bunun üçün Google simsiz siqnal məkanları üzrə kütləvi qaynaq yaratmaq məqsədilə cihaz sensorları və cihazdan gələn simsiz siqnallar haqqında məlumatları vaxtaşırı emal edir. Bu məlumatlar kimliyinizi müəyyənləşdirmədən məkan dəqiqliyini və məkan əsaslı xidmətləri təkmilləşdirmək, Google xidmətlərini Google və üçüncü tərəflərin qanuni maraqlarına uyğun olmaqla istifadəçilərin ehtiyaclarına xidmət edəcək şəkildə təkmilləşdirmək, təmin etmək və davam etdirmək üçün istifadə edilir. <ph name="BEGIN_LINK1" />Məkandan istifadə haqqında ətraflı məlumat əldə edin<ph name="END_LINK1" /></translation>
-<translation id="5190434775614603677">Ardı</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> istifadə edilir</translation>
 <translation id="5190926251776387065">Portu aktiv edin</translation>
 <translation id="5190959794678983197">Mikrofon yoxdur</translation>
@@ -7025,6 +7028,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6184099524311454384">Tabları axtarın</translation>
 <translation id="6184868291074982484">Chrome üçüncü tərəf kukilərini avtomatik məhdudlaşdırır</translation>
 <translation id="6185132558746749656">Cihaz Məkanı</translation>
+<translation id="6185151644843671709">Giriş açarı yadda saxlanıldı və PIN yaradıldı</translation>
 <translation id="6190953336330058278">Telefon Mərkəzi tətbiqləri</translation>
 <translation id="6192333916571137726">Faylı endirin</translation>
 <translation id="6192413564913825901">Bütün Əlfəcinlərə köçürün</translation>
@@ -7072,6 +7076,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="622125358038862905">{NUM_OF_FILES,plural, =1{Faylı <ph name="CLOUD_PROVIDER" /> provayderinə kopyalamaq olmur}other{Faylları <ph name="CLOUD_PROVIDER" /> provayderinə kopyalamaq olmur}}</translation>
 <translation id="6224481128663248237">Formatlama uğurla tamamlandı!</translation>
 <translation id="622474711739321877">Bu konteyner artıq mövcuddur.</translation>
+<translation id="622484624075952240">Aşağı</translation>
 <translation id="622537739776246443">Profil silinəcək</translation>
 <translation id="6225475702458870625">Data bağlantısı <ph name="PHONE_NAME" /> telefonunda əlçatandır</translation>
 <translation id="6226777517901268232">Xüsusi açar faylı (istəyə bağlı)</translation>
@@ -7403,6 +7408,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6479881432656947268">Chrome Veb Dükanına daxil olun</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> tərəfindən idarə edilir</translation>
 <translation id="6481749622989211463">Yaxınlıqdakı cihazlar ilə fayl və s. paylaşın. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
+<translation id="648204537326351595"><ph name="SPECIFIC_NAME" /> üçün mikrofona giriş icazəsi verin</translation>
 <translation id="6482559668224714696">Tam ekran böyüdücüsü</translation>
 <translation id="6483485061007832714">Endirilən faylı açın</translation>
 <translation id="6483805311199035658"><ph name="FILE" /> açılır...</translation>
@@ -7743,6 +7749,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="674632704103926902">Tıklama sürükləməsinə icazə verin</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> üçün parolu göstərin</translation>
 <translation id="6748980958975836188"><ph name="BEGIN_LINK1" />Google Xidmət Şərtləri<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />Chrome və ChromeOS Əlavə Xidmət Şərtlərini<ph name="END_LINK2" /> oxudum və qəbul edirəm.</translation>
+<translation id="6749077623962119521">İcazələr sıfırlansın?</translation>
 <translation id="6749473226660745022">Foto</translation>
 <translation id="6750757184909117990">Mobil şəbəkəni deaktiv edin</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkoqnito)</translation>
@@ -7882,6 +7889,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6833753236242482566">Balanslı (tövsiyə olunur)</translation>
 <translation id="6835762382653651563">Yeniləmə İnternetə qoşulmaq edin sizin <ph name="DEVICE_TYPE" /> .</translation>
 <translation id="683630338945552556">Google Hesabında parollardan istifadə edin və yadda saxlayın</translation>
+<translation id="6838992358006915573">Böyüdücü ChromeVox fokusunu izləyir</translation>
 <translation id="6839225236531462745">Sertifikatın Silinməsi Xətası</translation>
 <translation id="6839916869147598086">Giriş dəyişdirilib</translation>
 <translation id="6840155290835956714">Göndərməmişdən əvvəl soruşun</translation>
@@ -8640,6 +8648,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7417435070053325657"><ph name="BLOCKED_APPS_SIZE" />/<ph name="APPS_LIST_SIZE" /> tətbiq bloklandı</translation>
 <translation id="741906494724992817">Bu tətbiq xüsusi icazə tələb etmir.</translation>
 <translation id="7419142833919893307">İstifadəçi adı əlavə edilməyib</translation>
+<translation id="7419426517282923105">{NUM_ATTEMPTS,plural, =1{PIN səhvdir. 1 cəhd qalır.}other{PIN səhvdir. # cəhd qalır.}}</translation>
 <translation id="7419565702166471774">Həmişə güvənli bağlantılardan istifadə edin</translation>
 <translation id="7419819959108735624">Google Linza ilə axtarmaq üçün istədiyinizi seçin</translation>
 <translation id="742130257665691897">Əlfəcinlər silindi</translation>
@@ -9813,6 +9822,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8261506727792406068">Silin</translation>
 <translation id="8261625296061301062">Skaner proqram təminatı quraşdırıldı</translation>
 <translation id="8262971894813353037">WebUI üçün yeni masaüstü dizaynını aktiv edir. Chrome Refresh 2023 də aktiv olmalıdır.</translation>
+<translation id="8263228331881858381">Giriş açarı saxlanıldı</translation>
 <translation id="8263336784344783289">Bu Qrupu Adlandırın</translation>
 <translation id="8264024885325823677">Bu ayar inzibatçınız tərəfindən idarə edilir.</translation>
 <translation id="826511437356419340">Pəncərə icmalı rejiminə daxil olundu. Naviqasiya üçün sürüşdürün və ya klaviatura istifadə edirsinizsə tabı basın.</translation>
@@ -10085,6 +10095,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8452105022015742247">Android telefonundan Google Hesabı məlumatları ötürülür</translation>
 <translation id="8455775311562941553"><ph name="HOST_DEVICE_NAME" /> cihazına qoşulub</translation>
 <translation id="8456067150616457342">Defolt brauzer ayarlayın</translation>
+<translation id="8456200178779628126">Oxumaq və yazmaq ilə bağlı kömək almaq üçün Google Sİ istifadə edin</translation>
 <translation id="845702320058262034">Qoşulmaq mümkün deyil. Telefonda Bluetooth'u aktiv edin.</translation>
 <translation id="8457251154056341970">Artıq <ph name="MODULE_NAME" /> bu səhifədə görünməyəcək</translation>
 <translation id="8457451314607652708">Əlfəcinləri import edin</translation>
@@ -10318,7 +10329,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8636500887554457830">Saytlara popap bildirişlər göndərmək, yaxud yönləndirmələrdən istifadə etmək icazəsi verməyin</translation>
 <translation id="8636514272606969031">Yan panel bərkidildi</translation>
 <translation id="8637688295594795546">Sistem güncəlləşməsi əlçatandır. İndi endiriləcək...</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Bu artırma tezliklə dəstəklənməyə bilər}other{Bu artırmalar tezliklə dəstəklənməyə bilər}}</translation>
 <translation id="8638719155236856752">ChromeOS şəbəkə vəziyyəti</translation>
 <translation id="8639635302972078117">İstifadə və diaqnostika datasını göndərin. Bu cihaz hazırda diaqnostika, cihaz və tətbiqdən istifadə datasını avtomatik Google'a göndərir. Bu məlumatlardan uşağınızı müəyyən etmək üçün istifadə edilməyəcək. Onlar sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Bəzi ümumiləşdirilmiş məlumatlar Google tətbiqlərinə və Android tərtibatçıları kimi partnyorlara da kömək edəcək. Uşağınız üçün əlavə Veb və Tətbiq Fəaliyyəti ayarı aktiv edilərsə, bu data Google Hesabınızda saxlanıla bilər.</translation>
 <translation id="8640575194957831802">Son açılan</translation>
@@ -10568,7 +10578,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8805385115381080995">Saytın real insan olduğunuzu təsdiqləmək ehtimalı az olduğuna görə daha sürətlə baxmaq olur</translation>
 <translation id="8807588541160250261">Heç bir cihaz qoşulmadıqda</translation>
 <translation id="8807632654848257479">Stabil</translation>
-<translation id="880812391407122701">Chrome-a tabları nizamlamaq imkanı verin</translation>
 <translation id="8808478386290700967">Veb Dükanı</translation>
 <translation id="8808686172382650546">Pişik</translation>
 <translation id="8809147117840417135">Açıq-firuzəyi</translation>
@@ -11022,6 +11031,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="9120362425083889527">Quraşdırma tamamlanmadı. Yenidən cəhd edin və ya bu pəncərəni bağlayın</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Ən yaxşı təcrübə üçün <ph name="DEVICE_OS" /> sistemini daxili diskinizdə quraşdırın. Daha sonra giriş ekranından da quraşdıra bilərsiniz.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Quraşdırmağa hazır deyilsinizsə, sınamaq üçün USB'dən işə sala bilərsiniz. Bununla mövcud ƏS və məlumatlarınız saxlanılacaq, lakin saxlama və performans məhdudiyyətləri tətbiq edilə bilər.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="9120761757252614786">Alətlər panelini fərdiləşdirin</translation>
 <translation id="9121814364785106365">Sancılmış tab olaraq açın</translation>
 <translation id="9122788874051694311">Bu giriş açarı Anonim rejimdən kənarda saxlanılsın?</translation>
 <translation id="9123287046453017203">Cihazınız güncəl deyil</translation>

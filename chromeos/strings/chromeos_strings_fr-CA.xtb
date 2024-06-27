@@ -102,6 +102,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> gère cet utilisateur et peut gérer ses paramètres et faire le suivi de son activité à distance.</translation>
 <translation id="150962533380566081">Clé PUK non valide.</translation>
 <translation id="1510238584712386396">Lanceur</translation>
+<translation id="1514446283880973949">Écrivez avec plus d'assurance, résumez du contenu, obtenez des définitions et plus</translation>
 <translation id="1515129336378114413">Page d'accueil du navigateur</translation>
 <translation id="1526389707933164996">Animation de l'écran de veille</translation>
 <translation id="152892567002884378">Augmenter le volume</translation>
@@ -1287,6 +1288,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="8167413449582155132">Arrière-plan propulsé par l'IA de Google</translation>
 <translation id="8179976553408161302">Entrée</translation>
 <translation id="8183975772394450380">plage</translation>
+<translation id="819278132617411009">Utiliser l'IA de Google pour être plus productif</translation>
 <translation id="8206859287963243715">Cellulaire</translation>
 <translation id="8208861521865154048">Avantages</translation>
 <translation id="8226628635270268143">Sélectionner vos photos et vos albums préférés</translation>
@@ -1333,6 +1335,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="8431300646573772016">Nouveautés dans Chrome OS</translation>
 <translation id="843568408673868420">Connectivité Internet</translation>
 <translation id="844521431886043384">Le DNS n'est pas configuré</translation>
+<translation id="8456200178779628126">Utiliser l'IA de Google pour obtenir de l'aide pour lire et écrire</translation>
 <translation id="8456761643544401578">Mode sombre automatique</translation>
 <translation id="8461329675984532579">Nom du propriétaire</translation>
 <translation id="8475690821716466388">Le réseau Wi-Fi est sécurisé par un protocole faible : WEP PSK</translation>
@@ -1459,6 +1462,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="910415269708673980">Actualiser le ticket pour <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Numérisation de la page <ph name="PAGE_NUMBER" /> en cours…</translation>
 <translation id="9111102763498581341">Déverrouiller</translation>
+<translation id="9122492456897874028">Résumez du contenu, obtenez des définitions et bien plus</translation>
 <translation id="9122602430962285795">Pour vous reconnecter, accédez à Paramètres</translation>
 <translation id="9122865513525855321">zen</translation>
 <translation id="9126720536733509015">Enregistrer plusieurs pages en un seul PDF</translation>

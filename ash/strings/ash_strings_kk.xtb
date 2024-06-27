@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">Экрандық пернетақта қосылды</translation>
 <translation id="1749109475624620922"><ph name="WINDOW_TITLE" /> терезесі барлық жұмыс үстеліне тағайындалды.</translation>
 <translation id="1750088060796401187">Ең көбі <ph name="MAX_DESK_LIMIT" /> жұмыс үстелін ашуға болады. Жаңасын ашу үшін жұмыс үстелін жойыңыз.</translation>
+<translation id="1751335846119670066">Оқуға көмек керек</translation>
 <translation id="1755408179247123630">Select to Speak қосу қажет пе?</translation>
 <translation id="1755556344721611131">Diagnostics қолданбасы</translation>
 <translation id="1756833229520115364">Үлгі сақталмады. Терезе мен қойынды тым көп.</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">Телефондағы соңғы фотосуреттерді, медиафайлдарды және хабарландыруларды көру мүмкіндігін реттеу</translation>
 <translation id="1787955149152357925">Өшірулі</translation>
 <translation id="1796561540704213354">Веб-сайттар, соның ішінде сіз кірген беттер мен ашылған беттер</translation>
+<translation id="179842970735685253">Google Қызмет көрсету шарттары</translation>
 <translation id="181103072419391116">Сигнал күші – <ph name="SIGNAL_STRENGTH" />, Әкімші басқарады</translation>
 <translation id="1816896987747843206">Бұл — камера рұқсаты бар барлық қолданба мен веб-сайт үшін камераны пайдалануға мүмкіндік береді.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">Орталық процессор</translation>
 <translation id="3125690294288312932">Сынып жұмысының түрі</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Есте сақтау керек нәрселер</translation>
 <translation id="3139188263101386725">Жаңартылған таңбашаны пайдалану</translation>
 <translation id="3139942575505304791">1-ші жұмыс үстелі</translation>
 <translation id="315116470104423982">Мобильді деректер</translation>
@@ -961,6 +964,7 @@
 <translation id="4585337515783392668">Белгісіз қабылдағышқа трансляциялауды тоқтату</translation>
 <translation id="4596144739579517758">Қараңғы режим өшірулі.</translation>
 <translation id="4596442969149038771"><ph name="USER" /> бөлісті</translation>
+<translation id="4610493115106525653">Жақсы пікір</translation>
 <translation id="4611292653554630842">Жүйеге кіру</translation>
 <translation id="462160925400706389"><ph name="NAME" /> жалғанды</translation>
 <translation id="4623167406982293031">Аккаунтты растау</translation>
@@ -1118,6 +1122,7 @@
 <translation id="5121628974188116412">Беттің соңына өту</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> алғы көрінісі. Жұмыс үстелі белсенді емес.</translation>
 <translation id="5136175204352732067">Басқа пернетақта жалғанды</translation>
+<translation id="5140105873789567560">"Жазуға көмек керек" және "Оқуға көмек керек" функцияларын пайдалану үшін 18 жастан асқан болуыңыз керек.</translation>
 <translation id="5144005092084035179">Аудио кірісін ауыстыру қажет пе?</translation>
 <translation id="5147567197700016471">Құлып ашылды.</translation>
 <translation id="5150070631291639005">Құпиялық параметрлері</translation>
@@ -1558,6 +1563,7 @@
 <translation id="6696025732084565524">Алынбалы пернетақтаны жаңарту қажет</translation>
 <translation id="6697913454192220372">Жаңа жұмыс үстелін қосу</translation>
 <translation id="6700713906295497288">IME мәзір түймесі</translation>
+<translation id="6704375469818246414">Жасампаз AI пайдаланған кезде, сапа әртүрлі болуы мүмкін.</translation>
 <translation id="6706742084323792866">PIN пернетақтасы</translation>
 <translation id="6710213216561001401">Алдыңғы</translation>
 <translation id="6723839937902243910">Күш</translation>
@@ -1825,9 +1831,11 @@
 <translation id="7726391492136714301">Телефондағы хабарландырулар мен қолданбаларды көру</translation>
 <translation id="7727952505535211425">Мекенжай жолағындағы веб-сайтты жаңа қойындыда ашу</translation>
 <translation id="7742327441377685481">Хабарландырулар жоқ</translation>
+<translation id="774736258792760908">"Жазуға көмек керек" және "Оқуға көмек керек" функцияларын қоссаңыз, <ph name="LINK_TO_SERVICE_TERMS" /> ережелеріне сәйкес жазу ұсыныстары мен қорытындылар жасау, сұрақтарға жауап беру және өнімді жақсарту үшін кіріс мәтін және құжат мазмұны Google AI серверлеріне жіберіледі. Жеке, шетін не құпия деректерді қоспаңыз.</translation>
 <translation id="7748275671948949022">Сөредегі іске қосу тақтасының түймесін ерекшелеу</translation>
 <translation id="7749443890790263709">Жұмыс үстелдерінің максималды санына жетті.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">"Жазуға көмек керек" және "Оқуға көмек керек" функцияларын параметрлер бөлімінде кез келген уақытта өшіруге болады. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Select to Speak</translation>
 <translation id="7769299611924763557">GIF файлыңыз жақын арада дайын болады.</translation>
 <translation id="7773536009433685931">Оның орнына Wi-Fi функциясын қосу</translation>
@@ -1836,6 +1844,7 @@
 <translation id="7781829728241885113">Кеше</translation>
 <translation id="7787212146956232129">Кіріс және шығыс құрылғылар орнатылды. Өзгерту үшін "Параметрлер" бөліміне өтіңіз.</translation>
 <translation id="7792590255364786396">Көрінеді</translation>
+<translation id="7793389284006812057">Жасампаз AI — әзірлеу циклінің бастапқы сатысындағы, әзірше тек кейбір пайдаланушыларға ұсынылатын эксперименттік функция.</translation>
 <translation id="7796735576426975947">Жаңа хабарландыру жасырылған</translation>
 <translation id="7798302898096527229">Бас тарту үшін Іздеу не Shift пернесін басыңыз.</translation>
 <translation id="780301667611848630">Жоқ, рақмет</translation>
@@ -1990,6 +1999,7 @@
 <translation id="8331351032546853669">Жүктеп алу басталмады</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Нашар пікір</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> терезесі таңдалды</translation>
 <translation id="8349826889576450703">қосқыш</translation>
 <translation id="8349964124165471584">Сілтемені жаңа терезеде ашу</translation>

@@ -45,6 +45,7 @@
 <translation id="1070901266639972381">Գիշեր</translation>
 <translation id="1073690811593784042">Ապակի (գունավոր)</translation>
 <translation id="1074497978438210769">Անվտանգ չէ</translation>
+<translation id="1074779248866616641">Արդյունք</translation>
 <translation id="1075364221219156102">Օգտագործել մուտքի բանալի</translation>
 <translation id="1080116354587839789">Հարմարեցնել լայնությանը</translation>
 <translation id="1081061862829655580">Դարակ 19</translation>
@@ -68,6 +69,7 @@
 <translation id="1118429183611783760">Փոշեկուլներ և հատակի խնամք</translation>
 <translation id="1122714970786750095">Էլեկտրոնիկա և էլեկտրական սարքեր</translation>
 <translation id="1123753900084781868">Կենդանի ենթագրերն այս պահին հասանելի չեն</translation>
+<translation id="1125453215844207206">Չպիտակված գծապատկեր։ Տեքստն արտահանվում է Google AI-ի միջոցով</translation>
 <translation id="1125573121925420732">Կայքերի անվտանգության հավաստագրերի թարմացման ժամանակ կարող են զգուշացումներ ցուցադրվել: Այս խնդիրը շուտով կշտկվի:</translation>
 <translation id="112840717907525620">Քաղաքականության քեշում սխալներ չեն գտնվել</translation>
 <translation id="1131264053432022307">Ձեր պատճենած պատկերը</translation>
@@ -406,6 +408,7 @@
 <translation id="1719838434204287058">24 x 30 դյույմ</translation>
 <translation id="1720941539803966190">Փակել ուղեցույցը</translation>
 <translation id="1721424275792716183">* Դաշտը պարտադիր է</translation>
+<translation id="1723505128907434375">Էջանիշը պահվեց։</translation>
 <translation id="1725591448053514783">Envelope You 6</translation>
 <translation id="1727613060316725209">Հավաստագիրը վավեր է</translation>
 <translation id="1728677426644403582">Դուք դիտում եք վեբ էջի կոդը</translation>
@@ -1076,6 +1079,7 @@
 <translation id="3041612393474885105">Վկայագրի տեղեկությունները</translation>
 <translation id="3045769629416806687">Էքստրեմալ սպորտաձևեր</translation>
 <translation id="305162504811187366">Chrome հեռակա աշխատասեղանի պատմությունը, այդ թվում՝ ժամադրոշմները, խնամորդները և սպասառուների աշխատաշրջանների նույնացուցիչները</translation>
+<translation id="3052868890529250114">Սովորաբար դուք անվտանգ եղանակով եք միանում այս կայքերին, սակայն այս անգամ Chrome-ին չհաջողվեց անվտանգ միացում օգտագործել։ Հաքերները կարող են փորձել լրտեսել ձեր կապը կամ փոփոխել այն։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> գնիջեցում <ph name="PRODUCT_NAME" />-ի համար</translation>
 <translation id="3054512251683174387">Chrome-ը ավտոմատ կերպով ջնջում է թեմաները, որոնք ավելացվել են առնվազն 4 շաբաթ առաջ։ Երբ դուք շարունակում եք դիտել վեբ էջեր, համապատասխան թեման կարող է նորից հայտնվել ցանկում։ Դուք կարող եք արգելափակել թեմաները, որոնք չեք ցանկանում, որ Chrome-ը կիսվի կայքերի հետ։ Իմացեք ավելին Chrome-ում գովազդի գաղտնիությունը կառավարելու մասին։</translation>
 <translation id="3061707000357573562">Խոցելիության շտկում</translation>
@@ -1275,6 +1279,7 @@
 <translation id="342781501876943858">Խորհուրդ ենք տալիս վերակայել ձեր գաղտնաբառը, եթե այն օգտագործել եք այլ կայքերում:</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates կանոնի սերվերի ձևանմուշների URI-ներից առնվազն մեկն անվավեր է և չի կարող օգտագործվել:</translation>
 <translation id="3428789896412418755">Խմբավորված պատմություն</translation>
+<translation id="3430206873883193118">Կայքում, որը փորձում եք այցելել, հաքերները կարող են խաբեությամբ ստիպել ձեզ վնասաբեր ծրագրեր տեղադրել կամ բացահայտել ձեր տեղեկությունները, այդ թվում՝ գաղտնաբառը, հեռախոսահամարը կամ վարկային քարտի համարը։ Chrome-ը խորհուրդ է տալիս վերադառնալ անվտանգ էջ։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">Փակել էջը</translation>
 <translation id="3433111389595862568">Համատեղ աշխատանքի և տեսակոնֆերանսների կազմակերպման ծրագրեր</translation>
 <translation id="3433144818443565002">Ձայնային և տեսազրույց</translation>
@@ -1371,6 +1376,7 @@
 <translation id="3585455899094692781">Օգտագործել և տեղաշարժել հասանելի տեսախցիկները (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Թաց թաղանթ</translation>
 <translation id="3586931643579894722">Թաքցնել մանրամասները</translation>
+<translation id="3587725436724465984">Այս կայքը (<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />) ձեր կազմակերպության կողմից ճանաչվել է որպես կայք, որը հավանաբար խախտում է կանոնները։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Միջին</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">«Կառավարել Google-ի գաղտնիության կարգավորումները» կոճակ․ ակտիվացրեք՝ ձեր Google հաշվի գաղտնիության կարգավորումները բացելու համար</translation>
@@ -1380,6 +1386,7 @@
 <translation id="3608932978122581043">Նշել դիրքը</translation>
 <translation id="3610142117915544498">Հաջորդ անգամ ավելի արագ վճարելու համար պահեք ձեր քարտը, անունն ու վճարային հասցեն Google հաշվում</translation>
 <translation id="3612660594051121194">Միջքաղաքային ավտոբուսներ և երկաթուղի</translation>
+<translation id="3614001939154393113">Հաքերները կարող են փորձել <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> կայքից տվյալներ հափշտակել (օրինակ՝ գաղտնաբառեր, հաղորդագրություններ և վարկային քարտերի տվյալներ): <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Չափ 2</translation>
 <translation id="361438452008624280">«<ph name="LANGUAGE_ID" />» ցանկի տարր․ լեզուն չի աջակցվում կամ հայտնի չէ։</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Chrome-ի կարգավորումներում անվտանգության ստուգում անցնելու համար սեղմեք «Tab», ապա՝ «Enter»։</translation>
@@ -1532,6 +1539,7 @@
 <translation id="3880456882942693779">Արվեստ և զվարճանք</translation>
 <translation id="3880589673277376494">Ինտերնետ և հեռահաղորդակցություն</translation>
 <translation id="3881478300875776315">Ցույց տալ ավելի քիչ տողեր</translation>
+<translation id="3883437137686353397">Սովորաբար դուք անվտանգ եղանակով եք միանում այս կայքին, սակայն այս անգամ Chrome-ին չհաջողվեց անվտանգ միացում օգտագործել։ Հաքերները կարող են փորձել լրտեսել ձեր կապը կամ փոփոխել այն։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3883500545751229739">հոգնեցնող գովազդ</translation>
 <translation id="3884278016824448484">Սարքերի նույնացուցիչների ընդհարում</translation>
 <translation id="388632593194507180">Միացումը վերահսկվում է</translation>
@@ -1659,6 +1667,7 @@
 <translation id="4140905530744469899">Պրոֆիլի ID՝</translation>
 <translation id="4142935452406587478">Դարակ 10</translation>
 <translation id="4148925816941278100">American Express</translation>
+<translation id="4149757165376323512">Դուք տեսնում եք այս նախազգուշացումը, քանի որ այս կայքը չի աջակցում HTTPS-ը, իսկ ձեզ մոտ միացված է Google-ի Լրացուցիչ պաշտպանության ծրագիրը։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4150099059797363385">Envelope Chinese #4</translation>
 <translation id="4151403195736952345">Օգտագործել համընդհանուր կանխադրվածը (Հատկորոշել)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Էջ 1}one{Էջ {COUNT}}other{Էջ {COUNT}}}</translation>
@@ -2183,6 +2192,7 @@
 <translation id="514704532284964975">Կայքին (<ph name="URL" />) անհրաժեշտ է տեսնել և փոփոխել տեղեկությունները NFC սարքերում, որոնց հպում եք ձեր հեռախոսով</translation>
 <translation id="5147633291963801297">Դիտեք գնիջեցումները կողային վահանակում</translation>
 <translation id="5148809049217731050">Երեսի կողմով վերև</translation>
+<translation id="5148889558173091794">Ձեր կազմակերպությունն արգելափակել է <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> կայքը, քանի որ այն կանոն է խախտում։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5157504274688344097">Առևտրի կետեր և հանրախանութներ</translation>
 <translation id="5158275234811857234">Շապիկ</translation>
 <translation id="5159010409087891077">Բացել էջը նոր ինկոգնիտո պատուհանում (⇧⌘N)</translation>
@@ -2467,6 +2477,7 @@
 <translation id="5689516760719285838">Տեղորոշում</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates կանոնի արժեքը անհամապատասխան է և չի կարող օգտագործվել, եթե DnsOverHttpsMode կանոնի համար չի կարգավորվել <ph name="SECURE_DNS_MODE_AUTOMATIC" /> կամ <ph name="SECURE_DNS_MODE_SECURE" /> արժեքը:</translation>
 <translation id="5691848789297492617">Քարտի տվյալների պահման պատուհանը բացված է ամբողջությամբ։</translation>
+<translation id="5692655638459249302">Կայքում, որը փորձում եք այցելել, հաքերները կարող են խաբեությամբ ստիպել ձեզ վնասաբեր ծրագիր տեղադրել, որը գողանում կամ ջնջում է ձեր տվյալները, օրինակ՝ գաղտնաբառը, լուսանկարները, հաղորդագրությունները կամ վարկային քարտի համարը։ Chrome-ը խորհուրդ է տալիս վերադառնալ անվտանգ էջ։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">Հաստատե՞լ և ավարտել ձեր գնումը Windows Hello-ի միջոցով</translation>
 <translation id="5699628521141772782">Կաթնամթերք և ձու</translation>
 <translation id="5700761515355162635">Երրորդ կողմի քուքիները թույլատրված են</translation>
@@ -2762,6 +2773,7 @@
 <translation id="6284449872909111707">SMS-ներ և ակնթարթային հաղորդակցում</translation>
 <translation id="6284517535531159884">Տարբերակների նախնական տեսակ</translation>
 <translation id="6287197303017372967">Գծել երթուղիներ դեպի նպատակակետ քայլ առ քայլ ցուցումների միջոցով՝ օգտագործելով նավիգացիան։</translation>
+<translation id="6288521565586608304">Կայքում, որը փորձում եք այցելել, հաքերները կարող են խաբեությամբ ստիպել ձեզ վնասաբեր ծրագրեր տեղադրել, որոնք ազդում են համացանցում ձեր դիտարկման վրա (օրինակ՝ փոխում են ձեր գլխավոր էջը կամ ձեր այցելած կայքերում լրացուցիչ գովազդ ցուցադրում)։ Վնասից խուսափելու համար Chrome-ը խորհուրդ է տալիս վերադառնալ անվտանգ էջ։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">Գտնվել է զեղչ</translation>
 <translation id="6289939620939689042">Էջի գույնը</translation>
 <translation id="6292819926564202163">Ձեր որոնողական համակարգը Chrome-ում</translation>
@@ -2795,6 +2807,7 @@
 <translation id="634500758737709758">Երթուղիներ</translation>
 <translation id="6348220984832452017">Ընթացիկ տարբերակներ</translation>
 <translation id="6349101878882523185">Տեղադրել <ph name="APP_NAME" /> հավելվածը</translation>
+<translation id="6351398281531821890">ԴԻՏԵԼ</translation>
 <translation id="6351658970066645919">Ջնջել այցելությունների պատմությունը</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Չկա}=1{1 գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />, համաժամացված է)}=2{2 գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />, համաժամացված են)}one{# գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />, համաժամացված են)}other{# գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />, համաժամացված են)}}</translation>
 <translation id="6355392890578844978">Ձեր դիտարկիչը չի կառավարվում որևէ ընկերության կամ կազմակերպության կողմից։ Սարքում արվող գործողությունները կարող են կառավարվել Chromium-ից դուրս։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -3127,6 +3140,7 @@
 <translation id="6978722349058177832">Եթե այս սարքից օգտվում եք այլ օգտատերերի հետ համատեղ, Chromium-ը կարող է խնդրել ձեզ հաստատել ամեն անգամ, երբ վճարում եք ինքնալրացման միջոցով</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Անձայն (կանխադրված)</translation>
+<translation id="6984270784814146224">Չպիտակված պատկեր։ Տեքստն արտահանվում է Google AI-ի միջոցով</translation>
 <translation id="6987806006823772670">Ծրար (կավճապատ)</translation>
 <translation id="6989763994942163495">Ցույց տալ լրացուցիչ կարգավորումները…</translation>
 <translation id="6996312675313362352">Միշտ թարգմանել <ph name="ORIGINAL_LANGUAGE" /> լեզվից</translation>
@@ -3152,6 +3166,7 @@
 <translation id="7031646650991750659">Ինչ Google Play հավելվածներ եք դուք տեղադրել</translation>
 <translation id="7035705295266423040">Ձեր բանկը ցանկանում է հաստատել ձեր ինքնությունը</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Ձեր Google հաշվի գաղտնիության կարգավորումները կառավարելու համար սեղմեք Tab, ապա՝ Enter։</translation>
+<translation id="7042616127917168121">Որոնման պայմանների հստակեցում</translation>
 <translation id="7043552168914147882">Բաժանարար</translation>
 <translation id="7044081119134178347">Տրվել է տեսախցիկն օգտագործելու մեկանգամյա թույլտվություն</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
@@ -3194,6 +3209,7 @@
 <translation id="7112327784801341716">Տեղեկությունները չե՞ն թարմացվել։ Դիմեք ձեր բանկ։</translation>
 <translation id="7116334367957017155">Դուք պահված հասցեներ չունեք։ Ավելացրեք հասցե՝ այն Google-ի պրոդուկտներում օգտագործելու համար։</translation>
 <translation id="7118618213916969306">Սեղմատախտակին պահված URL-ի որոնում, <ph name="SHORT_URL" /></translation>
+<translation id="7118852830504022370">Դուք տեսնում եք այս նախազգուշացումը, քանի որ կայքը չի աջակցում HTTPS-ը։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">Հեռուստադրամաներ</translation>
 <translation id="7119371694555167493">Պատճենման ժամանակը սպառվել է</translation>
 <translation id="7119414471315195487">Փակեք մյուս ներդիրներն ու ծրագրերը</translation>
@@ -4113,6 +4129,7 @@
 <translation id="882338992931677877">Ձեռքով զետեղման դարակ</translation>
 <translation id="8830320733681313421">Hagaki բացիկ</translation>
 <translation id="8833007469711500369">Լվացքի մեքենաներ և չորանոցներ</translation>
+<translation id="8834962751196791179">Դուք տեսնում եք այս նախազգուշացումը, քանի որ այս կայքը չի աջակցում HTTPS-ը, իսկ դուք ինկոգնիտո ռեժիմում եք։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">Գիտաֆանտաստիկ և ֆենտըզի շոուներ</translation>
 <translation id="883848425547221593">Այլ էջանիշներ</translation>
 <translation id="8842351563145134519">Վճարման հասանելի եղանակները, որոնք կարելի է լրացնել հպումով, ցուցադրված են էկրանի կեսով։</translation>

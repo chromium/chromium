@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Aktiv <ph name="LAST_UPDATED" /> ditë më parë</translation>
 <translation id="1390418506739274310">Mund të shikosh historikun nga aplikacionet e tjera që hapin lidhjet në Chrome. "Llogaria jote e Google" mund të ketë forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Për të vazhduar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> do të ndajë emrin, adresën e email-it dhe fotografinë tënde të profilit me këtë sajt. Shiko <ph name="BEGIN_LINK1" />kushtet e shërbimit<ph name="END_LINK1" /> të këtij sajti.</translation>
+<translation id="139752016751285248">Fleta e poshtme e statistikave të çmimeve e hapur në lartësi të plotë</translation>
 <translation id="1397811292916898096">Kërko me <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Mund <ph name="BEGIN_LINK1" />të menaxhosh se çfarë të dhënash të Chrome ruhen<ph name="END_LINK1" /> në "Llogarinë tënde të Google".
 
@@ -179,6 +180,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1877073879466606884">Profili në të cilin je identifikuar është një profil i menaxhuar. Administratori yt mund të bëjë ndryshime në cilësimet e profilit tënd në distancë, mund të analizojë informacionet rreth shfletuesit nëpërmjet raportimit dhe mund të kryejë detyra të tjera të nevojshme.</translation>
 <translation id="1883903952484604915">Skedarët e mi</translation>
 <translation id="189358972401248634">Gjuhë të tjera</translation>
+<translation id="1899175549411605574">Fleta e poshtme e statistikave të çmimeve</translation>
 <translation id="1900260903084164610">Duke vazhduar, ti pranon <ph name="BEGIN_TOS_LINK" />Kushtet e shërbimit<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">URL-të që viziton ruhen në "Llogarinë tënde të Google"</translation>
 <translation id="1910950723001426294">Lista e opsioneve të ndarjes është e mbyllur.</translation>
@@ -520,6 +522,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3587596251841506391">Ndihmo në përmirësimin e sigurisë në ueb</translation>
 <translation id="3597179440835065298">Merr sugjerime më të mira</translation>
 <translation id="3602290021589620013">Pamje paraprake</translation>
+<translation id="3614126103057878858">Statistikat e çmimeve</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Menaxho dritaret</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 sajt}other{+ # sajte}}</translation>
@@ -529,6 +532,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3637744895182738742">Nëse ke harruar frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Shko te faqja bazë e aplikacionit të Google</translation>
 <translation id="368329460027487650">Ke dalë Hap opsionet për t'u identifikuar.</translation>
+<translation id="3684540848053703310">Fleta e poshtme e statistikave të çmimeve e mbyllur</translation>
 <translation id="3687645719033307815">Po shikon një pamje paraprake të kësaj faqeje</translation>
 <translation id="3690369331356918524">Të paralajmëron nëse fjalëkalimet janë ekspozuar në një nxjerrje të paautorizuar të të dhënave</translation>
 <translation id="3692944402865947621">Shkarkimi i skedarit <ph name="FILE_NAME" /> dështoi sepse vendndodhja e hapësirës ruajtëse nuk është e arritshme.</translation>

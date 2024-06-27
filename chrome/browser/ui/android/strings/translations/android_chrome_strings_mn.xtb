@@ -89,6 +89,7 @@
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> өдрийн өмнөөс идэвхтэй</translation>
 <translation id="1390418506739274310">Chrome-р холбоос нээдэг бусад аппын хөтчийн түүх танд харагдаж болно. Таны Google Бүртгэл <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> дээр өөр хэлбэрийн хөтчийн түүхтэй байж магадгүй.</translation>
 <translation id="13931502444227376">Үргэлжүүлэхийн тулд <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> таны нэр, имэйл хаяг болон профайл зургийг энэ сайттай хуваалцана. Энэ сайтын <ph name="BEGIN_LINK1" />үйлчилгээний нөхцөлийг<ph name="END_LINK1" /> харна уу.</translation>
+<translation id="139752016751285248">Үнийн статистикийн доод хүснэгтийг бүтэн өндрөөр нээсэн</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />-р хайх</translation>
 <translation id="1398057416966591719">Та Google Бүртгэлдээ <ph name="BEGIN_LINK1" />Chrome-н ямар өгөгдлийг хадгалахыг удирдах<ph name="END_LINK1" /> боломжтой.
 
@@ -179,6 +180,7 @@
 <translation id="1877073879466606884">Таны нэвтэрсэн профайл хяналттай профайл байна. Танай администратор профайлын тань тохиргоонд зайнаас өөрчлөлт хийх, тайлангаар дамжуулан хөтчийн талаарх мэдээллийг задлан шинжлэх, бусад шаардлагатай ажлыг гүйцэтгэх боломжтой.</translation>
 <translation id="1883903952484604915">Миний файл</translation>
 <translation id="189358972401248634">Бусад хэлнүүд</translation>
+<translation id="1899175549411605574">Үнийн статистикийн доод хүснэгт</translation>
 <translation id="1900260903084164610">Үргэлжлүүлснээр та <ph name="BEGIN_TOS_LINK" />Үйлчилгээний нөхцөлийг<ph name="END_TOS_LINK" /> зөвшөөрч байна.</translation>
 <translation id="1904580727789512086">Таны зочилсон URL-уудыг Google Бүртгэлд тань хадгалсан.</translation>
 <translation id="1910950723001426294">Хуваалцах сонголтын жагсаалтыг хаасан.</translation>
@@ -520,6 +522,7 @@
 <translation id="3587596251841506391">Веб дэх аюулгүй байдлыг сайжруулахад туслах</translation>
 <translation id="3597179440835065298">Илүү сайн зөвлөмжүүд аваарай</translation>
 <translation id="3602290021589620013">Мэдээллийг урьдчилж харах</translation>
+<translation id="3614126103057878858">Үнийн статистик</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3622349720008044802">Цонхнуудыг удирдах</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 сайт}other{+ # сайт}}</translation>
@@ -529,6 +532,7 @@
 <translation id="3637744895182738742">Хэрэв та нэвтрэх үгээ мартсан эсвэл энэ тохиргоог өөрчлөхийг хүсвэл <ph name="BEGIN_LINK" />бүртгэлийнхээ Chrome-н өгөгдлийг устгана уу<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Google Аппын нүүр хуудасны таб руу очих</translation>
 <translation id="368329460027487650">Гарсан. Нэвтрэх сонголтуудыг нээнэ.</translation>
+<translation id="3684540848053703310">Үнийн статистикийн доод хүснэгтийг хаасан</translation>
 <translation id="3687645719033307815">Та энэ хуудасны урьдчилан үзэлтийг үзэж байна</translation>
 <translation id="3690369331356918524">Өгөгдлийн зөрчлийн улмаас нууц үгийг задруулсан бол танд анхааруулга өгдөг</translation>
 <translation id="3692944402865947621">Сангийн байршил олдоогүй тул <ph name="FILE_NAME" />-г татаж чадсангүй.</translation>

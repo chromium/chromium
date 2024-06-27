@@ -26,6 +26,7 @@
 <translation id="1050038467049342496">Digər tətbiqləri bağlayın</translation>
 <translation id="1053959602163383901"><ph name="PROVIDER_ORIGIN" /> istifadə edən saytlarda doğrulayıcı cihaz ilə doğrulamağı seçmisiniz. Bu provayder ödəniş metodunuz haqqında məlumat saxlamış ola bilər, onu <ph name="LINK_TEXT" /> ünvanında tapa bilərsiniz.</translation>
 <translation id="1055184225775184556">Əlavəni geri qaytarın</translation>
+<translation id="105642538515333723">Keçmişdə nəzər saldığınız səhifələrdən xatırladığınız "Rahat gəzinti ayaqqabıları" kimi istənilən ifadə və ya detalları daxil edə bilərsiniz</translation>
 <translation id="1056898198331236512">Xəbərdarlıq</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome'da Dinozavr Qaçış oyununu oynayın</translation>
 <translation id="1058479211578257048">Kartlar yadda saxlanılır...</translation>
@@ -41,6 +42,7 @@
 <translation id="1070901266639972381">Gecə</translation>
 <translation id="1073690811593784042">Şüşə (rəngli)</translation>
 <translation id="1074497978438210769">Təhlükəsiz deyil</translation>
+<translation id="1074779248866616641">Nəticə</translation>
 <translation id="1075364221219156102">Giriş açarı istifadə edin</translation>
 <translation id="1080116354587839789">Eninə uyğunlaşdırın</translation>
 <translation id="1081061862829655580">Qab 19</translation>
@@ -967,6 +969,7 @@
 <translation id="2824775600643448204">Ünvan və axtarış paneli</translation>
 <translation id="2826760142808435982">Bağlantı şifrələnib və <ph name="CIPHER" /> işlədərək doğrulanıb və açar mübadiləsi olaraq <ph name="KX" /> işlədir.</translation>
 <translation id="2833637280516285136">Radio Müzakirə</translation>
+<translation id="2837891525090413132">Klaviaturanı kilidləmək və istifadə etmək istəyə bilər</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> haqqınızda yadda saxlanan məlumatdan istifadə etmək istəyir</translation>
 <translation id="2839032553903800133">Bildirişlər blok edilib</translation>
 <translation id="2839501879576190149">İrəlidə saxta sayt</translation>
@@ -2853,6 +2856,7 @@
 <translation id="6433797564277305076">Bundan sonra cihazın kiliddən çıxarılmasından istifadə edərək kartlarınızı daha sürətli təsdiqləyin</translation>
 <translation id="643917412048333145">Geyimlər</translation>
 <translation id="6440503408713884761">İqnor edilənlər</translation>
+<translation id="6440534369669992497">Keçmişdə nəzər saldığınız səhifələrdən xatırladığınız "Rahat gəzinti ayaqqabıları" kimi istənilən ifadə və ya detalları daxil edə bilərsiniz. Axtarmaq üçün <ph name="SHORTCUT" />.</translation>
 <translation id="6443406338865242315">Quraşdırdığınız artırmalar və qoşmalar</translation>
 <translation id="6444329331928531170">Təqaüd və Pensiya</translation>
 <translation id="6446608382365791566">Ətraflı məlumat əlavə edin</translation>
@@ -3136,6 +3140,7 @@
 <translation id="7006930604109697472">İstənilən halda göndərin</translation>
 <translation id="7010658264061801199">Qida və İçki</translation>
 <translation id="7012363358306927923">Çin UnionPay</translation>
+<translation id="7013835112918108252">Mausu kilidləmək və istifadə etmək istəyə bilər</translation>
 <translation id="7014042602717177828">Avtomobil üçün audio avadanlığı</translation>
 <translation id="7014741021609395734">Miqyas səviyyəsi</translation>
 <translation id="7016992613359344582">Bu ödənişlər birdəfəlik və ya təkrarlanan ola bilər. Onlar, eyni zamanda görünməyə bilər.</translation>
@@ -3150,6 +3155,7 @@
 <translation id="7031646650991750659">Quraşdırdığınız Google Play tətbiqləri</translation>
 <translation id="7035705295266423040">Bank kimliyinizi doğrulamaq istəyir</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Google Hesabınızın məxfilik ayarlarını idarə edin</translation>
+<translation id="7042616127917168121">Nəticələri dəqiqləşdirin</translation>
 <translation id="7043552168914147882">Çıxıntılı kağız</translation>
 <translation id="7044081119134178347">Bu dəfə üçün kameraya icazə verilib</translation>
 <translation id="7048095965575426564">Avropa Fanfold</translation>
@@ -3600,7 +3606,7 @@
 <translation id="7825558994363763489">Mikrodalğalı sobalar</translation>
 <translation id="782886543891417279">İstifadə etdiyiniz Wi-Fi (<ph name="WIFI_NAME" />) Sizdən login səhifəsinə daxil olmağınızı tələb edə bilər.</translation>
 <translation id="7831993212387676366">Alış-veriş siyahısı nədir?</translation>
-<translation id="7832078172950550575">Gündəlik danışıqdan istifadə edərək "yaxınlıqdakı pizza yerləri" və ya "şəhərin mərkəzində ailəyə uyğun parklar" kimi ifadələrlə brauzer tarixçəsində axtarış edə bilərsiniz. Axtarışlar, ən yaxşı uyğunluqlar və onların səhifə kontenti Google-a göndərilir. İnsan redaktorlar bu funksiyanı təkmilləşdirmək üçün onlara baxa bilər. <ph name="BEGIN_LINK" />Tarixçdə axtarış ayarını idarə edin<ph name="END_LINK" /></translation>
+<translation id="7832078172950550575">Gündəlik danışıqdan istifadə edərək "yaxınlıqdakı pizza yerləri" və ya "şəhərin mərkəzində ailəyə uyğun parklar" kimi ifadələrlə brauzer tarixçəsində axtarış edə bilərsiniz. Axtarışlar, ən yaxşı uyğunluqlar və onların səhifə kontenti Google-a göndərilir. İnsan redaktorlar bu funksiyanı təkmilləşdirmək üçün onlara baxa bilər. <ph name="BEGIN_LINK" />Tarixçədə axtarış ayarını idarə edin<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">Ekranın çəkilməsi başladılıb</translation>
 <translation id="784137052867620416">Şoppinq üzrə statistik məlumat</translation>
 <translation id="784404208867107517">Qruplaşdırılmış tarixçə</translation>

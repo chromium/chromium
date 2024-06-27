@@ -102,6 +102,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> administrerer denne brukeren og kan administrere innstillinger og overvåke brukeraktiviteten eksternt.</translation>
 <translation id="150962533380566081">Ugyldig PUK.</translation>
 <translation id="1510238584712386396">Appoversikt</translation>
+<translation id="1514446283880973949">Skriv med større selvtillit, oppsummer innhold, få definisjoner med mer</translation>
 <translation id="1515129336378114413">startside for nettleser</translation>
 <translation id="1526389707933164996">Skjermspareranimasjon</translation>
 <translation id="152892567002884378">Volum opp</translation>
@@ -1287,6 +1288,7 @@
 <translation id="8167413449582155132">Bakgrunn basert på AI fra Google</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">strand</translation>
+<translation id="819278132617411009">Bruk AI-løsninger fra Google for å bli mer produktiv</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordeler</translation>
 <translation id="8226628635270268143">Velg favorittbildene og -albumene dine</translation>
@@ -1333,6 +1335,7 @@
 <translation id="8431300646573772016">Dette er nytt i ChromeOS</translation>
 <translation id="843568408673868420">Internettilkobling</translation>
 <translation id="844521431886043384">DNS er ikke konfigurert</translation>
+<translation id="8456200178779628126">Bruk AI-løsninger fra Google for å få hjelp med å lese og skrive</translation>
 <translation id="8456761643544401578">Automatisk mørk modus</translation>
 <translation id="8461329675984532579">Navn på leverandøren for hjemmeenheten</translation>
 <translation id="8475690821716466388">Wifi-nettverket er sikret med den svake protokollen WEP PSK</translation>
@@ -1459,6 +1462,7 @@
 <translation id="910415269708673980">Oppdater saken for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skanner side <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Lås opp</translation>
+<translation id="9122492456897874028">Oppsummer innhold, få definisjoner med mer</translation>
 <translation id="9122602430962285795">For å koble til på nytt, gå til Innstillinger</translation>
 <translation id="9122865513525855321">zen</translation>
 <translation id="9126720536733509015">Lagre flere sider som én PDF-fil</translation>

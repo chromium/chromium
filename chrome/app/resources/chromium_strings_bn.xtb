@@ -79,6 +79,8 @@
 <translation id="2329088755516916767">চালু থাকলে, Chromium পৃষ্ঠা প্রিলোড করে যা ব্রাউজ ও সার্চ করার কাজকে আরও দ্রুত করে তোলে।</translation>
 <translation id="2343156876103232566">এখান থেকে আপনার Android ফোনে একটি নম্বর পাঠাতে, উভয় ডিভাইসের Chromium-এ সাইন-ইন করুন।</translation>
 <translation id="2359808026110333948">চালিয়ে যান</translation>
+<translation id="2361918034042471035">"<ph name="EXTENSION_NAME" />" এক্সটেনশন ব্যবহার করতে Chromium-এ সাইন-ইন করতে হবে</translation>
+<translation id="2374216753258219393"><ph name="USER_EMAIL_ADDRESS" /> হিসেবে এই এক্সটেনশন ব্যবহার করতে, Chromium-এ সাইন-ইন করুন।</translation>
 <translation id="2384373936468275798">আপনার অ্যাকাউন্টের সাইন-ইনের বিবরণ পুরানো হয়ে যাওয়ার কারণে ChromiumOS আপনার ডেটা সিঙ্ক করতে পারেনি।</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{১টি HID ডিভাইস এক বা একাধিক Chromium এক্সটেনশনের মাধ্যমে অ্যাক্সেস করা হচ্ছিল}=1{১টি HID ডিভাইস এক বা একাধিক Chromium এক্সটেনশনের মাধ্যমে অ্যাক্সেস করা হচ্ছে}one{#টি HID ডিভাইস এক বা একাধিক Chromium এক্সটেনশনের মাধ্যমে অ্যাক্সেস করা হচ্ছে}other{#টি HID ডিভাইস এক বা একাধিক Chromium এক্সটেনশনের মাধ্যমে অ্যাক্সেস করা হচ্ছে}}</translation>
 <translation id="2401032172288869980">এই সাইটের জন্য Chromium-এর ক্যামেরা ও মাইক্রোফোন অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
@@ -242,9 +244,11 @@
 <translation id="4893347770495441059">&amp;Chromium আপডেট করতে আবার লঞ্চ করুন</translation>
 <translation id="4942295735032723435">ভবিষ্যতে Chromium আপডেট পেতে হলে, আপনার কাছে macOS 11 বা তার পরবর্তী ভার্সন থাকতে হবে। এই কম্পিউটারে macOS 10.15 ভার্সন ব্যবহার করা হচ্ছে।</translation>
 <translation id="4943838377383847465">Chromium পটভূমিতে চলছে৷</translation>
+<translation id="494490797786467921">Chromium-এ সাইন-ইন করার জন্য় ডায়ালগ বন্ধ করতে, ক্লিক করুন</translation>
 <translation id="4987820182225656817">অতিথিগণ কোনো কিছুর জন্য অভাব বোধ না করেই Chromium ব্যবহার করতে পারবেন৷</translation>
 <translation id="4994636714258228724">Chromium এর সাথে নিজেকে যোগ করুন</translation>
 <translation id="5114678101347489141">Chromium নতুন ফিচার এক্সপ্লোর করছে যা সাইটগুলিকে আপনার কম তথ্য ব্যবহার করে একই ব্রাউজিং অভিজ্ঞতা প্রদান করতে দেয়</translation>
+<translation id="5187123684706427865">Chromium অ্যাকাউন্ট আবার যাচাই করতে হবে</translation>
 <translation id="5224391634244552924">কোনও পাসওয়ার্ড সেভ করা নেই। আপনি পাসওয়ার্ড সেভ করলে Chromium সেটি চেক করতে পারবে।</translation>
 <translation id="5231355151045086930">Chromium থেকে সাইন-আউট করুন</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> আগে থেকেই এই Chromium প্রোফাইলে সাইন-ইন করে আছেন। <ph name="USER_EMAIL_ADDRESS" />-এর জন্য এটি একটি নতুন Chromium প্রোফাইল তৈরি করবে</translation>

@@ -5,6 +5,8 @@
 <translation id="1026101648481255140">继续安装</translation>
 <translation id="102763973188675173">有可用的更新。欢迎自定义和控制 Google Chrome。</translation>
 <translation id="1028061813283459617">若要仅删除此设备中的浏览数据而保留您的 Google 账号中的浏览数据，请<ph name="BEGIN_LINK" />从 Chrome 中退出账号<ph name="END_LINK" />。</translation>
+<translation id="1042270987544905725">点击即可关闭 Chrome 登录对话框</translation>
+<translation id="1059838145689930908">如要以 <ph name="USER_EMAIL_ADDRESS" /> 的身份使用此扩展程序，请登录 Chrome。</translation>
 <translation id="1065672644894730302">系统无法读取您的偏好设置。某些功能可能无法使用，并且对偏好设置所做的更改不会保存。</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> 之前使用的是 Chrome</translation>
 <translation id="110877069173485804">这是您的专属Chrome</translation>
@@ -364,6 +366,7 @@
 <translation id="6291089322031436445">Chrome 开发者版应用</translation>
 <translation id="6291549208091401781">已为您计算机上的所有用户安装 Google Chrome。</translation>
 <translation id="6319856120645568262">Chrome 需要获得权限，才能绘制您周边环境的地图并跟踪您的双手</translation>
+<translation id="6321592572353357376">扩展程序“<ph name="EXTENSION_NAME" />”需要您登录 Chrome</translation>
 <translation id="6326175484149238433">从 Chrome 中移除</translation>
 <translation id="6327105987658262776">没有可用的更新。</translation>
 <translation id="6360449101159168105">当此标签页处于闲置状态时，系统会释放一些内存，以让 Chrome 保持快速运行。您可以选择始终不让此网站处于闲置状态。</translation>
@@ -456,6 +459,7 @@
 <translation id="7655455401911432608">您的浏览记录，即您在此设备上使用 Chrome 访问过的网站的记录。</translation>
 <translation id="7661924425853052955">您近期未访问过该网站。Chrome 移除了<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />权限和另外 <ph name="COUNT" /> 项权限</translation>
 <translation id="7668816516367091728">直接在地址栏中执行翻译、计算等任务</translation>
+<translation id="7670287553302121848">Chrome 账号需要重新验证身份</translation>
 <translation id="769538538642757151">如有任何内容需要您审核，Chrome 会通知您</translation>
 <translation id="7747138024166251722">安装程序无法创建临时目录。请检查您是否有足够的磁盘空间和权限来安装该软件。</translation>
 <translation id="7761834446675418963">点击您的姓名即可打开Chrome并开始浏览。</translation>

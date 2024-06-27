@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Feil PUK-kode.</translation>
 <translation id="4057991113334098539">Aktiverer ...</translation>
 <translation id="4092890906744441904">Irsk</translation>
+<translation id="4101601646343868113">Logg på mobilnettverket, og bekreft at mobildataplanen din er aktiv</translation>
 <translation id="4124731372776320263">Synkroniserer 1 Disk-fil</translation>
 <translation id="4124935795427217608">Enhjørning</translation>
 <translation id="4131235941541910880">Flytt elementer du ikke trenger, til papirkurven</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Tamil med Tamil99-tastatur</translation>
 <translation id="5633226425545095130">Hvis du flytter dette elementet, deles det med alle som kan se den delte mappen «<ph name="DESTINATION_NAME" />».</translation>
 <translation id="5649768706273821470">Lytt</translation>
+<translation id="5650895901941743674">Sjekk APN-konfigurasjonen din</translation>
 <translation id="5669691691057771421">Skriv inn en ny PIN-kode</translation>
 <translation id="5678784840044122290">Linux-appen blir tilgjengelig i terminalen din og kan også vise et ikon i appoversikten.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Kan ikke koble fra et arkiv eller en virtuell disk<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Fillisten vises nå i miniatyrbildevisning.</translation>
 <translation id="8601932370724196034">Crostini-bildefil</translation>
 <translation id="8609695766746872526">Islandsk</translation>
+<translation id="8630384863424041081">Skriv inn PIN-koden for SIM-kortet eller standard-PIN-koden fra operatøren din. Kontakt operatøren for hjelp.</translation>
 <translation id="863903787380594467">Feil PIN-kode. Du har <ph name="RETRIES" /> forsøk igjen.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
 <translation id="8656407365183407932">Filene dine uten nett måtte fjernes</translation>

@@ -5,8 +5,8 @@
 <translation id="1026101648481255140">Nastavi instalaciju</translation>
 <translation id="102763973188675173">Prilagodite i kontrolirajte Google Chrome. Dostupno je ažuriranje.</translation>
 <translation id="1028061813283459617">Da izbrišete podatke pregledanja samo s ovog uređaja, a da ih zadržite na Google računu, <ph name="BEGIN_LINK" />odjavite se iz Chromea<ph name="END_LINK" />.</translation>
-<translation id="1042270987544905725">Kliknite da biste zatvorili dijaloški okvir za prijavu u Chrome</translation>
-<translation id="1059838145689930908">Da biste upotrebljavali ovo proširenje kao <ph name="USER_EMAIL_ADDRESS" />, prijavite se u Chrome.</translation>
+<translation id="1042270987544905725">Zatvaranje dijaloškog okvira za prijavu u Chrome klikom</translation>
+<translation id="1059838145689930908">Da koristite ekstenziju kao <ph name="USER_EMAIL_ADDRESS" />, prijavite se u Chrome.</translation>
 <translation id="1065672644894730302">Nije moguće sačuvati vaše postavke.
 
 Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.</translation>
@@ -375,7 +375,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="6291089322031436445">Chrome Dev aplikacije</translation>
 <translation id="6291549208091401781">Google Chrome je već instaliran za sve korisnike na vašem računaru.</translation>
 <translation id="6319856120645568262">Chromeu je potrebno odobrenje da mapira okruženje i prati pokrete ruku</translation>
-<translation id="6321592572353357376">Proširenje <ph name="EXTENSION_NAME" /> traži da se prijavite u Chrome</translation>
+<translation id="6321592572353357376">Ekstenzija "<ph name="EXTENSION_NAME" />" želi da se prijavite u Chrome</translation>
 <translation id="6326175484149238433">Ukloni iz Chromea</translation>
 <translation id="6327105987658262776">Ažuriranje nije dostupno.</translation>
 <translation id="6360449101159168105">Dok je ova kartica bila neaktivna, memorija je oslobođena kako bi Chrome ostao brz. Možete odabrati da uvijek izuzmete ovu web lokaciju iz neaktivnosti.</translation>

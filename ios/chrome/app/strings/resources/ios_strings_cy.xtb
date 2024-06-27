@@ -814,6 +814,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="5150492518600715772">Anfon at eich Dyfais</translation>
 <translation id="5157638238828697074">Aeth rhywbeth o'i le. Nid oedd modd agor yr ap.</translation>
 <translation id="5168414296986405587">Wedi'i ddatblygu ar gyfer iPadOS</translation>
+<translation id="5169725654005786900">Mae gweithred ar y gweill…</translation>
 <translation id="5173088371991956744">Mae Angen i Gysoni Gadarnhau Mai Chi Sydd Yno</translation>
 <translation id="5173493422621051500">Defnyddio Bysellfwrdd</translation>
 <translation id="5176312250994681348">Cadw cyfrinair diweddar</translation>
@@ -824,6 +825,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="5190835502935405962">Bar Nodau Tudalen</translation>
 <translation id="519530786644929958">Lawrlwytho wedi methu ac ni ellir rhoi cynni arall arni.</translation>
 <translation id="5197255632782567636">Rhyngrwyd</translation>
+<translation id="5205197603258285592">Cadw'r Llun yn...</translation>
 <translation id="5211488077761630279">Caniatáu i "<ph name="SITE_NAME" />" ddefnyddio eich <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Helpwch i Wella Diogelwch ar y We i Bawb</translation>
 <translation id="5220945116117011963">Creu digwyddiadau calendr o ddyddiadau</translation>
@@ -848,6 +850,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="5327753393331509826">Cael Hysbysiadau Cynnwys</translation>
 <translation id="5329451663851195956">Gallwch dynnu i lawr i ail-lwytho.</translation>
 <translation id="5333148247954006827">Newid i Broffil Arall</translation>
+<translation id="5338512273860059533">Wrthi'n mewngofnodi.</translation>
 <translation id="5339316356165661760">Troi Cysoni Ymlaen</translation>
 <translation id="5343472494710226394">Newyddion, chwaraeon, a chynnwys yn seiliedig ar eich diddordebau.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Tracio'r Pecyn Hwn?}zero{Tracio {COUNT} Pecyn?}two{Tracio {COUNT} Becyn?}few{Tracio {COUNT} Pecyn?}many{Tracio {COUNT} Pecyn?}other{Tracio {COUNT} Pecyn?}}</translation>
@@ -1523,6 +1526,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8556590991644167667">{count,plural, =1{Rydych wedi diystyru {count} rhybudd}zero{Rydych wedi diystyru {count} rhybudd}two{Rydych wedi diystyru {count} rybudd}few{Rydych wedi diystyru {count} rhybudd}many{Rydych wedi diystyru {count} rhybudd}other{Rydych wedi diystyru {count} rhybudd}}</translation>
 <translation id="8560253818350321773">Dangos eitemau a ddefnyddir yn aml yn gyntaf.</translation>
 <translation id="8569721750632860947">Pa URL hoffech chi ei ychwanegu at eich rhestr ddarllen?</translation>
+<translation id="8570765991595769633">Addasu Cardiau</translation>
 <translation id="8577056989960190117">Awtolenwi'r flwyddyn darfod <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Diffodd</translation>
 <translation id="8591976964826315682">Rhwystro Cwcis Trydydd Parti yn y Modd Anhysbys</translation>
@@ -1662,6 +1666,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="948048872540558976">Creu Tab Newydd</translation>
 <translation id="952218985181984374">{count,plural, =1{Cadwyd nod tudalen}zero{Mae {count} nod tudalen wedi'u cadw}two{Mae {count} nod tudalen wedi'u cadw}few{Mae {count} nod tudalen wedi'u cadw}many{Mae {count} nod tudalen wedi'u cadw}other{Mae {count} nod tudalen wedi'u cadw}}</translation>
 <translation id="952704832371081537">Canslo</translation>
+<translation id="955587716023217544">Golygu Rhestr Cyfrifon</translation>
 <translation id="959066944189734975">Rydych yn dilyn <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Dangos Awgrymiadau Tab o Ddyfeisiadau Eraill</translation>
 <translation id="973493300226275298">Olrhain pris cynnyrch ar draws siopau ar-lein. Byddwch yn cael rhybudd pan fydd y pris yn gostwng.</translation>

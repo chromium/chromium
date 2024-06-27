@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">වැරදි PUK එකකි.</translation>
 <translation id="4057991113334098539">සක්‍රිය කරමින්...</translation>
 <translation id="4092890906744441904">අයිරිෂ්</translation>
+<translation id="4101601646343868113">ඔබේ ජංගම ජාලයට පුරනය වී ඔබේ ජංගම දත්ත සැලසුම සක්‍රිය බව තහවුරු කරන්න</translation>
 <translation id="4124731372776320263">Drive 1 ගොනුවක් සමමුහූර්ත කරමින්</translation>
 <translation id="4124935795427217608">කඟවේනා</translation>
 <translation id="4131235941541910880">ඔබට අවශ්‍ය නොවන අයිතම කුණු කූඩයට ගෙන යන්න</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Tamil99 යතුරුපුවරුව සමග දෙමළ</translation>
 <translation id="5633226425545095130">මෙම අයිතමය ගෙන යාම '<ph name="DESTINATION_NAME" />' බෙදා ගත් ෆෝල්ඩරය දැකිය හැකි සියලු දෙනා සමග එය බෙදා ගනු ඇත.</translation>
 <translation id="5649768706273821470">සවන් දෙන්න</translation>
+<translation id="5650895901941743674">ඔබේ APN වින්‍යාසය පරීක්ෂා කරන්න</translation>
 <translation id="5669691691057771421">නව PIN ඇතුළු කරන්න</translation>
 <translation id="5678784840044122290">Linux යෙදුම ඔබගේ පර්යන්තයෙහි ලබා ගත හැකි අතර, ඔබගේ දියත්කරණයේ ද නිරූපකයක් පෙන්වනු ඇත.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />සංරක්ෂිතයක් හෝ අතථ්‍ය තැටියක් වෙතින් විසන්ධි කළ නොහැකිය<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">ගොනු ලැයිස්තුව සිඟිති රූ දසුනට වෙනස් විය.</translation>
 <translation id="8601932370724196034">Crostini රූප ගොනුව</translation>
 <translation id="8609695766746872526">අයිස්ලන්ත</translation>
+<translation id="8630384863424041081">ඔබේ SIM කාඩ්පත් PIN හෝ ඔබේ වාහකයා විසින් සපයන ලද පෙරනිමි PIN අංකය ඇතුළු කරන්න. සහාය සඳහා ඔබේ වාහකය සම්බන්ධ කර ගන්න.</translation>
 <translation id="863903787380594467">වැරදි PIN එකකි. ඔබට උත්සාහයන් <ph name="RETRIES" />ක් ඉතිරිව ඇත.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - තොට</translation>
 <translation id="8656407365183407932">ඔබේ නොබැඳි ගොනු ඉවත් කිරීමට සිදු විය</translation>

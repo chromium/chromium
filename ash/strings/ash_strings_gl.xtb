@@ -216,6 +216,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1747827819627189109">Teclado en pantalla activado</translation>
 <translation id="1749109475624620922">A ventá <ph name="WINDOW_TITLE" /> está asignada a todos os escritorios</translation>
 <translation id="1750088060796401187">Só se permite un máximo de <ph name="MAX_DESK_LIMIT" /> escritorios. Para abrir outro, quita un dos anteriores.</translation>
+<translation id="1751335846119670066">Axúdame a ler</translation>
 <translation id="1755408179247123630">Queres activar Escoitar selección?</translation>
 <translation id="1755556344721611131">Aplicación Diagnósticos</translation>
 <translation id="1756833229520115364">Non se puido gardar o modelo. Hai demasiadas ventás ou pestanas.</translation>
@@ -227,6 +228,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="178347895271755507">Configurar a visualización do contido multimedia, das notificacións e das fotos recentes do teu teléfono</translation>
 <translation id="1787955149152357925">Desactivado</translation>
 <translation id="1796561540704213354">Sitios web que inclúen as páxinas que visitaches e as abertas</translation>
+<translation id="179842970735685253">Condicións de servizo de Google</translation>
 <translation id="181103072419391116">Intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
 <translation id="1816896987747843206">Desta forma, poderán acceder á cámara todas as aplicacións e sitios web con permiso de acceso á cámara</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Tipo de traballo de clase</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Uns detalliños que debes ter en conta</translation>
 <translation id="3139188263101386725">Usa o atallo actualizado</translation>
 <translation id="3139942575505304791">Escritorio 1</translation>
 <translation id="315116470104423982">Datos móbiles</translation>
@@ -962,6 +965,7 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="4585337515783392668">Deter emisión nun receptor descoñecido</translation>
 <translation id="4596144739579517758">O tema escuro está desactivado</translation>
 <translation id="4596442969149038771"><ph name="USER" /> compartiuno</translation>
+<translation id="4610493115106525653">Bo resultado</translation>
 <translation id="4611292653554630842">Iniciar sesión</translation>
 <translation id="462160925400706389">Dispositivo conectado: <ph name="NAME" /></translation>
 <translation id="4623167406982293031">Verificar conta</translation>
@@ -1119,6 +1123,7 @@ Tamén podes usar o atallo de teclado. Primeiro, destaca o texto e, a continuaci
 <translation id="5121628974188116412">Vai á parte inferior da páxina</translation>
 <translation id="5122517996953421795">Vista previa de <ph name="DESK_NAME" />. Escritorio inactivo.</translation>
 <translation id="5136175204352732067">Conectouse un teclado diferente</translation>
+<translation id="5140105873789567560">Debes ter 18 anos como mínimo para poder usar Axúdame a escribir e Axúdame a ler.</translation>
 <translation id="5144005092084035179">Queres cambiar a entrada de audio?</translation>
 <translation id="5147567197700016471">Desbloqueouse</translation>
 <translation id="5150070631291639005">Configuración de privacidade</translation>
@@ -1559,6 +1564,7 @@ Nova instalación</translation>
 <translation id="6696025732084565524">É necesario instalar unha actualización esencial do teclado extraíble</translation>
 <translation id="6697913454192220372">Engadir un novo escritorio</translation>
 <translation id="6700713906295497288">Botón de menú de IME</translation>
+<translation id="6704375469818246414">A calidade pode variar ao usar a IA xenerativa</translation>
 <translation id="6706742084323792866">Fixar o teclado</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6723839937902243910">A</translation>
@@ -1826,9 +1832,11 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7726391492136714301">Accede ás notificacións e ás aplicacións do teu teléfono</translation>
 <translation id="7727952505535211425">Abre o sitio web na barra de enderezos nunha pestana nova</translation>
 <translation id="7742327441377685481">Non hai notificacións</translation>
+<translation id="774736258792760908">Cando activas Axúdame a escribir ou Axúdame a ler, o texto de entrada e o contido do documento envíanse aos servidores da IA de Google para xerar suxestións de escritura e resumos, responder preguntas e mellorar o produto, suxeito ás <ph name="LINK_TO_SERVICE_TERMS" />. Non inclúas información persoal nin confidencial.</translation>
 <translation id="7748275671948949022">Destacar botón do menú de aplicacións no andel</translation>
 <translation id="7749443890790263709">Alcanzouse o número máximo de escritorios.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Podes desactivar Axúdame a escribir e Axúdame a ler cando queiras en Configuración. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Escoitar selección</translation>
 <translation id="7769299611924763557">O teu GIF estará listo decontado</translation>
 <translation id="7773536009433685931">Activar wifi</translation>
@@ -1837,6 +1845,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7781829728241885113">Onte</translation>
 <translation id="7787212146956232129">Definíronse os dispositivos de saída e entrada. Para cambialos, vai a Configuración.</translation>
 <translation id="7792590255364786396">Visible</translation>
+<translation id="7793389284006812057">A IA xenerativa é experimental, está nas primeiras etapas de programación e actualmente ten dispoñibilidade limitada.</translation>
 <translation id="7796735576426975947">Ocultouse unha nova notificación</translation>
 <translation id="7798302898096527229">Preme Buscar ou Maiúsculas para cancelar.</translation>
 <translation id="780301667611848630">Non, grazas</translation>
@@ -1991,6 +2000,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8331351032546853669">Descarga pendente</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Mal resultado</translation>
 <translation id="8345019317483336363">Ventá seleccionada: <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">menú de aplicacións</translation>
 <translation id="8349964124165471584">Abre a ligazón nunha ventá nova</translation>

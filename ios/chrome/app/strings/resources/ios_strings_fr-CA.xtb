@@ -814,6 +814,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5150492518600715772">Envoyer à votre appareil</translation>
 <translation id="5157638238828697074">Un problème est survenu. L'application n'a pas pu être ouverte.</translation>
 <translation id="5168414296986405587">Conçu pour iPadOS</translation>
+<translation id="5169725654005786900">Action en cours…</translation>
 <translation id="5173088371991956744">La synchronisation doit vérifier qu'il s'agit bien de vous</translation>
 <translation id="5173493422621051500">Utiliser le clavier</translation>
 <translation id="5176312250994681348">Conserver le mot de passe récent</translation>
@@ -848,6 +849,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5327753393331509826">Recevoir des notifications de contenu</translation>
 <translation id="5329451663851195956">Vous pouvez tirer l'écran vers le bas pour actualiser la page.</translation>
 <translation id="5333148247954006827">Changer de profil?</translation>
+<translation id="5338512273860059533">Connexion en cours…</translation>
 <translation id="5339316356165661760">Activer la synchronisation</translation>
 <translation id="5343472494710226394">Actualités, sports et contenu en fonction de vos champs d'intérêt.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Suivre ce colis?}one{Suivre {COUNT} colis?}other{Suivre {COUNT} colis?}}</translation>

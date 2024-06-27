@@ -814,6 +814,7 @@
 <translation id="5150492518600715772">Изпращане до устройството ви</translation>
 <translation id="5157638238828697074">Нещо се обърка. Приложението не се отвори.</translation>
 <translation id="5168414296986405587">Създадено за iPadOS</translation>
+<translation id="5169725654005786900">Извършва се действие…</translation>
 <translation id="5173088371991956744">Синхронизирането трябва да потвърди, че това сте вие</translation>
 <translation id="5173493422621051500">Използване на клавиатурата</translation>
 <translation id="5176312250994681348">Запазване на скорошната парола</translation>
@@ -824,6 +825,7 @@
 <translation id="5190835502935405962">Лента на отметките</translation>
 <translation id="519530786644929958">Изтеглянето не успя и не може да бъде повторено.</translation>
 <translation id="5197255632782567636">Интернет</translation>
+<translation id="5205197603258285592">Запазване на изображението в(ъв)...</translation>
 <translation id="5211488077761630279">Да се разреши ли на <ph name="SITE_NAME" /> да използва <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Помогнете за всеобщото подобряване на сигурността в мрежата</translation>
 <translation id="5220945116117011963">Създаване на събития в календара от дати</translation>
@@ -848,6 +850,7 @@
 <translation id="5327753393331509826">Получаване на известия за съдържание</translation>
 <translation id="5329451663851195956">Можете да дръпнете надолу, за да опресните.</translation>
 <translation id="5333148247954006827">Превключване към друг потребителски профил</translation>
+<translation id="5338512273860059533">Влизате в профила си.</translation>
 <translation id="5339316356165661760">Включване на синхронизирането</translation>
 <translation id="5343472494710226394">Новини, спорт и съдържание въз основа на интересите ви.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Искате ли да проследявате тази пратка?}other{Искате ли да проследявате {COUNT} пратки?}}</translation>
@@ -1523,6 +1526,7 @@
 <translation id="8556590991644167667">{count,plural, =1{Отхвърлихте {count} предупреждение}other{Отхвърлихте {count} предупреждения}}</translation>
 <translation id="8560253818350321773">Първо да се показват често използваните елементи.</translation>
 <translation id="8569721750632860947">Кой URL адрес искате да добавите към списъка си за четене?</translation>
+<translation id="8570765991595769633">Персонализиране на картите</translation>
 <translation id="8577056989960190117">Автоматично попълване на годината на валидност: <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Изключено</translation>
 <translation id="8591976964826315682">Блокиране на „бисквитките“ на трети страни в режим „инкогнито“</translation>
@@ -1662,6 +1666,7 @@
 <translation id="948048872540558976">Създаване на нов раздел</translation>
 <translation id="952218985181984374">{count,plural, =1{Отметката е запазена}other{{count} отметки са запазени}}</translation>
 <translation id="952704832371081537">Отказ</translation>
+<translation id="955587716023217544">Редактиране на списъка с профили</translation>
 <translation id="959066944189734975">Следвате <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Показване на предложения за раздели от други устройства</translation>
 <translation id="973493300226275298">Проследявайте цената на даден продукт в различни онлайн магазини. Ще получите сигнал, когато цената се понижи.</translation>

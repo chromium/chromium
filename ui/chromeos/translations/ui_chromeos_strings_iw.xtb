@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">‏ה-PUK שגוי</translation>
 <translation id="4057991113334098539">מפעיל...</translation>
 <translation id="4092890906744441904">אירית</translation>
+<translation id="4101601646343868113">עליך להיכנס לרשת הסלולרית שלך ולאשר שחבילת הגלישה שלך פעילה</translation>
 <translation id="4124731372776320263">‏קובץ אחד מסתנכרן ב-Drive עכשיו</translation>
 <translation id="4124935795427217608">חד-קרן</translation>
 <translation id="4131235941541910880">אפשר להעביר לאשפה פריטים שאין לך צורך בהם</translation>
@@ -604,6 +605,7 @@
 <translation id="5625294776298156701">‏טמילית עם מקלדת Tamil99</translation>
 <translation id="5633226425545095130">לאחר העברת הפריט הזה, הוא ישותף עם כל מי שיכול לראות את התיקייה המשותפת '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="5649768706273821470">האזנה</translation>
+<translation id="5650895901941743674">‏בדיקת ההגדרות האישיות של ה-APN</translation>
 <translation id="5669691691057771421">הזנת קוד האימות החדש</translation>
 <translation id="5678784840044122290">‏אפליקציית Linux תהיה זמינה דרך המסוף שלך, ובחלק מהמקרים הסמל שלה יופיע במרכז האפליקציות.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />לא ניתן להתנתק מהארכיון או מהדיסק הווירטואלי<ph name="END_BOLD" />
@@ -1009,6 +1011,7 @@
 <translation id="8600173386174225982">רשימת הקבצים מוצגת עכשיו בתצוגת תמונות ממוזערות.</translation>
 <translation id="8601932370724196034">‏קובץ תמונה Crostini</translation>
 <translation id="8609695766746872526">איסלנדית</translation>
+<translation id="8630384863424041081">‏עליך להזין את קוד האימות של כרטיס ה-SIM או את קוד האימות שמוגדר כברירת מחדל שניתן לך על ידי הספק. אפשר לפנות לספק לקבלת תמיכה.</translation>
 <translation id="863903787380594467">קוד האימות שגוי. נותרו לך עוד <ph name="RETRIES" /> ניסיונות.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – יציאה</translation>
 <translation id="8656407365183407932">היה צורך להסיר את הקבצים במצב אופליין</translation>

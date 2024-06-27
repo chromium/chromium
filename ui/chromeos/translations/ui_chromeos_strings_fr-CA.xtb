@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Clé personnelle de déblocage incorrecte</translation>
 <translation id="4057991113334098539">Activation en cours…</translation>
 <translation id="4092890906744441904">Irlandais</translation>
+<translation id="4101601646343868113">Connectez-vous à votre réseau cellulaire et confirmez que votre forfait de données cellulaires est actif</translation>
 <translation id="4124731372776320263">Synchronisation de 1 fichier Disque en cours…</translation>
 <translation id="4124935795427217608">Licorne</translation>
 <translation id="4131235941541910880">Mettre les éléments inutiles dans la corbeille.</translation>
@@ -605,6 +606,7 @@
 <translation id="5625294776298156701">Tamoul avec clavier Tamil99</translation>
 <translation id="5633226425545095130">En déplaçant cet élément, vous le partagerez avec quiconque peut accéder au dossier partagé « <ph name="DESTINATION_NAME" /> ».</translation>
 <translation id="5649768706273821470">Écouter</translation>
+<translation id="5650895901941743674">Vérifiez votre configuration APN</translation>
 <translation id="5669691691057771421">Entrez le nouveau NIP</translation>
 <translation id="5678784840044122290">L'application Linux sera disponible dans votre terminal et une icône peut également s'afficher dans votre lanceur d'applications.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Déconnexion à partir d'une archive ou d'un disque virtuel impossible<ph name="END_BOLD" />
@@ -1010,6 +1012,7 @@
 <translation id="8600173386174225982">La liste de fichiers utilise maintenant l'affichage en miniatures.</translation>
 <translation id="8601932370724196034">Fichier d'image Crostini</translation>
 <translation id="8609695766746872526">Islandais</translation>
+<translation id="8630384863424041081">Saisissez le NIP de votre carte SIM ou le NIP par défaut fourni par votre opérateur. Communiquez avec votre opérateur pour obtenir de l'aide.</translation>
 <translation id="863903787380594467">NIP incorrect. Il vous reste <ph name="RETRIES" /> tentatives.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Port</translation>
 <translation id="8656407365183407932">Vos fichiers hors ligne ont dû être retirés</translation>

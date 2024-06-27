@@ -89,6 +89,7 @@
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> दिवसांपूर्वी ॲक्टिव्ह होते</translation>
 <translation id="1390418506739274310">तुम्हाला Chrome मध्ये लिंक उघडणाऱ्या इतर ॲप्समधील इतिहास दिसू शकतो. <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> येथे तुमच्या Google खाते चा इतर स्वरूपांमधील ब्राउझिंग इतिहास असू शकतो.</translation>
 <translation id="13931502444227376">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे नाव, ईमेल अ‍ॅड्रेस आणि प्रोफाइल फोटो या साइटसह शेअर करेल. या साइटच्या <ph name="BEGIN_LINK1" />सेवा अटी<ph name="END_LINK1" /> पहा.</translation>
+<translation id="139752016751285248">किमतीच्या इनसाइटची तळाशी असलेली शीट पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> सह शोधा</translation>
 <translation id="1398057416966591719">तुमच्या Google खाते मध्ये <ph name="BEGIN_LINK1" />Chrome चा कोणता डेटा सेव्ह केला जातो हे व्यवस्थापित करणे<ph name="END_LINK1" /> हे तुम्ही करू शकता.
 
@@ -179,6 +180,7 @@
 <translation id="1877073879466606884">तुम्ही साइन इन केलेली प्रोफाइल ही व्यवस्थापित केलेली प्रोफाइल आहे. तुमचा अ‍ॅडमिनिस्ट्रेटर हा तुमच्या प्रोफाइल सेटिंग्जमध्ये रिमोट पद्धतीने बदल करू शकतो, तक्रारीद्वारे ब्राउझरशी संबंधित माहितीचे विश्लेषण करू शकतो आणि इतर आवश्यक टास्क करू शकतो.</translation>
 <translation id="1883903952484604915">माझ्या फाइल</translation>
 <translation id="189358972401248634">इतर भाषा</translation>
+<translation id="1899175549411605574">किमतीच्या इनसाइटची तळाशी असलेली शीट</translation>
 <translation id="1900260903084164610">पुढे सुरू ठेवून, तुम्ही <ph name="BEGIN_TOS_LINK" />सेवा अटी<ph name="END_TOS_LINK" /> यांना सहमती दर्शवता.</translation>
 <translation id="1904580727789512086">तुम्ही भेट दिलेल्या URL तुमच्या Google खाते मध्ये सेव्ह केल्या जातात</translation>
 <translation id="1910950723001426294">शेअरिंग पर्यांयाची सूची बंद आहे.</translation>
@@ -520,6 +522,7 @@
 <translation id="3587596251841506391">वेबवरील सुरक्षेमध्ये सुधारणा करण्यात मदत करा</translation>
 <translation id="3597179440835065298">आणखी चांगल्या सूचना मिळवा</translation>
 <translation id="3602290021589620013">पूर्वावलोकन</translation>
+<translation id="3614126103057878858">किमतीचे इनसाइट</translation>
 <translation id="3616113530831147358">ऑडिओ</translation>
 <translation id="3622349720008044802">विंडो व्यवस्थापित करा</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{आणि १ साइट}other{आणि # साइट}}</translation>
@@ -529,6 +532,7 @@
 <translation id="3637744895182738742">तुम्ही तुमचा पासफ्रेझ विसरल्यास किंवा तुम्हाला हे सेटिंग बदलायचे असल्यास, <ph name="BEGIN_LINK" />तुमच्या खात्यामधील Chrome हटवणे<ph name="END_LINK" /> हे करा.</translation>
 <translation id="3674208116086565128">Google अ‍ॅप होम वर जा</translation>
 <translation id="368329460027487650">साइन आउट केले आहे. साइन इन करण्यासाठी पर्याय उघडते.</translation>
+<translation id="3684540848053703310">किमतीच्या इनसाइटची तळाशी असलेली शीट बंद केली</translation>
 <translation id="3687645719033307815">तुम्ही या पेजचे पूर्वावलोकन पाहत आहात</translation>
 <translation id="3690369331356918524">डेटा भंगामध्ये पासवर्ड उघड झाल्यास, तुम्हाला चेतावणी देते</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> download failed because storage location is not reachable.</translation>

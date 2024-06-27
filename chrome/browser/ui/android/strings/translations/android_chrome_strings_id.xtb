@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Aktif <ph name="LAST_UPDATED" /> hari lalu</translation>
 <translation id="1390418506739274310">Anda mungkin melihat histori dari aplikasi lain yang membuka link di Chrome. Akun Google Anda mungkin memiliki bentuk histori penjelajahan lainnya di <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Untuk melanjutkan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan membagikan nama, alamat email, dan foto profil Anda ke situs ini. Lihat <ph name="BEGIN_LINK1" />persyaratan layanan<ph name="END_LINK1" /> situs ini.</translation>
+<translation id="139752016751285248">Sheet bawah analisis harga terbuka sepenuhnya</translation>
 <translation id="1397811292916898096">Telusuri dengan <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Anda dapat <ph name="BEGIN_LINK1" />mengelola data Chrome yang disimpan<ph name="END_LINK1" /> di Akun Google Anda.
 
@@ -179,6 +180,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1877073879466606884">Profil yang Anda gunakan untuk login adalah profil terkelola. Administrator dapat melakukan perubahan pada setelan profil Anda dari jarak jauh, menganalisis informasi tentang browser melalui pelaporan, dan melakukan tugas lain yang diperlukan.</translation>
 <translation id="1883903952484604915">File Saya</translation>
 <translation id="189358972401248634">Bahasa lain</translation>
+<translation id="1899175549411605574">Sheet bawah analisis harga</translation>
 <translation id="1900260903084164610">Dengan melanjutkan, Anda menyetujui <ph name="BEGIN_TOS_LINK" />Persyaratan Layanan<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">URL yang Anda buka disimpan ke Akun Google Anda</translation>
 <translation id="1910950723001426294">Daftar opsi berbagi ditutup.</translation>
@@ -520,6 +522,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3587596251841506391">Bantu sempurnakan keamanan di web</translation>
 <translation id="3597179440835065298">Dapatkan saran yang lebih baik</translation>
 <translation id="3602290021589620013">Pratinjau</translation>
+<translation id="3614126103057878858">Analisis harga</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Kelola jendela</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 situs}other{+ # situs}}</translation>
@@ -529,6 +532,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3637744895182738742">Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Buka Beranda Aplikasi Google</translation>
 <translation id="368329460027487650">Logout. Buka opsi untuk login.</translation>
+<translation id="3684540848053703310">Sheet bawah analisis harga ditutup</translation>
 <translation id="3687645719033307815">Anda sedang melihat pratinjau halaman ini</translation>
 <translation id="3690369331356918524">Memberikan peringatan jika sandi terekspos saat terjadi pelanggaran data</translation>
 <translation id="3692944402865947621">Download <ph name="FILE_NAME" /> gagal karena lokasi penyimpanan tidak dapat dijangkau.</translation>

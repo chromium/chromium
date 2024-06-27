@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">螢幕小鍵盤已啟用</translation>
 <translation id="1749109475624620922">「<ph name="WINDOW_TITLE" />」視窗已指派給所有桌面</translation>
 <translation id="1750088060796401187">只允許 <ph name="MAX_DESK_LIMIT" /> 個桌面。如要開啟新桌面，請先移除一個現有桌面。</translation>
+<translation id="1751335846119670066">幫我讀</translation>
 <translation id="1755408179247123630">要開啟隨選朗讀嗎？</translation>
 <translation id="1755556344721611131">執行診斷的應用程式</translation>
 <translation id="1756833229520115364">視窗或分頁過多，無法儲存範本。</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">配置以下設定：查看手機上最近的相片、媒體和通知</translation>
 <translation id="1787955149152357925">關閉</translation>
 <translation id="1796561540704213354">網站，包括你造訪過的網頁和目前開啟的頁面</translation>
+<translation id="179842970735685253">Google 服務條款</translation>
 <translation id="181103072419391116">訊號強度 <ph name="SIGNAL_STRENGTH" />，由系統管理員管理</translation>
 <translation id="1816896987747843206">這將允許具有攝影機權限的所有應用程式和網站存取攝影機</translation>
 <translation id="1823873187264960516">乙太網路：<ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">課堂作業類型</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">注意事項</translation>
 <translation id="3139188263101386725">使用新版快速鍵</translation>
 <translation id="3139942575505304791">桌面 1</translation>
 <translation id="315116470104423982">行動數據</translation>
@@ -958,6 +961,7 @@
 <translation id="4585337515783392668">停止透過不明接收器投放</translation>
 <translation id="4596144739579517758">深色主題已關閉</translation>
 <translation id="4596442969149038771"><ph name="USER" /> 分享了這個項目</translation>
+<translation id="4610493115106525653">輸出結果良好</translation>
 <translation id="4611292653554630842">登入</translation>
 <translation id="462160925400706389">已連結「<ph name="NAME" />」</translation>
 <translation id="4623167406982293031">驗證帳戶</translation>
@@ -1115,6 +1119,7 @@
 <translation id="5121628974188116412">前往頁面底部</translation>
 <translation id="5122517996953421795">「<ph name="DESK_NAME" />」預覽。非使用中的桌面。</translation>
 <translation id="5136175204352732067">已連接其他鍵盤</translation>
+<translation id="5140105873789567560">你必須年滿 18 歲才能使用「幫我寫」和「幫我讀」功能。</translation>
 <translation id="5144005092084035179">要切換音訊輸入裝置嗎？</translation>
 <translation id="5147567197700016471">已解鎖</translation>
 <translation id="5150070631291639005">隱私權設定</translation>
@@ -1554,6 +1559,7 @@
 <translation id="6696025732084565524">你的卸除式鍵盤需安裝重大更新</translation>
 <translation id="6697913454192220372">新增桌面</translation>
 <translation id="6700713906295497288">IME 選單按鈕</translation>
+<translation id="6704375469818246414">使用生成式 AI 時，輸出結果的品質可能會有差異。</translation>
 <translation id="6706742084323792866">PIN 碼鍵盤</translation>
 <translation id="6710213216561001401">返回</translation>
 <translation id="6723839937902243910">電源</translation>
@@ -1821,9 +1827,11 @@
 <translation id="7726391492136714301">查看手機上的通知和應用程式</translation>
 <translation id="7727952505535211425">在新分頁中開啟網址列中的網站</translation>
 <translation id="7742327441377685481">沒有任何通知</translation>
+<translation id="774736258792760908">開啟「幫我寫」和「幫我讀」功能後，系統會將你輸入的文字和文件內容傳送到 Google AI 伺服器，據以產生撰寫建議、產生摘要、回答問題及提升產品品質。我們在使用這類資料時會遵守《<ph name="LINK_TO_SERVICE_TERMS" />》的規定。請勿加入任何個人、敏感或機密資訊。</translation>
 <translation id="7748275671948949022">醒目顯示檔案櫃中的啟動器按鈕</translation>
 <translation id="7749443890790263709">桌面數量已達上限。</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">你隨時可以前往「設定」關閉「幫我寫」和「幫我讀」功能。<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">隨選朗讀</translation>
 <translation id="7769299611924763557">GIF 很快就能使用</translation>
 <translation id="7773536009433685931">改為開啟 Wi-Fi</translation>
@@ -1832,6 +1840,7 @@
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7787212146956232129">輸入和輸出裝置已設定。如要變更，請前往「設定」。</translation>
 <translation id="7792590255364786396">顯示</translation>
+<translation id="7793389284006812057">生成式 AI 為實驗功能，處於初期開發階段，目前並未全面開放使用。</translation>
 <translation id="7796735576426975947">已隱藏新通知</translation>
 <translation id="7798302898096527229">按下搜尋鍵或 Shift 鍵即可取消。</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
@@ -1986,6 +1995,7 @@
 <translation id="8331351032546853669">等候下載</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">輸出結果不佳</translation>
 <translation id="8345019317483336363">已選取「<ph name="WINDOW_TITLE" />」視窗</translation>
 <translation id="8349826889576450703">啟動器</translation>
 <translation id="8349964124165471584">在新視窗中開啟連結</translation>

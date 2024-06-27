@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">ใช้งานเมื่อ <ph name="LAST_UPDATED" /> วันที่ผ่านมา</translation>
 <translation id="1390418506739274310">คุณอาจเห็นประวัติการเข้าชมจากแอปอื่นๆ ที่เปิดลิงก์ใน Chrome บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="13931502444227376">หากต้องการดำเนินการต่อ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> จะแชร์ชื่อ อีเมล และรูปโปรไฟล์ของคุณกับเว็บไซต์นี้ โปรดอ่าน<ph name="BEGIN_LINK1" />ข้อกำหนดในการให้บริการ<ph name="END_LINK1" />ของเว็บไซต์</translation>
+<translation id="139752016751285248">Bottom Sheet ข้อมูลเชิงลึกด้านราคาเปิดอยู่แบบเต็มหน้า</translation>
 <translation id="1397811292916898096">ค้นหาด้วย <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">คุณ<ph name="BEGIN_LINK1" />จัดการข้อมูล Chrome ที่บันทึกไว้<ph name="END_LINK1" />ได้ในบัญชี Google
 
@@ -179,6 +180,7 @@
 <translation id="1877073879466606884">โปรไฟล์ที่คุณลงชื่อเข้าใช้เป็นโปรไฟล์ที่มีการจัดการ ผู้ดูแลระบบสามารถเปลี่ยนแปลงการตั้งค่าโปรไฟล์จากระยะไกล วิเคราะห์ข้อมูลเกี่ยวกับเบราว์เซอร์ผ่านการรายงาน และดำเนินการอื่นๆ ที่จำเป็นได้</translation>
 <translation id="1883903952484604915">ไฟล์ของฉัน</translation>
 <translation id="189358972401248634">ภาษาอื่นๆ</translation>
+<translation id="1899175549411605574">Bottom Sheet ข้อมูลเชิงลึกด้านราคา</translation>
 <translation id="1900260903084164610">การดำเนินการต่อหมายความว่าคุณยอมรับ<ph name="BEGIN_TOS_LINK" />ข้อกำหนดในการให้บริการ<ph name="END_TOS_LINK" /></translation>
 <translation id="1904580727789512086">ระบบจะบันทึก URL ที่เข้าชมไว้ในบัญชี Google ของคุณ</translation>
 <translation id="1910950723001426294">ปิดรายการตัวเลือกการแชร์แล้ว</translation>
@@ -530,6 +532,7 @@
 <translation id="3637744895182738742">หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ลบข้อมูล Chrome ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="3674208116086565128">ไปที่หน้าแรกของแอป Google</translation>
 <translation id="368329460027487650">ออกจากระบบ เปิดตัวเลือกเพื่อลงชื่อเข้าใช้</translation>
+<translation id="3684540848053703310">Bottom Sheet ข้อมูลเชิงลึกด้านราคาปิดอยู่</translation>
 <translation id="3687645719033307815">คุณกำลังดูตัวอย่างของหน้านี้</translation>
 <translation id="3690369331356918524">เตือนคุณในกรณีที่รหัสผ่านรั่วไหลจากการละเมิดข้อมูล</translation>
 <translation id="3692944402865947621">ดาวน์โหลด <ph name="FILE_NAME" /> ไม่สำเร็จเนื่องจากเข้าถึงตำแหน่งที่เก็บข้อมูลไม่ได้</translation>

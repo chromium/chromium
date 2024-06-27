@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">ऑन-स्क्रीन कीबोर्ड सक्षम</translation>
 <translation id="1749109475624620922">विंडो <ph name="WINDOW_TITLE" /> सर्व डेस्कना असाइन केले</translation>
 <translation id="1750088060796401187">फक्त <ph name="MAX_DESK_LIMIT" /> डेस्कना अनुमती आहे. नवीन डेस्क उघडण्यासाठी एक डेस्क काढून टाका.</translation>
+<translation id="1751335846119670066">वाचायला मला मदत करा</translation>
 <translation id="1755408179247123630">बोलण्यासाठी निवडा सुरू करायचे आहे का?</translation>
 <translation id="1755556344721611131">निदान करण्यासाठी अ‍ॅप</translation>
 <translation id="1756833229520115364">टेंप्लेट सेव्ह करता आले नाही. खूप जास्त विंडो किंवा टॅब आहेत.</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">तुमच्या फोनमधील अलीकडील फोटो, मीडिया आणि सूचना पाहणे सेट करा</translation>
 <translation id="1787955149152357925">बंद करा</translation>
 <translation id="1796561540704213354">तुम्ही भेट दिलेल्या आणि उघडलेल्या पेजसह वेबसाइट</translation>
+<translation id="179842970735685253">Google च्या सेवा अटी</translation>
 <translation id="181103072419391116">सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले</translation>
 <translation id="1816896987747843206">हे कॅमेरा परवानगी असलेल्या सर्व अ‍ॅप्स आणि वेबसाइटना कॅमेराच्या अ‍ॅक्सेसची अनुमती देते</translation>
 <translation id="1823873187264960516">इथरनेट: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">सीपीयू</translation>
 <translation id="3125690294288312932">वर्गपाठाचा प्रकार</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">लक्षात ठेवण्यासारख्या काही गोष्टी</translation>
 <translation id="3139188263101386725">अपडेट केलेला शॉर्टकट वापरा</translation>
 <translation id="3139942575505304791">डेस्‍क १</translation>
 <translation id="315116470104423982">मोबाइल डेटा</translation>
@@ -961,6 +964,7 @@
 <translation id="4585337515783392668">एखाद्या अज्ञात मिळवणाऱ्यावर कास्ट करणे थांबवा</translation>
 <translation id="4596144739579517758">गडद थीम बंद आहे</translation>
 <translation id="4596442969149038771"><ph name="USER" /> यांनी शेअर केली आहे</translation>
+<translation id="4610493115106525653">चांगले आउटपुट</translation>
 <translation id="4611292653554630842">लॉग इन करा</translation>
 <translation id="462160925400706389"><ph name="NAME" /> कनेक्‍ट केले आहे</translation>
 <translation id="4623167406982293031">खात्याची पडताळणी करा</translation>
@@ -1118,6 +1122,7 @@
 <translation id="5121628974188116412">पेजच्या तळाशी जा</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> चे पूर्वावलोकन करा. इनॅक्टिव्ह डेस्‍क.</translation>
 <translation id="5136175204352732067">वेगळा कीबोर्ड कनेक्ट केला आहे</translation>
+<translation id="5140105873789567560">लिहिण्यात मला मदत करा आणि वाचायला मला मदत करा हे वापरण्यासाठी तुमचे वय किमान १८ वर्षे असणे आवश्यक आहे.</translation>
 <translation id="5144005092084035179">ऑडिओ इनपुट स्विच करायचे आहे का?</translation>
 <translation id="5147567197700016471">अनलॉक केली</translation>
 <translation id="5150070631291639005">गोपनीयता सेटिंग्ज</translation>
@@ -1558,6 +1563,7 @@
 <translation id="6696025732084565524">तुमच्या वेगळ्या करण्यायोग्य कीबोर्डला गंभीर अपडेटची आवश्यकता आहे</translation>
 <translation id="6697913454192220372">नवीन डेस्क जोडा</translation>
 <translation id="6700713906295497288">IME मेनू बटण</translation>
+<translation id="6704375469818246414">जनरेटिव्ह AI वापरताना गुणवत्ता वेगवेगळी असू शकते.</translation>
 <translation id="6706742084323792866">कीबोर्ड पिन करा</translation>
 <translation id="6710213216561001401">मागील</translation>
 <translation id="6723839937902243910">पॉवर</translation>
@@ -1657,7 +1663,7 @@
 <translation id="7067196344162293536">स्वयं फिरवा</translation>
 <translation id="7068360136237591149">फाइल उघडा</translation>
 <translation id="7076293881109082629">साइन इन करीत आहे</translation>
-<translation id="7076878155205969899">ध्वनी म्यूट करा</translation>
+<translation id="7076878155205969899">आवाज म्यूट करा</translation>
 <translation id="7083848064787091821">फोकस करा</translation>
 <translation id="7084678090004350185">हॉटस्पॉट टॉगल करा. हॉटस्पॉट सुरू आहे, <ph name="DEVICECOUNT" /> डिव्हाइस कनेक्ट केली आहेत.</translation>
 <translation id="7086931198345821656">या अपडेट साठी तुमचे <ph name="DEVICE_TYPE" /> Powerwash करणे आवश्यक आहे. सर्व डेटा हटवला जाईल. <ph name="SYSTEM_APP_NAME" /> च्या नवीनतम अपडेटबाबत अधिक जाणून घ्या.</translation>
@@ -1825,9 +1831,11 @@
 <translation id="7726391492136714301">तुमच्या फोनच्या सूचना आणि अ‍ॅप्स पहा</translation>
 <translation id="7727952505535211425">वेबसाइट नवीन टॅबमधील अ‍ॅड्रेस बारमध्ये उघडा</translation>
 <translation id="7742327441377685481">सूचना नाहीत</translation>
+<translation id="774736258792760908">तुम्ही लिहिण्यात मला मदत करा आणि वाचायला मला मदत करा हे सुरू करता, तेव्हा इनपुट मजकूर व दस्तऐवज आशय हा Google AI सर्व्हरकडे लेखनासाठी सूचना, सारांश जनरेट करण्याकरिता, प्रश्नांची उत्तरे देण्याकरिता आणि उत्पादनामध्ये सुधारणा करण्याकरिता पाठवला जातो, तो<ph name="LINK_TO_SERVICE_TERMS" /> च्या अधीन आहे. वैयक्तिक, संवेदनशील किंवा गोपनीय असे काहीही समाविष्ट करू नका.</translation>
 <translation id="7748275671948949022">शेल्फवरील लाँचर बटण हायलाइट करा</translation>
 <translation id="7749443890790263709">डेस्कची कमाल मर्यादा गाठली आहे.</translation>
 <translation id="7749958366403230681">ExpressKey ४</translation>
+<translation id="7759183637555564029">लिहिण्यात मला मदत करा आणि वाचायला मला मदत करा हे तुम्ही सेटिंग्ज मध्ये कधीही बंद करू शकता. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">बोलण्यासाठी निवडा</translation>
 <translation id="7769299611924763557">तुमची GIF लवकरच तयार होईल</translation>
 <translation id="7773536009433685931">त्याऐवजी वायफाय सुरू करा</translation>
@@ -1836,6 +1844,7 @@
 <translation id="7781829728241885113">काल</translation>
 <translation id="7787212146956232129">इनपुट आणि आउटपुट डिव्हाइस सेट केलेली आहेत. बदलण्यासाठी सेटिंग्ज वर जा.</translation>
 <translation id="7792590255364786396">दृश्यमान</translation>
+<translation id="7793389284006812057">जनरेटिव्ह AI हे प्रायोगिक आहे, ते विकासाच्या सुरुवातीच्या टप्प्यात असून सध्या त्याची उपलब्धता मर्यादित आहे.</translation>
 <translation id="7796735576426975947">नवीन सूचना लपवलेल्या आहेत</translation>
 <translation id="7798302898096527229">रद्द करण्यासाठी Search किंवा Shift प्रेस करा.</translation>
 <translation id="780301667611848630">नाही, नको</translation>
@@ -1990,6 +1999,7 @@
 <translation id="8331351032546853669">डाउनलोड प्रलंबित आहे</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">खराब आउटपुट</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> विंडो निवडली</translation>
 <translation id="8349826889576450703">लाँचर</translation>
 <translation id="8349964124165471584">लिंक नवीन विंडोमध्ये उघडा</translation>

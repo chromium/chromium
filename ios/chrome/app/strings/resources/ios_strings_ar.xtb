@@ -786,6 +786,7 @@
 <translation id="4971735654804503942">‏يوفّر حماية استباقية وسريعة من الإضافات وعمليات التنزيل والمواقع الإلكترونية الضارة، ويُحذّرك من عمليات اختراق كلمة المرور. يتطلّب إرسال بيانات التصفّح إلى Google.</translation>
 <translation id="4979397965658815378">‏سجّل الدخول إلى حسابك على Google للحصول على الإشارات المرجعية وكلمات المرور والسجلّ والإعدادات الأخرى واستخدامها على جميع أجهزتك.</translation>
 <translation id="4989065233040279145">اختَر مكانًا لحفظ "<ph name="FILENAME" />".</translation>
+<translation id="4992255726304765516">لون مجموعة علامات التبويب: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">نسخ كلمة المرور</translation>
 <translation id="5016420433031926653">سيتم الإرسال إلى <ph name="USER_EMAIL" />.</translation>
 <translation id="5017828934289857214">تذكيري لاحقًا</translation>
@@ -815,6 +816,7 @@
 <translation id="5150492518600715772">الإرسال إلى جهازك</translation>
 <translation id="5157638238828697074">حدث خطأ. تعذَّر فتح التطبيق.</translation>
 <translation id="5168414296986405587">‏مصمّم لنظام التشغيل iPadOS</translation>
+<translation id="5169725654005786900">جارٍ تنفيذ الإجراء…</translation>
 <translation id="5173088371991956744">تحتاج ميزة المزامنة إلى التحقّق من هويتك</translation>
 <translation id="5173493422621051500">استخدام لوحة المفاتيح</translation>
 <translation id="5176312250994681348">الاحتفاظ بكلمة المرور الأخيرة</translation>
@@ -825,6 +827,7 @@
 <translation id="5190835502935405962">شريط الإشارات</translation>
 <translation id="519530786644929958">تعذّر تنزيل الملف ولا يمكن إعادة المحاولة.</translation>
 <translation id="5197255632782567636">الإنترنت</translation>
+<translation id="5205197603258285592">حفظ الصورة في…</translation>
 <translation id="5211488077761630279">هل تريد السماح لـ "<ph name="SITE_NAME" />" باستخدام <ph name="PERMISSION" />؟</translation>
 <translation id="5219295696240154694">المساعدة في تحسين الأمان على الإنترنت من أجل الجميع</translation>
 <translation id="5220945116117011963">إنشاء أحداث في التقويم من التواريخ</translation>
@@ -849,6 +852,7 @@
 <translation id="5327753393331509826">الحصول على إشعارات المحتوى</translation>
 <translation id="5329451663851195956">يمكنك السحب للأسفل لإعادة التحميل.</translation>
 <translation id="5333148247954006827">التبديل إلى ملف شخصي آخر</translation>
+<translation id="5338512273860059533">يجري تسجيل الدخول.</translation>
 <translation id="5339316356165661760">تفعيل المزامنة</translation>
 <translation id="5343472494710226394">الأخبار والرياضة وغيرهما من المحتوى استنادًا إلى اهتماماتك</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{هل تريد تتبُّع هذه الحزمة؟}zero{هل تريد تتبُّع {COUNT} حزمة؟}two{هل تريد تتبُّع حزمتَين ({COUNT})؟}few{هل تريد تتبُّع {COUNT} حِزم؟}many{هل تريد تتبُّع {COUNT} حزمة؟}other{هل تريد تتبُّع {COUNT} حزمة؟}}</translation>
@@ -1524,6 +1528,7 @@
 <translation id="8556590991644167667">{count,plural, =1{أغلقت تحذيرًا واحدًا ({count}).}zero{أغلقت {count} تحذير.}two{أغلقت تحذيرَين ({count}).}few{أغلقت {count} تحذيرات.}many{أغلقت {count} تحذيرًا.}other{أغلقت {count} تحذير.}}</translation>
 <translation id="8560253818350321773">عرض العناصر الأكثر استخدامًا أولاً</translation>
 <translation id="8569721750632860947">‏ما هو عنوان URL الذي تريد إضافته إلى "قائمة القراءة"؟</translation>
+<translation id="8570765991595769633">تخصيص البطاقات</translation>
 <translation id="8577056989960190117">الملء التلقائي لسنة انتهاء الصلاحية <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">غير مفعَّل</translation>
 <translation id="8591976964826315682">حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفُّح المتخفي</translation>
@@ -1663,6 +1668,7 @@
 <translation id="948048872540558976">إنشاء علامة تبويب جديدة</translation>
 <translation id="952218985181984374">{count,plural, =1{تم حفظ الإشارة المرجعية.}zero{تم حفظ {count} إشارة مرجعية.}two{تم حفظ إشارتَين مرجعيتَين ({count}).}few{تم حفظ {count} إشارات مرجعية.}many{تم حفظ {count} إشارة مرجعية.}other{تم حفظ {count} إشارة مرجعية.}}</translation>
 <translation id="952704832371081537">إلغاء</translation>
+<translation id="955587716023217544">تعديل قائمة الحسابات</translation>
 <translation id="959066944189734975">تتم حاليًا متابعة <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">عرض اقتراحات علامات التبويب من أجهزة أخرى</translation>
 <translation id="973493300226275298">يمكنك تتبُّع سعر منتج معيَّن في المتاجر على الإنترنت. وستتلقّى تنبيهات عند انخفاض السعر.</translation>

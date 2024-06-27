@@ -81,6 +81,8 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="2329088755516916767">When on, Chromium preloads pages, which makes browsing and searching faster.</translation>
 <translation id="2343156876103232566">To send a number from here to your Android phone, sign in to Chromium on both devices.</translation>
 <translation id="2359808026110333948">Continue</translation>
+<translation id="2361918034042471035">The extension '<ph name="EXTENSION_NAME" />' wants you to sign in to Chromium</translation>
+<translation id="2374216753258219393">To use this extension as <ph name="USER_EMAIL_ADDRESS" />, sign in to Chromium.</translation>
 <translation id="2384373936468275798">Chromium OS could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 HID device was being accessed by one or more Chromium extensions}=1{1 HID device is being accessed by one or more Chromium extensions}other{# HID devices are being accessed by one or more Chromium extensions}}</translation>
 <translation id="2401032172288869980">Chromium needs camera and microphone permissions for this site</translation>
@@ -244,9 +246,11 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="4893347770495441059">Relaunch to Update &amp;Chromium</translation>
 <translation id="4942295735032723435">To get future Chromium updates, you'll need macOS 11 or later. This computer is using macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium is in background mode.</translation>
+<translation id="494490797786467921">Click to close the Chromium sign-in dialogue</translation>
 <translation id="4987820182225656817">Guests can use Chromium without leaving anything behind.</translation>
 <translation id="4994636714258228724">Add yourself to Chromium</translation>
 <translation id="5114678101347489141">Chromium is exploring new features that allow sites to deliver the same browsing experience using less of your info</translation>
+<translation id="5187123684706427865">Chromium account requires re-authentication</translation>
 <translation id="5224391634244552924">No saved passwords. Chromium can check your passwords when you save them.</translation>
 <translation id="5231355151045086930">Sign out of Chromium</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> is already signed in to this Chromium profile. This will create a new Chromium profile for <ph name="USER_EMAIL_ADDRESS" /></translation>

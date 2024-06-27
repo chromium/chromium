@@ -102,6 +102,7 @@
 <translation id="1499900233129743732">يدير <ph name="MANAGER" /> هذا المستخدم، ويمكنه إدارة الإعدادات ومراقبة نشاط المستخدم عن بُعد.</translation>
 <translation id="150962533380566081">‏PUK غير صالح.</translation>
 <translation id="1510238584712386396">مشغِّل التطبيقات</translation>
+<translation id="1514446283880973949">يمكنك الكتابة بثقة أكبر وتلخيص المحتوى وتعريف المصطلحات والمزيد</translation>
 <translation id="1515129336378114413">الصفحة الرئيسية للمتصفّح</translation>
 <translation id="1526389707933164996">الصور المتحركة لشاشة الاستراحة</translation>
 <translation id="152892567002884378">رفع مستوى الصوت</translation>
@@ -1287,6 +1288,7 @@
 <translation id="8167413449582155132">‏الخلفية مستندة إلى تكنولوجيات الذكاء الاصطناعي من Google</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">شاطئ</translation>
+<translation id="819278132617411009">‏استخدام تكنولوجيات الذكاء الاصطناعي من Google لتعزيز إنتاجيتك</translation>
 <translation id="8206859287963243715">خلوي</translation>
 <translation id="8208861521865154048">المزايا</translation>
 <translation id="8226628635270268143">اختيار صورك وألبوماتك المفضَّلة</translation>
@@ -1333,6 +1335,7 @@
 <translation id="8431300646573772016">‏الجديد في نظام Chrome</translation>
 <translation id="843568408673868420">اتصال الإنترنت</translation>
 <translation id="844521431886043384">لم يتم ضبط إعدادات نظام أسماء النطاقات.</translation>
+<translation id="8456200178779628126">‏استخدام تكنولوجيا الذكاء الاصطناعي من Google للحصول على مساعدة في القراءة والكتابة</translation>
 <translation id="8456761643544401578">الوضع المُعتِم التلقائي</translation>
 <translation id="8461329675984532579">اسم مقدم الخدمة الرئيسي</translation>
 <translation id="8475690821716466388">‏شبكة Wi-Fi مؤمَّنة باستخدام بروتوكول WEP PSK ضعيف.</translation>
@@ -1459,6 +1462,7 @@
 <translation id="910415269708673980">تحديث تذكرة من أجل <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">جارٍ المسح ضوئيًا للصفحة رقم <ph name="PAGE_NUMBER" />.</translation>
 <translation id="9111102763498581341">فتح القفل</translation>
+<translation id="9122492456897874028">يمكنك تلخيص المحتوى وتعريف المصطلحات والمزيد</translation>
 <translation id="9122602430962285795">لإعادة الاتصال، انتقِل إلى "الإعدادات".</translation>
 <translation id="9122865513525855321">بسيط</translation>
 <translation id="9126720536733509015">‏حفظ صفحات متعدّدة في ملف PDF واحد</translation>

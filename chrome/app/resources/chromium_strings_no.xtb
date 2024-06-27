@@ -79,6 +79,8 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="2329088755516916767">Når dette er på, forhåndslaster Chromium sider, slik at det går raskere å surfe og søke.</translation>
 <translation id="2343156876103232566">For å sende numre herfra til Android-telefonen din, logg på Chromium på begge enhetene.</translation>
 <translation id="2359808026110333948">Fortsett</translation>
+<translation id="2361918034042471035">Utvidelsen «<ph name="EXTENSION_NAME" />» vil at du skal logge på Chromium</translation>
+<translation id="2374216753258219393">For å bruke denne utvidelsen som <ph name="USER_EMAIL_ADDRESS" />, logg på Chromium.</translation>
 <translation id="2384373936468275798">ChromiumOS kunne ikke synkronisere dataene dine, ettersom påloggingsopplysningene for kontoen din er utdaterte.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 HID-enhet ble brukt av en eller flere Chromium-utvidelser}=1{1 HID-enhet brukes av en eller flere Chromium-utvidelser}other{# HID-enheter brukes av en eller flere Chromium-utvidelser}}</translation>
 <translation id="2401032172288869980">Chromium trenger kamera- og mikrofontillatelse for dette nettstedet</translation>
@@ -242,9 +244,11 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="4893347770495441059">Start på nytt for å oppdatere &amp;Chromium</translation>
 <translation id="4942295735032723435">For å få fremtidige Chromium-oppdateringer må du ha macOS 11 eller nyere. Denne datamaskinen bruker macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium er i bakgrunnsmodus.</translation>
+<translation id="494490797786467921">Klikk for å lukke dialogboksen for Chromium-pålogging</translation>
 <translation id="4987820182225656817">Gjester kan bruke Chromium uten å etterlate seg spor.</translation>
 <translation id="4994636714258228724">Legg til deg selv i Chromium</translation>
 <translation id="5114678101347489141">Chrome utforsker nye funksjoner som gjør det mulig for nettsteder å bruke mindre av dataene dine og likevel gi deg den samme nettlesingsopplevelsen</translation>
+<translation id="5187123684706427865">Chromium-kontoen krever ny autentisering</translation>
 <translation id="5224391634244552924">Ingen lagrede passord. Chromium kan sjekke passordene dine når du lagrer dem.</translation>
 <translation id="5231355151045086930">Vil du logge av Chromium?</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> er allerede logget på denne Chromium-profilen. Dette medfører at det blir opprettet en ny Chromium-profil for <ph name="USER_EMAIL_ADDRESS" /></translation>

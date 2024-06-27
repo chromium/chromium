@@ -5,6 +5,8 @@
 <translation id="1026101648481255140">繼續安裝</translation>
 <translation id="102763973188675173">自訂和管理 Google Chrome。有可用的更新。</translation>
 <translation id="1028061813283459617">如果只刪除此裝置上的瀏覽資料，但保留 Google 帳戶中的資料，請<ph name="BEGIN_LINK" />登出 Chrome<ph name="END_LINK" />。</translation>
+<translation id="1042270987544905725">點擊即可關閉 Chrome 登入對話框</translation>
+<translation id="1059838145689930908">如要以 <ph name="USER_EMAIL_ADDRESS" /> 身分使用此擴充程式，請登入 Chrome。</translation>
 <translation id="1065672644894730302">系統無法讀取您的偏好設定。
 
 部分功能可能無法使用，而系統也不會儲存任何偏好設定的變更。</translation>
@@ -372,6 +374,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6291089322031436445">Chrome 開發人員應用程式</translation>
 <translation id="6291549208091401781">電腦上的所有使用者均安裝了 Google Chrome。</translation>
 <translation id="6319856120645568262">Chrome 需要適當權限，才能繪製周遭環境並進行手部追蹤</translation>
+<translation id="6321592572353357376">擴充程式「<ph name="EXTENSION_NAME" />」需要你登入 Chrome</translation>
 <translation id="6326175484149238433">從 Chrome 中移除</translation>
 <translation id="6327105987658262776">沒有可用的更新。</translation>
 <translation id="6360449101159168105">當此分頁處於閒置狀態時，系統會釋出記憶體，加快 Chrome 的運作速度。您可選擇一律不讓此網站進入閒置狀態。</translation>
@@ -464,6 +467,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7655455401911432608">您的瀏覽記錄，亦即您在此裝置上使用 Chrome 瀏覽過的網站記錄。</translation>
 <translation id="7661924425853052955">由於最近沒有瀏覽記錄，Chrome 已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和另外 <ph name="COUNT" /> 項權限</translation>
 <translation id="7668816516367091728">使用網址列就能翻譯、計算及執行其他工作</translation>
+<translation id="7670287553302121848">Chrome 帳戶需要重新驗證</translation>
 <translation id="769538538642757151">如有任何需要審核的事項，Chrome 會通知你</translation>
 <translation id="7747138024166251722">安裝程式無法建立暫時目錄，請檢查可用磁碟空間與權限，以順利安裝軟件。</translation>
 <translation id="7761834446675418963">按一下您的名稱即可開啟 Chrome 並開始瀏覽。</translation>

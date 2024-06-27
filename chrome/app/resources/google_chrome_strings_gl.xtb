@@ -5,6 +5,8 @@
 <translation id="1026101648481255140">Retomar instalación</translation>
 <translation id="102763973188675173">Personalizar e controlar Google Chrome. Hai unha actualización dispoñible.</translation>
 <translation id="1028061813283459617">Para eliminar os datos de navegación só deste dispositivo, pero non da túa Conta de Google, tes que <ph name="BEGIN_LINK" />pechar sesión en Chrome<ph name="END_LINK" />.</translation>
+<translation id="1042270987544905725">Fai clic para pechar o cadro de diálogo de inicio de sesión de Chrome</translation>
+<translation id="1059838145689930908">Para usar esta extensión como <ph name="USER_EMAIL_ADDRESS" />, inicia sesión en Chrome.</translation>
 <translation id="1065672644894730302">Non se poden ler as túas preferencias.
 
 É posible que algunhas funcións non estean dispoñibles e que non se garden os cambios nas preferencias.</translation>
@@ -372,6 +374,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6291089322031436445">Aplicacións de Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome xa está instalado para todos os usuarios no teu ordenador.</translation>
 <translation id="6319856120645568262">Chrome necesita permiso para analizar o que te rodea e facer un seguimento das mans</translation>
+<translation id="6321592572353357376">A extensión \"<ph name="EXTENSION_NAME" />\" quere que inicies sesión en Chrome</translation>
 <translation id="6326175484149238433">Eliminar de Chrome</translation>
 <translation id="6327105987658262776">Non hai ningunha actualización dispoñible.</translation>
 <translation id="6360449101159168105">Mentres esta pestana estaba inactiva, liberouse memoria para que Chrome siga funcionando rápido. Podes optar por excluír este sitio para que nunca estea inactivo.</translation>
@@ -464,6 +467,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="7655455401911432608">O teu historial de navegación e un rexistro dos sitios que visitases usando Chrome neste dispositivo.</translation>
 <translation id="7661924425853052955">Levas un tempo sen entrar. Chrome quitou os seguintes permisos: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="COUNT" /> máis</translation>
 <translation id="7668816516367091728">Leva a cabo accións como traducir textos, facer cálculos e moito máis directamente desde a barra de enderezos</translation>
+<translation id="7670287553302121848">Para poder usar a conta de Chrome, é necesario volver autenticarse</translation>
 <translation id="769538538642757151">Chrome informarate se atopa algo que necesites revisar</translation>
 <translation id="7747138024166251722">O programa de instalación non puido crear un directorio temporal. Comproba se hai espazo libre no disco e se tes autorización para instalar o software.</translation>
 <translation id="7761834446675418963">Fai clic no teu nome para abrir Chrome e comezar a navegar.</translation>

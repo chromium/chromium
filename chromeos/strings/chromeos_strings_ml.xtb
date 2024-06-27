@@ -102,6 +102,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> ആണ് ഈ ഉപയോക്താവിനെ മാനേജ് ചെയ്യുന്നത്, ഒപ്പം വിദൂരമായി ക്രമീകരണം മാനേജ് ചെയ്യുകയും ഉപയോക്തൃ ആക്‌റ്റിവിറ്റി നിരീക്ഷിക്കുകയും ചെയ്തേക്കാം.</translation>
 <translation id="150962533380566081">അസാധുവായ PUK.</translation>
 <translation id="1510238584712386396">ലോഞ്ചർ</translation>
+<translation id="1514446283880973949">കൂടുതൽ ആത്മവിശ്വാസത്തോടെ എഴുതുകയും ഉള്ളടക്കം സംഗ്രഹിക്കുകയും നിർവചനങ്ങൾ നേടുകയും മറ്റും ചെയ്യൂ</translation>
 <translation id="1515129336378114413">ബ്രൗസർ ഹോം</translation>
 <translation id="1526389707933164996">സ്ക്രീൻ സേവർ ആനിമേഷൻ</translation>
 <translation id="152892567002884378">ശബ്ദം കൂട്ടുക</translation>
@@ -1287,6 +1288,7 @@
 <translation id="8167413449582155132">പശ്ചാത്തലത്തിൽ Google AI കൊണ്ട് പ്രവർത്തിക്കുന്നത്</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">ബീച്ച്</translation>
+<translation id="819278132617411009">ഉൽപ്പാദനക്ഷമത വർദ്ധിപ്പിക്കാൻ Google AI ഉപയോഗിക്കൂ</translation>
 <translation id="8206859287963243715">സെല്ലുലാര്‍‌</translation>
 <translation id="8208861521865154048">പെർക്കുകൾ</translation>
 <translation id="8226628635270268143">നിങ്ങളുടെ പ്രിയപ്പെട്ട ഫോട്ടോകളും ആൽബങ്ങളും തിരഞ്ഞെടുക്കുക</translation>
@@ -1333,6 +1335,7 @@
 <translation id="8431300646573772016">ChromeOS-ൽ പുതിയത്</translation>
 <translation id="843568408673868420">ഇന്റർനെറ്റ് കണക്റ്റിവിറ്റി</translation>
 <translation id="844521431886043384">DNS സജ്ജീകരിച്ചിട്ടില്ല</translation>
+<translation id="8456200178779628126">വായിക്കാനും എഴുതാനും സഹായം നേടാൻ Google AI ഉപയോഗിക്കൂ</translation>
 <translation id="8456761643544401578">സ്വയമേവയുള്ള ഡാർക്ക് മോഡ്</translation>
 <translation id="8461329675984532579">ഹോം പ്രൊവൈഡറിന്റെ പേര്</translation>
 <translation id="8475690821716466388">ദുർബലമായ WEP PSK പ്രോട്ടോക്കോൾ ഉപയോഗിച്ചാണ് വെെഫെെ നെറ്റ്‌വർക്ക് സുരക്ഷിതമാക്കിയിരിക്കുന്നത്</translation>
@@ -1459,6 +1462,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> എന്നതിനുള്ള ടിക്കറ്റ് റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-ാമത്തെ പേജ് സ്‌കാൻ ചെയ്യുന്നു</translation>
 <translation id="9111102763498581341">അണ്‍ലോക്ക് ചെയ്യുക</translation>
+<translation id="9122492456897874028">ഉള്ളടക്കം സംഗ്രഹിക്കുകയും നിർവചനങ്ങൾ നേടുകയും മറ്റും ചെയ്യൂ</translation>
 <translation id="9122602430962285795">വീണ്ടും കണക്റ്റ് ചെയ്യാൻ, ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="9122865513525855321">സെൻ</translation>
 <translation id="9126720536733509015">ഒരു PDF-ൽ ഒന്നിലധികം പേജുകൾ സംരക്ഷിക്കുക</translation>

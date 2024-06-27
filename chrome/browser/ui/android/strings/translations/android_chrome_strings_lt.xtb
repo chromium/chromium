@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Aktyvus prieš <ph name="LAST_UPDATED" /> d.</translation>
 <translation id="1390418506739274310">Galite matyti kitų programų, kurios atidaro nuorodas naršyklėje „Chrome“, istoriją. „Google“ paskyroje gali būti kito tipo naršymo istorijos, kuri pasiekiama adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Kad būtų galima tęsti, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bendrins jūsų vardą ir pavardę, el. pašto adresą ir profilio nuotrauką su šia svetaine. Žr. svetainės <ph name="BEGIN_LINK1" />paslaugų teikimo sąlygas<ph name="END_LINK1" />.</translation>
+<translation id="139752016751285248">Kainų įžvalgų apatinis lapas atidarytas per visą ekrano aukštį</translation>
 <translation id="1397811292916898096">Paieška su „<ph name="PRODUCT_NAME" />“</translation>
 <translation id="1398057416966591719">Galite <ph name="BEGIN_LINK1" />tvarkyti, kokie „Chrome“ duomenys išsaugomi<ph name="END_LINK1" /> „Google“ paskyroje.
 
@@ -179,6 +180,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="1877073879466606884">Profilis, prie kurio esate prisijungę, yra tvarkomas profilis. Administratorius gali nuotoliniu būdu keisti profilio nustatymus, analizuoti informaciją apie naršyklę pateikdamas ataskaitas ir atlikti kitas reikiamas užduotis.</translation>
 <translation id="1883903952484604915">Mano failai</translation>
 <translation id="189358972401248634">Kitos kalbos</translation>
+<translation id="1899175549411605574">Kainų įžvalgų apatinis lapas</translation>
 <translation id="1900260903084164610">Tęsdami sutinkate su <ph name="BEGIN_TOS_LINK" />paslaugų teikimo sąlygomis<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">URL, kuriais lankotės, išsaugomi jūsų „Google“ paskyroje</translation>
 <translation id="1910950723001426294">Bendrinimo parinkčių sąrašas uždarytas.</translation>
@@ -530,6 +532,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3637744895182738742">Jei pamiršote slaptafrazę ar norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Eiti į „Google“ programos pagrindinį skirtuką</translation>
 <translation id="368329460027487650">Atsijungta. Atidaromos prisijungimo parinktys.</translation>
+<translation id="3684540848053703310">Kainų įžvalgų apatinis lapas uždarytas</translation>
 <translation id="3687645719033307815">Žiūrite šio puslapio peržiūrą</translation>
 <translation id="3690369331356918524">Įspėjama, jei slaptažodžiai buvo atskleisti įvykus duomenų saugos pažeidimui</translation>
 <translation id="3692944402865947621">Nepavyko atsisiųsti „<ph name="FILE_NAME" />“, nes saugyklos vieta nepasiekiama.</translation>

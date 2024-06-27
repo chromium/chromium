@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">Екранну клавіатуру ввімкнено</translation>
 <translation id="1749109475624620922">Вікно "<ph name="WINDOW_TITLE" />" призначено для всіх робочих столів</translation>
 <translation id="1750088060796401187">Максимальна кількість робочих столів – <ph name="MAX_DESK_LIMIT" />. Щоб додати новий робочий стіл, вилучіть старий.</translation>
+<translation id="1751335846119670066">Допомога із читанням</translation>
 <translation id="1755408179247123630">Увімкнути функцію "Читання з екрана"?</translation>
 <translation id="1755556344721611131">Додаток Діагностика</translation>
 <translation id="1756833229520115364">Не вдалося зберегти шаблон. Забагато вікон або вкладок.</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">Налаштувати перегляд нещодавніх фотографій, медіафайлів і сповіщень на телефоні</translation>
 <translation id="1787955149152357925">Вимкнено</translation>
 <translation id="1796561540704213354">Веб-сайти, зокрема відвідані й відкриті сторінки</translation>
+<translation id="179842970735685253">Загальних положень і умов Google</translation>
 <translation id="181103072419391116">Рівень сигналу – <ph name="SIGNAL_STRENGTH" />. Мережею керує адміністратор</translation>
 <translation id="1816896987747843206">Буде надано доступ до камери для всіх додатків і веб-сайтів, де потрібен відповідний дозвіл</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">ЦП</translation>
 <translation id="3125690294288312932">Тип завдання</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Важлива інформація</translation>
 <translation id="3139188263101386725">Використовуйте оновлену комбінацію клавіш</translation>
 <translation id="3139942575505304791">Робочий стіл 1</translation>
 <translation id="315116470104423982">Мобільне передавання даних</translation>
@@ -961,6 +964,7 @@
 <translation id="4585337515783392668">Зупинити трансляцію на невідомий пристрій</translation>
 <translation id="4596144739579517758">Темну тему вимкнено</translation>
 <translation id="4596442969149038771">Поділився користувач <ph name="USER" /></translation>
+<translation id="4610493115106525653">Корисний результат</translation>
 <translation id="4611292653554630842">Увійти</translation>
 <translation id="462160925400706389"><ph name="NAME" /> підключено</translation>
 <translation id="4623167406982293031">Підтвердьте обліковий запис</translation>
@@ -1118,6 +1122,7 @@
 <translation id="5121628974188116412">Перейти вниз сторінки</translation>
 <translation id="5122517996953421795">Попередній огляд робочого столу "<ph name="DESK_NAME" />". Він неактивний.</translation>
 <translation id="5136175204352732067">Під’єднано іншу клавіатуру</translation>
+<translation id="5140105873789567560">Користуватися функціями "Допомога з текстом" і "Допомога із читанням" можуть лише особи, яким виповнилося 18 років.</translation>
 <translation id="5144005092084035179">Змінити аудіовхід?</translation>
 <translation id="5147567197700016471">Розблоковано</translation>
 <translation id="5150070631291639005">Налаштування конфіденційності</translation>
@@ -1558,6 +1563,7 @@
 <translation id="6696025732084565524">Змінну клавіатуру потрібно оновити</translation>
 <translation id="6697913454192220372">Додати новий робочий стіл</translation>
 <translation id="6700713906295497288">Кнопка меню IME</translation>
+<translation id="6704375469818246414">Якість контенту, створеного за допомогою генеративного ШІ, може бути різною.</translation>
 <translation id="6706742084323792866">Закріпити клавіатуру</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="6723839937902243910">Заряд</translation>
@@ -1825,9 +1831,11 @@
 <translation id="7726391492136714301">Переглядати сповіщення й додатки на вашому телефоні</translation>
 <translation id="7727952505535211425">Відкрити веб-сайт в адресному рядку на новій вкладці</translation>
 <translation id="7742327441377685481">Немає сповіщень</translation>
+<translation id="774736258792760908">Коли ви вмикаєте функції "Допомога з текстом" і "Допомога із читанням", введений текст та вміст документа надсилається на сервери ШІ від Google, щоб генерувати пропозиції, підсумовувати контент і відповідати на запитання відповідно до <ph name="LINK_TO_SERVICE_TERMS" />. Не вказуйте особисту, чутливу чи конфіденційну інформацію.</translation>
 <translation id="7748275671948949022">Виділити кнопку запуску на панелі</translation>
 <translation id="7749443890790263709">Ви додали максимальну кількість робочих столів.</translation>
 <translation id="7749958366403230681">Клавіша ExpressKey 4</translation>
+<translation id="7759183637555564029">Ви можете будь-коли вимкнути функції "Допомога з текстом" і "Допомога із читанням" у налаштуваннях. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Читання з екрана</translation>
 <translation id="7769299611924763557">Зображення GIF буде готове незабаром</translation>
 <translation id="7773536009433685931">Увімкнути Wi-Fi</translation>
@@ -1836,6 +1844,7 @@
 <translation id="7781829728241885113">Учора</translation>
 <translation id="7787212146956232129">Пристрої введення й виведення налаштовано. Щоб внести зміни, перейдіть у налаштування.</translation>
 <translation id="7792590255364786396">Відображається</translation>
+<translation id="7793389284006812057">Генеративний ШІ є експериментальною функцією, яка перебуває на ранніх стадіях розробки й зараз доступна не для всіх.</translation>
 <translation id="7796735576426975947">Нове сповіщення приховано</translation>
 <translation id="7798302898096527229">Щоб скасувати, натисніть клавішу Search або Shift.</translation>
 <translation id="780301667611848630">Ні, дякую</translation>
@@ -1990,6 +1999,7 @@
 <translation id="8331351032546853669">Очікує на завантаження</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Некорисний результат</translation>
 <translation id="8345019317483336363">Вибрано вікно "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="8349826889576450703">панель запуску</translation>
 <translation id="8349964124165471584">Відкрити посилання в новому вікні</translation>

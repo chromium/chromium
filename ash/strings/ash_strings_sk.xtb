@@ -216,6 +216,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1747827819627189109">Klávesnica na obrazovke je povolená</translation>
 <translation id="1749109475624620922">Okno <ph name="WINDOW_TITLE" /> bolo pridelené všetkým plochám</translation>
 <translation id="1750088060796401187">Povolený je iba tento počet plôch: <ph name="MAX_DESK_LIMIT" />. Ak chcete otvoriť novú plochu, odstráňte jednu z nich.</translation>
+<translation id="1751335846119670066">Asistent pri čítaní</translation>
 <translation id="1755408179247123630">Chcete zapnúť počúvanie vybraného textu?</translation>
 <translation id="1755556344721611131">Diagnostická aplikácia</translation>
 <translation id="1756833229520115364">Šablónu sa nepodarilo uložiť. Príliš veľa okien alebo kariet.</translation>
@@ -227,6 +228,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="178347895271755507">Nastaviť zobrazovanie nedávnych fotiek, médií a upozornení z telefónu</translation>
 <translation id="1787955149152357925">Vypnuté</translation>
 <translation id="1796561540704213354">Weby vrátane stránok, ktoré ste navštívili, a tých, ktoré sú otvorené</translation>
+<translation id="179842970735685253">zmluvnými podmienkami spoločnosti Google</translation>
 <translation id="181103072419391116">Sila signálu <ph name="SIGNAL_STRENGTH" />, ovládané správcom</translation>
 <translation id="1816896987747843206">Týmto povolíte prístup ku kamere všetkým aplikáciám a webom s povolením používať kameru</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Typ prác triedy</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Niekoľko vecí, na ktoré treba pamätať</translation>
 <translation id="3139188263101386725">Použite aktualizovanú skratku</translation>
 <translation id="3139942575505304791">1. plocha</translation>
 <translation id="315116470104423982">Mobilné dátové prenosy</translation>
@@ -961,6 +964,7 @@ Pripojené je jedno zariadenie.</translation>
 <translation id="4585337515783392668">Zastaviť prenos do neznámeho zariadenia</translation>
 <translation id="4596144739579517758">Tmavý motív je vypnutý</translation>
 <translation id="4596442969149038771">Zdieľal používateľ <ph name="USER" /></translation>
+<translation id="4610493115106525653">Dobrý vstup</translation>
 <translation id="4611292653554630842">Prihlásiť sa</translation>
 <translation id="462160925400706389">Bolo pripojené zariadenie <ph name="NAME" /></translation>
 <translation id="4623167406982293031">Overiť účet</translation>
@@ -1118,6 +1122,7 @@ Môžete použiť aj klávesovú skratku. Najprv zvýraznite text, potom stlačt
 <translation id="5121628974188116412">Prechod na koniec stránky</translation>
 <translation id="5122517996953421795">Ukážka plochy <ph name="DESK_NAME" />. Plocha je neaktívna.</translation>
 <translation id="5136175204352732067">Bola pripojená iná klávesnica</translation>
+<translation id="5140105873789567560">Ak chcete používať asistenta pri písaní a asistenta pri čítaní, musíte mať aspoň 18 rokov.</translation>
 <translation id="5144005092084035179">Chcete prepnúť zvukový vstup?</translation>
 <translation id="5147567197700016471">Odomknutý</translation>
 <translation id="5150070631291639005">Nastavenia súkromia</translation>
@@ -1558,6 +1563,7 @@ Nová inštalácia</translation>
 <translation id="6696025732084565524">Odoberateľná klávesnica potrebuje kritickú aktualizáciu</translation>
 <translation id="6697913454192220372">Pridať novú plochu</translation>
 <translation id="6700713906295497288">Tlačidlo ponuky IME</translation>
+<translation id="6704375469818246414">Kvalita sa môže pri používaní generatívnej umelej inteligencie líšiť</translation>
 <translation id="6706742084323792866">Pripnúť klávesnicu</translation>
 <translation id="6710213216561001401">Späť</translation>
 <translation id="6723839937902243910">Napájanie</translation>
@@ -1825,9 +1831,11 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7726391492136714301">Zobrazujte si upozornenia a aplikácie svojho telefónu</translation>
 <translation id="7727952505535211425">Otvorenie webu na paneli s adresou na novej karte</translation>
 <translation id="7742327441377685481">Žiadne upozornenia</translation>
+<translation id="774736258792760908">Keď zapnete asistenta pri písaní a asistenta pri čítaní, vstupný text a obsah dokumentov budú odoslané na servery umelej inteligencie Googlu, aby bolo možné generovať návrhy formulácií aj zhrnutia, odpovedať na otázky a zlepšovať danú službu v súlade so <ph name="LINK_TO_SERVICE_TERMS" />. Neuvádzajte žiadne osobné, citlivé ani dôverné údaje.</translation>
 <translation id="7748275671948949022">Zvýraznenie tlačidla Spúšťača na poličke</translation>
 <translation id="7749443890790263709">Dosiahli ste maximálny počet pracovných prostredí.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Asistenta pri písaní a asistenta pri čítaní môžete kedykoľvek vypnúť v Nastaveniach. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Vyslovenie položky po vybratí</translation>
 <translation id="7769299611924763557">Váš gif bude čoskoro pripravený</translation>
 <translation id="7773536009433685931">Zapnúť Wi‐Fi</translation>
@@ -1836,6 +1844,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7781829728241885113">Včera</translation>
 <translation id="7787212146956232129">Vstupné a výstupné zariadenia sú nastavené. Zmeny môžete vykonať v Nastaveniach.</translation>
 <translation id="7792590255364786396">Viditeľné</translation>
+<translation id="7793389284006812057">Generatívna umelá inteligencia je experiment v ranom vývoji a momentálne je jej dostupnosť obmedzená.</translation>
 <translation id="7796735576426975947">Nové upozornenie bolo skryté</translation>
 <translation id="7798302898096527229">Ak to chcete zrušiť, stlačte kláves Hľadať alebo Shift.</translation>
 <translation id="780301667611848630">Nie, ďakujem</translation>
@@ -1990,6 +1999,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8331351032546853669">Čaká sa na stiahnutie</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Zlý výstup</translation>
 <translation id="8345019317483336363">Bolo vybrané okno <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">spúšťač</translation>
 <translation id="8349964124165471584">Otvorenie odkazu v novom okne</translation>

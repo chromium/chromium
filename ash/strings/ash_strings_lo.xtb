@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">ແປ້ນພິມ​ເທິງ​ໜ້າ​ຈໍ​ເປີດໃຊ້​ງານ​ແລ້ວ</translation>
 <translation id="1749109475624620922">ໜ້າຈໍ <ph name="WINDOW_TITLE" /> ຖືກມອບໝາຍໄປໃສ່ໂຕະທັງໝົດແລ້ວ</translation>
 <translation id="1750088060796401187">ອະນຸຍາດໃຫ້ມີ <ph name="MAX_DESK_LIMIT" /> ໂຕະເທົ່ານັ້ນ. ກະລຸນາລຶບໂຕະໃດໜຶ່ງອອກເພື່ອເປີດໂຕະໃໝ່.</translation>
+<translation id="1751335846119670066">ຊ່ວຍຂ້ອຍອ່ານ</translation>
 <translation id="1755408179247123630">ເປີດຄຸນສົມບັດເລືອກເພື່ອເວົ້າບໍ?</translation>
 <translation id="1755556344721611131">ແອັບການວິນິໄສ</translation>
 <translation id="1756833229520115364">ບໍ່ສາມາດບັນທຶກແມ່ແບບໄດ້. ມີໜ້າຈໍ ຫຼື ແຖບຫຼາຍເກີນໄປ.</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">ຕັ້ງຄ່າການເບິ່ງຮູບພາບຫຼ້າສຸດ, ມີເດຍ ແລະ ການແຈ້ງເຕືອນຂອງໂທລະສັບທ່ານ</translation>
 <translation id="1787955149152357925">ປິດ</translation>
 <translation id="1796561540704213354">ເວັບໄຊຮວມມີໜ້າຕ່າງໆທີ່ທ່ານເຄີຍເຂົ້າ ແລະ ໜ້າທີ່ເປີດໄວ້</translation>
+<translation id="179842970735685253">ຂໍ້ກຳນົດບໍລິການຂອງ Google</translation>
 <translation id="181103072419391116">ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="1816896987747843206">ການດຳເນີນການນີ້ອະນຸຍາດສິດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບໃຫ້ແກ່ແອັບ ແລະ ເວັບໄຊທັງໝົດທີ່ມີສິດການອະນຸຍາດກ້ອງຖ່າຍຮູບ</translation>
 <translation id="1823873187264960516">ອີເທີເນັດ: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">ປະເພດວຽກຫ້ອງ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">ສອງສາມສິ່ງທີ່ຕ້ອງຄຳນຶງ</translation>
 <translation id="3139188263101386725">ໃຊ້ທາງລັດທີ່ອັບເດດແລ້ວ</translation>
 <translation id="3139942575505304791">ໂຕະ 1</translation>
 <translation id="315116470104423982">ຂໍ້​ມູນ​ມື​ຖື</translation>
@@ -961,6 +964,7 @@
 <translation id="4585337515783392668">ຢຸດການສົ່ງສັນຍານໃນເຄື່ອງຮັບທີ່ບໍ່ຮູ້ຈັກ</translation>
 <translation id="4596144739579517758">ຮູບແບບສີສັນມືດປິດຢູ່</translation>
 <translation id="4596442969149038771"><ph name="USER" /> ໄດ້ແບ່ງປັນ</translation>
+<translation id="4610493115106525653">ເອົ້າພຸດດີ</translation>
 <translation id="4611292653554630842">ເຂົ້າສູ່ລະບົບ</translation>
 <translation id="462160925400706389">ເຊື່ອມຕໍ່ <ph name="NAME" /> ແລ້ວ</translation>
 <translation id="4623167406982293031">ຢັ້ງຢືນບັນຊີ</translation>
@@ -1118,6 +1122,7 @@
 <translation id="5121628974188116412">ໄປຫາສ່ວນລຸ່ມຂອງໜ້າ</translation>
 <translation id="5122517996953421795">ຕົວຢ່າງ <ph name="DESK_NAME" />. ໂຕະທີ່ບໍ່ໄດ້ໃຊ້.</translation>
 <translation id="5136175204352732067">ເຊື່ອມຕໍ່ແປ້ນພິມອື່ນແລ້ວ</translation>
+<translation id="5140105873789567560">ທ່ານຕ້ອງມີອາຍຸຢ່າງໜ້ອຍ 18 ປີຈຶ່ງຈະສາມາດໃຊ້ຄຸນສົມບັດຊ່ວຍຂ້ອຍຂຽນ ແລະ ຊ່ວຍຂ້ອຍອ່ານໄດ້.</translation>
 <translation id="5144005092084035179">ປ່ຽນອິນພຸດສຽງບໍ?</translation>
 <translation id="5147567197700016471">ປົດລັອກແລ້ວ</translation>
 <translation id="5150070631291639005">ການຕັ້ງຄ່າຄວາມເປັນສ່ວນຕົວ</translation>
@@ -1558,6 +1563,7 @@
 <translation id="6696025732084565524">ແປ້ນພິມທີ່ສາມາດແຍກອອກໄດ້ຂອງທ່ານຈຳເປັນຕ້ອງມີການອັບເດດສຳຄັນ</translation>
 <translation id="6697913454192220372">ເພີ່ມໂຕະໃໝ່</translation>
 <translation id="6700713906295497288">ປຸ່ມເມນູ IME</translation>
+<translation id="6704375469818246414">ຄຸນນະພາບອາດແຕກຕ່າງກັນໄປເມື່ອໃຊ້ AI ສ້າງເນື້ອຫາ.</translation>
 <translation id="6706742084323792866">ປັກໝຸດແປ້ນພິມ</translation>
 <translation id="6710213216561001401">ຜ່ານມາ</translation>
 <translation id="6723839937902243910">ໄຟ</translation>
@@ -1825,9 +1831,11 @@
 <translation id="7726391492136714301">ເບິ່ງການແຈ້ງເຕືອນ ແລະ ແອັບຂອງໂທລະສັບທ່ານ</translation>
 <translation id="7727952505535211425">ເປີດເວັບໄຊໃນແຖບທີ່ຢູ່ໃນແຖບໃໝ່</translation>
 <translation id="7742327441377685481">ບໍ່ມີການແຈ້ງເຕືອນ</translation>
+<translation id="774736258792760908">ເມື່ອທ່ານເປີດຄຸນສົມບັດຊ່ວຍຂ້ອຍຂຽນ ແລະ ຊ່ວຍຂ້ອຍອ່ານ, ລະບົບຈະສົ່ງຂໍ້ຄວາມອິນພຸດ ແລະ ເນື້ອຫາເອກະສານໄປຫາເຊີບເວີຂອງ Google AI ເພື່ອສ້າງຄຳແນະນຳໃນການຂຽນ, ສ້າງຂໍ້ມູນສະຫຼຸບ, ຕອບຄຳຖາມ ແລະ ປັບປຸງຜະລິດຕະພັນໃຫ້ດີຂຶ້ນ, ໂດຍເປັນໄປຕາມ <ph name="LINK_TO_SERVICE_TERMS" />. ຢ່າລະບຸຂໍ້ມູນໃດກໍຕາມທີ່ສ່ວນຕົວ, ລະອຽດອ່ອນ ຫຼື ເປັນຄວາມລັບ.</translation>
 <translation id="7748275671948949022">ໄຮໄລ້ປຸ່ມຕົວເປີດໃຊ້ຢູ່ຖ້ານ</translation>
 <translation id="7749443890790263709">ຮອດຈຳນວນສູງສຸດຂອງພື້ນທີ່ເຮັດວຽກແລ້ວ</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">ທ່ານສາມາດປິດຄຸນສົມບັດຊ່ວຍຂ້ອຍຂຽນ ແລະ ຊ່ວຍຂ້ອຍອ່ານໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າ. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">ເລືອກເພື່ອເວົ້າ</translation>
 <translation id="7769299611924763557">GIF ຂອງທ່ານຈະພ້ອມໃນໄວໆນີ້</translation>
 <translation id="7773536009433685931">ເປີດ Wi-Fi ແທນ</translation>
@@ -1836,6 +1844,7 @@
 <translation id="7781829728241885113">ມື້​ວານ​ນີ້</translation>
 <translation id="7787212146956232129">ຕັ້ງຄ່າອຸປະກອນອິນພຸດ ແລະ ເອົ້າພຸດແລ້ວ. ເຂົ້າໄປການຕັ້ງຄ່າເພື່ອປ່ຽນແປງ.</translation>
 <translation id="7792590255364786396">ເບິ່ງເຫັນ</translation>
+<translation id="7793389284006812057">AI ສ້າງເນື້ອຫາແມ່ນເວີຊັນທົດລອງ, ທີ່ຢູ່ໃນຊ່ວງການພັດທະນາຂັ້ນຕົ້ນ ແລະ ມີໃຫ້ບໍລິການແບບຈຳກັດໃນຕອນນີ້.</translation>
 <translation id="7796735576426975947">ເຊື່ອງການແຈ້ງເຕືອນໃໝ່ແລ້ວ</translation>
 <translation id="7798302898096527229">ກົດຊອກຫາ ຫຼື Shift ເພື່ອຍົກເລີກ.</translation>
 <translation id="780301667611848630">ບໍ່​, ​ຂອບ​ໃຈ</translation>
@@ -1990,6 +1999,7 @@
 <translation id="8331351032546853669">ການດາວໂຫຼດລໍຖ້າດຳເນີນການ</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">ເອົ້າພຸດບໍ່ດີ</translation>
 <translation id="8345019317483336363">ເລືອກໜ້າຈໍ <ph name="WINDOW_TITLE" /> ແລ້ວ</translation>
 <translation id="8349826889576450703">ຕົວເປີດໃຊ້</translation>
 <translation id="8349964124165471584">ເປີດລິ້ງໃນໜ້າຈໍໃໝ່</translation>

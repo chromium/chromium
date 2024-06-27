@@ -81,6 +81,8 @@
 <translation id="2329088755516916767">사용 설정하면 Chromium에서 페이지를 미리 로드하여 더 빠르게 탐색하고 검색할 수 있습니다.</translation>
 <translation id="2343156876103232566">여기에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chromium에 로그인하세요.</translation>
 <translation id="2359808026110333948">계속</translation>
+<translation id="2361918034042471035">"<ph name="EXTENSION_NAME" />" 확장 프로그램에서 Chromium 로그인을 요청합니다</translation>
+<translation id="2374216753258219393"><ph name="USER_EMAIL_ADDRESS" /> 계정으로 이 확장 프로그램을 사용하려면 Chromium에 로그인하세요.</translation>
 <translation id="2384373936468275798">계정의 로그인 세부정보가 오래되어 ChromiumOS에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{하나 이상의 Chromium 확장 프로그램에서 HID 기기 1대에 액세스함}=1{하나 이상의 Chromium 확장 프로그램에서 HID 기기 1대에 액세스 중}other{하나 이상의 Chromium 확장 프로그램에서 HID 기기 #대에 액세스 중}}</translation>
 <translation id="2401032172288869980">Chromium에서 사이트에 대한 카메라 및 마이크 권한이 필요합니다.</translation>
@@ -244,9 +246,11 @@
 <translation id="4893347770495441059">다시 실행하여 Chromium 업데이트</translation>
 <translation id="4942295735032723435">향후 Chromium 업데이트를 받으려면 macOS 11 이상이 필요합니다. 이 컴퓨터에서는 macOS 10.15를 사용 중입니다.</translation>
 <translation id="4943838377383847465">Chromium이 백그라운드 모드로 실행 중입니다.</translation>
+<translation id="494490797786467921">클릭하여 Chromium 로그인 대화상자 닫기</translation>
 <translation id="4987820182225656817">게스트로 사용 기록을 남기지 않고 Chromium을 사용할 수 있습니다.</translation>
 <translation id="4994636714258228724">Chromium에 본인 추가</translation>
 <translation id="5114678101347489141">Chromium은 사이트에서 내 정보를 더 적게 사용하면서도 동일한 인터넷 사용 환경을 제공할 수 있는 새로운 기능을 모색하고 있습니다.</translation>
+<translation id="5187123684706427865">Chromium 계정에 재인증이 필요함</translation>
 <translation id="5224391634244552924">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Chromium에서 확인할 수 있습니다.</translation>
 <translation id="5231355151045086930">Chromium에서 로그아웃</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" />님이 이미 Chromium 프로필에 로그인되어 있습니다. <ph name="USER_EMAIL_ADDRESS" />님을 위한 새 Chromium 프로필이 생성됩니다.</translation>

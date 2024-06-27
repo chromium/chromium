@@ -81,6 +81,8 @@
 <translation id="2329088755516916767">ਚਾਲੂ ਹੋਣ 'ਤੇ, Chromium ਉਨ੍ਹਾਂ ਪੰਨਿਆਂ ਨੂੰ ਪ੍ਰੀਲੋਡ ਕਰਦਾ ਹੈ ਜੋ ਬ੍ਰਾਊਜ਼ ਅਤੇ ਖੋਜ ਕਰਨ ਵਿੱਚ ਤੇਜ਼ੀ ਲਿਆਉਂਦੇ ਹਨ।</translation>
 <translation id="2343156876103232566">ਇੱਥੋਂ ਆਪਣੇ Android ਫ਼ੋਨ 'ਤੇ ਨੰਬਰ ਭੇਜਣ ਲਈ, ਦੋਵੇਂ ਡੀਵਾਈਸਾਂ 'ਤੇ Chromium ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="2359808026110333948">ਜਾਰੀ ਰੱਖੋ</translation>
+<translation id="2361918034042471035">ਐਕਸਟੈਂਸ਼ਨ "<ph name="EXTENSION_NAME" />" ਨੂੰ ਵਰਤਣ ਲਈ, ਤੁਹਾਨੂੰ Chromium ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
+<translation id="2374216753258219393">ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ <ph name="USER_EMAIL_ADDRESS" /> ਵਜੋਂ ਵਰਤਣ ਲਈ, Chromium ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="2384373936468275798">ChromiumOS ਤੁਹਾਡਾ ਡਾਟਾ ਸਿੰਕ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿਉਂਕਿ ਤੁਹਾਡੇ ਖਾਤਾ ਸਾਈਨ-ਇਨ ਵੇਰਵੇ ਪੁਰਾਣੇ ਹਨ।</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{ਇੱਕ ਜਾਂ ਇੱਕ ਤੋਂ ਵੱਧ Chromium ਐਕਸਟੈਂਸ਼ਨਾਂ ਵੱਲੋਂ 1 HID ਡੀਵਾਈਸ ਤੱਕ ਪਹੁੰਚ ਕੀਤੀ ਜਾ ਰਹੀ ਸੀ}=1{ਇੱਕ ਜਾਂ ਇੱਕ ਤੋਂ ਵੱਧ Chromium ਐਕਸਟੈਂਸ਼ਨਾਂ ਵੱਲੋਂ 1 HID ਡੀਵਾਈਸ ਤੱਕ ਪਹੁੰਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ}other{ਇੱਕ ਜਾਂ ਇੱਕ ਤੋਂ ਵੱਧ Chromium ਐਕਸਟੈਂਸ਼ਨਾਂ ਵੱਲੋਂ # HID ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ}}</translation>
 <translation id="2401032172288869980">Chromium ਨੂੰ ਇਸ ਸਾਈਟ ਲਈ ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>
@@ -244,9 +246,11 @@
 <translation id="4893347770495441059">&amp;Chromium ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਮੁੜ-ਲਾਂਚ ਕਰੋ</translation>
 <translation id="4942295735032723435">Chromium ਸੰਬੰਧੀ ਭਵਿੱਖੀ ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਤੁਹਾਨੂੰ macOS 11 ਜਾਂ ਇਸ ਤੋਂ ਬਾਅਦ ਵਾਲੇ ਵਰਜਨ ਦੀ ਲੋੜ ਪਵੇਗੀ। ਇਸ ਕੰਪਿਊਟਰ 'ਤੇ macOS 10.15 ਵਰਜਨ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="4943838377383847465">Chromium ਪਿਛੋਕੜ ਮੋਡ ਵਿੱਚ ਹੈ।</translation>
+<translation id="494490797786467921">Chromium ਦੀ ਸਾਈਨ-ਇਨ ਵਿੰਡੋ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="4987820182225656817">ਮਹਿਮਾਨ ਕੁਝ ਵੀ ਪਿੱਛੇ ਛੱਡੇ ਬਿਨਾਂ Chromium ਵਰਤ ਸਕਦੇ ਹਨ।</translation>
 <translation id="4994636714258228724">ਖੁਦ ਨੂੰ Chromium ਵਿੱਚ ਜੋੜੋ</translation>
 <translation id="5114678101347489141">Chromium ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੀ ਪੜਚੋਲ ਕਰ ਰਿਹਾ ਹੈ ਜੋ ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੀ ਘੱਟ ਜਾਣਕਾਰੀ ਦੀ ਵਰਤੋਂ ਦੇ ਨਾਲ ਓਹੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਅਨੁਭਵ ਪ੍ਰਦਾਨ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿੰਦੀਆਂ ਹਨ</translation>
+<translation id="5187123684706427865">Chromium ਖਾਤੇ ਨੂੰ ਮੁੜ-ਪ੍ਰਮਾਣੀਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="5224391634244552924">ਕੋਈ ਰੱਖਿਅਤ ਕੀਤਾ ਪਾਸਵਰਡ ਨਹੀਂ। ਤੁਹਾਡੇ ਵੱਲੋਂ ਆਪਣੇ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨ 'ਤੇ Chromium ਉਹਨਾਂ ਦੀ ਜਾਂਚ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="5231355151045086930">Chromium ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਇਸ Chromium ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਹੈ। ਇਸ ਨਾਲ <ph name="USER_EMAIL_ADDRESS" /> ਲਈ ਨਵਾਂ Chromium ਪ੍ਰੋਫਾਈਲ ਬਣਾਇਆ ਜਾਵੇਗਾ</translation>

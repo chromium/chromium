@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">PUK коды дұрыс емес.</translation>
 <translation id="4057991113334098539">Іске қосылуда...</translation>
 <translation id="4092890906744441904">Ирланд</translation>
+<translation id="4101601646343868113">Мобильдік желіге кіріп, мобильдік интернет жоспарының белсенді екенін тексеріңіз.</translation>
 <translation id="4124731372776320263">1 Drive файлы синхрондалып жатыр</translation>
 <translation id="4124935795427217608">Пырақ</translation>
 <translation id="4131235941541910880">Қажетсіз элементтерді себетке жіберіңіз.</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Тамиль (Tamil99 пернетақтасымен)</translation>
 <translation id="5633226425545095130">Егер бұл элементті тасымалдасаңыз, ол "<ph name="DESTINATION_NAME" />" ортақ қалтасын көре алатын кез келген адаммен бөлісіледі.</translation>
 <translation id="5649768706273821470">Тыңдау</translation>
+<translation id="5650895901941743674">APN конфигурациясын тексеріңіз.</translation>
 <translation id="5669691691057771421">Жаңа PIN кодын енгізіңіз</translation>
 <translation id="5678784840044122290">Linux қолданбасы терминалда қолжетімді болады және Launcher қолданбасында белгіше көрсетіледі.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Мұрағаттан немесе виртуалдық дискіден ажырату мүмкін емес<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Файлдар нобай ретінде көрсетілді.</translation>
 <translation id="8601932370724196034">Crostini кескін файлы</translation>
 <translation id="8609695766746872526">Исланд</translation>
+<translation id="8630384863424041081">SIM картасының PIN кодын немесе оператор берген әдепкі PIN кодын енгізіңіз. Көмек алу үшін операторға хабарласыңыз.</translation>
 <translation id="863903787380594467">PIN коды дұрыс емес. <ph name="RETRIES" /> әрекет қалды.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – ұяшық</translation>
 <translation id="8656407365183407932">Офлайн файлдарыңыз өшірілуі керек</translation>

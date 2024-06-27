@@ -81,6 +81,8 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="2329088755516916767">Aktiv olduqda Chromium səhifələri əvvəlcədən yükləyərək baxış və axtarışı sürətləndirir.</translation>
 <translation id="2343156876103232566">Buradan Android telefonunuza nömrə göndərmək üçün hər iki cihazda Chromium'a daxil olun.</translation>
 <translation id="2359808026110333948">Davam edin</translation>
+<translation id="2361918034042471035">"<ph name="EXTENSION_NAME" />" artırması Chromium-a daxil olmağınızı istəyir</translation>
+<translation id="2374216753258219393"><ph name="USER_EMAIL_ADDRESS" /> kimi bu artırmanı istifadə etmək üçün Chromium-a daxil olun.</translation>
 <translation id="2384373936468275798">ChromiumOS datanızı sinxronizasiya edə bilmir, çünki hesaba giriş məlumatlarınız köhnədir.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Bir və ya bir neçə Chromium artırması 1 HID cihazına daxil olurdu}=1{Bir və ya bir neçə Chromium artırması 1 HID cihazına daxil olur}other{Bir və ya bir neçə Chromium artırması # HID cihazına daxil olur}}</translation>
 <translation id="2401032172288869980">Chromium bu sayt üçün kamera və mikrofon icazəsi tələb edir</translation>
@@ -242,9 +244,11 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="4893347770495441059">&amp;Chromium'u Güncəlləmək üçün yenidən başladın</translation>
 <translation id="4942295735032723435">Chromium güncəlləmələri əldə etmək üçün macOS 11 və ya yeni versiya tələb olunur. Bu kompüter macOS 10.15 istifadə edir.</translation>
 <translation id="4943838377383847465">Chromium arxa fon rejimindədir.</translation>
+<translation id="494490797786467921">Klikləyərək Chromium giriş dialoqunu bağlayın</translation>
 <translation id="4987820182225656817">Qonaqlar geridə heç nə buraxmadan Chromium istifadə edə bilər.</translation>
 <translation id="4994636714258228724">Özünüzü Chromium'a əlavə edin</translation>
 <translation id="5114678101347489141">Chromium saytlara məlumatlarınızdan daha az istifadə etməklə eyni baxış təcrübəsi təqdim etməyə imkan verən yeni funksiyaları araşdırır</translation>
+<translation id="5187123684706427865">Chromium hesabı təkrar doğrulama tələb edir</translation>
 <translation id="5224391634244552924">Yadda saxlanmış parol yoxdur. Parollarınızı yadda saxladıqda Chromium onları yoxlaya bilər.</translation>
 <translation id="5231355151045086930">Chromium hesabından çıxın</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> artıq bu Chromium profilinə daxil olub. Bununla <ph name="USER_EMAIL_ADDRESS" /> üçün yeni Chromium profili yaradılacaq</translation>

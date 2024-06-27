@@ -79,6 +79,8 @@
 <translation id="2329088755516916767">Когда этот параметр включен, Chromium предварительно загружает страницы, ускоряя работу браузера и поиска.</translation>
 <translation id="2343156876103232566">Чтобы отправить номер на телефон Android, войдите в Chromium на обоих устройствах.</translation>
 <translation id="2359808026110333948">Продолжить</translation>
+<translation id="2361918034042471035">Расширение "<ph name="EXTENSION_NAME" />" запрашивает вход в Chromium</translation>
+<translation id="2374216753258219393">Чтобы использовать это расширение как <ph name="USER_EMAIL_ADDRESS" />, войдите в Chromium.</translation>
 <translation id="2384373936468275798">Не удалось выполнить синхронизацию, так как учетные данные устарели.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Одно или несколько расширений Chromium обращались к одному HID-устройству}=1{Одно или несколько расширений Chromium обращались к одному HID-устройству}one{Одно или несколько расширений Chromium обращались к # HID-устройству}few{Одно или несколько расширений Chromium обращались к # HID-устройствам}many{Одно или несколько расширений Chromium обращались к # HID-устройствам}other{Одно или несколько расширений Chromium обращались к # HID-устройства}}</translation>
 <translation id="2401032172288869980">Браузер Chromium запрашивает доступ к камере и микрофону для этого сайта.</translation>
@@ -240,9 +242,11 @@
 <translation id="4893347770495441059">Перезапустить для обновления &amp;Chromium</translation>
 <translation id="4942295735032723435">На вашем устройстве используется macOS 10.15. Чтобы получать обновления Chromium, установите macOS 11 или более поздней версии.</translation>
 <translation id="4943838377383847465">Chromium работает в фоновом режиме</translation>
+<translation id="494490797786467921">Нажмите, чтобы закрыть диалоговое окно входа в Chromium</translation>
 <translation id="4987820182225656817">Используйте Chromium в гостевом режиме, если не хотите сохранять данные о посещенных сайтах.</translation>
 <translation id="4994636714258228724">Добавить пользователя Chromium</translation>
 <translation id="5114678101347489141">Мы тестируем новые функции Chromium, с которыми сайты смогут использовать меньше информации о вас, оставаясь столь же удобными</translation>
+<translation id="5187123684706427865">Необходимо снова войти в аккаунт Chromium</translation>
 <translation id="5224391634244552924">Сохраненных паролей нет. Чтобы браузер Chromium мог проверять пароли, сохраните их.</translation>
 <translation id="5231355151045086930">Выйти из Chromium</translation>
 <translation id="5252179775517634216">Пользователь <ph name="EXISTING_USER" /> уже выполнил вход в профиль Chromium. Вы можете создать новый профиль Chromium для <ph name="USER_EMAIL_ADDRESS" />.</translation>

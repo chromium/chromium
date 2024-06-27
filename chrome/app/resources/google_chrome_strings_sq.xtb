@@ -5,6 +5,8 @@
 <translation id="1026101648481255140">Rifillo instalimin</translation>
 <translation id="102763973188675173">Personalizo dhe kontrollo Google Chrome. Ofrohet përditësim.</translation>
 <translation id="1028061813283459617">Për t'i fshirë të dhënat e shfletimit vetëm nga kjo pajisje, ndërkohë që i mban ato në "Llogarinë tënde të Google", <ph name="BEGIN_LINK" />dil nga llogaria në Chrome<ph name="END_LINK" />.</translation>
+<translation id="1042270987544905725">Kliko për të mbyllur dialogun e identifikimit në Chrome</translation>
+<translation id="1059838145689930908">Për ta përdorur këtë shtesë si <ph name="USER_EMAIL_ADDRESS" />, identifikohu në Chrome.</translation>
 <translation id="1065672644894730302">Preferencat e tua nuk mund të lexohen.
 
 Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruhen.</translation>
@@ -372,6 +374,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6291089322031436445">Aplikacionet e Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome është i instaluar tashmë për të gjithë përdoruesit në kompjuterin tënd.</translation>
 <translation id="6319856120645568262">Chrome ka nevojë për leje për të krijuar një hartë të ambientit rrethues dhe për të ndjekur duart e tua</translation>
+<translation id="6321592572353357376">Shtesa "<ph name="EXTENSION_NAME" />" kërkon që të identifikohesh në Chrome</translation>
 <translation id="6326175484149238433">Hiqe nga Chrome</translation>
 <translation id="6327105987658262776">Nuk ofrohet asnjë përditësim.</translation>
 <translation id="6360449101159168105">Kur kjo skedë ishte joaktive, memoria u lirua që Chrome të vazhdojë të jetë i shpejtë. Mund të zgjedhësh që ta përjashtosh gjithmonë këtë sajt nga caktimi si joaktiv.</translation>
@@ -464,6 +467,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="7655455401911432608">Historiku yt i shfletimit, regjistri i sajteve që ke vizituar duke përdorur Chrome në këtë pajisje.</translation>
 <translation id="7661924425853052955">Nuk ke vizituar së fundi. Chrome ka hequr lejet (<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="COUNT" /> të tjera)</translation>
 <translation id="7668816516367091728">Kryej detyra, si p.sh. përkthimi, llogaritja etj., drejtpërdrejt nga shiriti i adresave</translation>
+<translation id="7670287553302121848">Llogaria e Chrome kërkon rivërtetim</translation>
 <translation id="769538538642757151">Chrome do të të informojë nëse duhet të rishikosh diçka</translation>
 <translation id="7747138024166251722">Instaluesi nuk mund të krijonte një direktori të përkohshme. Kontrollo për hapësirë të lirë në disk dhe për lejen për të instaluar softuerin.</translation>
 <translation id="7761834446675418963">Kliko tek emri yt për të hapur Chrome dhe fillo shfletimin.</translation>

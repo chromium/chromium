@@ -81,6 +81,8 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="2329088755516916767">Cando está activada a opción, Chromium precarga as páxinas para que navegar e facer buscas sexa máis rápido.</translation>
 <translation id="2343156876103232566">Para enviar un número desde aquí ao teu teléfono Android, inicia sesión en Chromium nos dous dispositivos.</translation>
 <translation id="2359808026110333948">Continuar</translation>
+<translation id="2361918034042471035">A extensión \"<ph name="EXTENSION_NAME" />\" quere que inicies sesión en Chromium</translation>
+<translation id="2374216753258219393">Para usar esta extensión como <ph name="USER_EMAIL_ADDRESS" />, inicia sesión en Chromium.</translation>
 <translation id="2384373936468275798">Chromium OS non puido sincronizar os teus datos porque a información de inicio de sesión da túa conta está desactualizada.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Unha ou varias extensións de Chromium estaban accedendo a 1 dispositivo de interface humana}=1{Unha ou varias extensións de Chromium estaban accedendo a 1 dispositivo de interface humana}other{Unha ou varias extensións de Chromium estaban accedendo a # dispositivos de interface humana}}</translation>
 <translation id="2401032172288869980">Chromium necesita permiso de acceso á cámara e ao micrófono para este sitio</translation>
@@ -244,9 +246,11 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="4893347770495441059">Reiniciar para actualizar &amp;Chromium</translation>
 <translation id="4942295735032723435">Se queres recibir actualizacións de Chromium no futuro, debes instalar o sistema operativo macOS 11 ou unha versión posterior. Este ordenador ten macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium está no modo de segundo plano.</translation>
+<translation id="494490797786467921">Fai clic para pechar o cadro de diálogo de inicio de sesión de Chromium</translation>
 <translation id="4987820182225656817">Os invitados poden utilizar Chromium sen perder información.</translation>
 <translation id="4994636714258228724">Engádete a Chromium</translation>
 <translation id="5114678101347489141">Chromium está probando novas funcións que lles permitan aos sitios ofrecer a mesma experiencia de navegación usando menos información túa</translation>
+<translation id="5187123684706427865">Para poder usar a conta de Chromium, é necesario volver autenticarse</translation>
 <translation id="5224391634244552924">Non hai contrasinais gardados. Chromium pode comprobar os teus contrasinais cando os gardes.</translation>
 <translation id="5231355151045086930">Pechar sesión en Chromium</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> xa ten a sesión iniciada neste perfil de Chromium. Con esta acción crearase un novo perfil de Chromium para <ph name="USER_EMAIL_ADDRESS" /></translation>

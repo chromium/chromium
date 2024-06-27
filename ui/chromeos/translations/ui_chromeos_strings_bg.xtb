@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Неправилен PUK код</translation>
 <translation id="4057991113334098539">Активира се...</translation>
 <translation id="4092890906744441904">Ирландски</translation>
+<translation id="4101601646343868113">Влезте в мобилната си мрежа и се уверете, че планът ви за мобилни данни е активен</translation>
 <translation id="4124731372776320263">1 файл в Диск се синхронизира</translation>
 <translation id="4124935795427217608">Еднорог</translation>
 <translation id="4131235941541910880">Преместете в кошчето елементите, от които нямате нужда</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Тамилски с клавиатура Tamil99</translation>
 <translation id="5633226425545095130">Ако преместите този елемент, той ще бъде споделен с всеки, който може да вижда споделената папка „<ph name="DESTINATION_NAME" />“.</translation>
 <translation id="5649768706273821470">Слушане</translation>
+<translation id="5650895901941743674">Проверете конфигурацията си за APN</translation>
 <translation id="5669691691057771421">Въведете новия ПИН</translation>
 <translation id="5678784840044122290">Приложението за Linux ще бъде налично в терминала и може също да има икона в стартовия панел.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Не може да се прекрати връзката с архив или виртуален диск<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Списъкът с файлове е превключен към изглед с миниизображения.</translation>
 <translation id="8601932370724196034">Файл с образ на Crostini</translation>
 <translation id="8609695766746872526">Исландски</translation>
+<translation id="8630384863424041081">Въведете ПИН кода на SIM картата си или стандартния ПИН, предоставен от оператора ви. Свържете се с него за поддръжка.</translation>
 <translation id="863903787380594467">Неправилен ПИН код. Остават ви <ph name="RETRIES" /> опита.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Порт</translation>
 <translation id="8656407365183407932">Офлайн файловете ви трябваше да бъдат премахнати</translation>

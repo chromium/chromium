@@ -216,6 +216,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1747827819627189109">Skærmtastaturet er aktiveret</translation>
 <translation id="1749109475624620922">Vinduet <ph name="WINDOW_TITLE" /> er tildelt til alle skriveborde</translation>
 <translation id="1750088060796401187">Maks. <ph name="MAX_DESK_LIMIT" /> skriveborde er tilladt. Fjern et skrivebord for at åbne et nyt.</translation>
+<translation id="1751335846119670066">Hjælp mig med at læse</translation>
 <translation id="1755408179247123630">Vil du aktivere Tekstoplæsning?</translation>
 <translation id="1755556344721611131">Appen Diagnostik</translation>
 <translation id="1756833229520115364">Skabelonen kunne ikke gemmes. Der er for mange vinduer eller faner.</translation>
@@ -227,6 +228,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="178347895271755507">Konfigurer visning af din telefons seneste billeder, medier og notifikationer</translation>
 <translation id="1787955149152357925">Fra</translation>
 <translation id="1796561540704213354">Websites, der omfatter sider, du har besøgt, og åbne sider</translation>
+<translation id="179842970735685253">Googles servicevilkår</translation>
 <translation id="181103072419391116">Signalstyrke <ph name="SIGNAL_STRENGTH" />, administreret af din administrator</translation>
 <translation id="1816896987747843206">Dette giver alle apps og websites med kameratilladelse adgang til kameraet</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Ressourcetype</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Husk følgende</translation>
 <translation id="3139188263101386725">Brug den opdaterede genvej</translation>
 <translation id="3139942575505304791">Skrivebord 1</translation>
 <translation id="315116470104423982">Mobildata</translation>
@@ -961,6 +964,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4585337515783392668">Stop cast på en ukendt modtager</translation>
 <translation id="4596144739579517758">Mørkt tema er deaktiveret</translation>
 <translation id="4596442969149038771"><ph name="USER" /> har delt</translation>
+<translation id="4610493115106525653">Godt output</translation>
 <translation id="4611292653554630842">Log ind</translation>
 <translation id="462160925400706389"><ph name="NAME" /> er forbundet</translation>
 <translation id="4623167406982293031">Verificer konto</translation>
@@ -1118,6 +1122,7 @@ Du kan også bruge tastaturgenvejen. Fremhæv først tekst, og tryk derefter på
 <translation id="5121628974188116412">Gå til bunden af siden</translation>
 <translation id="5122517996953421795">Forhåndsvisning af <ph name="DESK_NAME" />. Inaktivt skrivebord.</translation>
 <translation id="5136175204352732067">Du har tilsluttet et andet tastatur</translation>
+<translation id="5140105873789567560">Du skal være mindst 18 år for at bruge Hjælp mig med at skrive og Hjælp mig med at læse.</translation>
 <translation id="5144005092084035179">Vil du skifte lydinput?</translation>
 <translation id="5147567197700016471">Låst op</translation>
 <translation id="5150070631291639005">Privatlivsindstillinger</translation>
@@ -1558,6 +1563,7 @@ Installeret for nylig</translation>
 <translation id="6696025732084565524">Dit aftagelige tastatur kræver en vigtig opdatering</translation>
 <translation id="6697913454192220372">Tilføj nyt skrivebord</translation>
 <translation id="6700713906295497288">IME-menuknap</translation>
+<translation id="6704375469818246414">Kvaliteten kan variere, når du bruger generativ AI.</translation>
 <translation id="6706742084323792866">Fastgør tastatur</translation>
 <translation id="6710213216561001401">Forrige</translation>
 <translation id="6723839937902243910">Strøm</translation>
@@ -1825,9 +1831,11 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7726391492136714301">Se din telefons notifikationer og apps</translation>
 <translation id="7727952505535211425">Åbn websitet i adresselinjen på en ny fane</translation>
 <translation id="7742327441377685481">Ingen notifikationer</translation>
+<translation id="774736258792760908">Når du aktiverer Hjælp mig med at skrive og Hjælp mig med at læse, sendes inputteksten og dokumentindholdet til Google AI-servere for at generere skriveforslag, generere opsummeringer, besvare spørgsmål og forbedre produktet i overensstemmelse med <ph name="LINK_TO_SERVICE_TERMS" />. Medtag ikke personlige, følsomme eller fortrolige oplysninger.</translation>
 <translation id="7748275671948949022">Fremhæv knappen til applisten på hylden</translation>
 <translation id="7749443890790263709">Det maksimale antal skriveborde er nået.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Du kan til enhver tid deaktivere Hjælp mig med at skrive og Hjælp mig med at læse under Indstillinger. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Tekstoplæsning</translation>
 <translation id="7769299611924763557">Din gif er klar om et øjeblik</translation>
 <translation id="7773536009433685931">Aktivér Wi-Fi i stedet</translation>
@@ -1836,6 +1844,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7781829728241885113">I går</translation>
 <translation id="7787212146956232129">Input- og outputenhederne er konfigureret. Gå til Indstillinger for at ændre dem.</translation>
 <translation id="7792590255364786396">Synlig</translation>
+<translation id="7793389284006812057">Generativ AI er eksperimentel, under udvikling og har i øjeblikket begrænset tilgængelighed.</translation>
 <translation id="7796735576426975947">Nye notifikationer er skjult</translation>
 <translation id="7798302898096527229">Tryk på Søg eller Shift for at annullere.</translation>
 <translation id="780301667611848630">Nej tak</translation>
@@ -1990,6 +1999,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8331351032546853669">Download afventer</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Dårligt output</translation>
 <translation id="8345019317483336363">Vinduet <ph name="WINDOW_TITLE" /> er valgt</translation>
 <translation id="8349826889576450703">appliste</translation>
 <translation id="8349964124165471584">Åbn link i et nyt vindue</translation>
@@ -2035,7 +2045,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="85123341071060231">Bluetooth er deaktiveret på din Chromebook. Angiv din adgangskode for at låse din Chromebook op.</translation>
 <translation id="8513108775083588393">Autoroter</translation>
 <translation id="851458219935658693">Vis vinduer fra det aktuelle skrivebord. Alternativknappen er valgt.</translation>
-<translation id="851660987304951246">Brug Hjælp mig med at læse for hurtigt at opsummere indhold eller stille spørgsmål</translation>
+<translation id="851660987304951246">Brug Hjælp mig læse for hurtigt at opsummere indhold eller stille spørgsmål</translation>
 <translation id="8517041960877371778">Din <ph name="DEVICE_TYPE" /> kan muligvis ikke oplades, mens den er tændt.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Mikrofoninput styres af <ph name="APP_NAME" />}one{Mikrofoninput styres af # app}other{Mikrofoninput styres af # apps}}</translation>
 <translation id="8535393432370007982">Fortryd sortering efter farve</translation>

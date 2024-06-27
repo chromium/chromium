@@ -216,6 +216,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1747827819627189109">Tastatura na ekranu je omogućena</translation>
 <translation id="1749109475624620922">Prozor <ph name="WINDOW_TITLE" /> je dodijeljen svim radnim površinama</translation>
 <translation id="1750088060796401187">Maksimalan broj dozvoljenih radnih površina je <ph name="MAX_DESK_LIMIT" />. Uklonite jednu radnu površinu da otvorite novu.</translation>
+<translation id="1751335846119670066">Pomoć u čitanju</translation>
 <translation id="1755408179247123630">Uključiti funkciju Odaberite za govor?</translation>
 <translation id="1755556344721611131">Aplikacija Diagnostics</translation>
 <translation id="1756833229520115364">Pohranjivanje šablona nije uspjelo. Previše prozora ili kartica.</translation>
@@ -227,6 +228,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="178347895271755507">Postavljanje pregledanja nedavnih fotografija, medijskih fajlova i obavještenja telefona</translation>
 <translation id="1787955149152357925">Isključeno</translation>
 <translation id="1796561540704213354">Web lokacije uključujući posjećene i otvorene stranice</translation>
+<translation id="179842970735685253">Googleovim Uslovima korištenja usluge</translation>
 <translation id="181103072419391116">Jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja vaš administrator</translation>
 <translation id="1816896987747843206">Ovo omogućava pristup kameri za sve aplikacije i web lokacije s odobrenjem za nju</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@ Povezano je više uređaja (ukupno <ph name="DEVICECOUNT" />).</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Vrsta školskog zadatka</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Nekoliko stvari koje trebate imati na umu</translation>
 <translation id="3139188263101386725">Koristite ažuriranu prečicu</translation>
 <translation id="3139942575505304791">Radna površina 1</translation>
 <translation id="315116470104423982">Mobilni podaci</translation>
@@ -961,6 +964,7 @@ Povezan je 1 uređaj.</translation>
 <translation id="4585337515783392668">Zaustavi emitiranje na nepoznati prijemnik</translation>
 <translation id="4596144739579517758">Tamna tema je isključena</translation>
 <translation id="4596442969149038771"><ph name="USER" /> je podijelio/la</translation>
+<translation id="4610493115106525653">Dobar rezultat</translation>
 <translation id="4611292653554630842">Prijava</translation>
 <translation id="462160925400706389">Uređaj <ph name="NAME" /> je povezan</translation>
 <translation id="4623167406982293031">Potvrdite račun</translation>
@@ -1118,6 +1122,7 @@ Također možete upotrijebiti prečicu na tastaturi. Prvo istaknite tekst, a zat
 <translation id="5121628974188116412">Odlazak na dno stranice</translation>
 <translation id="5122517996953421795">Pregled radne površine <ph name="DESK_NAME" />. Neaktivna radna površina.</translation>
 <translation id="5136175204352732067">Povezana je drugačija tastatura</translation>
+<translation id="5140105873789567560">Morate imati najmanje 18 godina da koristite Pomoć u pisanju i Pomoć u čitanju.</translation>
 <translation id="5144005092084035179">Promijeniti ulaz zvuka?</translation>
 <translation id="5147567197700016471">Otključano</translation>
 <translation id="5150070631291639005">Postavke privatnosti</translation>
@@ -1558,6 +1563,7 @@ Nova instalacija</translation>
 <translation id="6696025732084565524">Vašoj odvojivoj tastaturi je potrebno važno ažuriranje</translation>
 <translation id="6697913454192220372">Dodavanje nove radne površine</translation>
 <translation id="6700713906295497288">IME dugme menija</translation>
+<translation id="6704375469818246414">Kvalitet se može razlikovati prilikom korištenja generativnog AI-ja.</translation>
 <translation id="6706742084323792866">Kačenje tastature</translation>
 <translation id="6710213216561001401">Nazad</translation>
 <translation id="6723839937902243910">Uključivanje/isključivanje</translation>
@@ -1825,9 +1831,11 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7726391492136714301">Pregledajte obavještenja i aplikacije telefona</translation>
 <translation id="7727952505535211425">Otvaranje web lokacije u traci za adresu u novoj kartici</translation>
 <translation id="7742327441377685481">Nema obavještenja</translation>
+<translation id="774736258792760908">Kada uključite Pomoć u pisanju i Pomoć u čitanju, sadržaj unesenog teksta i dokumenta se šalje na servere Google AI-ja radi generiranja prijedloga za pisanje i sažetaka, odgovaranja na pitanja i poboljšanja proizvoda podložno <ph name="LINK_TO_SERVICE_TERMS" />. Nemojte uključivati ništa što je lične, osjetljive ili povjerljive prirode.</translation>
 <translation id="7748275671948949022">Istaknite dugme Pokretača na polici</translation>
 <translation id="7749443890790263709">Dostigli ste maksimalni broj radnih površina.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">U svakom trenutku možete isključiti Pomoć u pisanju i Pomoć u čitanju u Postavkama. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Odaberite za govor</translation>
 <translation id="7769299611924763557">GIF će uskoro biti spreman</translation>
 <translation id="7773536009433685931">Umjesto toga uključite WiFi</translation>
@@ -1836,6 +1844,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7781829728241885113">Jučer</translation>
 <translation id="7787212146956232129">Ulazni i izlazni uređaji su postavljeni. Idite u Postavke da promijenite.</translation>
 <translation id="7792590255364786396">Vidljivo</translation>
+<translation id="7793389284006812057">Generativni AI je eksperimentalan, u ranoj je fazi razvoja i trenutno je njegova dostupnost ograničena.</translation>
 <translation id="7796735576426975947">Novo obavještenje je skriveno</translation>
 <translation id="7798302898096527229">Za otkazivanje pritisnite tipku za pretraživanje ili Shift.</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
@@ -1990,6 +1999,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8331351032546853669">Preuzimanje je na čekanju</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Loš rezultat</translation>
 <translation id="8345019317483336363">Odabran je prozor <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">pokretač</translation>
 <translation id="8349964124165471584">Otvaranje linka u novom prozoru</translation>

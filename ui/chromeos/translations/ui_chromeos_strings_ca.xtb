@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">El PUK no és correcte</translation>
 <translation id="4057991113334098539">S'està activant...</translation>
 <translation id="4092890906744441904">Irlandès</translation>
+<translation id="4101601646343868113">Inicia la sessió a la xarxa mòbil i confirma que el teu pla de dades mòbils està actiu</translation>
 <translation id="4124731372776320263">S'està sincronitzant 1 fitxer de Drive</translation>
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4131235941541910880">Mou els elements que no necessitis a la paperera</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Tàmil amb teclat Tamil99</translation>
 <translation id="5633226425545095130">En moure aquest element, es compartirà amb tothom que pugui veure la carpeta compartida "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Escolta</translation>
+<translation id="5650895901941743674">Comprova la configuració de l'APN</translation>
 <translation id="5669691691057771421">Introdueix el PIN nou</translation>
 <translation id="5678784840044122290">L'aplicació per a Linux estarà disponible al terminal i és possible que també inclogui una icona al menú d'aplicacions.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />No es pot desconnectar d'un arxiu o d'un disc virtual<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">La llista de fitxers ha canviat a la visualització de miniatures.</translation>
 <translation id="8601932370724196034">Fitxer d'imatge de Crostini</translation>
 <translation id="8609695766746872526">Islandès</translation>
+<translation id="8630384863424041081">Introdueix el PIN de la targeta SIM o el predeterminat que t'hagi proporcionat l'operador. Contacta amb l'operador per obtenir assistència.</translation>
 <translation id="863903787380594467">El PIN no és correcte. Et queden <ph name="RETRIES" /> intents.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Port</translation>
 <translation id="8656407365183407932">Els fitxers sense connexió s'han hagut de suprimir</translation>

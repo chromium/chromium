@@ -26,6 +26,7 @@
 <translation id="1050038467049342496">Zavrite ostatné aplikácie</translation>
 <translation id="1053959602163383901">Na weboch využívajúcich poskytovateľa <ph name="PROVIDER_ORIGIN" /> ste vybrali overenie zariadením s overovateľom. Tento poskytovateľ mohol ukladať informácie o vašom spôsobe platby, o ktorých odstránenie môžete <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Vrátiť späť pridanie</translation>
+<translation id="105642538515333723">Môžete zadať akékoľvek výrazy alebo podrobnosti, ktoré si pamätáte zo stránok prehliadaných v minulosti, napríklad „pohodlná vychádzková obuv“</translation>
 <translation id="1056898198331236512">Upozornenie</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter si zahrajte hru Dino Run v Chrome</translation>
 <translation id="1058479211578257048">Ukladajú sa karty…</translation>
@@ -41,6 +42,7 @@
 <translation id="1070901266639972381">Noc</translation>
 <translation id="1073690811593784042">Sklo (farebné)</translation>
 <translation id="1074497978438210769">Nezabezpečené</translation>
+<translation id="1074779248866616641">Výsledok</translation>
 <translation id="1075364221219156102">Použiť prístupový kľúč</translation>
 <translation id="1080116354587839789">Prispôsobiť šírke</translation>
 <translation id="1081061862829655580">Zásobník č. 19</translation>
@@ -967,6 +969,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2824775600643448204">Panel s adresou a vyhľadávací panel</translation>
 <translation id="2826760142808435982">Pripojenie je šifrované pomocou štandardu <ph name="CIPHER" /> a používa mechanizmus výmeny kľúčov <ph name="KX" />.</translation>
 <translation id="2833637280516285136">Rozhlasové diskusie</translation>
+<translation id="2837891525090413132">Môže požiadať o uzamknutie a používanie klávesnice</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> chce používať uložené informácie o vás</translation>
 <translation id="2839032553903800133">Boli zablokované upozornenia</translation>
 <translation id="2839501879576190149">Falošný web</translation>
@@ -2852,6 +2855,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6433797564277305076">Odteraz môžete potvrdzovať karty rýchlejšie pomocou odomknutia zariadením</translation>
 <translation id="643917412048333145">Šaty</translation>
 <translation id="6440503408713884761">Ignorované</translation>
+<translation id="6440534369669992497">Môžete zadať akékoľvek výrazy alebo podrobnosti, ktoré si pamätáte zo stránok prehliadaných v minulosti, napríklad „pohodlná vychádzková obuv“. Vyhľadávajte pomocou skratky <ph name="SHORTCUT" />.</translation>
 <translation id="6443406338865242315">Ktoré rozšírenia a doplnky máte nainštalované</translation>
 <translation id="6444329331928531170">Dôchodok a penzia</translation>
 <translation id="6446608382365791566">Pridanie ďalších informácií</translation>
@@ -3135,6 +3139,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7006930604109697472">Aj tak odoslať</translation>
 <translation id="7010658264061801199">Jedlo a pitie</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013835112918108252">Môže požiadať o uzamknutie a používanie myši</translation>
 <translation id="7014042602717177828">Zvukové vybavenie automobilov</translation>
 <translation id="7014741021609395734">Úroveň lupy</translation>
 <translation id="7016992613359344582">Tieto poplatky môžu byť jednorazové alebo opakované a nemusia byť predvídateľné.</translation>
@@ -3149,6 +3154,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7031646650991750659">Ktoré aplikácie Google Play máte nainštalované.</translation>
 <translation id="7035705295266423040">Vaša banka chce overiť, že ste to vy</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter spravujte nastavenia ochrany súkromia svojho účtu Google</translation>
+<translation id="7042616127917168121">Spresnenie výsledkov</translation>
 <translation id="7043552168914147882">Papier so záložkami</translation>
 <translation id="7044081119134178347">Kamera je momentálne povolená</translation>
 <translation id="7048095965575426564">Európsky skladaný formát</translation>

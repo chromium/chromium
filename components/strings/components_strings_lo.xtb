@@ -26,6 +26,7 @@
 <translation id="1050038467049342496">ປິດແອັບອື່ນ</translation>
 <translation id="1053959602163383901">ທ່ານເລືອກທີ່ຈະຢັ້ງຢືນດ້ວຍອຸປະກອນຕົວພິສູດຢືນຢັນຢູ່ເວັບໄຊທີ່ໃຊ້ <ph name="PROVIDER_ORIGIN" />. ຜູ້ໃຫ້ບໍລິການນີ້ອາດມີການຈັດເກັບຂໍ້ມູນກ່ຽວກັບວິທີການຈ່າຍເງິນຂອງທ່ານໄວ້, ເຊິ່ງທ່ານສາມາດ <ph name="LINK_TEXT" /> ໄດ້.</translation>
 <translation id="1055184225775184556">ປ່ຽນ​ຄືນຄໍາສັ່ງເພີ່ມ</translation>
+<translation id="105642538515333723">ທ່ານສາມາດໃສ່ວະລີ ຫຼື ລາຍລະອຽດໃດໆທີ່ທ່ານຈື່ໄດ້ຈາກໜ້າທີ່ທ່ານເຄີຍເລືອກເບິ່ງໃນອະດີດ ເຊັ່ນ: "ເກີບໃສ່ຍ່າງທີ່ສວມໃສ່ສະບາຍ"</translation>
 <translation id="1056898198331236512">ຄໍາເຕືອນ</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ tab ຈາກນັ້ນກົດ Enter ເພື່ອຫຼິ້ນເກມ Dino Run ໃນ Chrome</translation>
 <translation id="1058479211578257048">ກຳລັງບັດທຶກບັດໄວ້...</translation>
@@ -968,6 +969,7 @@
 <translation id="2824775600643448204">ແຖບ​ທີ່​ຢູ່​ ແລະ​ຄົ້ນ​ຫາ</translation>
 <translation id="2826760142808435982">ການເຊື່ອມຕໍ່ມີລະຫັດ ແລະໄດ້ຮັບຮອງແລ້ວດ້ວຍການໃຊ້ <ph name="CIPHER" /> ແລະໃຊ້ <ph name="KX" /> ເປັນກົນໄກແລກປ່ຽນປຸ່ມ.</translation>
 <translation id="2833637280516285136">ລາຍການວິທະຍຸ</translation>
+<translation id="2837891525090413132">ສາມາດຂໍລັອກ ແລະ ໃຊ້ແປ້ນພິມຂອງທ່ານໄດ້</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> ຕ້ອງການໃຊ້ຂໍ້ມູນທີ່ເຂົາເຈົ້າບັນທຶກໄວ້ກ່ຽວກັບທ່ານ</translation>
 <translation id="2839032553903800133">ບລັອກການແຈ້ງເຕືອນ</translation>
 <translation id="2839501879576190149">ລະວັງເວັບໄຊປອມ</translation>
@@ -1157,7 +1159,6 @@
 <translation id="3209034400446768650">ໜ້າອາດຈະຮຽກເກັບເງິນ</translation>
 <translation id="3212581601480735796">ກຳລັງມີການຕິດຕາມເບິ່ງການເຄື່ອນໄຫວຂອງທ່ານໃນ <ph name="HOSTNAME" /></translation>
 <translation id="3215092763954878852">ບໍ່ສາມາດໃຊ້ WebAuthn ໄດ້</translation>
-<translation id="3215311088819828484">ອັບເດດຜົນໄດ້ຮັບແລ້ວ</translation>
 <translation id="3216313131063488104">ສີຟ້າ</translation>
 <translation id="3218181027817787318">ຍາດພີ່ນ້ອງ</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{ຕ້ອງອັບເດດຕອນນີ້}=2{ຕ້ອງອັບເດດພາຍໃນມື້ອື່ນ}other{ຕ້ອງອັບເດດພາຍໃນ # ມື້}}</translation>
@@ -2859,6 +2860,7 @@
 <translation id="6433797564277305076">ຢືນຢັນບັດຂອງທ່ານໄວຂຶ້ນໂດຍການໃຊ້ການປົດລັອກອຸປະກອນຈາກນີ້ໄປ</translation>
 <translation id="643917412048333145">ຊຸດກະໂປງ</translation>
 <translation id="6440503408713884761">ລະເລີຍ</translation>
+<translation id="6440534369669992497">ທ່ານສາມາດໃສ່ວະລີ ຫຼື ລາຍລະອຽດໃດໆທີ່ທ່ານຈື່ໄດ້ຈາກໜ້າທີ່ທ່ານເຄີຍເລືອກເບິ່ງໃນອະດີດ ເຊັ່ນ: "ເກີບໃສ່ຍ່າງທີ່ສວມໃສ່ສະບາຍ". <ph name="SHORTCUT" /> ເພື່ອຊອກຫາ.</translation>
 <translation id="6443406338865242315">ສ່ວນຂະຫຍາຍ ແລະ ປລັກອິນທີ່ທ່ານຕິດຕັ້ງ</translation>
 <translation id="6444329331928531170">ການກະສຽນ ແລະ ເງິນເບ້ຍບຳນານ</translation>
 <translation id="6446608382365791566">ເພີ່ມຂໍ້ມູນເພີ່ມເຕີມ</translation>
@@ -3142,6 +3144,7 @@
 <translation id="7006930604109697472">ຢືນຢັນການສົ່ງ</translation>
 <translation id="7010658264061801199">ອາຫານ ແລະ ເຄື່ອງດື່ມ</translation>
 <translation id="7012363358306927923">UnionPay ປະເທດ​ຈີນ</translation>
+<translation id="7013835112918108252">ສາມາດຂໍລັອກ ແລະ ໃຊ້ເມົ້າຂອງທ່ານໄດ້</translation>
 <translation id="7014042602717177828">ເຄື່ອງສຽງລົດ</translation>
 <translation id="7014741021609395734">ລະດັບການຊູມ</translation>
 <translation id="7016992613359344582">ການເກັບເງິນເຫຼົ່ານີ້ອາດຈະເກັບຄັ້ງດຽວ ຫຼື ເປັນປະຈຳຫຼາຍຄັ້ງ ແລະ ອາດຈະບໍ່ເຫັນໄດ້ຈະແຈ້ງ.</translation>

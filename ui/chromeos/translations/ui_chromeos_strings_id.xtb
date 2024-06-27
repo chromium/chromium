@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">PUK salah</translation>
 <translation id="4057991113334098539">Mengaktifkan...</translation>
 <translation id="4092890906744441904">Irlandia</translation>
+<translation id="4101601646343868113">Login ke jaringan seluler Anda dan konfirmasi paket data seluler Anda aktif</translation>
 <translation id="4124731372776320263">Menyinkronkan 1 file Drive</translation>
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4131235941541910880">Pindahkan item yang tidak Anda butuhkan ke sampah</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Tamil dengan keyboard Tamil99</translation>
 <translation id="5633226425545095130">Memindahkan item ini akan membagikannya ke siapa saja yang dapat melihat folder bersama '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="5649768706273821470">Dengar</translation>
+<translation id="5650895901941743674">Periksa konfigurasi APN Anda</translation>
 <translation id="5669691691057771421">Masukkan PIN baru</translation>
 <translation id="5678784840044122290">Aplikasi Linux akan tersedia dalam Terminal Anda dan juga mungkin menampilkan ikon di Peluncur.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Tidak dapat memutuskan hubungan dari arsip atau disk virtual<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Daftar file telah diubah menjadi tampilan thumbnail.</translation>
 <translation id="8601932370724196034">File gambar Crostini</translation>
 <translation id="8609695766746872526">Islandia</translation>
+<translation id="8630384863424041081">Masukkan PIN kartu SIM Anda atau PIN default yang disediakan oleh operator Anda. Hubungi operator Anda untuk mendapatkan dukungan.</translation>
 <translation id="863903787380594467">PIN salah. Tersisa <ph name="RETRIES" /> upaya lagi.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Port</translation>
 <translation id="8656407365183407932">File offline Anda harus dihapus</translation>

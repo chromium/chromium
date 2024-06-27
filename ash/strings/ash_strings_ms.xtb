@@ -216,6 +216,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1747827819627189109">Papan kekunci pada skrin didayakan</translation>
 <translation id="1749109475624620922">Window <ph name="WINDOW_TITLE" /> ditetapkan kepada semua meja</translation>
 <translation id="1750088060796401187">Hanya <ph name="MAX_DESK_LIMIT" /> meja dibenarkan. Alih keluar satu meja untuk membuka meja baharu.</translation>
+<translation id="1751335846119670066">Bantu saya baca</translation>
 <translation id="1755408179247123630">Hidupkan Pilih untuk bercakap?</translation>
 <translation id="1755556344721611131">Apl diagnostik</translation>
 <translation id="1756833229520115364">Tidak dapat menyimpan templat. Terlalu banyak tetingkap atau tab.</translation>
@@ -227,6 +228,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="178347895271755507">Menyediakan pemaparan foto, media dan pemberitahuan terbaharu telefon anda</translation>
 <translation id="1787955149152357925">Mati</translation>
 <translation id="1796561540704213354">Laman web termasuk halaman yang anda lawati dan halaman terbuka</translation>
+<translation id="179842970735685253">Syarat Perkhidmatan Google</translation>
 <translation id="181103072419391116">Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />, Diurus oleh Pentadbir anda</translation>
 <translation id="1816896987747843206">Ini membenarkan akses kamera untuk semua apl dan laman web dengan kebenaran kamera</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Jenis kerja kelas</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Beberapa perkara yang perlu diingati</translation>
 <translation id="3139188263101386725">Gunakan pintasan yang telah dikemaskinikan</translation>
 <translation id="3139942575505304791">Meja 1</translation>
 <translation id="315116470104423982">Data mudah alih</translation>
@@ -961,6 +964,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4585337515783392668">Berhenti menghantar pada penerima yang tidak diketahui</translation>
 <translation id="4596144739579517758">Tema gelap dimatikan</translation>
 <translation id="4596442969149038771"><ph name="USER" /> telah berkongsi</translation>
+<translation id="4610493115106525653">Output yang baik</translation>
 <translation id="4611292653554630842">Log masuk</translation>
 <translation id="462160925400706389"><ph name="NAME" /> disambungkan</translation>
 <translation id="4623167406982293031">Sahkan akaun</translation>
@@ -1118,6 +1122,7 @@ Anda juga boleh menggunakan pintasan papan kekunci. Mula-mula, serlahkan teks, k
 <translation id="5121628974188116412">Pergi ke bahagian bawah halaman</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> pratonton. Meja tidak aktif.</translation>
 <translation id="5136175204352732067">Papan kekunci lain disambungkan</translation>
+<translation id="5140105873789567560">Anda mestilah berumur sekurang-kurangnya 18 tahun untuk menggunakan Bantu saya tulis dan Bantu saya baca.</translation>
 <translation id="5144005092084035179">Tukar input audio?</translation>
 <translation id="5147567197700016471">Tidak berkunci</translation>
 <translation id="5150070631291639005">Tetapan privasi</translation>
@@ -1558,6 +1563,7 @@ Pemasangan baharu</translation>
 <translation id="6696025732084565524">Papan kekunci anda yang boleh dicabut memerlukan kemas kini kritikal</translation>
 <translation id="6697913454192220372">Tambahkan meja baharu</translation>
 <translation id="6700713906295497288">Butang menu IME</translation>
+<translation id="6704375469818246414">Kualiti mungkin berbeza-beza apabila menggunakan AI generatif.</translation>
 <translation id="6706742084323792866">Papan kekunci PIN</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
 <translation id="6723839937902243910">Kuasa</translation>
@@ -1825,9 +1831,11 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7726391492136714301">Lihat pemberitahuan dan apl telefon anda</translation>
 <translation id="7727952505535211425">Buka laman web dalam bar alamat pada tab baharu</translation>
 <translation id="7742327441377685481">Tiada pemberitahuan</translation>
+<translation id="774736258792760908">Apabila anda menghidupkan Bantu saya tulis dan Bantu saya baca, teks input dan kandungan dokumen akan dihantar kepada pelayan Google AI untuk menjana cadangan penulisan, menjana ringkasan, menjawab pertanyaan dan meningkatkan produk, tertakluk pada <ph name="LINK_TO_SERVICE_TERMS" />. Jangan sertakan sebarang maklumat yang bersifat peribadi, sensitif atau sulit.</translation>
 <translation id="7748275671948949022">Serlahkan butang Pelancar pada rak</translation>
 <translation id="7749443890790263709">Bilangan maksimum meja dicapai.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Anda boleh mematikan Bantu saya tulis dan Bantu saya baca pada bila-bila masa dalam Tetapan. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Pilih untuk bercakap</translation>
 <translation id="7769299611924763557">GIF anda akan tersedia tidak lama lagi</translation>
 <translation id="7773536009433685931">Hidupkan Wi-Fi</translation>
@@ -1836,6 +1844,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7781829728241885113">Semalam</translation>
 <translation id="7787212146956232129">Peranti input dan output telah ditetapkan. Akses Tetapan untuk membuat perubahan.</translation>
 <translation id="7792590255364786396">Kelihatan</translation>
+<translation id="7793389284006812057">AI Generatif ialah ciri percubaan dan dalam pembangunan awal dengan ketersediaan terhad pada masa ini.</translation>
 <translation id="7796735576426975947">Pemberitahuan baharu disembunyikan</translation>
 <translation id="7798302898096527229">Tekan Search atau Shift untuk membatalkan.</translation>
 <translation id="780301667611848630">Tidak, terima kasih</translation>
@@ -1990,6 +1999,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8331351032546853669">Muat turun belum selesai</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Output yang buruk</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> tetingkap dipilih</translation>
 <translation id="8349826889576450703">launcher</translation>
 <translation id="8349964124165471584">Buka pautan dalam tetingkap baharu</translation>

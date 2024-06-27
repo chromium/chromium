@@ -26,6 +26,7 @@
 <translation id="1050038467049342496">Затворите друге апликације</translation>
 <translation id="1053959602163383901">Одабрали сте да се верификујете помоћу уређаја за потврду идентитета на веб-сајтовима који користе <ph name="PROVIDER_ORIGIN" />. Овај добављач је можда сачувао информације о начину плаћања, за који можете да <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Опозови додавање</translation>
+<translation id="105642538515333723">Можете да унесете било коју фразу или детаље којих се сећате са страница које сте прегледали у прошлости, на пример „удобне ципеле за ходање“</translation>
 <translation id="1056898198331236512">Упозорење</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте играли игру Диносаурус у Chrome-у</translation>
 <translation id="1058479211578257048">Картице се чувају...</translation>
@@ -968,6 +969,7 @@
 <translation id="2824775600643448204">Трака за адресу и претрагу</translation>
 <translation id="2826760142808435982">Веза је шифрована и њена аутентичност је потврђена помоћу <ph name="CIPHER" /> и користи <ph name="KX" /> као механизам за размену шифара.</translation>
 <translation id="2833637280516285136">Радио-емисије са гостима</translation>
+<translation id="2837891525090413132">Може да тражи да закључа и користи тастатуру</translation>
 <translation id="2838682941130655229">Веб-сајт <ph name="EMBEDDED_URL" /> жели да користи информације које је сачувао о вама</translation>
 <translation id="2839032553903800133">Обавештења су блокирана</translation>
 <translation id="2839501879576190149">Сајт на који желите да одете је лажан</translation>
@@ -1016,7 +1018,7 @@
 <translation id="2941112035454246133">Низак</translation>
 <translation id="2941878205777356567">Коверта 23×30 cm</translation>
 <translation id="2941952326391522266">Овај сервер не може да докаже да је <ph name="DOMAIN" />; његов безбедносни сертификат је са домена <ph name="DOMAIN2" />. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
-<translation id="2942492342931589800">За опуштање</translation>
+<translation id="2942492342931589800">Неформално</translation>
 <translation id="2942515540157583425">ИТ и технички послови</translation>
 <translation id="2943895734390379394">Време отпремања:</translation>
 <translation id="2948083400971632585">На страници Подешавања можете да онемогућите све проксије конфигурисане за везу.</translation>
@@ -1157,7 +1159,6 @@
 <translation id="3209034400446768650">Страница може да наплаћује</translation>
 <translation id="3212581601480735796">Ваше активности на <ph name="HOSTNAME" /> се прате</translation>
 <translation id="3215092763954878852">Коришћење веб-стандарда WebAuthn није успело</translation>
-<translation id="3215311088819828484">Резултат је ажуриран</translation>
 <translation id="3216313131063488104">Блуз</translation>
 <translation id="3218181027817787318">Релативно</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Ажурирање мора да се обави одмах}=2{Ажурирање мора да се обави до сутра}one{Ажурирање мора да се обави у року од # дана}few{Ажурирање мора да се обави у року од # дана}other{Ажурирање мора да се обави у року од # дана}}</translation>
@@ -2858,6 +2859,7 @@
 <translation id="6433797564277305076">Од сада брже потврђујте картице уз откључавање уређаја</translation>
 <translation id="643917412048333145">Хаљине</translation>
 <translation id="6440503408713884761">Занемарено</translation>
+<translation id="6440534369669992497">Можете да унесете било коју фразу или детаље којих се сећате са страница које сте прегледали у прошлости, на пример „удобне ципеле за ходање“. <ph name="SHORTCUT" /> да бисте претраживали.</translation>
 <translation id="6443406338865242315">додатке и додатне компонента које сте инсталирали</translation>
 <translation id="6444329331928531170">Пензионисање</translation>
 <translation id="6446608382365791566">Додајте још информација</translation>
@@ -3141,6 +3143,7 @@
 <translation id="7006930604109697472">Ипак пошаљи</translation>
 <translation id="7010658264061801199">Храна и пиће</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013835112918108252">Може да тражи да закључа и користи миш</translation>
 <translation id="7014042602717177828">Аудио опрема за аутомобиле</translation>
 <translation id="7014741021609395734">Ниво зумирања</translation>
 <translation id="7016992613359344582">Те наплате могу да буду једнократне или периодичне и можда нису одмах видљиве.</translation>

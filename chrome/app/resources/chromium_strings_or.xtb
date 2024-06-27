@@ -81,6 +81,8 @@
 <translation id="2329088755516916767">ଏହା ଚାଲୁ ଥିବା ସମୟରେ, Chromium ବ୍ରାଉଜ ଓ ସର୍ଚ୍ଚ କରିବାକୁ ଦ୍ରୁତ କରାଉଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକୁ ପ୍ରିଲୋଡ କରେ।</translation>
 <translation id="2343156876103232566">ଏଠାରୁ ଆପଣଙ୍କ Android ଫୋନକୁ ଏକ ନମ୍ବର ପଠାଇବାକୁ, ଉଭୟ ଡିଭାଇସରେ Chromiumରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</translation>
 <translation id="2359808026110333948">ଜାରି ରଖନ୍ତୁ</translation>
+<translation id="2361918034042471035">ଆପଣ Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ ବୋଲି "<ph name="EXTENSION_NAME" />" ଏକ୍ସଟେନସନ ଚାହୁଁଛି</translation>
+<translation id="2374216753258219393"><ph name="USER_EMAIL_ADDRESS" /> ଭାବେ ଏହି ଏକ୍ସଟେନସନ ବ୍ୟବହାର କରିବାକୁ Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
 <translation id="2384373936468275798">ଆପଣଙ୍କ ଆକାଉଣ୍ଟର ସାଇନ-ଇନ ବିବରଣୀ ପୁରୁଣା ହୋଇଯାଇଥିବା ଯୋଗୁଁ ChromiumOS ଆପଣଙ୍କ ଡାଟାକୁ ସିଙ୍କ କରିପାରିଲା ନାହିଁ।</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1ଟି HID ଡିଭାଇସ ଗୋଟିଏ କିମ୍ବା ଏକାଧିକ Chromium ଏକ୍ସଟେନସନ ଦ୍ୱାରା ଆକ୍ସେସ କରାଯାଉଥିଲା}=1{1ଟି HID ଡିଭାଇସ ଗୋଟିଏ କିମ୍ବା ଏକାଧିକ Chromium ଏକ୍ସଟେନସନ ଦ୍ୱାରା ଆକ୍ସେସ କରାଯାଉଛି}other{#ଟି HID ଡିଭାଇସ ଗୋଟିଏ କିମ୍ବା ଏକାଧିକ Chromium ଏକ୍ସଟେନସନ ଦ୍ୱାରା ଆକ୍ସେସ କରାଯାଉଛି}}</translation>
 <translation id="2401032172288869980">ଏହି ସାଇଟ୍ ପାଇଁ Chromium କ୍ୟାମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ୍ ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
@@ -244,9 +246,11 @@
 <translation id="4893347770495441059">&amp;Chromium ଅପଡେଟ୍ କରିବା ପାଇଁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="4942295735032723435">ଭବିଷ୍ୟତରେ Chromiumର ଅପଡେଟଗୁଡ଼ିକ ପାଇବା ପାଇଁ ଆପଣଙ୍କୁ macOS 11 କିମ୍ବା ତା'ପରର ଭର୍ସନ ଆବଶ୍ୟକ ହେବ। ଏହି କମ୍ପ୍ୟୁଟରରେ macOS 10.15 ଭର୍ସନ ବ୍ୟବହାର କରାଯାଉଛି।</translation>
 <translation id="4943838377383847465">Chromium ପୃଷ୍ଠପଟ ମୋଡ୍‌ରେ ଅଛି।</translation>
+<translation id="494490797786467921">Chromium ସାଇନ-ଇନ ଡାଏଲଗକୁ ବନ୍ଦ କରିବା ପାଇଁ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="4987820182225656817">କିଛି ପଛରେ ନଛାଡ଼ି ଅତିଥି Chromium ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="4994636714258228724">Chromium ସହ ନିଜକୁ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5114678101347489141">ଆପଣଙ୍କର କମ୍ ସୂଚନା ବ୍ୟବହାର କରି ସମାନ ବ୍ରାଉଜିଂ ଅନୁଭୂତି ଡେଲିଭର କରିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦେଉଥିବା ନୂଆ ଫିଚରଗୁଡ଼ିକୁ Chromium ଏକ୍ସପ୍ଲୋର କରୁଛି</translation>
+<translation id="5187123684706427865">Chromium ଆକାଉଣ୍ଟ ପାଇଁ ପୁଣି-ପ୍ରମାଣୀକରଣ ଆବଶ୍ୟକ</translation>
 <translation id="5224391634244552924">ସେଭ୍ କରାଯାଇଥିବା କୌଣସି ପାସୱାର୍ଡ ନାହିଁ। ଆପଣ ପାସୱାର୍ଡଗୁଡ଼ିକ ସେଭ୍ କଲେ Chromium ସେଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ।</translation>
 <translation id="5231355151045086930">Chromiumରୁ ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> ଏହି Chromium ପ୍ରୋଫାଇଲରେ ପୂର୍ବରୁ ସାଇନ୍ ଇନ୍ କରିସାରିଛନ୍ତି। ଏହା <ph name="USER_EMAIL_ADDRESS" /> ପାଇଁ ଏକ ନୂଆ Chromium ପ୍ରୋଫାଇଲ୍ ତିଆରି କରିବ</translation>

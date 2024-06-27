@@ -825,6 +825,7 @@
 <translation id="5190835502935405962">బుక్‌మార్క్‌ల బార్</translation>
 <translation id="519530786644929958">డౌన్‌లోడ్ విఫలమైంది, మళ్లీ ట్రై చేయడం సాధ్యం కాదు.</translation>
 <translation id="5197255632782567636">ఇంటర్నెట్</translation>
+<translation id="5205197603258285592">ఇమేజ్‌ను దీనిలో సేవ్ చేయండి...</translation>
 <translation id="5211488077761630279">మీ <ph name="PERMISSION" />‌ను ఉపయోగించడానికి "<ph name="SITE_NAME" />"‌ను అనుమతించాలా?</translation>
 <translation id="5219295696240154694">వెబ్‌లో ప్రతిఒక్కరి భద్రతను మెరుగుపరచడంలో సహాయపడండి</translation>
 <translation id="5220945116117011963">తేదీల నుండి క్యాలెండర్ ఈవెంట్‌లను క్రియేట్ చేయండి</translation>
@@ -1413,6 +1414,7 @@
 <translation id="8023878949384262191">విభాగాన్ని విస్తరింపజేస్తుంది.</translation>
 <translation id="8027581147000338959">కొత్త విండోలో తెరవండి</translation>
 <translation id="8032569120109842252">ఫాలో చేస్తున్నారు</translation>
+<translation id="8035412398498507358">Photos</translation>
 <translation id="8040207962129315716">నన్ను ప్రతిసారి అడగాలి</translation>
 <translation id="8041089156583427627">ప్రతిస్పందనను పంపండి</translation>
 <translation id="804225253087497565">మీరు సైన్ ఇన్ చేసినప్పుడు, <ph name="BEGIN_LINK" />సెర్చ్ హిస్టరీ<ph name="END_LINK" />, <ph name="BEGIN_LINK" />ఇతర రకాల యాక్టివిటీ<ph name="END_LINK" /> మీ Google ఖాతాలో సేవ్ చేయబడవచ్చు. మీరు వాటిని ఎప్పుడైనా తొలగించవచ్చు.</translation>
@@ -1525,6 +1527,7 @@
 <translation id="8556590991644167667">{count,plural, =1{మీరు {count} హెచ్చరికను విస్మరించారు}other{మీరు {count} హెచ్చరికలను విస్మరించారు}}</translation>
 <translation id="8560253818350321773">తరచుగా ఉపయోగించే ఐటెమ్‌లను ముందుగా చూపండి.</translation>
 <translation id="8569721750632860947">మీరు మీ చదవాల్సిన లిస్ట్‌కు ఏ URLను జోడించాలనుకుంటున్నారు?</translation>
+<translation id="8570765991595769633">కార్డ్‌లను అనుకూలంగా మార్చండి</translation>
 <translation id="8577056989960190117">గడువు ముగింపు సంవత్సరాన్ని <ph name="YEAR" />‌తో ఆటోఫిల్ చేయండి</translation>
 <translation id="8588404856427128947">ఆఫ్ చేయబడి ఉంది</translation>
 <translation id="8591976964826315682">అజ్ఞాత మోడ్‌లో థర్డ్-పార్టీ కుక్కీలను బ్లాక్ చేయండి</translation>
@@ -1664,6 +1667,7 @@
 <translation id="948048872540558976">కొత్త ట్యాబ్‌ను క్రియేట్ చేయండి</translation>
 <translation id="952218985181984374">{count,plural, =1{బుక్‌మార్క్ సేవ్ చేయబడింది}other{{count} బుక్‌మార్క్‌లు సేవ్ చేయబడ్డాయి}}</translation>
 <translation id="952704832371081537">రద్దు చేయండి</translation>
+<translation id="955587716023217544">ఖాతా లిస్ట్‌ను ఎడిట్ చేయండి</translation>
 <translation id="959066944189734975">మీరు <ph name="CHANNEL_NAME" />ను ఫాలో అవుతున్నారు</translation>
 <translation id="96615566463761848">ఇతర పరికరాల నుండి ట్యాబ్ సూచనలను చూడండి</translation>
 <translation id="973493300226275298">ఆన్‌లైన్ స్టోర్‌లలో ప్రోడక్ట్ ధరను ట్రాక్ చేయండి. ధర తగ్గినప్పుడు మీరు అలర్ట్‌లను పొందుతారు.</translation>

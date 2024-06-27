@@ -41,6 +41,7 @@
 <translation id="1070901266639972381">Ніч</translation>
 <translation id="1073690811593784042">Скло (кольорове)</translation>
 <translation id="1074497978438210769">Не конфіденційний</translation>
+<translation id="1074779248866616641">Результат</translation>
 <translation id="1075364221219156102">Використовувати ключ доступу</translation>
 <translation id="1080116354587839789">За шириною сторінки</translation>
 <translation id="1081061862829655580">Лоток 19</translation>
@@ -64,6 +65,7 @@
 <translation id="1118429183611783760">Пилососи й засоби для догляду за підлогою</translation>
 <translation id="1122714970786750095">Електроніка й електротехнічне обладнання</translation>
 <translation id="1123753900084781868">Живі субтитри зараз недоступні</translation>
+<translation id="1125453215844207206">Графічний об’єкт без мітки. Текст видобувається за допомогою ШІ від Google.</translation>
 <translation id="1125573121925420732">Можуть з’являтися застереження під час оновлення системи безпеки сайтів. Цю проблему буде незабаром виправлено.</translation>
 <translation id="112840717907525620">Кеш-пам’ять правила не пошкоджено</translation>
 <translation id="1131264053432022307">Скопійоване зображення</translation>
@@ -402,6 +404,7 @@
 <translation id="1719838434204287058">24 x 30 дюйм.</translation>
 <translation id="1720941539803966190">Закрити навчальний посібник</translation>
 <translation id="1721424275792716183">* Обов’язкове поле</translation>
+<translation id="1723505128907434375">Закладку збережено.</translation>
 <translation id="1725591448053514783">Конверт You 6</translation>
 <translation id="1727613060316725209">Сертифікат дійсний</translation>
 <translation id="1728677426644403582">Ви переглядаєте джерело веб-сторінки</translation>
@@ -1070,6 +1073,7 @@
 <translation id="3041612393474885105">Інформація про сертифікат</translation>
 <translation id="3045769629416806687">Екстремальні види спорту</translation>
 <translation id="305162504811187366">Історію Віддаленого керування Chrome, включно з позначками часу, хостами й ідентифікаторами сеансів клієнта</translation>
+<translation id="3052868890529250114">Зазвичай ви безпечно підключаєтеся до сайтів, проте цього разу Chrome не може застосувати захищене з’єднання. Можливо, зловмисник намагається підслухати або змінити ваше з’єднання з мережею. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше про це попередження<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Ціну на товар "<ph name="PRODUCT_NAME" />" знижено на <ph name="PRICE_DROP" /></translation>
 <translation id="3054512251683174387">Chrome автоматично видаляє теми через 4 тижні. Але якщо ви продовжите пошук за видаленою темою, вона може знову з’явитися в списку. Ви також можете заблокувати теми, якими Chrome не має ділитись із сайтами. Дізнайтесь, як керувати конфіденційністю в рекламі в Chrome.</translation>
 <translation id="3061707000357573562">Служба виправлень</translation>
@@ -1269,6 +1273,7 @@
 <translation id="342781501876943858">Chromium радить скинути пароль, якщо ви застосовували його на інших сайтах.</translation>
 <translation id="3428151540071562330">Щонайменше один ідентифікатор URI шаблону сервера DnsOverHttpsTemplates недійсний і не використовуватиметься.</translation>
 <translation id="3428789896412418755">Історія, упорядкована за групами</translation>
+<translation id="3430206873883193118">На сайті, який ви намагаєтеся відвідати, зловмисники можуть обманом змусити вас установити програмне забезпечення або розкрити вашу інформацію, зокрема пароль, номер телефону чи кредитної картки. Chrome радить повернутися на безпечну сторінку. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше про це попередження<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">Закрити сторінку</translation>
 <translation id="3433111389595862568">Програмне забезпечення для спільної роботи й відеоконференцій</translation>
 <translation id="3433144818443565002">Голосові й відеочати</translation>
@@ -1365,6 +1370,7 @@
 <translation id="3585455899094692781">Використовувати й переміщувати доступні камери (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Волога плівка</translation>
 <translation id="3586931643579894722">Сховати докладні дані</translation>
+<translation id="3587725436724465984">Адміністратор вашої організації визначив, що сайт <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> може порушувати правила. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше про це попередження<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Середній</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Кнопка "Керувати налаштуваннями конфіденційності Google"; активуйте, щоб перейти в налаштування конфіденційності облікового запису Google</translation>
@@ -1374,6 +1380,7 @@
 <translation id="3608932978122581043">Орієнтація стрічки</translation>
 <translation id="3610142117915544498">Щоб наступного разу платити швидше, збережіть дані картки, ім’я і платіжну адресу в обліковому записі Google</translation>
 <translation id="3612660594051121194">Автобуси й поїзди далекого прямування</translation>
+<translation id="3614001939154393113">Зловмисники можуть намагатися викрасти вашу інформацію із сайту <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (наприклад, паролі, повідомлення чи дані кредитних карток). <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше про це попередження<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Розмір 2</translation>
 <translation id="361438452008624280">Пункт списку <ph name="LANGUAGE_ID" />: мова невідома або не підтримується.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб виконати перевірку безпеки в налаштуваннях Chrome</translation>
@@ -1524,6 +1531,7 @@
 <translation id="3880456882942693779">Мистецтво й розваги</translation>
 <translation id="3880589673277376494">Інтернет і телекомунікації</translation>
 <translation id="3881478300875776315">Показати менше рядків</translation>
+<translation id="3883437137686353397">Зазвичай ви безпечно підключаєтеся до цього сайту, проте цього разу Chrome не може застосувати захищене з’єднання. Можливо, зловмисник намагається підслухати або змінити ваше з’єднання з мережею. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше про це попередження<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3883500545751229739">нав’язливі оголошення</translation>
 <translation id="3884278016824448484">Конфліктуючий ідентифікатор пристрою</translation>
 <translation id="388632593194507180">Виявлено відстеження</translation>
@@ -1651,6 +1659,7 @@
 <translation id="4140905530744469899">Ідентифікатор профілю:</translation>
 <translation id="4142935452406587478">Лоток 10</translation>
 <translation id="4148925816941278100">American Express</translation>
+<translation id="4149757165376323512">Ви бачите це попередження, оскільки цей сайт не підтримує HTTPS і ви берете участь у Програмі додаткового захисту Google. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше про це попередження<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4150099059797363385">Конверт Chinese № 4</translation>
 <translation id="4151403195736952345">Використовувати загальне значення за умовчанням (визначати)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Сторінка 1}one{Сторінка {COUNT}}few{Сторінка {COUNT}}many{Сторінка {COUNT}}other{Сторінка {COUNT}}}</translation>
@@ -2174,6 +2183,7 @@
 <translation id="514704532284964975">Сайт <ph name="URL" /> хоче переглядати й змінювати інформацію на пристроях NFC, яких ви торкаєтеся телефоном</translation>
 <translation id="5147633291963801297">Переглянути зниження ціни на бічній панелі</translation>
 <translation id="5148809049217731050">Лицевою стороною вгору</translation>
+<translation id="5148889558173091794">Ваша організація заблокувала домен <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, оскільки він порушує правила. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше про це попередження<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5157504274688344097">Магазини зі змішаним асортиментом і універмаги</translation>
 <translation id="5158275234811857234">Обкладинка</translation>
 <translation id="5159010409087891077">Відкрийте сторінку в анонімному вікні (⇧⌘N)</translation>
@@ -2456,6 +2466,7 @@
 <translation id="5689516760719285838">Місцезнаходження</translation>
 <translation id="569000877158168851">Значення DnsOverHttpsTemplates невідповідне й не використовуватиметься, якщо для правила DnsOverHttpsMode не буде вибрано значення <ph name="SECURE_DNS_MODE_AUTOMATIC" /> або <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Зберегти картку у відкритому вигляді на всю висоту.</translation>
+<translation id="5692655638459249302">На сайті, який ви намагаєтеся відвідати, зловмисники можуть установити програмне забезпечення, яке викрадає або видаляє вашу інформацію, зокрема пароль, фотографії, повідомлення або номер кредитної картки. Chrome радить повернутися на безпечну сторінку. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше про це попередження<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">Підтвердити й завершити покупку за допомогою Windows Hello?</translation>
 <translation id="5699628521141772782">Молоко і яйця</translation>
 <translation id="5700761515355162635">Сторонні файли cookie дозволено</translation>
@@ -2751,6 +2762,7 @@
 <translation id="6284449872909111707">Обмін текстовими повідомленнями й чати</translation>
 <translation id="6284517535531159884">Тип вихідного варіанта</translation>
 <translation id="6287197303017372967">Отримайте покрокові інструкції щодо того, як дістатися вашого пункту призначення, за допомогою функції навігації.</translation>
+<translation id="6288521565586608304">На сайті, який ви намагаєтеся відвідати, зловмисники можуть обманом змусити вас установити шкідливе програмне забезпечення, яке впливає на ваш вебперегляд (наприклад, змінює головну сторінку або показує додаткову рекламу на сайтах, які ви відвідуєте). Chrome радить повернутися на безпечну сторінку, щоб уникнути шкоди. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше про це попередження<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">Знайдено знижку</translation>
 <translation id="6289939620939689042">Колір сторінки</translation>
 <translation id="6292819926564202163">Ваша пошукова система в Chrome</translation>
@@ -2784,6 +2796,7 @@
 <translation id="634500758737709758">Покрокові інструкції</translation>
 <translation id="6348220984832452017">Активні варіанти</translation>
 <translation id="6349101878882523185">Установіть додаток <ph name="APP_NAME" /></translation>
+<translation id="6351398281531821890">ПОКАЗАТИ</translation>
 <translation id="6351658970066645919">Видалити дані вебперегляду</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Немає}=1{1 пароль (для <ph name="DOMAIN_LIST" />, синхронізовано)}=2{2 паролі (для <ph name="DOMAIN_LIST" />, синхронізовано)}one{# пароль (для <ph name="DOMAIN_LIST" />, синхронізовано)}few{# паролі (для <ph name="DOMAIN_LIST" />, синхронізовано)}many{# паролів (для <ph name="DOMAIN_LIST" />, синхронізовано)}other{# пароля (для <ph name="DOMAIN_LIST" />, синхронізовано)}}</translation>
 <translation id="6355392890578844978">Цим веб-переглядачем не керує адміністратор компанії чи іншої організації. Діями на цьому пристрої можна керувати за межами Chromium. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
@@ -3116,6 +3129,7 @@
 <translation id="6978722349058177832">Якщо ви користуєтеся цим пристроєм спільно з іншими людьми, Chromium може просити вас підтверджувати особу щоразу, коли ви оплачуєте покупки за допомогою автозаповнення</translation>
 <translation id="6979158407327259162">Диск Google</translation>
 <translation id="6979440798594660689">Без звуку (за умовчанням)</translation>
+<translation id="6984270784814146224">Зображення без мітки. Текст видобувається за допомогою ШІ від Google.</translation>
 <translation id="6987806006823772670">Конверт (з покриттям)</translation>
 <translation id="6989763994942163495">Показати розширені налаштування...</translation>
 <translation id="6996312675313362352">Завжди перекладати з такої мови: <ph name="ORIGINAL_LANGUAGE" /></translation>
@@ -3141,6 +3155,7 @@
 <translation id="7031646650991750659">встановлені додатки Google Play.</translation>
 <translation id="7035705295266423040">Банку потрібне підтвердження вашої особи</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб керувати налаштуваннями конфіденційності облікового запису Google.</translation>
+<translation id="7042616127917168121">Уточнити результати</translation>
 <translation id="7043552168914147882">Роздільники</translation>
 <translation id="7044081119134178347">Надано разовий доступ до камери</translation>
 <translation id="7048095965575426564">Fanfold (Європейський Союз)</translation>
@@ -3183,6 +3198,7 @@
 <translation id="7112327784801341716">Не відображається актуальна інформація? Попросіть представника банку оновити її.</translation>
 <translation id="7116334367957017155">У вас немає збережених адрес. Додайте адресу, щоб використовувати її в продуктах Google.</translation>
 <translation id="7118618213916969306">Пошук URL-адреси з буфера обміну, <ph name="SHORT_URL" /></translation>
+<translation id="7118852830504022370">Ви бачите це попередження, оскільки цей сайт не підтримує HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше про це попередження<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">Телевізійні драми</translation>
 <translation id="7119371694555167493">Час очікування копіювання минув</translation>
 <translation id="7119414471315195487">Закрийте інші вкладки та програми</translation>
@@ -4103,6 +4119,7 @@
 <translation id="882338992931677877">Лоток для ручного введення</translation>
 <translation id="8830320733681313421">Уфуку Хагакі (листівка)</translation>
 <translation id="8833007469711500369">Пральні й сушильні машини</translation>
+<translation id="8834962751196791179">Ви бачите це попередження, оскільки сайт не підтримує HTTPS і ви ввійшли в режимі анонімного перегляду. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше про це попередження<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">Науково-фантастичні й фентезі-шоу</translation>
 <translation id="883848425547221593">Інші закладки</translation>
 <translation id="8842351563145134519">Список способів оплати, дані яких заповнюються дотиком, відкрито на половину висоти.</translation>

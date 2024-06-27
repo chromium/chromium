@@ -81,6 +81,8 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="2329088755516916767">Če je vklopljena ta nastavitev, Chromium vnaprej naloži strani, kar omogoča hitrejše brskanje in iskanje.</translation>
 <translation id="2343156876103232566">Če želite poslati telefonsko številko od tukaj v telefon Android, se prijavite v Chromium v obeh napravah.</translation>
 <translation id="2359808026110333948">Naprej</translation>
+<translation id="2361918034042471035">Razširitev »<ph name="EXTENSION_NAME" />« želi, da se prijavite v Chromium</translation>
+<translation id="2374216753258219393">Če želite to razširitev uporabljati kot <ph name="USER_EMAIL_ADDRESS" />, se prijavite v Chromium.</translation>
 <translation id="2384373936468275798">Chromium OS ni mogel sinhronizirati podatkov, ker so podatki za prijavo v račun zastareli.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Najmanj ena razširitev za Chromium je dostopala do 1 naprave HID}=1{Najmanj ena razširitev za Chromium dostopa do 1 naprave HID}one{Najmanj ena razširitev za Chromium dostopa do # naprave HID}two{Najmanj ena razširitev za Chromium dostopa do # naprav HID}few{Najmanj ena razširitev za Chromium dostopa do # naprav HID}other{Najmanj ena razširitev za Chromium dostopa do # naprav HID}}</translation>
 <translation id="2401032172288869980">Chromium potrebuje dovoljenje za fotoaparat in mikrofon za to spletno mesto.</translation>
@@ -244,9 +246,11 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="4893347770495441059">Znova zaženite, če želite posodobiti &amp;Chromium</translation>
 <translation id="4942295735032723435">Če želite prejemati prihodnje posodobitve Chromiuma, potrebujete macOS 11 ali novejšo različico. V tem računalniku je nameščen macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium se izvaja v ozadju.</translation>
+<translation id="494490797786467921">Kliknite, če želite zapreti pogovorno okno za prijavo v Chromium</translation>
 <translation id="4987820182225656817">Gostje lahko uporabljajo Chromium, ne da bi za seboj pustili kar koli.</translation>
 <translation id="4994636714258228724">Dodajte se v Chromium</translation>
 <translation id="5114678101347489141">Chromium raziskuje nove funkcije, ki spletnim mestom omogočajo, da zagotavljajo isto izkušnjo pri brskanju, pri tem pa uporabljajo manj vaših podatkov.</translation>
+<translation id="5187123684706427865">Račun Chromium zahteva vnovično preverjanje pristnosti</translation>
 <translation id="5224391634244552924">Ni shranjenih gesel. Chromium lahko preveri gesla, če jih shranite.</translation>
 <translation id="5231355151045086930">Odjava iz Chromiuma</translation>
 <translation id="5252179775517634216">Uporabnik <ph name="EXISTING_USER" /> je že prijavljen v ta profil v Chromiumu. S tem bo ustvarjen novi profil v Chromiumu za uporabnika <ph name="USER_EMAIL_ADDRESS" />.</translation>

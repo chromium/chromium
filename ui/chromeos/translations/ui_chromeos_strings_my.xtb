@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">PUK မမှန်ပါ</translation>
 <translation id="4057991113334098539">စဖွင့်နေပါသည်…</translation>
 <translation id="4092890906744441904">အိုင်းရစ်ရှ်</translation>
+<translation id="4101601646343868113">သင့်မိုဘိုင်းကွန်ရက်သို့ လက်မှတ်ထိုးဝင်ပြီး မိုဘိုင်းဒေတာ အစီအစဉ်ကို သုံးနေကြောင်း အတည်ပြုပါ</translation>
 <translation id="4124731372776320263">Drive ဖိုင် ၁ ဖိုင်စင့်ခ်လုပ်နေသည်</translation>
 <translation id="4124935795427217608">သိင်္ဂဿမြင်း</translation>
 <translation id="4131235941541910880">မလိုသောဖိုင်များကို အမှိုက်ပုံးသို့ ရွှေ့ပါ</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Tamil99 ကီးဘုတ်ဖြင့် တမီးလ်</translation>
 <translation id="5633226425545095130">ဤဖိုင်ကိုရွှေ့သောအခါ မျှဝေထားသောဖိုင်တွဲ ‘<ph name="DESTINATION_NAME" />’ ကို ကြည့်ခွင့်ရသူတိုင်းနှင့် မျှဝေပါမည်။</translation>
 <translation id="5649768706273821470">နားထောင်</translation>
+<translation id="5650895901941743674">သင့် APN စီစဉ်သတ်မှတ်ချက်ကို ကြည့်ပါ</translation>
 <translation id="5669691691057771421">ပင်နံပါတ်အသစ်ကို ထည့်ပါ</translation>
 <translation id="5678784840044122290">Linux အပလီကေးရှင်းကို သင်၏ Terminal အတွင်းတွင်ရနိုင်ပြီး သင်၏ Launcher တွင်လည်း သင်္ကေတပြနိုင်ပါသည်။</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />မှတ်တမ်းဟောင်း သို့မဟုတ် ဒစ်ခ်အတုကို ချိတ်ဆက်မှုဖြုတ်၍မရပါ<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">ဖိုင်စာရင်းကို ပုံသေးမြင်ကွင်းအဖြစ် ပြောင်းထားသည်။</translation>
 <translation id="8601932370724196034">Crostini ပုံပါဝင်သော ဖိုင်</translation>
 <translation id="8609695766746872526">အိုက်စ်လန်</translation>
+<translation id="8630384863424041081">သင့်ဖုန်းကုမ္ပဏီက ပေးထားသည့် ဆင်းမ်ကတ်ပင်နံပါတ် (သို့) မူရင်းပင်နံပါတ်ကို ထည့်ပါ။ အကူအညီအတွက် သင့်ဖုန်းကုမ္ပဏီကို ဆက်သွယ်ပါ။</translation>
 <translation id="863903787380594467">ပင်နံပါတ် မမှန်ပါ။ သင့်တွင် ကြိုးစားခွင့် <ph name="RETRIES" /> ကြိမ် ကျန်သည်။</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ပို့တ်</translation>
 <translation id="8656407365183407932">သင့်အော့ဖ်လိုင်းဖိုင်များကို ဖယ်ရှားလိုက်ရသည်</translation>

@@ -825,6 +825,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5190835502935405962">Pasek zakładek</translation>
 <translation id="519530786644929958">Pobieranie się nie udało i nie można go powtórzyć.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205197603258285592">Zapisz obraz w…</translation>
 <translation id="5211488077761630279">Zezwolić witrynie „<ph name="SITE_NAME" />” na korzystanie z <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Pomóż poprawić bezpieczeństwo wszystkich użytkowników internetu</translation>
 <translation id="5220945116117011963">Twórz wydarzenia w kalendarzu na podstawie dat</translation>
@@ -1525,6 +1526,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8556590991644167667">{count,plural, =1{Odrzuciłeś(-aś) {count} ostrzeżenie}few{Odrzuciłeś(-aś) {count} ostrzeżenia}many{Odrzuciłeś(-aś) {count} ostrzeżeń}other{Odrzuciłeś(-aś) {count} ostrzeżenia}}</translation>
 <translation id="8560253818350321773">Najpierw pokazuj elementy często używane.</translation>
 <translation id="8569721750632860947">Jaki URL chcesz dodać do listy Do przeczytania?</translation>
+<translation id="8570765991595769633">Dostosuj karty</translation>
 <translation id="8577056989960190117">Automatycznie uzupełnij rok ważności (<ph name="YEAR" />)</translation>
 <translation id="8588404856427128947">Wyłączono</translation>
 <translation id="8591976964826315682">Blokuj pliki cookie innych firm w trybie incognito</translation>
@@ -1664,6 +1666,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="948048872540558976">Utwórz nową kartę</translation>
 <translation id="952218985181984374">{count,plural, =1{Zakładka została zapisana}few{{count} zakładki zostały zapisane}many{{count} zakładek została zapisanych}other{{count} zakładki zostało zapisane}}</translation>
 <translation id="952704832371081537">Anuluj</translation>
+<translation id="955587716023217544">Edytuj listę kont</translation>
 <translation id="959066944189734975">Obserwujesz kanał <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Pokazuj sugestie dotyczące kart z innych urządzeń</translation>
 <translation id="973493300226275298">Monitoruj cenę produktu w sklepach internetowych. Gdy cena spadnie, otrzymasz alert.</translation>

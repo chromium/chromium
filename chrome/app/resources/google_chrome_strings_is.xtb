@@ -5,6 +5,8 @@
 <translation id="1026101648481255140">Halda uppsetningu áfram</translation>
 <translation id="102763973188675173">Sérstilltu og stjórnaðu Google Chrome. Uppfærsla er í boði.</translation>
 <translation id="1028061813283459617"><ph name="BEGIN_LINK" />Skráðu þig út af Chrome<ph name="END_LINK" /> til að eyða vefskoðunargögnum aðeins úr þessu tæki en ekki af Google-reikningnum þínum.</translation>
+<translation id="1042270987544905725">Smelltu til að loka innskráningarglugga Chrome</translation>
+<translation id="1059838145689930908">Skráðu þig inn á Chrome til að nota þessa viðbót sem <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1065672644894730302">Ekki er tókst að lesa kjörstillingarnar þínar.
 
 Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingum verða ekki vistaðar.</translation>
@@ -372,6 +374,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6291089322031436445">Chrome Dev forrit</translation>
 <translation id="6291549208091401781">Google Chrome hefur þegar verið sett upp fyrir alla notendur í tölvunni.</translation>
 <translation id="6319856120645568262">Chrome þarfnast heimildar til að kortleggja umhverfið þitt og rekja handahreyfingarnar þínar</translation>
+<translation id="6321592572353357376">Viðbótin „<ph name="EXTENSION_NAME" />“ vill að þú skráir þig inn á Chrome</translation>
 <translation id="6326175484149238433">Fjarlægja úr Chrome</translation>
 <translation id="6327105987658262776">Uppfærsla er ekki tiltæk.</translation>
 <translation id="6360449101159168105">Meðan þessi flipi var óvirkur var losað um minni til að gera Chrome hraðari. Þú getur valið að undanskilja þetta vefsvæði alltaf frá því að vera óvirkt.</translation>
@@ -464,6 +467,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7655455401911432608">Vafraferillinn þinn, skrá yfir vefsvæði sem þú hefur opnað með Chrome í þessu tæki.</translation>
 <translation id="7661924425853052955">Þú hefur ekki skoðað vefsvæðið nýlega. Chrome fjarlægði <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="COUNT" /> til viðbótar</translation>
 <translation id="7668816516367091728">Framkvæmir verkefni eins og þýðingar, útreikninga og fleira, beint af veffangastikunni</translation>
+<translation id="7670287553302121848">Chrome-reikningur þarfnast endurauðkenningar</translation>
 <translation id="769538538642757151">Chrome lætur þig vita ef þú þarft að yfirfara eitthvað</translation>
 <translation id="7747138024166251722">Uppsetningarforritið gat ekki búið til tímabundna möppu. Athugaðu laust diskpláss og heimildir fyrir uppsetningu hugbúnaðar.</translation>
 <translation id="7761834446675418963">Smelltu á nafnið þitt til að opna Chrome og byrja að vafra.</translation>

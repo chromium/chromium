@@ -814,6 +814,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="5150492518600715772">Lähetä laitteeseen</translation>
 <translation id="5157638238828697074">Jotain meni pieleen. Sovelluksen avaaminen epäonnistui.</translation>
 <translation id="5168414296986405587">Suunniteltu iPadOS:lle</translation>
+<translation id="5169725654005786900">Toimintoa suoritetaan…</translation>
 <translation id="5173088371991956744">Synkronoinnin on vahvistettava henkilöllisyytesi</translation>
 <translation id="5173493422621051500">Käytä näppäimistöä</translation>
 <translation id="5176312250994681348">Säilytä uusin salasana</translation>
@@ -824,6 +825,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="5190835502935405962">Kirjanmerkkipalkki</translation>
 <translation id="519530786644929958">Lataus epäonnistui, eikä sitä voi yrittää uudelleen.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205197603258285592">Tallenna kuva…</translation>
 <translation id="5211488077761630279">Saako <ph name="SITE_NAME" /> käyttää <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Auta lisäämään verkon turvallisuutta kaikille</translation>
 <translation id="5220945116117011963">Luo kalenteritapahtumia päivämäärien kautta</translation>
@@ -848,6 +850,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="5327753393331509826">Sisältöilmoitusten tilaaminen</translation>
 <translation id="5329451663851195956">Voit päivittää välilehden vetämällä alas.</translation>
 <translation id="5333148247954006827">Vaihda toiseen profiiliin</translation>
+<translation id="5338512273860059533">Kirjautuminen käynnissä.</translation>
 <translation id="5339316356165661760">Laita synkronointi päälle</translation>
 <translation id="5343472494710226394">Kiinnostuksen kohteisiisi perustuvia uutisia, urheilua ja sisältöä.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Seurataanko tätä pakettia?}other{Seurataanko {COUNT} pakettia?}}</translation>
@@ -1523,6 +1526,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8556590991644167667">{count,plural, =1{Olet hylännyt {count} varoituksen}other{Olet hylännyt {count} varoitusta}}</translation>
 <translation id="8560253818350321773">Näytä usein käytetyt kohdat.</translation>
 <translation id="8569721750632860947">Minkä URL-osoitteen haluat lisätä lukulistalle?</translation>
+<translation id="8570765991595769633">Muokkaa kortteja</translation>
 <translation id="8577056989960190117">Täytä vanhenemisvuosi <ph name="YEAR" /> automaattisesti</translation>
 <translation id="8588404856427128947">Pois päältä</translation>
 <translation id="8591976964826315682">Estä kolmannen osapuolen evästeet incognito-tilassa</translation>
@@ -1662,6 +1666,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="948048872540558976">Luo uusi välilehti</translation>
 <translation id="952218985181984374">{count,plural, =1{Kirjanmerkki tallennettu}other{{count} kirjanmerkkiä tallennettu}}</translation>
 <translation id="952704832371081537">Peru</translation>
+<translation id="955587716023217544">Muokkaa tililuetteloa</translation>
 <translation id="959066944189734975">Seuraat tätä: <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Näytä välilehtiehdotukset muilta laitteilta</translation>
 <translation id="973493300226275298">Seuraa tuotteen hintaa verkkokaupoissa. Saat ilmoituksen, kun hinta laskee.</translation>

@@ -89,6 +89,7 @@
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> gün önce etkindi</translation>
 <translation id="1390418506739274310">Chrome'da bağlantı açan diğer uygulamalardaki geçmişi görebilirsiniz. Google Hesabınızın <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> adresinde başka biçimlerde tarama geçmişi olabilir</translation>
 <translation id="13931502444227376"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />, devam etmek için adınızı, e-posta adresinizi ve profil resminizi bu siteyle paylaşacaktır. Sitenin <ph name="BEGIN_LINK1" />hizmet şartlarını<ph name="END_LINK1" /> görüntüleyin.</translation>
+<translation id="139752016751285248">Fiyat analizleri alt sayfası tam ekranda açıldı</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ile ara</translation>
 <translation id="1398057416966591719">Google Hesabınıza <ph name="BEGIN_LINK1" />hangi Chrome verilerinin kaydedileceğini yönetebilirsiniz<ph name="END_LINK1" />.
 
@@ -179,6 +180,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="1877073879466606884">Oturum açtığınız profil, yönetilen bir profildir. Yöneticiniz profil ayarlarınızda uzaktan değişiklik yapabilir, raporlama aracılığıyla tarayıcı hakkındaki bilgileri analiz edebilir ve diğer gerekli görevleri yerine getirebilir.</translation>
 <translation id="1883903952484604915">Dosyalarım</translation>
 <translation id="189358972401248634">Diğer diller</translation>
+<translation id="1899175549411605574">Fiyat analizleri alt sayfası</translation>
 <translation id="1900260903084164610">Devam ederek <ph name="BEGIN_TOS_LINK" />Hizmet Şartları<ph name="END_TOS_LINK" />'nı kabul etmiş olursunuz.</translation>
 <translation id="1904580727789512086">Ziyaret ettiğiniz URL'ler Google Hesabınıza kaydedilir</translation>
 <translation id="1910950723001426294">Paylaşım seçenekleri listesi kapalı.</translation>
@@ -520,6 +522,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3587596251841506391">Web'de güvenliğin iyileştirilmesine yardımcı olun</translation>
 <translation id="3597179440835065298">Daha iyi öneriler alın</translation>
 <translation id="3602290021589620013">Önizleme</translation>
+<translation id="3614126103057878858">Fiyat analizleri</translation>
 <translation id="3616113530831147358">Ses</translation>
 <translation id="3622349720008044802">Pencereleri yönetin</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 site}other{+ # site}}</translation>
@@ -529,6 +532,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3637744895182738742">Parolanızı unuttuysanız veya bu ayarı değiştirmek istiyorsanız <ph name="BEGIN_LINK" />hesabınızdaki Chrome verilerini silin<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Google uygulamasının ana sayfasına gidin</translation>
 <translation id="368329460027487650">Oturum kapatıldı. Oturum açma seçeneklerini açar.</translation>
+<translation id="3684540848053703310">Fiyat analizleri alt sayfası kapatıldı</translation>
 <translation id="3687645719033307815">Bu sayfanın önizlemesini görüntülüyorsunuz</translation>
 <translation id="3690369331356918524">Şifreleriniz bir veri ihlalinde ifşa olursa uyarır</translation>
 <translation id="3692944402865947621">Depolama konumuna erişilemediği için <ph name="FILE_NAME" /> dosyası indirilemedi.</translation>

@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">PUK կոդը սխալ է</translation>
 <translation id="4057991113334098539">Ակտիվացվում է…</translation>
 <translation id="4092890906744441904">իռլանդերեն</translation>
+<translation id="4101601646343868113">Մուտք գործեք ձեր բջջային ցանց և համոզվեք, որ ձեր բջջային ինտերնետի սակագնային պլանն ակտիվ է</translation>
 <translation id="4124731372776320263">Համաժամացվում է 1 Drive ֆայլ</translation>
 <translation id="4124935795427217608">Միաեղջյուր</translation>
 <translation id="4131235941541910880">Ոչ պետքական ֆայլերը տեղափոխեք աղբարկղ</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">թամիլերեն (Tamil99 ստեղնաշար)</translation>
 <translation id="5633226425545095130">Այս տարրը տեղափոխելու դեպքում այն հասանելի կդառնա բոլորին, ում տեսանելի է «<ph name="DESTINATION_NAME" />» ընդհանուր պանակը։</translation>
 <translation id="5649768706273821470">Լսել</translation>
+<translation id="5650895901941743674">Ստուգեք ձեր APN-ի կազմաձևը</translation>
 <translation id="5669691691057771421">Մուտքագրեք նոր PIN կոդը</translation>
 <translation id="5678784840044122290">Լինուքսի հավելվածը հասանելի կլինի ձեր տերմինալում, և կարող է նաև պատկերակ ցուցադրվի ձեր գործարկիչում:</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Չհաջողվեց հեռացնել կրիչը կամ վիրտուալ սկավառակը<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Ֆայլերի ցանկն այժմ ցուցադրված է մանրապատկերների տեսքով:</translation>
 <translation id="8601932370724196034">Crostini գրաֆիկական ֆայլ</translation>
 <translation id="8609695766746872526">իսլանդերեն</translation>
+<translation id="8630384863424041081">Մուտքագրեք ձեր SIM քարտի PIN կոդը կամ օպերատորի տրամադրած կանխադրված PIN կոդը։ Հարցեր ունենալու դեպքում դիմեք ձեր կապի օպերատորին։</translation>
 <translation id="863903787380594467">PIN կոդը սխալ է։ Մնաց <ph name="RETRIES" /> փորձ։</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Միացք</translation>
 <translation id="8656407365183407932">Ձեր օֆլայն ֆայլերը պետք է հեռացվեին</translation>

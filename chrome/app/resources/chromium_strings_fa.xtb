@@ -79,6 +79,8 @@
 <translation id="2329088755516916767">‏وقتی روشن باشد، Chromium صفحه‌ها را پیش‌بارگیری می‌کند تا مرور و جستجو سریع‌تر شود.</translation>
 <translation id="2343156876103232566">‏برای ارسال شماره از اینجا به تلفن Android خود، در هر دو دستگاه به سیستم Chromium وارد شوید.</translation>
 <translation id="2359808026110333948">ادامه</translation>
+<translation id="2361918034042471035">‏افزونه «<ph name="EXTENSION_NAME" />» از شما می‌خواهد به سیستم Chromium وارد شوید</translation>
+<translation id="2374216753258219393">‏برای استفاده از این افزونه با حساب <ph name="USER_EMAIL_ADDRESS" />، به سیستم Chromium وارد شوید.</translation>
 <translation id="2384373936468275798">‏ChromiumOS نتوانست داده‌های شما را همگام‌سازی کند زیرا جزئیات ورود به حساب شما به‌روز نیست.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{‏یک یا چند افزونه Chromium به یک «دستگاه میانای انسانی» (HID) دسترسی داشتند}=1{‏یک یا چند افزونه Chromium به یک «دستگاه میانای انسانی» (HID) دسترسی دارند}one{‏یک یا چند افزونه Chromium به # «دستگاه میانای انسانی» (HID) دسترسی دارند}other{‏یک یا چند افزونه Chromium به # «دستگاه میانای انسانی» (HID) دسترسی دارند}}</translation>
 <translation id="2401032172288869980">‏Chromium برای این سایت به اجازه دوربین و میکروفون نیاز دارد</translation>
@@ -241,9 +243,11 @@
 <translation id="4893347770495441059">‏راه‌اندازی مجدد برای به‌روزرسانی Chromium</translation>
 <translation id="4942295735032723435">‏برای دریافت به‌روزرسانی‌های بعدی Chromium، باید macOS نسخه ۱۱ یا بالاتر داشته باشید. این رایانه از macOS نسخه ۱۰.۱۵ استفاده می‌کند.</translation>
 <translation id="4943838377383847465">‏Chromium در حالت پس‌زمینه است.</translation>
+<translation id="494490797786467921">‏برای بستن کادر گفتگوی ورود به سیستم Chromium، کلیک کنید</translation>
 <translation id="4987820182225656817">‏مهمان‌ها می توانند از Chromium استفاده کنند بدون این‌که اثری از خود به جا بگذارند.</translation>
 <translation id="4994636714258228724">‏افرودن خودتان به Chromium</translation>
 <translation id="5114678101347489141">‏Chromium ویژگی‌های جدیدی را کاوش می‌کند که به سایت‌ها اجازه می‌دهد بااستفاده از اطلاعات شخصی کمتر، همان تجربه مرور را ارائه دهند</translation>
+<translation id="5187123684706427865">‏حساب Chromium به اصالت‌سنجی مجدد نیاز دارد</translation>
 <translation id="5224391634244552924">‏گذرواژه ذخیره‌شده‌ای وجود ندارد. Chromium زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که آن‌ها را ذخیره کرده باشید.</translation>
 <translation id="5231355151045086930">‏خروج از سیستم Chromium</translation>
 <translation id="5252179775517634216">‏<ph name="EXISTING_USER" /> قبلاً به سیستم این نمایه Chromium وارد شده است. با این کار، نمایه Chromium جدیدی برای <ph name="USER_EMAIL_ADDRESS" /> ایجاد خواهد شد</translation>

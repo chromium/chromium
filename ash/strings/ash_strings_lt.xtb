@@ -216,6 +216,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1747827819627189109">Ekrano klaviatūra įgalinta</translation>
 <translation id="1749109475624620922">Langas „<ph name="WINDOW_TITLE" />“ priskirtas visiems darbalaukiams</translation>
 <translation id="1750088060796401187">Leidžiama tik tiek darbalaukių: <ph name="MAX_DESK_LIMIT" />. Pašalinkite darbalaukį, kad atidarytumėte naują.</translation>
+<translation id="1751335846119670066">Pagalba skaitant</translation>
 <translation id="1755408179247123630">Įjungti funkciją „Teksto ištarimas“?</translation>
 <translation id="1755556344721611131">Diagnostikos programa</translation>
 <translation id="1756833229520115364">Nepavyko išsaugoti šablono. Per daug langų ar skirtukų.</translation>
@@ -227,6 +228,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="178347895271755507">Nustatyti naujausių telefono nuotraukų, medijos ir pranešimų peržiūrą</translation>
 <translation id="1787955149152357925">Išjungta</translation>
 <translation id="1796561540704213354">Svetainės, įskaitant puslapius, kuriuose lankėtės, ir atidarytus puslapius</translation>
+<translation id="179842970735685253">„Google“ paslaugų teikimo sąlygos</translation>
 <translation id="181103072419391116">Signalo stiprumas <ph name="SIGNAL_STRENGTH" />, tvarko administratorius</translation>
 <translation id="1816896987747843206">Tai leis pasiekti vaizdo kamerą visoms programoms ir svetainėms, turinčioms vaizdo kameros leidimą</translation>
 <translation id="1823873187264960516">Eternetas: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@ Prijungtų įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3122464029669770682">Centrinis procesorius</translation>
 <translation id="3125690294288312932">Kurso darbo tipas</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Atminkite keletą dalykų</translation>
 <translation id="3139188263101386725">Atnaujinto sparčiojo klavišo naudojimas</translation>
 <translation id="3139942575505304791">1 pultas</translation>
 <translation id="315116470104423982">Duomenys mobiliesiems</translation>
@@ -961,6 +964,7 @@ Prijungtas vienas įrenginys.</translation>
 <translation id="4585337515783392668">Sustabdyti perdavimą į nežinomą imtuvą</translation>
 <translation id="4596144739579517758">Tamsioji tema išjungta</translation>
 <translation id="4596442969149038771"><ph name="USER" /> bendrino</translation>
+<translation id="4610493115106525653">Gera išvestis</translation>
 <translation id="4611292653554630842">Prisijungti</translation>
 <translation id="462160925400706389">Prijungta: <ph name="NAME" /></translation>
 <translation id="4623167406982293031">Patvirtinti paskyrą</translation>
@@ -1118,6 +1122,7 @@ Taip pat galite naudoti spartųjį klavišą. Pirmiausia paryškinkite tekstą, 
 <translation id="5121628974188116412">Eiti į puslapio apačią</translation>
 <translation id="5122517996953421795">„<ph name="DESK_NAME" />“ peržiūra. Neaktyvus darbalaukis.</translation>
 <translation id="5136175204352732067">Prijungta kita klaviatūra</translation>
+<translation id="5140105873789567560">Kad galėtumėte naudoti funkcijas „Pagalba rašant“ ir „Pagalba skaitant“, turite būti sulaukę bent aštuoniolikos metų.</translation>
 <translation id="5144005092084035179">Perjungti garso įvestį?</translation>
 <translation id="5147567197700016471">Atrakinta</translation>
 <translation id="5150070631291639005">Privatumo nustatymai</translation>
@@ -1558,6 +1563,7 @@ Naujas įdiegimas</translation>
 <translation id="6696025732084565524">Atjungiamai klaviatūrai reikia pritaikyti kritinį naujinį</translation>
 <translation id="6697913454192220372">Pridėti naują darbalaukį</translation>
 <translation id="6700713906295497288">IME meniu mygtukas</translation>
+<translation id="6704375469818246414">Kokybė gali skirtis naudojant generatyvinį DI.</translation>
 <translation id="6706742084323792866">Prisegti klaviatūrą</translation>
 <translation id="6710213216561001401">Ankstesnė</translation>
 <translation id="6723839937902243910">Maitinimas</translation>
@@ -1825,9 +1831,11 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7726391492136714301">Peržiūrėkite telefono pranešimus ir programas</translation>
 <translation id="7727952505535211425">Atidaryti svetainę adreso juostoje naujame skirtuke</translation>
 <translation id="7742327441377685481">Nėra pranešimų</translation>
+<translation id="774736258792760908">Kai įjungiate funkcijas „Pagalba rašant“ ir „Pagalba skaitant“, įvesties tekstas ir dokumento turinys siunčiami į „Google“ DI serverius, kad būtų generuojami rašymo pasiūlymai, suvestinės, atsakoma į klausimus ir tobulinamas produktas, vadovaujantis <ph name="LINK_TO_SERVICE_TERMS" />. Neįtraukite jokios asmens, neskelbtinos ar konfidencialios informacijos.</translation>
 <translation id="7748275671948949022">Paryškinti Paleidimo priemonės mygtuką lentynoje</translation>
 <translation id="7749443890790263709">Pasiektas didžiausias pultų skaičius.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Funkcijas „Pagalba rašant“ ir „Pagalba skaitant“ galite bet kada išjungti skiltyje „Nustatymai“. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Teksto ištarimas</translation>
 <translation id="7769299611924763557">GIF elementas bus netrukus paruoštas</translation>
 <translation id="7773536009433685931">Vietoj to įjungti „Wi-Fi“</translation>
@@ -1836,6 +1844,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7781829728241885113">Vakar</translation>
 <translation id="7787212146956232129">Įvesties ir išvesties įrenginiai nustatyti. Eikite į skiltį „Nustatymai“ ir pakeiskite.</translation>
 <translation id="7792590255364786396">Matoma</translation>
+<translation id="7793389284006812057">Generatyvinis DI yra eksperimentinis, jis dar kuriamas ir šiuo metu jo pasiekiamumas ribotas.</translation>
 <translation id="7796735576426975947">Nauji pranešimai paslėpti</translation>
 <translation id="7798302898096527229">Jei norite atšaukti, paspauskite paieškos klavišą arba „Shift“.</translation>
 <translation id="780301667611848630">Ačiū, ne</translation>
@@ -1990,6 +1999,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8331351032546853669">Laukiama atsisiuntimo</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Netinkama išvestis</translation>
 <translation id="8345019317483336363">Pasirinktas langas „<ph name="WINDOW_TITLE" />“</translation>
 <translation id="8349826889576450703">paleidimo priemonė</translation>
 <translation id="8349964124165471584">Atidaryti nuorodą naujame lange</translation>

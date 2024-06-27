@@ -102,6 +102,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> upravlja ovim korisnikom i može daljinski da upravlja podešavanjima i nadgleda aktivnosti korisnika.</translation>
 <translation id="150962533380566081">Nevažeći PUK.</translation>
 <translation id="1510238584712386396">Pokretač</translation>
+<translation id="1514446283880973949">Pišite sa više samopouzdanja, generišite rezime sadržaja, dobijajte definicije i drugo</translation>
 <translation id="1515129336378114413">početna stranica pregledača</translation>
 <translation id="1526389707933164996">Animacija čuvara ekrana</translation>
 <translation id="152892567002884378">Pojačajte zvuk</translation>
@@ -1287,6 +1288,7 @@
 <translation id="8167413449582155132">Pozadinu omogućava Google veštačka inteligencija</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">plaža</translation>
+<translation id="819278132617411009">Koristite Google veštačku inteligenciju da biste bili produktivniji</translation>
 <translation id="8206859287963243715">Mobilni uređaj</translation>
 <translation id="8208861521865154048">Pogodnosti</translation>
 <translation id="8226628635270268143">Odaberite omiljene slike i albume</translation>
@@ -1333,6 +1335,7 @@
 <translation id="8431300646573772016">Novosti u Chrome OS-u</translation>
 <translation id="843568408673868420">Povezivanje na internet</translation>
 <translation id="844521431886043384">DNS nije podešen</translation>
+<translation id="8456200178779628126">Koristite Google veštačku inteligenciju da biste dobili pomoć pri čitanju i pisanju</translation>
 <translation id="8456761643544401578">Automatski tamni režim</translation>
 <translation id="8461329675984532579">Naziv dobavljača za Home</translation>
 <translation id="8475690821716466388">WiFi mreža je obezbeđena slabim protokolom WEP PSK</translation>
@@ -1459,6 +1462,7 @@
 <translation id="910415269708673980">Osvežite tiket za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenira se <ph name="PAGE_NUMBER" />. stranica</translation>
 <translation id="9111102763498581341">Otključaj</translation>
+<translation id="9122492456897874028">Generišite rezime sadržaja, dobijajte definicije i drugo</translation>
 <translation id="9122602430962285795">Da biste se ponovo povezali, idite u Podešavanja</translation>
 <translation id="9122865513525855321">zen</translation>
 <translation id="9126720536733509015">Sačuvajte više stranica u jedan PDF dokument</translation>

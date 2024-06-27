@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">Тастатурата на екранот е овозможена</translation>
 <translation id="1749109475624620922">Прозорецот <ph name="WINDOW_TITLE" /> им е доделен на сите работни површини</translation>
 <translation id="1750088060796401187">Дозволени се само <ph name="MAX_DESK_LIMIT" /> работни површини. Отстранете работна површина за да отворите нова.</translation>
+<translation id="1751335846119670066">Помош при читање</translation>
 <translation id="1755408179247123630">Да се вклучи „Изберете за говор“?</translation>
 <translation id="1755556344721611131">Апликација за дијагностика</translation>
 <translation id="1756833229520115364">Не можеше да се зачува шаблон. Премногу прозорци или картички.</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">Поставете прегледување на неодамнешните фотографии, аудиовизуелни содржини и известувања на телефонот</translation>
 <translation id="1787955149152357925">Исклучено</translation>
 <translation id="1796561540704213354">Веб-сајтовите, заедно со страниците што сте ги посетиле, како и отворените страници</translation>
+<translation id="179842970735685253">Условите за користење на Google</translation>
 <translation id="181103072419391116">Јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, управувана од администраторот</translation>
 <translation id="1816896987747843206">Ова дозволува пристап до камерата за сите апликации и веб-сајтови со дозвола за камерата</translation>
 <translation id="1823873187264960516">Етернет: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">ЦПУ</translation>
 <translation id="3125690294288312932">Тип школска работа</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Неколку работи што треба да ги имате предвид</translation>
 <translation id="3139188263101386725">Користете ја ажурираната кратенка</translation>
 <translation id="3139942575505304791">Биро 1</translation>
 <translation id="315116470104423982">Мобилен интернет</translation>
@@ -962,6 +965,7 @@
 <translation id="4585337515783392668">Престани со емитување на непознат приемник</translation>
 <translation id="4596144739579517758">Темната тема е исклучена</translation>
 <translation id="4596442969149038771">Споделено од <ph name="USER" /></translation>
+<translation id="4610493115106525653">Добри излезни податоци</translation>
 <translation id="4611292653554630842">Најави се</translation>
 <translation id="462160925400706389">Поврзано: <ph name="NAME" /></translation>
 <translation id="4623167406982293031">Потврдете ја сметката</translation>
@@ -1119,6 +1123,7 @@
 <translation id="5121628974188116412">Одете најдолу на страницата</translation>
 <translation id="5122517996953421795">Преглед на <ph name="DESK_NAME" />. Неактивна работна површина.</translation>
 <translation id="5136175204352732067">Поврзана е друга тастатура</translation>
+<translation id="5140105873789567560">Мора да имате најмалку 18 години за да ги користите „Помош при пишување“ и „Помош при читање“.</translation>
 <translation id="5144005092084035179">Да се смени влезот за аудио?</translation>
 <translation id="5147567197700016471">Отклучено</translation>
 <translation id="5150070631291639005">Поставки за приватност</translation>
@@ -1559,6 +1564,7 @@
 <translation id="6696025732084565524">Отстранливата тастатура има потреба од важно ажурирање</translation>
 <translation id="6697913454192220372">Додајте нова работна површина</translation>
 <translation id="6700713906295497288">Копче за мени на IME</translation>
+<translation id="6704375469818246414">Квалитетот може да варира кога користите генеративна AI</translation>
 <translation id="6706742084323792866">Тастатура за PIN</translation>
 <translation id="6710213216561001401">Претходно</translation>
 <translation id="6723839937902243910">Енергија</translation>
@@ -1826,9 +1832,11 @@
 <translation id="7726391492136714301">Прегледувајте ги известувањата и апликациите од телефонот</translation>
 <translation id="7727952505535211425">Го отвора веб-сајтот во лентата за адреси во нова картичка</translation>
 <translation id="7742327441377685481">Нема известувања</translation>
+<translation id="774736258792760908">Кога ќе ги вклучите „Помош при пишување“ и „Помош при читање“, влезниот текст и содржините на документите се испраќаат до серверите на Google AI за да се генерираат предлози за пишување, да се генерираат резимеа, да се одговорат прашања и да се подобри производот, што подлежи на <ph name="LINK_TO_SERVICE_TERMS" />. Не внесувајте лични, чувствителни или доверливи податоци.</translation>
 <translation id="7748275671948949022">Нагласете го копчето за стартерот на полицата</translation>
 <translation id="7749443890790263709">Достигнат е максималниот број работни простори.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">„Помош при пишување“ и „Помош при читање“ може да ги исклучите кога сакате во „Поставки“. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Изберете за говор</translation>
 <translation id="7769299611924763557">Вашата GIF-датотека ќе биде подготвена наскоро</translation>
 <translation id="7773536009433685931">Наместо тоа, вклучете Wi-Fi</translation>
@@ -1837,6 +1845,7 @@
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7787212146956232129">Уредите за влез и излез за аудио се поставени. Одете во „Поставки“ за да промените.</translation>
 <translation id="7792590255364786396">Видливо</translation>
+<translation id="7793389284006812057">Генеративната AI е во експериментална фаза и во моментов има ограничена достапност.</translation>
 <translation id="7796735576426975947">Скриено е ново известување</translation>
 <translation id="7798302898096527229">Притиснете „Пребарување“ или Shift за да откажете.</translation>
 <translation id="780301667611848630">Не, фала</translation>
@@ -1991,6 +2000,7 @@
 <translation id="8331351032546853669">Преземање на чекање</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Лоши излезни податоци</translation>
 <translation id="8345019317483336363">Избран е прозорецот <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">стартер</translation>
 <translation id="8349964124165471584">Отвора линк во нов прозорец</translation>

@@ -79,6 +79,8 @@
 <translation id="2329088755516916767">オンにするとページがプリロードされ、閲覧と検索をすばやく行えるようになります。</translation>
 <translation id="2343156876103232566">Android スマートフォンに番号を送信するには、両方のデバイスで Chromium にログインしてください。</translation>
 <translation id="2359808026110333948">続行</translation>
+<translation id="2361918034042471035">拡張機能「<ph name="EXTENSION_NAME" />」が Chromium へのログインを求めています</translation>
+<translation id="2374216753258219393">この拡張機能を <ph name="USER_EMAIL_ADDRESS" /> として使用するには、Chromium にログインしてください。</translation>
 <translation id="2384373936468275798">アカウントのログイン情報が最新でないため、Chromium OS はデータを同期できませんでした。</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 つ以上の Chromium 拡張機能が 1 台の HID デバイスにアクセスしていました}=1{1 つ以上の Chromium 拡張機能が 1 台の HID デバイスにアクセスしています}other{1 つ以上の Chromium 拡張機能が # 台の HID デバイスにアクセスしています}}</translation>
 <translation id="2401032172288869980">このサイトを利用するには、Chromium でカメラとマイクの使用を許可する必要があります</translation>
@@ -242,9 +244,11 @@
 <translation id="4893347770495441059">再起動して Chromium を更新(&amp;C)</translation>
 <translation id="4942295735032723435">今後、Chromium のアップデートを受信するには、macOS 11 以降が必要となります。このコンピュータでは macOS 10.15 が実行されています。</translation>
 <translation id="4943838377383847465">Chromium はバックグラウンド モードです。</translation>
+<translation id="494490797786467921">クリックすると、Chromium のログイン ダイアログを閉じます</translation>
 <translation id="4987820182225656817">ゲスト ユーザーは、記録を残さずに Chromium を使用できます。</translation>
 <translation id="4994636714258228724">Chromium に自分を追加</translation>
 <translation id="5114678101347489141">Chromium では、使用されるユーザー情報の量を抑えつつ、同じようにサイトをブラウジングできる新機能をテストしています</translation>
+<translation id="5187123684706427865">Chromium アカウントの再認証が必要です</translation>
 <translation id="5224391634244552924">保存されているパスワードがありません。パスワードを保存すると、Chromium で確認できるようになります。</translation>
 <translation id="5231355151045086930">Chromium からのログアウト</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> さんはこの Chromium プロファイルにすでにログインしています。<ph name="USER_EMAIL_ADDRESS" /> 用の新しい Chromium プロファイルが作成されます。</translation>

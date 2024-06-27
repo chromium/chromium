@@ -814,6 +814,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="5150492518600715772">Qurilmangizga yuborish</translation>
 <translation id="5157638238828697074">Nimadir xato ketdi. Ilova ochilmadi.</translation>
 <translation id="5168414296986405587">iPadOS uchun ishlab chiqilgan</translation>
+<translation id="5169725654005786900">Amal bajarilmoqda…</translation>
 <translation id="5173088371991956744">Sinxronizatsiya uchun shaxsingizni tasdiqlang</translation>
 <translation id="5173493422621051500">Klaviaturadan foydalanish</translation>
 <translation id="5176312250994681348">Oxirgi parol saqlansin</translation>
@@ -824,6 +825,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="5190835502935405962">Xatcho‘plar paneli</translation>
 <translation id="519530786644929958">Yuklab olinmadi va qayta urinish imkonsiz.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205197603258285592">Rasmni saqlash...</translation>
 <translation id="5211488077761630279">“<ph name="SITE_NAME" />” saytiga <ph name="PERMISSION" /> ruxsati berilsinmi?</translation>
 <translation id="5219295696240154694">Internetni hamma uchun xavfsiz boʻlishiga yordam bering</translation>
 <translation id="5220945116117011963">Sanalardan taqvim tadbirlarini yaratish</translation>
@@ -848,6 +850,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="5327753393331509826">Bildirishnomalar kontentini olish</translation>
 <translation id="5329451663851195956">Sahifani pastga tortib yangilang.</translation>
 <translation id="5333148247954006827">Boshqa profilga almashtirish</translation>
+<translation id="5338512273860059533">Hisobga kirilmoqda.</translation>
 <translation id="5339316356165661760">Sinxronizatsiyani yoqish</translation>
 <translation id="5343472494710226394">Qiziqishlar asosidagi yangiliklar, sport va boshqa xabarlar</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Bu paket kuzatilsinmi?}other{{COUNT} ta paket kuzatilsinmi?}}</translation>
@@ -1411,6 +1414,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8023878949384262191">Bo‘limni yoyadi.</translation>
 <translation id="8027581147000338959">Yangi oynada ochish</translation>
 <translation id="8032569120109842252">Kuzatyapsiz</translation>
+<translation id="8035412398498507358">Photos</translation>
 <translation id="8040207962129315716">Har safar soʻralsin</translation>
 <translation id="8041089156583427627">Fikr-mulohaza</translation>
 <translation id="804225253087497565">Google hisobingizga kirganingizda <ph name="BEGIN_LINK" />Qidiruv tarixi<ph name="END_LINK" /> va <ph name="BEGIN_LINK" />boshqa shakldagi harakatlaringiz<ph name="END_LINK" /> hisobingizga saqlanishi mumkin. Ularni istalgan vaqt oʻchirish mumkin.</translation>
@@ -1523,6 +1527,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8556590991644167667">{count,plural, =1{{count} ta ogohlantirishni yopdingiz}other{{count} ta ogohlantirishni yopdingiz}}</translation>
 <translation id="8560253818350321773">Avval tez-tez ishlatilgan elementlarni chiqarish.</translation>
 <translation id="8569721750632860947">Qaysi URL Saqlangan sahifalarga kiritilsin?</translation>
+<translation id="8570765991595769633">Bildirgilarni moslash</translation>
 <translation id="8577056989960190117">Amal qilish yilini (<ph name="YEAR" />) avtomatik kiritish</translation>
 <translation id="8588404856427128947">Oʻchiq</translation>
 <translation id="8591976964826315682">Inkognito rejimidagi tashqi cookie fayllarni taqiqlash</translation>
@@ -1662,6 +1667,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="948048872540558976">Yangi varaq ochish</translation>
 <translation id="952218985181984374">{count,plural, =1{Bukmark saqlandi}other{{count} ta bukmark saqlandi}}</translation>
 <translation id="952704832371081537">Bekor qilish</translation>
+<translation id="955587716023217544">Hisoblar roʻyxatini tahrirlash</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> tasmasiga obuna boʻlgansiz</translation>
 <translation id="96615566463761848">Boshqa qurilmalar varaq tavsiyalarini koʻrsatish</translation>
 <translation id="973493300226275298">Onlayn doʻkonlarda mahsulot narxini kuzating. Narx tushganda ogohlantirish olasiz.</translation>

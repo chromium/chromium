@@ -102,6 +102,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> ले यो डिभाइस व्यवस्थापन गर्छ र यसले टाढैबाट सेटिङ व्यवस्थापन गर्न र प्रयोगकर्ताले गर्ने क्रियाकलाप निगरानी गर्न सक्छ।</translation>
 <translation id="150962533380566081">अमान्य PUK।</translation>
 <translation id="1510238584712386396">लन्चर</translation>
+<translation id="1514446283880973949">थप आत्मविश्वासका साथ लेख्नुहोस्, सामग्रीको सारांश बनाउनुहोस्, परिभाषा पाउनुहोस् र थप कार्य गर्नुहोस्</translation>
 <translation id="1515129336378114413">ब्राउजर होम</translation>
 <translation id="1526389707933164996">स्क्रिन सेभरको एनिमेसन</translation>
 <translation id="152892567002884378">भोल्युम बढाउनुहोस्</translation>
@@ -1287,6 +1288,7 @@
 <translation id="8167413449582155132">Google को AI प्रविधियुक्त ब्याकग्राउन्ड</translation>
 <translation id="8179976553408161302">प्रविष्टि गर्नुहोस्</translation>
 <translation id="8183975772394450380">समुद्र किनारा</translation>
+<translation id="819278132617411009">अझ बढी उत्पादनशील हुन Google AI प्रयोग गर्नुहोस्</translation>
 <translation id="8206859287963243715">सेल्युलर</translation>
 <translation id="8208861521865154048">लाभहरू</translation>
 <translation id="8226628635270268143">आफूलाई मन पर्ने फोटो र एल्बमहरू छनौट गर्नुहोस्</translation>
@@ -1333,6 +1335,7 @@
 <translation id="8431300646573772016">ChromeOS मा नयाँ के छ</translation>
 <translation id="843568408673868420">इन्टरनेट कनेक्सन</translation>
 <translation id="844521431886043384">DNS सेट अप गरिएको छैन</translation>
+<translation id="8456200178779628126">पढ्न र लेख्न मद्दत प्राप्त गर्न Google AI प्रयोग गर्नुहोस्</translation>
 <translation id="8456761643544401578">स्वचालित अँध्यारो मोड</translation>
 <translation id="8461329675984532579">गृह प्रदायकको नाम</translation>
 <translation id="8475690821716466388">WiFi नेटवर्क WEP PSK नामक कमजोर प्रोटोकोल प्रयोग गरी सुरक्षित गरिएको छ</translation>
@@ -1459,6 +1462,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> को टिकट पुन: ताजा गर्नुहोस्</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> स्क्यान गरिँदै छ</translation>
 <translation id="9111102763498581341">अनलक गर्नुहोस्</translation>
+<translation id="9122492456897874028">सामग्रीको सारांश बनाउनुहोस्, परिभाषा पाउनुहोस् र थप कार्य गर्नुहोस्</translation>
 <translation id="9122602430962285795">पुनः कनेक्ट गर्न सेटिङमा जानुहोस्</translation>
 <translation id="9122865513525855321">जेन</translation>
 <translation id="9126720536733509015">थुप्रै पेजहरू स्क्यान गरी एउटै PDF फाइलमा सेभ गर्नुहोस्</translation>

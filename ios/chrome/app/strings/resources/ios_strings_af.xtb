@@ -814,6 +814,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="5150492518600715772">Stuur na jou toestel toe</translation>
 <translation id="5157638238828697074">Iets het skeefgeloop. Die app kon nie oopgemaak word nie.</translation>
 <translation id="5168414296986405587">Gebou vir iPadOS</translation>
+<translation id="5169725654005786900">Handeling is aan die gang …</translation>
 <translation id="5173088371991956744">Sinkronisering moet verifieer dat dit jy is</translation>
 <translation id="5173493422621051500">Gebruik sleutelbord</translation>
 <translation id="5176312250994681348">Hou onlangse wagwoord</translation>
@@ -824,6 +825,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="5190835502935405962">Boekmerkebalk</translation>
 <translation id="519530786644929958">Kon nie aflaai nie en kan nie weer probeer nie.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205197603258285592">Stoor prent in ...</translation>
 <translation id="5211488077761630279">Laat “<ph name="SITE_NAME" />” toe om jou <ph name="PERMISSION" /> te gebruik?</translation>
 <translation id="5219295696240154694">Help om sekuriteit op die web vir almal beter te maak</translation>
 <translation id="5220945116117011963">Skep kalendergeleenthede van datums af</translation>
@@ -848,6 +850,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="5327753393331509826">Kry inhoudkennisgewings</translation>
 <translation id="5329451663851195956">Jy kan aftrek om te herlaai.</translation>
 <translation id="5333148247954006827">Skakel oor na ’n ander profiel</translation>
+<translation id="5338512273860059533">Aanmelding is aan die gang.</translation>
 <translation id="5339316356165661760">Skakel sinkronisering aan</translation>
 <translation id="5343472494710226394">Nuus, sport en inhoud wat op jou belangstellings gebaseer is.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Spoor hierdie pakkie na?}other{Spoor {COUNT} pakkies na?}}</translation>
@@ -1523,6 +1526,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8556590991644167667">{count,plural, =1{Jy het {count} waarskuwing toegemaak}other{Jy het {count} waarskuwings toegemaak}}</translation>
 <translation id="8560253818350321773">Wys gereeld gebruikte items eerste.</translation>
 <translation id="8569721750632860947">Watter URL wil jy by jou leeslys voeg?</translation>
+<translation id="8570765991595769633">Pasmaak kaarte</translation>
 <translation id="8577056989960190117">Vul die vervaljaar <ph name="YEAR" /> outomaties in</translation>
 <translation id="8588404856427128947">Af</translation>
 <translation id="8591976964826315682">Blokkeer derdepartywebkoekies in incognito</translation>
@@ -1662,6 +1666,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="948048872540558976">Skep nuwe oortjie</translation>
 <translation id="952218985181984374">{count,plural, =1{Boekmerk is gestoor}other{{count} boekmerke is gestoor}}</translation>
 <translation id="952704832371081537">Kanselleer</translation>
+<translation id="955587716023217544">Wysig rekeninglys</translation>
 <translation id="959066944189734975">Jy volg tans <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Wys oortjievoorstelle van ander toestelle af</translation>
 <translation id="973493300226275298">Spoor die prys van ’n produk in aanlyn winkels na. Jy sal opletberigte ontvang wanneer die prys verlaag word.</translation>

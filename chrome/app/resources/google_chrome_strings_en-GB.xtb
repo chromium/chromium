@@ -5,6 +5,8 @@
 <translation id="1026101648481255140">Resume installation</translation>
 <translation id="102763973188675173">Customise and control Google Chrome. Update is available.</translation>
 <translation id="1028061813283459617">To delete browsing data from this device only, while keeping it in your Google Account, <ph name="BEGIN_LINK" />sign out of Chrome<ph name="END_LINK" />.</translation>
+<translation id="1042270987544905725">Click to close the Chrome sign-in dialogue</translation>
+<translation id="1059838145689930908">To use this extension as <ph name="USER_EMAIL_ADDRESS" />, sign in to Chrome.</translation>
 <translation id="1065672644894730302">Your preferences cannot be read.
 
 Some features may be unavailable and changes to preferences won't be saved.</translation>
@@ -372,6 +374,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6291089322031436445">Chrome Dev Apps</translation>
 <translation id="6291549208091401781">Google Chrome is already installed for all users on your computer.</translation>
 <translation id="6319856120645568262">Chrome needs permission to map your surroundings and track your hands</translation>
+<translation id="6321592572353357376">The extension '<ph name="EXTENSION_NAME" />' wants you to sign in to Chrome</translation>
 <translation id="6326175484149238433">Remove from Chrome</translation>
 <translation id="6327105987658262776">No update is available.</translation>
 <translation id="6360449101159168105">While this tab was inactive, memory was freed up to keep Chrome fast. You can choose to always exclude this site from being inactive.</translation>
@@ -464,6 +467,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7655455401911432608">Your browsing history, a record of sites that you've visited using Chrome on this device.</translation>
 <translation id="7661924425853052955">You haven't visited recently. Chrome removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="COUNT" /> more</translation>
 <translation id="7668816516367091728">Perform tasks like translate, calculate and more directly from the address bar</translation>
+<translation id="7670287553302121848">Chrome account requires re-authentication</translation>
 <translation id="769538538642757151">Chrome will let you know if anything needs your review</translation>
 <translation id="7747138024166251722">The installer couldn't create a temporary directory. Please check for free disk space and permission to install software.</translation>
 <translation id="7761834446675418963">Click your name to open Chrome and start browsing.</translation>

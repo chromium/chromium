@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Активно преди <ph name="LAST_UPDATED" /> дни</translation>
 <translation id="1390418506739274310">Възможно е да виждате историята от други приложения, които отварят връзки в Chrome. В профила ви в Google може да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">За да продължите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ще сподели с този сайт името, имейл адреса и снимката на потребителския ви профил. Вижте <ph name="BEGIN_LINK1" />общите условия<ph name="END_LINK1" /> на сайта.</translation>
+<translation id="139752016751285248">Долният лист със статистика за цените е отворен на пълната височина</translation>
 <translation id="1397811292916898096">Търсене чрез <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Можете <ph name="BEGIN_LINK1" />да управлявате какви данни в Chrome да се запазват<ph name="END_LINK1" /> в профила ви в Google.
 
@@ -179,6 +180,7 @@
 <translation id="1877073879466606884">Потребителският профил, в който сте влезли, е управляван. Администраторът ви може да променя настройките на потребителския ви профил отдалечено, да анализира информацията за браузъра чрез отчитане и да изпълнява други необходими задачи.</translation>
 <translation id="1883903952484604915">Моите файлове</translation>
 <translation id="189358972401248634">Други езици</translation>
+<translation id="1899175549411605574">Долен лист със статистика за цените</translation>
 <translation id="1900260903084164610">Продължавайки, приемате <ph name="BEGIN_TOS_LINK" />Общите условия<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">URL адресите, които посещавате, се запазват в профила ви в Google</translation>
 <translation id="1910950723001426294">Списъкът с опции за споделяне е затворен.</translation>
@@ -520,6 +522,7 @@
 <translation id="3587596251841506391">Помогнете за по-сигурна мрежа</translation>
 <translation id="3597179440835065298">Получавайте по-добри предложения</translation>
 <translation id="3602290021589620013">Визуализация</translation>
+<translation id="3614126103057878858">Статистика за цените</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3622349720008044802">Управление на прозорците</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 сайт}other{+ # сайта}}</translation>
@@ -529,6 +532,7 @@
 <translation id="3637744895182738742">Ако сте забравили пропуска си или искате да промените тази настройка, <ph name="BEGIN_LINK" />изтрийте данните от Chrome в профила си<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Към началната страница на приложението Google</translation>
 <translation id="368329460027487650">Не сте в профила си. Отваря опциите за вход.</translation>
+<translation id="3684540848053703310">Долният лист със статистика за цените е затворен</translation>
 <translation id="3687645719033307815">Гледате визуализация на тази страница</translation>
 <translation id="3690369331356918524">Предупреждава ви за разкрити пароли при нарушение на сигурността на данните</translation>
 <translation id="3692944402865947621">Изтеглянето на <ph name="FILE_NAME" /> не бе успешно, тъй като няма достъп до местоположението за съхранение.</translation>

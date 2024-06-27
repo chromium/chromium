@@ -81,6 +81,8 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="2329088755516916767">När detta är aktiverat läses sidor in i förväg i Chromium, vilket gör det snabbare att surfa och söka.</translation>
 <translation id="2343156876103232566">Logga in på Chromium på båda enheterna om du vill skicka ett nummer från Android-telefonen.</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
+<translation id="2361918034042471035">Tillägget <ph name="EXTENSION_NAME" /> vill att du ska logga in i Chromium</translation>
+<translation id="2374216753258219393">Logga in i Chromium om du vill använda det här tillägget som <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2384373936468275798">Det gick inte att synkronisera data med Chromium OS eftersom inloggningsuppgifterna för kontot är inaktuella.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Minst ett Chromium-tillägg har fått åtkomst till 1 styrdon}=1{Minst ett Chromium-tillägg har åtkomst till 1 styrdon}other{Minst ett Chromium-tillägg har åtkomst till # styrdon}}</translation>
 <translation id="2401032172288869980">Du behöver ge Chromium kamera- och mikrofonbehörighet för den här webbplatsen</translation>
@@ -244,9 +246,11 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="4893347770495441059">Starta om för att uppdatera &amp;Chromium</translation>
 <translation id="4942295735032723435">Du behöver macOS 11 eller senare för att få framtida uppdateringar av Chromium. På den här datorn används macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium körs i bakgrundsläge.</translation>
+<translation id="494490797786467921">Klicka för att stänga inloggningsdialogrutan för Chromium</translation>
 <translation id="4987820182225656817">Gäster kan använda Chromium utan att lämna spår efter sig.</translation>
 <translation id="4994636714258228724">Lägg till dig själv i Chromium</translation>
 <translation id="5114678101347489141">Chromium utforskar nya funktioner som gör att webbplatser kan ge samma surfupplevelse med mindre information om dig</translation>
+<translation id="5187123684706427865">Omautentisering krävs för Chromium-kontot</translation>
 <translation id="5224391634244552924">Inga sparade lösenord. Chromium kan bara kontrollera dina lösenord om du sparar dem.</translation>
 <translation id="5231355151045086930">Logga ut från Chromium</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> är redan inloggad på den här Chromium-profilen. En ny Chromium-profil skapas för <ph name="USER_EMAIL_ADDRESS" /></translation>

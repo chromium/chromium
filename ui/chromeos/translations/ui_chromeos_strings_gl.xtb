@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">O PUK é incorrecto</translation>
 <translation id="4057991113334098539">Activando...</translation>
 <translation id="4092890906744441904">Irlandés</translation>
+<translation id="4101601646343868113">Inicia sesión na túa rede de telefonía móbil e confirma que o plan de datos móbiles está activo</translation>
 <translation id="4124731372776320263">Sincronizando 1 ficheiro de Drive</translation>
 <translation id="4124935795427217608">Unicornio</translation>
 <translation id="4131235941541910880">Envía á papeleira os elementos que non necesites</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Támil con teclado Tamil99</translation>
 <translation id="5633226425545095130">Ao mover este elemento, compartirase con todas as persoas que poidan ver o cartafol compartido <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Escoitar</translation>
+<translation id="5650895901941743674">Comproba a configuración de APN</translation>
 <translation id="5669691691057771421">Introducir novo PIN</translation>
 <translation id="5678784840044122290">A aplicación Linux estará dispoñible dentro do terminal e tamén pode mostrar unha icona no menú de aplicacións.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Non se puido desconectar dun arquivo ou disco virtual<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">A lista de ficheiros cambiou á vista de miniatura.</translation>
 <translation id="8601932370724196034">Ficheiro de imaxe de Crostini</translation>
 <translation id="8609695766746872526">Islandés</translation>
+<translation id="8630384863424041081">Introduce o PIN da túa tarxeta SIM ou o PIN predeterminado que che forneceu o operador. Contacta co operador se necesitas axuda.</translation>
 <translation id="863903787380594467">O PIN é incorrecto. Quédanche <ph name="RETRIES" /> intentos.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" />: porto</translation>
 <translation id="8656407365183407932">O teus ficheiros sen conexión tiveron que quitarse</translation>

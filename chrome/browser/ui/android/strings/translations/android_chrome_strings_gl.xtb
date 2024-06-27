@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Dispositivo activo hai <ph name="LAST_UPDATED" />días</translation>
 <translation id="1390418506739274310">Podes ver o historial doutras aplicacións que abran ligazóns en Chrome. Ademais, a túa Conta de Google pode ter outro contido do historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá o teu nome, enderezo de correo electrónico e imaxe do perfil con este sitio. Consulta as <ph name="BEGIN_LINK1" />condicións de servizo<ph name="END_LINK1" /> deste sitio.</translation>
+<translation id="139752016751285248">Pechouse o panel inferior de estatísticas de prezos</translation>
 <translation id="1397811292916898096">Buscar con <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Podes <ph name="BEGIN_LINK1" />xestionar que datos de Chrome se gardan<ph name="END_LINK1" /> na túa Conta de Google.
 
@@ -179,6 +180,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="1877073879466606884">O perfil no que tes a sesión iniciada é un perfil xestionado. A persoa administradora pode facer cambios na súa configuración de forma remota, analizar información sobre o navegador mediante informes e realizar outras tarefas necesarias.</translation>
 <translation id="1883903952484604915">Os meus ficheiros</translation>
 <translation id="189358972401248634">Outros idiomas</translation>
+<translation id="1899175549411605574">Panel inferior de estatísticas de prezos</translation>
 <translation id="1900260903084164610">Ao continuar, aceptas as <ph name="BEGIN_TOS_LINK" />Condicións de servizo<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Os URL que visitas gárdanse na túa Conta de Google</translation>
 <translation id="1910950723001426294">A lista de opcións para compartir está pechada.</translation>
@@ -520,6 +522,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3587596251841506391">Axudar a mellorar a seguranza na Web</translation>
 <translation id="3597179440835065298">Recibe mellores suxestións</translation>
 <translation id="3602290021589620013">Previsualizar</translation>
+<translation id="3614126103057878858">Estatísticas de prezos</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Xestionar as ventás</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{e 1 sitio máis}other{e # sitios máis}}</translation>
@@ -529,6 +532,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3637744895182738742">Se esqueciches a frase de acceso ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Ir ao inicio da aplicación Google</translation>
 <translation id="368329460027487650">Tes a sesión pechada. Abre as opcións de inicio de sesión.</translation>
+<translation id="3684540848053703310">Abriuse o panel inferior de estatísticas de prezos</translation>
 <translation id="3687645719033307815">Estás vendo unha vista previa desta páxina</translation>
 <translation id="3690369331356918524">Avísate se os teus contrasinais están en risco debido a unha violación da seguranza dos datos</translation>
 <translation id="3692944402865947621">Produciuse un erro ao descargar <ph name="FILE_NAME" /> porque non se pode acceder á localización do almacenamento.</translation>

@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">המקלדת שמופיעה במסך מופעלת</translation>
 <translation id="1749109475624620922">החלון <ph name="WINDOW_TITLE" /> מוקצה לכל שולחנות העבודה הווירטואליים</translation>
 <translation id="1750088060796401187">מותר להשתמש ב-<ph name="MAX_DESK_LIMIT" /> שולחנות עבודה וירטואליים לכל היותר. צריך להסיר שולחן עבודה וירטואלי כדי לפתוח אחד חדש.</translation>
+<translation id="1751335846119670066">עזרה בקריאה</translation>
 <translation id="1755408179247123630">להפעיל את התכונה 'הקראה'?</translation>
 <translation id="1755556344721611131">אפליקציית אבחון</translation>
 <translation id="1756833229520115364">לא ניתן היה לשמור את התבנית. יש יותר מדי חלונות או כרטיסיות.</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">הגדרת ההצגה של התמונות, המדיה וההתראות שבטלפון מהזמן האחרון</translation>
 <translation id="1787955149152357925">כבוי</translation>
 <translation id="1796561540704213354">אתרים, כולל דפים שביקרת בהם ודפים פתוחים</translation>
+<translation id="179842970735685253">‏תנאים ולהגבלות של Google</translation>
 <translation id="181103072419391116">עוצמת האות: <ph name="SIGNAL_STRENGTH" />, הרשת מנוהלת על ידי מנהל המערכת שלך</translation>
 <translation id="1816896987747843206">הפעולה הזו מאפשרת גישה למצלמה לכל האפליקציות והאתרים שיש להם הרשאת גישה למצלמה</translation>
 <translation id="1823873187264960516">אתרנט: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">סוג העבודה</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">כמה דברים שכדאי לזכור</translation>
 <translation id="3139188263101386725">שימוש במקש הקיצור המעודכן.</translation>
 <translation id="3139942575505304791">שולחן עבודה 1</translation>
 <translation id="315116470104423982">נתוני נייד</translation>
@@ -961,6 +964,7 @@
 <translation id="4585337515783392668">הפסקת העברה במכשיר לא מוכר</translation>
 <translation id="4596144739579517758">עיצוב כהה כבוי.</translation>
 <translation id="4596442969149038771">שותף על ידי <ph name="USER" /></translation>
+<translation id="4610493115106525653">תוצאה טובה</translation>
 <translation id="4611292653554630842">התחבר</translation>
 <translation id="462160925400706389"><ph name="NAME" /> מחובר</translation>
 <translation id="4623167406982293031">יש לאמת את החשבון</translation>
@@ -1118,6 +1122,7 @@
 <translation id="5121628974188116412">מעבר אל תחתית הדף</translation>
 <translation id="5122517996953421795">תצוגה מקדימה של <ph name="DESK_NAME" />. שולחן העבודה הווירטואלי לא פעיל.</translation>
 <translation id="5136175204352732067">חוברה מקלדת אחרת</translation>
+<translation id="5140105873789567560">עליך להיות בגיל 18 לפחות כדי להשתמש בתכונות 'עזרה בכתיבה' ו'עזרה בקריאה'.</translation>
 <translation id="5144005092084035179">להחליף את קלט האודיו?</translation>
 <translation id="5147567197700016471">הנעילה בוטלה</translation>
 <translation id="5150070631291639005">הגדרות פרטיות</translation>
@@ -1558,6 +1563,7 @@
 <translation id="6696025732084565524">למקלדת הניתנת לניתוק דרוש עדכון קריטי</translation>
 <translation id="6697913454192220372">הוספת שולחן עבודה וירטואלי חדש</translation>
 <translation id="6700713906295497288">‏לחצן תפריט IME</translation>
+<translation id="6704375469818246414">‏כשמשתמשים ב-AI גנרטיבי, האיכות של התוצאות לא תמיד אחידה.</translation>
 <translation id="6706742084323792866">מקלדת לקוד האימות</translation>
 <translation id="6710213216561001401">הקודם</translation>
 <translation id="6723839937902243910">חשמל</translation>
@@ -1827,9 +1833,11 @@
 <translation id="7726391492136714301">הצגת ההתראות והאפליקציות שבטלפון</translation>
 <translation id="7727952505535211425">פתיחת האתר שרשום בסרגל הכתובות בכרטיסייה חדשה</translation>
 <translation id="7742327441377685481">אין התראות</translation>
+<translation id="774736258792760908">‏כשמפעילים את התכונות 'עזרה בכתיבה' ו'עזרה בקריאה', הטקסט שהוזן והתוכן של המסמך נשלחים לשרתי ה-AI מבית Google כדי ליצור הצעות לכתיבה, ליצור סיכומים, לענות על שאלות ולשפר את המוצר, בכפוף ל<ph name="LINK_TO_SERVICE_TERMS" />. אין לכלול מידע אישי, רגיש או סודי.</translation>
 <translation id="7748275671948949022">הדגשת הלחצן של מרכז האפליקציות במדף</translation>
 <translation id="7749443890790263709">הגעת למספר המקסימלי של שולחנות עבודה.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">אפשר להשבית את התכונות 'עזרה בכתיבה' ו'עזרה בקריאה' בכל שלב בהגדרות. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">הקראה</translation>
 <translation id="7769299611924763557">‏קובץ ה-GIF יהיה מוכן בקרוב</translation>
 <translation id="7773536009433685931">‏הפעלת Wi-Fi במקום זאת</translation>
@@ -1838,6 +1846,7 @@
 <translation id="7781829728241885113">אתמול</translation>
 <translation id="7787212146956232129">הוגדרו מכשירי קלט ופלט. אפשר לשנות את זה בהגדרות.</translation>
 <translation id="7792590255364786396">גלוי</translation>
+<translation id="7793389284006812057">‏ה-AI הגנרטיבי הוא מערכת ניסיונית שנמצאת בשלבי פיתוח ראשוניים והזמינות שלה מוגבלת כרגע.</translation>
 <translation id="7796735576426975947">התראה חדשה מוסתרת</translation>
 <translation id="7798302898096527229">‏יש להקיש על Search או על Shift כדי לבטל.</translation>
 <translation id="780301667611848630">לא תודה</translation>
@@ -1992,6 +2001,7 @@
 <translation id="8331351032546853669">ההורדה בהמתנה</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">תוצאה לא טובה</translation>
 <translation id="8345019317483336363">נבחר החלון <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">מרכז האפליקציות</translation>
 <translation id="8349964124165471584">פתיחת הקישור בחלון חדש</translation>

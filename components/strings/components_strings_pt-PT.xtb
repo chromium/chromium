@@ -26,6 +26,7 @@
 <translation id="1050038467049342496">Fechar outras aplicações</translation>
 <translation id="1053959602163383901">Optou por validar com um dispositivo autenticador nos Websites que usam o fornecedor <ph name="PROVIDER_ORIGIN" />. Este fornecedor pode ter armazenado informações sobre o seu método de pagamento, que pode <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Anular adição</translation>
+<translation id="105642538515333723">Pode introduzir expressões ou detalhes de que se lembra de páginas que pesquisou anteriormente, como "calçado de caminhada confortável"</translation>
 <translation id="1056898198331236512">Aviso</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para jogar Dino Run no Chrome</translation>
 <translation id="1058479211578257048">A guardar os cartões…</translation>
@@ -968,6 +969,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2824775600643448204">Barra de pesquisa e endereço</translation>
 <translation id="2826760142808435982">A ligação é encriptada e autenticada com <ph name="CIPHER" /> e utiliza <ph name="KX" /> como mecanismo de troca de chaves.</translation>
 <translation id="2833637280516285136">Debates na rádio</translation>
+<translation id="2837891525090413132">Pode pedir para bloquear e usar o teclado</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> quer usar as informações que guardou sobre si</translation>
 <translation id="2839032553903800133">Notificações bloqueadas</translation>
 <translation id="2839501879576190149">O site seguinte é falso</translation>
@@ -1157,7 +1159,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3209034400446768650">A página pode efetuar cobranças</translation>
 <translation id="3212581601480735796">A sua atividade em <ph name="HOSTNAME" /> está a ser monitorizada</translation>
 <translation id="3215092763954878852">Não foi possível utilizar o WebAuthn</translation>
-<translation id="3215311088819828484">Resultado atualizado</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relativa</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Atualização necessária agora}=2{Atualização necessária até amanhã}other{Atualização necessária dentro de # dias}}</translation>
@@ -2859,6 +2860,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6433797564277305076">Confirme os seus cartões mais rapidamente ao usar o desbloqueio do dispositivo a partir de agora</translation>
 <translation id="643917412048333145">Vestidos</translation>
 <translation id="6440503408713884761">Ignorado</translation>
+<translation id="6440534369669992497">Pode introduzir expressões ou detalhes de que se lembra de páginas que pesquisou anteriormente, como "calçado de caminhada confortável". <ph name="SHORTCUT" /> para pesquisar.</translation>
 <translation id="6443406338865242315">As extensões e os plug-ins que instalou.</translation>
 <translation id="6444329331928531170">Reforma e pensões</translation>
 <translation id="6446608382365791566">Adicionar mais informações</translation>
@@ -3142,6 +3144,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7006930604109697472">Enviar mesmo assim</translation>
 <translation id="7010658264061801199">Alimentação e bebidas</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013835112918108252">Pode pedir para bloquear e usar o rato</translation>
 <translation id="7014042602717177828">Áudio para carros</translation>
 <translation id="7014741021609395734">Nível de zoom</translation>
 <translation id="7016992613359344582">Estas cobranças podem ser únicas ou recorrentes e podem não ser óbvias.</translation>

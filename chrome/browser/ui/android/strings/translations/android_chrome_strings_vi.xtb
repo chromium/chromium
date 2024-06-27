@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Hoạt động <ph name="LAST_UPDATED" /> ngày trước</translation>
 <translation id="1390418506739274310">Bạn có thể xem nhật ký từ các ứng dụng khác có mở đường liên kết trong Chrome. Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web khác tại <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ tên, địa chỉ email và ảnh hồ sơ của bạn với trang web này. Xem <ph name="BEGIN_LINK1" />điều khoản dịch vụ<ph name="END_LINK1" /> của trang web này.</translation>
+<translation id="139752016751285248">Đã mở bảng thông tin chi tiết về giá ở dưới cùng trên toàn màn hình</translation>
 <translation id="1397811292916898096">Tìm kiếm bằng <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Bạn có thể <ph name="BEGIN_LINK1" />quy định những dữ liệu Chrome nào được lưu<ph name="END_LINK1" /> vào Tài khoản Google của bạn.
 
@@ -179,6 +180,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="1877073879466606884">Hồ sơ bạn đã đăng nhập là hồ sơ được quản lý. Quản trị viên có thể thay đổi các chế độ cài đặt hồ sơ của bạn từ xa, phân tích thông tin về trình duyệt thông qua báo cáo và thực hiện những nhiệm vụ cần thiết khác.</translation>
 <translation id="1883903952484604915">Tệp của tôi</translation>
 <translation id="189358972401248634">Ngôn ngữ khác</translation>
+<translation id="1899175549411605574">Bảng thông tin chi tiết về giá ở dưới cùng</translation>
 <translation id="1900260903084164610">Bằng việc tiếp tục, bạn đồng ý với <ph name="BEGIN_TOS_LINK" />Điều khoản dịch vụ<ph name="END_TOS_LINK" />,</translation>
 <translation id="1904580727789512086">Các URL bạn truy cập sẽ được lưu vào Tài khoản Google của bạn</translation>
 <translation id="1910950723001426294">Danh sách các lựa chọn chia sẻ đã đóng.</translation>
@@ -530,6 +532,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3637744895182738742">Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Chuyển đến thẻ Trang chủ trong ứng dụng Google</translation>
 <translation id="368329460027487650">Đã đăng xuất. Mở các tuỳ chọn đăng nhập.</translation>
+<translation id="3684540848053703310">Đã đóng bảng thông tin chi tiết về giá ở dưới cùng</translation>
 <translation id="3687645719033307815">Bạn đang xem bản xem trước của trang này</translation>
 <translation id="3690369331356918524">Cảnh báo bạn nếu mật khẩu bị lộ trong một sự cố rò rỉ dữ liệu</translation>
 <translation id="3692944402865947621">Không tải <ph name="FILE_NAME" /> xuống được do không tìm thấy vị trí bộ nhớ.</translation>

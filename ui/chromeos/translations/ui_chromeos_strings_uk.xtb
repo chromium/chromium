@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Неправильний PUK-код</translation>
 <translation id="4057991113334098539">Активація...</translation>
 <translation id="4092890906744441904">Ірландська</translation>
+<translation id="4101601646343868113">Увійдіть у свою мобільну мережу й переконайтеся, що ваш тарифний план мобільного Інтернету активний</translation>
 <translation id="4124731372776320263">Синхронізація 1 файлу на Диску</translation>
 <translation id="4124935795427217608">Єдиноріг</translation>
 <translation id="4131235941541910880">Перемістіть непотрібні файли в кошик</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Тамільська, розкладка Tamil99</translation>
 <translation id="5633226425545095130">Якщо перемістити цей файл, до нього отримають доступ усі користувачі, які можуть переглядати спільну папку "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Слухати</translation>
+<translation id="5650895901941743674">Перевірте конфігурацію APN</translation>
 <translation id="5669691691057771421">Введіть новий PIN-код</translation>
 <translation id="5678784840044122290">Додаток Linux буде доступний в терміналі, а його значок може відображатися на панелі запуску.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Не вдається від’єднатися від архіву чи віртуального диска<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Список файлів тепер відображається у вигляді ескізів.</translation>
 <translation id="8601932370724196034">Файл зображення Crostini</translation>
 <translation id="8609695766746872526">Ісландська</translation>
+<translation id="8630384863424041081">Введіть PIN-код SIM-карти або PIN-код за умовчанням, наданий оператором. Якщо вам потрібна допомога, зв’яжіться з оператором.</translation>
 <translation id="863903787380594467">Неправильний PIN-код. Залишилося спроб: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Порт</translation>
 <translation id="8656407365183407932">Файли, доступні офлайн, було вилучено</translation>

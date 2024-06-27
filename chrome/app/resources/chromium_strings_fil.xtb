@@ -81,6 +81,8 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="2329088755516916767">Kapag naka-on, magpe-preload ang Chromium ng mga page na magpapabilis sa pag-browse at paghahanap.</translation>
 <translation id="2343156876103232566">Para magpadala ng numero sa iyong Android phone mula rito, mag-sign in sa Chromium sa parehong device.</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
+<translation id="2361918034042471035">Gusto ng extension na "<ph name="EXTENSION_NAME" />" na mag-sign in ka sa Chromium</translation>
+<translation id="2374216753258219393">Para magamit ang extension na ito bilang <ph name="USER_EMAIL_ADDRESS" />, mag-sign in sa Chromium.</translation>
 <translation id="2384373936468275798">Hindi ma-sync ng ChromiumOS ang iyong data dahil hindi napapanahon ang mga detalye sa pag-sign in sa iyong account.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 HID device ang ina-access ng isa o higit pang extension ng Chromium}=1{1 HID device ang ina-access ng isa o higit pang extension ng Chromium}one{# HID device ang ina-access ng isa o higit pang extension ng Chromium}other{# HID device ang ina-access ng isa o higit pang extension ng Chromium}}</translation>
 <translation id="2401032172288869980">Kailangan ng Chromium ng pahintulot sa camera at mikropono para sa site na ito</translation>
@@ -244,9 +246,11 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="4893347770495441059">Ilunsad Ulit para Ma-update ang Chromium</translation>
 <translation id="4942295735032723435">Para makatanggap ng mga update sa Chromium sa hinaharap, kakailanganin mo ng macOS 11 o mas bago. Gumagamit ng macOS 10.15 ang computer na ito.</translation>
 <translation id="4943838377383847465">Nasa background mode ang Chromium.</translation>
+<translation id="494490797786467921">I-click para isara ang dialog ng pag-sign in sa Chromium</translation>
 <translation id="4987820182225656817">Makakagamit ng Chromium ang mga bisita nang hindi nag-iiwan ng anumang bakas.</translation>
 <translation id="4994636714258228724">Idagdag ang iyong sarili sa Chromium</translation>
 <translation id="5114678101347489141">Nag-e-explore ang Chromium ng mga bagong feature na nagbibigay-daan sa mga site na ihatid ang parehong karanasan sa pag-browse nang hindi gaanong gumagamit ng iyong impormasyon</translation>
+<translation id="5187123684706427865">Nagre-require ang Chromium account ng pag-authenticate ulit</translation>
 <translation id="5224391634244552924">Walang naka-save na password. Masusuri ng Chromium ang iyong mga password kapag na-save mo ang mga ito.</translation>
 <translation id="5231355151045086930">Mag-sign out sa Chromium</translation>
 <translation id="5252179775517634216">Naka-sign in na si <ph name="EXISTING_USER" /> sa profile sa Chromium na ito. Gagawa ito ng bagong profile sa Chromium para sa <ph name="USER_EMAIL_ADDRESS" /></translation>

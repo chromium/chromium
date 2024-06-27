@@ -81,6 +81,8 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="2329088755516916767">Piztuta dagoenenean, Chromium-ek orriak aurrez kargatzen ditu, azkarrago arakatu eta bila dezazun.</translation>
 <translation id="2343156876103232566">Zenbaki bat hemendik Android-eko telefonora bidaltzeko, hasi Chromium-eko saioa bi gailuetan.</translation>
 <translation id="2359808026110333948">Egin aurrera</translation>
+<translation id="2361918034042471035">"<ph name="EXTENSION_NAME" />" luzapenak Chromium-en saioa has dezazun behar du</translation>
+<translation id="2374216753258219393">Luzapen hau <ph name="USER_EMAIL_ADDRESS" /> gisa erabiltzeko, hasi saioa Chromium-en.</translation>
 <translation id="2384373936468275798">Chromium OS-k ezin izan ditu sinkronizatu zure datuak, kontuan saioa hasteko xehetasunak zaharkituta daudelako.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Chromium-erako luzapen bat edo gehiago giza interfazeko gailu bat erabiltzen ari ziren}=1{Chromium-erako luzapen bat edo gehiago giza interfazeko gailu bat erabiltzen ari dira}other{Chromium-erako luzapen bat edo gehiago giza interfazeko # gailu erabiltzen ari dira}}</translation>
 <translation id="2401032172288869980">Chromium-ek kamera eta mikrofonoa erabiltzeko baimenak behar ditu webgune honetan</translation>
@@ -244,9 +246,11 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="4893347770495441059">Exekuta ezazu berriro &amp;Chromium eguneratzeko</translation>
 <translation id="4942295735032723435">Etorkizunean Chromium-en eguneratzeak eskuratzeko, macOS 11 edo berriago bat beharko duzu. Ordenagailu hau macOS 10.15 erabiltzen ari da.</translation>
 <translation id="4943838377383847465">Chromium atzeko planoko moduan dago.</translation>
+<translation id="494490797786467921">Chromium-en saioa hasteko leihoa ixteko, sakatu hau</translation>
 <translation id="4987820182225656817">Gonbidatuek Chromium erabil dezakete aztarnarik utzi gabe.</translation>
 <translation id="4994636714258228724">Gaitu zure burua Chromium-en</translation>
 <translation id="5114678101347489141">Chromium eginbide berriak probatzen ari da; haiei esker, informazio gutxiago erabilita sarea modu berean arakatzeko aukera eskainiko dute webguneek</translation>
+<translation id="5187123684706427865">Berriro autentifikatu behar da Chromium-eko kontua</translation>
 <translation id="5224391634244552924">Ez dago pasahitzik gordeta. Gordeta dituzun pasahitzak egiaztatu egin ditzake Chromium-ek.</translation>
 <translation id="5231355151045086930">Amaitu Chromium-eko saioa</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> erabiltzaileak Chromium-eko profil honetan hasi du saioa dagoeneko. Chromium-eko beste profil bat sortuko da <ph name="USER_EMAIL_ADDRESS" /> helbiderako.</translation>

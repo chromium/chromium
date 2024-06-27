@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">PUK anghywir</translation>
 <translation id="4057991113334098539">Wrthi'n gweithredu...</translation>
 <translation id="4092890906744441904">Gwyddeleg</translation>
+<translation id="4101601646343868113">Mewngofnodwch i'ch rhwydwaith symudol a chadarnhewch fod eich cynllun data symudol yn weithredol</translation>
 <translation id="4124731372776320263">Wrthi'n cysoni 1 ffeil Drive</translation>
 <translation id="4124935795427217608">Uncorn</translation>
 <translation id="4131235941541910880">Symud eitemau nad oes eu hangen arnoch i'r bin sbwriel.</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Tamileg gyda bysellfwrdd Tamil99</translation>
 <translation id="5633226425545095130">Bydd symud yr eitem hon yn ei rhannu â phawb sy'n gallu gweld y ffolder gyffredin '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="5649768706273821470">Gwrando</translation>
+<translation id="5650895901941743674">Gwiriwch eich ffurfweddiad APN</translation>
 <translation id="5669691691057771421">Rhowch y PIN newydd</translation>
 <translation id="5678784840044122290">Bydd yr ap Linux ar gael yn eich Terfynell a gall hefyd ddangos eicon yn eich Lansiwr.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Methu â datgysylltu o archif neu ddisg rithwir<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Mae'r rhestr ffeiliau wedi newid i olwg mân-luniau.</translation>
 <translation id="8601932370724196034">Ffeil llun Crostini</translation>
 <translation id="8609695766746872526">Islandeg</translation>
+<translation id="8630384863424041081">Rhowch eich PIN cerdyn SIM neu'r PIN rhagosodedig a ddarperir gan eich cludydd. Cysylltwch â'ch cludydd am gymorth.</translation>
 <translation id="863903787380594467">PIN anghywir. Mae gennych <ph name="RETRIES" /> ymgais ar ôl.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Porth</translation>
 <translation id="8656407365183407932">Roedd yn rhaid tynnu eich ffeiliau all-lein</translation>

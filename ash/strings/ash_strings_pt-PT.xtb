@@ -216,6 +216,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1747827819627189109">Teclado no ecrã ativado</translation>
 <translation id="1749109475624620922">Janela <ph name="WINDOW_TITLE" /> atribuída a todos os espaços de trabalho</translation>
 <translation id="1750088060796401187">Apenas são permitidos <ph name="MAX_DESK_LIMIT" /> espaços de trabalho. Remova um espaço de trabalho para abrir um novo.</translation>
+<translation id="1751335846119670066">Ajuda-me a ler</translation>
 <translation id="1755408179247123630">Ativar a funcionalidade Selecionar para falar?</translation>
 <translation id="1755556344721611131">App Diagnósticos</translation>
 <translation id="1756833229520115364">Não foi possível guardar o modelo. Existem demasiadas janelas ou separadores.</translation>
@@ -227,6 +228,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="178347895271755507">Configurar visualização das fotos, dos conteúdos multimédia e das notificações recentes do telemóvel</translation>
 <translation id="1787955149152357925">Desativado</translation>
 <translation id="1796561540704213354">Websites, incluindo páginas que visitou e páginas abertas</translation>
+<translation id="179842970735685253">Termos de Utilização da Google</translation>
 <translation id="181103072419391116">Intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, gerida pelo administrador</translation>
 <translation id="1816896987747843206">Isto permite o acesso à câmara para todas as apps e Websites com a autorização da câmara</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Tipo de trabalho da turma</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Algumas notas a ter em conta</translation>
 <translation id="3139188263101386725">Use o atalho atualizado</translation>
 <translation id="3139942575505304791">Secretária 1</translation>
 <translation id="315116470104423982">Dados móveis</translation>
@@ -961,6 +964,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4585337515783392668">Parar a transmissão para um recetor desconhecido</translation>
 <translation id="4596144739579517758">O tema escuro está desativado.</translation>
 <translation id="4596442969149038771"><ph name="USER" /> partilhou</translation>
+<translation id="4610493115106525653">Bom resultado</translation>
 <translation id="4611292653554630842">Iniciar sessão</translation>
 <translation id="462160925400706389">Dispositivo <ph name="NAME" /> ligado</translation>
 <translation id="4623167406982293031">Validar conta</translation>
@@ -1118,6 +1122,7 @@ Também pode usar o atalho de teclado. Primeiro, realce o texto e, em seguida, p
 <translation id="5121628974188116412">Ir para a parte inferior da página</translation>
 <translation id="5122517996953421795">Pré-visualização de <ph name="DESK_NAME" />. Espaço de trabalho inativo.</translation>
 <translation id="5136175204352732067">Teclado diferente ligado</translation>
+<translation id="5140105873789567560">Tem de ter, pelo menos, 18 anos para usar a funcionalidade Ajuda-me a escrever e Ajuda-me a ler.</translation>
 <translation id="5144005092084035179">Mudar de entrada de áudio?</translation>
 <translation id="5147567197700016471">Desbloqueado</translation>
 <translation id="5150070631291639005">Definições de privacidade</translation>
@@ -1558,6 +1563,7 @@ Nova instalação</translation>
 <translation id="6696025732084565524">O teclado amovível necessita de uma atualização crítica</translation>
 <translation id="6697913454192220372">Adicionar novo espaço de trabalho</translation>
 <translation id="6700713906295497288">Botão de menu IME</translation>
+<translation id="6704375469818246414">A qualidade pode variar ao usar a IA generativa.</translation>
 <translation id="6706742084323792866">Teclado do PIN</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6723839937902243910">Alimentação</translation>
@@ -1825,9 +1831,11 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7726391492136714301">Veja as notificações e as apps do seu telemóvel</translation>
 <translation id="7727952505535211425">Abrir o Website na barra de endereço num novo separador</translation>
 <translation id="7742327441377685481">Sem notificações</translation>
+<translation id="774736258792760908">Quando ativa a funcionalidade Ajuda-me a escrever e Ajuda-me a ler, o texto introduzido e o conteúdo do documento são enviados para os servidores de IA da Google para gerar sugestões de escrita, gerar resumos, responder a perguntas e melhorar o produto, sujeito aos <ph name="LINK_TO_SERVICE_TERMS" />. Não inclua informações pessoais nem confidenciais.</translation>
 <translation id="7748275671948949022">Realçar o botão do Launcher na prateleira</translation>
 <translation id="7749443890790263709">Atingiu o número máximo de espaços de trabalho.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Pode desativar as funcionalidades Ajuda-me a escrever e Ajuda-me a ler em qualquer altura nas Definições. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Selecionar para ativar voz</translation>
 <translation id="7769299611924763557">O seu GIF vai estar pronto em breve</translation>
 <translation id="7773536009433685931">Ativar Wi-Fi em alternativa</translation>
@@ -1836,6 +1844,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7781829728241885113">Ontem</translation>
 <translation id="7787212146956232129">Estão definidos dispositivos de entrada e saída. Aceda às Definições para fazer alterações.</translation>
 <translation id="7792590255364786396">Visível</translation>
+<translation id="7793389284006812057">A IA generativa é experimental, está em desenvolvimento inicial e tem atualmente disponibilidade limitada.</translation>
 <translation id="7796735576426975947">Nova notificação oculta</translation>
 <translation id="7798302898096527229">Prima Pesquisar ou Shift para cancelar.</translation>
 <translation id="780301667611848630">Não, obrigado</translation>
@@ -1990,6 +1999,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8331351032546853669">Transferência pendente</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Mau resultado</translation>
 <translation id="8345019317483336363">Janela <ph name="WINDOW_TITLE" /> selecionada</translation>
 <translation id="8349826889576450703">iniciador</translation>
 <translation id="8349964124165471584">Abrir o link numa nova janela</translation>

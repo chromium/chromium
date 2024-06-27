@@ -216,6 +216,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1747827819627189109">Tastiera në ekran u aktivizua</translation>
 <translation id="1749109475624620922">Dritarja <ph name="WINDOW_TITLE" /> u caktua për të gjitha tavolinat e punës</translation>
 <translation id="1750088060796401187">Lejohen vetëm <ph name="MAX_DESK_LIMIT" /> tavolina pune. Hiq një tavolinë pune për të hapur një të re.</translation>
+<translation id="1751335846119670066">Më ndihmo të lexoj</translation>
 <translation id="1755408179247123630">Të aktivizohet "Zgjidh që të thuhet"?</translation>
 <translation id="1755556344721611131">Aplikacioni i diagnostikimit</translation>
 <translation id="1756833229520115364">Shablloni nuk mund të ruhej. Shumë dritare ose skeda.</translation>
@@ -227,6 +228,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="178347895271755507">Konfiguro shikimin e njoftimeve, medias dhe fotografive më të fundit të telefonit tënd</translation>
 <translation id="1787955149152357925">Joaktive</translation>
 <translation id="1796561540704213354">Uebsajtet duke përfshirë faqet që ke vizituar dhe faqet e hapura</translation>
+<translation id="179842970735685253">"Kushteve të shërbimit" të Google</translation>
 <translation id="181103072419391116">Fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>
 <translation id="1816896987747843206">Kjo lejon qasjen te kamera për të gjitha aplikacionet dhe uebsajtet me lejen e kamerës</translation>
 <translation id="1823873187264960516">Eternet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Lloji i detyrave të klasës</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Disa gjëra për t'i pasur parasysh</translation>
 <translation id="3139188263101386725">Përdor shkurtoren e përditësuar</translation>
 <translation id="3139942575505304791">Tavolina e punës 1</translation>
 <translation id="315116470104423982">Të dhëna celulare</translation>
@@ -903,6 +906,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4381031910344220229">Kjo lejon qasjen te mikrofoni për <ph name="APP_NAME" /> dhe të gjitha aplikacionet dhe uebsajtet me lejen e mikrofonit</translation>
 <translation id="4382340674111381977">Kalo mbrapa te faqja e mëparshme</translation>
 <translation id="4389184120735010762">Ke shtypur shkurtoren e tastierës për zmadhuesin me puthitje. Dëshiron ta aktivizosh?</translation>
+<translation id="4394466652057229831">Kliko me butonin djathtas për të përmbledhur</translation>
 <translation id="439598569299422042">Në pauzë, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Transmetimi i ekranit nuk mund të ruhet</translation>
 <translation id="4405151984121254935">Lloji i pajisjes së lidhur periferike nuk mbështetet</translation>
@@ -960,6 +964,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4585337515783392668">Ndalo transmetimin në një marrës të panjohur</translation>
 <translation id="4596144739579517758">"Tema e errët" është joaktive</translation>
 <translation id="4596442969149038771"><ph name="USER" /> është ndarë</translation>
+<translation id="4610493115106525653">Rezultat i mirë</translation>
 <translation id="4611292653554630842">Identifikohu</translation>
 <translation id="462160925400706389"><ph name="NAME" /> u lidh</translation>
 <translation id="4623167406982293031">Verifiko llogarinë</translation>
@@ -1117,6 +1122,7 @@ Gjithashtu, mund të përdorësh shkurtoren e tastierës. Fillimisht thekso teks
 <translation id="5121628974188116412">Shko në fund të faqes</translation>
 <translation id="5122517996953421795">Pamja paraprake e "<ph name="DESK_NAME" />". Tavolina e punës joaktive.</translation>
 <translation id="5136175204352732067">Është lidhur një tastierë tjetër</translation>
+<translation id="5140105873789567560">Duhet të jesh të paktën 18 vjeç për të përdorur "Më ndihmo të shkruaj" dhe "Më ndihmo të lexoj".</translation>
 <translation id="5144005092084035179">Të ndryshohet hyrja e audios?</translation>
 <translation id="5147567197700016471">Shkyçur</translation>
 <translation id="5150070631291639005">Cilësimet e privatësisë</translation>
@@ -1557,6 +1563,7 @@ Instalim i ri</translation>
 <translation id="6696025732084565524">Tastiera jote e shkëputshme ka nevojë për një përditësim me rëndësi</translation>
 <translation id="6697913454192220372">Shto një tavolinë të re pune</translation>
 <translation id="6700713906295497288">Butoni i menysë IME</translation>
+<translation id="6704375469818246414">Cilësia mund të variojë kur përdor IA-në gjeneruese.</translation>
 <translation id="6706742084323792866">Gozhdo tastierën</translation>
 <translation id="6710213216561001401">Prapa</translation>
 <translation id="6723839937902243910">Energjia</translation>
@@ -1824,9 +1831,11 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7726391492136714301">Shiko njoftimet dhe aplikacionet e telefonit tënd</translation>
 <translation id="7727952505535211425">Hape në një skedë të re sajtin e uebit në shiritin e adresës</translation>
 <translation id="7742327441377685481">Asnjë njoftim</translation>
+<translation id="774736258792760908">Kur aktivizon "Më ndihmo të shkruaj" dhe "Më ndihmo të lexoj", teksti i hyrjes dhe përmbajtja e dokumentit dërgohen te serverët e IA-së së Google për të gjeneruar sugjerime për të shkruarit, për të gjeneruar përmbledhje, për t'iu përgjigjur pyetjeve dhe për të përmirësuar produktin, sipas <ph name="LINK_TO_SERVICE_TERMS" />. Mos përfshi asgjë personale, delikate apo konfidenciale.</translation>
 <translation id="7748275671948949022">Thekso butonin e "Nisësit" në raft</translation>
 <translation id="7749443890790263709">Është arritur numri maksimal i tavolinave të punës.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Mund të çaktivizosh "Më ndihmo të shkruaj" dhe "Më ndihmo të lexoj" në çdo kohë te "Cilësimet". <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Zgjidh që të thuhet</translation>
 <translation id="7769299611924763557">Imazhi yt GIF do të jetë gati së shpejti</translation>
 <translation id="7773536009433685931">Aktivizo WiFi më mirë</translation>
@@ -1835,6 +1844,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7781829728241885113">Dje</translation>
 <translation id="7787212146956232129">Pajisjet e hyrjes dhe daljes janë caktuar. Shko te "Cilësimet" për ta ndryshuar.</translation>
 <translation id="7792590255364786396">I dukshëm</translation>
+<translation id="7793389284006812057">IA-ja gjeneruese është eksperimentale, në fazë të hershme zhvillimi dhe ka aktualisht disponueshmëri të kufizuar.</translation>
 <translation id="7796735576426975947">Njoftimi i ri është fshehur</translation>
 <translation id="7798302898096527229">Shtyp "Kërko" ose "Shift" për të anuluar</translation>
 <translation id="780301667611848630">Jo, faleminderit</translation>
@@ -1939,6 +1949,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8113423164597455979">Aktiv, të gjitha aplikacionet</translation>
 <translation id="8113515504791187892">Butoni i "Zgjidh që të thuhet"</translation>
 <translation id="8120151603115102514">Telefoni yt nuk ka një ekran kyçjeje. Për të shkyçur Chromebook-un tënd, fut fjalëkalimin.</translation>
+<translation id="8120249852906205273">Rinis</translation>
 <translation id="8127095419621171197">Hap aplikacionin "Makina llogaritëse"</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8130528849632411619">Shko në fillim të dokumentit</translation>
@@ -1988,6 +1999,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8331351032546853669">Shkarkimi në pritje</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Rezultat i keq</translation>
 <translation id="8345019317483336363">U zgjodh dritarja <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">launcher</translation>
 <translation id="8349964124165471584">Hape lidhjen në një dritare të re</translation>
@@ -2033,6 +2045,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="85123341071060231">Bluetooth-i i Chromebook-ut është joaktiv. Për të shkyçur Chromebook-un tënd, fut fjalëkalimin.</translation>
 <translation id="8513108775083588393">Autorrotullim</translation>
 <translation id="851458219935658693">Shfaq dritaret nga tavolina aktuale e punës, butoni i radios i zgjedhur</translation>
+<translation id="851660987304951246">Përdor "Më ndihmo të lexoj" për të përmbledhur me shpejtësi përmbajtjen ose për të bërë pyetje</translation>
 <translation id="8517041960877371778">Pajisja jote <ph name="DEVICE_TYPE" /> mund të mos ngarkohet kur është e ndezur.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Hyrja e mikrofonit kontrollohet nga <ph name="APP_NAME" />}other{Hyrja e mikrofonit kontrollohet nga # aplikacione}}</translation>
 <translation id="8535393432370007982">Zhbëj mënyrën e renditjes sipas ngjyrës</translation>

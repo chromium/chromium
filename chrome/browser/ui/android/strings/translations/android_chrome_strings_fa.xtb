@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">آخرین فعالیت: <ph name="LAST_UPDATED" /> روز قبل</translation>
 <translation id="1390418506739274310">‏ممکن است سابقه را از برنامه‌های دیگری که پیوندها را در Chrome باز می‌کنند مشاهده کنید. ممکن است «حساب Google» شما انواع دیگری از سابقه مرور در <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> داشته باشد.</translation>
 <translation id="13931502444227376">برای ادامه دادن، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> نام، نشانی ایمیل، و عکس نمایه‌تان را با این سایت هم‌رسانی خواهد کرد. <ph name="BEGIN_LINK1" />شرایط خدمات<ph name="END_LINK1" /> این سایت را ببینید.</translation>
+<translation id="139752016751285248">برگ زیرین اطلاعات آماری قیمت به‌صورت کامل باز شده است</translation>
 <translation id="1397811292916898096">جستجو با <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">‏می‌توانید <ph name="BEGIN_LINK1" />مدیریت کنید چه داده‌هایی از Chrome در «حساب Google» شما ذخیره شود<ph name="END_LINK1" />.
 
@@ -179,6 +180,7 @@
 <translation id="1877073879466606884">نمایه‌ای که با آن به سیستم وارد شده‌اید تحت‌مدیریت است. سرپرست شما می‌تواند تنظیمات نمایه‌تان را از دور تغییر دهد، اطلاعات مربوط به مرورگر را ازطریق گزارش گرفتن تجزیه‌وتحلیل کند، و دیگر اقدامات ضروری را انجام دهد.</translation>
 <translation id="1883903952484604915">فایل‌های من</translation>
 <translation id="189358972401248634">زبان‌های دیگر</translation>
+<translation id="1899175549411605574">برگ زیرین اطلاعات آماری قیمت</translation>
 <translation id="1900260903084164610">درصورت ادامه دادن، موافقتتان را با <ph name="BEGIN_TOS_LINK" />شرایط خدمات<ph name="END_TOS_LINK" /> اعلام می‌کنید.</translation>
 <translation id="1904580727789512086">‏نشانی‌های وبی که بازدید می‌کنید در «حساب Google» شما ذخیره می‌شوند</translation>
 <translation id="1910950723001426294">فهرست گزینه‌های هم‌رسانی بسته است.</translation>
@@ -530,6 +532,7 @@
 <translation id="3637744895182738742">‏اگر گذرعبارت را فراموش کردید یا می‌خواهید این تنظیم را تغییر دهید، <ph name="BEGIN_LINK" />داده‌های Chrome ذخیره‌شده در حسابتان را حذف کنید<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">‏رفتن به «صفحه اصلی برنامه Google»</translation>
 <translation id="368329460027487650">از سیستم خارج شده‌اید. گزینه‌هایی را برای ورود به سیستم باز می‌کند.</translation>
+<translation id="3684540848053703310">برگ زیرین اطلاعات آماری قیمت بسته شد</translation>
 <translation id="3687645719033307815">درحال مشاهده پیش‌نمای این صفحه هستید</translation>
 <translation id="3690369331356918524">اگر گذرواژه‌ها به‌دلیل نقض داده درمعرض خطر باشد، به شما هشدار می‌دهد</translation>
 <translation id="3692944402865947621">به‌دلیل دردسترس نبودن مکان فضای ذخیره‌سازی، <ph name="FILE_NAME" /> بارگیری نشد.</translation>

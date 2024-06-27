@@ -102,6 +102,7 @@
 <translation id="1499900233129743732">Seda kasutajat haldab domeen <ph name="MANAGER" />, mis võib eemalt hallata seadeid ja jälgida kasutaja tegevusi.</translation>
 <translation id="150962533380566081">Vale PUK-kood.</translation>
 <translation id="1510238584712386396">Käivitaja</translation>
+<translation id="1514446283880973949">Kirjutage suurema enesekindlusega, kasutage definitsioone, tehke sisu kokkuvõtteid ja veel</translation>
 <translation id="1515129336378114413">brauseri avaleht</translation>
 <translation id="1526389707933164996">Ekraanisäästja animatsioon</translation>
 <translation id="152892567002884378">Helitugevuse suurendamine</translation>
@@ -1287,6 +1288,7 @@
 <translation id="8167413449582155132">Taust toimib Google’i AI platvormil</translation>
 <translation id="8179976553408161302">Sisestusklahv</translation>
 <translation id="8183975772394450380">rand</translation>
+<translation id="819278132617411009">Kasutage Google'i AI-d, et olla produktiivsem</translation>
 <translation id="8206859287963243715">Mobiil</translation>
 <translation id="8208861521865154048">Hüved</translation>
 <translation id="8226628635270268143">Valige oma lemmikfotod ja -albumid</translation>
@@ -1333,6 +1335,7 @@
 <translation id="8431300646573772016">Mis on Chrome OS-is uut?</translation>
 <translation id="843568408673868420">Interneti ühenduvus</translation>
 <translation id="844521431886043384">DNS ei ole seadistatud</translation>
+<translation id="8456200178779628126">Kasutage Google'i AI-d, et saada kirjutamisel ja lugemisel abi</translation>
 <translation id="8456761643544401578">Automaatne tume režiim</translation>
 <translation id="8461329675984532579">Koduteenuse pakkuja nimi</translation>
 <translation id="8475690821716466388">WiFi-võrk on kaitstud nõrga protokolliga (WEP PSK)</translation>
@@ -1459,6 +1462,7 @@
 <translation id="910415269708673980">Kasutaja <ph name="PRINCIPAL_NAME" /> pileti värskendamine</translation>
 <translation id="9106415115617144481">Lehe <ph name="PAGE_NUMBER" /> skannimine</translation>
 <translation id="9111102763498581341">Ava lukk</translation>
+<translation id="9122492456897874028">Tehke sisu kokkuvõtteid, kasutage definitsioone ja veel</translation>
 <translation id="9122602430962285795">Uuesti ühendamiseks avage leht Seaded</translation>
 <translation id="9122865513525855321">zen</translation>
 <translation id="9126720536733509015">Mitme lehe ühte PDF-faili salvestamine</translation>

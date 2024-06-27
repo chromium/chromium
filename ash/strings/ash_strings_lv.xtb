@@ -216,6 +216,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1747827819627189109">Ekrāna tastatūra iespējota</translation>
 <translation id="1749109475624620922">Logs <ph name="WINDOW_TITLE" /> ir piešķirts visām darbvietām</translation>
 <translation id="1750088060796401187">Ir atļautas tikai <ph name="MAX_DESK_LIMIT" /> darbvietas. Noņemiet kādu darbvietu, lai atvērtu jaunu darbvietu.</translation>
+<translation id="1751335846119670066">Palīdziet man izlasīt</translation>
 <translation id="1755408179247123630">Vai ieslēgt funkciju “Atlasīt, lai izrunātu”?</translation>
 <translation id="1755556344721611131">Diagnostikas lietotne</translation>
 <translation id="1756833229520115364">Nevarēja saglabāt veidni. Pārāk daudz logu vai ciļņu.</translation>
@@ -227,6 +228,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="178347895271755507">Iestatīt tālruņa jaunāko fotoattēlu, multivides satura un paziņojumu skatīšanu</translation>
 <translation id="1787955149152357925">Izslēgts</translation>
 <translation id="1796561540704213354">Tīmekļa vietnes, tostarp iepriekš apmeklētās un pašlaik atvērtās lapas</translation>
+<translation id="179842970735685253">Google pakalpojumu sniegšanas noteikumus</translation>
 <translation id="181103072419391116">Signāla stiprums: <ph name="SIGNAL_STRENGTH" />, pārvalda jūsu administrators</translation>
 <translation id="1816896987747843206">Atļauj piekļuvi kamerai visām lietotnēm un vietnēm, kurām ir kameras atļauja.</translation>
 <translation id="1823873187264960516">Ethernet adrese: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3122464029669770682">Maksa par daļas vienību</translation>
 <translation id="3125690294288312932">Klases darba veids</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Noderīga informācija</translation>
 <translation id="3139188263101386725">Izmantojiet atjauninātos īsinājumtaustiņus</translation>
 <translation id="3139942575505304791">1. galds</translation>
 <translation id="315116470104423982">Mobilie dati</translation>
@@ -961,6 +964,7 @@ Pievienota viena ierīce.</translation>
 <translation id="4585337515783392668">Pārtraukt apraidi nezināmā uztvērējā</translation>
 <translation id="4596144739579517758">Tumšais motīvs ir izslēgts.</translation>
 <translation id="4596442969149038771"><ph name="USER" /> kopīgoja</translation>
+<translation id="4610493115106525653">Labi izvades dati</translation>
 <translation id="4611292653554630842">Pieteikties</translation>
 <translation id="462160925400706389">Izveidots savienojums ar: <ph name="NAME" /></translation>
 <translation id="4623167406982293031">Verificēt kontu</translation>
@@ -1118,6 +1122,7 @@ Varat arī izmantot īsinājumtaustiņus. Vispirms atzīmējiet tekstu un pēc t
 <translation id="5121628974188116412">Pāriet uz lapas beigām</translation>
 <translation id="5122517996953421795">Darbvietas <ph name="DESK_NAME" /> priekšskatījums. Neaktīva darbvieta.</translation>
 <translation id="5136175204352732067">Ir pievienota cita tastatūra</translation>
+<translation id="5140105873789567560">Lai izmantotu funkcijas “Palīdziet man uzrakstīt” un “Palīdziet man izlasīt”, jums ir jābūt vismaz 18 gadus vecam.</translation>
 <translation id="5144005092084035179">Vai pārslēgt audio ieeju?</translation>
 <translation id="5147567197700016471">Atbloķēts</translation>
 <translation id="5150070631291639005">Konfidencialitātes iestatījumi</translation>
@@ -1558,6 +1563,7 @@ Jauna instalācija</translation>
 <translation id="6696025732084565524">Noņemamajai tastatūrai nepieciešams svarīgs atjauninājums</translation>
 <translation id="6697913454192220372">Pievienot jaunu darbvietu</translation>
 <translation id="6700713906295497288">IME izvēlnes poga</translation>
+<translation id="6704375469818246414">Izmantojot ģeneratīvo MI, kvalitāte var atšķirties.</translation>
 <translation id="6706742084323792866">Piespraust tastatūru</translation>
 <translation id="6710213216561001401">Iepriekšējais</translation>
 <translation id="6723839937902243910">Strāvas padeve</translation>
@@ -1825,9 +1831,11 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7726391492136714301">Skatiet tālruņa paziņojumus un lietotnes.</translation>
 <translation id="7727952505535211425">Atvērt adreses joslā norādīto vietni jaunā cilnē</translation>
 <translation id="7742327441377685481">Paziņojumu nav</translation>
+<translation id="774736258792760908">Kad ieslēdzat funkcijas “Palīdziet man uzrakstīt” un “Palīdziet man izlasīt”, ievadītais teksts un dokumenta saturs tiek nosūtīts uz Google MI serveriem, lai ģenerētu rakstīšanas ieteikumus, ģenerētu apkopojumus, atbildētu uz jautājumiem un uzlabotu produktu, ievērojot <ph name="LINK_TO_SERVICE_TERMS" />. Neiekļaujiet nekādu personas, sensitīvu vai konfidenciālu informāciju.</translation>
 <translation id="7748275671948949022">Plauktā izcelt palaidēja pogu</translation>
 <translation id="7749443890790263709">Sasniegts maksimālais darbvietu skaits.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Iestatījumos varat jebkurā laikā izslēgt funkcijas “Palīdziet man uzrakstīt” un “Palīdziet man izlasīt”. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Atlasīt, lai izrunātu</translation>
 <translation id="7769299611924763557">Jūsu GIF attēls drīz būs gatavs</translation>
 <translation id="7773536009433685931">Tā vietā ieslēgt Wi-Fi</translation>
@@ -1836,6 +1844,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7781829728241885113">Vakar</translation>
 <translation id="7787212146956232129">Ievades un izvades ierīces ir iestatītas. Lai tās mainītu, pārejiet uz iestatījumiem.</translation>
 <translation id="7792590255364786396">Redzamas</translation>
+<translation id="7793389284006812057">Ģeneratīvais MI ir eksperimentāls, tas ir agrīnā izstrādes stadijā, un pašlaik tam ir ierobežota pieejamība.</translation>
 <translation id="7796735576426975947">Paslēpts jauns paziņojums</translation>
 <translation id="7798302898096527229">Lai atceltu, nospiediet meklēšanas vai pārslēgšanas taustiņu.</translation>
 <translation id="780301667611848630">Nē, paldies</translation>
@@ -1990,6 +1999,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8331351032546853669">Tiek gaidīta lejupielāde</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Slikti izvades dati</translation>
 <translation id="8345019317483336363">Atlasīts logs “<ph name="WINDOW_TITLE" />”</translation>
 <translation id="8349826889576450703">palaišanas programma</translation>
 <translation id="8349964124165471584">Atvērt saiti jaunā logā</translation>

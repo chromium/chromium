@@ -216,6 +216,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1747827819627189109">Kibodi ya skrini imewashwa</translation>
 <translation id="1749109475624620922">Dirisha la <ph name="WINDOW_TITLE" /> limewekwa kwenye maeneokazi yote</translation>
 <translation id="1750088060796401187">Inaruhusu maeneokazi <ph name="MAX_DESK_LIMIT" /> pekee. Ondoa eneokazi moja ili ufungue jipya.</translation>
+<translation id="1751335846119670066">Kipengele cha Nisaidie kusoma</translation>
 <translation id="1755408179247123630">Ungependa kuwasha kipengele cha Chagua ili izungumze?</translation>
 <translation id="1755556344721611131">Programu ya uchunguzi</translation>
 <translation id="1756833229520115364">Imeshindwa kuhifadhi kiolezo. Madirisha au vichupo ni vingi sana.</translation>
@@ -227,6 +228,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="178347895271755507">Weka mipangilio ya kuangalia picha, maudhui na arifa za hivi karibuni za simu yako</translation>
 <translation id="1787955149152357925">Yamezimwa</translation>
 <translation id="1796561540704213354">Tovuti zinajumuisha kurasa ulizotembelea na kurasa zilizofunguliwa</translation>
+<translation id="179842970735685253">Sheria na Masharti ya Google</translation>
 <translation id="181103072419391116">Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />, Unadhibitiwa na Msimamizi wako</translation>
 <translation id="1816896987747843206">Hatua hii huruhusu ufikiaji wa kamera katika programu na tovuti zote zilizo na ruhusa ya kufikia kamera</translation>
 <translation id="1823873187264960516">Ethaneti: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@ Vifaa <ph name="DEVICECOUNT" /> vimeunganishwa.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Aina ya kazi ya darasani</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Mambo machache ya kukumbuka</translation>
 <translation id="3139188263101386725">Tumia njia ya mkato iliyosasishwa</translation>
 <translation id="3139942575505304791">Eneokazi la 1</translation>
 <translation id="315116470104423982">Data ya mtandao wa simu</translation>
@@ -961,6 +964,7 @@ Kifaa 1 kimeunganishwa.</translation>
 <translation id="4585337515783392668">Acha kutuma kwenye kifaa au kwa mpokeaji usiyemjua</translation>
 <translation id="4596144739579517758">Mandhari meusi yamezimwa</translation>
 <translation id="4596442969149038771"><ph name="USER" /> aliituma</translation>
+<translation id="4610493115106525653">Matokeo mazuri</translation>
 <translation id="4611292653554630842">Ingia katika akaunti</translation>
 <translation id="462160925400706389"><ph name="NAME" /> imeunganishwa</translation>
 <translation id="4623167406982293031">Thibitisha akaunti</translation>
@@ -1118,6 +1122,7 @@ Unaweza pia kutumia mikato ya kibodi. Kwanza, angazia maandishi, kisha ubonyeze 
 <translation id="5121628974188116412">Nenda sehemu ya chini ya ukurasa</translation>
 <translation id="5122517996953421795">Onyesho la kukagua <ph name="DESK_NAME" />. Eneokazi halitumiki.</translation>
 <translation id="5136175204352732067">Kibodi tofauti imeunganishwa</translation>
+<translation id="5140105873789567560">Ni lazima uwe na umri wa miaka 18 ili utumie kipengele cha Nisaidie kuandika na cha Nisaidie kusoma.</translation>
 <translation id="5144005092084035179">Ungependa kubadilisha kifaa cha kuingiza sauti?</translation>
 <translation id="5147567197700016471">Imefunguliwa</translation>
 <translation id="5150070631291639005">Mipangilio ya faragha</translation>
@@ -1558,6 +1563,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6696025732084565524">Kibodi unayoweza kutenganisha inahitaji sasisho muhimu</translation>
 <translation id="6697913454192220372">Weka eneokazi jipya</translation>
 <translation id="6700713906295497288">Kitufe cha menyu ya IME</translation>
+<translation id="6704375469818246414">Ubora unaweza kutofautiana unapotumia AI zalishi.</translation>
 <translation id="6706742084323792866">Bandika kibodi</translation>
 <translation id="6710213216561001401">Iliyopita</translation>
 <translation id="6723839937902243910">Nishati</translation>
@@ -1826,9 +1832,11 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7726391492136714301">Angalia arifa na programu za simu yako</translation>
 <translation id="7727952505535211425">Fungua tovuti kwenye sehemu ya anwani katika kichupo kipya</translation>
 <translation id="7742327441377685481">Hakuna arifa</translation>
+<translation id="774736258792760908">Unapowasha kipengele cha Nisaidie kuandika na cha Nisaidie kusoma, maandishi unayoweka na maudhui ya hati hutumwa kwa seva za Google AI ili kutayarisha mapendekezo ya kuandika, mihtasari, kujibu maswali na kuboresha bidhaa, hatua inayosimamiwa na <ph name="LINK_TO_SERVICE_TERMS" />. Usijumuishe taarifa zozote binafsi, nyeti au za siri.</translation>
 <translation id="7748275671948949022">Angazia kitufe cha Kifungua programu kwenye rafu</translation>
 <translation id="7749443890790263709">Umefikia idadi ya juu zaidi ya violesura.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Unaweza kuzima kipengele cha Nisaidie kuandika na cha Nisaidie kusoma wakati wowote katika Mipangilio. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Chagua ili izungumze</translation>
 <translation id="7769299611924763557">GIF yako itakuwa tayari hivi punde</translation>
 <translation id="7773536009433685931">Washa Wi-Fi badala yake</translation>
@@ -1837,6 +1845,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7781829728241885113">Jana</translation>
 <translation id="7787212146956232129">Umeweka vifaa vya kuingiza na kutoa sauti. Nenda kwenye Mipangilio ili ubadilishe.</translation>
 <translation id="7792590255364786396">Kinaonekana</translation>
+<translation id="7793389284006812057">AI zalishi inafanyiwa majaribio, iko katika hatua za mwanzo za kubuniwa na kwa sasa upatikanaji wake unadhibitiwa.</translation>
 <translation id="7796735576426975947">Arifa mpya imefichwa</translation>
 <translation id="7798302898096527229">Bonyeza Tafuta au Shift ili ughairi.</translation>
 <translation id="780301667611848630">Hapana</translation>
@@ -1991,6 +2000,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8331351032546853669">Upakuaji unashughulikiwa</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · tarehe <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Tokeo baya</translation>
 <translation id="8345019317483336363">Umechagua dirisha la <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">kifungua programu</translation>
 <translation id="8349964124165471584">Fungua kiungo kwenye dirisha jipya</translation>

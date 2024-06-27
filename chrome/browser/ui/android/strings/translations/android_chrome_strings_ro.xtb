@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Activ acum <ph name="LAST_UPDATED" /> zile</translation>
 <translation id="1390418506739274310">Poți vedea istoricul din alte aplicații care deschid linkuri în Chrome. Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Pentru a continua, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> va permite accesul site-ului la numele, adresa de e-mail și fotografia ta de profil. Vezi <ph name="BEGIN_LINK1" />termenii și condițiile<ph name="END_LINK1" /> acestui site.</translation>
+<translation id="139752016751285248">Foaia din partea de jos cu Statistici despre prețuri este deschisă la înălțime completă</translation>
 <translation id="1397811292916898096">Caută folosind <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Poți <ph name="BEGIN_LINK1" />gestiona ce date Chrome se salvează<ph name="END_LINK1" /> în Contul Google.
 
@@ -179,6 +180,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="1877073879466606884">Profilul la care te-ai conectat este un profil gestionat. Administratorul poate să modifice setările profilului de la distanță, să analizeze informațiile despre browser cu ajutorul rapoartelor și să finalizeze alte activități necesare.</translation>
 <translation id="1883903952484604915">Fișierele mele</translation>
 <translation id="189358972401248634">Alte limbi</translation>
+<translation id="1899175549411605574">Foaia din partea de jos cu Statistici despre prețuri</translation>
 <translation id="1900260903084164610">Dacă alegi să continui, ești de acord cu <ph name="BEGIN_TOS_LINK" />Termenii și condițiile<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Adresele URL pe care le accesezi sunt salvate în Contul Google</translation>
 <translation id="1910950723001426294">Lista cu opțiuni de permitere a accesului este închisă.</translation>
@@ -530,6 +532,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3637744895182738742">Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="BEGIN_LINK" />șterge datele Chrome din cont<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Accesează pagina de pornire a aplicației Google</translation>
 <translation id="368329460027487650">Utilizator deconectat. Deschide opțiunile pentru a te conecta.</translation>
+<translation id="3684540848053703310">S-a închis foaia din partea de jos cu Statistici despre prețuri</translation>
 <translation id="3687645719033307815">Este afișată o previzualizare a acestei pagini</translation>
 <translation id="3690369331356918524">Te avertizează dacă parolele au fost expuse în urma încălcării securității datelor</translation>
 <translation id="3692944402865947621">Descărcarea fișierului <ph name="FILE_NAME" /> nu a reușit, deoarece nu se poate contacta locația de stocare.</translation>

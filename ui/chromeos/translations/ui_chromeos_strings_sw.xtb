@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">PUK si sahihi</translation>
 <translation id="4057991113334098539">Inawashwa...</translation>
 <translation id="4092890906744441904">Kiayalandi</translation>
+<translation id="4101601646343868113">Ingia katika mtandao wako wa simu kisha uthibitishe kuwa mpango wako wa data ya mtandao wa simu unatumika</translation>
 <translation id="4124731372776320263">Inasawazisha faili 1 ya Hifadhi</translation>
 <translation id="4124935795427217608">Farasi mwenye pembe</translation>
 <translation id="4131235941541910880">Hamishia kwenye tupio vipengee ambavyo huvihitaji</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Kitamili kwenye kibodi ya Tamil99</translation>
 <translation id="5633226425545095130">Hatua ya kuhamisha kipengee hiki itakishiriki na kila mtu anayeweza kuona folda ya pamoja iitwayo '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="5649768706273821470">Sikiliza</translation>
+<translation id="5650895901941743674">Angalia mipangilio ya APN yako</translation>
 <translation id="5669691691057771421">Weka PIN mpya</translation>
 <translation id="5678784840044122290">Programu ya Linux itapatikana kwenye Kituo chako na huenda pia ikaonyesha aikoni kwenye Kifungua programu chako.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Imeshindwa kutenganishwa kwenye kumbukumbu au diski pepe<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Orodha ya faili imebadilishwa kuwa mwonekano wa kijipicha.</translation>
 <translation id="8601932370724196034">Picha ya faili ya Crostini</translation>
 <translation id="8609695766746872526">Kiaislandi</translation>
+<translation id="8630384863424041081">Weka PIN ya SIM kadi yako au PIN chaguomsingi iliyotolewa na mtoa huduma wako. Wasiliana na mtoa huduma wako ili upate usaidizi.</translation>
 <translation id="863903787380594467">PIN si sahihi. Umebakisha majaribio <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Mlango</translation>
 <translation id="8656407365183407932">Faili zako zilizo nje ya mtandao zilipaswa kuondolewa</translation>

@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Aktivní před tímto počtem dní: <ph name="LAST_UPDATED" /></translation>
 <translation id="1390418506739274310">Můžete vidět historii z jiných aplikací, které otevírají odkazy v Chromu. Na stránce <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
 <translation id="13931502444227376">Aby bylo možné pokračovat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bude s tímto webem sdílet vaše jméno, e‑mailovou adresu a profilový obrázek. Přečtěte si <ph name="BEGIN_LINK1" />smluvní podmínky<ph name="END_LINK1" /> tohoto webu.</translation>
+<translation id="139752016751285248">Spodní tabulka s informacemi o ceně otevřená na celou výšku</translation>
 <translation id="1397811292916898096">Hledat pomocí vyhledávače <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Můžete <ph name="BEGIN_LINK1" />spravovat, která data prohlížeče Chrome se ukládají<ph name="END_LINK1" /> do účtu Google.
 
@@ -179,6 +180,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1877073879466606884">Jste přihlášeni ke spravovanému profilu. Administrátor může vzdálené měnit nastavení profilu, analyzovat informace o prohlížeči prostřednictvím přehledů a provádět další nezbytné úkoly.</translation>
 <translation id="1883903952484604915">Moje soubory</translation>
 <translation id="189358972401248634">Ostatní jazyky</translation>
+<translation id="1899175549411605574">Spodní tabulka s informacemi o ceně</translation>
 <translation id="1900260903084164610">Pokračováním vyjadřujete souhlas se <ph name="BEGIN_TOS_LINK" />smluvními podmínkami<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Navštívené adresy URL se ukládají do vašeho účtu Google</translation>
 <translation id="1910950723001426294">Seznam možností sdílení je zavřený.</translation>
@@ -520,6 +522,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3587596251841506391">Zlepšovat bezpečnost na webu</translation>
 <translation id="3597179440835065298">Získejte lepší návrhy</translation>
 <translation id="3602290021589620013">Náhled</translation>
+<translation id="3614126103057878858">Informace o ceně</translation>
 <translation id="3616113530831147358">Zvuk</translation>
 <translation id="3622349720008044802">Spravovat okna</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 web}few{+ # weby}many{+ # webu}other{+ # webů}}</translation>
@@ -529,6 +532,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3637744895182738742">Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chrome ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Přejít na domovskou kartu aplikace Google</translation>
 <translation id="368329460027487650">Jste odhlášeni. Otevře možnosti přihlášení.</translation>
+<translation id="3684540848053703310">Zavřená spodní tabulka s informacemi o ceně</translation>
 <translation id="3687645719033307815">Prohlížíte si náhled této stránky</translation>
 <translation id="3690369331356918524">Upozorní vás v případě vyzrazení hesel při porušení zabezpečení</translation>
 <translation id="3692944402865947621">Stažení souboru <ph name="FILE_NAME" /> se nezdařilo, protože umístění úložiště není dostupné.</translation>

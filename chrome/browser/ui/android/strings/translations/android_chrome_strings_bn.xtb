@@ -89,6 +89,7 @@
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> দিন আগে ব্যবহার করা হয়েছে</translation>
 <translation id="1390418506739274310">Chrome-এ লিঙ্ক খোলে, এমন অন্যান্য অ্যাপ থেকে আপনি ইতিহাস দেখতে পেতে পারেন। <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> লিঙ্কে আপনার Google অ্যাকাউন্টের অন্যান্য ধরনের ব্রাউজিং ইতিহাস থাকতে পারে।</translation>
 <translation id="13931502444227376">চালিয়ে যেতে, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> আপনার নাম, ইমেল আইডি ও প্রোফাইল ছবি এই সাইটের সাথে শেয়ার করবে। এই সাইটের <ph name="BEGIN_LINK1" />পরিষেবার শর্তাবলী<ph name="END_LINK1" /> দেখুন।</translation>
+<translation id="139752016751285248">স্ক্রিনের নিচে অ্যাটাচ করা শিটে প্রাইস ইনসাইট সম্পূর্ণ স্ক্রিনে খুলেছে</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> এর সাহায্যে খুঁজুন</translation>
 <translation id="1398057416966591719">আপনার Google অ্যাকাউন্টে <ph name="BEGIN_LINK1" />Chrome-এর কোন ডেটা সেভ করা হবে তা ম্যানেজ<ph name="END_LINK1" /> করতে পারবেন।
 
@@ -179,6 +180,7 @@
 <translation id="1877073879466606884">আপনি ম্যানেজ করা প্রোফাইলে সাইন-ইন করেছেন। আপনার অ্যাডমিনিস্ট্রেটর রিমোট লোকেশন থেকে আপনার প্রোফাইল সেটিংসে পরিবর্তন, রিপোর্টিংয়ের সাহায্যে ব্রাউজার সম্পর্কিত তথ্য বিশ্লেষণ এবং অন্যান্য প্রয়োজনীয় কাজ করতে পারবে।</translation>
 <translation id="1883903952484604915">আমার ফাইল</translation>
 <translation id="189358972401248634">অন্যান্য ভাষা</translation>
+<translation id="1899175549411605574">প্রাইস ইনসাইট স্ক্রিনের নিচে অ্যাটাচ করা শিট</translation>
 <translation id="1900260903084164610">চালিয়ে যাওয়ার অর্থ হল আপনি <ph name="BEGIN_TOS_LINK" />পরিষেবার শর্তাবলী<ph name="END_TOS_LINK" />তে সম্মতি দিচ্ছেন।</translation>
 <translation id="1904580727789512086">আপনার ভিজিট করা URL আপনার Google অ্যাকাউন্টে সেভ করা হয়</translation>
 <translation id="1910950723001426294">শেয়ার করার বিকল্পের তালিকা বন্ধ আছে।</translation>
@@ -520,6 +522,7 @@
 <translation id="3587596251841506391">ওয়েবে নিরাপত্তা উন্নত করতে সাহায্য করে</translation>
 <translation id="3597179440835065298">আরও ভাল পরামর্শ পাওয়া</translation>
 <translation id="3602290021589620013">প্রিভিউ</translation>
+<translation id="3614126103057878858">প্রাইস ইনসাইট</translation>
 <translation id="3616113530831147358">অডিও</translation>
 <translation id="3622349720008044802">উইন্ডো ম্যানেজ করুন</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ ১টি সাইট}one{+ #টি সাইট}other{+ #টি সাইট}}</translation>
@@ -529,6 +532,7 @@
 <translation id="3637744895182738742">আপনি নিজের পাসফ্রেজ ভুলে গেলে অথবা এই সেটিং পরিবর্তন করতে চাইলে, <ph name="BEGIN_LINK" />আপনার অ্যাকাউন্টে থাকা Chrome ডেটা মুছে দিন<ph name="END_LINK" />।</translation>
 <translation id="3674208116086565128">Google অ্যাপের হোম ট্যাবে যান</translation>
 <translation id="368329460027487650">সাইন-আউট হয়ে গেছেন। সাইন-ইন করার জন্য বিকল্প খোলে।</translation>
+<translation id="3684540848053703310">স্ক্রিনের নিচে অ্যাটাচ করা প্রাইস ইনসাইট শিট বন্ধ করা হয়েছে</translation>
 <translation id="3687645719033307815">আপনি এই পৃষ্ঠার একটি প্রিভিউ দেখছেন</translation>
 <translation id="3690369331356918524">আপনার পাসওয়ার্ড কোনও ডেটা নিরাপত্তা লঙ্ঘনের কারণে সর্বজনীনভাবে প্রকাশ হলে তা আপনাকে জানানো হবে</translation>
 <translation id="3692944402865947621">স্টোর করার জায়গা খুঁজে না পাওয়ায় <ph name="FILE_NAME" /> ডাউনলোড করা যায়নি।</translation>

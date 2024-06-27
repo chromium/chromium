@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Aktiv för <ph name="LAST_UPDATED" /> dagar sedan</translation>
 <translation id="1390418506739274310">Historiken från andra appar som öppnar länkar kan visas i Chrome. Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar ditt namn, din e-postadress och din profilbild med den här webbplatsen om du fortsätter. Läs webbplatsens <ph name="BEGIN_LINK1" />användarvillkor<ph name="END_LINK1" />.</translation>
+<translation id="139752016751285248">Ark för prisinsikter på nedre delen av skärmen har öppnats över hela skärmen</translation>
 <translation id="1397811292916898096">Sök med <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Du kan <ph name="BEGIN_LINK1" />styra vilken Chrome-data som sparas<ph name="END_LINK1" /> i Google-kontot.
 
@@ -179,6 +180,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1877073879466606884">Profilen som du är inloggad med är en hanterad profil. Administratören kan göra ändringar i profilinställningarna på distans, analysera information om webbläsaren genom rapportering och utföra andra nödvändiga uppgifter.</translation>
 <translation id="1883903952484604915">Mina filer</translation>
 <translation id="189358972401248634">Övriga språk</translation>
+<translation id="1899175549411605574">Ark för prisinsikter på nedre delen av skärmen</translation>
 <translation id="1900260903084164610">Genom att fortsätta godkänner du <ph name="BEGIN_TOS_LINK" />användarvillkoren<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Webbadresserna du besöker sparas i Google-kontot</translation>
 <translation id="1910950723001426294">Lista över delningsalternativ har stängts.</translation>
@@ -520,6 +522,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3587596251841506391">Förbättra säkerheten på webben</translation>
 <translation id="3597179440835065298">Få bättre förslag</translation>
 <translation id="3602290021589620013">Förhandsgranskning</translation>
+<translation id="3614126103057878858">Prisinformation</translation>
 <translation id="3616113530831147358">Ljud</translation>
 <translation id="3622349720008044802">Hantera fönster</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 webbplats}other{+ # webbplatser}}</translation>
@@ -529,6 +532,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3637744895182738742">Om du har glömt lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Öppna startskärmen i Google-appen</translation>
 <translation id="368329460027487650">Utloggad. Öppnar inloggningsalternativen.</translation>
+<translation id="3684540848053703310">Ark för prisinsikter på nedre delen av skärmen har stängts</translation>
 <translation id="3687645719033307815">Du tittar på en förhandsgranskning av den här sidan</translation>
 <translation id="3690369331356918524">En varning visas om lösenord har läckt ut vid ett dataintrång</translation>
 <translation id="3692944402865947621">Det gick inte att ladda ned <ph name="FILE_NAME" /> eftersom det inte gick att nå lagringsplatsen.</translation>

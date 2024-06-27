@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">Экрандагы баскычтоп күйгүзүлдү</translation>
 <translation id="1749109475624620922"><ph name="WINDOW_TITLE" /> терезеси бардык иш такталарга дайындалды</translation>
 <translation id="1750088060796401187"><ph name="MAX_DESK_LIMIT" /> иш тактага гана уруксат берилет. Жаңысын ачуу үчүн иш тактаны жабыңыз.</translation>
+<translation id="1751335846119670066">Окуганга жардам бер</translation>
 <translation id="1755408179247123630">Басып туруп угуңуз функциясы күйгүзүлсүнбү?</translation>
 <translation id="1755556344721611131">Мүчүлүштүктөрдү аныктоо колдонмосу</translation>
 <translation id="1756833229520115364">Үлгү сакталган жок. Өтө көп терезелер же өтмөктөр сакталды.</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">Телефонуңуздагы соңку сүрөттөрдү, медиа файлдарды жана билдирмелерди көрүү параметрин тууралоо</translation>
 <translation id="1787955149152357925">Өчүк</translation>
 <translation id="1796561540704213354">Вебсайттар, анын ичинде сиз баш баккан жана ачык барактар</translation>
+<translation id="179842970735685253">Google’дун Тейлөө шарттары</translation>
 <translation id="181103072419391116">Сигналдын күчү <ph name="SIGNAL_STRENGTH" />, Администраторуңуз башкарат</translation>
 <translation id="1816896987747843206">Камерага уруксаты бар колдонмолордун жана вебсайттардын баарына камераны пайдалануу мүмкүнчүлүгү берилет</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Класс ишинин түрү</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Эмнелерди эске алуу керек</translation>
 <translation id="3139188263101386725">Жаңыртылган ыкчам баскычты колдонуу</translation>
 <translation id="3139942575505304791">1-иш такта</translation>
 <translation id="315116470104423982">Мобилдик Интернет</translation>
@@ -961,6 +964,7 @@
 <translation id="4585337515783392668">Белгисиз алуучуга чыгарууну токтотуу</translation>
 <translation id="4596144739579517758">Караңгы тема өчүк</translation>
 <translation id="4596442969149038771"><ph name="USER" /> бөлүштү</translation>
+<translation id="4610493115106525653">Чыгарылган маалымат жакшы</translation>
 <translation id="4611292653554630842">Кирүү</translation>
 <translation id="462160925400706389"><ph name="NAME" /> туташты</translation>
 <translation id="4623167406982293031">Аккаунтту ырастоо</translation>
@@ -1118,6 +1122,7 @@
 <translation id="5121628974188116412">Барактын аягына өтүү</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> алдын ала көрүү. Жигерсиз иш такта.</translation>
 <translation id="5136175204352732067">Башка баскычтоп туташтырылды</translation>
+<translation id="5140105873789567560">Текст жазгыч жана Окуганга жардам бер функцияларын колдонуу үчүн кеминде 18 жашта болушуңуз керек.</translation>
 <translation id="5144005092084035179">Башка аудио киргизүүчү түзмөккө которуласызбы?</translation>
 <translation id="5147567197700016471">Бекилген жок</translation>
 <translation id="5150070631291639005">Купуялык параметрлери</translation>
@@ -1558,6 +1563,7 @@
 <translation id="6696025732084565524">Ажыратылуучу баскычтопко жаңыртуу талап кылынат</translation>
 <translation id="6697913454192220372">Жаңы иш такта кошуу</translation>
 <translation id="6700713906295497288">IME меню баскычы</translation>
+<translation id="6704375469818246414">Генеративдүү жасалма интеллектти колдонууда сапат ар кандай болушу мүмкүн.</translation>
 <translation id="6706742084323792866">Баскычтопту кадап коюу</translation>
 <translation id="6710213216561001401">Мурунку</translation>
 <translation id="6723839937902243910">Кубат</translation>
@@ -1825,9 +1831,11 @@
 <translation id="7726391492136714301">Телефонуңуздагы билдирмелерди жана колдонмолорду көрүү</translation>
 <translation id="7727952505535211425">Вебсайтты жаңы өтмөктөгү дарек тилкесинде ачуу</translation>
 <translation id="7742327441377685481">Билдирмелер жок</translation>
+<translation id="774736258792760908">Текст жазгыч жана Окуганга жардам бер функцияларын колдонгонуңузда киргизилген текст жана документтин контенти жазуу боюнча сунуштарды көрсөтүү, кыскача маалыматты түзүү, суроолого жооп берүү жана кызматты жакшыртуу үчүн <ph name="LINK_TO_SERVICE_TERMS" /> ылайык Google'дун жасалма интеллектинин серверлерине жөнөтүлөт. Жеке же купуя нерселерди кошпоңуз.</translation>
 <translation id="7748275671948949022">Текчедеги Жүргүзгүч баскычын бөлүп көрсөтүү</translation>
 <translation id="7749443890790263709">Иш такталардын саны эң жогорку чегине жетти.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Текст жазгыч жана Окуганга жардам бер функцияларын Параметрлерден каалаган убакта өчүрө аласыз. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Басып туруп угуу</translation>
 <translation id="7769299611924763557">GIF файлыңыз бир аздан кийин даяр болот</translation>
 <translation id="7773536009433685931">Анын ордуна WiFi'ды күйгүзүңүз</translation>
@@ -1836,6 +1844,7 @@
 <translation id="7781829728241885113">Кечээ</translation>
 <translation id="7787212146956232129">Киргизүүчү жана чыгаруучу түзмөктөр туураланды. Өзгөртүү үчүн параметрлерге өтүңүз.</translation>
 <translation id="7792590255364786396">Көрүнүп турат</translation>
+<translation id="7793389284006812057">Генеративдүү жасалма интеллект сынамык функция жана иштеп чыгуунун алгачкы баскычында болгондуктан, учурда жеткиликтүүлүгү чектелген.</translation>
 <translation id="7796735576426975947">Жаңы билдирме жашырылды</translation>
 <translation id="7798302898096527229">Өчүрүп коюу үчүн Search же Shift баскычтарын басыңыз.</translation>
 <translation id="780301667611848630">Жок, рахмат</translation>
@@ -1990,6 +1999,7 @@
 <translation id="8331351032546853669">Жүктөп алуу күтүлүүдө</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Чыгарылган маалымат начар</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> терезеси тандалды</translation>
 <translation id="8349826889576450703">жүргүзгүч</translation>
 <translation id="8349964124165471584">Шилтемени жаңы терезеде ачуу</translation>

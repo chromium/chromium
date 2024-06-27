@@ -5,6 +5,8 @@
 <translation id="1026101648481255140">استئناف التثبيت</translation>
 <translation id="102763973188675173">‏تخصيص Google Chrome والتحكُّم فيه. هناك تحديث متوفر.</translation>
 <translation id="1028061813283459617">‏لحذف بيانات التصفّح من هذا الجهاز فقط والاحتفاظ بها في حسابك على Google، يُرجى <ph name="BEGIN_LINK" />تسجيل الخروج من Chrome<ph name="END_LINK" />.</translation>
+<translation id="1042270987544905725">‏انقر لإغلاق مربّع حوار تسجيل الدخول إلى Chrome</translation>
+<translation id="1059838145689930908">‏لاستخدام هذه الإضافة على الحساب <ph name="USER_EMAIL_ADDRESS" />، يُرجى تسجيل الدخول إلى Chrome.</translation>
 <translation id="1065672644894730302">لا يمكن قراءة إعداداتك المفضّلة. قد تكون بعض الميزات غير متاحة، ولن يتم حفظ التغييرات في الإعدادات المفضّلة.</translation>
 <translation id="1088300314857992706">‏كان <ph name="USER_EMAIL_ADDRESS" /> يستخدم Chrome سابقًا</translation>
 <translation id="110877069173485804">‏هذا Chrome الخاص بك</translation>
@@ -369,6 +371,7 @@
 <translation id="6291089322031436445">‏تطبيقات إصدار مطوري البرامج من Chrome</translation>
 <translation id="6291549208091401781">‏تم تثبيت Google Chrome من قبل لجميع المستخدمين على الكمبيوتر.</translation>
 <translation id="6319856120645568262">‏يحتاج Chrome إلى إذن لتتبُّع اليدين وإنشاء خريطة للبيئة المحيطة بك</translation>
+<translation id="6321592572353357376">‏تطلب منك الإضافة "<ph name="EXTENSION_NAME" />" تسجيل الدخول إلى Chrome</translation>
 <translation id="6326175484149238433">‏إزالة من Chrome</translation>
 <translation id="6327105987658262776">ما مِن تحديث متوفّر.</translation>
 <translation id="6360449101159168105">‏عندما كانت علامة التبويب هذه غير نشطة، تم إخلاء مساحة في الذاكرة للحفاظ على سرعة Chrome. يمكنك اختيار أن يظل هذا الموقع الإلكتروني نشطًا دائمًا.</translation>
@@ -459,6 +462,7 @@
 <translation id="7655455401911432608">‏سجلّ تصفّحك، وهو سجل يشمل المواقع الإلكترونية التي انتقلت إليها باستخدام Chrome على هذا الجهاز.</translation>
 <translation id="7661924425853052955">‏لم تزر هذا الموقع الإلكتروني مؤخرًا، لذلك أزال Chrome إذنَي <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="COUNT" /> إذن آخر</translation>
 <translation id="7668816516367091728">أنجِز المهام مباشرةً من شريط العناوين، مثل الترجمة والعمليات الحسابية وغير ذلك</translation>
+<translation id="7670287553302121848">‏يتطلب حساب Chrome إعادة المصادقة</translation>
 <translation id="769538538642757151">‏سيُعلِمك Chrome في حال العثور على اقتراحات مطلوب مراجعتها.</translation>
 <translation id="7747138024166251722">تعذر على أداة المثبِّت إنشاء دليل مؤقت. يُرجى التحقق من وجود مساحة خالية على القرص وتوفر الإذن اللازم لتثبيت البرنامج.</translation>
 <translation id="7761834446675418963">‏انقر على اسمك لفتح Chrome وبدء التصفح.</translation>

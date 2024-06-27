@@ -5,6 +5,8 @@
 <translation id="1026101648481255140">Installation fortsetzen</translation>
 <translation id="102763973188675173">Google Chrome anpassen und Einstellungen festlegen. Ein Update ist verfügbar.</translation>
 <translation id="1028061813283459617">Wenn du Browserdaten nur von diesem Gerät, aber nicht aus deinem Google-Konto löschen möchtest, <ph name="BEGIN_LINK" />melde dich in Chrome ab<ph name="END_LINK" />.</translation>
+<translation id="1042270987544905725">Klicken, um Dialogfeld zur Anmeldung in Chrome zu schließen</translation>
+<translation id="1059838145689930908">Wenn du diese Erweiterung als <ph name="USER_EMAIL_ADDRESS" /> verwenden möchtest, musst du dich in Chrome anmelden.</translation>
 <translation id="1065672644894730302">Deine Einstellungen können nicht gelesen werden. Einige Funktionen sind möglicherweise nicht verfügbar und Änderungen an Einstellungen werden nicht gespeichert.</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> hat zuvor Chrome verwendet</translation>
 <translation id="110877069173485804">Dies ist dein persönlicher Chrome-Browser</translation>
@@ -365,6 +367,7 @@
 <translation id="6291089322031436445">Chrome Dev-Apps</translation>
 <translation id="6291549208091401781">Google Chrome ist bereits für alle Nutzer auf deinem Computer installiert.</translation>
 <translation id="6319856120645568262">Chrome benötigt eine Berechtigung für das Erstellen einer Karte deiner Umgebung und das Hand-Tracking</translation>
+<translation id="6321592572353357376">Die Erweiterung „<ph name="EXTENSION_NAME" />“ fordert dich auf, dich in Chrome anzumelden</translation>
 <translation id="6326175484149238433">Aus Chrome entfernen</translation>
 <translation id="6327105987658262776">Es ist kein Update verfügbar.</translation>
 <translation id="6360449101159168105">Während dieser Tab inaktiv war, wurde Arbeitsspeicher freigegeben, damit Chrome schnell bleibt. Du kannst festlegen, dass diese Website nie inaktiv sein soll.</translation>
@@ -457,6 +460,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="7655455401911432608">Dein Browserverlauf, das heißt eine Liste der von dir auf diesem Gerät in Chrome besuchten Websites.</translation>
 <translation id="7661924425853052955">Du hast diese Website in letzter Zeit nicht besucht. Chrome hat „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ und <ph name="COUNT" /> weitere entfernt.</translation>
 <translation id="7668816516367091728">Du kannst Aufgaben wie Übersetzen oder Berechnen direkt über die Adressleiste ausführen</translation>
+<translation id="7670287553302121848">Chrome-Konto muss noch einmal authentifiziert werden</translation>
 <translation id="769538538642757151">Solltest du etwas überprüfen müssen, wirst du von Chrome informiert</translation>
 <translation id="7747138024166251722">Das Installationsprogramm konnte kein temporäres Verzeichnis erstellen. Überprüfe, ob freier Speicherplatz und die Rechte zum Installieren von Software vorhanden sind.</translation>
 <translation id="7761834446675418963">Klicke auf deinen Namen, um Chrome zu öffnen und im Web zu surfen.</translation>

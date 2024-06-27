@@ -484,7 +484,7 @@
 <translation id="3478058380795961209">Місяць закінчення терміну дії</translation>
 <translation id="3482959374254649722">Синхронізація вкладок…</translation>
 <translation id="3484946776651937681">Відкрити в папці "Завантаження"</translation>
-<translation id="3485558910355485767">Нове вікно в режимі анонімного перегляду</translation>
+<translation id="3485558910355485767">Нове анонімне вікно</translation>
 <translation id="3488501490964659223">Ви вийшли з облікового запису, вкладки було закрито, а дані веб-перегляду – видалено.</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /> про рекомендований контент</translation>
 <translation id="35083190962747987">Відкрити ${url}</translation>
@@ -814,6 +814,7 @@
 <translation id="5150492518600715772">Надіслати на ваш пристрій</translation>
 <translation id="5157638238828697074">Сталася помилка. Не вдалося відкрити додаток.</translation>
 <translation id="5168414296986405587">Створено для iPadOS</translation>
+<translation id="5169725654005786900">Виконується дія…</translation>
 <translation id="5173088371991956744">Для синхронізації потрібно підтвердити вашу особу</translation>
 <translation id="5173493422621051500">Скористатися клавіатурою</translation>
 <translation id="5176312250994681348">Зберегти останній пароль</translation>
@@ -848,6 +849,7 @@
 <translation id="5327753393331509826">Отримуйте сповіщення про контент</translation>
 <translation id="5329451663851195956">Щоб оновити сторінку, проведіть пальцем униз по екрану.</translation>
 <translation id="5333148247954006827">Увійти в інший профіль</translation>
+<translation id="5338512273860059533">Виконується вхід.</translation>
 <translation id="5339316356165661760">Увімкнути синхронізацію</translation>
 <translation id="5343472494710226394">Новини, спортивні події і контент на основі ваших інтересів.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Відстежувати це відправлення?}one{Відстежувати {COUNT} відправлення?}few{Відстежувати {COUNT} відправлення?}many{Відстежувати {COUNT} відправлень?}other{Відстежувати {COUNT} відправлення?}}</translation>

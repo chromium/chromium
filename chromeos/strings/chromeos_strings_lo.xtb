@@ -102,6 +102,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> ຈັດການຜູ້ໃຊ້ນີ້ ແລະ ອາດຈະຈັດການການຕັ້ງຄ່າ ແລະ ຕິດຕາມເບິ່ງການເຄື່ອນໄຫວຂອງຜູ້ໃຊ້ຈາກທາງໄກໄດ້.</translation>
 <translation id="150962533380566081">PUK ທີ່ຖືກຕ້ອງ.</translation>
 <translation id="1510238584712386396">ຕົວ​ເປີດ​ໃຊ້</translation>
+<translation id="1514446283880973949">ຂຽນໄດ້ຢ່າງໝັ້ນໃຈຫຼາຍຂຶ້ນ, ສະຫຼຸບເນື້ອຫາ, ຮັບຄຳນິຍາມ ແລະ ອື່ນໆ</translation>
 <translation id="1515129336378114413">ໜ້າຫຼັກຂອງໂປຣແກຣມທ່ອງເວັບ</translation>
 <translation id="1526389707933164996">ອະນິເມຊັນພາບພັກໜ້າຈໍ</translation>
 <translation id="152892567002884378">ເປີດສຽງຂຶ້ນ</translation>
@@ -1288,6 +1289,7 @@
 <translation id="8167413449582155132">ພາບພື້ນຫຼັງທີ່ຂັບເຄື່ອນໂດຍ Google AI</translation>
 <translation id="8179976553408161302">ປ້ອນເຂົ້າ</translation>
 <translation id="8183975772394450380">ຫາດຊາຍ</translation>
+<translation id="819278132617411009">ໃຊ້ Google AI ເພື່ອເຮັດວຽກຢ່າງມີຜະລິດຕະພາບຫຼາຍຂຶ້ນ</translation>
 <translation id="8206859287963243715">ເຊວລູລາ</translation>
 <translation id="8208861521865154048">ສິດທິປະໂຫຍດຕ່າງໆ</translation>
 <translation id="8226628635270268143">ເລືອກຮູບພາບ ແລະ ອະລະບໍ້າທີ່ທ່ານມັກ</translation>
@@ -1334,6 +1336,7 @@
 <translation id="8431300646573772016">ມີຫຍັງໃໝ່ກັບ ChromeOS</translation>
 <translation id="843568408673868420">ການເຊື່ອມຕໍ່ອິນເຕີເນັດ</translation>
 <translation id="844521431886043384">ບໍ່ໄດ້ຕັ້ງຄ່າ DNS ເທື່ອ</translation>
+<translation id="8456200178779628126">ໃຊ້ Google AI ເພື່ອຮັບຄວາມຊ່ວຍເຫຼືອໃນການອ່ານ ແລະ ຂຽນ</translation>
 <translation id="8456761643544401578">ໂໝດມືດອັດຕະໂນມັດ</translation>
 <translation id="8461329675984532579">ຊື່ຜູ້ໃຫ້ບໍລິການ Home</translation>
 <translation id="8475690821716466388">ເຄືອຂ່າຍ WiFi ມີການຮັກສາຄວາມປອດໄພດ້ວຍໂປຣໂຕຄໍ WEP PSK ທີ່ບໍ່ຮັດກຸມ</translation>
@@ -1460,6 +1463,7 @@
 <translation id="910415269708673980">ໂຫຼດຂໍ້ມູນປີ້ສຳລັບ <ph name="PRINCIPAL_NAME" /> ໃໝ່</translation>
 <translation id="9106415115617144481">ກຳລັງສະແກນໜ້າ <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">ປົດລັອກ</translation>
+<translation id="9122492456897874028">ສະຫຼຸບເນື້ອຫາ, ຮັບຄຳນິຍາມ ແລະ ອື່ນໆ</translation>
 <translation id="9122602430962285795">ເພື່ອເຊື່ອມຕໍ່ຄືນໃໝ່, ໃຫ້ເຂົ້າໄປຫາການຕັ້ງຄ່າ</translation>
 <translation id="9122865513525855321">ເຊນ</translation>
 <translation id="9126720536733509015">ບັນທຶກຫຼາຍໜ້າເປັນ PDF ດຽວ</translation>

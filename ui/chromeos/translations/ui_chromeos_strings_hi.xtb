@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">PUK गलत है</translation>
 <translation id="4057991113334098539">सक्रिय कर रहा है...</translation>
 <translation id="4092890906744441904">आयरिश</translation>
+<translation id="4101601646343868113">अपने मोबाइल नेटवर्क में साइन इन करें और पुष्टि करें कि आपका मोबाइल डेटा प्लान चालू है</translation>
 <translation id="4124731372776320263">Drive की एक फ़ाइल सिंक की जा रही है</translation>
 <translation id="4124935795427217608">यूनिकॉर्न</translation>
 <translation id="4131235941541910880">ग़ैर-ज़रूरी आइटम को ट्रैश में ले जाएं</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Tamil99 कीबोर्ड के साथ तमिल</translation>
 <translation id="5633226425545095130">इस आइटम को कहीं और ट्रांसफ़र करने से, यह उन सभी लोगों के साथ शेयर हो जाएगा जो इस शेयर किए जाने वाले फ़ोल्डर '<ph name="DESTINATION_NAME" />' को देख सकते हैं.</translation>
 <translation id="5649768706273821470">सुनें</translation>
+<translation id="5650895901941743674">अपने एपीएन कॉन्फ़िगरेशन की जांच करें</translation>
 <translation id="5669691691057771421">नया पिन डालें</translation>
 <translation id="5678784840044122290">Linux ऐप्लिकेशन आपके 'टर्मिनल' में उपलब्ध होगा और आपके 'लॉन्चर' में एक आइकॉन भी दिखाई दे सकता है.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />किसी संग्रह या वर्चुअल डिस्क से डिसकनेक्ट नहीं किया जा सकता<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">फ़ाइल की सूची अब थंबनेल की तरह दिखाई जा रही है.</translation>
 <translation id="8601932370724196034">Crostini इमेज फ़ाइल</translation>
 <translation id="8609695766746872526">आइसलैंडिक</translation>
+<translation id="8630384863424041081">अपने सिम कार्ड का पिन या मोबाइल और इंटरनेट सेवा देने वाली कंपनी से मिला डिफ़ॉल्ट पिन डालें. सहायता पाने के लिए, मोबाइल और इंटरनेट सेवा देने वाली कंपनी से संपर्क करें.</translation>
 <translation id="863903787380594467">आपने गलत पिन डाला है. आप <ph name="RETRIES" /> बार और कोशिश कर सकते हैं.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - पोर्ट</translation>
 <translation id="8656407365183407932">आपकी ऑफ़लाइन फ़ाइलों को हटा दिया गया</translation>

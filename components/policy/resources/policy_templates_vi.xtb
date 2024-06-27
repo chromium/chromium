@@ -3245,6 +3245,7 @@ Nếu bạn đặt chính sách này, <ph name="DEVELOPER_TOOLS_AVAILABILITY_POL
 
        Theo mặc định, tất cả tiện ích đều được phép. Tuy nhiên, nếu bạn đã cấm các tiện ích theo chính sách, hãy sử dụng danh sách các tiện ích được phép để thay đổi chính sách đó.</translation>
 <translation id="3501606938635483637">Các phím tắt quốc tế được liên kết với ký tự của các phím thay cho vị trí của phím trên bàn phím.</translation>
+<translation id="3501850499442915474">Trình cung cấp <ph name="UIA_NAME" /> sẽ được bật hoặc tắt thông qua khung biến thể.</translation>
 <translation id="3502438748205582075">Tắt Kerberos</translation>
 <translation id="3502555714327823858">Cho phép tất cả các chế độ in hai mặt</translation>
 <translation id="350443680860256679">Định cấu hình ARC</translation>
@@ -3888,6 +3889,7 @@ Các tính năng AI tạo sinh của Công cụ cho nhà phát triển bao gồm
       Khi bạn bật chế độ cài đặt này, <ph name="PRODUCT_NAME" /> sẽ sử dụng trình xác minh chứng chỉ tích hợp sẵn để xác minh chứng chỉ máy chủ.
       Khi bạn tắt chế độ cài đặt này, <ph name="PRODUCT_NAME" /> sẽ sử dụng trình xác minh chứng chỉ cũ do nền tảng cung cấp để xác minh chứng chỉ máy chủ, trừ khi bạn bật <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />.
       Nếu bạn không đặt chế độ cài đặt này, thì trình xác minh chứng chỉ cũ hoặc tích hợp sẵn có thể được sử dụng.</translation>
+<translation id="3997496219154877791">Tắt tính năng tích hợp Ống kính</translation>
 <translation id="3997519162482760140">URL sẽ được cấp quyền truy cập thiết bị quay video trên các trang đăng nhập SAML</translation>
 <translation id="4004523942550416237">Không hiển thị quy trình so khớp giọng nói của Trợ lý Google trong quá trình thiết lập ban đầu</translation>
 <translation id="4007646377576030214"> Lưu ý rằng chúng tôi không dùng chính sách này trong M87 nữa và sẽ xóa khỏi M89. Vui lòng dùng <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> để định cấu hình các cảnh báo về quyền riêng tư của những phiên khách được quản lý.
@@ -3955,6 +3957,18 @@ Hành vi cũ và không được dùng nữa: Trong "beforeunload", lệnh gọi
 <translation id="4052529125939620019">Tải tiện ích thành phần CryptoToken khi khởi động</translation>
 <translation id="4053157306171963473">Tắt tính năng báo cáo thời gian hoạt động của thiết bị</translation>
 <translation id="4056910949759281379">Vô hiệu hóa giao thức SPDY</translation>
+<translation id="4057113125482566814">Bật trình cung cấp khung hỗ trợ tiếp cận <ph name="UIA_NAME" /> trong <ph name="PRODUCT_NAME" /> để các công cụ hỗ trợ tiếp cận sử dụng.
+
+<ph name="PRODUCT_NAME" /> hỗ trợ chính sách này trong giai đoạn chuyển đổi kéo dài một năm để giúp quản trị viên doanh nghiệp kiểm soát việc triển khai trình cung cấp khung hỗ trợ tiếp cận <ph name="UIA_NAME" /> của trình duyệt. Chức năng hỗ trợ tiếp cận và các công cụ khác dùng khung hỗ trợ tiếp cận <ph name="UIA_NAME" /> để tương tác với trình duyệt có thể cần cập nhật để hoạt động đúng cách với trình cung cấp <ph name="UIA_NAME" /> của trình duyệt. Trong khi làm việc với nhà cung cấp để cập nhật những công cụ bị ảnh hưởng, quản trị viên có thể sử dụng chính sách này để tạm thời tắt trình cung cấp <ph name="UIA_NAME" /> của trình duyệt và quay về hành vi cũ.
+
+Khi bạn đặt thành false, <ph name="PRODUCT_NAME" /> chỉ bật trình cung cấp <ph name="MSAA_NAME" />. Chức năng hỗ trợ tiếp cận và các công cụ khác dùng khung hỗ trợ tiếp cận <ph name="UIA_NAME" /> mới hơn để tương tác với trình duyệt sẽ giao tiếp với trình duyệt thông qua đoạn mã đệm tương thích trong <ph name="MS_WIN_NAME" />.
+
+Khi bạn đặt chính sách này thành true, <ph name="PRODUCT_NAME" /> sẽ bật trình cung cấp <ph name="UIA_NAME" /> cùng với trình cung cấp <ph name="MSAA_NAME" />.
+Chức năng hỗ trợ tiếp cận và các công cụ khác dùng khung hỗ trợ tiếp cận <ph name="UIA_NAME" /> mới hơn để tương tác với trình duyệt sẽ giao tiếp trực tiếp với trình duyệt.
+
+Khi bạn không đặt chính sách này, khung biến thể trong <ph name="PRODUCT_NAME" /> sẽ được dùng để bật hoặc tắt trình cung cấp.
+
+Chúng tôi sẽ ngừng hỗ trợ chế độ cài đặt chính sách này kể từ <ph name="PRODUCT_NAME" /> 136.</translation>
 <translation id="4057442294431066708">Chính sách này kiểm soát tuỳ chọn phím tắt đã chọn để gán lại các sự kiện thành
 F11/F12 trên trang con về gán lại phím. Các chế độ cài đặt này chỉ áp dụng cho
 bàn phím ChromeOS và bị tắt theo mặc định nếu bạn không đặt chính sách này.</translation>
@@ -4969,6 +4983,7 @@ Nếu bạn đặt chính sách này thành False (Sai), thì chế độ mặc 
 <translation id="4874982543810021567">Chặn WebUSB trên các trang web này</translation>
 <translation id="4876805738539874299">Đã bật phiên bản SSL tối đa</translation>
 <translation id="4877305769899044884">Màu đèn nền bàn phím mặc định</translation>
+<translation id="4886138258823889910">Bật trình cung cấp khung hỗ trợ tiếp cận <ph name="UIA_NAME" /> của trình duyệt trên Windows</translation>
 <translation id="4886783562285047261">Thao tác đặt chính sách này thành Bật sẽ ủy nhiệm việc đăng ký <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> và chặn quá trình phát hành <ph name="PRODUCT_NAME" /> nếu không thành công.
 
       Thao tác đặt chính sách này thành Tắt hoặc không đặt sẽ hiển thị <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> theo cách không bắt buộc và không chặn quá trình phát hành <ph name="PRODUCT_NAME" /> nếu không thành công.
@@ -5104,6 +5119,10 @@ Bạn không nên tắt tính năng giải mã video có tăng tốc phần cứ
 <translation id="4970855112942626932">Vô hiệu hóa đăng nhập vào trình duyệt</translation>
 <translation id="4974091268178043378">Chế độ màu trên ChromeOS</translation>
 <translation id="4978533099939732984">Luôn hiển thị cảnh báo dung lượng ổ đĩa thấp</translation>
+<translation id="4979614740553442831">Chính sách này kiểm soát khả năng sử dụng tính năng tích hợp Ống kính trong Ứng dụng thư viện trên <ph name="PRODUCT_OS_NAME" />
+
+Khi bạn bật hoặc không đặt chính sách này, người dùng có thể sử dụng Ống kính để tìm kiếm nội dung nghe nhìn mà họ đang xem trong Ứng dụng thư viện.
+Khi bạn tắt chính sách này, tính năng này sẽ tắt.</translation>
 <translation id="4979714585847741269">Nếu bạn đặt chính sách này thành Bật, thì ứng dụng web kiosk có thể mở một cửa sổ trình duyệt khác. Cửa sổ này có thể nằm trên cùng màn hình hoặc trên một màn hình khác. Để mở một cửa sổ mới, ứng dụng web cần gọi hàm JavaScript <ph name="OPEN_NEW_WINDOW_JS" />.
 
       Nếu bạn đặt chính sách này thành Tắt hoặc chưa đặt, ứng dụng web kiosk chỉ có thể sử dụng cửa sổ chính trong trình duyệt và không thể mở cửa sổ mới. Việc gọi bất kỳ hàm JavaScript nào để mở cửa sổ mới sẽ bị bỏ qua.</translation>
@@ -5641,6 +5660,7 @@ Từ <ph name="PRODUCT_NAME" /> phiên bản 92, chính sách này cũng đượ
 <translation id="5405289061476885481">Định cấu hình bố cục bàn phím được cho phép trên màn hình đăng nhập <ph name="PRODUCT_OS_NAME" />.
 
       Nếu chính sách này được đặt thành danh sách số nhận dạng phương thức nhập, phương thức nhập được cung cấp sẽ có sẵn trên màn hình đăng nhập. Phương thức nhập được cung cấp đầu tiên sẽ được chọn sẵn. Mặc dù nhóm người dùng được lấy tiêu điểm trên màn hình đăng nhập, phương thức nhập được sử dụng gần đây nhất của người dùng sẽ có sẵn ngoài phương thức nhập được cung cấp bởi chính sách này. Nếu chính sách này chưa được đặt, các phương thức nhập trên màn hình đăng nhập sẽ được lấy từ ngôn ngữ mà màn hình đăng nhập hiển thị. Các giá trị không phải số nhận dạng phương thức nhập hợp lệ sẽ bị bỏ qua.</translation>
+<translation id="5406626703145660021">Kích hoạt thoả thuận về khoá hậu lượng tử cho TLS của thiết bị</translation>
 <translation id="5407008856008996384">Cho phép truy cập vào máy in CUPS</translation>
 <translation id="5413051574966911176">Tắt giao diện người dùng liên quan đến kết nối trên màn hình máy chủ từ xa khi đang có kết nối</translation>
 <translation id="5415713057512333739">URL của dữ liệu cần tải xuống.</translation>
@@ -6040,6 +6060,21 @@ Chính sách này ảnh hưởng đến cả quy trình xác thực khi đăng n
 <translation id="5695907219125832836">Bật tính năng này nhưng không gửi dữ liệu cho hoạt động đào tạo mô hình AI</translation>
 <translation id="5697306356229823047">Báo cáo người dùng thiết bị</translation>
 <translation id="5697387906103995839">Tắt tính năng ghi nhật ký hệ thống cho tiện ích dành cho doanh nghiệp</translation>
+<translation id="5697466839975082179">Chính sách cấp thiết bị này sẽ định cấu hình việc <ph name="PRODUCT_OS_NAME" /> có đề xuất Kyber, thuật toán của thoả thuận về khoá hậu lượng tử, trong TLS hay không. Điều này cho phép các máy chủ hỗ trợ bảo vệ lưu lượng truy cập của người dùng khỏi bị máy tính lượng tử giải mã sau này.
+
+Nếu bạn Bật chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ đề xuất Kyber trong kết nối TLS. Kết nối TLS sẽ được bảo vệ bằng thoả thuận về khoá Kyber khi giao tiếp với các máy chủ tương thích chọn Kyber trong quá trình bắt tay TLS.
+
+Nếu bạn Tắt chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ không đề xuất Kyber trong kết nối TLS. Sau đó, lưu lượng truy cập của người dùng sẽ không được bảo vệ khỏi máy tính lượng tử.
+
+Nếu bạn không đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ tuân theo quy trình phát hành mặc định về việc đề xuất Kyber.
+
+Việc đề xuất Kyber có khả năng tương thích ngược. Các máy chủ TLS hiện có và phần mềm trung gian kết nối mạng dự kiến sẽ bỏ qua lựa chọn mới và tiếp tục chọn các lựa chọn trước đó.
+
+Tuy nhiên, các thiết bị không triển khai TLS đúng cách có thể gặp sự cố khi được đề xuất lựa chọn mới. Ví dụ: Các thiết bị có thể ngắt kết nối trong quá trình phản hồi các lựa chọn không xác định hoặc các tin nhắn phóng to hơn. Những thiết bị này chưa sẵn sàng cho hậu lượng tử và sẽ can thiệp vào quá trình chuyển đổi hậu lượng tử của doanh nghiệp. Nếu gặp sự cố, quản trị viên nên liên hệ với nhà cung cấp để khắc phục.
+
+Chính sách này chỉ là biện pháp tạm thời và sẽ bị xoá trong phiên bản <ph name="PRODUCT_OS_NAME" /> trong tương lai. Bạn có thể Bật chính sách này để kiểm tra sự cố và có thể Tắt chính sách này trong khi sự cố đang được giải quyết.
+
+Nếu bạn đặt cả chính sách này và chính sách PostQuantumKeyAgreementEnabled, thì chính sách này sẽ được ưu tiên.</translation>
 <translation id="569777361305162263">Tắt chính sách hiển thị nội dung quảng cáo dưới dạng toàn bộ thẻ</translation>
 <translation id="5698923148503075597">Nếu đặt chính sách này thành Bật, thì chính sách đám mây sẽ được ưu tiên nếu chính sách này xung đột với chính sách nền tảng.
 
@@ -6167,6 +6202,7 @@ Có thể tăng cường chế độ hạn chế tài khoản bằng chính sác
 <translation id="5814301096961727113">Đặt trạng thái phản hồi bằng giọng nói mặc định trên màn hình đăng nhập</translation>
 <translation id="5815129011704381141">Tự động khởi động lại sau khi cập nhật</translation>
 <translation id="5815990343032461023">Hành vi cũ: Hệ thống tiện ích sẽ cập nhật các ứng dụng Kiosk Chrome bằng cách sử dụng URL cập nhật trong tệp kê khai tiện ích, cũng như bằng trình quản lý bộ nhớ đệm sử dụng URL cập nhật trong chính sách</translation>
+<translation id="5816688024515869030">Tắt trình cung cấp <ph name="UIA_NAME" />.</translation>
 <translation id="5828008775808363753">Không chạy trình duyệt khi khởi động</translation>
 <translation id="582857022372205358">Bật chế độ in hai mặt với cạnh ngắn</translation>
 <translation id="5830196507442186669">Cho phép các thiết bị sử dụng <ph name="BOREALIS_NAME" /> trên <ph name="PRODUCT_OS_NAME" /></translation>
@@ -8184,6 +8220,7 @@ Lưu ý quan trọng: Lịch biểu do chính sách này đặt có thể không
       Khi bạn đặt chính sách này thành <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> (giá trị 3), theo mặc định, hệ thống sẽ thông báo cho người dùng khi có người yêu cầu quyền kiểm soát vị trí cửa sổ. Nếu người dùng cho phép quyền này, thì hệ thống sẽ mở rộng khả năng các trang web xem được thông tin về màn hình của thiết bị và dùng thông tin đó để mở và đặt cửa sổ hoặc yêu cầu chế độ toàn màn hình trên một số màn hình cụ thể.
 
       Khi bạn không đặt chính sách này, chính sách <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> sẽ được áp dụng. Tuy nhiên, người dùng có thể thay đổi chế độ cài đặt này.</translation>
+<translation id="7238335422094660594">Bật trình cung cấp <ph name="UIA_NAME" />.</translation>
 <translation id="7244600351241637530">Nếu chế độ cài đặt này được bật, người dùng đã chọn tham gia Trung tâm điều khiển điện thoại sẽ xem và tải được ảnh cũng như video mới chụp/quay trên điện thoại của họ trên ChromeOS.
 
       Nếu chế độ cài đặt này đang tắt, người dùng sẽ không được phép sử dụng tính năng này. Nếu chính sách <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" /> bị vô hiệu hoá, người dùng cũng sẽ không được phép sử dụng tính năng này.
@@ -10079,6 +10116,7 @@ giao thức https.</translation>
 <translation id="8757552286070680084">Cấu hình bộ điều khiển chẩn đoán và đo từ xa (DTC) wilco</translation>
 <translation id="8758831693895931466">Bật đăng ký quản lý đám mây bắt buộc</translation>
 <translation id="8759829385824155666">Các loại mã hóa Kerberos được cho phép</translation>
+<translation id="8765401957266318536">Bật tính năng tích hợp Ống kính/Ứng dụng thư viện trên <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8766308369516978190">Nếu bạn đặt chính sách này thành Bật thì người dùng sẽ được phép sử dụng <ph name="ASSISTANT_PRODUCT_NAME" /> trên web, ví dụ như cho mục đích thanh toán nhanh hơn và đổi mật khẩu. Việc sử dụng <ph name="ASSISTANT_PRODUCT_NAME" /> yêu cầu phải có thêm sự đồng ý của người dùng và <ph name="ASSISTANT_PRODUCT_NAME" /> chỉ chạy nếu người dùng chọn đồng ý, ngay cả khi bạn đặt chính sách này thành Bật.
 
       Nếu bạn đặt chính sách này thành Tắt thì người dùng sẽ không thể sử dụng <ph name="ASSISTANT_PRODUCT_NAME" /> trên web.
@@ -10130,6 +10168,7 @@ Các mẫu URL không được xung đột với <ph name="WEB_PRINTING_BLOCKED_
 <translation id="8806478127647484805">Không cho phép người dùng kết thúc quá trình bằng trình quản lý tác vụ Chrome</translation>
 <translation id="8807274441692477185">Không hiển thị màn hình hướng cuộn của bàn di chuột trong khi đăng nhập</translation>
 <translation id="8807313206348471682">Hiển thị hộp thoại xác nhận đăng xuất</translation>
+<translation id="8807728576820212213">Bật tính năng tích hợp Ống kính</translation>
 <translation id="8809082103104823938">Hỗ trợ GIF trong bộ chọn biểu tượng cảm xúc</translation>
 <translation id="8812091410765157924">Chỉ cho phép cửa sổ bật lên ở trạng thái mở với mục tiêu <ph name="BLANK_PAGE_NAME" /> để tương tác với chính trang đã mở cửa sổ bật lên nếu trang mở thể hiện rõ việc chọn sử dụng hoạt động tương tác đó</translation>
 <translation id="8816370949847593408">Ứng dụng Chrome có thể không được phép chạy, tùy thuộc vào trạng thái của việc ngừng phát hành.</translation>

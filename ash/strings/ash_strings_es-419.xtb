@@ -216,6 +216,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1747827819627189109">Teclado en pantalla habilitado</translation>
 <translation id="1749109475624620922">Se asignó la ventana <ph name="WINDOW_TITLE" /> a todos los escritorios</translation>
 <translation id="1750088060796401187">Solo se permiten <ph name="MAX_DESK_LIMIT" /> escritorios. Para abrir un escritorio nuevo, deberás quitar uno.</translation>
+<translation id="1751335846119670066">Help me read</translation>
 <translation id="1755408179247123630">¿Quieres activar Seleccionar para pronunciar?</translation>
 <translation id="1755556344721611131">App de diagnóstico</translation>
 <translation id="1756833229520115364">No se pudo guardar la plantilla. Hay demasiadas ventanas o pestañas.</translation>
@@ -227,6 +228,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="178347895271755507">Configurar la visualización de las fotos, el contenido multimedia y las notificaciones recientes de tu teléfono</translation>
 <translation id="1787955149152357925">No</translation>
 <translation id="1796561540704213354">Sitios web que incluyen las páginas que visitaste y las páginas abiertas</translation>
+<translation id="179842970735685253">Condiciones del Servicio de Google</translation>
 <translation id="181103072419391116">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, administrada por tu administrador</translation>
 <translation id="1816896987747843206">Permite el acceso a la cámara para todas las apps y sitios web con el permiso correspondiente</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Tipo de trabajo en clase</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Ten en cuenta lo siguiente</translation>
 <translation id="3139188263101386725">Usa la combinación de teclas actualizada</translation>
 <translation id="3139942575505304791">Escritorio 1</translation>
 <translation id="315116470104423982">Datos móviles</translation>
@@ -962,6 +965,7 @@ Se conectó un dispositivo.</translation>
 <translation id="4585337515783392668">Dejar de transmitir en un receptor desconocido</translation>
 <translation id="4596144739579517758">El Tema oscuro está desactivado</translation>
 <translation id="4596442969149038771"><ph name="USER" /> compartió</translation>
+<translation id="4610493115106525653">Buenos resultados</translation>
 <translation id="4611292653554630842">Acceder</translation>
 <translation id="462160925400706389"><ph name="NAME" /> está conectado</translation>
 <translation id="4623167406982293031">Verificar cuenta</translation>
@@ -1119,6 +1123,7 @@ También puedes usar la combinación de teclas. Primero, destaca el texto y, lue
 <translation id="5121628974188116412">Ir a la parte inferior de la página</translation>
 <translation id="5122517996953421795">Vista previa de <ph name="DESK_NAME" />. Escritorio inactivo.</translation>
 <translation id="5136175204352732067">Se conectó otro teclado</translation>
+<translation id="5140105873789567560">Debes tener al menos 18 años para usar Ayúdame a escribir y Help me read.</translation>
 <translation id="5144005092084035179">¿Quieres cambiar la entrada de audio?</translation>
 <translation id="5147567197700016471">Desactivado</translation>
 <translation id="5150070631291639005">Configuración de privacidad</translation>
@@ -1559,6 +1564,7 @@ Nueva instalación</translation>
 <translation id="6696025732084565524">Tu teclado desmontable necesita una actualización muy importante</translation>
 <translation id="6697913454192220372">Agregar escritorio nuevo</translation>
 <translation id="6700713906295497288">Botón de menú IME</translation>
+<translation id="6704375469818246414">La calidad puede variar cuando se usa la IA generativa.</translation>
 <translation id="6706742084323792866">Fijar teclado</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6723839937902243910">Alimentación</translation>
@@ -1826,9 +1832,11 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7726391492136714301">Mira las notificaciones y apps del teléfono</translation>
 <translation id="7727952505535211425">Abrir el sitio web en la barra de direcciones en una pestaña nueva</translation>
 <translation id="7742327441377685481">No hay notificaciones</translation>
+<translation id="774736258792760908">Cuando activas Ayúdame a escribir y Help me read, el texto de entrada y el contenido del documento se envían a los servidores de la IA de Google para generar sugerencias de escritura, hacer resúmenes, responder preguntas y mejorar el producto, sujeto a las <ph name="LINK_TO_SERVICE_TERMS" />. No incluyas información personal, sensible ni confidencial.</translation>
 <translation id="7748275671948949022">Destacar el botón del Selector en la barra</translation>
 <translation id="7749443890790263709">Se alcanzó la cantidad máxima de escritorios.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Puedes desactivar Ayúdame a escribir y Help me read en cualquier momento en Configuración. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Seleccionar para pronunciar</translation>
 <translation id="7769299611924763557">Tu GIF estará listo en breve</translation>
 <translation id="7773536009433685931">Activar el Wi-Fi</translation>
@@ -1837,6 +1845,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7781829728241885113">Ayer</translation>
 <translation id="7787212146956232129">Se establecieron los dispositivos de entrada y salida. Ve a Configuración para cambiarlos.</translation>
 <translation id="7792590255364786396">Visible</translation>
+<translation id="7793389284006812057">La IA generativa es experimental, está en desarrollo temprano y actualmente tiene disponibilidad limitada.</translation>
 <translation id="7796735576426975947">Se ocultó una nueva notificación</translation>
 <translation id="7798302898096527229">Presiona mayúscula o la tecla de búsqueda para cancelarlo.</translation>
 <translation id="780301667611848630">No, gracias</translation>
@@ -1991,6 +2000,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8331351032546853669">Descarga pendiente</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Malos resultados</translation>
 <translation id="8345019317483336363">Ventana <ph name="WINDOW_TITLE" /> seleccionada</translation>
 <translation id="8349826889576450703">launcher</translation>
 <translation id="8349964124165471584">Abrir el vínculo en una ventana nueva</translation>

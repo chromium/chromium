@@ -123,6 +123,7 @@
 
 لتغيير هذه الإعدادات، يُرجى <ph name="BEGIN_LINK" />حذف بيانات Chromium في حسابك<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">‏يؤدي هذا الاختصار إلى فتح صفحة إعدادات "طرق الدفع" في Chromium.</translation>
+<translation id="458786853569524949">‏يمكنك الآن استخدام Chromium في أي وقت تنقر فيه على الروابط في الرسائل الإلكترونية والمستندات والتطبيقات الأخرى.</translation>
 <translation id="459080529287102949">‏البحث عن العناصر المرئية في Chromium</translation>
 <translation id="4633738821577273991">‏يمكنك الاستفادة من ميزة "الحماية المحسّنة للتصفّح الآمن" لهذا الملف الشخصي على Chromium أيضًا.</translation>
 <translation id="4638625642619341392">‏نزِّل Chromium من هنا.</translation>
@@ -290,6 +291,7 @@
 وتم تشفير بياناتك باستخدام عبارة المرور في ‎<ph name="TIME" />. عليك إدخال عبارة المرور لاستخدام بيانات Chromium وحفظها في حسابك على Google.</translation>
 <translation id="9022552996538154597">‏تسجيل الدخول إلى Chromium</translation>
 <translation id="9050790730841755540">‏يؤدي هذا الإعداد إلى فتح Chromium عند النقر على الروابط في التطبيقات الأخرى.</translation>
+<translation id="9057082013386654559">‏استخدام متصفّح Chromium على جهاز iPad تلقائيًا</translation>
 <translation id="9059693977935746710">لن تضطر إلى تذكُّر كلمة المرور هذه. وسيتم حفظ كلمة المرور في "مدير كلمات المرور" على عنوان البريد الإلكتروني <ph name="EMAIL" />.</translation>
 <translation id="9089354809943900324">‏إصدار Chromium قديم</translation>
 <translation id="9110075932708282655">‏استخدام Chromium بشكل تلقائي</translation>

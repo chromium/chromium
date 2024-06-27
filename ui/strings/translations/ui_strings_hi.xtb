@@ -130,6 +130,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> सिस्टम</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">बायां तीर</translation>
+<translation id="5633029987065897167">कोई भी एंट्री मौजूद नहीं है</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 मिनट}one{# मिनट}other{# मिनट}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{आज चालू है}=1{1 दिन पहले चालू किया गया}one{# दिन पहले चालू किया गया}other{# दिन पहले चालू किया गया}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 दिन और }one{# दिन और }other{# दिन और }}</translation>

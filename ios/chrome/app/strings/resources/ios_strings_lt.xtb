@@ -825,6 +825,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="5190835502935405962">Žymių juosta</translation>
 <translation id="519530786644929958">Nepavyko atsisiųsti. Negalima bandyti iš naujo.</translation>
 <translation id="5197255632782567636">Internetas</translation>
+<translation id="5205197603258285592">Išsaugoti vaizdą...</translation>
 <translation id="5211488077761630279">Leisti „<ph name="SITE_NAME" />“ naudoti leidimą „<ph name="PERMISSION" />“?</translation>
 <translation id="5219295696240154694">Padėkite pagerinti visų naudotojų saugą žiniatinklyje</translation>
 <translation id="5220945116117011963">Kalendoriaus įvykių kūrimas pagal datas</translation>
@@ -1525,6 +1526,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8556590991644167667">{count,plural, =1{Atsisakėte {count} perspėjimo}one{Atsisakėte {count} perspėjimo}few{Atsisakėte {count} perspėjimų}many{Atsisakėte {count} perspėjimo}other{Atsisakėte {count} perspėjimų}}</translation>
 <translation id="8560253818350321773">Pirmiausia rodykite dažnai naudojamus elementus.</translation>
 <translation id="8569721750632860947">Kokį URL norėtumėte pridėti prie skaitymo sąrašo?</translation>
+<translation id="8570765991595769633">Tinkinti korteles</translation>
 <translation id="8577056989960190117">Automatiškai pildyti galiojimo pabaigos metus (<ph name="YEAR" />)</translation>
 <translation id="8588404856427128947">Išjungta</translation>
 <translation id="8591976964826315682">Blokuoti trečiųjų šalių slapukus inkognito režimu</translation>
@@ -1664,6 +1666,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="948048872540558976">Kurti naują skirtuką</translation>
 <translation id="952218985181984374">{count,plural, =1{Žymė išsaugota}one{{count} žymė išsaugota}few{{count} žymės išsaugotos}many{{count} žymės išsaugota}other{{count} žymių išsaugota}}</translation>
 <translation id="952704832371081537">Atšaukti</translation>
+<translation id="955587716023217544">Redaguoti paskyrų sąrašą</translation>
 <translation id="959066944189734975">Stebite „<ph name="CHANNEL_NAME" />“</translation>
 <translation id="96615566463761848">Rodyti skirtukų pasiūlymus iš kitų įrenginių</translation>
 <translation id="973493300226275298">Stebėkite produkto kainą internetinėse parduotuvėse. Kai kaina sumažės, gausite įspėjimus.</translation>

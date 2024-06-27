@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Aktibo duela <ph name="LAST_UPDATED" /> egun</translation>
 <translation id="1390418506739274310">Chrome-n estekak irekitzen dituzten beste aplikazioen historiak ikusiko dituzu agian. Google-ko kontuko historia arakatzeko beste modu batzuk aurkitu nahi izanez gero, joan <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webgunera.</translation>
 <translation id="13931502444227376">Aurrera egiteko, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzaileak zure izena, helbide elektronikoa eta profileko argazkia partekatuko ditu webgune honekin. Ikusi webgunearen <ph name="BEGIN_LINK1" />zerbitzu-baldintzak<ph name="END_LINK1" />.</translation>
+<translation id="139752016751285248">Pantailaren behealdean ainguratutako orria, prezioaren informazio xehatua duena, altuera osoan irekita dago</translation>
 <translation id="1397811292916898096">Egin bilaketak <ph name="PRODUCT_NAME" /> zerbitzuarekin</translation>
 <translation id="1398057416966591719"><ph name="BEGIN_LINK1" />Chrome-ko zein datu gordetzen diren<ph name="END_LINK1" /> kudea dezakezu Google Kontua atalean.
 
@@ -179,6 +180,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="1877073879466606884">Saioa hasteko erabili duzun profila kudeatua da. Administratzaileak profilaren ezarpenak urrunetik alda ditzake, baita txostenen bidez arakatzaileari buruzko informazioa aztertu eta beharrezko beste zeregin batzuk gauzatu ere.</translation>
 <translation id="1883903952484604915">Nire fitxategiak</translation>
 <translation id="189358972401248634">Beste hizkuntzak</translation>
+<translation id="1899175549411605574">Pantailaren behealdean ainguratutako orria, prezioaren informazio xehatua duena</translation>
 <translation id="1900260903084164610">Aurrera egiten baduzu, onartu egingo dituzu <ph name="BEGIN_TOS_LINK" />Zerbitzu-baldintzak<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Bisitatzen dituzun URLak Google-ko kontuan gordetzen dira</translation>
 <translation id="1910950723001426294">Partekatze-aukeren zerrenda itxita dago.</translation>
@@ -520,6 +522,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3587596251841506391">Hobetu sareko segurtasuna</translation>
 <translation id="3597179440835065298">Lortu iradokizun hobeak</translation>
 <translation id="3602290021589620013">Aurrebista</translation>
+<translation id="3614126103057878858">Prezioaren informazio xehatua</translation>
 <translation id="3616113530831147358">Audioa</translation>
 <translation id="3622349720008044802">Kudeatu leihoak</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{eta beste webgune bat}other{eta beste # webgune}}</translation>
@@ -529,6 +532,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3637744895182738742">Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Joan Google aplikazioaren orri nagusira</translation>
 <translation id="368329460027487650">Amaitu da saioa. Saioa hasteko aukerak irekitzen ditu.</translation>
+<translation id="3684540848053703310">Pantailaren behealdean ainguratutako orria, prezioaren informazio xehatua duena, itxita dago</translation>
 <translation id="3687645719033307815">Orri honen aurrebista ikusten ari zara</translation>
 <translation id="3690369331356918524">Abisatu pasahitzak arriskuan badaude datuen isilpekotasuna urratu delako.</translation>
 <translation id="3692944402865947621">Ezin izan da deskargatu <ph name="FILE_NAME" />, memoria ez dagoelako eskuragarri.</translation>

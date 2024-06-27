@@ -89,6 +89,7 @@
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> napja volt aktív</translation>
 <translation id="1390418506739274310">Előfordulhat, hogy más olyan alkalmazásokból származó előzményeket is lát, amelyek a Chrome-ban nyitják meg a linkeket. Előfordulhat, hogy a böngészési előzmények más formái még megtalálhatók Google-fiókjában a <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webhelyen.</translation>
 <translation id="13931502444227376">A folytatáshoz a(z) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> megosztja az Ön nevét, e-mail-címét és profilképét ezzel a webhellyel. Tekintse meg a szóban forgó webhely <ph name="BEGIN_LINK1" />általános szerződési feltételeit<ph name="END_LINK1" />.</translation>
+<translation id="139752016751285248">Az „Árváltozások és -összehasonlítások” alsó lap teljes magasságban van megnyitva</translation>
 <translation id="1397811292916898096">Keresőmotor: <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719"><ph name="BEGIN_LINK1" />Kezelheti, hogy milyen Chrome-adatokat mentsen<ph name="END_LINK1" /> a rendszer az Ön Google-fiókjába.
 
@@ -179,6 +180,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="1877073879466606884">A bejelentkezéshez használt profil felügyelt profil. A rendszergazda távolról módosíthatja az Ön profilbeállításait, jelentésekkel elemezheti a böngészőadatait, és egyéb szükséges feladatokat is elvégezhet.</translation>
 <translation id="1883903952484604915">Saját fájlok</translation>
 <translation id="189358972401248634">Más nyelvek</translation>
+<translation id="1899175549411605574">„Árváltozások és -összehasonlítások” alsó lap</translation>
 <translation id="1900260903084164610">A folytatással Ön elfogadja az <ph name="BEGIN_TOS_LINK" />Általános Szerződési Feltételeket<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">A felkeresett URL-eket a Google-fiókba menti a rendszer</translation>
 <translation id="1910950723001426294">A megosztási lehetőségek listája össze van csukva.</translation>
@@ -520,6 +522,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3587596251841506391">Legyen biztonságos a böngészés</translation>
 <translation id="3597179440835065298">Relevánsabb javaslatokat kaphat</translation>
 <translation id="3602290021589620013">Előnézet</translation>
+<translation id="3614126103057878858">Árváltozások és -összehasonlítások</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Ablakok kezelése</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+1 webhely}other{+# webhely}}</translation>
@@ -529,6 +532,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3637744895182738742">Ha elfelejtette az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Ugrás a Google alkalmazás főoldalára</translation>
 <translation id="368329460027487650">Kijelentkezve. Megnyitja a bejelentkezési lehetőségeket.</translation>
+<translation id="3684540848053703310">Az „Árváltozások és -összehasonlítások” alsó lap be van zárva</translation>
 <translation id="3687645719033307815">Ön az oldal előnézetét nézi</translation>
 <translation id="3690369331356918524">Figyelmeztetést küld, ha jelszavai adatvédelmi incidens során nyilvánosságra kerülnek.</translation>
 <translation id="3692944402865947621">A(z) <ph name="FILE_NAME" /> fájl letöltése sikertelen, mert nem lehet elérni a tárhelyet.</translation>

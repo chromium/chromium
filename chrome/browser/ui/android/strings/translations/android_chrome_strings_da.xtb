@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Aktiv for <ph name="LAST_UPDATED" /> dage siden</translation>
 <translation id="1390418506739274310">Du kan muligvis se historikken fra andre apps, der åbner links i Chrome. Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse og dit profilbillede med dette website. Se dette websites <ph name="BEGIN_LINK1" />servicevilkår<ph name="END_LINK1" />.</translation>
+<translation id="139752016751285248">Felt i bunden med prisinfo åbnet i fuld højde</translation>
 <translation id="1397811292916898096">Søg med <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Du kan <ph name="BEGIN_LINK1" />administrere, hvilke Chrome-data der gemmes<ph name="END_LINK1" /> på din Google-konto.
 
@@ -179,6 +180,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1877073879466606884">Den profil, du er logget ind på, er en administreret profil. Din administrator kan foretage ændringer i dine profilindstillinger via fjernadgang, analysere oplysninger om browseren via rapportering og udføre andre nødvendige opgaver.</translation>
 <translation id="1883903952484604915">Mine filer</translation>
 <translation id="189358972401248634">Andre sprog</translation>
+<translation id="1899175549411605574">Felt i bunden med prisinfo</translation>
 <translation id="1900260903084164610">Ved at fortsætte accepterer du <ph name="BEGIN_TOS_LINK" />servicevilkårene<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">De webadresser, du besøger, gemmes på din Google-konto</translation>
 <translation id="1910950723001426294">Listen over delingsindstillinger er lukket.</translation>
@@ -520,6 +522,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3587596251841506391">Gør sikkerheden på nettet bedre</translation>
 <translation id="3597179440835065298">Få bedre forslag</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
+<translation id="3614126103057878858">Prisinfo</translation>
 <translation id="3616113530831147358">Lyd</translation>
 <translation id="3622349720008044802">Administrer vinduer</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 website}one{+ # website}other{+ # websites}}</translation>
@@ -529,6 +532,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3637744895182738742">Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />slette Chrome-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Gå til startsiden i Google-appen</translation>
 <translation id="368329460027487650">Logget ud. Åbner valgmuligheder for login.</translation>
+<translation id="3684540848053703310">Felt i bunden med prisinfo lukket</translation>
 <translation id="3687645719033307815">Du ser en forhåndsvisning af denne side</translation>
 <translation id="3690369331356918524">Advarer dig, hvis adgangskoder offentliggøres i et brud på datasikkerheden</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> blev ikke downloadet, da lagerplaceringen ikke er tilgængelig.</translation>

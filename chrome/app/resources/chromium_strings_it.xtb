@@ -79,6 +79,8 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="2329088755516916767">Quando questa impostazione è attiva, Chromium precarica le pagine per velocizzare la navigazione e la ricerca.</translation>
 <translation id="2343156876103232566">Per inviare un numero da questo dispositivo al tuo telefono Android, accedi a Chromium su entrambi i dispositivi.</translation>
 <translation id="2359808026110333948">Continua</translation>
+<translation id="2361918034042471035">L'estensione "<ph name="EXTENSION_NAME" />" richiede l'accesso a Chromium</translation>
+<translation id="2374216753258219393">Per usare questa estensione con l'account <ph name="USER_EMAIL_ADDRESS" />, accedi a Chromium.</translation>
 <translation id="2384373936468275798">Impossibile sincronizzare i dati in Chromium OS perché i dati di accesso dell'account sono obsoleti.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Una o più estensioni di Chromium stavano accedendo a 1 dispositivo HID}=1{Una o più estensioni di Chromium stanno accedendo a 1 dispositivo HID}other{Una o più estensioni di Chromium stanno accedendo a # dispositivi HID}}</translation>
 <translation id="2401032172288869980">Chromium deve avere le autorizzazioni di accesso al microfono e alla fotocamera per questo sito</translation>
@@ -242,9 +244,11 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="4893347770495441059">Riavvia per aggiornare &amp;Chromium</translation>
 <translation id="4942295735032723435">Per ricevere gli aggiornamenti futuri di Chromium, devi avere macOS 11 o versioni successive. Su questo computer è installato macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium è in modalità background.</translation>
+<translation id="494490797786467921">Fai clic per chiudere la finestra di dialogo di accesso a Chromium</translation>
 <translation id="4987820182225656817">Gli ospiti possono utilizzare Chromium senza lasciare tracce.</translation>
 <translation id="4994636714258228724">Aggiungiti a Chromium</translation>
 <translation id="5114678101347489141">Chromium sta esaminando nuove funzionalità che consentano ai siti di offrire la stessa esperienza di navigazione utilizzando meno informazioni personali</translation>
+<translation id="5187123684706427865">L'account Chromium richiede la ri-autenticazione</translation>
 <translation id="5224391634244552924">Nessuna password salvata. Chromium può controllare le password quando le salvi.</translation>
 <translation id="5231355151045086930">Uscita da Chromium</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> ha già eseguito l'accesso a questo profilo Chromium. Questa operazione creerà un nuovo profilo Chromium per <ph name="USER_EMAIL_ADDRESS" /></translation>

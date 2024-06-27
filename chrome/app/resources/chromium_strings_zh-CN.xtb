@@ -79,6 +79,8 @@
 <translation id="2329088755516916767">开启此设置后，Chromium 会预加载网页，以便您更快速地浏览和搜索。</translation>
 <translation id="2343156876103232566">若要从此处向您的 Android 手机发送电话号码，请在这两部设备上分别登录 Chromium。</translation>
 <translation id="2359808026110333948">继续</translation>
+<translation id="2361918034042471035">扩展程序“<ph name="EXTENSION_NAME" />”需要您登录 Chromium</translation>
+<translation id="2374216753258219393">如要以 <ph name="USER_EMAIL_ADDRESS" /> 的身份使用此扩展程序，请登录 Chromium。</translation>
 <translation id="2384373936468275798">由于您的账号登录详细信息已过期，Chromium 操作系统无法同步您的数据。</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{一个或多个 Chromium 扩展程序访问过 1 部 HID 设备}=1{一个或多个 Chromium 扩展程序正在访问 1 部 HID 设备}other{一个或多个 Chromium 扩展程序正在访问 # 部 HID 设备}}</translation>
 <translation id="2401032172288869980">Chromium 需要为此网站授予摄像头权限和麦克风权限</translation>
@@ -242,9 +244,11 @@
 <translation id="4893347770495441059">重新启动以更新 Chromium(&amp;C)</translation>
 <translation id="4942295735032723435">若要接收后续 Chromium 更新，您需使用 macOS 11 或更高版本。该计算机目前使用的是 macOS 10.15。</translation>
 <translation id="4943838377383847465">Chromium处于后台运行模式。</translation>
+<translation id="494490797786467921">点击即可关闭 Chromium 登录对话框</translation>
 <translation id="4987820182225656817">访客使用Chromium不会留下任何痕迹。</translation>
 <translation id="4994636714258228724">将您自己添加到Chromium</translation>
 <translation id="5114678101347489141">Chromium 正在探索各种新功能，以便让网站既能减少使用您的信息，又能提供同样出色的浏览体验</translation>
+<translation id="5187123684706427865">Chromium 账号需要重新验证身份</translation>
 <translation id="5224391634244552924">尚未保存任何密码。您需要先保存密码才能使用 Chromium 的密码检查功能。</translation>
 <translation id="5231355151045086930">退出 Chromium</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" />已登录此 Chromium 个人资料。这样做会为 <ph name="USER_EMAIL_ADDRESS" /> 创建一份新的 Chromium 个人资料</translation>

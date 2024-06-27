@@ -81,6 +81,8 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="2329088755516916767">Wanneer dit aan is, laai Chromium bladsye vooraf wat blaai en soek vinniger maak.</translation>
 <translation id="2343156876103232566">Meld op albei toestelle by Chromium aan om 'n nommer van hier af na jou Android-foon te stuur.</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
+<translation id="2361918034042471035">Die uitbreiding “<ph name="EXTENSION_NAME" />” wil hê dat jy by Chromium moet aanmeld</translation>
+<translation id="2374216753258219393">Meld aan by Chromium om hierdie uitbreiding as <ph name="USER_EMAIL_ADDRESS" /> te gebruik.</translation>
 <translation id="2384373936468275798">Chromium-bedryfstelsel kon nie jou data sinkroniseer nie omdat jou rekening se aanmeldbesonderhede verouderd is.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Een of meer Chromium-uitbreidings het toegang tot 1 MKT-toestel gehad}=1{Een of meer Chromium-uitbreidings het tans toegang tot 1 MKT-toestel}other{Een of meer Chromium-uitbreidings het tans toegang tot # MKT-toestelle}}</translation>
 <translation id="2401032172288869980">Chromium het kamera- en mikrofoontoestemming vir hierdie werf nodig</translation>
@@ -244,9 +246,11 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="4893347770495441059">Begin weer om &amp;Chromium op te dateer</translation>
 <translation id="4942295735032723435">Jy het macOS 11 of nuwer nodig om in die toekoms Chromium-opdaterings te kry. Hierdie rekenaar gebruik macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium is in agtergrondmodus.</translation>
+<translation id="494490797786467921">Klik om die Chromium-aanmeldingdialoog toe te maak</translation>
 <translation id="4987820182225656817">Gaste kan Chromium gebruik sonder om iets agter te laat.</translation>
 <translation id="4994636714258228724">Voeg jouself by Chromium</translation>
 <translation id="5114678101347489141">Chromium verken tans nuwe kenmerke wat werwe in staat stel om minder van jou inligting te gebruik om dieselfde blaai-ervaring te lewer</translation>
+<translation id="5187123684706427865">Chromium-rekening vereis herstawing</translation>
 <translation id="5224391634244552924">Geen gestoorde wagwoorde nie. Chromium kan jou wagwoorde nagaan wanneer jy hulle stoor.</translation>
 <translation id="5231355151045086930">Meld af uit Chromium</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> is reeds by hierdie Chromium-profiel aangemeld. Dit sal 'n nuwe Chromium-profiel vir <ph name="USER_EMAIL_ADDRESS" /> skep</translation>

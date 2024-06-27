@@ -89,6 +89,7 @@
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> dagen geleden actief</translation>
 <translation id="1390418506739274310">Je kunt de geschiedenis zien van andere apps die links openen in Chrome. Er kunnen andere vormen van browsegeschiedenis zijn opgeslagen voor je Google-account op <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je naam, e-mailadres en profielfoto met deze site om door te gaan. Bekijk de <ph name="BEGIN_LINK1" />servicevoorwaarden<ph name="END_LINK1" /> van deze site.</translation>
+<translation id="139752016751285248">Blad onderaan met prijsinzichten is op volledige hoogte geopend</translation>
 <translation id="1397811292916898096">Zoeken met <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Je kunt <ph name="BEGIN_LINK1" />beheren welke Chrome-gegevens worden opgeslagen<ph name="END_LINK1" /> in je Google-account.
 
@@ -179,6 +180,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1877073879466606884">Het profiel waarop je bent ingelogd, is een beheerd profiel. Je beheerder kan op afstand wijzigingen aanbrengen in je profielinstellingen, informatie over de browser analyseren via rapportage en andere nodige taken uitvoeren.</translation>
 <translation id="1883903952484604915">Mijn bestanden</translation>
 <translation id="189358972401248634">Andere talen</translation>
+<translation id="1899175549411605574">Blad onderaan met prijsinzichten</translation>
 <translation id="1900260903084164610">Door verder te gaan, ga je akkoord met de <ph name="BEGIN_TOS_LINK" />Servicevoorwaarden<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">De URL's die je bezoekt, worden opgeslagen in je Google-account</translation>
 <translation id="1910950723001426294">Lijst met deelopties is gesloten.</translation>
@@ -530,6 +532,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3637744895182738742">Als je je wachtwoordzin bent vergeten of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Chrome-gegevens in je account<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Naar de homepage van de Google-app</translation>
 <translation id="368329460027487650">Uitgelogd. Hiermee open je de inlogopties.</translation>
+<translation id="3684540848053703310">Blad onderaan met prijsinzichten is gesloten</translation>
 <translation id="3687645719033307815">Je bekijkt een voorbeeld van deze pagina</translation>
 <translation id="3690369331356918524">Waarschuwt als je wachtwoorden zijn gelekt bij een gegevenslek</translation>
 <translation id="3692944402865947621">Downloaden van <ph name="FILE_NAME" /> mislukt omdat de opslaglocatie niet bereikbaar is.</translation>

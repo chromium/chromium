@@ -784,6 +784,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4971735654804503942">Mbrojtje më e shpejtë dhe proaktive kundër faqeve të internetit, shkarkimeve dhe shtesave të rrezikshme. Të paralajmëron rreth nxjerrjeve të paautorizuara të fjalëkalimeve. Kërkon që të dhënat e shfletimit t'i dërgohen Google.</translation>
 <translation id="4979397965658815378">Identifikohu me llogarinë e Google për të marrë faqeshënuesit, fjalëkalimet, historikun dhe cilësime të tjera në të gjitha pajisjet e tua.</translation>
 <translation id="4989065233040279145">Zgjidh se ku do ta ruash skedarin <ph name="FILENAME" /></translation>
+<translation id="4992255726304765516">Ngjyra e grupit të skedave: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopjo fjalëkalimin</translation>
 <translation id="5016420433031926653">Dërgo te <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Më kujto më vonë</translation>
@@ -813,6 +814,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5150492518600715772">Dërgo te pajisjet e tua</translation>
 <translation id="5157638238828697074">Ndodhi një gabim. Aplikacioni nuk mund të hapej.</translation>
 <translation id="5168414296986405587">Krijuar për iPadOS</translation>
+<translation id="5169725654005786900">Veprimi është në vazhdim…</translation>
 <translation id="5173088371991956744">Sinkronizimi ka nevojë të verifikojë që je ti</translation>
 <translation id="5173493422621051500">Përdor tastierën</translation>
 <translation id="5176312250994681348">Mbaj fjalëkalimin më të fundit</translation>
@@ -847,6 +849,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5327753393331509826">Merr njoftime për përmbajtjet</translation>
 <translation id="5329451663851195956">Mund ta tërheqësh poshtë për ta rifreskuar.</translation>
 <translation id="5333148247954006827">Kalo në një profil tjetër</translation>
+<translation id="5338512273860059533">Identifikimi është në vazhdim</translation>
 <translation id="5339316356165661760">Aktivizo sinkronizimin</translation>
 <translation id="5343472494710226394">Lajme, sporte dhe përmbajtje të bazuara në interesat e tu.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Të gjurmohet kjo paketë?}other{Të gjurmohen {COUNT} paketa?}}</translation>

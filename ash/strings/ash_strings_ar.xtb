@@ -217,6 +217,7 @@
 <translation id="1747827819627189109">تم تفعيل لوحة المفاتيح على الشاشة</translation>
 <translation id="1749109475624620922">تم تخصيص النافذة <ph name="WINDOW_TITLE" /> لجميع أسطح المكتب.</translation>
 <translation id="1750088060796401187">لا يُسمح باستخدام سوى <ph name="MAX_DESK_LIMIT" /> سطح مكتب. يجب إزالة أحد أسطح المكتب لفتح سطح مكتب جديد.</translation>
+<translation id="1751335846119670066">ساعدني في القراءة</translation>
 <translation id="1755408179247123630">هل تريد تفعيل ميزة "سماع الاختيار"؟</translation>
 <translation id="1755556344721611131">تطبيق "بيانات التشخيص"</translation>
 <translation id="1756833229520115364">لا يمكن حفظ النموذج بسبب تخطّي عدد النوافذ أو علامات التبويب الحد المسموح به.</translation>
@@ -228,6 +229,7 @@
 <translation id="178347895271755507">إعداد ميزة عرض الصور والوسائط والإشعارات الحديثة في هاتفك</translation>
 <translation id="1787955149152357925">غير مُفعَّل</translation>
 <translation id="1796561540704213354">المواقع الإلكترونية بما في ذلك الصفحات التي سبقَت زيارتها والصفحات المفتوحة الآن</translation>
+<translation id="179842970735685253">‏بنود خدمة Google</translation>
 <translation id="181103072419391116">قوة الإشارة <ph name="SIGNAL_STRENGTH" />، يديرها المشرف</translation>
 <translation id="1816896987747843206">يتيح هذا الإجراء إمكانية الوصول إلى الكاميرا من التطبيقات والمواقع الإلكترونية التي لديها هذا الإذن.</translation>
 <translation id="1823873187264960516">الإيثرنت: <ph name="ADDRESS" /></translation>
@@ -553,6 +555,7 @@
 <translation id="3122464029669770682">وحدة المعالجة المركزية</translation>
 <translation id="3125690294288312932">نوع الواجب الدراسي</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">في ما يلي بعض الملاحظات التي يجب مراعاتها</translation>
 <translation id="3139188263101386725">استخدام الاختصار الجديد</translation>
 <translation id="3139942575505304791">مكتب 1</translation>
 <translation id="315116470104423982">بيانات الجوال</translation>
@@ -905,6 +908,7 @@
 <translation id="4381031910344220229">يتيح هذا الإجراء وصول "<ph name="APP_NAME" />" وجميع التطبيقات والمواقع الإلكترونية إلى الميكروفون من خلال منحها إذن استخدام الميكروفون.</translation>
 <translation id="4382340674111381977">الرجوع إلى الصفحة السابقة</translation>
 <translation id="4389184120735010762">لقد ضغطت على اختصار لوحة المفاتيح للمُكبِّر الذي تم إرساؤه. هل ترغب في تفعيله؟</translation>
+<translation id="4394466652057229831">انقر بزر الماوس الأيمن لتلخيص المحتوى</translation>
 <translation id="439598569299422042">التنزيل متوقّف مؤقتًا، <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">يتعذّر حفظ التسجيل الرقمي للشاشة</translation>
 <translation id="4405151984121254935">نوع الجهاز الملحق المتصل غير متوافق.</translation>
@@ -962,6 +966,7 @@
 <translation id="4585337515783392668">إيقاف الإرسال إلى مستلم غير معروف</translation>
 <translation id="4596144739579517758">المظهر الداكن غير مُفعَّل.</translation>
 <translation id="4596442969149038771">تمت مشاركته من قِبل "<ph name="USER" />"</translation>
+<translation id="4610493115106525653">نتيجة مناسبة</translation>
 <translation id="4611292653554630842">تسجيل الدخول</translation>
 <translation id="462160925400706389">تم ربط "<ph name="NAME" />"</translation>
 <translation id="4623167406982293031">يجب إثبات ملكية الحساب</translation>
@@ -1119,6 +1124,7 @@
 <translation id="5121628974188116412">الانتقال إلى أسفل الصفحة</translation>
 <translation id="5122517996953421795">معاينة "<ph name="DESK_NAME" />": جهاز سطح المكتب غير نشِط.</translation>
 <translation id="5136175204352732067">تم توصيل لوحة مفاتيح مختلفة</translation>
+<translation id="5140105873789567560">يجب أن يكون عمرك 18 عامًا على الأقل لاستخدام ميزتَي "ساعدني في الكتابة" و"ساعدني في القراءة".</translation>
 <translation id="5144005092084035179">هل تريد تبديل مصدر إدخال الصوت؟</translation>
 <translation id="5147567197700016471">تم فتح القفل.</translation>
 <translation id="5150070631291639005">إعدادات الخصوصية</translation>
@@ -1559,6 +1565,7 @@
 <translation id="6696025732084565524">تحتاج لوحة المفاتيح القابلة للفصل إلى تحديث مهم</translation>
 <translation id="6697913454192220372">إضافة جهاز سطح مكتب جديد</translation>
 <translation id="6700713906295497288">‏زر قائمة أداة تحرير أسلوب الإدخال (IME)</translation>
+<translation id="6704375469818246414">قد تختلف الجودة عند استخدام الذكاء الاصطناعي التوليدي.</translation>
 <translation id="6706742084323792866">تثبيت لوحة المفاتيح</translation>
 <translation id="6710213216561001401">السابق</translation>
 <translation id="6723839937902243910">الطاقة</translation>
@@ -1827,9 +1834,11 @@
 <translation id="7726391492136714301">عرض إشعارات هاتفك وتطبيقاته</translation>
 <translation id="7727952505535211425">فتح الموقع الإلكتروني بشريط العناوين في علامة تبويب جديدة</translation>
 <translation id="7742327441377685481">ما مِن إشعارات</translation>
+<translation id="774736258792760908">‏عند تفعيل ميزتَي "ساعدني في الكتابة" و"ساعدني في القراءة"، يتم إرسال النص المُدخَل ومحتوى المستند إلى خوادم تكنولوجيات الذكاء الاصطناعي من Google لإنشاء ملخصات واقتراحات عن الكتابة والإجابة عن الأسئلة وتحسين المنتج، وذلك بما يتوافق مع <ph name="LINK_TO_SERVICE_TERMS" />. يُرجى عدم تضمين أي معلومات شخصية أو حسّاسة أو سرية.</translation>
 <translation id="7748275671948949022">تمييز زر مشغّل التطبيقات على الرف</translation>
 <translation id="7749443890790263709">تم تجاوز أقصى عدد مسموح به من محطات الإرساء.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">يمكنك متى شئت إيقاف ميزتَي "ساعدني في الكتابة" و"ساعدني في القراءة" من خلال الإعدادات. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">الاختيار والاستماع</translation>
 <translation id="7769299611924763557">‏سيصبح ملف GIF جاهزًا بعد قليل.</translation>
 <translation id="7773536009433685931">‏تفعيل شبكة Wi-Fi</translation>
@@ -1838,6 +1847,7 @@
 <translation id="7781829728241885113">أمس</translation>
 <translation id="7787212146956232129">تم ضبط أجهزة الإدخال والإخراج. انتقِل إلى "الإعدادات" لتغيير ذلك.</translation>
 <translation id="7792590255364786396">مرئي</translation>
+<translation id="7793389284006812057">لا يزال الذكاء الاصطناعي التوليدي تجريبيًا وفي مرحلة التطوير المبكر، ويتوفّر حاليًا بشكل محدود.</translation>
 <translation id="7796735576426975947">تم إخفاء إشعار جديد</translation>
 <translation id="7798302898096527229">‏اضغط على مفتاح البحث أو المفتاح Shift للإلغاء.</translation>
 <translation id="780301667611848630">لا، شكرًا</translation>
@@ -1942,6 +1952,7 @@
 <translation id="8113423164597455979">مفعلة، كل التطبيقات</translation>
 <translation id="8113515504791187892">زر "سماع الاختيار"</translation>
 <translation id="8120151603115102514">‏شاشة القفل غير مفعّلة على هاتفك. لفتح قفل جهاز Chromebook، أدخِل كلمة المرور.</translation>
+<translation id="8120249852906205273">إعادة التشغيل</translation>
 <translation id="8127095419621171197">فتح تطبيق "الآلة الحاسبة"</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° مئوية</translation>
 <translation id="8130528849632411619">الانتقال إلى بداية المستند</translation>
@@ -1991,6 +2002,7 @@
 <translation id="8331351032546853669">بانتظار التنزيل</translation>
 <translation id="8339706171276328417">‏<ph name="ACTION_DESCRIPTION" /> · بتاريخ ‎<ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">نتيجة غير مناسبة</translation>
 <translation id="8345019317483336363">تم اختيار النافذة <ph name="WINDOW_TITLE" />.</translation>
 <translation id="8349826889576450703">launcher</translation>
 <translation id="8349964124165471584">فتح الرابط في نافذة جديدة</translation>
@@ -2036,6 +2048,7 @@
 <translation id="85123341071060231">‏البلوتوث غير مفعّل على جهاز Chromebook. لفتح قفل جهاز Chromebook، أدخِل كلمة المرور.</translation>
 <translation id="8513108775083588393">التدوير تلقائي</translation>
 <translation id="851458219935658693">عرض النوافذ المفتوحة في سطح المكتب الحالي، تم النقر على زر الاختيار.</translation>
+<translation id="851660987304951246">يمكنك استخدام ميزة "ساعدني في القراءة" لتلخيص المحتوى بسرعة أو طرح الأسئلة</translation>
 <translation id="8517041960877371778">قد يتعذر شحن <ph name="DEVICE_TYPE" /> أثناء التشغيل.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{يتحكَّم "<ph name="APP_NAME" />" في إدخال الميكروفون.}zero{يتحكَّم # تطبيق في إدخال الميكروفون.}two{يتحكَّم تطبيقان في إدخال الميكروفون.}few{تتحكَّم # تطبيقات في إدخال الميكروفون.}many{يتحكَّم # تطبيقًا في إدخال الميكروفون.}other{يتحكَّم # تطبيق في إدخال الميكروفون.}}</translation>
 <translation id="8535393432370007982">عكس نظام الترتيب حسب اللون</translation>

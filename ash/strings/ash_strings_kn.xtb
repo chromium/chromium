@@ -119,6 +119,7 @@
 <translation id="1383876407941801731">ಹುಡುಕಿ</translation>
 <translation id="1391102559483454063">ಆನ್</translation>
 <translation id="1394698770495054737">ಫುಲ್ ಬ್ಲರ್</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 ದಿನದ ಹಿಂದೆ}one{# ದಿನಗಳ ಹಿಂದೆ}other{# ದಿನಗಳ ಹಿಂದೆ}}</translation>
 <translation id="1404963891829069586">ಫೋಕಸ್ ಸೌಂಡ್‌ಗಳು</translation>
 <translation id="1407069428457324124">ಡಾರ್ಕ್ ಥೀಮ್</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. ದಿನಾಂಕಗಳ ನಡುವೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಬಾಣದ ಕೀಗಳನ್ನು ಬಳಸಿ.</translation>
@@ -209,11 +210,13 @@
 <translation id="174102739345480129">ಮಾರ್ಕರ್ ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="1743570585616704562">ಗುರುತಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" /> ನೋಟಿಫಿಕೇಶನ್ ಅನ್ನು ಕುಗ್ಗಿಸಿ</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{1 ಗಂಟೆಯ ಒಳಗೆ}=1{1 ಗಂಟೆ ಹಿಂದೆ}one{# ಗಂಟೆ ಹಿಂದೆ}other{# ಗಂಟೆ ಹಿಂದೆ}}</translation>
 <translation id="1746730358044914197">ನಿಮ್ಮ ಇನ್‌ಪುಟ್‌ ವಿಧಾನಗಳನ್ನು ನಿರ್ವಾಹಕರ ಸಹಾಯದಿಂದ ಕಾನ್ಫಿಗರ್‌ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="1747336645387973286">ಅಂತಿಮ ದಿನಾಂಕ <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">ಆನ್ ಸ್ಕ್ರೀನ್ ಕೀಬೋರ್ಡ್ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1749109475624620922">ವಿಂಡೋ <ph name="WINDOW_TITLE" /> ಅನ್ನು ಎಲ್ಲಾ ಡೆಸ್ಕ್‌ಗಳಿಗೆ ನಿಯೋಜಿಸಲಾಗಿದೆ</translation>
 <translation id="1750088060796401187">ಕೇವಲ <ph name="MAX_DESK_LIMIT" /> ಡೆಸ್ಕ್‌ಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ. ಡೆಸ್ಕ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ ಹಾಗೂ ಹೊಸದನ್ನು ತೆರೆಯಿರಿ.</translation>
+<translation id="1751335846119670066">ಓದಲು ಸಹಾಯ ಮಾಡಿ</translation>
 <translation id="1755408179247123630">ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ ಎಂಬುದನ್ನು ಆನ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="1755556344721611131">ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್ ಆ್ಯಪ್</translation>
 <translation id="1756833229520115364">ಟೆಂಪ್ಲೇಟ್ ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಹಲವಾರು ವಿಂಡೋಗಳು ಅಥವಾ ಟ್ಯಾಬ್‌ಗಳು ತೆರೆದುಕೊಂಡಿವೆ.</translation>
@@ -225,6 +228,7 @@
 <translation id="178347895271755507">ನಿಮ್ಮ ಫೋನ್‌ನ ಇತ್ತೀಚಿನ ಫೋಟೋಗಳು, ಮಾಧ್ಯಮ ಮತ್ತು ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸುವುದಕ್ಕಾಗಿ ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="1787955149152357925">ಆಫ್</translation>
 <translation id="1796561540704213354">ನೀವು ಭೇಟಿ ನೀಡಿದ ಪುಟಗಳನ್ನು ಒಳಗೊಂಡಂತೆ ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು ಪುಟಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="179842970735685253">Google ನ ಸೇವಾ ನಿಯಮಗಳು</translation>
 <translation id="181103072419391116">ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ</translation>
 <translation id="1816896987747843206">ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು ಅನುಮತಿ ಹೊಂದಿರುವ ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಇದು ಕ್ಯಾಮರಾಗೆ ಆ್ಯಕ್ಸೆಸ್ ನೀಡುತ್ತದೆ</translation>
 <translation id="1823873187264960516">ಇಥರ್ನೆಟ್: <ph name="ADDRESS" /></translation>
@@ -278,7 +282,7 @@
 <translation id="2017998995161831444">ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಆ್ಯಪ್‌ನಲ್ಲಿ "ಸಹಾಯ" ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="2018630726571919839">ನನಗೊಂದು ಜೋಕ್ ಹೇಳಿ</translation>
 <translation id="2021864487439853900">ಅನ್‌ಲಾಕ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
-<translation id="2034971124472263449">ಹೇಗಾದರೂ ಉಳಿಸಿ</translation>
+<translation id="2034971124472263449">ಹೇಗಾದರೂ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> ಶಾರ್ಟ್‌ಕಟ್ ಪ್ರಸ್ತುತ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="2049240716062114887">ಡೆಸ್ಕ್ ಹೆಸರನ್ನು <ph name="DESK_NAME" /> ಗೆ ಬದಲಿಸಲಾಗಿದೆ</translation>
 <translation id="2064048859448024834">ಕ್ಯಾಮರಾ ಪೂರ್ವವೀಕ್ಷಣೆ ಆನ್ ಆಗಿದೆ</translation>
@@ -346,6 +350,7 @@
 <translation id="2359808026110333948">ಮುಂದುವರೆಸಿ</translation>
 <translation id="2360398059912971776">ಬ್ಯಾಟರಿ</translation>
 <translation id="2361210043495191221">ವೈ-ಫೈ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE" />.</translation>
+<translation id="236574664504281623"><ph name="SESSION_NAME" /> ಅವರಿಂದ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
 <translation id="2367186422933365202">ನಿಮ್ಮ Chromebook ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="2367972762794486313">ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ತೋರಿಸು</translation>
 <translation id="2368828502825385061">ಹುಡುಕಿ</translation>
@@ -506,6 +511,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">ಮೈಕ್ರೋಫೋನ್ ಆ್ಯಕ್ಸೆಸ್ ಆನ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> ಧ್ವನಿ ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
+<translation id="2968761508099987738">ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಸ್ಥಳವು ಈ ಸಮಯದಲ್ಲಿ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ.</translation>
 <translation id="2970920913501714344">ಆ್ಯಪ್‌ಗಳು, ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು, ಮತ್ತು ಥೀಮ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವುದು</translation>
 <translation id="2977598380246111477">ಮುಂದಿನ ಸಂಖ್ಯೆ</translation>
 <translation id="2985148236010982088">ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳನ್ನು ನೋಡಿ</translation>
@@ -548,6 +554,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">ತರಗತಿ ಕಾರ್ಯದ ಪ್ರಕಾರ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">ನೆನಪಿನಲ್ಲಿಟ್ಟುಕೊಳ್ಳಬೇಕಾದ ಕೆಲವು ವಿಷಯಗಳು</translation>
 <translation id="3139188263101386725">ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿದ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="3139942575505304791">ಡೆಸ್ಕ್ 1</translation>
 <translation id="315116470104423982">ಮೊಬೈಲ್ ಡೇಟಾ</translation>
@@ -957,6 +964,7 @@
 <translation id="4585337515783392668">"ಅಪರಿಚಿತ ಸ್ವೀಕರಿಸುವವರು" ನಲ್ಲಿ ಬಿತ್ತರಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="4596144739579517758">ಡಾರ್ಕ್ ಥೀಮ್ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="4596442969149038771"><ph name="USER" /> ಅವರು ಹಂಚಿಕೊಂಡಿದ್ದಾರೆ</translation>
+<translation id="4610493115106525653">ಉತ್ತಮ ಔಟ್‌‌ಪುಟ್</translation>
 <translation id="4611292653554630842">ಲಾಗ್ ಇನ್</translation>
 <translation id="462160925400706389"><ph name="NAME" /> ಅನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4623167406982293031">ಖಾತೆಯನ್ನು ದೃಢೀಕರಿಸಿ</translation>
@@ -980,6 +988,7 @@
 <translation id="468293128311738995">ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿನ ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="4690510401873698237">ಪರದೆಯ ಕೆಳಭಾಗದಲ್ಲಿ ಶೆಲ್ಫ್ ಇದೆ</translation>
 <translation id="4696813013609194136">ಪೋಷಕ ಕೋಡ್ ಬಳಸಿಕೊಂಡು ಸಾಧನವನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
+<translation id="4697357603686181098">ಈ ಕುರಿತು ಸಹಾಯ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಮತ್ತೊಂದು ವಿನಂತಿಯನ್ನು ಬಳಸಿ ನೋಡಿ.</translation>
 <translation id="4702647871202761252">ಗೌಪ್ಯತೆ ಸ್ಕ್ರೀನ್ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="4706121060329443414">ನಂತರ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಲಾಗುವುದು. ಸದ್ಯಕ್ಕೆ ಪ್ರಕ್ರಿಯೆಗಾಗಿ Google ಗೆ ಧ್ವನಿಯನ್ನು ಕಳುಹಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="470644585772471629">ಬಣ್ಣ ವಿಲೋಮ</translation>
@@ -1113,12 +1122,13 @@
 <translation id="5121628974188116412">ಪುಟದ ಕೆಳಭಾಗಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> ಪೂರ್ವವೀಕ್ಷಣೆ. ನಿಷ್ಕ್ರಿಯ ಡೆಸ್ಕ್.</translation>
 <translation id="5136175204352732067">ವಿವಿಧ ಕೀಬೋರ್ಡ್ ಸಂಪರ್ಕಗೊಂಡಿದೆ</translation>
+<translation id="5140105873789567560">ಬರೆಯಲು ಸಹಾಯ ಪಡೆಯಿರಿ ಮತ್ತು ಓದಲು ನನಗೆ ಸಹಾಯ ಮಾಡಿಯನ್ನು ಬಳಸಲು ನೀವು ಕನಿಷ್ಟ 18 ವರ್ಷ ವಯಸ್ಸಿನವರಾಗಿರಬೇಕು.</translation>
 <translation id="5144005092084035179">ಆಡಿಯೋ ಇನ್‌ಪುಟ್ ಬದಲಿಸಬೇಕೆ?</translation>
 <translation id="5147567197700016471">ಅನ್‌ಲಾಕ್ ಆಗಿದೆ</translation>
 <translation id="5150070631291639005">ಗೌಪ್ಯತಾ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="5155897006997040331">ರೀಡಿಂಗ್ ಸ್ಪೀಡ್</translation>
 <translation id="5163434717504750796">ಬ್ಯಾಟರಿ ಅರೋಗ್ಯ <ph name="BATTERY_HEALTH_PERCENTAGE" />% | ಸೈಕಲ್ ಎಣಿಕೆ <ph name="CYCLE_COUNT" /></translation>
-<translation id="5166007464919321363">ಡೆಸ್ಕ್ ಅನ್ನು ಟೆಂಪ್ಲೇಟ್ ಆಗಿ ಉಳಿಸಿ</translation>
+<translation id="5166007464919321363">ಡೆಸ್ಕ್ ಅನ್ನು ಟೆಂಪ್ಲೇಟ್ ಆಗಿ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="5168181903108465623">ಬಿತ್ತರಿಸುವಿಕೆಯ ಸಾಧನಗಳು ಲಭ್ಯವಿದೆ</translation>
 <translation id="5168753792967365150">Google Tasks ನಲ್ಲಿ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="5170568018924773124">ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ತೋರಿಸಿ</translation>
@@ -1553,6 +1563,7 @@
 <translation id="6696025732084565524">ನಿಮ್ಮ ಪ್ರತ್ಯೇಕಿಸಬಹುದಾದ ಕೀಬೋರ್ಡ್‌ಗೆ ವಿಷಮಸ್ಥಿತಿ ಅಪ್‌ಡೇಟ್‌ನ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="6697913454192220372">ಹೊಸ ಡೆಸ್ಕ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="6700713906295497288">IME ಮೆನು ಬಟನ್</translation>
+<translation id="6704375469818246414">ಜನರೇಟಿವ್ AI ಬಳಸುವಾಗ ಗುಣಮಟ್ಟ ಬದಲಾಗಬಹುದು.</translation>
 <translation id="6706742084323792866">ಕೀಬೋರ್ಡ್ ಅನ್ನು ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="6710213216561001401">ಹಿಂದಿನದು</translation>
 <translation id="6723839937902243910">ಪವರ್‌</translation>
@@ -1612,7 +1623,7 @@
 <translation id="692135145298539227">ಅಳಿಸಿ</translation>
 <translation id="6921427376813842559">ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ</translation>
 <translation id="6929081673585394903">ಕಂಟ್ರೋಲ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
-<translation id="6931576957638141829">ಇಲ್ಲಿ ಉಳಿಸಿ</translation>
+<translation id="6931576957638141829">ಇಲ್ಲಿ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="6942518653766415536">ರೆಕಾರ್ಡಿಂಗ್ ಫಾರ್ಮ್ಯಾಟ್ ಮೆನು</translation>
 <translation id="6945221475159498467">ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6945922087561257829">ನಿಮ್ಮ ಫೋನ್ ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಬಳಸುತ್ತಿದೆ. ನಿಮ್ಮ ಫೋನ್ ಮತ್ತು Chromebook ಒಂದೇ ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿರುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಮತ್ತು ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ. <ph name="LEARN_MORE" /></translation>
@@ -1820,9 +1831,11 @@
 <translation id="7726391492136714301">ನಿಮ್ಮ ಫೋನ್‌ನ ಅಧಿಸೂಚನೆಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="7727952505535211425">ಹೊಸ ಟ್ಯಾಬ್‌ ಒಂದರಲ್ಲಿನ ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ವೆಬ್‌ಸೈಟ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="7742327441377685481">ಯಾವುದೇ ಅಧಿಸೂಚನೆಗಳಿಲ್ಲ</translation>
+<translation id="774736258792760908">ನೀವು ಬರೆಯಲು ಸಹಾಯ ಪಡೆಯಿರಿ ಮತ್ತು ಓದಲು ನನಗೆ ಸಹಾಯ ಮಾಡಿಯನ್ನು ಆನ್ ಮಾಡಿದಾಗ, ಬರವಣಿಗೆಯನ್ನು ಜನರೇಟ್ ಮಾಡಲು, ಸಾರಾಂಶಗಳನ್ನು ಜನರೇಟ್‌ ಮಾಡಲು, ಪ್ರಶ್ನೆಗಳಿಗೆ ಉತ್ತರಿಸಲು ಮತ್ತು ಉತ್ಪನ್ನವನ್ನು ಸುಧಾರಿಸಲು ಇನ್‌ಪುಟ್ ಪಠ್ಯ ಮತ್ತು ಡಾಕ್ಯುಮೆಂಟ್ ಕಂಟೆಂಟ್‌ ಅನ್ನು Google AI ಸರ್ವರ್‌ಗಳಿಗೆ ಕಳುಹಿಸುವುದು <ph name="LINK_TO_SERVICE_TERMS" /> ಗೆ ಒಳಪಟ್ಟಿರುತ್ತದೆ. ವೈಯಕ್ತಿಕ, ಸೂಕ್ಷ್ಮ ಅಥವಾ ಗೌಪ್ಯವಾದ ಯಾವುದೇ ಮಾಹಿತಿಯನ್ನೂ ಸೇರಿಸಬೇಡಿ.</translation>
 <translation id="7748275671948949022">ಶೆಲ್ಫ್‌ನಲ್ಲಿ ಲಾಂಚರ್ ಬಟನ್ ಅನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
 <translation id="7749443890790263709">ಗರಿಷ್ಠ ಸಂಖ್ಯೆಯ ಡೆಸ್ಕ್‌ಗಳನ್ನು ತಲುಪಲಾಗಿದೆ.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ಬರೆಯಲು ಸಹಾಯ ಪಡೆಯಿರಿ ಮತ್ತುಓದಲು ನನಗೆ ಸಹಾಯ ಮಾಡಿಯನ್ನು ಆಫ್ ಮಾಡಬಹುದು. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ</translation>
 <translation id="7769299611924763557">ನಿಮ್ಮ GIF ಶೀಘ್ರದಲ್ಲೇ ಸಿದ್ಧವಾಗಲಿದೆ</translation>
 <translation id="7773536009433685931">ಬದಲಿಗೆ ವೈಫೈ ಆನ್ ಮಾಡಿ</translation>
@@ -1831,6 +1844,7 @@
 <translation id="7781829728241885113">ನಿನ್ನೆ</translation>
 <translation id="7787212146956232129">ಇನ್‌ಪುಟ್ ಮತ್ತು ಔಟ್‌ಪುಟ್ ಸಾಧನಗಳನ್ನು ಸೆಟ್‌ ಮಾಡಲಾಗಿದೆ ಬದಲಾಯಿಸಲು ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ.</translation>
 <translation id="7792590255364786396">ಗೋಚರಿಸುತ್ತದೆ</translation>
+<translation id="7793389284006812057">ಜನರೇಟಿವ್ AI ಪ್ರಾಯೋಗಿಕವಾಗಿದೆ, ಅಭಿವೃದ್ಧಿಯ ಆರಂಭಿಕ ಹಂತದಲ್ಲಿದೆ ಹಾಗೂ ಪ್ರಸ್ತುತ ಸೀಮಿತ ಲಭ್ಯತೆಯನ್ನು ಹೊಂದಿದೆ.</translation>
 <translation id="7796735576426975947">ಹೊಸ ಅಧಿಸೂಚನೆಯನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7798302898096527229">ರದ್ದುಗೊಳಿಸಲು 'ಹುಡುಕಾಟ' ಅಥವಾ Shift ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="780301667611848630">ಬೇಡ</translation>
@@ -1902,6 +1916,7 @@
 <translation id="7982878511129296052">ಆಫ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="7984197416080286869">ತೀರಾ ಹೆಚ್ಚು ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಪ್ರಯತ್ನಗಳು</translation>
 <translation id="798779949890829624">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರ ಮೂಲಕ ನಿರ್ವಹಿಸಲ್ಪಡುತ್ತದೆ</translation>
+<translation id="7989206653429884947">ಪದೇ ಪದೇ ಸಾಮಾನ್ಯವಾಗಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="799296642788192631">ಪ್ರಮುಖ ಫೈಲ್‌ಗಳನ್ನು ನೀವು ಪಿನ್ ಮಾಡಬಹುದು. ಪಿನ್ ಮಾಡಲು, ಐಟಂ ಮೇಲೆ ಹೋವರ್ ಮಾಡಿ ಅಥವಾ ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ ಮತ್ತು ಐಟಂ ಮೇಲೆ ಬಲ ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="7994370417837006925">ಬಹು ಸೈನ್-ಇನ್</translation>
 <translation id="7995804128062002838">ಸ್ಕ್ರೀನ್ ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
@@ -1984,6 +1999,7 @@
 <translation id="8331351032546853669">ಡೌನ್‌ಲೋಡ್ ಬಾಕಿ ಉಳಿದಿದೆ</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">ಕಳಪೆ ಔಟ್‌‌ಪುಟ್</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ವಿಂಡೋ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8349826889576450703">ಲಾಂಚರ್</translation>
 <translation id="8349964124165471584">ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
@@ -2089,6 +2105,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">ಸಮಯ ಮುಗಿದಿದೆ. ಭೇಷ್! 🎉</translation>
+<translation id="8753368202781196133">ಈ ಸಮಯದಲ್ಲಿ ಈ ಭಾಷೆ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ.</translation>
 <translation id="8755498163081687682">ನಿಮ್ಮ ಗುರುತನ್ನು ಖಚಿತಪಡಿಸಿ: ಇದು ನೀವೇ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಲು <ph name="ORIGIN_NAME" /> ಬಯಸುತ್ತದೆ</translation>
 <translation id="875593634123171288">VPN ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="8756799553341497810">ನೀವು ಈ ವೀಕ್ಷಣೆಯಿಂದ ನಿರ್ಗಮಿಸಿದ ನಂತರ ನಿಮ್ಮ ಆ್ಯಪ್ ಲೇಔಟ್ ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲು ಪ್ರಾರಂಭಿಸಬಹುದು.</translation>

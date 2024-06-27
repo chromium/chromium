@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">صفحه‌کلید مجازی فعال شد</translation>
 <translation id="1749109475624620922">پنجره <ph name="WINDOW_TITLE" /> به همه میزکارها واگذار شد</translation>
 <translation id="1750088060796401187">فقط <ph name="MAX_DESK_LIMIT" /> میزکار مجاز است. یکی‌از میزکارها را بردارید تا بتوانید میزکار جدیدی باز کنید.</translation>
+<translation id="1751335846119670066">کمک گرفتن در خواندن</translation>
 <translation id="1755408179247123630">«انتخاب برای شنیدن» روشن شود؟</translation>
 <translation id="1755556344721611131">برنامه عیب‌یابی</translation>
 <translation id="1756833229520115364">الگو ذخیره نشد. تعداد پنجره‌ها یا برگه‌ها خیلی زیاد است.</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">راه‌اندازی مشاهده عکس‌ها، رسانه‌ها، و اعلان‌های جدید تلفن</translation>
 <translation id="1787955149152357925">خاموش</translation>
 <translation id="1796561540704213354">وب‌سایت‌ها شامل صفحه‌های که از آن‌ها بازدید کرده‌اید و صفحه‌های باز می‌شود</translation>
+<translation id="179842970735685253">‏شرایط خدمات Google</translation>
 <translation id="181103072419391116">قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، تحت‌مدیریت سرپرست</translation>
 <translation id="1816896987747843206">با این کار، دسترسی به دوربین برای همه برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین مجاز می‌شود</translation>
 <translation id="1823873187264960516">اترنت: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">نوع کار کلاسی</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">چند چیز را به‌خاطر داشته باشید</translation>
 <translation id="3139188263101386725">از میان‌بر به‌روزشده استفاده کنید</translation>
 <translation id="3139942575505304791">میز ۱</translation>
 <translation id="315116470104423982">داده‌های تلفن همراه</translation>
@@ -961,6 +964,7 @@
 <translation id="4585337515783392668">توقف پخش محتوا به گیرنده ناشناس</translation>
 <translation id="4596144739579517758">زمینه تاریک خاموش است</translation>
 <translation id="4596442969149038771"><ph name="USER" /> هم‌رسانی کرد</translation>
+<translation id="4610493115106525653">برونداد خوب</translation>
 <translation id="4611292653554630842">ورود به سیستم</translation>
 <translation id="462160925400706389"><ph name="NAME" /> متصل شد</translation>
 <translation id="4623167406982293031">به‌تأیید رساندن حساب</translation>
@@ -1118,6 +1122,7 @@
 <translation id="5121628974188116412">رفتن به پایین صفحه</translation>
 <translation id="5122517996953421795">پیش‌نمایش <ph name="DESK_NAME" />. میزکار غیرفعال است.</translation>
 <translation id="5136175204352732067">صفحه‌کلید دیگری متصل شد</translation>
+<translation id="5140105873789567560">برای استفاده از «کمک گرفتن در نوشتن» و «کمک گرفتن در خواندن»، باید حداقل ۱۸ سال داشته باشید.</translation>
 <translation id="5144005092084035179">ورودی صوتی تغییر کند؟</translation>
 <translation id="5147567197700016471">قفل‌نشده</translation>
 <translation id="5150070631291639005">تنظیمات حریم خصوصی</translation>
@@ -1558,6 +1563,7 @@
 <translation id="6696025732084565524">لازم است صفحه‌کلید قابل جدا شدن به‌روزرسانی ضروری شود</translation>
 <translation id="6697913454192220372">افزودن میزکار جدید</translation>
 <translation id="6700713906295497288">‏دکمه منو IME</translation>
+<translation id="6704375469818246414">هنگام استفاده از هوش مصنوعی زایا، کیفیت ممکن است متفاوت باشد.</translation>
 <translation id="6706742084323792866">سنجاق کردن صفحه‌کلید</translation>
 <translation id="6710213216561001401">قبلی</translation>
 <translation id="6723839937902243910">نیرو</translation>
@@ -1825,9 +1831,11 @@
 <translation id="7726391492136714301">مشاهده کردن اعلان‌ها و برنامه‌های تلفن شما</translation>
 <translation id="7727952505535211425">باز کردن وب‌سایت در نوار نشانی در برگه جدید</translation>
 <translation id="7742327441377685481">اعلانی ندارید</translation>
+<translation id="774736258792760908">‏وقتی «کمک گرفتن در نوشتن» و «کمک گرفتن در خواندن» را روشن می‌کنید، نوشتار ورودی و محتوای سند برای تولید پیشنهادهای نوشتن، تولید خلاصه، پاسخ به سؤالات، و بهبود محصول، منوط به رعایت <ph name="LINK_TO_SERVICE_TERMS" />، به سرورهای هوش مصنوعی Google ارسال می‌شود. اطلاعات شخصی، حساس، یا محرمانه را وارد نکنید.</translation>
 <translation id="7748275671948949022">برجسته کردن دکمه «راه‌انداز» در قفسه</translation>
 <translation id="7749443890790263709">به حداکثر تعداد میز رسیده‌اید.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">هرزمان بخواهید می‌توانید «کمک گرفتن در نوشتن» و «کمک گرفتن در خواندن» را در «تنظیمات» خاموش کنید. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">انتخاب برای شنیدن</translation>
 <translation id="7769299611924763557">‏فایل GIF شما به‌زودی آماده خواهد شد</translation>
 <translation id="7773536009433685931">‏روشن کردن Wi-Fi</translation>
@@ -1836,6 +1844,7 @@
 <translation id="7781829728241885113">دیروز</translation>
 <translation id="7787212146956232129">دستگاه‌های ورودی و خروجی تنظیم شده‌اند. برای تغییر به «تنظیمات» بروید.</translation>
 <translation id="7792590255364786396">نمایان</translation>
+<translation id="7793389284006812057">هوش مصنوعی زایا آزمایشی است، در مراحل اولیه توسعه است، و درحال‌حاضر به‌صورت محدود دردسترس است.</translation>
 <translation id="7796735576426975947">اعلان جدید پنهان شده است</translation>
 <translation id="7798302898096527229">‏برای لغو کردن، Search یا Shift را فشار دهید.</translation>
 <translation id="780301667611848630">نه متشکرم</translation>
@@ -1990,6 +1999,7 @@
 <translation id="8331351032546853669">بارگیری درحالت تعلیق است</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">برونداد بد</translation>
 <translation id="8345019317483336363">پنجره <ph name="WINDOW_TITLE" /> انتخاب شد</translation>
 <translation id="8349826889576450703">راه‌انداز</translation>
 <translation id="8349964124165471584">باز کردن پیوند در پنجره جدید</translation>
@@ -2042,7 +2052,7 @@
 <translation id="8541078764854166027">قاب‌بندی دوربین</translation>
 <translation id="8542053257095774575">میزکار یا الگوی ذخیره‌شده‌ای ندارید</translation>
 <translation id="8546059259582788728">مرتب‌سازی واگرد شد</translation>
-<translation id="8551588720239073785">تنظیمات تاریخ و ساعت</translation>
+<translation id="8551588720239073785">تنظیمات ساعت و تاریخ</translation>
 <translation id="8553395910833293175">قبلاً به همه میزکارها اختصاص داده شده است.</translation>
 <translation id="8555757996376137129">حذف میزکار کنونی</translation>
 <translation id="8559845965695780508"><ph name="USER" /> ویرایش کرد</translation>

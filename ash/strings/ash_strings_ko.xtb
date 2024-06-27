@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">터치 키보드 사용 설정됨</translation>
 <translation id="1749109475624620922"><ph name="WINDOW_TITLE" /> 창이 모든 데스크에 할당됨</translation>
 <translation id="1750088060796401187">데스크는 최대 <ph name="MAX_DESK_LIMIT" />개만 허용됩니다. 새로운 데스크를 열려면 기존 데스크를 1개 삭제하세요.</translation>
+<translation id="1751335846119670066">읽기 도우미</translation>
 <translation id="1755408179247123630">텍스트 읽어주기를 사용 설정하시겠습니까?</translation>
 <translation id="1755556344721611131">진단 앱</translation>
 <translation id="1756833229520115364">템플릿을 저장할 수 없습니다. 창 또는 탭이 너무 많습니다.</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">휴대전화의 최근 사진, 미디어, 알림 보기 설정</translation>
 <translation id="1787955149152357925">꺼짐</translation>
 <translation id="1796561540704213354">방문한 페이지 및 열린 페이지를 포함한 웹사이트</translation>
+<translation id="179842970735685253">Google 서비스 약관</translation>
 <translation id="181103072419391116">신호 강도 <ph name="SIGNAL_STRENGTH" />, 관리자가 관리함</translation>
 <translation id="1816896987747843206">카메라 액세스 권한이 있는 모든 앱 및 웹사이트에서 카메라에 액세스할 수 있게 됩니다.</translation>
 <translation id="1823873187264960516">이더넷: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">수업 과제 유형</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">주의사항</translation>
 <translation id="3139188263101386725">업데이트된 단축키 사용</translation>
 <translation id="3139942575505304791">데스크 1</translation>
 <translation id="315116470104423982">모바일 데이터</translation>
@@ -961,6 +964,7 @@
 <translation id="4585337515783392668">알 수 없는 수신기에 전송 중지</translation>
 <translation id="4596144739579517758">어두운 테마가 꺼져 있습니다.</translation>
 <translation id="4596442969149038771"><ph name="USER" />님이 공유함</translation>
+<translation id="4610493115106525653">좋은 결과</translation>
 <translation id="4611292653554630842">로그인</translation>
 <translation id="462160925400706389"><ph name="NAME" /> 연결됨</translation>
 <translation id="4623167406982293031">계정을 인증하세요.</translation>
@@ -1118,6 +1122,7 @@
 <translation id="5121628974188116412">페이지 맨 아래로 이동</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> 미리보기입니다. 비활성 데스크입니다.</translation>
 <translation id="5136175204352732067">다른 키보드 연결됨</translation>
+<translation id="5140105873789567560">글쓰기 도우미 기능 및 읽기 도우미 기능을 사용하려면 18세 이상이어야 합니다.</translation>
 <translation id="5144005092084035179">오디오 입력을 전환할까요?</translation>
 <translation id="5147567197700016471">잠금 해제됨</translation>
 <translation id="5150070631291639005">개인 정보 보호 설정</translation>
@@ -1558,6 +1563,7 @@
 <translation id="6696025732084565524">분리식 키보드에 중요 업데이트 필요</translation>
 <translation id="6697913454192220372">새 데스크 추가</translation>
 <translation id="6700713906295497288">IME 메뉴 버튼</translation>
+<translation id="6704375469818246414">생성형 AI 사용 시 품질이 일정하지 않을 수 있습니다.</translation>
 <translation id="6706742084323792866">키보드 고정</translation>
 <translation id="6710213216561001401">이전</translation>
 <translation id="6723839937902243910">전원</translation>
@@ -1825,9 +1831,11 @@
 <translation id="7726391492136714301">휴대전화의 알림과 앱을 봅니다.</translation>
 <translation id="7727952505535211425">새 탭의 주소 표시줄에서 웹사이트 열기</translation>
 <translation id="7742327441377685481">알림 없음</translation>
+<translation id="774736258792760908">글쓰기 도우미 기능과 읽기 도우미 기능을 사용 설정하면 <ph name="LINK_TO_SERVICE_TERMS" />에 따라 작성 제안을 생성하고, 요약을 생성하고, 질문에 답변하고, 제품을 개선하기 위해 입력 텍스트 및 문서 콘텐츠가 Google AI 서버로 전송됩니다. 개인 정보, 민감한 정보 또는 기밀 정보는 포함하지 마세요.</translation>
 <translation id="7748275671948949022">앱 표시줄의 런처 버튼 강조 표시</translation>
 <translation id="7749443890790263709">최대 데스크 개수에 도달했습니다.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">언제든지 설정에서 글쓰기 도우미 기능 및 읽기 도우미 기능을 사용 중지할 수 있습니다. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">텍스트 읽어주기</translation>
 <translation id="7769299611924763557">곧 GIF가 준비됩니다</translation>
 <translation id="7773536009433685931">대신 Wi-Fi 사용 설정하기</translation>
@@ -1836,6 +1844,7 @@
 <translation id="7781829728241885113">어제</translation>
 <translation id="7787212146956232129">입력 및 출력 장치가 설정되었습니다. 설정으로 이동하여 해당 설정을 변경하세요.</translation>
 <translation id="7792590255364786396">표시</translation>
+<translation id="7793389284006812057">생성형 AI는 초기 개발 단계에 있는 실험적인 기술로, 현재 제한적으로만 이용할 수 있습니다.</translation>
 <translation id="7796735576426975947">새로운 알림 숨겨짐</translation>
 <translation id="7798302898096527229">취소하려면 검색 또는 Shift 키를 누르세요.</translation>
 <translation id="780301667611848630">사용 안함</translation>
@@ -1990,6 +1999,7 @@
 <translation id="8331351032546853669">다운로드 대기 중</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">좋지 않은 결과</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> 창 선택됨</translation>
 <translation id="8349826889576450703">런처</translation>
 <translation id="8349964124165471584">새 창에서 링크 열기</translation>

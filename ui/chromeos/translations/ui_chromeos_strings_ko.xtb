@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">잘못된 PUK</translation>
 <translation id="4057991113334098539">활성화 중...</translation>
 <translation id="4092890906744441904">아일랜드어</translation>
+<translation id="4101601646343868113">모바일 네트워크에 로그인하여 모바일 데이터 요금제가 활성화되어 있는지 확인하세요.</translation>
 <translation id="4124731372776320263">Drive 파일 1개 동기화 중</translation>
 <translation id="4124935795427217608">유니콘</translation>
 <translation id="4131235941541910880">필요하지 않은 항목은 휴지통으로 옮기세요.</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">타밀어(Tamil99 키보드)</translation>
 <translation id="5633226425545095130">이 항목을 옮기면 '<ph name="DESTINATION_NAME" />' 공유 폴더를 볼 수 있는 모든 사용자와 항목이 공유됩니다.</translation>
 <translation id="5649768706273821470">듣기</translation>
+<translation id="5650895901941743674">APN 구성을 확인하세요.</translation>
 <translation id="5669691691057771421">새 PIN 입력</translation>
 <translation id="5678784840044122290">단말기 내에서 Linux 애플리케이션을 사용할 수 있게 되며 런처에 아이콘이 표시될 수도 있습니다.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />아카이브 또는 가상 디스크의 연결을 해제할 수 없습니다.<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">파일 목록을 썸네일 이미지 보기로 변경했습니다.</translation>
 <translation id="8601932370724196034">Crostini 이미지 파일</translation>
 <translation id="8609695766746872526">아이슬란드어</translation>
+<translation id="8630384863424041081">SIM 카드 PIN 또는 이동통신사에서 제공한 기본 PIN을 입력하세요. 지원이 필요할 경우 이동통신사에 문의하세요</translation>
 <translation id="863903787380594467">잘못된 PIN입니다. 기회가 <ph name="RETRIES" />번 남았습니다.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - 포트</translation>
 <translation id="8656407365183407932">오프라인 파일이 삭제됨</translation>

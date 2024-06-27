@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Aktiivinen <ph name="LAST_UPDATED" /> päivää sitten</translation>
 <translation id="1390418506739274310">Saatat nähdä muiden sellaisten sovellusten historian, jotka avaavat linkkejä Chromessa. Google-tililläsi voi olla muita selaushistoriatietoja osoitteessa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Jos jatkat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jakaa nimesi, sähköpostiosoitteesi, osoitteesi ja profiilikuvasi tälle sivustolle. Katso sivuston <ph name="BEGIN_LINK1" />käyttöehdot<ph name="END_LINK1" />.</translation>
+<translation id="139752016751285248">Hintatilastojen alapaneeli kokonaan avattuna</translation>
 <translation id="1397811292916898096">Hae hakukoneella <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Voit <ph name="BEGIN_LINK1" />valita, mitä Chrome-dataa tallennetaan<ph name="END_LINK1" /> Google-tilillesi.
 
@@ -179,6 +180,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="1877073879466606884">Profiili, johon olet kirjautunut, on hallinnoitu profiili. Järjestelmänvalvoja voi tehdä muutoksia profiilin asetuksiin etänä, analysoida selaimen tietoja raporttien avulla ja tehdä muita tarvittavia tehtäviä.</translation>
 <translation id="1883903952484604915">Omat tiedostot</translation>
 <translation id="189358972401248634">Muut kielet</translation>
+<translation id="1899175549411605574">Hintatilastojen alapaneeli</translation>
 <translation id="1900260903084164610">Jatkamalla hyväksyt <ph name="BEGIN_TOS_LINK" />käyttöehdot<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Avaamasi URL-osoitteet tallennetaan Google-tilillesi</translation>
 <translation id="1910950723001426294">Jakamisvaihtoehtojen lista on suljettu.</translation>
@@ -520,6 +522,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3587596251841506391">Paranna verkon turvallisuutta</translation>
 <translation id="3597179440835065298">Parempia ehdotuksia</translation>
 <translation id="3602290021589620013">Esikatselu</translation>
+<translation id="3614126103057878858">Hintatilastot</translation>
 <translation id="3616113530831147358">Ääni</translation>
 <translation id="3622349720008044802">Hallitse ikkunoita</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+1 sivusto}other{+# sivustoa}}</translation>
@@ -529,6 +532,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3637744895182738742">Jos unohdit tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-data<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Siirry Google-sovelluksen etusivulle</translation>
 <translation id="368329460027487650">Kirjautunut ulos. Avaa kirjautumisvaihtoehdot.</translation>
+<translation id="3684540848053703310">Hintatilastojen alapaneeli suljettu</translation>
 <translation id="3687645719033307815">Katselet tämän sivun esikatselua</translation>
 <translation id="3690369331356918524">Varoittaa, jos salasanoja vaarantuu tietosuojaloukkauksessa</translation>
 <translation id="3692944402865947621">Lataus epäonnistui, koska tallennussijainti ei ole saatavilla: <ph name="FILE_NAME" /></translation>

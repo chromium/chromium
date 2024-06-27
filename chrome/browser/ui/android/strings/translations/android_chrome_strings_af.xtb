@@ -89,6 +89,7 @@
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> dae gelede aktief</translation>
 <translation id="1390418506739274310">Jy kan moontlik die geskiedenis sien van ander apps wat skakels in Chrome oopmaak. Jou Google-rekening kan dalk ander vorme van blaaigeskiedenis hê by <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Om voort te gaan, sal <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jou naam, e-posadres en profielfoto met hierdie werf deel. Besoek hierdie werf se <ph name="BEGIN_LINK1" />diensbepalings<ph name="END_LINK1" />.</translation>
+<translation id="139752016751285248">Prysinsigte se onderste blad het teen volle hoogte oopgemaak</translation>
 <translation id="1397811292916898096">Soek met <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Jy kan <ph name="BEGIN_LINK1" />bestuur watter Chrome-data gestoor word<ph name="END_LINK1" /> in jou Google-rekening.
 
@@ -179,6 +180,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1877073879466606884">Die profiel waarmee jy aangemeld is, is ’n bestuurde profiel. Jou administrateur kan oor ’n afstand veranderinge aan jou profielinstellings maak, inligting oor die blaaier ontleed deur middel van verslagdoening, en ander nodige take uitvoer.</translation>
 <translation id="1883903952484604915">My lêers</translation>
 <translation id="189358972401248634">Ander tale</translation>
+<translation id="1899175549411605574">Prysinsigte se onderste blad</translation>
 <translation id="1900260903084164610">Deur voort te gaan, stem jy in tot die <ph name="BEGIN_TOS_LINK" />diensbepalings<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Die URL'e wat jy besoek, word in jou Google-rekening gestoor</translation>
 <translation id="1910950723001426294">Lys deelopsies is gesluit.</translation>
@@ -520,6 +522,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3587596251841506391">Help websekuriteit verbeter</translation>
 <translation id="3597179440835065298">Kry beter voorstelle</translation>
 <translation id="3602290021589620013">Voorskou</translation>
+<translation id="3614126103057878858">Prysinsigte</translation>
 <translation id="3616113530831147358">Oudio</translation>
 <translation id="3622349720008044802">Bestuur vensters</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 werf}other{+ # werwe}}</translation>
@@ -529,6 +532,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3637744895182738742"><ph name="BEGIN_LINK" />Vee die Chrome-data in jou rekening uit<ph name="END_LINK" /> indien jy jou wagfrase vergeet het of hierdie instelling wil verander.</translation>
 <translation id="3674208116086565128">Gaan na tuisblad van Google-app</translation>
 <translation id="368329460027487650">Afgemeld. Maak opsies oop om aan te meld.</translation>
+<translation id="3684540848053703310">Prysinsigte se onderste blad is toegemaak</translation>
 <translation id="3687645719033307815">Jy bekyk tans 'n voorskou van hierdie bladsy</translation>
 <translation id="3690369331356918524">Waarsku jou as wagwoorde in 'n dataskending blootgestel is</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> aflaai het misluk omdat die bergingligging nie bereik kan word nie.</translation>

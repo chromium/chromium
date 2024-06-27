@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">තිරය මත යතුරු පුවරුව සබල කර ඇත</translation>
 <translation id="1749109475624620922">සියලු මේසවලට <ph name="WINDOW_TITLE" /> කවුළුව පවරා ඇත</translation>
 <translation id="1750088060796401187">මේස <ph name="MAX_DESK_LIMIT" />ක් පමණක් ඉඩ දේ. අලුත් එකක් විවෘත කිරීමට මේසයක් ඉවත් කරන්න.</translation>
+<translation id="1751335846119670066">මට කියවීමට උදවු කරන්න</translation>
 <translation id="1755408179247123630">කථා කිරීමට තෝරන්න ක්‍රියාත්මක කරන්න ද?</translation>
 <translation id="1755556344721611131">Diagnostics යෙදුම</translation>
 <translation id="1756833229520115364">අච්චුව සුරැකීමට නොහැකි විය. කවුළු හෝ ටැබ ඉතා වැඩි ගණනකි.</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">ඔබේ දුරකථනයේ මෑත ඡායාරූප, මාධ්‍ය සහ දැනුම්දීම් බැලීම පිහිටුවන්න</translation>
 <translation id="1787955149152357925">ක්‍රියාවිරහිතයි</translation>
 <translation id="1796561540704213354">ඔබ පිවිසි පිටු සහ විවෘත පිටු ඇතුළු වෙබ් අඩවි</translation>
+<translation id="179842970735685253">Google හි සේවා නියම</translation>
 <translation id="181103072419391116">සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි</translation>
 <translation id="1816896987747843206">මෙය කැමරා අවසරය ඇති සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා කැමරා ප්‍රවේශයට ඉඩ දෙයි</translation>
 <translation id="1823873187264960516">ඊතර්නෙට්: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">පන්ති වැඩ වර්ගය</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">මතක තබා ගත යුතු කරුණු කිහිපයක්</translation>
 <translation id="3139188263101386725">යාවත්කාලීන කෙටිමඟ භාවිතා කරන්න</translation>
 <translation id="3139942575505304791">1 වෙනි මේසය</translation>
 <translation id="315116470104423982">ජංගම දත්ත</translation>
@@ -961,6 +964,7 @@
 <translation id="4585337515783392668">නොදන්නා ග්‍රාහකයෙකු මත විකාශය කිරීම නවත්වන්න</translation>
 <translation id="4596144739579517758">අඳුරු තේමාව ක්‍රියාවිරහිතයි</translation>
 <translation id="4596442969149038771"><ph name="USER" /> බෙදා ගන්නා ලදි</translation>
+<translation id="4610493115106525653">හොඳ ප්‍රතිදානය</translation>
 <translation id="4611292653554630842">පුරන්න</translation>
 <translation id="462160925400706389"><ph name="NAME" /> සම්බන්ධිතයි</translation>
 <translation id="4623167406982293031">ගිණුම සත්‍යාපනය කරන්න</translation>
@@ -1118,6 +1122,7 @@
 <translation id="5121628974188116412">පිටුවේ පහළට යන්න</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> පෙරදසුන. අක්‍රිය මේසය.</translation>
 <translation id="5136175204352732067">වෙනස් යතුරු පුවරුවක් සම්බන්ධ කර ඇත</translation>
+<translation id="5140105873789567560">මට ලිවීමට කරන්න සහ මට කියවීමට උදවු කරන්න භාවිත කිරීමට ඔබට අවම වශයෙන් වයස අවුරුදු 18ක් විය යුතු යි.</translation>
 <translation id="5144005092084035179">ශ්‍රව්‍ය ආදානය මාරු කරන්න ද?</translation>
 <translation id="5147567197700016471">අගුලු හැර ඇත</translation>
 <translation id="5150070631291639005">පෞද්ගලිකත්ව සැකසීම්</translation>
@@ -1558,6 +1563,7 @@
 <translation id="6696025732084565524">ඔබේ ගැලවීමට හැකි යතුරු පුවරුවට අවදානම් යාවත්කාලීනයක් අවශ්‍යයි</translation>
 <translation id="6697913454192220372">නව මේසයක් එක් කරන්න</translation>
 <translation id="6700713906295497288">IME මෙනු බොත්තම</translation>
+<translation id="6704375469818246414">උත්පාදක AI භාවිතා කරන විට ගුණත්වය වෙනස් විය හැක.</translation>
 <translation id="6706742084323792866">යතුරු පුවරුව අමුණන්න</translation>
 <translation id="6710213216561001401">පෙර</translation>
 <translation id="6723839937902243910">බලය</translation>
@@ -1825,9 +1831,11 @@
 <translation id="7726391492136714301">ඔබගේ දුරකථනයේ දැනුම්දීම් සහ යෙදුම් බලන්න</translation>
 <translation id="7727952505535211425">නව පටිත්තක ලිපින තීරුවේ වෙබ් අඩවිය විවෘත කරන්න</translation>
 <translation id="7742327441377685481">දැනුම්දීම් නැත</translation>
+<translation id="774736258792760908">ඔබ මට ලිවීමට උදවු කරන්න සහ මට කියවීමට උදවු කරන්න ක්‍රියාත්මක කළ විට, ලිවීමේ යෝජනා උත්පාදනය කිරීමට, සාරාංශ උත්පාදනය කිරීමට, ප්‍රශ්නවලට පිළිතුරු දීමට සහ <ph name="LINK_TO_SERVICE_TERMS" /> වෙත යටත්ව නිෂ්පාදනය වැඩි දියුණු කිරීමට ආදාන පෙළ සහ ලේඛන අන්තර්ගතය Google AI සේවාදායකයන් වෙත යවනු ලැබේ. පුද්ගලික, සංවේදී, හෝ රහසිගත කිසිවක් ඇතුළත් නොකරන්න.</translation>
 <translation id="7748275671948949022">රාක්කයේ දියත්කරණ බොත්තම උද්දීපනය කරන්න</translation>
 <translation id="7749443890790263709">උපරිම මේස ගණන ළඟා විය.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">ඔබට සැකසීම් තුළ ඕනෑම වේලාවක දී මට ලිවීමට උදවු කරන්න සහ මට කියවීමට උදවු කරන්න ක්‍රියාවිරහිත කළ හැක. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">කීමට-තේරීම</translation>
 <translation id="7769299611924763557">ඔබේ GIF ඉක්මනින් සූදානම් වෙයි</translation>
 <translation id="7773536009433685931">ඒ වෙනුවට WiFi ක්‍රියාත්මක කරන්න</translation>
@@ -1836,6 +1844,7 @@
 <translation id="7781829728241885113">ඊයේ</translation>
 <translation id="7787212146956232129">ආදාන සහ ප්‍රතිදාන උපාංග සකසා ඇත. වෙනස් කිරීමට සැකසීම් වෙත යන්න.</translation>
 <translation id="7792590255364786396">දෘශ්‍යමාන</translation>
+<translation id="7793389284006812057">උත්පාදක AI පර්යේෂණාත්මක, මුල් සංවර්ධන අවධියේ පවතින අතර දැනට සීමිත ලැබීම ඇත.</translation>
 <translation id="7796735576426975947">නව දැනුම්දීම සඟවා ඇත</translation>
 <translation id="7798302898096527229">අවලංගු කිරීමට සෙවීම හෝ Shift ඔබන්න.</translation>
 <translation id="780301667611848630">එපා, ස්තූතියි</translation>
@@ -1990,6 +1999,7 @@
 <translation id="8331351032546853669">බාගැනීම පොරොත්තුවෙන්</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">අයහපත් ප්‍රතිදානය</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> කවුළුව තෝරා ගන්නා ලදී</translation>
 <translation id="8349826889576450703">දියත්කරණය</translation>
 <translation id="8349964124165471584">සබැඳිය නව කවුළුවක විවෘත කරන්න</translation>

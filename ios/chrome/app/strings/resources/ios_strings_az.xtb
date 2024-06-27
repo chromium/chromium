@@ -825,6 +825,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5190835502935405962">Əlfəcinlər Paneli</translation>
 <translation id="519530786644929958">Endirmə uğursuz oldu və yenidən cəhd etmək mümkün deyil.</translation>
 <translation id="5197255632782567636">internet</translation>
+<translation id="5205197603258285592">Şəkli burada yadda saxlayın..</translation>
 <translation id="5211488077761630279">"<ph name="SITE_NAME" />" saytının <ph name="PERMISSION" /> istifadə etməsinə icazə verilsin?</translation>
 <translation id="5219295696240154694">Vebdə hər kəsin güvənliyini artırmağa yardım edin</translation>
 <translation id="5220945116117011963">Tarixlərdən təqvim tədbirləri yaradın</translation>
@@ -1525,6 +1526,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8556590991644167667">{count,plural, =1{{count} xəbərdarlıqdan imtina etdiniz}other{{count} xəbərdarlıqdan imtina etdiniz}}</translation>
 <translation id="8560253818350321773">Əvvəlcə çox istifadə edilənləri göstərin.</translation>
 <translation id="8569721750632860947">Oxu siyahısına hansı URL-i əlavə etmək istərdiniz?</translation>
+<translation id="8570765991595769633">Kartları fərdiləşdirin</translation>
 <translation id="8577056989960190117">Son istifadə ilini (<ph name="YEAR" />) avtomatik doldurun</translation>
 <translation id="8588404856427128947">Deaktiv</translation>
 <translation id="8591976964826315682">Anonim rejimdə üçüncü tərəf kukilərini bloklayın</translation>
@@ -1664,6 +1666,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="948048872540558976">Yeni Tab Yaradın</translation>
 <translation id="952218985181984374">{count,plural, =1{Əlfəcin yadda saxlandı}other{{count} əlfəcin yadda saxlandı}}</translation>
 <translation id="952704832371081537">Ləğv edin</translation>
+<translation id="955587716023217544">Hesab siyahısını redaktə edin</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> kanalını izləyirsiniz</translation>
 <translation id="96615566463761848">Digər cihazların tab təkliflərini göstərin</translation>
 <translation id="973493300226275298">Onlayn mağazalarda məhsulun qiymətini izləyin. Qiymət düşəndə bildiriş alacaqsınız.</translation>

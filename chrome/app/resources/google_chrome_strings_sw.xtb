@@ -5,6 +5,8 @@
 <translation id="1026101648481255140">Endelea na Usakinishaji</translation>
 <translation id="102763973188675173">Weka mapendeleo na udhibiti Google Chrome. Sasisho linapatikana.</translation>
 <translation id="1028061813283459617">Ili ufute data ya kuvinjari kwenye kifaa hiki pekee, bila kuifuta katika Akaunti yako ya Google, <ph name="BEGIN_LINK" />ondoka kwenye akaunti ya Chrome<ph name="END_LINK" />.</translation>
+<translation id="1042270987544905725">Bofya ili ufunge kidirisha cha kuingia katika Chrome</translation>
+<translation id="1059838145689930908">Ili utumie kiendelezi hiki ukitumia <ph name="USER_EMAIL_ADDRESS" />, ingia katika Chrome.</translation>
 <translation id="1065672644894730302">Mapendeleo yako hayawezi kusomwa.
 
 Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahifadhiwa.</translation>
@@ -373,6 +375,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6291089322031436445">Programu za Chrome Dev</translation>
 <translation id="6291549208091401781">Tayari Google Chrome imesakinishwa kwa watumiaji wote kwenye kompyuta yako.</translation>
 <translation id="6319856120645568262">Chrome inahitaji ruhusa ili kuweka ramani ya mazingira yako na kufuatilia mikono yako</translation>
+<translation id="6321592572353357376">Kiendelezi cha "<ph name="EXTENSION_NAME" />" kinakuhitaji uingie katika Chrome</translation>
 <translation id="6326175484149238433">Ondoa kwenye Chrome</translation>
 <translation id="6327105987658262776">Hakuna sasisho linalopatikana.</translation>
 <translation id="6360449101159168105">Kichupo hiki kilipokuwa hakitumiki, nafasi ya hifadhi ilirejeshwa ili Chrome iwe na kasi ya utendaji. Unaweza kuchagua tovuti hii iendelee kutumika kila wakati.</translation>
@@ -465,6 +468,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="7655455401911432608">Historia yako ya kuvinjari, kumbukumbu ya tovuti ulizozitembelea ukitumia Chrome kwenye kifaa hiki.</translation>
 <translation id="7661924425853052955">Hujatembelea hivi majuzi. Chrome imeondoa <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na <ph name="COUNT" /> zaidi</translation>
 <translation id="7668816516367091728">Fanya shughuli kama vile kutafsiri, kukokotoa na zaidi, moja kwa moja kwenye sehemu ya anwani</translation>
+<translation id="7670287553302121848">Akaunti ya Chrome inahitaji kuthibitisha upya</translation>
 <translation id="769538538642757151">Chrome itakufahamisha ikiwa kuna chochote kinachohitaji ukague</translation>
 <translation id="7747138024166251722">Kisakinishi hakikuweza kuunda saraka la muda. Tafadhali chunguza nafasi iliyo wazi kwenye diski na ruhusa ya kusakinisha programu.</translation>
 <translation id="7761834446675418963">Bofya jina lako ili ufungue Chrome na uanze kuvinjari.</translation>

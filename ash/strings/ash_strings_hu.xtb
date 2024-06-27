@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">Képernyő-billentyűzet bekapcsolva</translation>
 <translation id="1749109475624620922">Az ablak (<ph name="WINDOW_TITLE" />) minden asztalhoz hozzá van rendelve</translation>
 <translation id="1750088060796401187">Csak <ph name="MAX_DESK_LIMIT" /> asztal engedélyezett. Távolítsa el valamelyik asztalt, ha újat kíván nyitni.</translation>
+<translation id="1751335846119670066">Segítség az olvasáshoz</translation>
 <translation id="1755408179247123630">Bekapcsolja a Felolvasás funkciót?</translation>
 <translation id="1755556344721611131">Diagnosztika alkalmazás</translation>
 <translation id="1756833229520115364">Nem sikerült a sablon mentése. Túl sok ablak vagy lap van megnyitva.</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">A telefonján lévő legutóbbi fotók, médiatartalmak és értesítések megtekintésének beállítása</translation>
 <translation id="1787955149152357925">Ki</translation>
 <translation id="1796561540704213354">Webhelyek, például a felkeresett oldalak és a megnyitott oldalak</translation>
+<translation id="179842970735685253">A Google Általános Szerződési Feltételei</translation>
 <translation id="181103072419391116">Jelerősség: <ph name="SIGNAL_STRENGTH" />, a rendszergazdája kezeli</translation>
 <translation id="1816896987747843206">Ezzel engedélyezi a kamerához való hozzáférést a kamerahasználati engedéllyel rendelkező összes alkalmazás és webhely számára</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Feladat típusa</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Néhány fontos tudnivaló</translation>
 <translation id="3139188263101386725">A frissített billentyűparancs használata</translation>
 <translation id="3139942575505304791">1. asztal</translation>
 <translation id="315116470104423982">Mobiladatok</translation>
@@ -962,6 +965,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4585337515783392668">Ismeretlen fogadó eszközre történő átküldés leállítása</translation>
 <translation id="4596144739579517758">Sötét téma kikapcsolva.</translation>
 <translation id="4596442969149038771"><ph name="USER" /> megosztotta</translation>
+<translation id="4610493115106525653">Jó kimenet</translation>
 <translation id="4611292653554630842">Bejelentkezés</translation>
 <translation id="462160925400706389"><ph name="NAME" /> csatlakoztatva</translation>
 <translation id="4623167406982293031">Fiók ellenőrzése</translation>
@@ -1119,6 +1123,7 @@ Használhatja a billentyűparancsot is. Először jelölje ki a szöveget, majd 
 <translation id="5121628974188116412">Ugrás az oldal aljára</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> előnézete. Inaktív asztal.</translation>
 <translation id="5136175204352732067">Új billentyűzet lett csatlakoztatva</translation>
+<translation id="5140105873789567560">Legalább 18 évesnek kell lennie a Segítség az íráshoz és a Segítség az olvasáshoz használatához.</translation>
 <translation id="5144005092084035179">Hangbemenetet szeretne váltani?</translation>
 <translation id="5147567197700016471">Feloldva</translation>
 <translation id="5150070631291639005">Adatvédelmi beállítások</translation>
@@ -1559,6 +1564,7 @@ Frissen telepítve</translation>
 <translation id="6696025732084565524">Szükség van a leválasztható billentyűzet kritikus frissítésének telepítésére</translation>
 <translation id="6697913454192220372">Új asztal hozzáadása</translation>
 <translation id="6700713906295497288">IME-menü gomb</translation>
+<translation id="6704375469818246414">Generatív AI használatakor változó lehet a minőség.</translation>
 <translation id="6706742084323792866">Billentyűzet kitűzése</translation>
 <translation id="6710213216561001401">Előző</translation>
 <translation id="6723839937902243910">Energiaellátás</translation>
@@ -1826,9 +1832,11 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7726391492136714301">Telefonja értesítéseinek és alkalmazásainak megtekintése</translation>
 <translation id="7727952505535211425">A webhely megnyitása a címsávban új lapon</translation>
 <translation id="7742327441377685481">Nincs értesítés</translation>
+<translation id="774736258792760908">Ha bekapcsolja a Segítség az íráshoz és a Segítség az olvasáshoz funkciót, a rendszer elküldi a bevitt szöveget és a dokumentumok tartalmát a Google AI szervereinek írási javaslatok és összefoglalók generálásához, kérdések megválaszolásához, valamint a termék fejlesztéséhez a(z) <ph name="LINK_TO_SERVICE_TERMS" /> értelmében. Ne adjon meg személyes, kényes vagy bizalmas adatokat.</translation>
 <translation id="7748275671948949022">Az indítógomb kiemelése a polcon</translation>
 <translation id="7749443890790263709">Elérte az asztalok maximális számát.</translation>
 <translation id="7749958366403230681">4. ExpressKey</translation>
+<translation id="7759183637555564029">A Beállításokban bármikor kikapcsolhatja a Segítség az íráshoz és a Segítség az olvasáshoz funkciót. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Felolvasás</translation>
 <translation id="7769299611924763557">A GIF hamarosan elkészül.</translation>
 <translation id="7773536009433685931">Helyette Wi-Fi bekapcsolása</translation>
@@ -1837,6 +1845,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7781829728241885113">Tegnap</translation>
 <translation id="7787212146956232129">A bemeneti és kimeneti eszközök be vannak állítva. A beállításoknál módosíthatja őket.</translation>
 <translation id="7792590255364786396">Látható</translation>
+<translation id="7793389284006812057">A generatív AI egy kísérleti szolgáltatás, korai fejlesztési fázisban van, és jelenleg korlátozottan áll rendelkezésre.</translation>
 <translation id="7796735576426975947">Új értesítés elrejtve</translation>
 <translation id="7798302898096527229">A kikapcsoláshoz nyomja meg a Keresés vagy a Shift billentyűt.</translation>
 <translation id="780301667611848630">Köszönöm, nem</translation>
@@ -1991,6 +2000,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8331351032546853669">Letöltés függőben</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Rossz kimenet</translation>
 <translation id="8345019317483336363">A következő ablak van kiválasztva: <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">indító</translation>
 <translation id="8349964124165471584">A link megnyitása új ablakban</translation>

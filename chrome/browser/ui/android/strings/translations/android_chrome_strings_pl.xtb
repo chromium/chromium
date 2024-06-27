@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Aktywność <ph name="LAST_UPDATED" /> dni temu</translation>
 <translation id="1390418506739274310">Możesz zobaczyć historię z innych aplikacji, które otwierają linki w Chrome. Inne rodzaje historii przeglądania mogą być nadal dostępne na Twoim koncie Google na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> udostępni teraz witrynie Twoje imię i nazwisko, adres e-mail i zdjęcie profilowe. Zobacz <ph name="BEGIN_LINK1" />warunki korzystania<ph name="END_LINK1" /> z tej witryny.</translation>
+<translation id="139752016751285248">Plansza dolna ze statystykami cen jest otwarta na całą wysokość</translation>
 <translation id="1397811292916898096">Szukaj w <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Możesz <ph name="BEGIN_LINK1" />określić, jakie dane Chrome mają być zapisywane<ph name="END_LINK1" /> na koncie Google.
 
@@ -179,6 +180,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="1877073879466606884">Profil, na którym jesteś zalogowany(-a), jest profilem zarządzanym. Administrator może zdalnie wprowadzać zmiany w ustawieniach profilu, analizować informacje o przeglądarce za pomocą raportów i wykonywać inne niezbędne zadania.</translation>
 <translation id="1883903952484604915">Moje pliki</translation>
 <translation id="189358972401248634">Inne języki</translation>
+<translation id="1899175549411605574">Plansza dolna ze statystykami dotyczącymi cen</translation>
 <translation id="1900260903084164610">Przechodząc dalej, akceptujesz <ph name="BEGIN_TOS_LINK" />Warunki korzystania z usługi<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Odwiedzane adresy URL są zapisywane na Twoim koncie Google</translation>
 <translation id="1910950723001426294">Lista opcji udostępniania jest zamknięta.</translation>
@@ -530,6 +532,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="3637744895182738742">Jeśli zapomnisz hasło lub postanowisz zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Otwórz stronę główną aplikacji Google</translation>
 <translation id="368329460027487650">Wylogowano. Otwiera opcje logowania.</translation>
+<translation id="3684540848053703310">Plansza dolna ze statystykami cen została zamknięta</translation>
 <translation id="3687645719033307815">Widzisz podgląd strony</translation>
 <translation id="3690369331356918524">Ostrzega, jeśli wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia haseł</translation>
 <translation id="3692944402865947621">Nie udało się pobrać pliku <ph name="FILE_NAME" /> z powodu niedostępności pamięci.</translation>

@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Aktívne pred <ph name="LAST_UPDATED" /> dňami</translation>
 <translation id="1390418506739274310">Môžete si zobraziť históriu z iných aplikácií, ktoré otvárajú odkazy v Chrome. Váš účet Google môže mať ďalšie formy histórie prehliadania na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Ak chcete pokračovať, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bude s týmto webom zdieľať vaše meno, e‑mailovú adresu a profilovú fotku. Pozrite si <ph name="BEGIN_LINK1" />zmluvné podmienky<ph name="END_LINK1" /> tohto webu.</translation>
+<translation id="139752016751285248">Dolný hárok cenových štatistík je otvorený na celú výšku</translation>
 <translation id="1397811292916898096">Hľadať pomocou vyhľadávača <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Vo svojom účte Google môžete <ph name="BEGIN_LINK1" />spravovať, ktoré údaje Chromu sa majú ukladať<ph name="END_LINK1" />.
 
@@ -179,6 +180,7 @@
 <translation id="1877073879466606884">Profil, do ktorého ste sa prihlásili, je spravovaný. Správca môže vzdialene vykonávať zmeny v nastaveniach profilu, analyzovať informácie o prehliadači na základe reportov a vykonávať ďalšie potrebné úlohy.</translation>
 <translation id="1883903952484604915">Moje súbory</translation>
 <translation id="189358972401248634">Ďalšie jazyky</translation>
+<translation id="1899175549411605574">Dolný hárok cenových štatistík</translation>
 <translation id="1900260903084164610">Pokračovaním vyjadrujete súhlas so <ph name="BEGIN_TOS_LINK" />zmluvnými podmienkami<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Webové adresy, ktoré navštívite, sa uložia do vášho účtu Google</translation>
 <translation id="1910950723001426294">Zoznam možností zdieľania je zatvorený.</translation>
@@ -530,6 +532,7 @@
 <translation id="3637744895182738742">Ak ste zabudli prístupovú frázu alebo chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Prejsť na domovskú stránku aplikácie Google</translation>
 <translation id="368329460027487650">Účet je odhlásený. Otvoria sa možnosti na prihlásenie.</translation>
+<translation id="3684540848053703310">Dolný hárok cenových štatistík je zatvorený</translation>
 <translation id="3687645719033307815">Zobrazujete si ukážku tejto stránky</translation>
 <translation id="3690369331356918524">Upozorňuje pri prezradení hesiel v rámci porušenia ochrany údajov</translation>
 <translation id="3692944402865947621">Súbor <ph name="FILE_NAME" /> sa nepodarilo stiahnuť, pretože umiestnenie úložiska nie je k dispozícii.</translation>

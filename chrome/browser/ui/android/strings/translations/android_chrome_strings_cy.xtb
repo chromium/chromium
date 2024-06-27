@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Yma <ph name="LAST_UPDATED" /> o ddiwrnodau yn ôl</translation>
 <translation id="1390418506739274310">Mae'n bosib y byddwch yn gweld yr hanes o apiau eraill sy'n agor dolenni yn Chrome. Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori yn <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">I barhau, bydd <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> yn rhannu eich enw, eich e-bost, eich cyfeiriad, a'ch llun proffil gyda'r wefan. Gweler <ph name="BEGIN_LINK1" />telerau gwasanaeth<ph name="END_LINK1" /> y wefan hon.</translation>
+<translation id="139752016751285248">Dalen waelod mewnwelediadau pris wedi'i hagor ar uchder llawn</translation>
 <translation id="1397811292916898096">Chwilio gyda <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Gallwch <ph name="BEGIN_LINK1" />reoli pa ddata Chrome sy'n cael eu cadw<ph name="END_LINK1" /> yn eich Cyfrif Google.
 
@@ -179,6 +180,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="1877073879466606884">Mae'r proffil rydych wedi mewngofnodi iddo yn broffil a reolir. Gall eich gweinyddwr wneud newidiadau i'ch gosodiadau proffil o bell, dadansoddi gwybodaeth am y porwr trwy adrodd, a chyflawni tasgau angenrheidiol eraill.</translation>
 <translation id="1883903952484604915">Fy Ffeiliau</translation>
 <translation id="189358972401248634">Ieithoedd eraill</translation>
+<translation id="1899175549411605574">Dalen waelod mewnwelediadau pris</translation>
 <translation id="1900260903084164610">Drwy barhau, rydych yn cytuno i'r <ph name="BEGIN_TOS_LINK" />Telerau Gwasanaeth<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Mae'r cyfeiriadau URL rydych yn ymweld â nhw wedi'u cadw i'ch Cyfrif Google</translation>
 <translation id="1910950723001426294">Mae'r rhestr o ddewisiadau rhannu ar gau.</translation>
@@ -520,6 +522,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3587596251841506391">Helpu i wella diogelwch ar y we</translation>
 <translation id="3597179440835065298">Cael awgrymiadau gwell</translation>
 <translation id="3602290021589620013">Rhagolwg</translation>
+<translation id="3614126103057878858">Mewnwelediadau pris</translation>
 <translation id="3616113530831147358">Sain</translation>
 <translation id="3622349720008044802">Rheoli ffenestri</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 wefan}zero{+ # gwefannau}two{+ # wefan}few{+ # gwefan}many{+ # gwefan}other{+ # gwefan}}</translation>
@@ -529,6 +532,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3637744895182738742">Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Mynd i Google App Home</translation>
 <translation id="368329460027487650">Rydych wedi'ch allgofnodi. Yn agor opsiynau i fewngofnodi.</translation>
+<translation id="3684540848053703310">Dalen waelod mewnwelediadau pris ar gau</translation>
 <translation id="3687645719033307815">Rydych yn edrych ar ragolwg o'r dudalen hon</translation>
 <translation id="3690369331356918524">Yn eich rhybuddio os yw cyfrineiriau'n cael eu datgelu mewn tor data</translation>
 <translation id="3692944402865947621">Methwyd â lawrlwytho <ph name="FILE_NAME" /> gan nad oedd modd cyrraedd lleoliad y storfa.</translation>

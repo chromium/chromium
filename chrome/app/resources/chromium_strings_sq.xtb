@@ -81,6 +81,8 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="2329088755516916767">Kur ky cilësim është aktiv, Chromium i ngarkon paraprakisht faqet, gjë që e bën më të shpejtë shfletimin dhe kërkimin.</translation>
 <translation id="2343156876103232566">Për të dërguar një numër nga këtu te telefoni yt Android, identifikohu në Chromium në të dyja pajisjet.</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
+<translation id="2361918034042471035">Shtesa "<ph name="EXTENSION_NAME" />" kërkon që të identifikohesh në Chromium</translation>
+<translation id="2374216753258219393">Për ta përdorur këtë shtesë si <ph name="USER_EMAIL_ADDRESS" />, identifikohu në Chromium.</translation>
 <translation id="2384373936468275798">ChromiumOS nuk mund t'i sinkronizonte të dhënat e tua sepse detajet e identifikimit të llogarisë janë të papërditësuara.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Një ose disa shtesa të Chromium kanë pasur qasje në 1 pajisje HID}=1{Një ose disa shtesa të Chromium kanë qasje në 1 pajisje HID}other{Një ose disa shtesa të Chromium kanë qasje në # pajisje HID}}</translation>
 <translation id="2401032172288869980">Chromium ka nevojë për lejet e kamerës dhe të mikrofonit për këtë sajt</translation>
@@ -244,9 +246,11 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="4893347770495441059">Nise përsëri për të përditësuar &amp;Chromium</translation>
 <translation id="4942295735032723435">Për të marrë përditësimet e ardhshme të Chromium, do të të duhet macOS 11 ose një version i mëvonshëm. Ky kompjuter përdor macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium është në modalitetin e sfondit.</translation>
+<translation id="494490797786467921">Kliko për të mbyllur dialogun e identifikimit në Chromium</translation>
 <translation id="4987820182225656817">Vizitorët mund të përdorin Chromium pa lënë asgjë prapa.</translation>
 <translation id="4994636714258228724">Shtoje veten te Chromium</translation>
 <translation id="5114678101347489141">Chromium po eksploron veçori të reja që u lejojnë sajteve të ofrojnë të njëjtën përvojë shfletimi duke përdorur më pak nga informacionet e tua</translation>
+<translation id="5187123684706427865">Llogaria e Chromium kërkon rivërtetim</translation>
 <translation id="5224391634244552924">Nuk ka asnjë fjalëkalim të ruajtur. Chromium mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato.</translation>
 <translation id="5231355151045086930">Dil nga Chromium</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> është i identifikuar tashmë në këtë profil të Chromium. Kjo do të krijojë një profil të ri të Chromium për <ph name="USER_EMAIL_ADDRESS" /></translation>

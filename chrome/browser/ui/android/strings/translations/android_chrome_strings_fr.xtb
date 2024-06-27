@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Actif il y a <ph name="LAST_UPDATED" /> jours</translation>
 <translation id="1390418506739274310">Vous verrez peut-être l'historique d'autres applis qui ouvrent des liens dans Chrome. Votre compte Google conserve peut-être d'autres historiques de navigation sur <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site vos nom, adresse e-mail et photo de profil. Consultez les <ph name="BEGIN_LINK1" />Conditions d'utilisation<ph name="END_LINK1" /> du site.</translation>
+<translation id="139752016751285248">Bottom sheet des tendances de prix ouverte à pleine hauteur</translation>
 <translation id="1397811292916898096">Rechercher avec <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Vous pouvez <ph name="BEGIN_LINK1" />gérer les données Chrome à enregistrer<ph name="END_LINK1" /> dans votre compte Google.
 
@@ -179,6 +180,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1877073879466606884">Le profil auquel vous êtes connecté est un profil géré. Votre administrateur peut modifier à distance les paramètres de votre profil, analyser les rapports d'informations sur le navigateur et effectuer d'autres tâches nécessaires.</translation>
 <translation id="1883903952484604915">Mes fichiers</translation>
 <translation id="189358972401248634">Autres langues</translation>
+<translation id="1899175549411605574">Bottom sheet des tendances de prix</translation>
 <translation id="1900260903084164610">En continuant, vous acceptez les <ph name="BEGIN_TOS_LINK" />Conditions d'utilisation<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Les URL que vous consultez sont enregistrées dans votre compte Google</translation>
 <translation id="1910950723001426294">La liste des options de partage est fermée.</translation>
@@ -520,6 +522,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3587596251841506391">Contribuer à sécuriser le Web</translation>
 <translation id="3597179440835065298">Obtenez de meilleures suggestions</translation>
 <translation id="3602290021589620013">Aperçu</translation>
+<translation id="3614126103057878858">Tendances des prix</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Gérer les fenêtres</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 site}one{+ # site}other{+ # sites}}</translation>
@@ -529,6 +532,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3637744895182738742">Si vous avez oublié votre phrase secrète ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Accéder à la page d'accueil de l'appli Google</translation>
 <translation id="368329460027487650">Déconnecté. Ouvre les options de connexion.</translation>
+<translation id="3684540848053703310">Bottom sheet des tendances de prix fermée</translation>
 <translation id="3687645719033307815">Ceci est un aperçu de cette page</translation>
 <translation id="3690369331356918524">Vous alerte si des mots de passe sont compromis lors d'une violation des données</translation>
 <translation id="3692944402865947621">Échec du téléchargement du fichier "<ph name="FILE_NAME" />" en raison de l'espace de stockage indisponible.</translation>

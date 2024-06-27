@@ -26,6 +26,7 @@
 <translation id="1050038467049342496">Close other apps</translation>
 <translation id="1053959602163383901">You chose to verify with an authenticator device on websites that use <ph name="PROVIDER_ORIGIN" />. This provider may have stored information about your payment method, which you can <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Undo add</translation>
+<translation id="105642538515333723">You can enter any phrases or details that you remember from pages that you've browsed in the past, like 'comfortable walking shoes'</translation>
 <translation id="1056898198331236512">Warning</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Press tab then Enter to play the Dino Run game in Chrome</translation>
 <translation id="1058479211578257048">Saving cards...</translation>
@@ -41,6 +42,7 @@
 <translation id="1070901266639972381">Night</translation>
 <translation id="1073690811593784042">Glass (coloured)</translation>
 <translation id="1074497978438210769">Not secure</translation>
+<translation id="1074779248866616641">Result</translation>
 <translation id="1075364221219156102">Use a passkey</translation>
 <translation id="1080116354587839789">Fit to width</translation>
 <translation id="1081061862829655580">Tray 19</translation>
@@ -967,6 +969,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2824775600643448204">Address and search bar</translation>
 <translation id="2826760142808435982">The connection is encrypted and authenticated using <ph name="CIPHER" /> and uses <ph name="KX" /> as the key exchange mechanism.</translation>
 <translation id="2833637280516285136">Talk radio</translation>
+<translation id="2837891525090413132">Can ask to lock and use your keyboard</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> wants to use info they've saved about you</translation>
 <translation id="2839032553903800133">Notifications blocked</translation>
 <translation id="2839501879576190149">Fake site ahead</translation>
@@ -2857,6 +2860,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6433797564277305076">Confirm your cards faster by using device unlock from now on</translation>
 <translation id="643917412048333145">Dresses</translation>
 <translation id="6440503408713884761">Ignored</translation>
+<translation id="6440534369669992497">You can enter any phrases or details that you remember from pages that you've browsed in the past, like 'comfortable walking shoes'. <ph name="SHORTCUT" /> to search.</translation>
 <translation id="6443406338865242315">Which extensions and plug-ins you have installed</translation>
 <translation id="6444329331928531170">Retirement and pension</translation>
 <translation id="6446608382365791566">Add more information</translation>
@@ -3140,6 +3144,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7006930604109697472">Send anyway</translation>
 <translation id="7010658264061801199">Food and drink</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013835112918108252">Can ask to lock and use your mouse</translation>
 <translation id="7014042602717177828">Car Audio</translation>
 <translation id="7014741021609395734">Zoom level</translation>
 <translation id="7016992613359344582">These charges could be one-off or recurring and may not be obvious.</translation>
@@ -3154,6 +3159,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7031646650991750659">Which Google Play apps you have installed</translation>
 <translation id="7035705295266423040">Your bank wants to verify that it's you</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Press Tab then Enter to manage your Google Account privacy settings</translation>
+<translation id="7042616127917168121">Refine results</translation>
 <translation id="7043552168914147882">Tab stock</translation>
 <translation id="7044081119134178347">Camera allowed this time</translation>
 <translation id="7048095965575426564">European Fanfold</translation>

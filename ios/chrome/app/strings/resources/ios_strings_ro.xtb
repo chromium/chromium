@@ -825,6 +825,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="5190835502935405962">Bară de marcaje</translation>
 <translation id="519530786644929958">Descărcarea nu a reușit. Nu poți să încerci din nou.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205197603258285592">Salvează imaginea în...</translation>
 <translation id="5211488077761630279">Permiți ca <ph name="SITE_NAME" /> să-ți folosească <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Contribuie la îmbunătățirea securității pe web pentru toată lumea</translation>
 <translation id="5220945116117011963">Creează evenimente în calendar din date</translation>
@@ -1525,6 +1526,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8556590991644167667">{count,plural, =1{Ai respins {count} avertisment}few{Ai respins {count} avertismente}other{Ai respins {count} de avertismente}}</translation>
 <translation id="8560253818350321773">Afișează mai întâi elementele folosite frecvent.</translation>
 <translation id="8569721750632860947">Ce adresă URL dorești să adaugi în lista de lecturi?</translation>
+<translation id="8570765991595769633">Personalizează cardurile</translation>
 <translation id="8577056989960190117">Completează automat anul de expirare <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Stinsă</translation>
 <translation id="8591976964826315682">Blochează cookie-urile terță parte în modul incognito</translation>
@@ -1664,6 +1666,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="948048872540558976">Creează o nouă filă</translation>
 <translation id="952218985181984374">{count,plural, =1{Marcaj salvat}few{{count} marcaje salvate}other{{count} de marcaje salvate}}</translation>
 <translation id="952704832371081537">Anulează</translation>
+<translation id="955587716023217544">Editează lista de conturi</translation>
 <translation id="959066944189734975">Urmărești <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Afișează sugestii de file de pe alte dispozitive</translation>
 <translation id="973493300226275298">Urmărește prețul unui produs în mai multe magazine online. Vei primi alerte când scade prețul.</translation>

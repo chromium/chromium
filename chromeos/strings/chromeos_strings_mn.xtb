@@ -102,6 +102,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> энэ хэрэглэгчийг удирддаг бөгөөд алсаас тохиргоог удирдаж, хэрэглэгчийн үйл ажиллагааг хянаж болзошгүй.</translation>
 <translation id="150962533380566081">PUK буруу байна.</translation>
 <translation id="1510238584712386396">Launcher</translation>
+<translation id="1514446283880973949">Илүү итгэлтэйгээр бичиж, контентыг хураангуйлж, тодорхойлолт авч мөн илүү ихийг хийгээрэй</translation>
 <translation id="1515129336378114413">хөтчийн үндсэн нүүр</translation>
 <translation id="1526389707933164996">Дэлгэц амраагчийн анимаци</translation>
 <translation id="152892567002884378">Дууны түвшинг нэмэх</translation>
@@ -1287,6 +1288,7 @@
 <translation id="8167413449582155132">Google AI-аар дэмжигдсэн дэвсгэр</translation>
 <translation id="8179976553408161302">Нэвтрэх</translation>
 <translation id="8183975772394450380">далайн эрэг</translation>
+<translation id="819278132617411009">Илүү бүтээмжтэй байхын тулд Google AI-г ашиглах</translation>
 <translation id="8206859287963243715">Үүрэн холбоо</translation>
 <translation id="8208861521865154048">Нэмэлтүүд</translation>
 <translation id="8226628635270268143">Дуртай зураг, цомгуудаа сонгоно уу</translation>
@@ -1333,6 +1335,7 @@
 <translation id="8431300646573772016">ChromeOS-н шинэ зүйлс</translation>
 <translation id="843568408673868420">Интернэт холболт</translation>
 <translation id="844521431886043384">DNS-г тохируулаагүй байна</translation>
+<translation id="8456200178779628126">Унших болон бичих тусламж авахын тулд Google AI-г ашиглах</translation>
 <translation id="8456761643544401578">Автомат бараан горим</translation>
 <translation id="8461329675984532579">Нүүр хуудас бэлтгэх нэр</translation>
 <translation id="8475690821716466388">WiFi сүлжээ WEP PSK-н сул протоколоор хамгаалагдсан байна</translation>
@@ -1459,6 +1462,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />-н тасалбарыг дахин шинэчлэх</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-р хуудсыг скан хийж байна</translation>
 <translation id="9111102763498581341">Нээх</translation>
+<translation id="9122492456897874028">Контентыг хураангуйлж, тодорхойлолт авч мөн илүү ихийг хийгээрэй</translation>
 <translation id="9122602430962285795">Дахин холбогдохын тулд Тохиргоо руу очно уу</translation>
 <translation id="9122865513525855321">зэн</translation>
 <translation id="9126720536733509015">Олон хуудсыг нэг PDF болгож хадгалах</translation>

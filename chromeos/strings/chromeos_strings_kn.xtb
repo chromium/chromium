@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">ಪೇಸ್ಟಲ್ ಹಳದಿ</translation>
 <translation id="1056898198331236512">ಎಚ್ಚರಿಕೆ</translation>
 <translation id="1059913517121127803">ಸ್ಕ್ಯಾನ್ ಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
+<translation id="1061864016440983342">ಸ್ಥಳವಿಲ್ಲದೆ ಬಳಸಿ</translation>
 <translation id="1062823486781306604"><ph name="COUNT" /> ರಲ್ಲಿ <ph name="INDEX" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ಫೈರ್‌ವಾಲ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಲಾಗಿದೆ</translation>
@@ -101,6 +102,7 @@
 <translation id="1499900233129743732">ಈ ಬಳಕೆದಾರರನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ ಮತ್ತು ರಿಮೋಟ್ ಆಗಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಬಹುದು ಹಾಗೂ ಬಳಕೆದಾರರ ಚಟುವಟಿಕೆಯನ್ನು ಮಾನಿಟರ್ ಮಾಡಬಹುದು.</translation>
 <translation id="150962533380566081">ಅಮಾನ್ಯ PUK.</translation>
 <translation id="1510238584712386396">ಲಾಂಚರ್</translation>
+<translation id="1514446283880973949">ಹೆಚ್ಚು ಆತ್ಮವಿಶ್ವಾಸದಿಂದ ಬರೆಯಿರಿ, ಕಂಟೆಂಟ್‌ ಸಾರಾಂಶಗೊಳಿಸಿ, ವ್ಯಾಖ್ಯಾನಗಳನ್ನು ಪಡೆಯಿರಿ ಮತ್ತು ಇತ್ಯಾದಿ</translation>
 <translation id="1515129336378114413">ಬ್ರೌಸರ್ ಹೋಮ್</translation>
 <translation id="1526389707933164996">ಸ್ಕ್ರೀನ್‌ಸೇವರ್ ಆ್ಯನಿಮೇಶನ್</translation>
 <translation id="152892567002884378">ವಾಲ್ಯೂಮ್ ಹೆಚ್ಚು ಮಾಡಿ</translation>
@@ -217,6 +219,7 @@
 <translation id="2080070583977670716">ಇನ್ನಷ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="2082932131694554252">ಕೀಬೋರ್ಡ್ ಕೀ ಅನ್ನು ನಿಯೋಜಿಸಲಾಗಿದೆ</translation>
 <translation id="2085089206770112532">ಡಿಸ್‌ಪ್ಲೇ ಪ್ರಖರತೆಯನ್ನು ಕಡಿಮೆ ಮಾಡಿ</translation>
+<translation id="2086091080968010660">ಸಮಯ ಆಧಾರಿತ ಬದಲಾವಣೆಗಳು ನಿಖರವಾಗಿಲ್ಲದಿರಬಹುದು. ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸಿಸ್ಟಂ ಸ್ಥಳ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಆನ್ ಮಾಡಿ.</translation>
 <translation id="2102231663024125441">ಪಠ್ಯ ಎಡಿಟ್ ಮಾಡುವಿಕೆ</translation>
 <translation id="2105810540595158374">ಸಾಧನವು ಗೇಮ್ ಕಂಟ್ರೋಲ್ ಆಗಿದೆ.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ಆವೃತ್ತಿ <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +261,7 @@
 <translation id="2279051792571591988">ಡೀಫಾಲ್ಟ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="2286454467119466181">ಸರಳ</translation>
 <translation id="2287186687001756809">ಯಾವುದೇ ಚಿತ್ರ ಲಭ್ಯವಿಲ್ಲ. ಫೋಟೋಗಳನ್ನು ಸೇರಿಸಲು, <ph name="LINK" /> ಗೆ ಹೋಗಿ</translation>
+<translation id="2294577623958216786">ಪ್ರಸ್ತುತ ವೇಳಾಪಟ್ಟಿಯನ್ನು <ph name="SUNRISE" />-<ph name="SUNSET" /> ಗೆ ಸೆಟ್ ಮಾಡಲಾಗಿದೆ. ಸೂರ್ಯಾಸ್ತ ಮತ್ತು ಸೂರ್ಯೋದಯ ವೇಳಾಪಟ್ಟಿಯನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು, ಸಿಸ್ಟಂ ಸ್ಥಳ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಆನ್ ಮಾಡಿ.</translation>
 <translation id="2305172810646967500">ಕಪ್ಪು</translation>
 <translation id="2307344026739914387">ಪ್ರಸ್ತುತ ಕೀ ಜೋಡಿಯನ್ನು ಬಳಸಿ</translation>
 <translation id="2308243864813041101">ಅಪ್‌ಡೇಟ್ ಪ್ರಕ್ರಿಯೆಯನ್ನು ಮುಂದುವರಿಸಲು <ph name="DEVICE_NAME" /> USB ಕೇಬಲ್ ಅನ್ನು ಅನ್‌ಪ್ಲಗ್ ಮಾಡಿ</translation>
@@ -538,7 +542,7 @@
 <translation id="4086271957099059213">ಮತ್ತೊಂದು ಕಂಟ್ರೋಲ್‌ ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="4091002263446255071">ರೊಮ್ಯಾಂಟಿಕ್</translation>
 <translation id="4093865285251893588">ಪ್ರೊಫೈಲ್ ಚಿತ್ರ</translation>
-<translation id="409427325554347132">ಪರೀಕ್ಷಾ ವಿವರಗಳನ್ನು ಉಳಿಸಿ</translation>
+<translation id="409427325554347132">ಪರೀಕ್ಷಾ ವಿವರಗಳನ್ನು ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="409469431304488632">ಪ್ರಯೋಗ</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">ಆಲ್ಬಮ್ ಆಯ್ಕೆ ಮಾಡಿ <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -961,6 +965,7 @@
 <translation id="6411934471898487866">ಕೀಬೋರ್ಡ್ ಪ್ರಖರತೆ</translation>
 <translation id="6412715219990689313">ಬಿಲ್ಟ್-ಇನ್ ಕೀಬೋರ್ಡ್</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="6419454453018688975">ಸಿಸ್ಟಮ್ ಸ್ಥಳದ ಆ್ಯಕ್ಸೆಸ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="6423239382391657905">VPN ತೆರೆಯಿರಿ</translation>
 <translation id="6439505561246192797">ದುರ್ಬಲ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ಖಾತೆಯ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
@@ -1077,7 +1082,7 @@
 <translation id="7040230719604914234">ಆಪರೇಟರ್</translation>
 <translation id="7041549558901442110">ಸಾಧನವು ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ.</translation>
 <translation id="7046522406494308071">ಎಲ್ಲಾ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ಡೀಫಾಲ್ಟ್ ಆಗಿ ರೀಸೆಟ್ ಮಾಡಬೇಕೆ?</translation>
-<translation id="7058278511608979688">ಕೊನೆಗೊಳಿಸಿ ಮತ್ತು ಉಳಿಸಿ</translation>
+<translation id="7058278511608979688">ಕೊನೆಗೊಳಿಸಿ ಮತ್ತು ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="7059230779847288458">ಚಾರ್ಜಿಂಗ್ ಆಗುತ್ತಿದೆ, ಸಂಪೂರ್ಣವಾಗಿ ಚಾರ್ಜ್ ಆಗಲು <ph name="TIME_VALUE" /> ಸಮಯ ಬೇಕು</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> ಕೀ</translation>
 <translation id="7068619307603204412">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಸಿದ್ಧಪಡಿಸಿ</translation>
@@ -1283,6 +1288,7 @@
 <translation id="8167413449582155132">Google AI ನಿಂದ ಚಾಲಿತವಾದ ಹಿನ್ನೆಲೆ</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">ಸಮುದ್ರ ತೀರ</translation>
+<translation id="819278132617411009">ಉತ್ಪಾದಕತೆಯನ್ನು ಹೆಚ್ಚಿಸಲು Google AI ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="8206859287963243715">ಸೆಲ್ಯುಲಾರ್</translation>
 <translation id="8208861521865154048">ಪರ್ಕ್‌ಗಳು</translation>
 <translation id="8226628635270268143">ನಿಮ್ಮ ಮೆಚ್ಚಿನ ಫೋಟೋಗಳು ಮತ್ತು ಆಲ್ಬಮ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -1329,6 +1335,7 @@
 <translation id="8431300646573772016">ChromeOS ನಲ್ಲಿ ಹೊಸದೇನಿದೆ</translation>
 <translation id="843568408673868420">ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕ</translation>
 <translation id="844521431886043384">DNS ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿಲ್ಲ</translation>
+<translation id="8456200178779628126">ಓದಲು ಮತ್ತು ಬರೆಯಲು ಸಹಾಯ ಪಡೆಯಲು Google AI ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="8456761643544401578">ಸ್ವಯಂಚಾಲಿತ ಕತ್ತಲೆ ಮೋಡ್</translation>
 <translation id="8461329675984532579">Home ಪೂರೈಕೆದಾರರ ಹೆಸರು</translation>
 <translation id="8475690821716466388">ದುರ್ಬಲ ಪ್ರೋಟೋಕಾಲ್ WEP PSK‌ ಮೂಲಕ ವೈಫೈ ನೆಟ್‌ವರ್ಕ್ ರಕ್ಷಿಸಲಾಗಿದೆ</translation>
@@ -1455,9 +1462,10 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> ಗಾಗಿ ಟಿಕೆಟ್ ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="9106415115617144481">ಪುಟ <ph name="PAGE_NUMBER" /> ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="9111102763498581341">ಅನ್‌ಲಾಕ್</translation>
+<translation id="9122492456897874028">ಕಂಟೆಂಟ್‌ ಅನ್ನು ಸಾರಾಂಶಗೊಳಿಸಿ, ವ್ಯಾಖ್ಯಾನಗಳನ್ನು ಪಡೆಯಿರಿ ಮತ್ತು ಇತ್ಯಾದಿ</translation>
 <translation id="9122602430962285795">ಮರುಕನೆಕ್ಟ್ ಮಾಡಲು ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="9122865513525855321">ಝೆನ್</translation>
-<translation id="9126720536733509015">ಒಂದೇ PDF ನಲ್ಲಿ ಹಲವಾರು ಪುಟಗಳನ್ನು ಉಳಿಸಿ</translation>
+<translation id="9126720536733509015">ಒಂದೇ PDF ನಲ್ಲಿ ಹಲವಾರು ಪುಟಗಳನ್ನು ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="9133772297793293778">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ 1-4 ಮಾರ್ಪಾಡಿಸುವಿಕೆಗಳು ಮತ್ತು ಇತರ 1 ಕೀಯನ್ನು ಒತ್ತಿ. ಎಡಿಟಿಂಗ್ ಮೋಡ್‌ನಿಂದ ನಿರ್ಗಮಿಸಲು, alt + Esc ಒತ್ತಿ.</translation>
 <translation id="9137526406337347448">Google ಸೇವೆಗಳು</translation>
 <translation id="9138630967333032450">ಎಡ Shift ಕೀ</translation>

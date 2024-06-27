@@ -825,6 +825,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="5190835502935405962">Barra dei preferiti</translation>
 <translation id="519530786644929958">Download non riuscito. Impossibile riprovare.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205197603258285592">Salva immagine in…</translation>
 <translation id="5211488077761630279">Vuoi consentire a "<ph name="SITE_NAME" />" di usare <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Contribuisci a migliorare la sicurezza sul web per tutti</translation>
 <translation id="5220945116117011963">Crea eventi nel calendario dalle date</translation>
@@ -1525,6 +1526,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8556590991644167667">{count,plural, =1{Hai ignorato {count} avviso}other{Hai ignorato {count} avvisi}}</translation>
 <translation id="8560253818350321773">Mostra prima le voci usate di frequente.</translation>
 <translation id="8569721750632860947">Quale URL vorresti aggiungere al tuo elenco di lettura?</translation>
+<translation id="8570765991595769633">Personalizza le schede</translation>
 <translation id="8577056989960190117">Compila automaticamente l'anno di scadenza <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Non attiva</translation>
 <translation id="8591976964826315682">Blocca cookie di terze parti in modalità di navigazione in incognito</translation>
@@ -1664,6 +1666,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="948048872540558976">Crea nuova scheda</translation>
 <translation id="952218985181984374">{count,plural, =1{Preferito salvato}other{{count} preferiti salvati}}</translation>
 <translation id="952704832371081537">Annulla</translation>
+<translation id="955587716023217544">Modifica l'elenco degli account</translation>
 <translation id="959066944189734975">Stai seguendo <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Mostra Suggerimenti di schede da Altri dispositivi</translation>
 <translation id="973493300226275298">Monitora il prezzo di un prodotto nei negozi online. Riceverai avvisi quando il prezzo cala.</translation>

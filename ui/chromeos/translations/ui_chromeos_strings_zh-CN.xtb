@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">PUK 不正确</translation>
 <translation id="4057991113334098539">正在激活...</translation>
 <translation id="4092890906744441904">爱尔兰语</translation>
+<translation id="4101601646343868113">请登录您的移动网络并确认您的移动流量套餐处于有效状态</translation>
 <translation id="4124731372776320263">正在同步 1 个云端硬盘文件</translation>
 <translation id="4124935795427217608">独角兽</translation>
 <translation id="4131235941541910880">将不需要的内容移至回收站</translation>
@@ -598,6 +599,7 @@
 <translation id="5625294776298156701">泰米尔语 Tamil99 键盘</translation>
 <translation id="5633226425545095130">移动此内容会将其分享给所有能看到共享文件夹“<ph name="DESTINATION_NAME" />”的人。</translation>
 <translation id="5649768706273821470">收听</translation>
+<translation id="5650895901941743674">请检查您的 APN 配置</translation>
 <translation id="5669691691057771421">请输入新的 PIN 码</translation>
 <translation id="5678784840044122290">此 Linux 应用将可以在您的终端上使用，且可能在启动器中显示图标。</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />无法断开与档案或虚拟磁盘的连接<ph name="END_BOLD" />
@@ -1003,6 +1005,7 @@
 <translation id="8600173386174225982">文件列表已切换到缩略图视图。</translation>
 <translation id="8601932370724196034">Crostini 映像文件</translation>
 <translation id="8609695766746872526">冰岛语</translation>
+<translation id="8630384863424041081">请输入您的 SIM 卡 PIN 码或运营商提供的默认 PIN 码，也可联系运营商寻求支持。</translation>
 <translation id="863903787380594467">PIN 码不正确。您还有 <ph name="RETRIES" /> 次尝试机会。</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - 端口</translation>
 <translation id="8656407365183407932">您必须移除一些离线文件</translation>

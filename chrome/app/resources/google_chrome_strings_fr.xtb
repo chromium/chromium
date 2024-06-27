@@ -5,6 +5,8 @@
 <translation id="1026101648481255140">Reprendre l'installation</translation>
 <translation id="102763973188675173">Personnalisez et contrôlez Google Chrome. Une mise à jour est disponible.</translation>
 <translation id="1028061813283459617">Pour supprimer les données de navigation de cet appareil uniquement, tout en les conservant dans votre compte Google, <ph name="BEGIN_LINK" />déconnectez-vous de Chrome<ph name="END_LINK" />.</translation>
+<translation id="1042270987544905725">Cliquez pour fermer la boîte de dialogue de connexion à Chrome</translation>
+<translation id="1059838145689930908">Pour utiliser cette extension en tant que <ph name="USER_EMAIL_ADDRESS" />, connectez-vous à Chrome.</translation>
 <translation id="1065672644894730302">Impossible de lire vos préférences.
 Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifications apportées à vos préférences ne seront pas enregistrées.</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> utilisait Chrome précédemment</translation>
@@ -372,6 +374,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6291089322031436445">Applications Chrome pour les développeurs</translation>
 <translation id="6291549208091401781">Google Chrome est déjà installé pour tous les utilisateurs de votre ordinateur.</translation>
 <translation id="6319856120645568262">Chrome a besoin de votre autorisation pour cartographier votre environnement et suivre vos mains</translation>
+<translation id="6321592572353357376">L'extension <ph name="EXTENSION_NAME" /> vous demande de vous connecter à Chrome</translation>
 <translation id="6326175484149238433">Supprimer de Google Chrome</translation>
 <translation id="6327105987658262776">Aucune mise à jour disponible.</translation>
 <translation id="6360449101159168105">Lorsque cet onglet était inactif, de la mémoire a été libérée pour préserver la rapidité de Chrome. Si vous le souhaitez, vous pouvez exclure définitivement ce site de la liste des sites inactifs.</translation>
@@ -464,6 +467,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="7655455401911432608">Votre historique de navigation, qui liste tous les sites que vous avez consultés dans Chrome sur cet appareil.</translation>
 <translation id="7661924425853052955">Vous n'avez pas consulté le site récemment. Chrome a supprimé les autorisations de <ph name="PERMISSION_2" />, d'accéder à la <ph name="PERMISSION_1" /> et <ph name="COUNT" /> autres.</translation>
 <translation id="7668816516367091728">Effectuez des tâches directement depuis la barre d'adresse, comme traduire, calculer et plus</translation>
+<translation id="7670287553302121848">Le compte Chrome nécessite une réauthentification</translation>
 <translation id="769538538642757151">Chrome vous avertira si quelque chose doit être examiné</translation>
 <translation id="7747138024166251722">Le programme d'installation n'a pas pu créer de répertoire temporaire. Vérifiez que le disque a suffisamment d'espace libre et que vous disposez des autorisations nécessaires pour installer le logiciel.</translation>
 <translation id="7761834446675418963">Cliquez sur votre nom pour ouvrir Chrome et commencer à naviguer.</translation>

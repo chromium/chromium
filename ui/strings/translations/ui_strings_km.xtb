@@ -130,6 +130,7 @@
 <translation id="5574202486608032840">ប្រព័ន្ធ <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">ព្រួញខាងឆ្វេង</translation>
+<translation id="5633029987065897167">ទទេ</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{ 1 នាទី}other{# នាទី}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{ដំណើរការ​ថ្ងៃនេះ}=1{ដំណើរការ 1 ថ្ងៃមុន}other{ដំណើរការ # ថ្ងៃមុន}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 ថ្ងៃ និង }other{# ថ្ងៃ និង }}</translation>

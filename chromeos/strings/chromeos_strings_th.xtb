@@ -102,6 +102,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> จัดการผู้ใช้รายนี้อยู่และอาจจัดการการตั้งค่าและตรวจสอบกิจกรรมของผู้ใช้จากระยะไกล</translation>
 <translation id="150962533380566081">PUK ไม่ถูกต้อง</translation>
 <translation id="1510238584712386396">ตัวเรียกใช้งาน</translation>
+<translation id="1514446283880973949">เขียนได้อย่างมั่นใจมากขึ้น สรุปเนื้อหา รับคำจำกัดความ และอื่นๆ</translation>
 <translation id="1515129336378114413">หน้าหลักของเบราว์เซอร์</translation>
 <translation id="1526389707933164996">ภาพเคลื่อนไหวของโปรแกรมรักษาหน้าจอ</translation>
 <translation id="152892567002884378">เพิ่มระดับเสียง</translation>
@@ -1287,6 +1288,7 @@
 <translation id="8167413449582155132">พื้นหลังที่ทำงานด้วยระบบ AI ของ Google</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">ชายหาด</translation>
+<translation id="819278132617411009">ใช้ AI ของ Google เพื่อทำงานอย่างมีประสิทธิภาพมากขึ้น</translation>
 <translation id="8206859287963243715">โทรศัพท์มือถือ</translation>
 <translation id="8208861521865154048">สิทธิประโยชน์</translation>
 <translation id="8226628635270268143">เลือกรูปภาพและอัลบั้มที่ชื่นชอบ</translation>
@@ -1333,6 +1335,7 @@
 <translation id="8431300646573772016">มีอะไรใหม่ใน Chrome OS</translation>
 <translation id="843568408673868420">การเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="844521431886043384">ไม่ได้ตั้งค่า DNS</translation>
+<translation id="8456200178779628126">ใช้ AI ของ Google เพื่อรับความช่วยเหลือในการอ่านและเขียน</translation>
 <translation id="8456761643544401578">โหมดมืดอัตโนมัติ</translation>
 <translation id="8461329675984532579">ชื่อผู้ให้บริการหน้าแรก</translation>
 <translation id="8475690821716466388">เครือข่าย WiFi มีการรักษาความปลอดภัยด้วยโปรโตคอล WEP PSK ที่ไม่รัดกุม</translation>
@@ -1459,6 +1462,7 @@
 <translation id="910415269708673980">รีเฟรชตั๋วสำหรับ <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">กำลังสแกนหน้า <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">ปลดล็อก</translation>
+<translation id="9122492456897874028">สรุปเนื้อหา รับคำจำกัดความ และอื่นๆ</translation>
 <translation id="9122602430962285795">ไปที่การตั้งค่าเพื่อเชื่อมต่ออีกครั้ง</translation>
 <translation id="9122865513525855321">เซน</translation>
 <translation id="9126720536733509015">บันทึกหลายหน้าเป็น PDF ไฟล์เดียว</translation>

@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Kodi PUK i pasaktë</translation>
 <translation id="4057991113334098539">Po aktivizohet...</translation>
 <translation id="4092890906744441904">Irlandisht</translation>
+<translation id="4101601646343868113">Identifikohu në rrjetin tënd celular dhe konfirmo që plani i të dhënave celulare është aktiv</translation>
 <translation id="4124731372776320263">Po sinkronizohet 1 skedar i "Diskut"</translation>
 <translation id="4124935795427217608">Njëbrirësh</translation>
 <translation id="4131235941541910880">Zhvendosi artikujt që nuk të duhen te koshi.</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Tamilisht me tastierë Tamil99</translation>
 <translation id="5633226425545095130">Zhvendosja e këtij artikulli do ta ndajë atë me të gjithë ata që mund ta shikojnë dosjen e ndarë "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Dëgjo</translation>
+<translation id="5650895901941743674">Kontrollo konfigurimin e APN-së</translation>
 <translation id="5669691691057771421">Fut kodin e ri PIN</translation>
 <translation id="5678784840044122290">Aplikacioni për Linux do të ofrohet në "Terminalin" tënd dhe mund dhe të shfaqë një ikonë te "Nisësi" yt.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nuk mund të shkëputet nga një arkiv ose disk virtual<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Lista e skedarëve ka ndryshuar në pamjen e miniaturës.</translation>
 <translation id="8601932370724196034">Skedar imazhi Crostini</translation>
 <translation id="8609695766746872526">Islandisht</translation>
+<translation id="8630384863424041081">Fut kodin PIN të kartës SIM ose kodin e parazgjedhur PIN të dhënë nga operatori yt celulatr. Kontakto me operatorin celular për mbështetje.</translation>
 <translation id="863903787380594467">Kodi PIN është i pasaktë. Të kanë mbetur edhe <ph name="RETRIES" /> përpjekje.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - porta</translation>
 <translation id="8656407365183407932">Skedarët e tu offline duhej të hiqeshin</translation>

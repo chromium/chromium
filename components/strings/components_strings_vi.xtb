@@ -1157,7 +1157,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3209034400446768650">Trang này có thể tính phí</translation>
 <translation id="3212581601480735796">Hoạt động của bạn trên <ph name="HOSTNAME" /> sẽ bị giám sát</translation>
 <translation id="3215092763954878852">Không thể dùng WebAuthn</translation>
-<translation id="3215311088819828484">Đã cập nhật kết quả</translation>
 <translation id="3216313131063488104">Nhạc blue</translation>
 <translation id="3218181027817787318">Tương đối</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Cần cập nhật ngay}=2{Cần cập nhật chậm nhất vào ngày mai}other{Cần cập nhật trong vòng # ngày}}</translation>

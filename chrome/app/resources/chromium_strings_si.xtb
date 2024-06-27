@@ -81,6 +81,8 @@
 <translation id="2329088755516916767">ක්‍රියාත්මක වන විට, Chromium බ්‍රවුස් කිරීම සහ සෙවීම වේගවත් කරන පිටු පූර්ව පූරණය කරයි.</translation>
 <translation id="2343156876103232566">මෙහි සිට ඔබගේ Android දුරකථනයට අංකයක් යැවීමට, උපාංග දෙකෙහිම Chromium වෙත පුරන්න.</translation>
 <translation id="2359808026110333948">කරගෙන යන්න</translation>
+<translation id="2361918034042471035">"<ph name="EXTENSION_NAME" />" දිගුවට ඔබ Chromium වෙත පුරනය වීමට අවශ්‍යයි</translation>
+<translation id="2374216753258219393">මෙම දිගුව <ph name="USER_EMAIL_ADDRESS" /> ලෙස භාවිතා කිරීමට, Chromium වෙත පුරන්න.</translation>
 <translation id="2384373936468275798">ඔබගේ ගිණුම් පිරීමේ විස්තර යල් පැන ගොස් ඇති බැවින් ChromiumOS හට ඔබගේ දත්ත සමමුහුර්ත කළ නොහැකි විය.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 HID උපාංගයකට එක Chromium දිගුවකින් හෝ වැඩි ගණනකින් ප්‍රවේශ වන ලදි}=1{1 HID උපාංගයකට එක Chromium දිගුවකින් හෝ වැඩි ගණනකින් ප්‍රවේශ වනු ලබයි}one{HID උපාංග #කට එක Chromium දිගුවකින් හෝ වැඩි ගණනකින් ප්‍රවේශ වනු ලබයි}other{HID උපාංග #කට එක Chromium දිගුවකින් හෝ වැඩි ගණනකින් ප්‍රවේශ වනු ලබයි}}</translation>
 <translation id="2401032172288869980">මෙම අඩවිය සඳහා Chromium හට මයික්‍රෆෝන සහ කැමරා අවසරය අවශ්‍යයි</translation>
@@ -244,9 +246,11 @@
 <translation id="4893347770495441059">&amp;Chromium යාවත්කාලීන කිරීමට යළි දියත් කරන්න</translation>
 <translation id="4942295735032723435">අනාගත Chromium යාවත්කාලීන ලබා ගැනීමට, ඔබට macOS 11 හෝ පසු අනුවාද අවශ්‍ය වෙයි. මෙම පරිගණකය macOS 10.15 භාවිත කරයි.</translation>
 <translation id="4943838377383847465">Chromium පසුබිම් ප්‍රකාරය තුළ ඇත.</translation>
+<translation id="494490797786467921">Chromium පුරනය වීමේ සංවාදය වැසීමට ක්ලික් කරන්න</translation>
 <translation id="4987820182225656817">අමුත්තන්ට කිසිවක් තබා යෑමෙන් තොරව Chromium භාවිත කළ හැක.</translation>
 <translation id="4994636714258228724">ඔබව Chromium වෙත එක් කරන්න</translation>
 <translation id="5114678101347489141">Chromium ඔබගේ තතු අඩුවෙන් භාවිත කරමින් එකම බ්‍රවුස් කිරීමේ අත්දැකීම ලබා දීමට අඩවිවලට ඉඩ සලසන නව විශේෂාංග ගවේෂණය කරයි</translation>
+<translation id="5187123684706427865">Chromium ගිණුමට නැවත සත්‍යාපනය අවශ්‍යයි</translation>
 <translation id="5224391634244552924">සුරැකි මුරපද නැත. ඔබ ඔබේ මුරපද පරීක්‍ෂා කරන විට Chromium හට ඒවා පරීක්‍ෂා කළ හැක.</translation>
 <translation id="5231355151045086930">Chromium වෙතින් වරන්න</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> දැනටමත් මෙම Chromium පැතිකඩට පුරා ඇත. මෙය <ph name="USER_EMAIL_ADDRESS" /> සඳහා නව Chromium පැතිකඩක් තනනු ඇත</translation>

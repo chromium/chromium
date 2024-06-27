@@ -825,6 +825,7 @@
 <translation id="5190835502935405962">ブックマーク バー</translation>
 <translation id="519530786644929958">ダウンロードに失敗し、再試行できません。</translation>
 <translation id="5197255632782567636">インターネット</translation>
+<translation id="5205197603258285592">画像を保存...</translation>
 <translation id="5211488077761630279">「<ph name="SITE_NAME" />」に <ph name="PERMISSION" /> の使用を許可しますか？</translation>
 <translation id="5219295696240154694">すべてのユーザーのウェブ上のセキュリティ強化に協力する</translation>
 <translation id="5220945116117011963">日付からカレンダーの予定を作成する</translation>
@@ -1525,6 +1526,7 @@
 <translation id="8556590991644167667">{count,plural, =1{{count} 件の警告を非表示にしました}other{{count} 件の警告を非表示にしました}}</translation>
 <translation id="8560253818350321773">よく使うアイテムを最初に表示します。</translation>
 <translation id="8569721750632860947">どの URL をリーディング リストに追加しますか？</translation>
+<translation id="8570765991595769633">カードをカスタマイズ</translation>
 <translation id="8577056989960190117">有効期限（年）「<ph name="YEAR" />」を自動入力する</translation>
 <translation id="8588404856427128947">オフ</translation>
 <translation id="8591976964826315682">シークレット モードでサードパーティの Cookie をブロックする</translation>
@@ -1664,6 +1666,7 @@
 <translation id="948048872540558976">新しいタブを作成</translation>
 <translation id="952218985181984374">{count,plural, =1{ブックマークを保存しました}other{{count} 件のブックマークを保存しました}}</translation>
 <translation id="952704832371081537">キャンセル</translation>
+<translation id="955587716023217544">アカウント リストを編集</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> をフォローしています</translation>
 <translation id="96615566463761848">他のデバイスからのタブの候補を表示</translation>
 <translation id="973493300226275298">複数のオンライン ショップで商品の価格をトラッキングします。値下げされた場合は、アラートが表示されます。</translation>

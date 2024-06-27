@@ -216,6 +216,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1747827819627189109">Tastatura na ekranu je omogućena</translation>
 <translation id="1749109475624620922">Prozor <ph name="WINDOW_TITLE" /> je dodeljen svim radnim površinama</translation>
 <translation id="1750088060796401187">Maksimalni broj radnih površina je <ph name="MAX_DESK_LIMIT" />. Uklonite radnu površinu da biste otvorili novu.</translation>
+<translation id="1751335846119670066">Pomoć pri čitanju</translation>
 <translation id="1755408179247123630">Želite da uključite uslugu Izaberite za govor?</translation>
 <translation id="1755556344721611131">Aplikacija Dijagnostika</translation>
 <translation id="1756833229520115364">Čuvanje šablona nije uspelo. Ima previše prozora ili kartica.</translation>
@@ -227,6 +228,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="178347895271755507">Podesite pregled nedavnih slika, medija i obaveštenja na telefonu</translation>
 <translation id="1787955149152357925">Isključeno</translation>
 <translation id="1796561540704213354">Veb-sajtovi, uključujući stranice koje ste posetili i otvorili</translation>
+<translation id="179842970735685253">Google uslovi korišćenja usluge</translation>
 <translation id="181103072419391116">Jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja administrator</translation>
 <translation id="1816896987747843206">Ovo omogućava pristup kameri za sve aplikacije i veb-sajtove sa dozvolom za kameru</translation>
 <translation id="1823873187264960516">Eternet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@ Broj povezanih uređaja je <ph name="DEVICECOUNT" />.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Tip školskih zadataka</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Nekoliko napomena</translation>
 <translation id="3139188263101386725">Koristite ažuriranu prečicu</translation>
 <translation id="3139942575505304791">Radna površina 1</translation>
 <translation id="315116470104423982">Mobilni podaci</translation>
@@ -962,6 +965,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4585337515783392668">Zaustavi prebacivanje na nepoznati prijemnik</translation>
 <translation id="4596144739579517758">Tamna tema je isključena</translation>
 <translation id="4596442969149038771"><ph name="USER" /> deli</translation>
+<translation id="4610493115106525653">Dobar rezultat</translation>
 <translation id="4611292653554630842">Prijavi me</translation>
 <translation id="462160925400706389"><ph name="NAME" /> – povezano</translation>
 <translation id="4623167406982293031">Verifikujte nalog</translation>
@@ -1119,6 +1123,7 @@ Možete da koristite i tastersku prečicu. Prvo istaknite tekst, pa pritisnite <
 <translation id="5121628974188116412">Idite na dno stranice</translation>
 <translation id="5122517996953421795">Pregled radne površine <ph name="DESK_NAME" />. Neaktivna radna površina.</translation>
 <translation id="5136175204352732067">Neka druga tastatura je povezana</translation>
+<translation id="5140105873789567560">Morate da imate najmanje 18 godina da biste koristili funkciju Pomoć pri pisanju i Pomoć pri čitanju.</translation>
 <translation id="5144005092084035179">Želite da promenite audio ulaz?</translation>
 <translation id="5147567197700016471">Otključano</translation>
 <translation id="5150070631291639005">Podešavanja privatnosti</translation>
@@ -1354,6 +1359,7 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="5975235751479998104">Kretanje kroz prozore unapred</translation>
 <translation id="5978382165065462689">Delite kontrolu nad ekranom preko Daljinske pomoći.</translation>
 <translation id="5980301590375426705">Zatvori kao gost</translation>
+<translation id="5982119059638483922">Pritisnite Fn + taster za pretragu ili Shift da biste otkazali.</translation>
 <translation id="5983567367406220847">Hotspot je isključen zbog neaktivnosti.</translation>
 <translation id="598407983968395253">Koristi šablon</translation>
 <translation id="598882571027504733">Da biste preuzeli ažuriranje, restartujte Chromebook sa priključenom tastasturom.</translation>
@@ -1559,6 +1565,7 @@ Novo instaliranje</translation>
 <translation id="6696025732084565524">Treba da instalirate važno ažuriranje za odvojivu tastaturu</translation>
 <translation id="6697913454192220372">Dodajte novu radnu površinu</translation>
 <translation id="6700713906295497288">Dugme IME menija</translation>
+<translation id="6704375469818246414">Kvalitet može da varira kada se koristi generativna veštačka inteligencija.</translation>
 <translation id="6706742084323792866">Tastatura za PIN</translation>
 <translation id="6710213216561001401">Prethodno</translation>
 <translation id="6723839937902243910">Energija</translation>
@@ -1827,9 +1834,11 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="7726391492136714301">Pregledajte obaveštenja i aplikacije sa telefona</translation>
 <translation id="7727952505535211425">Otvori veb-sajt iz trake za adresu na novoj kartici</translation>
 <translation id="7742327441377685481">Nema obaveštenja</translation>
+<translation id="774736258792760908">Kada uključite Pomoć pri pisanju i Pomoć pri čitanju, tekst unosa i sadržaj dokumenta se šalju serverima Google veštačke inteligencije da bi se generisali predlozi za pisanje i rezimei, davali odgovori na pitanja i poboljšao proizvod, u skladu sa <ph name="LINK_TO_SERVICE_TERMS" />. Nemojte da navodite nikakve lične, osetljive ili poverljive informacije.</translation>
 <translation id="7748275671948949022">Istakni dugme pokretača na polici</translation>
 <translation id="7749443890790263709">Dostigli ste maksimalan broj radnih površina.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Uvek možete da isključite Pomoć pri pisanju i Pomoć pri čitanju u Podešavanjima. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Izaberite za govor</translation>
 <translation id="7769299611924763557">GIF će uskoro biti spreman</translation>
 <translation id="7773536009433685931">Uključi WiFi</translation>
@@ -1838,6 +1847,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="7781829728241885113">Juče</translation>
 <translation id="7787212146956232129">Ulazni i izlazni uređaji su podešeni. Idite u Podešavanja da biste to promenili.</translation>
 <translation id="7792590255364786396">Vidljivo</translation>
+<translation id="7793389284006812057">Generativni AI je eksperimentalan, u ranoj fazi razvoja i trenutno ima ograničenu dostupnost.</translation>
 <translation id="7796735576426975947">Novo obaveštenje je skriveno</translation>
 <translation id="7798302898096527229">Pritisnite taster za pretragu ili Shift da biste otkazali.</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
@@ -1992,6 +2002,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8331351032546853669">Preuzimanje je na čekanju</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Loš rezultat</translation>
 <translation id="8345019317483336363">Prozor <ph name="WINDOW_TITLE" /> je izabran</translation>
 <translation id="8349826889576450703">Pokretač</translation>
 <translation id="8349964124165471584">Otvori link u novom prozoru</translation>

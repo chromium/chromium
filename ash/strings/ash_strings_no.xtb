@@ -216,6 +216,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1747827819627189109">Skjermtastaturet er aktivert</translation>
 <translation id="1749109475624620922">Vinduet <ph name="WINDOW_TITLE" /> er tilordnet alle skrivebord</translation>
 <translation id="1750088060796401187">Kun <ph name="MAX_DESK_LIMIT" /> skrivebord er tillatt. Fjern et skrivebord for å åpne et nytt.</translation>
+<translation id="1751335846119670066">Hjelp meg å lese</translation>
 <translation id="1755408179247123630">Vil du slå på tekstopplesing?</translation>
 <translation id="1755556344721611131">Diagnostikk-appen</translation>
 <translation id="1756833229520115364">Kunne ikke lagre malen. For mange vinduer eller faner.</translation>
@@ -227,6 +228,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="178347895271755507">Konfigurer visning av nylige bilder, medier og varsler fra telefonen din</translation>
 <translation id="1787955149152357925">Av</translation>
 <translation id="1796561540704213354">Nettsteder, inkludert sider du har besøkt, og åpne sider</translation>
+<translation id="179842970735685253">Googles vilkår for bruk</translation>
 <translation id="181103072419391116">Signalstyrke <ph name="SIGNAL_STRENGTH" /> – administreres av administratoren din</translation>
 <translation id="1816896987747843206">Dette gir alle apper og nettsteder som har kameratillatelsen, tilgang til kameraet</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3122464029669770682">Prosessor</translation>
 <translation id="3125690294288312932">Kursarbeidstype</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Ting du bør huske på</translation>
 <translation id="3139188263101386725">Bruk den oppdaterte snarveien</translation>
 <translation id="3139942575505304791">Skrivebord 1</translation>
 <translation id="315116470104423982">Mobildata</translation>
@@ -961,6 +964,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4585337515783392668">Stopp casting på en ukjent mottaker</translation>
 <translation id="4596144739579517758">Mørkt tema er av</translation>
 <translation id="4596442969149038771">Delt av <ph name="USER" /></translation>
+<translation id="4610493115106525653">Godt svar</translation>
 <translation id="4611292653554630842">Logg på</translation>
 <translation id="462160925400706389"><ph name="NAME" /> er tilkoblet</translation>
 <translation id="4623167406982293031">Bekreft kontoen</translation>
@@ -1118,6 +1122,7 @@ Du kan også bruke hurtigtasten. Marker først teksten, og trykk deretter på <p
 <translation id="5121628974188116412">Gå til bunnen av siden</translation>
 <translation id="5122517996953421795">Forhåndsvisning av <ph name="DESK_NAME" />. Inaktivt skrivebord.</translation>
 <translation id="5136175204352732067">Et annet tastatur er koblet til</translation>
+<translation id="5140105873789567560">Du må være minst 18 år for å bruke Hjelp meg å skrive og Hjelp meg å lese.</translation>
 <translation id="5144005092084035179">Vil du bytte innenhet for lyd?</translation>
 <translation id="5147567197700016471">Ulåst</translation>
 <translation id="5150070631291639005">Personverninnstillinger</translation>
@@ -1558,6 +1563,7 @@ Nylig installert</translation>
 <translation id="6696025732084565524">Det avtakbare tastaturet trenger en kritisk oppdatering</translation>
 <translation id="6697913454192220372">Legg til nytt skrivebord</translation>
 <translation id="6700713906295497288">IME-menyknappen</translation>
+<translation id="6704375469818246414">Kvaliteten kan variere når du bruker generativ AI.</translation>
 <translation id="6706742084323792866">PIN-tastatur</translation>
 <translation id="6710213216561001401">Forrige</translation>
 <translation id="6723839937902243910">Strøm</translation>
@@ -1825,9 +1831,11 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7726391492136714301">Se varslene og appene på telefonen din</translation>
 <translation id="7727952505535211425">Åpne nettstedet i adressefeltet i en ny fane</translation>
 <translation id="7742327441377685481">Ingen varsler</translation>
+<translation id="774736258792760908">Når du slår på Hjelp meg å skrive og Hjelp meg å lese, sendes inndatateksten og dokumentinnholdet til Googles AI-tjenere for å generere skriveforslag, generere sammendrag, svare på spørsmål og forbedre produktet, i henhold til <ph name="LINK_TO_SERVICE_TERMS" />. Ikke ta med noe som er personlig, sensitivt eller konfidensielt.</translation>
 <translation id="7748275671948949022">Fremhev Appoversikt-knappen på hyllen</translation>
 <translation id="7749443890790263709">Maksimalt antall skrivebord er nådd.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Du kan når som helst slå av Hjelp meg å skrive og Hjelp meg å lese i innstillingene. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Tekstopplesing</translation>
 <translation id="7769299611924763557">GIF-en din er snart klar</translation>
 <translation id="7773536009433685931">Slå på wifi i stedet</translation>
@@ -1836,6 +1844,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7781829728241885113">I går</translation>
 <translation id="7787212146956232129">Inn- og utenheter for lyd er angitt. Gå til innstillingene for å endre dem.</translation>
 <translation id="7792590255364786396">Synlig</translation>
+<translation id="7793389284006812057">Generativ AI er på forsøksstadiet og i en tidlig fase av utviklingen, og tilgjengeligheten er foreløpig begrenset.</translation>
 <translation id="7796735576426975947">Et nytt varsel er skjult</translation>
 <translation id="7798302898096527229">Trykk på Søk eller Shift for å avbryte</translation>
 <translation id="780301667611848630">Nei takk</translation>
@@ -1990,6 +1999,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8331351032546853669">Nedlasting venter</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /><ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Dårlig svar</translation>
 <translation id="8345019317483336363">Vinduet <ph name="WINDOW_TITLE" /> er valgt</translation>
 <translation id="8349826889576450703">appoversikt</translation>
 <translation id="8349964124165471584">Åpne link i et nytt vindu</translation>

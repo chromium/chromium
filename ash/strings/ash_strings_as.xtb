@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">অন-স্ক্ৰীন কীব‘র্ড সক্ষম কৰা হ‘ল</translation>
 <translation id="1749109475624620922">আটাইবোৰ ডেস্কৰ বাবে ৱিণ্ড’ <ph name="WINDOW_TITLE" /> আবণ্টন কৰা হৈছে</translation>
 <translation id="1750088060796401187">কেৱল <ph name="MAX_DESK_LIMIT" /> খন ডেস্কৰ অনুমতি আছে। নতুন এখন খুলিবলৈ এখন ডেস্ক আঁতৰাওক।</translation>
+<translation id="1751335846119670066">হেল্প মী ৰীড</translation>
 <translation id="1755408179247123630">কথা ক’বলৈ বাছনি কৰাৰ সুবিধাটো অন কৰিবনে?</translation>
 <translation id="1755556344721611131">ডায়েগন’ষ্টিক্স এপ্</translation>
 <translation id="1756833229520115364">টেমপ্লে’ট ছেভ কৰিব পৰা নগ’ল। বহুসংখ্যক ৱিণ্ড’ অথবা টেব।</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">আপোনাৰ ফ’নৰ শেহতীয়া ফট’, মিডিয়া আৰু জাননী চোৱাৰ সুবিধা ছেট আপ কৰক</translation>
 <translation id="1787955149152357925">অফ আছে</translation>
 <translation id="1796561540704213354">আপুনি চোৱা আৰু খোলা পৃষ্ঠাসমূহকে ধৰি ৱেবছাইটসমূহ</translation>
+<translation id="179842970735685253">Googleৰ সেৱাৰ চৰ্তাৱলী</translation>
 <translation id="181103072419391116">ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="1816896987747843206">এইটোৱে কেমেৰাৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইটৰ বাবে কেমেৰা এক্সেছ কৰাৰ অনুমতি দিয়ে</translation>
 <translation id="1823873187264960516">ইথাৰনেট: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">শ্ৰেণীকাৰ্যৰ প্ৰকাৰ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">মনত ৰাখিবলগীয়া কেইটামান কথা</translation>
 <translation id="3139188263101386725">আপডে’ট কৰা শ্বৰ্টকাটটো ব্যৱহাৰ কৰক</translation>
 <translation id="3139942575505304791">ডেস্ক ১</translation>
 <translation id="315116470104423982">ম’বাইল ডেটা</translation>
@@ -581,7 +584,7 @@
 <translation id="3253743281242075461">শ্ৰেণীকাৰ্যৰ প্ৰকাৰ: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">আপুনি কি কৰিব পাৰে?</translation>
 <translation id="3256109297135787951">আপোনাৰ শ্বেল্ফৰ কোনো বস্তুৰ পৰা হাইলাইট আঁতৰাওক</translation>
-<translation id="3260969790895726815">কথন স্থানীয়ভাৱে প্ৰক্ৰিয়াকৰণ কৰা হয় আৰু শ্ৰুতলিপিয়ে অফলাইন কাম কৰে, কিন্তু কিছুমান কণ্ঠস্বৰৰ নিৰ্দেশে কাম নকৰে।</translation>
+<translation id="3260969790895726815">কথন স্থানীয়ভাৱে প্ৰক্ৰিয়াকৰণ কৰা হয় আৰু শ্ৰুতলিপিয়ে অফলাইন কাম কৰে, কিন্তু কিছুমান ভইচৰ নিৰ্দেশে কাম নকৰে।</translation>
 <translation id="3265032511221679826">সঠিক অৱস্থানৰ এক্সেছ অন কৰিবনে?</translation>
 <translation id="3269597722229482060">সোঁফালে ক্লিক কৰক</translation>
 <translation id="3274634049061007184">আপোনাৰ ফ’নৰ এপ্‌সমূহ চাওক</translation>
@@ -961,6 +964,7 @@
 <translation id="4585337515783392668">কোনো অজ্ঞাত প্ৰাপকলৈ কাষ্ট কৰাটো বন্ধ কৰক</translation>
 <translation id="4596144739579517758">গাঢ় ৰঙৰ ম’ড অফ আছে</translation>
 <translation id="4596442969149038771"><ph name="USER" />এ শ্বেয়াৰ কৰা</translation>
+<translation id="4610493115106525653">ভাল ফলাফল</translation>
 <translation id="4611292653554630842">লগ ইন কৰক</translation>
 <translation id="462160925400706389"><ph name="NAME" /> সংযোগ কৰা হৈছে</translation>
 <translation id="4623167406982293031">একাউণ্টটোৰ সত্যাপন কৰক</translation>
@@ -1118,6 +1122,7 @@
 <translation id="5121628974188116412">পৃষ্ঠাটোৰ একেবাৰে তললৈ যাওক</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" />ৰ পূৰ্বদৰ্শন। নিষ্ক্ৰিয় ডেস্ক।</translation>
 <translation id="5136175204352732067">বিভিন্ন কীব’র্ড সংযোগ কৰা হৈছে</translation>
+<translation id="5140105873789567560">হেল্প মী ৰাইট আৰু হেল্প মী ৰীড ব্যৱহাৰ কৰিবলৈ আপোনাৰ বয়স অতি কমেও ১৮ বছৰ হ’বই লাগিব।</translation>
 <translation id="5144005092084035179">অডিঅ’ ইনপুট সলনি কৰিবনে?</translation>
 <translation id="5147567197700016471">আনলক কৰা হ’ল</translation>
 <translation id="5150070631291639005">গোপনীয়তাৰ ছেটিংসমূহ</translation>
@@ -1558,6 +1563,7 @@
 <translation id="6696025732084565524">আপোনাৰ পৃথক কৰিব পৰা কীব’ৰ্ডত এটা গুৰুত্বপূর্ণ আপডে’ট কৰাৰ প্ৰয়োজন</translation>
 <translation id="6697913454192220372">নতুন ডেস্ক যোগ দিয়ক</translation>
 <translation id="6700713906295497288">IME মেনু বুটাম</translation>
+<translation id="6704375469818246414">জেনেৰেটিভ AI ব্যৱহাৰ কৰি থাকিলে গুণগত মান ভিন্ন হ’ব পাৰে।</translation>
 <translation id="6706742084323792866">কীব’ৰ্ড পিন কৰক</translation>
 <translation id="6710213216561001401">পূৰ্বৱৰ্তী</translation>
 <translation id="6723839937902243910">পাৱাৰ</translation>
@@ -1825,9 +1831,11 @@
 <translation id="7726391492136714301">আপোনাৰ ফ’নৰ জাননী আৰু এপ্‌সমূহ চাওক</translation>
 <translation id="7727952505535211425">এটা নতুন টেবত ঠিকনাৰ বাৰত ৱেবছাইটটো খোলক</translation>
 <translation id="7742327441377685481">কোনো জাননী নাই</translation>
+<translation id="774736258792760908">আপুনি হেল্প মী ৰাইট আৰু হেল্প মী ৰীড অন কৰিলে ইনপুট কৰা পাঠ আৰু নথিত থকা সমলখিনি <ph name="LINK_TO_SERVICE_TERMS" /> অনুসৰি লিখাৰ পৰামৰ্শ সৃষ্টি কৰিবলৈ, সাৰাংশ প্ৰস্তুত কৰিবলৈ, প্ৰশ্নৰ উত্তৰ দিবলৈ আৰু প্ৰ’ডাক্টটো উন্নত কৰিবলৈ Google AI ছাৰ্ভাৰলৈ পঠিওৱা হয়। যিকোনো ধৰণৰ ব্যক্তিগত, সংবেদনশীল বা গোপন তথ্য অন্তৰ্ভুক্ত নকৰিব।</translation>
 <translation id="7748275671948949022">শ্বেল্ফত থকা লঞ্চাৰ বুটামটো হাইলাইট কৰক</translation>
 <translation id="7749443890790263709">ডেস্কৰ সৰ্বাধিক সংখ্যাত উপনীত হৈছে।</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">আপুনি ছেটিঙলৈ লৈ যিকোনো সময়তে হেল্প মী ৰাইট আৰু হেল্প মী ৰীড অফ কৰিব পাৰে। <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">কথা ক’বলৈ বাছনি কৰক</translation>
 <translation id="7769299611924763557">আপোনাৰ GIF সোনকালেই সাজু হ’ব</translation>
 <translation id="7773536009433685931">তাৰ পৰিৱৰ্তে ৱাইফাই অন কৰক</translation>
@@ -1836,6 +1844,7 @@
 <translation id="7781829728241885113">কালি</translation>
 <translation id="7787212146956232129">ইনপুট আৰু আউটপুট ডিভাইচসমূহ ছেট কৰা আছে। সলনি কৰিবলৈ ছেটিঙলৈ যাওক।</translation>
 <translation id="7792590255364786396">দৃশ্যমান</translation>
+<translation id="7793389284006812057">জেনেৰেটিভ AI সম্পৰীক্ষামূলক, যিটো বিকাশৰ প্ৰাৰম্ভিক স্থিতিত আছে আৰু বৰ্তমান ইয়াৰ উপলব্ধতা সীমিত।</translation>
 <translation id="7796735576426975947">নতুন জাননী লুকুওৱা হৈছে</translation>
 <translation id="7798302898096527229">বাতিল কৰিবলৈ Search বা Shift টিপক।</translation>
 <translation id="780301667611848630">নালাগে, ধন্যবাদ</translation>
@@ -1990,6 +1999,7 @@
 <translation id="8331351032546853669">ডাউনল’ড বাকী আছে</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">বেয়া ফলাফল</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ৱিণ্ড' বাছনি কৰা হ'ল</translation>
 <translation id="8349826889576450703">লঞ্চাৰ</translation>
 <translation id="8349964124165471584">লিংকটো নতুন ৱিণ্ড’ত খোলক</translation>
@@ -2078,7 +2088,7 @@
 <translation id="8683506306463609433">কার্যদক্ষতা ট্ৰে’চ কৰাটো সক্ৰিয় অৱস্থাত আছে</translation>
 <translation id="8703634754197148428">ৰেকৰ্ডিং আৰম্ভ কৰক। ৰেকৰ্ডিং আৰম্ভ হোৱাৰ পাছত, শ্বেল্‌ফটোলৈ যাবলৈ অল্‌ট + শ্বিফ্ট + এল ব্যৱহাৰ কৰক আৰু ৰেকৰ্ডিং বন্ধ কৰাৰ বুটামটো বিচাৰক</translation>
 <translation id="8704155109538237473">picture-in-picture ৱিণ্ড’খনত ফ’কাছ কৰক</translation>
-<translation id="870917907284186124">শ্ৰুতলিপিৰ সুবিধাটো অন/অফ কৰক (আপোনাৰ কণ্ঠস্বৰৰ জৰিয়তে টাইপ কৰক)</translation>
+<translation id="870917907284186124">শ্ৰুতলিপিৰ সুবিধাটো অন/অফ কৰক (আপোনাৰ ভইচৰ জৰিয়তে টাইপ কৰক)</translation>
 <translation id="8711169534266271368">গে’ম ডেশ্বব’ৰ্ডৰ বিকল্পসমূহ</translation>
 <translation id="8712637175834984815">বুজি পালোঁ</translation>
 <translation id="8714138378966541668">প্ৰদানকাৰীয়ে লক কৰিছে</translation>

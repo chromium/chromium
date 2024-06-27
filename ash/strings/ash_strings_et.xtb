@@ -216,6 +216,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1747827819627189109">Ekraanil kuvatav klaviatuur on lubatud</translation>
 <translation id="1749109475624620922">Aken <ph name="WINDOW_TITLE" /> määrati kõigile töölaudadele</translation>
 <translation id="1750088060796401187">Lubatud on ainult <ph name="MAX_DESK_LIMIT" /> töölauda. Uue töölaua avamiseks eemaldage mõni olemasolev töölaud.</translation>
+<translation id="1751335846119670066">Aita mul lugeda</translation>
 <translation id="1755408179247123630">Kas lülitada funktsioon Vali ja kuula sisse?</translation>
 <translation id="1755556344721611131">Rakendus Diagnostika</translation>
 <translation id="1756833229520115364">Malli ei saanud salvestada. Liiga palju aknaid või vahelehti.</translation>
@@ -227,6 +228,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="178347895271755507">Teie telefoni hiljutiste fotode, meediafailide ja märguannete kuvamise seadistamine</translation>
 <translation id="1787955149152357925">Väljas</translation>
 <translation id="1796561540704213354">Veebisaidid, mis hõlmavad teie külastatud lehti ja avatud lehti</translation>
+<translation id="179842970735685253">Google'i teenusetingimused</translation>
 <translation id="181103072419391116">Signaali tugevus: <ph name="SIGNAL_STRENGTH" />, võrku haldab teie administraator</translation>
 <translation id="1816896987747843206">See lubab kõikidel kaamerale juurdepääsemise loaga rakendustel ja veebisaitidel kaamerale juurde pääseda</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3122464029669770682">Protsessor</translation>
 <translation id="3125690294288312932">Kursuse tööde tüüp</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Pidage meeles järgmist</translation>
 <translation id="3139188263101386725">Kasutage uut otseteed</translation>
 <translation id="3139942575505304791">Töölaud 1</translation>
 <translation id="315116470104423982">Mobiilne andmeside</translation>
@@ -962,6 +965,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4585337515783392668">Katkesta ülekandmine tundmatus vastuvõtjas</translation>
 <translation id="4596144739579517758">Tume teema on väljas</translation>
 <translation id="4596442969149038771">Kasutaja <ph name="USER" /> poolt jagatud</translation>
+<translation id="4610493115106525653">Hea tootlus</translation>
 <translation id="4611292653554630842">Logi sisse</translation>
 <translation id="462160925400706389"><ph name="NAME" /> on ühendatud</translation>
 <translation id="4623167406982293031">Kinnitage konto</translation>
@@ -1119,6 +1123,7 @@ Kasutada saate ka klaviatuuri otseteed. Esmalt tõstke tekst esile, seejärel va
 <translation id="5121628974188116412">Lehe lõppu liikumine</translation>
 <translation id="5122517996953421795">Töölaua <ph name="DESK_NAME" /> eelvaade. Inaktiivne töölaud.</translation>
 <translation id="5136175204352732067">Ühendatud on teine klaviatuur</translation>
+<translation id="5140105873789567560">Funktsiooni Aita mul kirjutada ja Aita mul lugeda kasutamiseks peate olema vähemalt 18-aastane.</translation>
 <translation id="5144005092084035179">Kas vahetada helisisendit?</translation>
 <translation id="5147567197700016471">Avatud</translation>
 <translation id="5150070631291639005">Privaatsusseaded</translation>
@@ -1559,6 +1564,7 @@ Uus installimine</translation>
 <translation id="6696025732084565524">Eemaldatav klaviatuur vajab kriitilist värskendust</translation>
 <translation id="6697913454192220372">Uue töölaua lisamine</translation>
 <translation id="6700713906295497288">IME menüünupp</translation>
+<translation id="6704375469818246414">Generatiivse AI-kasutamisel võib kvaliteet olla kõikuv.</translation>
 <translation id="6706742084323792866">Klaviatuuri kinnitamine</translation>
 <translation id="6710213216561001401">Eelmine</translation>
 <translation id="6723839937902243910">Toide</translation>
@@ -1826,9 +1832,11 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7726391492136714301">Teie telefoni märguannete ja rakenduste vaatamine</translation>
 <translation id="7727952505535211425">Veebisaidi avamine uue vahelehe aadressiribal</translation>
 <translation id="7742327441377685481">Märguandeid pole</translation>
+<translation id="774736258792760908">Kui lülitate funktsioonid Aita mul kirjutada ja Aita mul lugeda sisse ning sisestatud tekst ja dokumendi sisu saadetakse Google'i AI serveritesse, et genereerida kirjutamissoovitusi, kokkuvõtteid, vastata küsimustele ja täiustada toodet vastavalt dokumendile <ph name="LINK_TO_SERVICE_TERMS" />. Ärge lisage midagi isiklikku, delikaatset ega konfidentsiaalset.</translation>
 <translation id="7748275671948949022">Riiulil Käivitaja nupu esile tõstmine</translation>
 <translation id="7749443890790263709">Töölaudade maksimaalne arv on täis.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Saate funktsiooni Aita mul kirjutada ja Aita mul lugeda igal ajal seadetes välja lülitada. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Vali ja kuula</translation>
 <translation id="7769299611924763557">Teie GIF on varsti valmis</translation>
 <translation id="7773536009433685931">Lülita sisse hoopis WiFi</translation>
@@ -1837,6 +1845,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7781829728241885113">Eile</translation>
 <translation id="7787212146956232129">Sisend- ja väljundseadmed on määratud. Muutmiseks avage menüü Seaded.</translation>
 <translation id="7792590255364786396">Nähtav</translation>
+<translation id="7793389284006812057">Generatiivne AI on varajases katsejärgus ning sellel on praegu piiratud saadavus.</translation>
 <translation id="7796735576426975947">Uus märguanne on peidetud</translation>
 <translation id="7798302898096527229">Tühistamiseks vajutage otsinguklahvi või tõstuklahvi.</translation>
 <translation id="780301667611848630">Tänan, ei</translation>
@@ -1991,6 +2000,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8331351032546853669">Allalaadimine on ootel</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Halb väljund</translation>
 <translation id="8345019317483336363">Valitud on aken <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">käivitaja</translation>
 <translation id="8349964124165471584">Lingi avamine uues aknas</translation>

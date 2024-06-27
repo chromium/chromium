@@ -102,6 +102,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> алыстан параметрлерди башкарып, колдонуучунун аракеттерин көзөмөлдөй алат.</translation>
 <translation id="150962533380566081">Жараксыз PUK.</translation>
 <translation id="1510238584712386396">Жүргүзгүч</translation>
+<translation id="1514446283880973949">Ишенимдүүлүк менен жазыңыз, мазмунду жыйынтыктап, аныктамаларды алыңыз жана башкалар</translation>
 <translation id="1515129336378114413">серепчинин башкы бети</translation>
 <translation id="1526389707933164996">Көшөгө анимациясы</translation>
 <translation id="152892567002884378">Катуулатуу</translation>
@@ -1287,6 +1288,7 @@
 <translation id="8167413449582155132">Фон Google сунуштаган ЖИ технологиялары менен түзүлгөн</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">жээк</translation>
+<translation id="819278132617411009">Майнаптуу иштөө үчүн Google'дун жасалма интеллектин колдонуңуз</translation>
 <translation id="8206859287963243715">Уюктук</translation>
 <translation id="8208861521865154048">Бонустар</translation>
 <translation id="8226628635270268143">Сүйүктүү сүрөттөр менен альбомдорду тандоо</translation>
@@ -1333,6 +1335,7 @@
 <translation id="8431300646573772016">ChromeOS жаңылыктары</translation>
 <translation id="843568408673868420">Интернет байланышы</translation>
 <translation id="844521431886043384">DNS туураланган жок</translation>
+<translation id="8456200178779628126">Google'дун жасалма интеллекти менен окуп жана жазыңыз</translation>
 <translation id="8456761643544401578">Караңгы теманын автоматтык графиги</translation>
 <translation id="8461329675984532579">Баштапкы жабдуучунун аты</translation>
 <translation id="8475690821716466388">WiFi тармагынын WEP PSK протоколунун коопсуздугу начар</translation>
@@ -1459,6 +1462,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> үчүн билетти жаңыртыңыз</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-бет скандалууда</translation>
 <translation id="9111102763498581341">Кулпуну ачуу</translation>
+<translation id="9122492456897874028">Контенттин корутундусун түзүү, аныктамаларды алуу жана башкалар</translation>
 <translation id="9122602430962285795">Кайра туташуу үчүн Параметрлерге өтүңүз</translation>
 <translation id="9122865513525855321">дзен</translation>
 <translation id="9126720536733509015">Бир нече бетти бир PDF файлына сактаңыз</translation>

@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">స్క్రీన్‌పై కనిపించే కీబోర్డ్ ప్రారంభించబడింది</translation>
 <translation id="1749109475624620922">అన్ని డెస్క్‌లకు విండో <ph name="WINDOW_TITLE" /> కేటాయించబడింది</translation>
 <translation id="1750088060796401187">కేవలం <ph name="MAX_DESK_LIMIT" /> డెస్క్‌లు మాత్రమే అనుమతించబడతాయి. కొత్త డెస్క్‌ను తెరవడానికి పాత దానిని తీసివేయండి.</translation>
+<translation id="1751335846119670066">చదవడంలో సహాయం పొందండి</translation>
 <translation id="1755408179247123630">'వినడానికి ఎంచుకోండి'ని ఆన్ చేయాలా?</translation>
 <translation id="1755556344721611131">సమస్య విశ్లేషణలకు సంబంధించిన యాప్</translation>
 <translation id="1756833229520115364">టెంప్లేట్‌ను సేవ్ చేయడం సాధ్యపడలేదు. చాలా ఎక్కువ విండోలు లేదా ట్యాబ్‌లు ఉన్నాయి.</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">మీ ఫోన్‌లోని తాజా ఫోటోలను, మీడియాను, నోటిఫికేషన్‌లను చూసే సదుపాయాన్ని సెటప్ చేయండి</translation>
 <translation id="1787955149152357925">ఆఫ్ చేయి</translation>
 <translation id="1796561540704213354">వెబ్‌సైట్‌లలో మీరు బ్రౌజ్ చేసిన, తెరిచిన పేజీలు ఉంటాయి</translation>
+<translation id="179842970735685253">Google సర్వీస్ నియమాలు</translation>
 <translation id="181103072419391116">సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />, మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతుంది</translation>
 <translation id="1816896987747843206">ఇది కెమెరా అనుమతితో అన్ని యాప్‌లు, వెబ్‌సైట్‌ల కోసం కెమెరా యాక్సెస్‌ను అనుమతిస్తుంది</translation>
 <translation id="1823873187264960516">ఈథర్‌నెట్: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">క్లాస్‌వర్క్ రకం</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">దృష్టిలో ఉంచుకోవాల్సిన కొన్ని ముఖ్యాంశాలు</translation>
 <translation id="3139188263101386725">అప్‌డేట్ చేయబడిన షార్ట్‌కట్‌ను ఉపయోగించండి</translation>
 <translation id="3139942575505304791">డెస్క్ 1</translation>
 <translation id="315116470104423982">మొబైల్ డేటా</translation>
@@ -962,6 +965,7 @@
 <translation id="4585337515783392668">తెలియని రిసీవర్‌లో ప్రసారం చేయడాన్ని ఆపివేయి</translation>
 <translation id="4596144739579517758">ముదురు రంగు రూపం ఆఫ్‌లో ఉంది</translation>
 <translation id="4596442969149038771"><ph name="USER" /> షేర్ చేశారు</translation>
+<translation id="4610493115106525653">మంచి ఫలితం</translation>
 <translation id="4611292653554630842">లాగిన్ చేయండి</translation>
 <translation id="462160925400706389"><ph name="NAME" /> కనెక్ట్ అయింది</translation>
 <translation id="4623167406982293031">ఖాతాను వెరిఫై చేయండి</translation>
@@ -1119,6 +1123,7 @@
 <translation id="5121628974188116412">పేజీ దిగువకు వెళ్లండి</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> ప్రివ్యూ. ఇన్‌యాక్టివ్ డెస్క్.</translation>
 <translation id="5136175204352732067">వేరే కీబోర్డ్ కనెక్ట్ చేయబడింది</translation>
+<translation id="5140105873789567560">"రాయడంలో సహాయం పొందండి", "చదవడంలో సహాయం పొందండి" ఫీచర్‌ను ఉపయోగించడానికి మీకు కనీసం 18 ఏళ్లు నిండి ఉండాలి.</translation>
 <translation id="5144005092084035179">ఆడియో ఇన్‌పుట్‌ను మార్చాలా?</translation>
 <translation id="5147567197700016471">అన్‌లాక్ చేయబడింది</translation>
 <translation id="5150070631291639005">గోప్యతా సెట్టింగ్‌లు</translation>
@@ -1354,6 +1359,7 @@
 <translation id="5975235751479998104">విండోల ద్వారా ముందుకు వెళ్లండి</translation>
 <translation id="5978382165065462689">రిమోట్ సహాయం విధానంలో మీ స్క్రీన్ నియంత్రణను షేర్ చేస్తోంది.</translation>
 <translation id="5980301590375426705">అతిథిగా నిష్క్రమించండి</translation>
+<translation id="5982119059638483922">రద్దు చేయడానికి Fn+Search లేదా Shiftను నొక్కండి.</translation>
 <translation id="5983567367406220847">ఇన్‌యాక్టివిటీ కారణంగా, హాట్‌స్పాట్ ఆఫ్ చేయబడింది.</translation>
 <translation id="598407983968395253">టెంప్లేట్‌ను ఉపయోగించండి</translation>
 <translation id="598882571027504733">అప్‌డేట్‌ను పొందడానికి, కీబోర్డ్‌ను అలానే జోడించి ఉంచి మీ Chromebookను పునఃప్రారంభించండి.</translation>
@@ -1559,6 +1565,7 @@
 <translation id="6696025732084565524">మీ తీసివేయగల కీబోర్డ్‌కి ఒక ముఖ్యమైన అప్‌డేట్ అవసరం</translation>
 <translation id="6697913454192220372">కొత్త డెస్క్‌ను జోడించండి</translation>
 <translation id="6700713906295497288">IME మెనూ బటన్</translation>
+<translation id="6704375469818246414">జెనరేటివ్ AIని ఉపయోగించినప్పుడు క్వాలిటీ మారవచ్చు.</translation>
 <translation id="6706742084323792866">కీబోర్డ్‌ను పిన్ చేయండి</translation>
 <translation id="6710213216561001401">మునుపటి</translation>
 <translation id="6723839937902243910">పవర్</translation>
@@ -1826,9 +1833,11 @@
 <translation id="7726391492136714301">మీ ఫోన్‌లోని నోటిఫికేషన్‌లు, యాప్‌లను చూడండి</translation>
 <translation id="7727952505535211425">వెబ్‌సైట్‌ను కొత్త ట్యాబ్‌లోని అడ్రస్ బార్‌లో తెరవండి</translation>
 <translation id="7742327441377685481">నోటిఫికేషన్‌లు లేవు</translation>
+<translation id="774736258792760908">"రాయడంలో సహాయం పొందండి", "చదవడంలో సహాయం పొందండి" ఫీచర్‌ను ఆన్ చేసినప్పుడు, <ph name="LINK_TO_SERVICE_TERMS" />‌కు లోబడి, రాత సూచనలను, సారాంశాలను జెనరేట్ చేయడానికి, ప్రశ్నలకు సమాధానమివ్వడానికి, ప్రోడక్ట్‌ను మెరుగుపరచడానికి ఇన్‌పుట్ టెక్స్ట్, డాక్యుమెంట్ కంటెంట్ Google AI సర్వర్‌లకు పంపబడుతుంది. అందులో వ్యక్తిగతమైన వాటిని, సున్నితమైన, లేదా గోప్యమైన అంశాలను చేర్చకండి.</translation>
 <translation id="7748275671948949022">షెల్ఫ్‌లో లాంచర్ బటన్‌ను హైలైట్ చేయండి</translation>
 <translation id="7749443890790263709">గరిష్ట డెస్క్‌ల సంఖ్యను చేరుకుంది.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">"రాయడంలో సహాయం పొందండి", "చదవడంలో సహాయం పొందండి" ఫీచర్‌ను సెట్టింగ్‌లలో మీరు ఎప్పుడైనా ఆఫ్ చేయవచ్చు. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">వినడానికి ఎంచుకోండి</translation>
 <translation id="7769299611924763557">మీ GIF త్వరలో సిద్ధంగా ఉంటుంది</translation>
 <translation id="7773536009433685931">బదులుగా Wi-Fiని ఆన్ చేయండి</translation>
@@ -1837,6 +1846,7 @@
 <translation id="7781829728241885113">నిన్న</translation>
 <translation id="7787212146956232129">ఇన్‌పుట్, అవుట్‌పుట్ పరికరాలు సెట్ చేయబడ్డాయి. మార్చడానికి సెట్టింగ్‌లకు వెళ్లండి.</translation>
 <translation id="7792590255364786396">కనిపిస్తుంది</translation>
+<translation id="7793389284006812057">జెనరేటివ్ AI ప్రయోగాత్మకమైనది, ఇంకా ప్రారంభ స్థాయి అభివృద్ధి దశలోనే ఉంది, ప్రస్తుతానికి అది పరిమిత స్థాయిలో అందుబాటులో ఉంది.</translation>
 <translation id="7796735576426975947">కొత్త నోటిఫికేషన్ దాచబడింది</translation>
 <translation id="7798302898096527229">రద్దు చేయడానికి Search లేదా Shiftను నొక్కండి.</translation>
 <translation id="780301667611848630">వద్దు</translation>
@@ -1991,6 +2001,7 @@
 <translation id="8331351032546853669">డౌన్‌లోడ్ పెండింగ్‌లో ఉంది</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">అవుట్‌పుట్ బాగా లేదు</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> విండో ఎంచుకోబడింది</translation>
 <translation id="8349826889576450703">లాంచర్</translation>
 <translation id="8349964124165471584">లింక్‌ను కొత్త విండోలో తెరవండి</translation>

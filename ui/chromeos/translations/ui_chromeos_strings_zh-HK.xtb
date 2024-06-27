@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">PUK 不正確</translation>
 <translation id="4057991113334098539">正在啟用…</translation>
 <translation id="4092890906744441904">愛爾蘭文</translation>
+<translation id="4101601646343868113">登入流動網絡，確認流動數據計劃生效中</translation>
 <translation id="4124731372776320263">正在同步 1 個雲端硬碟檔案</translation>
 <translation id="4124935795427217608">獨角獸</translation>
 <translation id="4131235941541910880">將不需要的項目移至垃圾桶</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">泰米爾文 (Tamil99 鍵盤)</translation>
 <translation id="5633226425545095130">此項目移動至「<ph name="DESTINATION_NAME" />」共用資料夾後，就會與所有看得到該資料夾的使用者共用。</translation>
 <translation id="5649768706273821470">收聽</translation>
+<translation id="5650895901941743674">檢查你的 APN 設定</translation>
 <translation id="5669691691057771421">輸入新的 PIN</translation>
 <translation id="5678784840044122290">此 Linux 應用程式將可在終端機上使用，其圖示可能在啟動器中顯示。</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />無法中斷與封存或虛擬磁碟的連線<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">檔案清單改咗做縮圖檢視模式。</translation>
 <translation id="8601932370724196034">Crostini 映像檔案</translation>
 <translation id="8609695766746872526">冰島文</translation>
+<translation id="8630384863424041081">輸入流動網絡供應商提供的 SIM 卡 PIN 或預設 PIN。請聯絡流動網絡供應商尋求支援。</translation>
 <translation id="863903787380594467">PIN 不正確。您還可嘗試 <ph name="RETRIES" /> 次。</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - 連接埠</translation>
 <translation id="8656407365183407932">必須移除離線檔案</translation>

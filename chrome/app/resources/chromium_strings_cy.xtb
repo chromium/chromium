@@ -81,6 +81,8 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="2329088755516916767">Pan y bydd wedi'i droi ymlaen, bydd Chromium yn rhaglwytho tudalennau sy'n gwneud pori a chwilio'n gyflymach.</translation>
 <translation id="2343156876103232566">I anfon rhif oddi yma i'ch ffôn Android, mewngofnodwch i Chromium ar y ddwy ddyfais.</translation>
 <translation id="2359808026110333948">Parhau</translation>
+<translation id="2361918034042471035">Mae'r estyniad "<ph name="EXTENSION_NAME" />" eisiau i chi fewngofnodi i Chromium</translation>
+<translation id="2374216753258219393">I ddefnyddio'r estyniad hwn fel <ph name="USER_EMAIL_ADDRESS" />, mewngofnodwch i Chromium.</translation>
 <translation id="2384373936468275798">Ni allai ChromiumOS gysoni'ch data gan fod manylion mewngofnodi eich cyfrif yn hen.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Roedd 1 ddyfais HID yn cael ei chyrchu gan un neu'n fwy o estyniadau Chromium}=1{Mae 1 ddyfais HID yn cael ei chyrchu gan un neu'n fwy o estyniadau Chromium}two{Mae # ddyfais HID yn cael eu cyrchu gan un neu'n fwy o estyniadau Chromium}few{Mae # dyfais HID yn cael eu cyrchu gan un neu'n fwy o estyniadau Chromium}many{Mae # dyfais HID yn cael eu cyrchu gan un neu'n fwy o estyniadau Chromium}other{Mae # dyfais HID yn cael eu cyrchu gan un neu'n fwy o estyniadau Chromium}}</translation>
 <translation id="2401032172288869980">Mae angen caniatâd camera a meicroffon ar Chromium ar gyfer y wefan hon</translation>
@@ -244,9 +246,11 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="4893347770495441059">Ail-lansiwch i Ddiweddaru &amp;Chromium</translation>
 <translation id="4942295735032723435">I gael diweddariadau Chromium yn y dyfodol, bydd angen macOS 11 neu'n hwyrach arnoch. Mae'r cyfrifiadur hwn yn defnyddio macOS 10.15.</translation>
 <translation id="4943838377383847465">Mae Chromium yn y modd cefndir.</translation>
+<translation id="494490797786467921">Cliciwch i gau'r deialog mewngofnodi Chromium</translation>
 <translation id="4987820182225656817">Gall gwesteion ddefnyddio Chromium heb adael unrhyw beth ar ôl.</translation>
 <translation id="4994636714258228724">Ychwanegu eich hun at Chromium</translation>
 <translation id="5114678101347489141">Mae Chromium yn archwilio nodweddion newydd sy'n caniatáu i wefannau roi'r un profiad pori gan ddefnyddio llai o'ch gwybodaeth</translation>
+<translation id="5187123684706427865">Mae angen ail-ddilysu'r cyfrif Chromium</translation>
 <translation id="5224391634244552924">Nid oes unrhyw gyfrineiriau sydd wedi'u cadw. Gall Chromium wirio'ch cyfrineiriau pan fyddwch yn eu cadw.</translation>
 <translation id="5231355151045086930">Allgofnodi o Chromium</translation>
 <translation id="5252179775517634216">Mae <ph name="EXISTING_USER" /> wedi'i fewngofnodi yn barod i'r proffil Chromium hwn. Bydd hyn yn creu proffil Chromium newydd ar gyfer <ph name="USER_EMAIL_ADDRESS" /></translation>

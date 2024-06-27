@@ -216,6 +216,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1747827819627189109">Naka-enable ang on-screen na keyboard</translation>
 <translation id="1749109475624620922">Naitalaga sa lahat ng desk ang window na <ph name="WINDOW_TITLE" /></translation>
 <translation id="1750088060796401187"><ph name="MAX_DESK_LIMIT" /> (na) desk lang ang pinapayagan. Mag-alis ng desk para makapagbukas ng bago.</translation>
+<translation id="1751335846119670066">Tulungan akong magbasa</translation>
 <translation id="1755408179247123630">I-on ang Select-to-speak?</translation>
 <translation id="1755556344721611131">Diagnostics app</translation>
 <translation id="1756833229520115364">Hindi ma-save ang template. Masyadong maraming window o tab.</translation>
@@ -227,6 +228,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="178347895271755507">I-set up ang pagtingin sa mga kamakailang larawan, media, at notification ng iyong telepono</translation>
 <translation id="1787955149152357925">Naka-off</translation>
 <translation id="1796561540704213354">Mga website kasama ang mga page na binisita mo at nakabukas na page</translation>
+<translation id="179842970735685253">Mga Tuntunin ng Serbisyo ng Google</translation>
 <translation id="181103072419391116">Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Pinapamahalaan ng iyong Administrator</translation>
 <translation id="1816896987747843206">Pinapayagan nito ang access sa camera para sa lahat ng app at website na may pahintulot sa camera</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Uri ng classwork</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">Ilang bagay na dapat tandaan</translation>
 <translation id="3139188263101386725">Gamitin ang in-update na shortcut</translation>
 <translation id="3139942575505304791">Desk 1</translation>
 <translation id="315116470104423982">Data sa mobile</translation>
@@ -961,6 +964,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4585337515783392668">Ihinto ang pag-cast sa isang hindi pa natutukoy na tagatanggap</translation>
 <translation id="4596144739579517758">Naka-off ang Madilim na tema</translation>
 <translation id="4596442969149038771">Na-share ni <ph name="USER" /></translation>
+<translation id="4610493115106525653">Magandang output</translation>
 <translation id="4611292653554630842">Mag-log in</translation>
 <translation id="462160925400706389">Nakonekta ang <ph name="NAME" /></translation>
 <translation id="4623167406982293031">I-verify ang account</translation>
@@ -1118,6 +1122,7 @@ Puwede mo ring gamitin ang keyboard shortcut. Una, i-highlight ang text, at pagk
 <translation id="5121628974188116412">Pumunta sa pinakababa ng page</translation>
 <translation id="5122517996953421795">Preview ng <ph name="DESK_NAME" />. Hindi aktibong desk.</translation>
 <translation id="5136175204352732067">Ibang keyboard ang nakakonekta</translation>
+<translation id="5140105873789567560">Dapat ay hindi ka bababa sa 18 taong gulang para magamit mo ang Tulungan akong magsulat at Tulungan akong magbasa.</translation>
 <translation id="5144005092084035179">Palitan ang audio input?</translation>
 <translation id="5147567197700016471">Na-unlock na</translation>
 <translation id="5150070631291639005">Mga setting ng privacy</translation>
@@ -1558,6 +1563,7 @@ Kaka-install lang</translation>
 <translation id="6696025732084565524">Nangangailangan ng mahalagang update ang iyong naaalis na keyboard</translation>
 <translation id="6697913454192220372">Magdagdag ng bagong desk</translation>
 <translation id="6700713906295497288">Button ng menu ng IME</translation>
+<translation id="6704375469818246414">Puwedeng mag-iba-iba ang kalidad kapag ginagamit ang generative AI.</translation>
 <translation id="6706742084323792866">I-pin ang keyboard</translation>
 <translation id="6710213216561001401">Nauna</translation>
 <translation id="6723839937902243910">Power</translation>
@@ -1824,9 +1830,11 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7726391492136714301">Tingnan ang mga notification at app ng iyong telepono</translation>
 <translation id="7727952505535211425">Buksan ang website sa address bar sa bagong tab</translation>
 <translation id="7742327441377685481">Walang notification</translation>
+<translation id="774736258792760908">Kapag in-on mo ang Tulungan akong magsulat at Tulungan akong magbasa, ipapadala ang text ng input at content ng dokumento sa mga server ng Google AI para bumuo ng mga suhestyon sa pagsusulat, bumuo ng mga buod, sumagot ng mga tanong, at pahusayin ang produkto, nang napapailalim sa <ph name="LINK_TO_SERVICE_TERMS" />. Huwag maglagay ng kahit anong personal, sensitibo, o kumpidensyal.</translation>
 <translation id="7748275671948949022">I-highlight ang button ng Launcher sa shelf</translation>
 <translation id="7749443890790263709">Naabot ang maximum na bilang ng desk.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">Puwede mong i-off ang Tulungan akong magsulat at Tulungan akong magbasa sa anumang oras sa Mga Setting. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Select to Speak</translation>
 <translation id="7769299611924763557">Handa na ang iyong GIF sa ilang sandali</translation>
 <translation id="7773536009433685931">I-on na lang ang WiFi</translation>
@@ -1835,6 +1843,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7781829728241885113">Kahapon</translation>
 <translation id="7787212146956232129">Nakatakda ang mga input device at output device. Pumunta sa Mga Setting para baguhin.</translation>
 <translation id="7792590255364786396">Nakikita</translation>
+<translation id="7793389284006812057">Ang Generative AI ay pang-eksperimento, na nasa unang yugto ng pag-develop, at kasalukuyang may limitadong availability.</translation>
 <translation id="7796735576426975947">Nakatago ang bagong notification</translation>
 <translation id="7798302898096527229">Pindutin ang Search o Shift upang kanselahin.</translation>
 <translation id="780301667611848630">Hindi salamat</translation>
@@ -1989,6 +1998,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8331351032546853669">Nakabinbin ang pag-download</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">Hindi magandang output</translation>
 <translation id="8345019317483336363">Napili ang window ng <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">launcher</translation>
 <translation id="8349964124165471584">Buksan ang link sa bagong window</translation>

@@ -81,6 +81,8 @@ Izimvume ozinikezile kakade amawebhusayithi nama-app zingase zisebenze kule akha
 <translation id="2329088755516916767">Uma ivuliwe, i-Chromium ilayisha kuqala amakhasi okwenza ukubhrawuza nokusesha kusheshe.</translation>
 <translation id="2343156876103232566">Ukuze uthumele inombolo kusukela lapha kufoni yakho ye-Android, ngena ngemvume ku-Chromium kuwo womabili amadivayisi.</translation>
 <translation id="2359808026110333948">Qhubeka</translation>
+<translation id="2361918034042471035">Isandiso esithi "<ph name="EXTENSION_NAME" />" sifuna ukuthi ungene ngemvume kuChromium</translation>
+<translation id="2374216753258219393">Ukuze usebenzise lesi sandiso njenge-<ph name="USER_EMAIL_ADDRESS" />, ngena ngemvume kuChromium.</translation>
 <translation id="2384373936468275798">I-ChromiumOS ayikwazanga ukuvumelanisa idatha yakho ngoba imininingwane yokungena ngemvume kwi-akhawunti yakho iphelelwe isikhathi.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Idivayisi e-1 ye-HID ibifinyelelwa yisandiso se-Chromium esisodwa noma eziningi}=1{Idivayisi e-1 ye-HID ifinyelelwa yisandiso se-Chromium esisodwa noma eziningi}one{Amadivayisi angu-# e-HID abefinyelelwa yisandiso se-Chromium esisodwa noma eziningi}other{Amadivayisi angu-# e-HID abefinyelelwa yisandiso se-Chromium esisodwa noma eziningi}}</translation>
 <translation id="2401032172288869980">I-Chromium idinga izimvume zekhamera nemakrofoni kule sayithi</translation>
@@ -244,9 +246,11 @@ Izimvume ozinikezile kakade amawebhusayithi nama-app zingase zisebenze kule akha
 <translation id="4893347770495441059">Qalisa kabusha ukuze Ubuyekeze i-&amp;Chromium</translation>
 <translation id="4942295735032723435">Ukuze uthole izibuyekezo zesikhathi esizayo ze-Chromium, uzodinga i-macOS 11 noma eyakamuva. Le khompyutha isebenzisa i-macOS 10.15.</translation>
 <translation id="4943838377383847465">I-Chromium kumodi yasemuva.</translation>
+<translation id="494490797786467921">Chofoza ukuze uvale ibhokisi lokungena ngemvume leChromium</translation>
 <translation id="4987820182225656817">Izihambeli zingasebenzisa i-Chromium ngaphandle kokushiya noma yini ngemuva.</translation>
 <translation id="4994636714258228724">Zingeze ngokwakho ku-Chromium</translation>
 <translation id="5114678101347489141">I-Chromium ihlola izakhi ezintsha ezivumela amasayithi ukuthi alethe ukuzizwisa kokubhrawuza okufanayo kusetshenziswa ulwazi lwakho oluncane</translation>
+<translation id="5187123684706427865">I-akhawunti yeChromium idinga ukuqinisekiswa kabusha</translation>
 <translation id="5224391634244552924">Awekho amaphasiwedi alondoloziwe. I-Chromium ingahlola amaphasiwedi akho lapho uwalondoloza khona.</translation>
 <translation id="5231355151045086930">Phuma ngemvume ku-Chromium</translation>
 <translation id="5252179775517634216">U-<ph name="EXISTING_USER" /> usengene ngemvume kakade kule phrofayela ye-Chromium. Lokhu kuzodalela u-<ph name="USER_EMAIL_ADDRESS" /> iphrofayela entsha ye-Chromium</translation>

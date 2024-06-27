@@ -5,6 +5,8 @@
 <translation id="1026101648481255140">Nadaljuj namestitev</translation>
 <translation id="102763973188675173">Prilagodite in nadzirajte Google Chrome. Posodobitev je na voljo.</translation>
 <translation id="1028061813283459617">Če želite izbrisati podatke brskanja samo iz te naprave, v računu Google pa jih želite ohraniti, <ph name="BEGIN_LINK" />se odjavite iz Chroma<ph name="END_LINK" />.</translation>
+<translation id="1042270987544905725">Kliknite, če želite zapreti pogovorno okno za prijavo v Chrome</translation>
+<translation id="1059838145689930908">Če želite to razširitev uporabljati kot <ph name="USER_EMAIL_ADDRESS" />, se prijavite v Chrome.</translation>
 <translation id="1065672644894730302">Nastavitev ni mogoče prebrati.
 
 Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.</translation>
@@ -373,6 +375,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6291089322031436445">Aplikacije za Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome je že nameščen za vse uporabnike v računalniku.</translation>
 <translation id="6319856120645568262">Chrome potrebuje dovoljenje za ustvarjanje zemljevida vašega okolja in sledenje rokam</translation>
+<translation id="6321592572353357376">Razširitev »<ph name="EXTENSION_NAME" />« želi, da se prijavite v Chrome</translation>
 <translation id="6326175484149238433">Odstrani iz Chroma</translation>
 <translation id="6327105987658262776">Na voljo ni nobena posodobitev.</translation>
 <translation id="6360449101159168105">Ko je bil ta zavihek neaktiven, je bil pomnilnik sproščen, da je bil Chrome še naprej hiter. Izberete lahko, da to spletno mesto ni nikoli neaktivno.</translation>
@@ -465,6 +468,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="7655455401911432608">Zgodovina brskanja, evidenca spletnih mest, ki ste jih obiskali s Chromom v tej napravi.</translation>
 <translation id="7661924425853052955">Nedavno niste obiskali tega mesta. Chrome je odstranil ta dovoljenja: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="COUNT" />.</translation>
 <translation id="7668816516367091728">Izvajanje opravil, kot so prevajanje, računanje in drugo, neposredno v naslovni vrstici</translation>
+<translation id="7670287553302121848">Račun Chrome zahteva vnovično preverjanje pristnosti</translation>
 <translation id="769538538642757151">Chrome vas bo obvestil, če boste morali kaj pregledati</translation>
 <translation id="7747138024166251722">Namestitvenemu programu ni uspelo ustvariti začasnega imenika. Preverite, ali je na disku dovolj prostora in ali imate dovoljenje za namestitev programske opreme.</translation>
 <translation id="7761834446675418963">Kliknite ime, da odprete Chrome in začnete brskati.</translation>

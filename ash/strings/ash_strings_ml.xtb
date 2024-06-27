@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">ഓൺ‌ സ്‌ക്രീൻ കീ‌ബോർഡ് പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="1749109475624620922">വിൻഡോ <ph name="WINDOW_TITLE" /> എല്ലാ ഡെസ്ക്കുകളിലേക്കും അസൈൻ ചെയ്തു</translation>
 <translation id="1750088060796401187"><ph name="MAX_DESK_LIMIT" /> ഡെസ്‌കുകൾ മാത്രമേ അനുവദിക്കൂ. പുതിയൊരെണ്ണം തുറക്കാൻ ഒരു ഡെസ്‌ക് നീക്കം ചെയ്യുക.</translation>
+<translation id="1751335846119670066">എന്നെ വായിക്കാൻ സഹായിക്കൂ</translation>
 <translation id="1755408179247123630">'വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക' ഓണാക്കണോ?</translation>
 <translation id="1755556344721611131">Diagnostics ആപ്പ്</translation>
 <translation id="1756833229520115364">ടെംപ്ലേറ്റ് സംരക്ഷിക്കാനാകുന്നില്ല. നിരവധി വിൻഡോകളും ടാബുകളും.</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും അറിയിപ്പുകളും കാണുന്നത് സജ്ജീകരിക്കുക</translation>
 <translation id="1787955149152357925">ഓഫാണ്</translation>
 <translation id="1796561540704213354">നിങ്ങൾ സന്ദർശിച്ച പേജുകളും തുറന്ന പേജുകളും ഉൾപ്പെടെയുള്ള വെബ്‌സൈറ്റുകൾ</translation>
+<translation id="179842970735685253">Google-ന്റെ സേവന നിബന്ധനകൾ</translation>
 <translation id="181103072419391116">സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="1816896987747843206">ക്യാമറ ആക്‌സസ് ചെയ്യാൻ അനുമതിയുള്ള എല്ലാ ആപ്പുകൾക്കും വെബ്സൈറ്റുകൾക്കും ഇത് ക്യാമറയിലേക്ക് ആക്‌സസ് അനുവദിക്കുന്നു</translation>
 <translation id="1823873187264960516">ഇതർനെറ്റ്: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">ക്ലാസ്‌വർക്ക് തരം</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">ഓർമ്മിക്കേണ്ട ഏതാനും കാര്യങ്ങൾ</translation>
 <translation id="3139188263101386725">അപ്ഡേറ്റ് ചെയ്ത കുറുക്കുവഴി ഉപയോഗിക്കുക</translation>
 <translation id="3139942575505304791">ഡെസ്‌ക് 1</translation>
 <translation id="315116470104423982">മൊബൈല്‍ ഡാറ്റ</translation>
@@ -961,6 +964,7 @@
 <translation id="4585337515783392668">അജ്ഞാത റിസീവറിൽ കാസ്‌റ്റ് ചെയ്യുന്നത് നിർത്തുക</translation>
 <translation id="4596144739579517758">ഡാർക്ക് തീം ഓഫാണ്</translation>
 <translation id="4596442969149038771"><ph name="USER" /> പങ്കിട്ടു</translation>
+<translation id="4610493115106525653">നല്ല ഔട്ട്പുട്ട്</translation>
 <translation id="4611292653554630842">ലോഗ് ഇന്‍ ചെയ്യുക</translation>
 <translation id="462160925400706389"><ph name="NAME" /> കണക്‌റ്റ് ചെയ്‌തു</translation>
 <translation id="4623167406982293031">അക്കൗണ്ട് പരിശോധിച്ചുറപ്പിക്കുക</translation>
@@ -1118,6 +1122,7 @@
 <translation id="5121628974188116412">പേജിന്റെ താഴേയ്ക്ക് പോവുക</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> പ്രിവ്യൂ. നിഷ്ക്രിയ ഡെസ്‌ക്.</translation>
 <translation id="5136175204352732067">വ്യത്യസ്ത കീബോർഡ് കണക്‌റ്റ് ചെയ്‌തു</translation>
+<translation id="5140105873789567560">എന്നെ എഴുതാൻ സഹായിക്കൂ, എന്നെ വായിക്കാൻ സഹായിക്കൂ എന്നിവ ഉപയോഗിക്കാൻ നിങ്ങൾക്ക് 18 വയസ്സെങ്കിലും പ്രായമുണ്ടായിരിക്കണം.</translation>
 <translation id="5144005092084035179">ഓഡിയോ ഇൻപുട്ട് മാറണോ?</translation>
 <translation id="5147567197700016471">അൺലോക്ക് ചെയ്തു</translation>
 <translation id="5150070631291639005">സ്വകാര്യതാ ക്രമീകരണം</translation>
@@ -1558,6 +1563,7 @@
 <translation id="6696025732084565524">നിങ്ങളുടെ വേർപെടുത്താനാകുന്ന കീബോഡിന് നിർണ്ണായക അപ്‌ഡേറ്റ് ആവശ്യമാണ്</translation>
 <translation id="6697913454192220372">പുതിയ ഡെസ്‌ക് ചേർക്കുക</translation>
 <translation id="6700713906295497288">IME മെനു ബട്ടൺ</translation>
+<translation id="6704375469818246414">ജനറേറ്റീവ് AI ഉപയോഗിക്കുമ്പോൾ ഗുണനിലവാരത്തിൽ മാറ്റമുണ്ടായേക്കാം.</translation>
 <translation id="6706742084323792866">കീബോർഡ് പിൻ ചെയ്യുക</translation>
 <translation id="6710213216561001401">മുമ്പത്തേത്</translation>
 <translation id="6723839937902243910">പവർ</translation>
@@ -1826,9 +1832,11 @@
 <translation id="7726391492136714301">നിങ്ങളുടെ ഫോണിലെ അറിയിപ്പുകളും ആപ്പുകളും കാണുക</translation>
 <translation id="7727952505535211425">പുതിയ ടാബിലെ വിലാസ ബാറിൽ വെബ്സൈറ്റ് തുറക്കുക</translation>
 <translation id="7742327441377685481">അറിയിപ്പുകൾ ഒന്നുമില്ല</translation>
+<translation id="774736258792760908">നിങ്ങൾ എന്നെ എഴുതാൻ സഹായിക്കൂ, എന്നെ വായിക്കാൻ സഹായിക്കൂ എന്നിവ ഓണാക്കുമ്പോൾ, എഴുത്ത് നിർദ്ദേശങ്ങളും സംഗ്രഹങ്ങളും ജനറേറ്റ് ചെയ്യാനും ചോദ്യങ്ങൾക്ക് ഉത്തരം നൽകാനും ഉൽപ്പന്നങ്ങൾ മെച്ചപ്പെടുത്താനും, <ph name="LINK_TO_SERVICE_TERMS" />-ക്ക് വിധേയമായി ,ഇൻപുട്ട് ടെക്സ്റ്റും ഡോക്യുമെന്റിലെ ഉള്ളടക്കവും Google AI സെർവറുകളിലേക്ക് അയയ്ക്കുന്നു. വ്യക്തിപരമോ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ടതോ രസഹ്യാത്മകമോ ആയ കാര്യങ്ങളൊന്നും ഉൾപ്പെടുത്തരുത്.</translation>
 <translation id="7748275671948949022">ഷെൽഫിലെ ലോഞ്ചർ ബട്ടൺ ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="7749443890790263709">ഡെസ്‌ക്കുകളുടെ പരമാവധി എണ്ണത്തിൽ എത്തിയിരിക്കുന്നു.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">എന്നെ എഴുതാൻ സഹായിക്കൂ, എന്നെ വായിക്കാൻ സഹായിക്കൂ എന്നിവ നിങ്ങൾക്ക് ഏതുസമയത്തും ക്രമീകരണത്തിൽ ഓഫാക്കാം. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7769299611924763557">നിങ്ങളുടെ GIF ഉടൻ തയ്യാറാകും</translation>
 <translation id="7773536009433685931">പകരം വൈഫൈ ഓണാക്കുക</translation>
@@ -1837,6 +1845,7 @@
 <translation id="7781829728241885113">ഇന്നലെ</translation>
 <translation id="7787212146956232129">ഇൻപുട്ട്, ഔട്ട്പുട്ട് ഉപകരണങ്ങൾ സജ്ജീകരിച്ചു. മാറ്റാൻ ക്രമീകരണത്തിലേക്ക് പോകുക.</translation>
 <translation id="7792590255364786396">കാണാനാകുന്നത്</translation>
+<translation id="7793389284006812057">ജനറേറ്റീവ് AI പരീക്ഷണാത്മകവും പ്രാരംഭ ഘട്ടത്തിലുള്ളതുമാണ്, നിലവിൽ ഇതിന്റെ ലഭ്യത പരിമിതമാണ്.</translation>
 <translation id="7796735576426975947">പുതിയ അറിയിപ്പ് മറച്ചിരിക്കുന്നു</translation>
 <translation id="7798302898096527229">റദ്ദാക്കാൻ 'തിരയൽ' അല്ലെങ്കിൽ Shift അമർത്തുക.</translation>
 <translation id="780301667611848630">വേണ്ട</translation>
@@ -1991,6 +2000,7 @@
 <translation id="8331351032546853669">ഡൗൺലോഡ് ശേഷിക്കുന്നു</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">മോശം ഔട്ട്പുട്ട്</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> വിന്‍ഡോ തിരഞ്ഞടുത്തു</translation>
 <translation id="8349826889576450703">ലോഞ്ചർ</translation>
 <translation id="8349964124165471584">പുതിയ വിൻഡോയിൽ ലിങ്ക് തുറക്കുക</translation>

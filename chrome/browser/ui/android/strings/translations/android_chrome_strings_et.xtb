@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Aktiivne <ph name="LAST_UPDATED" /> päeva tagasi</translation>
 <translation id="1390418506739274310">Võite näha ajalugu muudest rakendustest, mis avavad linke Chrome'is. Aadressil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> võib teie Google'i kontol olla muus vormis sirvimisajalugu.</translation>
 <translation id="13931502444227376">Jätkamiseks jagab <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> selle saidiga teie nime, e-posti aadressi ja profiilipilti. Vaadake selle saidi <ph name="BEGIN_LINK1" />teenusetingimusi<ph name="END_LINK1" />.</translation>
+<translation id="139752016751285248">Hinnastatistika alumine leht on avatud täiskõrguses</translation>
 <translation id="1397811292916898096">Otsi teenusega <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Teil on võimalik <ph name="BEGIN_LINK1" />määrata, milliseid Chrome'i andmeid teie Google'i kontole salvestatakse<ph name="END_LINK1" />.
 
@@ -179,6 +180,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="1877073879466606884">Profiil, millele olete sisse logitud, on hallatud profiil. Teie administraator saab teha teie profiili seadetes distantsilt muudatusi, analüüsida aruandluse kaudu brauseri teavet ning teha muid vajalikke toiminguid.</translation>
 <translation id="1883903952484604915">Minu failid</translation>
 <translation id="189358972401248634">Teised keeled</translation>
+<translation id="1899175549411605574">Hinnastatistika alumine leht</translation>
 <translation id="1900260903084164610">Jätkates kinnitate, et nõustute <ph name="BEGIN_TOS_LINK" />teenusetingimustega<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Teie külastatavad URL-id salvestatakse teie Google'i kontole</translation>
 <translation id="1910950723001426294">Jagamisvalikute loend on suletud.</translation>
@@ -520,6 +522,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3587596251841506391">Aidake veebi turvalisemaks muuta</translation>
 <translation id="3597179440835065298">Hankige paremaid soovitusi</translation>
 <translation id="3602290021589620013">Eelvaade</translation>
+<translation id="3614126103057878858">Hinnastatistika</translation>
 <translation id="3616113530831147358">Heli</translation>
 <translation id="3622349720008044802">Akende haldamine</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{ja veel üks sait}other{ja veel # saiti}}</translation>
@@ -529,6 +532,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3637744895182738742">Kui unustasite parooli või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chrome’i andmed<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Ava Google’i rakenduse avaleht</translation>
 <translation id="368329460027487650">Välja logitud. Avab sisselogimise valikud.</translation>
+<translation id="3684540848053703310">Hinnastatistika alumine leht on suletud</translation>
 <translation id="3687645719033307815">Vaatate selle lehe eelvaadet</translation>
 <translation id="3690369331356918524">Hoiatab teid, kui paroolid andmetega seotud rikkumise käigus avalikustatakse</translation>
 <translation id="3692944402865947621">Faili <ph name="FILE_NAME" /> allalaadimine nurjus, kuna salvestuskoht ei ole saadaval.</translation>

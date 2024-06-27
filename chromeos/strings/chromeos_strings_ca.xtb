@@ -102,6 +102,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> gestiona aquest usuari i és possible que gestioni les opcions de configuració i monitori l'activitat de l'usuari de manera remota.</translation>
 <translation id="150962533380566081">El PUK no és vàlid.</translation>
 <translation id="1510238584712386396">Menú d'aplicacions</translation>
+<translation id="1514446283880973949">Escriu amb més confiança, resumeix el contingut, obtén definicions i més</translation>
 <translation id="1515129336378114413">pàgina d'inici del navegador</translation>
 <translation id="1526389707933164996">Animació de l'estalvi de pantalla</translation>
 <translation id="152892567002884378">Apuja el volum</translation>
@@ -1287,6 +1288,7 @@
 <translation id="8167413449582155132">Fons amb la tecnologia de la IA de Google</translation>
 <translation id="8179976553408161302">Retorn</translation>
 <translation id="8183975772394450380">una platja</translation>
+<translation id="819278132617411009">Utilitza la IA de Google per augmentar la productivitat</translation>
 <translation id="8206859287963243715">Cel·lular</translation>
 <translation id="8208861521865154048">Avantatges</translation>
 <translation id="8226628635270268143">Tria les teves fotos i els teus àlbums preferits</translation>
@@ -1333,6 +1335,7 @@
 <translation id="8431300646573772016">Novetats de Chrome OS</translation>
 <translation id="843568408673868420">Connectivitat a Internet</translation>
 <translation id="844521431886043384">No s'ha configurat el DNS</translation>
+<translation id="8456200178779628126">Utilitza la IA de Google a fi d'obtenir ajuda per llegir i escriure</translation>
 <translation id="8456761643544401578">Mode fosc automàtic</translation>
 <translation id="8461329675984532579">Nom del proveïdor domèstic</translation>
 <translation id="8475690821716466388">La xarxa Wi-Fi està protegida amb el protocol dèbil WEP PSK</translation>
@@ -1459,6 +1462,7 @@
 <translation id="910415269708673980">Actualitza el tiquet de: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">S'està cercant la pàgina <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloqueja</translation>
+<translation id="9122492456897874028">Resumeix el contingut, obtén definicions i més</translation>
 <translation id="9122602430962285795">Per tornar-te a connectar, ves a Configuració</translation>
 <translation id="9122865513525855321">zen</translation>
 <translation id="9126720536733509015">Desa múltiples pàgines en un PDF</translation>

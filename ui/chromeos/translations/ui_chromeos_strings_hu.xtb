@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Helytelen PUK-kód</translation>
 <translation id="4057991113334098539">Aktiválás...</translation>
 <translation id="4092890906744441904">ír</translation>
+<translation id="4101601646343868113">Jelentkezzen be a mobilhálózatra, és ellenőrizze, hogy aktív-e a mobiladatcsomagja</translation>
 <translation id="4124731372776320263">1 Drive-fájl szinkronizálása…</translation>
 <translation id="4124935795427217608">Egyszarvú</translation>
 <translation id="4131235941541910880">Helyezze a kukába azokat az elemeket, amelyekre nincs szüksége.</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">tamil, Tamil99-billentyűzettel</translation>
 <translation id="5633226425545095130">Az áthelyezése esetén az elemet mindenkivel megosztja, aki látja a következő megosztott mappát: <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Meghallgatás</translation>
+<translation id="5650895901941743674">Az APN-konfiguráció ellenőrzése</translation>
 <translation id="5669691691057771421">Új PIN-kód megadása</translation>
 <translation id="5678784840044122290">A Linux-alkalmazás rendelkezésre áll majd a terminálból, valamint az ikonja is megjelenhet az Indítóban.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nem sikerült az archívum vagy virtuális lemez leválasztása<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">A fájllista nézete indexképnézetre változott.</translation>
 <translation id="8601932370724196034">Crostini-képfájl</translation>
 <translation id="8609695766746872526">izlandi</translation>
+<translation id="8630384863424041081">Adja meg a SIM-kártyájához tartozó PIN-kódot vagy a szolgáltató által biztosított alapértelmezett PIN-kódot. Ha segítségre van szüksége, forduljon szolgáltatójához.</translation>
 <translation id="863903787380594467">Helytelen PIN-kód. <ph name="RETRIES" /> próbálkozási lehetősége maradt.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
 <translation id="8656407365183407932">Az offline fájlokat el kellett távolítani</translation>

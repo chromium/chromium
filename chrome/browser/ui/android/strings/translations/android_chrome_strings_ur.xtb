@@ -89,6 +89,7 @@
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> دن پہلے فعال تھا</translation>
 <translation id="1390418506739274310">‏آپ Chrome میں لنکس کو کھولنے والی دیگر ایپس کی سرگزشت دیکھ سکتے ہیں۔ ممکن ہے کہ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں۔</translation>
 <translation id="13931502444227376">جاری رکھنے کے لیے، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اس سائٹ کے ساتھ آپ کے نام، ای میل پتہ اور پروفائل کی تصویر کا اشتراک کرے گا۔ اس سائٹ کی <ph name="BEGIN_LINK1" />سروس کی شرائط<ph name="END_LINK1" /> دیکھیں۔</translation>
+<translation id="139752016751285248">قیمت سے متعلق حقائق کی نیچے کی شیٹ پوری اسکرین پر کھلی ہے</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> کے ساتھ تلاش کریں</translation>
 <translation id="1398057416966591719">‏آپ اس بات کا نظم کر سکتے ہیں کہ آپ کے Google اکاؤنٹ میں <ph name="BEGIN_LINK1" />Chrome کا کون سا ڈیٹا محفوظ کیا جائے<ph name="END_LINK1" />۔
 
@@ -179,6 +180,7 @@
 <translation id="1877073879466606884">آپ جس پروفائل میں سائن ان ہیں وہ ایک منظم پروفائل ہے۔ آپ کا منتظم آپ کی پروفائل کی ترتیبات میں دور سے تبدیلیاں کر سکتا ہے، رپورٹنگ کے ذریعے براؤزر کے بارے میں معلومات کا تجزیہ کر سکتا ہے اور دیگر ضروری ٹاسکس انجام دے سکتا ہے۔</translation>
 <translation id="1883903952484604915">میری فائلز</translation>
 <translation id="189358972401248634">دوسری زبانیں</translation>
+<translation id="1899175549411605574">قیمت سے متعلق حقائق کی نیچے کی شیٹ</translation>
 <translation id="1900260903084164610">جاری رکھ کر آپ <ph name="BEGIN_TOS_LINK" />سروس کی شرائط<ph name="END_TOS_LINK" /> سے اتفاق کرتے ہیں۔</translation>
 <translation id="1904580727789512086">‏آپ کے ملاحظہ کردہ URLs آپ کے Google اکاؤنٹ میں محفوظ ہوتے ہیں</translation>
 <translation id="1910950723001426294">اشتراک کرنے کے اختیارات کی فہرست بند ہے۔</translation>
@@ -530,6 +532,7 @@
 <translation id="3637744895182738742">‏اگر آپ اپنا پاس فریز بھول گئے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو حذف کریں<ph name="END_LINK" />۔</translation>
 <translation id="3674208116086565128">‏‫Google ایپ ہوم پر جائیں</translation>
 <translation id="368329460027487650">سائن آؤٹ ہو گئے۔ سائن ان کرنے کے اختیارات کھولتا ہے۔</translation>
+<translation id="3684540848053703310">قیمت سے متعلق حقائق کی نیچے کی شیٹ بند ہے</translation>
 <translation id="3687645719033307815">آپ اس صفحہ کا پیش منظر دیکھ رہے ہیں</translation>
 <translation id="3690369331356918524">اگر پاس ورڈز ڈیٹا کی خلاف ورزی میں افشاء ہوتے ہیں تو آپ کو متنبہ کرتی ہے</translation>
 <translation id="3692944402865947621">اسٹوریج کا مقام ناقابل رسائی ہونے کے سبب <ph name="FILE_NAME" /> ڈاؤن لوڈ کرنا ناکام ہو گیا۔</translation>

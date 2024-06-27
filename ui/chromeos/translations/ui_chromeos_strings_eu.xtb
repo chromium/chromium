@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Okerreko PUKa</translation>
 <translation id="4057991113334098539">Aktibatzen…</translation>
 <translation id="4092890906744441904">Irlandarra</translation>
+<translation id="4101601646343868113">Hasi saioa sare mugikorrean eta berretsi mugikorrerako datu-tarifa aktibo daukazula</translation>
 <translation id="4124731372776320263">Drive-ko fitxategi bat sinkronizatzen</translation>
 <translation id="4124935795427217608">Adarbakarra</translation>
 <translation id="4131235941541910880">Eraman zaborrontzira behar ez dituzun elementuak</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Tamildarra, Tamil99 teklatuarekin</translation>
 <translation id="5633226425545095130">Elementu hau mugituz gero, "<ph name="DESTINATION_NAME" />" karpeta partekatua ikus dezakeen edonorekin partekatuko da.</translation>
 <translation id="5649768706273821470">Entzun</translation>
+<translation id="5650895901941743674">Egiaztatu APNaren konfigurazioa</translation>
 <translation id="5669691691057771421">Idatzi PIN berria</translation>
 <translation id="5678784840044122290">Linux aplikazioa erabilgarri egongo da zure terminalean eta baliteke haren ikonoa abiarazlean agertzea.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Ezin da deskonektatu artxibotik edo disko birtualetik<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Irudi txikiko ikuspegira aldatu da fitxategi-zerrenda.</translation>
 <translation id="8601932370724196034">Crostini motako irudi-fitxategia</translation>
 <translation id="8609695766746872526">Islandiarra</translation>
+<translation id="8630384863424041081">Idatzi zure SIM txartelaren PINa edo operadoreak emandako PIN lehenetsia. Laguntza jasotzeko, jarri operadorearekin harremanetan.</translation>
 <translation id="863903787380594467">PINa okerra da. <ph name="RETRIES" /> saiakera gelditzen zaizkizu.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Ataka</translation>
 <translation id="8656407365183407932">Kendu egin behar izan ditugu konexiorik gabe erabilgarri zenituen fitxategiak</translation>

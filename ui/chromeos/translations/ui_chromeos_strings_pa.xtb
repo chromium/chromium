@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">ਗਲਤ PUK</translation>
 <translation id="4057991113334098539">ਕਿਰਿਆਸ਼ੀਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="4092890906744441904">ਆਇਰਸ਼</translation>
+<translation id="4101601646343868113">ਆਪਣੇ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ ਅਤੇ ਤਸਦੀਕ ਕਰੋ ਕਿ ਤੁਹਾਡਾ ਮੋਬਾਈਲ ਡਾਟਾ ਪਲਾਨ ਕਿਰਿਆਸ਼ੀਲ ਹੈ</translation>
 <translation id="4124731372776320263">Drive ਦੀ 1 ਫ਼ਾਈਲ ਨੂੰ ਸਿੰਕ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="4124935795427217608">ਇੱਕ ਸਿੰਗ ਵਾਲਾ ਘੋੜਾ</translation>
 <translation id="4131235941541910880">ਆਪਣੀਆਂ ਬੇਲੋੜੀਆਂ ਆਈਟਮਾਂ ਰੱਦੀ ਵਿੱਚ ਲਿਜਾਓ</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">ਤਮਿਲ99 ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਤਮਿਲ</translation>
 <translation id="5633226425545095130">ਇਸ ਆਈਟਮ ਦੀ ਜਗ੍ਹਾ ਬਦਲਣ ਨਾਲ ਇਸਨੂੰ ਹਰ ਉਸ ਵਿਅਕਤੀ ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਜਾਵੇਗਾ ਜੋ ਸਾਂਝਾ ਕੀਤੇ ਫੋਲਡਰ '<ph name="DESTINATION_NAME" />' ਨੂੰ ਦੇਖ ਸਕਦੇ ਹਨ।</translation>
 <translation id="5649768706273821470">ਸੁਣਿਆ</translation>
+<translation id="5650895901941743674">ਆਪਣੇ APN ਸੰਰੂਪਣ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="5669691691057771421">ਨਵਾਂ PIN ਦਾਖਲ ਕਰੋ</translation>
 <translation id="5678784840044122290">Linux ਐਪਲੀਕੇਸ਼ਨ ਤੁਹਾਡੇ ਟਰਮੀਨਲ ਵਿੱਚ ਉਪਲਬਧ ਹੋਵੇਗੀ ਅਤੇ ਸ਼ਾਇਦ ਇਹ ਤੁਹਾਡੇ ਲਾਂਚਰ ਵਿੱਚ ਕੋਈ ਪ੍ਰਤੀਕ ਵੀ ਦਿਖਾ ਸਕਦੀ ਹੈ।</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ਕਿਸੇ ਪੁਰਾਲੇਖ ਜਾਂ ਵਰਚੁਅਲ ਡਿਸਕ ਤੋਂ ਡਿਸਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">ਫ਼ਾਈਲ ਸੂਚੀ, ਲਘੂ-ਚਿੱਤਰ ਦ੍ਰਿਸ਼ ਵਿੱਚ ਬਦਲ ਗਈ ਹੈ।</translation>
 <translation id="8601932370724196034">Crostini ਈਮੇਜ ਫ਼ਾਈਲ</translation>
 <translation id="8609695766746872526">ਆਈਸਲੈਂਡੀ</translation>
+<translation id="8630384863424041081">ਆਪਣਾ ਸਿਮ ਕਾਰਡ ਪਿੰਨ ਜਾਂ ਤੁਹਾਡੇ ਕੈਰੀਅਰ ਵੱਲੋਂ ਮੁਹੱਈਆ ਕਰਵਾਇਆ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਪਿੰਨ ਦਾਖਲ ਕਰੋ। ਸਹਾਇਤਾ ਲਈ ਆਪਣੇ ਕੈਰੀਅਰ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="863903787380594467">ਗਲਤ ਪਿੰਨ। ਤੁਹਾਡੇ ਕੋਲ <ph name="RETRIES" /> ਕੋਸ਼ਿਸ਼ਾਂ ਬਾਕੀ ਹਨ।</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ਪੋਰਟ</translation>
 <translation id="8656407365183407932">ਤੁਹਾਡੀਆਂ ਆਫ਼ਲਾਈਨ ਫ਼ਾਈਲਾਂ ਨੂੰ ਹਟਾਉਣਾ ਪਿਆ</translation>

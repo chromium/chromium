@@ -102,6 +102,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> upravlja ovim korisnikom i možda može daljinski upravljati postavkama i nadzirati aktivnost korisnika.</translation>
 <translation id="150962533380566081">PUK nije važeći.</translation>
 <translation id="1510238584712386396">Pokretač</translation>
+<translation id="1514446283880973949">Pišite samopouzdanije, sažimajte sadržaj, saznajte definicije i drugo</translation>
 <translation id="1515129336378114413">početna stranica preglednika</translation>
 <translation id="1526389707933164996">Animirani čuvari zaslona</translation>
 <translation id="152892567002884378">Pojačavanje glasnoće</translation>
@@ -1287,6 +1288,7 @@
 <translation id="8167413449582155132">Pozadinu omogućuje Googleov AI</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">plaže</translation>
+<translation id="819278132617411009">Googleov AI može vam pomoći da budete produktivniji</translation>
 <translation id="8206859287963243715">Mobitel</translation>
 <translation id="8208861521865154048">Pogodnosti</translation>
 <translation id="8226628635270268143">Odaberite svoje omiljene fotografije i albume</translation>
@@ -1333,6 +1335,7 @@
 <translation id="8431300646573772016">Novo u Chrome OS-u</translation>
 <translation id="843568408673868420">Povezivanje s internetom</translation>
 <translation id="844521431886043384">DNS nije postavljen</translation>
+<translation id="8456200178779628126">Googleov AI može vam pomoći pri čitanju i pisanju</translation>
 <translation id="8456761643544401578">Automatski tamni način</translation>
 <translation id="8461329675984532579">Naziv davatelja usluge kućne mreže</translation>
 <translation id="8475690821716466388">Wi-Fi mreža zaštićena je slabim protokolom WEP PSK</translation>
@@ -1459,6 +1462,7 @@
 <translation id="910415269708673980">Osvježite tiket za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skeniranje stranice <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Otključaj</translation>
+<translation id="9122492456897874028">Sažimajte sadržaj, saznajte definicije i drugo</translation>
 <translation id="9122602430962285795">Da biste se povezali ponovo, otvorite postavke</translation>
 <translation id="9122865513525855321">zen</translation>
 <translation id="9126720536733509015">Spremi više stranica u jedan PDF</translation>

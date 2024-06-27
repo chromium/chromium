@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Virkt fyrir <ph name="LAST_UPDATED" /> dögum</translation>
 <translation id="1390418506739274310">Þú gætir séð feril annarra forrita sem opna tengla í Chrome. Google-reikningurinn þinn kann að vera með annars konar vafraferil á <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Til að halda áfram mun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deila nafni þínu, netfangi og prófílmynd með þessu vefsvæði. Sjá <ph name="BEGIN_LINK1" />þjónustuskilmála<ph name="END_LINK1" /> þessa vefsvæðis.</translation>
+<translation id="139752016751285248">Blað neðst með verðinnsýn, opið til hálfs</translation>
 <translation id="1397811292916898096">Leita með <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Þú getur <ph name="BEGIN_LINK1" />stjórnað því hvaða Chrome-gögn eru vistuð<ph name="END_LINK1" /> á Google-reikningnum þínum.
 
@@ -179,6 +180,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="1877073879466606884">Prófíllinn sem þú ert skráð(ur) inn á er stýrður prófíll. Stjórnandinn þinn getur breytt stillingum prófílsins þíns í gegnum fjaraðgang, greint upplýsingar um vafrann þinn út frá skýrslum og framkvæmt aðrar nauðsynlegar aðgerðir.</translation>
 <translation id="1883903952484604915">Skrárnar mínar</translation>
 <translation id="189358972401248634">Önnur tungumál</translation>
+<translation id="1899175549411605574">Blað neðst með verðinnsýn</translation>
 <translation id="1900260903084164610">Með því að halda áfram samþykkirðu <ph name="BEGIN_TOS_LINK" />þjónustuskilmálana<ph name="END_TOS_LINK" /></translation>
 <translation id="1904580727789512086">Vefslóðirnar sem þú opnar eru vistaðar á Google reikningnum þínum</translation>
 <translation id="1910950723001426294">Listi yfir deilingarvalkosti er lokaður.</translation>
@@ -520,6 +522,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3587596251841506391">Hjálpaðu við að bæta netöryggi</translation>
 <translation id="3597179440835065298">Fáðu betri tillögur</translation>
 <translation id="3602290021589620013">Forskoða</translation>
+<translation id="3614126103057878858">Verðinnsýn</translation>
 <translation id="3616113530831147358">Hljóð</translation>
 <translation id="3622349720008044802">Stjórna gluggum</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 vefsvæði}one{+ # vefsvæði}other{+ # vefsvæði}}</translation>
@@ -529,6 +532,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3637744895182738742">Ef þú gleymdir aðgangsorðinu eða vilt breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-gögnunum á reikningnum þínum<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Fara í Google Home-forritið</translation>
 <translation id="368329460027487650">Útskráð(ur). Opnar valkosti fyrir innskráningu.</translation>
+<translation id="3684540848053703310">Blað neðst með verðinnsýn, lokað</translation>
 <translation id="3687645719033307815">Þú ert að sjá forskoðun þessarar síðu</translation>
 <translation id="3690369331356918524">Lætur þig vita ef aðgangsorð eru afhjúpuð vegna öryggisbrots</translation>
 <translation id="3692944402865947621">Ekki tókst að sækja <ph name="FILE_NAME" /> því að ekki næst í geymslustaðinn.</translation>

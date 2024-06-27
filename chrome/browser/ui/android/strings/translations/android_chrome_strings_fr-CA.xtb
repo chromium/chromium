@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">Actif il y a <ph name="LAST_UPDATED" /> jours</translation>
 <translation id="1390418506739274310">Vous pourriez voir l'historique d'autres applis qui ouvrent des liens dans Chrome. Votre compte Google peut contenir d'autres formes d'historique de navigation sur la page <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera votre nom, votre adresse de courriel et votre photo de profil avec ce site. Consultez les <ph name="BEGIN_LINK1" />conditions d'utilisation<ph name="END_LINK1" /> de ce site.</translation>
+<translation id="139752016751285248">Zone de contenu dans le bas de l'écran concernant les statistiques sur les prix ouverte à pleine hauteur</translation>
 <translation id="1397811292916898096">Rechercher avec <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Vous pouvez <ph name="BEGIN_LINK1" />gérer les données Chrome enregistrées<ph name="END_LINK1" /> dans votre compte Google.
 
@@ -179,6 +180,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1877073879466606884">Le profil auquel vous êtes connecté est un profil géré. Votre administrateur peut modifier les paramètres de votre profil à distance, analyser les informations concernant le navigateur au moyen des rapports et effectuer d'autres tâches nécessaires.</translation>
 <translation id="1883903952484604915">Mes fichiers</translation>
 <translation id="189358972401248634">Autres langues</translation>
+<translation id="1899175549411605574">Zone de contenu dans le bas de l'écran concernant les statistiques sur les prix</translation>
 <translation id="1900260903084164610">En continuant, vous acceptez les <ph name="BEGIN_TOS_LINK" />conditions d'utilisation<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Les adresses URL que vous visitez sont enregistrées dans votre compte Google</translation>
 <translation id="1910950723001426294">La liste d'options de partage est fermée.</translation>
@@ -520,6 +522,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3587596251841506391">Contribuer à la sécurité sur le Web</translation>
 <translation id="3597179440835065298">Obtenez de meilleures suggestions</translation>
 <translation id="3602290021589620013">Aperçu</translation>
+<translation id="3614126103057878858">Statistiques sur les prix</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Gérer les fenêtres</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 site}one{+ # site}other{+ # sites}}</translation>
@@ -529,6 +532,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3637744895182738742">Si vous avez oublié votre phrase de passe ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Accéder à l'onglet d'accueil de l'appli Google</translation>
 <translation id="368329460027487650">Déconnecté. Ouvre les options de connexion.</translation>
+<translation id="3684540848053703310">Zone de contenu dans le bas de l'écran concernant les statistiques sur les prix fermée</translation>
 <translation id="3687645719033307815">Vous regardez un aperçu de cette page</translation>
 <translation id="3690369331356918524">Vous avertit si des mots de passe sont exposés dans une violation de données</translation>
 <translation id="3692944402865947621">Impossible de télécharger <ph name="FILE_NAME" />, car aucun emplacement de stockage n'a été trouvé.</translation>

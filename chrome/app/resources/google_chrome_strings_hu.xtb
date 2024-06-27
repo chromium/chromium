@@ -5,6 +5,8 @@
 <translation id="1026101648481255140">Telepítés folytatása</translation>
 <translation id="102763973188675173">A Google Chrome személyre szabása és vezérlése. Van rendelkezésre álló frissítés.</translation>
 <translation id="1028061813283459617">Ha csak erről az eszközről szeretné törölni böngészési adatait, Google-fiókjából azonban nem, <ph name="BEGIN_LINK" />jelentkezzen ki a Chrome-ból<ph name="END_LINK" />.</translation>
+<translation id="1042270987544905725">Kattintson a Chrome bejelentkezési párbeszédpaneljének bezárásához</translation>
+<translation id="1059838145689930908">Ha ezt a bővítményt a(z) <ph name="USER_EMAIL_ADDRESS" /> fiókban szeretné használni, jelentkezzen be a Chrome-ba.</translation>
 <translation id="1065672644894730302">A beállításait nem sikerült olvasni. Egyes funkciókat esetleg nem ér el, és a beállításaiban végrehajtott módosításokat nem menti a rendszer.</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> előzőleg Chrome-ot használt</translation>
 <translation id="110877069173485804">Ez az Ön Chrome-ja</translation>
@@ -365,6 +367,7 @@
 <translation id="6291089322031436445">Chrome Dev-alkalmazások</translation>
 <translation id="6291549208091401781">A Google Chrome már telepítve van az összes felhasználó számára a számítógépen.</translation>
 <translation id="6319856120645568262">A Chrome-nak engedélyre van szüksége ahhoz, hogy feltérképezhesse az Ön környezetét, és nyomon követhesse a kezét</translation>
+<translation id="6321592572353357376">A(z) „<ph name="EXTENSION_NAME" />” bővítmény arra kéri, hogy jelentkezzen be a Chrome-ba</translation>
 <translation id="6326175484149238433">Eltávolítás a Chrome-ból</translation>
 <translation id="6327105987658262776">Nincs rendelkezésre álló frissítés.</translation>
 <translation id="6360449101159168105">Amíg ez a lap inaktív volt, a rendszer memóriát szabadított fel, hogy a Chrome gyors maradjon. Dönthet úgy, hogy mindig kizárja ezt a webhelyet az inaktív állapotból.</translation>
@@ -457,6 +460,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="7655455401911432608">Böngészési előzményei és az Ön által az ezen az eszközön használt Chrome-ban felkeresett webhelyek jegyzéke.</translation>
 <translation id="7661924425853052955">Nem látogatta meg mostanában. A Chrome eltávolította a következőket: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="COUNT" />.</translation>
 <translation id="7668816516367091728">Közvetlenül a címsávból hajthat végre feladatokat, például fordításokat, számításokat és egyebeket</translation>
+<translation id="7670287553302121848">A Chrome-fiók újbóli hitelesítést igényel</translation>
 <translation id="769538538642757151">A Chrome értesíti Önt, ha bármit érdemes áttekintenie</translation>
 <translation id="7747138024166251722">A telepítőnek nem sikerült létrehoznia az ideiglenes könyvtárat. Kérjük ellenőrizze, hogy van-e elegendő hely a lemezen, és rendelkezik-e engedéllyel a szoftvertelepítésre.</translation>
 <translation id="7761834446675418963">Kattintson a nevére a Chrome megnyitásához és a böngészés megkezdéséhez.</translation>

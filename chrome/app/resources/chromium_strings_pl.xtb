@@ -79,6 +79,8 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="2329088755516916767">Gdy to ustawienie jest włączone, Chromium wstępnie wczytuje strony, co przyspiesza przeglądanie i wyszukiwanie.</translation>
 <translation id="2343156876103232566">Aby wysłać stąd numer na swój telefon z Androidem, zaloguj się w Chromium na obu urządzeniach.</translation>
 <translation id="2359808026110333948">Dalej</translation>
+<translation id="2361918034042471035">Rozszerzenie „<ph name="EXTENSION_NAME" />” chce, żebyś zalogował(-a) się w Chromium</translation>
+<translation id="2374216753258219393">Aby używać tego rozszerzenia jako <ph name="USER_EMAIL_ADDRESS" />, zaloguj się w Chromium.</translation>
 <translation id="2384373936468275798">System operacyjny Chromium nie może zsynchronizować danych, ponieważ dane logowania na Twoje konto są nieaktualne.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Co najmniej 1 rozszerzenie do Chromium uzyskiwało dostęp do 1 urządzenia HID}=1{Co najmniej 1 rozszerzenie do Chromium uzyskuje dostęp do 1 urządzenia HID}few{Co najmniej 1 rozszerzenie do Chromium uzyskuje dostęp do # urządzeń HID}many{Co najmniej 1 rozszerzenie do Chromium uzyskuje dostęp do # urządzeń HID}other{Co najmniej 1 rozszerzenie do Chromium uzyskuje dostęp do # urządzenia HID}}</translation>
 <translation id="2401032172288869980">Ta strona musi mieć w Chromium dostęp do aparatu i mikrofonu</translation>
@@ -240,9 +242,11 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="4893347770495441059">Uruchom ponownie, aby zaktualizować &amp;Chromium</translation>
 <translation id="4942295735032723435">Aby otrzymywać w przyszłości aktualizacje Chromium, musisz mieć system macOS 11 lub nowszy. Na tym komputerze jest zainstalowany system macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium jest w trybie działania w tle</translation>
+<translation id="494490797786467921">Kliknij, aby zamknąć okno logowania się w Chromium</translation>
 <translation id="4987820182225656817">Goście mogą korzystać z Chromium, nie pozostawiając żadnych danych.</translation>
 <translation id="4994636714258228724">Dodaj siebie do Chromium</translation>
 <translation id="5114678101347489141">Testujemy nowe funkcje Chromium zapewniające taką samą wygodę przeglądania witryn, jednak przy wykorzystaniu mniejszej ilości informacji o użytkowniku</translation>
+<translation id="5187123684706427865">Konto Chromium wymaga ponownego uwierzytelnienia</translation>
 <translation id="5224391634244552924">Brak zapisanych haseł. Chromium może sprawdzać Twoje hasła, gdy je zapiszesz.</translation>
 <translation id="5231355151045086930">Wylogowanie z Chromium</translation>
 <translation id="5252179775517634216">W tym profilu Chromium jest już zalogowany użytkownik <ph name="EXISTING_USER" />. Spowoduje to utworzenie nowego profilu Chromium dla użytkownika <ph name="USER_EMAIL_ADDRESS" />.</translation>

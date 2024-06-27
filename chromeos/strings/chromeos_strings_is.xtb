@@ -102,6 +102,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> hefur umsjón með þessum notanda og getur stjórnað stillingum og skoðað notendavirkni með fjartengingu.</translation>
 <translation id="150962533380566081">Ógilt PUK-númer.</translation>
 <translation id="1510238584712386396">Ræsiforrit</translation>
+<translation id="1514446283880973949">Skrifaðu af meira öryggi, taktu saman efni, fáðu skilgreiningar og fleira</translation>
 <translation id="1515129336378114413">heimasíða vafra</translation>
 <translation id="1526389707933164996">Hreyfimynd skjávara</translation>
 <translation id="152892567002884378">Hækka hljóð</translation>
@@ -1287,6 +1288,7 @@
 <translation id="8167413449582155132">Bakgrunnur sem er knúinn af gervigreind Google</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">strönd</translation>
+<translation id="819278132617411009">Notaðu gervigreind Google til að koma fleiru í verk</translation>
 <translation id="8206859287963243715">Farsímakerfi</translation>
 <translation id="8208861521865154048">Fríðindi</translation>
 <translation id="8226628635270268143">Veldu uppáhaldsmyndir og -möppur</translation>
@@ -1333,6 +1335,7 @@
 <translation id="8431300646573772016">Nýjungar í ChromeOS</translation>
 <translation id="843568408673868420">Nettenging</translation>
 <translation id="844521431886043384">Ekki er búið að setja upp DNS</translation>
+<translation id="8456200178779628126">Notaðu gervigreind Google til að fá aðstoð við skrif og lestur</translation>
 <translation id="8456761643544401578">Sjálfvirk dökk stilling</translation>
 <translation id="8461329675984532579">Heiti heimaveitu</translation>
 <translation id="8475690821716466388">Wi-Fi netið er varið með veikum samskiptareglum, WEP PSK</translation>
@@ -1459,6 +1462,7 @@
 <translation id="910415269708673980">Endurnýja miða fyrir <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skannar síðu <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Taka úr lás</translation>
+<translation id="9122492456897874028">Taktu saman efni, fáðu skilgreiningar og fleira</translation>
 <translation id="9122602430962285795">Opnaðu stillingarnar til að tengjast á ný</translation>
 <translation id="9122865513525855321">zen</translation>
 <translation id="9126720536733509015">Vista margar síður í einu PDF-skjali</translation>

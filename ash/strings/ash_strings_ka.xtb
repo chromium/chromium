@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">ეკრანული კლავიატურა ჩართულია</translation>
 <translation id="1749109475624620922">ფანჯარა <ph name="WINDOW_TITLE" /> მიმაგრებულია ყველა სამუშაო მაგიდაზე</translation>
 <translation id="1750088060796401187">დაშვებულია მხოლოდ <ph name="MAX_DESK_LIMIT" /> სამუშაო მაგიდა. ახლის გასახსნელად ამოშალეთ ერთ-ერთი არსებული.</translation>
+<translation id="1751335846119670066">წაკითხვაში დახმარება</translation>
 <translation id="1755408179247123630">ჩაირთოს „მონიშვნა წარმოსათქმელად“?</translation>
 <translation id="1755556344721611131">დიაგნოსტიკის აპი</translation>
 <translation id="1756833229520115364">შაბლონის შენახვა ვერ მოხერხდა. გახსნილია ზედმეტად ბევრი ფანჯარა ან ჩანართი.</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">თქვენი ტელეფონის ბოლოდროინდელი ფოტოების, მედიაფაილებისა და შეტყობინებების ნახვის დაყენება</translation>
 <translation id="1787955149152357925">გამორთვა</translation>
 <translation id="1796561540704213354">ვებსაიტები, მათ შორის, თქვენ მიერ მონახულებული გვერდები და გახსნილი გვერდები</translation>
+<translation id="179842970735685253">Google-ის მომსახურების პირობები</translation>
 <translation id="181103072419391116">სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />, მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="1816896987747843206">ყველა აპსა და ვებსაიტს, რომლებსაც აქვს კამერის გამოყენების ნებართვა, მიენიჭება კამერაზე წვდომა</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">საკლასო სამუშაოს ტიპი</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">რა უნდა გახსოვდეთ</translation>
 <translation id="3139188263101386725">გამოიყენეთ განახლებული მალსახმობი</translation>
 <translation id="3139942575505304791">დესკტოპი 1</translation>
 <translation id="315116470104423982">მობილური მონაცემები</translation>
@@ -961,6 +964,7 @@
 <translation id="4585337515783392668">ტრანსლირების შეწყვეტა უცნობ მიმღებში</translation>
 <translation id="4596144739579517758">მუქი თემა გამორთულია</translation>
 <translation id="4596442969149038771"><ph name="USER" />-მა გააზიარა</translation>
+<translation id="4610493115106525653">კარგი შედეგი</translation>
 <translation id="4611292653554630842">შესვლა</translation>
 <translation id="462160925400706389">დაკავშირებულია <ph name="NAME" /></translation>
 <translation id="4623167406982293031">დაადასტურეთ ანგარიში</translation>
@@ -1118,6 +1122,7 @@
 <translation id="5121628974188116412">გვერდის ბოლოში გადასვლა</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" />-ის გადასახედი ვერსია. არააქტიური სამუშაო მაგიდა.</translation>
 <translation id="5136175204352732067">დაკავშირებულია განსხვავებული კლავიატურა</translation>
+<translation id="5140105873789567560">თქვენ მინიმუმ 18 წლის უნდა იყოთ, ტექსტის შემქმნელი და წაკითხვაში დახმარება რომ გამოიყენოთ.</translation>
 <translation id="5144005092084035179">გადართავთ შემავალ აუდიოს?</translation>
 <translation id="5147567197700016471">განბლოკილია</translation>
 <translation id="5150070631291639005">კონფიდენციალურობის პარამეტრები</translation>
@@ -1558,6 +1563,7 @@
 <translation id="6696025732084565524">თქვენი განცალკევებადი კლავიატურა საჭიროებს კრიტიკულ განახლებას</translation>
 <translation id="6697913454192220372">ახალი სამუშაო მაგიდის დამატება</translation>
 <translation id="6700713906295497288">IME მენიუს ღილაკი</translation>
+<translation id="6704375469818246414">ხარისხის შეიძლება განსხვავდებოდეს გენერაციული ხელოვნური ინტელექტის გამოყენების დროს.</translation>
 <translation id="6706742084323792866">კლავიატურის ჩამაგრება</translation>
 <translation id="6710213216561001401">წინა</translation>
 <translation id="6723839937902243910">ენერგია</translation>
@@ -1825,9 +1831,11 @@
 <translation id="7726391492136714301">ნახეთ თქვენი ტელეფონის შეტყობინებები და აპები</translation>
 <translation id="7727952505535211425">მისამართთა ზოლში მითითებული ვებსაიტის გახსნა ახალ ჩანართში</translation>
 <translation id="7742327441377685481">შეტყობინებები არ არის</translation>
+<translation id="774736258792760908">როცა ტექსტის შემქმნელი და წაკითხვაში დახმარება ჩართულია, შეტანილი ტექსტი და დოკუმენტის კონტენტი ეგზავნება Google-ის ხელოვნური ინტელექტის სერვერებს, რათა დაგენერირდეს ტექსტური შეთავაზებები, შეჯამებები, კითხვებზე პასუხები და გაუმჯობესდეს პროდუქტი, <ph name="LINK_TO_SERVICE_TERMS" />-ის შესაბამისად. ნუ მიუთითებთ პერსონალურ, სენსიტიურ და კონფიდენციალურ ინფორმაციას.</translation>
 <translation id="7748275671948949022">გამშვების ღილაკის გამოყოფა თაროზე</translation>
 <translation id="7749443890790263709">მიღწეულია სამუშაო მაგიდების მაქსიმალური რაოდენობა.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">შეგიძლიათ, გამორთოთ ტექსტის შემქმნელი და წაკითხვაში დახმარება ნებისმიერ დროს პარამეტრებიდან. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">მონიშვნა წარმოსათქმელად</translation>
 <translation id="7769299611924763557">თქვენი GIF მალე იქნება მზად</translation>
 <translation id="7773536009433685931">სანაცვლოდ გამოირთოს Wi-Fi</translation>
@@ -1836,6 +1844,7 @@
 <translation id="7781829728241885113">გუშინ</translation>
 <translation id="7787212146956232129">შემყვანი და გამომყვანი მოწყობილობები დაყენებულია. შესაცვლელად გადადით პარამეტრებში.</translation>
 <translation id="7792590255364786396">ხილული</translation>
+<translation id="7793389284006812057">გენერაციული ხელოვნური ინტელექტი ექსპერიმენტული ფუნქციაა, რომელიც შემუშავების ადრეულ სტადიაზეა, ამიტომ მისი ხელმისაწვდომობა შეზღუდულია.</translation>
 <translation id="7796735576426975947">ახალი შეტყობინება დამალულია</translation>
 <translation id="7798302898096527229">გასაუქმებლად დააჭირეთ Search ან Shift კლავიშს.</translation>
 <translation id="780301667611848630">არა, გმადლობთ</translation>
@@ -1990,6 +1999,7 @@
 <translation id="8331351032546853669">ჩამოტვირთვა მოლოდინის რეჟიმშია</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">ცუდი შედეგი</translation>
 <translation id="8345019317483336363">არჩეულია ფანჯარა „<ph name="WINDOW_TITLE" />“</translation>
 <translation id="8349826889576450703">გამშვები</translation>
 <translation id="8349964124165471584">ბმულის გახსნა ახალ ფანჯარაში</translation>

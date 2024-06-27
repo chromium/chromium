@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">نشط قبل <ph name="LAST_UPDATED" /> يوم</translation>
 <translation id="1390418506739274310">‏قد يظهر لك السجلّ من خلال التطبيقات الأخرى التي تفتح الروابط في Chrome. قد يتضمّن حسابك على Google نماذج أخرى من سجلّ التصفّح في <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اسمك وعنوان بريدك الإلكتروني وصورة ملفك الشخصي مع هذا الموقع الإلكتروني. يُرجى الاطّلاع على <ph name="BEGIN_LINK1" />بنود الخدمة<ph name="END_LINK1" /> لهذا الموقع الإلكتروني.</translation>
+<translation id="139752016751285248">البطاقة السفلية للمعلومات المفصّلة عن الأسعار مفتوحة بطول الشاشة</translation>
 <translation id="1397811292916898096">البحث باستخدام <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">‏يمكنك <ph name="BEGIN_LINK1" />إدارة بيانات Chrome التي يتم حفظها<ph name="END_LINK1" /> في حسابك على Google.
 
@@ -179,6 +180,7 @@
 <translation id="1877073879466606884">الملف الشخصي الذي سجّلت الدخول إليه مُدار. يمكن للمشرف إجراء تغييرات على إعدادات ملفك الشخصي عن بُعد وتحليل المعلومات عن المتصفّح من خلال إعداد التقارير وتنفيذ المهام الضرورية الأخرى.</translation>
 <translation id="1883903952484604915">ملفاتي</translation>
 <translation id="189358972401248634">لغات أخرى</translation>
+<translation id="1899175549411605574">البطاقة السفلية للمعلومات المفصّلة عن الأسعار</translation>
 <translation id="1900260903084164610">تشير المتابعة إلى موافقتك على <ph name="BEGIN_TOS_LINK" />بنود الخدمة<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">‏يتم حفظ عناوين URL التي تنتقل إليها في حسابك على Google.</translation>
 <translation id="1910950723001426294">قائمة خيارات المشاركة مغلقة.</translation>
@@ -522,6 +524,7 @@
 <translation id="3587596251841506391">المساعدة في تحسين الأمان على الويب</translation>
 <translation id="3597179440835065298">الحصول على اقتراحات أفضل</translation>
 <translation id="3602290021589620013">معاينة</translation>
+<translation id="3614126103057878858">معلومات مفصّلة عن الأسعار</translation>
 <translation id="3616113530831147358">المقاطع الصوتية</translation>
 <translation id="3622349720008044802">إدارة النوافذ</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ موقع إلكتروني واحد}zero{+ # موقع إلكتروني}two{+ موقعان إلكترونيان}few{+ # مواقع إلكترونية}many{+ # موقعًا إلكترونيًا}other{+ # موقع إلكتروني}}</translation>
@@ -531,6 +534,7 @@
 <translation id="3637744895182738742">‏إذا نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />حذف بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">‏الانتقال إلى "الصفحة الرئيسية" في تطبيق Google</translation>
 <translation id="368329460027487650">تم تسجيل الخروج. سيتم فتح خيارات لتسجيل الدخول.</translation>
+<translation id="3684540848053703310">البطاقة السفلية للمعلومات المفصّلة عن الأسعار مُغلقة</translation>
 <translation id="3687645719033307815">أنت تعرض معاينة لهذه الصفحة.</translation>
 <translation id="3690369331356918524">التحذير إذا تم الكشف عن كلمات المرور في عملية اختراق بيانات</translation>
 <translation id="3692944402865947621">تعذّر تنزيل <ph name="FILE_NAME" /> نظرًا لعدم إمكانية الوصول إلى موقع مساحة التخزين.</translation>

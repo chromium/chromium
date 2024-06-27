@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Yanlış PUK</translation>
 <translation id="4057991113334098539">Etkinleştiriliyor...</translation>
 <translation id="4092890906744441904">İrlandaca</translation>
+<translation id="4101601646343868113">Mobil ağınızda oturum açıp mobil veri planınızın etkin olduğunu onaylayın</translation>
 <translation id="4124731372776320263">1 Drive dosyası senkronize ediliyor</translation>
 <translation id="4124935795427217608">Tek boynuzlu at</translation>
 <translation id="4131235941541910880">İhtiyacınız olmayan öğeleri Çöp Kutusu'na taşıyın</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Tamil99 klavye ile Tamilce</translation>
 <translation id="5633226425545095130">Bu öğe, "<ph name="DESTINATION_NAME" />" adlı paylaşılan klasöre taşınırsa bu klasörü görebilen herkesle paylaşılır.</translation>
 <translation id="5649768706273821470">Dinle</translation>
+<translation id="5650895901941743674">APN yapılandırmanızı kontrol edin</translation>
 <translation id="5669691691057771421">Yeni PIN'i girin</translation>
 <translation id="5678784840044122290">Linux uygulaması sizin Terminalinizde mevcut. Ayrıca Başlatıcınızda bir simgesini görebilirsiniz.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Arşivle veya sanal diskle olan bağlantı kesilemiyor<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Dosya listesi, küçük resim görünümü olarak değiştirildi.</translation>
 <translation id="8601932370724196034">Crostini resim dosyası</translation>
 <translation id="8609695766746872526">İzlandaca</translation>
+<translation id="8630384863424041081">SIM kartınızın PIN'ini veya operatörünüzün sağladığı varsayılan PIN'i girin. Destek için operatörünüzle iletişim kurun.</translation>
 <translation id="863903787380594467">Yanlış PIN. <ph name="RETRIES" /> deneme hakkınız kaldı.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Bağlantı noktası</translation>
 <translation id="8656407365183407932">Çevrimdışı dosyalarınızın kaldırılması gerekti</translation>

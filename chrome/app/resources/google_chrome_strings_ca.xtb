@@ -5,6 +5,8 @@
 <translation id="1026101648481255140">Reprèn la instal·lació</translation>
 <translation id="102763973188675173">Personalitza i controla Google Chrome. Hi ha una actualització disponible.</translation>
 <translation id="1028061813283459617">Per suprimir les dades de navegació només d'aquest dispositiu i conservar-les al teu Compte de Google, <ph name="BEGIN_LINK" />tanca la sessió de Chrome<ph name="END_LINK" />.</translation>
+<translation id="1042270987544905725">Fes clic per tancar el quadre de diàleg d'inici de sessió de Chrome</translation>
+<translation id="1059838145689930908">Per utilitzar aquesta extensió com a <ph name="USER_EMAIL_ADDRESS" />, inicia la sessió a Chrome.</translation>
 <translation id="1065672644894730302">No es poden llegir les vostres preferències. És possible que algunes funcions no estiguin disponibles i que els canvis a les preferències no es desin.</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> abans utilitzava Chrome</translation>
 <translation id="110877069173485804">Aquest és el vostre Chrome</translation>
@@ -365,6 +367,7 @@
 <translation id="6291089322031436445">Aplicacions de Chrome Dev</translation>
 <translation id="6291549208091401781">Ja tens instal·lat Google Chrome per a tots els usuaris de l'ordinador.</translation>
 <translation id="6319856120645568262">Chrome necessita permís per mapar el teu entorn i fer un seguiment de les teves mans</translation>
+<translation id="6321592572353357376">L'extensió "<ph name="EXTENSION_NAME" />" vol que iniciïs la sessió a Chrome</translation>
 <translation id="6326175484149238433">Suprimeix de Chrome</translation>
 <translation id="6327105987658262776">No hi ha cap actualització disponible.</translation>
 <translation id="6360449101159168105">Mentre aquesta pestanya estava inactiva, s'ha alliberat memòria perquè Chrome funcioni sempre de pressa. Pots optar per excloure sempre aquest lloc web d'estar inactiu.</translation>
@@ -457,6 +460,7 @@
 <translation id="7655455401911432608">El teu historial de navegació, que és un registre dels llocs web que has visitat amb Chrome en aquest dispositiu.</translation>
 <translation id="7661924425853052955">No l'has visitat recentment. Chrome ha suprimit <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="COUNT" /> elements més.</translation>
 <translation id="7668816516367091728">Fes tasques, com ara traduir, calcular i fer altres accions directament des de la barra d'adreces</translation>
+<translation id="7670287553302121848">El compte de Chrome requereix una reautenticació</translation>
 <translation id="769538538642757151">Chrome t'avisarà si hi ha res que hagis de revisar</translation>
 <translation id="7747138024166251722">L'instal·lador no ha pogut crear un directori temporal. Comprova que hi ha espai lliure al disc i que tens permís per instal·lar el programari.</translation>
 <translation id="7761834446675418963">Feu clic al vostre nom per obrir Chrome i començar a navegar.</translation>

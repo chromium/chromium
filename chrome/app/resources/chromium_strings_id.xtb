@@ -79,6 +79,8 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="2329088755516916767">Saat diaktifkan, Chromium akan melakukan pramuat halaman yang membuat penjelajahan dan penelusuran menjadi lebih cepat.</translation>
 <translation id="2343156876103232566">Untuk mengirimkan nomor dari sini ke ponsel Android Anda, login ke Chromium di kedua perangkat.</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
+<translation id="2361918034042471035">Ekstensi "<ph name="EXTENSION_NAME" />" ingin Anda login ke Chromium</translation>
+<translation id="2374216753258219393">Untuk menggunakan ekstensi ini sebagai <ph name="USER_EMAIL_ADDRESS" />, login ke Chromium.</translation>
 <translation id="2384373936468275798">ChromiumOS tidak dapat menyinkronkan data karena detail login akun Anda belum diperbarui.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Tidak ada perangkat HID yang diakses oleh ekstensi Chromium}=1{1 perangkat HID sedang diakses oleh satu atau beberapa ekstensi Chromium}other{# perangkat HID sedang diakses oleh satu atau beberapa ekstensi Chromium}}</translation>
 <translation id="2401032172288869980">Chromium memerlukan izin mikrofon dan kamera untuk situs ini</translation>
@@ -242,9 +244,11 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="4893347770495441059">Luncurkan kembali untuk Mengupdate &amp;Chromium</translation>
 <translation id="4942295735032723435">Untuk mendapatkan update Chromium berikutnya, Anda perlu macOS 11 atau yang lebih baru. Komputer ini menggunakan macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium berjalan di mode latar belakang.</translation>
+<translation id="494490797786467921">Klik untuk menutup dialog login Chromium</translation>
 <translation id="4987820182225656817">Tamu dapat menggunakan Chromium tanpa meninggalkan apa pun.</translation>
 <translation id="4994636714258228724">Tambahkan diri Anda ke Chromium</translation>
 <translation id="5114678101347489141">Chromium sedang mengembangkan fitur baru yang memungkinkan situs memberikan pengalaman penjelajahan yang sama, tetapi menggunakan lebih sedikit info pribadi Anda</translation>
+<translation id="5187123684706427865">Akun Chromium memerlukan autentikasi ulang</translation>
 <translation id="5224391634244552924">Tidak ada sandi yang tersimpan. Chromium dapat memeriksa sandi Anda jika Anda menyimpannya.</translation>
 <translation id="5231355151045086930">Keluar dari Chromium</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> telah login ke profil Chromium ini. Ini akan membuat profil Chromium baru untuk <ph name="USER_EMAIL_ADDRESS" /></translation>

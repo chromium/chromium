@@ -102,6 +102,7 @@
 <translation id="1499900233129743732">Ο τομέας <ph name="MANAGER" /> διαχειρίζεται αυτόν τον χρήστη και ενδέχεται να διαχειρίζεται απομακρυσμένα τις ρυθμίσεις και να παρακολουθεί τη δραστηριότητα του χρήστη.</translation>
 <translation id="150962533380566081">Μη έγκυρος κωδικός PUK.</translation>
 <translation id="1510238584712386396">Λειτουργία εκκίνησης</translation>
+<translation id="1514446283880973949">Γράψτε με περισσότερη αυτοπεποίθηση, συνοψίστε περιεχόμενο, λάβετε ορισμούς και πολλά άλλα</translation>
 <translation id="1515129336378114413">αρχική σελίδα προγράμματος περιήγησης</translation>
 <translation id="1526389707933164996">Κινούμενη εικόνα προφύλαξης οθόνης</translation>
 <translation id="152892567002884378">Αύξηση έντασης ήχου</translation>
@@ -1287,6 +1288,7 @@
 <translation id="8167413449582155132">Φόντο με την υποστήριξη του Google AI</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">παραλία</translation>
+<translation id="819278132617411009">Χρησιμοποιήστε το Google AI για να γίνετε πιο παραγωγικοί</translation>
 <translation id="8206859287963243715">Κινητό</translation>
 <translation id="8208861521865154048">Προνόμια</translation>
 <translation id="8226628635270268143">Επιλέξτε τις αγαπημένες σας φωτογραφίες και λευκώματα.</translation>
@@ -1333,6 +1335,7 @@
 <translation id="8431300646573772016">Νέα στοιχεία Chrome OS</translation>
 <translation id="843568408673868420">Συνδεσιμότητα στο διαδίκτυο</translation>
 <translation id="844521431886043384">Το DNS δεν έχει ρυθμιστεί.</translation>
+<translation id="8456200178779628126">Χρησιμοποιήστε το Google AI για να λάβετε βοήθεια με την ανάγνωση και τη γραφή</translation>
 <translation id="8456761643544401578">Αυτόματη λειτουργία χαμηλού φωτισμού</translation>
 <translation id="8461329675984532579">Όνομα παρόχου αρχικής σελίδας</translation>
 <translation id="8475690821716466388">Η ασφάλεια του δικτύου Wi-Fi βασίζεται σε ένα αδύναμο πρωτόκολλο WEP PSK.</translation>
@@ -1459,6 +1462,7 @@
 <translation id="910415269708673980">Ανανέωση εισιτηρίου για το <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Σάρωση σελίδας <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Ξεκλείδωμα</translation>
+<translation id="9122492456897874028">Συνοψίστε το περιεχόμενο, λάβετε ορισμούς και πολλά άλλα</translation>
 <translation id="9122602430962285795">Για επανασύνδεση, μεταβείτε στις Ρυθμίσεις.</translation>
 <translation id="9122865513525855321">ζεν</translation>
 <translation id="9126720536733509015">Αποθηκεύστε πολλές σελίδες σε ένα PDF</translation>

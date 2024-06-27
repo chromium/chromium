@@ -89,6 +89,7 @@
 <translation id="1386674309198842382">У мережі <ph name="LAST_UPDATED" /> дн. тому</translation>
 <translation id="1390418506739274310">Ви можете побачити історію інших додатків, які відкривають посилання в Chrome. Історія вебперегляду може також зберігатись у вашому обліковому записі Google на сторінці <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Щоб продовжити, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> надасть ваші ім’я, електронну адресу й зображення профілю цьому сайту. Перегляньте <ph name="BEGIN_LINK1" />Умови використання<ph name="END_LINK1" /> цього сайту.</translation>
+<translation id="139752016751285248">Нижній екран із відомостями про ціни відкрито на всю висоту</translation>
 <translation id="1397811292916898096">Шукати в <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Ви можете <ph name="BEGIN_LINK1" />керувати тим, які дані Chrome зберігаються<ph name="END_LINK1" /> у вашому обліковому записі Google.
 
@@ -179,6 +180,7 @@
 <translation id="1877073879466606884">Ви ввійшли в керований профіль. Адміністратор може віддалено змінювати налаштування вашого профілю, аналізувати інформацію про вебпереглядач за допомогою звітів і виконувати інші необхідні дії.</translation>
 <translation id="1883903952484604915">Мої файли</translation>
 <translation id="189358972401248634">Інші мови</translation>
+<translation id="1899175549411605574">Нижній екран із відомостями про ціни</translation>
 <translation id="1900260903084164610">Продовжуючи, ви приймаєте <ph name="BEGIN_TOS_LINK" />Умови використання<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">URL-адреси, на які ви переходите, зберігаються в обліковому записі Google</translation>
 <translation id="1910950723001426294">Список параметрів спільного доступу закрито.</translation>
@@ -336,7 +338,7 @@
 <translation id="2702516483241149200">Новинка! Діліться посиланням, яке прокручує сторінку до цього тексту</translation>
 <translation id="2705073298859543115">Створити короткий переказ</translation>
 <translation id="2708051474374549906">Розумний захист у реальному часі від небезпечних сайтів, завантажень і розширень на основі ваших даних веб-перегляду, що надсилаються в Google</translation>
-<translation id="2708226184420201102">Відкрити у веб-переглядачі <ph name="PRODUCT_NAME" /></translation>
+<translation id="2708226184420201102">Відкрити у вебпереглядачі <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">Новий</translation>
 <translation id="2718352093833049315">Лише у Wi-Fi</translation>
 <translation id="2718846868787000099">Сайти, які ви відвідуєте, можуть переглядати ваші налаштування, щоб показувати контент вибраними мовами</translation>
@@ -520,6 +522,7 @@
 <translation id="3587596251841506391">Покращувати безпеку в Інтернеті</translation>
 <translation id="3597179440835065298">Отримуйте кращі пропозиції</translation>
 <translation id="3602290021589620013">Попередній перегляд</translation>
+<translation id="3614126103057878858">Відомості про ціни</translation>
 <translation id="3616113530831147358">Аудіо</translation>
 <translation id="3622349720008044802">Керувати вікнами</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{і ще один сайт}one{і ще # сайт}few{і ще # сайти}many{і ще # сайтів}other{і ще # сайту}}</translation>
@@ -529,6 +532,7 @@
 <translation id="3637744895182738742">Якщо ви забули парольну фразу або хочете змінити це налаштування, <ph name="BEGIN_LINK" />видаліть дані Chrome у своєму обліковому записі<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Перейти на головну сторінку додатка Google</translation>
 <translation id="368329460027487650">Ви вийшли. Натисніть, щоб переглянути параметри входу.</translation>
+<translation id="3684540848053703310">Нижній екран із відомостями про ціни закрито</translation>
 <translation id="3687645719033307815">Ви попередньо переглядаєте цю сторінку</translation>
 <translation id="3690369331356918524">Попереджає, якщо паролі розкрито через порушення безпеки даних</translation>
 <translation id="3692944402865947621">Не вдалося завантажити файл <ph name="FILE_NAME" />. Місце зберігання недоступне.</translation>
@@ -1234,7 +1238,7 @@
 <translation id="6996145122199359148">Завантажити цю сторінку</translation>
 <translation id="7013762323294215682">Цей ключ доступу буде збережено в Менеджері паролів. Усі, хто має доступ до цього ключа, зможуть використовувати його.</translation>
 <translation id="7020741890149022655">Додати в список читання <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
-<translation id="7022756207310403729">Відкрити у веб-переглядачі</translation>
+<translation id="7022756207310403729">Відкрити у вебпереглядачі</translation>
 <translation id="7025769836128625875">Це експериментальна функція на основі ШІ, тому вона не завжди працює правильно. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="7027549951530753705">Відновлено об'єкт "<ph name="ITEM_TITLE" />"</translation>
 <translation id="7029809446516969842">Паролі</translation>

@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">ভুল PUK দিয়েছেন</translation>
 <translation id="4057991113334098539">সক্রিয় করা হচ্ছে...</translation>
 <translation id="4092890906744441904">আইরিশ</translation>
+<translation id="4101601646343868113">নিজের মোবাইল নেটওয়ার্কে সাইন-ইন করুন এবং নিশ্চিত করুন যে মোবাইল ডেটা প্ল্যান চালু আছে</translation>
 <translation id="4124731372776320263">১টি Drive ফাইল সিঙ্ক করা হচ্ছে</translation>
 <translation id="4124935795427217608">ইউনিকর্ন</translation>
 <translation id="4131235941541910880">অপ্রয়োজনীয় আইটেম ট্র্যাশে সরান</translation>
@@ -602,6 +603,7 @@
 <translation id="5625294776298156701">তামিল ভাষায় তামিল৯৯ (Tamil99) কীবোর্ড</translation>
 <translation id="5633226425545095130">এই আইটেম অন্য কোথাও সরিয়ে দিলে, এটি শেয়ার করা ফোল্ডার '<ph name="DESTINATION_NAME" />' দেখতে পাওয়া প্রতিটি ব্যক্তির সাথে শেয়ার হয়ে যাবে।</translation>
 <translation id="5649768706273821470">শুনুন</translation>
+<translation id="5650895901941743674">আপনার APN কনফিগারেশন চেক করুন</translation>
 <translation id="5669691691057771421">নতুন পিন লিখুন</translation>
 <translation id="5678784840044122290">Linux অ্যাপ্লিকেশনটি আপনার  টার্মিনালের মধ্যে পাওয়া যাবে এবং আপনার লঞ্চারে একটি আইকনও দেখাতে পারে।</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />একটি আর্কাইভ বা ভার্চুয়াল ডিস্ক থেকে ডিসকানেক্ট করা যাবে না<ph name="END_BOLD" />
@@ -1007,6 +1009,7 @@
 <translation id="8600173386174225982">থাম্বনেল ভিউতে ফাইলের তালিকা পরিবর্তিত হয়েছে।</translation>
 <translation id="8601932370724196034">Crostini ছবির ফাইল</translation>
 <translation id="8609695766746872526">আইসল্যান্ডিক</translation>
+<translation id="8630384863424041081">নিজের সিম কার্ডের পিন বা আপনার পরিষেবা প্রদানকারীর দেওয়া ডিফল্ট পিন লিখুন। সহায়তার জন্য আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
 <translation id="863903787380594467">ভুল পিন দিয়েছেন। আপনি আর <ph name="RETRIES" /> বার চেষ্টা করতে পারবেন।</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - পোর্ট</translation>
 <translation id="8656407365183407932">আপনার অফলাইন ফাইল সরিয়ে দিতে হয়েছে</translation>

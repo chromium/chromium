@@ -26,6 +26,7 @@
 <translation id="1050038467049342496">Zatvorite druge aplikacije</translation>
 <translation id="1053959602163383901">Možete odabrati potvrdu pomoću uređaja za autentifikaciju na web lokacijama koje koriste pružatelja usluga <ph name="PROVIDER_ORIGIN" />. Ovaj pružalac usluga je možda pohranio informacije o vašem načinu plaćanja, za koji možete <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Poništi dodavanje</translation>
+<translation id="105642538515333723">Možete unijeti bilo koju frazu ili detalj kojeg se sjećate sa stranica koje ste ranije pregledali, npr. "udobne patike za pješačenje"</translation>
 <translation id="1056898198331236512">Upozorenje</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da igrate igru Dino Run u Chromeu</translation>
 <translation id="1058479211578257048">Pohranjivanje kartica…</translation>
@@ -968,6 +969,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2824775600643448204">Traka za adresu i pretraživanje</translation>
 <translation id="2826760142808435982">Veza je šifrirana i autentificirana koristeći <ph name="CIPHER" /> i koristi <ph name="KX" /> kao glavni mehanizam za razmjenu.</translation>
 <translation id="2833637280516285136">Radioemisije</translation>
+<translation id="2837891525090413132">Može zatražiti da zaključa i koristi vašu tastaturu</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> želi koristiti sačuvane informacije o vama</translation>
 <translation id="2839032553903800133">Obavještenja su blokirana</translation>
 <translation id="2839501879576190149">Web lokacija koja slijedi je lažna</translation>
@@ -1157,7 +1159,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3209034400446768650">Stranica se možda naplaćuje</translation>
 <translation id="3212581601480735796">Vaša aktivnost na <ph name="HOSTNAME" /> je pod nadzorom</translation>
 <translation id="3215092763954878852">Upotreba autentifikatora WebAuthn nije uspjela</translation>
-<translation id="3215311088819828484">Rezultat je ažuriran</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relativno</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Ažuriranje je potrebno izvršiti sada}=2{Ažuriranje je potrebno izvršiti do sutra}one{Ažuriranje je potrebno izvršiti u roku od # dana}few{Ažuriranje je potrebno izvršiti u roku od # dana}other{Ažuriranje je potrebno izvršiti u roku od # dana}}</translation>
@@ -2859,6 +2860,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6433797564277305076">Potvrdite kartice brže koristeći otključavanja uređaja od sada</translation>
 <translation id="643917412048333145">Haljine</translation>
 <translation id="6440503408713884761">Zanemareno</translation>
+<translation id="6440534369669992497">Možete unijeti bilo koju frazu ili detalj kojeg se sjećate sa stranica koje ste ranije pregledali, npr. "udobne patike za pješačenje". Pritisnite <ph name="SHORTCUT" /> da pretražite.</translation>
 <translation id="6443406338865242315">Koje ekstenzije i dodatke ste instalirali</translation>
 <translation id="6444329331928531170">Mirovine i penzije</translation>
 <translation id="6446608382365791566">Dodajte više informacija</translation>
@@ -3142,6 +3144,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7006930604109697472">Svejedno pošalji</translation>
 <translation id="7010658264061801199">Hrana i piće</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013835112918108252">Može zatražiti da zaključa i koristi vaš miš</translation>
 <translation id="7014042602717177828">Zvuk u automobilu</translation>
 <translation id="7014741021609395734">Nivo zumiranja</translation>
 <translation id="7016992613359344582">Ti troškovi mogu biti jednokratni ili ponavljajući te također mogu biti diskretni.</translation>
@@ -3156,7 +3159,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7031646650991750659">Koje Google Play aplikacije ste instalirali</translation>
 <translation id="7035705295266423040">Banka želi potvrditi vaš identitet</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da upravljate postavkama privatnosti Google računa</translation>
-<translation id="7042616127917168121">Filtriranje rezultata</translation>
+<translation id="7042616127917168121">Preciziranje rezultata</translation>
 <translation id="7043552168914147882">Papir s jezičkom</translation>
 <translation id="7044081119134178347">Kamera je dozvoljena ovaj put</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
@@ -3469,7 +3472,7 @@ Dodatni detalji:
 <translation id="7591636454931265313">Web lokacija <ph name="EMBEDDED_URL" /> želi koristiti kolačiće i podatke web lokacije na <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Potvrda servera krši ograničenja naziva.</translation>
 <translation id="7592749602347161287">A5 Extra</translation>
-<translation id="7593239413389459614">Mrežna sigurnost</translation>
+<translation id="7593239413389459614">Sigurnost mreže</translation>
 <translation id="7598391785903975535">Manje od <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> trenutno ne može obraditi ovaj zahtjev.</translation>
 <translation id="7599089013883397081">Preuzimanje je isteklo</translation>
