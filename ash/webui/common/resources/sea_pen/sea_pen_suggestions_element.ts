@@ -17,7 +17,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {SEA_PEN_SUGGESTIONS} from './constants.js';
 import {getTemplate} from './sea_pen_suggestions_element.html.js';
-import {shuffle} from './sea_pen_utils.js';
+import {isArrayEqual, shuffle} from './sea_pen_utils.js';
 
 const SeaPenSuggestionsElementBase = I18nMixin(PolymerElement);
 
@@ -67,7 +67,16 @@ export class SeaPenSuggestionsElement extends SeaPenSuggestionsElementBase {
   }
 
   private onShuffleClicked_() {
-    this.suggestions = shuffle(this.suggestions);
+    // Run shuffle (5 times at most) until the shuffled suggestions are
+    // different from current; which is highly likely to happen the first time.
+    for (let i = 0; i < 5; i++) {
+      const newSuggestions = shuffle(this.suggestions);
+
+      if (!isArrayEqual(newSuggestions, this.suggestions)) {
+        this.suggestions = newSuggestions;
+        break;
+      }
+    }
   }
 }
 

@@ -216,3 +216,12 @@ export function shuffle<T>(array: T[]): T[] {
   }
   return copy;
 }
+
+/**
+ * Checks whether the two arrays contain the same elements. Uses strict equals
+ * comparison on each member of the arrays.
+ */
+export function isArrayEqual<T>(arr1: T[], arr2: T[]): boolean {
+  return arr1.length === arr2.length &&
+      arr1.every((value, index) => value === arr2[index]);
+}

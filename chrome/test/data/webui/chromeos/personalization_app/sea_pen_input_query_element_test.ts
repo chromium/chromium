@@ -201,20 +201,10 @@ suite('SeaPenInputQueryElementTest', function() {
     assertTrue(!!shuffleButton, 'suggestions button should exist');
 
     const originalSuggestions = getSuggestions();
-    const RETRIES_COUNT = 10;
-    for (let i = 0; i < RETRIES_COUNT; i++) {
-      shuffleButton.click();
-      await waitAfterNextRender(seaPenInputQueryElement);
-      try {
-        chai.assert.notSameOrderedMembers(
-            originalSuggestions, getSuggestions());
-        chai.assert.sameMembers(originalSuggestions, getSuggestions());
-      } catch (e) {
-        if (i === RETRIES_COUNT - 1) {
-          throw e;
-        }
-      }
-    }
+    shuffleButton.click();
+    await waitAfterNextRender(seaPenInputQueryElement);
+    chai.assert.notSameOrderedMembers(originalSuggestions, getSuggestions());
+    chai.assert.sameMembers(originalSuggestions, getSuggestions());
   });
 
 
