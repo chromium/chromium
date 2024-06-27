@@ -848,6 +848,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
        # Needed for interop with third-party library.
        '^third_party/blink/renderer/core/typed_arrays/array_buffer/' +
          'array_buffer_contents\.(cc|h)',
+       '^third_party/blink/renderer/core/typed_arrays/dom_array_buffer\.cc',
        '^third_party/blink/renderer/bindings/core/v8/' +
          'v8_wasm_response_extensions.cc',
        '^gin/array_buffer\.(cc|h)',

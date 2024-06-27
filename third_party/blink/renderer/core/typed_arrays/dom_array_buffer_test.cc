@@ -38,4 +38,13 @@ TEST(DOMArrayBufferTest, TransferredEmptyArrayBufferIsDetached) {
   ASSERT_EQ(true, buffer->IsDetached());
 }
 
+TEST(DOMArrayBufferTest, WrapEmpty) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope v8_scope;
+  ArrayBufferContents src;
+  auto* buffer = DOMArrayBuffer::Create(src);
+  v8::Local<v8::Value> wrapped = buffer->Wrap(v8_scope.GetScriptState());
+  ASSERT_FALSE(wrapped.IsEmpty());
+}
+
 }  // namespace blink

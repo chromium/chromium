@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<title>Mojo shared buffer tests</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+let kBufferSize = 32;
+
+test(() => {
+  let {handle} = Mojo.createSharedBuffer(kBufferSize);
+  let {result, buffer} = handle.mapBuffer(kBufferSize, kBufferSize);
+  assert_equals(result, Mojo.RESULT_OK);
+  assert_true(buffer instanceof ArrayBuffer);
+}, "Attempt to map beyond buffer size does not crash");
+
+</script>

@@ -279,8 +279,11 @@ v8::Local<v8::Value> DOMArrayBuffer::Wrap(ScriptState* script_state) {
   v8::Local<v8::ArrayBuffer> wrapper;
   {
     v8::Context::Scope context_scope(script_state->GetContext());
-    wrapper = v8::ArrayBuffer::New(script_state->GetIsolate(),
-                                   Content()->BackingStore());
+    std::shared_ptr<v8::BackingStore> backing_store = Content()->BackingStore();
+    wrapper = backing_store
+                  ? v8::ArrayBuffer::New(script_state->GetIsolate(),
+                                         std::move(backing_store))
+                  : v8::ArrayBuffer::New(script_state->GetIsolate(), 0);
 
     if (!detach_key_.IsEmpty()) {
       wrapper->SetDetachKey(detach_key_.Get(script_state->GetIsolate()));
