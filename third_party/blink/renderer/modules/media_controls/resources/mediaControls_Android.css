@@ -4,6 +4,10 @@
 
 @namespace "http://www.w3.org/1999/xhtml";
 
+/* Rules in this and other mediaControls*.css files override rules from html.css
+   and other UA sheets regardless of specificity. See comment in
+   StyleResolver::MatchUARules(). */
+
 /* On Android, we always want the slider thumb to appear. */
 video::-webkit-media-controls input[pseudo="-webkit-media-controls-timeline" i]::-webkit-slider-thumb,
 audio::-webkit-media-controls input[pseudo="-webkit-media-controls-timeline" i]::-webkit-slider-thumb {

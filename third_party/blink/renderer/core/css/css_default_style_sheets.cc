@@ -194,6 +194,7 @@ void CSSDefaultStyleSheets::InitializeDefaultStyles() {
   default_fullscreen_style_ = MakeGarbageCollected<RuleSet>();
   default_forced_color_style_.Clear();
   default_pseudo_element_style_.Clear();
+  default_forced_colors_media_controls_style_.Clear();
 
   default_html_style_->AddRulesFromSheet(DefaultStyleSheet(), ScreenEval());
   default_html_quirks_style_->AddRulesFromSheet(QuirksStyleSheet(),
@@ -258,7 +259,20 @@ void CSSDefaultStyleSheets::AddRulesToDefaultStyleSheets(
   // Add to print and forced color for all namespaces.
   default_print_style_->AddRulesFromSheet(rules, PrintEval());
   if (default_forced_color_style_) {
-    default_forced_color_style_->AddRulesFromSheet(rules, ForcedColorsEval());
+    switch (type) {
+      case NamespaceType::kMediaControls:
+        if (!default_forced_colors_media_controls_style_) {
+          default_forced_colors_media_controls_style_ =
+              MakeGarbageCollected<RuleSet>();
+        }
+        default_forced_colors_media_controls_style_->AddRulesFromSheet(
+            rules, ForcedColorsEval());
+        break;
+      default:
+        default_forced_color_style_->AddRulesFromSheet(rules,
+                                                       ForcedColorsEval());
+        break;
+    }
   }
   VerifyUniversalRuleCount();
 }
@@ -307,6 +321,8 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
   if (!text_track_style_sheet_ && IsA<HTMLVideoElement>(element)) {
     Settings* settings = element.GetDocument().GetSettings();
     if (settings) {
+      // Rules below override rules from html.css and other UA sheets regardless
+      // of specificity. See comment in StyleResolver::MatchUARules().
       StringBuilder builder;
       builder.Append("video::-webkit-media-text-track-display { ");
       AddTextTrackCSSProperties(&builder, CSSPropertyID::kBackgroundColor,
@@ -453,9 +469,13 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
     default_forced_color_style_->AddRulesFromSheet(SvgStyleSheet(),
                                                    ForcedColorsEval());
   }
+
   if (media_controls_style_sheet_) {
-    default_forced_color_style_->AddRulesFromSheet(MediaControlsStyleSheet(),
-                                                   ForcedColorsEval());
+    CHECK(!default_forced_colors_media_controls_style_);
+    default_forced_colors_media_controls_style_ =
+        MakeGarbageCollected<RuleSet>();
+    default_forced_colors_media_controls_style_->AddRulesFromSheet(
+        MediaControlsStyleSheet(), ForcedColorsEval());
   }
 
   return true;
@@ -509,6 +529,7 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(stylable_select_forced_colors_style_sheet_);
   visitor->Trace(marker_style_sheet_);
   visitor->Trace(default_json_document_style_);
+  visitor->Trace(default_forced_colors_media_controls_style_);
 }
 
 }  // namespace blink

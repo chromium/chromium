@@ -878,9 +878,6 @@ void StyleResolver::ForEachUARulesForElement(const Element& element,
   if (!print_media_type_) {
     if (LIKELY(element.IsHTMLElement() || element.IsVTTElement())) {
       func(default_style_sheets.DefaultHtmlStyle());
-      if (UNLIKELY(IsInMediaUAShadow(element))) {
-        func(default_style_sheets.DefaultMediaControlsStyle());
-      }
     } else if (element.IsSVGElement()) {
       func(default_style_sheets.DefaultSVGStyle());
     } else if (element.namespaceURI() == mathml_names::kNamespaceURI) {
@@ -942,6 +939,21 @@ void StyleResolver::MatchUARules(const Element& element,
   if (!match_request.IsEmpty()) {
     collector.ClearMatchedRules();
     collector.CollectMatchingRules(match_request);
+    collector.SortAndTransferMatchedRules(
+        CascadeOrigin::kUserAgent, /*is_vtt_embedded_style=*/false, tracker_);
+  }
+
+  if (IsInMediaUAShadow(element)) {
+    RuleSet* rule_set =
+        IsForcedColorsModeEnabled()
+            ? CSSDefaultStyleSheets::Instance()
+                  .DefaultForcedColorsMediaControlsStyle()
+            : CSSDefaultStyleSheets::Instance().DefaultMediaControlsStyle();
+    // Match media controls UA shadow rules in separate UA origin, as they
+    // should override UA styles regardless of specificity.
+    MatchRequest media_controls_request(rule_set);
+    collector.ClearMatchedRules();
+    collector.CollectMatchingRules(media_controls_request);
     collector.SortAndTransferMatchedRules(
         CascadeOrigin::kUserAgent, /*is_vtt_embedded_style=*/false, tracker_);
   }

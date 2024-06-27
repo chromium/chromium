@@ -4,6 +4,10 @@
 
 @namespace "http://www.w3.org/1999/xhtml";
 
+/* Rules in this and other mediaControls*.css files override rules from html.css
+   and other UA sheets regardless of specificity. See comment in
+   StyleResolver::MatchUARules(). */
+
 /**
  * Panel Structure
  */
