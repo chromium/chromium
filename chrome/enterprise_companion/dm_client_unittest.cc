@@ -619,4 +619,52 @@ TEST_F(DMClientTest, FetchPoliciesOverwrite) {
   EXPECT_EQ(read_data2->SerializeAsString(), data2.SerializeAsString());
 }
 
+// Tests that the DM token is removed if the server requests the device to be
+// reset.
+TEST_F(DMClientTest, FetchPoliciesReset) {
+  EnsureRegistered();
+
+  EXPECT_CALL(*mock_cloud_policy_client_, FetchPolicy).Times(1);
+
+  base::RunLoop first_fetch_loop;
+  dm_client_->FetchPolicies(
+      base::BindOnce([](const EnterpriseCompanionStatus& status) {
+        EXPECT_TRUE(status.EqualsDeviceManagementStatus(
+            policy::DM_STATUS_SERVICE_DEVICE_NEEDS_RESET));
+      }).Then(first_fetch_loop.QuitClosure()));
+
+  mock_cloud_policy_client_->SetStatus(
+      policy::DM_STATUS_SERVICE_DEVICE_NEEDS_RESET);
+  mock_cloud_policy_client_->dm_token_.clear();
+  mock_cloud_policy_client_->NotifyClientError();
+  mock_cloud_policy_client_->NotifyRegistrationStateChanged();
+  first_fetch_loop.Run();
+
+  EXPECT_TRUE(test_token_service_->GetDmToken().empty());
+}
+
+// Tests that the DM token is replaced with the invalid token if the server
+// indicates that the device is not found.
+TEST_F(DMClientTest, FetchPoliciesInvalidation) {
+  EnsureRegistered();
+
+  EXPECT_CALL(*mock_cloud_policy_client_, FetchPolicy).Times(1);
+
+  base::RunLoop first_fetch_loop;
+  dm_client_->FetchPolicies(
+      base::BindOnce([](const EnterpriseCompanionStatus& status) {
+        EXPECT_TRUE(status.EqualsDeviceManagementStatus(
+            policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND));
+      }).Then(first_fetch_loop.QuitClosure()));
+
+  mock_cloud_policy_client_->SetStatus(
+      policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND);
+  mock_cloud_policy_client_->dm_token_.clear();
+  mock_cloud_policy_client_->NotifyClientError();
+  mock_cloud_policy_client_->NotifyRegistrationStateChanged();
+  first_fetch_loop.Run();
+
+  EXPECT_TRUE(dm_storage_->IsDeviceDeregistered());
+}
+
 }  // namespace enterprise_companion

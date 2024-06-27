@@ -241,27 +241,34 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
   void OnRegistrationStateChanged(policy::CloudPolicyClient*) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     VLOG(1) << __func__;
+    if (cloud_policy_client_->is_registered()) {
+      dm_storage_->StoreDmToken(cloud_policy_client_->dm_token());
+    }
     if (pending_callback_) {
       std::move(pending_callback_)
           .Run(EnterpriseCompanionStatus::FromDeviceManagementStatus(
               cloud_policy_client_->last_dm_status()));
-    }
-    if (cloud_policy_client_->is_registered()) {
-      dm_storage_->StoreDmToken(cloud_policy_client_->dm_token());
     }
   }
 
   void OnClientError(policy::CloudPolicyClient*) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     VLOG(1) << __func__;
+    if (cloud_policy_client_->last_dm_status() ==
+        policy::DM_STATUS_SERVICE_DEVICE_NEEDS_RESET) {
+      VLOG(1) << "DMServer requests deregister via DMToken deletion.";
+      LOG_IF(ERROR, !dm_storage_->DeleteDMToken())
+          << "Could not deregister: Failed to delete the DMToken.";
+    } else if (cloud_policy_client_->last_dm_status() ==
+               policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND) {
+      VLOG(1) << "DMServer requests deregister via DMToken invalidation.";
+      LOG_IF(ERROR, !dm_storage_->InvalidateDMToken())
+          << "Could not deregister: Failed to invalidate the DMToken.";
+    }
     if (pending_callback_) {
       std::move(pending_callback_)
           .Run(EnterpriseCompanionStatus::FromDeviceManagementStatus(
               cloud_policy_client_->last_dm_status()));
-    }
-    if (cloud_policy_client_->last_dm_status() ==
-        policy::DM_STATUS_SERVICE_DEVICE_NEEDS_RESET) {
-      dm_storage_->DeleteDMToken();
     }
   }
 
