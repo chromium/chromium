@@ -35,12 +35,7 @@ using ::attribution_reporting::Registrar;
 class AttributionOsLevelManagerAndroidTest : public ::testing::Test {
  public:
   void SetUp() override {
-    base::RunLoop run_loop;
-    // `base::RunLoop::Quit()` is thread-safe and may be invoked directly from
-    // another thread.
-    manager_ = std::make_unique<AttributionOsLevelManagerAndroid>(
-        run_loop.QuitClosure());
-    run_loop.Run();
+    manager_ = std::make_unique<AttributionOsLevelManagerAndroid>();
   }
 
  protected:
@@ -49,7 +44,10 @@ class AttributionOsLevelManagerAndroidTest : public ::testing::Test {
   std::unique_ptr<AttributionOsLevelManager> manager_;
 };
 
-TEST_F(AttributionOsLevelManagerAndroidTest, GetMeasurementStatusTimeMetric) {
+// Disabled due to flakiness, see crbug.com/338662230.
+TEST_F(AttributionOsLevelManagerAndroidTest,
+       DISABLED_GetMeasurementStatusTimeMetric) {
+  task_environment_.RunUntilIdle();
   histogram_tester_.ExpectTotalCount("Conversions.GetMeasurementStatusTime", 1);
 }
 
