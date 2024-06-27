@@ -31,6 +31,24 @@ id<GREYMatcher> BottomToolbar() {
   return grey_kindOfClassName(@"SecondaryToolbarView");
 }
 
+// Open split screen. Should only be invoked for iPad.
+void OpenSplitScreen() {
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad without multiwindow support.");
+  }
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(0)];
+}
+
+// Reload the current page from omnibox.
+void ReloadFromOmnibox() {
+  [ChromeEarlGreyUI focusOmnibox];
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+}
+
 }  // namespace
 
 @interface BubblePresenterTestCase : ChromeTestCase
@@ -53,6 +71,7 @@ id<GREYMatcher> BottomToolbar() {
   // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
+  [ChromeEarlGrey waitForPageToFinishLoading];
 }
 
 #pragma mark - Tests
@@ -63,19 +82,14 @@ id<GREYMatcher> BottomToolbar() {
 }
 
 - (void)tearDown {
+  [ChromeEarlGrey closeAllExtraWindows];
   [BaseEarlGreyTestCaseAppInterface enableFastAnimation];
   ResetFirstRunRecency();
   [super tearDown];
 }
 
 // Tests that the New Tab IPH can be displayed when opening an URL from omnibox.
-// TODO(crbug.com/40278143): Test is flaky on device. Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testNewTabIPH FLAKY_testNewTabIPH
-#else
-#define MAYBE_testNewTabIPH testNewTabIPH
-#endif
-- (void)MAYBE_testNewTabIPH {
+- (void)testNewTabIPH {
   RelaunchWithIPHFeature(@"IPH_iOSNewTabToolbarItemFeature",
                          /*safari_switcher=*/YES);
   [self openURLFromOmniboxWithIsAfterNewAppLaunch:YES];
@@ -87,13 +101,7 @@ id<GREYMatcher> BottomToolbar() {
 
 // Tests that the Tab Grid IPH can be displayed when opening a new tab and there
 // are multiple tabs.
-// TODO(crbug.com/40278143): Test is flaky on device. Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testTabGridIPH FLAKY_testTabGridIPH
-#else
-#define MAYBE_testTabGridIPH testTabGridIPH
-#endif
-- (void)MAYBE_testTabGridIPH {
+- (void)testTabGridIPH {
   RelaunchWithIPHFeature(@"IPH_iOSTabGridToolbarItemFeature",
                          /*safari_switcher=*/YES);
   [ChromeEarlGrey openNewTab];
@@ -105,28 +113,21 @@ id<GREYMatcher> BottomToolbar() {
 
 // Tests that the pull-to-refresh IPH is atttempted when user taps the omnibox
 // to reload the same page, and disappears after the user navigates away.
-// TODO(crbug.com/329078389): This test is flaky on simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testPullToRefreshIPHAfterReloadFromOmniboxAndDisappearsAfterNavigation \
-  FLAKY_testPullToRefreshIPHAfterReloadFromOmniboxAndDisappearsAfterNavigation
-#else
-#define MAYBE_testPullToRefreshIPHAfterReloadFromOmniboxAndDisappearsAfterNavigation \
-  testPullToRefreshIPHAfterReloadFromOmniboxAndDisappearsAfterNavigation
-#endif
-- (void)
-    MAYBE_testPullToRefreshIPHAfterReloadFromOmniboxAndDisappearsAfterNavigation {
+- (void)testPullToRefreshIPHAfterReloadFromOmniboxAndDisappearsAfterNavigation {
   RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
                          /*safari_switcher=*/YES);
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    OpenSplitScreen();
+  }
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   const GURL destinationUrl1 = self.testServer->GetURL("/pony.html");
   const GURL destinationUrl2 =
       self.testServer->GetURL("/chromium_logo_page.html");
-  [ChromeEarlGrey loadURL:destinationUrl1];
-  [ChromeEarlGrey loadURL:destinationUrl2];
-  [ChromeEarlGreyUI focusOmnibox];
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
+  [ChromeEarlGrey loadURL:destinationUrl1 inWindowWithNumber:0];
+  [ChromeEarlGrey loadURL:destinationUrl2 inWindowWithNumber:0];
+  ReloadFromOmnibox();
   AssertGestureIPHVisibleWithDismissAction(
       @"Pull to refresh IPH did not appear after reloading from omnibox.", ^{
         [[EarlGrey selectElementWithMatcher:BackButton()]
@@ -139,22 +140,23 @@ id<GREYMatcher> BottomToolbar() {
 // Tests that the pull-to-refresh IPH is attempted when user reloads the page
 // using context menu.
 - (void)testPullToRefreshIPHAfterReloadFromContextMenuAndDisappearsOnSwitchTab {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (no reload in context menu)");
-  }
   RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
                          /*safari_switcher=*/YES);
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
+  }
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   const GURL destinationUrl1 = self.testServer->GetURL("/pony.html");
   const GURL destinationUrl2 =
       self.testServer->GetURL("/chromium_logo_page.html");
-  [ChromeEarlGrey loadURL:destinationUrl1];
+  [ChromeEarlGrey loadURL:destinationUrl1 inWindowWithNumber:0];
   [ChromeEarlGrey openNewTab];
-  [ChromeEarlGrey loadURL:destinationUrl2];
+  [ChromeEarlGrey loadURL:destinationUrl2 inWindowWithNumber:0];
   // Reload using context menu.
   [ChromeEarlGreyUI reload];
+  [ChromeEarlGrey waitForPageToFinishLoading];
   AssertGestureIPHVisibleWithDismissAction(
       @"Pull to refresh IPH did not appear after reloading from context menu.",
       ^{
@@ -170,13 +172,15 @@ id<GREYMatcher> BottomToolbar() {
 - (void)testPullToRefreshIPHShouldDisappearOnEnteringTabGrid {
   RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
                          /*safari_switcher=*/YES);
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    OpenSplitScreen();
+  }
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
-  [ChromeEarlGrey loadURL:destinationUrl];
-  [ChromeEarlGreyUI focusOmnibox];
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
+  [ChromeEarlGrey loadURL:destinationUrl inWindowWithNumber:0];
+  ReloadFromOmnibox();
   AssertGestureIPHVisibleWithDismissAction(
       @"Pull to refresh IPH did not appear after reloading from omnibox.", ^{
         [ChromeEarlGreyUI openTabGrid];
@@ -195,31 +199,25 @@ id<GREYMatcher> BottomToolbar() {
 - (void)testPullToRefreshIPHShouldNotShowOnPageLoadFail {
   RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
                          /*safari_switcher=*/YES);
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    OpenSplitScreen();
+  }
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
-  [ChromeEarlGrey loadURL:destinationUrl];
+  [ChromeEarlGrey loadURL:destinationUrl inWindowWithNumber:0];
   // Cut off server.
   GREYAssertTrue(self.testServer->ShutdownAndWaitUntilComplete(),
                  @"Server did not shut down.");
-  [ChromeEarlGreyUI focusOmnibox];
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
+  ReloadFromOmnibox();
   AssertGestureIPHInvisible(
       @"Pull to refresh IPH still appeared despite loading fails.");
 }
 
 // Tests that the swipe back/forward IPH is attempted on navigation, and
 // disappears when user leaves the page.
-// TODO(crbug.com/328732643): This test is flaky on simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testSwipeBackForwardIPHShowsOnNavigationAndHidesOnNavigation \
-  FLAKY_testSwipeBackForwardIPHShowsOnNavigationAndHidesOnNavigation
-#else
-#define MAYBE_testSwipeBackForwardIPHShowsOnNavigationAndHidesOnNavigation \
-  testSwipeBackForwardIPHShowsOnNavigationAndHidesOnNavigation
-#endif
-- (void)MAYBE_testSwipeBackForwardIPHShowsOnNavigationAndHidesOnNavigation {
+- (void)testSwipeBackForwardIPHShowsOnNavigationAndHidesOnNavigation {
   RelaunchWithIPHFeature(@"IPH_iOSSwipeBackForward", /*safari_switcher=*/NO);
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
@@ -246,6 +244,9 @@ id<GREYMatcher> BottomToolbar() {
 - (void)testPullToRefreshPerformAction {
   RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
                          /*safari_switcher=*/YES);
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    OpenSplitScreen();
+  }
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   // Trigger pull-to-refresh IPH.
@@ -253,10 +254,9 @@ id<GREYMatcher> BottomToolbar() {
   const GURL destinationUrl1 = self.testServer->GetURL("/pony.html");
   const GURL destinationUrl2 =
       self.testServer->GetURL("/chromium_logo_page.html");
-  [ChromeEarlGrey loadURL:destinationUrl1];
-  [ChromeEarlGrey loadURL:destinationUrl2];
-  [ChromeEarlGreyUI focusOmnibox];
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
+  [ChromeEarlGrey loadURL:destinationUrl1 inWindowWithNumber:0];
+  [ChromeEarlGrey loadURL:destinationUrl2 inWindowWithNumber:0];
+  ReloadFromOmnibox();
   AssertGestureIPHVisibleWithDismissAction(
       @"Pull to refresh IPH did not appear after reloading from omnibox.", ^{
         // Swipe down.

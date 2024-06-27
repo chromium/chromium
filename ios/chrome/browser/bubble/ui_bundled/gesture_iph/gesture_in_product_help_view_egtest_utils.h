@@ -29,7 +29,9 @@ void RelaunchWithIPHFeature(NSString* feature, BOOL safari_switcher);
 void AssertGestureIPHVisibleWithDismissAction(NSString* description,
                                               void (^action)(void));
 
-// Checks if it disappears within a reasonable wait time or is never visible.
+// Asserts that the gesture IPH is invisible. If it is visible when this
+// function is called, asserts that it is dismissed within a reasonable wait
+// time.
 void AssertGestureIPHInvisible(NSString* description);
 
 // Taps "Dismiss" button with animation running.
