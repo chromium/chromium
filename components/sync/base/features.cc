@@ -105,11 +105,6 @@ BASE_FEATURE(kEnablePreferencesAccountStorage,
 #endif
 );
 
-BASE_FEATURE(kSyncPollImmediatelyOnEveryStartup,
-             "SyncPollImmediatelyOnEveryStartup2",
-             base::FEATURE_DISABLED_BY_DEFAULT
-);
-
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kSyncWebauthnCredentials,
              "SyncWebauthnCredentials",

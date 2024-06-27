@@ -40,8 +40,6 @@ source_set("sync") {
     "sync_invalidations_service_factory.h",
     "sync_service_factory.cc",
     "sync_service_factory.h",
-    "sync_service_util.cc",
-    "sync_service_util.h",
     "sync_startup_tracker.cc",
     "sync_startup_tracker.h",
     "user_event_service_factory.cc",

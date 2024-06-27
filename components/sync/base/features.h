@@ -87,11 +87,6 @@ BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorageForNonSyncingUsers);
 // have any effect for signed-in non-syncing users!)
 BASE_DECLARE_FEATURE(kEnablePreferencesAccountStorage);
 
-// If enabled, Sync will send a poll GetUpdates request on every browser
-// startup. This is a temporary hack; see crbug.com/1425026.
-// TODO(crbug.com/40260698): Remove this.
-BASE_DECLARE_FEATURE(kSyncPollImmediatelyOnEveryStartup);
-
 #if !BUILDFLAG(IS_ANDROID)
 // Enables syncing the WEBAUTHN_CREDENTIAL data type.
 // Enabled by default on M123. Remove on or after M126 on all platforms,
