@@ -52,6 +52,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/cpp/document_isolation_policy.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -593,6 +594,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
   const scoped_refptr<PolicyContainerHost> policy_container_host() const {
     return policy_container_host_;
   }
+
+  // Returns a pointer to the DIP stored in `client_security_state()`.
+  // Returns nullptr if `client_security_state()` is nullptr.
+  const network::DocumentIsolationPolicy* document_isolation_policy() const;
 
   // Returns a client security state built from this service worker's policy
   // container policies.

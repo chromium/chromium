@@ -104,6 +104,7 @@ void CacheStorageContextImpl::AddReceiver(
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
+    const network::DocumentIsolationPolicy& document_isolation_policy,
     const storage::BucketLocator& bucket_locator,
     storage::mojom::CacheStorageOwner owner,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
@@ -112,8 +113,8 @@ void CacheStorageContextImpl::AddReceiver(
   auto add_receiver =
       base::BindOnce(&CacheStorageContextImpl::AddReceiverWithBucketInfo,
                      weak_factory_.GetWeakPtr(), cross_origin_embedder_policy,
-                     std::move(coep_reporter), bucket_locator.storage_key,
-                     owner, std::move(receiver));
+                     std::move(coep_reporter), document_isolation_policy,
+                     bucket_locator.storage_key, owner, std::move(receiver));
 
   if (bucket_locator.is_default) {
     DCHECK_EQ(storage::BucketId(), bucket_locator.id);
@@ -152,6 +153,7 @@ void CacheStorageContextImpl::AddReceiverWithBucketInfo(
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
+    const network::DocumentIsolationPolicy& document_isolation_policy,
     const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageOwner owner,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver,
@@ -163,7 +165,8 @@ void CacheStorageContextImpl::AddReceiverWithBucketInfo(
                          : std::nullopt;
 
   dispatcher_host_->AddReceiver(cross_origin_embedder_policy,
-                                std::move(coep_reporter), storage_key, bucket,
+                                std::move(coep_reporter),
+                                document_isolation_policy, storage_key, bucket,
                                 owner, std::move(receiver));
 }
 

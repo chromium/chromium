@@ -79,17 +79,19 @@ void ServiceWorkerCacheStorageMatcher::Run() {
     return;
   }
   // Since this is offloading the cache storage API access in ServiceWorker,
-  // we need to follow COEP used there.
+  // we need to follow COEP and DIP used there.
   // The reason why COEP is enforced to the cache storage API can be seen in:
   // crbug.com/991428.
   const network::CrossOriginEmbedderPolicy* coep =
       version_->cross_origin_embedder_policy();
-  if (!coep) {
+  const network::DocumentIsolationPolicy* dip =
+      version_->document_isolation_policy();
+  if (!coep || !dip) {
     FailFallback();
     return;
   }
   control->AddReceiver(
-      *coep, version_->embedded_worker()->GetCoepReporter(),
+      *coep, version_->embedded_worker()->GetCoepReporter(), *dip,
       storage::BucketLocator::ForDefaultBucket(version_->key()),
       storage::mojom::CacheStorageOwner::kCacheAPI,
       remote_.BindNewPipeAndPassReceiver());

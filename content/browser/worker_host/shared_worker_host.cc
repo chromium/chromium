@@ -459,9 +459,10 @@ void SharedWorkerHost::BindCacheStorageInternal(
     coep_reporter_->Clone(coep_reporter.InitWithNewPipeAndPassReceiver());
   }
 
-  GetProcessHost()->BindCacheStorage(cross_origin_embedder_policy(),
-                                     std::move(coep_reporter), bucket_locator,
-                                     std::move(receiver));
+  GetProcessHost()->BindCacheStorage(
+      cross_origin_embedder_policy(), std::move(coep_reporter),
+      worker_client_security_state_->document_isolation_policy, bucket_locator,
+      std::move(receiver));
 }
 
 void SharedWorkerHost::GetSandboxedFileSystemForBucket(

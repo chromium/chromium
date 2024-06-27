@@ -93,6 +93,7 @@ void StorageAccessHandle::BindCaches(
   }
   host.GetProcess()->BindCacheStorage(
       host.cross_origin_embedder_policy(), std::move(coep_reporter_remote),
+      host.policy_container_host()->policies().document_isolation_policy,
       storage::BucketLocator::ForDefaultBucket(
           blink::StorageKey::CreateFirstParty(host.GetStorageKey().origin())),
       std::move(receiver));

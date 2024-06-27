@@ -8,6 +8,7 @@ import "components/services/storage/public/mojom/buckets/bucket_locator.mojom";
 import "components/services/storage/public/mojom/storage_policy_update.mojom";
 import "components/services/storage/public/mojom/storage_usage_info.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
+import "services/network/public/mojom/document_isolation_policy.mojom";
 import "third_party/blink/public/mojom/cache_storage/cache_storage.mojom";
 import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 
@@ -41,9 +42,10 @@ interface CacheStorageControl {
   // may represent the default bucket (`is_default` will be true), in which case
   // its ID will not be valid.
   AddReceiver(
-      network.mojom.CrossOriginEmbedderPolicy policy,
+      network.mojom.CrossOriginEmbedderPolicy cross_origin_embedder_policy,
       pending_remote<network.mojom.CrossOriginEmbedderPolicyReporter>?
           coep_reporter,
+      network.mojom.DocumentIsolationPolicy document_isolation_policy,
       BucketLocator bucket_locator,
       CacheStorageOwner owner,
       pending_receiver<blink.mojom.CacheStorage> receiver);

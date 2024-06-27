@@ -99,9 +99,11 @@ BackgroundFetchDataManager::GetOrOpenCacheStorage(
   // This storage key and unique_id has never been opened before.
   mojo::Remote<blink::mojom::CacheStorage> remote;
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
+  network::DocumentIsolationPolicy document_isolation_policy;
 
   storage_partition_->GetCacheStorageControl()->AddReceiver(
       cross_origin_embedder_policy, mojo::NullRemote(),
+      document_isolation_policy,
       storage::BucketLocator::ForDefaultBucket(storage_key),
       storage::mojom::CacheStorageOwner::kBackgroundFetch,
       remote.BindNewPipeAndPassReceiver());

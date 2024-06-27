@@ -1115,12 +1115,9 @@ void EmbeddedWorkerInstance::BindCacheStorageInternal() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const network::CrossOriginEmbedderPolicy* coep =
       owner_version_->cross_origin_embedder_policy();
-
-  // Without PlzServiceWorker, the COEP header might not be known initially.
-  // The in-flight CacheStorage requests are kept until the main script has
-  // loaded the headers and the COEP one is known.
-  if (!coep)
-    return;
+  const network::DocumentIsolationPolicy* dip =
+      owner_version_->document_isolation_policy();
+  CHECK(coep && dip);
 
   for (auto& request : pending_cache_storage_requests_) {
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
@@ -1134,7 +1131,7 @@ void EmbeddedWorkerInstance::BindCacheStorageInternal() {
     if (!rph)
       return;
 
-    rph->BindCacheStorage(*coep, std::move(coep_reporter_remote),
+    rph->BindCacheStorage(*coep, std::move(coep_reporter_remote), *dip,
                           request.bucket, std::move(request.receiver));
   }
   pending_cache_storage_requests_.clear();

@@ -109,6 +109,7 @@ void DidGenerateCacheableMetadataInCacheStorageOnUI(
 
   mojo::Remote<blink::mojom::CacheStorage> remote;
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
+  network::DocumentIsolationPolicy document_isolation_policy;
 
   storage::mojom::CacheStorageControl* cache_storage_control =
       cache_storage_control_for_testing
@@ -118,6 +119,7 @@ void DidGenerateCacheableMetadataInCacheStorageOnUI(
 
   cache_storage_control->AddReceiver(
       cross_origin_embedder_policy, mojo::NullRemote(),
+      document_isolation_policy,
       storage::BucketLocator::ForDefaultBucket(code_cache_storage_key),
       storage::mojom::CacheStorageOwner::kCacheAPI,
       remote.BindNewPipeAndPassReceiver());

@@ -2077,6 +2077,13 @@ ServiceWorkerVersion::cross_origin_embedder_policy() const {
              : nullptr;
 }
 
+const network::DocumentIsolationPolicy*
+ServiceWorkerVersion::document_isolation_policy() const {
+  return policy_container_host_
+             ? &policy_container_host_->document_isolation_policy()
+             : nullptr;
+}
+
 const network::mojom::ClientSecurityStatePtr
 ServiceWorkerVersion::BuildClientSecurityState() const {
   if (!policy_container_host_) {
@@ -3168,8 +3175,14 @@ ServiceWorkerVersion::GetRemoteCacheStorage() {
     return mojo::NullRemote();
   }
 
+  // Similarly, DIP should be passed to cache storage to enforce it.
+  const network::DocumentIsolationPolicy* dip = document_isolation_policy();
+  if (!dip) {
+    return mojo::NullRemote();
+  }
+
   mojo::PendingRemote<blink::mojom::CacheStorage> remote;
-  control->AddReceiver(*coep, embedded_worker()->GetCoepReporter(),
+  control->AddReceiver(*coep, embedded_worker()->GetCoepReporter(), *dip,
                        storage::BucketLocator::ForDefaultBucket(key()),
                        storage::mojom::CacheStorageOwner::kCacheAPI,
                        remote.InitWithNewPipeAndPassReceiver());
