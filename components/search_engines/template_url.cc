@@ -859,8 +859,9 @@ bool TemplateURLRef::ParseParameter(size_t start,
     if constexpr (kIsAndroid) {
       // Capture a snippet of Template URL and the Parameter causing the
       // problem.
-      SCOPED_CRASH_KEY_STRING32("TemplateURL", "URL", *url);
+      SCOPED_CRASH_KEY_STRING256("TemplateURL", "URL", *url);
       SCOPED_CRASH_KEY_STRING32("TemplateURL", "Parameter", parameter);
+      SCOPED_CRASH_KEY_STRING32("TemplateURL", "Source", "User");
       base::debug::DumpWithoutCrashing();
     }
 
@@ -881,8 +882,10 @@ bool TemplateURLRef::ParseParameter(size_t start,
                               /* is externally supplied template? */ true);
     // Prepopulated templates should always be valid on all platforms. Enforce
     // this invariant with a DCHECK to ensure violations are fixed immediately.
-    NOTREACHED_IN_MIGRATION() << "Unexpanded Internal TemplateURL parameter: `"
-                              << parameter << "' while processing: " << url;
+    SCOPED_CRASH_KEY_STRING256("TemplateURL", "URL", *url);
+    SCOPED_CRASH_KEY_STRING32("TemplateURL", "Parameter", parameter);
+    SCOPED_CRASH_KEY_STRING32("TemplateURL", "Source", "Chrome");
+    base::debug::DumpWithoutCrashing();
 
     return true;
   }

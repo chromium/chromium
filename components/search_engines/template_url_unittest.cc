@@ -467,10 +467,8 @@ TEST_F(TemplateURLTest, SetPrepopulatedAndParse) {
 
   data.prepopulate_id = 123;
   TemplateURL url2(data);
-  EXPECT_DEATH_IF_SUPPORTED(
-      url2.url_ref().ParseURL("http://foo{fhqwhgads}bar", &replacements,
-                              nullptr, &valid),
-      "");
+  url2.url_ref().ParseURL("http://foo{fhqwhgads}bar", &replacements, nullptr,
+                          &valid);
   EXPECT_TRUE(replacements.empty());
 }
 
@@ -510,8 +508,7 @@ TEST_F(TemplateURLTest, SetPrepopulatedAndReplace) {
 
   data.prepopulate_id = 123;
   TemplateURL url2(data);
-  EXPECT_DEATH_IF_SUPPORTED(url2.url_ref().ReplaceSearchTerms(args, stdata),
-                            "");
+  url2.url_ref().ReplaceSearchTerms(args, stdata);
 }
 
 TEST_F(TemplateURLTest, InputEncodingBeforeSearchTerm) {
@@ -1274,8 +1271,7 @@ TEST_F(TemplateURLTest, ParseParameterUnknown) {
   parsed_url = "{fhqwhgads}abc";
   data.prepopulate_id = 1;
   TemplateURL url2(data);
-  EXPECT_DEATH_IF_SUPPORTED(
-      url2.url_ref().ParseParameter(0, 10, &parsed_url, &replacements), "");
+  url2.url_ref().ParseParameter(0, 10, &parsed_url, &replacements);
   EXPECT_TRUE(replacements.empty());
 }
 
