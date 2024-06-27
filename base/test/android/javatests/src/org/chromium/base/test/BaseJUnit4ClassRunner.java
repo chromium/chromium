@@ -15,6 +15,7 @@ import androidx.test.InstrumentationRegistry;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import androidx.test.internal.util.AndroidRunnerParams;
 
+import org.junit.AssumptionViolatedException;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -391,8 +392,10 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
                     }
                 }
                 if (exception != null) {
-                    exception = wrapExceptionIfCascadingFailure(exception);
-                    markBatchTestFailed(method);
+                    if (!(exception instanceof AssumptionViolatedException)) {
+                        exception = wrapExceptionIfCascadingFailure(exception);
+                        markBatchTestFailed(method);
+                    }
                     throw exception;
                 }
             }
