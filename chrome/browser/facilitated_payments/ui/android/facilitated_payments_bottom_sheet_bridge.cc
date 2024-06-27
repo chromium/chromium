@@ -7,6 +7,7 @@
 #include "base/android/jni_android.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -28,6 +29,9 @@ bool FacilitatedPaymentsBottomSheetBridge::RequestShowContent(
     return false;  // Already shown.
   }
 
+  if (web_contents == nullptr) {
+    return false;
+  }
   if (!web_contents->GetNativeView() ||
       !web_contents->GetNativeView()->GetWindowAndroid()) {
     return false;  // No window attached (yet or anymore).
@@ -40,11 +44,22 @@ bool FacilitatedPaymentsBottomSheetBridge::RequestShowContent(
     return false;
   }
 
+  if (web_contents->GetBrowserContext() == nullptr) {
+    return false;
+  }
+
+  Profile* browser_profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (browser_profile == nullptr) {
+    return false;
+  }
+
   JNIEnv* env = base::android::AttachCurrentThread();
 
   java_bridge_.Reset(Java_FacilitatedPaymentsPaymentMethodsViewBridge_create(
       env, java_controller,
-      web_contents->GetTopLevelNativeWindow()->GetJavaObject()));
+      web_contents->GetTopLevelNativeWindow()->GetJavaObject(),
+      browser_profile->GetJavaObject()));
   if (!java_bridge_) {
     return false;
   }

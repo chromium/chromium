@@ -33,7 +33,9 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//chrome/android:chrome_app_java_resources",
+    "//chrome/browser/autofill/android:java",
     "//chrome/browser/facilitated_payments/ui/android:public_java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/touch_to_fill/common/android:java_resources",
     "//components/autofill/android:payments_autofill_java",
     "//components/browser_ui/bottomsheet/android:java",
@@ -46,6 +48,7 @@ android_library("java") {
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:url_java",
   ]
 }
 
@@ -74,6 +77,7 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//base:callback_java",
     "//chrome/android:chrome_java",
+    "//chrome/browser/profiles/android:java",
     "//components/autofill/android:autofill_java",
     "//components/browser_ui/bottomsheet/android:factory_java",
     "//components/browser_ui/bottomsheet/android:java",

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
+import android.graphics.Bitmap;
+
 import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -52,9 +54,14 @@ class FacilitatedPaymentsPaymentMethodsProperties {
                 new ReadableIntPropertyKey("bank_account_drawable_id");
         static final ReadableObjectPropertyKey<Runnable> ON_BANK_ACCOUNT_CLICK_ACTION =
                 new ReadableObjectPropertyKey<>("on_bank_account_click_action");
-
+        static final ReadableObjectPropertyKey<Bitmap> BANK_ACCOUNT_ICON_BITMAP =
+                new ReadableObjectPropertyKey<>("bank_account_icon_bitmap");
         static final PropertyKey[] NON_TRANSFORMING_KEYS = {
-            BANK_NAME, BANK_ACCOUNT_SUMMARY, BANK_ACCOUNT_DRAWABLE_ID, ON_BANK_ACCOUNT_CLICK_ACTION
+            BANK_NAME,
+            BANK_ACCOUNT_SUMMARY,
+            BANK_ACCOUNT_DRAWABLE_ID,
+            ON_BANK_ACCOUNT_CLICK_ACTION,
+            BANK_ACCOUNT_ICON_BITMAP
         };
 
         private BankAccountProperties() {}

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.facilitated_payments;
 
 import android.content.Context;
 
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
@@ -30,7 +31,10 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
 
     /** Initializes the component. */
     void initialize(
-            Context context, BottomSheetController bottomSheetController, Delegate delegate);
+            Context context,
+            BottomSheetController bottomSheetController,
+            Delegate delegate,
+            Profile profile);
 
     /** Displays a new bottom sheet. */
     boolean showSheet(List<BankAccount> bankAccounts);

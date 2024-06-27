@@ -50,6 +50,7 @@ android_library("public_java") {
   ]
 
   deps = [
+    "//chrome/browser/profiles/android:java",
     "//components/autofill/android:payments_autofill_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//ui/android:ui_no_recycler_view_java",

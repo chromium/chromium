@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.facilitated_payments;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
@@ -32,6 +33,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.PaymentInstrument;
@@ -74,6 +76,7 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     @Mock private WebContents mWebContents;
     @Mock private ManagedBottomSheetController mBottomSheetController;
     @Mock private FacilitatedPaymentsPaymentMethodsComponent.Delegate mDelegateMock;
+    @Mock private Profile mProfile;
 
     private FacilitatedPaymentsPaymentMethodsViewBridge mViewBridge;
     private WindowAndroid mWindow;
@@ -84,13 +87,47 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
         Context mApplicationContext = ApplicationProvider.getApplicationContext();
         mWindow = new WindowAndroid(mApplicationContext);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
-        mViewBridge = FacilitatedPaymentsPaymentMethodsViewBridge.create(mDelegateMock, mWindow);
+        mViewBridge =
+                FacilitatedPaymentsPaymentMethodsViewBridge.create(
+                        mDelegateMock, mWindow, mProfile);
     }
 
     @After
     public void tearDown() {
         BottomSheetControllerFactory.detach(mBottomSheetController);
         mWindow.destroy();
+    }
+
+    @Test
+    @SmallTest
+    public void create_nullProfile() {
+        mViewBridge =
+                FacilitatedPaymentsPaymentMethodsViewBridge.create(
+                        mDelegateMock, mWindow, /* profile= */ null);
+
+        assertNull(mViewBridge);
+    }
+
+    @Test
+    @SmallTest
+    public void create_nullWindowAndroid() {
+        mViewBridge =
+                FacilitatedPaymentsPaymentMethodsViewBridge.create(
+                        mDelegateMock, /* windowAndroid= */ null, mProfile);
+
+        assertNull(mViewBridge);
+    }
+
+    @Test
+    @SmallTest
+    public void create_nullBottomSheetController() {
+        BottomSheetControllerFactory.detach(mBottomSheetController);
+
+        mViewBridge =
+                FacilitatedPaymentsPaymentMethodsViewBridge.create(
+                        mDelegateMock, mWindow, mProfile);
+
+        assertNull(mViewBridge);
     }
 
     @Test

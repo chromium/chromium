@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.facilitated_payments;
 
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AdditionalInfoProperties.DESCRIPTION_1_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_DRAWABLE_ID;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_ICON_BITMAP;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_SUMMARY;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_NAME;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.ON_BANK_ACCOUNT_CLICK_ACTION;
@@ -18,13 +19,17 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsComponent.Delegate;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AdditionalInfoProperties;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -34,6 +39,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 /**
@@ -44,13 +50,14 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     private Context mContext;
     private PropertyModel mModel;
     private Delegate mDelegate;
-
+    private Profile mProfile;
     private InputProtector mInputProtector = new InputProtector();
 
-    void initialize(Context context, PropertyModel model, Delegate delegate) {
+    void initialize(Context context, PropertyModel model, Delegate delegate, Profile profile) {
         mContext = context;
         mModel = model;
         mDelegate = delegate;
+        mProfile = profile;
     }
 
     boolean showSheet(List<BankAccount> bankAccounts) {
@@ -118,6 +125,20 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                         .with(
                                 ON_BANK_ACCOUNT_CLICK_ACTION,
                                 () -> this.onBankAccountSelected(bankAccount));
+        Optional<Bitmap> bankIconOptional = Optional.empty();
+        if (bankAccount.getDisplayIconUrl() != null && bankAccount.getDisplayIconUrl().isValid()) {
+            bankIconOptional =
+                    PersonalDataManagerFactory.getForProfile(mProfile)
+                            .getCustomImageForAutofillSuggestionIfAvailable(
+                                    bankAccount.getDisplayIconUrl(),
+                                    AutofillUiUtils.CardIconSpecs.create(
+                                            context, AutofillUiUtils.CardIconSize.LARGE));
+        }
+        if (bankIconOptional.isPresent()) {
+            bankAccountModelBuilder.with(BANK_ACCOUNT_ICON_BITMAP, bankIconOptional.get());
+        } else {
+            bankAccountModelBuilder.with(BANK_ACCOUNT_DRAWABLE_ID, R.drawable.ic_account_balance);
+        }
         return bankAccountModelBuilder.build();
     }
 

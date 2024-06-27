@@ -16,6 +16,7 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -37,9 +38,12 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
 
     @Override
     public void initialize(
-            Context context, BottomSheetController bottomSheetController, Delegate delegate) {
+            Context context,
+            BottomSheetController bottomSheetController,
+            Delegate delegate,
+            Profile profile) {
         mFacilitatedPaymentsPaymentMethodsModel = createModel(mMediator);
-        mMediator.initialize(context, mFacilitatedPaymentsPaymentMethodsModel, delegate);
+        mMediator.initialize(context, mFacilitatedPaymentsPaymentMethodsModel, delegate, profile);
         setUpModelChangeProcessors(
                 mFacilitatedPaymentsPaymentMethodsModel,
                 new FacilitatedPaymentsPaymentMethodsView(context, bottomSheetController));

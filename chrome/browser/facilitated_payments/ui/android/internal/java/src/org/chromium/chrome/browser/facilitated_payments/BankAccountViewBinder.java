@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.facilitated_payments;
 
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_DRAWABLE_ID;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_ICON_BITMAP;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_SUMMARY;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_NAME;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.ON_BANK_ACCOUNT_CLICK_ACTION;
@@ -44,6 +45,9 @@ class BankAccountViewBinder {
             bankAccountIcon.setImageDrawable(
                     AppCompatResources.getDrawable(
                             view.getContext(), model.get(BANK_ACCOUNT_DRAWABLE_ID)));
+        } else if (propertyKey == BANK_ACCOUNT_ICON_BITMAP) {
+            ImageView bankAccountIcon = view.findViewById(R.id.bank_account_icon);
+            bankAccountIcon.setImageBitmap(model.get(BANK_ACCOUNT_ICON_BITMAP));
         } else if (propertyKey == ON_BANK_ACCOUNT_CLICK_ACTION) {
             view.setOnClickListener(unusedView -> model.get(ON_BANK_ACCOUNT_CLICK_ACTION).run());
         } else {

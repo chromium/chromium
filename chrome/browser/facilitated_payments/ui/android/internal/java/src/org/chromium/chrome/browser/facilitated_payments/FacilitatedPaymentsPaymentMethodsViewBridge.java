@@ -14,6 +14,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsComponent.Delegate;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -31,26 +32,39 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
     private final FacilitatedPaymentsPaymentMethodsComponent mComponent;
 
     private FacilitatedPaymentsPaymentMethodsViewBridge(
-            Context context, BottomSheetController bottomSheetController, Delegate delegate) {
+            Context context,
+            BottomSheetController bottomSheetController,
+            Delegate delegate,
+            Profile profile) {
         mComponent = new FacilitatedPaymentsPaymentMethodsCoordinator();
-        mComponent.initialize(context, bottomSheetController, delegate);
+        mComponent.initialize(context, bottomSheetController, delegate, profile);
     }
 
     @CalledByNative
     @VisibleForTesting
     static @Nullable FacilitatedPaymentsPaymentMethodsViewBridge create(
-            Delegate delegate, WindowAndroid windowAndroid) {
-        if (windowAndroid == null) return null;
+            Delegate delegate, WindowAndroid windowAndroid, Profile profile) {
+        if (windowAndroid == null) {
+            return null;
+        }
+
+        if (profile == null) {
+            return null;
+        }
 
         Context context = windowAndroid.getContext().get();
-        if (context == null) return null;
+        if (context == null) {
+            return null;
+        }
 
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
-        if (bottomSheetController == null) return null;
+        if (bottomSheetController == null) {
+            return null;
+        }
 
         return new FacilitatedPaymentsPaymentMethodsViewBridge(
-                context, bottomSheetController, delegate);
+                context, bottomSheetController, delegate, profile);
     }
 
     /**

@@ -40,6 +40,7 @@ import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.PaymentInstrument;
@@ -97,6 +98,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private FacilitatedPaymentsPaymentMethodsComponent.Delegate mDelegateMock;
+    @Mock private Profile mProfile;
 
     public FacilitatedPaymentsPaymentMethodsControllerRobolectricTest() {
         mCoordinator = new FacilitatedPaymentsPaymentMethodsCoordinator();
@@ -110,7 +112,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                         mBottomSheetController.requestShowContent(
                                 any(BottomSheetContent.class), anyBoolean()))
                 .thenReturn(true);
-        mCoordinator.initialize(mContext, mBottomSheetController, mDelegateMock);
+        mCoordinator.initialize(mContext, mBottomSheetController, mDelegateMock, mProfile);
         mFacilitatedPaymentsPaymentMethodsModel = mCoordinator.getModelForTesting();
         mCoordinator
                 .getMediatorForTesting()
