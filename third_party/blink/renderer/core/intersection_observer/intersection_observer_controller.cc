@@ -139,16 +139,6 @@ bool IntersectionObserverController::ComputeIntersections(
     LocalFrameView& frame_view,
     gfx::Vector2dF accumulated_scroll_delta_since_last_update,
     ComputeIntersectionsContext& context) {
-#if CHECK_SKIPPED_UPDATE_ON_SCROLL()
-  debug_info_ = debug_info_ +
-                String::Format("%x %g,%g|", flags,
-                               accumulated_scroll_delta_since_last_update.x(),
-                               accumulated_scroll_delta_since_last_update.y());
-  if (debug_info_.length() > 256) {
-    debug_info_ = debug_info_.Right(192);
-  }
-#endif
-
   needs_occlusion_tracking_ = false;
   if (!GetExecutionContext()) {
     return false;

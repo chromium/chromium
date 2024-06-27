@@ -245,30 +245,6 @@ bool IntersectionGeometry::RootGeometry::operator==(
          root_to_view_transform == other.root_to_view_transform;
 }
 
-#if CHECK_SKIPPED_UPDATE_ON_SCROLL()
-String IntersectionGeometry::CachedRects::ToString() const {
-  auto transform_to_string = [](const gfx::Transform& t) {
-    return t.IsIdentityOr2dTranslation() ? t.To2dTranslation().ToString()
-                                         : t.ToString();
-  };
-  return String::Format(
-      "%d target_rect: %s %s root_rect: %s %s intersection: %s %s %s "
-      "min_to_update %s %s target_t: %s root_t: %s intersect: %d "
-      "rel: %d r_scrolls_t: %d",
-      valid, local_target_rect.ToString().c_str(),
-      target_rect.ToString().c_str(), local_root_rect.ToString().c_str(),
-      root_rect.ToString().c_str(),
-      unscrolled_unclipped_intersection_rect.ToString().c_str(),
-      unclipped_intersection_rect.ToString().c_str(),
-      intersection_rect.ToString().c_str(),
-      computed_min_scroll_delta_to_update.ToString().c_str(),
-      min_scroll_delta_to_update.ToString().c_str(),
-      transform_to_string(target_to_view_transform).c_str(),
-      transform_to_string(root_to_view_transform).c_str(), does_intersect,
-      relationship, root_scrolls_target);
-}
-#endif
-
 const LayoutObject* IntersectionGeometry::GetExplicitRootLayoutObject(
     const Node& root_node) {
   if (!root_node.isConnected()) {
@@ -719,38 +695,6 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
         root_and_target, target_to_view_transform,
         root_geometry.root_to_view_transform, thresholds, scroll_margin);
     cached_rects->valid = true;
-
-#if CHECK_SKIPPED_UPDATE_ON_SCROLL()
-    // TODO(wangxianzhu): Remove or clean up this code after fixing
-    // crbug.com/41492283.
-    PropertyTreeStateOrAlias target_properties =
-        PropertyTreeState::Uninitialized();
-    if (root_and_target.target->GetPropertyContainer(nullptr,
-                                                     &target_properties)) {
-      cached_rects->clip_tree = target_properties.Clip().ToTreeString();
-      cached_rects->transform_tree =
-          target_properties.Transform().ToTreeString();
-      cached_rects->scroll_tree = target_properties.Transform()
-                                      .Unalias()
-                                      .NearestScrollTranslationNode()
-                                      .ScrollNode()
-                                      ->ToTreeString();
-    } else {
-      cached_rects->clip_tree = cached_rects->transform_tree =
-          cached_rects->scroll_tree = "No properties";
-    }
-    cached_rects->computed_min_scroll_delta_to_update =
-        cached_rects->min_scroll_delta_to_update;
-    cached_rects->local_root_rect = root_geometry.local_root_rect;
-    cached_rects->root_rect = root_rect_;
-    cached_rects->target_rect = target_rect_;
-    cached_rects->intersection_rect = intersection_rect_;
-    cached_rects->unclipped_intersection_rect = unclipped_intersection_rect_;
-    cached_rects->target_to_view_transform = target_to_view_transform;
-    cached_rects->root_to_view_transform = root_geometry.root_to_view_transform;
-    cached_rects->relationship = static_cast<int>(root_and_target.relationship);
-    cached_rects->root_scrolls_target = root_and_target.root_scrolls_target;
-#endif
   }
 
   // This must be the last step after all calculations in zoomed coordinates.
