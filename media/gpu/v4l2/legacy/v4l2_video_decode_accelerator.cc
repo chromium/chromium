@@ -30,8 +30,11 @@
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
 #include "media/gpu/chromeos/fourcc.h"
+#include "media/gpu/chromeos/native_pixmap_frame_resource.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
+#ifdef SUPPORT_MT21_PIXEL_FORMAT_SOFTWARE_DECOMPRESSION
 #include "media/gpu/chromeos/video_frame_resource.h"
+#endif
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_image_processor_backend.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
@@ -620,12 +623,9 @@ void V4L2VideoDecodeAccelerator::ImportBufferForPictureTask(
       return;
     }
 
-    // TODO(nhebert): switch to NativePixmap-based FrameResource when it is
-    // available.
-    iter->output_frame =
-        VideoFrameResource::Create(VideoFrame::WrapExternalDmabufs(
-            *layout, gfx::Rect(visible_size_), visible_size_,
-            std::move(duped_fds), base::TimeDelta()));
+    iter->output_frame = NativePixmapFrameResource::Create(
+        *layout, gfx::Rect(visible_size_), visible_size_, std::move(duped_fds),
+        base::TimeDelta());
   }
 
   // The buffer can now be used for decoding
