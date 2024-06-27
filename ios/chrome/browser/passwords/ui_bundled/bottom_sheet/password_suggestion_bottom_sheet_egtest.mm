@@ -292,6 +292,11 @@ id<GREYMatcher> OpenKeyboardButton() {
 // This test verifies that the keyboard opens on autofocus events, when the
 // kIOSPasswordBottomSheetAutofocus feature is disabled.
 - (void)testOpenKeyboardOnAutofocus {
+  // TODO(crbug.com/349804536): Test is flaky on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test is flaky on iPad.")
+  }
+
   [PasswordManagerAppInterface
       storeCredentialWithUsername:@"user"
                          password:@"password"
@@ -308,6 +313,11 @@ id<GREYMatcher> OpenKeyboardButton() {
 // This test verifies that the password bottom sheet does not open when the
 // webpage has enabled passkey login.
 - (void)testOpenKeyboardOnPasskey {
+  // TODO(crbug.com/349804536): Test is flaky on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test is flaky on iPad.")
+  }
+
   [PasswordManagerAppInterface
       storeCredentialWithUsername:@"user"
                          password:@"password"
@@ -354,6 +364,11 @@ id<GREYMatcher> OpenKeyboardButton() {
 }
 
 - (void)testOpenPasswordBottomSheetTapUseKeyboardShowKeyboard {
+  // TODO(crbug.com/349804536): Test is flaky on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test is flaky on iPad.")
+  }
+
   [PasswordManagerAppInterface
       storeCredentialWithUsername:@"user"
                          password:@"password"
@@ -834,6 +849,11 @@ id<GREYMatcher> OpenKeyboardButton() {
 }
 
 - (void)testPasswordBottomSheetDismiss3TimesNotShownAnymore {
+  // TODO(crbug.com/349804536): Test is flaky on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test is flaky on iPad.")
+  }
+
   [PasswordManagerAppInterface
       storeCredentialWithUsername:@"user"
                          password:@"password"
