@@ -13,6 +13,7 @@
 
 #include <stdint.h>
 
+#include <functional>
 #include <memory>
 #include <set>
 #include <string>
@@ -236,19 +237,19 @@ class COMPONENTS_PREFS_EXPORT PrefService {
 
   // Returns true if the preference for the given preference name is available
   // and is managed.
-  bool IsManagedPreference(const std::string& pref_name) const;
+  bool IsManagedPreference(std::string_view path) const;
 
   // Returns true if the preference for the given preference name is available
   // and is controlled by the parent/guardian of the child Account.
-  bool IsPreferenceManagedByCustodian(const std::string& pref_name) const;
+  bool IsPreferenceManagedByCustodian(std::string_view path) const;
 
   // Returns |true| if a preference with the given name is available and its
   // value can be changed by the user.
-  bool IsUserModifiablePreference(const std::string& pref_name) const;
+  bool IsUserModifiablePreference(std::string_view path) const;
 
   // Look up a preference.  Returns NULL if the preference is not
   // registered.
-  const PrefService::Preference* FindPreference(const std::string& path) const;
+  const PrefService::Preference* FindPreference(std::string_view path) const;
 
   // If the path is valid and the value at the end of the path matches the type
   // specified, it will return the specified value.  Otherwise, the default
@@ -334,7 +335,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // NOTE: this is NOT the same as FindPreference. In particular
   // FindPreference returns whether RegisterXXX has been invoked, where as
   // this checks if a value exists for the path.
-  bool HasPrefPath(const std::string& path) const;
+  bool HasPrefPath(std::string_view path) const;
 
   // Issues a callback for every preference value. The preferences must not be
   // mutated during iteration.
@@ -450,7 +451,11 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // string comparisons. Order is unimportant, and deletions are rare.
   // Confirmed on Android where this speeded Chrome startup by roughly 50ms
   // vs. std::map, and by roughly 180ms vs. std::set of Preference pointers.
-  typedef std::unordered_map<std::string, Preference> PreferenceMap;
+  struct StringViewHasher : public std::hash<std::string_view> {
+    using is_transparent = void;
+  };
+  using PreferenceMap = std::
+      unordered_map<std::string, Preference, StringViewHasher, std::equal_to<>>;
 
   // Give access to ReportUserPrefChanged() and GetMutableUserPref().
   friend class subtle::ScopedUserPrefUpdateBase;

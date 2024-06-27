@@ -236,7 +236,7 @@ base::FilePath PrefService::GetFilePath(std::string_view path) const {
   return *result;
 }
 
-bool PrefService::HasPrefPath(const std::string& path) const {
+bool PrefService::HasPrefPath(std::string_view path) const {
   const Preference* pref = FindPreference(path);
   return pref && !pref->IsDefaultValue();
 }
@@ -285,17 +285,19 @@ PrefService::GetPreferencesValueAndStore() const {
 }
 
 const PrefService::Preference* PrefService::FindPreference(
-    const std::string& pref_name) const {
+    std::string_view path) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = prefs_map_.find(pref_name);
+  auto it = prefs_map_.find(path);
   if (it != prefs_map_.end())
     return &(it->second);
   const base::Value* default_value = nullptr;
-  if (!pref_registry_->defaults()->GetValue(pref_name, &default_value))
+  if (!pref_registry_->defaults()->GetValue(path, &default_value)) {
     return nullptr;
+  }
   it = prefs_map_
            .insert(std::make_pair(
-               pref_name, Preference(this, pref_name, default_value->type())))
+               std::string(path),
+               Preference(this, std::string(path), default_value->type())))
            .first;
   return &(it->second);
 }
@@ -327,20 +329,18 @@ PrefService::GetAllPrefStoresInitializationStatus() const {
   return GetInitializationStatus();
 }
 
-bool PrefService::IsManagedPreference(const std::string& pref_name) const {
-  const Preference* pref = FindPreference(pref_name);
+bool PrefService::IsManagedPreference(std::string_view path) const {
+  const Preference* pref = FindPreference(path);
   return pref && pref->IsManaged();
 }
 
-bool PrefService::IsPreferenceManagedByCustodian(
-    const std::string& pref_name) const {
-  const Preference* pref = FindPreference(pref_name);
+bool PrefService::IsPreferenceManagedByCustodian(std::string_view path) const {
+  const Preference* pref = FindPreference(path);
   return pref && pref->IsManagedByCustodian();
 }
 
-bool PrefService::IsUserModifiablePreference(
-    const std::string& pref_name) const {
-  const Preference* pref = FindPreference(pref_name);
+bool PrefService::IsUserModifiablePreference(std::string_view path) const {
+  const Preference* pref = FindPreference(path);
   return pref && pref->IsUserModifiable();
 }
 
