@@ -65,6 +65,7 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
@@ -173,6 +174,23 @@ public class BottomSheetControllerTest {
                 "The bottom sheet is showing incorrect content.",
                 mLowPriorityContent,
                 mSheetController.getCurrentSheetContent());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"BottomSheetController"})
+    public void testSheetPeek_hideKeyboard() {
+        KeyboardVisibilityDelegate keyboardDelegate = KeyboardVisibilityDelegate.getInstance();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> keyboardDelegate.showKeyboard(mActivity.getTabsView()));
+        requestContentInSheet(mLowPriorityContent, true);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        assertFalse(
+                                keyboardDelegate.isKeyboardShowing(
+                                        mActivity, mActivity.getTabsView())));
+        BottomSheetTestSupport.waitForContentChange(mSheetController, mLowPriorityContent);
+        BottomSheetTestSupport.waitForState(mSheetController, SheetState.PEEK);
     }
 
     @Test

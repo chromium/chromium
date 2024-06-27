@@ -102,6 +102,8 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
 
     private Supplier<Integer> mEdgeToEdgeBottomInsetSupplier;
 
+    private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
+
     /**
      * Build a new controller of the bottom sheet.
      *
@@ -127,6 +129,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         mSuppressionTokens = new TokenHolder(() -> onSuppressionTokensChanged());
         mAlwaysFullWidth = alwaysFullWidth;
         mEdgeToEdgeBottomInsetSupplier = edgeToEdgeBottomInsetSupplier;
+        mKeyboardVisibilityDelegate = keyboardDelegate;
         mSheetInitializer =
                 () -> {
                     initializeSheet(initializedCallback, window, keyboardDelegate, root);
@@ -597,6 +600,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                     .removeObserver(mContentBackPressStateChangedObserver);
         }
         if (nextContent != null) {
+            mKeyboardVisibilityDelegate.hideKeyboard(mBottomSheetContainer);
             mContentBackPressStateChangedObserver =
                     (contentWillHandleBackPress) -> updateBackPressStateChangedSupplier();
             nextContent
