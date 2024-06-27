@@ -9,6 +9,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.times;
@@ -22,7 +23,10 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.UNINITIALIZED;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
 
 import android.app.Activity;
@@ -122,29 +126,31 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testCreatesValidDefaultPropertyModel() {
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE), is(false));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN), is(UNINITIALIZED));
+        assertNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
+        assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(DISMISS_HANDLER));
+    }
+
+    @Test
+    public void testCreatesModelForFopSelectorScreen() {
+        mCoordinator.showSheet(List.of(BANK_ACCOUNT_1));
+
+        // Verify that the bottom sheet model is updated to show the FOP selector.
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE), is(true));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN), is(FOP_SELECTOR));
         assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
         assertNotNull(
                 mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS));
-        ModelList itemList =
-                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
-        assertThat(itemList.size(), is(0));
-        assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(DISMISS_HANDLER));
-        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE), is(false));
     }
 
     @Test
     public void testBankAccountsShown() {
-        assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
-        assertNotNull(
-                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS));
-        ModelList itemList =
-                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
-        assertThat(itemList.size(), is(0));
-        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE), is(false));
-
         mCoordinator.showSheet(List.of(BANK_ACCOUNT_1, BANK_ACCOUNT_2));
 
-        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE), is(true));
+        // Verify the screen contents set in the model when 2 bank accounts exist.
+        ModelList itemList =
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
         assertThat(itemList.size(), is(4));
         assertEquals(itemList.get(0).type, HEADER);
         assertEquals(itemList.get(1).type, BANK_ACCOUNT);
@@ -153,9 +159,10 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    public void testSingleBankAccountsShown() {
+    public void testSingleBankAccountShown() {
         mCoordinator.showSheet(List.of(BANK_ACCOUNT_1));
 
+        // Verify the screen contents set in the model when only 1 bank account exists.
         ModelList itemList =
                 mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
         assertThat(itemList.size(), is(4));

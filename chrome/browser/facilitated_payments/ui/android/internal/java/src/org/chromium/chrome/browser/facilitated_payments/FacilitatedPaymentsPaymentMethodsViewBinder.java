@@ -14,7 +14,10 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.DESCRIPTION_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.TITLE_ID;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.UNINITIALIZED;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
 
 import android.view.LayoutInflater;
@@ -44,13 +47,27 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
             PropertyModel model,
             FacilitatedPaymentsPaymentMethodsView view,
             PropertyKey propertyKey) {
-        if (propertyKey == DISMISS_HANDLER) {
-            view.setDismissHandler(model.get(DISMISS_HANDLER));
-        } else if (propertyKey == VISIBLE) {
+        if (propertyKey == VISIBLE) {
             view.setVisible(model.get(VISIBLE));
+        } else if (propertyKey == SCREEN) {
+            switch (model.get(SCREEN)) {
+                case FOP_SELECTOR:
+                    {
+                        FacilitatedPaymentsSequenceView fop_selector_screen =
+                                new FacilitatedPaymentsFopSelectorScreen();
+                        fop_selector_screen.setupView(view.getScreenHolder());
+                        view.setNextScreen(fop_selector_screen);
+                        model.set(SCREEN_VIEW_MODEL, fop_selector_screen.getModel());
+                        break;
+                    }
+                default:
+                    assert model.get(SCREEN) == UNINITIALIZED : "Undefined screen type.";
+            }
+            // This property contains the model to manipulate the {@link #SCREEN} view. No need to
+            // update the {@code view} for this property. Intentional fall-through.
         } else if (propertyKey == SCREEN_VIEW_MODEL) {
-            // When a new screen is to be shown, its model is saved in this property. There's no
-            // need to update the bottom sheet for this property. Intentional fall-through.
+        } else if (propertyKey == DISMISS_HANDLER) {
+            view.setDismissHandler(model.get(DISMISS_HANDLER));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

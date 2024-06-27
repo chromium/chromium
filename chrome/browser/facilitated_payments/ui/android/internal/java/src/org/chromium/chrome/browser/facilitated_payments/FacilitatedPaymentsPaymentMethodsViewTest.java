@@ -11,7 +11,9 @@ import static org.hamcrest.Matchers.is;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FopSelectorProperties.SCREEN_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
@@ -96,10 +98,15 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         mMediator = new FacilitatedPaymentsPaymentMethodsMediator();
         runOnUiThreadBlocking(
                 () -> {
+                    mModel =
+                            new PropertyModel.Builder(
+                                            FacilitatedPaymentsPaymentMethodsProperties.ALL_KEYS)
+                                    .with(VISIBLE, false)
+                                    .with(SCREEN, FOP_SELECTOR)
+                                    .build();
                     mView =
                             new FacilitatedPaymentsPaymentMethodsView(
                                     mActivityTestRule.getActivity(), mBottomSheetController);
-                    mModel = createFacilitatedPaymentsPaymentMethodsModel(mView);
                     PropertyModelChangeProcessor.create(
                             mModel,
                             mView,
@@ -134,12 +141,12 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                             .add(
                                     new ListItem(
                                             BANK_ACCOUNT, createBankAccountModel(BANK_ACCOUNT_1)));
-                    mModel.set(VISIBLE, true);
                     mModel.get(SCREEN_VIEW_MODEL)
                             .get(SCREEN_ITEMS)
                             .add(
                                     new ListItem(
                                             BANK_ACCOUNT, createBankAccountModel(BANK_ACCOUNT_2)));
+                    mModel.set(VISIBLE, true);
                 });
 
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -191,14 +198,6 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
         TextView buttonText = mView.getContentView().findViewById(R.id.touch_to_fill_button_title);
         assertThat(buttonText.getText(), is("Continue"));
-    }
-
-    private PropertyModel createFacilitatedPaymentsPaymentMethodsModel(
-            FacilitatedPaymentsPaymentMethodsView view) {
-        return new PropertyModel.Builder(FacilitatedPaymentsPaymentMethodsProperties.ALL_KEYS)
-                .with(VISIBLE, false)
-                .with(SCREEN_VIEW_MODEL, view.getCurrentScreen().getModel())
-                .build();
     }
 
     private PropertyModel createBankAccountModel(BankAccount bankAccount) {

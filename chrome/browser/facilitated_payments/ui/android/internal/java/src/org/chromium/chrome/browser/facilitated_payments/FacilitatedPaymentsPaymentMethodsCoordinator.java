@@ -5,7 +5,8 @@
 package org.chromium.chrome.browser.facilitated_payments;
 
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.DISMISS_HANDLER;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.UNINITIALIZED;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
 
 import android.content.Context;
@@ -36,13 +37,11 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
             BottomSheetController bottomSheetController,
             Delegate delegate,
             Profile profile) {
-        FacilitatedPaymentsPaymentMethodsView view =
-                new FacilitatedPaymentsPaymentMethodsView(context, bottomSheetController);
-        // TODO(b/348142774): Undo temporary change when FacilitatedPaymentsPaymentMethodsViewBinder
-        // is able to get the model from the screen to be shown.
-        mFacilitatedPaymentsPaymentMethodsModel = createModel(mMediator, view);
+        mFacilitatedPaymentsPaymentMethodsModel = createModel(mMediator);
         mMediator.initialize(context, mFacilitatedPaymentsPaymentMethodsModel, delegate, profile);
-        setUpModelChangeProcessors(mFacilitatedPaymentsPaymentMethodsModel, view);
+        setUpModelChangeProcessors(
+                mFacilitatedPaymentsPaymentMethodsModel,
+                new FacilitatedPaymentsPaymentMethodsView(context, bottomSheetController));
     }
 
     @Override
@@ -67,12 +66,10 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
                         ::bindFacilitatedPaymentsPaymentMethodsView);
     }
 
-    PropertyModel createModel(
-            FacilitatedPaymentsPaymentMethodsMediator mediator,
-            FacilitatedPaymentsPaymentMethodsView view) {
+    PropertyModel createModel(FacilitatedPaymentsPaymentMethodsMediator mediator) {
         return new PropertyModel.Builder(FacilitatedPaymentsPaymentMethodsProperties.ALL_KEYS)
                 .with(VISIBLE, false)
-                .with(SCREEN_VIEW_MODEL, view.getCurrentScreen().getModel())
+                .with(SCREEN, UNINITIALIZED)
                 .with(DISMISS_HANDLER, mediator::onDismissed)
                 .build();
     }

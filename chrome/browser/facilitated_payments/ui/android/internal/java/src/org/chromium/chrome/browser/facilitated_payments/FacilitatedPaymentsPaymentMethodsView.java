@@ -30,8 +30,11 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
     // Holds the screens to be displayed in the bottom sheet. To show different screens, simply swap
     // the view contained. Does not include the drag handler.
     private final FrameLayout mScreenHolder;
-    private final FacilitatedPaymentsSequenceView mCurrentScreen;
     private final BottomSheetController mBottomSheetController;
+    // The screen currently being shown.
+    private FacilitatedPaymentsSequenceView mCurrentScreen;
+    // The new screen to be shown replacing {@link #mCurrentScreen}.
+    private FacilitatedPaymentsSequenceView mNextScreen;
     private Callback<Integer> mDismissHandler;
 
     private final BottomSheetObserver mBottomSheetObserver =
@@ -60,9 +63,6 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
                         LayoutInflater.from(context)
                                 .inflate(R.layout.facilitated_payments_sequence_view, null);
         mScreenHolder = (FrameLayout) mView.findViewById(R.id.screen_holder);
-        mCurrentScreen = new FacilitatedPaymentsFopSelectorScreen();
-        mCurrentScreen.setupView(mScreenHolder);
-        mScreenHolder.addView(mCurrentScreen.getView());
 
         // Apply RTL layout changes.
         int layoutDirection =
@@ -78,15 +78,30 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
      * @param isVisible A boolean describing whether to show or hide the sheet.
      * @return True if the request was successful, false otherwise
      */
-    public boolean setVisible(boolean isVisible) {
+    boolean setVisible(boolean isVisible) {
         if (isVisible) {
-            mBottomSheetController.addObserver(mBottomSheetObserver);
-            if (!mBottomSheetController.requestShowContent(this, /* animate= */ true)) {
-                mBottomSheetController.removeObserver(mBottomSheetObserver);
-                return false;
+            // If the bottom sheet is already showing a screen, replace it with {@link
+            // #mNextScreen}. Else, open the bottom sheet and show the {@link mNextScreen}.
+            if (mBottomSheetController.isSheetOpen()) {
+                assert (mCurrentScreen != null && mNextScreen != null);
+                mScreenHolder.addView(mNextScreen.getView());
+                mScreenHolder.removeView(mCurrentScreen.getView());
+            } else {
+                assert mCurrentScreen == null;
+                mBottomSheetController.addObserver(mBottomSheetObserver);
+                mScreenHolder.addView(mNextScreen.getView());
+                if (!mBottomSheetController.requestShowContent(this, /* animate= */ true)) {
+                    mBottomSheetController.removeObserver(mBottomSheetObserver);
+                    mNextScreen = null;
+                    return false;
+                }
             }
+            // Update the reference for {@link mCurrentScreen} to the current screen being shown.
+            mCurrentScreen = mNextScreen;
+            mNextScreen = null;
         } else {
             mBottomSheetController.hideContent(this, true);
+            mCurrentScreen = null;
         }
         return true;
     }
@@ -96,17 +111,24 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
      *
      * @param dismissHandler A {@link Callback<Integer>}.
      */
-    public void setDismissHandler(Callback<Integer> dismissHandler) {
+    void setDismissHandler(Callback<Integer> dismissHandler) {
         mDismissHandler = dismissHandler;
     }
 
-    // TODO(b/348142774): Undo temporary change when FacilitatedPaymentsPaymentMethodsViewBinder is
-    // able to get the model from the screen to be shown.
     /**
-     * @return The screen currently being shown in the bottom sheet.
+     * @return {@link #mScreenHolder}, the parent view where the screen to be shown is added.
      */
-    public FacilitatedPaymentsSequenceView getCurrentScreen() {
-        return mCurrentScreen;
+    FrameLayout getScreenHolder() {
+        return mScreenHolder;
+    }
+
+    /**
+     * Sets the screen to be shown in the bottom sheet.
+     *
+     * @param nextScreen The screen to be shown.
+     */
+    void setNextScreen(FacilitatedPaymentsSequenceView nextScreen) {
+        mNextScreen = nextScreen;
     }
 
     @Override

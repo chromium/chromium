@@ -16,7 +16,9 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.TITLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
 
 import android.content.Context;
@@ -67,19 +69,20 @@ class FacilitatedPaymentsPaymentMethodsMediator {
             return false;
         }
 
-        ModelList sheetItems = mModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
-        sheetItems.clear();
+        mModel.set(SCREEN, FOP_SELECTOR);
+        ModelList screenItems = mModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
+        screenItems.clear();
 
         for (BankAccount bankAccount : bankAccounts) {
             final PropertyModel model = createBankAccountModel(mContext, bankAccount);
-            sheetItems.add(new ListItem(BANK_ACCOUNT, model));
+            screenItems.add(new ListItem(BANK_ACCOUNT, model));
         }
 
-        sheetItems.add(buildAdditionalInfo());
+        screenItems.add(buildAdditionalInfo());
 
-        maybeShowContinueButton(sheetItems);
+        maybeShowContinueButton(screenItems);
 
-        sheetItems.add(0, buildHeader());
+        screenItems.add(0, buildHeader());
 
         mModel.set(VISIBLE, true);
         mInputProtector.markShowTime();
@@ -176,20 +179,20 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         }
     }
 
-    private void maybeShowContinueButton(ModelList sheetItems) {
-        if (StreamSupport.stream(sheetItems.spliterator(), false)
+    private void maybeShowContinueButton(ModelList screenItems) {
+        if (StreamSupport.stream(screenItems.spliterator(), false)
                         .filter(item -> item.type == BANK_ACCOUNT)
                         .count()
                 != 1) {
             return;
         }
         PropertyModel model =
-                StreamSupport.stream(sheetItems.spliterator(), false)
+                StreamSupport.stream(screenItems.spliterator(), false)
                         .filter(item -> item.type == BANK_ACCOUNT)
                         .findFirst()
                         .get()
                         .model;
-        sheetItems.add(new ListItem(CONTINUE_BUTTON, model));
+        screenItems.add(new ListItem(CONTINUE_BUTTON, model));
     }
 
     void setInputProtectorForTesting(InputProtector inputProtector) {

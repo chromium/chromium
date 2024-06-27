@@ -13,6 +13,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /**
@@ -21,12 +22,13 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
  */
 class FacilitatedPaymentsPaymentMethodsProperties {
     static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey("visible");
+    static final WritableIntPropertyKey SCREEN = new WritableIntPropertyKey("screen");
     static final WritableObjectPropertyKey<PropertyModel> SCREEN_VIEW_MODEL =
             new WritableObjectPropertyKey("screen_view_model");
     static final ReadableObjectPropertyKey<Callback<Integer>> DISMISS_HANDLER =
             new ReadableObjectPropertyKey<>("dismiss_handler");
 
-    static final PropertyKey[] ALL_KEYS = {VISIBLE, SCREEN_VIEW_MODEL, DISMISS_HANDLER};
+    static final PropertyKey[] ALL_KEYS = {VISIBLE, SCREEN, SCREEN_VIEW_MODEL, DISMISS_HANDLER};
 
     // TODO: b/348595414 - Rename to FopSelectorItemType and move to a separate directory.
     @interface ItemType {
@@ -45,6 +47,14 @@ class FacilitatedPaymentsPaymentMethodsProperties {
 
         // A footer section containing additional actions.
         int FOOTER = 3;
+    }
+
+    // The type of user visible screens that can be shown in the Facilitated Payments bottom sheet.
+    @interface SequenceScreen {
+        // No screen should be assigned 0 because {@link WritableIntPropertyKey} defaults to 0.
+        int UNINITIALIZED = 0;
+        // The screen showing the user's payment instruments.
+        int FOP_SELECTOR = 1;
     }
 
     /**
