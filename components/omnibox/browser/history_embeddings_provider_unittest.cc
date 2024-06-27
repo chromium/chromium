@@ -130,10 +130,11 @@ TEST_F(HistoryEmbeddingsProviderTest, Start) {
       .Times(0);
   history_embeddings_provider_->Start(long_input, false);
 
-  base::test::ScopedFeatureList enabled_feature{
-      history_embeddings::kHistoryEmbeddings};
-
   // Short queries should be blocked.
+  base::test::ScopedFeatureList enabled_feature;
+  enabled_feature.InitAndEnableFeatureWithParameters(
+      history_embeddings::kHistoryEmbeddings,
+      {{history_embeddings::kSearchQueryMinimumWordCount.name, "3"}});
   EXPECT_CALL(history_embeddings_service_,
               Search(testing::_, testing::_, testing::_, testing::_))
       .Times(0);
@@ -229,8 +230,10 @@ TEST_F(HistoryEmbeddingsProviderTest,
 
 TEST_F(HistoryEmbeddingsProviderTest,
        Start_MultipleParallelSearchesWithIneligibleQuery) {
-  base::test::ScopedFeatureList enabled_feature{
-      history_embeddings::kHistoryEmbeddings};
+  base::test::ScopedFeatureList enabled_feature;
+  enabled_feature.InitAndEnableFeatureWithParameters(
+      history_embeddings::kHistoryEmbeddings,
+      {{history_embeddings::kSearchQueryMinimumWordCount.name, "3"}});
 
   // Start 1st search.
   history_embeddings_provider_->Start(CreateAutocompleteInput(u"1 1 1"), false);

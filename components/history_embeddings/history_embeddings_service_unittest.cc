@@ -32,6 +32,32 @@
 
 namespace history_embeddings {
 
+class HistoryEmbeddingsServicePublic : public HistoryEmbeddingsService {
+ public:
+  HistoryEmbeddingsServicePublic(
+      history::HistoryService* history_service,
+      page_content_annotations::PageContentAnnotationsService*
+          page_content_annotations_service,
+      optimization_guide::OptimizationGuideModelProvider*
+          optimization_guide_model_provider,
+      PassageEmbeddingsServiceController* service_controller,
+      os_crypt_async::OSCryptAsync* os_crypt_async)
+      : HistoryEmbeddingsService(history_service,
+                                 page_content_annotations_service,
+                                 optimization_guide_model_provider,
+                                 service_controller,
+                                 os_crypt_async) {}
+
+  using HistoryEmbeddingsService::Storage;
+
+  using HistoryEmbeddingsService::OnPassagesEmbeddingsComputed;
+  using HistoryEmbeddingsService::OnSearchCompleted;
+
+  using HistoryEmbeddingsService::answerer_;
+  using HistoryEmbeddingsService::embedder_metadata_;
+  using HistoryEmbeddingsService::storage_;
+};
+
 class HistoryEmbeddingsServiceTest : public testing::Test {
  public:
   void SetUp() override {
@@ -57,7 +83,7 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
             optimization_guide_model_provider_.get(), history_service_.get());
     CHECK(page_content_annotations_service_);
 
-    service_ = std::make_unique<HistoryEmbeddingsService>(
+    service_ = std::make_unique<HistoryEmbeddingsServicePublic>(
         history_service_.get(), page_content_annotations_service_.get(),
         optimization_guide_model_provider_.get(),
         /*service_controller=*/nullptr, os_crypt_.get());
@@ -89,7 +115,7 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
     size_t result = 0;
     base::RunLoop loop;
     service_->storage_.PostTaskWithThisObject(base::BindLambdaForTesting(
-        [&](HistoryEmbeddingsService::Storage* storage) {
+        [&](HistoryEmbeddingsServicePublic::Storage* storage) {
           std::unique_ptr<SqlDatabase::EmbeddingsIterator> iterator =
               storage->sql_database.MakeEmbeddingsIterator({});
           if (!iterator) {
@@ -141,7 +167,7 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
   std::unique_ptr<page_content_annotations::TestPageContentAnnotationsService>
       page_content_annotations_service_;
   page_content_annotations::TestPageContentAnnotator page_content_annotator_;
-  std::unique_ptr<HistoryEmbeddingsService> service_;
+  std::unique_ptr<HistoryEmbeddingsServicePublic> service_;
 };
 
 TEST_F(HistoryEmbeddingsServiceTest, ConstructsAndInvalidatesWeakPtr) {
@@ -209,45 +235,54 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchReportsHistograms) {
 }
 
 TEST_F(HistoryEmbeddingsServiceTest, SearchUsesCorrectThresholds) {
-  AddTestHistoryPage("http://test1.com");
-  AddTestHistoryPage("http://test2.com");
-  OnPassagesEmbeddingsComputed(UrlPassages(1, 1, base::Time::Now()),
-                               {"test passage 1"},
-                               {Embedding(std::vector<float>(768, 1.0f))},
-                               ComputeEmbeddingsStatus::SUCCESS);
-  OnPassagesEmbeddingsComputed(UrlPassages(2, 2, base::Time::Now()),
-                               {"test passage 2"},
-                               {Embedding(std::vector<float>(768, 0.01f))},
-                               ComputeEmbeddingsStatus::SUCCESS);
   OverrideVisibilityScoresForTesting({
-      {"test query 1", 0.99},
-      {"test query 2", 0.99},
-      {"test passage 1", 0.99},
-      {"test passage 2", 0.99},
+      {"passage", 1},
   });
 
+  auto create_scored_url = [&](history::VisitID visit_id, float score) {
+    AddTestHistoryPage("http://test.com");
+    ScoredUrl scored_url{1, visit_id, {}, score, 0, {}};
+    scored_url.passage = "passage";
+    return scored_url;
+  };
+  std::vector<ScoredUrl> scored_urls = {
+      create_scored_url(1, 1),
+      create_scored_url(2, .8),
+      create_scored_url(3, .6),
+      create_scored_url(4, .4),
+  };
+
+  // Should default to .9 when neither the feature param nor metadata thresholds
+  // are set.
   base::test::TestFuture<SearchResult> future;
-  // Search using default threshold from feature param.
-  service_->Search("test query 1", {}, 2, future.GetCallback());
+  service_->OnSearchCompleted(future.GetCallback(), {}, scored_urls);
   SearchResult result = future.Take();
+  ASSERT_EQ(result.scored_url_rows.size(), 1u);
+  EXPECT_EQ(result.scored_url_rows[0].scored_url.visit_id, 1);
 
-  EXPECT_EQ(result.query, "test query 1");
-  EXPECT_EQ(result.time_range_start, std::nullopt);
-  EXPECT_EQ(result.count, 2u);
-  EXPECT_EQ(result.scored_url_rows.size(), 1u);
-  EXPECT_EQ(result.scored_url_rows[0].scored_url.url_id, 1);
-
-  // Search again using threshold from metadata.
-  SetMetadataScoreThreshold(0.01);
-  service_->Search("test query 2", {}, 2, future.GetCallback());
+  // Should use the metadata threshold when it's set.
+  SetMetadataScoreThreshold(0.7);
+  service_->OnSearchCompleted(future.GetCallback(), {}, scored_urls);
   result = future.Take();
+  ASSERT_EQ(result.scored_url_rows.size(), 2u);
+  EXPECT_EQ(result.scored_url_rows[0].scored_url.visit_id, 1);
+  EXPECT_EQ(result.scored_url_rows[1].scored_url.visit_id, 2);
 
-  EXPECT_EQ(result.query, "test query 2");
-  EXPECT_EQ(result.time_range_start, std::nullopt);
-  EXPECT_EQ(result.count, 2u);
-  EXPECT_EQ(result.scored_url_rows.size(), 2u);
-  EXPECT_EQ(result.scored_url_rows[0].scored_url.url_id, 1);
-  EXPECT_EQ(result.scored_url_rows[1].scored_url.url_id, 2);
+  // Should use the feature param threshold when it's set, even if the metadata
+  // is also set.
+  feature_list_.Reset();
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kHistoryEmbeddings, {
+                              {"UseMlEmbedder", "false"},
+                              {"SearchPassageMinimumWordCount", "3"},
+                              {"SearchScoreThreshold", "0.5"},
+                          });
+  service_->OnSearchCompleted(future.GetCallback(), {}, scored_urls);
+  result = future.Take();
+  ASSERT_EQ(result.scored_url_rows.size(), 3u);
+  EXPECT_EQ(result.scored_url_rows[0].scored_url.visit_id, 1);
+  EXPECT_EQ(result.scored_url_rows[1].scored_url.visit_id, 2);
+  EXPECT_EQ(result.scored_url_rows[2].scored_url.visit_id, 3);
 }
 
 TEST_F(HistoryEmbeddingsServiceTest, SearchFiltersLowScoringResults) {

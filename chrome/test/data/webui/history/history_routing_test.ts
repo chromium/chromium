@@ -301,6 +301,7 @@ suite(`routing-test-with-history-embeddings-enabled`, () => {
     BrowserProxyImpl.setInstance(new TestBrowserProxy());
     MetricsProxyImpl.setInstance(new TestMetricsProxy());
     const handler = TestMock.fromClass(HistoryEmbeddingsPageHandlerRemote);
+    handler.setResultFor('search', new Promise(() => {}));
     HistoryEmbeddingsBrowserProxyImpl.setInstance(
         new HistoryEmbeddingsBrowserProxyImpl(handler));
 

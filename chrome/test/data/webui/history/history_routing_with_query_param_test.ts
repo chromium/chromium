@@ -5,10 +5,11 @@
 import 'chrome://history/history.js';
 
 import type {HistoryAppElement} from 'chrome://history/history.js';
-import {BrowserServiceImpl} from 'chrome://history/history.js';
+import {BrowserServiceImpl, HistoryEmbeddingsBrowserProxyImpl, HistoryEmbeddingsPageHandlerRemote} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {TestBrowserService} from './test_browser_service.js';
 import {createHistoryInfo, navigateTo} from './test_util.js';
@@ -17,6 +18,8 @@ suite('routing-with-query-param', function() {
   let app: HistoryAppElement;
   let expectedQuery: string;
   let testService: TestBrowserService;
+  let embeddingsHandler: TestMock<HistoryEmbeddingsPageHandlerRemote>&
+      HistoryEmbeddingsPageHandlerRemote;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -31,6 +34,13 @@ suite('routing-with-query-param', function() {
       info: createHistoryInfo('query'),
       value: [],
     });
+
+    embeddingsHandler = TestMock.fromClass(HistoryEmbeddingsPageHandlerRemote);
+    HistoryEmbeddingsBrowserProxyImpl.setInstance(
+        new HistoryEmbeddingsBrowserProxyImpl(embeddingsHandler));
+    embeddingsHandler.setResultFor(
+        'search', Promise.resolve({result: {items: []}}));
+
     app = document.createElement('history-app');
     document.body.appendChild(app);
     expectedQuery = 'query';
