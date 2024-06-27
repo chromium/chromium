@@ -41,6 +41,9 @@
           # https://crbug.com/1289764
           '--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*',
         ],
+        'swarming': {
+          'shards': 4,
+        },
       },
       'android-12-x64-rel': {
         # TODO(crbug.com/40188616): Remove experiment and ci_only
