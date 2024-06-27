@@ -348,6 +348,7 @@ include_rules = [
   "+components/subresource_filter/content/shared/browser",
   "+components/subresource_filter/content/browser",
   "+components/fingerprinting_protection_filter/browser",
+  "+components/fingerprinting_protection_filter/common",
   "+components/subresource_filter/content/mojom",
   "+components/subresource_filter/core/browser",
   "+components/subresource_filter/core/common",

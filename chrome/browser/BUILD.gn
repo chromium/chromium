@@ -2243,6 +2243,7 @@ static_library("browser") {
     "//components/filename_generation",
     "//components/find_in_page",
     "//components/fingerprinting_protection_filter/browser",
+    "//components/fingerprinting_protection_filter/common",
     "//components/flags_ui",
     "//components/gcm_driver",
     "//components/handoff",

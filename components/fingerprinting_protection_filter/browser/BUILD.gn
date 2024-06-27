@@ -10,8 +10,6 @@ if (use_blink) {
     sources = [
       "fingerprinting_protection_child_navigation_throttle.cc",
       "fingerprinting_protection_child_navigation_throttle.h",
-      "fingerprinting_protection_filter_constants.cc",
-      "fingerprinting_protection_filter_constants.h",
       "fingerprinting_protection_observer.h",
       "fingerprinting_protection_page_activation_throttle.cc",
       "fingerprinting_protection_page_activation_throttle.h",
@@ -23,10 +21,11 @@ if (use_blink) {
       "throttle_manager.h",
     ]
     public_deps = [
-      ":features",
       "//base",
       "//components/content_settings/core/browser:cookie_settings",
       "//components/content_settings/core/common:common",
+      "//components/fingerprinting_protection_filter/common:common",
+      "//components/fingerprinting_protection_filter/common:features",
       "//components/privacy_sandbox:tracking_protection_settings",
       "//components/subresource_filter/content/shared/browser",
       "//components/subresource_filter/content/shared/common",
@@ -41,17 +40,6 @@ if (use_blink) {
       "//net",
       "//url",
     ]
-  }
-
-  component("features") {
-    output_name = "fingerprinting_protection_filter_features"
-    defines = [ "IS_FINGERPRINTING_PROTECTION_FILTER_FEATURES_IMPL" ]
-    sources = [
-      "fingerprinting_protection_filter_features.cc",
-      "fingerprinting_protection_filter_features.h",
-    ]
-    public_deps = [ "//base" ]
-    deps = [ "//components/subresource_filter/core/mojom" ]
   }
 
   source_set("test_support") {
