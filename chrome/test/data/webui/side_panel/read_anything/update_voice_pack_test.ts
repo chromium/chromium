@@ -7,7 +7,6 @@ import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js'
 import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {convertLangOrLocaleForVoicePackManager, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createAndSetVoices, createSpeechSynthesisVoice, setVoices} from './common.js';
@@ -18,15 +17,6 @@ import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.j
 suite('UpdateVoicePack', () => {
   let app: ReadAnythingElement;
   let speechSynthesis: FakeSpeechSynthesis;
-
-  function getVoicePackServerInstallStatus(lang: string): VoicePackStatus {
-    const convertedLang: string|undefined =
-        convertLangOrLocaleForVoicePackManager(lang);
-    const serverStatus =
-        app.voicePackInstallStatusServerResponses[convertedLang!];
-    assertFalse(serverStatus === undefined);
-    return serverStatus!;
-  }
 
   function setNaturalVoicesForLang(lang: string) {
     createAndSetVoices(app, speechSynthesis, [
@@ -64,16 +54,15 @@ suite('UpdateVoicePack', () => {
         chrome.readingMode.baseLanguageForSpeech = lang;
         app.$.toolbar.updateFonts = () => {};
         app.languageChanged();
-
         const voicePackLang = convertLangOrLocaleForVoicePackManager(lang)!;
 
         app.updateVoicePackStatus(voicePackLang, 'kNotInstalled');
 
+        const serverStatus =
+            app.getVoicePackStatusForTesting(voicePackLang).server;
         assertEquals(
-            getVoicePackServerInstallStatus(voicePackLang).code,
-            VoicePackServerStatusSuccessCode.NOT_INSTALLED);
-        assertEquals(
-            'Successful response', getVoicePackServerInstallStatus(lang).id);
+            serverStatus.code, VoicePackServerStatusSuccessCode.NOT_INSTALLED);
+        assertEquals('Successful response', serverStatus.id);
         assertEquals(voicePackLang, sentInstallRequestFor);
       });
     });
@@ -160,14 +149,12 @@ suite('UpdateVoicePack', () => {
 
         app.updateVoicePackStatus(lang, 'kInstalled');
 
+        const status = app.getVoicePackStatusForTesting(lang);
         assertEquals(
-            getVoicePackServerInstallStatus(lang).code,
-            VoicePackServerStatusSuccessCode.INSTALLED);
+            status.server.code, VoicePackServerStatusSuccessCode.INSTALLED);
+        assertEquals('Successful response', status.server.id);
         assertEquals(
-            'Successful response', getVoicePackServerInstallStatus(lang).id);
-        assertEquals(
-            app.getVoicePackLocalStatus(lang),
-            VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
+            status.client, VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
       });
 
   test(
@@ -179,12 +166,11 @@ suite('UpdateVoicePack', () => {
         // only has english voices.
         app.updateVoicePackStatus(lang, 'kInstalled');
 
+        const status = app.getVoicePackStatusForTesting(lang);
         assertEquals(
-            getVoicePackServerInstallStatus(lang).code,
-            VoicePackServerStatusSuccessCode.INSTALLED);
+            status.server.code, VoicePackServerStatusSuccessCode.INSTALLED);
         assertEquals(
-            app.getVoicePackLocalStatus(lang),
-            VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
+            status.client, VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
       });
 
   test('installed if non-natural voices are in the list for this lang', () => {
@@ -192,14 +178,12 @@ suite('UpdateVoicePack', () => {
 
     app.updateVoicePackStatus(lang, 'kInstalled');
 
+    const status = app.getVoicePackStatusForTesting(lang);
     assertEquals(
-        getVoicePackServerInstallStatus(lang).code,
-        VoicePackServerStatusSuccessCode.INSTALLED);
+        status.server.code, VoicePackServerStatusSuccessCode.INSTALLED);
+    assertEquals('Successful response', status.server.id);
     assertEquals(
-        'Successful response', getVoicePackServerInstallStatus(lang).id);
-    assertEquals(
-        app.getVoicePackLocalStatus(lang),
-        VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
+        status.client, VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
   });
 
   test(
@@ -212,14 +196,11 @@ suite('UpdateVoicePack', () => {
 
         app.updateVoicePackStatus(lang, 'kInstalled');
 
+        const status = app.getVoicePackStatusForTesting(lang);
         assertEquals(
-            getVoicePackServerInstallStatus(lang).code,
-            VoicePackServerStatusSuccessCode.INSTALLED);
-        assertEquals(
-            'Successful response', getVoicePackServerInstallStatus(lang).id);
-        assertEquals(
-            app.getVoicePackLocalStatus(lang),
-            VoiceClientSideStatusCode.AVAILABLE);
+            status.server.code, VoicePackServerStatusSuccessCode.INSTALLED);
+        assertEquals('Successful response', status.server.id);
+        assertEquals(status.client, VoiceClientSideStatusCode.AVAILABLE);
       });
 
   test(
@@ -229,14 +210,12 @@ suite('UpdateVoicePack', () => {
 
         app.updateVoicePackStatus(lang, 'kInstalled');
 
+        const status = app.getVoicePackStatusForTesting(lang);
         assertEquals(
-            getVoicePackServerInstallStatus(lang).code,
-            VoicePackServerStatusSuccessCode.INSTALLED);
+            status.server.code, VoicePackServerStatusSuccessCode.INSTALLED);
+        assertEquals('Successful response', status.server.id);
         assertEquals(
-            'Successful response', getVoicePackServerInstallStatus(lang).id);
-        assertEquals(
-            app.getVoicePackLocalStatus(lang),
-            VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
+            status.client, VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
       });
 
   test(
@@ -254,14 +233,11 @@ suite('UpdateVoicePack', () => {
 
         // Confirm that updateVoicePackStatus refreshes the voice list and marks
         // the language as available
+        const status = app.getVoicePackStatusForTesting(lang);
         assertEquals(
-            getVoicePackServerInstallStatus(lang).code,
-            VoicePackServerStatusSuccessCode.INSTALLED);
-        assertEquals(
-            'Successful response', getVoicePackServerInstallStatus(lang).id);
-        assertEquals(
-            app.getVoicePackLocalStatus(lang),
-            VoiceClientSideStatusCode.AVAILABLE);
+            status.server.code, VoicePackServerStatusSuccessCode.INSTALLED);
+        assertEquals('Successful response', status.server.id);
+        assertEquals(status.client, VoiceClientSideStatusCode.AVAILABLE);
         assertTrue(app.getVoices().some(v => v.lang.toLowerCase() === lang));
         assertTrue(!!app.selectedVoice);
       });
@@ -311,16 +287,14 @@ suite('UpdateVoicePack', () => {
 
   test('with error code marks the status', () => {
     const lang = 'en-us';
-    app.updateVoicePackStatus(lang, 'kOther');
-    assertEquals(
-        getVoicePackServerInstallStatus(lang).code,
-        VoicePackServerStatusErrorCode.OTHER);
-    assertEquals(
-        'Unsuccessful response', getVoicePackServerInstallStatus(lang).id);
 
-    assertEquals(
-        app.getVoicePackLocalStatus(lang),
-        VoiceClientSideStatusCode.ERROR_INSTALLING);
+    app.updateVoicePackStatus(lang, 'kOther');
+
+    const status = app.getVoicePackStatusForTesting(lang);
+    assertEquals(status.server.code, VoicePackServerStatusErrorCode.OTHER);
+    assertEquals('Unsuccessful response', status.server.id);
+
+    assertEquals(status.client, VoiceClientSideStatusCode.ERROR_INSTALLING);
   });
 
   suite('updateVoicePackStatusFromInstallResponse', () => {

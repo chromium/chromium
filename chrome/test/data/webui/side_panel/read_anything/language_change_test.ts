@@ -10,7 +10,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechSynthesisVoice, setVoices, suppressInnocuousErrors} from './common.js';
@@ -67,10 +67,7 @@ suite('LanguageChanged', () => {
   }
 
   function setInstalled(lang: string) {
-    app.voicePackInstallStatusServerResponses[lang] = {
-      id: 'Successful response',
-      code: VoicePackServerStatusSuccessCode.INSTALLED,
-    };
+    app.updateVoicePackStatus(lang, 'kInstalled');
   }
 
   setup(() => {
@@ -299,10 +296,7 @@ suite('LanguageChanged', () => {
       const voicePackLang = convertLangOrLocaleForVoicePackManager(lang);
       assertTrue(voicePackLang !== undefined);
 
-      app.setVoicePackServerStatus(voicePackLang, {
-        id: 'Successful response',
-        code: VoicePackServerStatusSuccessCode.INSTALLING,
-      });
+      app.updateVoicePackStatus(lang, 'kInstalling');
       app.languageChanged();
 
       assertFalse(sentRequest);

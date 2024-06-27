@@ -244,13 +244,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   // Our local representation of the status of voice pack downloads and
   // availability
-  private voiceStatusLocalState:
+  private voiceStatusLocalState_:
       {[language: string]: VoiceClientSideStatusCode} = {};
 
-  // TODO(b/346868764): Longer term, voicePackInstallServerResponses shouldn't
-  // be public just for tests.
   // Cache of responses from LanguagePackManager
-  voicePackInstallStatusServerResponses:
+  private voicePackInstallStatusServerResponses_:
       {[language: string]: VoicePackStatus} = {};
 
   // Set of languages of the browser and/or of the pages navigated to that we
@@ -861,7 +859,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     if (isVoicePackStatusError(newVoicePackStatus)) {
       // Keep the server responses.
-      this.setVoicePackServerStatus(lang, newVoicePackStatus);
+      this.setVoicePackServerStatus_(lang, newVoicePackStatus);
 
       // Update application state.
       this.updateApplicationState(lang, newVoicePackStatus, oldVoicePackStatus);
@@ -894,7 +892,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const oldVoicePackStatus = this.getVoicePackServerStatus_(lang);
 
     // Keep the server responses
-    this.setVoicePackServerStatus(lang, newVoicePackStatus);
+    this.setVoicePackServerStatus_(lang, newVoicePackStatus);
 
     // Update application state
     this.updateApplicationState(lang, newVoicePackStatus, oldVoicePackStatus);
@@ -914,7 +912,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
           // as a language that should be installed
           if (this.languagesForVoiceDownloads.has(lang)) {
             // Don't re-send install request if it's already been sent
-            if (this.getVoicePackLocalStatus(lang) !==
+            if (this.getVoicePackLocalStatus_(lang) !==
                 VoiceClientSideStatusCode.SENT_INSTALL_REQUEST) {
               this.forceInstallRequest(lang, /* isRetry = */ false);
             }
@@ -937,7 +935,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
           // the language is newly downloaded.
           if ((!oldVoicePackStatus &&
                isWaitingForInstallLocally(
-                   this.getVoicePackLocalStatus(lang))) ||
+                   this.getVoicePackLocalStatus_(lang))) ||
               (oldVoicePackStatus &&
                oldVoicePackStatus.code !==
                    VoicePackServerStatusSuccessCode.INSTALLED)) {
@@ -1214,7 +1212,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   private refreshVoicePackStatuses() {
     for (const lang of Object.keys(
-             this.voicePackInstallStatusServerResponses)) {
+             this.voicePackInstallStatusServerResponses_)) {
       this.sendGetVoicePackInfoRequest(lang);
     }
   }
@@ -2514,7 +2512,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
 
     const statusForLang =
-        this.voicePackInstallStatusServerResponses[langCodeForVoicePackManager];
+        this.voicePackInstallStatusServerResponses_[langCodeForVoicePackManager];
 
     if (!statusForLang) {
       if (retryIfPreviousInstallFailed) {
@@ -2570,33 +2568,40 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  private getVoicePackServerStatus_(lang: string): VoicePackStatus|undefined {
-    const voicePackLanguage = getVoicePackConvertedLangIfExists(lang);
-    return this.voicePackInstallStatusServerResponses[voicePackLanguage];
+  getVoicePackStatusForTesting(lang: string):
+      {server: VoicePackStatus, client: VoiceClientSideStatusCode} {
+    const server = this.getVoicePackServerStatus_(lang);
+    const client = this.getVoicePackLocalStatus_(lang);
+    assert(server);
+    assert(client);
+    return {server, client};
   }
 
-  // TODO(b/346868764): Longer term, getters and setters for voice pack
-  // status shouldn't be public just for tests.
-  getVoicePackLocalStatus(lang: string): VoiceClientSideStatusCode|undefined {
+  private getVoicePackServerStatus_(lang: string): VoicePackStatus|undefined {
     const voicePackLanguage = getVoicePackConvertedLangIfExists(lang);
-    return this.voiceStatusLocalState[voicePackLanguage];
+    return this.voicePackInstallStatusServerResponses_[voicePackLanguage];
+  }
+
+  private getVoicePackLocalStatus_(lang: string): VoiceClientSideStatusCode
+      |undefined {
+    const voicePackLanguage = getVoicePackConvertedLangIfExists(lang);
+    return this.voiceStatusLocalState_[voicePackLanguage];
   }
 
   setVoicePackLocalStatus(lang: string, status: VoiceClientSideStatusCode) {
     const voicePackLanguage = getVoicePackConvertedLangIfExists(lang);
-    this.voiceStatusLocalState = {
-      ...this.voiceStatusLocalState,
+    this.voiceStatusLocalState_ = {
+      ...this.voiceStatusLocalState_,
       [voicePackLanguage]: status,
     };
   }
 
-  // TODO(b/346868764): Longer term, this shouldn't be public just for tests.
-  setVoicePackServerStatus(lang: string, status: VoicePackStatus) {
+  private setVoicePackServerStatus_(lang: string, status: VoicePackStatus) {
     // Convert the language string to ensure consistency across
     // languages and locales when setting the status.
     const voicePackLanguage = getVoicePackConvertedLangIfExists(lang);
-    this.voicePackInstallStatusServerResponses = {
-      ...this.voicePackInstallStatusServerResponses,
+    this.voicePackInstallStatusServerResponses_ = {
+      ...this.voicePackInstallStatusServerResponses_,
       [voicePackLanguage]: status,
     };
   }

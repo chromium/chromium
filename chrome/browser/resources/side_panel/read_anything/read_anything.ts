@@ -18,6 +18,6 @@ export {MetricsBrowserProxy, MetricsBrowserProxyImpl, ReadAloudHighlightState, R
 export {ReadAnythingLogger, TimeFrom, TimeTo} from './read_anything_logger.js';
 export type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 export {FONT_EVENT, FONT_SIZE_EVENT, HIGHLIGHT_TOGGLE_EVENT, LETTER_SPACING_EVENT, LINE_SPACING_EVENT, LINK_TOGGLE_BUTTON_ID, LINKS_DISABLED_ICON, LINKS_ENABLED_ICON, LINKS_EVENT, moreOptionsClass, NEXT_GRANULARITY_EVENT, PLAY_PAUSE_EVENT, PREVIOUS_GRANULARITY_EVENT, RATE_EVENT, THEME_EVENT} from './read_anything_toolbar.js';
-export {AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, mojoVoicePackStatusToVoicePackStatusEnum, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode, VoicePackStatus} from './voice_language_util.js';
+export {AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, mojoVoicePackStatusToVoicePackStatusEnum, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
 export type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
 export {PLAY_PREVIEW_EVENT} from './voice_selection_menu.js';
