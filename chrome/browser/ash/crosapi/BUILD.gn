@@ -346,6 +346,7 @@ source_set("crosapi") {
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/notifications",
     "//chrome/browser/ash/privacy_hub",
+    "//chrome/browser/ash/remote_apps",
     "//chrome/browser/ash/smart_reader",
     "//chrome/browser/ash/sync",
     "//chrome/browser/ash/system_web_apps",
