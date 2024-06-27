@@ -21,6 +21,7 @@
 #include "base/values.h"
 #include "pdf/ink/ink_brush.h"
 #include "pdf/ink/ink_in_progress_stroke.h"
+#include "pdf/ink/ink_skia_renderer.h"
 #include "pdf/ink/ink_stroke.h"
 #include "pdf/ink/ink_stroke_input_batch.h"
 #include "pdf/ink/ink_stroke_input_batch_view.h"
@@ -74,6 +75,8 @@ PdfInkModule::PdfInkModule(Client& client) : client_(client) {
 PdfInkModule::~PdfInkModule() = default;
 
 void PdfInkModule::Draw(SkCanvas& canvas) {
+  auto skia_renderer = InkSkiaRenderer::Create();
+
   for (const auto& [page_index, page_strokes] : strokes_) {
     if (!client_->IsPageVisible(page_index)) {
       continue;
@@ -81,26 +84,37 @@ void PdfInkModule::Draw(SkCanvas& canvas) {
 
     // Use an updated transform based on the page and its position in the
     // viewport.
-    // TODO(crbug.com/335524380): Draw `strokes_` with InkSkiaRenderer using
-    // the canonical-to-screen rendering transform.
     InkAffineTransform transform = GetInkRenderTransform(
         client_->GetViewportOriginOffset(), client_->GetOrientation(),
         client_->GetPageContentsRect(page_index), client_->GetZoom());
     if (draw_render_transform_callback_for_testing_) {
       draw_render_transform_callback_for_testing_.Run(transform);
     }
+
+    for (const auto& finished_stroke : page_strokes) {
+      if (!finished_stroke.should_draw) {
+        continue;
+      }
+
+      bool success =
+          skia_renderer->Draw(*finished_stroke.stroke, transform, canvas);
+      CHECK(success);
+    }
   }
 
   auto in_progress_stroke = CreateInProgressStrokeSegmentsFromInputs();
   if (!in_progress_stroke.empty()) {
     DrawingStrokeState& state = drawing_stroke_state();
-    // TODO(crbug.com/335524380): Draw `in_progress_stroke` with InkSkiaRenderer
-    // using the canonical-to-screen rendering transform.
     InkAffineTransform transform = GetInkRenderTransform(
         client_->GetViewportOriginOffset(), client_->GetOrientation(),
         client_->GetPageContentsRect(state.page_index), client_->GetZoom());
     if (draw_render_transform_callback_for_testing_) {
       draw_render_transform_callback_for_testing_.Run(transform);
+    }
+
+    for (const auto& segment : in_progress_stroke) {
+      bool success = skia_renderer->Draw(*segment, transform, canvas);
+      CHECK(success);
     }
   }
 }
