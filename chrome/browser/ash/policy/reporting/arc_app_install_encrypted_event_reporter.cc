@@ -47,11 +47,6 @@ void ArcAppInstallEncryptedEventReporter::Add(
         auto android_app_install_event =
             std::make_unique<reporting::AndroidAppInstallEvent>(
                 CreateAndroidAppInstallEvent(package, event));
-        // TODO(b/334977181): Remove this log statement. It's just to debug TAST
-        // test flakiness. Enqueue status is purposefully blank because the test
-        // expects a regex match for " enqueue status = "
-        LOG(ERROR) << "Enqueued ARC install event: package = " << package
-                   << " event type = " << event.event_type() << " enqueue status = ";
         report_queue_->Enqueue(
             std::move(android_app_install_event),
             reporting::Priority::BACKGROUND_BATCH,
@@ -64,9 +59,10 @@ void ArcAppInstallEncryptedEventReporter::Add(
                   // are reported. LOG(ERROR) ensures that logs are written
                   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
                           ash::switches::kArcInstallEventChromeLogForTests)) {
-                    LOG(ERROR) << "arc install event: package = " << package
-                               << " event type = " << event_type
-                               << " enqueue status = " << status;
+                    LOG(ERROR)
+                        << "Enqueued ARC install event: package = " << package
+                        << " event type = " << event_type
+                        << " enqueue status = " << status;
                   }
                 },
                 package, event.event_type()));
