@@ -7,6 +7,7 @@ load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
+load("//lib/builder_url.star", "linkify_builder")
 load("//lib/builders.star", "gardener_rotations", "os", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
@@ -496,7 +497,9 @@ ci.builder(
 
 ci.builder(
     name = "linux-win-cross-rel",
-    description_html = "Linux to Windows cross compile.",
+    description_html = "Linux to Windows cross compile.<br/>" +
+                       "It builds with the same GN args with " + linkify_builder("ci", "Win x64 Builder", "chromium") +
+                       ", and runs the same test suites with " + linkify_builder("ci", "Win10 Tests x64", "chromium"),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -521,9 +524,6 @@ ci.builder(
     ),
     cores = 32,
     os = os.LINUX_DEFAULT,
-
-    # TODO(crbug.com/332248571): Promote to main gardening rotation once green.
-    gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "misc",
