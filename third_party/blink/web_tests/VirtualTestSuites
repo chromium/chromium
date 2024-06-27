@@ -1895,7 +1895,7 @@
       "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true/block_until_head_timeout_eager_prefetch/0,PrefetchRedirects,PrefetchCookieIndices,CookieIndicesHeader",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
     ],
-    "expires": "Jul 1, 2024"
+    "expires": "Oct 1, 2024"
   },
   {
     "prefix": "prefetch-no-vary-search",
@@ -1909,7 +1909,7 @@
     "args": [
       "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true"
     ],
-    "expires": "Jul 1, 2024"
+    "expires": "Oct 1, 2024"
   },
   {
     "prefix": "prefetch-reusable",
@@ -1924,7 +1924,7 @@
       "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true/block_until_head_timeout_eager_prefetch/0,PrefetchRedirects,PrefetchReusable,PrefetchCookieIndices,CookieIndicesHeader",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
     ],
-    "expires": "Jul 1, 2024"
+    "expires": "Oct 1, 2024"
   },
   {
     "prefix": "speculation-rules-prerender-target-hint",
@@ -1940,7 +1940,7 @@
       "--disable-features=KeepAliveInBrowserMigration"
     ],
     "owners": ["nhiroki@chromium.org", "yoichio@chromium.org"],
-    "expires": "Jul 1, 2024"
+    "expires": "Oct 1, 2024"
   },
   {
     "prefix": "prerender2-fallback-prefetch-spec-rules",
