@@ -825,8 +825,8 @@ ResultCode SandboxWin::AddAppContainerProfileToConfig(
     return SBOX_ALL_OK;
   std::wstring profile_name =
       GetAppContainerProfileName(appcontainer_id, sandbox_type);
-  ResultCode result =
-      config->AddAppContainerProfile(profile_name.c_str(), true);
+  ResultCode result = config->AddAppContainerProfile(
+      profile_name.c_str(), ACProfileRegistration::kDefault);
   if (result != SBOX_ALL_OK)
     return result;
 

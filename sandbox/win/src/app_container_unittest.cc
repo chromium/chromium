@@ -15,6 +15,7 @@
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/access_control_list.h"
 #include "base/win/security_descriptor.h"
 #include "base/win/security_util.h"
 #include "base/win/sid.h"
@@ -97,6 +98,56 @@ bool ProfileExist(const std::wstring& package_name) {
   if (!GetProfilePath(package_name, &profile_path))
     return false;
   return base::PathExists(profile_path);
+}
+
+bool FindAce(const std::optional<base::win::AccessControlList>& acl,
+             DWORD ace_type,
+             const base::win::Sid& sid,
+             DWORD flags,
+             DWORD mask) {
+  if (!acl || acl->is_null()) {
+    return false;
+  }
+  PACL pacl = acl->get();
+  for (DWORD ace_index = 0; ace_index < pacl->AceCount; ++ace_index) {
+    PACCESS_ALLOWED_ACE ace = nullptr;
+    if (::GetAce(pacl, ace_index, reinterpret_cast<LPVOID*>(&ace)) &&
+        ace->Header.AceType == ace_type &&
+        (ace->Header.AceFlags & flags) == flags && ace->Mask == mask &&
+        sid.Equal(&ace->SidStart)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void CheckProfileDirectorySecurity(const base::FilePath& path,
+                                   const base::win::Sid& package_sid) {
+  DWORD flags = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE;
+  std::optional<base::win::SecurityDescriptor> sd =
+      base::win::SecurityDescriptor::FromFile(
+          path, DACL_SECURITY_INFORMATION | LABEL_SECURITY_INFORMATION);
+  ASSERT_TRUE(sd);
+  EXPECT_TRUE(FindAce(sd->dacl(), ACCESS_ALLOWED_ACE_TYPE, package_sid, flags,
+                      FILE_ALL_ACCESS))
+      << path.value();
+  EXPECT_TRUE(
+      FindAce(sd->sacl(), SYSTEM_MANDATORY_LABEL_ACE_TYPE,
+              base::win::Sid::FromIntegrityLevel(SECURITY_MANDATORY_LOW_RID),
+              flags, SYSTEM_MANDATORY_LABEL_NO_WRITE_UP))
+      << path.value();
+}
+
+void CheckProfileDirectoryLayout(const AppContainerBase* profile) {
+  base::FilePath profile_path;
+  ASSERT_TRUE(GetProfilePath(profile->GetPackageName(), &profile_path));
+  ASSERT_TRUE(base::DirectoryExists(profile_path));
+  base::FilePath ac_path = profile_path.Append(L"AC");
+  ASSERT_TRUE(base::DirectoryExists(ac_path));
+  CheckProfileDirectorySecurity(ac_path, profile->GetPackageSid());
+  base::FilePath tmp_path = ac_path.Append(L"Temp");
+  ASSERT_TRUE(base::DirectoryExists(tmp_path));
+  CheckProfileDirectorySecurity(tmp_path, profile->GetPackageSid());
 }
 
 std::wstring GenerateRandomPackageName() {
@@ -248,6 +299,7 @@ TEST(AppContainerTest, MAYBE_CreateAndDeleteAppContainerProfile) {
                                       L"Description");
   ASSERT_NE(nullptr, profile_container.get());
   EXPECT_TRUE(ProfileExist(package_name));
+  CheckProfileDirectoryLayout(profile_container.get());
   EXPECT_TRUE(AppContainerBase::Delete(package_name.c_str()));
   EXPECT_FALSE(ProfileExist(package_name));
 }
@@ -270,6 +322,7 @@ TEST(AppContainerTest, MAYBE_CreateAndOpenAppContainer) {
                                       L"Description");
   ASSERT_NE(nullptr, profile_container.get());
   EXPECT_TRUE(ProfileExist(package_name));
+  CheckProfileDirectoryLayout(profile_container.get());
   std::unique_ptr<AppContainerBase> open_container =
       AppContainerBase::Open(package_name.c_str());
   ASSERT_NE(nullptr, open_container.get());
@@ -279,6 +332,41 @@ TEST(AppContainerTest, MAYBE_CreateAndOpenAppContainer) {
   EXPECT_FALSE(ProfileExist(package_name));
   std::unique_ptr<AppContainerBase> open_container2 =
       AppContainerBase::Open(package_name.c_str());
+  EXPECT_FALSE(ProfileExist(package_name));
+}
+
+TEST(AppContainerTest, CreateAndDeleteAppContainerProfileNoFirewall) {
+  if (!features::IsAppContainerSandboxSupported()) {
+    return;
+  }
+  std::wstring package_name = GenerateRandomPackageName();
+  EXPECT_FALSE(AppContainerBase::ProfileExists(package_name.c_str()));
+  std::unique_ptr<AppContainerBase> profile_container =
+      AppContainerBase::CreateProfileNoFirewall(package_name.c_str(), L"Name");
+  ASSERT_NE(nullptr, profile_container.get());
+  EXPECT_TRUE(AppContainerBase::ProfileExists(package_name.c_str()));
+  CheckProfileDirectoryLayout(profile_container.get());
+  EXPECT_TRUE(AppContainerBase::DeleteNoFirewall(package_name.c_str()));
+  EXPECT_FALSE(AppContainerBase::ProfileExists(package_name.c_str()));
+}
+
+TEST(AppContainerTest, ReOpenAppContainerProfileNoFirewall) {
+  if (!features::IsAppContainerSandboxSupported()) {
+    return;
+  }
+  std::wstring package_name = GenerateRandomPackageName();
+  EXPECT_FALSE(ProfileExist(package_name));
+  std::unique_ptr<AppContainerBase> profile_container =
+      AppContainerBase::CreateProfileNoFirewall(package_name.c_str(), L"Name");
+  ASSERT_NE(nullptr, profile_container.get());
+  EXPECT_TRUE(ProfileExist(package_name));
+  CheckProfileDirectoryLayout(profile_container.get());
+  std::unique_ptr<AppContainerBase> open_container =
+      AppContainerBase::CreateProfileNoFirewall(package_name.c_str(), L"Name");
+  ASSERT_NE(nullptr, open_container.get());
+  EXPECT_EQ(profile_container->GetPackageSid(),
+            open_container->GetPackageSid());
+  EXPECT_TRUE(AppContainerBase::Delete(package_name.c_str()));
   EXPECT_FALSE(ProfileExist(package_name));
 }
 

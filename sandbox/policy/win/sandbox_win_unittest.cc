@@ -98,13 +98,18 @@ class TestTargetConfig : public TargetConfig {
   void AddKernelObjectToClose(HandleToClose handle_info) override {}
   void SetDisconnectCsrss() override {}
 
-  ResultCode AddAppContainerProfile(const wchar_t* package_name,
-                                    bool create_profile) override {
-    if (create_profile) {
-      app_container_ =
-          AppContainerBase::CreateProfile(package_name, L"Sandbox", L"Sandbox");
-    } else {
-      app_container_ = AppContainerBase::Open(package_name);
+  ResultCode AddAppContainerProfile(
+      const wchar_t* package_name,
+      ACProfileRegistration registration) override {
+    switch (registration) {
+      case ACProfileRegistration::kDefault:
+        app_container_ = AppContainerBase::CreateProfile(
+            package_name, L"Sandbox", L"Sandbox");
+        break;
+      case ACProfileRegistration::kNoFirewall:
+        app_container_ =
+            AppContainerBase::CreateProfileNoFirewall(package_name, L"Sandbox");
+        break;
     }
     if (!app_container_) {
       return SBOX_ERROR_CREATE_APPCONTAINER;

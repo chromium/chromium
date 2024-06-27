@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
@@ -152,8 +153,8 @@ std::wstring GetAppContainerProfileName() {
 // Adds an app container policy similar to network service.
 ResultCode AddNetworkAppContainerPolicy(TargetPolicy* policy) {
   std::wstring profile_name = GetAppContainerProfileName();
-  ResultCode ret =
-      policy->GetConfig()->AddAppContainerProfile(profile_name.c_str(), true);
+  ResultCode ret = policy->GetConfig()->AddAppContainerProfile(
+      profile_name.c_str(), ACProfileRegistration::kDefault);
   if (SBOX_ALL_OK != ret)
     return ret;
   ret = policy->GetConfig()->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
@@ -192,8 +193,9 @@ class AppContainerTest : public ::testing::Test {
     policy_ = broker_services_->CreatePolicy();
     ASSERT_EQ(SBOX_ALL_OK, policy_->GetConfig()->SetProcessMitigations(
                                MITIGATION_HEAP_TERMINATE));
-    ASSERT_EQ(SBOX_ALL_OK, policy_->GetConfig()->AddAppContainerProfile(
-                               package_name_.c_str(), true));
+    ASSERT_EQ(SBOX_ALL_OK,
+              policy_->GetConfig()->AddAppContainerProfile(
+                  package_name_.c_str(), ACProfileRegistration::kDefault));
     created_profile_ = true;
   }
 
@@ -471,6 +473,47 @@ TEST(AppContainerLaunchTest, IsNotAppContainer) {
   TestRunner runner;
 
   EXPECT_EQ(SBOX_TEST_FAILED, runner.RunTest(L"CheckIsAppContainer"));
+}
+
+TEST(AppContainerLaunchTest, IsAppContainerNoFirewall) {
+  if (!features::IsAppContainerSandboxSupported()) {
+    return;
+  }
+  TestRunner runner;
+  std::wstring package_name = GenerateRandomPackageName();
+  ASSERT_EQ(SBOX_ALL_OK,
+            runner.GetPolicy()->GetConfig()->AddAppContainerProfile(
+                package_name.c_str(), ACProfileRegistration::kNoFirewall));
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"CheckIsAppContainer"));
+  EXPECT_TRUE(AppContainerBase::DeleteNoFirewall(package_name.c_str()));
+}
+
+SBOX_TESTS_COMMAND int CreateTempFileInAppContainer(int argc, wchar_t** argv) {
+  if (!base::IsCurrentProcessInAppContainer()) {
+    return SBOX_TEST_FIRST_ERROR;
+  }
+  base::FilePath temp_file;
+  if (!base::CreateTemporaryFile(&temp_file)) {
+    return SBOX_TEST_SECOND_ERROR;
+  }
+  return SBOX_TEST_SUCCEEDED;
+}
+
+TEST(AppContainerLaunchTest, CreateTempFileNoFirewall) {
+  if (!features::IsAppContainerSandboxSupported()) {
+    return;
+  }
+  TestRunner runner;
+  std::wstring package_name = GenerateRandomPackageName();
+  ASSERT_EQ(SBOX_ALL_OK,
+            runner.GetPolicy()->GetConfig()->AddAppContainerProfile(
+                package_name.c_str(), ACProfileRegistration::kNoFirewall));
+  EXPECT_EQ(SBOX_ALL_OK, runner.GetPolicy()->GetConfig()->SetTokenLevel(
+                             USER_UNPROTECTED, USER_UNPROTECTED));
+
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED,
+            runner.RunTest(L"CreateTempFileInAppContainer"));
+  EXPECT_TRUE(AppContainerBase::DeleteNoFirewall(package_name.c_str()));
 }
 
 TEST_F(AppContainerTest, ChildProcessMitigationLowBox) {

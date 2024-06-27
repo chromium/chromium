@@ -352,8 +352,9 @@ void ConfigBase::SetLockdownDefaultDacl() {
   lockdown_default_dacl_ = true;
 }
 
-ResultCode ConfigBase::AddAppContainerProfile(const wchar_t* package_name,
-                                              bool create_profile) {
+ResultCode ConfigBase::AddAppContainerProfile(
+    const wchar_t* package_name,
+    ACProfileRegistration registration) {
   if (!features::IsAppContainerSandboxSupported())
     return SBOX_ERROR_UNSUPPORTED;
 
@@ -363,12 +364,17 @@ ResultCode ConfigBase::AddAppContainerProfile(const wchar_t* package_name,
     return SBOX_ERROR_BAD_PARAMS;
   }
 
-  if (create_profile) {
-    app_container_ = AppContainerBase::CreateProfile(
-        package_name, L"Chrome Sandbox", L"Profile for Chrome Sandbox");
-  } else {
-    app_container_ = AppContainerBase::Open(package_name);
+  switch (registration) {
+    case ACProfileRegistration::kDefault:
+      app_container_ = AppContainerBase::CreateProfile(
+          package_name, L"Chrome Sandbox", L"Profile for Chrome Sandbox");
+      break;
+    case ACProfileRegistration::kNoFirewall:
+      app_container_ = AppContainerBase::CreateProfileNoFirewall(
+          package_name, L"Chrome Sandbox");
+      break;
   }
+
   if (!app_container_)
     return SBOX_ERROR_CREATE_APPCONTAINER;
 

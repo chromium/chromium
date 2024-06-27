@@ -75,8 +75,9 @@ class ConfigBase final : public TargetConfig {
   MitigationFlags GetDelayedProcessMitigations() const override;
   void AddRestrictingRandomSid() override;
   void SetLockdownDefaultDacl() override;
-  ResultCode AddAppContainerProfile(const wchar_t* package_name,
-                                    bool create_profile) override;
+  ResultCode AddAppContainerProfile(
+      const wchar_t* package_name,
+      ACProfileRegistration registration) override;
   AppContainer* GetAppContainer() override;
   void AddKernelObjectToClose(HandleToClose handle_info) override;
   void SetDisconnectCsrss() override;

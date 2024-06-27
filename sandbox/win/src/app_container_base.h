@@ -6,9 +6,11 @@
 #define SANDBOX_WIN_SRC_APP_CONTAINER_BASE_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <vector>
 
-#include <optional>
+#include "base/files/file_path.h"
 #include "base/win/access_token.h"
 #include "base/win/security_descriptor.h"
 #include "base/win/sid.h"
@@ -20,7 +22,9 @@ namespace sandbox {
 
 class AppContainerBase final : public AppContainer {
  public:
-  AppContainerBase(base::win::Sid& package_sid, AppContainerType type);
+  AppContainerBase(const wchar_t* package_name,
+                   base::win::Sid package_sid,
+                   AppContainerType type);
   AppContainerBase(const AppContainerBase&) = delete;
   AppContainerBase& operator=(const AppContainerBase&) = delete;
   ~AppContainerBase();
@@ -47,6 +51,9 @@ class AppContainerBase final : public AppContainer {
   // Get the package SID for this AC.
   const base::win::Sid& GetPackageSid() const;
 
+  // Get the package name for this AC.
+  const wchar_t* GetPackageName() const;
+
   // Creates a new AppContainer object. This will create a new profile
   // if it doesn't already exist. The profile must be deleted manually using
   // the Delete method if it's no longer required.
@@ -54,6 +61,15 @@ class AppContainerBase final : public AppContainer {
       const wchar_t* package_name,
       const wchar_t* display_name,
       const wchar_t* description);
+
+  // Creates a new AppContainer object. This will create a new profile
+  // if it doesn't already exist. The profile must be deleted manually using
+  // the `DeleteNoFirewall` method if it's no longer required. This differs from
+  // the `CreateProfile` method in that it doesn't register the profile with the
+  // system firewall which might remove contention and deadlock issues.
+  static std::unique_ptr<AppContainerBase> CreateProfileNoFirewall(
+      const wchar_t* package_name,
+      const wchar_t* display_name);
 
   // Opens a derived AppContainer object. No checks will be made on
   // whether the package exists or not.
@@ -63,9 +79,18 @@ class AppContainerBase final : public AppContainer {
   // token
   static std::unique_ptr<AppContainerBase> CreateLowbox(const wchar_t* sid);
 
+  // Checks if a profile with a given name exists.
+  static bool ProfileExists(const wchar_t* package_name);
+
   // Delete a profile based on name. Returns true if successful, or if the
   // package doesn't already exist.
   static bool Delete(const wchar_t* package_name);
+
+  // Delete a profile based on name. Returns true if successful, or if the
+  // package doesn't already exist. This differs from the `DeleteProfile`
+  // method in that it doesn't delete the profile with the system firewall
+  // which might remove contention and deadlock issues.
+  static bool DeleteNoFirewall(const wchar_t* package_name);
 
   // Build an impersontion token from an existing token.
   // `token` specify the base token to create the new token from. Must have
@@ -85,6 +110,7 @@ class AppContainerBase final : public AppContainer {
   bool AddCapability(const std::optional<base::win::Sid>& capability_sid,
                      bool impersonation_only);
 
+  std::wstring package_name_;
   base::win::Sid package_sid_;
   bool enable_low_privilege_app_container_;
   std::vector<base::win::Sid> capabilities_;
