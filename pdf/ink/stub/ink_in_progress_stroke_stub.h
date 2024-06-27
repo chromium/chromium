@@ -7,6 +7,7 @@
 
 #include "pdf/ink/ink_in_progress_stroke.h"
 #include "pdf/ink/stub/ink_stroke_input_batch_stub.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace chrome_pdf {
 
@@ -26,6 +27,7 @@ class InkInProgressStrokeStub : public InkInProgressStroke {
   std::unique_ptr<InkStroke> CopyToStroke() const override;
 
  private:
+  SkColor brush_color_ = SkColorSetARGB(0, 0, 0, 0);
   InkStrokeInputBatchStub inputs_;
 };
 

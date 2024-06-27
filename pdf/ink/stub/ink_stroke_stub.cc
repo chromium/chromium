@@ -10,10 +10,15 @@
 
 namespace chrome_pdf {
 
-InkStrokeStub::InkStrokeStub(const InkStrokeInputBatchStub& inputs)
-    : inputs_(inputs), inputs_view_(inputs_) {}
+InkStrokeStub::InkStrokeStub(SkColor brush_color,
+                             const InkStrokeInputBatchStub& inputs)
+    : brush_color_(brush_color), inputs_(inputs), inputs_view_(inputs_) {}
 
 InkStrokeStub::~InkStrokeStub() = default;
+
+SkColor InkStrokeStub::GetBrushColor() const {
+  return brush_color_;
+}
 
 const InkStrokeInputBatchView& InkStrokeStub::GetInputs() const {
   return inputs_view_;

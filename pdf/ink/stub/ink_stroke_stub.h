@@ -9,6 +9,7 @@
 #include "pdf/ink/stub/ink_modeled_shape_view_stub.h"
 #include "pdf/ink/stub/ink_stroke_input_batch_stub.h"
 #include "pdf/ink/stub/ink_stroke_input_batch_view_stub.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace chrome_pdf {
 
@@ -16,16 +17,18 @@ class InkModeledShapeViewStub;
 
 class InkStrokeStub : public InkStroke {
  public:
-  explicit InkStrokeStub(const InkStrokeInputBatchStub& inputs);
+  InkStrokeStub(SkColor brush_color, const InkStrokeInputBatchStub& inputs);
   InkStrokeStub(const InkStrokeStub&) = delete;
   InkStrokeStub& operator=(const InkStrokeStub&) = delete;
   ~InkStrokeStub() override;
 
   // InkStroke:
+  SkColor GetBrushColor() const override;
   const InkStrokeInputBatchView& GetInputs() const override;
   const InkModeledShapeView& GetShape() const override;
 
  private:
+  const SkColor brush_color_;
   const InkModeledShapeViewStub shape_;
   const InkStrokeInputBatchStub inputs_;
   const InkStrokeInputBatchViewStub inputs_view_;
