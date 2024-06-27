@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/picker/metrics/picker_performance_metrics.h"
 #include "ash/picker/model/picker_search_results_section.h"
+#include "ash/picker/picker_controller.h"
 #include "ash/picker/views/picker_emoji_bar_view_delegate.h"
 #include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/picker/views/picker_pseudo_focus_handler.h"
@@ -21,6 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
@@ -65,6 +67,13 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   PickerView(const PickerView&) = delete;
   PickerView& operator=(const PickerView&) = delete;
   ~PickerView() override;
+
+  // Time from when a search starts to when the previous set of results are
+  // cleared.
+  // Slightly longer than the real burn in period to ensure empty results do not
+  // flash on the screen before showing burn-in results.
+  static constexpr base::TimeDelta kClearResultsTimeout =
+      PickerController::kBurnInPeriod + base::Milliseconds(50);
 
   // views::WidgetDelegateView:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
@@ -194,9 +203,12 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // trigger `DoPseudoFocusedAction`.
   raw_ptr<views::View> pseudo_focused_view_ = nullptr;
 
-  // Whether the first set of results for the current search have been published
-  // yet.
-  bool published_first_results_ = false;
+  // Clears `search_results_view_`'s old search results when a new search is
+  // started - after `kClearResultsTimeout`, or when the first search results
+  // come in (whatever is earliest).
+  // This timer is running iff the first set of results for the current search
+  // have not been published yet.
+  base::OneShotTimer clear_results_timer_;
 
   base::ScopedObservation<views::View, views::ViewObserver>
       pseudo_focused_view_observation_{this};

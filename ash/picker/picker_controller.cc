@@ -80,9 +80,6 @@ constexpr std::string_view kPickerFeatureTestKeyHash(
     "\x00\x89",
     base::kSHA1Length);
 
-// Time from when a start starts to when the first set of results are published.
-constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(200);
-
 enum class PickerFeatureKeyType { kNone, kDev, kTest };
 
 constexpr int kMaxRecentEmoji = 20;

@@ -6,12 +6,14 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/mock_picker_asset_fetcher.h"
 #include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/model/picker_search_results_section.h"
+#include "ash/picker/picker_controller.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_contents_view.h"
 #include "ash/picker/views/picker_emoji_bar_view.h"
@@ -31,9 +33,11 @@
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/view_drawn_waiter.h"
+#include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/test/test_structured_metrics_recorder.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -46,6 +50,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/ax_event_manager.h"
@@ -674,6 +679,69 @@ TEST_F(PickerViewTest, SearchingReplacesOldResultsWithNewResults) {
       ElementsAre(Pointee(Property(
           "title", &PickerSectionView::title_label_for_testing,
           Property("text", &views::Label::GetText, u"Matching links")))));
+}
+
+TEST_F(PickerViewTest, DoesNotClearResultsBeforeTimeout) {
+  base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
+  FakePickerViewDelegate delegate({
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue(std::move(callback));
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  FakePickerViewDelegate::SearchResultsCallback first_callback = future.Take();
+  first_callback.Run({{PickerSearchResultsSection(
+      PickerSectionType::kSuggestions, {{PickerSearchResult::Text(u"result")}},
+      /*has_more_results=*/false)}});
+  task_environment()->FastForwardBy(PickerView::kClearResultsTimeout);
+  ASSERT_FALSE(picker_view->search_results_view_for_testing()
+                   .section_views_for_testing()
+                   .empty());
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(future.Wait());
+  future.Clear();
+  task_environment()->FastForwardBy(PickerView::kClearResultsTimeout -
+                                    base::Milliseconds(1));
+
+  EXPECT_FALSE(picker_view->search_results_view_for_testing()
+                   .section_views_for_testing()
+                   .empty());
+}
+
+TEST_F(PickerViewTest, ClearsResultsAfterTimeout) {
+  base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
+  FakePickerViewDelegate delegate({
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue(std::move(callback));
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  FakePickerViewDelegate::SearchResultsCallback first_callback = future.Take();
+  first_callback.Run({{PickerSearchResultsSection(
+      PickerSectionType::kSuggestions, {{PickerSearchResult::Text(u"result")}},
+      /*has_more_results=*/false)}});
+  task_environment()->FastForwardBy(PickerView::kClearResultsTimeout);
+  ASSERT_FALSE(picker_view->search_results_view_for_testing()
+                   .section_views_for_testing()
+                   .empty());
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(future.Wait());
+  future.Clear();
+  task_environment()->FastForwardBy(PickerView::kClearResultsTimeout);
+
+  EXPECT_TRUE(picker_view->search_results_view_for_testing()
+                  .section_views_for_testing()
+                  .empty());
 }
 
 TEST_F(PickerViewTest, SearchingShowsExpressionResultsInEmojiBar) {

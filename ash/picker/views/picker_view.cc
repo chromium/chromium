@@ -32,6 +32,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -359,7 +360,12 @@ void PickerView::StartSearch(const std::u16string& query) {
   delegate_->GetSessionMetrics().UpdateSearchQuery(query);
   if (!query.empty()) {
     SetActivePage(search_results_view_);
-    published_first_results_ = false;
+    // SAFETY: `clear_results_timer_` will be destructed before the child view
+    // pointed to by `search_results_view_`.
+    clear_results_timer_.Start(
+        FROM_HERE, kClearResultsTimeout,
+        base::BindOnce(&PickerSearchResultsView::ClearSearchResults,
+                       base::Unretained(search_results_view_)));
     delegate_->StartEmojiSearch(query,
                                 base::BindOnce(&PickerView::PublishEmojiResults,
                                                weak_ptr_factory_.GetWeakPtr()));
@@ -386,6 +392,10 @@ void PickerView::PublishEmojiResults(std::vector<PickerSearchResult> results) {
 void PickerView::PublishSearchResults(
     bool show_no_results_found,
     std::vector<PickerSearchResultsSection> results) {
+  if (clear_results_timer_.IsRunning()) {
+    clear_results_timer_.FireNow();
+  }
+
   // TODO: b/333826943: This is a hacky way to detect if there are no results.
   // Design a better API for notifying when the search has completed without any
   // results.
@@ -394,10 +404,6 @@ void PickerView::PublishSearchResults(
     return;
   }
 
-  if (!published_first_results_) {
-    search_results_view_->ClearSearchResults();
-    published_first_results_ = true;
-  }
   for (PickerSearchResultsSection& result : results) {
     // Do not show GIFs.
     if (result.type() == PickerSectionType::kGifs) {
