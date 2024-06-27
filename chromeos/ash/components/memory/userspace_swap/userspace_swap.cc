@@ -165,7 +165,7 @@ class RendererSwapDataImpl : public RendererSwapData {
   uint64_t reclaimed_bytes_ = 0;
 
   // Areas which can be used for moving PTEs.
-  std::stack<const Region> free_swap_dest_areas_;
+  std::stack<Region> free_swap_dest_areas_;
 
   std::unique_ptr<UserfaultFD> uffd_;
   std::unique_ptr<SwapFile> swap_file_;

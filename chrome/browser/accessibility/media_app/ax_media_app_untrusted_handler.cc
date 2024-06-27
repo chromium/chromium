@@ -410,7 +410,7 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
   }
 
   // Update all page numbers and rects.
-  std::set<const std::string> page_id_updated;
+  std::set<std::string> page_id_updated;
   for (size_t i = 0; i < page_metadata.size(); ++i) {
     const std::string& page_id = page_metadata.at(i)->id;
     if (HasRendererTerminatedDueToBadPageId("PageMetadataUpdated", page_id)) {

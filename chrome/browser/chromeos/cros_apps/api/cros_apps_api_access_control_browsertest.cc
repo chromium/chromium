@@ -69,10 +69,10 @@ class CrosAppsApiAccessControlBrowsertestBase : public InProcessBrowserTest {
  protected:
   // Sets up test API info, and creates a browser with a default opened tab.
   // Must be called once at the beginning of the test body.
-  void SetUpTestApi(const std::vector<url::Origin>& allowlisted_origins,
-                    const std::initializer_list<
-                        const std::reference_wrapper<const base::Feature>>&
-                        required_features) {
+  void SetUpTestApi(
+      const std::vector<url::Origin>& allowlisted_origins,
+      const std::initializer_list<std::reference_wrapper<const base::Feature>>&
+          required_features) {
     auto* profile = ProfileManager::GetPrimaryUserProfile();
     CHECK(profile);
 

@@ -65,8 +65,8 @@ class TestAXMediaAppUntrustedHandler : public AXMediaAppUntrustedHandler {
     return pages_;
   }
 
-  const std::vector<const ui::AXTreeUpdate>&
-  GetPendingSerializedUpdatesForTesting() const {
+  const std::vector<ui::AXTreeUpdate>& GetPendingSerializedUpdatesForTesting()
+      const {
     return *pending_serialized_updates_for_testing_;
   }
 

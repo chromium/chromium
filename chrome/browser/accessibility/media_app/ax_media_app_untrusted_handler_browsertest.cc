@@ -988,7 +988,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
   EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[1]);
   EXPECT_EQ("PageC", fake_media_app_.PageIdsWithBitmap()[2]);
 
-  const std::vector<const ui::AXTreeUpdate>& pending_serialized_updates =
+  const std::vector<ui::AXTreeUpdate>& pending_serialized_updates =
       handler_->GetPendingSerializedUpdatesForTesting();
   // Three updates, one for each page, plus one update for the document that
   // contains them.

@@ -122,7 +122,7 @@ class ContentCacheImpl : public ContentCache {
 
   // Removes items individually from the disk and the lru_cache. Removes items
   // in bulk from the database.
-  void RemoveItems(std::vector<const base::FilePath>& fsp_paths);
+  void RemoveItems(const std::vector<base::FilePath>& fsp_paths);
 
   // Removes items in bulk from the database.
   void RemoveItemsFromDatabase(std::vector<int64_t>& item_ids);
@@ -141,7 +141,7 @@ class ContentCacheImpl : public ContentCache {
   // aren't being accessed by current FSP requests will be removed from the disk
   // and the database. Each remaining item will be removed once the last FSP
   // request for the item completes with `CloseFile()`.
-  void EvictItems(std::vector<const base::FilePath>& file_paths);
+  void EvictItems(const std::vector<base::FilePath>& file_paths);
 
   // The cache has maximum bounds on the number of items available. In the event
   // this boundary is exceeded, excess items should be evicted. There may

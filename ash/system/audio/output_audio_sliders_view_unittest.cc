@@ -61,7 +61,7 @@ AudioNode GenerateAudioNode(const AudioNodeInfo& node_info) {
 }
 
 AudioNodeList GenerateAudioNodeList(
-    const std::vector<const AudioNodeInfo>& node_infos) {
+    const std::vector<AudioNodeInfo>& node_infos) {
   AudioNodeList node_list(node_infos.size());
   base::ranges::transform(node_infos, node_list.begin(),
                           [](const AudioNodeInfo& node_info) {

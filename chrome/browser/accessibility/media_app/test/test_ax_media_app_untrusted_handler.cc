@@ -36,7 +36,7 @@ std::string TestAXMediaAppUntrustedHandler::GetDocumentTreeToStringForTesting()
 void TestAXMediaAppUntrustedHandler::
     EnablePendingSerializedUpdatesForTesting() {
   pending_serialized_updates_for_testing_ =
-      std::make_unique<std::vector<const ui::AXTreeUpdate>>();
+      std::make_unique<std::vector<ui::AXTreeUpdate>>();
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

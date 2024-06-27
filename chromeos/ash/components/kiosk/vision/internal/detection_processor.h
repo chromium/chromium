@@ -44,10 +44,7 @@ class DetectionProcessor {
 // enabled.
 //
 // `DetectionProcessor` entries are not owned and must outlive the vector.
-//
-// Note the pointer is `const`, not the underlying `DetectionProcessor`. This
-// is analogous to `DetectionProcessor* const`.
-using DetectionProcessors = std::vector<const raw_ptr<DetectionProcessor>>;
+using DetectionProcessors = std::vector<raw_ptr<DetectionProcessor>>;
 
 }  // namespace ash::kiosk_vision
 

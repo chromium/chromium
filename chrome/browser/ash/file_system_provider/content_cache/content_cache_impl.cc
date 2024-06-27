@@ -101,7 +101,7 @@ void ContentCacheImpl::SetMaxCacheItems(size_t max_cache_items) {
 void ContentCacheImpl::Notify(ProvidedFileSystemObserver::Changes& changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<const base::FilePath> to_evict;
+  std::vector<base::FilePath> to_evict;
   for (const auto& change : changes) {
     ContentLRUCache::iterator it = lru_cache_.Peek(change.entry_path);
     if (it == lru_cache_.end()) {
@@ -151,12 +151,12 @@ void ContentCacheImpl::ObservedVersionTag(const base::FilePath& entry_path,
 }
 
 void ContentCacheImpl::Evict(const base::FilePath& file_path) {
-  std::vector<const base::FilePath> file_paths = {file_path};
+  std::vector<base::FilePath> file_paths = {file_path};
   EvictItems(file_paths);
 }
 
 void ContentCacheImpl::RemoveItems(
-    std::vector<const base::FilePath>& fsp_paths) {
+    const std::vector<base::FilePath>& fsp_paths) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<int64_t> item_ids;
@@ -267,7 +267,7 @@ void ContentCacheImpl::OnItemRemovedFromDisk(const base::FilePath& fsp_path,
 }
 
 void ContentCacheImpl::EvictItems(
-    std::vector<const base::FilePath>& file_paths) {
+    const std::vector<base::FilePath>& file_paths) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (const base::FilePath& file_path : file_paths) {
@@ -316,7 +316,7 @@ void ContentCacheImpl::EvictExcessItems() {
   // evicted items brings the size of the cache (without these items) to below
   // the `max_cache_items_`.
   ContentLRUCache::reverse_iterator it = lru_cache_.rbegin();
-  std::vector<const base::FilePath> to_evict;
+  std::vector<base::FilePath> to_evict;
   while (to_evict.size() < items_to_evict) {
     CacheFileContext& ctx = it->second;
     if (!ctx.evicted()) {
@@ -512,7 +512,7 @@ void ContentCacheImpl::CloseFile(const OpenedCloudFile& file) {
     ctx.CloseLocalFD(file.request_id);
     if (ctx.evicted()) {
       // File was evicted when reading. Remove it.
-      std::vector<const base::FilePath> file_paths = {file.file_path};
+      std::vector<base::FilePath> file_paths = {file.file_path};
       RemoveItems(file_paths);
     }
   }

@@ -144,7 +144,7 @@ class AXMediaAppUntrustedHandler
   std::map<const std::string, std::unique_ptr<TreeSource>> page_sources_;
   std::map<const std::string, std::unique_ptr<TreeSerializer>>
       page_serializers_;
-  std::unique_ptr<std::vector<const ui::AXTreeUpdate>>
+  std::unique_ptr<std::vector<ui::AXTreeUpdate>>
       pending_serialized_updates_for_testing_;
   scoped_refptr<screen_ai::OpticalCharacterRecognizer> ocr_;
 
