@@ -343,6 +343,7 @@ source_set("tests") {
     deps += [
       ":usb_test_gadget",
       "//device/base",
+      "//mojo/public/cpp/test_support:test_utils",
       "//net:test_support",
       "//services/device/public/cpp:test_support",
       "//services/device/public/cpp/usb",

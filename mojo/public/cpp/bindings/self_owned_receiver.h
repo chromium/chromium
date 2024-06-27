@@ -91,6 +91,13 @@ class SelfOwnedReceiver {
   // stimulus.
   void FlushForTesting() { receiver_.FlushForTesting(); }
 
+  // Reports the currently dispatching message as bad. This destroys the
+  // SelfOwnedReceiver instance.
+  void ReportBadMessage(std::string_view error) {
+    receiver_.ReportBadMessage(error);
+    Close();
+  }
+
  private:
   SelfOwnedReceiver(std::unique_ptr<Interface> impl,
                     PendingReceiver<Interface> receiver,
