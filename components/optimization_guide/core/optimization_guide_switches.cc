@@ -124,6 +124,10 @@ const char kEnableModelQualityDogfoodLogging[] =
 const char kGetFreeDiskSpaceWithUserVisiblePriorityTask[] =
     "optimization-guide-get-free-disk-space-with-user-visible-priority-task";
 
+// Allows sending an language code to the backend.
+const char kOptimizationGuideLanguageOverride[] =
+    "optimization-guide-language-override";
+
 std::string GetModelQualityServiceAPIKey() {
   // Command line override takes priority.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
