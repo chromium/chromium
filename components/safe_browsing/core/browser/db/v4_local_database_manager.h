@@ -169,8 +169,15 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
 
     ~PendingCheck();
 
+    // Abandon this check by nulling out the `client` pointer and thus
+    // guaranteeing this check will not henceforth produce a response.
+    void Abandon();
+
     // The SafeBrowsing client that's waiting for the safe/unsafe verdict.
-    raw_ptr<Client, AcrossTasksDanglingUntriaged> client;
+    // This is required to be non-null if a `client_callback_type` other than
+    // CHECK_OTHER (for synchronous checks) is expected. Upon Abandon()'ment,
+    // this is set to null.
+    raw_ptr<Client> client;
 
     // Determines which funtion from the |client| needs to be called once we
     // know whether the URL in |url| is safe or unsafe.
@@ -357,13 +364,16 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   void DropQueuedAndPendingChecks();
 
   // Calls the appropriate method on the |client| object, based on the contents
-  // of |pending_check|.
+  // of |pending_check|. May only be invoked once on a given check. May not be
+  // invoked on an Abandon()'ed check.
   void RespondToClient(std::unique_ptr<PendingCheck> pending_check);
 
   // Callers should generally use |RespondToClient| instead, which will clean up
   // the |pending_check|. Callers should use this function when they don't own
   // the |pending_check|. Like |RespondToClient|, this calls the appropriate
   // method on the |client| object, based on the contents of |pending_check|.
+  // May only be invoked once on a given check, and resets the `client` pointer.
+  // May not be invoked on an Abandon()'ed check.
   void RespondToClientWithoutPendingCheckCleanup(PendingCheck* pending_check);
 
   // Instantiates and initializes |v4_database_| on the task runner. Sets up the
