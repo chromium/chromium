@@ -1384,6 +1384,42 @@ public class TabListMediatorUnitTest {
         assertNotEquals(mModel.get(1).model.get(TabProperties.THUMBNAIL_FETCHER), tab2Fetcher);
     }
 
+    // Regression test for: crbug.com/349773923.
+    @Test
+    public void tabSelection_LeaveGroupClears() {
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab2, newTab));
+        createTabGroup(tabs, TAB2_ID, TAB_GROUP_ID);
+
+        ThumbnailFetcher tab1Fetcher = mModel.get(0).model.get(TabProperties.THUMBNAIL_FETCHER);
+        ThumbnailFetcher tab2Fetcher = mModel.get(1).model.get(TabProperties.THUMBNAIL_FETCHER);
+
+        // Select tab 3 although the represenative tab 2 should update.
+        mTabModelObserverCaptor
+                .getValue()
+                .didSelectTab(newTab, TabLaunchType.FROM_CHROME_UI, TAB1_ID);
+
+        assertThat(mModel.size(), equalTo(2));
+        assertThat(mModel.get(0).model.get(TabProperties.IS_SELECTED), equalTo(false));
+        assertNotEquals(mModel.get(0).model.get(TabProperties.THUMBNAIL_FETCHER), tab1Fetcher);
+        assertThat(mModel.get(1).model.get(TabProperties.IS_SELECTED), equalTo(true));
+        assertNotEquals(mModel.get(1).model.get(TabProperties.THUMBNAIL_FETCHER), tab2Fetcher);
+
+        tab1Fetcher = mModel.get(0).model.get(TabProperties.THUMBNAIL_FETCHER);
+        tab2Fetcher = mModel.get(1).model.get(TabProperties.THUMBNAIL_FETCHER);
+
+        // Select tab 1 again and the other group should unselect.
+        mTabModelObserverCaptor
+                .getValue()
+                .didSelectTab(mTab1, TabLaunchType.FROM_CHROME_UI, TAB3_ID);
+
+        assertThat(mModel.size(), equalTo(2));
+        assertThat(mModel.get(0).model.get(TabProperties.IS_SELECTED), equalTo(true));
+        assertNotEquals(mModel.get(0).model.get(TabProperties.THUMBNAIL_FETCHER), tab1Fetcher);
+        assertThat(mModel.get(1).model.get(TabProperties.IS_SELECTED), equalTo(false));
+        assertNotEquals(mModel.get(1).model.get(TabProperties.THUMBNAIL_FETCHER), tab2Fetcher);
+    }
+
     @Test
     public void tabSelection_updatePreviousSelectedTabThumbnailFetcher() {
         mMediator =

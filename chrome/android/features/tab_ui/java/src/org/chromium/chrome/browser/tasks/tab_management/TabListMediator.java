@@ -973,6 +973,9 @@ class TabListMediator {
                         if (tab.getId() == lastId) return;
 
                         int oldIndex = mModel.indexFromId(lastId);
+                        if (oldIndex == TabModel.INVALID_TAB_INDEX && mActionsOnAllRelatedTabs) {
+                            oldIndex = getIndexForTabIdWithRelatedTabs(lastId);
+                        }
                         int newIndex = mModel.indexFromId(tab.getId());
                         if (newIndex == TabModel.INVALID_TAB_INDEX && mActionsOnAllRelatedTabs) {
                             // If a tab in tab group does not exist in model and needs to be
