@@ -1006,6 +1006,7 @@ if (is_chromeos_ash) {
       "//media/capture:capture_unittests",
       "//sandbox/linux:chrome_sandbox",
       "//sandbox/linux:sandbox_linux_unittests",
+      "//services/screen_ai:screen_ai_ocr_perf_test",
       "//third_party/breakpad:minidump_stackwalk($host_toolchain)",
       "//third_party/dawn/src/dawn/tests:dawn_end2end_tests",
       "//third_party/dawn/src/dawn/tests:dawn_unittests",
