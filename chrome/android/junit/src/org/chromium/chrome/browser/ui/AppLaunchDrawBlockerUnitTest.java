@@ -125,7 +125,6 @@ public class AppLaunchDrawBlockerUnitTest {
                         mIntentSupplier,
                         mShouldIgnoreIntentSupplier,
                         mIsTabletSupplier,
-                        mShouldShowTabSwitcherOnStartSupplier,
                         mProfileSupplier,
                         mIncognitoRestoreAppLaunchDrawBlockerFactoryMock);
         validateConstructorAndCaptureObservers();
@@ -278,29 +277,6 @@ public class AppLaunchDrawBlockerUnitTest {
         verify(mViewTreeObserver, never())
                 .addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
         mAppLaunchDrawBlocker.onActiveTabAvailable(true);
-    }
-
-    @Test
-    public void testLastTabNtp_phone_searchEngineHasLogo_noIntent_tabSwitcherOnStart() {
-        ChromeSharedPreferences.getInstance()
-                .writeInt(
-                        ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
-                        ActiveTabState.NTP);
-        setSearchEngineHasLogo(true);
-        when(mShouldShowTabSwitcherOnStartSupplier.get()).thenReturn(true);
-
-        mInflationObserver.onPostInflationStartup();
-        verify(mViewTreeObserver).addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
-        assertFalse(
-                "Draw is not blocked.", mOnPreDrawListenerArgumentCaptor.getValue().onPreDraw());
-
-        SystemClock.setCurrentTimeMillis(INITIAL_TIME + 10);
-        mAppLaunchDrawBlocker.onOverviewPageAvailable();
-
-        assertTrue(
-                "Draw is still blocked.", mOnPreDrawListenerArgumentCaptor.getValue().onPreDraw());
-        verify(mViewTreeObserver)
-                .removeOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.getValue());
     }
 
     @Test

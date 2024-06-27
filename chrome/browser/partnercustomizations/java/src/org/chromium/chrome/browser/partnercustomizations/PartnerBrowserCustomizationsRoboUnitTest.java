@@ -166,7 +166,6 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
         PartnerBrowserCustomizations.getInstance()
                 .onCreateInitialTab(
                         JUnitTestGURLs.NTP_NATIVE_URL.getSpec(),
-                        /* overviewOrStart= */ true,
                         mActivityLifecycleDispatcherMock,
                         HomepageCharacterizationHelperStub::ntpHelper);
 

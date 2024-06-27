@@ -37,8 +37,6 @@ import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.homepage.HomepageManager;
-import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -76,7 +74,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
-import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -131,8 +128,6 @@ public final class ReturnToChromeUtil {
             "NewTabPage.FailToShowHomeSurfaceUI";
 
     private static final String START_V2_SEGMENTATION_PLATFORM_KEY = "chrome_start_android_v2";
-
-    private static boolean sIsHomepagePolicyManagerInitializedRecorded;
 
     public static void setActivityPresentingOverivewWithOmniboxForTesting(ChromeActivity value) {
         sActivityPresentingOverivewWithOmniboxForTesting = value;
@@ -485,16 +480,6 @@ public final class ReturnToChromeUtil {
         return chromeActivity;
     }
 
-    /** Returns whether to use Chrome's homepage. */
-    @VisibleForTesting
-    public static boolean useChromeHomepage() {
-        HomepageManager homepageManager = HomepageManager.getInstance();
-        GURL homePageGurl = homepageManager.getHomepageGurl();
-        return homepageManager.isHomepageEnabled()
-                && ((HomepagePolicyManager.isInitializedWithNative())
-                        && (homePageGurl.isEmpty() || UrlUtilities.isNtpUrl(homePageGurl)));
-    }
-
     /**
      * Returns whether Start Surface is enabled in the given context. This includes checks of: 1)
      * whether home page is enabled; 2) whether it is on phone; 3) whether show NTP at start up is
@@ -525,54 +510,6 @@ public final class ReturnToChromeUtil {
         return tabModelSelector.getTotalTabCount();
     }
 
-    /** Returns whether grid Tab switcher or the Start surface should be shown at startup. */
-    public static boolean shouldShowOverviewPageOnStart(
-            Context context,
-            Intent intent,
-            TabModelSelector tabModelSelector,
-            ChromeInactivityTracker inactivityTracker,
-            boolean isTablet) {
-        // Neither Start surface or GTS should be shown on Tablet at startup.
-        if (isTablet) return false;
-
-        // If Start surface isn't enabled, return false.
-        if (!ReturnToChromeUtil.isStartSurfaceEnabled(context)) return false;
-
-        return shouldShowHomeSurfaceAtStartupImpl(intent, tabModelSelector, inactivityTracker);
-    }
-
-    private static boolean shouldShowHomeSurfaceAtStartupImpl(
-            Intent intent,
-            TabModelSelector tabModelSelector,
-            ChromeInactivityTracker inactivityTracker) {
-        // All of the following checks are based on Start surface is enabled.
-        // If there's no tab existing, handle the initial tab creation.
-        // Note: if user has a customized homepage, we don't show Start even there isn't any tab.
-        // However, if NTP is used as homepage, we show Start when there isn't any tab. See
-        // https://crbug.com/1368224.
-        if (IntentUtils.isMainIntentFromLauncher(intent)
-                && ReturnToChromeUtil.getTotalTabCount(tabModelSelector) <= 0) {
-            boolean initialized = HomepagePolicyManager.isInitializedWithNative();
-            if (!sIsHomepagePolicyManagerInitializedRecorded) {
-                sIsHomepagePolicyManagerInitializedRecorded = true;
-                RecordHistogram.recordBooleanHistogram(
-                        "Startup.Android.IsHomepagePolicyManagerInitialized", initialized);
-            }
-            if (!initialized) {
-                return false;
-            } else {
-                return useChromeHomepage();
-            }
-        }
-
-        // Checks whether to show the Start surface due to feature flag TAB_SWITCHER_ON_RETURN_MS.
-        long lastVisibleTimeMs = inactivityTracker.getLastVisibleTimeMs();
-        long lastBackgroundTimeMs = inactivityTracker.getLastBackgroundedTimeMs();
-        return IntentUtils.isMainIntentFromLauncher(intent)
-                && ReturnToChromeUtil.shouldShowTabSwitcher(
-                        Math.max(lastBackgroundTimeMs, lastVisibleTimeMs));
-    }
-
     /**
      * Returns whether should show a NTP as the home surface at startup. This feature is only
      * enabled on Tablet.
@@ -592,7 +529,12 @@ public final class ReturnToChromeUtil {
             return false;
         }
 
-        return shouldShowHomeSurfaceAtStartupImpl(intent, tabModelSelector, inactivityTracker);
+        // Checks whether to show the Start surface due to feature flag TAB_SWITCHER_ON_RETURN_MS.
+        long lastVisibleTimeMs = inactivityTracker.getLastVisibleTimeMs();
+        long lastBackgroundTimeMs = inactivityTracker.getLastBackgroundedTimeMs();
+        return IntentUtils.isMainIntentFromLauncher(intent)
+                && ReturnToChromeUtil.shouldShowTabSwitcher(
+                        Math.max(lastBackgroundTimeMs, lastVisibleTimeMs));
     }
 
     /** Returns whether a recreate was happened. */

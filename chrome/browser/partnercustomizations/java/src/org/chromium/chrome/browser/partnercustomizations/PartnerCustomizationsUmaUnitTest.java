@@ -541,11 +541,7 @@ public class PartnerCustomizationsUmaUnitTest {
 
         mPartnerCustomizationsUma.logAsyncInitStarted(START_TIME);
         mPartnerCustomizationsUma.onCreateInitialTab(
-                false,
-                NTP_URL,
-                false,
-                mActivityLifecycleDispatcherMock,
-                HELPER_FOR_PARTNER_NON_NTP);
+                false, NTP_URL, mActivityLifecycleDispatcherMock, HELPER_FOR_PARTNER_NON_NTP);
         PartnerCustomizationsUma.logPartnerCustomizationDelegate(SOME_DELEGATE);
         mPartnerCustomizationsUma.logAsyncInitCompleted();
         mPartnerCustomizationsUma.logAsyncInitFinalized(true);
@@ -571,11 +567,7 @@ public class PartnerCustomizationsUmaUnitTest {
         mPartnerCustomizationsUma.logAsyncInitStarted(START_TIME);
         PartnerCustomizationsUma.logPartnerCustomizationDelegate(SOME_DELEGATE);
         mPartnerCustomizationsUma.onCreateInitialTab(
-                false,
-                NTP_URL,
-                false,
-                mActivityLifecycleDispatcherMock,
-                HELPER_FOR_NTP);
+                false, NTP_URL, mActivityLifecycleDispatcherMock, HELPER_FOR_NTP);
         mPartnerCustomizationsUma.logAsyncInitCompleted();
         mPartnerCustomizationsUma.logAsyncInitFinalized(false);
 
@@ -596,11 +588,7 @@ public class PartnerCustomizationsUmaUnitTest {
         mPartnerCustomizationsUma.logAsyncInitStarted(START_TIME);
         PartnerCustomizationsUma.logPartnerCustomizationDelegate(SOME_DELEGATE);
         mPartnerCustomizationsUma.onCreateInitialTab(
-                false,
-                NTP_URL,
-                false,
-                mActivityLifecycleDispatcherMock,
-                HELPER_FOR_NTP);
+                false, NTP_URL, mActivityLifecycleDispatcherMock, HELPER_FOR_NTP);
         mPartnerCustomizationsUma.logAsyncInitCancelled();
         mPartnerCustomizationsUma.logAsyncInitFinalized(false);
         // Customization never completes probably due to the async task timing out due to a slow
@@ -627,11 +615,7 @@ public class PartnerCustomizationsUmaUnitTest {
         mPartnerCustomizationsUma.logAsyncInitStarted(START_TIME);
         PartnerCustomizationsUma.logPartnerCustomizationDelegate(SOME_DELEGATE);
         mPartnerCustomizationsUma.onCreateInitialTab(
-                false,
-                NON_NTP_URL,
-                false,
-                mActivityLifecycleDispatcherMock,
-                HELPER_FOR_PARTNER_NON_NTP);
+                false, NON_NTP_URL, mActivityLifecycleDispatcherMock, HELPER_FOR_PARTNER_NON_NTP);
         mPartnerCustomizationsUma.logAsyncInitCompleted();
         mPartnerCustomizationsUma.logAsyncInitFinalized(true);
 
@@ -658,7 +642,6 @@ public class PartnerCustomizationsUmaUnitTest {
         mPartnerCustomizationsUma.onCreateInitialTab(
                 false,
                 NON_NTP_URL,
-                false,
                 mActivityLifecycleDispatcherMock,
                 HomepageCharacterizationHelperStub::nonPartnerHelper);
         mPartnerCustomizationsUma.logAsyncInitCompleted();
@@ -690,11 +673,7 @@ public class PartnerCustomizationsUmaUnitTest {
         mPartnerCustomizationsUma.logAsyncInitStarted(START_TIME);
         PartnerCustomizationsUma.logPartnerCustomizationDelegate(SOME_DELEGATE);
         mPartnerCustomizationsUma.onCreateInitialTab(
-                false,
-                NTP_URL,
-                false,
-                mActivityLifecycleDispatcherMock,
-                HELPER_FOR_NTP);
+                false, NTP_URL, mActivityLifecycleDispatcherMock, HELPER_FOR_NTP);
         mPartnerCustomizationsUma.logAsyncInitCompleted();
         mPartnerCustomizationsUma.logAsyncInitFinalized(false);
 
@@ -719,11 +698,7 @@ public class PartnerCustomizationsUmaUnitTest {
         mPartnerCustomizationsUma.logAsyncInitStarted(START_TIME);
         PartnerCustomizationsUma.logPartnerCustomizationDelegate(SOME_DELEGATE);
         mPartnerCustomizationsUma.onCreateInitialTab(
-                false,
-                NON_NTP_URL,
-                false,
-                mActivityLifecycleDispatcherMock,
-                HELPER_FOR_PARTNER_NON_NTP);
+                false, NON_NTP_URL, mActivityLifecycleDispatcherMock, HELPER_FOR_PARTNER_NON_NTP);
         mPartnerCustomizationsUma.logAsyncInitCompleted();
         mPartnerCustomizationsUma.logAsyncInitFinalized(false);
 
@@ -747,11 +722,7 @@ public class PartnerCustomizationsUmaUnitTest {
         mPartnerCustomizationsUma.logAsyncInitFinalized(false);
 
         mPartnerCustomizationsUma.onCreateInitialTab(
-                false,
-                NTP_URL,
-                false,
-                mActivityLifecycleDispatcherMock,
-                HELPER_FOR_NTP);
+                false, NTP_URL, mActivityLifecycleDispatcherMock, HELPER_FOR_NTP);
 
         captureObserverFromLifecycleMockForEnabledFeature().onFinishNativeInitialization();
         histograms.assertExpected();
@@ -773,11 +744,7 @@ public class PartnerCustomizationsUmaUnitTest {
         mPartnerCustomizationsUma.logAsyncInitFinalized(true);
 
         mPartnerCustomizationsUma.onCreateInitialTab(
-                true,
-                NON_NTP_URL,
-                false,
-                mActivityLifecycleDispatcherMock,
-                HELPER_FOR_PARTNER_NON_NTP);
+                true, NON_NTP_URL, mActivityLifecycleDispatcherMock, HELPER_FOR_PARTNER_NON_NTP);
 
         captureObserverFromLifecycleMockForEnabledFeature().onFinishNativeInitialization();
         histograms.assertExpected();
@@ -797,11 +764,7 @@ public class PartnerCustomizationsUmaUnitTest {
                                 "Android.PartnerCustomization.HomepageCustomizationOutcome");
 
         mPartnerCustomizationsUma.onCreateInitialTab(
-                false,
-                NON_NTP_URL,
-                false,
-                mActivityLifecycleDispatcherMock,
-                HELPER_FOR_PARTNER_NON_NTP);
+                false, NON_NTP_URL, mActivityLifecycleDispatcherMock, HELPER_FOR_PARTNER_NON_NTP);
         beforeStartedBuilder.build().assertExpected();
 
         // Histograms should be emitted once the Async task starts up.
@@ -845,18 +808,10 @@ public class PartnerCustomizationsUmaUnitTest {
         mPartnerCustomizationsUma.logAsyncInitStarted(START_TIME);
         PartnerCustomizationsUma.logPartnerCustomizationDelegate(SOME_DELEGATE);
         mPartnerCustomizationsUma.onCreateInitialTab(
-                false,
-                NON_NTP_URL,
-                false,
-                mActivityLifecycleDispatcherMock,
-                HELPER_FOR_PARTNER_NON_NTP);
+                false, NON_NTP_URL, mActivityLifecycleDispatcherMock, HELPER_FOR_PARTNER_NON_NTP);
         // Starting two activities right away, e.g. on multi window. The second should be ignored.
         mPartnerCustomizationsUma.onCreateInitialTab(
-                false,
-                NON_NTP_URL,
-                false,
-                mActivityLifecycleDispatcherMock,
-                HELPER_FOR_PARTNER_NON_NTP);
+                false, NON_NTP_URL, mActivityLifecycleDispatcherMock, HELPER_FOR_PARTNER_NON_NTP);
         mPartnerCustomizationsUma.logAsyncInitCompleted();
         mPartnerCustomizationsUma.logAsyncInitFinalized(true);
 

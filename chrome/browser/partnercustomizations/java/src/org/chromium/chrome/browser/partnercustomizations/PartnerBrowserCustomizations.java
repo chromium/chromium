@@ -277,27 +277,23 @@ public class PartnerBrowserCustomizations {
     }
 
     /**
-     * Called when Chrome creates an initial tab.
-     * This notifies the UMA instance so it tracks how much initialization progresses relative to
-     * initial Tab creation.
+     * Called when Chrome creates an initial tab. This notifies the UMA instance so it tracks how
+     * much initialization progresses relative to initial Tab creation.
+     *
      * @param homepageUrlCreated The URL of the initial Tab that was created or {@code null} if
-     *         something other than a Homepage was used for an initial Tab.
-     * @param isOverviewPageOrStartSurface indicates that there was no created Homepage because some
-     *         kind of overview page or Start Surface was presented in place of the initial Tab.
+     *     something other than a Homepage was used for an initial Tab.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} to use to wait for
-     *         native initialization.
+     *     native initialization.
      * @param homepageCharacterizationHelper A supplier to characterize a Homepage.
      */
     public void onCreateInitialTab(
             @Nullable String homepageUrlCreated,
-            boolean isOverviewPageOrStartSurface,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull Supplier<HomepageCharacterizationHelper> homepageCharacterizationHelper) {
         if (mPartnerCustomizationsUma != null) {
             mPartnerCustomizationsUma.onCreateInitialTab(
                     isInitialized(),
                     homepageUrlCreated,
-                    isOverviewPageOrStartSurface,
                     activityLifecycleDispatcher,
                     homepageCharacterizationHelper);
         }

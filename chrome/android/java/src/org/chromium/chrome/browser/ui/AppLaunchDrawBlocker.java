@@ -44,7 +44,6 @@ public class AppLaunchDrawBlocker {
     private final Supplier<Intent> mIntentSupplier;
     private final Supplier<Boolean> mShouldIgnoreIntentSupplier;
     private final Supplier<Boolean> mIsTabletSupplier;
-    private final Supplier<Boolean> mShouldShowOverviewPageOnStartSupplier;
     private final ObservableSupplier<Profile> mProfileSupplier;
 
     /**
@@ -74,8 +73,6 @@ public class AppLaunchDrawBlocker {
      * @param shouldIgnoreIntentSupplier {@link Supplier<Boolean>} for whether the ignore should be
      *     ignored.
      * @param isTabletSupplier {@link Supplier<Boolean>} for whether the device is a tablet.
-     * @param shouldShowTabSwitcherOnStartSupplier {@link Supplier<Boolean>} for whether the tab
-     *     switcher should be shown on start.
      * @param incognitoRestoreAppLaunchDrawBlockerFactory Factory to create {@link
      *     IncognitoRestoreAppLaunchDrawBlocker}.
      */
@@ -85,7 +82,6 @@ public class AppLaunchDrawBlocker {
             @NonNull Supplier<Intent> intentSupplier,
             @NonNull Supplier<Boolean> shouldIgnoreIntentSupplier,
             @NonNull Supplier<Boolean> isTabletSupplier,
-            @NonNull Supplier<Boolean> shouldShowTabSwitcherOnStartSupplier,
             @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull
                     IncognitoRestoreAppLaunchDrawBlockerFactory
@@ -118,7 +114,6 @@ public class AppLaunchDrawBlocker {
         mIntentSupplier = intentSupplier;
         mShouldIgnoreIntentSupplier = shouldIgnoreIntentSupplier;
         mIsTabletSupplier = isTabletSupplier;
-        mShouldShowOverviewPageOnStartSupplier = shouldShowTabSwitcherOnStartSupplier;
         mProfileSupplier = profileSupplier;
         mIncognitoRestoreAppLaunchDrawBlocker =
                 incognitoRestoreAppLaunchDrawBlockerFactory.create(
@@ -188,14 +183,6 @@ public class AppLaunchDrawBlocker {
 
     /** Only block the draw if we believe the initial tab will be the NTP. */
     private void maybeBlockDraw() {
-        if (mShouldShowOverviewPageOnStartSupplier.get()) {
-            mTimeStartedBlockingDrawForInitialTab = SystemClock.elapsedRealtime();
-            mBlockDrawForOverviewPage = true;
-            ViewDrawBlocker.blockViewDrawUntilReady(
-                    mViewSupplier.get(), () -> !mBlockDrawForOverviewPage);
-            return;
-        }
-
         @ActiveTabState int tabState = TabPersistentStore.readLastKnownActiveTabStatePref();
         boolean searchEngineHasLogo =
                 ChromeSharedPreferences.getInstance()

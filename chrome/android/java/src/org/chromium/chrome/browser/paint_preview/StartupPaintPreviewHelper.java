@@ -49,9 +49,8 @@ public class StartupPaintPreviewHelper {
      * @param windowAndroid The WindowAndroid that corresponds to the tabModelSelector.
      * @param activityCreationTime The time the ChromeActivity was created.
      * @param browserControlsManager The BrowserControlsManager which is used to fetch the browser
-     *         visibility delegate
+     *     visibility delegate
      * @param tabModelSelector The TabModelSelector to observe.
-     * @param willShowStartSurface Whether the start surface will be shown.
      * @param progressBarCoordinatorSupplier Supplier for the progress bar.
      */
     public StartupPaintPreviewHelper(
@@ -59,15 +58,13 @@ public class StartupPaintPreviewHelper {
             long activityCreationTime,
             BrowserControlsManager browserControlsManager,
             TabModelSelector tabModelSelector,
-            boolean willShowStartSurface,
             Supplier<LoadProgressCoordinator> progressBarCoordinatorSupplier) {
         mActivityCreationTime = activityCreationTime;
         mBrowserControlsManager = browserControlsManager;
         mProgressBarCoordinatorSupplier = progressBarCoordinatorSupplier;
 
         if (MultiWindowUtils.getInstance()
-                        .areMultipleChromeInstancesRunning(windowAndroid.getContext().get())
-                || willShowStartSurface) {
+                .areMultipleChromeInstancesRunning(windowAndroid.getContext().get())) {
             sShouldShowOnRestore = false;
         }
 

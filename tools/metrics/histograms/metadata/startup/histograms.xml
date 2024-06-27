@@ -410,18 +410,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.Android.IsHomepagePolicyManagerInitialized"
-    enum="Boolean" expires_after="2024-09-15">
-  <owner>hanxi@chromium.org</owner>
-  <owner>xinyiji@chromium.org</owner>
-  <summary>
-    Records whether the HompagePolicyManager is initialized with native in
-    startup when the check of whether to show Start surface when there isn't any
-    Tab happens. The histogram is recorded only on startup when Chrome is
-    launched from app icon and there isn't any Tab to restore.
-  </summary>
-</histogram>
-
 <histogram name="Startup.Android.IsLastBackgroundTimeLogged" enum="Boolean"
     expires_after="2024-11-17">
   <owner>hanxi@chromium.org</owner>

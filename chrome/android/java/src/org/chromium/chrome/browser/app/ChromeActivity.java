@@ -1907,11 +1907,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return false;
     }
 
-    /** Returns whether grid Tab switcher or the Start surface should be shown at startup. */
-    public boolean shouldShowOverviewPageOnStart(Intent intent) {
-        return false;
-    }
-
     @CallSuper
     @Override
     public boolean canShowAppMenu() {
