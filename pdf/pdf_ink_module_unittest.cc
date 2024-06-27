@@ -32,6 +32,7 @@
 #include "ui/gfx/geometry/vector2d_f.h"
 
 using testing::ElementsAre;
+using testing::ElementsAreArray;
 using testing::Pair;
 
 namespace chrome_pdf {
@@ -553,7 +554,7 @@ TEST_F(PdfInkModuleStrokeTest, StrokeAcrossPages) {
               ElementsAre(Pair(0, testing::SizeIs(1))));
 }
 
-TEST_F(PdfInkModuleStrokeTest, StrokePageExitAndRentry) {
+TEST_F(PdfInkModuleStrokeTest, StrokePageExitAndReentry) {
   EnableAnnotationMode();
   InitializeVerticalTwoPageLayout();
 
@@ -571,13 +572,13 @@ TEST_F(PdfInkModuleStrokeTest, StrokePageExitAndRentry) {
                                kTwoPageVerticalLayoutPoint3InsidePage0,
                                /*expect_mouse_events_handled=*/true);
 
-  const PdfInkModule::StrokeInputPoints kSegment1 = {gfx::PointF(5.0f, 5.0f),
-                                                     gfx::PointF(5.0f, 0.0f)};
-  const PdfInkModule::StrokeInputPoints kSegment2 = {gfx::PointF(10.0f, 0.0f),
-                                                     gfx::PointF(10.0f, 5.0f)};
+  constexpr gfx::PointF kSegment1[] = {gfx::PointF(5.0f, 5.0f),
+                                       gfx::PointF(5.0f, 0.0f)};
+  constexpr gfx::PointF kSegment2[] = {gfx::PointF(10.0f, 0.0f),
+                                       gfx::PointF(10.0f, 5.0f)};
   EXPECT_THAT(ink_module().GetStrokesInputPositionsForTesting(),
-              ElementsAre(Pair(0, PdfInkModule::PageStrokeInputPoints{
-                                      {kSegment1, kSegment2}})));
+              ElementsAre(Pair(0, ElementsAre(ElementsAreArray(kSegment1),
+                                              ElementsAreArray(kSegment2)))));
 }
 
 }  // namespace
