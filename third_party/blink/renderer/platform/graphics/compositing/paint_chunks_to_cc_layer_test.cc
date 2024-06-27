@@ -1323,8 +1323,20 @@ TEST_P(PaintChunksToCcLayerTest,
                   PaintOpIs<cc::DrawRecordOp>()));  // chunk 2
 }
 
+// This tests the following situation:
+// <div id="scroller" style="width: 100px; height: 400px; overflow: scroll">
+//   <div style="transform_under_scroll clip_under_scroll">
+//     <div id="opacity" style="opacity: 0.5; height: 1000px">
+//       Contained by scroller.
+//       <div style="position: absolute">
+//         Not contained by scroller.
+//       </div>
+//       Contained by scroller.
+//     </div>
+//   </div>
+// </div>
 TEST_P(PaintChunksToCcLayerTest,
-       DISABLED_ScrollingContentsInterlacingNonScrollingIntoDisplayItemList) {
+       ScrollingContentsInterlacingNonScrollingIntoDisplayItemList) {
   if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     return;
   }
@@ -1345,11 +1357,13 @@ TEST_P(PaintChunksToCcLayerTest,
 
   TestChunks chunks;
   chunks.AddChunk(t0(), c0(), e0());
+  // Contained by scroller.
   chunks.AddChunk(*transform_under_scroll, *clip_under_scroll,
                   *effect_under_scroll);
+  // Not contained by scroller.
   chunks.AddChunk(t0(), c0(), *effect_under_scroll);
-  chunks.AddChunk(*transform_under_scroll, *clip_under_scroll,
-                  *effect_under_scroll);
+  // Contained by scroller.
+  chunks.AddChunk(*transform_under_scroll, *clip_under_scroll, e0());
   chunks.AddChunk(t0(), c0(), e0());
 
   auto cc_list = base::MakeRefCounted<cc::DisplayItemList>();
@@ -1367,18 +1381,19 @@ TEST_P(PaintChunksToCcLayerTest,
           PaintOpEq<cc::ClipRectOp>(SkRect::MakeXYWH(5, 5, 20, 30),
                                     SkClipOp::kIntersect,
                                     /*antialias=*/true),  // <overflow-clip>
-          PaintOpIs<cc::DrawScrollingContentsOp>(),
-          PaintOpIs<cc::RestoreOp>(),  // </overflow-clip>
-          PaintOpIs<cc::RestoreOp>(),  // </effect>
+          PaintOpIs<cc::DrawScrollingContentsOp>(),       // chunk 1
+          PaintOpIs<cc::RestoreOp>(),                     // </overflow-clip>
+          PaintOpIs<cc::DrawRecordOp>(),                  // chunk 2
+          PaintOpIs<cc::RestoreOp>(),                     // </effect>
           // The rest of the scrolling contents not under the effect
           // needs another DrawScrollingContentsOp.
           PaintOpIs<cc::SaveOp>(),
           PaintOpEq<cc::ClipRectOp>(SkRect::MakeXYWH(5, 5, 20, 30),
                                     SkClipOp::kIntersect,
                                     /*antialias=*/true),  // <overflow-clip>
-          PaintOpIs<cc::DrawScrollingContentsOp>(),
-          PaintOpIs<cc::RestoreOp>(),       // </overflow-clip>
-          PaintOpIs<cc::DrawRecordOp>()));  // chunk 3
+          PaintOpIs<cc::DrawScrollingContentsOp>(),       // chunk 3
+          PaintOpIs<cc::RestoreOp>(),                     // </overflow-clip>
+          PaintOpIs<cc::DrawRecordOp>()));                // chunk 4
 
   const auto& scrolling_contents_op1 =
       static_cast<const cc::DrawScrollingContentsOp&>(
@@ -1399,12 +1414,20 @@ TEST_P(PaintChunksToCcLayerTest,
 
   const auto& scrolling_contents_op2 =
       static_cast<const cc::DrawScrollingContentsOp&>(
-          cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(9));
+          cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(10));
   ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
             scrolling_contents_op2.GetType());
   EXPECT_THAT(
       scrolling_contents_op2.display_item_list->GetPaintOpBufferForTesting(),
-      ElementsAre(PaintOpIs<cc::DrawRecordOp>()));  // chunk 2
+      ElementsAre(PaintOpIs<cc::SaveOp>(),
+                  PaintOpEq<cc::ConcatOp>(
+                      SkM44::Scale(2, 2)),  // <transform_under_scroll>
+                  PaintOpEq<cc::ClipRectOp>(
+                      SkRect::MakeXYWH(0, 0, 1, 1), SkClipOp::kIntersect,
+                      /*antialias=*/true),        // <clip_under_scroll>
+                  PaintOpIs<cc::DrawRecordOp>(),  // chunk 3
+                  PaintOpIs<cc::RestoreOp>()));   // </clip_under_scroll>
+                                                  // </transform_under_scroll>
 }
 
 TEST_P(PaintChunksToCcLayerTest, NestedScrollingContentsIntoDisplayItemList) {

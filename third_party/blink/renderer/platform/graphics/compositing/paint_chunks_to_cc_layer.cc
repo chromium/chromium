@@ -650,20 +650,18 @@ ScrollTranslationAction ConversionContext<Result>::StartEffect(
     if (auto action = SwitchToClip(effect.OutputClip()->Unalias())) {
       return action;
     }
+    // Adjust transform first. Though a non-filter effect itself doesn't depend
+    // on the transform, switching to the target transform before
+    // SaveLayer[Alpha]Op will help the rasterizer optimize a non-filter
+    // SaveLayer[Alpha]Op/DrawRecord/Restore sequence into a single DrawRecord
+    // which is much faster. This also avoids multiple Save/Concat/.../Restore
+    // pairs for multiple consecutive effects in the same transform space, by
+    // issuing only one pair around all of the effects.
+    if (auto action =
+            SwitchToTransform(effect.LocalTransformSpace().Unalias())) {
+      return action;
+    }
   } else if (auto action = EndClips()) {
-    return action;
-  }
-
-  size_t save_layer_id = kNotFound;
-
-  // Adjust transform first. Though a non-filter effect itself doesn't depend on
-  // the transform, switching to the target transform before SaveLayer[Alpha]Op
-  // will help the rasterizer optimize a non-filter SaveLayer[Alpha]Op/
-  // DrawRecord/Restore sequence into a single DrawRecord which is much faster.
-  // This also avoids multiple Save/Concat/.../Restore pairs for multiple
-  // consecutive effects in the same transform space, by issuing only one pair
-  // around all of the effects.
-  if (auto action = SwitchToTransform(effect.LocalTransformSpace().Unalias())) {
     return action;
   }
 
@@ -679,6 +677,7 @@ ScrollTranslationAction ConversionContext<Result>::StartEffect(
   DCHECK(!has_filter || !(has_opacity || has_other_effects));
 
   // Apply effects.
+  size_t save_layer_id = kNotFound;
   result_.StartPaint();
   if (!has_filter) {
     if (has_other_effects) {
