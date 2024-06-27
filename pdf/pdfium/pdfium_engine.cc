@@ -3637,10 +3637,10 @@ bool PDFiumEngine::MouseDownState::Matches(
 PDFiumEngine::RegionData::RegionData(base::span<uint8_t> buffer, size_t stride)
     : buffer(buffer), stride(stride) {}
 
-PDFiumEngine::RegionData::RegionData(RegionData&&) = default;
+PDFiumEngine::RegionData::RegionData(RegionData&&) noexcept = default;
 
-PDFiumEngine::RegionData& PDFiumEngine::RegionData::operator=(RegionData&&) =
-    default;
+PDFiumEngine::RegionData& PDFiumEngine::RegionData::operator=(
+    RegionData&&) noexcept = default;
 
 PDFiumEngine::RegionData::~RegionData() = default;
 
@@ -4315,13 +4315,13 @@ PDFiumEngine::ProgressivePaint::ProgressivePaint(int index,
                                                  const gfx::Rect& rect)
     : page_index_(index), rect_(rect) {}
 
-PDFiumEngine::ProgressivePaint::ProgressivePaint(ProgressivePaint&& that) =
-    default;
-
-PDFiumEngine::ProgressivePaint::~ProgressivePaint() = default;
+PDFiumEngine::ProgressivePaint::ProgressivePaint(
+    ProgressivePaint&& that) noexcept = default;
 
 PDFiumEngine::ProgressivePaint& PDFiumEngine::ProgressivePaint::operator=(
-    ProgressivePaint&& that) = default;
+    ProgressivePaint&& that) noexcept = default;
+
+PDFiumEngine::ProgressivePaint::~ProgressivePaint() = default;
 
 void PDFiumEngine::ProgressivePaint::SetBitmapAndImageData(
     ScopedFPDFBitmap bitmap,
@@ -4332,11 +4332,11 @@ void PDFiumEngine::ProgressivePaint::SetBitmapAndImageData(
 
 PDFiumEngine::PendingThumbnail::PendingThumbnail() = default;
 
-PDFiumEngine::PendingThumbnail::PendingThumbnail(PendingThumbnail&& that) =
-    default;
+PDFiumEngine::PendingThumbnail::PendingThumbnail(
+    PendingThumbnail&& that) noexcept = default;
 
 PDFiumEngine::PendingThumbnail& PDFiumEngine::PendingThumbnail::operator=(
-    PendingThumbnail&& that) = default;
+    PendingThumbnail&& that) noexcept = default;
 
 PDFiumEngine::PendingThumbnail::~PendingThumbnail() = default;
 

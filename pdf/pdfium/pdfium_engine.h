@@ -265,8 +265,8 @@ class PDFiumEngine : public PDFEngine,
 
   struct RegionData {
     RegionData(base::span<uint8_t> buffer, size_t stride);
-    RegionData(RegionData&&);
-    RegionData& operator=(RegionData&&);
+    RegionData(RegionData&&) noexcept;
+    RegionData& operator=(RegionData&&) noexcept;
     ~RegionData();
 
     base::raw_span<uint8_t> buffer;  // Never empty.
@@ -785,8 +785,8 @@ class PDFiumEngine : public PDFEngine,
   class ProgressivePaint {
    public:
     ProgressivePaint(int page_index, const gfx::Rect& rect);
-    ProgressivePaint(ProgressivePaint&& that);
-    ProgressivePaint& operator=(ProgressivePaint&& that);
+    ProgressivePaint(ProgressivePaint&& that) noexcept;
+    ProgressivePaint& operator=(ProgressivePaint&& that) noexcept;
     ~ProgressivePaint();
 
     int page_index() const { return page_index_; }
@@ -821,8 +821,8 @@ class PDFiumEngine : public PDFEngine,
   // Pending thumbnail requests.
   struct PendingThumbnail {
     PendingThumbnail();
-    PendingThumbnail(PendingThumbnail&& that);
-    PendingThumbnail& operator=(PendingThumbnail&& that);
+    PendingThumbnail(PendingThumbnail&& that) noexcept;
+    PendingThumbnail& operator=(PendingThumbnail&& that) noexcept;
     ~PendingThumbnail();
 
     float device_pixel_ratio = 1.0f;

@@ -21,8 +21,8 @@ struct ParsedParams {
   ParsedParams();
   ParsedParams(const ParsedParams& other);
   ParsedParams& operator=(const ParsedParams& other);
-  ParsedParams(ParsedParams&& other);
-  ParsedParams& operator=(ParsedParams&& other);
+  ParsedParams(ParsedParams&& other) noexcept;
+  ParsedParams& operator=(ParsedParams&& other) noexcept;
   ~ParsedParams();
 
   // The plugin source URL. Must not be empty.

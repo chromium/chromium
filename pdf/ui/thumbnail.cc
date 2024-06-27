@@ -117,9 +117,9 @@ Thumbnail::Thumbnail(const gfx::Size& page_size, float device_pixel_ratio)
   DCHECK(!image_data_.empty());
 }
 
-Thumbnail::Thumbnail(Thumbnail&& other) = default;
+Thumbnail::Thumbnail(Thumbnail&& other) noexcept = default;
 
-Thumbnail& Thumbnail::operator=(Thumbnail&& other) = default;
+Thumbnail& Thumbnail::operator=(Thumbnail&& other) noexcept = default;
 
 Thumbnail::~Thumbnail() = default;
 

@@ -12,12 +12,11 @@ namespace chrome_pdf {
 
 struct FlattenPdfResult {
   FlattenPdfResult(std::vector<uint8_t> pdf_in, uint32_t page_count);
-  ~FlattenPdfResult();
-
   FlattenPdfResult(const FlattenPdfResult&);
-  FlattenPdfResult(FlattenPdfResult&&);
   FlattenPdfResult& operator=(const FlattenPdfResult&);
-  FlattenPdfResult& operator=(FlattenPdfResult&&);
+  FlattenPdfResult(FlattenPdfResult&&) noexcept;
+  FlattenPdfResult& operator=(FlattenPdfResult&&) noexcept;
+  ~FlattenPdfResult();
 
   // `pdf` is never empty.
   std::vector<uint8_t> pdf;

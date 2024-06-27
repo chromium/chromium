@@ -731,11 +731,11 @@ PDFiumFormFiller::EngineInIsolateScope::EngineInIsolateScope(
 }
 
 PDFiumFormFiller::EngineInIsolateScope::EngineInIsolateScope(
-    EngineInIsolateScope&&) = default;
+    EngineInIsolateScope&&) noexcept = default;
 
 PDFiumFormFiller::EngineInIsolateScope&
-PDFiumFormFiller::EngineInIsolateScope::operator=(EngineInIsolateScope&&) =
-    default;
+PDFiumFormFiller::EngineInIsolateScope::operator=(
+    EngineInIsolateScope&&) noexcept = default;
 
 PDFiumFormFiller::EngineInIsolateScope::~EngineInIsolateScope() = default;
 
