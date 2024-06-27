@@ -645,6 +645,9 @@ const CGFloat kModuleMinMargin = 16;
     heightAboveFeed += viewController.view.frame.size.height;
   }
   heightAboveFeed += kBottomMagicStackPadding;
+  if (!self.contentSuggestionsViewController) {
+    heightAboveFeed += content_suggestions::HeaderBottomPadding();
+  }
   return heightAboveFeed;
 }
 
