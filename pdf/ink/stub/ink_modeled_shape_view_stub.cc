@@ -14,7 +14,8 @@ uint32_t InkModeledShapeViewStub::RenderGroupCount() const {
   return 0;
 }
 
-std::vector<InkModeledShapeView::Outline> InkModeledShapeViewStub::GetOutlines(
+std::vector<InkModeledShapeView::OutlinePositions>
+InkModeledShapeViewStub::GetRenderGroupOutlinePositions(
     uint32_t group_index) const {
   return {};
 }

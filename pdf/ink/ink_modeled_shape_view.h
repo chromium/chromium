@@ -9,22 +9,23 @@
 
 #include <vector>
 
+#include "pdf/ink/ink_point.h"
 #include "pdf/ink/ink_rect.h"
 
 namespace chrome_pdf {
 
 class InkModeledShapeView {
  public:
-  struct VertexIndexPair {
-    uint16_t mesh_index;
-    uint16_t vertex_index;
-  };
-  using Outline = std::vector<VertexIndexPair>;
+  using OutlinePositions = std::vector<InkPoint>;
 
   virtual ~InkModeledShapeView() = default;
 
   virtual uint32_t RenderGroupCount() const = 0;
-  virtual std::vector<Outline> GetOutlines(uint32_t group_index) const = 0;
+
+  // Gets the collection of all outline positions for the 0-based render group
+  // index.
+  virtual std::vector<OutlinePositions> GetRenderGroupOutlinePositions(
+      uint32_t group_index) const = 0;
 
   // Note that the return type is simpler and more straight-forward than Ink's.
   virtual InkRect Bounds() const = 0;
