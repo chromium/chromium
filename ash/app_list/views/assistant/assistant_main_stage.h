@@ -86,15 +86,40 @@ class ASH_EXPORT AppListAssistantMainStage
   void MaybeHideZeroStateAndShowFooter();
   void InitializeUIForStartingSession(bool from_search);
 
+  AssistantQueryView* query_view() {
+    return query_view_observation_.GetSource();
+  }
+  const AssistantQueryView* query_view() const {
+    return query_view_observation_.GetSource();
+  }
+
+  UiElementContainerView* ui_element_container() {
+    return ui_element_container_observation_.GetSource();
+  }
+  const UiElementContainerView* ui_element_container() const {
+    return ui_element_container_observation_.GetSource();
+  }
+
+  AssistantFooterView* footer() { return footer_observation_.GetSource(); }
+  const AssistantFooterView* footer() const {
+    return footer_observation_.GetSource();
+  }
+
   const raw_ptr<AssistantViewDelegate> delegate_;  // Owned by Shell.
 
   // Owned by view hierarchy.
   raw_ptr<AssistantProgressIndicator> progress_indicator_;
   raw_ptr<views::Separator> horizontal_separator_;
-  raw_ptr<AssistantQueryView> query_view_;
-  raw_ptr<UiElementContainerView> ui_element_container_;
+  // The observed views are owned by the view hierarchy. These could be a
+  // raw_ptr to the view + ScopedObservation, but accessing the view through
+  // the ScopedObservation saves a pointer.
+  base::ScopedObservation<AssistantQueryView, ViewObserver>
+      query_view_observation_{this};
+  base::ScopedObservation<UiElementContainerView, ViewObserver>
+      ui_element_container_observation_{this};
   raw_ptr<AssistantZeroStateView> zero_state_view_;
-  raw_ptr<AssistantFooterView> footer_;
+  base::ScopedObservation<AssistantFooterView, ViewObserver>
+      footer_observation_{this};
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};
