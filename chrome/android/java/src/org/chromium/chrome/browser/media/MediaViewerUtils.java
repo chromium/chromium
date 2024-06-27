@@ -24,6 +24,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -251,13 +252,11 @@ public class MediaViewerUtils {
         sIsMediaLauncherActivityForceEnabledForTest = true;
         // Synchronously update to avoid race conditions in tests.
         synchronousUpdateMediaLauncherActivityEnabled();
-    }
-
-    /** Stops forcing MediaLauncherActivity to be enabled for testing. */
-    public static void stopForcingEnableMediaLauncherActivityForTest() {
-        sIsMediaLauncherActivityForceEnabledForTest = false;
-        // Synchronously update to avoid race conditions in tests.
-        synchronousUpdateMediaLauncherActivityEnabled();
+        ResettersForTesting.register(
+                () -> {
+                    sIsMediaLauncherActivityForceEnabledForTest = false;
+                    synchronousUpdateMediaLauncherActivityEnabled();
+                });
     }
 
     private static boolean shouldEnableMediaLauncherActivity() {

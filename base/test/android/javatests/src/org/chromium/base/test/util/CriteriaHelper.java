@@ -7,8 +7,11 @@ package org.chromium.base.test.util;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.annotation.Nullable;
+
 import org.hamcrest.Matchers;
 
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -63,8 +66,13 @@ public class CriteriaHelper {
         }
     }
 
+    private static final String TAG = "CriteriaHelper";
+
     /** The default maximum time to wait for a criteria to become valid. */
     public static final long DEFAULT_MAX_TIME_TO_POLL = 3000L;
+
+    /** The default maximum time to wait for a criteria to become valid for long timeouts. */
+    private static final long DEFAULT_MAX_TIME_TO_POLL_LONG = 8000L;
 
     /** The default polling interval to wait between checking for a satisfied criteria. */
     public static final long DEFAULT_POLLING_INTERVAL = 50;
@@ -298,6 +306,24 @@ public class CriteriaHelper {
      */
     public static void pollUiThread(final Runnable criteria) {
         pollUiThread(criteria, DEFAULT_MAX_TIME_TO_POLL, DEFAULT_POLLING_INTERVAL);
+    }
+
+    /**
+     * Checks whether the given Runnable completes without exception at the default interval on the
+     * UI thread (using a longer than default timeout).
+     *
+     * @param criteria The Runnable that will be attempted.
+     * @see #pollInstrumentationThread(Runnable)
+     */
+    public static void pollUiThreadLongTimeout(
+            @Nullable String logMessage, final Runnable criteria) {
+        if (logMessage != null) {
+            Log.i(TAG, "Started: %s", logMessage);
+        }
+        pollUiThread(criteria, DEFAULT_MAX_TIME_TO_POLL_LONG, DEFAULT_POLLING_INTERVAL);
+        if (logMessage != null) {
+            Log.i(TAG, "Finished: %s", logMessage);
+        }
     }
 
     /**
