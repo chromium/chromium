@@ -105,6 +105,7 @@ found in the LICENSE file.
         <item name="android:textAppearanceListItemSecondary">@style/TextAppearance.TextMedium.Secondary</item>
         <item name="android:itemTextAppearance">@style/TextAppearance.TextLarge.Primary</item>
 
+        <item name="android:spinnerItemStyle">@style/Widget.BrowserUI.SpinnerItem</item>
         <item name="android:spinnerDropDownItemStyle">@style/Widget.BrowserUI.SpinnerDropDownItemStyle</item>
         <!-- This is for keeping the current TextInputLayout style.
              TODO(crbug.com/40764906): Remove or update once the design for the app is updated. -->
@@ -179,6 +180,7 @@ found in the LICENSE file.
         <item name="defaultMediumFontFamily">sans-serif-medium</item>
 
         <item name="android:itemTextAppearance">@style/TextAppearance.TextLarge.Primary</item>
+        <item name="android:spinnerItemStyle">@style/Widget.BrowserUI.SpinnerItem</item>
         <item name="android:spinnerDropDownItemStyle">@style/Widget.BrowserUI.SpinnerDropDownItemStyle</item>
     </style>
     <style name="Theme.BrowserUI.DialogWhenLarge.V35" parent="Theme.BrowserUI.DialogWhenLarge" />
@@ -265,6 +267,7 @@ found in the LICENSE file.
         <item name="defaultMediumFontFamily">sans-serif-medium</item>
 
         <item name="android:itemTextAppearance">@style/TextAppearance.TextLarge.Primary</item>
+        <item name="android:spinnerItemStyle">@style/Widget.BrowserUI.SpinnerItem</item>
         <item name="android:spinnerDropDownItemStyle">@style/Widget.BrowserUI.SpinnerDropDownItemStyle</item>
     </style>
     <style name="Theme.BrowserUI.AlertDialog.NoActionBar.V35" parent="Theme.BrowserUI.AlertDialog.NoActionBar" />

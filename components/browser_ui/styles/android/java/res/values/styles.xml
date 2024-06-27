@@ -40,11 +40,12 @@ found in the LICENSE file.
         <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
     </style>
 
-
+    <style name="Widget.BrowserUI.SpinnerItem" parent="Widget.AppCompat.TextView.SpinnerItem">
+        <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
+    </style>
     <style name="Widget.BrowserUI.SpinnerDropDownItemStyle" parent="Widget.AppCompat.DropDownItem.Spinner">
         <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
     </style>
-
 
     <!-- Basic theme for an overflow menu displayed in Chrome. -->
     <style name="Base.OverflowMenuThemeOverlay" parent="">
