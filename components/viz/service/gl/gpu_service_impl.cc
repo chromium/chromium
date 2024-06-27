@@ -909,9 +909,16 @@ void GpuServiceImpl::BindWebNNContextProvider(
                        std::move(pending_receiver), client_id));
     return;
   }
-  webnn::WebNNContextProviderImpl::Create(std::move(pending_receiver),
-                                          GetContextState(), gpu_feature_info_,
-                                          gpu_info_);
+
+  if (!webnn_context_provider_) {
+    // TODO(crbug.com/345352987): manage `WebNNContextProviderImpl` instance per
+    // `client_id` in order to support memory metrics.
+    webnn_context_provider_ = webnn::WebNNContextProviderImpl::Create(
+        GetContextState(), gpu_feature_info_, gpu_info_);
+  }
+
+  webnn_context_provider_->BindWebNNContextProvider(
+      std::move(pending_receiver));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

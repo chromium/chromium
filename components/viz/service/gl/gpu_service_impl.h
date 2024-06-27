@@ -89,6 +89,12 @@ namespace media {
 class MediaGpuChannelManager;
 }  // namespace media
 
+#if !BUILDFLAG(IS_CHROMEOS)
+namespace webnn {
+class WebNNContextProviderImpl;
+}  // namespace webnn
+#endif
+
 namespace viz {
 
 class VulkanContextProvider;
@@ -600,6 +606,10 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 #endif
 #if BUILDFLAG(SKIA_USE_DAWN)
   std::unique_ptr<gpu::DawnContextProvider> dawn_context_provider_;
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<webnn::WebNNContextProviderImpl> webnn_context_provider_;
 #endif
 
   std::unique_ptr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
