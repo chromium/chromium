@@ -222,6 +222,12 @@ void UpdateCharacterOffsets(const chrome_screen_ai::WordBox& word_box,
 void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
                       ui::AXNodeData& inline_text_box) {
   DCHECK_NE(inline_text_box.id, ui::kInvalidAXNodeID);
+
+  // TODO(crbug.com/347622611): Drop empty words in preprocessing.
+  if (word_box.utf8_string().empty()) {
+    return;
+  }
+
   // The boundaries of each `inline_text_box` is computed as the union of the
   // boundaries of all `word_box`es that are inside.
   // TODO(crbug.com/40918372): What if the angles of orientation are different?
@@ -250,9 +256,9 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
   std::vector<int32_t> word_ends = inline_text_box.GetIntListAttribute(
       ax::mojom::IntListAttribute::kWordEnds);
   int32_t new_word_start = 0;
-  int32_t new_word_end = base::checked_cast<int32_t>(word_length);
+  int32_t new_word_end = base::checked_cast<int32_t>(word_length) - 1;
   if (!word_ends.empty()) {
-    new_word_start += word_ends[word_ends.size() - 1];
+    new_word_start += word_ends[word_ends.size() - 1] + 1;
     new_word_end += new_word_start;
   }
   word_starts.push_back(new_word_start);
