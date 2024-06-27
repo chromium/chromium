@@ -70,6 +70,17 @@ class ASH_EXPORT PickerSearchRequest {
   void HandleEditorSearchResults(PickerSearchSource source,
                                  std::optional<PickerSearchResult> result);
 
+  // Sets the search for the source to be started right now.
+  // `CHECK` fails if a search was already started.
+  void MarkSearchStarted(PickerSearchSource source);
+  // Sets the search for the source to be not started, and emits a metric for
+  // the source.
+  // `CHECK` fails if a search wasn't started.
+  void MarkSearchEnded(PickerSearchSource source);
+  std::optional<base::TimeTicks> SwapSearchStart(
+      PickerSearchSource source,
+      std::optional<base::TimeTicks> new_value);
+
   bool is_category_specific_search_;
   const raw_ref<PickerClient> client_;
 
