@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "pdf/pdfium/pdfium_font_linux.h"
 
 #include <stddef.h>
@@ -211,9 +206,12 @@ BlinkFontMapper& GetBlinkFontMapper() {
 void EnumFonts(FPDF_SYSFONTINFO* sysfontinfo, void* mapper) {
   FPDF_AddInstalledFont(mapper, "Arial", FXFONT_DEFAULT_CHARSET);
 
-  const FPDF_CharsetFontMap* font_map = FPDF_GetDefaultTTFMap();
-  for (; font_map->charset != -1; ++font_map) {
-    FPDF_AddInstalledFont(mapper, font_map->fontname, font_map->charset);
+  size_t count = FPDF_GetDefaultTTFMapCount();
+  for (size_t i = 0; i < count; ++i) {
+    const FPDF_CharsetFontMap* font_map = FPDF_GetDefaultTTFMapEntry(i);
+    if (font_map) {
+      FPDF_AddInstalledFont(mapper, font_map->fontname, font_map->charset);
+    }
   }
 }
 
