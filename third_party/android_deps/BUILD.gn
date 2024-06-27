@@ -125,7 +125,7 @@ java_annotation_processor("auto_service_processor") {
 # === Generated Code Start ===
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_android_tools_common_java") {
-  jar_path = "libs/com_android_tools_common/common-30.2.0-beta01.jar"
+  jar_path = "cipd/libs/com_android_tools_common/common-30.2.0-beta01.jar"
   output_name = "com_android_tools_common"
   enable_bytecode_checks = false
 
@@ -137,7 +137,7 @@ java_prebuilt("com_android_tools_common_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_android_tools_layoutlib_layoutlib_api_java") {
-  jar_path = "libs/com_android_tools_layoutlib_layoutlib_api/layoutlib-api-30.2.0-beta01.jar"
+  jar_path = "cipd/libs/com_android_tools_layoutlib_layoutlib_api/layoutlib-api-30.2.0-beta01.jar"
   output_name = "com_android_tools_layoutlib_layoutlib_api"
   enable_bytecode_checks = false
 
@@ -149,7 +149,8 @@ java_prebuilt("com_android_tools_layoutlib_layoutlib_api_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_android_tools_sdk_common_java") {
-  jar_path = "libs/com_android_tools_sdk_common/sdk-common-30.2.0-beta01.jar"
+  jar_path =
+      "cipd/libs/com_android_tools_sdk_common/sdk-common-30.2.0-beta01.jar"
   output_name = "com_android_tools_sdk_common"
   enable_bytecode_checks = false
 
@@ -162,7 +163,7 @@ java_prebuilt("com_android_tools_sdk_common_java") {
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_auto_service_auto_service_java") {
   jar_path =
-      "libs/com_google_auto_service_auto_service/auto-service-1.0-rc6.jar"
+      "cipd/libs/com_google_auto_service_auto_service/auto-service-1.0-rc6.jar"
   output_name = "com_google_auto_service_auto_service"
   enable_bytecode_checks = false
   deps = [
@@ -174,7 +175,7 @@ java_prebuilt("com_google_auto_service_auto_service_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_auto_service_auto_service_annotations_java") {
-  jar_path = "libs/com_google_auto_service_auto_service_annotations/auto-service-annotations-1.0-rc6.jar"
+  jar_path = "cipd/libs/com_google_auto_service_auto_service_annotations/auto-service-annotations-1.0-rc6.jar"
   output_name = "com_google_auto_service_auto_service_annotations"
   supports_android = true
   enable_bytecode_checks = false
@@ -182,7 +183,7 @@ java_prebuilt("com_google_auto_service_auto_service_annotations_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_code_findbugs_jsr305_java") {
-  jar_path = "libs/com_google_code_findbugs_jsr305/jsr305-3.0.2.jar"
+  jar_path = "cipd/libs/com_google_code_findbugs_jsr305/jsr305-3.0.2.jar"
   output_name = "com_google_code_findbugs_jsr305"
   supports_android = true
   enable_bytecode_checks = false
@@ -190,7 +191,7 @@ java_prebuilt("com_google_code_findbugs_jsr305_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_code_gson_gson_java") {
-  jar_path = "libs/com_google_code_gson_gson/gson-2.9.0.jar"
+  jar_path = "cipd/libs/com_google_code_gson_gson/gson-2.9.0.jar"
   output_name = "com_google_code_gson_gson"
   supports_android = true
   enable_bytecode_checks = false
@@ -199,7 +200,7 @@ java_prebuilt("com_google_code_gson_gson_java") {
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 if (!defined(dagger_java_target)) {
   java_prebuilt("com_google_dagger_dagger_java") {
-    jar_path = "libs/com_google_dagger_dagger/dagger-2.30.jar"
+    jar_path = "cipd/libs/com_google_dagger_dagger/dagger-2.30.jar"
     output_name = "com_google_dagger_dagger"
     supports_android = true
     enable_bytecode_checks = false
@@ -214,7 +215,8 @@ if (!defined(dagger_java_target)) {
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 if (!defined(dagger_annotation_processor_target)) {
   java_prebuilt("com_google_dagger_dagger_compiler_java") {
-    jar_path = "libs/com_google_dagger_dagger_compiler/dagger-compiler-2.30.jar"
+    jar_path =
+        "cipd/libs/com_google_dagger_dagger_compiler/dagger-compiler-2.30.jar"
     output_name = "com_google_dagger_dagger_compiler"
     enable_bytecode_checks = false
 
@@ -241,7 +243,7 @@ if (!defined(dagger_annotation_processor_target)) {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_errorprone_error_prone_annotation_java") {
-  jar_path = "libs/com_google_errorprone_error_prone_annotation/error_prone_annotation-2.19.1.jar"
+  jar_path = "cipd/libs/com_google_errorprone_error_prone_annotation/error_prone_annotation-2.19.1.jar"
   output_name = "com_google_errorprone_error_prone_annotation"
   enable_bytecode_checks = false
   deps = [ ":com_google_guava_guava_java" ]
@@ -249,7 +251,7 @@ java_prebuilt("com_google_errorprone_error_prone_annotation_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_errorprone_error_prone_annotations_java") {
-  jar_path = "libs/com_google_errorprone_error_prone_annotations/error_prone_annotations-2.23.0.jar"
+  jar_path = "cipd/libs/com_google_errorprone_error_prone_annotations/error_prone_annotations-2.23.0.jar"
   output_name = "com_google_errorprone_error_prone_annotations"
   supports_android = true
   enable_bytecode_checks = false
@@ -257,7 +259,7 @@ java_prebuilt("com_google_errorprone_error_prone_annotations_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_errorprone_error_prone_check_api_java") {
-  jar_path = "libs/com_google_errorprone_error_prone_check_api/error_prone_check_api-2.11.0.jar"
+  jar_path = "cipd/libs/com_google_errorprone_error_prone_check_api/error_prone_check_api-2.11.0.jar"
   output_name = "com_google_errorprone_error_prone_check_api"
   enable_bytecode_checks = false
   deps = [
@@ -274,8 +276,7 @@ java_prebuilt("com_google_errorprone_error_prone_check_api_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_errorprone_error_prone_core_java") {
-  jar_path =
-      "libs/com_google_errorprone_error_prone_core/error_prone_core-2.11.0.jar"
+  jar_path = "cipd/libs/com_google_errorprone_error_prone_core/error_prone_core-2.11.0.jar"
   output_name = "com_google_errorprone_error_prone_core"
   enable_bytecode_checks = false
   deps = [
@@ -296,14 +297,14 @@ java_prebuilt("com_google_errorprone_error_prone_core_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_errorprone_javac_java") {
-  jar_path = "libs/com_google_errorprone_javac/javac-9+181-r4173-1.jar"
+  jar_path = "cipd/libs/com_google_errorprone_javac/javac-9+181-r4173-1.jar"
   output_name = "com_google_errorprone_javac"
   enable_bytecode_checks = false
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_guava_guava_java") {
-  jar_path = "libs/com_google_guava_guava/guava-32.1.3-jre.jar"
+  jar_path = "cipd/libs/com_google_guava_guava/guava-32.1.3-jre.jar"
   output_name = "com_google_guava_guava"
   enable_bytecode_checks = false
   deps = [
@@ -322,8 +323,7 @@ java_prebuilt("com_google_guava_guava_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_j2objc_j2objc_annotations_java") {
-  jar_path =
-      "libs/com_google_j2objc_j2objc_annotations/j2objc-annotations-2.8.jar"
+  jar_path = "cipd/libs/com_google_j2objc_j2objc_annotations/j2objc-annotations-2.8.jar"
   output_name = "com_google_j2objc_j2objc_annotations"
   supports_android = true
   enable_bytecode_checks = false
@@ -331,14 +331,14 @@ java_prebuilt("com_google_j2objc_j2objc_annotations_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_squareup_javapoet_java") {
-  jar_path = "libs/com_squareup_javapoet/javapoet-1.13.0.jar"
+  jar_path = "cipd/libs/com_squareup_javapoet/javapoet-1.13.0.jar"
   output_name = "com_squareup_javapoet"
   enable_bytecode_checks = false
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("javax_annotation_jsr250_api_java") {
-  jar_path = "libs/javax_annotation_jsr250_api/jsr250-api-1.0.jar"
+  jar_path = "cipd/libs/javax_annotation_jsr250_api/jsr250-api-1.0.jar"
   output_name = "javax_annotation_jsr250_api"
   supports_android = true
   enable_bytecode_checks = false
@@ -346,7 +346,7 @@ java_prebuilt("javax_annotation_jsr250_api_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("javax_inject_javax_inject_java") {
-  jar_path = "libs/javax_inject_javax_inject/javax.inject-1.jar"
+  jar_path = "cipd/libs/javax_inject_javax_inject/javax.inject-1.jar"
   output_name = "javax_inject_javax_inject"
   supports_android = true
   enable_bytecode_checks = false
@@ -354,7 +354,7 @@ java_prebuilt("javax_inject_javax_inject_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_checkerframework_checker_compat_qual_java") {
-  jar_path = "libs/org_checkerframework_checker_compat_qual/checker-compat-qual-2.5.5.jar"
+  jar_path = "cipd/libs/org_checkerframework_checker_compat_qual/checker-compat-qual-2.5.5.jar"
   output_name = "org_checkerframework_checker_compat_qual"
   supports_android = true
   enable_bytecode_checks = false
@@ -362,7 +362,8 @@ java_prebuilt("org_checkerframework_checker_compat_qual_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_checkerframework_checker_qual_java") {
-  jar_path = "libs/org_checkerframework_checker_qual/checker-qual-3.37.0.jar"
+  jar_path =
+      "cipd/libs/org_checkerframework_checker_qual/checker-qual-3.37.0.jar"
   output_name = "org_checkerframework_checker_qual"
   supports_android = true
   enable_bytecode_checks = false
@@ -370,14 +371,14 @@ java_prebuilt("org_checkerframework_checker_qual_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_ow2_asm_asm_java") {
-  jar_path = "libs/org_ow2_asm_asm/asm-9.7.jar"
+  jar_path = "cipd/libs/org_ow2_asm_asm/asm-9.7.jar"
   output_name = "org_ow2_asm_asm"
   enable_bytecode_checks = false
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_ow2_asm_asm_commons_java") {
-  jar_path = "libs/org_ow2_asm_asm_commons/asm-commons-9.7.jar"
+  jar_path = "cipd/libs/org_ow2_asm_asm_commons/asm-commons-9.7.jar"
   output_name = "org_ow2_asm_asm_commons"
   enable_bytecode_checks = false
   deps = [
@@ -388,7 +389,7 @@ java_prebuilt("org_ow2_asm_asm_commons_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_ow2_asm_asm_tree_java") {
-  jar_path = "libs/org_ow2_asm_asm_tree/asm-tree-9.7.jar"
+  jar_path = "cipd/libs/org_ow2_asm_asm_tree/asm-tree-9.7.jar"
   output_name = "org_ow2_asm_asm_tree"
   enable_bytecode_checks = false
   deps = [ ":org_ow2_asm_asm_java" ]
@@ -396,7 +397,7 @@ java_prebuilt("org_ow2_asm_asm_tree_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_ow2_asm_asm_util_java") {
-  jar_path = "libs/org_ow2_asm_asm_util/asm-util-9.7.jar"
+  jar_path = "cipd/libs/org_ow2_asm_asm_util/asm-util-9.7.jar"
   output_name = "org_ow2_asm_asm_util"
   enable_bytecode_checks = false
   deps = [
@@ -408,7 +409,8 @@ java_prebuilt("org_ow2_asm_asm_util_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_github_ben_manes_caffeine_caffeine_java") {
-  jar_path = "libs/com_github_ben_manes_caffeine_caffeine/caffeine-2.8.8.jar"
+  jar_path =
+      "cipd/libs/com_github_ben_manes_caffeine_caffeine/caffeine-2.8.8.jar"
   output_name = "com_github_ben_manes_caffeine_caffeine"
   enable_bytecode_checks = false
 
@@ -426,7 +428,7 @@ java_prebuilt("com_github_ben_manes_caffeine_caffeine_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_github_kevinstern_software_and_algorithms_java") {
-  jar_path = "libs/com_github_kevinstern_software_and_algorithms/software-and-algorithms-1.0.jar"
+  jar_path = "cipd/libs/com_github_kevinstern_software_and_algorithms/software-and-algorithms-1.0.jar"
   output_name = "com_github_kevinstern_software_and_algorithms"
   enable_bytecode_checks = false
 
@@ -440,7 +442,7 @@ java_prebuilt("com_github_kevinstern_software_and_algorithms_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_auto_auto_common_java") {
-  jar_path = "libs/com_google_auto_auto_common/auto-common-1.2.1.jar"
+  jar_path = "cipd/libs/com_google_auto_auto_common/auto-common-1.2.1.jar"
   output_name = "com_google_auto_auto_common"
   enable_bytecode_checks = false
 
@@ -455,7 +457,7 @@ java_prebuilt("com_google_auto_auto_common_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_auto_value_auto_value_annotations_java") {
-  jar_path = "libs/com_google_auto_value_auto_value_annotations/auto-value-annotations-1.10.4.jar"
+  jar_path = "cipd/libs/com_google_auto_value_auto_value_annotations/auto-value-annotations-1.10.4.jar"
   output_name = "com_google_auto_value_auto_value_annotations"
   enable_bytecode_checks = false
 
@@ -471,7 +473,7 @@ java_prebuilt("com_google_auto_value_auto_value_annotations_java") {
 if (!defined(dagger_annotation_processor_target)) {
   java_prebuilt("com_google_dagger_dagger_producers_java") {
     jar_path =
-        "libs/com_google_dagger_dagger_producers/dagger-producers-2.30.jar"
+        "cipd/libs/com_google_dagger_dagger_producers/dagger-producers-2.30.jar"
     output_name = "com_google_dagger_dagger_producers"
     enable_bytecode_checks = false
 
@@ -493,7 +495,7 @@ if (!defined(dagger_annotation_processor_target)) {
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 if (!defined(dagger_annotation_processor_target)) {
   java_prebuilt("com_google_dagger_dagger_spi_java") {
-    jar_path = "libs/com_google_dagger_dagger_spi/dagger-spi-2.30.jar"
+    jar_path = "cipd/libs/com_google_dagger_dagger_spi/dagger-spi-2.30.jar"
     output_name = "com_google_dagger_dagger_spi"
     enable_bytecode_checks = false
 
@@ -516,7 +518,7 @@ if (!defined(dagger_annotation_processor_target)) {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_errorprone_error_prone_type_annotations_java") {
-  jar_path = "libs/com_google_errorprone_error_prone_type_annotations/error_prone_type_annotations-2.11.0.jar"
+  jar_path = "cipd/libs/com_google_errorprone_error_prone_type_annotations/error_prone_type_annotations-2.11.0.jar"
   output_name = "com_google_errorprone_error_prone_type_annotations"
   enable_bytecode_checks = false
 
@@ -530,8 +532,7 @@ java_prebuilt("com_google_errorprone_error_prone_type_annotations_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_errorprone_javac_shaded_java") {
-  jar_path =
-      "libs/com_google_errorprone_javac_shaded/javac-shaded-9-dev-r4023-3.jar"
+  jar_path = "cipd/libs/com_google_errorprone_javac_shaded/javac-shaded-9-dev-r4023-3.jar"
   output_name = "com_google_errorprone_javac_shaded"
   enable_bytecode_checks = false
 
@@ -545,7 +546,7 @@ java_prebuilt("com_google_errorprone_javac_shaded_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_googlejavaformat_google_java_format_java") {
-  jar_path = "libs/com_google_googlejavaformat_google_java_format/google-java-format-1.5.jar"
+  jar_path = "cipd/libs/com_google_googlejavaformat_google_java_format/google-java-format-1.5.jar"
   output_name = "com_google_googlejavaformat_google_java_format"
   enable_bytecode_checks = false
 
@@ -563,7 +564,7 @@ java_prebuilt("com_google_googlejavaformat_google_java_format_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_guava_failureaccess_java") {
-  jar_path = "libs/com_google_guava_failureaccess/failureaccess-1.0.1.jar"
+  jar_path = "cipd/libs/com_google_guava_failureaccess/failureaccess-1.0.1.jar"
   output_name = "com_google_guava_failureaccess"
   supports_android = true
   enable_bytecode_checks = false
@@ -575,7 +576,8 @@ java_prebuilt("com_google_guava_failureaccess_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_protobuf_protobuf_java_java") {
-  jar_path = "libs/com_google_protobuf_protobuf_java/protobuf-java-3.19.2.jar"
+  jar_path =
+      "cipd/libs/com_google_protobuf_protobuf_java/protobuf-java-3.19.2.jar"
   output_name = "com_google_protobuf_protobuf_java"
   enable_bytecode_checks = false
 
@@ -589,8 +591,7 @@ java_prebuilt("com_google_protobuf_protobuf_java_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("io_github_java_diff_utils_java_diff_utils_java") {
-  jar_path =
-      "libs/io_github_java_diff_utils_java_diff_utils/java-diff-utils-4.0.jar"
+  jar_path = "cipd/libs/io_github_java_diff_utils_java_diff_utils/java-diff-utils-4.0.jar"
   output_name = "io_github_java_diff_utils_java_diff_utils"
   enable_bytecode_checks = false
 
@@ -605,7 +606,7 @@ java_prebuilt("io_github_java_diff_utils_java_diff_utils_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("net_ltgt_gradle_incap_incap_java") {
-  jar_path = "libs/net_ltgt_gradle_incap_incap/incap-0.2.jar"
+  jar_path = "cipd/libs/net_ltgt_gradle_incap_incap/incap-0.2.jar"
   output_name = "net_ltgt_gradle_incap_incap"
   enable_bytecode_checks = false
 
@@ -619,7 +620,7 @@ java_prebuilt("net_ltgt_gradle_incap_incap_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_checkerframework_dataflow_errorprone_java") {
-  jar_path = "libs/org_checkerframework_dataflow_errorprone/dataflow-errorprone-3.15.0.jar"
+  jar_path = "cipd/libs/org_checkerframework_dataflow_errorprone/dataflow-errorprone-3.15.0.jar"
   output_name = "org_checkerframework_dataflow_errorprone"
   enable_bytecode_checks = false
 
@@ -633,7 +634,7 @@ java_prebuilt("org_checkerframework_dataflow_errorprone_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_eclipse_jgit_org_eclipse_jgit_java") {
-  jar_path = "libs/org_eclipse_jgit_org_eclipse_jgit/org.eclipse.jgit-4.4.1.201607150455-r.jar"
+  jar_path = "cipd/libs/org_eclipse_jgit_org_eclipse_jgit/org.eclipse.jgit-4.4.1.201607150455-r.jar"
   output_name = "org_eclipse_jgit_org_eclipse_jgit"
   enable_bytecode_checks = false
 
@@ -647,7 +648,7 @@ java_prebuilt("org_eclipse_jgit_org_eclipse_jgit_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_jetbrains_kotlinx_kotlinx_metadata_jvm_java") {
-  jar_path = "libs/org_jetbrains_kotlinx_kotlinx_metadata_jvm/kotlinx-metadata-jvm-0.1.0.jar"
+  jar_path = "cipd/libs/org_jetbrains_kotlinx_kotlinx_metadata_jvm/kotlinx-metadata-jvm-0.1.0.jar"
   output_name = "org_jetbrains_kotlinx_kotlinx_metadata_jvm"
   enable_bytecode_checks = false
 
@@ -662,7 +663,7 @@ java_prebuilt("org_jetbrains_kotlinx_kotlinx_metadata_jvm_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_ow2_asm_asm_analysis_java") {
-  jar_path = "libs/org_ow2_asm_asm_analysis/asm-analysis-9.7.jar"
+  jar_path = "cipd/libs/org_ow2_asm_asm_analysis/asm-analysis-9.7.jar"
   output_name = "org_ow2_asm_asm_analysis"
   enable_bytecode_checks = false
 
@@ -677,7 +678,7 @@ java_prebuilt("org_ow2_asm_asm_analysis_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_pcollections_pcollections_java") {
-  jar_path = "libs/org_pcollections_pcollections/pcollections-3.1.4.jar"
+  jar_path = "cipd/libs/org_pcollections_pcollections/pcollections-3.1.4.jar"
   output_name = "org_pcollections_pcollections"
   enable_bytecode_checks = false
 
@@ -691,7 +692,8 @@ java_prebuilt("org_pcollections_pcollections_java") {
 if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("com_android_support_drawerlayout_java") {
-    aar_path = "libs/com_android_support_drawerlayout/drawerlayout-28.0.0.aar"
+    aar_path =
+        "cipd/libs/com_android_support_drawerlayout/drawerlayout-28.0.0.aar"
     info_path = "libs/com_android_support_drawerlayout/com_android_support_drawerlayout.info"
     enable_bytecode_checks = false
     deps = [
@@ -704,7 +706,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("com_android_support_support_annotations_java") {
-    jar_path = "libs/com_android_support_support_annotations/support-annotations-28.0.0.jar"
+    jar_path = "cipd/libs/com_android_support_support_annotations/support-annotations-28.0.0.jar"
     output_name = "com_android_support_support_annotations"
     supports_android = true
     enable_bytecode_checks = false
@@ -713,7 +715,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("com_android_support_support_compat_java") {
     aar_path =
-        "libs/com_android_support_support_compat/support-compat-28.0.0.aar"
+        "cipd/libs/com_android_support_support_compat/support-compat-28.0.0.aar"
     info_path = "libs/com_android_support_support_compat/com_android_support_support_compat.info"
     enable_bytecode_checks = false
     deps = [
@@ -739,8 +741,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("com_android_support_support_core_ui_java") {
-    aar_path =
-        "libs/com_android_support_support_core_ui/support-core-ui-28.0.0.aar"
+    aar_path = "cipd/libs/com_android_support_support_core_ui/support-core-ui-28.0.0.aar"
     info_path = "libs/com_android_support_support_core_ui/com_android_support_support_core_ui.info"
     enable_bytecode_checks = false
     deps = [
@@ -763,7 +764,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt(
       "com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java") {
-    aar_path = "libs/com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework/accessibility-test-framework-4.0.0.aar"
+    aar_path = "cipd/libs/com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework/accessibility-test-framework-4.0.0.aar"
     info_path = "libs/com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework/com_google_android_accessibility_test_framework.info"
     enable_bytecode_checks = false
     testonly = true
@@ -784,7 +785,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_auth_java") {
-      aar_path = "libs/com_google_android_gms_play_services_auth/play-services-auth-20.1.0.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_auth/play-services-auth-20.1.0.aar"
       info_path = "libs/com_google_android_gms_play_services_auth/com_google_android_gms_play_services_auth.info"
       enable_bytecode_checks = false
       deps = [
@@ -802,7 +803,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_auth_api_phone_java") {
-      aar_path = "libs/com_google_android_gms_play_services_auth_api_phone/play-services-auth-api-phone-18.0.1.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_auth_api_phone/play-services-auth-api-phone-18.0.1.aar"
       info_path = "libs/com_google_android_gms_play_services_auth_api_phone/com_google_android_gms_play_services_auth_api_phone.info"
       enable_bytecode_checks = false
       deps = [
@@ -816,7 +817,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_auth_base_java") {
-      aar_path = "libs/com_google_android_gms_play_services_auth_base/play-services-auth-base-18.0.2.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_auth_base/play-services-auth-base-18.0.2.aar"
       info_path = "libs/com_google_android_gms_play_services_auth_base/com_google_android_gms_play_services_auth_base.info"
       enable_bytecode_checks = false
       deps = [
@@ -831,7 +832,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_base_java") {
-      aar_path = "libs/com_google_android_gms_play_services_base/play-services-base-18.1.0.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_base/play-services-base-18.1.0.aar"
       info_path = "libs/com_google_android_gms_play_services_base/com_google_android_gms_play_services_base.info"
       enable_bytecode_checks = false
       deps = [
@@ -847,7 +848,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_basement_java") {
-      aar_path = "libs/com_google_android_gms_play_services_basement/play-services-basement-18.1.0.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_basement/play-services-basement-18.1.0.aar"
       info_path = "libs/com_google_android_gms_play_services_basement/com_google_android_gms_play_services_basement.info"
       enable_bytecode_checks = false
       deps = [
@@ -873,7 +874,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_cast_java") {
-      aar_path = "libs/com_google_android_gms_play_services_cast/play-services-cast-17.0.0.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_cast/play-services-cast-17.0.0.aar"
       info_path = "libs/com_google_android_gms_play_services_cast/com_google_android_gms_play_services_cast.info"
       enable_bytecode_checks = false
       deps = [
@@ -890,7 +891,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_cast_framework_java") {
-      aar_path = "libs/com_google_android_gms_play_services_cast_framework/play-services-cast-framework-17.0.0.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_cast_framework/play-services-cast-framework-17.0.0.aar"
       info_path = "libs/com_google_android_gms_play_services_cast_framework/com_google_android_gms_play_services_cast_framework.info"
       enable_bytecode_checks = false
       deps = [
@@ -911,7 +912,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_gcm_java") {
-      aar_path = "libs/com_google_android_gms_play_services_gcm/play-services-gcm-17.0.0.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_gcm/play-services-gcm-17.0.0.aar"
       info_path = "libs/com_google_android_gms_play_services_gcm/com_google_android_gms_play_services_gcm.info"
       enable_bytecode_checks = false
       deps = [
@@ -929,7 +930,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_iid_java") {
-      aar_path = "libs/com_google_android_gms_play_services_iid/play-services-iid-17.0.0.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_iid/play-services-iid-17.0.0.aar"
       info_path = "libs/com_google_android_gms_play_services_iid/com_google_android_gms_play_services_iid.info"
       enable_bytecode_checks = false
       deps = [
@@ -946,7 +947,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_instantapps_java") {
-      aar_path = "libs/com_google_android_gms_play_services_instantapps/play-services-instantapps-18.0.1.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_instantapps/play-services-instantapps-18.0.1.aar"
       info_path = "libs/com_google_android_gms_play_services_instantapps/com_google_android_gms_play_services_instantapps.info"
       enable_bytecode_checks = false
       deps = [
@@ -960,7 +961,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_location_java") {
-      aar_path = "libs/com_google_android_gms_play_services_location/play-services-location-21.0.1.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_location/play-services-location-21.0.1.aar"
       info_path = "libs/com_google_android_gms_play_services_location/com_google_android_gms_play_services_location.info"
       enable_bytecode_checks = false
       deps = [
@@ -974,7 +975,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_tasks_java") {
-      aar_path = "libs/com_google_android_gms_play_services_tasks/play-services-tasks-18.0.2.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_tasks/play-services-tasks-18.0.2.aar"
       info_path = "libs/com_google_android_gms_play_services_tasks/com_google_android_gms_play_services_tasks.info"
       enable_bytecode_checks = false
       deps =
@@ -985,7 +986,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_vision_java") {
-      aar_path = "libs/com_google_android_gms_play_services_vision/play-services-vision-20.1.3.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_vision/play-services-vision-20.1.3.aar"
       info_path = "libs/com_google_android_gms_play_services_vision/com_google_android_gms_play_services_vision.info"
       enable_bytecode_checks = false
       deps = [
@@ -999,7 +1000,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_vision_common_java") {
-      aar_path = "libs/com_google_android_gms_play_services_vision_common/play-services-vision-common-19.1.3.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_vision_common/play-services-vision-common-19.1.3.aar"
       info_path = "libs/com_google_android_gms_play_services_vision_common/com_google_android_gms_play_services_vision_common.info"
       enable_bytecode_checks = false
       deps = [
@@ -1015,8 +1016,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (!defined(material_design_target)) {
     android_aar_prebuilt("com_google_android_material_material_java") {
-      aar_path =
-          "libs/com_google_android_material_material/material-1.11.0-beta01.aar"
+      aar_path = "cipd/libs/com_google_android_material_material/material-1.11.0-beta01.aar"
       info_path = "libs/com_google_android_material_material/com_google_android_material_material.info"
       enable_bytecode_checks = false
 
@@ -1063,7 +1063,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (!defined(playcore_target)) {
     android_aar_prebuilt("com_google_android_play_feature_delivery_java") {
-      aar_path = "libs/com_google_android_play_feature_delivery/feature-delivery-2.0.1.aar"
+      aar_path = "cipd/libs/com_google_android_play_feature_delivery/feature-delivery-2.0.1.aar"
       info_path = "libs/com_google_android_play_feature_delivery/com_google_android_play_feature_delivery.info"
       enable_bytecode_checks = false
 
@@ -1081,7 +1081,8 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_firebase_firebase_iid_java") {
-      aar_path = "libs/com_google_firebase_firebase_iid/firebase-iid-21.0.1.aar"
+      aar_path =
+          "cipd/libs/com_google_firebase_firebase_iid/firebase-iid-21.0.1.aar"
       info_path = "libs/com_google_firebase_firebase_iid/com_google_firebase_firebase_iid.info"
       enable_bytecode_checks = false
       deps = [
@@ -1104,7 +1105,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_firebase_firebase_messaging_java") {
-      aar_path = "libs/com_google_firebase_firebase_messaging/firebase-messaging-21.0.1.aar"
+      aar_path = "cipd/libs/com_google_firebase_firebase_messaging/firebase-messaging-21.0.1.aar"
       info_path = "libs/com_google_firebase_firebase_messaging/com_google_firebase_firebase_messaging.info"
       enable_bytecode_checks = false
       deps = [
@@ -1130,7 +1131,8 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (!defined(guava_android_target)) {
     java_prebuilt("com_google_guava_guava_android_java") {
-      jar_path = "libs/com_google_guava_guava_android/guava-32.1.3-android.jar"
+      jar_path =
+          "cipd/libs/com_google_guava_guava_android/guava-32.1.3-android.jar"
       output_name = "com_google_guava_guava_android"
       supports_android = true
       enable_bytecode_checks = false
@@ -1167,7 +1169,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (!defined(android_proto_runtime)) {
     java_prebuilt("com_google_protobuf_protobuf_javalite_java") {
-      jar_path = "libs/com_google_protobuf_protobuf_javalite/protobuf-javalite-3.21.1.jar"
+      jar_path = "cipd/libs/com_google_protobuf_protobuf_javalite/protobuf-javalite-3.21.1.jar"
       output_name = "com_google_protobuf_protobuf_javalite"
       supports_android = true
       enable_bytecode_checks = false
@@ -1191,7 +1193,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("com_googlecode_java_diff_utils_diffutils_java") {
     jar_path =
-        "libs/com_googlecode_java_diff_utils_diffutils/diffutils-1.3.0.jar"
+        "cipd/libs/com_googlecode_java_diff_utils_diffutils/diffutils-1.3.0.jar"
     output_name = "com_googlecode_java_diff_utils_diffutils"
     supports_android = true
     enable_bytecode_checks = false
@@ -1201,7 +1203,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("com_squareup_moshi_moshi_adapters_java") {
     jar_path =
-        "libs/com_squareup_moshi_moshi_adapters/moshi-adapters-1.15.0.jar"
+        "cipd/libs/com_squareup_moshi_moshi_adapters/moshi-adapters-1.15.0.jar"
     output_name = "com_squareup_moshi_moshi_adapters"
     supports_android = true
     enable_bytecode_checks = false
@@ -1214,8 +1216,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("com_squareup_wire_wire_runtime_jvm_java") {
-    jar_path =
-        "libs/com_squareup_wire_wire_runtime_jvm/wire-runtime-jvm-4.9.7.jar"
+    jar_path = "cipd/libs/com_squareup_wire_wire_runtime_jvm/wire-runtime-jvm-4.9.7.jar"
     output_name = "com_squareup_wire_wire_runtime_jvm"
     supports_android = true
     enable_bytecode_checks = false
@@ -1229,7 +1230,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("io_grpc_grpc_api_java") {
-    jar_path = "libs/io_grpc_grpc_api/grpc-api-1.49.0.jar"
+    jar_path = "cipd/libs/io_grpc_grpc_api/grpc-api-1.49.0.jar"
     output_name = "io_grpc_grpc_api"
     supports_android = true
     enable_bytecode_checks = false
@@ -1246,7 +1247,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("io_grpc_grpc_binder_java") {
-    aar_path = "libs/io_grpc_grpc_binder/grpc-binder-1.49.0.aar"
+    aar_path = "cipd/libs/io_grpc_grpc_binder/grpc-binder-1.49.0.aar"
     info_path = "libs/io_grpc_grpc_binder/io_grpc_grpc_binder.info"
     enable_bytecode_checks = false
     deps = [
@@ -1260,7 +1261,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("io_grpc_grpc_context_java") {
-    jar_path = "libs/io_grpc_grpc_context/grpc-context-1.49.0.jar"
+    jar_path = "cipd/libs/io_grpc_grpc_context/grpc-context-1.49.0.jar"
     output_name = "io_grpc_grpc_context"
     supports_android = true
     enable_bytecode_checks = false
@@ -1271,7 +1272,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("io_grpc_grpc_protobuf_lite_java") {
-    jar_path = "libs/io_grpc_grpc_protobuf_lite/grpc-protobuf-lite-1.49.0.jar"
+    jar_path =
+        "cipd/libs/io_grpc_grpc_protobuf_lite/grpc-protobuf-lite-1.49.0.jar"
     output_name = "io_grpc_grpc_protobuf_lite"
     supports_android = true
     enable_bytecode_checks = false
@@ -1288,7 +1290,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("io_grpc_grpc_stub_java") {
-    jar_path = "libs/io_grpc_grpc_stub/grpc-stub-1.49.0.jar"
+    jar_path = "cipd/libs/io_grpc_grpc_stub/grpc-stub-1.49.0.jar"
     output_name = "io_grpc_grpc_stub"
     supports_android = true
     enable_bytecode_checks = false
@@ -1304,7 +1306,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("javax_annotation_javax_annotation_api_java") {
-    jar_path = "libs/javax_annotation_javax_annotation_api/javax.annotation-api-1.3.2.jar"
+    jar_path = "cipd/libs/javax_annotation_javax_annotation_api/javax.annotation-api-1.3.2.jar"
     output_name = "javax_annotation_javax_annotation_api"
     supports_android = true
     enable_bytecode_checks = false
@@ -1312,7 +1314,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("net_bytebuddy_byte_buddy_java") {
-    jar_path = "libs/net_bytebuddy_byte_buddy/byte-buddy-1.14.12.jar"
+    jar_path = "cipd/libs/net_bytebuddy_byte_buddy/byte-buddy-1.14.12.jar"
     output_name = "net_bytebuddy_byte_buddy"
     supports_android = true
     enable_bytecode_checks = false
@@ -1321,7 +1323,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_ccil_cowan_tagsoup_tagsoup_java") {
-    jar_path = "libs/org_ccil_cowan_tagsoup_tagsoup/tagsoup-1.2.1.jar"
+    jar_path = "cipd/libs/org_ccil_cowan_tagsoup_tagsoup/tagsoup-1.2.1.jar"
     output_name = "org_ccil_cowan_tagsoup_tagsoup"
     supports_android = true
     enable_bytecode_checks = false
@@ -1330,7 +1332,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_checkerframework_checker_util_java") {
-    jar_path = "libs/org_checkerframework_checker_util/checker-util-3.25.0.jar"
+    jar_path =
+        "cipd/libs/org_checkerframework_checker_util/checker-util-3.25.0.jar"
     output_name = "org_checkerframework_checker_util"
     supports_android = true
     enable_bytecode_checks = false
@@ -1339,7 +1342,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_codehaus_mojo_animal_sniffer_annotations_java") {
-    jar_path = "libs/org_codehaus_mojo_animal_sniffer_annotations/animal-sniffer-annotations-1.21.jar"
+    jar_path = "cipd/libs/org_codehaus_mojo_animal_sniffer_annotations/animal-sniffer-annotations-1.21.jar"
     output_name = "org_codehaus_mojo_animal_sniffer_annotations"
     supports_android = true
     enable_bytecode_checks = false
@@ -1347,7 +1350,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jetbrains_kotlin_kotlin_parcelize_runtime_java") {
-    jar_path = "libs/org_jetbrains_kotlin_kotlin_parcelize_runtime/kotlin-parcelize-runtime-1.9.22.jar"
+    jar_path = "cipd/libs/org_jetbrains_kotlin_kotlin_parcelize_runtime/kotlin-parcelize-runtime-1.9.22.jar"
     output_name = "org_jetbrains_kotlin_kotlin_parcelize_runtime"
     supports_android = true
     enable_bytecode_checks = false
@@ -1359,7 +1362,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_jdk7_java") {
-    jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_jdk7/kotlin-stdlib-jdk7-1.8.20.jar"
+    jar_path = "cipd/libs/org_jetbrains_kotlin_kotlin_stdlib_jdk7/kotlin-stdlib-jdk7-1.8.20.jar"
     output_name = "org_jetbrains_kotlin_kotlin_stdlib_jdk7"
     supports_android = true
     enable_bytecode_checks = false
@@ -1368,7 +1371,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_jdk8_java") {
-    jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_jdk8/kotlin-stdlib-jdk8-1.8.20.jar"
+    jar_path = "cipd/libs/org_jetbrains_kotlin_kotlin_stdlib_jdk8/kotlin-stdlib-jdk8-1.8.20.jar"
     output_name = "org_jetbrains_kotlin_kotlin_stdlib_jdk8"
     supports_android = true
     enable_bytecode_checks = false
@@ -1380,7 +1383,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jetbrains_kotlinx_atomicfu_jvm_java") {
-    jar_path = "libs/org_jetbrains_kotlinx_atomicfu_jvm/atomicfu-jvm-0.23.2.jar"
+    jar_path =
+        "cipd/libs/org_jetbrains_kotlinx_atomicfu_jvm/atomicfu-jvm-0.23.2.jar"
     output_name = "org_jetbrains_kotlinx_atomicfu_jvm"
     supports_android = true
     enable_bytecode_checks = false
@@ -1389,7 +1393,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jetbrains_kotlinx_kotlinx_coroutines_android_java") {
-    jar_path = "libs/org_jetbrains_kotlinx_kotlinx_coroutines_android/kotlinx-coroutines-android-1.6.4.jar"
+    jar_path = "cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_android/kotlinx-coroutines-android-1.6.4.jar"
     output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_android"
     supports_android = true
     enable_bytecode_checks = false
@@ -1402,7 +1406,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java") {
-    jar_path = "libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.6.4.jar"
+    jar_path = "cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.6.4.jar"
     output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm"
     supports_android = true
     enable_bytecode_checks = false
@@ -1414,7 +1418,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jetbrains_kotlinx_kotlinx_coroutines_guava_java") {
-    jar_path = "libs/org_jetbrains_kotlinx_kotlinx_coroutines_guava/kotlinx-coroutines-guava-1.6.4.jar"
+    jar_path = "cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_guava/kotlinx-coroutines-guava-1.6.4.jar"
     output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_guava"
     supports_android = true
     enable_bytecode_checks = false
@@ -1427,7 +1431,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jsoup_jsoup_java") {
-    jar_path = "libs/org_jsoup_jsoup/jsoup-1.15.1.jar"
+    jar_path = "cipd/libs/org_jsoup_jsoup/jsoup-1.15.1.jar"
     output_name = "org_jsoup_jsoup"
     supports_android = true
     enable_bytecode_checks = false
@@ -1436,7 +1440,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_mockito_mockito_android_java") {
-    jar_path = "libs/org_mockito_mockito_android/mockito-android-5.11.0.jar"
+    jar_path =
+        "cipd/libs/org_mockito_mockito_android/mockito-android-5.11.0.jar"
     output_name = "org_mockito_mockito_android"
     supports_android = true
     enable_bytecode_checks = false
@@ -1452,7 +1457,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_mockito_mockito_core_java") {
-    jar_path = "libs/org_mockito_mockito_core/mockito-core-5.11.0.jar"
+    jar_path = "cipd/libs/org_mockito_mockito_core/mockito-core-5.11.0.jar"
     output_name = "org_mockito_mockito_core"
     supports_android = true
     enable_bytecode_checks = false
@@ -1473,7 +1478,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_mockito_mockito_subclass_java") {
-    jar_path = "libs/org_mockito_mockito_subclass/mockito-subclass-5.11.0.jar"
+    jar_path =
+        "cipd/libs/org_mockito_mockito_subclass/mockito-subclass-5.11.0.jar"
     output_name = "org_mockito_mockito_subclass"
     supports_android = true
     enable_bytecode_checks = false
@@ -1483,7 +1489,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_robolectric_java") {
-    jar_path = "libs/org_robolectric_robolectric/robolectric-4.12.1.jar"
+    jar_path = "cipd/libs/org_robolectric_robolectric/robolectric-4.12.1.jar"
     output_name = "org_robolectric_robolectric"
     enable_bytecode_checks = false
     testonly = true
@@ -1509,7 +1515,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("android_arch_core_common_java") {
-    jar_path = "libs/android_arch_core_common/common-1.1.1.jar"
+    jar_path = "cipd/libs/android_arch_core_common/common-1.1.1.jar"
     output_name = "android_arch_core_common"
     supports_android = true
     enable_bytecode_checks = false
@@ -1525,7 +1531,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("android_arch_core_runtime_java") {
-    aar_path = "libs/android_arch_core_runtime/runtime-1.1.1.aar"
+    aar_path = "cipd/libs/android_arch_core_runtime/runtime-1.1.1.aar"
     info_path = "libs/android_arch_core_runtime/android_arch_core_runtime.info"
     enable_bytecode_checks = false
 
@@ -1543,7 +1549,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("android_arch_lifecycle_common_java") {
-    jar_path = "libs/android_arch_lifecycle_common/common-1.1.1.jar"
+    jar_path = "cipd/libs/android_arch_lifecycle_common/common-1.1.1.jar"
     output_name = "android_arch_lifecycle_common"
     supports_android = true
     enable_bytecode_checks = false
@@ -1559,7 +1565,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("android_arch_lifecycle_livedata_java") {
-    aar_path = "libs/android_arch_lifecycle_livedata/livedata-1.1.1.aar"
+    aar_path = "cipd/libs/android_arch_lifecycle_livedata/livedata-1.1.1.aar"
     info_path = "libs/android_arch_lifecycle_livedata/android_arch_lifecycle_livedata.info"
     enable_bytecode_checks = false
 
@@ -1579,7 +1585,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("android_arch_lifecycle_livedata_core_java") {
     aar_path =
-        "libs/android_arch_lifecycle_livedata_core/livedata-core-1.1.1.aar"
+        "cipd/libs/android_arch_lifecycle_livedata_core/livedata-core-1.1.1.aar"
     info_path = "libs/android_arch_lifecycle_livedata_core/android_arch_lifecycle_livedata_core.info"
     enable_bytecode_checks = false
 
@@ -1598,7 +1604,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("android_arch_lifecycle_runtime_java") {
-    aar_path = "libs/android_arch_lifecycle_runtime/runtime-1.1.1.aar"
+    aar_path = "cipd/libs/android_arch_lifecycle_runtime/runtime-1.1.1.aar"
     info_path = "libs/android_arch_lifecycle_runtime/android_arch_lifecycle_runtime.info"
     enable_bytecode_checks = false
 
@@ -1617,7 +1623,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("android_arch_lifecycle_viewmodel_java") {
-    aar_path = "libs/android_arch_lifecycle_viewmodel/viewmodel-1.1.1.aar"
+    aar_path = "cipd/libs/android_arch_lifecycle_viewmodel/viewmodel-1.1.1.aar"
     info_path = "libs/android_arch_lifecycle_viewmodel/android_arch_lifecycle_viewmodel.info"
     enable_bytecode_checks = false
 
@@ -1632,7 +1638,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("com_android_support_asynclayoutinflater_java") {
-    aar_path = "libs/com_android_support_asynclayoutinflater/asynclayoutinflater-28.0.0.aar"
+    aar_path = "cipd/libs/com_android_support_asynclayoutinflater/asynclayoutinflater-28.0.0.aar"
     info_path = "libs/com_android_support_asynclayoutinflater/com_android_support_asynclayoutinflater.info"
     enable_bytecode_checks = false
 
@@ -1651,7 +1657,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("com_android_support_collections_java") {
-    jar_path = "libs/com_android_support_collections/collections-28.0.0.jar"
+    jar_path =
+        "cipd/libs/com_android_support_collections/collections-28.0.0.jar"
     output_name = "com_android_support_collections"
     supports_android = true
     enable_bytecode_checks = false
@@ -1667,7 +1674,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("com_android_support_coordinatorlayout_java") {
-    aar_path = "libs/com_android_support_coordinatorlayout/coordinatorlayout-28.0.0.aar"
+    aar_path = "cipd/libs/com_android_support_coordinatorlayout/coordinatorlayout-28.0.0.aar"
     info_path = "libs/com_android_support_coordinatorlayout/com_android_support_coordinatorlayout.info"
     enable_bytecode_checks = false
 
@@ -1690,7 +1697,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("com_android_support_cursoradapter_java") {
-    aar_path = "libs/com_android_support_cursoradapter/cursoradapter-28.0.0.aar"
+    aar_path =
+        "cipd/libs/com_android_support_cursoradapter/cursoradapter-28.0.0.aar"
     info_path = "libs/com_android_support_cursoradapter/com_android_support_cursoradapter.info"
     enable_bytecode_checks = false
 
@@ -1706,7 +1714,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("com_android_support_customview_java") {
-    aar_path = "libs/com_android_support_customview/customview-28.0.0.aar"
+    aar_path = "cipd/libs/com_android_support_customview/customview-28.0.0.aar"
     info_path = "libs/com_android_support_customview/com_android_support_customview.info"
     enable_bytecode_checks = false
 
@@ -1725,7 +1733,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("com_android_support_documentfile_java") {
-    aar_path = "libs/com_android_support_documentfile/documentfile-28.0.0.aar"
+    aar_path =
+        "cipd/libs/com_android_support_documentfile/documentfile-28.0.0.aar"
     info_path = "libs/com_android_support_documentfile/com_android_support_documentfile.info"
     enable_bytecode_checks = false
 
@@ -1741,7 +1750,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("com_android_support_interpolator_java") {
-    aar_path = "libs/com_android_support_interpolator/interpolator-28.0.0.aar"
+    aar_path =
+        "cipd/libs/com_android_support_interpolator/interpolator-28.0.0.aar"
     info_path = "libs/com_android_support_interpolator/com_android_support_interpolator.info"
     enable_bytecode_checks = false
 
@@ -1757,7 +1767,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("com_android_support_loader_java") {
-    aar_path = "libs/com_android_support_loader/loader-28.0.0.aar"
+    aar_path = "cipd/libs/com_android_support_loader/loader-28.0.0.aar"
     info_path =
         "libs/com_android_support_loader/com_android_support_loader.info"
     enable_bytecode_checks = false
@@ -1779,7 +1789,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("com_android_support_localbroadcastmanager_java") {
-    aar_path = "libs/com_android_support_localbroadcastmanager/localbroadcastmanager-28.0.0.aar"
+    aar_path = "cipd/libs/com_android_support_localbroadcastmanager/localbroadcastmanager-28.0.0.aar"
     info_path = "libs/com_android_support_localbroadcastmanager/com_android_support_localbroadcastmanager.info"
     enable_bytecode_checks = false
 
@@ -1795,7 +1805,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("com_android_support_print_java") {
-    aar_path = "libs/com_android_support_print/print-28.0.0.aar"
+    aar_path = "cipd/libs/com_android_support_print/print-28.0.0.aar"
     info_path = "libs/com_android_support_print/com_android_support_print.info"
     enable_bytecode_checks = false
 
@@ -1811,7 +1821,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("com_android_support_slidingpanelayout_java") {
-    aar_path = "libs/com_android_support_slidingpanelayout/slidingpanelayout-28.0.0.aar"
+    aar_path = "cipd/libs/com_android_support_slidingpanelayout/slidingpanelayout-28.0.0.aar"
     info_path = "libs/com_android_support_slidingpanelayout/com_android_support_slidingpanelayout.info"
     enable_bytecode_checks = false
 
@@ -1831,7 +1841,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("com_android_support_support_core_utils_java") {
-    aar_path = "libs/com_android_support_support_core_utils/support-core-utils-28.0.0.aar"
+    aar_path = "cipd/libs/com_android_support_support_core_utils/support-core-utils-28.0.0.aar"
     info_path = "libs/com_android_support_support_core_utils/com_android_support_support_core_utils.info"
     enable_bytecode_checks = false
 
@@ -1854,7 +1864,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("com_android_support_swiperefreshlayout_java") {
-    aar_path = "libs/com_android_support_swiperefreshlayout/swiperefreshlayout-28.0.0.aar"
+    aar_path = "cipd/libs/com_android_support_swiperefreshlayout/swiperefreshlayout-28.0.0.aar"
     info_path = "libs/com_android_support_swiperefreshlayout/com_android_support_swiperefreshlayout.info"
     enable_bytecode_checks = false
 
@@ -1874,7 +1884,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("com_android_support_versionedparcelable_java") {
-    aar_path = "libs/com_android_support_versionedparcelable/versionedparcelable-28.0.0.aar"
+    aar_path = "cipd/libs/com_android_support_versionedparcelable/versionedparcelable-28.0.0.aar"
     info_path = "libs/com_android_support_versionedparcelable/com_android_support_versionedparcelable.info"
     enable_bytecode_checks = false
 
@@ -1900,7 +1910,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("com_android_support_viewpager_java") {
-    aar_path = "libs/com_android_support_viewpager/viewpager-28.0.0.aar"
+    aar_path = "cipd/libs/com_android_support_viewpager/viewpager-28.0.0.aar"
     info_path =
         "libs/com_android_support_viewpager/com_android_support_viewpager.info"
     enable_bytecode_checks = false
@@ -1921,7 +1931,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("com_google_android_annotations_java") {
-    jar_path = "libs/com_google_android_annotations/annotations-4.1.1.4.jar"
+    jar_path =
+        "cipd/libs/com_google_android_annotations/annotations-4.1.1.4.jar"
     output_name = "com_google_android_annotations"
     supports_android = true
     enable_bytecode_checks = false
@@ -1937,7 +1948,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_android_datatransport_transport_api_java") {
-      aar_path = "libs/com_google_android_datatransport_transport_api/transport-api-2.2.1.aar"
+      aar_path = "cipd/libs/com_google_android_datatransport_transport_api/transport-api-2.2.1.aar"
       info_path = "libs/com_google_android_datatransport_transport_api/com_google_android_datatransport_transport_api.info"
       enable_bytecode_checks = false
 
@@ -1954,7 +1965,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_clearcut_java") {
-      aar_path = "libs/com_google_android_gms_play_services_clearcut/play-services-clearcut-17.0.0.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_clearcut/play-services-clearcut-17.0.0.aar"
       info_path = "libs/com_google_android_gms_play_services_clearcut/com_google_android_gms_play_services_clearcut.info"
       enable_bytecode_checks = false
 
@@ -1977,7 +1988,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_cloud_messaging_java") {
-      aar_path = "libs/com_google_android_gms_play_services_cloud_messaging/play-services-cloud-messaging-16.0.0.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_cloud_messaging/play-services-cloud-messaging-16.0.0.aar"
       info_path = "libs/com_google_android_gms_play_services_cloud_messaging/com_google_android_gms_play_services_cloud_messaging.info"
       enable_bytecode_checks = false
 
@@ -1997,7 +2008,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_flags_java") {
-      aar_path = "libs/com_google_android_gms_play_services_flags/play-services-flags-17.0.0.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_flags/play-services-flags-17.0.0.aar"
       info_path = "libs/com_google_android_gms_play_services_flags/com_google_android_gms_play_services_flags.info"
       enable_bytecode_checks = false
 
@@ -2017,7 +2028,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_phenotype_java") {
-      aar_path = "libs/com_google_android_gms_play_services_phenotype/play-services-phenotype-17.0.0.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_phenotype/play-services-phenotype-17.0.0.aar"
       info_path = "libs/com_google_android_gms_play_services_phenotype/com_google_android_gms_play_services_phenotype.info"
       enable_bytecode_checks = false
 
@@ -2039,7 +2050,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_stats_java") {
-      aar_path = "libs/com_google_android_gms_play_services_stats/play-services-stats-17.0.0.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_stats/play-services-stats-17.0.0.aar"
       info_path = "libs/com_google_android_gms_play_services_stats/com_google_android_gms_play_services_stats.info"
       enable_bytecode_checks = false
 
@@ -2058,7 +2069,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("com_google_android_play_core_common_java") {
-    aar_path = "libs/com_google_android_play_core_common/core-common-2.0.2.aar"
+    aar_path =
+        "cipd/libs/com_google_android_play_core_common/core-common-2.0.2.aar"
     info_path = "libs/com_google_android_play_core_common/com_google_android_play_core_common.info"
     enable_bytecode_checks = false
 
@@ -2073,7 +2085,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     java_prebuilt("google_firebase_firebase_annotations_java") {
-      jar_path = "libs/com_google_firebase_firebase_annotations/firebase-annotations-16.0.0.jar"
+      jar_path = "cipd/libs/com_google_firebase_firebase_annotations/firebase-annotations-16.0.0.jar"
       output_name = "com_google_firebase_firebase_annotations"
       supports_android = true
       enable_bytecode_checks = false
@@ -2090,8 +2102,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_firebase_firebase_common_java") {
-      aar_path =
-          "libs/com_google_firebase_firebase_common/firebase-common-19.5.0.aar"
+      aar_path = "cipd/libs/com_google_firebase_firebase_common/firebase-common-19.5.0.aar"
       info_path = "libs/com_google_firebase_firebase_common/com_google_firebase_firebase_common.info"
       enable_bytecode_checks = false
 
@@ -2112,7 +2123,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_firebase_firebase_components_java") {
-      aar_path = "libs/com_google_firebase_firebase_components/firebase-components-16.1.0.aar"
+      aar_path = "cipd/libs/com_google_firebase_firebase_components/firebase-components-16.1.0.aar"
       info_path = "libs/com_google_firebase_firebase_components/com_google_firebase_firebase_components.info"
       enable_bytecode_checks = false
 
@@ -2132,7 +2143,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     java_prebuilt("google_firebase_firebase_encoders_java") {
-      jar_path = "libs/com_google_firebase_firebase_encoders/firebase-encoders-16.1.0.jar"
+      jar_path = "cipd/libs/com_google_firebase_firebase_encoders/firebase-encoders-16.1.0.jar"
       output_name = "com_google_firebase_firebase_encoders"
       supports_android = true
       enable_bytecode_checks = false
@@ -2153,7 +2164,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_firebase_firebase_encoders_json_java") {
-      aar_path = "libs/com_google_firebase_firebase_encoders_json/firebase-encoders-json-17.1.0.aar"
+      aar_path = "cipd/libs/com_google_firebase_firebase_encoders_json/firebase-encoders-json-17.1.0.aar"
       info_path = "libs/com_google_firebase_firebase_encoders_json/com_google_firebase_firebase_encoders_json.info"
       enable_bytecode_checks = false
 
@@ -2173,7 +2184,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_firebase_firebase_iid_interop_java") {
-      aar_path = "libs/com_google_firebase_firebase_iid_interop/firebase-iid-interop-17.0.0.aar"
+      aar_path = "cipd/libs/com_google_firebase_firebase_iid_interop/firebase-iid-interop-17.0.0.aar"
       info_path = "libs/com_google_firebase_firebase_iid_interop/com_google_firebase_firebase_iid_interop.info"
       enable_bytecode_checks = false
 
@@ -2193,7 +2204,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_firebase_firebase_installations_java") {
-      aar_path = "libs/com_google_firebase_firebase_installations/firebase-installations-16.3.5.aar"
+      aar_path = "cipd/libs/com_google_firebase_firebase_installations/firebase-installations-16.3.5.aar"
       info_path = "libs/com_google_firebase_firebase_installations/com_google_firebase_firebase_installations.info"
       enable_bytecode_checks = false
 
@@ -2216,7 +2227,7 @@ if (!limit_android_deps) {
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt(
         "google_firebase_firebase_installations_interop_java") {
-      aar_path = "libs/com_google_firebase_firebase_installations_interop/firebase-installations-interop-16.0.1.aar"
+      aar_path = "cipd/libs/com_google_firebase_firebase_installations_interop/firebase-installations-interop-16.0.1.aar"
       info_path = "libs/com_google_firebase_firebase_installations_interop/com_google_firebase_firebase_installations_interop.info"
       enable_bytecode_checks = false
 
@@ -2237,7 +2248,7 @@ if (!limit_android_deps) {
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt(
         "google_firebase_firebase_measurement_connector_java") {
-      aar_path = "libs/com_google_firebase_firebase_measurement_connector/firebase-measurement-connector-18.0.0.aar"
+      aar_path = "cipd/libs/com_google_firebase_firebase_measurement_connector/firebase-measurement-connector-18.0.0.aar"
       info_path = "libs/com_google_firebase_firebase_measurement_connector/com_google_firebase_firebase_measurement_connector.info"
       enable_bytecode_checks = false
 
@@ -2254,7 +2265,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("com_squareup_javawriter_java") {
-    jar_path = "libs/com_squareup_javawriter/javawriter-2.1.1.jar"
+    jar_path = "cipd/libs/com_squareup_javawriter/javawriter-2.1.1.jar"
     output_name = "com_squareup_javawriter"
     supports_android = true
     enable_bytecode_checks = false
@@ -2270,7 +2281,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("com_squareup_moshi_moshi_java") {
-    jar_path = "libs/com_squareup_moshi_moshi/moshi-1.15.0.jar"
+    jar_path = "cipd/libs/com_squareup_moshi_moshi/moshi-1.15.0.jar"
     output_name = "com_squareup_moshi_moshi"
     supports_android = true
     enable_bytecode_checks = false
@@ -2290,7 +2301,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("com_squareup_okio_okio_jvm_java") {
-    jar_path = "libs/com_squareup_okio_okio_jvm/okio-jvm-3.7.0.jar"
+    jar_path = "cipd/libs/com_squareup_okio_okio_jvm/okio-jvm-3.7.0.jar"
     output_name = "com_squareup_okio_okio_jvm"
     supports_android = true
     enable_bytecode_checks = false
@@ -2307,7 +2318,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("io_grpc_grpc_core_java") {
-    jar_path = "libs/io_grpc_grpc_core/grpc-core-1.49.0.jar"
+    jar_path = "cipd/libs/io_grpc_grpc_core/grpc-core-1.49.0.jar"
     output_name = "io_grpc_grpc_core"
     supports_android = true
     enable_bytecode_checks = false
@@ -2334,7 +2345,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("io_perfmark_perfmark_api_java") {
-    jar_path = "libs/io_perfmark_perfmark_api/perfmark-api-0.25.0.jar"
+    jar_path = "cipd/libs/io_perfmark_perfmark_api/perfmark-api-0.25.0.jar"
     output_name = "io_perfmark_perfmark_api"
     supports_android = true
     enable_bytecode_checks = false
@@ -2350,7 +2361,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("net_bytebuddy_byte_buddy_agent_java") {
     jar_path =
-        "libs/net_bytebuddy_byte_buddy_agent/byte-buddy-agent-1.14.12.jar"
+        "cipd/libs/net_bytebuddy_byte_buddy_agent/byte-buddy-agent-1.14.12.jar"
     output_name = "net_bytebuddy_byte_buddy_agent"
     supports_android = true
     enable_bytecode_checks = false
@@ -2366,7 +2377,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_bouncycastle_bcprov_jdk18on_java") {
-    jar_path = "libs/org_bouncycastle_bcprov_jdk18on/bcprov-jdk18on-1.77.jar"
+    jar_path =
+        "cipd/libs/org_bouncycastle_bcprov_jdk18on/bcprov-jdk18on-1.77.jar"
     output_name = "org_bouncycastle_bcprov_jdk18on"
     enable_bytecode_checks = false
 
@@ -2381,7 +2393,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_conscrypt_conscrypt_openjdk_uber_java") {
-    jar_path = "libs/org_conscrypt_conscrypt_openjdk_uber/conscrypt-openjdk-uber-2.5.2.jar"
+    jar_path = "cipd/libs/org_conscrypt_conscrypt_openjdk_uber/conscrypt-openjdk-uber-2.5.2.jar"
     output_name = "org_conscrypt_conscrypt_openjdk_uber"
     enable_bytecode_checks = false
 
@@ -2396,7 +2408,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_hamcrest_hamcrest_java") {
-    jar_path = "libs/org_hamcrest_hamcrest/hamcrest-2.2.jar"
+    jar_path = "cipd/libs/org_hamcrest_hamcrest/hamcrest-2.2.jar"
     output_name = "org_hamcrest_hamcrest"
     supports_android = true
     enable_bytecode_checks = false
@@ -2412,7 +2424,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jetbrains_kotlin_kotlin_android_extensions_runtime_java") {
-    jar_path = "libs/org_jetbrains_kotlin_kotlin_android_extensions_runtime/kotlin-android-extensions-runtime-1.9.22.jar"
+    jar_path = "cipd/libs/org_jetbrains_kotlin_kotlin_android_extensions_runtime/kotlin-android-extensions-runtime-1.9.22.jar"
     output_name = "org_jetbrains_kotlin_kotlin_android_extensions_runtime"
     supports_android = true
     enable_bytecode_checks = false
@@ -2428,7 +2440,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_objenesis_objenesis_java") {
-    jar_path = "libs/org_objenesis_objenesis/objenesis-3.3.jar"
+    jar_path = "cipd/libs/org_objenesis_objenesis/objenesis-3.3.jar"
     output_name = "org_objenesis_objenesis"
     supports_android = true
     enable_bytecode_checks = false
@@ -2444,7 +2456,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_annotations_java") {
-    jar_path = "libs/org_robolectric_annotations/annotations-4.12.1.jar"
+    jar_path = "cipd/libs/org_robolectric_annotations/annotations-4.12.1.jar"
     output_name = "org_robolectric_annotations"
     enable_bytecode_checks = false
 
@@ -2460,7 +2472,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_junit_java") {
-    jar_path = "libs/org_robolectric_junit/junit-4.12.1.jar"
+    jar_path = "cipd/libs/org_robolectric_junit/junit-4.12.1.jar"
     output_name = "org_robolectric_junit"
     enable_bytecode_checks = false
 
@@ -2483,7 +2495,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_nativeruntime_java") {
-    jar_path = "libs/org_robolectric_nativeruntime/nativeruntime-4.12.1.jar"
+    jar_path =
+        "cipd/libs/org_robolectric_nativeruntime/nativeruntime-4.12.1.jar"
     output_name = "org_robolectric_nativeruntime"
     enable_bytecode_checks = false
 
@@ -2505,7 +2518,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_nativeruntime_dist_compat_java") {
-    jar_path = "libs/org_robolectric_nativeruntime_dist_compat/nativeruntime-dist-compat-1.0.9.jar"
+    jar_path = "cipd/libs/org_robolectric_nativeruntime_dist_compat/nativeruntime-dist-compat-1.0.9.jar"
     output_name = "org_robolectric_nativeruntime_dist_compat"
     enable_bytecode_checks = false
 
@@ -2521,7 +2534,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_pluginapi_java") {
-    jar_path = "libs/org_robolectric_pluginapi/pluginapi-4.12.1.jar"
+    jar_path = "cipd/libs/org_robolectric_pluginapi/pluginapi-4.12.1.jar"
     output_name = "org_robolectric_pluginapi"
     enable_bytecode_checks = false
 
@@ -2541,7 +2554,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_plugins_maven_dependency_resolver_java") {
-    jar_path = "libs/org_robolectric_plugins_maven_dependency_resolver/plugins-maven-dependency-resolver-4.12.1.jar"
+    jar_path = "cipd/libs/org_robolectric_plugins_maven_dependency_resolver/plugins-maven-dependency-resolver-4.12.1.jar"
     output_name = "org_robolectric_plugins_maven_dependency_resolver"
     enable_bytecode_checks = false
 
@@ -2563,7 +2576,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_resources_java") {
-    jar_path = "libs/org_robolectric_resources/resources-4.12.1.jar"
+    jar_path = "cipd/libs/org_robolectric_resources/resources-4.12.1.jar"
     output_name = "org_robolectric_resources"
     enable_bytecode_checks = false
 
@@ -2586,7 +2599,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_sandbox_java") {
-    jar_path = "libs/org_robolectric_sandbox/sandbox-4.12.1.jar"
+    jar_path = "cipd/libs/org_robolectric_sandbox/sandbox-4.12.1.jar"
     output_name = "org_robolectric_sandbox"
     enable_bytecode_checks = false
 
@@ -2613,7 +2626,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_shadowapi_java") {
-    jar_path = "libs/org_robolectric_shadowapi/shadowapi-4.12.1.jar"
+    jar_path = "cipd/libs/org_robolectric_shadowapi/shadowapi-4.12.1.jar"
     output_name = "org_robolectric_shadowapi"
     enable_bytecode_checks = false
 
@@ -2633,8 +2646,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_shadows_framework_java") {
-    jar_path =
-        "libs/org_robolectric_shadows_framework/shadows-framework-4.12.1.jar"
+    jar_path = "cipd/libs/org_robolectric_shadows_framework/shadows-framework-4.12.1.jar"
     output_name = "org_robolectric_shadows_framework"
     enable_bytecode_checks = false
 
@@ -2666,8 +2678,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_shadows_versioning_java") {
-    jar_path =
-        "libs/org_robolectric_shadows_versioning/shadows-versioning-4.12.1.jar"
+    jar_path = "cipd/libs/org_robolectric_shadows_versioning/shadows-versioning-4.12.1.jar"
     output_name = "org_robolectric_shadows_versioning"
     enable_bytecode_checks = false
 
@@ -2684,7 +2695,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_utils_java") {
-    jar_path = "libs/org_robolectric_utils/utils-4.12.1.jar"
+    jar_path = "cipd/libs/org_robolectric_utils/utils-4.12.1.jar"
     output_name = "org_robolectric_utils"
     enable_bytecode_checks = false
 
@@ -2707,7 +2718,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_utils_reflector_java") {
-    jar_path = "libs/org_robolectric_utils_reflector/utils-reflector-4.12.1.jar"
+    jar_path =
+        "cipd/libs/org_robolectric_utils_reflector/utils-reflector-4.12.1.jar"
     output_name = "org_robolectric_utils_reflector"
     enable_bytecode_checks = false
 
