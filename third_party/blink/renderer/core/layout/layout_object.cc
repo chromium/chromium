@@ -681,7 +681,7 @@ void LayoutObject::AddChild(LayoutObject* new_child,
   NOT_DESTROYED();
 #if DCHECK_IS_ON()
   DCHECK(IsAllowedToModifyLayoutTreeStructure(GetDocument()) ||
-         IsDetachedNonDomRoot());
+         IsInDetachedNonDomTree());
 #endif
 
   LayoutObjectChildList* children = VirtualChildren();
@@ -752,7 +752,7 @@ void LayoutObject::RemoveChild(LayoutObject* old_child) {
   NOT_DESTROYED();
 #if DCHECK_IS_ON()
   DCHECK(IsAllowedToModifyLayoutTreeStructure(GetDocument()) ||
-         IsDetachedNonDomRoot());
+         IsInDetachedNonDomTree());
 #endif
 
   LayoutObjectChildList* children = VirtualChildren();
@@ -2617,9 +2617,10 @@ StyleDifference LayoutObject::AdjustStyleDifference(
   return diff;
 }
 
-void LayoutObject::SetPseudoElementStyle(const ComputedStyle* pseudo_style,
+void LayoutObject::SetPseudoElementStyle(const LayoutObject& owner,
                                          bool match_parent_size) {
   NOT_DESTROYED();
+  const ComputedStyle* pseudo_style = owner.Style();
   DCHECK(pseudo_style->StyleType() == kPseudoIdBefore ||
          pseudo_style->StyleType() == kPseudoIdAfter ||
          pseudo_style->StyleType() == kPseudoIdMarker ||
@@ -2627,6 +2628,8 @@ void LayoutObject::SetPseudoElementStyle(const ComputedStyle* pseudo_style,
          pseudo_style->StyleType() == kPseudoIdScrollMarkerGroup ||
          pseudo_style->IsPageMarginBox() ||
          pseudo_style->StyleType() == kPseudoIdScrollMarker);
+
+  InheritIsInDetachedNonDomTree(owner);
 
   // FIXME: We should consider just making all pseudo items use an inherited
   // style.

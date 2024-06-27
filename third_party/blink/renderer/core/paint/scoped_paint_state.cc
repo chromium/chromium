@@ -49,7 +49,7 @@ void ScopedPaintState::AdjustForPaintProperties(const LayoutObject& object) {
 
   if (!object.Parent() && !object.HasLayer()) {
 #if DCHECK_IS_ON()
-    DCHECK(object.IsDetachedNonDomRoot());
+    DCHECK(object.IsInDetachedNonDomTree());
     DCHECK(object.IsBox());
     DCHECK_EQ(To<LayoutBox>(object).GetPhysicalFragment(0)->GetBoxType(),
               PhysicalFragment::kPageBorderBox);

@@ -2268,7 +2268,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
                 ApplyStyleChanges = ApplyStyleChanges::kYes);
 
   // Set the style of the object if it's generated content.
-  void SetPseudoElementStyle(const ComputedStyle*,
+  void SetPseudoElementStyle(const LayoutObject& owner,
                              bool match_parent_size = false);
 
   // In some cases we modify the ComputedStyle after the style recalc, either
@@ -3363,19 +3363,28 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
 
 #if DCHECK_IS_ON()
-  // Return true if the layout object has no parent and isn't part of the DOM
-  // tree. Such layout objects have no parent, and are managed by something else
-  // than the regular layout object tree builder. One example of this is
-  // formatted text inside a CANVAS element.
-  bool IsDetachedNonDomRoot() const {
+  // Return true if the layout object isn't part of the DOM tree. Such layout
+  // objects either have no parent (even if it isn't a LayoutView), or is a
+  // descendant of such an object, and are managed by something else than the
+  // regular layout object tree builder. One example of this is formatted text
+  // inside a CANVAS element. Another example is @page margin boxes.
+  bool IsInDetachedNonDomTree() const {
     NOT_DESTROYED();
-    return is_detached_non_dom_root_;
+    return is_in_detached_non_dom_tree_;
   }
   void SetIsDetachedNonDomRoot(bool b) {
     NOT_DESTROYED();
-    is_detached_non_dom_root_ = b;
+    DCHECK(!Parent());
+    is_in_detached_non_dom_tree_ = b;
+  }
+  void InheritIsInDetachedNonDomTree(const LayoutObject& parent) {
+    NOT_DESTROYED();
+    is_in_detached_non_dom_tree_ = parent.IsInDetachedNonDomTree();
   }
 #else
+  void InheritIsInDetachedNonDomTree(const LayoutObject& parent) {
+    NOT_DESTROYED();
+  }
   void SetIsDetachedNonDomRoot(bool) { NOT_DESTROYED(); }
 #endif  // DCHECK_IS_ON()
 
@@ -3726,7 +3735,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   unsigned has_ax_object_ : 1;
   unsigned set_needs_layout_forbidden_ : 1;
   unsigned as_image_observer_count_ : 20;
-  unsigned is_detached_non_dom_root_ : 1 = false;
+  unsigned is_in_detached_non_dom_tree_ : 1 = false;
 #endif
 
 #define ADD_BOOLEAN_BITFIELD(field_name_, MethodNameBase)               \

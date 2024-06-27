@@ -36,9 +36,12 @@
 
 namespace blink {
 
-LayoutQuote::LayoutQuote(PseudoElement& pseudo, QuoteType quote)
-    : LayoutInline(nullptr), type_(quote), depth_(0), owning_pseudo_(&pseudo) {
-  SetDocumentForAnonymous(&pseudo.GetDocument());
+LayoutQuote::LayoutQuote(LayoutObject& owner, QuoteType quote)
+    : LayoutInline(nullptr),
+      type_(quote),
+      depth_(0),
+      owning_pseudo_(DynamicTo<PseudoElement>(owner.GetNode())) {
+  SetDocumentForAnonymous(&owner.GetDocument());
 }
 
 LayoutQuote::~LayoutQuote() {

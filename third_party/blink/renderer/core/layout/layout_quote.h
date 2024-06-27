@@ -38,10 +38,12 @@ class PseudoElement;
 // This object is generated thus always anonymous.
 class LayoutQuote final : public LayoutInline {
  public:
-  LayoutQuote(PseudoElement&, const QuoteType);
+  LayoutQuote(LayoutObject& owner, const QuoteType);
   ~LayoutQuote() override;
   void Trace(Visitor*) const override;
 
+  // Will return nullptr, if this doesn't originate from a pseudo element, but
+  // rather an @page margin box.
   PseudoElement* GetOwningPseudo() const {
     NOT_DESTROYED();
     return owning_pseudo_.Get();

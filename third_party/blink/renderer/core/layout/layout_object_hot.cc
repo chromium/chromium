@@ -146,7 +146,7 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
       continue;
     }
     if (child->IsText() || child->IsQuote() || child->IsImage())
-      child->SetPseudoElementStyle(Style());
+      child->SetPseudoElementStyle(*this);
     child = child->NextInPreOrder(this);
   }
 }

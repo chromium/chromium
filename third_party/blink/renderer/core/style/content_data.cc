@@ -57,7 +57,7 @@ void ContentData::Trace(Visitor* visitor) const {
 LayoutObject* ImageContentData::CreateLayoutObject(LayoutObject& owner) const {
   LayoutImage* image = LayoutImage::CreateAnonymous(owner.GetDocument());
   bool match_parent_size = image_ && image_->IsGeneratedImage();
-  image->SetPseudoElementStyle(owner.Style(), match_parent_size);
+  image->SetPseudoElementStyle(owner, match_parent_size);
   if (image_) {
     image->SetImageResource(
         MakeGarbageCollected<LayoutImageResourceStyleImage>(image_.Get()));
@@ -75,7 +75,7 @@ void ImageContentData::Trace(Visitor* visitor) const {
 LayoutObject* TextContentData::CreateLayoutObject(LayoutObject& owner) const {
   LayoutObject* layout_object =
       LayoutTextFragment::CreateAnonymous(owner.GetDocument(), text_);
-  layout_object->SetPseudoElementStyle(owner.Style());
+  layout_object->SetPseudoElementStyle(owner);
   return layout_object;
 }
 
@@ -95,7 +95,7 @@ LayoutObject* CounterContentData::CreateLayoutObject(
 
   LayoutObject* layout_object = MakeGarbageCollected<LayoutCounter>(
       To<PseudoElement>(*owner.GetNode()), *this);
-  layout_object->SetPseudoElementStyle(owner.Style());
+  layout_object->SetPseudoElementStyle(owner);
   return layout_object;
 }
 
@@ -105,13 +105,9 @@ void CounterContentData::Trace(Visitor* visitor) const {
 }
 
 LayoutObject* QuoteContentData::CreateLayoutObject(LayoutObject& owner) const {
-  // TODO(crbug.com/40341678): Implement for @page margins. No pseudo element
-  // then.
-  DCHECK(owner.IsPseudoElement());
-
-  LayoutObject* layout_object = MakeGarbageCollected<LayoutQuote>(
-      To<PseudoElement>(*owner.GetNode()), quote_);
-  layout_object->SetPseudoElementStyle(owner.Style());
+  LayoutObject* layout_object =
+      MakeGarbageCollected<LayoutQuote>(owner, quote_);
+  layout_object->SetPseudoElementStyle(owner);
   return layout_object;
 }
 

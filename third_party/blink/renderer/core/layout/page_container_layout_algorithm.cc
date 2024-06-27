@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/frame/pagination_state.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_quote.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/logical_fragment.h"
@@ -378,6 +379,7 @@ BlockNode PageContainerLayoutAlgorithm::CreateBlockNodeIfNeeded(
       document.View()->GetPaginationState()->CreateAnonymousPageLayoutObject(
           document, *page_margin_style);
 
+  int quote_depth = 0;
   for (; content; content = content->Next()) {
     if (content->IsAltText() || content->IsNone()) {
       continue;
@@ -385,6 +387,12 @@ BlockNode PageContainerLayoutAlgorithm::CreateBlockNodeIfNeeded(
     LayoutObject* child = content->CreateLayoutObject(*margin_layout_box);
     if (margin_layout_box->IsChildAllowed(child, *page_margin_style)) {
       margin_layout_box->AddChild(child);
+
+      if (auto* quote = DynamicTo<LayoutQuote>(child)) {
+        quote->SetDepth(quote_depth);
+        quote->UpdateText();
+        quote_depth = quote->GetNextDepth();
+      }
     } else {
       child->Destroy();
     }

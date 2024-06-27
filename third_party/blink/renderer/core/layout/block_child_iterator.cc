@@ -96,7 +96,7 @@ BlockChildIterator::Entry BlockChildIterator::NextChild(
   // impossible scenario)
 #if DCHECK_IS_ON()
   if (const LayoutBox* box = current_child.GetLayoutBox())
-    DCHECK(box->IsDetachedNonDomRoot() || box->Parent());
+    DCHECK(box->IsInDetachedNonDomTree() || box->Parent());
 #endif
   return Entry(current_child, current_child_break_token, current_child_idx);
 }

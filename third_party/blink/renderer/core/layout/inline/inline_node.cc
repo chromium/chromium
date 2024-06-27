@@ -967,7 +967,7 @@ const InlineNodeData& InlineNode::EnsureData() const {
 const OffsetMapping* InlineNode::ComputeOffsetMappingIfNeeded() const {
 #if DCHECK_IS_ON()
   DCHECK(!GetLayoutBlockFlow()->GetDocument().NeedsLayoutTreeUpdate() ||
-         GetLayoutBlockFlow()->IsDetachedNonDomRoot());
+         GetLayoutBlockFlow()->IsInDetachedNonDomTree());
 #endif
 
   InlineNodeData* data = MutableData();
@@ -984,7 +984,7 @@ void InlineNode::ComputeOffsetMapping(LayoutBlockFlow* layout_block_flow,
 #if DCHECK_IS_ON()
   DCHECK(!data->offset_mapping);
   DCHECK(!layout_block_flow->GetDocument().NeedsLayoutTreeUpdate() ||
-         layout_block_flow->IsDetachedNonDomRoot());
+         layout_block_flow->IsInDetachedNonDomTree());
 #endif
 
   const SvgTextChunkOffsets* chunk_offsets = nullptr;
