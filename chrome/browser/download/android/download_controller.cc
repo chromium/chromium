@@ -27,6 +27,7 @@
 #include "chrome/browser/download/android/dangerous_download_infobar_delegate.h"
 #include "chrome/browser/download/android/download_manager_service.h"
 #include "chrome/browser/download/android/download_utils.h"
+#include "chrome/browser/download/android/new_navigation_observer.h"
 #include "chrome/browser/download/download_offline_content_provider.h"
 #include "chrome/browser/download/download_offline_content_provider_factory.h"
 #include "chrome/browser/download/download_stats.h"
@@ -383,8 +384,9 @@ void DownloadController::OnDownloadStarted(DownloadItem* download_item) {
       ShouldOpenPdfInline(download_item)) {
     content::WebContents* web_contents =
         content::DownloadItemUtils::GetWebContents(download_item);
-    bool has_tab = false;
-    if (web_contents) {
+    bool should_cancel_download = true;
+    if (web_contents &&
+        !NewNavigationObserver::GetInstance()->HasNewNavigation(web_contents)) {
       TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
       if (tab) {
         JNIEnv* env = base::android::AttachCurrentThread();
@@ -392,11 +394,13 @@ void DownloadController::OnDownloadStarted(DownloadItem* download_item) {
             DownloadManagerService::CreateJavaDownloadInfo(env, download_item);
         Java_DownloadController_onPdfDownloadStarted(env, tab->GetJavaObject(),
                                                      j_item);
-        has_tab = true;
+        should_cancel_download = false;
       }
     }
-    if (!has_tab) {
+    NewNavigationObserver::GetInstance()->StopObserving(web_contents);
+    if (should_cancel_download) {
       download_item->Cancel(/*user_cancel=*/false);
+      return;
     }
   }
 
