@@ -1104,8 +1104,12 @@ void Display::DidReceiveSwapBuffersAck(
         data->set_display_trace_id(params.swap_trace_id);
       });
 
+  // Both cases require full damage. That is, if buffers are recreated or
+  // non-simple overlays failed, a frame is expected to be sent again.
   if (params.swap_response.result ==
-      gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS) {
+          gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS ||
+      params.swap_response.result ==
+          gfx::SwapResult::SWAP_NON_SIMPLE_OVERLAYS_FAILED) {
     aggregator_->SetFullDamageForSurface(current_surface_id_);
     damage_tracker_->SetRootSurfaceDamaged();
   }
