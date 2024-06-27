@@ -11717,6 +11717,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCanvasHibernationDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kCanvas2DHibernation)},
 
+#if BUILDFLAG(IS_WIN)
+    {"authenticate-using-interop-windows-hello-api",
+     flag_descriptions::kAuthenticateUsingInteropWindowsHelloApiName,
+     flag_descriptions::kAuthenticateUsingInteropWindowsHelloApiDescription,
+     kOsWin,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kAuthenticateUsingInteropWindowsHelloApi)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

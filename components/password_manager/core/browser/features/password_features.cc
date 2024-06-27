@@ -21,6 +21,10 @@ BASE_FEATURE(kAutofillPasswordUserPerceptionSurvey,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kAuthenticateUsingInteropWindowsHelloApi,
+             "AuthenticateUsingInteropWindowsHelloApi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAuthenticateUsingNewWindowsHelloApi,
              "AuthenticateUsingNewWindowsHelloApi",
              base::FEATURE_DISABLED_BY_DEFAULT);

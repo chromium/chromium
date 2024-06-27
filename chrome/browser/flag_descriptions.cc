@@ -5437,6 +5437,13 @@ const char kDevToolsTabTargetLiteralDescription[] =
 
 #if BUILDFLAG(IS_WIN)
 
+const char kAuthenticateUsingInteropWindowsHelloApiName[] =
+    "OS authentication will use IUserConsentVerifierInterop api if available.";
+const char kAuthenticateUsingInteropWindowsHelloApiDescription[] =
+    "If user has Windows Hello configured, OS authentication will use "
+    "IUserConsentVerifierInterop api with explicit window passing, otherwise "
+    "Wincred will be used.";
+
 const char kAuthenticateUsingNewWindowsHelloApiName[] =
     "OS authentication will use new Windows Hello if available.";
 const char kAuthenticateUsingNewWindowsHelloApiDescription[] =

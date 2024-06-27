@@ -579,9 +579,14 @@
     "expiry_milestone": 125
   },
   {
+    "name": "authenticate-using-interop-windows-hello-api",
+    "owners": [ "sygiet@google.com", "vasilii@chromium.org"],
+    "expiry_milestone": 134
+  },
+  {
     "name": "authenticate-using-new-windows-hello-api",
     "owners": [ "sygiet@google.com", "vasilii@chromium.org"],
-    "expiry_milestone": 130
+    "expiry_milestone": 132
   },
   {
     "name": "auto-framing-override",

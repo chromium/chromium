@@ -3172,6 +3172,9 @@ extern const char kDevToolsTabTargetLiteralDescription[];
 
 #if BUILDFLAG(IS_WIN)
 
+extern const char kAuthenticateUsingInteropWindowsHelloApiName[];
+extern const char kAuthenticateUsingInteropWindowsHelloApiDescription[];
+
 extern const char kAuthenticateUsingNewWindowsHelloApiName[];
 extern const char kAuthenticateUsingNewWindowsHelloApiDescription[];
 

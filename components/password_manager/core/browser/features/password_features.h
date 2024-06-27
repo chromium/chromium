@@ -33,6 +33,11 @@ BASE_DECLARE_FEATURE(kAutofillPasswordUserPerceptionSurvey);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN)
+// OS authentication will use IUserConsentVerifierInterop api to trigger Windows
+// Hello authentication. This api allows us to specify explicitly to which
+// window, the OS prompt should attach.
+BASE_DECLARE_FEATURE(kAuthenticateUsingInteropWindowsHelloApi);
+
 // OS authentication will use UserConsentVerifier api to trigger Windows Hello
 // authentication.
 BASE_DECLARE_FEATURE(kAuthenticateUsingNewWindowsHelloApi);

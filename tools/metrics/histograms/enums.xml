@@ -19478,6 +19478,8 @@ from previous Chrome versions.
   <int value="-461713516" label="ArcEnableVirtioBlkForData:enabled"/>
   <int value="-461568027" label="EcheSWADebugMode:disabled"/>
   <int value="-461292699" label="ContentSuggestionsCategoryOrder:enabled"/>
+  <int value="-460737002"
+      label="AuthenticateUsingInteropWindowsHelloApi:enabled"/>
   <int value="-460702745" label="ExportTaggedPDF:disabled"/>
   <int value="-460486807" label="ConsolidatedSiteStorageControls:enabled"/>
   <int value="-460313418" label="ProgressBarThrottle:enabled"/>
@@ -24492,6 +24494,8 @@ from previous Chrome versions.
   <int value="1693658048" label="AppsShortcutDefaultOff:enabled"/>
   <int value="1693685694"
       label="AutofillEnableNewCardArtAndNetworkImages:disabled"/>
+  <int value="1694241061"
+      label="AuthenticateUsingInteropWindowsHelloApi:disabled"/>
   <int value="1694663094" label="RobustAudioDeviceSelectLogic:disabled"/>
   <int value="1694766748"
       label="AutofillRestrictUnownedFieldsToFormlessCheckout:enabled"/>
