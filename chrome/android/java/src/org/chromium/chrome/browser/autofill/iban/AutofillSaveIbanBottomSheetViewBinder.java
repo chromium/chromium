@@ -1,0 +1,21 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.autofill.iban;
+
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
+
+/**
+ * This class is responsible for binding and translating the IBAN model defined in
+ * AutofillSaveIbanBottomSheetProperties to an AutofillSaveIbanBottomSheetView View.
+ */
+/*package*/ class AutofillSaveIbanBottomSheetViewBinder {
+    static void bind(
+            PropertyModel model, AutofillSaveIbanBottomSheetView view, PropertyKey propertyKey) {
+        if (AutofillSaveIbanBottomSheetProperties.IBAN_LABEL == propertyKey) {
+            view.mIbanLabel.setText(model.get(AutofillSaveIbanBottomSheetProperties.IBAN_LABEL));
+        }
+    }
+}

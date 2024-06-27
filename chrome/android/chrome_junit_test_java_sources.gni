@@ -45,6 +45,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/autofill/iban/AutofillSaveIbanBottomSheetContentTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/iban/AutofillSaveIbanBottomSheetCoordinatorTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/iban/AutofillSaveIbanBottomSheetMediatorTest.java",
+  "junit/src/org/chromium/chrome/browser/autofill/iban/AutofillSaveIbanBottomSheetViewBinderTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetBridgeTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetContentTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetCoordinatorTest.java",

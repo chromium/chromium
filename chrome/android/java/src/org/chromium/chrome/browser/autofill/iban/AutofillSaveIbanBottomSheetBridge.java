@@ -54,15 +54,20 @@ public class AutofillSaveIbanBottomSheetBridge {
     /**
      * Requests to show the bottom sheet. Called via JNI from C++.
      *
-     * @param ibanLabel String value of the IBAN being saved, e.g. CH56 **** **** **** *800 9.
+     * @param ibanLabel String value of the IBAN being saved, e.g. CH** **** **** **** *800 9.
      */
     @CalledByNative
     public void requestShowContent(@JniType("std::u16string_view") String ibanLabel) {
         if (mNativeAutofillSaveIbanBottomSheetBridge == 0) return;
         mCoordinator =
                 new AutofillSaveIbanBottomSheetCoordinator(
-                        this, mContext, mBottomSheetController, mLayoutStateProvider, mTabModel);
-        mCoordinator.requestShowContent(ibanLabel);
+                        this,
+                        ibanLabel,
+                        mContext,
+                        mBottomSheetController,
+                        mLayoutStateProvider,
+                        mTabModel);
+        mCoordinator.requestShowContent();
     }
 
     @CalledByNative

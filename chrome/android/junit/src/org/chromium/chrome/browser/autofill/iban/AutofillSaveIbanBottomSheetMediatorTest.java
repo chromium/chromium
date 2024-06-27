@@ -24,8 +24,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public final class AutofillSaveIbanBottomSheetMediatorTest {
-    private static final String IBAN_LABEL = "CH56 **** **** **** *800 9";
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private AutofillSaveIbanBottomSheetBridge mBridge;
@@ -52,7 +50,7 @@ public final class AutofillSaveIbanBottomSheetMediatorTest {
         when(mBottomSheetController.requestShowContent(
                         any(AutofillSaveIbanBottomSheetContent.class), /* animate= */ eq(true)))
                 .thenReturn(true);
-        mMediator.requestShowContent(IBAN_LABEL);
+        mMediator.requestShowContent();
 
         verify(mBottomSheetController).requestShowContent(mBottomSheetContent, /* animate= */ true);
     }

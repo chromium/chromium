@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.autofill.iban;
 
-import static com.google.common.truth.Truth.assertThat;
-
-import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -30,7 +27,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public final class AutofillSaveIbanBottomSheetCoordinatorTest {
-    private static final String IBAN_LABEL = "CH56 **** **** **** *800 9";
+    private static final String IBAN_LABEL = "CH** **** **** **** *800 9";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -50,6 +47,7 @@ public final class AutofillSaveIbanBottomSheetCoordinatorTest {
         mCoordinator =
                 new AutofillSaveIbanBottomSheetCoordinator(
                         mBridge,
+                        IBAN_LABEL,
                         mActivity,
                         mBottomSheetController,
                         mLayoutStateProvider,
@@ -58,7 +56,7 @@ public final class AutofillSaveIbanBottomSheetCoordinatorTest {
 
     @Test
     public void testRequestShowContent() {
-        mCoordinator.requestShowContent(IBAN_LABEL);
+        mCoordinator.requestShowContent();
 
         verify(mBottomSheetController)
                 .requestShowContent(
@@ -66,18 +64,8 @@ public final class AutofillSaveIbanBottomSheetCoordinatorTest {
     }
 
     @Test
-    public void testRequestShowContent_requestsShowEmptyString() {
-        IllegalArgumentException e =
-                assertThrows(
-                        IllegalArgumentException.class, () -> mCoordinator.requestShowContent(""));
-        assertThat(e)
-                .hasMessageThat()
-                .isEqualTo("IBAN label passed from C++ should not be NULL or empty.");
-    }
-
-    @Test
     public void testDestroy() {
-        mCoordinator.requestShowContent(IBAN_LABEL);
+        mCoordinator.requestShowContent();
         mCoordinator.destroy();
 
         verify(mBottomSheetController)

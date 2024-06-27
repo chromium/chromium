@@ -64,14 +64,11 @@ import java.util.function.Consumer;
         mTabModel.addObserver(this);
     }
 
-    /**
-     * Requests to show the bottom sheet content.
-     *
-     * @param ibanLabel Label for the IBAN being saved, e.g. CH56 **** **** **** *800 9.
-     */
-    void requestShowContent(String ibanLabel) {
-        // TODO(b/309163431): Use ibanLabel parameter to display IBAN label.
-        if (mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true)) {}
+    /** Requests to show the bottom sheet content. */
+    void requestShowContent() {
+        if (mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true)) {
+            // TODO(b/309163770): call delegate functions.
+        }
     }
 
     public void destroy() {

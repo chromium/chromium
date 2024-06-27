@@ -4,26 +4,25 @@
 
 package org.chromium.chrome.browser.autofill.iban;
 
-import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ScrollView;
 
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** This class is responsible for rendering the content for the Autofill save IBAN bottomsheet. */
 /*package*/ class AutofillSaveIbanBottomSheetContent implements BottomSheetContent {
-    private final View mView;
+    private final ScrollView mScrollView;
+    private final View mContentView;
 
-    AutofillSaveIbanBottomSheetContent(Context context) {
-        mView =
-                LayoutInflater.from(context)
-                        .inflate(R.layout.autofill_save_iban_bottom_sheet, null);
+    AutofillSaveIbanBottomSheetContent(View contentView, ScrollView scrollView) {
+        mContentView = contentView;
+        mScrollView = scrollView;
     }
 
     @Override
     public View getContentView() {
-        return mView;
+        return mContentView;
     }
 
     @Override
@@ -47,7 +46,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
     @Override
     public int getVerticalScrollOffset() {
-        return 0;
+        return mScrollView.getScrollY();
     }
 
     @Override

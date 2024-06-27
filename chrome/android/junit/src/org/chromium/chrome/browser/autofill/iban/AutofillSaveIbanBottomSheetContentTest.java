@@ -10,6 +10,8 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertFalse;
 
 import android.app.Activity;
+import android.view.View;
+import android.widget.ScrollView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -28,6 +30,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 public class AutofillSaveIbanBottomSheetContentTest {
     private Activity mActivity;
     private AutofillSaveIbanBottomSheetContent mContent;
+    private View mContentView;
+    private ScrollView mScrollView;
 
     @Before
     public void setUp() {
@@ -35,7 +39,9 @@ public class AutofillSaveIbanBottomSheetContentTest {
         mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
         // set a MaterialComponents theme which is required for the `OutlinedBox` text field.
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mContent = new AutofillSaveIbanBottomSheetContent(mActivity);
+        mContentView = new View(mActivity);
+        mScrollView = new ScrollView(mActivity);
+        mContent = new AutofillSaveIbanBottomSheetContent(mContentView, mScrollView);
     }
 
     @Test
