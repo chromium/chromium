@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/core/dom/slot_assignment_recalc_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
+#include "third_party/blink/renderer/core/editing/serializers/markup_accumulator.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
@@ -113,6 +114,7 @@
 #include "third_party/blink/renderer/core/xml_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
@@ -199,6 +201,18 @@ class PopoverCloseWatcherEventListener : public NativeEventListener {
   WeakMember<HTMLElement> popover_;
 };
 
+class NameInHeapSnapshotBuilder : public MarkupAccumulator {
+ public:
+  NameInHeapSnapshotBuilder()
+      : MarkupAccumulator(kDoNotResolveURLs,
+                          SerializationType::kHTML,
+                          ShadowRootInclusion()) {}
+  String GetStartTag(const Element& element) {
+    AppendElement(element);
+    return markup_.ToString();
+  }
+};
+
 }  // anonymous namespace
 
 String HTMLElement::nodeName() const {
@@ -212,6 +226,18 @@ String HTMLElement::nodeName() const {
     return Element::nodeName().UpperASCII();
   }
   return Element::nodeName();
+}
+
+const char* HTMLElement::NameInHeapSnapshot() const {
+  if (!ThreadState::Current()->IsTakingHeapSnapshot()) {
+    // If a heap snapshot is not in progress, we must return a string with
+    // static lifetime rather than allocating something.
+    return Element::NameInHeapSnapshot();
+  }
+  NameInHeapSnapshotBuilder builder;
+  String start_tag = builder.GetStartTag(*this);
+  std::string utf_8 = start_tag.Utf8();
+  return ThreadState::Current()->CopyNameForHeapSnapshot(utf_8.c_str());
 }
 
 bool HTMLElement::ShouldSerializeEndTag() const {

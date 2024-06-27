@@ -104,6 +104,12 @@ class PLATFORM_EXPORT ThreadState final {
   // Writing to a file requires a disabled sandbox.
   void TakeHeapSnapshotForTesting(const char* filename) const;
 
+  bool IsTakingHeapSnapshot() const;
+
+  // Copies a string into the V8 heap profiler, and returns a pointer to the
+  // copy. Only valid while taking a heap snapshot.
+  const char* CopyNameForHeapSnapshot(const char* name) const;
+
  private:
   explicit ThreadState(v8::Platform*);
   ~ThreadState();

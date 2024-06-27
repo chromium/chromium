@@ -113,6 +113,8 @@ class CORE_EXPORT HTMLElement : public Element {
     return HasLocalName(name.LocalName());
   }
 
+  const char* NameInHeapSnapshot() const override;
+
   String title() const final;
 
   void setInnerText(const String&);
