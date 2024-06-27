@@ -70,6 +70,19 @@ constexpr gfx::PointF kTwoPageVerticalLayoutPoint1InsidePage1(10.0f, 75.0f);
 constexpr gfx::PointF kTwoPageVerticalLayoutPoint2InsidePage1(15.0f, 80.0f);
 constexpr gfx::PointF kTwoPageVerticalLayoutPoint3InsidePage1(20.0f, 80.0f);
 
+// The inputs for a stroke that starts in first page, leaves the bounds of that
+// page, but then moves back into the page results in one stroke with two
+// segments.
+constexpr gfx::PointF kTwoPageVerticalLayoutPageExitAndReentryPoints[] = {
+    gfx::PointF(10.0f, 5.0f), gfx::PointF(10.0f, 0.0f),
+    gfx::PointF(15.0f, 0.0f), gfx::PointF(15.0f, 5.0f),
+    gfx::PointF(15.0f, 10.0f)};
+// The two segments created by the inputs above.
+constexpr gfx::PointF kTwoPageVerticalLayoutPageExitAndReentrySegment1[] = {
+    gfx::PointF(5.0f, 5.0f), gfx::PointF(5.0f, 0.0f)};
+constexpr gfx::PointF kTwoPageVerticalLayoutPageExitAndReentrySegment2[] = {
+    gfx::PointF(10.0f, 0.0f), gfx::PointF(10.0f, 5.0f)};
+
 class FakeClient : public PdfInkModule::Client {
  public:
   FakeClient() = default;
@@ -561,24 +574,19 @@ TEST_F(PdfInkModuleStrokeTest, StrokePageExitAndReentry) {
   // Start out without any strokes.
   EXPECT_TRUE(ink_module().GetStrokesInputPositionsForTesting().empty());
 
-  // A stroke that starts in first page, leaves the bounds of that page, but
-  // then moves back into the page results in one stroke with two segments.
-  constexpr gfx::PointF kStrokeMoves[] = {
-      gfx::PointF(10.0f, 5.0f), gfx::PointF(10.0f, 0.0f),
-      gfx::PointF(15.0f, 0.0f), gfx::PointF(15.0f, 5.0f),
-      gfx::PointF(15.0f, 10.0f)};
   ApplyStrokeWithMouseAtPoints(kTwoPageVerticalLayoutPoint1InsidePage0,
-                               kStrokeMoves,
+                               kTwoPageVerticalLayoutPageExitAndReentryPoints,
                                kTwoPageVerticalLayoutPoint3InsidePage0,
                                /*expect_mouse_events_handled=*/true);
 
-  constexpr gfx::PointF kSegment1[] = {gfx::PointF(5.0f, 5.0f),
-                                       gfx::PointF(5.0f, 0.0f)};
-  constexpr gfx::PointF kSegment2[] = {gfx::PointF(10.0f, 0.0f),
-                                       gfx::PointF(10.0f, 5.0f)};
-  EXPECT_THAT(ink_module().GetStrokesInputPositionsForTesting(),
-              ElementsAre(Pair(0, ElementsAre(ElementsAreArray(kSegment1),
-                                              ElementsAreArray(kSegment2)))));
+  EXPECT_THAT(
+      ink_module().GetStrokesInputPositionsForTesting(),
+      ElementsAre(Pair(
+          0,
+          ElementsAre(ElementsAreArray(
+                          kTwoPageVerticalLayoutPageExitAndReentrySegment1),
+                      ElementsAreArray(
+                          kTwoPageVerticalLayoutPageExitAndReentrySegment2)))));
 }
 
 }  // namespace
