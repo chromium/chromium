@@ -224,6 +224,14 @@ void DrmOverlayManager::RegisterOverlayRequirement(
 }
 
 void DrmOverlayManager::OnSwapBuffersComplete(gfx::SwapResult swap_result) {
+  DCHECK(!in_flight_overlay_types_.empty());
+  auto committed_overlay_types = std::move(in_flight_overlay_types_.front());
+  in_flight_overlay_types_.pop_front();
+
+  if (swap_result != gfx::SwapResult::SWAP_NON_SIMPLE_OVERLAYS_FAILED) {
+    return;
+  }
+
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
@@ -232,6 +240,13 @@ void DrmOverlayManager::SetSupportedBufferFormats(
     base::flat_set<gfx::BufferFormat> supported_buffer_formats) {
   per_widget_overlay_supported_buffer_formats_.insert_or_assign(
       widget, std::move(supported_buffer_formats));
+}
+
+void DrmOverlayManager::OnPromotedOverlayTypes(
+    std::vector<gfx::OverlayType> promoted_overlay_types) {
+  // Hold promoted overlay types so that it's possible to distinguish swap
+  // buffers completion calls.
+  in_flight_overlay_types_.push_back(std::move(promoted_overlay_types));
 }
 
 bool DrmOverlayManager::CanHandleCandidate(

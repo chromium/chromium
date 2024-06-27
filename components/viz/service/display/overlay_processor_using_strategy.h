@@ -241,7 +241,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   virtual void SortProposedOverlayCandidates(
       std::vector<OverlayProposedCandidate>* proposed_candidates);
 
-  // Used by Android pre-SurfaceControl to notify promotion hints.
+  // Used by Android pre-SurfaceControl to notify promotion hints, and by
+  // Ozone to notify overlay manager what overlays are actually promoted.
   virtual void NotifyOverlayPromotion(
       DisplayResourceProvider* display_resource_provider,
       const OverlayCandidateList& candidate_list,

@@ -47,4 +47,9 @@ void DrmOverlayCandidates::SetSupportedBufferFormats(
       widget_, std::move(supported_buffer_formats));
 }
 
+void DrmOverlayCandidates::NotifyOverlayPromotion(
+    std::vector<gfx::OverlayType> promoted_overlay_types) {
+  overlay_manager_->OnPromotedOverlayTypes(std::move(promoted_overlay_types));
+}
+
 }  // namespace ui

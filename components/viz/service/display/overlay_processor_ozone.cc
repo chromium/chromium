@@ -233,6 +233,24 @@ bool OverlayProcessorOzone::SupportsFlipRotateTransform() const {
 #endif
 }
 
+void OverlayProcessorOzone::NotifyOverlayPromotion(
+    DisplayResourceProvider* display_resource_provider,
+    const OverlayCandidateList& candidate_list,
+    const QuadList& quad_list) {
+  if (!overlay_candidates_) {
+    return;
+  }
+
+  std::vector<gfx::OverlayType> promoted_overlay_types;
+  promoted_overlay_types.reserve(candidate_list.size());
+  for (const auto& candidate : candidate_list) {
+    promoted_overlay_types.emplace_back(candidate.overlay_type);
+  }
+
+  overlay_candidates_->NotifyOverlayPromotion(
+      std::move(promoted_overlay_types));
+}
+
 void OverlayProcessorOzone::CheckOverlaySupportImpl(
     const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
     OverlayCandidateList* surfaces) {

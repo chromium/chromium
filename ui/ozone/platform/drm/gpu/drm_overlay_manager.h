@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/lru_cache.h"
@@ -74,6 +75,12 @@ class DrmOverlayManager : public OverlayManagerOzone {
       gfx::AcceleratedWidget widget,
       base::flat_set<gfx::BufferFormat> supported_buffer_formats);
 
+  // Should be called by the overlay processor to indicate what overlay types
+  // are promoted. This is later used in |OnSwapBuffersComplete| to distinguish
+  // overlay types. Can be empty.
+  void OnPromotedOverlayTypes(
+      std::vector<gfx::OverlayType> promoted_overlay_types);
+
  protected:
   // Sends a request to see if overlay configuration will work. Implementations
   // should call UpdateCacheForOverlayCandidates() with the response.
@@ -132,6 +139,9 @@ class DrmOverlayManager : public OverlayManagerOzone {
 
   base::flat_map<gfx::AcceleratedWidget, base::flat_set<gfx::BufferFormat>>
       per_widget_overlay_supported_buffer_formats_;
+
+  // A simple queue of bools that helps to identify buffer swaps.
+  base::circular_deque<std::vector<gfx::OverlayType>> in_flight_overlay_types_;
 
   THREAD_CHECKER(thread_checker_);
 };

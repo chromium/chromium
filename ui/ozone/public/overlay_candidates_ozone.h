@@ -52,6 +52,11 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlayCandidatesOzone {
   virtual void SetSupportedBufferFormats(
       base::flat_set<gfx::BufferFormat> supported_buffer_formats) {}
 
+  // Notifies what overlay candidates were actually promoted as overlays.
+  // Can be empty.
+  virtual void NotifyOverlayPromotion(
+      std::vector<gfx::OverlayType> promoted_overlay_types) {}
+
   virtual ~OverlayCandidatesOzone();
 };
 
