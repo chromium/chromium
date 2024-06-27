@@ -672,13 +672,21 @@ void PickerController::FetchFileThumbnail(const base::FilePath& path,
 }
 
 void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp) {
-  session_metrics_ = std::make_unique<PickerSessionMetrics>();
   show_editor_callback_ = client_->CacheEditorContext();
 
   model_ = std::make_unique<PickerModel>(
       GetFocusedTextInputClient(), &GetImeKeyboard(),
       show_editor_callback_.is_null() ? PickerModel::EditorStatus::kDisabled
                                       : PickerModel::EditorStatus::kEnabled);
+
+  if (model_->GetMode() == PickerModeType::kPassword) {
+    GetImeKeyboard().SetCapsLockEnabled(!model_->is_caps_lock_enabled());
+    model_.reset();
+    return;
+  }
+
+  session_metrics_ = std::make_unique<PickerSessionMetrics>();
+
   widget_ = PickerWidget::Create(
       this,
       GetPickerAnchorBounds(GetCaretBounds(), GetCursorPoint(),

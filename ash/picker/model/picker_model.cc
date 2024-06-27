@@ -32,6 +32,11 @@ gfx::Range GetSelectionRange(ui::TextInputClient* client) {
              : gfx::Range();
 }
 
+ui::TextInputType GetTextInputType(ui::TextInputClient* client) {
+  return client ? client->GetTextInputType()
+                : ui::TextInputType::TEXT_INPUT_TYPE_NONE;
+}
+
 }  // namespace
 
 PickerModel::PickerModel(ui::TextInputClient* focused_client,
@@ -41,7 +46,8 @@ PickerModel::PickerModel(ui::TextInputClient* focused_client,
       selected_text_(GetSelectedText(focused_client)),
       selection_range_(GetSelectionRange(focused_client)),
       is_caps_lock_enabled_(CHECK_DEREF(ime_keyboard).IsCapsLockEnabled()),
-      editor_status_(editor_status) {}
+      editor_status_(editor_status),
+      text_input_type_(GetTextInputType(focused_client)) {}
 
 std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
   switch (GetMode()) {
@@ -75,6 +81,9 @@ std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
 
       return categories;
     }
+    case PickerModeType::kPassword: {
+      return {};
+    }
   }
 }
 
@@ -101,6 +110,10 @@ bool PickerModel::is_caps_lock_enabled() const {
 PickerModeType PickerModel::GetMode() const {
   if (!has_focus_) {
     return PickerModeType::kUnfocused;
+  }
+
+  if (text_input_type_ == ui::TextInputType::TEXT_INPUT_TYPE_PASSWORD) {
+    return PickerModeType::kPassword;
   }
 
   return selection_range_.is_empty() ? PickerModeType::kNoSelection

@@ -183,6 +183,29 @@ TEST_F(PickerControllerTest, ToggleWidgetShowsWidgetIfClosed) {
   EXPECT_TRUE(controller.widget_for_testing());
 }
 
+TEST_F(PickerControllerTest, ToggleWidgetTogglesCapslockForPasswordField) {
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_PASSWORD});
+  input_method->SetFocusedTextInputClient(&input_field);
+
+  controller.ToggleWidget();
+  input_method::ImeKeyboard* ime_keyboard = GetImeKeyboard();
+  ASSERT_TRUE(ime_keyboard);
+
+  EXPECT_FALSE(controller.widget_for_testing());
+  EXPECT_TRUE(ime_keyboard->IsCapsLockEnabled());
+
+  controller.ToggleWidget();
+
+  EXPECT_FALSE(controller.widget_for_testing());
+  EXPECT_FALSE(ime_keyboard->IsCapsLockEnabled());
+}
+
 TEST_F(PickerControllerTest, ToggleWidgetClosesWidgetIfOpen) {
   PickerController controller;
   NiceMock<TestPickerClient> client(&controller);

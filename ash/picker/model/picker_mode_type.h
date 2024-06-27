@@ -12,12 +12,13 @@ namespace ash {
 enum class PickerModeType {
   // Triggered without focusing on an input field.
   kUnfocused,
-  // Triggered with focus, but no selected text.
+  // Triggered with focus, but no selected text in a non-password field.
   kNoSelection,
-  // Triggered with focus and selected text.
-  kHasSelection
+  // Triggered with focus and selected text in a non-password field.
+  kHasSelection,
+  // Triggered with focus in a password field.
+  kPassword,
 };
-
 }
 
 #endif  // ASH_PICKER_MODEL_PICKER_MODE_TYPE_H_
