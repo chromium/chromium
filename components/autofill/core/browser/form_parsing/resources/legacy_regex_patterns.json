@@ -1371,6 +1371,15 @@
         "form_control_types": ["INPUT_TEXT", "TEXT_AREA", "INPUT_SEARCH"]
       }
     ],
+    "fr": [
+      {
+        "positive_pattern": "compl[eé]ment[\\s]*d[\\'\\’]adresse",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "form_control_types": ["INPUT_TEXT", "TEXT_AREA", "INPUT_SEARCH"]
+      }
+    ],
     "it": [
       {
         "positive_pattern": "indirizzo[.\\s]*aggiuntivo",
