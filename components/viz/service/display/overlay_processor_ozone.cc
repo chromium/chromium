@@ -23,6 +23,7 @@
 #include "components/viz/service/display/overlay_strategy_single_on_top.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -61,7 +62,7 @@ void ConvertToOzoneOverlaySurface(
     const OverlayCandidate& overlay_candidate,
     ui::OverlaySurfaceCandidate* ozone_candidate) {
   ozone_candidate->transform = overlay_candidate.transform;
-  ozone_candidate->format = overlay_candidate.format;
+  ozone_candidate->format = gpu::ToBufferFormat(overlay_candidate.format);
   ozone_candidate->color_space = overlay_candidate.color_space;
   ozone_candidate->display_rect = overlay_candidate.display_rect;
   ozone_candidate->crop_rect = overlay_candidate.uv_rect;
@@ -116,7 +117,7 @@ bool IsYUVColorSpace(const gfx::ColorSpace& color_space) {
 }
 
 bool AllowColorSpaceCombination(
-    gfx::BufferFormat source_format,
+    SharedImageFormat source_format,
     const gfx::ColorSpace& source_color_space,
     const gfx::ColorSpace& destination_color_space) {
   // Allow invalid source color spaces because the assumption is that the
@@ -151,9 +152,9 @@ bool AllowColorSpaceCombination(
   // DCHECK() once LaCrOS plumbs the correct color space.
   bool is_yuv_color_space = features::IsLacrosColorManagementEnabled() ||
                             IsYUVColorSpace(source_color_space);
-  if ((source_format == gfx::BufferFormat::YUV_420_BIPLANAR ||
-       source_format == gfx::BufferFormat::YVU_420 ||
-       source_format == gfx::BufferFormat::P010) &&
+  if ((source_format == MultiPlaneFormat::kNV12 ||
+       source_format == MultiPlaneFormat::kYV12 ||
+       source_format == MultiPlaneFormat::kP010) &&
       is_yuv_color_space &&
       (source_color_space.GetMatrixID() ==
            gfx::ColorSpace::MatrixID::BT2020_NCL ||

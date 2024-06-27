@@ -1162,8 +1162,7 @@ void SkiaRenderer::FinishDrawingFrame() {
       surface_candidate.display_rect = surface_plane.display_rect;
       surface_candidate.uv_rect = surface_plane.uv_rect;
       surface_candidate.resource_size_in_pixels = surface_plane.resource_size;
-      surface_candidate.format =
-          SinglePlaneSharedImageFormatToBufferFormat(surface_plane.format);
+      surface_candidate.format = surface_plane.format;
       surface_candidate.color_space = surface_plane.color_space;
       if (current_frame()->display_color_spaces.SupportsHDR() &&
           current_frame()->root_render_pass->content_color_usage ==
@@ -3004,7 +3003,7 @@ void SkiaRenderer::ScheduleOverlays() {
       locks.emplace_back(resource_provider(), overlay.resource_id);
       auto& lock = locks.back();
 
-      bool is_10bit = overlay.format == gfx::BufferFormat::P010;
+      bool is_10bit = overlay.format == MultiPlaneFormat::kP010;
       gpu::Mailbox detiled_image = GetProtectedSharedImage(is_10bit);
       skia_output_surface_->DetileOverlay(
           overlay.mailbox, overlay.resource_size_in_pixels, lock.sync_token(),
@@ -3018,8 +3017,8 @@ void SkiaRenderer::ScheduleOverlays() {
       overlay.mailbox = detiled_image;
       overlay.format = (is_10bit && base::FeatureList::IsEnabled(
                                         media::kEnableArmHwdrm10bitOverlays))
-                           ? gfx::BufferFormat::BGRA_1010102
-                           : gfx::BufferFormat::BGRA_8888;
+                           ? SinglePlaneFormat::kBGRA_1010102
+                           : SinglePlaneFormat::kBGRA_8888;
       overlay.transform = gfx::OVERLAY_TRANSFORM_NONE;
 
       continue;
@@ -4168,7 +4167,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
 
   // Fill in |format| and |color_space| information based on selected backing.
   overlay->color_space = color_space;
-  overlay->format = SinglePlaneSharedImageFormatToBufferFormat(si_format);
+  overlay->format = si_format;
 #endif  // BUILDFLAG(IS_APPLE)
 }
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)

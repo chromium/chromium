@@ -61,6 +61,7 @@
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/service/scheduler_sequence.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
@@ -729,7 +730,7 @@ void Display::MaybeLogQuadsProperties(AggregatedRenderPass& last_render_pass) {
         candidate.color_space.GetTransferID());
     UMA_HISTOGRAM_ENUMERATION(
         "Compositing.Display.Draw.LastPass.Quads.BufferFormat",
-        candidate.format);
+        gpu::ToBufferFormat(candidate.format));
     gfx::RectF uv_rect = candidate.uv_rect;
     candidate_factory.HandleClipAndSubsampling(candidate);
     if (uv_rect != candidate.uv_rect) {

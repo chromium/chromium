@@ -113,7 +113,7 @@ TEST(OverlayProcessorOzoneTest, PrimaryPlaneSizeAndFormatMatches) {
   // Set up a dummy OverlayCandidate.
   OverlayCandidate candidate;
   candidate.resource_size_in_pixels = size;
-  candidate.format = gfx::BufferFormat::BGRA_8888;
+  candidate.format = SinglePlaneFormat::kBGRA_8888;
   candidate.mailbox = gpu::Mailbox::Generate();
   candidate.overlay_handled = false;
   OverlayCandidateList candidates;
@@ -153,7 +153,7 @@ TEST(OverlayProcessorOzoneTest, PrimaryPlaneFormatMismatch) {
   // Set up a dummy OverlayCandidate.
   OverlayCandidate candidate;
   candidate.resource_size_in_pixels = size;
-  candidate.format = gfx::BufferFormat::BGRA_8888;
+  candidate.format = SinglePlaneFormat::kBGRA_8888;
   candidate.mailbox = gpu::Mailbox::Generate();
   candidate.overlay_handled = false;
   OverlayCandidateList candidates;
@@ -187,7 +187,7 @@ TEST(OverlayProcessorOzoneTest, ColorSpaceMismatch) {
   // Set up a dummy OverlayCandidate.
   OverlayCandidate candidate;
   candidate.resource_size_in_pixels = size;
-  candidate.format = gfx::BufferFormat::BGRA_8888;
+  candidate.format = SinglePlaneFormat::kBGRA_8888;
   candidate.mailbox = gpu::Mailbox::Generate();
   candidate.overlay_handled = false;
   OverlayCandidateList candidates;
