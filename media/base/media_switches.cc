@@ -1291,7 +1291,7 @@ BASE_FEATURE(kEnableProtectedVulkanDetiling,
 // Expiry: When AR30 overlays are stable on devices that support them.
 BASE_FEATURE(kEnableArmHwdrm10bitOverlays,
              "EnableArmHwdrm10bitOverlays",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 // Enable use of HW based L1 Widevine DRM via the cdm-oemcrypto daemon on
 // ChromeOS. This flag is temporary while we finish development.
