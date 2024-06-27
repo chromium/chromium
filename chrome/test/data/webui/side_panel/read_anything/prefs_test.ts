@@ -9,6 +9,7 @@ import {assertArrayEquals, assertEquals, assertTrue} from 'chrome-untrusted://we
 
 import {createSpeechSynthesisVoice, suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
+import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 // TODO: b/40927698 - Add more tests.
@@ -38,30 +39,13 @@ suite('PrefsTest', () => {
       const langs = ['si', 'km', 'th'];
 
       setup(() => {
-        app.availableVoices = [
-          {
-            lang: langs[0]!,
-            name: '',
-            default: true,
-            localService: true,
-            voiceURI: '',
-          },
-          {
-            lang: langs[1]!,
-            name: '',
-            default: false,
-            localService: true,
-            voiceURI: '',
-          },
-          {
-            lang: langs[2]!,
-            name: '',
-            default: false,
-            localService: true,
-            voiceURI: '',
-          },
-        ];
-        app.availableLangs = langs;
+        const speechSynthesis = new FakeSpeechSynthesis();
+        speechSynthesis.setVoices([
+          createSpeechSynthesisVoice({lang: langs[0]}),
+          createSpeechSynthesisVoice({lang: langs[1]}),
+          createSpeechSynthesisVoice({lang: langs[2]}),
+        ]);
+        app.synth = speechSynthesis;
       });
 
       test('with langs stored in prefs', () => {

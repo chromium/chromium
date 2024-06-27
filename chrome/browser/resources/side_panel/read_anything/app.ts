@@ -230,12 +230,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // are stored in preferences. The latter are not.
   enabledLangs: string[] = [];
 
-  // TODO(b/346868764): Longer term, availableVoices and availableLangs
+  // TODO(b/346868764): Longer term, availableVoices
   // should not be public just for the sake of tests.
   // All possible available voices for the current speech engine.
   availableVoices: SpeechSynthesisVoice[];
-  // A set of availableLangs derived from availableVoices
-  availableLangs: string[] = [];
+  // The set of languages found in availableVoices.
+  private availableLangs_: string[] = [];
   // If a preview is playing, this is set to the voice the preview is playing.
   // Otherwise, this is undefined.
   private previewVoicePlaying: SpeechSynthesisVoice|null;
@@ -1203,7 +1203,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
             ({name}) => !name.toLowerCase().includes('android'));
       }
       this.availableVoices = availableVoices;
-      this.availableLangs = [...new Set(availableVoices.map(({lang}) => lang))];
+      this.availableLangs_ =
+          [...new Set(availableVoices.map(({lang}) => lang))];
 
       this.populateDisplayNamesForLocaleCodes();
     }
@@ -1746,7 +1747,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // SpeechSynthesisUtterance lang.
       if (error.error === 'language-unavailable') {
         const possibleNewLanguage = convertLangToAnAvailableLangIfPresent(
-            this.speechSynthesisLanguage, this.availableLangs,
+            this.speechSynthesisLanguage, this.availableLangs_,
             /* allowCurrentLanguageIfExists */ false);
         if (possibleNewLanguage) {
           this.speechSynthesisLanguage = possibleNewLanguage;
@@ -2203,7 +2204,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.speechSynthesisLanguage = browserOrPageBaseLang;
 
     this.enabledLangs = createInitialListOfEnabledLanguages(
-        browserOrPageBaseLang, storedLanguagesPref, this.availableLangs,
+        browserOrPageBaseLang, storedLanguagesPref, this.availableLangs_,
         this.defaultVoice()?.lang);
 
     storedLanguagesPref.forEach(storedLanguage => {
@@ -2445,7 +2446,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // Only enable this language if it has available voices and is the current
     // language. Otherwise switch to a default voice if nothing is selected.
     const availableLang =
-        convertLangToAnAvailableLangIfPresent(lang, this.availableLangs);
+        convertLangToAnAvailableLangIfPresent(lang, this.availableLangs_);
     if (!availableLang ||
         !availableLang.startsWith(this.speechSynthesisLanguage.split('-')[0])) {
       this.selectPreferredVoice();
@@ -2462,7 +2463,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // If there are no Google TTS locales for this language then enable any
       // available locale for this language.
       localesToEnable =
-          this.availableLangs.filter(l => l.startsWith(availableLang));
+          this.availableLangs_.filter(l => l.startsWith(availableLang));
     }
 
     // Enable the locales so we can select a voice for the given language and

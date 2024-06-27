@@ -14,6 +14,7 @@ export class FakeSpeechSynthesis {
   shouldUseLocalVoices: boolean = false;
   canceledUtterances: SpeechSynthesisUtterance[];
   currentUtterance: SpeechSynthesisUtterance|undefined;
+  private voices_: SpeechSynthesisVoice[] = [];
 
 
   constructor() {
@@ -46,7 +47,7 @@ export class FakeSpeechSynthesis {
   }
 
   getVoices(): SpeechSynthesisVoice[] {
-    return [
+    return this.voices_.length > 0 ? this.voices_ : [
       createSpeechSynthesisVoice({lang: 'en', name: 'Lauren', default: true}),
       createSpeechSynthesisVoice({lang: 'en', name: 'Eitan'}),
       createSpeechSynthesisVoice({lang: 'en', name: 'Kristi'}),
@@ -55,6 +56,10 @@ export class FakeSpeechSynthesis {
       createSpeechSynthesisVoice(
           {lang: 'en', name: 'Xiang', localService: this.shouldUseLocalVoices}),
     ];
+  }
+
+  setVoices(voices: SpeechSynthesisVoice[]) {
+    this.voices_ = voices;
   }
 
   speak(utterance: SpeechSynthesisUtterance) {
