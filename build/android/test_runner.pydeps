@@ -137,6 +137,7 @@
 ../skia_gold_common/skia_gold_session.py
 ../skia_gold_common/skia_gold_session_manager.py
 ../util/lib/__init__.py
+../util/lib/common/__init__.py
 ../util/lib/common/chrome_test_server_spawner.py
 ../util/lib/common/unittest_util.py
 ../util/lib/proto/__init__.py

@@ -43,7 +43,6 @@ def CommonChecks(input_api, output_api):
               J('gyp'),
               J('buildbot'),
               J('..', 'util'),
-              J('..', 'util', 'lib', 'common'),
               J('..', '..', 'third_party', 'catapult', 'common',
                 'py_trace_event'),
               J('..', '..', 'third_party', 'catapult', 'common', 'py_utils'),

@@ -41,8 +41,7 @@ DIR_SOURCE_ROOT = os.environ.get(
     os.path.abspath(
         os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)))
 
-BUILD_COMMON_PATH = os.path.join(DIR_SOURCE_ROOT, 'build', 'util', 'lib',
-                                 'common')
+BUILD_UTIL_PATH = os.path.join(DIR_SOURCE_ROOT, 'build', 'util')
 
 TRACING_PATH = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'catapult',
                             'tracing')
@@ -50,8 +49,8 @@ TRACING_PATH = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'catapult',
 EU_STRIP_PATH = os.path.join(DIR_SOURCE_ROOT, 'buildtools', 'third_party',
                              'eu-strip', 'bin', 'eu-strip')
 
-with _SysPath(BUILD_COMMON_PATH):
-  import perf_tests_results_helper  # pylint: disable=import-error
+with _SysPath(BUILD_UTIL_PATH):
+  from lib.common import perf_tests_results_helper
 
 with _SysPath(TRACING_PATH):
   from tracing.value import convert_chart_json  # pylint: disable=import-error

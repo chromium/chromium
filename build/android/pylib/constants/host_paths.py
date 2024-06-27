@@ -14,16 +14,14 @@ DIR_SOURCE_ROOT = os.environ.get(
     os.path.abspath(os.path.join(os.path.dirname(__file__),
                                  os.pardir, os.pardir, os.pardir, os.pardir)))
 
-BUILD_COMMON_PATH = os.path.join(
-    DIR_SOURCE_ROOT, 'build', 'util', 'lib', 'common')
-
 # third-party libraries
 ANDROID_PLATFORM_DEVELOPMENT_SCRIPTS_PATH = os.path.join(
     DIR_SOURCE_ROOT, 'third_party', 'android_platform', 'development',
     'scripts')
 BUILD_PATH = os.path.join(DIR_SOURCE_ROOT, 'build')
-DEVIL_PATH = os.path.join(
-    DIR_SOURCE_ROOT, 'third_party', 'catapult', 'devil')
+BUILD_UTIL_PATH = os.path.join(DIR_SOURCE_ROOT, 'build', 'util')
+
+DEVIL_PATH = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'catapult', 'devil')
 JAVA_PATH = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'jdk', 'current',
                          'bin')
 TRACING_PATH = os.path.join(

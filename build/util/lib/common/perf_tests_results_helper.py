@@ -10,7 +10,7 @@ import json
 import logging
 import math
 
-import perf_result_data_type
+from lib.common import perf_result_data_type
 
 
 # Mapping from result type to test output

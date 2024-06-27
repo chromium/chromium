@@ -11,9 +11,8 @@ from devil.android import ports
 from pylib.base import test_server
 from pylib.constants import host_paths
 
-with host_paths.SysPath(host_paths.BUILD_COMMON_PATH):
-  import chrome_test_server_spawner
-
+with host_paths.SysPath(host_paths.BUILD_UTIL_PATH):
+  from lib.common import chrome_test_server_spawner
 
 # The tests should not need more than one test server instance.
 MAX_TEST_SERVER_INSTANCES = 1
