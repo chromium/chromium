@@ -21,9 +21,7 @@
 namespace cbor {
 
 // A class for Concise Binary Object Representation (CBOR) values.
-// This does not support:
-//  * Floating-point numbers.
-//  * Indefinite-length encodings.
+// This does not support indefinite-length encodings.
 class CBOR_EXPORT Value {
  public:
   struct Less {
