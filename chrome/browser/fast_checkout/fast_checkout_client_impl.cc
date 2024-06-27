@@ -220,7 +220,7 @@ void FastCheckoutClientImpl::ShowFastCheckoutUI() {
 
 void FastCheckoutClientImpl::OnRunComplete(FastCheckoutRunOutcome run_outcome,
                                            bool allow_further_runs) {
-  ukm::builders::Autofill_FastCheckoutRunOutcome run_outcome_builder(
+  ukm::builders::FastCheckout_RunOutcome run_outcome_builder(
       autofill_client_->GetWebContents()
           .GetPrimaryMainFrame()
           ->GetPageUkmSourceId());
@@ -239,7 +239,7 @@ void FastCheckoutClientImpl::OnRunComplete(FastCheckoutRunOutcome run_outcome,
           break;
         }
       }
-      ukm::builders::Autofill_FastCheckoutFormStatus form_status_builder(
+      ukm::builders::FastCheckout_FormStatus form_status_builder(
           autofill_client_->GetWebContents()
               .GetPrimaryMainFrame()
               ->GetPageUkmSourceId());

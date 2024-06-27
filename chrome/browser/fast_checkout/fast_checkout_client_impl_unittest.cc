@@ -66,8 +66,8 @@ using ::testing::Pointee;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::UnorderedElementsAre;
-using ::ukm::builders::Autofill_FastCheckoutFormStatus;
-using ::ukm::builders::Autofill_FastCheckoutRunOutcome;
+using ::ukm::builders::FastCheckout_FormStatus;
+using ::ukm::builders::FastCheckout_RunOutcome;
 
 namespace {
 
@@ -425,10 +425,10 @@ class DISABLED_FastCheckoutClientImplTest
   }
 
   void ExpectRunOutcomeUkm(FastCheckoutRunOutcome run_outcome) {
-    auto ukm_entries = ukm_recorder_.GetEntries(
-        Autofill_FastCheckoutRunOutcome::kEntryName,
-        {Autofill_FastCheckoutRunOutcome::kRunOutcomeName,
-         Autofill_FastCheckoutRunOutcome::kRunIdName});
+    auto ukm_entries =
+        ukm_recorder_.GetEntries(FastCheckout_RunOutcome::kEntryName,
+                                 {FastCheckout_RunOutcome::kRunOutcomeName,
+                                  FastCheckout_RunOutcome::kRunIdName});
     EXPECT_EQ(ukm_entries.size(), 1UL);
     EXPECT_EQ(ukm_entries[0].metrics.at("RunOutcome"),
               static_cast<long>(run_outcome));
@@ -888,12 +888,12 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
             FastCheckoutUIState::kWasShown);
   EXPECT_FALSE(fast_checkout_client()->IsNotShownYet());
   ExpectRunOutcomeUkm(FastCheckoutRunOutcome::kSuccess);
-  auto ukm_entries = ukm_recorder_.GetEntries(
-      Autofill_FastCheckoutFormStatus::kEntryName,
-      {Autofill_FastCheckoutFormStatus::kRunIdName,
-       Autofill_FastCheckoutFormStatus::kFilledName,
-       Autofill_FastCheckoutFormStatus::kFormSignatureName,
-       Autofill_FastCheckoutFormStatus::kFormTypesName});
+  auto ukm_entries =
+      ukm_recorder_.GetEntries(FastCheckout_FormStatus::kEntryName,
+                               {FastCheckout_FormStatus::kRunIdName,
+                                FastCheckout_FormStatus::kFilledName,
+                                FastCheckout_FormStatus::kFormSignatureName,
+                                FastCheckout_FormStatus::kFormTypesName});
   EXPECT_EQ(ukm_entries.size(), 2UL);
   base::flat_set<ukm::TestAutoSetUkmRecorder::HumanReadableUkmMetrics> metrics;
   metrics.emplace(ukm_entries[0].metrics);
@@ -902,18 +902,18 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
       metrics,
       UnorderedElementsAre(
           UnorderedElementsAre(
-              Pair(Autofill_FastCheckoutFormStatus::kRunIdName, run_id),
-              Pair(Autofill_FastCheckoutFormStatus::kFilledName, 1),
-              Pair(Autofill_FastCheckoutFormStatus::kFormSignatureName,
+              Pair(FastCheckout_FormStatus::kRunIdName, run_id),
+              Pair(FastCheckout_FormStatus::kFilledName, 1),
+              Pair(FastCheckout_FormStatus::kFormSignatureName,
                    autofill::HashFormSignature(address_form->form_signature())),
-              Pair(Autofill_FastCheckoutFormStatus::kFormTypesName, 2)),
+              Pair(FastCheckout_FormStatus::kFormTypesName, 2)),
           UnorderedElementsAre(
-              Pair(Autofill_FastCheckoutFormStatus::kRunIdName, run_id),
-              Pair(Autofill_FastCheckoutFormStatus::kFilledName, 1),
-              Pair(Autofill_FastCheckoutFormStatus::kFormSignatureName,
+              Pair(FastCheckout_FormStatus::kRunIdName, run_id),
+              Pair(FastCheckout_FormStatus::kFilledName, 1),
+              Pair(FastCheckout_FormStatus::kFormSignatureName,
                    autofill::HashFormSignature(
                        credit_card_form->form_signature())),
-              Pair(Autofill_FastCheckoutFormStatus::kFormTypesName, 4))));
+              Pair(FastCheckout_FormStatus::kFormTypesName, 4))));
 }
 
 TEST_F(DISABLED_FastCheckoutClientImplTest,

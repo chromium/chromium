@@ -3104,56 +3104,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Autofill.FastCheckoutFormStatus">
-  <owner>bwolfgang@google.com</owner>
-  <owner>jkeitel@google.com</owner>
-  <owner>vizcay@google.com</owner>
-  <summary>
-    Recorded at the end of a Fast Checkout run.
-  </summary>
-  <metric name="Filled" enum="Boolean">
-    <summary>
-      1 if the form was filled by Fast Checkout, 0 otherwise.
-    </summary>
-  </metric>
-  <metric name="FormSignature">
-    <summary>
-      An approximately 10-bit hash of the form's actual signature.
-    </summary>
-  </metric>
-  <metric name="FormTypes">
-    <summary>
-      Type of form. Stored as bitvector. A set i-th bit implies enum
-      FormTypeNameForLogging's i-th type was detected. Multiple types are
-      possible.
-    </summary>
-  </metric>
-  <metric name="RunId">
-    <summary>
-      Unique run ID for linking to other UKM events.
-    </summary>
-  </metric>
-</event>
-
-<event name="Autofill.FastCheckoutRunOutcome">
-  <owner>bwolfgang@google.com</owner>
-  <owner>jkeitel@google.com</owner>
-  <owner>vizcay@google.com</owner>
-  <summary>
-    Recorded at the end of a Fast Checkout run.
-  </summary>
-  <metric name="RunId">
-    <summary>
-      Unique run ID for linking to other UKM events.
-    </summary>
-  </metric>
-  <metric name="RunOutcome" enum="FastCheckoutRunOutcome">
-    <summary>
-      States if the run was successful or why it was not.
-    </summary>
-  </metric>
-</event>
-
 <event name="Autofill.FieldFillStatus">
   <owner>rogerm@chromium.org</owner>
   <summary>
@@ -10298,6 +10248,56 @@ be describing additional metrics about the same event.
     <summary>
       The number of Iframes that were blocked by the supervised user filtering
       logic in this page load. Exponentially bucketed.
+    </summary>
+  </metric>
+</event>
+
+<event name="FastCheckout.FormStatus">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <summary>
+    Recorded at the end of a Fast Checkout run.
+  </summary>
+  <metric name="Filled" enum="Boolean">
+    <summary>
+      1 if the form was filled by Fast Checkout, 0 otherwise.
+    </summary>
+  </metric>
+  <metric name="FormSignature">
+    <summary>
+      An approximately 10-bit hash of the form's actual signature.
+    </summary>
+  </metric>
+  <metric name="FormTypes">
+    <summary>
+      Type of form. Stored as bitvector. A set i-th bit implies enum
+      FormTypeNameForLogging's i-th type was detected. Multiple types are
+      possible.
+    </summary>
+  </metric>
+  <metric name="RunId">
+    <summary>
+      Unique run ID for linking to other UKM events.
+    </summary>
+  </metric>
+</event>
+
+<event name="FastCheckout.RunOutcome">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <summary>
+    Recorded at the end of a Fast Checkout run.
+  </summary>
+  <metric name="RunId">
+    <summary>
+      Unique run ID for linking to other UKM events.
+    </summary>
+  </metric>
+  <metric name="RunOutcome" enum="FastCheckoutRunOutcome">
+    <summary>
+      States if the run was successful or why it was not.
     </summary>
   </metric>
 </event>
