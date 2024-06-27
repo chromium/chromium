@@ -547,8 +547,8 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     }
 
     /**
-     * Whether an operation is in progress for which we should wait before
-     * scheduling users of {@link runAfterOperationInProgress}.
+     * Whether an operation is in progress for which we should wait before scheduling users of
+     * {@link runAfterOperationInProgress}.
      */
     private boolean isOperationInProgress() {
         ThreadUtils.assertOnUiThread();
@@ -558,8 +558,8 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     /**
      * Maybe notifies any callbacks registered via runAfterOperationInProgress().
      *
-     * The callbacks are notified in FIFO order, and each callback is only notified if there is no
-     * outstanding work (either work which was outstanding at the time the callback was added, or
+     * <p>The callbacks are notified in FIFO order, and each callback is only notified if there is
+     * no outstanding work (either work which was outstanding at the time the callback was added, or
      * which was scheduled by subsequently dequeued callbacks).
      */
     private void notifyCallbacksWaitingForOperation() {
@@ -700,7 +700,10 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                             0);
         }
         SignOutCallback signOutCallback = mSignOutState.mSignOutCallback;
-        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)
+                && mAccountManagerFacade.getCoreAccountInfos().isFulfilled()) {
+            // We don't reload the accounts if they are not yet available.
+            // They will be seeded in onCoreAccountInfosChanged() when they become available.
             seedThenReloadAllAccountsFromSystem(null);
         }
         mSignOutState = null;

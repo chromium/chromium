@@ -26,25 +26,31 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
+import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
+import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Integration test for the IdentityManager.
@@ -66,6 +72,7 @@ public class SigninManagerIntegrationTest {
     private CoreAccountInfo mTestAccount2;
 
     private IdentityManager mIdentityManager;
+    private AccountManagerFacade mAccountManagerFacade;
     private SigninManager mSigninManager;
 
     @Mock private SigninManager.SignInStateObserver mSignInStateObserverMock;
@@ -82,6 +89,7 @@ public class SigninManagerIntegrationTest {
                 () -> {
                     Profile profile = ProfileManager.getLastUsedRegularProfile();
                     mIdentityManager = IdentityServicesProvider.get().getIdentityManager(profile);
+                    mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
                     mSigninManager = IdentityServicesProvider.get().getSigninManager(profile);
                     mSigninManager.addSignInStateObserver(mSignInStateObserverMock);
                 });
@@ -466,10 +474,7 @@ public class SigninManagerIntegrationTest {
                     Assert.assertFalse(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
                 });
 
-        // Wait for the operation to have completed - the revokeSyncConsent processing calls back
-        // SigninManager, and if we don't wait for this to complete before test teardown then we
-        // can hit a race condition where this async processing overlaps with the signout causing
-        // teardown to fail.
+        // Wait for the operation to have completed.
         verify(mSignInStateObserverMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .onSignedOut();
     }
@@ -533,5 +538,50 @@ public class SigninManagerIntegrationTest {
         Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
         verify(mSignInStateObserverMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .onSignedIn();
+    }
+
+    @Test
+    @MediumTest
+    public void testSignoutWhenAccountsNotAvailable() {
+        HistogramWatcher signoutWatcher =
+                HistogramWatcher.newSingleRecordWatcher("Signin.SignOut.Completed");
+        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
+        // Blocks updated the accounts list and ensures that {@link #getCoreAccountInfos} returns an
+        // unfulfilled promise.
+        FakeAccountManagerFacade.UpdateBlocker blocker =
+                mSigninTestRule.blockGetCoreAccountInfosUpdate(/* populateCache= */ false);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
+                    Assert.assertFalse(mAccountManagerFacade.getCoreAccountInfos().isFulfilled());
+                    Assert.assertEquals(
+                            List.of(AccountManagerTestRule.TEST_ACCOUNT_1),
+                            Arrays.asList(mIdentityManager.getAccountsWithRefreshTokens()));
+
+                    // Sign-out should be allowed even if the list of accounts isn't available yet.
+                    mSigninManager.signOut(SignoutReason.TEST);
+
+                    // Check the account is signed out
+                    Assert.assertFalse(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
+                });
+
+        // Wait for the operation to have completed.
+        verify(mSignInStateObserverMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .onSignedOut();
+
+        // Unblocks the updates.
+        blocker.close();
+        // Check that the account is still signed out and that is has been removed from the
+        // IdentityManager.
+        Assert.assertFalse(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertArrayEquals(
+                            "No accounts available",
+                            new CoreAccountInfo[] {},
+                            mIdentityManager.getAccountsWithRefreshTokens());
+                });
+        signoutWatcher.assertExpected();
     }
 }
