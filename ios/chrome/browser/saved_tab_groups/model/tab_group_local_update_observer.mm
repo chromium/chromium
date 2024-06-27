@@ -38,6 +38,11 @@ TabGroupLocalUpdateObserver::TabGroupLocalUpdateObserver(
 
 TabGroupLocalUpdateObserver::~TabGroupLocalUpdateObserver() = default;
 
+void TabGroupLocalUpdateObserver::IgnoreNavigationForWebState(
+    web::WebState* web_state) {
+  ignored_identifiers_.insert(web_state->GetUniqueIdentifier());
+}
+
 void TabGroupLocalUpdateObserver::OnBrowserAdded(
     const BrowserList* browser_list,
     Browser* browser) {
@@ -155,8 +160,14 @@ void TabGroupLocalUpdateObserver::TitleWasSet(web::WebState* web_state) {
 void TabGroupLocalUpdateObserver::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  // TODO(crbug.com/329640035): Update the model with the new URL. The first
-  // navigation should be ignored and the other navigations should be checked.
+  // The first navigation after a sync update should be ignored.
+  web::WebStateID identifier = web_state->GetUniqueIdentifier();
+  if (ignored_identifiers_.contains(identifier)) {
+    ignored_identifiers_.erase(identifier);
+    return;
+  }
+
+  // TODO(crbug.com/329640035): Update the model with the new URL.
 }
 
 void TabGroupLocalUpdateObserver::WebStateDestroyed(web::WebState* web_state) {
@@ -191,6 +202,8 @@ void TabGroupLocalUpdateObserver::StartObservingWebState(
 
 void TabGroupLocalUpdateObserver::StopObservingWebState(
     web::WebState* web_state) {
+  // Try to remove the `web_state` identifier from `ignored_identifiers_`.
+  ignored_identifiers_.erase(web_state->GetUniqueIdentifier());
   web_state_observation_.RemoveObservation(web_state);
 }
 

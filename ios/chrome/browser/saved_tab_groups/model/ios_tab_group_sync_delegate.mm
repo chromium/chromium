@@ -41,7 +41,9 @@ IOSTabGroupSyncDelegate::IOSTabGroupSyncDelegate(
     std::unique_ptr<TabGroupLocalUpdateObserver> local_update_observer)
     : browser_list_(browser_list),
       sync_service_(sync_service),
-      local_update_observer_(std::move(local_update_observer)) {}
+      local_update_observer_(std::move(local_update_observer)) {
+  CHECK(local_update_observer_);
+}
 
 IOSTabGroupSyncDelegate::~IOSTabGroupSyncDelegate() {}
 
@@ -250,8 +252,10 @@ web::WebState* IOSTabGroupSyncDelegate::InsertDistantTab(
     tab_insertion_params.insert_in_group = true;
     tab_insertion_params.tab_group = tab_group->GetWeakPtr();
   }
-  return tab_insertion_browser_agent->InsertWebState(web_params,
-                                                     tab_insertion_params);
+  web::WebState* web_state = tab_insertion_browser_agent->InsertWebState(
+      web_params, tab_insertion_params);
+  local_update_observer_->IgnoreNavigationForWebState(web_state);
+  return web_state;
 }
 
 void IOSTabGroupSyncDelegate::UpdateLocalWebState(
@@ -268,6 +272,7 @@ void IOSTabGroupSyncDelegate::UpdateLocalWebState(
 
   // If the `web_state` is the active index, open and load the updated URL.
   if (web_state_list->active_index() == web_state_index) {
+    local_update_observer_->IgnoreNavigationForWebState(web_state);
     web_state->OpenURL(web::WebState::OpenURLParams(
         saved_tab.url(), web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
         ui::PAGE_TRANSITION_GENERATED, /*is_renderer_initiated=*/false));

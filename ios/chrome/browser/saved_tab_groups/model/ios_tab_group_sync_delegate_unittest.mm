@@ -104,8 +104,10 @@ class IOSTabGroupSyncDelegateTest : public PlatformTest {
     browser_list_->AddBrowser(browser_);
     browser_list_->AddBrowser(browser_same_browser_state_);
 
+    auto local_observer = std::make_unique<TabGroupLocalUpdateObserver>(
+        browser_list_.get(), mock_service_);
     delegate_ = std::make_unique<IOSTabGroupSyncDelegate>(
-        browser_list_, mock_service_, /*local_update_observer*/ nullptr);
+        browser_list_, mock_service_, std::move(local_observer));
   }
 
   // Returns a vector containing the 3 local tabs.

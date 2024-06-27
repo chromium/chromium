@@ -73,7 +73,7 @@ class TabGroupLocalUpdateObserverTest : public PlatformTest {
     browser_list_ =
         BrowserListFactory::GetForBrowserState(browser_state_.get());
     browser_list_->AddBrowser(browser_.get());
-    local_service_ = std::make_unique<TabGroupLocalUpdateObserver>(
+    local_observer_ = std::make_unique<TabGroupLocalUpdateObserver>(
         browser_list_.get(), mock_service_);
 
     BrowserList* other_browser_list =
@@ -106,7 +106,7 @@ class TabGroupLocalUpdateObserverTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> other_browser_state_;
   std::unique_ptr<TestBrowser> other_browser_;
   raw_ptr<BrowserList> browser_list_;
-  std::unique_ptr<TabGroupLocalUpdateObserver> local_service_;
+  std::unique_ptr<TabGroupLocalUpdateObserver> local_observer_;
   raw_ptr<MockTabGroupSyncService> mock_service_;
   const std::u16string kNewTitle = u"title to update";
 };

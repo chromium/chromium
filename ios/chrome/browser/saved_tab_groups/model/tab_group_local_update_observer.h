@@ -21,9 +21,12 @@ class TabGroupSyncService;
 
 // Service for propagating local updates of Tab Group to the sync service.
 class TabGroupLocalUpdateObserver : public BrowserListObserver,
-                                   public WebStateListObserver,
-                                   public web::WebStateObserver {
+                                    public WebStateListObserver,
+                                    public web::WebStateObserver {
  public:
+  // Ignores the synchronisation of `web_state` for its first navigation.
+  void IgnoreNavigationForWebState(web::WebState* web_state);
+
   // BrowserListObserver.
   void OnBrowserAdded(const BrowserList* browser_list,
                       Browser* browser) override;
@@ -65,6 +68,10 @@ class TabGroupLocalUpdateObserver : public BrowserListObserver,
 
   raw_ptr<TabGroupSyncService> sync_service_ = nullptr;
   raw_ptr<BrowserList> browser_list_ = nullptr;
+
+  // Vector that contains identifiers that should be ignored for their first
+  // navigation.
+  std::set<web::WebStateID> ignored_identifiers_;
 
   base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
