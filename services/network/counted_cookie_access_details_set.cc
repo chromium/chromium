@@ -12,7 +12,7 @@ bool CookieAccessDetailsPrecede(const mojom::CookieAccessDetailsPtr& lhs,
   // TODO(crbug.com/344653945): get these static asserts working for other
   // architectures / platforms.
   static_assert(
-      sizeof(mojom::CookieAccessDetails) == 408,
+      sizeof(mojom::CookieAccessDetails) == 368,
       "CookieAccessDetailsPrecede needs to be updated if fields are added to "
       "CookieAccessDetails");
   static_assert(
@@ -44,13 +44,11 @@ bool CookieAccessDetailsPrecede(const mojom::CookieAccessDetailsPtr& lhs,
   // LINT.IfChange(CookieAccessDetails)
   const auto lhs_fields =
       std::make_tuple(std::tie(lhs->type, lhs->url, lhs->top_frame_origin,
-                               lhs->devtools_request_id, lhs->is_ad_tagged,
-                               lhs->source_location),
+                               lhs->devtools_request_id, lhs->is_ad_tagged),
                       lhs->cookie_setting_overrides.ToEnumBitmask());
   const auto rhs_fields =
       std::make_tuple(std::tie(rhs->type, rhs->url, rhs->top_frame_origin,
-                               rhs->devtools_request_id, rhs->is_ad_tagged,
-                               rhs->source_location),
+                               rhs->devtools_request_id, rhs->is_ad_tagged),
                       rhs->cookie_setting_overrides.ToEnumBitmask());
   if (lhs_fields < rhs_fields) {
     return true;

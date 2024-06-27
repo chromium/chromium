@@ -47,7 +47,7 @@ mojom::CookieAccessDetailsPtr GetDefaultCookieAccessDetails() {
   return mojom::CookieAccessDetails::New(
       type, kDefaultTopFrameUrl, top_frame_origin, site_for_cookies,
       std::move(cookie_list), std::nullopt, count, is_ad_tagged,
-      net::CookieSettingOverrides(), /*source_location=*/nullptr);
+      net::CookieSettingOverrides());
 }
 
 std::pair<mojom::CookieAccessDetailsPtr, std::unique_ptr<size_t>>
@@ -205,19 +205,6 @@ TEST(CountedCookieAccessDetailsSet, VaryCookie) {
   auto clone = CloneCountedCookieAccessDetails(detail);
   clone.first->cookie_list.clear();
   clone.first->cookie_list.push_back(GetDefaultCookieOrLineWithAccessResult());
-  result = details.insert(std::move(clone));
-  EXPECT_TRUE(result.second);
-}
-
-TEST(CountedCookieAccessDetailsSet, VarySourceLocation) {
-  CookieAccessDetails details;
-  auto detail = GetDefaultCountedCookieAccessDetails();
-  auto result = details.insert(CloneCountedCookieAccessDetails(detail));
-  EXPECT_TRUE(result.second);
-  auto clone = CloneCountedCookieAccessDetails(detail);
-  clone.first->source_location =
-      mojom::SourceLocation::New(kDefaultUrl.spec(), /*line=*/1,
-                                 /*column=*/1);
   result = details.insert(std::move(clone));
   EXPECT_TRUE(result.second);
 }

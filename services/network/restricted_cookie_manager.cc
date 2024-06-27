@@ -608,9 +608,8 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
       OnCookiesAccessed(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kRead, url,
           isolated_top_frame_origin, site_for_cookies,
-          std::move(on_cookies_accessed_result),
-          /*devtools_request_id=*/std::nullopt, /*count=*/1, is_ad_tagged,
-          cookie_setting_overrides, /*source_location=*/nullptr));
+          std::move(on_cookies_accessed_result), std::nullopt, /*count=*/1,
+          is_ad_tagged, cookie_setting_overrides));
     }
   };
 
@@ -728,11 +727,9 @@ void RestrictedCookieManager::SetCanonicalCookie(
       OnCookiesAccessed(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kChange, url,
           isolated_top_frame_origin, site_for_cookies,
-          std::move(result_with_access_result),
-          /*devtools_request_id=*/std::nullopt,
+          std::move(result_with_access_result), std::nullopt,
           /*count=*/1,
-          /*is_ad_tagged=*/false, cookie_setting_overrides,
-          /*source_location=*/nullptr));
+          /*is_ad_tagged=*/false, cookie_setting_overrides));
     }
     std::move(callback).Run(false);
     return;
@@ -848,9 +845,8 @@ void RestrictedCookieManager::SetCanonicalCookieResult(
       OnCookiesAccessed(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kChange, url,
           isolated_top_frame_origin, site_for_cookies, std::move(notify),
-          /*devtools_request_id=*/std::nullopt, /*count=*/1,
-          /*is_ad_tagged=*/false, cookie_setting_overrides,
-          /*source_location=*/nullptr));
+          std::nullopt, /*count=*/1,
+          /*is_ad_tagged=*/false, cookie_setting_overrides));
     }
   }
   std::move(user_callback).Run(access_result.status.IsInclude());
@@ -922,15 +918,13 @@ void RestrictedCookieManager::SetCookieFromString(
       OnCookiesAccessed(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kChange, url,
           isolation_info_.top_frame_origin().value_or(url::Origin()),
-          site_for_cookies, std::move(result_with_access_result),
-          /*devtools_request_id=*/std::nullopt,
+          site_for_cookies, std::move(result_with_access_result), std::nullopt,
           /*count=*/1,
           /*is_ad_tagged=*/false,
           GetCookieSettingOverrides(
               has_storage_access,
               /*is_ad_tagged=*/false,
-              /*force_disable_third_party_cookies=*/false),
-          /*source_location=*/nullptr));
+              /*force_disable_third_party_cookies=*/false)));
     }
     return;
   }
