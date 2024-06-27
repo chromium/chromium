@@ -29,7 +29,7 @@
     // existing data should get a new version. Otherwise, existing data may
     // continue to be used and updates made here will not always appear.
     // Also then run tools/search_engine_choice/generate_search_engine_icons.py.
-    "kCurrentDataVersion": 163
+    "kCurrentDataVersion": 164
   },
 
   // The following engines are included in country lists and are added to the
@@ -280,7 +280,7 @@
       "favicon_url": "https://search.seznam.cz/favicon.ico",
       "search_url": "https://search.seznam.cz/?q={searchTerms}",
       "suggest_url": "https://suggest.seznam.cz/fulltext_ff?phrase={searchTerms}",
-      "new_tab_url": "https://search.seznam.cz/?sourceid=chromechoice",
+      "new_tab_url": "https://search.seznam.cz/newtab",
       "type": "SEARCH_ENGINE_SEZNAM",
       "id": 25
     },
@@ -292,7 +292,7 @@
       "favicon_url": "https://search.seznam.cz/favicon.ico",
       "search_url": "https://search.seznam.cz/?q={searchTerms}",
       "suggest_url": "https://suggest.seznam.cz/fulltext_ff?phrase={searchTerms}",
-      "new_tab_url": "https://search.seznam.cz/?sourceid=chromechoice",
+      "new_tab_url": "https://search.seznam.cz/newtab",
       "type": "SEARCH_ENGINE_SEZNAM",
       "id": 25
     },
