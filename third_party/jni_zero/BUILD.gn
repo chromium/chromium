@@ -33,14 +33,12 @@ generate_jar_jni("system_jni") {
 
 # This is the public target that we intend others to use.
 component("jni_zero") {
-  # This is the public API.
-  sources = [
+  public = [
     "default_conversions.h",
     "jni_zero.h",
   ]
 
-  # These are intended to only be used within jni_zero and the code it generates.
-  sources += [
+  sources = [
     "common_apis.cc",
     "common_apis.h",
     "default_conversions.cc",
