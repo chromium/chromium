@@ -9,5 +9,7 @@ bundle_data_xcassets("resources") {
   sources = [
     "Assets.xcassets/Contents.json",
     "Assets.xcassets/graph_gradient_color.colorset/Contents.json",
+    "Assets.xcassets/tooltip_background_color.colorset/Contents.json",
+    "Assets.xcassets/tooltip_text_color.colorset/Contents.json",
   ]
 }

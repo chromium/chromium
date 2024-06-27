@@ -35,11 +35,11 @@ struct TooltipView: View {
   /// Size of the text.
   static let textSize = 11.0
 
-  /// Color representing green (50).
-  static let green50 = UIColor(named: kGreen50Color) ?? .green
+  /// Color for the tool tip background.
+  static let tooltipBackgroundColor = "tooltip_background_color"
 
-  /// Color representing green (800).
-  static let green800 = UIColor(named: kGreen800Color) ?? .black
+  /// Color for the tool tip text.
+  static let tooltipTextColor = "tooltip_text_color"
 
   /// Tooltip width value.
   @State private var tooltipWidth: CGFloat = 0
@@ -58,13 +58,13 @@ struct TooltipView: View {
 
     Text(tooltipText)
       .font(.system(size: Self.textSize))
-      .foregroundColor(Color(uiColor: Self.green800))
+      .foregroundColor(Color(Self.tooltipTextColor))
       .padding([.leading, .trailing], Self.verticalPadding)
       .padding([.bottom, .top], Self.horizontalPadding)
       .background(
         GeometryReader { geo in
           RoundedRectangle(cornerRadius: Self.cornerRadius)
-            .fill(Color(uiColor: Self.green50))
+            .fill(Color(Self.tooltipBackgroundColor))
             .preference(key: TooltipViewWidthKey.self, value: geo.size.width)
         }
       )
@@ -103,7 +103,7 @@ struct HistoryGraph: View {
   static let blue600 = UIColor(named: kBlue600Color) ?? .blue
 
   /// Color representing solid white.
-  static let solidWhite = UIColor(named: kSolidWhiteColor) ?? .white
+  static let backgroundColor = UIColor(named: kBackgroundColor) ?? .white
 
   /// Color representing grey 200.
   static let grey200 = UIColor(named: kGrey200Color) ?? .gray
@@ -177,7 +177,7 @@ struct HistoryGraph: View {
       .interpolationMethod(.stepEnd)
     }
     .chartBackground { chartProxy in
-      Color(uiColor: Self.solidWhite)
+      Color(uiColor: Self.backgroundColor)
     }
     .chartYScale(domain: axisYRange)
     .chartYAxis {
