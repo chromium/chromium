@@ -3311,15 +3311,14 @@ class CSSMathExpressionNodeParser {
     State& operator=(const State&) = default;
   };
 
-  CSSMathExpressionNodeParser(
-      const CSSParserContext& context,
-      const Flags parsing_flags,
-      CSSAnchorQueryTypes allowed_anchor_queries,
-      const HashMap<CSSValueID, double>& color_channel_keyword_values)
+  CSSMathExpressionNodeParser(const CSSParserContext& context,
+                              const Flags parsing_flags,
+                              CSSAnchorQueryTypes allowed_anchor_queries,
+                              const CSSColorChannelMap& color_channel_map)
       : context_(context),
         allowed_anchor_queries_(allowed_anchor_queries),
         parsing_flags_(parsing_flags),
-        color_channel_keyword_values_(color_channel_keyword_values) {}
+        color_channel_map_(color_channel_map) {}
 
   bool IsSupportedMathFunction(CSSValueID function_id) {
     switch (function_id) {
@@ -3865,9 +3864,9 @@ class CSSMathExpressionNodeParser {
       // For relative color syntax. Swap in the associated value of a color
       // channel here. e.g. color(from color(srgb 1 0 0) calc(r * 2) 0 0) should
       // swap in "1" for the value of "r" in the calc expression.
-      if (color_channel_keyword_values_.Contains(token.Id())) {
+      if (color_channel_map_.Contains(token.Id())) {
         return CSSMathExpressionNumericLiteral::Create(
-            color_channel_keyword_values_.at(token.Id()),
+            color_channel_map_.at(token.Id()),
             CSSPrimitiveValue::UnitType::kNumber);
       }
       return nullptr;
@@ -4043,7 +4042,7 @@ class CSSMathExpressionNodeParser {
   const CSSParserContext& context_;
   const CSSAnchorQueryTypes allowed_anchor_queries_;
   const Flags parsing_flags_;
-  const HashMap<CSSValueID, double>& color_channel_keyword_values_;
+  const CSSColorChannelMap& color_channel_map_;
 };
 
 scoped_refptr<const CalculationValue> CSSMathExpressionNode::ToCalcValue(
@@ -4263,10 +4262,9 @@ CSSMathExpressionNode* CSSMathExpressionNode::ParseMathFunction(
     const CSSParserContext& context,
     const Flags parsing_flags,
     CSSAnchorQueryTypes allowed_anchor_queries,
-    const HashMap<CSSValueID, double>& color_channel_keyword_values) {
+    const CSSColorChannelMap& color_channel_map) {
   CSSMathExpressionNodeParser parser(context, parsing_flags,
-                                     allowed_anchor_queries,
-                                     color_channel_keyword_values);
+                                     allowed_anchor_queries, color_channel_map);
   CSSMathExpressionNodeParser::State state;
   CSSMathExpressionNode* result =
       parser.ParseMathFunction(function_id, tokens, state);

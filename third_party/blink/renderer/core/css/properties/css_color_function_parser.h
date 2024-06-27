@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_CSS_COLOR_FUNCTION_PARSER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_color_channel_map.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
@@ -63,7 +64,7 @@ class CORE_EXPORT ColorFunctionParser {
   // For relative colors
   bool is_relative_color_ = false;
   Color origin_color_;
-  HashMap<CSSValueID, double> channel_keyword_values_;
+  CSSColorChannelMap color_channel_map_;
 };
 
 }  // namespace blink

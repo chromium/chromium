@@ -1020,7 +1020,7 @@ class MathFunctionParser {
       CSSPrimitiveValue::ValueRange value_range,
       const Flags parsing_flags = Flags({Flag::AllowPercent}),
       CSSAnchorQueryTypes allowed_anchor_queries = kCSSAnchorQueryTypesNone,
-      HashMap<CSSValueID, double> color_channel_keyword_values = {})
+      const CSSColorChannelMap& color_channel_map = {})
       : stream_(&stream), savepoint_(Save(stream)) {
     const CSSParserToken token = stream.Peek();
     if (token.GetType() == kFunctionToken) {

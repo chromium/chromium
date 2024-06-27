@@ -78,6 +78,7 @@ blink_core_sources_css = [
   "css_bracketed_value_list.h",
   "css_color.cc",
   "css_color.h",
+  "css_color_channel_map.h",
   "css_color_mix_value.h",
   "css_color_mix_value.cc",
   "css_computed_style_declaration.cc",
