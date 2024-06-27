@@ -52,20 +52,21 @@ struct PhysicalBoxSides {
   PhysicalBoxSides(bool top, bool right, bool bottom, bool left)
       : top(top), right(right), bottom(bottom), left(left) {}
   PhysicalBoxSides(LogicalBoxSides logical, WritingMode writing_mode) {
-    // The values sideways-lr and sideways-rl are not supported by the engine,
-    // although they're part of the WritingMode enum.
-    DCHECK(writing_mode != WritingMode::kSidewaysLr);
-    DCHECK(writing_mode != WritingMode::kSidewaysRl);
-
     if (writing_mode == WritingMode::kHorizontalTb) {
       top = logical.block_start;
       right = logical.line_right;
       bottom = logical.block_end;
       left = logical.line_left;
+    } else if (writing_mode == WritingMode::kSidewaysLr) {
+      top = logical.line_right;
+      bottom = logical.line_left;
+      right = logical.block_end;
+      left = logical.block_start;
     } else {
       top = logical.line_left;
       bottom = logical.line_right;
-      if (writing_mode == WritingMode::kVerticalRl) {
+      if (writing_mode == WritingMode::kVerticalRl ||
+          writing_mode == WritingMode::kSidewaysRl) {
         right = logical.block_start;
         left = logical.block_end;
       } else {
