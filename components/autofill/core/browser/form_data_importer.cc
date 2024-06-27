@@ -219,7 +219,6 @@ void FormDataImporter::ImportAndProcessFormData(
 
   bool cc_prompt_potentially_shown = ProcessExtractedCreditCard(
       submitted_form, extracted_data.extracted_credit_card,
-      payment_methods_autofill_enabled,
       credit_card_save_manager_->IsCreditCardUploadEnabled());
   fetched_card_instrument_id_.reset();
 
@@ -728,7 +727,6 @@ bool FormDataImporter::ProcessAddressProfileImportCandidates(
 bool FormDataImporter::ProcessExtractedCreditCard(
     const FormStructure& submitted_form,
     const std::optional<CreditCard>& extracted_credit_card,
-    bool payment_methods_autofill_enabled,
     bool is_credit_card_upstream_enabled) {
   // If no card was successfully extracted from the form, return.
   if (credit_card_import_type_ == CreditCardImportType::kNoCard) {

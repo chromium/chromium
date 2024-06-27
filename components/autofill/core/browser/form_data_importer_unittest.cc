@@ -4157,7 +4157,6 @@ TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_EmptyCreditCard) {
   EXPECT_FALSE(test_api(form_data_importer())
                    .ProcessExtractedCreditCard(
                        *form_structure, extracted_credit_card,
-                       /*payment_methods_autofill_enabled=*/true,
                        /*is_credit_card_upstream_enabled=*/true));
   personal_data_manager_->SetSyncServiceForTest(nullptr);
 }
@@ -4191,7 +4190,6 @@ TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_VirtualCardEligible) {
   EXPECT_FALSE(test_api(form_data_importer())
                    .ProcessExtractedCreditCard(
                        *form_structure, extracted_credit_card,
-                       /*payment_methods_autofill_enabled=*/true,
                        /*is_credit_card_upstream_enabled=*/true));
 
   form_data_importer().SetFetchedCardInstrumentId(1111);
@@ -4203,7 +4201,6 @@ TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_VirtualCardEligible) {
   EXPECT_TRUE(test_api(form_data_importer())
                   .ProcessExtractedCreditCard(
                       *form_structure, extracted_credit_card,
-                      /*payment_methods_autofill_enabled=*/true,
                       /*is_credit_card_upstream_enabled=*/true));
 
   personal_data_manager_->SetSyncServiceForTest(nullptr);
@@ -4239,7 +4236,6 @@ TEST_F(FormDataImporterTest,
 
   test_api(form_data_importer())
       .ProcessExtractedCreditCard(*form_structure, extracted_credit_card,
-                                  /*payment_methods_autofill_enabled=*/true,
                                   /*is_credit_card_upstream_enabled=*/true);
 }
 
@@ -4270,7 +4266,6 @@ TEST_F(FormDataImporterTest,
 
   test_api(form_data_importer())
       .ProcessExtractedCreditCard(*form_structure, test::GetCreditCard2(),
-                                  /*payment_methods_autofill_enabled=*/true,
                                   /*is_credit_card_upstream_enabled=*/true);
 }
 
@@ -4304,7 +4299,6 @@ TEST_F(FormDataImporterTest,
   EXPECT_TRUE(test_api(form_data_importer())
                   .ProcessExtractedCreditCard(
                       *form_structure, extracted_credit_card,
-                      /*payment_methods_autofill_enabled=*/true,
                       /*is_credit_card_upstream_enabled=*/true));
 
   // Ensure that we reset the record type at the end of the flow.
@@ -4385,7 +4379,6 @@ TEST_F(FormDataImporterTest,
   EXPECT_CALL(credit_card_save_manager(), ProceedWithSavingIfApplicable);
   test_api(form_data_importer())
       .ProcessExtractedCreditCard(*form_structure, card,
-                                  /*payment_methods_autofill_enabled=*/true,
                                   /*is_credit_card_upstream_enabled=*/false);
 }
 
@@ -4403,7 +4396,6 @@ TEST_F(FormDataImporterTest,
   EXPECT_CALL(credit_card_save_manager(), ProceedWithSavingIfApplicable);
   test_api(form_data_importer())
       .ProcessExtractedCreditCard(*form_structure, card,
-                                  /*payment_methods_autofill_enabled=*/true,
                                   /*is_credit_card_upstream_enabled=*/false);
 }
 

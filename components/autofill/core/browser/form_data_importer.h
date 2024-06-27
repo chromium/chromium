@@ -269,7 +269,6 @@ class FormDataImporter : public AddressDataManager::Observer,
   bool ProcessExtractedCreditCard(
       const FormStructure& submitted_form,
       const std::optional<CreditCard>& extracted_credit_card,
-      bool payment_methods_autofill_enabled,
       bool is_credit_card_upstream_enabled);
 
   // Processes the address profile import candidates.
