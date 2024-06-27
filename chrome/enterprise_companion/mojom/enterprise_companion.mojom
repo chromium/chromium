@@ -4,17 +4,23 @@
 
 module enterprise_companion.mojom;
 
+[Stable] struct Status {
+    // The numeric identifier of the status space corresponding to the variant
+    // indices defined in enterprise_companion_status.h. Zero corresponds to
+    // the monostate OK space.
+    int32 space@0;
+
+    // The numeric status code which paired with `space` uniquely identifies an
+    // error.
+    int32 code@1;
+
+    // A human-readable description of the status.
+    string description@2;
+};
+
 // The core of the enterprise companion.
 [Stable] interface EnterpriseCompanion {
-    [Stable, Extensible] enum Result {
-        // The remote transmitted a value unknown to this version of the app.
-        [Default] kUnknown = 0,
-
-        // The service successfully handled the function call.
-        kSuccess,
-    };
-
     // Instruct the application to exit. The callback will be returned before
     // the app shuts down.
-    Shutdown@0() => (Result result);
+    Shutdown@0() => (Status result);
 };

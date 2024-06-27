@@ -17,6 +17,7 @@ source_set("base") {
     "enterprise_companion_service.h",
     "enterprise_companion_service_stub.cc",
     "enterprise_companion_service_stub.h",
+    "enterprise_companion_status.cc",
     "enterprise_companion_status.h",
     "ipc_support.cc",
     "ipc_support.h",
