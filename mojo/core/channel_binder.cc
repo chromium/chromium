@@ -27,12 +27,14 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/writable_shared_memory_region.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/unguessable_token.h"
+#include "mojo/core/embedder/features.h"
 #include "mojo/public/cpp/platform/binder_exchange.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -220,6 +222,12 @@ base::android::BinderStatusOr<PlatformHandle> ReadPlatformHandle(
     default:
       return base::unexpected(STATUS_BAD_VALUE);
   }
+}
+
+bool ShouldUseSyncTransactions() {
+  static const bool use_sync_transactions = GetFieldTrialParamByFeatureAsBool(
+      kMojoUseBinder, "use_sync_transactions", true);
+  return use_sync_transactions;
 }
 
 }  // namespace
@@ -425,7 +433,14 @@ base::android::BinderStatusOr<void> ChannelBinder::SendMessageToReceiver(
   for (auto& handle : handles) {
     RETURN_IF_ERROR(WritePlatformHandle(writer, handle.TakeHandle()));
   }
-  return receiver.TransactOneWay(kReceive, std::move(parcel));
+
+  if (ShouldUseSyncTransactions()) {
+    ASSIGN_OR_RETURN(auto empty_reply,
+                     receiver.Transact(kReceive, std::move(parcel)));
+    return base::ok();
+  } else {
+    return receiver.TransactOneWay(kReceive, std::move(parcel));
+  }
 }
 
 ChannelBinder::Receiver::Receiver(scoped_refptr<ChannelBinder> channel)
