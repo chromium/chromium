@@ -143,15 +143,11 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
   }
 
   private renderSuggestionFooter() {
-    const genAiDisclaimer = i18n(
-        'Generative AI is experimental and content may be inaccurate, ' +
-            'misleading, or offensive.',
-    );
     return html`
       <div id="footer">
-        ${genAiDisclaimer}
+        ${i18n.genAiDisclaimerText}
         <!-- TODO: b/336963138 - Add correct link -->
-        <a href="#">${i18n('Learn more')}</a>
+        <a href="#">${i18n.genAiLearnMoreLink}</a>
       </div>
       <div id="feedback-buttons">
         <!-- These are the two additional "rounded corner". -->
@@ -194,7 +190,7 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
   override render(): RenderResult {
     return html`
       <div id="header">
-        <span>${i18n('A few options:')}</span>
+        <span>${i18n.titleGenerationHeader}</span>
         <cra-icon-button
           buttonstyle="floating"
           size="small"

@@ -33,6 +33,7 @@ import {assertInstanceof, checkEnumVariant} from '../core/utils/assert.js';
 import {formatDuration} from '../core/utils/datetime.js';
 
 function getDefaultTitle(): string {
+  // TODO: b/336963138 - Align this with spec, and handle i18n.
   const now = new Date();
   const weekday = new Intl.DateTimeFormat('en-US', {
     weekday: 'long',
@@ -303,7 +304,7 @@ export class RecordPage extends ReactiveLitElement {
     }
     const session = this.recordingSession.value;
     const audioData = await session.finish();
-    const metadata: RecordingCreateParams = {
+    const params: RecordingCreateParams = {
       title: this.recordingTitle,
       durationMs: Math.round(session.progress.value.length * 1000),
       recordedAt: Date.now(),
@@ -311,7 +312,7 @@ export class RecordPage extends ReactiveLitElement {
       textTokens: session.progress.value.textTokens,
     };
     const id = await this.recordingDataManager.createRecording(
-        metadata,
+        params,
         audioData,
     );
 
@@ -339,6 +340,7 @@ export class RecordPage extends ReactiveLitElement {
     super.disconnectedCallback();
     // Cancel current recording when leaving page / hot reloading.
     // TODO: b/336963138 - Have a confirmation before leaving.
+    // TODO: b/336963138 - Exit handler for the whole page.
     await this.cancelRecording();
   }
 
@@ -419,7 +421,7 @@ export class RecordPage extends ReactiveLitElement {
     return html`<cra-button
       id="stop-record"
       shape="circle"
-      .label=${i18n('Stop recording')}
+      .label=${i18n.recordStopButton}
       @click=${this.onStopRecording}
     >
       <cra-icon slot="leading-icon" name="stop"></cra-icon>
@@ -443,23 +445,21 @@ export class RecordPage extends ReactiveLitElement {
 
   private renderExitRecordingDialog() {
     return html`<cra-dialog id="exit-dialog">
-      <div slot="headline">${i18n('Exit recording')}</div>
-      <div slot="content">
-        ${i18n('Leaving this page will end your current recording.')}
-      </div>
+      <div slot="headline">${i18n.recordExitDialogHeader}</div>
+      <div slot="content">${i18n.recordExitDialogDescription}</div>
       <div slot="actions">
         <cra-button
-          .label=${i18n('Delete')}
+          .label=${i18n.recordExitDialogDeleteButton}
           button-style="secondary"
           @click=${this.deleteRecording}
         ></cra-button>
         <cra-button
-          .label=${i18n('Cancel')}
+          .label=${i18n.recordExitDialogCancelButton}
           button-style="secondary"
           @click=${this.closeExitDialog}
         ></cra-button>
         <cra-button
-          .label=${i18n('Save and exit')}
+          .label=${i18n.recordExitDialogSaveAndExitButton}
           @click=${this.saveAndExitRecording}
         ></cra-button>
       </div>
@@ -472,15 +472,15 @@ export class RecordPage extends ReactiveLitElement {
 
   private renderDeleteRecordingDialog() {
     return html`<cra-dialog id="delete-dialog">
-      <div slot="headline">${i18n('Delete current recording?')}</div>
+      <div slot="headline">${i18n.recordDeleteDialogHeader}</div>
       <div slot="actions">
         <cra-button
-          .label=${i18n('Cancel')}
+          .label=${i18n.recordDeleteDialogCancelButton}
           button-style="secondary"
           @click=${this.closeDeleteDialog}
         ></cra-button>
         <cra-button
-          .label=${i18n('Delete')}
+          .label=${i18n.recordDeleteDialogDeleteButton}
           @click=${this.deleteRecording}
         ></cra-button>
       </div>

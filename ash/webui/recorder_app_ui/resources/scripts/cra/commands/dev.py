@@ -4,13 +4,15 @@
 
 import functools
 import http.server
+import json
 import logging
 import mimetypes
 import os
 import pathlib
 import re
-from urllib import parse as urllib_parse
 from typing import Callable, NamedTuple, Optional, Union
+from urllib import parse as urllib_parse
+from xml.dom import minidom
 
 from cra import build
 from cra import cli
@@ -58,10 +60,12 @@ class RequestHandler:
         cra_root: pathlib.Path,
         tsc_root: pathlib.Path,
         build_dir: pathlib.Path,
+        strings_dir: pathlib.Path,
     ):
         self._cra_root = cra_root
         self._tsc_root = tsc_root
         self._gen_dir = build_dir / "gen"
+        self._strings_dir = strings_dir
         self._dev_static_dir = self._cra_root / "scripts/cra/static"
         self._routes = self._build_routes()
         mimetypes.add_type('application/javascript', '.map')
@@ -85,6 +89,43 @@ class RequestHandler:
         js = js.replace("'./platforms/mojo/handler.js'",
                         " './platforms/dev/handler.js'")
         return self._transform_js(request_path, js)
+
+    def _load_grd_strings(self) -> dict[str, str]:
+
+        def get_message_text_content(message: minidom.Element) -> str:
+            pieces = []
+            for child in message.childNodes:
+                if child.nodeType == minidom.Element.TEXT_NODE:
+                    pieces.append(child.nodeValue)
+                if child.nodeType == minidom.Element.ELEMENT_NODE:
+                    if child.tagName == "ex":
+                        continue
+                    pieces.append(get_message_text_content(child))
+            return "".join(pieces)
+
+        def to_camel_case(s: str) -> str:
+            start, *rest = s.lower().split('_')
+            return start + ''.join(part.capitalize() for part in rest)
+
+        strings = {}
+        grd_path = self._strings_dir / "recorder_strings.grdp"
+        dom = minidom.parse(str(grd_path))
+        messages = dom.getElementsByTagName("grit-part")[0]
+        for message in messages.getElementsByTagName("message"):
+            name = message.getAttribute("name")
+            value = get_message_text_content(message).strip()
+            assert name.startswith("IDS_RECORDER_")
+            id = name[len("IDS_RECORDER_"):]
+            id = to_camel_case(id)
+            strings[id] = value
+        return strings
+
+    def _handle_dev_strings_js(
+            self, _request_path: _RequestPath) -> tuple[bytes, str]:
+        grd_strings = self._load_grd_strings()
+
+        return (f"export const strings = {json.dumps(grd_strings)};".encode(),
+                "text/javascript")
 
     def _handle_icons_js(self,
                          request_path: _RequestPath) -> tuple[bytes, str]:
@@ -173,6 +214,11 @@ class RequestHandler:
                     root=self._tsc_root,
                     transform=self._transform_init_js,
                 ),
+            ),
+            # platforms/dev/strings.js is for strings in dev server.
+            _Route(
+                _RequestPath("platforms/dev/strings.js"),
+                self._handle_dev_strings_js,
             ),
             # All other .js files.
             _Route(
@@ -310,7 +356,7 @@ def cmd(build_dir: pathlib.Path, port: int) -> int:
         cwd=util.get_cra_root())
 
     handler = RequestHandler(util.get_cra_root(), _DEV_OUTPUT_TEMP_DIR,
-                             build_dir)
+                             build_dir, util.get_strings_dir())
     dev_server = http.server.ThreadingHTTPServer(
         ("localhost", port),
         lambda *args: DevServerHandler(handler, *args),

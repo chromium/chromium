@@ -109,7 +109,7 @@ export class SettingsMenu extends ReactiveLitElement {
     return html`<cra-dialog>
       <div slot="content">
         <div id="header">
-          ${i18n('Recorder settings')}
+          ${i18n.settingsHeader}
           <cra-icon-button
             buttonstyle="floating"
             size="small"
@@ -121,35 +121,41 @@ export class SettingsMenu extends ReactiveLitElement {
         </div>
         <div id="body">
           <div class="section">
-            <div class="title">${i18n('General')}</div>
+            <div class="title">${i18n.settingsSectionGeneralHeader}</div>
             <div class="body">
               <settings-row>
-                <span slot="label">${i18n('Do not disturb')}</span>
+                <span slot="label"
+                  >${i18n.settingsOptionsDoNotDisturbLabel}</span
+                >
                 <span slot="description">
-                  ${i18n('Mutes notifications while recording')}
+                  ${i18n.settingsOptionsDoNotDisturbDescription}
                 </span>
                 <cros-switch slot="action"></cros-switch>
               </settings-row>
               <settings-row>
                 <span slot="label">
-                  ${i18n('Keep screen on during recording')}
+                  ${i18n.settingsOptionsKeepScreenOnLabel}
                 </span>
                 <cros-switch slot="action"></cros-switch>
               </settings-row>
             </div>
           </div>
           <div class="section">
-            <div class="title">${i18n('Transcription & Google AI')}</div>
+            <div class="title">
+              ${i18n.settingsSectionTranscriptionSummaryHeader}
+            </div>
             <div class="body">
               <settings-row>
-                <span slot="label">${i18n('Allow speaker ID')}</span>
+                <span slot="label">${i18n.settingsOptionsSpeakerIdLabel}</span>
                 <span slot="description">
-                  ${i18n('Currently only available in English (US)')}
+                  ${i18n.settingsOptionsSpeakerIdDescription}
                 </span>
                 <cros-switch slot="action"></cros-switch>
               </settings-row>
               <settings-row>
-                <span slot="label">${i18n('Audio transcription')}</span>
+                <span slot="label"
+                  >${i18n.settingsOptionsTranscriptionLabel}</span
+                >
                 <cros-switch slot="action"></cros-switch>
               </settings-row>
               <!--

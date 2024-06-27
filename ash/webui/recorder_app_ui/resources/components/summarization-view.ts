@@ -185,15 +185,11 @@ export class SummarizationView extends ReactiveLitElement {
   }
 
   private renderSummaryFooter() {
-    const genAiDisclaimer = i18n(
-        'Generative AI is experimental and content may be inaccurate, ' +
-            'misleading, or offensive.',
-    );
     return html`
       <div id="footer">
-        ${genAiDisclaimer}
+        ${i18n.genAiDisclaimerText}
         <!-- TODO: b/336963138 - Add correct link -->
-        <a href="#">${i18n('Learn more')}</a>
+        <a href="#">${i18n.genAiLearnMoreLink}</a>
       </div>
       <div id="feedback-buttons">
         <!-- These are the two additional "white rounded corner". -->
@@ -234,8 +230,8 @@ export class SummarizationView extends ReactiveLitElement {
       <div id="container">
         <div id="header" class="sheet">
           <cra-icon name="summarize_auto"></cra-icon>
-          <span>${i18n('Summary')}</span>
-          <cros-badge>${i18n('Experiment')}</cros-badge>
+          <span>${i18n.summaryHeader}</span>
+          <cros-badge>${i18n.genAiExperimentBadge}</cros-badge>
           <cra-icon-button
             @click=${this.onSummaryOpenClick}
             buttonstyle="floating"

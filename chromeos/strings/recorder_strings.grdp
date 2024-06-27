@@ -5,4 +5,82 @@
   <message desc="Name of the Recorder App." name="IDS_RECORDER_APP_NAME">
     Recorder
   </message>
+  <message desc="Disclaimer under generative AI features." name="IDS_RECORDER_GEN_AI_DISCLAIMER_TEXT">
+    Generative AI is experimental and content may be inaccurate, misleading, or offensive.
+  </message>
+  <message desc="Badge for experimental state of generative AI features." name="IDS_RECORDER_GEN_AI_EXPERIMENT_BADGE">
+    Experiment
+  </message>
+  <message desc="Link to more information about generative AI disclaimer." name="IDS_RECORDER_GEN_AI_LEARN_MORE_LINK">
+    Learn more
+  </message>
+  <message desc="Header of the recording list." name="IDS_RECORDER_RECORDING_LIST_HEADER">
+    My Recordings
+  </message>
+  <message desc="Button to cancel deleting recording in the delete recording dialog." name="IDS_RECORDER_RECORD_DELETE_DIALOG_CANCEL_BUTTON">
+    Cancel
+  </message>
+  <message desc="Button to delete recording in the delete recording dialog." name="IDS_RECORDER_RECORD_DELETE_DIALOG_DELETE_BUTTON">
+    Delete
+  </message>
+  <message desc="Header of the delete recording dialog." name="IDS_RECORDER_RECORD_DELETE_DIALOG_HEADER">
+    Delete current recording?
+  </message>
+  <message desc="Button to cancel exiting recording in the exit recording dialog." name="IDS_RECORDER_RECORD_EXIT_DIALOG_CANCEL_BUTTON">
+    Cancel
+  </message>
+  <message desc="Button to exit recording in the exit recording dialog." name="IDS_RECORDER_RECORD_EXIT_DIALOG_DELETE_BUTTON">
+    Delete
+  </message>
+  <message desc="Description of the exit recording dialog." name="IDS_RECORDER_RECORD_EXIT_DIALOG_DESCRIPTION">
+    Leaving this page will end your current recording.
+  </message>
+  <message desc="Header of the exit recording dialog." name="IDS_RECORDER_RECORD_EXIT_DIALOG_HEADER">
+    Exit recording
+  </message>
+  <message desc="Button to save and exit in the exit recording dialog." name="IDS_RECORDER_RECORD_EXIT_DIALOG_SAVE_AND_EXIT_BUTTON">
+    Save and exit
+  </message>
+  <message desc="Button to stop recording." name="IDS_RECORDER_RECORD_STOP_BUTTON">
+    Stop recording
+  </message>
+  <message desc="Description of the do not disturb toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_DO_NOT_DISTURB_DESCRIPTION">
+    Silence notifications while recording
+  </message>
+  <message desc="Label of the do not disturb toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_DO_NOT_DISTURB_LABEL">
+    Do Not Disturb
+  </message>
+  <message desc="Label of the keep screen on toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_KEEP_SCREEN_ON_LABEL">
+    Keep screen on when recording
+  </message>
+  <message desc="Description of the speaker ID toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SPEAKER_ID_DESCRIPTION">
+    Currently only available in English (US)
+  </message>
+  <message desc="Label of the speaker ID toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SPEAKER_ID_LABEL">
+    Allow speaker identification
+  </message>
+  <message desc="Label of the transcription toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_LABEL">
+    Audio transcription
+  </message>
+  <message desc="Header of the general section in settings." name="IDS_RECORDER_SETTINGS_SECTION_GENERAL_HEADER">
+    General
+  </message>
+  <message desc="Header of the transcription and summary section in settings." name="IDS_RECORDER_SETTINGS_SECTION_TRANSCRIPTION_SUMMARY_HEADER">
+    Transcription and summary
+  </message>
+  <message desc="Header of the settings." name="IDS_RECORDER_SETTINGS_HEADER">
+    Recorder settings
+  </message>
+  <message desc="Header of the summary." name="IDS_RECORDER_SUMMARY_HEADER">
+    Summary
+  </message>
+  <message desc="Header of title generation." name="IDS_RECORDER_TITLE_GENERATION_HEADER">
+    A few options:
+  </message>
+  <message desc="Tooltip of the record title renaming text input." name="IDS_RECORDER_TITLE_RENAME_TOOLTIP">
+    Rename
+  </message>
+  <message desc="Button to enable autoscroll for transcription." name="IDS_RECORDER_TRANSCRIPTION_AUTOSCROLL_BUTTON">
+    Autoscroll
+  </message>
 </grit-part>

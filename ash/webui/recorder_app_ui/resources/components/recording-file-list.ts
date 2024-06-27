@@ -156,7 +156,7 @@ export class RecordingFileList extends LitElement {
 
   private renderHeader() {
     return html`<div id="header">
-      <span>${i18n('Recordings')}</span>
+      <span>${i18n.recordingListHeader}</span>
       <cra-icon-button buttonstyle="floating">
         <!-- TODO: b/336963138 - Implements search -->
         <cra-icon slot="icon" name="search"></cra-icon>

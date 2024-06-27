@@ -8,6 +8,7 @@
 
 import {assert} from '../../utils/assert.js';
 import {IterableWeakSet} from '../../utils/iterable_weak_set.js';
+import {forceCast} from '../../utils/type_utils.js';
 
 import {Signal} from './types.js';
 
@@ -103,8 +104,7 @@ export class ComputedImpl<T> extends Signal<T> implements Parent, Child {
   // when re-evaluating, the initial value should be something distinct to
   // possible values of the computed variable, so we can't use null/undefined
   // here and use a unique symbol as initial value instead.
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  private valueInternal: T = uninitialized as unknown as T;
+  private valueInternal: T = forceCast<T>(uninitialized);
 
   private state = DirtyState.DIRTY;
 

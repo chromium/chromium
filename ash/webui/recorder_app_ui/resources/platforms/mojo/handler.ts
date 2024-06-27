@@ -2,10 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/*
+ * strings.m.js is generated when we enable it via UseStringsJs() in webUI
+ * controller. When loading it, it will populate data such as localized strings
+ * into |loadTimeData| that is imported below.
+ */
+import '../../strings.m.js';
+
 import {
   ColorChangeUpdater,
 } from
     'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {nothing} from 'chrome://resources/mwc/lit/index.js';
 
 import {
@@ -59,9 +67,8 @@ export class PlatformHandler extends PlatformHandlerBase {
     return session;
   }
 
-  override i18n(name: string, ..._substitutions: Array<number|string>): string {
-    // TODO(pihsun): Call load_time_data.
-    return name;
+  override getStringF(id: string, ...args: Array<number|string>): string {
+    return loadTimeData.getStringF(id, ...args);
   }
 
   override renderDevUi(): RenderResult {

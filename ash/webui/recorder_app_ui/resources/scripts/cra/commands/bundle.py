@@ -89,7 +89,7 @@ def cmd(build_dir: pathlib.Path) -> int:
         cwd=cra_root)
 
     handler = dev_cmd.RequestHandler(cra_root, _BUNDLE_TSC_OUTPUT_TEMP_DIR,
-                                     build_dir)
+                                     build_dir, util.get_strings_dir())
 
     output_folder = cra_root / "dist"
     shutil.rmtree(output_folder, ignore_errors=True)

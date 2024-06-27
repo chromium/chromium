@@ -424,7 +424,7 @@ export class TranscriptionView extends ReactiveLitElement {
       <cros-button
         button-style="secondary"
         id="autoscroll-button"
-        label=${i18n('Autoscroll')}
+        label=${i18n.transcriptionAutoscrollButton}
         @click=${this.onAutoScrollButtonClick}
       ></cros-button>`;
   }

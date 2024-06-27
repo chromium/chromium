@@ -30,6 +30,12 @@ def get_chromium_root() -> pathlib.Path:
 
 
 @functools.cache
+def get_strings_dir() -> pathlib.Path:
+    """Gets the folder of chromeos strings where recorder_strings.grd is at."""
+    return get_chromium_root() / "chromeos/strings"
+
+
+@functools.cache
 def _resolve_build_dir(build_dir: str) -> pathlib.Path:
     if "/" in build_dir:
         # This is either a relative or absolute path.

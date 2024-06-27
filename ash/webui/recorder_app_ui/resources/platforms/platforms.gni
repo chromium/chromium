@@ -6,8 +6,10 @@
 # build_webui don't expose the toggle to have dev files compiled but not
 # include in the bundle. Reconsider this when we eventually have an "expert
 # mode" to toggle different platform implementation on DUT.
+# TODO(pihsun): "mojo" should probably better be named "swa"?
 platform_files = [
   "dev/handler.ts",
+  "dev/strings.ts",
   "dev/settings.ts",
   "mojo/handler.ts",
   "mojo/on_device_model.ts",

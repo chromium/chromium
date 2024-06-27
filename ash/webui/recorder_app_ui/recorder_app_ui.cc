@@ -8,6 +8,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/recorder_app_ui/recorder_app_ui_delegate.h"
+#include "ash/webui/recorder_app_ui/resources.h"
 #include "ash/webui/recorder_app_ui/resources/grit/recorder_app_resources.h"
 #include "ash/webui/recorder_app_ui/resources/grit/recorder_app_resources_map.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
@@ -82,6 +83,10 @@ RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
   source->AddResourcePath("playback", IDR_STATIC_INDEX_HTML);
   source->AddResourcePath("record", IDR_STATIC_INDEX_HTML);
   source->AddResourcePath("dev", IDR_STATIC_INDEX_HTML);
+
+  source->AddLocalizedStrings(kLocalizedStrings);
+
+  source->UseStringsJs();
 
   ash::EnableTrustedTypesCSP(source);
   // TODO(pihsun): Add other needed CSP.

@@ -23,6 +23,7 @@ import {
 } from '../../core/platform_handler.js';
 import {SodaEvent, TimeDelta} from '../../core/soda/types.js';
 import {
+  assert,
   assertEnumVariant,
   assertExists,
   assertInstanceof,
@@ -35,6 +36,7 @@ import {
 import {sleep} from '../../core/utils/utils.js';
 
 import {ColorTheme, devSettings, init as settingsInit} from './settings.js';
+import {strings} from './strings.js';
 
 class ModelDev implements Model {
   async suggestTitles(content: string): Promise<string[]> {
@@ -197,6 +199,36 @@ class SodaSessionDev implements SodaSession {
   }
 }
 
+/**
+ * Returns a formatted localized string where $1 to $9 are replaced by the
+ * second to the tenth argument. Any standalone $ signs must be escaped as
+ * $$.
+ *
+ * This is a copy of the function in
+ * ui/webui/resources/js/load_time_data.ts to avoid pulling those as
+ * dependency for dev.
+ */
+function substituteI18nString(
+    label: string, ...args: Array<number|string>): string {
+  return label.replace(/\$(.|$|\n)/g, (m) => {
+    assert(
+        m.match(/\$[$1-9]/) !== null,
+        'Unescaped $ found in localized string.',
+    );
+    if (m === '$$') {
+      return '$';
+    }
+
+    const substitute = args[Number(m[1]) - 1];
+    if (substitute === undefined || substitute === null) {
+      // Not all callers actually provide values for all substitutes. Return
+      // an empty value for this case.
+      return '';
+    }
+    return substitute.toString();
+  });
+}
+
 export class PlatformHandler extends PlatformHandlerBase {
   override init(): void {
     settingsInit();
@@ -210,9 +242,13 @@ export class PlatformHandler extends PlatformHandlerBase {
     return new SodaSessionDev();
   }
 
-  override i18n(name: string, ..._substitutions: Array<number|string>): string {
-    // TODO(pihsun): Do substitutions here.
-    return name;
+  override getStringF(id: string, ...args: Array<number|string>): string {
+    const label = strings[id];
+    if (label === undefined) {
+      console.error(`Unknown string ${id}`);
+      return '';
+    }
+    return substituteI18nString(label, ...args);
   }
 
   override renderDevUi(): RenderResult {

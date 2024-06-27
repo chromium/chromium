@@ -11,6 +11,16 @@ export function upcast<T>(x: T): T {
   return x;
 }
 
+/**
+ * Force cast a value to a specific type.
+ *
+ * Usage should be accompany with comments on why this is safe.
+ */
+export function forceCast<T>(x: unknown): T {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  return x as unknown as T;
+}
+
 /*
  * Expand the type to allow extra key/value in the object.
  *

@@ -96,6 +96,7 @@ build_webui("build") {
     "//third_party/material_web_components:bundle_lit_ts",
     "//third_party/material_web_components:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
 

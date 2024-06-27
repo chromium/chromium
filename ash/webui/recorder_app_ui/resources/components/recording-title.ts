@@ -239,7 +239,7 @@ export class RecordingTitle extends ReactiveLitElement {
         @click=${this.startEditTitle}
       >
         ${this.recordingMetadata?.title ?? ''}
-        <cra-tooltip>${i18n('Rename')}</cra-tooltip>
+        <cra-tooltip>${i18n.titleRenameTooltip}</cra-tooltip>
       </div>
     `;
   }
