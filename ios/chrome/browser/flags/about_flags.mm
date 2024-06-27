@@ -787,6 +787,13 @@ const FeatureEntry::FeatureParam
          "0,550;0.018,1150;0.14,1248;1,1422"},
         {"MlUrlPiecewiseMappedSearchBlending_GroupingThreshold", "1250"},
         {"MlUrlPiecewiseMappedSearchBlending_RelevanceBias", "0"}};
+const FeatureEntry::FeatureParam
+    kMlUrlPiecewiseMappedSearchBlendingMobileMapping[] = {
+        {"MlUrlPiecewiseMappedSearchBlending", "true"},
+        {"MlUrlPiecewiseMappedSearchBlending_BreakPoints",
+         "0,600;0.0177,900;0.052,950;0.087,1300;1,1500"},
+        {"MlUrlPiecewiseMappedSearchBlending_GroupingThreshold", "1340"},
+        {"MlUrlPiecewiseMappedSearchBlending_RelevanceBias", "0"}};
 
 const FeatureEntry::FeatureVariation
     kMlUrlPiecewiseMappedSearchBlendingVariations[] = {
@@ -798,6 +805,8 @@ const FeatureEntry::FeatureVariation
          std::size(kMlUrlPiecewiseMappedSearchBlendingAdjustedBy100), nullptr},
         {"adjusted by 150", kMlUrlPiecewiseMappedSearchBlendingAdjustedBy150,
          std::size(kMlUrlPiecewiseMappedSearchBlendingAdjustedBy150), nullptr},
+        {"mobile mapping", kMlUrlPiecewiseMappedSearchBlendingMobileMapping,
+         std::size(kMlUrlPiecewiseMappedSearchBlendingMobileMapping), nullptr},
 };
 
 const FeatureEntry::FeatureParam kOmniboxMlUrlScoringEnabledWithFixes[] = {
@@ -864,6 +873,11 @@ const FeatureEntry::FeatureVariation kMlUrlSearchBlendingVariations[] = {
      std::size(kMlUrlSearchBlendingMappedModerateUrls), nullptr},
     {"Mapped aggressive urls", kMlUrlSearchBlendingMappedAggressiveUrls,
      std::size(kMlUrlSearchBlendingMappedAggressiveUrls), nullptr},
+};
+
+const FeatureEntry::FeatureVariation kUrlScoringModelVariations[] = {
+    {"Small model", nullptr, 0, "3379590"},
+    {"Full model", nullptr, 0, "3380197"},
 };
 
 const FeatureEntry::FeatureParam kSaveToPhotosContextMenuImprovement[] = {
@@ -1887,7 +1901,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"omnibox-ml-url-scoring-model",
      flag_descriptions::kOmniboxMlUrlScoringModelName,
      flag_descriptions::kOmniboxMlUrlScoringModelDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(omnibox::kUrlScoringModel)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kUrlScoringModel,
+                                    kUrlScoringModelVariations,
+                                    "MlUrlScoring")},
     {"default-browser-promo-ipad-experimental-string",
      flag_descriptions::kDefaultBrowserPromoIPadExperimentalStringName,
      flag_descriptions::kDefaultBrowserPromoIPadExperimentalStringDescription,
