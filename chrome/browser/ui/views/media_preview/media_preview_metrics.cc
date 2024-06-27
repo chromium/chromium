@@ -28,6 +28,15 @@ base::HistogramBase* GetMediaPreviewDurationHistogram(const std::string& name) {
       name, custom_ranges, base::HistogramBase::kUmaTargetedHistogramFlag);
 }
 
+base::HistogramBase* GetTotalVisiblePreviewDurationHistogram(
+    const std::string& name) {
+  // Duration buckets in milliseconds.
+  const std::vector<int> custom_ranges{50,   125,  250,  500,  750,  1000,
+                                       1333, 1666, 2000, 2500, 3000, 4000};
+  return base::CustomHistogram::FactoryGet(
+      name, custom_ranges, base::HistogramBase::kUmaTargetedHistogramFlag);
+}
+
 const char* GetUiLocationString(UiLocation location) {
   switch (location) {
     case UiLocation::kPermissionPrompt:
@@ -152,6 +161,16 @@ void RecordPreviewVideoFramesRenderedPercent(const Context& context,
   // Convert percentage to 0-100 integer.
   int integer_percent = std::clamp(percent, /*lo=*/0.0f, /*hi=*/1.0f) * 100;
   base::UmaHistogramPercentage(metric_name, integer_percent);
+}
+
+void RecordTotalVisiblePreviewDuration(const Context& context,
+                                       const base::TimeDelta& delta) {
+  CHECK_EQ(context.preview_type, PreviewType::kCamera);
+  std::string metric_name =
+      StrCat({kUiPrefix, kPreview, GetUiLocationString(context.ui_location),
+              ".Video.TotalVisibleDuration"});
+  GetTotalVisiblePreviewDurationHistogram(metric_name)
+      ->Add(delta.InMilliseconds());
 }
 
 void RecordOriginTrialAllowed(UiLocation location, bool allowed) {

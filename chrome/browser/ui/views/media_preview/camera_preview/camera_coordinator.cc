@@ -126,6 +126,8 @@ void CameraCoordinator::UpdateDevicePreferenceRanking() {
 
   media_prefs::UpdateVideoDevicePreferenceRanking(*prefs_, active_device_iter,
                                                   eligible_device_infos_);
+
+  video_stream_coordinator_->OnClosing();
 }
 
 void CameraCoordinator::ResetViewController() {
