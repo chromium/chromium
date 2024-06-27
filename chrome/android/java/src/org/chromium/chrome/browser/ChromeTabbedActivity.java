@@ -1041,20 +1041,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             OnClickListener bookmarkClickHandler =
                     v -> mTabBookmarkerSupplier.get().addOrEditBookmark(getActivityTab());
 
-            Supplier<Boolean> showStartSurfaceSupplier =
-                    () -> {
-                        // If incognito is selected, tapping the home button stays on the current
-                        // incognito tab.
-                        if (ReturnToChromeUtil.shouldShowStartSurfaceAsTheHomePageOnPhone(
-                                        this, isTablet())
-                                && !mTabModelSelector.isIncognitoSelected()) {
-                            StartSurfaceUserData.setKeepTab(getActivityTab(), true);
-                            showOverview(StartSurfaceState.SHOWING_HOMEPAGE);
-                            return true;
-                        }
-                        return false;
-                    };
-
             getToolbarManager()
                     .initializeWithNative(
                             mLayoutManager,
@@ -1062,8 +1048,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             v -> onTabSwitcherClicked(),
                             mNewTabButtonClickListener,
                             bookmarkClickHandler,
-                            null,
-                            showStartSurfaceSupplier);
+                            null);
 
             // TODO(crbug.com/40828084): Fix this assert which is tripping on unrelated
             // tests.

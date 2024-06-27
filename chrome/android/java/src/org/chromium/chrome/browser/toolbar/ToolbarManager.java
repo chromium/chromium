@@ -222,8 +222,6 @@ public class ToolbarManager
     private final FullscreenManager.Observer mFullscreenObserver;
     private final ObservableSupplierImpl<Boolean> mHomepageEnabledSupplier =
             new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Boolean> mStartSurfaceAsHomepageSupplier =
-            new ObservableSupplierImpl<>();
     private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private final ConstraintsProxy mConstraintsProxy = new ConstraintsProxy();
     private ObservableSupplierImpl<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier =
@@ -707,7 +705,6 @@ public class ToolbarManager
         mToolbarTabController =
                 new ToolbarTabControllerImpl(
                         mLocationBarModel::getTab,
-                        () -> mShowStartSurfaceSupplier != null && mShowStartSurfaceSupplier.get(),
                         () -> {
                             Profile profile = profileSupplier.get();
                             return profile != null
@@ -1449,10 +1446,6 @@ public class ToolbarManager
         mHomepageStateListener =
                 () -> {
                     mHomepageEnabledSupplier.set(HomepageManager.getInstance().isHomepageEnabled());
-                    // Whether to show start surface as homepage is affected by whether homepage URI
-                    // is customized. So we add a supplier to observe homepage URI change.
-                    mStartSurfaceAsHomepageSupplier.set(
-                            ReturnToChromeUtil.shouldShowStartSurfaceAsTheHomePage(mActivity));
                 };
 
         HomepageManager.getInstance().addListener(mHomepageStateListener);
@@ -1724,7 +1717,6 @@ public class ToolbarManager
      * @param bookmarkClickHandler The {@link OnClickListener} for the bookmark button.
      * @param customTabsBackClickHandler The {@link OnClickListener} for the custom tabs back
      *     button.
-     * @param showStartSurfaceSupplier Supplies if we should show the start surface.
      */
     public void initializeWithNative(
             @NonNull LayoutManagerImpl layoutManager,
@@ -1732,14 +1724,12 @@ public class ToolbarManager
             OnClickListener tabSwitcherClickHandler,
             OnClickListener newTabClickHandler,
             OnClickListener bookmarkClickHandler,
-            OnClickListener customTabsBackClickHandler,
-            Supplier<Boolean> showStartSurfaceSupplier) {
+            OnClickListener customTabsBackClickHandler) {
         TraceEvent.begin("ToolbarManager.initializeWithNative");
         assert !mInitializedWithNative;
         assert mTabModelSelectorSupplier.get() != null;
 
         mTabModelSelector = mTabModelSelectorSupplier.get();
-        mShowStartSurfaceSupplier = showStartSurfaceSupplier;
 
         // Must be initialized before Toolbar attempts to use it.
         mLocationBarModel.initializeWithNative();

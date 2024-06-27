@@ -19,7 +19,6 @@ import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.FAIL_TO_SHOW_
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_AT_STARTUP_UMA;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_UMA;
 import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.HOME_SURFACE_RETURN_TIME_SECONDS;
-import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_OPEN_START_AS_HOMEPAGE;
 import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_USE_MODEL;
 
 import android.content.Context;
@@ -47,7 +46,6 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.SysUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -83,7 +81,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.segmentation_platform.ClassificationResult;
 import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link ReturnToChromeUtil} class. */
@@ -285,222 +282,6 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    public void testShouldShowStartSurfaceAsTheHomePageUseVisibleTime() {
-        START_SURFACE_OPEN_START_AS_HOMEPAGE.setForTesting(true);
-        assertTrue(ReturnToChromeUtil.isStartSurfaceEnabled(mContext));
-
-        // Sets main intent from launcher:
-        Intent intent = createMainIntentFromLauncher();
-        assertTrue(IntentUtils.isMainIntentFromLauncher(intent));
-        // Tests the case when the total tab count > 0:
-        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
-        doReturn(1).when(mTabModelSelector).getTotalTabCount();
-        HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(ON_RETURN_THRESHOLD_SECOND);
-
-        long currentTime = System.currentTimeMillis();
-        long returnTimeMS = ON_RETURN_THRESHOLD_SECOND * DateUtils.SECOND_IN_MILLIS;
-        long expectedVisibleTime = currentTime - returnTimeMS - 1; // has reached
-        long expectedLastBackgroundTime = -1;
-        doReturn(expectedVisibleTime).when(mInactivityTracker).getLastVisibleTimeMs();
-        doReturn(expectedLastBackgroundTime).when(mInactivityTracker).getLastBackgroundedTimeMs();
-
-        // Verifies that Start will show if the threshold of return time has reached using last
-        // visible time, while last background time is lost or not set.
-        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(expectedVisibleTime));
-        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(expectedLastBackgroundTime));
-        assertTrue(
-                ReturnToChromeUtil.shouldShowOverviewPageOnStart(
-                        mContext,
-                        intent,
-                        mTabModelSelector,
-                        mInactivityTracker,
-                        /* isTablet= */ false));
-
-        // Verifies that Start will NOT show if the threshold of return time hasn't reached using
-        // last visible time, while last background time is lost or not set.
-        currentTime = System.currentTimeMillis();
-        expectedVisibleTime = currentTime - returnTimeMS + DELTA_MS; // doesn't reach
-        doReturn(expectedVisibleTime).when(mInactivityTracker).getLastVisibleTimeMs();
-        doReturn(expectedLastBackgroundTime).when(mInactivityTracker).getLastBackgroundedTimeMs();
-        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(expectedVisibleTime));
-        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(expectedLastBackgroundTime));
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldShowOverviewPageOnStart(
-                        mContext,
-                        intent,
-                        mTabModelSelector,
-                        mInactivityTracker,
-                        /* isTablet= */ false));
-
-        // Verifies that Start will NOT show if the threshold of return time has reached using
-        // last visible time, while hasn't using the last background time which is the max time.
-        currentTime = System.currentTimeMillis();
-        expectedVisibleTime = currentTime - returnTimeMS - 1; // has reached
-        expectedLastBackgroundTime = currentTime - returnTimeMS + DELTA_MS; // doesn't reach
-        doReturn(expectedVisibleTime).when(mInactivityTracker).getLastVisibleTimeMs();
-        doReturn(expectedLastBackgroundTime).when(mInactivityTracker).getLastBackgroundedTimeMs();
-        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(expectedVisibleTime));
-        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(expectedLastBackgroundTime));
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldShowOverviewPageOnStart(
-                        mContext,
-                        intent,
-                        mTabModelSelector,
-                        mInactivityTracker,
-                        /* isTablet= */ false));
-
-        // Verifies that Start will show if the threshold of both return time has reached using
-        // either last visible time or the last background time.
-        currentTime = System.currentTimeMillis();
-        expectedVisibleTime = currentTime - returnTimeMS - 2; // has reached
-        expectedLastBackgroundTime = currentTime - returnTimeMS - 1; // has reached
-        doReturn(expectedVisibleTime).when(mInactivityTracker).getLastVisibleTimeMs();
-        doReturn(expectedLastBackgroundTime).when(mInactivityTracker).getLastBackgroundedTimeMs();
-        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(expectedVisibleTime));
-        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(expectedLastBackgroundTime));
-        assertTrue(
-                ReturnToChromeUtil.shouldShowOverviewPageOnStart(
-                        mContext,
-                        intent,
-                        mTabModelSelector,
-                        mInactivityTracker,
-                        /* isTablet= */ false));
-    }
-
-    @Test
-    @SmallTest
-    public void testShouldShowStartSurfaceAtStartupWithDefaultChromeHomepage() {
-        START_SURFACE_OPEN_START_AS_HOMEPAGE.setForTesting(true);
-        assertTrue(ReturnToChromeUtil.isStartSurfaceEnabled(mContext));
-
-        // Sets main intent from launcher:
-        Intent intent = createMainIntentFromLauncher();
-
-        // Sets background time to not show Start:
-        HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(-1);
-        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(0));
-
-        // Tests the case when there isn't any Tab:
-        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
-        doReturn(0).when(mTabModelSelector).getTotalTabCount();
-        assertTrue(HomepagePolicyManager.isInitializedWithNative());
-        assertTrue(
-                ReturnToChromeUtil.shouldShowOverviewPageOnStart(
-                        mContext,
-                        intent,
-                        mTabModelSelector,
-                        mInactivityTracker,
-                        /* isTablet= */ false));
-
-        // Tests the case when the total tab count > 0:
-        doReturn(1).when(mTabModelSelector).getTotalTabCount();
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldShowOverviewPageOnStart(
-                        mContext,
-                        intent,
-                        mTabModelSelector,
-                        mInactivityTracker,
-                        /* isTablet= */ false));
-
-        // Sets background time to make the return time arrive:
-        ChromeSharedPreferences.getInstance()
-                .addToStringSet(
-                        ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF, "0");
-        HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
-        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(0));
-
-        // Verifies that Start will show since the return time has arrived.
-        assertTrue(
-                ReturnToChromeUtil.shouldShowOverviewPageOnStart(
-                        mContext,
-                        intent,
-                        mTabModelSelector,
-                        mInactivityTracker,
-                        /* isTablet= */ false));
-
-        ChromeSharedPreferences.getInstance()
-                .removeKey(ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF);
-    }
-
-    @Test
-    @SmallTest
-    public void testShouldShowStartSurfaceWithCustomizedHomePage() {
-        START_SURFACE_OPEN_START_AS_HOMEPAGE.setForTesting(true);
-        assertTrue(ReturnToChromeUtil.isStartSurfaceEnabled(mContext));
-
-        // Sets a customized homepage:
-        doReturn(new GURL("http://foo.com")).when(mHomepageManager).getHomepageGurl();
-        Assert.assertFalse(ReturnToChromeUtil.useChromeHomepage());
-
-        // Sets main intent from launcher:
-        Intent intent = createMainIntentFromLauncher();
-
-        // Sets background time to make the return time arrive:
-        ChromeSharedPreferences.getInstance()
-                .addToStringSet(
-                        ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF, "0");
-        HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
-        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(0));
-
-        // Tests the case when there isn't any Tab but with customized homepage:
-        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
-        doReturn(0).when(mTabModelSelector).getTotalTabCount();
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldShowOverviewPageOnStart(
-                        mContext,
-                        intent,
-                        mTabModelSelector,
-                        mInactivityTracker,
-                        /* isTablet= */ false));
-
-        // Tests the case when the total tab count > 0 and return time arrives, Start will show.
-        doReturn(1).when(mTabModelSelector).getTotalTabCount();
-        assertTrue(
-                ReturnToChromeUtil.shouldShowOverviewPageOnStart(
-                        mContext,
-                        intent,
-                        mTabModelSelector,
-                        mInactivityTracker,
-                        /* isTablet= */ false));
-
-        doReturn(UrlConstants.ntpGurl()).when(mHomepageManager).getHomepageGurl();
-        ChromeSharedPreferences.getInstance()
-                .removeKey(ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF);
-    }
-
-    @Test
-    @SmallTest
-    public void testShouldShowStartSurfaceAtStartupWithHomepageDisabled() {
-        START_SURFACE_OPEN_START_AS_HOMEPAGE.setForTesting(true);
-        assertTrue(ReturnToChromeUtil.isStartSurfaceEnabled(mContext));
-
-        // Sets main intent from launcher:
-        Intent intent = createMainIntentFromLauncher();
-
-        // Sets background time to make the return time arrive:
-        ChromeSharedPreferences.getInstance()
-                .addToStringSet(
-                        ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF, "0");
-        HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
-        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(0));
-
-        // When homepage is disabled, verifies that Start isn't shown when there isn't any Tab, even
-        // if the return time has arrived.
-        doReturn(false).when(mHomepageManager).isHomepageEnabled();
-
-        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
-        doReturn(0).when(mTabModelSelector).getTotalTabCount();
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldShowOverviewPageOnStart(
-                        mContext,
-                        intent,
-                        mTabModelSelector,
-                        mInactivityTracker,
-                        /* isTablet= */ false));
-    }
-
-    @Test
-    @SmallTest
     public void testStartSurfaceIsDisabledOnTablet() {
         // Sets for !DeviceFormFactor.isNonMultiDisplayContextOnTablet()
         setupAndVerifyTablets();
@@ -528,59 +309,6 @@ public class ReturnToChromeUtilUnitTest {
 
         ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.IS_DSE_GOOGLE);
         DseNewTabUrlManager.resetIsEeaChoiceCountryForTesting();
-    }
-
-    @Test
-    @SmallTest
-    public void testShouldNotShowStartSurfaceOnStartWhenHomepagePolicyManagerIsNotInitialized() {
-        START_SURFACE_OPEN_START_AS_HOMEPAGE.setForTesting(true);
-        assertTrue(ReturnToChromeUtil.isStartSurfaceEnabled(mContext));
-        ShadowHomepagePolicyManager.sIsInitialized = false;
-        Assert.assertFalse(HomepagePolicyManager.isInitializedWithNative());
-
-        // Sets main intent from launcher:
-        Intent intent = createMainIntentFromLauncher();
-
-        // Sets background time to make the return time arrive:
-        ChromeSharedPreferences.getInstance()
-                .addToStringSet(
-                        ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF, "0");
-        HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
-        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(0));
-
-        // Tests the case when there isn't any Tab. Verifies that Start isn't shown if
-        // HomepagePolicyManager isn't initialized.
-        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
-        doReturn(0).when(mTabModelSelector).getTotalTabCount();
-
-        Assert.assertFalse(ReturnToChromeUtil.useChromeHomepage());
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldShowOverviewPageOnStart(
-                        mContext,
-                        intent,
-                        mTabModelSelector,
-                        mInactivityTracker,
-                        /* isTablet= */ false));
-        Assert.assertEquals(
-                1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Startup.Android.IsHomepagePolicyManagerInitialized"));
-
-        // Tests the case when the total tab count > 0. Verifies that Start is shown when the return
-        // time arrives.
-        doReturn(1).when(mTabModelSelector).getTotalTabCount();
-        assertTrue(
-                ReturnToChromeUtil.shouldShowOverviewPageOnStart(
-                        mContext,
-                        intent,
-                        mTabModelSelector,
-                        mInactivityTracker,
-                        /* isTablet= */ false));
-        // Verifies that we don't record the histogram again.
-        Assert.assertEquals(
-                1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Startup.Android.IsHomepagePolicyManagerInitialized"));
     }
 
     @Test

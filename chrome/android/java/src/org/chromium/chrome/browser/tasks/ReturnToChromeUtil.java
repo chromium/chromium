@@ -133,8 +133,6 @@ public final class ReturnToChromeUtil {
     private static final String START_V2_SEGMENTATION_PLATFORM_KEY = "chrome_start_android_v2";
 
     private static boolean sIsHomepagePolicyManagerInitializedRecorded;
-    // Whether to skip the check of the initialization of HomepagePolicyManager.
-    private static boolean sSkipInitializationCheckForTesting;
 
     public static void setActivityPresentingOverivewWithOmniboxForTesting(ChromeActivity value) {
         sActivityPresentingOverivewWithOmniboxForTesting = value;
@@ -487,42 +485,14 @@ public final class ReturnToChromeUtil {
         return chromeActivity;
     }
 
-    /**
-     * Check whether we should show Start Surface as the home page. This is used for all cases
-     * except initial tab creation, which uses {@link
-     * ReturnToChromeUtil#isStartSurfaceEnabled(Context)}.
-     *
-     * @return Whether Start Surface should be shown as the home page.
-     * @param context The activity context
-     */
-    public static boolean shouldShowStartSurfaceAsTheHomePage(Context context) {
-        return isStartSurfaceEnabled(context)
-                && StartSurfaceConfiguration.START_SURFACE_OPEN_START_AS_HOMEPAGE.getValue()
-                && useChromeHomepage();
-    }
-
-    /**
-     * Returns whether to use Chrome's homepage. This function doesn't distinguish whether to show
-     * NTP or Start though. If checking whether to show Start as homepage, use {@link
-     * ReturnToChromeUtil#shouldShowStartSurfaceAsTheHomePage(Context)} instead.
-     */
+    /** Returns whether to use Chrome's homepage. */
     @VisibleForTesting
     public static boolean useChromeHomepage() {
         HomepageManager homepageManager = HomepageManager.getInstance();
         GURL homePageGurl = homepageManager.getHomepageGurl();
         return homepageManager.isHomepageEnabled()
-                && ((HomepagePolicyManager.isInitializedWithNative()
-                                || sSkipInitializationCheckForTesting)
+                && ((HomepagePolicyManager.isInitializedWithNative())
                         && (homePageGurl.isEmpty() || UrlUtilities.isNtpUrl(homePageGurl)));
-    }
-
-    /**
-     * Returns whether we should show Start Surface as the home page on phone. Start surface hasn't
-     * been enabled on tablet yet.
-     */
-    public static boolean shouldShowStartSurfaceAsTheHomePageOnPhone(
-            Context context, boolean isTablet) {
-        return !isTablet && shouldShowStartSurfaceAsTheHomePage(context);
     }
 
     /**
@@ -588,7 +558,7 @@ public final class ReturnToChromeUtil {
                 RecordHistogram.recordBooleanHistogram(
                         "Startup.Android.IsHomepagePolicyManagerInitialized", initialized);
             }
-            if (!initialized && !sSkipInitializationCheckForTesting) {
+            if (!initialized) {
                 return false;
             } else {
                 return useChromeHomepage();
@@ -851,13 +821,9 @@ public final class ReturnToChromeUtil {
                 START_SHOW_STATE_UMA, state, StartSurfaceState.NUM_ENTRIES);
     }
 
-    public static void setSkipInitializationCheckForTesting(boolean skipInitializationCheck) {
-        sSkipInitializationCheckForTesting = skipInitializationCheck;
-        ResettersForTesting.register(() -> sSkipInitializationCheckForTesting = false);
-    }
-
     /**
      * Records user clicks on the tab switcher button in New tab page or Start surface.
+     *
      * @param isInOverview Whether the current tab is in overview mode.
      * @param currentTab Current tab or null if none exists.
      */

@@ -29,10 +29,6 @@ public class StartSurfaceConfiguration {
                             "hide_switch_when_no_incognito_tabs",
                             true);
 
-    public static final BooleanCachedFieldTrialParameter START_SURFACE_OPEN_START_AS_HOMEPAGE =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.START_SURFACE_ANDROID, "open_start_as_homepage", false);
-
     private static final String SIGNIN_PROMO_NTP_COUNT_LIMIT_PARAM = "signin_promo_NTP_count_limit";
     public static final IntCachedFieldTrialParameter SIGNIN_PROMO_NTP_COUNT_LIMIT =
             ChromeFeatureList.newIntCachedFieldTrialParameter(
