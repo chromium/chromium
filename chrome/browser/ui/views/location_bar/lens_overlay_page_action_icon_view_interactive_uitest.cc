@@ -19,16 +19,14 @@
 
 namespace {
 
-class LensOverlayPageActionIconViewTest : public InProcessBrowserTest {
+class LensOverlayPageActionIconViewTestBase : public InProcessBrowserTest {
  public:
-  LensOverlayPageActionIconViewTest() {
-    scoped_feature_list_.InitWithFeatures({lens::features::kLensOverlay}, {});
-  }
-  LensOverlayPageActionIconViewTest(const LensOverlayPageActionIconViewTest&) =
-      delete;
-  LensOverlayPageActionIconViewTest& operator=(
-      const LensOverlayPageActionIconViewTest&) = delete;
-  ~LensOverlayPageActionIconViewTest() override = default;
+  LensOverlayPageActionIconViewTestBase() = default;
+  LensOverlayPageActionIconViewTestBase(
+      const LensOverlayPageActionIconViewTestBase&) = delete;
+  LensOverlayPageActionIconViewTestBase& operator=(
+      const LensOverlayPageActionIconViewTestBase&) = delete;
+  ~LensOverlayPageActionIconViewTestBase() override = default;
 
   LensOverlayPageActionIconView* lens_overlay_icon_view() {
     views::View* const icon_view =
@@ -47,8 +45,25 @@ class LensOverlayPageActionIconViewTest : public InProcessBrowserTest {
         browser_view->toolbar()->location_bar());
   }
 
- private:
+ protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class LensOverlayPageActionIconViewTest
+    : public LensOverlayPageActionIconViewTestBase {
+ public:
+  LensOverlayPageActionIconViewTest() {
+    scoped_feature_list_.InitWithFeatures({lens::features::kLensOverlay}, {});
+  }
+};
+
+class LensOverlayPageActionIconViewTestOmniboxEntryPointDisabled
+    : public LensOverlayPageActionIconViewTestBase {
+ public:
+  LensOverlayPageActionIconViewTestOmniboxEntryPointDisabled() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        lens::features::kLensOverlay, {{"omnibox-entry-point", "false"}});
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest,
@@ -115,6 +130,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest, DoesNotShowOnNTP) {
   EXPECT_TRUE(focus_manager->GetFocusedView());
   run_loop.Run();
   EXPECT_FALSE(icon_view->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LensOverlayPageActionIconViewTestOmniboxEntryPointDisabled,
+    DoesNotExistWhenOmniboxFeatureParamDisabled) {
+  // Navigate to a non-NTP page.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  LensOverlayPageActionIconView* icon_view = lens_overlay_icon_view();
+  EXPECT_EQ(nullptr, icon_view);
 }
 
 }  // namespace

@@ -28,6 +28,7 @@
 #include "components/dom_distiller/content/browser/distillable_page_utils.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
@@ -265,7 +266,8 @@ void BrowserFrameMac::ValidateUserInterfaceItem(
       result->new_toggle_state =
           prefs->GetBoolean(omnibox::kShowGoogleLensShortcut);
       // Disable this menu option if the LensOverlay feature is not enabled.
-      result->enable = LensOverlayController::IsEnabled(browser);
+      result->enable = lens::features::IsOmniboxEntryPointEnabled() &&
+                       LensOverlayController::IsEnabled(browser);
       break;
     }
     case IDC_TOGGLE_JAVASCRIPT_APPLE_EVENTS: {

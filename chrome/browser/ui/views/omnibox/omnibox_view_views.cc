@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_client.h"
@@ -1842,7 +1843,8 @@ void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
                                             IDS_CONTEXT_MENU_SHOW_FULL_URLS);
   }
 
-  if (LensOverlayController::IsEnabled(location_bar_view_->browser())) {
+  if (lens::features::IsOmniboxEntryPointEnabled() &&
+      LensOverlayController::IsEnabled(location_bar_view_->browser())) {
     menu_contents->AddCheckItemWithStringId(
         IDC_SHOW_GOOGLE_LENS_SHORTCUT,
         IDS_CONTEXT_MENU_SHOW_GOOGLE_LENS_SHORTCUT);
