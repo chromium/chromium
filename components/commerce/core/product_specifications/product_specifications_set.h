@@ -21,6 +21,7 @@ namespace commerce {
 
 class ProductSpecificationsService;
 class ProductSpecificationsSyncBridge;
+class ProductSpecificationsSyncBridgeTest;
 
 // Contains a set of product specifications.
 class ProductSpecificationsSet {
@@ -78,6 +79,7 @@ class ProductSpecificationsSet {
  private:
   friend commerce::ProductSpecificationsService;
   friend commerce::ProductSpecificationsSyncBridge;
+  friend commerce::ProductSpecificationsSyncBridgeTest;
   friend ::SingleClientProductSpecificationsSyncTest;
 
   static ProductSpecificationsSet FromProto(

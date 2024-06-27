@@ -27,6 +27,7 @@ namespace commerce {
 class MockProductSpecificationsSyncBridge;
 class ProductSpecificationsService;
 class ProductSpecificationsServiceTest;
+class ProductSpecificationsSyncBridgeMultiSpecsTest;
 class ProductSpecificationsSyncBridgeTest;
 
 // Integration point between sync and ProductSpecificationService.
@@ -59,6 +60,7 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
   friend class commerce::MockProductSpecificationsSyncBridge;
   friend class commerce::ProductSpecificationsService;
   friend class commerce::ProductSpecificationsServiceTest;
+  friend class commerce::ProductSpecificationsSyncBridgeMultiSpecsTest;
   friend class commerce::ProductSpecificationsSyncBridgeTest;
   using CompareSpecificsEntries =
       std::map<std::string, sync_pb::ProductComparisonSpecifics>;
@@ -71,7 +73,7 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
                      product_comparison_specifics);
   }
 
-  virtual sync_pb::ProductComparisonSpecifics AddProductSpecifications(
+  virtual ProductSpecificationsSet AddProductSpecifications(
       const std::string& name,
       const std::vector<GURL>& urls);
 
@@ -99,7 +101,7 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
   void RemoveObserver(commerce::ProductSpecificationsSet::Observer* observer);
 
   void OnSpecificsAdded(
-      const sync_pb::ProductComparisonSpecifics& product_comparison_specifics);
+      const ProductSpecificationsSet& product_specifications_set);
   void OnSpecificsUpdated(const sync_pb::ProductComparisonSpecifics& before,
                           const sync_pb::ProductComparisonSpecifics& after);
   void OnSpecificsRemoved(const ProductSpecificationsSet& removed_set);

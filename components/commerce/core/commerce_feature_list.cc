@@ -206,6 +206,12 @@ BASE_FEATURE(kProductSpecifications,
 BASE_FEATURE(kProductSpecificationsClearMetadataOnNewlySupportedFields,
              "ProductSpecificationsClearMetadataOnNewlySupportedFields",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Stores Product Specifications across multiple specifics instead of one.
+BASE_FEATURE(kProductSpecificationsMultiSpecifics,
+             "ProductSpecificationsMultiSpecifics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kProductSpecificationsRegionLaunched,
              "ProductSpecificationsRegionLaunched",
              base::FEATURE_DISABLED_BY_DEFAULT);

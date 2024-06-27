@@ -30,6 +30,7 @@ source_set("unit_tests") {
     ":product_specifications",
     "//base/test:test_support",
     "//components/commerce/core:commerce_types",
+    "//components/commerce/core:feature_list",
     "//components/sync:test_support",
   ]
 }

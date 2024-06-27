@@ -111,12 +111,7 @@ ProductSpecificationsService::AddProductSpecificationsSet(
     const std::string& name,
     const std::vector<GURL>& urls) {
   // TODO(crbug.com/332545064) add for a product specification set being added.
-  std::optional<sync_pb::ProductComparisonSpecifics> specifics =
-      bridge_->AddProductSpecifications(name, urls);
-  if (!specifics.has_value()) {
-    return std::nullopt;
-  }
-  return std::optional(ProductSpecificationsSet::FromProto(specifics.value()));
+  return bridge_->AddProductSpecifications(name, urls);
 }
 
 const std::optional<ProductSpecificationsSet>
