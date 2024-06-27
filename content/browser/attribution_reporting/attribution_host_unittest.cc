@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/attribution_reporting/data_host.mojom.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
@@ -41,7 +42,6 @@
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
 #include "url/gurl.h"
@@ -497,7 +497,7 @@ TEST_F(AttributionHostTest, DataHost_RegisteredWithContext) {
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   attribution_host_mojom()->RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
       RegistrationEligibility::kSource, kIsForBackgroundRequests);
@@ -517,7 +517,7 @@ TEST_F(AttributionHostTest, DISABLED_DataHostOnInsecurePage_BadMessage) {
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   attribution_host_mojom()->RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
       RegistrationEligibility::kSource, kIsForBackgroundRequests);
@@ -538,7 +538,7 @@ TEST_F(AttributionHostTest,
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   attribution_host_mojom()->RegisterNavigationDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
       blink::AttributionSrcToken());
@@ -560,7 +560,7 @@ TEST_F(AttributionHostTest, DuplicateAttributionSrcToken_BadMessage) {
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   attribution_host_mojom()->RegisterNavigationDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
       blink::AttributionSrcToken());
@@ -585,7 +585,7 @@ TEST_F(
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   attribution_host_mojom()
       ->NotifyNavigationWithBackgroundRegistrationsWillStart(
           blink::AttributionSrcToken(), /*expected_registrations=*/1);
@@ -606,7 +606,7 @@ TEST_F(
               NotifyNavigationWithBackgroundRegistrationsWillStart)
       .Times(0);
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   attribution_host_mojom()
       ->NotifyNavigationWithBackgroundRegistrationsWillStart(
           blink::AttributionSrcToken(), /*expected_registrations=*/1);
@@ -636,7 +636,7 @@ TEST_F(AttributionHostTest, DataHostInSubframe_ContextIsOutermostFrame) {
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   attribution_host_mojom()->RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
       RegistrationEligibility::kSource, kIsForBackgroundRequests);
@@ -663,7 +663,7 @@ TEST_F(AttributionHostTest,
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   attribution_host_mojom()->RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
       RegistrationEligibility::kSource, kIsForBackgroundRequests);
@@ -701,7 +701,7 @@ TEST_F(AttributionHostTest, DataHost_RegisteredWithFencedFrame) {
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   attribution_host_mojom()->RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
       RegistrationEligibility::kSource, kIsForBackgroundRequests);
@@ -769,7 +769,7 @@ TEST_F(AttributionHostTest, RegisterDataHost_FeaturePolicyChecked) {
         GURL(test_case.subframe_url), subframe);
     ScopedAttributionHostTargetFrame frame_scope(attribution_host(), subframe);
 
-    mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+    mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
     attribution_host_mojom()->RegisterDataHost(
         data_host_remote.BindNewPipeAndPassReceiver(),
         RegistrationEligibility::kSource, kIsForBackgroundRequests);
@@ -808,7 +808,7 @@ TEST_F(AttributionHostTest, RegisterNavigationDataHost_FeaturePolicyChecked) {
         GURL(test_case.subframe_url), subframe);
     ScopedAttributionHostTargetFrame frame_scope(attribution_host(), subframe);
 
-    mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+    mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
     attribution_host_mojom()->RegisterNavigationDataHost(
         data_host_remote.BindNewPipeAndPassReceiver(),
         blink::AttributionSrcToken());

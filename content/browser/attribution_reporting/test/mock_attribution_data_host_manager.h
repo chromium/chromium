@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "components/attribution_reporting/data_host.mojom-forward.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
@@ -22,7 +23,6 @@
 #include "services/network/public/cpp/trigger_verification.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -39,7 +39,7 @@ class MockAttributionDataHostManager final : public AttributionDataHostManager {
   MOCK_METHOD(
       void,
       RegisterDataHost,
-      (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+      (mojo::PendingReceiver<attribution_reporting::mojom::DataHost> data_host,
        AttributionSuitableContext,
        attribution_reporting::mojom::RegistrationEligibility,
        bool),
@@ -48,7 +48,7 @@ class MockAttributionDataHostManager final : public AttributionDataHostManager {
   MOCK_METHOD(
       bool,
       RegisterNavigationDataHost,
-      (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+      (mojo::PendingReceiver<attribution_reporting::mojom::DataHost> data_host,
        const blink::AttributionSrcToken& attribution_src_token),
       (override));
 

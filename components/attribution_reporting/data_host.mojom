@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module blink.mojom;
+module attribution_reporting.mojom;
 
 import "components/attribution_reporting/registration.mojom";
 import "components/attribution_reporting/registration_header_error.mojom";
@@ -11,7 +11,7 @@ import "services/network/public/mojom/attribution.mojom";
 // Browser-process interface responsible for processing attribution
 // configurations registered by the renderer. These configurations may be sent
 // out of the normal frame lifecycle, e.g. after the frame is destroyed.
-interface AttributionDataHost {
+interface DataHost {
   // Called when data from the renderer is available for a given attributionsrc
   // request.
   SourceDataAvailable(attribution_reporting.mojom.SuitableOrigin reporting_origin,

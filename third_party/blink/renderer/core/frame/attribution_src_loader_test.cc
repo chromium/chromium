@@ -17,6 +17,7 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "components/attribution_reporting/data_host.mojom-blink.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/os_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-shared.h"
@@ -34,7 +35,6 @@
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
@@ -96,10 +96,11 @@ class AttributionSrcLocalFrameClient : public EmptyLocalFrameClient {
   ResourceRequestHead request_head_;
 };
 
-class MockDataHost : public mojom::blink::AttributionDataHost {
+class MockDataHost : public attribution_reporting::mojom::blink::DataHost {
  public:
   explicit MockDataHost(
-      mojo::PendingReceiver<mojom::blink::AttributionDataHost> data_host) {
+      mojo::PendingReceiver<attribution_reporting::mojom::blink::DataHost>
+          data_host) {
     receiver_.Bind(std::move(data_host));
     receiver_.set_disconnect_handler(
         WTF::BindOnce(&MockDataHost::OnDisconnect, WTF::Unretained(this)));
@@ -142,7 +143,7 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
  private:
   void OnDisconnect() { disconnects_++; }
 
-  // mojom::blink::AttributionDataHost:
+  // attribution_reporting::mojom::blink::DataHost:
   void SourceDataAvailable(
       attribution_reporting::SuitableOrigin reporting_origin,
       attribution_reporting::SourceRegistration data,
@@ -193,7 +194,7 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
   Vector<attribution_reporting::RegistrationHeaderError> header_errors_;
 
   size_t disconnects_ = 0;
-  mojo::Receiver<mojom::blink::AttributionDataHost> receiver_{this};
+  mojo::Receiver<attribution_reporting::mojom::blink::DataHost> receiver_{this};
 };
 
 class MockAttributionHost : public mojom::blink::AttributionHost {
@@ -235,14 +236,16 @@ class MockAttributionHost : public mojom::blink::AttributionHost {
   }
 
   void RegisterDataHost(
-      mojo::PendingReceiver<mojom::blink::AttributionDataHost> data_host,
+      mojo::PendingReceiver<attribution_reporting::mojom::blink::DataHost>
+          data_host,
       attribution_reporting::mojom::RegistrationEligibility eligibility,
       bool is_for_background_requests) override {
     mock_data_host_ = std::make_unique<MockDataHost>(std::move(data_host));
   }
 
   void RegisterNavigationDataHost(
-      mojo::PendingReceiver<mojom::blink::AttributionDataHost> data_host,
+      mojo::PendingReceiver<attribution_reporting::mojom::blink::DataHost>
+          data_host,
       const blink::AttributionSrcToken& attribution_src_token) override {}
 
   void NotifyNavigationWithBackgroundRegistrationsWillStart(

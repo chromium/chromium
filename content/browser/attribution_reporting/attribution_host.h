@@ -13,13 +13,13 @@
 #include "base/containers/flat_set.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "components/attribution_reporting/data_host.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_suitable_context.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
 
 namespace content {
@@ -68,11 +68,11 @@ class CONTENT_EXPORT AttributionHost
       const blink::AttributionSrcToken& attribution_src_token,
       uint32_t expected_registrations) override;
   void RegisterDataHost(
-      mojo::PendingReceiver<blink::mojom::AttributionDataHost>,
+      mojo::PendingReceiver<attribution_reporting::mojom::DataHost>,
       attribution_reporting::mojom::RegistrationEligibility,
       bool is_for_background_requests) override;
   void RegisterNavigationDataHost(
-      mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+      mojo::PendingReceiver<attribution_reporting::mojom::DataHost> data_host,
       const blink::AttributionSrcToken& attribution_src_token) override;
 
   // WebContentsObserver:

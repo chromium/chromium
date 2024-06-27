@@ -7,12 +7,12 @@
 
 #include <stdint.h>
 
+#include "components/attribution_reporting/data_host.mojom-forward.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-forward.h"
 
 namespace content {
 
@@ -26,14 +26,14 @@ class MockAttributionHost : public AttributionHost {
 
   MOCK_METHOD(void,
               RegisterDataHost,
-              (mojo::PendingReceiver<blink::mojom::AttributionDataHost>,
+              (mojo::PendingReceiver<attribution_reporting::mojom::DataHost>,
                attribution_reporting::mojom::RegistrationEligibility,
                bool),
               (override));
 
   MOCK_METHOD(void,
               RegisterNavigationDataHost,
-              (mojo::PendingReceiver<blink::mojom::AttributionDataHost>,
+              (mojo::PendingReceiver<attribution_reporting::mojom::DataHost>,
                const blink::AttributionSrcToken&),
               (override));
 

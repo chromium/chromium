@@ -536,6 +536,7 @@ static_library("test_support") {
     ":web_ui_mojo_test_resources",
     "//build:chromeos_buildflags",
     "//cc:test_support",
+    "//components/attribution_reporting:data_host_mojom",
     "//components/attribution_reporting:mojom",
     "//components/attribution_reporting:source_type_mojom",
     "//components/breadcrumbs/core",

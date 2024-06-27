@@ -4,8 +4,8 @@
 
 module blink.mojom;
 
+import "components/attribution_reporting/data_host.mojom";
 import "components/attribution_reporting/registration_eligibility.mojom";
-import "third_party/blink/public/mojom/conversions/attribution_data_host.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "services/network/public/mojom/attribution.mojom";
 
@@ -28,7 +28,7 @@ interface AttributionHost {
   // element. Information will be passed at a later point when the renderer
   // is done fetching the config. `is_for_background_requests` indicates if the
   // host will be used to register registrations from background requests.
-  RegisterDataHost(pending_receiver<AttributionDataHost> data_host,
+  RegisterDataHost(pending_receiver<attribution_reporting.mojom.DataHost> data_host,
                    attribution_reporting.mojom.RegistrationEligibility registration_eligibility,
                    bool is_for_background_requests
                    );
@@ -39,7 +39,7 @@ interface AttributionHost {
   // processing the attribution source config returned from the request.
   // `attribution_src_token` can be used to associate `data_host` with an
   // `Impression` object in the browser process.
-  RegisterNavigationDataHost(pending_receiver<AttributionDataHost> data_host,
+  RegisterNavigationDataHost(pending_receiver<attribution_reporting.mojom.DataHost> data_host,
                              AttributionSrcToken attribution_src_token
                              );
 

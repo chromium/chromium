@@ -34,6 +34,7 @@
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/data_host.mojom.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
@@ -83,7 +84,6 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -212,7 +212,7 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
                            kFrameId))
       .Times(2);
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -255,7 +255,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto reporting_origin =
       *SuitableOrigin::Deserialize("https://reporter.example");
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -330,7 +330,7 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
           kFrameId))
       .Times(2);
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -376,7 +376,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto reporting_origin =
       *SuitableOrigin::Deserialize("https://reporter.example");
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -411,7 +411,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     data_host_remote.FlushForTesting();
 
     EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-              "AttributionDataHost: Not eligible for source.");
+              "DataHost: Not eligible for source.");
   }
 
   checkpoint.Call(3);
@@ -447,7 +447,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto reporting_origin =
       *SuitableOrigin::Deserialize("https://reporter.example");
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -502,7 +502,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto reporting_origin =
       *SuitableOrigin::Deserialize("https://reporter.example");
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -533,7 +533,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     data_host_remote.FlushForTesting();
 
     EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-              "AttributionDataHost: Not eligible for trigger.");
+              "DataHost: Not eligible for trigger.");
   }
 
   checkpoint.Call(3);
@@ -553,7 +553,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto reporting_origin =
       *SuitableOrigin::Deserialize("https://reporter.example");
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -579,7 +579,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     data_host_remote.FlushForTesting();
 
     EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-              "AttributionDataHost: Source invalid for source type.");
+              "DataHost: Source invalid for source type.");
   }
 }
 
@@ -621,7 +621,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   const blink::AttributionSrcToken attribution_src_token;
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   data_host_manager_.RegisterNavigationDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(), attribution_src_token);
 
@@ -743,7 +743,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   const blink::AttributionSrcToken attribution_src_token;
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   data_host_manager_.RegisterNavigationDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(), attribution_src_token);
 
@@ -804,7 +804,7 @@ TEST_F(AttributionDataHostManagerImplTest,
                                  SourceIsWithinFencedFrameIs(true)),
                            kFrameId));
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
 
   SourceRegistration source_data(*DestinationSet::Create(
       {net::SchemefulSite::Deserialize("https://trigger.example")}));
@@ -845,7 +845,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token, /*navigation_id=*/1, kDevtoolsRequestId);
 
   const blink::AttributionSrcToken attribution_src_token_2;
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote_2;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote_2;
   data_host_manager_.RegisterNavigationDataHost(
       data_host_remote_2.BindNewPipeAndPassReceiver(), attribution_src_token_2);
 
@@ -881,7 +881,7 @@ TEST_F(AttributionDataHostManagerImplTest, NoSourceOrTrigger) {
   base::HistogramTester histograms;
   auto page_origin = *SuitableOrigin::Deserialize("https://page.example");
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -906,7 +906,8 @@ TEST_F(AttributionDataHostManagerImplTest,
     base::HistogramTester histograms;
     EXPECT_CALL(mock_manager_, HandleTrigger).Times(1);
 
-    mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
+    mojo::Remote<attribution_reporting::mojom::DataHost>
+        source_data_host_remote;
     data_host_manager_.RegisterDataHost(
         source_data_host_remote.BindNewPipeAndPassReceiver(),
         AttributionSuitableContext::CreateForTesting(
@@ -915,7 +916,8 @@ TEST_F(AttributionDataHostManagerImplTest,
             kLastNavigationId),
         registration_eligibility, kIsForBackgroundRequests);
 
-    mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+    mojo::Remote<attribution_reporting::mojom::DataHost>
+        trigger_data_host_remote;
     data_host_manager_.RegisterDataHost(
         trigger_data_host_remote.BindNewPipeAndPassReceiver(),
         AttributionSuitableContext::CreateForTesting(
@@ -944,7 +946,7 @@ TEST_F(AttributionDataHostManagerImplTest,
        TriggerModeReceiverConnected_TriggerNotDelayed) {
   EXPECT_CALL(mock_manager_, HandleTrigger);
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote1;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote1;
   data_host_manager_.RegisterDataHost(
       data_host_remote1.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -952,7 +954,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
       RegistrationEligibility::kTrigger, kIsForBackgroundRequests);
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote2;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote2;
   data_host_manager_.RegisterDataHost(
       data_host_remote2.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -982,7 +984,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   }
 
   const blink::AttributionSrcToken attribution_src_token;
-  mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> source_data_host_remote;
   data_host_manager_.RegisterNavigationDataHost(
       source_data_host_remote.BindNewPipeAndPassReceiver(),
       attribution_src_token);
@@ -996,7 +998,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.NotifyNavigationRegistrationCompleted(
       attribution_src_token);
 
-  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -1035,7 +1037,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   }
 
   const blink::AttributionSrcToken attribution_src_token;
-  mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> source_data_host_remote;
   data_host_manager_.RegisterNavigationDataHost(
       source_data_host_remote.BindNewPipeAndPassReceiver(),
       attribution_src_token);
@@ -1051,10 +1053,11 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.NotifyNavigationRegistrationCompleted(
       attribution_src_token);
 
-  std::vector<mojo::Remote<blink::mojom::AttributionDataHost>>
+  std::vector<mojo::Remote<attribution_reporting::mojom::DataHost>>
       trigger_data_hosts;
   for (size_t i = 0; i < kMaxDeferredReceiversPerNavigation + 2; ++i) {
-    mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+    mojo::Remote<attribution_reporting::mojom::DataHost>
+        trigger_data_host_remote;
     data_host_manager_.RegisterDataHost(
         trigger_data_host_remote.BindNewPipeAndPassReceiver(),
         AttributionSuitableContext::CreateForTesting(
@@ -1096,7 +1099,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto source_origin = *SuitableOrigin::Deserialize("https://source.test");
 
   const blink::AttributionSrcToken attribution_src_token;
-  mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> source_data_host_remote;
   // 1 - There is a background attribution request
   data_host_manager_.RegisterNavigationDataHost(
       source_data_host_remote.BindNewPipeAndPassReceiver(),
@@ -1108,7 +1111,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
       attribution_src_token, kNavigationId, kDevtoolsRequestId);
 
-  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -1157,7 +1160,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   }
 
   const blink::AttributionSrcToken attribution_src_token;
-  mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> source_data_host_remote;
   data_host_manager_.RegisterNavigationDataHost(
       source_data_host_remote.BindNewPipeAndPassReceiver(),
       attribution_src_token);
@@ -1168,7 +1171,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
       attribution_src_token, kNavigationId, kDevtoolsRequestId);
 
-  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -1212,7 +1215,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   // First
   const blink::AttributionSrcToken attribution_src_token;
-  mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> source_data_host_remote;
   data_host_manager_.RegisterNavigationDataHost(
       source_data_host_remote.BindNewPipeAndPassReceiver(),
       attribution_src_token);
@@ -1228,7 +1231,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token);
   source_data_host_remote.reset();
   task_environment_.FastForwardBy(base::TimeDelta());
-  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -1247,7 +1250,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   // Second
   const blink::AttributionSrcToken attribution_src_token_2;
-  mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote_2;
+  mojo::Remote<attribution_reporting::mojom::DataHost>
+      source_data_host_remote_2;
   data_host_manager_.RegisterNavigationDataHost(
       source_data_host_remote_2.BindNewPipeAndPassReceiver(),
       attribution_src_token_2);
@@ -1259,7 +1263,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token_2, /*navigation_id=*/2, kDevtoolsRequestId);
   data_host_manager_.NotifyNavigationRegistrationCompleted(
       attribution_src_token_2);
-  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote_2;
+  mojo::Remote<attribution_reporting::mojom::DataHost>
+      trigger_data_host_remote_2;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote_2.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -1280,7 +1285,8 @@ TEST_F(AttributionDataHostManagerImplTest,
   // Third
 
   const blink::AttributionSrcToken attribution_src_token_3;
-  mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote_3;
+  mojo::Remote<attribution_reporting::mojom::DataHost>
+      source_data_host_remote_3;
   data_host_manager_.RegisterNavigationDataHost(
       source_data_host_remote_3.BindNewPipeAndPassReceiver(),
       attribution_src_token_3);
@@ -1292,7 +1298,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token_3, /*navigation_id=*/3, kDevtoolsRequestId);
   data_host_manager_.NotifyNavigationRegistrationCompleted(
       attribution_src_token_3);
-  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote_3;
+  mojo::Remote<attribution_reporting::mojom::DataHost>
+      trigger_data_host_remote_3;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote_3.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -1335,7 +1342,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   EXPECT_CALL(mock_manager_, HandleTrigger).Times(1);
 
   const blink::AttributionSrcToken attribution_src_token;
-  mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> source_data_host_remote;
   data_host_manager_.RegisterNavigationDataHost(
       source_data_host_remote.BindNewPipeAndPassReceiver(),
       attribution_src_token);
@@ -1348,7 +1355,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   // The trigger is linked to a different navigation id, so it should not be
   // deferred.
-  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -1609,7 +1616,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   }
 
   // The navigation starts, register data and completes.
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   data_host_manager_.RegisterNavigationDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(), attribution_src_token);
   data_host_manager_.NotifyNavigationRegistrationStarted(
@@ -2013,7 +2020,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token, headers.get(), reporter_url,
       network::AttributionReportingRuntimeFeatures());
 
-  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -2079,7 +2086,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   checkpoint.Call(1);
 
-  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -2099,7 +2106,8 @@ TEST_F(AttributionDataHostManagerImplTest, TwoTriggerReceivers) {
 
   EXPECT_CALL(mock_manager_, HandleTrigger).Times(2);
 
-  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote1;
+  mojo::Remote<attribution_reporting::mojom::DataHost>
+      trigger_data_host_remote1;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote1.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -2107,7 +2115,8 @@ TEST_F(AttributionDataHostManagerImplTest, TwoTriggerReceivers) {
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
       RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
-  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote2;
+  mojo::Remote<attribution_reporting::mojom::DataHost>
+      trigger_data_host_remote2;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote2.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -2139,11 +2148,11 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto source_origin = *SuitableOrigin::Deserialize("https://page2.example");
 
   const blink::AttributionSrcToken attribution_src_token;
-  mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> source_data_host_remote;
   data_host_manager_.RegisterNavigationDataHost(
       source_data_host_remote.BindNewPipeAndPassReceiver(),
       attribution_src_token);
-  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -2200,7 +2209,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   }
 
   const blink::AttributionSrcToken attribution_src_token;
-  mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> source_data_host_remote;
   data_host_manager_.RegisterNavigationDataHost(
       source_data_host_remote.BindNewPipeAndPassReceiver(),
       attribution_src_token);
@@ -2211,7 +2220,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
       attribution_src_token, kNavigationId, kDevtoolsRequestId);
 
-  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -2247,7 +2256,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       .WillOnce([&](AttributionTrigger trigger,
                     GlobalRenderFrameHostId render_frame_id) { loop.Quit(); });
 
-  mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> source_data_host_remote;
   data_host_manager_.RegisterDataHost(
       source_data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -2255,7 +2264,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
       RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
-  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -2295,7 +2304,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
 
   const blink::AttributionSrcToken attribution_src_token;
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   data_host_manager_.RegisterNavigationDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(), attribution_src_token);
 
@@ -2313,7 +2322,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_remote.FlushForTesting();
 
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-            "AttributionDataHost: Not eligible for trigger.");
+            "DataHost: Not eligible for trigger.");
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -2325,7 +2334,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   const blink::AttributionSrcToken attribution_src_token;
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote1,
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote1,
       data_host_remote2;
 
   {
@@ -2382,7 +2391,7 @@ TEST_F(AttributionDataHostManagerImplTest,
                                  SourceIsWithinFencedFrameIs(true)),
                            kFrameId));
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -2410,7 +2419,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       HandleTrigger(Property(&AttributionTrigger::is_within_fenced_frame, true),
                     kFrameId));
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -2430,7 +2439,7 @@ TEST_F(AttributionDataHostManagerImplTest,
               HandleSource(SourceIsWithinFencedFrameIs(true), kFrameId));
 
   const blink::AttributionSrcToken attribution_src_token;
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
 
   data_host_manager_.RegisterNavigationDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(), attribution_src_token);
@@ -2624,7 +2633,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
       kNavigationId, kDevtoolsRequestId);
 
-  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -2695,7 +2704,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
       kNavigationId, kDevtoolsRequestId);
 
-  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -2760,7 +2769,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   const blink::AttributionSrcToken attribution_src_token;
 
   // 1 - A source is registered with a background attribution request
-  mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> source_data_host_remote;
   data_host_manager_.RegisterNavigationDataHost(
       source_data_host_remote.BindNewPipeAndPassReceiver(),
       attribution_src_token);
@@ -2771,7 +2780,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
       attribution_src_token, kNavigationId, kDevtoolsRequestId);
 
-  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -2852,7 +2861,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
       kNavigationId, kDevtoolsRequestId);
 
-  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -2939,7 +2948,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   checkpoint.Call(1);
 
-  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -2976,7 +2985,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       /*reporting_url=*/GURL(), /*headers=*/nullptr,
       /*is_final_response=*/true);
 
-  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -3039,7 +3048,7 @@ TEST_F(AttributionDataHostManagerImplTest, OsSourceAvailable) {
                                  /*is_within_fenced_frame=*/true,
                                  /*render_frame_id=*/kFrameId, kRegistrar)));
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -3080,7 +3089,7 @@ TEST_F(AttributionDataHostManagerImplTest, OsTriggerAvailable) {
           /*input_event=*/std::nullopt,
           /*is_within_fenced_frame=*/true, kFrameId, kRegistrar)));
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -3313,7 +3322,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
   checkpoint.Call(0);
 
   // The navigation starts, register data and completes.
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   data_host_manager_.NotifyNavigationWithBackgroundRegistrationsWillStart(
       attribution_src_token, /*expected_registrations=*/3);
   data_host_manager_.NotifyNavigationRegistrationStarted(
@@ -3435,7 +3444,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
         .Times(1);
   }
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   data_host_manager_.NotifyNavigationWithBackgroundRegistrationsWillStart(
       attribution_src_token, /*expected_registrations=*/5);
 
@@ -4254,7 +4263,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
       /*attribution_src_token=*/std::nullopt, kDevtoolsRequestId);
 
   // Trigger registration that should not be delayed.
-  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -4939,7 +4948,7 @@ TEST_F(AttributionDataHostManagerImplTest,
                                  reporting_origin, error, page_origin,
                                  /*is_within_fenced_frame=*/false, kFrameId));
 
-  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
       AttributionSuitableContext::CreateForTesting(
@@ -5080,7 +5089,7 @@ TEST_F(AttributionDataHostManagerImplTest,
                               GURL("https://b.test/x"))))))
         .Times(has_support);
 
-    mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+    mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;
     data_host_manager_.RegisterDataHost(
         data_host_remote.BindNewPipeAndPassReceiver(),
         AttributionSuitableContext::CreateForTesting(

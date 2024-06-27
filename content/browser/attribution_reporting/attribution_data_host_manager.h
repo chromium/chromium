@@ -13,13 +13,13 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "components/attribution_reporting/data_host.mojom-forward.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_background_registrations_id.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-forward.h"
 
 class GURL;
 
@@ -45,7 +45,7 @@ class AttributionDataHostManager {
   // origin. This is only called for events which are not associated with a
   // navigation.
   virtual void RegisterDataHost(
-      mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+      mojo::PendingReceiver<attribution_reporting::mojom::DataHost> data_host,
       AttributionSuitableContext,
       attribution_reporting::mojom::RegistrationEligibility,
       bool is_for_background_requests) = 0;
@@ -56,7 +56,7 @@ class AttributionDataHostManager {
   // `attribution_src_token`. Returns `false` if `attribution_src_token` was
   // already registered.
   virtual bool RegisterNavigationDataHost(
-      mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+      mojo::PendingReceiver<attribution_reporting::mojom::DataHost> data_host,
       const blink::AttributionSrcToken& attribution_src_token) = 0;
 
   // Notifies the manager that an attribution-enabled navigation associated to

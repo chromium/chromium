@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "components/attribution_reporting/data_host.mojom.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
 #include "components/attribution_reporting/registration_header_error.h"
 #include "content/browser/attribution_reporting/attribution_background_registrations_id.h"
@@ -35,7 +36,6 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
 
 class GURL;
@@ -67,7 +67,7 @@ class AttributionSuitableContext;
 // receiver.
 class CONTENT_EXPORT AttributionDataHostManagerImpl final
     : public AttributionDataHostManager,
-      public blink::mojom::AttributionDataHost {
+      public attribution_reporting::mojom::DataHost {
  public:
   explicit AttributionDataHostManagerImpl(
       AttributionManager* attribution_manager);
@@ -81,12 +81,12 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
 
   // AttributionDataHostManager:
   void RegisterDataHost(
-      mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+      mojo::PendingReceiver<attribution_reporting::mojom::DataHost> data_host,
       AttributionSuitableContext,
       attribution_reporting::mojom::RegistrationEligibility,
       bool is_for_background_requests) override;
   bool RegisterNavigationDataHost(
-      mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+      mojo::PendingReceiver<attribution_reporting::mojom::DataHost> data_host,
       const blink::AttributionSrcToken& attribution_src_token) override;
   bool NotifyNavigationWithBackgroundRegistrationsWillStart(
       const blink::AttributionSrcToken& attribution_src_token,
@@ -180,7 +180,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   using RegistrationsId = absl::
       variant<blink::AttributionSrcToken, BeaconId, BackgroundRegistrationsId>;
 
-  // blink::mojom::AttributionDataHost:
+  // attribution_reporting::mojom::DataHost:
   void SourceDataAvailable(
       attribution_reporting::SuitableOrigin reporting_origin,
       attribution_reporting::SourceRegistration,
@@ -302,7 +302,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   // Owns `this`.
   const raw_ref<AttributionManager> attribution_manager_;
 
-  mojo::ReceiverSet<blink::mojom::AttributionDataHost, RegistrationContext>
+  mojo::ReceiverSet<attribution_reporting::mojom::DataHost, RegistrationContext>
       receivers_;
 
   // Map which stores pending receivers for data hosts which are going to
@@ -310,7 +310,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   // `receivers_` until the necessary browser process information is available
   // to validate the attribution sources which is after the navigation starts.
   base::flat_map<blink::AttributionSrcToken,
-                 mojo::PendingReceiver<blink::mojom::AttributionDataHost>>
+                 mojo::PendingReceiver<attribution_reporting::mojom::DataHost>>
       navigation_data_host_map_;
 
   // If eligible, sources can be registered during a navigation. These

@@ -35,6 +35,7 @@
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/data_host.mojom.h"
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/os_registration_error.mojom.h"
@@ -78,7 +79,6 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "url/gurl.h"
@@ -553,7 +553,7 @@ class AttributionDataHostManagerImpl::RegistrationContext {
 };
 
 struct AttributionDataHostManagerImpl::DeferredReceiver {
-  mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host;
+  mojo::PendingReceiver<attribution_reporting::mojom::DataHost> data_host;
   RegistrationContext context;
   base::TimeTicks initial_registration_time = base::TimeTicks::Now();
 };
@@ -1076,7 +1076,7 @@ AttributionDataHostManagerImpl::AttributionDataHostManagerImpl(
 AttributionDataHostManagerImpl::~AttributionDataHostManagerImpl() = default;
 
 void AttributionDataHostManagerImpl::RegisterDataHost(
-    mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+    mojo::PendingReceiver<attribution_reporting::mojom::DataHost> data_host,
     AttributionSuitableContext suitable_context,
     RegistrationEligibility registration_eligibility,
     bool is_for_background_requests) {
@@ -1116,7 +1116,7 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
 }
 
 bool AttributionDataHostManagerImpl::RegisterNavigationDataHost(
-    mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+    mojo::PendingReceiver<attribution_reporting::mojom::DataHost> data_host,
     const blink::AttributionSrcToken& attribution_src_token) {
   auto [it, inserted] = navigation_data_host_map_.try_emplace(
       attribution_src_token, std::move(data_host));
@@ -1731,7 +1731,7 @@ AttributionDataHostManagerImpl::GetReceiverRegistrationContextForSource() {
   const RegistrationContext& context = receivers_.current_context();
 
   if (context.registration_eligibility() == RegistrationEligibility::kTrigger) {
-    mojo::ReportBadMessage("AttributionDataHost: Not eligible for source.");
+    mojo::ReportBadMessage("DataHost: Not eligible for source.");
     return nullptr;
   }
 
@@ -1743,7 +1743,7 @@ AttributionDataHostManagerImpl::GetReceiverRegistrationContextForTrigger() {
   const RegistrationContext& context = receivers_.current_context();
 
   if (context.registration_eligibility() == RegistrationEligibility::kSource) {
-    mojo::ReportBadMessage("AttributionDataHost: Not eligible for trigger.");
+    mojo::ReportBadMessage("DataHost: Not eligible for trigger.");
     return nullptr;
   }
 
@@ -1770,8 +1770,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   }
 
   if (!data.IsValidForSourceType(source_type)) {
-    mojo::ReportBadMessage(
-        "AttributionDataHost: Source invalid for source type.");
+    mojo::ReportBadMessage("DataHost: Source invalid for source type.");
     return;
   }
 

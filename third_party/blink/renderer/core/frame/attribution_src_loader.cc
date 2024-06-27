@@ -20,6 +20,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
+#include "components/attribution_reporting/data_host.mojom-blink.h"
 #include "components/attribution_reporting/eligibility.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/os_registration_error.mojom-shared.h"
@@ -44,7 +45,6 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -330,7 +330,8 @@ class AttributionSrcLoader::ResourceClient
       AttributionSrcLoader* loader,
       RegistrationEligibility eligibility,
       SourceType source_type,
-      mojo::SharedRemote<mojom::blink::AttributionDataHost> data_host,
+      mojo::SharedRemote<attribution_reporting::mojom::blink::DataHost>
+          data_host,
       network::mojom::AttributionSupport support)
       : loader_(loader),
         eligibility_(eligibility),
@@ -411,7 +412,7 @@ class AttributionSrcLoader::ResourceClient
   // Note that there's no check applied for `SharedRemote`, and it should be
   // memory safe as long as `SharedRemote::set_disconnect_handler` is not
   // installed. See https://crbug.com/1512895 for details.
-  mojo::SharedRemote<mojom::blink::AttributionDataHost> data_host_;
+  mojo::SharedRemote<attribution_reporting::mojom::blink::DataHost> data_host_;
 
   wtf_size_t num_registrations_ = 0;
 
@@ -556,7 +557,7 @@ bool AttributionSrcLoader::DoRegistration(
   local_frame_->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
       &conversion_host);
 
-  mojo::SharedRemote<mojom::blink::AttributionDataHost> data_host;
+  mojo::SharedRemote<attribution_reporting::mojom::blink::DataHost> data_host;
 
   if (KeepaliveResponsesHandledInBrowser() &&
       attribution_src_token.has_value()) {
@@ -828,13 +829,13 @@ void AttributionSrcLoader::RegisterAttributionHeaders(
   local_frame_->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
       &conversion_host);
 
-  mojo::SharedRemote<mojom::blink::AttributionDataHost> data_host;
+  mojo::SharedRemote<attribution_reporting::mojom::blink::DataHost> data_host;
   conversion_host->RegisterDataHost(data_host.BindNewPipeAndPassReceiver(),
                                     registration_eligibility,
                                     /*is_for_background_requests=*/false);
 
   // Create a client to mimic processing of attributionsrc requests. Note we do
-  // not share `AttributionDataHosts` for redirects chains.
+  // not share `DataHosts` for redirects chains.
   // TODO(johnidel): Consider refactoring this such that we can share clients
   // for redirect chain, or not create the client at all.
   auto* client = MakeGarbageCollected<ResourceClient>(
