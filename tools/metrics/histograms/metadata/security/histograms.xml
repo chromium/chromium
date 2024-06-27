@@ -365,6 +365,12 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the security level (e.g. secure, not secure, etc.) of each HTTP
     request, recording one histogram per fetch (i.e. including redirects).
+
+    Starting from M128, initial HTTP requests to captive portal login pages are
+    not upgraded and this exclusion is recorded in the &quot;HTTP request to a
+    captive portal login page&quot; bucket. Previously, these requests could
+    have been put under various buckets depending on the captive portal
+    configuration.
   </summary>
 </histogram>
 

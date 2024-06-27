@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "build/build_config.h"
+#include "chrome/browser/captive_portal/captive_portal_service_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,7 +27,10 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/captive_portal/content/captive_portal_service.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/embedder_support/pref_names.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_view.h"
@@ -423,6 +427,8 @@ class HttpsUpgradesBrowserTest
   net::EmbeddedTestServer* http_server() { return &http_server_; }
   net::EmbeddedTestServer* https_server() { return &https_server_; }
   base::HistogramTester* histograms() { return &histograms_; }
+
+  void EnableCaptivePortalDetection(Browser* browser);
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -2935,21 +2941,216 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
       http_url.host(), contents->GetPrimaryMainFrame()->GetStoragePartition()));
 }
 
+// Url used to detect the presence of a captive portal.
+constexpr char kCaptivePortalPingUrl[] = "http://captive-portal-ping-url.com/";
+// HTTPS version of the same URL.
+constexpr char kCaptivePortalPingUrlHttps[] =
+    "https://captive-portal-ping-url.com/";
+
+// Returns a URL loader interceptor that responds to HTTPS URLs with a cert
+// error and to HTTP URLs with a good response.
+std::unique_ptr<content::URLLoaderInterceptor> MakeCaptivePortalInterceptor(
+    bool login_page_has_valid_https) {
+  return std::make_unique<content::URLLoaderInterceptor>(
+      base::BindLambdaForTesting(
+          [login_page_has_valid_https](
+              content::URLLoaderInterceptor::RequestParams* params) {
+            if (params->url_request.url == GURL(kCaptivePortalPingUrl) ||
+                (login_page_has_valid_https &&
+                 params->url_request.url == GURL(kCaptivePortalPingUrlHttps))) {
+              // Return a non-204 response for the captive portal ping URL
+              // so that the portal is detected.
+              content::URLLoaderInterceptor::WriteResponse(
+                  "HTTP/1.1 200 OK\nContent-type: text/html\n\n",
+                  "<html>Non-204 response to trigger captive portal "
+                  "detection</html>",
+                  params->client.get());
+              return true;
+            }
+
+            if (params->url_request.url.SchemeIs("https")) {
+              // Fail with an SSL error so that a fallback is triggered.
+              network::URLLoaderCompletionStatus status;
+              status.error_code = net::ERR_CERT_COMMON_NAME_INVALID;
+              status.ssl_info = net::SSLInfo();
+              status.ssl_info->cert_status =
+                  net::CERT_STATUS_COMMON_NAME_INVALID;
+              // The cert doesn't matter.
+              status.ssl_info->cert = net::ImportCertFromFile(
+                  net::GetTestCertsDirectory(), "ok_cert.pem");
+              status.ssl_info->unverified_cert = status.ssl_info->cert;
+              params->client->OnComplete(status);
+              return true;
+            }
+            content::URLLoaderInterceptor::WriteResponse(
+                "HTTP/1.1 200 OK\nContent-type: text/html\n\n",
+                "<html>Done</html>", params->client.get());
+            return true;
+          }));
+}
+
+void HttpsUpgradesBrowserTest::EnableCaptivePortalDetection(Browser* browser) {
+  captive_portal::CaptivePortalService* captive_portal_service =
+      CaptivePortalServiceFactory::GetForProfile(browser->profile());
+  captive_portal_service->set_test_url(GURL(kCaptivePortalPingUrl));
+
+  captive_portal::CaptivePortalService::set_state_for_testing(
+      captive_portal::CaptivePortalService::NOT_TESTING);
+  browser->profile()->GetPrefs()->SetBoolean(
+      embedder_support::kAlternateErrorPagesEnabled, true);
+}
+
+// Checks that an automatically opened captive portal login page is not upgraded
+// to HTTPS unless the interstitial is enabled. The captive portal's login
+// page supports https.
+IN_PROC_BROWSER_TEST_P(
+    HttpsUpgradesBrowserTest,
+    CaptivePortal_LoginPageWithValidSSL_ShouldNotUpgradeUnlessInterstitialEnabled) {
+  if (https_upgrades_test_type() ==
+      HttpsUpgradesTestType::kHttpsFirstModeIncognito) {
+    return;
+  }
+  auto interceptor =
+      MakeCaptivePortalInterceptor(/*login_page_has_valid_https=*/true);
+
+  // Disable the testing port configuration, as this test doesn't use the
+  // EmbeddedTestServer.
+  HttpsUpgradesInterceptor::SetHttpsPortForTesting(0);
+  HttpsUpgradesInterceptor::SetHttpPortForTesting(0);
+  EnableCaptivePortalDetection(browser());
+
+  auto* tab_strip = GetBrowser()->tab_strip_model();
+  auto* contents = tab_strip->GetActiveWebContents();
+  size_t tab_count = tab_strip->count();
+
+  // Go to an HTTPS URL. The navigation will fail and trigger a captive portal
+  // detection.
+  ui_test_utils::TabAddedWaiter waiter(browser());
+  NavigateAndWaitForFallback(contents,
+                             GURL("https://ssl-error-for-captive-portal.com/"));
+  waiter.Wait();
+
+  // Captive portal login page should not be upgraded.
+  content::WebContents* login_page = tab_strip->GetWebContentsAt(tab_count);
+  content::WaitForLoadStop(login_page);
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          login_page));
+
+  if (IsHttpsFirstModePrefEnabled()) {
+    // If the interstitial is enabled, captive portal login page should also be
+    // upgraded to HTTPS.
+    EXPECT_EQ(GURL(kCaptivePortalPingUrlHttps),
+              login_page->GetLastCommittedURL());
+
+    // Should only attempt an upgrade for the original page.
+    histograms()->ExpectTotalCount(kNavigationRequestSecurityLevelHistogram, 3);
+    // The original page serves bad HTTPS, but any HTTPS URL is counted as
+    // secure in this histogram. Captive portal login page is valid HTTPS, so
+    // it's also counted here.
+    histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                    NavigationRequestSecurityLevel::kSecure, 2);
+    histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                    NavigationRequestSecurityLevel::kUpgraded,
+                                    1);
+  } else {
+    // Captive portal login page should not be upgraded to HTTPS.
+    EXPECT_EQ(GURL(kCaptivePortalPingUrl), login_page->GetLastCommittedURL());
+
+    // Should only attempt an upgrade for the original page.
+    histograms()->ExpectTotalCount(kNavigationRequestSecurityLevelHistogram, 2);
+    // The original page serves bad HTTPS, but any HTTPS URL is counted as
+    // secure in this histogram:
+    histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                    NavigationRequestSecurityLevel::kSecure, 1);
+    histograms()->ExpectBucketCount(
+        kNavigationRequestSecurityLevelHistogram,
+        NavigationRequestSecurityLevel::kCaptivePortalLogin, 1);
+  }
+}
+
+// Same as
+// CaptivePortal_LoginPageWithValidSSL_ShouldNotUpgradeUnlessInterstitialEnabled
+// but the captive portal's login page serves bad SSL.
+IN_PROC_BROWSER_TEST_P(
+    HttpsUpgradesBrowserTest,
+    CaptivePortal_LoginPageWithoutValidSSL_ShouldNotUpgradeUnlessInterstitialEnabled) {
+  if (https_upgrades_test_type() ==
+      HttpsUpgradesTestType::kHttpsFirstModeIncognito) {
+    return;
+  }
+  auto interceptor =
+      MakeCaptivePortalInterceptor(/*login_page_has_valid_https=*/true);
+
+  // Disable the testing port configuration, as this test doesn't use the
+  // EmbeddedTestServer.
+  HttpsUpgradesInterceptor::SetHttpsPortForTesting(0);
+  HttpsUpgradesInterceptor::SetHttpPortForTesting(0);
+  EnableCaptivePortalDetection(browser());
+
+  auto* tab_strip = GetBrowser()->tab_strip_model();
+  auto* contents = tab_strip->GetActiveWebContents();
+  size_t tab_count = tab_strip->count();
+
+  // Go to an HTTPS URL. The navigation will fail and trigger a captive portal
+  // detection.
+  ui_test_utils::TabAddedWaiter waiter(browser());
+  NavigateAndWaitForFallback(contents,
+                             GURL("https://ssl-error-for-captive-portal.com/"));
+  waiter.Wait();
+
+  content::WebContents* login_page = tab_strip->GetWebContentsAt(tab_count);
+  content::WaitForLoadStop(login_page);
+
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          login_page));
+
+  if (IsHttpsFirstModePrefEnabled()) {
+    // If the interstitial is enabled, captive portal login page should also be
+    // upgraded to HTTPS.
+    EXPECT_EQ(GURL(kCaptivePortalPingUrlHttps),
+              login_page->GetLastCommittedURL());
+
+    // Should only attempt an upgrade for the original page.
+    histograms()->ExpectTotalCount(kNavigationRequestSecurityLevelHistogram, 3);
+    // The original page serves bad HTTPS, but any HTTPS URL is counted as
+    // secure in this histogram. Captive portal login page is valid HTTPS, so
+    // it's also counted here.
+    histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                    NavigationRequestSecurityLevel::kSecure, 2);
+    histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                    NavigationRequestSecurityLevel::kUpgraded,
+                                    1);
+  } else {
+    // Captive portal login page should not be upgraded to HTTPS.
+    EXPECT_EQ(GURL(kCaptivePortalPingUrl), login_page->GetLastCommittedURL());
+
+    // The original page serves bad HTTPS, but any HTTPS URL is counted as
+    // secure in this histogram:
+    histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                    NavigationRequestSecurityLevel::kSecure, 1);
+    histograms()->ExpectBucketCount(
+        kNavigationRequestSecurityLevelHistogram,
+        NavigationRequestSecurityLevel::kCaptivePortalLogin, 1);
+  }
+}
+
 // Regression test for crbug.com/1475747. With HTTPS-Upgrades enabled but
 // HFM-for-Typically-Secure-Users disabled, sets the prefs as though
 // HFM-for-Typically-Secure-Users had triggered accidentally and tests whether
 // the remediation that resets this works correctly.
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                        AccidentalTypicallySecureUsersRemediation) {
-  // Just test for HTTPS-Upgrades (we want HFM-for-Typically-Secure-Users to be
-  // disabled).
+  // Just test for HTTPS-Upgrades (we want HFM-for-Typically-Secure-Users to
+  // be disabled).
   if (https_upgrades_test_type() != HttpsUpgradesTestType::kNone) {
     return;
   }
 
-  // Pretend that the feature had been erroneously enabled previously. The prefs
-  // must be set in this order, as setting kHttpsOnlyModeEnabled will cause
-  // kHttpsOnlyModeAutoEnabled to be reset to false by the pref observer
+  // Pretend that the feature had been erroneously enabled previously. The
+  // prefs must be set in this order, as setting kHttpsOnlyModeEnabled will
+  // cause kHttpsOnlyModeAutoEnabled to be reset to false by the pref observer
   // in HttpsFirstModeService.
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
                                                true);
@@ -3003,10 +3204,10 @@ class HttpsUpgradesPrefsBrowserTest : public InProcessBrowserTest {
   base::HistogramTester histograms_;
 };
 
-// Tests that the HTTPS-First Mode pref is recorded at startup and when changed.
-// This test requires restarting the browser to test the "at startup" metric in
-// order for the preference state to be set up before the HttpsFirstModeService
-// is created.
+// Tests that the HTTPS-First Mode pref is recorded at startup and when
+// changed. This test requires restarting the browser to test the "at startup"
+// metric in order for the preference state to be set up before the
+// HttpsFirstModeService is created.
 IN_PROC_BROWSER_TEST_F(HttpsUpgradesPrefsBrowserTest, PRE_PrefStatesRecorded) {
   // The default pref state is `false`, which should get recorded when the
   // initial browser instance is started here.
@@ -3026,8 +3227,8 @@ IN_PROC_BROWSER_TEST_F(HttpsUpgradesPrefsBrowserTest, PRE_PrefStatesRecorded) {
 
 IN_PROC_BROWSER_TEST_F(HttpsUpgradesPrefsBrowserTest, PrefStatesRecorded) {
   // Restarting the browser from the PRE_ test should record the startup pref
-  // histogram. Checking the unique count also ensures that other profile types
-  // (e.g. the ChromeOS sign-in profile) don't cause double-counting.
+  // histogram. Checking the unique count also ensures that other profile
+  // types (e.g. the ChromeOS sign-in profile) don't cause double-counting.
   EXPECT_TRUE(GetPref());
   histograms()->ExpectUniqueSample(
       "Security.HttpsFirstMode.SettingEnabledAtStartup", true, 1);
@@ -3042,8 +3243,8 @@ IN_PROC_BROWSER_TEST_F(HttpsUpgradesPrefsBrowserTest, PrefStatesRecorded) {
 
 // A simple test fixture that constructs a HistogramTester (so that it gets
 // initialized before browser startup). Used for testing pref tracking logic.
-// Variant of HttpsUpgradesPrefsBrowserTest but with the HttpsFirstModeIncognito
-// feature enabled.
+// Variant of HttpsUpgradesPrefsBrowserTest but with the
+// HttpsFirstModeIncognito feature enabled.
 class HttpsUpgradesPrefsIncognitoEnabledBrowserTest
     : public InProcessBrowserTest {
  public:
@@ -3074,10 +3275,11 @@ class HttpsUpgradesPrefsIncognitoEnabledBrowserTest
   base::HistogramTester histograms_;
 };
 
-// Tests that the HTTPS-First Mode pref is recorded at startup and when changed,
-// when the HFM-in-Incognito feature flag is enabled. This test requires
-// restarting the browser to test the "at startup" metric in order for the
-// preference state to be set up before the HttpsFirstModeService is created.
+// Tests that the HTTPS-First Mode pref is recorded at startup and when
+// changed, when the HFM-in-Incognito feature flag is enabled. This test
+// requires restarting the browser to test the "at startup" metric in order
+// for the preference state to be set up before the HttpsFirstModeService is
+// created.
 IN_PROC_BROWSER_TEST_F(HttpsUpgradesPrefsIncognitoEnabledBrowserTest,
                        PRE_PrefStatesRecorded) {
   // The default pref states is true in Incognito, which should get recorded
@@ -3101,8 +3303,8 @@ IN_PROC_BROWSER_TEST_F(HttpsUpgradesPrefsIncognitoEnabledBrowserTest,
 IN_PROC_BROWSER_TEST_F(HttpsUpgradesPrefsIncognitoEnabledBrowserTest,
                        PrefStatesRecorded) {
   // Restarting the browser from the PRE_ test should record the startup pref
-  // histogram. Checking the unique count also ensures that other profile types
-  // (e.g. the ChromeOS sign-in profile) don't cause double-counting.
+  // histogram. Checking the unique count also ensures that other profile
+  // types (e.g. the ChromeOS sign-in profile) don't cause double-counting.
   EXPECT_TRUE(GetPref());
   histograms()->ExpectUniqueSample(
       "Security.HttpsFirstMode.SettingEnabledAtStartup2",
@@ -3129,8 +3331,8 @@ IN_PROC_BROWSER_TEST_F(TypicallySecureUserBrowserTest,
                        RestoreCountsOnStartup_OneNavigation) {
   HttpsFirstModeService* hfm_service =
       HttpsFirstModeServiceFactory::GetForProfile(browser()->profile());
-  // A single navigation will not be persisted to the pref and won't be restored
-  // on startup.
+  // A single navigation will not be persisted to the pref and won't be
+  // restored on startup.
   EXPECT_EQ(0u, hfm_service->GetRecentNavigationCount());
 }
 

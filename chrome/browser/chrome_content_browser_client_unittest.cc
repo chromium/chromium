@@ -1130,7 +1130,7 @@ TEST_F(ChromeContentBrowserClientCaptivePortalBrowserTest,
       web_contents(), CaptivePortalServiceFactory::GetForProfile(profile()),
       base::NullCallback());
   captive_portal::CaptivePortalTabHelper::FromWebContents(web_contents())
-      ->set_is_captive_portal_window();
+      ->set_window_type(captive_portal::CaptivePortalWindowType::kPopup);
   NavigateAndCommit(GURL("https://www.google.com"), ui::PAGE_TRANSITION_LINK);
   EXPECT_TRUE(network_context->WaitAndGetInvokedURLLoaderFactory());
 }

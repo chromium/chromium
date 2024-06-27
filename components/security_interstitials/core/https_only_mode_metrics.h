@@ -126,7 +126,10 @@ enum class NavigationRequestSecurityLevel {
   // opposed to autocompleted) that included an explicit http scheme.
   kExplicitHttpScheme = 9,
 
-  kMaxValue = kExplicitHttpScheme,
+  // Request was for a captive portal login page.
+  kCaptivePortalLogin = 10,
+
+  kMaxValue = kCaptivePortalLogin,
 };
 
 // Recorded by the Site Engagement Heuristic logic, recording whether HFM should

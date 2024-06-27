@@ -492,11 +492,14 @@ base::WeakPtr<content::NavigationHandle> LoadURLInContents(
   // |frame_tree_node_id| is kNoFrameTreeNodeId for main frame navigations.
   if (params->frame_tree_node_id ==
       content::RenderFrameHost::kNoFrameTreeNodeId) {
+    bool force_no_https_upgrade =
+        params->url_typed_with_http_scheme ||
+        params->captive_portal_window_type !=
+            captive_portal::CaptivePortalWindowType::kNone;
     load_url_params.navigation_ui_data =
         ChromeNavigationUIData::CreateForMainFrameNavigation(
             target_contents, params->disposition,
-            params->is_using_https_as_default_scheme,
-            params->url_typed_with_http_scheme);
+            params->is_using_https_as_default_scheme, force_no_https_upgrade);
   }
 
   if (params->post_data) {
@@ -606,12 +609,8 @@ std::unique_ptr<content::WebContents> CreateTargetContents(
                                params.app_id);
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
-  if (params.is_captive_portal_popup) {
-    DCHECK_EQ(WindowOpenDisposition::NEW_POPUP, params.disposition);
-    captive_portal::CaptivePortalTabHelper::FromWebContents(
-        target_contents.get())
-        ->set_is_captive_portal_window();
-  }
+  captive_portal::CaptivePortalTabHelper::FromWebContents(target_contents.get())
+      ->set_window_type(params.captive_portal_window_type);
 #endif
 
   return target_contents;

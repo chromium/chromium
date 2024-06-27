@@ -86,11 +86,12 @@ void NetworkPortalSigninWindow::Show(const GURL& url) {
   params.disposition = WindowOpenDisposition::NEW_POPUP;
   params.user_gesture = true;
   params.trusted_source = false;
-  // |is_captive_portal_popup| is used on desktop Chrome to identify captive
-  // portal signin popup windows. This affects the following behaviors:
+  // `captive_portal_window_type = kPopup` is used on desktop Chrome to identify
+  // captive portal signin popup windows. This affects the following behaviors:
   // * Secure DNS is disabled in ChromeContentBrowserClient
   // * The window title is customized in Browser
-  params.is_captive_portal_popup = true;
+  params.captive_portal_window_type =
+      captive_portal::CaptivePortalWindowType::kPopup;
   auto handle = ::Navigate(&params);
   if (!handle) {
     NET_LOG(ERROR) << "Failed to navigate to captive portal url: " << url;

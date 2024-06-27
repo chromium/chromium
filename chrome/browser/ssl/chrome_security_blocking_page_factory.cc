@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -321,6 +322,38 @@ ChromeSecurityBlockingPageFactory::CreateHttpsOnlyModeBlockingPage(
 }
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
+
+// Open a login tab or popup for the captive portal login page.
+void OpenLoginTab(Browser* browser,
+                  captive_portal::CaptivePortalWindowType portal_type) {
+  // We only end up here when a captive portal result was received, so it's safe
+  // to assume profile has a captive_portal::CaptivePortalService.
+  NavigateParams params(
+      browser,
+      CaptivePortalServiceFactory::GetForProfile(browser->profile())
+          ->test_url(),
+      ui::PAGE_TRANSITION_TYPED);
+  WindowOpenDisposition disposition;
+  switch (portal_type) {
+    case captive_portal::CaptivePortalWindowType::kPopup:
+      disposition = WindowOpenDisposition::NEW_POPUP;
+      break;
+    case captive_portal::CaptivePortalWindowType::kTab:
+      disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+      break;
+    default:
+      NOTREACHED() << "Invalid captive portal window type";
+  }
+  params.captive_portal_window_type = portal_type;
+  params.disposition = disposition;
+  Navigate(&params);
+
+  content::WebContents* new_contents = params.navigated_or_inserted_contents;
+  captive_portal::CaptivePortalTabHelper* captive_portal_tab_helper =
+      captive_portal::CaptivePortalTabHelper::FromWebContents(new_contents);
+  captive_portal_tab_helper->SetIsLoginTab();
+}
+
 // static
 void ChromeSecurityBlockingPageFactory::OpenLoginTabForWebContents(
     content::WebContents* web_contents,
@@ -354,18 +387,7 @@ void ChromeSecurityBlockingPageFactory::OpenLoginTabForWebContents(
     }
 
     // Otherwise, create a captive portal popup window.
-    NavigateParams params(
-        browser,
-        CaptivePortalServiceFactory::GetForProfile(browser->profile())
-            ->test_url(),
-        ui::PAGE_TRANSITION_TYPED);
-    params.disposition = WindowOpenDisposition::NEW_POPUP;
-    params.is_captive_portal_popup = true;
-    Navigate(&params);
-    content::WebContents* new_contents = params.navigated_or_inserted_contents;
-    captive_portal::CaptivePortalTabHelper* captive_portal_tab_helper =
-        captive_portal::CaptivePortalTabHelper::FromWebContents(new_contents);
-    captive_portal_tab_helper->SetIsLoginTab();
+    OpenLoginTab(browser, captive_portal::CaptivePortalWindowType::kPopup);
     return;
   }
 
@@ -385,18 +407,10 @@ void ChromeSecurityBlockingPageFactory::OpenLoginTabForWebContents(
     }
   }
 
-  // Otherwise, open a login tab.  Only end up here when a captive portal result
-  // was received, so it's safe to assume profile has a
-  // captive_portal::CaptivePortalService.
-  content::WebContents* new_contents = chrome::AddSelectedTabWithURL(
-      browser,
-      CaptivePortalServiceFactory::GetForProfile(browser->profile())
-          ->test_url(),
-      ui::PAGE_TRANSITION_TYPED);
-  captive_portal::CaptivePortalTabHelper* captive_portal_tab_helper =
-      captive_portal::CaptivePortalTabHelper::FromWebContents(new_contents);
-  captive_portal_tab_helper->SetIsLoginTab();
+  // Otherwise, open a login tab.
+  OpenLoginTab(browser, captive_portal::CaptivePortalWindowType::kTab);
 }
+
 #endif  // BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 
 void ChromeSecurityBlockingPageFactory::SetEnterpriseManagedForTesting(

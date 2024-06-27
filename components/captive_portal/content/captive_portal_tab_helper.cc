@@ -31,7 +31,6 @@ CaptivePortalTabHelper::CaptivePortalTabHelper(
                                                  open_login_tab_callback)),
 
       login_detector_(new CaptivePortalLoginDetector(captive_portal_service)),
-      is_captive_portal_window_(false),
       subscription_(captive_portal_service->RegisterCallback(
           base::BindRepeating(&CaptivePortalTabHelper::Observe,
                               base::Unretained(this)))) {

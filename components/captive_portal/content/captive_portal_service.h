@@ -30,7 +30,9 @@ class URLLoaderFactory;
 }
 }  // namespace network
 
+class Browser;
 class CaptivePortalBrowserTest;
+class HttpsUpgradesBrowserTest;
 
 namespace captive_portal {
 
@@ -106,6 +108,7 @@ class CaptivePortalService : public KeyedService {
  private:
   friend class CaptivePortalServiceTest;
   friend class ::CaptivePortalBrowserTest;
+  friend class ::HttpsUpgradesBrowserTest;
 
   enum State {
     // No check is running or pending.

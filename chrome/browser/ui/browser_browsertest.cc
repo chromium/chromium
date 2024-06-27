@@ -488,7 +488,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, CaptivePortalWindowTitle) {
   NavigateParams captive_portal_params(browser(), url,
                                        ui::PAGE_TRANSITION_TYPED);
   captive_portal_params.disposition = WindowOpenDisposition::NEW_POPUP;
-  captive_portal_params.is_captive_portal_popup = true;
+  captive_portal_params.captive_portal_window_type =
+      captive_portal::CaptivePortalWindowType::kPopup;
   ui_test_utils::NavigateToURL(&captive_portal_params);
   std::u16string captive_portal_window_title =
       chrome::FindBrowserWithTab(

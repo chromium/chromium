@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "components/captive_portal/core/captive_portal_types.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/reload_type.h"
@@ -230,9 +231,9 @@ struct NavigateParams {
   // NO_ACTION, |window_action| will be set to SHOW_WINDOW.
   WindowAction window_action = NO_ACTION;
 
-  // Whether the browser is being created for captive portal resolution. If
-  // true, |disposition| should be NEW_POPUP.
-  bool is_captive_portal_popup = false;
+  // Captive portal type for this browser window.
+  captive_portal::CaptivePortalWindowType captive_portal_window_type =
+      captive_portal::CaptivePortalWindowType::kNone;
 
   // Whether the browser popup is being created as a tab modal. If true,
   // `disposition` should be NEW_POPUP.

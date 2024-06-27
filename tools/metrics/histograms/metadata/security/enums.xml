@@ -179,6 +179,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="HTTP request to non-unique host."/>
   <int value="9"
       label="HTTP request to a fully typed URL with explicit HTTP scheme."/>
+  <int value="10" label="HTTP request to a captive portal login page"/>
 </enum>
 
 <enum name="NewAcceptedDeviceType">

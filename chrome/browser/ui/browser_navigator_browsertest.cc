@@ -626,13 +626,14 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupTrusted) {
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 // This test verifies that navigating with WindowOpenDisposition = NEW_POPUP
-// and is_captive_portal_popup = true results in a new WebContents where
-// is_captive_portal_window() is true.
+// and NavigateParams::CaptivePortalWindowType::kPopup results in a new
+// WebContents where is_captive_portal_window() is true.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                        Disposition_NewPopupCaptivePortal) {
   NavigateParams params(MakeNavigateParams());
   params.disposition = WindowOpenDisposition::NEW_POPUP;
-  params.is_captive_portal_popup = true;
+  params.captive_portal_window_type =
+      captive_portal::CaptivePortalWindowType::kPopup;
   params.window_features.bounds = gfx::Rect(0, 0, 200, 200);
   // Wait for new popup to to load and gain focus.
   ui_test_utils::NavigateToURL(&params);
