@@ -2679,6 +2679,9 @@ extern const char kQueryTilesSwapTrendingDescription[];
 
 extern const char kReadAloudName[];
 extern const char kReadAloudDescription[];
+extern const char kReadAloudBackgroundPlaybackName[];
+extern const char kReadAloudBackgroundPlaybackDescription[];
+
 extern const char kReadAloudInCCTName[];
 extern const char kReadAloudInCCTDescription[];
 

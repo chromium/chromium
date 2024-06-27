@@ -18463,6 +18463,7 @@ from previous Chrome versions.
   <int value="-902125579" label="ImmersiveUiMode:disabled"/>
   <int value="-901418755" label="TrafficCountersForWiFiTesting:enabled"/>
   <int value="-900871741" label="DesktopPWAsNotificationIconAndTitle:disabled"/>
+  <int value="-899969457" label="ReadAloudBackgroundPlayback:disabled"/>
   <int value="-899915066" label="ImprovedKeyboardShortcuts:disabled"/>
   <int value="-899799867" label="AllowWgcScreenCapturer:disabled"/>
   <int value="-899393472" label="enable-new-app-menu-icon"/>
@@ -20417,6 +20418,7 @@ from previous Chrome versions.
   <int value="-63207112" label="NtpSingleRowShortcuts:disabled"/>
   <int value="-60692320" label="PrefBasedDataCollectionConsentHelper:disabled"/>
   <int value="-60219461" label="BluetoothFlossTelephony:enabled"/>
+  <int value="-60106539" label="ReadAloudBackgroundPlayback:enabled"/>
   <int value="-59530055" label="ChromeVoxArcSupport:enabled"/>
   <int value="-59491374" label="LockedMode:enabled"/>
   <int value="-59401847" label="ContentSuggestionsLargeThumbnail:disabled"/>

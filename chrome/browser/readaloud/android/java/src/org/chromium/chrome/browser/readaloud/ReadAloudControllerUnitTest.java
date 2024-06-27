@@ -12,6 +12,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -115,7 +116,10 @@ import java.util.List;
     ChromeFeatureList.READALOUD_PLAYBACK,
     ChromeFeatureList.READALOUD_TAP_TO_SEEK
 })
-@DisableFeatures({ChromeFeatureList.READALOUD_IN_MULTI_WINDOW})
+@DisableFeatures({
+    ChromeFeatureList.READALOUD_IN_MULTI_WINDOW,
+    ChromeFeatureList.READALOUD_BACKGROUND_PLAYBACK
+})
 public class ReadAloudControllerUnitTest {
     private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
     private static final GURL sTestRedirectGURL = JUnitTestGURLs.URL_1_WITH_PATH;
@@ -1846,6 +1850,33 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.READALOUD_BACKGROUND_PLAYBACK)
+    public void testBackgroundPlaybackContinuesWhenActivityPaused() {
+        // Play tab.
+        requestAndStartPlayback();
+        // set progress
+        var data = Mockito.mock(PlaybackData.class);
+
+        doReturn(2).when(data).paragraphIndex();
+        doReturn(1000000L).when(data).positionInParagraphNanos();
+        mController.onPlaybackDataChanged(data);
+
+        // App is backgrounded with the screen on. Playback should continue if the flag is on.
+        setIsScreenOnAndUnlocked(true);
+        mController.onApplicationStateChange(ApplicationState.HAS_PAUSED_ACTIVITIES);
+        verify(mPlayback, never()).release();
+        // also the screen is still on, don;t notify about screen state change
+        verify(mPlayerCoordinator, never()).onScreenStatusChanged(anyBoolean());
+
+        // now turn the screen off.
+        setIsScreenOnAndUnlocked(false);
+        mController.onApplicationStateChange(ApplicationState.HAS_STOPPED_ACTIVITIES);
+        verify(mPlayback, never()).release();
+        // also the screen is still on, don;t notify about screen state change
+        verify(mPlayerCoordinator).onScreenStatusChanged(true);
+    }
+
+    @Test
     public void testPlaybackStopsAndStateSavedWhenAppBackgrounded_screenOn() {
         // Play tab.
         requestAndStartPlayback();
@@ -1856,7 +1887,7 @@ public class ReadAloudControllerUnitTest {
         doReturn(1000000L).when(data).positionInParagraphNanos();
         mController.onPlaybackDataChanged(data);
 
-        // App is backgrounded. Make sure playback stops.
+        // App is backgrounded with the screen on. Make sure playback stops.
         setIsScreenOnAndUnlocked(true);
         mController.onApplicationStateChange(ApplicationState.HAS_STOPPED_ACTIVITIES);
         verify(mPlayback).release();

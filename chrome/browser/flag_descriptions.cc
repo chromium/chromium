@@ -4516,6 +4516,11 @@ const char kQueryTilesSwapTrendingDescription[] =
 const char kReadAloudName[] = "Read Aloud";
 const char kReadAloudDescription[] = "Controls the Read Aloud feature";
 
+const char kReadAloudBackgroundPlaybackName[] =
+    "Read Aloud Background Playback";
+const char kReadAloudBackgroundPlaybackDescription[] =
+    "Controls background playback for the Read Aloud feature";
+
 const char kReadAloudInCCTName[] = "Read Aloud entrypoint in CCT";
 const char kReadAloudInCCTDescription[] =
     "Controls the Read Aloud entrypoint in the overflow menu for CCT";

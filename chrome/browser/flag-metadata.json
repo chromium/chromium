@@ -7456,6 +7456,14 @@
     "expiry_milestone": 133
   },
   {
+    "name": "read-aloud-background-playback",
+    "owners": [
+      "basiaz@google.com",
+      "iwells@google.com"
+    ],
+    "expiry_milestone": 133
+  },
+  {
     "name": "read-aloud-in-cct",
     "owners": [
       "basiaz@google.com",

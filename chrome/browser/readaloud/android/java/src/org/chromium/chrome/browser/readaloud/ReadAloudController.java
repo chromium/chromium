@@ -131,6 +131,7 @@ public class ReadAloudController
     private boolean mOnUserLeaveHint;
     private boolean mRestoringPlayer;
     private boolean mIsDestroyed;
+    private boolean mIsScreenOnAndUnlocked = true;
 
     /**
      * ReadAloud entrypoint defined in readaloud/enums.xml.
@@ -1387,7 +1388,17 @@ public class ReadAloudController
     public void onApplicationStateChange(@ApplicationState int newState) {
         boolean isScreenOnAndUnlocked =
                 DeviceConditions.isCurrentlyScreenOnAndUnlocked(mActivity.getApplicationContext());
-        // stop any playback if user left Chrome while screen is on and unlocked
+        if (ReadAloudFeatures.isBackgroundPlaybackEnabled()) {
+            if (mIsScreenOnAndUnlocked != isScreenOnAndUnlocked) {
+                mPlayerCoordinator.onScreenStatusChanged(/* isLocked= */ !isScreenOnAndUnlocked);
+                mIsScreenOnAndUnlocked = isScreenOnAndUnlocked;
+            }
+            // Do nothing Chrome doesn't have to be in foreground to keep playback active.
+            return;
+        }
+
+        // If background playback is disabled, stop any playback if user left Chrome while screen is
+        // on and unlocked
         if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES
                 && (isScreenOnAndUnlocked || mOnUserLeaveHint)) {
             if (mCurrentlyPlayingTab != null) {
