@@ -3188,18 +3188,9 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
         std::min(renderbuffer_manager()->max_renderbuffer_size(),
                  texture_manager()->MaxSizeForTarget(GL_TEXTURE_2D));
 
-    gfx::Size initial_size =
-        attrib_helper.offscreen_framebuffer_size_for_testing;
-    if (initial_size.IsEmpty()) {
-      // If we're an offscreen surface with zero width and/or height, set to a
-      // non-zero size so that we have a complete framebuffer for operations
-      // like glClear.
-      // TODO(piman): allow empty framebuffers, similar to
-      // EGL_KHR_surfaceless_context / GL_OES_surfaceless_context.
-      // Use 64x64 instead of 1x1 to handle minimum framebuffer size
-      // requirement on some platforms: b/265847440.
-      initial_size = gfx::Size(64, 64);
-    }
+    // Use 64x64 instead of 1x1 to handle minimum framebuffer size
+    // requirement on some platforms: b/265847440.
+    gfx::Size initial_size = gfx::Size(64, 64);
 
     state_.viewport_width = initial_size.width();
     state_.viewport_height = initial_size.height();
