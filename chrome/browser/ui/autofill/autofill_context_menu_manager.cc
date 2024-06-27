@@ -653,10 +653,9 @@ void AutofillContextMenuManager::LogManualFallbackContextMenuEntryAccepted(
     }
     case FillingProduct::kCreditCard:
     case FillingProduct::kStandaloneCvc:
-      if (!field ||
-          !FieldTypeGroupSet::is_one_of(
-              field->Type().group(), {FieldTypeGroup::kCreditCard,
-                                      FieldTypeGroup::kStandaloneCvcField})) {
+      if (!field || !FieldTypeGroupSet{FieldTypeGroup::kCreditCard,
+                                       FieldTypeGroup::kStandaloneCvcField}
+                         .contains(field->Type().group())) {
         // Only log payments manual fallback when triggered from a field that is
         // not classified as payments.
         manager.GetManualFallbackEventLogger().ContextMenuEntryAccepted(

@@ -188,9 +188,9 @@ bool IsCreditCardAutofillManuallyTriggeredOnNonCreditCardField(
   }
 
   return !autofill_field ||
-         !FieldTypeGroupSet::is_one_of(autofill_field->Type().group(),
-                                       {FieldTypeGroup::kCreditCard,
-                                        FieldTypeGroup::kStandaloneCvcField});
+         !FieldTypeGroupSet{FieldTypeGroup::kCreditCard,
+                            FieldTypeGroup::kStandaloneCvcField}
+              .contains(autofill_field->Type().group());
 }
 
 // Converts `filling_stats` to a key-value representation, where the key
@@ -2890,9 +2890,9 @@ BrowserAutofillManager::GetAvailableAddressAndCreditCardSuggestions(
   }
 
   std::vector<Suggestion> suggestions;
-  if (FillingProductSet::is_one_of(
-          context.filling_product,
-          {FillingProduct::kCreditCard, FillingProduct::kStandaloneCvc})) {
+  if (FillingProductSet{FillingProduct::kCreditCard,
+                        FillingProduct::kStandaloneCvc}
+          .contains(context.filling_product)) {
     FieldType trigger_field_type =
         autofill_field ? autofill_field->Type().GetStorableType()
                        : UNKNOWN_TYPE;
