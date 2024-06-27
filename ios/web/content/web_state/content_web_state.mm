@@ -369,12 +369,9 @@ double ContentWebState::GetLoadingProgress() const {
 }
 
 bool ContentWebState::IsVisible() const {
-  auto* render_frame_host = web_contents_->GetPrimaryMainFrame();
-  DCHECK(render_frame_host);
-  return render_frame_host->GetVisibilityState() ==
-                 blink::mojom::PageVisibilityState::kVisible
-             ? true
-             : false;
+  DCHECK(web_contents_);
+  return web_contents_->GetVisibility() == content::Visibility::VISIBLE ? true
+                                                                        : false;
 }
 
 bool ContentWebState::IsCrashed() const {
