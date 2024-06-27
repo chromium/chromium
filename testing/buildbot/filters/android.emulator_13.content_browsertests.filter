@@ -26,11 +26,6 @@
 # crbug.com/1428300
 -OpenCodec/WebRtcMediaRecorderTest.StartAndDataAvailable/2
 
-# crbug.com/1495529
--FormControlsBrowserTest.Checkbox
--FormControlsBrowserTest.MultiSelect
--FormControlsBrowserTest.Select
-
 # crbug.com/338082561
 -ViewTransitionBrowserTest.OwnershipTransferredToNewRenderer
 -ViewTransitionBrowserTest.NavigationCancelledAfterScreenshot
@@ -44,4 +39,3 @@
 
 # crbug.com/340587779
 -PerformanceTimelineBrowserTest.NoResourceTimingEntryForFileProtocol
-

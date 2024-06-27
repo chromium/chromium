@@ -6270,6 +6270,7 @@ data/form_that_posts_to_echoall_nocache.html
 data/format_error.js
 data/forms/form_controls_browsertest_button.png
 data/forms/form_controls_browsertest_button_android.png
+data/forms/form_controls_browsertest_button_android_T.png
 data/forms/form_controls_browsertest_button_fuchsia.png
 data/forms/form_controls_browsertest_button_ios.png
 data/forms/form_controls_browsertest_button_linux.png
@@ -6277,11 +6278,13 @@ data/forms/form_controls_browsertest_button_mac.png
 data/forms/form_controls_browsertest_button_win.png
 data/forms/form_controls_browsertest_checkbox.png
 data/forms/form_controls_browsertest_checkbox_android.png
+data/forms/form_controls_browsertest_checkbox_android_T.png
 data/forms/form_controls_browsertest_checkbox_ios.png
 data/forms/form_controls_browsertest_checkbox_linux.png
 data/forms/form_controls_browsertest_checkbox_win.png
 data/forms/form_controls_browsertest_color_input.png
 data/forms/form_controls_browsertest_color_input_android.png
+data/forms/form_controls_browsertest_color_input_android_T.png
 data/forms/form_controls_browsertest_color_input_chromeos.png
 data/forms/form_controls_browsertest_color_input_fuchsia.png
 data/forms/form_controls_browsertest_color_input_ios.png
@@ -6290,6 +6293,7 @@ data/forms/form_controls_browsertest_color_input_mac.png
 data/forms/form_controls_browsertest_color_input_win.png
 data/forms/form_controls_browsertest_dark_mode_text_selection.png
 data/forms/form_controls_browsertest_dark_mode_text_selection_android.png
+data/forms/form_controls_browsertest_dark_mode_text_selection_android_T.png
 data/forms/form_controls_browsertest_dark_mode_text_selection_fuchsia.png
 data/forms/form_controls_browsertest_dark_mode_text_selection_ios.png
 data/forms/form_controls_browsertest_dark_mode_text_selection_linux.png
@@ -6297,6 +6301,7 @@ data/forms/form_controls_browsertest_dark_mode_text_selection_mac.png
 data/forms/form_controls_browsertest_dark_mode_text_selection_win.png
 data/forms/form_controls_browsertest_input.png
 data/forms/form_controls_browsertest_input_android.png
+data/forms/form_controls_browsertest_input_android_T.png
 data/forms/form_controls_browsertest_input_fuchsia.png
 data/forms/form_controls_browsertest_input_ios.png
 data/forms/form_controls_browsertest_input_linux.png
@@ -6304,6 +6309,7 @@ data/forms/form_controls_browsertest_input_mac.png
 data/forms/form_controls_browsertest_input_win.png
 data/forms/form_controls_browsertest_meter.png
 data/forms/form_controls_browsertest_meter_android.png
+data/forms/form_controls_browsertest_meter_android_T.png
 data/forms/form_controls_browsertest_meter_fuchsia.png
 data/forms/form_controls_browsertest_meter_ios.png
 data/forms/form_controls_browsertest_meter_linux.png
@@ -6311,6 +6317,7 @@ data/forms/form_controls_browsertest_meter_mac.png
 data/forms/form_controls_browsertest_meter_win.png
 data/forms/form_controls_browsertest_multi_select.png
 data/forms/form_controls_browsertest_multi_select_android.png
+data/forms/form_controls_browsertest_multi_select_android_T.png
 data/forms/form_controls_browsertest_multi_select_chromeos.png
 data/forms/form_controls_browsertest_multi_select_fuchsia.png
 data/forms/form_controls_browsertest_multi_select_ios.png
@@ -6319,6 +6326,7 @@ data/forms/form_controls_browsertest_multi_select_mac.png
 data/forms/form_controls_browsertest_multi_select_win.png
 data/forms/form_controls_browsertest_progress.png
 data/forms/form_controls_browsertest_progress_android.png
+data/forms/form_controls_browsertest_progress_android_T.png
 data/forms/form_controls_browsertest_progress_fuchsia.png
 data/forms/form_controls_browsertest_progress_ios.png
 data/forms/form_controls_browsertest_progress_linux.png
@@ -6326,17 +6334,20 @@ data/forms/form_controls_browsertest_progress_mac.png
 data/forms/form_controls_browsertest_progress_win.png
 data/forms/form_controls_browsertest_radio.png
 data/forms/form_controls_browsertest_radio_android.png
+data/forms/form_controls_browsertest_radio_android_T.png
 data/forms/form_controls_browsertest_radio_ios.png
 data/forms/form_controls_browsertest_radio_linux.png
 data/forms/form_controls_browsertest_radio_win.png
 data/forms/form_controls_browsertest_range.png
 data/forms/form_controls_browsertest_range_android.png
+data/forms/form_controls_browsertest_range_android_T.png
 data/forms/form_controls_browsertest_range_ios.png
 data/forms/form_controls_browsertest_range_linux.png
 data/forms/form_controls_browsertest_range_mac.png
 data/forms/form_controls_browsertest_range_win.png
 data/forms/form_controls_browsertest_select.png
 data/forms/form_controls_browsertest_select_android.png
+data/forms/form_controls_browsertest_select_android_T.png
 data/forms/form_controls_browsertest_select_chromeos.png
 data/forms/form_controls_browsertest_select_fuchsia.png
 data/forms/form_controls_browsertest_select_ios.png
@@ -6345,6 +6356,7 @@ data/forms/form_controls_browsertest_select_mac.png
 data/forms/form_controls_browsertest_select_win.png
 data/forms/form_controls_browsertest_textarea.png
 data/forms/form_controls_browsertest_textarea_android.png
+data/forms/form_controls_browsertest_textarea_android_T.png
 data/forms/form_controls_browsertest_textarea_chromeos.png
 data/forms/form_controls_browsertest_textarea_fuchsia.png
 data/forms/form_controls_browsertest_textarea_ios.png
