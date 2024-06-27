@@ -12,7 +12,8 @@ namespace commerce {
 MockProductSpecificationsService::MockProductSpecificationsService()
     : ProductSpecificationsService(
           base::DoNothing(),
-          std::make_unique<syncer::MockModelTypeChangeProcessor>()) {}
+          std::make_unique<
+              testing::NiceMock<syncer::MockModelTypeChangeProcessor>>()) {}
 
 MockProductSpecificationsService::~MockProductSpecificationsService() = default;
 

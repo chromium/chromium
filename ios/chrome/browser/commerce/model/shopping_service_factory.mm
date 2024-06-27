@@ -73,9 +73,6 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(state);
   PrefService* pref_service = chrome_state ? chrome_state->GetPrefs() : nullptr;
 
-  bookmarks::BookmarkModel* local_or_syncable_bookmark_model =
-      ios::BookmarkModelFactory::GetForBrowserState(chrome_state);
-
   if (IsIOSParcelTrackingEnabled()) {
     RecordParcelTrackingOptInStatus(pref_service);
   }
@@ -83,7 +80,7 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<ShoppingService>(
       GetCurrentCountryCode(GetApplicationContext()->GetVariationsService()),
       GetApplicationContext()->GetApplicationLocale(),
-      local_or_syncable_bookmark_model, /*account_bookmark_model=*/nullptr,
+      ios::BookmarkModelFactory::GetForBrowserState(chrome_state),
       OptimizationGuideServiceFactory::GetForBrowserState(chrome_state),
       pref_service, IdentityManagerFactory::GetForBrowserState(chrome_state),
       SyncServiceFactory::GetForBrowserState(chrome_state),

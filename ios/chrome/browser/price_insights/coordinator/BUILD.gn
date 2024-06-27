@@ -15,6 +15,7 @@ source_set("coordinator") {
     "//components/payments/core",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/contextual_panel/coordinator:public",
     "//ios/chrome/browser/price_insights/model",

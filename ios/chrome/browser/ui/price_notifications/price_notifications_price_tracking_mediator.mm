@@ -74,6 +74,7 @@ using PriceNotificationItems =
 
 - (instancetype)
     initWithShoppingService:(commerce::ShoppingService*)service
+              bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                imageFetcher:
                    (std::unique_ptr<image_fetcher::ImageDataFetcher>)fetcher
                    webState:(web::WebState*)webState
@@ -81,10 +82,12 @@ using PriceNotificationItems =
   self = [super init];
   if (self) {
     DCHECK(service);
+    DCHECK(bookmarkModel);
     DCHECK(fetcher);
     DCHECK(webState);
     DCHECK(pushNotificationService);
     _shoppingService = service;
+    _bookmarkModel = bookmarkModel;
     _imageFetcher = std::move(fetcher);
     _webState = webState;
     _pushNotificationService = pushNotificationService;
@@ -108,12 +111,6 @@ using PriceNotificationItems =
   }
 
   _priceInsightsConsumer = consumer;
-}
-
-#pragma mark - Accessors
-
-- (bookmarks::BookmarkModel*)bookmarkModel {
-  return self.shoppingService->GetBookmarkModelUsedForSync();
 }
 
 #pragma mark - PriceNotificationsMutator

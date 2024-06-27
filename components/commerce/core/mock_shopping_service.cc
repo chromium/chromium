@@ -32,7 +32,6 @@ MockShoppingService::MockShoppingService()
                                 nullptr,
                                 nullptr,
                                 nullptr,
-                                nullptr,
                                 nullptr) {
   product_specifications_service_ =
       std::make_unique<MockProductSpecificationsService>();
@@ -258,12 +257,6 @@ void MockShoppingService::SetResponseForGetDiscountInfoForUrls(
       });
 }
 
-void MockShoppingService::SetBookmarkModelUsedForSync(
-    bookmarks::BookmarkModel* bookmark_model) {
-  ON_CALL(*this, GetBookmarkModelUsedForSync)
-      .WillByDefault(testing::Return(bookmark_model));
-}
-
 void MockShoppingService::SetIsParcelTrackingEligible(bool is_eligible) {
   ON_CALL(*this, IsParcelTrackingEligible)
       .WillByDefault(testing::Return(is_eligible));
@@ -298,4 +291,5 @@ void MockShoppingService::SetResponseForGetProductSpecificationsForUrls(
                                               std::move(specs))));
           });
 }
+
 }  // namespace commerce

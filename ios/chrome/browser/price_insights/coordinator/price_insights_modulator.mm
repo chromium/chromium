@@ -10,6 +10,7 @@
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/payments/core/currency_formatter.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 #import "ios/chrome/browser/price_insights/ui/price_insights_cell.h"
@@ -68,6 +69,9 @@ NSDate* getNSDateFromString(std::string date) {
   commerce::ShoppingService* shoppingService =
       commerce::ShoppingServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
+  bookmarks::BookmarkModel* bookmarkModel =
+      ios::BookmarkModelFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
   std::unique_ptr<image_fetcher::ImageDataFetcher> imageFetcher =
@@ -75,6 +79,7 @@ NSDate* getNSDateFromString(std::string date) {
           self.browser->GetBrowserState()->GetSharedURLLoaderFactory());
   self.mediator = [[PriceNotificationsPriceTrackingMediator alloc]
       initWithShoppingService:shoppingService
+                bookmarkModel:bookmarkModel
                  imageFetcher:std::move(imageFetcher)
                      webState:webState
       pushNotificationService:pushNotificationService];

@@ -226,14 +226,13 @@ void CommerceInternalsHandler::GetSubscriptionDetails(
       SubscriptionType::kPriceTrack,
       base::BindOnce(
           [](GetSubscriptionDetailsCallback callback,
-             bookmarks::BookmarkModel* bookmark_model,
+             base::WeakPtr<bookmarks::BookmarkModel> bookmark_model,
              const std::string& locale_on_startup,
              std::vector<CommerceSubscription> subscriptions) {
             std::move(callback).Run(GetSubscriptionsMojom(
-                bookmark_model, locale_on_startup, subscriptions));
+                bookmark_model.get(), locale_on_startup, subscriptions));
           },
-          std::move(callback),
-          std::move(shopping_service_->GetBookmarkModelUsedForSync()),
+          std::move(callback), shopping_service_->bookmark_model_->AsWeakPtr(),
           shopping_service_->locale_on_startup_));
 }
 

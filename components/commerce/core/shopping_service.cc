@@ -167,8 +167,7 @@ const uint64_t kProductInfoLocalExtractionDelayMs = 2000;
 ShoppingService::ShoppingService(
     const std::string& country_on_startup,
     const std::string& locale_on_startup,
-    bookmarks::BookmarkModel* local_or_syncable_bookmark_model,
-    bookmarks::BookmarkModel* account_bookmark_model,
+    bookmarks::BookmarkModel* bookmark_model,
     optimization_guide::OptimizationGuideDecider* opt_guide,
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
@@ -190,9 +189,7 @@ ShoppingService::ShoppingService(
       opt_guide_(opt_guide),
       pref_service_(pref_service),
       sync_service_(sync_service),
-      local_or_syncable_bookmark_model_(local_or_syncable_bookmark_model),
-      account_bookmark_model_(account_bookmark_model),
-      bookmark_model_used_for_sync_(nullptr),
+      bookmark_model_(bookmark_model),
       power_bookmark_service_(power_bookmark_service),
       product_specifications_service_(product_specifications_service),
       bookmark_consent_throttle_(
@@ -253,19 +250,10 @@ ShoppingService::ShoppingService(
     }
   }
 
-  if (local_or_syncable_bookmark_model_) {
-    if (base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos) &&
-        account_bookmark_model_) {
-      // Account bookmarks is supported, we should observe SyncService to update
-      // the model that is used for sync based on the opt-in state.
-      sync_service_observation_.Observe(sync_service_);
-    }
-    bookmark_model_used_for_sync_ = CalculateBookmarkModelUsedForSync();
-
+  if (bookmark_model_) {
     shopping_bookmark_observer_ =
         std::make_unique<ShoppingBookmarkModelObserver>(
-            GetBookmarkModelUsedForSync(), this, subscriptions_manager_.get());
+            bookmark_model, this, subscriptions_manager_.get());
 
     if (power_bookmark_service_ && IsProductInfoApiEnabled()) {
       shopping_power_bookmark_data_provider_ =
@@ -275,11 +263,10 @@ ShoppingService::ShoppingService(
   }
 
   bookmark_update_manager_ = std::make_unique<BookmarkUpdateManager>(
-      this, GetBookmarkModelUsedForSync(), pref_service_);
+      this, bookmark_model_, pref_service_);
 
   // In testing, the objects required for metrics may be null.
-  if (pref_service_ && GetBookmarkModelUsedForSync() &&
-      subscriptions_manager_) {
+  if (pref_service_ && bookmark_model_ && subscriptions_manager_) {
     scheduled_metrics_manager_ =
         std::make_unique<metrics::ScheduledMetricsManager>(pref_service_, this);
   }
@@ -291,8 +278,7 @@ ShoppingService::ShoppingService(
 
   if (subscriptions_manager_) {
     RemoveDanglingSubscriptions(
-        this, bookmark_model_used_for_sync_,
-        base::BindOnce([](size_t dangling_sub_count) {
+        this, bookmark_model_, base::BindOnce([](size_t dangling_sub_count) {
           base::UmaHistogramCounts100(
               "Commerce.PriceTracking.DanglingUserSubscriptionCountAtStartup",
               dangling_sub_count);
@@ -699,12 +685,11 @@ void ShoppingService::GetUpdatedProductInfoForBookmarks(
   std::vector<GURL> urls;
   std::unordered_map<std::string, int64_t> url_to_id_map;
   for (uint64_t id : bookmark_ids) {
-    bookmarks::BookmarkModel* model = GetBookmarkModelUsedForSync();
     const bookmarks::BookmarkNode* bookmark =
-        bookmarks::GetBookmarkNodeByID(model, id);
+        bookmarks::GetBookmarkNodeByID(bookmark_model_, id);
 
     std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
-        power_bookmarks::GetNodePowerBookmarkMeta(model, bookmark);
+        power_bookmarks::GetNodePowerBookmarkMeta(bookmark_model_, bookmark);
 
     if (!meta || !meta->has_shopping_specifics()) {
       continue;
@@ -712,7 +697,7 @@ void ShoppingService::GetUpdatedProductInfoForBookmarks(
 
     CHECK(bookmark);
 
-    if (model->IsLocalOnlyNode(*bookmark)) {
+    if (bookmark_model_->IsLocalOnlyNode(*bookmark)) {
       continue;
     }
 
@@ -734,66 +719,16 @@ size_t ShoppingService::GetMaxProductBookmarkUpdatesPerBatch() {
       MaxUrlsForOptimizationGuideServiceHintsFetch();
 }
 
-bookmarks::BookmarkModel* ShoppingService::GetBookmarkModelUsedForSync() {
-  return bookmark_model_used_for_sync_;
-}
-
-void ShoppingService::UpdateBookmarkModelUsedForSync() {
-  bookmarks::BookmarkModel* model_to_use_for_sync =
-      CalculateBookmarkModelUsedForSync();
-  if (bookmark_model_used_for_sync_ == model_to_use_for_sync) {
-    return;
-  }
-
-  // These objects are safe to recreate.
-  bookmark_update_manager_.reset();
-  shopping_bookmark_observer_.reset();
-
-  bookmark_model_used_for_sync_ = model_to_use_for_sync;
-
-  if (local_or_syncable_bookmark_model_) {
-    shopping_bookmark_observer_ =
-        std::make_unique<ShoppingBookmarkModelObserver>(
-            GetBookmarkModelUsedForSync(), this, subscriptions_manager_.get());
-  }
-  bookmark_update_manager_ = std::make_unique<BookmarkUpdateManager>(
-      this, GetBookmarkModelUsedForSync(), pref_service_);
-
-  if (subscriptions_manager_) {
-    subscriptions_manager_->WipeStorageAndSyncSubscriptions();
-  }
-}
-
-bookmarks::BookmarkModel* ShoppingService::CalculateBookmarkModelUsedForSync() {
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) ||
-      !account_bookmark_model_) {
-    // Feature flag isn't enabled or account storage isn't available - use
-    // local-or-syncable instead.
-    return local_or_syncable_bookmark_model_;
-  }
-  if (sync_service_->HasSyncConsent()) {
-    // The user is in the legacy sync state - use local-or-syncable storage.
-    return local_or_syncable_bookmark_model_;
-  }
-  // In all other cases, account bookmark model should be used. This avoids
-  // changing the bookmark model back-and-forth when the user signs in or out.
-  return account_bookmark_model_;
-}
-
-void ShoppingService::OnStateChanged(syncer::SyncService* sync) {
-  UpdateBookmarkModelUsedForSync();
-}
-
 void ShoppingService::GetAllPriceTrackedBookmarks(
     base::OnceCallback<void(std::vector<const bookmarks::BookmarkNode*>)>
         callback) {
-  commerce::GetAllPriceTrackedBookmarks(this, std::move(callback));
+  commerce::GetAllPriceTrackedBookmarks(this, bookmark_model_,
+                                        std::move(callback));
 }
 
 std::vector<const bookmarks::BookmarkNode*>
 ShoppingService::GetAllShoppingBookmarks() {
-  return commerce::GetAllShoppingBookmarks(GetBookmarkModelUsedForSync());
+  return commerce::GetAllShoppingBookmarks(bookmark_model_);
 }
 
 void ShoppingService::GetMerchantInfoForUrl(const GURL& url,
@@ -1908,12 +1843,6 @@ base::WeakPtr<ShoppingService> ShoppingService::AsWeakPtr() {
 
 void ShoppingService::Shutdown() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-
-  // SyncService requires all observer to unregister themselves before its
-  // shutdown is called, which can be done either in OnSyncShutdown() or
-  // for a KeyedService in their Shutdown() method. Opt for this option as
-  // ShoppingService is a KeyedService.
-  sync_service_observation_.Reset();
 }
 
 ShoppingService::~ShoppingService() = default;

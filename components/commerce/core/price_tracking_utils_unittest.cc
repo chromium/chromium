@@ -40,7 +40,6 @@ class PriceTrackingUtilsTest : public testing::Test {
     bookmark_model_ =
         bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
     shopping_service_ = std::make_unique<MockShoppingService>();
-    shopping_service_->SetBookmarkModelUsedForSync(bookmark_model_.get());
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     RegisterPrefs(pref_service_->registry());
   }
@@ -310,7 +309,7 @@ TEST_F(PriceTrackingUtilsTest, GetAllPriceTrackedBookmarks) {
 
   base::RunLoop run_loop;
   GetAllPriceTrackedBookmarks(
-      shopping_service_.get(),
+      shopping_service_.get(), bookmark_model_.get(),
       base::BindOnce(
           [](base::RunLoop* looper,
              const bookmarks::BookmarkNode* known_tracked_bookmark,

@@ -432,40 +432,34 @@ MockWebExtractor::MockWebExtractor() {
 MockWebExtractor::~MockWebExtractor() = default;
 
 ShoppingServiceTestBase::ShoppingServiceTestBase()
-    : local_or_syncable_bookmark_model_(
-          bookmarks::TestBookmarkClient::CreateModel()),
-      account_bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()),
-      opt_guide_(std::make_unique<MockOptGuideDecider>()),
+    : bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()),
+      opt_guide_(std::make_unique<testing::NiceMock<MockOptGuideDecider>>()),
       pref_service_(std::make_unique<TestingPrefServiceSimple>()),
       identity_test_env_(std::make_unique<signin::IdentityTestEnvironment>()),
       sync_service_(std::make_unique<syncer::TestSyncService>()),
       test_url_loader_factory_(
           std::make_unique<network::TestURLLoaderFactory>()),
       product_spec_service_(
-          std::make_unique<MockProductSpecificationsService>()) {
+          std::make_unique<
+              testing::NiceMock<MockProductSpecificationsService>>()) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   RegisterPrefs(pref_service_->registry());
   pref_service_->registry()->RegisterBooleanPref(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
-  // These tests use a dedicated BookmarkModel instance for account bookmarks.
-  // Let BookmarkModel know about it, so it can return the correct value in
-  // BookmarkModel::IsLocalOnlyNode().
-  account_bookmark_model_
-      ->SetLoadedAccountBookmarksFileAsLocalOrSyncableBookmarksForTest();
 }
 
 ShoppingServiceTestBase::~ShoppingServiceTestBase() = default;
 
 void ShoppingServiceTestBase::SetUp() {
   shopping_service_ = std::make_unique<ShoppingService>(
-      "us", "en-us", local_or_syncable_bookmark_model_.get(),
-      account_bookmark_model_.get(), opt_guide_.get(), pref_service_.get(),
-      identity_test_env_->identity_manager(), sync_service_.get(),
+      "us", "en-us", bookmark_model_.get(), opt_guide_.get(),
+      pref_service_.get(), identity_test_env_->identity_manager(),
+      sync_service_.get(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           test_url_loader_factory_.get()),
       nullptr, nullptr, product_spec_service_.get(), nullptr, nullptr, nullptr,
-      std::make_unique<MockWebExtractor>());
+      std::make_unique<testing::NiceMock<MockWebExtractor>>());
 }
 
 void ShoppingServiceTestBase::TestBody() {}

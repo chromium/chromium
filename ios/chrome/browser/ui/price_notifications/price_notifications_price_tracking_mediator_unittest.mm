@@ -77,9 +77,8 @@ void TrackBookmark(commerce::ShoppingService* shopping_service,
 
 const bookmarks::BookmarkNode* PrepareSubscription(
     commerce::MockShoppingService* shopping_service,
+    bookmarks::BookmarkModel* bookmark_model,
     BOOL unsubscribe_callback) {
-  bookmarks::BookmarkModel* bookmark_model =
-      shopping_service->GetBookmarkModelUsedForSync();
   std::string_view title = kBookmarkTitle;
   const bookmarks::BookmarkNode* product =
       commerce::AddProductBookmark(bookmark_model, base::UTF8ToUTF16(title),
@@ -155,7 +154,6 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
         commerce::ShoppingServiceFactory::GetForBrowserState(
             test_chrome_browser_state.get()));
     shopping_service_->SetupPermissiveMock();
-    shopping_service_->SetBookmarkModelUsedForSync(bookmark_model_);
     test_manager_ = std::make_unique<TestChromeBrowserStateManager>(
         std::move(test_chrome_browser_state));
     TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
@@ -163,6 +161,7 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
     push_notification_service_ = ios::provider::CreatePushNotificationService();
     mediator_ = [[PriceNotificationsPriceTrackingMediator alloc]
         initWithShoppingService:(commerce::ShoppingService*)shopping_service_
+                  bookmarkModel:bookmark_model_
                    imageFetcher:std::move(image_fetcher_)
                        webState:(web::WebState*)web_state_.get()
         pushNotificationService:(PushNotificationService*)
@@ -188,7 +187,7 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
 
 TEST_F(PriceNotificationsPriceTrackingMediatorTest,
        TrackableItemIsEmptyWhenUserIsViewingProductWebpageAndProduct) {
-  PrepareSubscription(shopping_service_, true);
+  PrepareSubscription(shopping_service_, bookmark_model_, true);
   mediator_.consumer = consumer_;
 
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(

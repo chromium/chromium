@@ -454,7 +454,8 @@ void SubscriptionsManager::OnUnsubscribe(
 
 void SubscriptionsManager::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
-  WipeStorageAndSyncSubscriptions();
+  storage_->DeleteAll();
+  SyncSubscriptions();
 }
 
 bool SubscriptionsManager::HasRequestRunning() {
@@ -483,11 +484,6 @@ void SubscriptionsManager::AddObserver(SubscriptionsObserver* observer) {
 
 void SubscriptionsManager::RemoveObserver(SubscriptionsObserver* observer) {
   observers_.RemoveObserver(observer);
-}
-
-void SubscriptionsManager::WipeStorageAndSyncSubscriptions() {
-  storage_->DeleteAll();
-  SyncSubscriptions();
 }
 
 bool SubscriptionsManager::GetLastSyncSucceededForTesting() {

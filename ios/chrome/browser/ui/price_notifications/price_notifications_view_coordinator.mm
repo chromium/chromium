@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
@@ -77,6 +78,9 @@
   commerce::ShoppingService* shoppingService =
       commerce::ShoppingServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
+  bookmarks::BookmarkModel* bookmarkModel =
+      ios::BookmarkModelFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
   std::unique_ptr<image_fetcher::ImageDataFetcher> imageFetcher =
@@ -84,6 +88,7 @@
           self.browser->GetBrowserState()->GetSharedURLLoaderFactory());
   self.mediator = [[PriceNotificationsPriceTrackingMediator alloc]
       initWithShoppingService:shoppingService
+                bookmarkModel:bookmarkModel
                  imageFetcher:std::move(imageFetcher)
                      webState:webState
       pushNotificationService:pushNotificationService];

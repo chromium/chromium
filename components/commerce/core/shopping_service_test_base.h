@@ -251,9 +251,7 @@ class ShoppingServiceTestBase : public testing::Test {
   // Used primarily for decoding JSON for the mock javascript execution.
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
-  std::unique_ptr<bookmarks::BookmarkModel> local_or_syncable_bookmark_model_;
-
-  std::unique_ptr<bookmarks::BookmarkModel> account_bookmark_model_;
+  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
 
   std::unique_ptr<MockOptGuideDecider> opt_guide_;
 
