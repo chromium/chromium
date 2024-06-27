@@ -438,7 +438,8 @@
     // - name_for_methods: "BlendMode"
     // Tweaks how we choose defaults for getter, setter, initial and type_name.
     // For example, setting this to BlendMode will make us use a setter of
-    // setBlendMode
+    // SetBlendMode. Note that 'name_for_methods' also determines the name
+    // of the generated field on ComputedStyle.
     // - initial
     // The static function to invoke on ComputedStyleInitialValues
     // or FontBuilder to retrieve the initial value.
@@ -6093,6 +6094,7 @@
     },
     {
       name: "-webkit-box-decoration-break",
+      name_for_methods: "WebkitBoxDecorationBreak",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "box",
       field_template: "keyword",
