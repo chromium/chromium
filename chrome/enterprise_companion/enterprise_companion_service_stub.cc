@@ -50,11 +50,20 @@ class Stub final : public mojom::EnterpriseCompanion {
   }
   ~Stub() override = default;
 
+  // Overrides for mjom::EnterpriseCompanion.
   void Shutdown(ShutdownCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     service_->Shutdown(
         base::BindOnce(std::move(callback),
                        EnterpriseCompanionStatus::Success().ToMojomStatus()));
+  }
+
+  void FetchPolicies(FetchPoliciesCallback callback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    service_->FetchPolicies(
+        base::BindOnce([](const EnterpriseCompanionStatus& status) {
+          return status.ToMojomStatus();
+        }).Then(std::move(callback)));
   }
 
  private:

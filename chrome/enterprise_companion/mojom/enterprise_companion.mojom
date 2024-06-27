@@ -23,4 +23,9 @@ module enterprise_companion.mojom;
     // Instruct the application to exit. The callback will be returned before
     // the app shuts down.
     Shutdown@0() => (Status result);
+
+    // Instruct the app to perform a policy fetch, registering the device if
+    // needed. Fetched policies are persisted to the on-disk cached which may be
+    // read from by dependent applications.
+    FetchPolicies@1() => (Status result);
 };

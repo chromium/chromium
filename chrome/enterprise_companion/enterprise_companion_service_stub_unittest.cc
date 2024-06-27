@@ -26,6 +26,7 @@
 #include "base/unguessable_token.h"
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_service.h"
+#include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/ipc_support.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom-forward.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
@@ -51,6 +52,11 @@ class MockEnterpriseCompanionService final : public EnterpriseCompanionService {
   ~MockEnterpriseCompanionService() override = default;
 
   MOCK_METHOD(void, Shutdown, (base::OnceClosure callback), (override));
+  MOCK_METHOD(
+      void,
+      FetchPolicies,
+      (base::OnceCallback<void(const EnterpriseCompanionStatus&)> callback),
+      (override));
 };
 
 }  // namespace

@@ -19,6 +19,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequence_bound.h"
+#include "chrome/enterprise_companion/dm_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_service.h"
 #include "chrome/enterprise_companion/enterprise_companion_service_stub.h"
 #include "chrome/enterprise_companion/ipc_support.h"
@@ -91,7 +92,10 @@ int EnterpriseCompanionMain(int argc, const char* const* argv) {
                  pending_shared_url_loader_factory) {
             VLOG(1) << "Launching Chrome Enterprise Companion";
             auto stub = CreateEnterpriseCompanionServiceStub(
-                CreateEnterpriseCompanionService(std::move(shutdown)));
+                CreateEnterpriseCompanionService(
+                    CreateDMClient(GetDefaultCloudPolicyClientProvider(
+                        std::move(pending_shared_url_loader_factory))),
+                    std::move(shutdown)));
           },
           base::BindPostTaskToCurrentDefault(run_loop.QuitClosure())));
   run_loop.Run();

@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "chrome/enterprise_companion/dm_client.h"
+#include "chrome/enterprise_companion/enterprise_companion_status.h"
 
 namespace enterprise_companion {
 
@@ -18,9 +20,13 @@ class EnterpriseCompanionService {
   virtual ~EnterpriseCompanionService() = default;
 
   virtual void Shutdown(base::OnceClosure callback) = 0;
+
+  virtual void FetchPolicies(
+      base::OnceCallback<void(const EnterpriseCompanionStatus&)> callback) = 0;
 };
 
 std::unique_ptr<EnterpriseCompanionService> CreateEnterpriseCompanionService(
+    std::unique_ptr<DMClient> dm_client,
     base::OnceClosure shutdown_callback);
 
 }  // namespace enterprise_companion

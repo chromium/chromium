@@ -6,19 +6,25 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/enterprise_companion/dm_client.h"
+#include "chrome/enterprise_companion/enterprise_companion_status.h"
 
 namespace enterprise_companion {
 
 class EnterpriseCompanionServiceImpl : public EnterpriseCompanionService {
  public:
-  explicit EnterpriseCompanionServiceImpl(base::OnceClosure shutdown_callback)
-      : shutdown_callback_(std::move(shutdown_callback)) {}
+  EnterpriseCompanionServiceImpl(std::unique_ptr<DMClient> dm_client,
+                                 base::OnceClosure shutdown_callback)
+      : dm_client_(std::move(dm_client)),
+        shutdown_callback_(std::move(shutdown_callback)) {}
   ~EnterpriseCompanionServiceImpl() override = default;
 
   // Overrides for EnterpriseCompanionService.
@@ -33,16 +39,43 @@ class EnterpriseCompanionServiceImpl : public EnterpriseCompanionService {
     }
   }
 
+  void FetchPolicies(base::OnceCallback<void(const EnterpriseCompanionStatus&)>
+                         callback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    VLOG(1) << __func__;
+
+    dm_client_->RegisterBrowser(
+        base::BindOnce(&EnterpriseCompanionServiceImpl::OnRegistrationCompleted,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
+  std::unique_ptr<DMClient> dm_client_;
   base::OnceClosure shutdown_callback_;
+
+  void OnRegistrationCompleted(
+      base::OnceCallback<void(const EnterpriseCompanionStatus&)>
+          policy_fetch_callback,
+      const EnterpriseCompanionStatus& device_registration_status) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (!device_registration_status.ok()) {
+      std::move(policy_fetch_callback).Run(device_registration_status);
+    } else {
+      dm_client_->FetchPolicies(std::move(policy_fetch_callback));
+    }
+  }
+
+  base::WeakPtrFactory<EnterpriseCompanionServiceImpl> weak_ptr_factory_{this};
 };
 
 std::unique_ptr<EnterpriseCompanionService> CreateEnterpriseCompanionService(
+    std::unique_ptr<DMClient> dm_client,
     base::OnceClosure shutdown_callback) {
   return std::make_unique<EnterpriseCompanionServiceImpl>(
-      std::move(shutdown_callback));
+      std::move(dm_client), std::move(shutdown_callback));
 }
 
 }  // namespace enterprise_companion

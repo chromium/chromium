@@ -4,14 +4,41 @@
 
 #include "chrome/enterprise_companion/enterprise_companion_service.h"
 
+#include <memory>
+
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "chrome/enterprise_companion/dm_client.h"
+#include "chrome/enterprise_companion/enterprise_companion_status.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise_companion {
+
+namespace {
+
+class MockDMClient final : public DMClient {
+ public:
+  MockDMClient() = default;
+  ~MockDMClient() override = default;
+
+  MOCK_METHOD(
+      void,
+      RegisterBrowser,
+      (base::OnceCallback<void(const EnterpriseCompanionStatus&)> callback),
+      (override));
+  MOCK_METHOD(
+      void,
+      FetchPolicies,
+      (base::OnceCallback<void(const EnterpriseCompanionStatus&)> callback),
+      (override));
+};
+
+}  // namespace
 
 class EnterpriseCompanionServiceTest : public ::testing::Test {
  protected:
@@ -22,11 +49,92 @@ TEST_F(EnterpriseCompanionServiceTest, Shutdown) {
   base::MockCallback<base::OnceClosure> shutdown_callback;
   base::RunLoop service_run_loop;
   std::unique_ptr<EnterpriseCompanionService> service =
-      CreateEnterpriseCompanionService(service_run_loop.QuitClosure());
+      CreateEnterpriseCompanionService(std::make_unique<MockDMClient>(),
+                                       service_run_loop.QuitClosure());
 
   EXPECT_CALL(shutdown_callback, Run()).Times(1);
   service->Shutdown(shutdown_callback.Get());
   service_run_loop.Run(FROM_HERE);
+}
+
+TEST_F(EnterpriseCompanionServiceTest, FetchPoliciesSuccess) {
+  std::unique_ptr<MockDMClient> mock_dm_client_ =
+      std::make_unique<MockDMClient>();
+  EXPECT_CALL(*mock_dm_client_, RegisterBrowser)
+      .WillOnce([](base::OnceCallback<void(const EnterpriseCompanionStatus&)>
+                       callback) {
+        std::move(callback).Run(EnterpriseCompanionStatus::Success());
+      });
+  EXPECT_CALL(*mock_dm_client_, FetchPolicies)
+      .WillOnce([](base::OnceCallback<void(const EnterpriseCompanionStatus&)>
+                       callback) {
+        std::move(callback).Run(EnterpriseCompanionStatus::Success());
+      });
+
+  std::unique_ptr<EnterpriseCompanionService> service =
+      CreateEnterpriseCompanionService(std::move(mock_dm_client_),
+                                       base::DoNothing());
+
+  base::RunLoop run_loop;
+  service->FetchPolicies(
+      base::BindOnce([](const EnterpriseCompanionStatus& status) {
+        EXPECT_TRUE(status.ok());
+      }).Then(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(EnterpriseCompanionServiceTest, FetchPoliciesRegistrationFail) {
+  std::unique_ptr<MockDMClient> mock_dm_client_ =
+      std::make_unique<MockDMClient>();
+  EXPECT_CALL(*mock_dm_client_, RegisterBrowser)
+      .WillOnce([](base::OnceCallback<void(const EnterpriseCompanionStatus&)>
+                       callback) {
+        std::move(callback).Run(
+            EnterpriseCompanionStatus::FromDeviceManagementStatus(
+                policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND));
+      });
+  EXPECT_CALL(*mock_dm_client_, FetchPolicies).Times(0);
+
+  std::unique_ptr<EnterpriseCompanionService> service =
+      CreateEnterpriseCompanionService(std::move(mock_dm_client_),
+                                       base::DoNothing());
+
+  base::RunLoop run_loop;
+  service->FetchPolicies(
+      base::BindOnce([](const EnterpriseCompanionStatus& status) {
+        EXPECT_TRUE(status.EqualsDeviceManagementStatus(
+            policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND));
+      }).Then(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(EnterpriseCompanionServiceTest, FetchPoliciesFail) {
+  std::unique_ptr<MockDMClient> mock_dm_client_ =
+      std::make_unique<MockDMClient>();
+  EXPECT_CALL(*mock_dm_client_, RegisterBrowser)
+      .WillOnce([](base::OnceCallback<void(const EnterpriseCompanionStatus&)>
+                       callback) {
+        std::move(callback).Run(EnterpriseCompanionStatus::Success());
+      });
+  EXPECT_CALL(*mock_dm_client_, FetchPolicies)
+      .WillOnce([](base::OnceCallback<void(const EnterpriseCompanionStatus&)>
+                       callback) {
+        std::move(callback).Run(
+            EnterpriseCompanionStatus::FromDeviceManagementStatus(
+                policy::DM_STATUS_HTTP_STATUS_ERROR));
+      });
+
+  std::unique_ptr<EnterpriseCompanionService> service =
+      CreateEnterpriseCompanionService(std::move(mock_dm_client_),
+                                       base::DoNothing());
+
+  base::RunLoop run_loop;
+  service->FetchPolicies(
+      base::BindOnce([](const EnterpriseCompanionStatus& status) {
+        EXPECT_TRUE(status.EqualsDeviceManagementStatus(
+            policy::DM_STATUS_HTTP_STATUS_ERROR));
+      }).Then(run_loop.QuitClosure()));
+  run_loop.Run();
 }
 
 }  // namespace enterprise_companion
