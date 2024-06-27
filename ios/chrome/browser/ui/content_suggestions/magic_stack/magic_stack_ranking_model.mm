@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_ranking_model.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "components/prefs/pref_service.h"
 #import "components/segmentation_platform/public/constants.h"
@@ -342,11 +343,13 @@
   }
 
   if ([self.homeStartDataSource isStartSurface]) {
-    LOCAL_HISTOGRAM_TIMES(kMagicStackStartSegmentationRankingFetchTimeHistogram,
-                          base::TimeTicks::Now() - ranking_fetch_start_time_);
+    base::UmaHistogramMediumTimes(
+        kMagicStackStartSegmentationRankingFetchTimeHistogram,
+        base::TimeTicks::Now() - ranking_fetch_start_time_);
   } else {
-    LOCAL_HISTOGRAM_TIMES(kMagicStackNTPSegmentationRankingFetchTimeHistogram,
-                          base::TimeTicks::Now() - ranking_fetch_start_time_);
+    base::UmaHistogramMediumTimes(
+        kMagicStackNTPSegmentationRankingFetchTimeHistogram,
+        base::TimeTicks::Now() - ranking_fetch_start_time_);
   }
 
   NSMutableArray* magicStackOrder = [NSMutableArray array];
