@@ -5,6 +5,7 @@
 import logging
 
 from cra import cli
+from cra.commands import add_strings
 from cra.commands import bundle
 from cra.commands import dev
 from cra.commands import lint
@@ -12,6 +13,7 @@ from cra.commands import tsc
 
 
 @cli.root(children=[
+    add_strings.cmd,
     bundle.cmd,
     dev.cmd,
     lint.cmd,

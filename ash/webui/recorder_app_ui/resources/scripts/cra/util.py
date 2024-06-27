@@ -88,3 +88,9 @@ def run_node(args: list[str], *, cwd: Optional[pathlib.Path] = None):
     node = root / "third_party/node/linux/node-linux-x64/bin/node"
     binary = root / "third_party/node/node_modules" / args[0]
     run([str(node), str(binary)] + args[1:], cwd=cwd)
+
+
+def to_camel_case(s: str) -> str:
+    """Converts CAPITAL_CASE to camelCase."""
+    start, *rest = s.lower().split('_')
+    return start + ''.join(part.capitalize() for part in rest)

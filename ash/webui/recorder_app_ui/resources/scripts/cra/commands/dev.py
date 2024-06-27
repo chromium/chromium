@@ -103,10 +103,6 @@ class RequestHandler:
                     pieces.append(get_message_text_content(child))
             return "".join(pieces)
 
-        def to_camel_case(s: str) -> str:
-            start, *rest = s.lower().split('_')
-            return start + ''.join(part.capitalize() for part in rest)
-
         strings = {}
         grd_path = self._strings_dir / "recorder_strings.grdp"
         dom = minidom.parse(str(grd_path))
@@ -116,7 +112,7 @@ class RequestHandler:
             value = get_message_text_content(message).strip()
             assert name.startswith("IDS_RECORDER_")
             id = name[len("IDS_RECORDER_"):]
-            id = to_camel_case(id)
+            id = util.to_camel_case(id)
             strings[id] = value
         return strings
 
