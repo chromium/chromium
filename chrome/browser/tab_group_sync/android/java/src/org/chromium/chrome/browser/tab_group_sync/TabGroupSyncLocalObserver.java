@@ -124,7 +124,9 @@ public final class TabGroupSyncLocalObserver {
                 SavedTabGroup savedGroup = mTabGroupSyncService.getGroup(localId);
                 if (savedGroup == null) return;
 
-                if (savedGroup.isRemoteGroup) {
+                // TODO(shaktisahu): Provide this.
+                boolean isRemoteGroup = false;
+                if (isRemoteGroup) {
                     RecordUserAction.record("TabGroups.Sync.SelectedTabInRemotelyCreatedGroup");
                 } else {
                     RecordUserAction.record("TabGroups.Sync.SelectedTabInLocallyCreatedGroup");

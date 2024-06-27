@@ -260,6 +260,11 @@ void TabGroupSyncServiceImpl::MoveTab(const LocalTabGroupID& group_id,
   LogEvent(TabGroupEvent::kTabGroupTabsReordered, group_id, std::nullopt);
 }
 
+void TabGroupSyncServiceImpl::OnTabSelected(const LocalTabGroupID& group_id,
+                                            const LocalTabID& tab_id) {
+  // TODO(shaktisahu): Provide implementation.
+}
+
 std::vector<SavedTabGroup> TabGroupSyncServiceImpl::GetAllGroups() {
   VLOG(2) << __func__;
   std::vector<SavedTabGroup> non_empty_groups;
@@ -351,6 +356,22 @@ void TabGroupSyncServiceImpl::UpdateLocalTabId(
   CHECK(tab);
 
   model_->UpdateLocalTabId(group->saved_guid(), *tab, local_tab_id);
+}
+
+bool TabGroupSyncServiceImpl::IsRemoteDevice(
+    const std::optional<std::string>& cache_guid) const {
+  std::optional<std::string> local_cache_guid =
+      saved_bridge_.GetLocalCacheGuid();
+  if (!local_cache_guid || !cache_guid) {
+    return false;
+  }
+
+  return local_cache_guid.value() != cache_guid.value();
+}
+
+void TabGroupSyncServiceImpl::RecordTabGroupEvent(
+    const EventDetails& event_details) {
+  // TODO(shaktisahu): Provide implementation.
 }
 
 void TabGroupSyncServiceImpl::SavedTabGroupAddedFromSync(

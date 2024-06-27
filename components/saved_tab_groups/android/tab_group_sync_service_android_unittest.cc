@@ -118,10 +118,13 @@ TEST_F(TabGroupSyncServiceAndroidTest, SavedTabGroupConversion) {
   SavedTabGroup group = test::CreateTestSavedTabGroup();
   group.SetTitle(kTestGroupTitle);
   group.SetColor(tab_groups::TabGroupColorId::kRed);
+  group.SetCreatorCacheGuid("creator_cache_guid");
+  group.SetLastUpdaterCacheGuid("last_updater_cache_guid");
 
   SavedTabGroupTab tab3(GURL(), kTestTabTitle, group.saved_guid(),
                         /*position=*/std::nullopt,
-                        /*saved_tab_guid=*/std::nullopt, /*local_tab_id=*/9);
+                        /*saved_tab_guid=*/std::nullopt, /*local_tab_id=*/9,
+                        "creator_cache_guid", "last_updater_cache_guid");
   group.AddTabLocally(tab3);
   auto j_group = TabGroupSyncConversionsBridge::CreateGroup(env, group);
   Java_TabGroupSyncServiceAndroidUnitTest_testSavedTabGroupConversion(

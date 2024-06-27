@@ -47,6 +47,12 @@ public class SavedTabGroupTab {
     /** Timestamp for when the tab was last updated. */
     public long updateTimeMs;
 
+    /* The sync cache guid of the device that created the tab. */
+    public String creatorCacheGuid;
+
+    /* The sync cache guid of the device that last updated the tab. */
+    public String lastUpdaterCacheGuid;
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

@@ -37,6 +37,7 @@ class MockTabGroupSyncService : public TabGroupSyncService {
                std::optional<size_t>));
   MOCK_METHOD(void, RemoveTab, (const LocalTabGroupID&, const LocalTabID&));
   MOCK_METHOD(void, MoveTab, (const LocalTabGroupID&, const LocalTabID&, int));
+  MOCK_METHOD(void, OnTabSelected, (const LocalTabGroupID&, const LocalTabID&));
 
   MOCK_METHOD(std::vector<SavedTabGroup>, GetAllGroups, ());
   MOCK_METHOD(std::optional<SavedTabGroup>, GetGroup, (const base::Uuid&));
@@ -50,6 +51,11 @@ class MockTabGroupSyncService : public TabGroupSyncService {
   MOCK_METHOD(void,
               UpdateLocalTabId,
               (const LocalTabGroupID&, const base::Uuid&, const LocalTabID&));
+  MOCK_METHOD(bool,
+              IsRemoteDevice,
+              (const std::optional<std::string>&),
+              (const));
+  MOCK_METHOD(void, RecordTabGroupEvent, (const EventDetails&));
 
   MOCK_METHOD(syncer::ModelTypeSyncBridge*, bridge, ());
   MOCK_METHOD(base::WeakPtr<syncer::ModelTypeControllerDelegate>,
