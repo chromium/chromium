@@ -245,6 +245,7 @@ TEST_F(KioskVisionTest, BindsDetectionObserver) {
   EnableKioskVisionTelemetryPref(local_state_);
 
   KioskVision vision(&local_state_);
+  base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(fake_cros_camera_service_.WaitForObserver());
   ASSERT_TRUE(fake_cros_camera_service_.HasObserver());

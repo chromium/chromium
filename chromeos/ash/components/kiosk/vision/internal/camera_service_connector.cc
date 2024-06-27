@@ -108,6 +108,7 @@ CameraServiceConnector::~CameraServiceConnector() {
 
 void CameraServiceConnector::Start() {
   status_ = Status::kStarted;
+  StartKioskVisionDetection();
   ReconnectToVideoSourceProvider();
 }
 
@@ -169,8 +170,6 @@ void CameraServiceConnector::OnCameraDevicesReceived(
           video_format, device_id);
   video_frame_handler_->StartHandlingFrames(/*delegate=*/this);
   status_ = Status::kVideoStreamStarted;
-
-  StartKioskVisionDetection();
 }
 
 void CameraServiceConnector::StartKioskVisionDetection() {
