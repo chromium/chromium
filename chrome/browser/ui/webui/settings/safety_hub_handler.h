@@ -68,7 +68,8 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler,
 
  private:
   friend class SafetyHubHandlerTest;
-  friend class SafetyHubHandlerUnusedSitePermissionsDisabledTest;
+  friend class
+      SafetyHubHandlerEitherAbusiveOrUnusedPermissionRevocationDisabledTest;
   FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
                            PopulateUnusedSitePermissionsData);
   FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
@@ -110,12 +111,15 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler,
   FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest, VersionCardOutOfDate);
   FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
                            ExtensionPrefAndInitialization);
-  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerUnusedSitePermissionsDisabledTest,
-                           PopulateAbusiveSitePermissionsData);
-  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerUnusedSitePermissionsDisabledTest,
-                           HandleAllowPermissionsAgainForAbusiveSite);
-  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerUnusedSitePermissionsDisabledTest,
-                           HandleAcknowledgeRevokedAbusiveSitePermissionsList);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafetyHubHandlerEitherAbusiveOrUnusedPermissionRevocationDisabledTest,
+      PopulateSitePermissionsData);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafetyHubHandlerEitherAbusiveOrUnusedPermissionRevocationDisabledTest,
+      HandleAllowPermissionsAgainForSite);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafetyHubHandlerEitherAbusiveOrUnusedPermissionRevocationDisabledTest,
+      HandleAcknowledgeRevokedSitePermissionsList);
 
   // SettingsPageUIHandler implementation.
   void OnJavascriptAllowed() override;
