@@ -14,6 +14,7 @@ source_set("multidevice_debug") {
 
   deps = [
     "//ash/webui/multidevice_debug",
+    "//chrome/browser/ash/device_sync",
     "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/browser_context_helper",

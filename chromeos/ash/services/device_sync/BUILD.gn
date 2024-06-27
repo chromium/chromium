@@ -185,6 +185,7 @@ static_library("device_sync") {
   visibility = [
     ":*",
     "//chrome/browser/ash:*",
+    "//chrome/browser/ash/device_sync",
     "//chrome/browser/ash/phonehub:*",
     "//chrome/browser/ash/tether:unit_tests",
     "//chrome/browser/chromeos",

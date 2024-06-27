@@ -39,6 +39,7 @@ source_set("phonehub") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/device_sync",
     "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/favicon",
     "//chrome/browser/sync",

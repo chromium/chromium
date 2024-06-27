@@ -18,6 +18,7 @@ source_set("tether") {
 
   deps = [
     "//base",
+    "//chrome/browser/ash/device_sync",
     "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/profiles",
     "//chromeos/ash/components/network",
