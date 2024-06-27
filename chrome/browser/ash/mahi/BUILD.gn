@@ -66,3 +66,33 @@ source_set("unit_tests") {
     "//ui/views",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "mahi_ui_browsertest.cc" ]
+
+  deps = [
+    ":mahi",
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+    "//chrome/browser/ui/views/mahi",
+    "//chrome/test:test_support",
+    "//chromeos/components/mahi/public/cpp",
+    "//chromeos/constants",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/compositor",
+    "//ui/events:test_support",
+    "//ui/gfx",
+    "//ui/views",
+    "//url",
+  ]
+}

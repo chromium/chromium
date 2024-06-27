@@ -4799,7 +4799,6 @@ if (!is_android) {
         "../browser/ash/login/users/wallpaper_policy_browsertest.cc",
         "../browser/ash/login/webview_login_browsertest.cc",
         "../browser/ash/login/wizard_controller_browsertest.cc",
-        "../browser/ash/mahi/mahi_ui_browsertest.cc",
         "../browser/ash/net/alwayson_vpn_pre_connect_url_allowlist_service_browsertest.cc",
         "../browser/ash/net/ash_proxy_monitor_browsertest.cc",
         "../browser/ash/net/device_event_log_error_browsertest.cc",
