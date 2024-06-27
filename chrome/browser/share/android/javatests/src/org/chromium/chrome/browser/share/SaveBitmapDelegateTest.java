@@ -8,7 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.os.Build.VERSION_CODES;
+import android.os.Build;
 
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
@@ -23,7 +23,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -33,7 +33,6 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** Tests for the {@link SaveBitmapDelegate}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DisableIf.Build(sdk_is_greater_than = VERSION_CODES.S_V2, message = "crbug.com/1441685")
 public class SaveBitmapDelegateTest {
     private SaveBitmapDelegate mSaveBitmapDelegate;
 
@@ -78,6 +77,9 @@ public class SaveBitmapDelegateTest {
     @Test
     @MediumTest
     @UiThreadTest
+    @MaxAndroidSdkLevel(
+            value = Build.VERSION_CODES.S_V2,
+            reason = "Permission request is not made on T+")
     public void testSaveWithPermission() {
         mPermissionDelegate.setHasPermission(true);
         mSaveBitmapDelegate.save();
@@ -90,6 +92,9 @@ public class SaveBitmapDelegateTest {
     @Test
     @MediumTest
     @UiThreadTest
+    @MaxAndroidSdkLevel(
+            value = Build.VERSION_CODES.S_V2,
+            reason = "Permission request is not made on T+")
     public void testSaveWithoutPermissionCanNotAsk() {
         mPermissionDelegate.setHasPermission(false);
         mPermissionDelegate.setCanRequestPermission(false);
