@@ -11530,6 +11530,40 @@ TEST_F(OakTest, VirtualDesksBarStateChange) {
   EXPECT_TRUE(wallpaper_underlay_layer->IsVisible());
 }
 
+// Tests that the wallpaper clip does not intersect the desk bar when while
+// dragging an item. Regression test for http://b/339882124.
+TEST_F(OakTest, VerticalDeskBar) {
+  UpdateDisplay("800x1200");
+  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
+
+  auto window = CreateAppWindow(gfx::Rect(400, 400));
+
+  ToggleOverview();
+
+  // Move the overview item a bit so that the top and bottom snap indicators
+  // show up.
+  auto* item = GetOverviewItemForWindow(window.get());
+  GetEventGenerator()->set_current_screen_location(
+      gfx::ToRoundedPoint(item->target_bounds().CenterPoint()));
+  GetEventGenerator()->PressLeftButton();
+  GetEventGenerator()->MoveMouseBy(10, 10);
+
+  // Test that the desks bar does not intersect the wallpaper clip. The desk bar
+  // is in screen bounds while the clip is in parent bounds. However, with one
+  // display screen bounds are equivalent to bounds in root window, and since
+  // the wallpaper view is the size of the root window, it is also in root
+  // window bounds, so a conversion is unnecessary.
+  auto* desks_bar_view = GetOverviewSession()->grid_list()[0]->desks_bar_view();
+  auto* wallpaper_view_layer = Shell::GetPrimaryRootWindowController()
+                                   ->wallpaper_widget_controller()
+                                   ->wallpaper_view()
+                                   ->layer();
+  const int desk_bar_bottom = desks_bar_view->GetBoundsInScreen().bottom();
+  const int clip_top = wallpaper_view_layer->clip_rect().y();
+  // A little overlap is ok since the desk bar has a transparent background.
+  EXPECT_NEAR(desk_bar_bottom, clip_top, 30);
+}
+
 TEST_F(OakTest, CenterOverviewItems) {
   auto window1 = CreateAppWindow(gfx::Rect(0, 0, 100, 50));
   auto window2 = CreateAppWindow(gfx::Rect(20, 10, 200, 100));

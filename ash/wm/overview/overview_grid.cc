@@ -95,6 +95,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/wm/window_util.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "overview_focus_cycler_old.h"
 #include "overview_session.h"
@@ -1198,6 +1199,13 @@ bool OverviewGrid::MaybeUpdateDesksWidgetBounds() {
     // See crbug.com/1056371 for more details.
     desks_bar_view_->InvalidateLayout();
     desks_widget_->SetBounds(desks_widget_bounds);
+
+    if (scoped_overview_wallpaper_clipper_) {
+      scoped_overview_wallpaper_clipper_->RefreshWallpaperClipBounds(
+          ScopedOverviewWallpaperClipper::AnimationType::kNone,
+          base::DoNothing());
+    }
+
     return true;
   }
   return false;
@@ -2573,6 +2581,20 @@ const FasterSplitView* OverviewGrid::GetFasterSplitView() const {
 gfx::Rect OverviewGrid::GetWallpaperClipBounds() const {
   // The bottom of the clipping bounds should be above the birch bar.
   gfx::Rect clipping_bounds = GetGridEffectiveBounds();
+
+  // If we are dragging while in portrait mode, the desk bar will shift down to
+  // accommodate the snap region. The clip region should be updated so that the
+  // desks bar is not covering the wallpaper. We update here instead of updating
+  // `bounds_` so we do not relayout the grid.
+  if (split_view_drag_indicators_ &&
+      split_view_drag_indicators_->current_window_dragging_state() ==
+          SplitViewDragIndicators::WindowDraggingState::kFromOverview &&
+      !chromeos::wm::IsLandscapeOrientationForWindow(root_window_)) {
+    clipping_bounds.SetVerticalBounds(
+        clipping_bounds.y() +
+            split_view_drag_indicators_->GetLeftHighlightViewBounds().height(),
+        clipping_bounds.bottom());
+  }
 
   if (!birch_bar_widget_) {
     return clipping_bounds;
