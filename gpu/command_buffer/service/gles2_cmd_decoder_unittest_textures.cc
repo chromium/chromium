@@ -3214,7 +3214,6 @@ TEST_P(GLES2DecoderManualInitTest, DrawWithGLImageExternal) {
 
   SetupSamplerExternalProgram();
   SetupIndexBuffer();
-  AddExpectationsForSimulatedAttrib0(kMaxValidIndex + 1, 0);
   SetupExpectationsForApplyingDefaultDirtyState();
   EXPECT_TRUE(group().texture_manager()->CanRender(texture_ref));
 

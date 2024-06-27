@@ -2085,8 +2085,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
 
   // Returns true if successful, simulated will be true if attrib0 was
   // simulated.
-  bool SimulateAttrib0(
-      const char* function_name, GLuint max_vertex_accessed, bool* simulated);
   void RestoreStateForAttrib(GLuint attrib, bool restore_array_binding);
 
   void DoWindowRectanglesEXT(GLenum mode, GLsizei n, const volatile GLint* box);
@@ -2100,13 +2098,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
   // appropriately to indicate whether textures were set, even on failure.
   bool PrepareTexturesForRender(bool* textures_set, const char* function_name);
   void RestoreStateForTextures();
-
-  // Returns true if GL_FIXED attribs were simulated.
-  bool SimulateFixedAttribs(const char* function_name,
-                            GLuint max_vertex_accessed,
-                            bool* simulated,
-                            GLsizei primcount);
-  void RestoreStateForSimulatedFixedAttribs();
 
   // Having extra base vertex and base instance parameters and run-time if else
   // for heavily called DoMultiDrawArrays/DoMultiDrawElements caused
@@ -9586,86 +9577,6 @@ bool GLES2DecoderImpl::IsDrawValid(const char* function_name,
   return true;
 }
 
-bool GLES2DecoderImpl::SimulateAttrib0(
-    const char* function_name, GLuint max_vertex_accessed, bool* simulated) {
-  DCHECK(simulated);
-  *simulated = false;
-
-  if (gl_version_info().BehavesLikeGLES())
-    return true;
-
-  const VertexAttrib* attrib =
-      state_.vertex_attrib_manager->GetVertexAttrib(0);
-  // If it's enabled or it's not used then we don't need to do anything.
-  bool attrib_0_used =
-      state_.current_program->GetAttribInfoByLocation(0) != nullptr;
-  if (attrib->enabled() && attrib_0_used) {
-    return true;
-  }
-
-  // Make a buffer with a single repeated vec4 value enough to
-  // simulate the constant value that is supposed to be here.
-  // This is required to emulate GLES2 on GL.
-  GLuint num_vertices = max_vertex_accessed + 1;
-  uint32_t size_needed = 0;
-
-  if (num_vertices == 0 ||
-      !base::CheckMul(num_vertices, sizeof(Vec4f))
-           .AssignIfValid(&size_needed) ||
-      size_needed > 0x7FFFFFFFU) {
-    LOCAL_SET_GL_ERROR(GL_OUT_OF_MEMORY, function_name, "Simulating attrib 0");
-    return false;
-  }
-
-  LOCAL_PERFORMANCE_WARNING(
-      "Attribute 0 is disabled. This has significant performance penalty");
-
-  LOCAL_COPY_REAL_GL_ERRORS_TO_WRAPPER(function_name);
-  api()->glBindBufferFn(GL_ARRAY_BUFFER, attrib_0_buffer_id_);
-
-  bool new_buffer = static_cast<GLsizei>(size_needed) > attrib_0_size_;
-  if (new_buffer) {
-    api()->glBufferDataFn(GL_ARRAY_BUFFER, size_needed, nullptr,
-                          GL_DYNAMIC_DRAW);
-    GLenum error = api()->glGetErrorFn();
-    if (error != GL_NO_ERROR) {
-      LOCAL_SET_GL_ERROR(
-          GL_OUT_OF_MEMORY, function_name, "Simulating attrib 0");
-      return false;
-    }
-  }
-
-  const Vec4& value = state_.attrib_values[0];
-  if (new_buffer || (attrib_0_used && (!attrib_0_buffer_matches_value_ ||
-                                       !value.Equal(attrib_0_value_)))) {
-    // TODO(zmo): This is not 100% correct because we might lose data when
-    // casting to float type, but it is a corner case and once we migrate to
-    // core profiles on desktop GL, it is no longer relevant.
-    Vec4f fvalue(value);
-    constexpr GLuint kMaxVerticesPerLoop = 32u << 10;
-    const GLuint vertices_per_loop =
-        std::min(num_vertices, kMaxVerticesPerLoop);
-    std::vector<Vec4f> temp(vertices_per_loop, fvalue);
-    for (GLuint offset = 0; offset < num_vertices;) {
-      GLuint count = std::min(num_vertices - offset, vertices_per_loop);
-      api()->glBufferSubDataFn(GL_ARRAY_BUFFER, offset * sizeof(Vec4f),
-                               count * sizeof(Vec4f), temp.data());
-      offset += count;
-    }
-    attrib_0_buffer_matches_value_ = true;
-    attrib_0_value_ = value;
-    attrib_0_size_ = size_needed;
-  }
-
-  api()->glVertexAttribPointerFn(0, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
-
-  if (feature_info_->feature_flags().angle_instanced_arrays)
-    api()->glVertexAttribDivisorANGLEFn(0, 0);
-
-  *simulated = true;
-  return true;
-}
-
 void GLES2DecoderImpl::RestoreStateForAttrib(
     GLuint attrib_index, bool restore_array_binding) {
   const VertexAttrib* attrib =
@@ -9705,124 +9616,6 @@ void GLES2DecoderImpl::RestoreStateForAttrib(
       api()->glDisableVertexAttribArrayFn(attrib_index);
     }
   }
-}
-
-bool GLES2DecoderImpl::SimulateFixedAttribs(const char* function_name,
-                                            GLuint max_vertex_accessed,
-                                            bool* simulated,
-                                            GLsizei primcount) {
-  DCHECK(simulated);
-  *simulated = false;
-  if (gl_version_info().SupportsFixedType())
-    return true;
-
-  if (!state_.vertex_attrib_manager->HaveFixedAttribs()) {
-    return true;
-  }
-
-  LOCAL_PERFORMANCE_WARNING(
-      "GL_FIXED attributes have a significant performance penalty");
-
-  // NOTE: we could be smart and try to check if a buffer is used
-  // twice in 2 different attribs, find the overlapping parts and therefore
-  // duplicate the minimum amount of data but this whole code path is not meant
-  // to be used normally. It's just here to pass that OpenGL ES 2.0 conformance
-  // tests so we just add to the buffer attrib used.
-
-  base::CheckedNumeric<uint32_t> elements_needed = 0;
-  const VertexAttribManager::VertexAttribList& enabled_attribs =
-      state_.vertex_attrib_manager->GetEnabledVertexAttribs();
-  for (VertexAttribManager::VertexAttribList::const_iterator it =
-       enabled_attribs.begin(); it != enabled_attribs.end(); ++it) {
-    const VertexAttrib* attrib = *it;
-    const Program::VertexAttrib* attrib_info =
-        state_.current_program->GetAttribInfoByLocation(attrib->index());
-    GLuint max_accessed =
-        attrib->MaxVertexAccessed(primcount, max_vertex_accessed);
-    GLuint num_vertices = max_accessed + 1;
-    if (num_vertices == 0) {
-      LOCAL_SET_GL_ERROR(
-          GL_OUT_OF_MEMORY, function_name, "Simulating attrib 0");
-      return false;
-    }
-    if (attrib_info &&
-        attrib->CanAccess(max_accessed) &&
-        attrib->type() == GL_FIXED) {
-      elements_needed += base::CheckMul(num_vertices, attrib->size());
-    }
-  }
-
-  const uint32_t kSizeOfFloat = sizeof(float);  // NOLINT
-  uint32_t size_needed = 0;
-  if (!base::CheckMul(elements_needed, kSizeOfFloat)
-           .AssignIfValid(&size_needed) ||
-      size_needed > 0x7FFFFFFFU) {
-    LOCAL_SET_GL_ERROR(
-        GL_OUT_OF_MEMORY, function_name, "simulating GL_FIXED attribs");
-    return false;
-  }
-
-  LOCAL_COPY_REAL_GL_ERRORS_TO_WRAPPER(function_name);
-
-  api()->glBindBufferFn(GL_ARRAY_BUFFER, fixed_attrib_buffer_id_);
-  if (static_cast<GLsizei>(size_needed) > fixed_attrib_buffer_size_) {
-    api()->glBufferDataFn(GL_ARRAY_BUFFER, size_needed, nullptr,
-                          GL_DYNAMIC_DRAW);
-    GLenum error = api()->glGetErrorFn();
-    if (error != GL_NO_ERROR) {
-      LOCAL_SET_GL_ERROR(
-          GL_OUT_OF_MEMORY, function_name, "simulating GL_FIXED attribs");
-      return false;
-    }
-  }
-
-  // Copy the elements and convert to float
-  GLintptr offset = 0;
-  for (VertexAttribManager::VertexAttribList::const_iterator it =
-       enabled_attribs.begin(); it != enabled_attribs.end(); ++it) {
-    const VertexAttrib* attrib = *it;
-    const Program::VertexAttrib* attrib_info =
-        state_.current_program->GetAttribInfoByLocation(attrib->index());
-    GLuint max_accessed =
-        attrib->MaxVertexAccessed(primcount, max_vertex_accessed);
-    GLuint num_vertices = max_accessed + 1;
-    if (num_vertices == 0) {
-      LOCAL_SET_GL_ERROR(
-          GL_OUT_OF_MEMORY, function_name, "Simulating attrib 0");
-      return false;
-    }
-    if (attrib_info &&
-        attrib->CanAccess(max_accessed) &&
-        attrib->type() == GL_FIXED) {
-      int num_elements = attrib->size() * num_vertices;
-      const int src_size = num_elements * sizeof(int32_t);
-      const int dst_size = num_elements * sizeof(float);
-      auto data = base::HeapArray<float>::Uninit(num_elements);
-      const int32_t* src = reinterpret_cast<const int32_t*>(
-          attrib->buffer()->GetRange(attrib->offset(), src_size));
-      const int32_t* end = src + num_elements;
-      float* dst = data.data();
-      while (src != end) {
-        *dst++ = static_cast<float>(*src++) / 65536.0f;
-      }
-      api()->glBufferSubDataFn(GL_ARRAY_BUFFER, offset, dst_size, data.data());
-      api()->glVertexAttribPointerFn(attrib->index(), attrib->size(), GL_FLOAT,
-                                     false, 0,
-                                     reinterpret_cast<GLvoid*>(offset));
-      offset += dst_size;
-    }
-  }
-  *simulated = true;
-  return true;
-}
-
-void GLES2DecoderImpl::RestoreStateForSimulatedFixedAttribs() {
-  // There's no need to call glVertexAttribPointer because we shadow all the
-  // settings and passing GL_FIXED to it will not work.
-  api()->glBindBufferFn(GL_ARRAY_BUFFER,
-                        state_.bound_array_buffer.get()
-                            ? state_.bound_array_buffer->service_id()
-                            : 0);
 }
 
 bool GLES2DecoderImpl::AttribsTypeMatch() {
@@ -10028,17 +9821,10 @@ ALWAYS_INLINE error::Error GLES2DecoderImpl::DoMultiDrawArrays(
     return error::kNoError;
   }
 
-  bool simulated_attrib_0 = false;
-  if (!SimulateAttrib0(function_name, total_max_vertex_accessed,
-                       &simulated_attrib_0)) {
-    return error::kNoError;
-  }
-  bool simulated_fixed_attribs = false;
   // The branch with fixed attrib is not meant to be used
   // normally but just to pass OpenGL ES 2 conformance where there's no
   // basevertex and baseinstance support.
-  if (SimulateFixedAttribs(function_name, total_max_vertex_accessed,
-                           &simulated_fixed_attribs, total_max_primcount)) {
+  {
     bool textures_set;
     if (!PrepareTexturesForRender(&textures_set, function_name)) {
       return error::kNoError;
@@ -10084,9 +9870,6 @@ ALWAYS_INLINE error::Error GLES2DecoderImpl::DoMultiDrawArrays(
     if (textures_set) {
       RestoreStateForTextures();
     }
-    if (simulated_fixed_attribs) {
-      RestoreStateForSimulatedFixedAttribs();
-    }
     // only reset base vertex and base instance shader variable when it's
     // possibly non-zero
     if (option == DrawArraysOption::UseBaseInstance) {
@@ -10094,13 +9877,6 @@ ALWAYS_INLINE error::Error GLES2DecoderImpl::DoMultiDrawArrays(
         api()->glUniform1iFn(base_instance_location, 0);
       }
     }
-  }
-  if (simulated_attrib_0) {
-    // We don't have to restore attrib 0 generic data at the end of this
-    // function even if it is simulated. This is because we will simulate
-    // it in each draw call, and attrib 0 generic data queries use cached
-    // values instead of passing down to the underlying driver.
-    RestoreStateForAttrib(0, false);
   }
   return error::kNoError;
 }
@@ -10304,17 +10080,10 @@ ALWAYS_INLINE error::Error GLES2DecoderImpl::DoMultiDrawElements(
     return error::kNoError;
   }
 
-  bool simulated_attrib_0 = false;
-  if (!SimulateAttrib0(function_name, total_max_vertex_accessed,
-                       &simulated_attrib_0)) {
-    return error::kNoError;
-  }
-  bool simulated_fixed_attribs = false;
   // The branch with fixed attrib is not meant to be used
   // normally But just to pass OpenGL ES 2 conformance where there's no
   // basevertex and baseinstance support.
-  if (SimulateFixedAttribs(function_name, total_max_vertex_accessed,
-                           &simulated_fixed_attribs, total_max_primcount)) {
+  {
     bool textures_set;
     if (!PrepareTexturesForRender(&textures_set, function_name)) {
       return error::kNoError;
@@ -10386,9 +10155,6 @@ ALWAYS_INLINE error::Error GLES2DecoderImpl::DoMultiDrawElements(
     if (textures_set) {
       RestoreStateForTextures();
     }
-    if (simulated_fixed_attribs) {
-      RestoreStateForSimulatedFixedAttribs();
-    }
     // only reset base vertex and base instance shader variable when it's
     // possibly non-zero
     if (option == DrawElementsOption::UseBaseVertexBaseInstance) {
@@ -10399,13 +10165,6 @@ ALWAYS_INLINE error::Error GLES2DecoderImpl::DoMultiDrawElements(
         api()->glUniform1iFn(base_instance_location, 0);
       }
     }
-  }
-  if (simulated_attrib_0) {
-    // We don't have to restore attrib 0 generic data at the end of this
-    // function even if it is simulated. This is because we will simulate
-    // it in each draw call, and attrib 0 generic data queries use cached
-    // values instead of passing down to the underlying driver.
-    RestoreStateForAttrib(0, false);
   }
   return error::kNoError;
 }

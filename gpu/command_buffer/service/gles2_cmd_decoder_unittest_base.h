@@ -514,12 +514,6 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
 
   void SetupExpectationsForApplyingDefaultDirtyState();
 
-  void AddExpectationsForSimulatedAttrib0WithError(
-      GLsizei num_vertices, GLuint buffer_id, GLenum error);
-
-  void AddExpectationsForSimulatedAttrib0(
-      GLsizei num_vertices, GLuint buffer_id);
-
   void AddExpectationsForGenVertexArraysOES();
   void AddExpectationsForDeleteVertexArraysOES();
   void AddExpectationsForDeleteBoundVertexArraysOES();

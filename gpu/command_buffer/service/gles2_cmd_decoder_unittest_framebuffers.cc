@@ -81,7 +81,6 @@ TEST_P(GLES2DecoderTest, CheckFramebufferStatusWithNoBoundTarget) {
 
 TEST_P(GLES2DecoderWithShaderTest, BindAndDeleteFramebuffer) {
   SetupTexture();
-  AddExpectationsForSimulatedAttrib0(kNumVertices, 0);
   SetupExpectationsForApplyingDefaultDirtyState();
   DoBindFramebuffer(
       GL_FRAMEBUFFER, client_framebuffer_id_, kServiceFramebufferId);
