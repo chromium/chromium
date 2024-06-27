@@ -7,7 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
-#include "media/gpu/chromeos/video_frame_resource.h"
+#include "media/gpu/chromeos/native_pixmap_frame_resource.h"
 #include "media/gpu/macros.h"
 
 namespace {
@@ -400,11 +400,9 @@ scoped_refptr<FrameResource> OutputQueue::CreateFrame(const Buffer& buffer) {
     return nullptr;
   }
 
-  // TODO(nhebert): Migrate to NativePixmap-backed FrameResource when it is
-  // ready.
-  return VideoFrameResource::Create(VideoFrame::WrapExternalDmabufs(
+  return NativePixmapFrameResource::Create(
       *layout, gfx::Rect(buffer_format_.resolution), buffer_format_.resolution,
-      std::move(dmabuf_fds), base::TimeDelta()));
+      std::move(dmabuf_fds), base::TimeDelta());
 }
 
 bool OutputQueue::PrepareBuffers(size_t num_buffers) {
