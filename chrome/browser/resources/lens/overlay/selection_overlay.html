@@ -55,8 +55,9 @@
   }
 
   :host([shimmer-on-segmentation]) #objectSelectionLayer,
-  :host([shimmer-on-segmentation]) #overlayShimmerCanvas,
-  :host([shimmer-on-segmentation]) #overlayShimmer {
+  :host([shimmer-on-segmentation]) #overlayShimmer,
+  :host([shimmer-on-segmentation][shimmer-fade-out-complete])
+      #overlayShimmerCanvas  {
     z-index: 4;  /* Position above words but below selection corners. */
   }
 

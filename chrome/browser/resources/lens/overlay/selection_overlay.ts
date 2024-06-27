@@ -158,6 +158,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         type: Boolean,
         reflectToAttribute: true,
       },
+      shimmerFadeOutComplete: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
       darkenExtraScrim: {
         type: Boolean,
         reflectToAttribute: true,
@@ -198,6 +202,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private darkenExtraScrim: boolean = false;
   // Whether the shimmer is currently focused on a segmentation mask.
   private shimmerOnSegmentation: boolean = false;
+  private shimmerFadeOutComplete: boolean = true;
 
   private eventTracker_: EventTracker = new EventTracker();
   // Listener ids for events from the browser side.
@@ -232,6 +237,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
             this.removeDragListeners();
           }),
     ];
+    this.eventTracker_.add(
+        document, 'shimmer-fade-out-complete', (e: CustomEvent<boolean>) => {
+          this.shimmerFadeOutComplete = e.detail;
+        });
     this.eventTracker_.add(
         document, 'set-cursor', (e: CustomEvent<CursorData>) => {
           if (e.detail.cursor === CursorType.POINTER) {
@@ -690,6 +699,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.$.textSelectionLayer.selectAndSendWords(
         this.detectedTextStartIndex, this.detectedTextEndIndex);
     this.$.postSelectionRenderer.clearSelection();
+    unfocusShimmer(this, ShimmerControlRequester.CURSOR);
   }
 
   private handleTranslate() {
