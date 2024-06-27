@@ -250,7 +250,7 @@ TEST_F(PredictionBasedPermissionUiSelectorTest,
 TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
   PredictionBasedPermissionUiSelector prediction_selector(profile());
 
-  // All CPSS related flags enabled.
+  // All desktop CPSS related flags enabled, android cpssv2 flag disabled.
   feature_list_->Reset();
   feature_list_->InitWithFeatures(
       {
@@ -259,63 +259,42 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
           permissions::features::kPermissionOnDeviceGeolocationPredictions,
           features::kQuietNotificationPrompts,
       },
-      {});
-  EXPECT_EQ(PredictionSource::USE_SERVER_SIDE,
-            prediction_selector.GetPredictionTypeToUse(
-                permissions::RequestType::kNotifications));
-  EXPECT_EQ(PredictionSource::USE_SERVER_SIDE,
-            prediction_selector.GetPredictionTypeToUse(
-                permissions::RequestType::kGeolocation));
-
-  // Server side disabled but on device enabled.
-  feature_list_->Reset();
-  feature_list_->InitWithFeatures(
       {
-          permissions::features::kPermissionOnDeviceNotificationPredictions,
-          permissions::features::kPermissionOnDeviceGeolocationPredictions,
-          features::kQuietNotificationPrompts,
-      },
-      {
-          permissions::features::kPermissionPredictionsV2,
+#if BUILDFLAG(IS_ANDROID)
+          permissions::features::kPermissionDedicatedCpssSettingAndroid,
+#endif
       });
+// Use server side for desktop but not for android
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(PredictionSource::USE_ONDEVICE,
             prediction_selector.GetPredictionTypeToUse(
                 permissions::RequestType::kNotifications));
   EXPECT_EQ(PredictionSource::USE_ONDEVICE,
             prediction_selector.GetPredictionTypeToUse(
                 permissions::RequestType::kGeolocation));
-
-  // Server side enabled but on device disabled.
-  feature_list_->Reset();
-  feature_list_->InitWithFeatures(
-      {
-          permissions::features::kPermissionPredictionsV2,
-          features::kQuietNotificationPrompts,
-          permissions::features::kPermissionOnDeviceNotificationPredictions,
-          permissions::features::kPermissionOnDeviceGeolocationPredictions,
-      },
-      {});
+#else
   EXPECT_EQ(PredictionSource::USE_SERVER_SIDE,
             prediction_selector.GetPredictionTypeToUse(
                 permissions::RequestType::kNotifications));
   EXPECT_EQ(PredictionSource::USE_SERVER_SIDE,
             prediction_selector.GetPredictionTypeToUse(
                 permissions::RequestType::kGeolocation));
+#endif
 
-  // Features enabled but CPSS settings disabled
+  // All desktop and android CPSS flags enabled
   feature_list_->Reset();
   feature_list_->InitWithFeatures(
       {
           permissions::features::kPermissionPredictionsV2,
-          features::kQuietNotificationPrompts,
-      },
-      {
           permissions::features::kPermissionOnDeviceNotificationPredictions,
           permissions::features::kPermissionOnDeviceGeolocationPredictions,
-      });
-  // enable cpss for both notification and geolocation
-  profile()->GetPrefs()->SetBoolean(prefs::kEnableNotificationCPSS, true);
-  profile()->GetPrefs()->SetBoolean(prefs::kEnableGeolocationCPSS, true);
+          features::kQuietNotificationPrompts,
+#if BUILDFLAG(IS_ANDROID)
+          permissions::features::kPermissionDedicatedCpssSettingAndroid,
+#endif
+      },
+      {});
+  // Use server side for both desktop and android
   EXPECT_EQ(PredictionSource::USE_SERVER_SIDE,
             prediction_selector.GetPredictionTypeToUse(
                 permissions::RequestType::kNotifications));

@@ -227,10 +227,17 @@ PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
   permissions::PredictionRequestFeatures features;
   features.gesture = request->GetGestureType();
   features.type = request->request_type();
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionDedicatedCpssSettingAndroid)) {
+    features.url = request->requesting_origin().GetWithEmptyPath();
+  }
+#else
   if (base::FeatureList::IsEnabled(
           permissions::features::kPermissionPredictionsV2)) {
     features.url = request->requesting_origin().GetWithEmptyPath();
   }
+#endif
 
   base::Time cutoff = base::Time::Now() - kPermissionActionCutoffAge;
 
@@ -281,9 +288,9 @@ void PredictionBasedPermissionUiSelector::LookupResponseReceived(
     return;
   }
   was_decision_held_back_ = false;
-  VLOG(1)
-      << "[CPSS] Prediction service request succeeded and received likelihood: "
-      << last_request_grant_likelihood_.value();
+  VLOG(1) << "[CPSS] Prediction service request succeeded and received "
+             "likelihood: "
+          << last_request_grant_likelihood_.value();
 
   if (ShouldPredictionTriggerQuietUi(last_request_grant_likelihood_.value())) {
     std::move(callback_).Run(Decision(
@@ -368,9 +375,14 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
     is_on_device_enabled = base::FeatureList::IsEnabled(
         permissions::features::kPermissionOnDeviceGeolocationPredictions);
   }
-
+#if BUILDFLAG(IS_ANDROID)
+  if (is_msbb_enabled &&
+      base::FeatureList::IsEnabled(
+          permissions::features::kPermissionDedicatedCpssSettingAndroid)) {
+#else
   if (is_msbb_enabled && base::FeatureList::IsEnabled(
                              permissions::features::kPermissionPredictionsV2)) {
+#endif
     return PredictionSource::USE_SERVER_SIDE;
   } else if (is_tflite_available && is_on_device_enabled) {
     return PredictionSource::USE_ONDEVICE;
