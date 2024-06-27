@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 
 /** The utility class for magic stack. */
 public class HomeModulesMetricsUtils {
@@ -342,6 +343,7 @@ public class HomeModulesMetricsUtils {
             @ModuleType int moduleType,
             int modulePosition,
             boolean isShownAtStartup) {
+        BrowserUiUtils.recordModuleClickHistogram(hostSurface, ModuleTypeOnStartAndNtp.MAGIC_STACK);
         recordUma(hostSurface, moduleType, HISTOGRAM_MAGIC_STACK_MODULE_CLICK);
         recordUmaWithPosition(
                 hostSurface,

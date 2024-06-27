@@ -26869,6 +26869,7 @@ Called by update_use_counter_css.py.-->
   <int value="6" label="Profile button"/>
   <int value="7" label="Logo with doodle"/>
   <int value="8" label="Menu button"/>
+  <int value="9" label="Magic stack"/>
 </enum>
 
 <enum name="Month">

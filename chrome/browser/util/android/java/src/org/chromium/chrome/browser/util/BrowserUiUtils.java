@@ -25,6 +25,7 @@ public class BrowserUiUtils {
         ModuleTypeOnStartAndNtp.PROFILE_BUTTON,
         ModuleTypeOnStartAndNtp.DOODLE,
         ModuleTypeOnStartAndNtp.MENU_BUTTON,
+        ModuleTypeOnStartAndNtp.MAGIC_STACK,
         ModuleTypeOnStartAndNtp.NUM_ENTRIES
     })
     public @interface ModuleTypeOnStartAndNtp {
@@ -37,9 +38,10 @@ public class BrowserUiUtils {
         int PROFILE_BUTTON = 6;
         int DOODLE = 7;
         int MENU_BUTTON = 8;
+        int MAGIC_STACK = 9;
 
         // Be sure to also update enums.xml when updating these values.
-        int NUM_ENTRIES = 9;
+        int NUM_ENTRIES = 10;
     }
 
     /** Do not reorder or remove items, only add new items before NUM_ENTRIES. */
