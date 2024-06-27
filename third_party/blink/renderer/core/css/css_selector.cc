@@ -239,7 +239,7 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
       switch (GetPseudoType()) {
         case kPseudoSlotted:
           DCHECK(SelectorList()->HasOneSelector());
-          return kClassLikeSpecificity + SelectorList()->First()->Specificity();
+          return kTagSpecificity + SelectorList()->First()->Specificity();
         case kPseudoViewTransitionGroup:
         case kPseudoViewTransitionImagePair:
         case kPseudoViewTransitionOld:
@@ -247,12 +247,12 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
           CHECK(!IdentList().empty());
           return (IdentList().size() == 1u && IdentList()[0].IsNull())
                      ? 0
-                     : kClassLikeSpecificity;
+                     : kTagSpecificity;
         }
         default:
           break;
       }
-      return kClassLikeSpecificity;
+      return kTagSpecificity;
     case kClass:
     case kAttributeExact:
     case kAttributeSet:
