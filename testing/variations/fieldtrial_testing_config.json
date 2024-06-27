@@ -14364,6 +14364,21 @@
             ]
         }
     ],
+    "OmniboxActionsInSuggestIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxIOSActionsInSuggest"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxAsyncViewInflation": [
         {
             "platforms": [
