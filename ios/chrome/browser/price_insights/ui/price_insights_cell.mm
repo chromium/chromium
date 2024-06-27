@@ -214,6 +214,7 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
       CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
   priceTrackingTitle.textColor = [UIColor colorNamed:kTextPrimaryColor];
   priceTrackingTitle.text = self.item.title;
+  priceTrackingTitle.accessibilityTraits = UIAccessibilityTraitHeader;
 
   UILabel* priceTrackingSubtitle = [self createLabel];
   [priceTrackingSubtitle
@@ -290,6 +291,7 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
       CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
   title.text = l10n_util::GetNSString(IDS_PRICE_INSIGHTS_BUYING_OPTIONS_TITLE);
   title.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  title.accessibilityTraits = UIAccessibilityTraitHeader;
 
   UILabel* subtitle = [self createLabel];
   [subtitle setAccessibilityIdentifier:kBuyingOptionsSubtitleIdentifier];
@@ -305,10 +307,12 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
   verticalStack.distribution = UIStackViewDistributionFill;
   verticalStack.alignment = UIStackViewAlignmentLeading;
   verticalStack.spacing = kPriceTrackingVerticalStackViewSpacing;
+  verticalStack.isAccessibilityElement = NO;
 
   UIImage* icon = DefaultSymbolWithPointSize(kOpenImageActionSymbol, kIconSize);
   UIImageView* iconView = [[UIImageView alloc] initWithImage:icon];
   iconView.tintColor = [UIColor colorNamed:kGrey500Color];
+  iconView.isAccessibilityElement = NO;
 
   _buyingOptionsStackView = [[UIStackView alloc]
       initWithArrangedSubviews:@[ verticalStack, iconView ]];
@@ -325,6 +329,10 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
   _buyingOptionsStackView.layoutMargins =
       UIEdgeInsets(kContentVerticalInset, kContentHorizontalInset,
                    kContentVerticalInset, kContentHorizontalInset);
+  _buyingOptionsStackView.isAccessibilityElement = YES;
+  _buyingOptionsStackView.accessibilityTraits = UIAccessibilityTraitLink;
+  _buyingOptionsStackView.accessibilityLabel =
+      l10n_util::GetNSString(IDS_BUYING_OPTIONS_ACCESSIBILITY_DESCRIPTION);
 
   UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
       initWithTarget:self
@@ -348,6 +356,7 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
       CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
   title.text = titleText;
   title.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  title.accessibilityTraits = UIAccessibilityTraitHeader;
   [verticalStack addArrangedSubview:title];
 
   if (primarySubtitleText.length) {
@@ -412,6 +421,7 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
   labelStackView.distribution = UIStackViewDistributionFill;
   labelStackView.alignment = UIStackViewAlignmentLeading;
   labelStackView.spacing = kPriceTrackingVerticalStackViewSpacing;
+  labelStackView.isAccessibilityElement = NO;
 
   UILabel* title = [self createLabel];
   [title setAccessibilityIdentifier:kPriceRangeTitleIdentifier];
@@ -448,6 +458,7 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
                   maximumValue:self.item.highPrice
                   currentValue:self.item.currentPrice
                sliderViewWidth:sliderViewWidth];
+  sliderStackView.isAccessibilityElement = NO;
 
   _priceRangeStackView = [[UIStackView alloc]
       initWithArrangedSubviews:@[ labelStackView, sliderStackView ]];
@@ -462,6 +473,14 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
   _priceRangeStackView.layoutMargins =
       UIEdgeInsets(kContentVerticalInset, kContentHorizontalInset,
                    kContentVerticalInset, kContentHorizontalInset);
+  _priceRangeStackView.isAccessibilityElement = YES;
+  std::u16string currentPriceFormatted = getFormattedCurrentPrice(
+      self.item.currentPrice, self.item.currency, self.item.country);
+  _priceRangeStackView.accessibilityLabel = l10n_util::GetNSStringF(
+      IDS_PRICE_RANGE_ACCESSIBILITY_DESCRIPTION,
+      base::SysNSStringToUTF16(self.item.title), lowPriceFormatted,
+      highPriceFormatted, currentPriceFormatted);
+  _priceRangeStackView.accessibilityTraits = UIAccessibilityTraitImage;
 }
 
 // Creates and configures a UILabel with default settings.
@@ -501,6 +520,11 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
     _trackButtonWidthConstraint =
         [_trackButton.widthAnchor constraintEqualToConstant:0];
     _trackButtonWidthConstraint.active = YES;
+  }
+
+  if (!self.item.isPriceTracked) {
+    _trackButton.accessibilityLabel = l10n_util::GetNSString(
+        IDS_PRICE_TRACKING_NOT_TRACKING_ACCESSIBILITY_DESCRIPTION);
   }
 
   [_trackButton setAttributedTitle:title forState:UIControlStateNormal];
