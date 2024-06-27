@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_initial_color_value.h"
 #include "third_party/blink/renderer/core/css/css_layout_function_value.h"
+#include "third_party/blink/renderer/core/css/css_light_dark_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
@@ -2695,7 +2696,7 @@ namespace {
 String GetStringFromAttributeOrStringValue(const CSSValue& value,
                                            StyleResolverState& state,
                                            ComputedStyleBuilder& builder) {
-  String string;
+  String string = g_empty_string;
   if (const auto* function_value = DynamicTo<CSSFunctionValue>(value)) {
     DCHECK_EQ(function_value->FunctionType(), CSSValueID::kAttr);
     builder.SetHasAttrContent();
@@ -2705,7 +2706,21 @@ String GetStringFromAttributeOrStringValue(const CSSValue& value,
     const AtomicString& attr_value = state.GetElement().getAttribute(attr);
     string = attr_value.IsNull() ? g_empty_string : attr_value.GetString();
   } else {
-    string = To<CSSStringValue>(value).Value();
+    // We should be able to assume at this point that `value` is a
+    // CSSStringValue, since all other types of CSSValues produced in
+    // Content::ParseSingleValue should have been handled by Content::ApplyValue
+    // before reaching this point. However, as observed in crbug.com/348304397
+    // there is some unexpected type that is not getting handled. The following
+    // two DCHECKs are intended to help investigate this. The first DCHECK tests
+    // the theory that the unexpected type is coming from ConsumeImage, where a
+    // light-dark() function in a UA shadow DOM could cause a
+    // CSSLightDarkValuePair to be created. The second DCHECK will hit if this
+    // first theory is wrong and `value` has some other unexpected type.
+    DCHECK(!IsA<CSSLightDarkValuePair>(value));
+    DCHECK(IsA<CSSStringValue>(value));
+    if (const auto* string_value = DynamicTo<CSSStringValue>(value)) {
+      string = string_value->Value();
+    }
   }
   return string;
 }
