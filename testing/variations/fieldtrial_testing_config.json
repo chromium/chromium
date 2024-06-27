@@ -24944,27 +24944,6 @@
             ]
         }
     ],
-    "WebRTC-Vp9InterLayerPred": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "FlexibleMode,_20240321"
-                }
-            ]
-        }
-    ],
     "WebRTC-ZeroPlayoutDelay": [
         {
             "platforms": [
