@@ -367,7 +367,6 @@ TEST_F(URLPatternHistogramTest, BaseURLInheritance) {
 }
 
 TEST_F(URLPatternHistogramTest, ChangedPatternInDocumentRule) {
-  ScopedSpeculationRulesDocumentRulesForTest enable_document_rules(true);
   GetFrame().GetSettings()->SetScriptEnabled(true);
   SetBodyInnerHTML(R"(<a href="https://example.com/?a=1">example</a>)");
   auto* script = MakeGarbageCollected<HTMLScriptElement>(GetDocument(),

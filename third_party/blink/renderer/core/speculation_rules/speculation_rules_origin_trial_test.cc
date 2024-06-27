@@ -187,10 +187,6 @@ TEST(SpeculationRulesPrefetchFutureOriginTrialTest, FirstPartyTrialToken) {
   // This should have enabled the origin trial and all its dependent features.
   EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesPrefetchFutureEnabled(
       frame.DomWindow()));
-  EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesDocumentRulesEnabled(
-      frame.DomWindow()));
-  EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesFetchFromHeaderEnabled(
-      frame.DomWindow()));
 }
 
 }  // namespace

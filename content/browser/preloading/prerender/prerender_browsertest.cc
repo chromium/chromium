@@ -9191,8 +9191,7 @@ class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
  public:
   PrerenderEagernessBrowserTest() {
     feature_list_.InitWithFeatures(
-        {{blink::features::kSpeculationRulesEagerness},
-         {blink::features::kAnchorElementInteraction},
+        {{blink::features::kAnchorElementInteraction},
          {blink::features::kSpeculationRulesPointerDownHeuristics},
          {blink::features::kSpeculationRulesPointerHoverHeuristics}},
         {});

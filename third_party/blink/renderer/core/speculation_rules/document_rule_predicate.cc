@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
-#include "third_party/blink/renderer/core/speculation_rules/speculation_rules_features.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -499,9 +498,6 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
 
     // For now, use the ruleset's base URL to construct the predicates.
     KURL base_url = ruleset_base_url;
-    const bool relative_to_enabled =
-        RuntimeEnabledFeatures::SpeculationRulesRelativeToDocumentEnabled(
-            execution_context);
 
     for (wtf_size_t i = 0; i < input->size(); ++i) {
       const String key = input->at(i).first;
@@ -509,14 +505,9 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
         // This is always expected.
       } else if (key == "relative_to") {
         const char* const kKnownRelativeToValues[] = {"ruleset", "document"};
-        String relative_to;
-        if (!relative_to_enabled) {
-          SetParseErrorMessage(out_error,
-                               "\"relative_to\" is currently unsupported.");
-          return nullptr;
-        }
         // If relativeTo is neither the string "ruleset" nor the string
         // "document", then return null.
+        String relative_to;
         if (!input->GetString("relative_to", &relative_to) ||
             !base::Contains(kKnownRelativeToValues, relative_to)) {
           SetParseErrorMessage(
@@ -580,14 +571,6 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
 
   // If predicateType is "selector_matches"
   if (predicate_type == "selector_matches" && input->size() == 1) {
-    const bool selector_matches_enabled =
-        speculation_rules::SelectorMatchesEnabled(execution_context);
-    if (!selector_matches_enabled) {
-      SetParseErrorMessage(out_error,
-                           "\"selector_matches\" is currently unsupported.");
-      return nullptr;
-    }
-
     // Let rawSelectors be input["selector_matches"].
     Vector<JSONValue*> raw_selectors;
     JSONArray* selector_matches = input->GetArray("selector_matches");

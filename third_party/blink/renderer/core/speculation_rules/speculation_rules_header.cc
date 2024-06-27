@@ -36,11 +36,6 @@ SpeculationRulesHeader::~SpeculationRulesHeader() = default;
 void SpeculationRulesHeader::ProcessHeadersForDocumentResponse(
     const ResourceResponse& response,
     LocalDOMWindow& window) {
-  if (!RuntimeEnabledFeatures::SpeculationRulesFetchFromHeaderEnabled(
-          &window)) {
-    return;
-  }
-
   // If the Speculation-Rules header isn't present at all, then there's nothing
   // to do.
   const AtomicString& header_value =

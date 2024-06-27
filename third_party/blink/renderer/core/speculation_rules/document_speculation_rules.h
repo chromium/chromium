@@ -141,11 +141,6 @@ class CORE_EXPORT DocumentSpeculationRules
                PendingUpdateState::kMicrotaskQueuedWithForcedStyleUpdate;
   }
 
-  // Checks the RuntimeEnabledFeature to see if the feature is enabled. If the
-  // feature is found to be enabled once, it is considered to be enabled for the
-  // rest of the document's lifetime.
-  bool SelectorMatchesEnabled();
-
   HeapVector<Member<SpeculationRuleSet>> rule_sets_;
   HeapMojoRemote<mojom::blink::SpeculationHost> host_;
   HeapHashSet<Member<SpeculationRuleLoader>> speculation_rule_loaders_;
@@ -175,7 +170,6 @@ class CORE_EXPORT DocumentSpeculationRules
   HeapVector<Member<StyleRule>> selectors_;
 
   bool initialized_ = false;
-  bool was_selector_matches_enabled_ = false;
   PendingUpdateState pending_update_state_ = PendingUpdateState::kNoUpdate;
 
   // Set to true if the EventHandlerRegistry has recorded this object's need to

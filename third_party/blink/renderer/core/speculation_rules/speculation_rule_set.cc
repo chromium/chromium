@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/core/loader/resource/speculation_rules_resource.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_rule_predicate.h"
-#include "third_party/blink/renderer/core/speculation_rules/speculation_rules_features.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rules_metrics.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -25,7 +24,6 @@
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -132,35 +130,18 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
   // If input has any key other than "source", "urls", "where", "requires",
   // "target_hint", "referrer_policy", "relative_to", "eagerness" and
   // "expects_no_vary_search", then return null.
-  const char* const kKnownKeys[] = {"source",      "urls",
-                                    "where",       "requires",
-                                    "target_hint", "referrer_policy",
-                                    "relative_to", "expects_no_vary_search"};
-  const auto kConditionalKnownKeys = [context]() {
-    Vector<const char*, 4> conditional_known_keys;
-    if (speculation_rules::EagernessEnabled(context)) {
-      conditional_known_keys.push_back("eagerness");
-    }
-    return conditional_known_keys;
-  }();
-
+  const char* const kKnownKeys[] = {
+      "source",      "urls",        "where",
+      "requires",    "target_hint", "referrer_policy",
+      "relative_to", "eagerness",   "expects_no_vary_search"};
   for (wtf_size_t i = 0; i < input->size(); ++i) {
     const String& input_key = input->at(i).first;
-    if (!base::Contains(kKnownKeys, input_key) &&
-        !base::Contains(kConditionalKnownKeys, input_key)) {
+    if (!base::Contains(kKnownKeys, input_key)) {
       SetParseErrorMessage(
           out_error, "A rule contains an unknown key: \"" + input_key + "\".");
       return nullptr;
     }
   }
-
-  bool document_rules_enabled =
-      RuntimeEnabledFeatures::SpeculationRulesDocumentRulesEnabled(context);
-  const bool relative_to_enabled =
-      RuntimeEnabledFeatures::SpeculationRulesRelativeToDocumentEnabled(
-          context);
-  const bool implicit_source_enabled =
-      RuntimeEnabledFeatures::SpeculationRulesImplicitSourceEnabled(context);
 
   // Let source be null.
   // If input["source"] exists, then set source to input["source"].
@@ -172,7 +153,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
                            "The value of the \"source\" key must be a string.");
       return nullptr;
     }
-  } else if (implicit_source_enabled) {
+  } else {
     // Otherwise, if input["urls"] exists and input["where"] does not exist,
     // then set source to "list".
     //
@@ -195,12 +176,9 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
                            "one of \"urls\" or \"where\".");
       return nullptr;
     }
-  } else {
-    SetParseErrorMessage(out_error, "A rule must have a source.");
-    return nullptr;
   }
 
-  if (!(source == "list" || (document_rules_enabled && source == "document"))) {
+  if (source != "list" && source != "document") {
     SetParseErrorMessage(out_error,
                          "A rule has an unknown source: \"" + source + "\".");
     return nullptr;
@@ -223,7 +201,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
       String value;
       // If relativeTo is neither the string "ruleset" nor the string
       // "document", then return null.
-      if (!relative_to_enabled || !relative_to->AsString(&value) ||
+      if (!relative_to->AsString(&value) ||
           !base::Contains(kKnownRelativeToValues, value)) {
         SetParseErrorMessage(out_error,
                              "A rule has an unknown \"relative_to\" value.");
@@ -267,7 +245,6 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
 
   DocumentRulePredicate* document_rule_predicate = nullptr;
   if (source == "document") {
-    DCHECK(document_rules_enabled);
     // If input["urls"] exists, then return null.
     if (input->Get("urls")) {
       SetParseErrorMessage(out_error,
@@ -387,9 +364,6 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
 
   mojom::blink::SpeculationEagerness eagerness;
   if (JSONValue* eagerness_value = input->Get("eagerness")) {
-    // Feature gated due to known keys check above.
-    DCHECK(speculation_rules::EagernessEnabled(context));
-
     String eagerness_str;
     if (!eagerness_value->AsString(&eagerness_str)) {
       SetParseErrorMessage(out_error, "Eagerness value must be a string.");
