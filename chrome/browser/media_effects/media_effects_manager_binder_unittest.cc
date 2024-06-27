@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/media_effects/media_effects_manager_binder.h"
+#include "chrome/browser/media_effects/media_effects_manager_binder.h"
+
 #include "base/test/test_future.h"
 #include "components/media_effects/media_effects_service.h"
 #include "components/user_prefs/test/test_browser_context_with_prefs.h"

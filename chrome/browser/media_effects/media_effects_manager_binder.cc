@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/media_effects/media_effects_manager_binder.h"
-#include "components/media_effects/media_effects_service_factory.h"
+#include "chrome/browser/media_effects/media_effects_manager_binder.h"
+
+#include "chrome/browser/media_effects/media_effects_service_factory.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 

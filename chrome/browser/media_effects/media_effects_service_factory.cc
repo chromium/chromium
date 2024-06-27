@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/media_effects/media_effects_service_factory.h"
+#include "chrome/browser/media_effects/media_effects_service_factory.h"
+
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
@@ -17,6 +19,11 @@ MediaEffectsService* MediaEffectsServiceFactory::GetForBrowserContext(
 // static
 MediaEffectsServiceFactory* MediaEffectsServiceFactory::GetInstance() {
   static base::NoDestructor<MediaEffectsServiceFactory> instance;
+
+  // Media Effects Service depends on Optimization Guide because it needs to
+  // subscribe to the model updates.
+  instance->DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+
   return instance.get();
 }
 

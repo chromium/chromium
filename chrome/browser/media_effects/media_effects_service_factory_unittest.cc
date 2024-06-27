@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/media_effects/media_effects_service_factory.h"
+#include "chrome/browser/media_effects/media_effects_service_factory.h"
 
 #include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
