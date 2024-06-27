@@ -32,8 +32,7 @@ class MediaAppGuestUIDelegate {
   // Takes a WebUI and WebUIDataSource, and populates its load-time data.
   virtual void PopulateLoadTimeData(content::WebUI* web_ui,
                                     content::WebUIDataSource* source) = 0;
-  virtual std::unique_ptr<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
-  CreateAndBindOcrHandler(
+  virtual void CreateAndBindOcrHandler(
       content::BrowserContext& context,
       gfx::NativeWindow native_window,
       mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedPageHandler>

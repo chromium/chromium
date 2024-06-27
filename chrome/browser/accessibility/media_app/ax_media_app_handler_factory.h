@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_ACCESSIBILITY_MEDIA_APP_AX_MEDIA_APP_HANDLER_FACTORY_H_
 #define CHROME_BROWSER_ACCESSIBILITY_MEDIA_APP_AX_MEDIA_APP_HANDLER_FACTORY_H_
 
-#include <memory>
-#include <vector>
-
 #include "base/no_destructor.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_untrusted_handler.h"
@@ -25,7 +22,7 @@ class AXMediaAppHandlerFactory final {
   AXMediaAppHandlerFactory& operator=(const AXMediaAppHandlerFactory&) = delete;
   ~AXMediaAppHandlerFactory();
 
-  std::unique_ptr<AXMediaAppUntrustedHandler> CreateAXMediaAppUntrustedHandler(
+  void CreateAXMediaAppUntrustedHandler(
       content::BrowserContext& context,
       gfx::NativeWindow native_window,
       mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedPageHandler>

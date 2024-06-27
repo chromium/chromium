@@ -27,8 +27,7 @@ class ChromeMediaAppGuestUIDelegate : public ash::MediaAppGuestUIDelegate {
   void PopulateLoadTimeData(content::WebUI* web_ui,
                             content::WebUIDataSource* source) override;
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-  std::unique_ptr<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
-  CreateAndBindOcrHandler(
+  void CreateAndBindOcrHandler(
       content::BrowserContext& context,
       gfx::NativeWindow native_window,
       mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
