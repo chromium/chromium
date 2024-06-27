@@ -1,5 +1,0 @@
-specific_include_rules = {
-  ".*interactive_uitest\.cc": [
-    "+third_party/cros_system_api",
-  ]
-}

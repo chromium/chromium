@@ -1,4 +1,7 @@
 include_rules = [
+  "+dbus",
+  "+third_party/cros_system_api",
+
   # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
   # details.
   "-chrome",
@@ -21,8 +24,6 @@ include_rules = [
   "+chrome/browser/ui/browser_commands.h",
   "+chrome/browser/ui/browser_list.h",
   "+chrome/browser/ui/browser_navigator.h",
-  "+chrome/test/base/chromeos/crosier/aura_window_title_observer.h",
-  "+chrome/test/base/mixin_based_in_process_browser_test.h",
-  "+chrome/test/interaction/interactive_browser_test.h",
-  "+chrome/test/interaction/webcontents_interaction_test_util.h",
+  "+chrome/grit",
+  "+chrome/test",
 ]
