@@ -30,4 +30,8 @@ BASE_FEATURE(kVisitedURLRankingHistoryVisibilityScoreFilter,
              "VisitedURLRankingHistoryVisibilityScoreFilter",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kVisitedURLRankingSegmentationMetricsData,
+             "VisitedURLRankingSegmentationMetricsData",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace visited_url_ranking::features

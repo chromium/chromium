@@ -133,6 +133,12 @@ FetchOptions FetchOptions::CreateFetchOptionsForTabResumption(
         URLVisitAggregatesTransformType::kHistoryVisibilityScoreFilter);
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kVisitedURLRankingSegmentationMetricsData)) {
+    transforms.push_back(
+        URLVisitAggregatesTransformType::kSegmentationMetricsData);
+  }
+
   FetchOptions options(result_map,
                        base::Time::Now() - base::Hours(query_duration),
                        std::move(transforms));

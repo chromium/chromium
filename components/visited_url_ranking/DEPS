@@ -3,6 +3,8 @@ include_rules = [
   "+components/history",
   "+components/keyed_service/core",
   "+components/segmentation_platform/public",
+  "+components/segmentation_platform/embedder/default_model",
+  "+components/segmentation_platform/internal/metadata",
   "+components/sessions/core",
   "+components/sync_device_info",
   "+components/sync_sessions",

@@ -16,18 +16,28 @@ enum URLVisitAggregateRankingModelInputSignals {
   kTimeSinceLastActiveSec = 1,
   kTimeActiveForTimePeriodSec = 2,
   kNumTimesActive = 3,
-  kTabCount = 4,
-  kVisitCount = 5,
-  kIsBookmarked = 6,
-  kIsPinned = 7,
-  kIsInTabGroup = 8,
-  kIsInCluster = 9,
-  kHasUrlKeyedImage = 10,
-  kHasAppId = 11,
-  kPlatform = 12,
+  kLocalTabCount = 4,
+  kSessionTabCount = 5,
+  kVisitCount = 6,
+  kIsBookmarked = 7,
+  kIsPinned = 8,
+  kIsInTabGroup = 9,
+  kIsInCluster = 10,
+  kHasUrlKeyedImage = 11,
+  kHasAppId = 12,
+  kPlatform = 13,
+  kSeenCountLastDay = 14,
+  kActivatedCountLastDay = 15,
+  kDismissedCountLastDay = 16,
+  kSeenCountLast7Days = 17,
+  kActivatedCountLast7Days = 18,
+  kDismissedCountLast7Days = 19,
+  kSeenCountLast30Days = 20,
+  kActivatedCountLast30Days = 21,
+  kDismissedCountLast30Days = 22,
 };
 
-static constexpr size_t kNumInputs = 13;
+static constexpr size_t kNumInputs = 23;
 
 // Represents a field's metadata and is leveraged for the processing and
 // serialization of `URLVisitAggregate` fields participating in ML models.

@@ -11,12 +11,15 @@ import("//components/optimization_guide/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 static_library("internal") {
+  #TODO(crbug.com/347191610): Refactor code to eliminate visibility
+  #requirement below for `visited_url_ranking`.
   visibility = [
     ":*",
     "//chrome/browser",
     "//chrome/browser/segmentation_platform:*",
     "//chrome/test:*",
     "//components/segmentation_platform/embedder/*",
+    "//components/visited_url_ranking/internal/*",
     "//ios/chrome/browser/segmentation_platform/model:*",
   ]
 

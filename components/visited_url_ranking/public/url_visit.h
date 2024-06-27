@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VISITED_URL_RANKING_PUBLIC_URL_VISIT_H_
 #define COMPONENTS_VISITED_URL_RANKING_PUBLIC_URL_VISIT_H_
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <set>
@@ -165,6 +166,9 @@ struct URLVisitAggregate {
   // The number of times the visits associated with the aggregate where on the
   // foreground.
   size_t num_times_active = 0;
+
+  // A map of additional metrics signals intended only for ML use.
+  std::map<std::string, float> metrics_signals;
 
   // A score associated with the aggregate, if any.
   std::optional<float> score = std::nullopt;
