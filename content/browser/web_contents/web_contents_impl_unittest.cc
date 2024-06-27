@@ -16,7 +16,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/download/public/common/download_url_parameters.h"
@@ -29,6 +31,7 @@
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -62,10 +65,13 @@
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/network_handle.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/test/test_network_context.h"
 #include "skia/ext/skia_utils_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -78,6 +84,7 @@
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "url/gurl.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -365,6 +372,24 @@ class TestColorProviderSource : public ui::ColorProviderSource {
       {color::mojom::RendererColorId::kColorMenuBackground, SK_ColorBLACK}};
   const ui::RendererColorMap forced_colors_map{
       {color::mojom::RendererColorId::kColorMenuBackground, SK_ColorCYAN}};
+};
+
+class MockNetworkContext : public network::TestNetworkContext {
+ public:
+  explicit MockNetworkContext(
+      mojo::PendingReceiver<network::mojom::NetworkContext> receiver)
+      : receiver_(this, std::move(receiver)) {}
+  MOCK_METHOD(void,
+              NotifyExternalCacheHit,
+              (const GURL&,
+               const std::string&,
+               const net::NetworkIsolationKey&,
+               bool,
+               bool),
+              (override));
+
+ private:
+  mojo::Receiver<network::mojom::NetworkContext> receiver_;
 };
 
 }  // namespace
@@ -2572,6 +2597,61 @@ TEST_F(WebContentsImplTest, ParseDownloadHeaders) {
 
   request_headers = WebContentsImpl::ParseDownloadHeaders("A 1");
   ASSERT_EQ(0u, request_headers.size());
+}
+
+// CHECKs should occur when `WebContentsImpl::DidLoadResourceFromMemoryCache()`
+// is called with RequestDestinations that can only correspond to navigations.
+TEST_F(WebContentsImplTest, DidLoadResourceFromMemoryCache_NavigationCheck) {
+  const GURL kImgUrl("https://www.example.com/image.png");
+
+  EXPECT_CHECK_DEATH(contents()->DidLoadResourceFromMemoryCache(
+      main_test_rfh(), kImgUrl, "GET", "image/png",
+      network::mojom::RequestDestination::kDocument,
+      /*include_credentials=*/false));
+
+  EXPECT_CHECK_DEATH(contents()->DidLoadResourceFromMemoryCache(
+      main_test_rfh(), kImgUrl, "GET", "image/png",
+      network::mojom::RequestDestination::kIframe,
+      /*include_credentials=*/false));
+}
+
+// Regression test for crbug.com/347934841#comment3 to ensure that if
+// `WebContentsImpl::DidLoadResourceFromMemoryCache()` is called with a
+// `request_destination` parameter value of
+// `network::mojom::RequestDestination::kObject` or
+// `network::mojom::RequestDestination::kEmbed`, a CHECK does not occur since
+// those can correspond to both navigations and resource loads.
+TEST_F(WebContentsImplTest,
+       DidLoadResourceFromMemoryCache_BypassNavigationCheck) {
+  mojo::PendingRemote<network::mojom::NetworkContext> network_context_remote;
+  MockNetworkContext mock_network_context(
+      network_context_remote.InitWithNewPipeAndPassReceiver());
+  auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
+      GetBrowserContext()->GetDefaultStoragePartition());
+  storage_partition_impl->SetNetworkContextForTesting(
+      std::move(network_context_remote));
+
+  const GURL kImgUrl("https://www.example.com/image.png");
+  const std::string kGet = "GET";
+
+  for (const auto destination : {network::mojom::RequestDestination::kObject,
+                                 network::mojom::RequestDestination::kEmbed}) {
+    SCOPED_TRACE(static_cast<int>(destination));
+
+    base::test::TestFuture<void> signal;
+
+    // If the NotifyExternalCacheHit call is reached then we know the CHECKs
+    // were evaluated but didn't trigger.
+    EXPECT_CALL(mock_network_context,
+                NotifyExternalCacheHit(kImgUrl, kGet, ::testing::_,
+                                       ::testing::_, ::testing::_))
+        .WillOnce(base::test::InvokeFuture(signal));
+
+    contents()->DidLoadResourceFromMemoryCache(main_test_rfh(), kImgUrl, kGet,
+                                               "image/png", destination,
+                                               /*include_credentials=*/false);
+    EXPECT_TRUE(signal.Wait());
+  }
 }
 
 namespace {
