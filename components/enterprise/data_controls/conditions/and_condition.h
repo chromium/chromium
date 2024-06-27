@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ENTERPRISE_DATA_CONTROLS_AND_CONDITION_H_
-#define COMPONENTS_ENTERPRISE_DATA_CONTROLS_AND_CONDITION_H_
+#ifndef COMPONENTS_ENTERPRISE_DATA_CONTROLS_CONDITIONS_AND_CONDITION_H_
+#define COMPONENTS_ENTERPRISE_DATA_CONTROLS_CONDITIONS_AND_CONDITION_H_
 
 #include <memory>
 #include <vector>
 
-#include "components/enterprise/data_controls/condition.h"
+#include "components/enterprise/data_controls/conditions/condition.h"
 
 namespace data_controls {
 
@@ -35,4 +35,4 @@ class AndCondition : public Condition {
 
 }  // namespace data_controls
 
-#endif  // COMPONENTS_ENTERPRISE_DATA_CONTROLS_AND_CONDITION_H_
+#endif  // COMPONENTS_ENTERPRISE_DATA_CONTROLS_CONDITIONS_AND_CONDITION_H_

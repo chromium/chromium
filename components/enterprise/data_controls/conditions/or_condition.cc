@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/enterprise/data_controls/or_condition.h"
+#include "components/enterprise/data_controls/conditions/or_condition.h"
 
 #include <algorithm>
 

@@ -11,7 +11,7 @@
 
 #include "base/values.h"
 #include "components/enterprise/data_controls/action_context.h"
-#include "components/enterprise/data_controls/condition.h"
+#include "components/enterprise/data_controls/conditions/condition.h"
 #include "components/policy/core/common/schema.h"
 
 namespace policy {

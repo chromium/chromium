@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ENTERPRISE_DATA_CONTROLS_ATTRIBUTES_CONDITION_H_
-#define COMPONENTS_ENTERPRISE_DATA_CONTROLS_ATTRIBUTES_CONDITION_H_
+#ifndef COMPONENTS_ENTERPRISE_DATA_CONTROLS_CONDITIONS_ATTRIBUTES_CONDITION_H_
+#define COMPONENTS_ENTERPRISE_DATA_CONTROLS_CONDITIONS_ATTRIBUTES_CONDITION_H_
 
 #include <memory>
 
 #include "base/values.h"
-#include "components/enterprise/data_controls/condition.h"
+#include "components/enterprise/data_controls/conditions/condition.h"
 #include "components/url_matcher/url_matcher.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -132,4 +132,4 @@ class DestinationAttributesCondition : public AttributesCondition,
 
 }  // namespace data_controls
 
-#endif  // COMPONENTS_ENTERPRISE_DATA_CONTROLS_ATTRIBUTES_CONDITION_H_
+#endif  // COMPONENTS_ENTERPRISE_DATA_CONTROLS_CONDITIONS_ATTRIBUTES_CONDITION_H_
