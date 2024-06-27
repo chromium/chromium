@@ -10,11 +10,13 @@
 #include "ash/picker/metrics/picker_performance_metrics.h"
 #include "ash/picker/picker_test_util.h"
 #include "ash/picker/views/picker_key_event_handler.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -36,6 +38,17 @@ TEST_F(PickerSearchFieldViewTest, HasTextFieldRole) {
 
   EXPECT_EQ(view.textfield_for_testing().GetAccessibleRole(),
             ax::mojom::Role::kTextField);
+}
+
+TEST_F(PickerSearchFieldViewTest, ClearButtonHasTooltip) {
+  PickerKeyEventHandler key_event_handler;
+  PickerPerformanceMetrics metrics;
+  PickerSearchFieldView view(base::DoNothing(), base::DoNothing(),
+                             &key_event_handler, &metrics);
+
+  EXPECT_EQ(view.clear_button_for_testing().GetTooltipText(),
+            l10n_util::GetStringUTF16(
+                IDS_PICKER_SEARCH_FIELD_CLEAR_BUTTON_TOOLTIP_TEXT));
 }
 
 TEST_F(PickerSearchFieldViewTest, DoesNotTriggerSearchOnConstruction) {

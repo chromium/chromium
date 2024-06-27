@@ -84,7 +84,7 @@ class ASH_EXPORT PickerSearchFieldView : public views::BoxLayoutView,
   // Sets whether the back button is visible.
   void SetBackButtonVisible(bool visible);
 
-  const views::Textfield& textfield_for_testing() const { return *textfield_; }
+  views::Textfield& textfield_for_testing() { return *textfield_; }
   views::ImageButton& back_button_for_testing() { return *back_button_; }
   views::ImageButton& clear_button_for_testing() { return *clear_button_; }
 

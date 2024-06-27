@@ -10,11 +10,13 @@
 #include "ash/ash_element_identifiers.h"
 #include "ash/picker/metrics/picker_performance_metrics.h"
 #include "ash/picker/views/picker_key_event_handler.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/geometry/insets.h"
@@ -77,21 +79,20 @@ PickerSearchFieldView::PickerSearchFieldView(
                   TypographyToken::kCrosBody2))
               .SetProperty(views::kBoxLayoutFlexKey,
                            views::BoxLayoutFlexSpecification().WithWeight(1)))
-      .AddChild(
-          views::Builder<views::ImageButton>(
-              views::ImageButton::CreateIconButton(
-                  // `base::Unretained` is safe here since the search field is
-                  // owned by this class.
-                  base::BindRepeating(
-                      &PickerSearchFieldView::ClearButtonPressed,
-                      base::Unretained(this)),
-                  views::kIcCloseIcon, u"placeholder",
-                  views::ImageButton::MaterialIconStyle::kSmall))
-              .CopyAddressTo(&clear_button_)
-              .SetProperty(views::kMarginsKey, kButtonHorizontalMargin)
-              .SetVisible(false)
-              // TODO(b/309706053): Replace this once the strings are finalized.
-              .SetAccessibleName(u"placeholder"))
+      .AddChild(views::Builder<views::ImageButton>(
+                    views::ImageButton::CreateIconButton(
+                        // `base::Unretained` is safe here since the search
+                        // field is owned by this class.
+                        base::BindRepeating(
+                            &PickerSearchFieldView::ClearButtonPressed,
+                            base::Unretained(this)),
+                        views::kIcCloseIcon,
+                        l10n_util::GetStringUTF16(
+                            IDS_PICKER_SEARCH_FIELD_CLEAR_BUTTON_TOOLTIP_TEXT),
+                        views::ImageButton::MaterialIconStyle::kSmall))
+                    .CopyAddressTo(&clear_button_)
+                    .SetProperty(views::kMarginsKey, kButtonHorizontalMargin)
+                    .SetVisible(false))
       .BuildChildren();
 
   UpdateTextfieldBorder();

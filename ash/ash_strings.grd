@@ -7386,6 +7386,9 @@ New install
       <message name="IDS_PICKER_FEATURE_TOUR_START_BUTTON_LABEL" translateable="false" desc="Button label in feature tour dialog to start using Picker.">
         Get started
       </message>
+      <message name="IDS_PICKER_SEARCH_FIELD_CLEAR_BUTTON_TOOLTIP_TEXT" translateable="false" desc="Tooltip text for the button that clears all text from the Picker search field.">
+        Clear searchbox text
+      </message>
 
       <!-- WM -->
       <message name="IDS_ENTER_PIP_A11Y_NOTIFICATION" is_accessibility_with_no_ui="true" desc="Accessibility text read by chromevox when a window starts picture-in-picture mode.">

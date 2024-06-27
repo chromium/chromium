@@ -5,6 +5,7 @@
 #include "ash/picker/metrics/picker_performance_metrics.h"
 #include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/picker/views/picker_search_field_view.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/test/test_widget_builder.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
@@ -13,6 +14,9 @@
 #include "extensions/browser/browsertest_util.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -108,6 +112,31 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 
   sm_.ExpectSpeechPattern("Edit text");
   sm_.ExpectSpeechPattern("cat");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       FocusingSearchFieldClearButtonAnnouncesTooltip) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  ash::PickerKeyEventHandler key_event_handler;
+  ash::PickerPerformanceMetrics metrics;
+  auto* view =
+      widget->SetContentsView(std::make_unique<ash::PickerSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  view->SetPlaceholderText(u"placeholder");
+
+  sm_.Call([view]() {
+    view->textfield_for_testing().InsertOrReplaceText(u"a");
+    view->clear_button_for_testing().RequestFocus();
+  });
+
+  sm_.ExpectSpeechPattern(l10n_util::GetStringUTF8(
+      IDS_PICKER_SEARCH_FIELD_CLEAR_BUTTON_TOOLTIP_TEXT));
+  sm_.ExpectSpeechPattern("Button");
+  sm_.ExpectSpeechPattern("Press * to activate");
   sm_.Replay();
 }
 
