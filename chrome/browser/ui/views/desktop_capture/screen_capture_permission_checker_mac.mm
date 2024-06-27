@@ -52,7 +52,7 @@ ScreenCapturePermissionCheckerMac::MaybeCreate(
 ScreenCapturePermissionCheckerMac::ScreenCapturePermissionCheckerMac(
     base::RepeatingCallback<void(bool)> callback,
     base::RepeatingCallback<bool()> is_screen_capture_allowed)
-    : callback_(callback),
+    : callback_(std::move(callback)),
       is_screen_capture_allowed_(std::move(is_screen_capture_allowed)) {
   OnRecurrentPermissionCheck();
 
