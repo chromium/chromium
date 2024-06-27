@@ -239828,6 +239828,19 @@
         {}
        ]
       ],
+      "border-spacing.html": [
+       "2801a2920066f24655f84b9a2cccdaf361de2ab1",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/reference/border-spacing-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "font-size.html": [
        "e4b20c3c9314acf71bcd49bbcc6fd215207b22f8",
        [
@@ -239932,6 +239945,19 @@
         {}
        ]
       ],
+      "list-style-image.html": [
+       "f6caa249f789758a87f27ebc874e3c2bda9440c9",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/reference/list-style-image-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "relative-units-from-parent.html": [
        "57df82b6f1c5b8cd9ef405cdc1097826de0e061f",
        [
@@ -239945,6 +239971,19 @@
         {}
        ]
       ],
+      "stroke.html": [
+       "5af4eec10cce386eb5afce8d89ee4efb5a71cc85",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/reference/stroke-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "svg.html": [
        "826ce5a80a3b9c06b3c14678704daffd3e2faf7b",
        [
@@ -239952,6 +239991,71 @@
         [
          [
           "/css/css-viewport/zoom/svg-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-indent.html": [
+       "2edf6a62223d8d7ba1709a539731d3f9d62c0f78",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/reference/text-indent-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-shadow.html": [
+       "1d39a24cd19123f7db5d397dbdd69d884bd7f429",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/reference/text-shadow-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-stroke-width.html": [
+       "b11dc67d52c2f46a3a2c384d3e764f964a13ddb1",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/reference/text-stroke-width-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-underline-offset.html": [
+       "cdf7b3d7ab26e7c99b5640a617f5e30d30477ea5",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/reference/text-underline-offset-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "word-spacing.html": [
+       "80f52046cd5016a703285d26e9cbd5572107b0d0",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/reference/word-spacing-ref.html",
           "=="
          ]
         ],
@@ -345011,6 +345115,10 @@
        []
       ],
       "reference": {
+       "border-spacing-ref.html": [
+        "df01e965a27404c85784f8a86dda9bba7ceb7ddb",
+        []
+       ],
        "iframe-zoom-nested-ref.html": [
         "fcdc16b1fb784f829bd1d964f04987737abfe02f",
         []
@@ -345021,6 +345129,34 @@
        ],
        "letter-spacing-ref.html": [
         "7d050672c4eae54a27f888957173eb62f4a451ec",
+        []
+       ],
+       "list-style-image-ref.html": [
+        "c9f5f53b24dd194734448c147c347e48cad88ee2",
+        []
+       ],
+       "stroke-ref.html": [
+        "75742b1dc34e522a202bdedf7e4e66d472edc922",
+        []
+       ],
+       "text-indent-ref.html": [
+        "6dc0f8527c289c66a90fa7e109fc2aeed60b7959",
+        []
+       ],
+       "text-shadow-ref.html": [
+        "0538ba2c538ba4daa096a12d8721474836009fea",
+        []
+       ],
+       "text-stroke-width-ref.html": [
+        "d1c675fc77d14f2238221aa2cb1a86a5a02a1069",
+        []
+       ],
+       "text-underline-offset-ref.html": [
+        "11b61e0acaa286cb222031afa0ab6ea8a60f3e34",
+        []
+       ],
+       "word-spacing-ref.html": [
+        "02ace8352adde979c0eb4df39aebc3e342093172",
         []
        ]
       },
@@ -347931,10 +348067,6 @@
      ]
     },
     "cssom-view": {
-     "Element-currentCSSZoom-expected.txt": [
-      "9d34d2875cbb46259db1ca7c52b555d6be05ee5b",
-      []
-     ],
      "META.yml": [
       "a6644945910fc83ca079c93507b21117b91de9c3",
       []
@@ -347972,7 +348104,7 @@
       []
      ],
      "idlharness-expected.txt": [
-      "79ce4e9977fc25e66e9d98e2ca45efce1977a928",
+      "c805a680ffa67ef11734df0a4020b593b29e0aaa",
       []
      ],
      "iframe.html": [
@@ -400010,7 +400142,7 @@
       },
       "browsing_context": {
        "__init__.py": [
-        "a60940d370fdd7f5e1b25fbdd6bbbc504c8669c1",
+        "606ac071ed7b1def5316d84a5c29ca00d7187da5",
         []
        ],
        "activate": {
@@ -637569,7 +637701,7 @@
      ]
     ],
     "non-html-documents.html": [
-     "5cec6aee3a2bd62723e2c345b8282b1e31cf6c86",
+     "de1fe837e6d1c9749b3722d18503a51f91d6e8f6",
      [
       null,
       {
@@ -733654,14 +733786,14 @@
        },
        "context_created": {
         "context_created.py": [
-         "63dbd3a23c58bdb8a1d989d8574faf445390fb0b",
+         "1c9683c6b377869b1c2be7363528e40a28a91aec",
          [
           null,
           {}
          ]
         ],
         "original_opener.py": [
-         "115f9679df76880271720a8947afad97896f614b",
+         "18c9483e7ce83389472f7a3bef0617a3ef180083",
          [
           null,
           {}
@@ -733671,6 +733803,13 @@
        "context_destroyed": {
         "context_destroyed.py": [
          "17f7acf2f9b68911b1c9fb2cf882918edf894a6a",
+         [
+          null,
+          {}
+         ]
+        ],
+        "original_opener.py": [
+         "5c51b0e444ecd126818bca822ebd33498f675f9c",
          [
           null,
           {}
@@ -733756,6 +733895,13 @@
         ],
         "max_depth.py": [
          "b855b8e7eba06b56a63ee2dd4f64b0e88d8a7513",
+         [
+          null,
+          {}
+         ]
+        ],
+        "original_opener.py": [
+         "ceec74933fc3e665642eb2ffc862dd1558f27047",
          [
           null,
           {}
@@ -734465,7 +734611,7 @@
          ]
         ],
         "headers.py": [
-         "1a7acfcde005c44d5becdf6495ce72c32ff3c7be",
+         "d6af7094a6480273243ec46dffc45953476a6234",
          [
           null,
           {}

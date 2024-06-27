@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_multiple_headers
+  AssertionError: assert 'value2' in 'value1'
+Harness: the test ran to completion.
