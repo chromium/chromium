@@ -160,8 +160,16 @@ IN_PROC_BROWSER_TEST_F(ViewTransitionBrowserTest,
       "(async () => { await document.startViewTransition().ready; })()"));
 }
 
+// TODO(crbug.com/345689326): Test is flaky on Linux and Mac.
+#if defined(IS_MAC) || defined(IS_LINUX)
+#define MAYBE_OwnershipTransferredToNewRenderer \
+  DISABLED_OwnershipTransferredToNewRenderer
+#else
+#define MAYBE_OwnershipTransferredToNewRenderer \
+  OwnershipTransferredToNewRenderer
+#endif
 IN_PROC_BROWSER_TEST_F(ViewTransitionBrowserTest,
-                       OwnershipTransferredToNewRenderer) {
+                       MAYBE_OwnershipTransferredToNewRenderer) {
   // Start with a page which has an opt-in for VT.
   GURL test_url(
       embedded_test_server()->GetURL("/view_transitions/basic-vt-opt-in.html"));
