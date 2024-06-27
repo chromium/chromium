@@ -15,6 +15,9 @@ const uint32_t kPipeElementMaxSize = 0x1000u;
 const uint32_t kPipeCapacityMaxSize = 0x100000u;
 const uint32_t kPipeActionMaxSize = 0x100000u;
 
+const uint64_t kSharedBufferMaxSize = 0x100000u;
+const uint32_t kSharedBufferActionMaxSize = 0x100000u;
+
 Context::Context() = default;
 
 Context::~Context() = default;
@@ -303,7 +306,22 @@ bool ToProto(const mojo::ScopedMessagePipeHandle& input,
 
 bool FromProto(const ::mojolpm::SharedBufferHandle& input,
                mojo::ScopedSharedBufferHandle& output) {
-  return true;
+  bool result = false;
+
+  if (input.instance_case() == ::mojolpm::SharedBufferHandle::kOld) {
+    auto old =
+        mojolpm::GetContext()
+            ->GetAndRemoveInstance<mojo::ScopedSharedBufferHandle>(input.old());
+    if (old) {
+      output = std::move(*old.release());
+    }
+  } else {
+    output = mojo::SharedBufferHandle::Create(
+        std::min(input.new_().num_bytes(), kSharedBufferMaxSize));
+    result = true;
+  }
+
+  return result;
 }
 
 bool ToProto(const mojo::ScopedSharedBufferHandle& input,
@@ -399,6 +417,23 @@ void HandleDataPipeWrite(const ::mojolpm::DataPipeWrite& input) {
   }
 }
 
+void HandleSharedBufferWrite(const ::mojolpm::SharedBufferWrite& input) {
+  mojo::ScopedSharedBufferHandle handle;
+  if (!FromProto(input.handle(), handle)) {
+    return;
+  }
+  size_t size = input.data().size();
+  if (size > kSharedBufferActionMaxSize) {
+    size = kSharedBufferActionMaxSize;
+  }
+  size = std::min(handle->GetSize(), static_cast<uint64_t>(size));
+  auto mem = handle->Map(size);
+  if (!mem) {
+    return;
+  }
+  std::memcpy(mem.get(), input.data().data(), size);
+}
+
 void HandleDataPipeConsumerClose(
     const ::mojolpm::DataPipeConsumerClose& input) {
   mojolpm::GetContext()->RemoveInstance<mojo::ScopedDataPipeConsumerHandle>(
@@ -408,6 +443,11 @@ void HandleDataPipeConsumerClose(
 void HandleDataPipeProducerClose(
     const ::mojolpm::DataPipeProducerClose& input) {
   mojolpm::GetContext()->RemoveInstance<mojo::ScopedDataPipeProducerHandle>(
+      input.id());
+}
+
+void HandleSharedBufferRelease(const ::mojolpm::SharedBufferRelease& input) {
+  mojolpm::GetContext()->RemoveInstance<mojo::ScopedSharedBufferHandle>(
       input.id());
 }
 }  // namespace mojolpm

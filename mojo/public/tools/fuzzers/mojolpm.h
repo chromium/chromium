@@ -758,6 +758,8 @@ void HandleDataPipeRead(const ::mojolpm::DataPipeRead& input);
 void HandleDataPipeWrite(const ::mojolpm::DataPipeWrite& input);
 void HandleDataPipeConsumerClose(const ::mojolpm::DataPipeConsumerClose& input);
 void HandleDataPipeProducerClose(const ::mojolpm::DataPipeProducerClose& input);
+void HandleSharedBufferWrite(const ::mojolpm::SharedBufferWrite& input);
+void HandleSharedBufferRelease(const ::mojolpm::SharedBufferRelease& input);
 }  // namespace mojolpm
 
 #endif  // MOJO_PUBLIC_TOOLS_FUZZERS_MOJOLPM_H_

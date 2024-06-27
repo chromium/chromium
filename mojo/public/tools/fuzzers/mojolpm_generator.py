@@ -106,6 +106,8 @@ class MojoLPMActionType(enum.Enum):
   DATA_PIPE_WRITE = 'DataPipeWrite'
   DATA_PIPE_CONSUMER_CLOSE = 'DataPipeConsumerClose'
   DATA_PIPE_PRODUCER_CLOSE = 'DataPipeProducerClose'
+  SHARED_BUFFER_WRITE = 'SharedBufferWrite'
+  SHARED_BUFFER_RELEASE = 'SharedBufferRelease'
 
 
 @dataclasses.dataclass(frozen=True)
@@ -206,6 +208,20 @@ _EMULATED_HANDLE_ACTION_MAP = {
             dependencies=_DEFAULT_ACTION_DEPS,
         ),
     ],
+    MojomHandleType.SHARED_BUFFER: [
+        MojoLPMAction(
+            type=MojoLPMActionType.SHARED_BUFFER_WRITE,
+            namespace=None,
+            identifier="shared_buffer_write",
+            dependencies=_DEFAULT_ACTION_DEPS,
+        ),
+        MojoLPMAction(
+            type=MojoLPMActionType.SHARED_BUFFER_RELEASE,
+            namespace=None,
+            identifier="shared_buffer_release",
+            dependencies=_DEFAULT_ACTION_DEPS,
+        ),
+    ],
 }
 
 _REMOTE_HANDLE_ACTION_MAP = {
@@ -234,6 +250,20 @@ _REMOTE_HANDLE_ACTION_MAP = {
             type=MojoLPMActionType.DATA_PIPE_PRODUCER_CLOSE,
             namespace=None,
             identifier="data_pipe_producer_close_action",
+            dependencies=_DEFAULT_ACTION_DEPS,
+        ),
+    ],
+    MojomHandleType.SHARED_BUFFER: [
+        MojoLPMAction(
+            type=MojoLPMActionType.SHARED_BUFFER_WRITE,
+            namespace=None,
+            identifier="shared_buffer_write",
+            dependencies=_DEFAULT_ACTION_DEPS,
+        ),
+        MojoLPMAction(
+            type=MojoLPMActionType.SHARED_BUFFER_RELEASE,
+            namespace=None,
+            identifier="shared_buffer_release",
             dependencies=_DEFAULT_ACTION_DEPS,
         ),
     ],
@@ -287,7 +317,8 @@ def is_interesting_kind(kind: module.Kind) -> bool:
   interested in data_pipe kinds, pending kinds, struct kinds or union kinds.
   """
   return is_data_pipe_kind(kind) or is_pending_kind(
-      kind) or module.IsStructKind(kind) or module.IsUnionKind(kind)
+      kind) or module.IsStructKind(kind) or module.IsUnionKind(
+          kind) or module.IsSharedBufferKind(kind)
 
 
 def get_interesting_kind_deps(
@@ -518,7 +549,6 @@ def build_handle_actions(handle_type: MojomHandleType,
   # Not meaningful in the context of mojolpm
   if handle_type in (
       MojomHandleType.MESSAGE_PIPE,
-      MojomHandleType.SHARED_BUFFER,
       MojomHandleType.PLATFORM,
   ):
     return MojoLPMActionSet()
@@ -610,6 +640,10 @@ def build(interface: module.Interface,
         else:
           handle_type = MojomHandleType.DATA_PIPE_CONSUMER
         actions.update(build_handle_actions(handle_type, def_type))
+        continue
+      if module.IsSharedBufferKind(kind):
+        actions.update(
+            build_handle_actions(MojomHandleType.SHARED_BUFFER, def_type))
         continue
 
       child_def_type = def_type
