@@ -16,6 +16,12 @@
 // source of truth should always be the store.
 @interface ArchivableCredential : NSObject <Credential, NSSecureCoding>
 
+// Initializer used to create a credential based on another credential, but with
+// a new favicon.
+- (instancetype)initWithFavicon:(NSString*)favicon
+                     credential:(id<Credential>)credential;
+
+// Initializer used for password credentials.
 - (instancetype)initWithFavicon:(NSString*)favicon
                        password:(NSString*)password
                            rank:(int64_t)rank
@@ -24,6 +30,19 @@
                     serviceName:(NSString*)serviceName
                        username:(NSString*)username
                            note:(NSString*)note NS_DESIGNATED_INITIALIZER;
+
+// Initializer used for passkey credentials.
+- (instancetype)initWithFavicon:(NSString*)favicon
+               recordIdentifier:(NSString*)recordIdentifier
+                         syncId:(NSString*)syncId
+                       username:(NSString*)username
+                userDisplayName:(NSString*)userDisplayName
+                         userId:(NSString*)userId
+                   credentialId:(NSString*)credentialId
+                           rpId:(NSString*)rpId
+                     privateKey:(NSString*)privateKey
+                      encrypted:(NSString*)encrypted
+                   creationTime:(int64_t)creationTime NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
