@@ -291,6 +291,9 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void SetCheckedState(ax::mojom::CheckedState checked_state);
   void RemoveCheckedState();
 
+  void SetKeyShortcuts(const std::string& key_shortcuts);
+  void RemoveKeyShortcuts();
+
   // Sets the platform-specific accessible name/title property of the
   // NativeViewAccessible window. This is needed on platforms where the name
   // of the NativeViewAccessible window is automatically calculated by the

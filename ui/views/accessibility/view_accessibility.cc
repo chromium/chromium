@@ -664,6 +664,15 @@ void ViewAccessibility::RemoveCheckedState() {
   }
 }
 
+void ViewAccessibility::SetKeyShortcuts(const std::string& key_shortcuts) {
+  data_.AddStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts,
+                           key_shortcuts);
+}
+
+void ViewAccessibility::RemoveKeyShortcuts() {
+  data_.RemoveStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts);
+}
+
 void ViewAccessibility::SetIsSelected(bool selected) {
   data_.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, selected);
 }
