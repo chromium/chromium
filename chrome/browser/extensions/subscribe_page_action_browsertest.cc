@@ -22,7 +22,7 @@ namespace extensions {
 
 namespace {
 
-const char kSubscribePageAction[] = "subscribe_page_action/src";
+const char kSubscribePageAction[] = "subscribe_page_action_v2/src";
 const char kSubscribePage[] = "/subscribe.html";
 const char kFeedPageMultiRel[] = "/feeds/feed_multi_rel.html";
 const char kValidFeedNoLinks[] = "/feeds/feed_nolinks.xml";

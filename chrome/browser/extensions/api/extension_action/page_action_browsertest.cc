@@ -25,7 +25,7 @@
 namespace extensions {
 namespace {
 
-const std::string kSubscribePageAction = "subscribe_page_action/src";
+const std::string kSubscribePageAction = "subscribe_page_action_v2/src";
 const std::string kFeedPage = "/feeds/feed.html";
 const std::string kNoFeedPage = "/feeds/no_feed.html";
 
