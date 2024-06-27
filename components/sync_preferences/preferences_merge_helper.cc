@@ -15,7 +15,7 @@ namespace sync_preferences::helper {
 namespace {
 
 MergeBehavior GetMergeBehavior(const PrefModelAssociatorClient& client,
-                               const std::string& pref_name) {
+                               std::string_view pref_name) {
   std::optional<SyncablePrefMetadata> metadata =
       client.GetSyncablePrefsDatabase().GetSyncablePrefMetadata(pref_name);
   CHECK(metadata.has_value());
@@ -60,7 +60,7 @@ base::Value::Dict MergeDictionaryValues(const base::Value::Dict& local_value,
 }
 
 base::Value MergePreference(const PrefModelAssociatorClient* client,
-                            const std::string& pref_name,
+                            std::string_view pref_name,
                             const base::Value& local_value,
                             const base::Value& server_value) {
   if (!client) {

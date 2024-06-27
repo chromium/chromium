@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_SYNC_PREFERENCES_PREFERENCES_MERGE_HELPER_H_
 #define COMPONENTS_SYNC_PREFERENCES_PREFERENCES_MERGE_HELPER_H_
 
-#include "base/values.h"
-
+#include <string_view>
 #include <utility>
+
+#include "base/values.h"
 
 namespace sync_preferences {
 
@@ -33,7 +34,7 @@ base::Value::Dict MergeDictionaryValues(const base::Value::Dict& local_value,
 // Note: `client` can NULL in some tests, in which case `server_value` is
 // returned.
 base::Value MergePreference(const PrefModelAssociatorClient* client,
-                            const std::string& pref_name,
+                            std::string_view pref_name,
                             const base::Value& local_value,
                             const base::Value& server_value);
 

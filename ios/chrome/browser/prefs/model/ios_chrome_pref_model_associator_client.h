@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_PREFS_MODEL_IOS_CHROME_PREF_MODEL_ASSOCIATOR_CLIENT_H_
 #define IOS_CHROME_BROWSER_PREFS_MODEL_IOS_CHROME_PREF_MODEL_ASSOCIATOR_CLIENT_H_
 
-#include <string>
+#include <string_view>
 
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "ios/chrome/browser/sync/model/prefs/ios_chrome_syncable_prefs_database.h"
@@ -24,7 +24,7 @@ class IOSChromePrefModelAssociatorClient
 
   // sync_preferences::PrefModelAssociatorClient implementation.
   base::Value MaybeMergePreferenceValues(
-      const std::string& pref_name,
+      std::string_view pref_name,
       const base::Value& local_value,
       const base::Value& server_value) const override;
   const sync_preferences::SyncablePrefsDatabase& GetSyncablePrefsDatabase()

@@ -139,7 +139,7 @@ class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
 
   // PrefModelAssociatorClient implementation.
   base::Value MaybeMergePreferenceValues(
-      const std::string& pref_name,
+      std::string_view pref_name,
       const base::Value& local_value,
       const base::Value& server_value) const override {
     return base::Value();
@@ -1211,7 +1211,7 @@ class MergeTestPrefModelAssociatorClient : public PrefModelAssociatorClient {
 
   // PrefModelAssociatorClient implementation.
   base::Value MaybeMergePreferenceValues(
-      const std::string& pref_name,
+      std::string_view pref_name,
       const base::Value& local_value,
       const base::Value& server_value) const override {
     if (auto it = custom_merge_values_.find(pref_name);
@@ -1236,7 +1236,7 @@ class MergeTestPrefModelAssociatorClient : public PrefModelAssociatorClient {
 
   std::set<std::string> mergeable_dict_prefs_;
   std::set<std::string> mergeable_list_prefs_;
-  std::map<std::string, base::Value> custom_merge_values_;
+  std::map<std::string, base::Value, std::less<>> custom_merge_values_;
 };
 
 class DualLayerUserPrefStoreMergeTest : public testing::Test {

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SYNC_PREFERENCES_PREF_MODEL_ASSOCIATOR_CLIENT_H_
 #define COMPONENTS_SYNC_PREFERENCES_PREF_MODEL_ASSOCIATOR_CLIENT_H_
 
-#include <string>
+#include <string_view>
 
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
@@ -29,7 +29,7 @@ class PrefModelAssociatorClient
   // and server-provided value |server_value|. Otherwise, returns |nullptr| and
   // the server's value will be chosen.
   virtual base::Value MaybeMergePreferenceValues(
-      const std::string& pref_name,
+      std::string_view pref_name,
       const base::Value& local_value,
       const base::Value& server_value) const = 0;
 
