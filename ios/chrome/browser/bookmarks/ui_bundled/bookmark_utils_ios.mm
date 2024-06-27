@@ -240,11 +240,9 @@ bool UpdateBookmark(const BookmarkNode* node,
       // In-model move.
       node_model->Move(node, folder, folder->children().size());
     } else {
-      // Cross-model move.
+      // Cross-storage move.
       node_model->MoveToOtherModelPossiblyWithNewNodeIdsAndUuids(
           node, folder_model, folder);
-      // Warning: calling `MoveToOtherModelWithNewNodeIdsAndUuids` invalidates
-      // `node`, so it shouldn't be used after this line.
     }
   }
   return true;

@@ -22,7 +22,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -67,7 +66,6 @@ using base::ASCIIToUTF16;
 using base::Time;
 using testing::ElementsAre;
 using testing::Invoke;
-using testing::Mock;
 using testing::WithArg;
 
 // Test cases used to test the removal of extra whitespace when adding
@@ -2881,82 +2879,6 @@ TEST_F(BookmarkModelFaviconTest, ShouldResetFaviconStatusAfterRestore) {
 
   EXPECT_FALSE(node->is_favicon_loading());
   EXPECT_FALSE(node->is_favicon_loaded());
-}
-
-class BookmarkDualModelTest : public testing::Test {
- public:
-  BookmarkDualModelTest()
-      : local_or_syncable_model_(TestBookmarkClient::CreateModel()),
-        account_model_(TestBookmarkClient::CreateModel()) {
-    local_or_syncable_observation_.Observe(local_or_syncable_model_.get());
-    account_observation_.Observe(account_model_.get());
-
-    scoped_feature_list_.InitAndDisableFeature(
-        syncer::kSyncEnableBookmarksInTransportMode);
-  }
-
- protected:
-  std::unique_ptr<BookmarkModel> local_or_syncable_model_;
-  std::unique_ptr<BookmarkModel> account_model_;
-  MockBookmarkModelObserver local_or_syncable_observer_;
-  MockBookmarkModelObserver account_observer_;
-  base::ScopedObservation<BookmarkModel, BookmarkModelObserver>
-      local_or_syncable_observation_{&local_or_syncable_observer_};
-  base::ScopedObservation<BookmarkModel, BookmarkModelObserver>
-      account_observation_{&account_observer_};
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(BookmarkDualModelTest, MoveToOtherModel) {
-  const BookmarkNode* mobile_node = local_or_syncable_model_->mobile_node();
-  const BookmarkNode* folder =
-      local_or_syncable_model_->AddFolder(mobile_node, 0, u"folder");
-  local_or_syncable_model_->AddURL(folder, 0, u"foo", GURL("http://foo.com"));
-  local_or_syncable_model_->AddURL(folder, 1, u"bar", GURL("http://bar.com"));
-  base::Uuid folder_uuid_before_move = folder->uuid();
-  const BookmarkNode* dest_folder = account_model_->mobile_node();
-  ASSERT_TRUE(dest_folder->children().empty());
-
-  testing::Sequence local_or_syncable_sequence;
-  EXPECT_CALL(local_or_syncable_observer_,
-              OnWillRemoveBookmarks(mobile_node, 0, folder, testing::_))
-      .InSequence(local_or_syncable_sequence);
-  std::set<GURL> removed_urls{GURL("http://foo.com"), GURL("http://bar.com")};
-  EXPECT_CALL(
-      local_or_syncable_observer_,
-      BookmarkNodeRemoved(mobile_node, 0, folder, removed_urls, testing::_))
-      .InSequence(local_or_syncable_sequence);
-
-  testing::Sequence account_sequence;
-  EXPECT_CALL(account_observer_, BookmarkNodeAdded(dest_folder, 0, true))
-      .InSequence(account_sequence);
-  const BookmarkNode* captured_foo_parent = nullptr;
-  EXPECT_CALL(account_observer_, BookmarkNodeAdded(testing::_, 0, true))
-      .InSequence(account_sequence)
-      .WillOnce(testing::SaveArg<0>(&captured_foo_parent));
-  const BookmarkNode* captured_bar_parent = nullptr;
-  EXPECT_CALL(account_observer_, BookmarkNodeAdded(testing::_, 1, true))
-      .InSequence(account_sequence)
-      .WillOnce(testing::SaveArg<0>(&captured_bar_parent));
-
-  const BookmarkNode* moved_folder =
-      local_or_syncable_model_->MoveToOtherModelWithNewNodeIdsAndUuids(
-          folder, account_model_.get(), dest_folder);
-
-  ASSERT_THAT(dest_folder->children(),
-              testing::ElementsAre(testing::Pointer(moved_folder)));
-  EXPECT_EQ(moved_folder->GetTitle(), u"folder");
-  ASSERT_EQ(moved_folder->children().size(), 2u);
-  EXPECT_EQ(captured_foo_parent, moved_folder);
-  EXPECT_EQ(captured_bar_parent, moved_folder);
-  const BookmarkNode* moved_foo = moved_folder->children()[0].get();
-  EXPECT_EQ(moved_foo->GetTitle(), u"foo");
-  EXPECT_EQ(moved_foo->GetTitledUrlNodeUrl(), GURL("http://foo.com"));
-  const BookmarkNode* moved_bar = moved_folder->children()[1].get();
-  EXPECT_EQ(moved_bar->GetTitle(), u"bar");
-  EXPECT_EQ(moved_bar->GetTitledUrlNodeUrl(), GURL("http://bar.com"));
-  // Moving bookmarks to another model should generate new UUIDs.
-  EXPECT_NE(moved_folder->uuid(), folder_uuid_before_move);
 }
 
 }  // namespace bookmarks
