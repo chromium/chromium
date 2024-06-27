@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/349653202): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/webnn/tflite/graph_impl_cros.h"
+
+#include <vector>
 
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "services/webnn/error.h"
@@ -74,8 +71,7 @@ void GraphImplCrOS::ComputeImpl(
   input_tensors.reserve(named_inputs.size());
   for (const auto& [name, buffer] : named_inputs) {
     input_tensors.emplace_back(
-        name,
-        std::vector<uint8_t>(buffer.data(), buffer.data() + buffer.size()));
+        name, std::vector<uint8_t>(buffer.begin(), buffer.end()));
   }
 
   model_remote_->Compute(
