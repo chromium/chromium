@@ -81,7 +81,7 @@ export class ProductSpecificationsItemElement extends PolymerElement {
       e.preventDefault();
     }
     this.fire_(
-        'item-checkbox-select',
+        'product-spec-item-select',
         {checked: this.checked_, uuid: this.item.uuid.value});
   }
 

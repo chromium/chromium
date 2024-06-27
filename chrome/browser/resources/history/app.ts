@@ -18,6 +18,7 @@ import './query_manager.js';
 import './shared_style.css.js';
 import './side_bar.js';
 import './strings.m.js';
+import './product_specifications_lists.js';
 
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import type {HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
@@ -346,6 +347,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.addEventListener('cr-toolbar-menu-click', this.onCrToolbarMenuClick_);
     this.addEventListener('delete-selected', this.deleteSelected);
     this.addEventListener('history-checkbox-select', this.checkboxSelected);
+    this.addEventListener(
+        'product-spec-item-select',
+        this.productSpecificationsCheckboxSelected_);
     this.addEventListener('history-close-drawer', this.closeDrawer_);
     this.addEventListener('history-view-changed', this.historyViewChanged_);
     this.addEventListener('unselect-all', this.unselectAll);
@@ -449,6 +453,20 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.$.toolbar.count = this.$.history.getSelectedItemCount();
   }
 
+  /**
+   * Listens for product-specs-item being selected or deselected (through
+   * checkbox) and changes the view of the top toolbar.
+   */
+  private productSpecificationsCheckboxSelected_() {
+    if (this.selectedPage_ !== Page.PRODUCT_SPECIFICATIONS_LISTS) {
+      return;
+    }
+    const productSpecsListElement =
+        this.shadowRoot!.querySelector('product-specifications-lists');
+    assert(productSpecsListElement);
+    this.$.toolbar.count = productSpecsListElement.getSelectedItemCount();
+  }
+
   selectOrUnselectAll() {
     this.$.history.selectOrUnselectAll();
     this.$.toolbar.count = this.$.history.getSelectedItemCount();
@@ -464,7 +482,14 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   deleteSelected() {
-    this.$.history.deleteSelectedWithPrompt();
+    if (this.selectedPage_ === Page.PRODUCT_SPECIFICATIONS_LISTS) {
+      const productSpecsListElement =
+          this.shadowRoot!.querySelector('product-specifications-lists');
+      assert(productSpecsListElement);
+      productSpecsListElement.deleteSelectedWithPrompt();
+    } else {
+      this.$.history.deleteSelectedWithPrompt();
+    }
   }
 
   private onQueryFinished_() {

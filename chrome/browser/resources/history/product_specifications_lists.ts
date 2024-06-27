@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import './product_specifications_item.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './shared_style.css.js';
 
@@ -9,6 +10,7 @@ import type {BrowserProxy} from '//resources/cr_components/commerce/browser_prox
 import {BrowserProxyImpl} from '//resources/cr_components/commerce/browser_proxy.js';
 import type {ProductSpecificationsSet} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {FocusGrid} from 'chrome://resources/js/focus_grid.js';
@@ -21,12 +23,13 @@ import {getTemplate} from './product_specifications_lists.html.js';
 export interface ProductSpecificationsListsElement {
   $: {
     'sharedMenu': CrLazyRenderElement<CrActionMenuElement>,
+    'deleteItemDialog': CrLazyRenderElement<CrDialogElement>,
   };
 }
 
 declare global {
   interface HTMLElementEventMap {
-    'item-checkbox-select': ItemCheckboxSelectEvent;
+    'product-spec-item-select': ItemCheckboxSelectEvent;
     'item-menu-open': ItemMenuOpenEvent;
   }
 }
@@ -82,6 +85,10 @@ export class ProductSpecificationsListsElement extends PolymerElement {
     this.focusGrid_!.ensureRowActive(0);
   }
 
+  getSelectedItemCount() {
+    return this.selectedItems.size;
+  }
+
   private onItemSelected_(e: ItemCheckboxSelectEvent) {
     if (!this.selectedItems.has(e.detail.uuid)) {
       this.selectedItems.add(e.detail.uuid);
@@ -95,8 +102,7 @@ export class ProductSpecificationsListsElement extends PolymerElement {
     this.uuidOfOpenMenu_ = e.detail.uuid;
   }
 
-  // TODO: b/335670350 - add checkbox support for deleting multiple items.
-  private deleteItems_(items: string[]): Promise<void[]> {
+  private deleteItems_(items: Set<string>): Promise<void[]> {
     const promises: void[] = [];
     for (const uuid of items) {
       promises.push(
@@ -107,12 +113,40 @@ export class ProductSpecificationsListsElement extends PolymerElement {
 
   private onRemoveItemClick_() {
     if (this.uuidOfOpenMenu_ !== null) {
-      this.deleteItems_([this.uuidOfOpenMenu_.value]);
+      this.deleteItems_(new Set([this.uuidOfOpenMenu_.value]));
+      // TODO: b/335670350 - remove items from the UI.
     }
   }
 
   getFocusGridForTesting() {
     return this.focusGrid_;
+  }
+
+  /**
+   * Deletes selected items via the toolbar, which opens up a dialog.
+   */
+  deleteSelectedWithPrompt() {
+    // TODO: b/335670350 - add check for deleting history
+    this.$.deleteItemDialog.get().showModal();
+    const button =
+        this.shadowRoot!.querySelector<HTMLElement>('.action-button');
+    assert(button);
+    button.focus();
+  }
+
+  private onDialogConfirmClick_() {
+    this.deleteItems_(this.selectedItems);
+
+    // TODO: b/335670350 - set deleting state in progress.
+    const deleteItemDialog = this.$.deleteItemDialog.getIfExists();
+    assert(deleteItemDialog);
+    deleteItemDialog.close();
+  }
+
+  private onDialogCancelClick_() {
+    const deleteItemDialog = this.$.deleteItemDialog.getIfExists();
+    assert(deleteItemDialog);
+    deleteItemDialog.close();
   }
 }
 

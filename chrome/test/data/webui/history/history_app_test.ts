@@ -6,6 +6,7 @@ import 'chrome://history/history.js';
 
 import type {HistoryAppElement} from 'chrome://history/history.js';
 import {BrowserServiceImpl, CrRouter, HistoryEmbeddingsBrowserProxyImpl, HistoryEmbeddingsPageHandlerRemote} from 'chrome://history/history.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -309,5 +310,35 @@ suite('HistoryAppTest', function() {
         ],
     );
     await embeddingsHandler.whenCalled('maybeShowFeaturePromo');
+  });
+
+  test('ProductSpecsIncrementsToolbar', async () => {
+    // Reset the app with product spec lists feature enabled.
+    document.body.removeChild(element);
+    loadTimeData.overrideValues({productSpecificationsListsEnabled: true});
+    element = document.createElement('history-app');
+    document.body.appendChild(element);
+    element.$.router.selectedPage = 'productSpecificationsLists';
+    await flushTasks();
+    assertEquals(0, element.$.toolbar.count);
+
+    const productSpecificationsList =
+        element.shadowRoot!.querySelector('product-specifications-lists');
+    assert(!!productSpecificationsList);
+
+    // Mock adding a selected item.
+    productSpecificationsList.selectedItems.add('uuid1');
+    productSpecificationsList.dispatchEvent(
+        new CustomEvent('product-spec-item-select', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            checked: true,
+            uuid: 'uuid1',
+          },
+        }));
+    await flushTasks();
+
+    assertEquals(1, element.$.toolbar.count);
   });
 });

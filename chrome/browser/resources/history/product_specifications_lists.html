@@ -36,7 +36,7 @@
   <template is="dom-repeat" items="[[allItems_]]" as="item"
       on-dom-change="updateFocusGrid_">
     <product-specifications-item item="[[item]]"
-        on-item-checkbox-select="onItemSelected_"
+        on-product-spec-item-select="onItemSelected_"
         on-item-menu-open="onOpenMenu_">
     </product-specifications-item>
   </template>
@@ -50,4 +50,23 @@
       </cr-action-menu>
     </template>
   </cr-lazy-render>
+
+  <cr-lazy-render id="deleteItemDialog">
+    <template>
+      <cr-dialog consume-keydown-event>
+        <div slot="title" id="title">$i18n{removeSelected}</div>
+        <div slot="body" id="body">$i18n{deleteWarning}</div>
+        <div slot="button-container">
+          <cr-button class="cancel-button" on-click="onDialogCancelClick_">
+            $i18n{cancel}
+          </cr-button>
+          <cr-button class="action-button" on-click="onDialogConfirmClick_"
+              <if expr="is_macosx">aria-describedby="title body"</if>>
+            $i18n{deleteConfirm}
+          </cr-button>
+        </div>
+      </cr-dialog>
+    </template>
+  </cr-lazy-render>
+
 </div>

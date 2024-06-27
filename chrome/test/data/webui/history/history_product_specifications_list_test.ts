@@ -145,6 +145,65 @@ suite('ProductSpecificationsListTest', () => {
         shoppingServiceApi.getArgs('deleteProductSpecificationsSet')[0]);
   });
 
+  test('delete dialog renders', async function() {
+    await ensureLazyLoaded();
+    const dialog = productSpecificationsList.$.deleteItemDialog.get();
+    assertFalse(dialog.open);
+
+    productSpecificationsList.deleteSelectedWithPrompt();
+
+    assertTrue(dialog.open);
+    const title = dialog.querySelector('#title');
+    const body = dialog.querySelector('#body');
+    const cancelButton = dialog.querySelector('.cancel-button');
+    const actionButton = dialog.querySelector('.action-button');
+    assertTrue(!!title);
+    assertTrue(!!body);
+    assertTrue(!!cancelButton);
+    assertTrue(!!actionButton);
+  });
+
+  test('delete dialog cancel button closes dialog', async function() {
+    await ensureLazyLoaded();
+    const dialog = productSpecificationsList.$.deleteItemDialog.get();
+    productSpecificationsList.deleteSelectedWithPrompt();
+    const cancelButton = dialog.querySelector<HTMLElement>('.cancel-button');
+    assertTrue(!!cancelButton);
+
+    cancelButton.click();
+
+    assertFalse(dialog.open);
+  });
+
+  test('delete dialog action button calls delete', async function() {
+    await ensureLazyLoaded();
+
+    const items = productSpecificationsList.shadowRoot!.querySelectorAll(
+        'product-specifications-item');
+    const checkbox0 = items[0]!.$.checkbox as CrCheckboxElement;
+    checkbox0.click();
+    await checkbox0.updateComplete;
+    const checkbox1 = items[1]!.$.checkbox as CrCheckboxElement;
+    checkbox1.click();
+    await checkbox1.updateComplete;
+    assertDeepEquals(
+        new Set(['ex1', 'ex2']), productSpecificationsList.selectedItems);
+
+    const dialog = productSpecificationsList.$.deleteItemDialog.get();
+    productSpecificationsList.deleteSelectedWithPrompt();
+    const actionButton = dialog.querySelector<HTMLElement>('.action-button');
+    assertTrue(!!actionButton);
+    actionButton.click();
+
+    assertEquals(
+        2, shoppingServiceApi.getCallCount('deleteProductSpecificationsSet'));
+    assertDeepEquals(
+        {value: 'ex1'},
+        shoppingServiceApi.getArgs('deleteProductSpecificationsSet')[0]);
+    assertDeepEquals(
+        {value: 'ex2'},
+        shoppingServiceApi.getArgs('deleteProductSpecificationsSet')[1]);
+  });
 
 
   test('focus with arrow keys', async () => {

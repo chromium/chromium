@@ -41,7 +41,7 @@ suite('ProductSpecificationsItemTest', () => {
     let checked = false;
     let uuid = '';
     productSpecificationsItem.addEventListener(
-        'item-checkbox-select', function(e) {
+        'product-spec-item-select', function(e) {
           selectionCount++;
           checked = e.detail.checked;
           uuid = e.detail.uuid;
