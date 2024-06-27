@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_HISTORY_EMBEDDINGS_EMBEDDER_H_
 #define COMPONENTS_HISTORY_EMBEDDINGS_EMBEDDER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
