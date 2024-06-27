@@ -7,7 +7,6 @@
 
 #include <memory>
 
-class GrDirectContext;
 class SkCanvas;
 
 namespace chrome_pdf {
@@ -24,13 +23,12 @@ class InkSkiaRenderer {
   InkSkiaRenderer& operator=(const InkSkiaRenderer&) = delete;
   virtual ~InkSkiaRenderer() = default;
 
-  // TODO(thestig): Remove `context` parameter.
-  virtual bool Draw(GrDirectContext* context,
-                    const InkInProgressStroke& stroke,
+  // Note that the context parameter has been omitted, as it is always set to
+  // nullptr.
+  virtual bool Draw(const InkInProgressStroke& stroke,
                     const InkAffineTransform& object_to_canvas,
                     SkCanvas& canvas) = 0;
-  virtual bool Draw(GrDirectContext* context,
-                    const InkStroke& stroke,
+  virtual bool Draw(const InkStroke& stroke,
                     const InkAffineTransform& object_to_canvas,
                     SkCanvas& canvas) = 0;
 

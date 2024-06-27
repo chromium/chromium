@@ -11,12 +11,11 @@ namespace chrome_pdf {
 
 class InkSkiaRendererStub : public InkSkiaRenderer {
  public:
-  bool Draw(GrDirectContext* context,
-            const InkInProgressStroke& stroke,
+  // InkSkiaRenderer:
+  bool Draw(const InkInProgressStroke& stroke,
             const InkAffineTransform& object_to_canvas,
             SkCanvas& canvas) override;
-  bool Draw(GrDirectContext* context,
-            const InkStroke& stroke,
+  bool Draw(const InkStroke& stroke,
             const InkAffineTransform& object_to_canvas,
             SkCanvas& canvas) override;
 };

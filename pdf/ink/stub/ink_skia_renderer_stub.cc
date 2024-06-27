@@ -10,21 +10,19 @@ namespace chrome_pdf {
 
 // static
 std::unique_ptr<InkSkiaRenderer> InkSkiaRenderer::Create() {
-  return nullptr;
+  return std::make_unique<InkSkiaRendererStub>();
 }
 
-bool InkSkiaRendererStub::Draw(GrDirectContext* context,
-                               const InkInProgressStroke& stroke,
+bool InkSkiaRendererStub::Draw(const InkInProgressStroke& stroke,
                                const InkAffineTransform& object_to_canvas,
                                SkCanvas& canvas) {
-  return false;
+  return true;
 }
 
-bool InkSkiaRendererStub::Draw(GrDirectContext* context,
-                               const InkStroke& stroke,
+bool InkSkiaRendererStub::Draw(const InkStroke& stroke,
                                const InkAffineTransform& object_to_canvas,
                                SkCanvas& canvas) {
-  return false;
+  return true;
 }
 
 }  // namespace chrome_pdf
