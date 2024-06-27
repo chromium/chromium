@@ -521,8 +521,9 @@ void BluetoothAdapterFloss::OnStopDiscovery(
 
 void BluetoothAdapterFloss::OnInitializeDeviceProperties(
     BluetoothDeviceFloss* device_ptr) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.DeviceAdded(this, device_ptr);
+  }
 }
 
 void BluetoothAdapterFloss::OnDeviceUuidsChanged(
@@ -586,6 +587,16 @@ void BluetoothAdapterFloss::OnGetBondState(const FlossDeviceId& device_id,
   if (device->HasReadProperties()) {
     NotifyDevicePairedChanged(device, device->IsPaired());
   }
+}
+
+void BluetoothAdapterFloss::OnGetBatteryInformation(
+    DBusResult<std::optional<BatterySet>> battery_set) {
+  if (!battery_set.has_value() || !battery_set.value().has_value()) {
+    return;
+  }
+
+  auto set = battery_set.value().value();
+  BatteryInfoUpdated(set.address, set);
 }
 
 // Announce to observers a change in the adapter state.
@@ -806,6 +817,12 @@ void BluetoothAdapterFloss::UpdateDeviceProperties(
         base::BindOnce(&BluetoothAdapterFloss::OnGetConnectionState,
                        weak_ptr_factory_.GetWeakPtr(), device_found),
         device_found);
+
+    FlossDBusManager::Get()->GetBatteryManagerClient()->GetBatteryInformation(
+        base::BindOnce(&BluetoothAdapterFloss::OnGetBatteryInformation,
+                       weak_ptr_factory_.GetWeakPtr()),
+        new_device_ptr->AsFlossDeviceId());
+
     return;
   }
 

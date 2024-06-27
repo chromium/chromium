@@ -247,6 +247,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
                        DBusResult<Void> ret);
   // Called when all device properties have been initialized
   void OnInitializeDeviceProperties(BluetoothDeviceFloss* device_ptr);
+  // Called once the battery data for a specific device has been fetched
+  void OnGetBatteryInformation(
+      DBusResult<std::optional<BatterySet>> battery_set);
   // Called when the UUIDs property changed and fetched.
   void OnDeviceUuidsChanged(BluetoothDeviceFloss* device_ptr);
   void OnGetConnectionState(const FlossDeviceId& device_id,
