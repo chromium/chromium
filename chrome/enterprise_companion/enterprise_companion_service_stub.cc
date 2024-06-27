@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/sequence_checker.h"
 #include "chrome/enterprise_companion/enterprise_companion_service.h"
-#include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
 #include "components/named_mojo_ipc_server/endpoint_options.h"
@@ -52,9 +51,7 @@ class Stub final : public mojom::EnterpriseCompanion {
 
   void Shutdown(ShutdownCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    service_->Shutdown(
-        base::BindOnce(std::move(callback),
-                       EnterpriseCompanionStatus::Success().ToMojomStatus()));
+    service_->Shutdown(base::BindOnce(std::move(callback), Result::kSuccess));
   }
 
  private:

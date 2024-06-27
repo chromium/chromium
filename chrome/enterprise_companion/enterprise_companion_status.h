@@ -5,13 +5,11 @@
 #ifndef CHROME_ENTERPRISE_COMPANION_ENTERPRISE_COMPANION_STATUS_H_
 #define CHROME_ENTERPRISE_COMPANION_ENTERPRISE_COMPANION_STATUS_H_
 
-#include <cstdint>
 #include <ostream>
 #include <utility>
 #include <variant>
 
 #include "base/functional/overloaded.h"
-#include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 
@@ -31,9 +29,6 @@ enum class ApplicationError {
 class EnterpriseCompanionStatus {
  public:
   using Ok = std::monostate;
-  // The indices of the underlying variant are used by this implementation and
-  // are transmitted across RPC boundaries. Existing entries should not be
-  // reordered.
   using StatusVariant = std::variant<Ok,
                                      policy::DeviceManagementStatus,
                                      policy::CloudPolicyValidatorBase::Status,
@@ -46,23 +41,6 @@ class EnterpriseCompanionStatus {
   }
 
   bool ok() const { return std::holds_alternative<Ok>(status_variant_); }
-
-  // Indicates the status space for the code. As an implementation detail, the
-  // space is the index of the code's type within `StatusVariant`.
-  int space() const { return status_variant_.index(); }
-
-  int code() const {
-    return std::visit(
-        base::Overloaded{[](std::monostate) { return 0; },
-                         [](auto&& x) { return static_cast<int>(x); }},
-        status_variant_);
-  }
-
-  const char* description() const;
-
-  mojom::StatusPtr ToMojomStatus() const {
-    return mojom::Status::New(space(), code(), description());
-  }
 
   auto operator<=>(const EnterpriseCompanionStatus& other) const = default;
 

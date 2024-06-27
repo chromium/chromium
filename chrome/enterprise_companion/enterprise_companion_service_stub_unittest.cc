@@ -27,7 +27,6 @@
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_service.h"
 #include "chrome/enterprise_companion/ipc_support.h"
-#include "chrome/enterprise_companion/mojom/enterprise_companion.mojom-forward.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
@@ -141,7 +140,8 @@ TEST_F(EnterpriseCompanionServiceStubTest, ServiceReachable) {
   start_run_loop.Run(FROM_HERE);
 
   base::Process child_process = SpawnClient();
-  EXPECT_EQ(WaitForProcess(child_process, /*should_exit=*/true), 0);
+  EXPECT_EQ(WaitForProcess(child_process, /*should_exit=*/true),
+            static_cast<int>(mojom::EnterpriseCompanion::Result::kSuccess));
 }
 
 TEST_F(EnterpriseCompanionServiceStubTest, UntrustedCallerRejected) {
@@ -184,9 +184,11 @@ MULTIPROCESS_TEST_MAIN(EnterpriseCompanionClient) {
   base::RunLoop wait_for_response_run_loop;
   int32_t result_code = -1;
   remote->Shutdown(
-      base::BindLambdaForTesting([&result_code](mojom::StatusPtr status) {
-        result_code = static_cast<int>(status->code);
-      }).Then(wait_for_response_run_loop.QuitClosure()));
+      base::BindLambdaForTesting(
+          [&result_code](mojom::EnterpriseCompanion::Result result) {
+            result_code = static_cast<int>(result);
+          })
+          .Then(wait_for_response_run_loop.QuitClosure()));
   wait_for_response_run_loop.Run(FROM_HERE);
 
   return result_code;
