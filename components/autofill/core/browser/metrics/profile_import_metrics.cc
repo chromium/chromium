@@ -55,8 +55,12 @@ void LogAddressProfileImportUkm(
     AutofillProfileImportType import_type,
     AutofillClient::AddressPromptUserDecision user_decision,
     const ProfileImportMetadata& profile_import_metadata,
-    size_t num_edited_fields) {
-  ukm::builders::Autofill_AddressProfileImport(source_id)
+    size_t num_edited_fields,
+    std::optional<AutofillProfile> import_candidate,
+    const std::vector<const AutofillProfile*>& existing_profiles,
+    std::string_view app_locale) {
+  ukm::builders::Autofill2_AddressProfileImport builder(source_id);
+  builder
       .SetAutocompleteUnrecognizedImport(
           profile_import_metadata
               .did_import_from_unrecognized_autocomplete_field)
@@ -65,7 +69,15 @@ void LogAddressProfileImportUkm(
       .SetPhoneNumberStatus(
           static_cast<int64_t>(profile_import_metadata.phone_import_status))
       .SetUserDecision(static_cast<int64_t>(user_decision))
-      .Record(ukm_recorder);
+      .SetUserHasExistingProfile(!existing_profiles.empty());
+  if (import_type == AutofillProfileImportType::kNewProfile &&
+      !existing_profiles.empty() && import_candidate) {
+    builder.SetDuplicationRank(GetDuplicationRank(
+        AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
+            *import_candidate, existing_profiles,
+            AutofillProfileComparator(app_locale))));
+  }
+  builder.Record(ukm_recorder);
 }
 
 void LogAddressFormImportRequirementMetric(

@@ -29,7 +29,7 @@ namespace autofill {
 namespace {
 
 using UkmAddressProfileImportType =
-    ukm::builders::Autofill_AddressProfileImport;
+    ukm::builders::Autofill2_AddressProfileImport;
 using UserDecision = AutofillClient::AddressPromptUserDecision;
 using autofill_metrics::SettingsVisibleFieldTypeForMetrics;
 
@@ -139,6 +139,7 @@ struct ImportScenarioTestCase {
   std::vector<std::string> blocked_guids_for_updates;
   std::optional<AutofillProfile> profile_to_be_added_while_waiting;
   bool allow_only_silent_updates = false;
+  int duplication_rank;
 };
 
 bool IsNewProfile(const ImportScenarioTestCase& test_scenario) {
@@ -526,7 +527,7 @@ void AddressProfileSaveManagerTest::VerifyUkmForAddressImport(
   ASSERT_EQ(entries.size(), is_ukm_logged ? 1u : 0u);
 
   if (is_ukm_logged) {
-    ASSERT_EQ(5u, entries[0]->metrics.size());
+    ASSERT_GE(entries[0]->metrics.size(), 6u);
     ukm_recorder->ExpectEntryMetric(
         entries[0],
         UkmAddressProfileImportType::kAutocompleteUnrecognizedImportName,
@@ -543,6 +544,22 @@ void AddressProfileSaveManagerTest::VerifyUkmForAddressImport(
     ukm_recorder->ExpectEntryMetric(
         entries[0], UkmAddressProfileImportType::kUserDecisionName,
         static_cast<int64_t>(test_scenario.user_decision));
+    ukm_recorder->ExpectEntryMetric(
+        entries[0], UkmAddressProfileImportType::kUserHasExistingProfileName,
+        static_cast<int64_t>(!test_scenario.existing_profiles.empty() ||
+                             test_scenario.profile_to_be_added_while_waiting));
+    if (test_scenario.expected_import_type ==
+            AutofillProfileImportType::kNewProfile &&
+        test_scenario.import_candidate &&
+        (!test_scenario.existing_profiles.empty() ||
+         test_scenario.profile_to_be_added_while_waiting)) {
+      ukm_recorder->ExpectEntryMetric(
+          entries[0], UkmAddressProfileImportType::kDuplicationRankName,
+          test_scenario.duplication_rank);
+    } else {
+      EXPECT_FALSE(ukm_recorder->EntryHasMetric(
+          entries[0], UkmAddressProfileImportType::kDuplicationRankName));
+    }
   }
 }
 
@@ -583,7 +600,8 @@ TEST_P(AddressProfileSaveManagerTest, SaveNewProfile_ProfileAddedWhileWaiting) {
       .import_candidate = observed_profile,
       .expected_final_profiles = {observed_profile,
                                   profile_added_while_waiting},
-      .profile_to_be_added_while_waiting = profile_added_while_waiting};
+      .profile_to_be_added_while_waiting = profile_added_while_waiting,
+      .duplication_rank = 4};
 
   TestImportScenario(test_scenario);
 }

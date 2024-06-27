@@ -502,7 +502,9 @@ void ProfileImportProcess::CollectMetrics(
   auto LogUkmMetrics = [&](int num_edited_fields = 0) {
     autofill_metrics::LogAddressProfileImportUkm(
         ukm_recorder, source_id, import_type_, user_decision_, import_metadata_,
-        num_edited_fields);
+        num_edited_fields,
+        UserAccepted() ? confirmed_import_candidate_ : import_candidate_,
+        existing_profiles, app_locale_);
   };
 
   if (allow_only_silent_updates_) {

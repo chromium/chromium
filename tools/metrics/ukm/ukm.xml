@@ -2867,46 +2867,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Autofill.AddressProfileImport">
-  <owner>vidhanj@google.com</owner>
-  <owner>koerber@google.com</owner>
-  <summary>
-    Recorded after a form submission that either resulted in a save prompt for
-    addresses or in a silent update of an already existing profile.
-  </summary>
-  <metric name="AutocompleteUnrecognizedImport" enum="Boolean">
-    <summary>
-      Logs if data was imported from a field that has autocomplete=UNRECOGNIZED.
-    </summary>
-  </metric>
-  <metric name="ImportType" enum="AutofillProfileImportType">
-    <summary>
-      Logs the import type of the storage prompt. An import type can be either
-      the import of a new profile, an update of an existing profile that results
-      in a confirmation dialog, or a silent update that only changes the
-      structure of an already stored address but does not affect any
-      settings-visible stored data.
-    </summary>
-  </metric>
-  <metric name="NumberOfEditedFields">
-    <summary>
-      Logs the count for the number of fields that have been edited by the user
-      in the storage dialog before the storage was confirmed.
-    </summary>
-  </metric>
-  <metric name="PhoneNumberStatus" enum="AutofillPhoneImportValidity">
-    <summary>
-      Logs the phone number validity status based on whether the phone number
-      was imported in the profile or not or removed beforehand.
-    </summary>
-  </metric>
-  <metric name="UserDecision" enum="AutofillProfileImportDecision">
-    <summary>
-      Logs the user decision based on the storage prompt.
-    </summary>
-  </metric>
-</event>
-
 <event name="Autofill.CardUploadDecision">
   <owner>sebsg@chromium.org</owner>
   <metric name="UploadDecision">
@@ -3705,6 +3665,60 @@ be describing additional metrics about the same event.
   <metric name="ServerType">
     <summary>
       Field's |FieldType| returned by server. See |AutofillField.server_type()|.
+    </summary>
+  </metric>
+</event>
+
+<event name="Autofill2.AddressProfileImport">
+  <owner>vidhanj@google.com</owner>
+  <owner>koerber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Recorded after a form submission that either resulted in a save prompt for
+    addresses or in a silent update of an already existing profile.
+  </summary>
+  <metric name="AutocompleteUnrecognizedImport" enum="Boolean">
+    <summary>
+      Logs if data was imported from a field that has autocomplete=UNRECOGNIZED.
+    </summary>
+  </metric>
+  <metric name="DuplicationRank">
+    <summary>
+      Minimum number of fields whose removal makes the import candidate a
+      duplicate of any existing profile. If the duplication rank is 1, the
+      import candidate can be called a quasi-duplicate of an existing profile.
+      Only recorded for new profiles and if a stored profile existed.
+    </summary>
+  </metric>
+  <metric name="ImportType" enum="AutofillProfileImportType">
+    <summary>
+      Logs the import type of the storage prompt. An import type can be either
+      the import of a new profile, an update of an existing profile that results
+      in a confirmation dialog, or a silent update that only changes the
+      structure of an already stored address but does not affect any
+      settings-visible stored data.
+    </summary>
+  </metric>
+  <metric name="NumberOfEditedFields">
+    <summary>
+      Logs the count for the number of fields that have been edited by the user
+      in the storage dialog before the storage was confirmed.
+    </summary>
+  </metric>
+  <metric name="PhoneNumberStatus" enum="AutofillPhoneImportValidity">
+    <summary>
+      Logs the phone number validity status based on whether the phone number
+      was imported in the profile or not or removed beforehand.
+    </summary>
+  </metric>
+  <metric name="UserDecision" enum="AutofillProfileImportDecision">
+    <summary>
+      Logs the user decision based on the storage prompt.
+    </summary>
+  </metric>
+  <metric name="UserHasExistingProfile" enum="Boolean">
+    <summary>
+      True if the user had already saved an address profile, false otherwise.
     </summary>
   </metric>
 </event>
