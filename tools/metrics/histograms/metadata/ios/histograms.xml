@@ -2798,7 +2798,7 @@ the generic promo launch. -->
 
 <histogram name="IOS.PostDefaultAbandonmentPromo.UserAction"
     enum="IOSPostRestoreDefaultBrowserActionOnPrompt"
-    expires_after="2024-07-21">
+    expires_after="2024-12-31">
   <owner>gujen@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
