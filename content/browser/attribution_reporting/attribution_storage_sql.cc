@@ -436,6 +436,13 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
         ReportCorruptionStatus::kSourceInvalidDestinationSites);
   }
 
+  std::vector<uint64_t> event_level_dedup_keys;
+  std::vector<uint64_t> aggregatable_dedup_keys;
+  if (!ReadDedupKeys(source_id, event_level_dedup_keys,
+                     aggregatable_dedup_keys)) {
+    corruption_causes.Put(ReportCorruptionStatus::kSourceDedupKeyQueryFailed);
+  }
+
   if (!corruption_causes.empty()) {
     return base::unexpected(
         ReportCorruptionStatusSetAndIds(corruption_causes, source_id));
@@ -483,6 +490,9 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
             ReportCorruptionStatus::kStoredSourceConstructionFailed},
         source_id));
   }
+
+  stored_source->dedup_keys() = std::move(event_level_dedup_keys);
+  stored_source->aggregatable_dedup_keys() = std::move(aggregatable_dedup_keys);
 
   return StoredSourceData{.source = *std::move(stored_source),
                           .num_attributions = num_attributions,
@@ -1556,14 +1566,9 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
     return EventLevelResult::kNoMatchingConfigurations;
   }
 
-  switch (ReportAlreadyStored(source.source_id(), event_trigger->dedup_key,
-                              AttributionReport::Type::kEventLevel)) {
-    case ReportAlreadyStoredStatus::kNotStored:
-      break;
-    case ReportAlreadyStoredStatus::kStored:
-      return EventLevelResult::kDeduplicated;
-    case ReportAlreadyStoredStatus::kError:
-      return EventLevelResult::kInternalError;
+  if (event_trigger->dedup_key.has_value() &&
+      base::Contains(source.dedup_keys(), *event_trigger->dedup_key)) {
+    return EventLevelResult::kDeduplicated;
   }
 
   auto trigger_spec_it = source.trigger_specs().find(
@@ -2255,32 +2260,6 @@ bool AttributionStorageSql::HasCapacityForStoringSource(
   return count < delegate_->GetMaxSourcesPerOrigin();
 }
 
-AttributionStorageSql::ReportAlreadyStoredStatus
-AttributionStorageSql::ReportAlreadyStored(
-    StoredSource::Id source_id,
-    std::optional<uint64_t> dedup_key,
-    AttributionReport::Type report_type) {
-  if (!dedup_key.has_value()) {
-    return ReportAlreadyStoredStatus::kNotStored;
-  }
-
-  sql::Statement statement(db_.GetCachedStatement(
-      SQL_FROM_HERE, attribution_queries::kCountReportsSql));
-  statement.BindInt64(0, *source_id);
-  statement.BindInt(1, SerializeReportType(report_type));
-  statement.BindInt64(2, SerializeUint64(*dedup_key));
-
-  // If there's an error, return true so `MaybeCreateAndStoreReport()`
-  // returns early.
-  if (!statement.Step()) {
-    return ReportAlreadyStoredStatus::kError;
-  }
-
-  int64_t count = statement.ColumnInt64(0);
-  return count > 0 ? ReportAlreadyStoredStatus::kStored
-                   : ReportAlreadyStoredStatus::kNotStored;
-}
-
 AttributionStorageSql::ConversionCapacityStatus
 AttributionStorageSql::CapacityForStoringReport(
     const url::Origin& destination_origin,
@@ -2326,19 +2305,16 @@ std::vector<StoredSource> AttributionStorageSql::GetActiveSources(int limit) {
     return {};
   }
 
-  for (auto& source : sources) {
-    if (!ReadDedupKeys(source)) {
-      return {};
-    }
-  }
-
   return sources;
 }
 
-bool AttributionStorageSql::ReadDedupKeys(StoredSource& source) {
+bool AttributionStorageSql::ReadDedupKeys(
+    StoredSource::Id source_id,
+    std::vector<uint64_t>& event_level_dedup_keys,
+    std::vector<uint64_t>& aggregatable_dedup_keys) {
   sql::Statement statement(
       db_.GetCachedStatement(SQL_FROM_HERE, attribution_queries::kDedupKeySql));
-  statement.BindInt64(0, *source.source_id());
+  statement.BindInt64(0, *source_id);
 
   while (statement.Step()) {
     uint64_t dedup_key = DeserializeUint64(statement.ColumnInt64(0));
@@ -2350,10 +2326,10 @@ bool AttributionStorageSql::ReadDedupKeys(StoredSource& source) {
     }
     switch (*report_type) {
       case AttributionReport::Type::kEventLevel:
-        source.dedup_keys().push_back(dedup_key);
+        event_level_dedup_keys.push_back(dedup_key);
         break;
       case AttributionReport::Type::kAggregatableAttribution:
-        source.aggregatable_dedup_keys().push_back(dedup_key);
+        aggregatable_dedup_keys.push_back(dedup_key);
         break;
       case AttributionReport::Type::kNullAggregatable:
         break;
@@ -2507,7 +2483,7 @@ void AttributionStorageSql::VerifyReports(DeletionCounts* deletion_counts) {
       for (ReportCorruptionStatus corruption_cause :
            corruption_case.status_set) {
         static_assert(ReportCorruptionStatus::kMaxValue ==
-                          ReportCorruptionStatus::kSourceInvalidTriggerSpecs,
+                          ReportCorruptionStatus::kSourceDedupKeyQueryFailed,
                       "bump metric version");
         base::UmaHistogramEnumeration("Conversions.CorruptReportsInDatabase5",
                                       corruption_cause);
@@ -3182,15 +3158,9 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
     dedup_key = matched_dedup_key->dedup_key;
   }
 
-  switch (
-      ReportAlreadyStored(source.source_id(), dedup_key,
-                          AttributionReport::Type::kAggregatableAttribution)) {
-    case ReportAlreadyStoredStatus::kNotStored:
-      break;
-    case ReportAlreadyStoredStatus::kStored:
-      return AggregatableResult::kDeduplicated;
-    case ReportAlreadyStoredStatus::kError:
-      return AggregatableResult::kInternalError;
+  if (dedup_key.has_value() &&
+      base::Contains(source.aggregatable_dedup_keys(), *dedup_key)) {
+    return AggregatableResult::kDeduplicated;
   }
 
   std::vector<blink::mojom::AggregatableReportHistogramContribution>

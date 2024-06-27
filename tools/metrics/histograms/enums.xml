@@ -3406,6 +3406,7 @@ Called by update_net_error_codes.py.-->
   <int value="27" label="Corresponding source - invalid destination sites"/>
   <int value="28" label="Corresponding source - construction failed"/>
   <int value="29" label="Corresponding source - invalid trigger specs"/>
+  <int value="30" label="Corresponding source - dedup key query failed"/>
 </enum>
 
 <enum name="ConversionCreateAggregatableReportStatus">

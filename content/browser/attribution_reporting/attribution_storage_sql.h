@@ -115,7 +115,8 @@ class CONTENT_EXPORT AttributionStorageSql {
     kSourceInvalidDestinationSites = 27,
     kStoredSourceConstructionFailed = 28,
     kSourceInvalidTriggerSpecs = 29,
-    kMaxValue = kSourceInvalidTriggerSpecs,
+    kSourceDedupKeyQueryFailed = 30,
+    kMaxValue = kSourceDedupKeyQueryFailed,
   };
 
   struct DeletionCounts {
@@ -212,19 +213,7 @@ class CONTENT_EXPORT AttributionStorageSql {
   std::optional<int64_t> NumberOfSources()
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  enum class ReportAlreadyStoredStatus {
-    kNotStored,
-    kStored,
-    kError,
-  };
-
   void RecordSourcesPerSourceOrigin() VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  ReportAlreadyStoredStatus ReportAlreadyStored(
-      StoredSource::Id source_id,
-      std::optional<uint64_t> dedup_key,
-      AttributionReport::Type report_type)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   enum class ConversionCapacityStatus {
     kHasCapacity,
@@ -253,7 +242,10 @@ class CONTENT_EXPORT AttributionStorageSql {
   std::optional<AttributionReport> GetReportInternal(AttributionReport::Id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  [[nodiscard]] bool ReadDedupKeys(StoredSource&)
+  [[nodiscard]] bool ReadDedupKeys(
+      StoredSource::Id,
+      std::vector<uint64_t>& event_level_dedup_keys,
+      std::vector<uint64_t>& aggregatable_dedup_keys)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   bool StoreDedupKey(StoredSource::Id source_id,

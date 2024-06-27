@@ -67,10 +67,6 @@ inline constexpr const char kCountActiveSourcesFromSourceOriginSql[] =
 
 inline constexpr const char kCountSourcesSql[] = "SELECT COUNT(*)FROM sources";
 
-inline constexpr const char kCountReportsSql[] =
-    "SELECT COUNT(*)FROM dedup_keys "
-    "WHERE source_id=? AND report_type=? AND dedup_key=?";
-
 inline constexpr const char kDedupKeySql[] =
     "SELECT dedup_key,report_type FROM dedup_keys WHERE source_id=?";
 

@@ -193,8 +193,6 @@ class CONTENT_EXPORT StoredSource {
 
   int remaining_aggregatable_attribution_budget_;
 
-  // Dedup keys associated with the source. Only set in values returned from
-  // `AttributionStorage::GetActiveSources()`.
   std::vector<uint64_t> dedup_keys_;
 
   std::vector<uint64_t> aggregatable_dedup_keys_;
