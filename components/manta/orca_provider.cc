@@ -44,6 +44,7 @@ std::optional<Tone> GetTone(const std::string& tone) {
           {"EMOJIFY", proto::RequestConfig::EMOJIFY},
           {"FREEFORM_REWRITE", proto::RequestConfig::FREEFORM_REWRITE},
           {"FREEFORM_WRITE", proto::RequestConfig::FREEFORM_WRITE},
+          {"PROOFREAD", proto::RequestConfig::PROOFREAD},
 
       });
   const auto iter = tone_map.find(tone);

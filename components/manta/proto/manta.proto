@@ -79,6 +79,7 @@ message RequestConfig {
     EMOJIFY = 5;
     FREEFORM_REWRITE = 6;
     FREEFORM_WRITE = 7;
+    PROOFREAD = 8;
   }
 
   optional Tone tone = 5;
