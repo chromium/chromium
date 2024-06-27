@@ -4,7 +4,6 @@
 
 source_set("signals") {
   public = [
-    "dependency_factory.h",
     "signals_filterer.h",
     "signals_service.h",
   ]
@@ -28,6 +27,7 @@ source_set("test_support") {
 
   public_deps = [
     ":signals",
+    "//components/enterprise/core",
     "//testing/gmock",
   ]
 }

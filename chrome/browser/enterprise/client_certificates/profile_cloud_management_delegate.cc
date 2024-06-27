@@ -5,7 +5,6 @@
 #include "chrome/browser/enterprise/client_certificates/profile_cloud_management_delegate.h"
 
 #include "base/check.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
@@ -17,13 +16,14 @@
 namespace client_certificates {
 
 ProfileCloudManagementDelegate::ProfileCloudManagementDelegate(
-    Profile* profile,
+    std::unique_ptr<enterprise_management::DependencyFactory>
+        dependency_factory,
     enterprise::ProfileIdService* profile_id_service,
     std::unique_ptr<DMServerClient> dmserver_client)
-    : profile_(profile),
+    : dependency_factory_(std::move(dependency_factory)),
       profile_id_service_(profile_id_service),
       dmserver_client_(std::move(dmserver_client)) {
-  CHECK(profile_);
+  CHECK(dependency_factory_);
   CHECK(profile_id_service_);
   CHECK(dmserver_client_);
 }
@@ -50,7 +50,7 @@ void ProfileCloudManagementDelegate::UploadBrowserPublicKey(
 const enterprise_management::PolicyData*
 ProfileCloudManagementDelegate::GetPolicyData() const {
   policy::CloudPolicyManager* policy_manager =
-      profile_->GetCloudPolicyManager();
+      dependency_factory_->GetUserCloudPolicyManager();
   if (policy_manager && policy_manager->core() &&
       policy_manager->core()->store() &&
       policy_manager->core()->store()->has_policy()) {

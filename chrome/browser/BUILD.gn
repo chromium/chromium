@@ -6589,6 +6589,7 @@ static_library("browser") {
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network",
       "//components/enterprise/client_certificates/core",
+      "//components/enterprise/core",
     ]
   }
 
@@ -6633,6 +6634,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/connectors_internals:mojo_bindings",
       "//components/device_signals/core/browser",
       "//components/device_signals/core/common",
+      "//components/enterprise/core",
       "//components/policy/proto:proto",
       "//services/data_decoder/public/cpp",
     ]
@@ -6739,8 +6741,10 @@ static_library("browser") {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
       "//chrome/services/system_signals/public/cpp/browser",
     ]
-    public_deps +=
-        [ "//chrome/browser/enterprise/connectors/analysis:sdk_manager" ]
+    public_deps += [
+      "//chrome/browser/enterprise/connectors/analysis:sdk_manager",
+      "//components/enterprise/core",
+    ]
 
     if (is_win) {
       deps += [ "//components/device_signals/core/browser/win" ]

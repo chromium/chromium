@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_DEPENDENCY_FACTORY_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/enterprise/connectors/device_trust/signals/dependency_factory.h"
+#include "components/enterprise/core/dependency_factory.h"
 
 class Profile;
 
 namespace enterprise_connectors {
 
-class DependencyFactoryImpl : public DependencyFactory {
+class DependencyFactoryImpl : public enterprise_management::DependencyFactory {
  public:
   explicit DependencyFactoryImpl(Profile* profile);
 

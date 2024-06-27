@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_DEPENDENCY_FACTORY_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_DEPENDENCY_FACTORY_H_
+#ifndef COMPONENTS_ENTERPRISE_CORE_DEPENDENCY_FACTORY_H_
+#define COMPONENTS_ENTERPRISE_CORE_DEPENDENCY_FACTORY_H_
 
 namespace policy {
 class CloudPolicyManager;
 }  // namespace policy
 
-namespace enterprise_connectors {
+namespace enterprise_management {
 
 // Factory that can be used to lazy-load dependencies.
 class DependencyFactory {
@@ -19,6 +19,6 @@ class DependencyFactory {
   virtual policy::CloudPolicyManager* GetUserCloudPolicyManager() const = 0;
 };
 
-}  // namespace enterprise_connectors
+}  // namespace enterprise_management
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_DEPENDENCY_FACTORY_H_
+#endif  // COMPONENTS_ENTERPRISE_CORE_DEPENDENCY_FACTORY_H_

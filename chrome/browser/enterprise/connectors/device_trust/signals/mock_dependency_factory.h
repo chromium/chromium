@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_MOCK_DEPENDENCY_FACTORY_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_MOCK_DEPENDENCY_FACTORY_H_
 
-#include "chrome/browser/enterprise/connectors/device_trust/signals/dependency_factory.h"
+#include "components/enterprise/core/dependency_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace enterprise_connectors::test {
 
-class MockDependencyFactory : public DependencyFactory {
+class MockDependencyFactory : public enterprise_management::DependencyFactory {
  public:
   MockDependencyFactory();
   ~MockDependencyFactory() override;
