@@ -66,7 +66,6 @@ import org.chromium.android_webview.gfx.AwGLFunctor;
 import org.chromium.android_webview.gfx.AwPicture;
 import org.chromium.android_webview.gfx.RectUtils;
 import org.chromium.android_webview.metrics.AwOriginVisitLogger;
-import org.chromium.android_webview.metrics.AwSiteVisitLogger;
 import org.chromium.android_webview.metrics.BackForwardCacheNotRestoredReason;
 import org.chromium.android_webview.permission.AwGeolocationCallback;
 import org.chromium.android_webview.permission.AwPermissionRequest;
@@ -4129,12 +4128,6 @@ public class AwContents implements SmartClipProvider {
         PostTask.postTask(
                 TaskTraits.BEST_EFFORT_MAY_BLOCK,
                 () -> AwOriginVisitLogger.logOriginVisit(originHash));
-    }
-
-    @CalledByNative
-    private void logSiteVisit(long siteHash, boolean isRelated) {
-        if (isDestroyed(NO_WARN)) return;
-        AwSiteVisitLogger.logVisit(siteHash, isRelated);
     }
 
     @CalledByNative

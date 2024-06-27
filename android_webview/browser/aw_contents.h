@@ -332,8 +332,6 @@ class AwContents : public FindHelper::Listener,
 
   void SetDipScaleInternal(float dip_scale);
 
-  void LogSiteVisit(std::string etld_plus1, jlong site_hash);
-
   JavaObjectWeakGlobalRef java_ref_;
   BrowserViewRenderer browser_view_renderer_;  // Must outlive |web_contents_|.
   std::unique_ptr<content::WebContents> web_contents_;
@@ -358,8 +356,6 @@ class AwContents : public FindHelper::Listener,
   typedef std::pair<const GURL, PermissionCallback> OriginCallback;
   // The first element in the list is always the currently pending request.
   std::list<OriginCallback> pending_geolocation_prompts_;
-
-  base::WeakPtrFactory<AwContents> weak_ptr_factory_{this};
 };
 
 }  // namespace android_webview

@@ -9,6 +9,9 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.WorkerThread;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
@@ -21,6 +24,7 @@ import java.util.Set;
 
 /** Stores visited sites and logs the count of distinct visits over a week. */
 @Lifetime.Singleton
+@JNINamespace("android_webview")
 public final class AwSiteVisitLogger {
     // This uses the same file name as {@link AwOriginVisitLogger} so that
     // only one shared preference XML file needs to be opened on navigation.
@@ -38,6 +42,7 @@ public final class AwSiteVisitLogger {
      * Stores the sites and logs the count of distinct sites if there are any past visits older than
      * a week. This should not be called on the UI thread because it uses SharedPreferences.
      */
+    @CalledByNative
     @WorkerThread
     public static void logVisit(long siteHash, boolean isSiteRelated) {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {

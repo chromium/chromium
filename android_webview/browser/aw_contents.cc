@@ -113,6 +113,7 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwContents_jni.h"
+#include "android_webview/browser_jni_headers/AwSiteVisitLogger_jni.h"
 #include "android_webview/browser_jni_headers/StartupJavascriptInfo_jni.h"
 
 struct AwDrawSWFunctionTable;
@@ -162,6 +163,25 @@ std::vector<std::string>* g_app_defined_domains() {
           AppDefinedDomainCriteria::kAndroidAssetStatementsAndWebLinks));
 
   return app_defined_domains.get();
+}
+
+void LogSiteVisit(std::string etld_plus1, jlong site_hash) {
+  JNIEnv* env = AttachCurrentThread();
+
+  auto* app_defined_domains = g_app_defined_domains();
+
+  bool site_related =
+      std::find_if(app_defined_domains->begin(), app_defined_domains->end(),
+                   [&etld_plus1](const std::string& domain) {
+                     std::string domain_etld =
+                         net::registry_controlled_domains::GetDomainAndRegistry(
+                             domain, net::registry_controlled_domains::
+                                         INCLUDE_PRIVATE_REGISTRIES);
+
+                     return etld_plus1 == domain_etld;
+                   }) != app_defined_domains->end();
+
+  Java_AwSiteVisitLogger_logVisit(env, site_hash, site_related);
 }
 
 const void* const kAwContentsUserDataKey = &kAwContentsUserDataKey;
@@ -1218,26 +1238,6 @@ void AwContents::SetDipScaleInternal(float dip_scale) {
   browser_view_renderer_.SetDipScale(dip_scale);
 }
 
-void AwContents::LogSiteVisit(std::string etld_plus1, jlong site_hash) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> j_ref = java_ref_.get(env);
-
-  auto* app_defined_domains = g_app_defined_domains();
-
-  bool site_related =
-      std::find_if(app_defined_domains->begin(), app_defined_domains->end(),
-                   [&etld_plus1](const std::string& domain) {
-                     std::string domain_etld =
-                         net::registry_controlled_domains::GetDomainAndRegistry(
-                             domain, net::registry_controlled_domains::
-                                         INCLUDE_PRIVATE_REGISTRIES);
-
-                     return etld_plus1 == domain_etld;
-                   }) != app_defined_domains->end();
-
-  Java_AwContents_logSiteVisit(env, j_ref, site_hash, site_related);
-}
-
 void AwContents::ScrollTo(JNIEnv* env, jint x, jint y) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   browser_view_renderer_.ScrollTo(gfx::Point(x, y));
@@ -1524,10 +1524,13 @@ void AwContents::PrimaryPageChanged(content::Page& page) {
 
       Java_AwContents_logOriginVisit(env, j_ref, j_origin_hash);
 
+      // When recording the site visit, we want to reference this against
+      // g_app_defined_domains which may take a moment to retrieve since
+      // we are getting that from a system service so we need post this
+      // to the background thread to avoid blocking things here.
       base::ThreadPool::PostTask(
-          FROM_HERE, base::BindOnce(&AwContents::LogSiteVisit,
-                                    weak_ptr_factory_.GetWeakPtr(),
-                                    std::move(etld_plus1), j_etld_plus1_hash));
+          FROM_HERE, base::BindOnce(&LogSiteVisit, std::move(etld_plus1),
+                                    j_etld_plus1_hash));
     }
   }
 
