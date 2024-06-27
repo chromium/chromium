@@ -73,9 +73,10 @@ inline WritingMode ToLineWritingMode(WritingMode writing_mode) {
 }
 
 // Block progression increases in the opposite direction to normal; modes
-// vertical-rl.
+// vertical-rl and sideways-rl.
 inline bool IsFlippedBlocksWritingMode(WritingMode writing_mode) {
-  return writing_mode == WritingMode::kVerticalRl;
+  return writing_mode == WritingMode::kVerticalRl ||
+         writing_mode == WritingMode::kSidewaysRl;
 }
 
 // Whether the child and the containing block are parallel to each other.
