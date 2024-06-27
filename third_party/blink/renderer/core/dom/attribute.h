@@ -81,10 +81,16 @@ class Attribute {
   Attribute();
 #endif
 
+  bool operator==(const Attribute& other) const {
+    return name_ == other.name_ && value_ == other.value_;
+  }
+
  private:
   QualifiedName name_;
   AtomicString value_;
 };
+static_assert(sizeof(Attribute) == sizeof(QualifiedName) + sizeof(AtomicString),
+              "AttributeHash() assumes Attribute has no padding");
 
 inline bool Attribute::Matches(const QualifiedName& qualified_name) const {
   if (qualified_name.LocalName() != LocalName())
