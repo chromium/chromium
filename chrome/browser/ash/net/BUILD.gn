@@ -150,3 +150,47 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "alwayson_vpn_pre_connect_url_allowlist_service_browsertest.cc",
+    "ash_proxy_monitor_browsertest.cc",
+    "device_event_log_error_browsertest.cc",
+    "network_portal_detector_impl_browsertest.cc",
+    "system_proxy_manager_browsertest.cc",
+  ]
+
+  deps = [
+    ":net",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/notifications",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/dbus/system_proxy",
+    "//chromeos/ash/components/network",
+    "//chromeos/crosapi/mojom",
+    "//components/account_id",
+    "//components/device_event_log",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/proxy_config",
+    "//content/test:test_support",
+    "//dbus",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}
