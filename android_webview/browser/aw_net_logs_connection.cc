@@ -39,7 +39,10 @@ void AwNetLogsConnection::startNetLogBounded(int file_descriptor) {
     return;
   }
 
-  // TODO(thomasbull): Create net log observer
+  aw_net_log_observer_ = net::FileNetLogObserver::CreateBoundedFile(
+      base::File(file_descriptor), max_file_size,
+      net::NetLogCaptureMode::kDefault, /*constants=*/nullptr);
+  aw_net_log_observer_->StartObserving(net::NetLog::Get());
 }
 
 void AwNetLogsConnection::stopNetLogs() {

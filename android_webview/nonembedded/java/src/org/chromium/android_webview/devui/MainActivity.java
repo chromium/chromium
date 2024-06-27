@@ -192,6 +192,7 @@ public class MainActivity extends FragmentActivity {
         mFragmentIdMap.put(R.id.navigation_home, FRAGMENT_ID_HOME);
         mFragmentIdMap.put(R.id.navigation_crash_ui, FRAGMENT_ID_CRASHES);
         mFragmentIdMap.put(R.id.navigation_flags_ui, FRAGMENT_ID_FLAGS);
+        mFragmentIdMap.put(R.id.navigation_net_logs_ui, FRAGMENT_ID_NETLOGS);
         LinearLayout bottomNavBar = findViewById(R.id.nav_view);
         View.OnClickListener listener =
                 (View view) -> {

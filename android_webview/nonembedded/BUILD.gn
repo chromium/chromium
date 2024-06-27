@@ -235,6 +235,7 @@ android_resources("devui_resources") {
     "java/res_devui/drawable/ic_delete.xml",
     "java/res_devui/drawable/ic_devui_search.xml",
     "java/res_devui/drawable/ic_flag.xml",
+    "java/res_devui/drawable/ic_net_log.xml",
     "java/res_devui/layout/activity_main.xml",
     "java/res_devui/layout/components_list_item.xml",
     "java/res_devui/layout/crashes_list_item_body.xml",

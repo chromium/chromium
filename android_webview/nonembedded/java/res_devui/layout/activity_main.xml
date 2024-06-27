@@ -8,6 +8,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/header">
@@ -71,6 +72,17 @@
             android:drawableTop="@drawable/ic_flag"
             android:text="Flags"
             android:gravity="center_horizontal"
+            android:layout_weight="1">
+        </TextView>
+        <!--suppress HardcodedText -->
+        <TextView
+            android:id="@+id/navigation_net_logs_ui"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:drawableTop="@drawable/ic_net_log"
+            android:text="Net Logs"
+            android:gravity="center_horizontal"
+            tools:ignore="UseCompatTextViewDrawableXml"
             android:layout_weight="1">
         </TextView>
     </LinearLayout>

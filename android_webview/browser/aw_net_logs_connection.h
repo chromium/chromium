@@ -24,6 +24,9 @@ class AwNetLogsConnection {
 
  private:
   std::unique_ptr<net::FileNetLogObserver> aw_net_log_observer_;
+
+  // Max file sizr of 100Mb.
+  uint64_t max_file_size = 100000000;
 };
 
 }  // namespace android_webview
