@@ -1170,7 +1170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.DisplayAfterResumeDurationMs{PowerSource}" units="ms"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
   <owner>mhiramat@google.com</owner>
   <owner>cros-suspend-resume@google.com</owner>
   <summary>

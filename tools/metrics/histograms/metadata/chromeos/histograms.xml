@@ -1133,7 +1133,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.Error.{ErrorSource}"
-    enum="CrosDiagnosticsDataError" expires_after="2024-10-20">
+    enum="CrosDiagnosticsDataError" expires_after="2024-12-24">
   <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>zentaro@chromium.org</owner>
@@ -1163,7 +1163,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.KeyboardTesterRoutineDuration"
-    units="ms" expires_after="2024-10-20">
+    units="ms" expires_after="2024-12-24">
   <owner>zhangwenyu@google.com</owner>
   <owner>dpad@chromium.org</owner>
   <owner>michaelcheco@chromium.org</owner>
@@ -1189,7 +1189,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.OpenDuration" units="ms"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
   <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
@@ -1238,7 +1238,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.{RoutineType}Result"
-    enum="CrosDiagnosticsRoutineResult" expires_after="2024-10-20">
+    enum="CrosDiagnosticsRoutineResult" expires_after="2024-12-24">
   <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
@@ -2451,7 +2451,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.LockScreenReauth.LockScreenReauthReason"
-    enum="LoginReauthReasons" expires_after="2024-10-01">
+    enum="LoginReauthReasons" expires_after="2024-12-24">
   <owner>ayag@chromium.org</owner>
   <owner>cros-3pidp@google.com</owner>
   <summary>

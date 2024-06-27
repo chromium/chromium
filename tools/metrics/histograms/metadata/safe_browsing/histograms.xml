@@ -195,7 +195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.AndroidTelemetry.ApkDownload.Outcome"
-    enum="ApkDownloadTelemetryOutcome" expires_after="2024-10-20">
+    enum="ApkDownloadTelemetryOutcome" expires_after="2024-12-24">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -335,7 +335,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SafeBrowsing.BrowserThrottle.RequestDestination{RequestedSkippedOrChecked}"
-    enum="RequestDestination" expires_after="2024-10-20">
+    enum="RequestDestination" expires_after="2024-12-24">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -351,7 +351,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.BrowserThrottle.TotalDelay2{ResponseType}"
-    units="ms" expires_after="2024-10-20">
+    units="ms" expires_after="2024-12-24">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2221,7 +2221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RendererThrottle.RequestDestination"
-    enum="RequestDestination" expires_after="2024-10-20">
+    enum="RequestDestination" expires_after="2024-12-24">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2320,7 +2320,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SafeBrowsing.RT.EventUrlReferrerChainFetchSucceeded{UserCategory}"
-    enum="BooleanSuccess" expires_after="2024-10-20">
+    enum="BooleanSuccess" expires_after="2024-12-24">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2595,7 +2595,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Request.UserPopulation{UserCategory}"
-    enum="SafeBrowsingUserPopulation" expires_after="2024-10-20">
+    enum="SafeBrowsingUserPopulation" expires_after="2024-12-24">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2810,7 +2810,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.TailoredSecurityUnconsentedModalOutcome"
-    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2024-09-29">
+    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2024-12-24">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3145,7 +3145,7 @@ and applied correctly. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4ProcessPartialUpdate.AdditionsHashesCount"
-    units="entries" expires_after="2024-10-20">
+    units="entries" expires_after="2024-12-24">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

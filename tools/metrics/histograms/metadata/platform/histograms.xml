@@ -84,7 +84,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.BootMode.WriteProtectSwitch"
-    enum="Platform.BootMode.SwitchStatus" expires_after="2024-10-20">
+    enum="Platform.BootMode.SwitchStatus" expires_after="2024-12-24">
   <owner>enlightened@chromium.org</owner>
   <owner>chromeos-hardening@google.com</owner>
   <summary>
@@ -667,7 +667,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FlexHwis.ServerDeleteSuccess" enum="BooleanSuccess"
-    expires_after="2024-10-06">
+    expires_after="2024-12-24">
   <owner>tinghaolin@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -702,7 +702,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FlexHwis.ServerPutSuccess" enum="BooleanSuccess"
-    expires_after="2024-10-06">
+    expires_after="2024-12-24">
   <owner>tinghaolin@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -1169,7 +1169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Memory.Daemons" units="MiB"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryType" -->
 
   <owner>bgeffon@chromium.org</owner>
@@ -1929,7 +1929,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.StorageCapabilities"
-    enum="InternalStorageCapabilities" expires_after="2024-10-20">
+    enum="InternalStorageCapabilities" expires_after="2024-12-24">
   <owner>dlunev@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -1938,7 +1938,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.SwapInDaily" units="pages" expires_after="2024-09-22">
+<histogram name="Platform.SwapInDaily" units="pages" expires_after="2024-12-24">
   <owner>asavery@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>Number of pages swapped IN over a day, sampled daily.</summary>
@@ -2020,7 +2020,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Ti50.ARVCount{CountType}" units="GSC resets"
-    expires_after="2024-09-01">
+    expires_after="2024-12-24">
   <owner>jettrink@google.com</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>
@@ -2332,7 +2332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Trunks.FirstTimeoutWritingTime" units="seconds"
-    expires_after="2024-09-22">
+    expires_after="2024-12-24">
   <owner>chingkang@chromium.org</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>System uptime when first timeout writing TPM command occurs</summary>
@@ -2379,7 +2379,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.U2F.Command" enum="Cr50U2FCommands"
-    expires_after="2024-09-22">
+    expires_after="2024-12-24">
   <owner>hcyang@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>Records occurrences of U2F commands sent to cr50.</summary>

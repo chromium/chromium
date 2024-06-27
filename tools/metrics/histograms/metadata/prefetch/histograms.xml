@@ -183,7 +183,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.CacheEntryAge.{PrefetchProxyCanaryCheckerClient}"
-    units="hours" expires_after="2024-09-01">
+    units="hours" expires_after="2024-12-24">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>

@@ -181,7 +181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Views.{Process}.TimeSpentProcessingOnNativeThemeUpdatedEvent"
-    units="ms" expires_after="2024-10-20">
+    units="ms" expires_after="2024-12-24">
   <owner>pkasting@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>skau@chromium.org</owner>

@@ -519,7 +519,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.AXTreeSnapshotter.Snapshot.NoRestrictions.Nodes"
-    units="count" expires_after="2024-09-30">
+    units="count" expires_after="2024-12-24">
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -529,7 +529,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.AXTreeSnapshotter.Snapshot.NoRestrictions.Time"
-    units="ms" expires_after="2024-09-30">
+    units="ms" expires_after="2024-12-24">
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -627,7 +627,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosColorCorrection.FilterAmount" units="%"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -639,7 +639,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosColorCorrection.FilterType"
-    enum="ColorCorrectionFilterTypes" expires_after="2024-10-20">
+    enum="ColorCorrectionFilterTypes" expires_after="2024-12-24">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>

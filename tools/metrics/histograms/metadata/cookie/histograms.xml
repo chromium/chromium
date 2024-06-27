@@ -97,7 +97,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.CommitProblem" enum="CookieCommitProblem"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
   <owner>morlovich@chromium.org</owner>
   <summary>
     Recorded when a problem occurs trying to commit changes to the cookie store
@@ -209,7 +209,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.CookieSourceSchemeName" enum="CookieSourceSchemeName"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -376,7 +376,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.Experimental.CookiesAllowedForUrlsUsage"
-    enum="CookiesAllowedForUrlsUsage" expires_after="2024-10-20">
+    enum="CookiesAllowedForUrlsUsage" expires_after="2024-12-24">
   <owner>dylancutler@google.com</owner>
   <owner>sandormajor@google.com</owner>
   <summary>
@@ -819,7 +819,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.PerFirstPartySetCount" units="cookies"
-    expires_after="2024-09-15">
+    expires_after="2024-12-24">
   <owner>cfredric@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>

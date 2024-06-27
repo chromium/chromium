@@ -202,7 +202,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentNotifications.OpenURLAction.HasURL" enum="Boolean"
-    expires_after="2024-10-10">
+    expires_after="2024-12-24">
   <owner>guiperez@google.com</owner>
   <owner>chrome-sherlock@google.com</owner>
   <summary>
@@ -347,7 +347,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.GetContentSetting.Network.Duration"
-    units="microseconds" expires_after="2024-10-20">
+    units="microseconds" expires_after="2024-12-24">
   <owner>trishalfonso@google.com</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -454,7 +454,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.RegularProfile.DefaultAutoVerifySetting"
-    enum="ContentSetting" expires_after="2024-10-20">
+    enum="ContentSetting" expires_after="2024-12-24">
   <owner>ryankalla@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>

@@ -189,7 +189,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.EvictionRoundsPerHour" units="units"
-    expires_after="2024-09-29">
+    expires_after="2024-12-24">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -216,7 +216,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.NumberOfEvictedBucketsPerRound" units="units"
-    expires_after="2024-09-01">
+    expires_after="2024-12-24">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>Number of evicted buckets per round.</summary>

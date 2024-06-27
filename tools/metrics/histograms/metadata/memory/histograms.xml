@@ -795,7 +795,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Experimental.Renderer.HighestPrivateMemoryFootprint"
-    units="MB" expires_after="2024-09-01">
+    units="MB" expires_after="2024-12-24">
   <owner>tasak@google.com</owner>
   <owner>mikt@chromium.org</owner>
   <summary>
@@ -1601,7 +1601,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableString.TotalParkingThreadTime.5min" units="ms"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -1613,7 +1613,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableString.TotalUnparkingTime.5min" units="ms"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>

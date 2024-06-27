@@ -374,7 +374,7 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.ContentSettings.PrimaryPatternUniqueSecondaryPatternDifferent"
-    enum="ContentType" expires_after="2024-10-06">
+    enum="ContentType" expires_after="2024-12-24">
   <owner>erikchen@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1292,7 +1292,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.DeveloperModeEnabled" enum="Boolean"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4552,7 +4552,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ServiceWorkerBackground.MultiWorkerVersionIdMatch"
-    enum="Boolean" expires_after="2024-10-20">
+    enum="Boolean" expires_after="2024-12-24">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4564,7 +4564,7 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.ServiceWorkerBackground.MultiWorkerVersionStatus.{WorkerType}"
-    enum="ServiceWorkerVersionStatus" expires_after="2024-10-20">
+    enum="ServiceWorkerVersionStatus" expires_after="2024-12-24">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

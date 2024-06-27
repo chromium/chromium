@@ -4760,7 +4760,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.AreAuthTokensAvailable"
-    enum="BooleanSuccess" expires_after="2024-10-20">
+    enum="BooleanSuccess" expires_after="2024-12-24">
   <owner>djmitche@chromium.org</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>

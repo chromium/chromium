@@ -270,7 +270,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="BackForwardCache.HistoryNavigationOutcome.BrowsingInstanceNotSwappedReason"
     enum="BackForwardCacheBrowsingInstanceNotSwappedReason"
-    expires_after="2024-09-15">
+    expires_after="2024-12-24">
   <owner>fergal@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -417,7 +417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.PageWithForm.Storable"
-    enum="BackForwardCachePageWithFormStorable" expires_after="2024-10-20">
+    enum="BackForwardCachePageWithFormStorable" expires_after="2024-12-24">
   <owner>wenyufu@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -654,7 +654,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.DuringGesture.NavStarted{NavigationMode}"
-    enum="Boolean" expires_after="2024-10-20">
+    enum="Boolean" expires_after="2024-12-24">
   <owner>lazzzis@google.com</owner>
   <owner>liuwilliam@chromium.org</owner>
   <owner>chrome-seamless-core@google.com</owner>
@@ -1413,7 +1413,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.Prefetch.CompressedBodySize" units="KB"
-    expires_after="2024-10-18">
+    expires_after="2024-12-24">
   <owner>ricea@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
   <summary>
@@ -1426,7 +1426,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.Prefetch.IsHttps" enum="Boolean"
-    expires_after="2024-10-17">
+    expires_after="2024-12-24">
   <owner>ricea@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
   <summary>
@@ -1462,7 +1462,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.Prefetch.UncompressedBodySize" units="KB"
-    expires_after="2024-10-18">
+    expires_after="2024-12-24">
   <owner>ricea@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
   <summary>

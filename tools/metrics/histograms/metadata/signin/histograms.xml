@@ -795,7 +795,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram base="true" name="Signin.CookieJar.SignedInCountWithPrimary"
-    units="accounts" expires_after="2024-10-20">
+    units="accounts" expires_after="2024-12-24">
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1766,7 +1766,7 @@ OAuth Multilogin call. -->
 </histogram>
 
 <histogram name="Signin.SigninDisabledNotificationShown"
-    enum="SigninAccessPoint" expires_after="2024-10-20">
+    enum="SigninAccessPoint" expires_after="2024-12-24">
   <owner>bsazonov@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1776,7 +1776,7 @@ OAuth Multilogin call. -->
 </histogram>
 
 <histogram name="Signin.SigninManager.SigninAccessPoint"
-    enum="SigninAccessPoint" expires_after="2024-10-20">
+    enum="SigninAccessPoint" expires_after="2024-12-24">
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

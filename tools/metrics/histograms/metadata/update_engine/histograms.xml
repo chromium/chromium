@@ -68,7 +68,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.DurationMinutes" units="minutes"
-    expires_after="2024-10-06">
+    expires_after="2024-12-24">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -165,7 +165,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.PayloadType"
-    enum="UpdateEnginePayloadFormat" expires_after="2024-10-20">
+    enum="UpdateEnginePayloadFormat" expires_after="2024-12-24">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>

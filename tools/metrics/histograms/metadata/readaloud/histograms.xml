@@ -238,7 +238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.ServerReadabilityResult" enum="BooleanEligible"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
   <owner>andreaxg@google.com</owner>
   <owner>basiaz@google.com</owner>
   <owner>iwells@chromium.org</owner>

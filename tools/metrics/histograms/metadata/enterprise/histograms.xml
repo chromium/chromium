@@ -467,7 +467,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CBCMRemoteCommandInvalidations"
-    enum="EnterprisePolicyInvalidations" expires_after="2024-10-01">
+    enum="EnterprisePolicyInvalidations" expires_after="2024-12-24">
   <owner>anthonyvd@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
@@ -811,7 +811,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceRemoteCommand.FetchSupportPacket.Failure"
-    enum="EnterpriseFetchSupportPacketFailureType" expires_after="2024-10-20">
+    enum="EnterpriseFetchSupportPacketFailureType" expires_after="2024-12-24">
   <owner>iremuguz@google.com</owner>
   <owner>chromeos-commercial-supportability@google.com</owner>
   <summary>
@@ -3511,7 +3511,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsFullyManaged2" enum="IsFullyManagedBoolean"
-    expires_after="2024-09-22">
+    expires_after="2024-12-24">
   <owner>twellington@google.com</owner>
   <owner>tedchcoc@chromium.org</owner>
   <summary>

@@ -341,7 +341,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.AttributionOsLevelApiState"
-    enum="ConversionAttributionOsLevelApiState" expires_after="2024-10-24">
+    enum="ConversionAttributionOsLevelApiState" expires_after="2024-12-24">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -635,7 +635,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.FiltersPerFilterData" units="filters"
-    expires_after="2024-10-04">
+    expires_after="2024-12-24">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -851,7 +851,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.OsRegistrationsBufferWithSameContext"
-    enum="Boolean" expires_after="2024-10-20">
+    enum="Boolean" expires_after="2024-12-24">
   <owner>anthonygarant@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -869,7 +869,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.OsRegistrationsSkipBufferRegistrationsSize"
-    units="count" expires_after="2024-10-20">
+    units="count" expires_after="2024-12-24">
   <owner>anthonygarant@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>

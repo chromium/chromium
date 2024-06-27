@@ -734,7 +734,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackPress.SecondaryActivity" enum="SecondaryActivity"
-    expires_after="2024-09-15">
+    expires_after="2024-12-24">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/chrome/browser/back_press/android/OWNERS</owner>
   <summary>
@@ -770,7 +770,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ChildProcessBinding.TotalConnections"
-    units="connections" expires_after="2024-10-24">
+    units="connections" expires_after="2024-12-24">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -783,7 +783,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.ChildProcessBinding.{ChildProcessConnectionMetricsBindingState}Connections"
-    units="connections" expires_after="2024-10-24">
+    units="connections" expires_after="2024-12-24">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -2121,7 +2121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Android.IsolatedSplits.ContextCreateTime"
-    units="ms" expires_after="2024-10-20">
+    units="ms" expires_after="2024-12-24">
 <!-- Name completed by histogram_suffixes name="AndroidFeatureModuleName" -->
 
   <owner>cduvall@chromium.org</owner>
@@ -4290,7 +4290,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.ShowSurveyStatus"
-    enum="SurveyPresentationStatusCode" expires_after="2024-10-20">
+    enum="SurveyPresentationStatusCode" expires_after="2024-12-24">
   <owner>aishwaryarj@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
@@ -4329,7 +4329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Sync.ActualSyncedTabCountPercentage"
-    units="% of tab count" expires_after="2024-10-06">
+    units="% of tab count" expires_after="2024-12-24">
   <owner>bjfong@google.com</owner>
   <owner>ckitagawa@chromium.org</owner>
   <summary>

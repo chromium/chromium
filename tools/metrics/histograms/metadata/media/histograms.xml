@@ -329,7 +329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AImageReaderGLOwner.CodecType"
-    enum="TextureOwnerCodecType" expires_after="2024-10-20">
+    enum="TextureOwnerCodecType" expires_after="2024-12-24">
   <owner>vasilyt@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>

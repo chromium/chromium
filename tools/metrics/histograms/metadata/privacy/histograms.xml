@@ -527,7 +527,7 @@ reviewer.
 <histogram
     name="PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment"
     enum="PrivacySandboxStorageUserSegmentByRecentActivity"
-    expires_after="2024-09-30">
+    expires_after="2024-12-24">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -656,7 +656,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.ActivityTypeStorage.RecordsLength"
-    units="count" expires_after="2024-09-30">
+    units="count" expires_after="2024-12-24">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1143,7 +1143,7 @@ reviewer.
 <histogram
     name="PrivacySandbox.CookieDeprecationFacilitatedTesting.ReasonForEligibilityStoredInPrefs"
     enum="CookieDeprecationFacilitatedTestingProfileEligibility"
-    expires_after="2024-10-25">
+    expires_after="2024-12-24">
   <owner>anthonygarant@chromium.org</owner>
   <owner>linan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>

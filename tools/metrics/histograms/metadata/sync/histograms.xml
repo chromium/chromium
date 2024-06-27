@@ -206,7 +206,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.BookmarkGUIDSource2" enum="BookmarkGUIDSource"
-    expires_after="2024-10-25">
+    expires_after="2024-12-24">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -285,7 +285,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.BookmarksModelMetadataCorruptionReason"
-    enum="SyncBookmarkModelMetadataCorruptionReason" expires_after="2024-10-20">
+    enum="SyncBookmarkModelMetadataCorruptionReason" expires_after="2024-12-24">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -698,7 +698,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.History.IncomingSpecificsError"
-    enum="SyncHistorySpecificsError" expires_after="2024-10-20">
+    enum="SyncHistorySpecificsError" expires_after="2024-12-24">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>

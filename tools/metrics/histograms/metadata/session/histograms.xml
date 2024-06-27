@@ -785,7 +785,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.TotalDurationMax1Day.{HistorySyncState}" units="ms"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
   <owner>mastiz@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -824,7 +824,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.TotalDurationMax1Day.{MsbbState}" units="ms"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
   <owner>mastiz@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>

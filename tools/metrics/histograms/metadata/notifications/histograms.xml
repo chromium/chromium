@@ -734,7 +734,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.PerNotificationActions"
-    enum="NotificationActionType" expires_after="2024-10-20">
+    enum="NotificationActionType" expires_after="2024-12-24">
   <owner>dewittj@chromium.org</owner>
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>

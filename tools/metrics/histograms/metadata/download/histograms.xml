@@ -147,7 +147,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Bubble.ProcessedCommand2" enum="DownloadCommand"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

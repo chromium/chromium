@@ -30,7 +30,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="SharedHighlights.AndroidShareSheet.SharedState"
-    enum="LinkGenerationSharedStatus" expires_after="2024-10-20">
+    enum="LinkGenerationSharedStatus" expires_after="2024-12-24">
   <owner>sebsg@chromium.org</owner>
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
@@ -550,7 +550,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.TimeToShowShareSheet" units="ms"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
   <owner>wenyufu@chromium.org</owner>
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>

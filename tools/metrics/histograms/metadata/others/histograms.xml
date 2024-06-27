@@ -1723,7 +1723,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ads.InterestGroup.ServerAuction.Request.NumIterations"
-    units="count" expires_after="M129">
+    units="count" expires_after="2024-12-24">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
@@ -3473,7 +3473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DisplayManager.InternalDisplayZoomPercentage" units="%"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3497,7 +3497,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DisplayManager.MirrorModeTypes" enum="DisplayMirrorModeTypes"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3512,7 +3512,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DisplayManager.MultiDisplayMode" enum="MultiDisplayModes"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3523,7 +3523,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DisplayManager.UnifiedDesktopDisplayCountRange"
-    enum="MultiDisplayModeDisplayCountRanges" expires_after="2024-10-20">
+    enum="MultiDisplayModeDisplayCountRanges" expires_after="2024-12-24">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -4474,7 +4474,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.TrustSafetySentiment.SurveyRequested"
-    enum="TrustSafetySentimentFeatureArea" expires_after="2024-10-20">
+    enum="TrustSafetySentimentFeatureArea" expires_after="2024-12-24">
   <owner>sauski@google.com</owner>
   <owner>chrome-hats-eng@google.com</owner>
   <summary>
@@ -4971,7 +4971,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GestureNavigation.Activated2"
-    enum="GestureNavigationDirection" expires_after="2024-10-21">
+    enum="GestureNavigationDirection" expires_after="2024-12-24">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -4983,7 +4983,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GestureNavigation.Cancelled2"
-    enum="GestureNavigationDirection" expires_after="2024-10-21">
+    enum="GestureNavigationDirection" expires_after="2024-12-24">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -4994,7 +4994,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GestureNavigation.Completed2"
-    enum="GestureNavigationDirection" expires_after="2024-10-21">
+    enum="GestureNavigationDirection" expires_after="2024-12-24">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -5004,7 +5004,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GestureNavigation.Reversed2" enum="GestureNavigationDirection"
-    expires_after="2024-10-21">
+    expires_after="2024-12-24">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -5015,7 +5015,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GestureNavigation.Type2" enum="GestureNavigationType"
-    expires_after="2024-10-21">
+    expires_after="2024-12-24">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -6026,7 +6026,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NativeSmbFileShare.MountResult"
-    enum="NativeSmbFileShare_MountResult" expires_after="2024-10-23">
+    enum="NativeSmbFileShare_MountResult" expires_after="2024-12-24">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/chrome/browser/ash/smb_client/OWNERS</owner>
   <summary>
@@ -7270,7 +7270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadingList.AddOrReplaceEntry" enum="ReadingListStorageState"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
   <owner>mastiz@chromium.org</owner>
   <owner>mmrashad@google.com</owner>
   <owner>treib@chromium.org</owner>
@@ -7413,7 +7413,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadingList.WebUI.LoadDocumentTime" units="ms"
-    expires_after="2024-09-22">
+    expires_after="2024-12-24">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -7550,7 +7550,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RenderTextHarfBuzz.GetFallbackFontTime" units="ms"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
   <owner>ccameron@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -9191,7 +9191,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Touchpad.PointerSensitivity.Changed" enum="PointerSensitivity"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>

@@ -1867,7 +1867,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.InputTiming.InputToNavigationStart.FromLinkClick"
-    units="ms" expires_after="2024-10-20">
+    units="ms" expires_after="2024-12-24">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
   <summary>
@@ -1878,7 +1878,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.InputTiming.InputToNavigationStart.FromOmnibox"
-    units="ms" expires_after="2024-10-20">
+    units="ms" expires_after="2024-12-24">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
   <summary>
@@ -2800,7 +2800,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Internal.SoftNavigationOutcome"
-    enum="SoftNavigationOutcome" expires_after="2024-10-20">
+    enum="SoftNavigationOutcome" expires_after="2024-12-24">
   <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>

@@ -461,7 +461,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount.{RequestContext}"
-    units="total url count" expires_after="2024-10-20">
+    units="total url count" expires_after="2024-12-24">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -1063,7 +1063,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecutor.TaskExecutionLatency.{OptimizationTarget}"
-    units="ms" expires_after="2024-10-20">
+    units="ms" expires_after="2024-12-24">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>

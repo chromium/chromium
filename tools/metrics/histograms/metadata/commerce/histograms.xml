@@ -243,7 +243,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.ParcelTracking.{ParcelRequestTypes}.RequestStatus"
-    enum="ParcelRequestStatus" expires_after="2024-10-20">
+    enum="ParcelRequestStatus" expires_after="2024-12-24">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -543,7 +543,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceTracking.PriceInsightsSidePanel.{Action}"
-    enum="PriceInsightsPriceBucket" expires_after="2024-10-13">
+    enum="PriceInsightsPriceBucket" expires_after="2024-12-24">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>zhiyuancai@chromium.org</owner>
   <summary>

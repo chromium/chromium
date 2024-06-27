@@ -432,7 +432,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Update.UpdateEmptyUniqueId.NeedsUpgrade" enum="Boolean"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
   <owner>eirage@chromium.org</owner>
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>

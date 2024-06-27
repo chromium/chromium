@@ -645,7 +645,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.GoogleDrive.BulkPinning.Listing.Error"
-    enum="GoogleDrive.BulkPinning.Stage" expires_after="2024-10-20">
+    enum="GoogleDrive.BulkPinning.Stage" expires_after="2024-12-24">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -705,7 +705,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FileBrowser.GoogleDrive.BulkPinning.StateWhenCacheVolumeRemoved"
-    enum="BooleanEnabled" expires_after="2024-10-20">
+    enum="BooleanEnabled" expires_after="2024-12-24">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

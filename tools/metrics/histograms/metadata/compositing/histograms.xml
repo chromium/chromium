@@ -548,7 +548,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Display.VizScheduledDrawToDependencyResolvedUs"
-    units="microseconds" expires_after="2024-10-20">
+    units="microseconds" expires_after="2024-12-24">
   <owner>vasilyt@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -563,7 +563,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Display.VizScheduledDrawToGpuStartedDrawUs"
-    units="microseconds" expires_after="2024-10-20">
+    units="microseconds" expires_after="2024-12-24">
   <owner>vasilyt@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>

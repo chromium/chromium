@@ -415,7 +415,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.SettingsUserAction"
-    enum="PrinterSettingsUserAction" expires_after="2024-10-20">
+    enum="PrinterSettingsUserAction" expires_after="2024-12-24">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>

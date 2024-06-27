@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.DailyActiveUsers" enum="KerberosUserType"
-    expires_after="M130">
+    expires_after="2024-12-24">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
@@ -79,7 +79,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.NumberOfAccounts.Total" units="units"
-    expires_after="M130">
+    expires_after="2024-12-24">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>

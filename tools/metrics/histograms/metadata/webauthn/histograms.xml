@@ -258,7 +258,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.MacOS.PasskeyPermission"
-    enum="WebAuthenticationMacOSPasskeysPermission" expires_after="2024-10-20">
+    enum="WebAuthenticationMacOSPasskeysPermission" expires_after="2024-12-24">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -269,7 +269,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebAuthentication.MacOS.PlatformAuthenticatorAction"
     enum="WebAuthenticationMacOSPlatformAuthenticatorAction"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>

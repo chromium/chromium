@@ -340,7 +340,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.IdentityShared" enum="Boolean"
-    expires_after="2024-09-01">
+    expires_after="2024-12-24">
   <owner>jinsukkim@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>

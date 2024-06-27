@@ -933,7 +933,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EventLatency.{ScrollEventType}.{TopControls}"
-    units="microseconds" expires_after="2024-09-22">
+    units="microseconds" expires_after="2024-12-24">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>

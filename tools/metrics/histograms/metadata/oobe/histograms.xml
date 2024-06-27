@@ -648,7 +648,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ConsumerUpdateScreen.UpdateAvailable" enum="Boolean"
-    expires_after="2024-09-15">
+    expires_after="2024-12-24">
   <owner>bchikhaoui@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -668,7 +668,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.Drive-pinning.Enabled" enum="BooleanEnabled"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -1078,7 +1078,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.PinSetupScreen.UserActions"
-    enum="PinSetupScreenUserAction" expires_after="2024-09-03">
+    enum="PinSetupScreenUserAction" expires_after="2024-12-24">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>

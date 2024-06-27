@@ -69,7 +69,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SBClientDownload.AutomaticDeepScanNoticeSeen2.PartialView{PartialViewSetting}"
-    enum="BooleanShown" expires_after="2024-10-15">
+    enum="BooleanShown" expires_after="2024-12-24">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -242,7 +242,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DownloadRequestNetworkDuration" units="ms"
-    expires_after="2024-10-20">
+    expires_after="2024-12-24">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -276,7 +276,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.FileAnalysisDuration{Analysis}" units="ms"
-    expires_after="2024-10-13">
+    expires_after="2024-12-24">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -360,7 +360,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.ServerRequestsLocalDecryptionPrompt"
-    enum="BooleanRequested" expires_after="2024-10-20">
+    enum="BooleanRequested" expires_after="2024-12-24">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -689,7 +689,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.ImageEmbeddingModelLoadTime.FlatbufferScorer"
-    units="ms" expires_after="2024-09-15">
+    units="ms" expires_after="2024-12-24">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

@@ -481,7 +481,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MagicStack.Clank.{ModuleDelegateHost}.Scrollable.{ScrollState}"
-    units="count" expires_after="2024-10-20">
+    units="count" expires_after="2024-12-24">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>

@@ -54,7 +54,7 @@ each histogram. Maybe add here or add a new performance controls one
 
 <histogram
     name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.MessageShownCount"
-    units="count" expires_after="2024-09-02">
+    units="count" expires_after="2024-12-24">
   <owner>stluong@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -75,7 +75,7 @@ each histogram. Maybe add here or add a new performance controls one
 
 <histogram
     name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.MessageTriggerResult"
-    enum="InterventionMessageTriggerResult" expires_after="2024-09-02">
+    enum="InterventionMessageTriggerResult" expires_after="2024-12-24">
   <owner>stluong@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>

@@ -388,7 +388,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display.{DisplayType}.NightLightSchedule"
-    enum="DisplaySettingsNightLightScheduleOption" expires_after="2024-10-20">
+    enum="DisplaySettingsNightLightScheduleOption" expires_after="2024-12-24">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -402,7 +402,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display.{DisplayType}.NightLightStatus"
-    enum="DisplaySettingsBoolean" expires_after="2024-10-20">
+    enum="DisplaySettingsBoolean" expires_after="2024-12-24">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -734,7 +734,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Privacy.VerifiedAccessEnabled"
-    enum="BooleanEnabled" expires_after="2024-10-20">
+    enum="BooleanEnabled" expires_after="2024-12-24">
   <owner>jpachara@google.com</owner>
   <owner>pwg-cros@google.com</owner>
   <summary>
@@ -744,7 +744,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Privacy.VerifiedAccessOnOff"
-    enum="BooleanToggled" expires_after="2024-10-20">
+    enum="BooleanToggled" expires_after="2024-12-24">
   <owner>jpachara@google.com</owner>
   <owner>pwg-cros@google.com</owner>
   <summary>
