@@ -92,6 +92,30 @@ TEST_F(PickerSearchRequestTest, SendsQueryToCrosSearchImmediately) {
       &client(), kAllCategories);
 }
 
+TEST_F(PickerSearchRequestTest,
+       DoesNotSendQueryToCrosSearchIfNotAvailableNoCategory) {
+  NiceMock<MockSearchResultsCallback> search_results_callback;
+  EXPECT_CALL(client(), StartCrosSearch(_, _, _)).Times(0);
+
+  PickerSearchRequest request(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)),
+      &client(), {});
+}
+
+TEST_F(PickerSearchRequestTest,
+       DoesNotSendQueryToCrosSearchIfNotAvailableWithCategory) {
+  NiceMock<MockSearchResultsCallback> search_results_callback;
+  EXPECT_CALL(client(), StartCrosSearch(_, _, _)).Times(0);
+
+  PickerSearchRequest request(
+      u"cat", {PickerCategory::kLinks},
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)),
+      &client(), {});
+}
+
 TEST_F(PickerSearchRequestTest, ShowsResultsFromOmniboxSearch) {
   MockSearchResultsCallback search_results_callback;
   // Catch-all to prevent unexpected gMock call errors. See

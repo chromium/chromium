@@ -23,6 +23,7 @@
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -80,13 +81,16 @@ PickerSearchRequest::PickerSearchRequest(
 
   std::vector<PickerSearchSource> cros_search_sources;
   cros_search_sources.reserve(3);
-  if (!category.has_value() || category == PickerCategory::kLinks) {
+  if ((!category.has_value() || category == PickerCategory::kLinks) &&
+      base::Contains(available_categories, PickerCategory::kLinks)) {
     cros_search_sources.push_back(PickerSearchSource::kOmnibox);
   }
-  if (!category.has_value() || category == PickerCategory::kLocalFiles) {
+  if ((!category.has_value() || category == PickerCategory::kLocalFiles) &&
+      base::Contains(available_categories, PickerCategory::kLocalFiles)) {
     cros_search_sources.push_back(PickerSearchSource::kLocalFile);
   }
-  if (!category.has_value() || category == PickerCategory::kDriveFiles) {
+  if ((!category.has_value() || category == PickerCategory::kDriveFiles) &&
+      base::Contains(available_categories, PickerCategory::kDriveFiles)) {
     cros_search_sources.push_back(PickerSearchSource::kDrive);
   }
 
