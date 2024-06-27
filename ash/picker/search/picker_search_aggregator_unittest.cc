@@ -92,6 +92,10 @@ INSTANTIATE_TEST_SUITE_P(
             .section_type = PickerSectionType::kSuggestions,
         },
         TestCase{
+            .source = PickerSearchSource::kClipboard,
+            .section_type = PickerSectionType::kSuggestions,
+        },
+        TestCase{
             .source = PickerSearchSource::kEditorWrite,
             .section_type = PickerSectionType::kEditorWrite,
         },
