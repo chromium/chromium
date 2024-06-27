@@ -147,7 +147,6 @@
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
-#include "chrome/browser/ui/webui/side_panel/performance_controls/performance_side_panel_ui.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui.h"
 #include "chrome/browser/ui/webui/sync_file_system_internals/sync_file_system_internals_ui.h"
@@ -373,14 +372,6 @@ WebUIController* NewWebUI<WelcomeUI>(WebUI* web_ui, const GURL& url) {
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if !BUILDFLAG(IS_ANDROID)
-template <>
-WebUIController* NewWebUI<PerformanceSidePanelUI>(WebUI* web_ui,
-                                                  const GURL& url) {
-  return new PerformanceSidePanelUI(web_ui, url);
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 bool IsAboutUI(const GURL& url) {
   return (url.host_piece() == chrome::kChromeUIChromeURLsHost ||
           url.host_piece() == chrome::kChromeUICreditsHost
@@ -545,9 +536,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       return &NewWebUI<NewTabPageUI>;
     if (url.host_piece() == chrome::kChromeUINewTabPageThirdPartyHost)
       return &NewWebUI<NewTabPageThirdPartyUI>;
-  }
-  if (url.host_piece() == chrome::kChromeUIPerformanceSidePanelHost) {
-    return &NewWebUI<PerformanceSidePanelUI>;
   }
   // Settings are implemented with native UI elements on Android.
   if (url.host_piece() == chrome::kChromeUISettingsHost)

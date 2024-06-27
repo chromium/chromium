@@ -34574,6 +34574,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1673299360" label="chrome://tab-search.top-chrome/"/>
   <int value="1677735296" label="chrome://sync-confirmation/"/>
   <int value="1687272877" label="chrome://syncresources/"/>
+  <int value="1691459037" label="chrome://performance-side-panel.top-chrome/"/>
   <int value="1693406661" label="chrome://kiosk-vision-internals/"/>
   <int value="1715073862"
       label="chrome-untrusted://read-anything-side-panel.top-chrome/"/>

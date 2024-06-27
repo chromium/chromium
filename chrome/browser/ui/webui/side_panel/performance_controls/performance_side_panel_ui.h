@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/webui/side_panel/performance_controls/performance.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -19,6 +20,17 @@
 class PerformancePageHandler;
 class BatterySaverCardHandler;
 class MemorySaverCardHandler;
+
+class PerformanceSidePanelUIConfig : public content::WebUIConfig {
+ public:
+  PerformanceSidePanelUIConfig();
+
+  // content::WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+};
 
 class PerformanceSidePanelUI
     : public TopChromeWebUIController,

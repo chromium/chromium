@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/side_panel/performance_controls/performance_side_panel_ui.h"
 
+#include <memory>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -26,6 +27,23 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
+
+PerformanceSidePanelUIConfig::PerformanceSidePanelUIConfig()
+    : content::WebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIPerformanceSidePanelHost) {}
+
+bool PerformanceSidePanelUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return base::FeatureList::IsEnabled(
+      performance_manager::features::kPerformanceControlsSidePanel);
+}
+
+std::unique_ptr<content::WebUIController>
+PerformanceSidePanelUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                                    const GURL& url) {
+  return std::make_unique<PerformanceSidePanelUI>(web_ui, url);
+}
 
 PerformanceSidePanelUI::PerformanceSidePanelUI(content::WebUI* web_ui,
                                                const GURL& url)
