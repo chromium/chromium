@@ -65,7 +65,6 @@ void EditorSystemActuator::InsertText(const std::string& text) {
   // other announcements triggered from a text insertion do not collide with the
   // original announcement.
   system_->Announce(kAnnouncementForInsertion);
-  announcement_delay_.Reset();
   announcement_delay_.Start(
       FROM_HERE, kAnnouncementDelay,
       base::BindOnce(&EditorSystemActuator::QueueTextInsertion,
