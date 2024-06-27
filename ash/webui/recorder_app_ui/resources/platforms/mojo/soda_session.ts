@@ -32,7 +32,7 @@ export class MojoSodaSession implements SodaSession, SodaClientInterface {
   addAudio(samples: Float32Array): void {
     // Scale to int16 array.
     const scaledSamples = new Int16Array(
-        samples.map((v) => clamp(Math.floor(v * 32768), -32768, 32767)),
+      samples.map((v) => clamp(Math.floor(v * 32768), -32768, 32767)),
     );
     // The addAudio argument is a uint8 array for the bytes of the int16 array.
     const toSend = Array.from(new Uint8Array(scaledSamples.buffer));

@@ -107,11 +107,12 @@ export class AsyncJobQueue {
     if (this.runningPromise === null) {
       const result = Promise.resolve(job());
       this.runningPromise = result
-                                .catch(
-                                    () => {
-                                        /* ignore error from previous job */
-                                    })
-                                .then(() => this.handlePendingJobs());
+                              .catch(
+                                () => {
+                                  /* ignore error from previous job */
+                                }
+                              )
+                              .then(() => this.handlePendingJobs());
       return {result};
     }
 

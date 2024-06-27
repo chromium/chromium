@@ -26,8 +26,8 @@ export function computed<T>(options: ComputedOptions<T>): Signal<T>;
  * Creates a new computed signal with the given option.
  */
 export function computed<T>(
-    getOrOptions: ComputedOptions<T>|(() => T),
-    ): Computed<T>|Signal<T> {
+  getOrOptions: ComputedOptions<T>|(() => T),
+): Computed<T>|Signal<T> {
   if (typeof getOrOptions === 'function') {
     return new ComputedImpl(getOrOptions);
   } else {

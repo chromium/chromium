@@ -235,9 +235,9 @@ export class RecordingFileList extends LitElement {
     // TODO: b/336963138 - Add grouping when sort by date.
     // Sort most recent recordings first.
     const recordings = Object.values(this.recordingMetadataMap)
-                           .sort(
-                               (a, b) => b.recordedAt - a.recordedAt,
-                           );
+                         .sort(
+                           (a, b) => b.recordedAt - a.recordedAt,
+                         );
     return map(recordings, (rec) => this.renderRecording(rec));
   }
 

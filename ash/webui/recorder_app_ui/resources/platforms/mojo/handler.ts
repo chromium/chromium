@@ -12,7 +12,7 @@ import '../../strings.m.js';
 import {
   ColorChangeUpdater,
 } from
-    'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+  'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {nothing} from 'chrome://resources/mwc/lit/index.js';
 
@@ -42,8 +42,8 @@ export class PlatformHandler extends PlatformHandlerBase {
   override async loadModel(uuid: string): Promise<Model> {
     const newModel = new OnDeviceModelRemote();
     const {result} = await this.remote.loadModel(
-        {value: uuid},
-        newModel.$.bindNewPipeAndPassReceiver(),
+      {value: uuid},
+      newModel.$.bindNewPipeAndPassReceiver(),
     );
     if (result !== LoadModelResult.kSuccess) {
       // TODO(pihsun): Dedicated error type?
@@ -57,8 +57,8 @@ export class PlatformHandler extends PlatformHandlerBase {
     const session = new MojoSodaSession(recognizer);
     const client = new SodaClientReceiver(session);
     const {result} = await this.remote.loadSpeechRecognizer(
-        client.$.bindNewPipeAndPassRemote(),
-        recognizer.$.bindNewPipeAndPassReceiver(),
+      client.$.bindNewPipeAndPassRemote(),
+      recognizer.$.bindNewPipeAndPassReceiver(),
     );
     if (!result) {
       // TODO(pihsun): Dedicated error type?

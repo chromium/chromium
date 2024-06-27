@@ -46,20 +46,20 @@ export function init(): void {
   document.head.appendChild(style);
 
   bindSignal(
-      devSettings,
-      localStorage.Key.DEV_SETTINGS,
-      devSettingsSchema,
-      defaultSettings,
+    devSettings,
+    localStorage.Key.DEV_SETTINGS,
+    devSettingsSchema,
+    defaultSettings,
   );
 
   effect(() => {
     document.documentElement.classList.toggle(
-        'force-dark',
-        devSettings.value.forceTheme === ColorTheme.DARK,
+      'force-dark',
+      devSettings.value.forceTheme === ColorTheme.DARK,
     );
     document.documentElement.classList.toggle(
-        'force-light',
-        devSettings.value.forceTheme === ColorTheme.LIGHT,
+      'force-light',
+      devSettings.value.forceTheme === ColorTheme.LIGHT,
     );
   });
 }

@@ -115,8 +115,8 @@ export class ComputedImpl<T> extends Signal<T> implements Parent, Child {
   // Note that the `set` function should actually change the "source" value
   // depend by `get`, so the next call to `get` will get the correct value.
   constructor(
-      private readonly get: () => T,
-      private readonly set?: (val: T) => void,
+    private readonly get: () => T,
+    private readonly set?: (val: T) => void,
   ) {
     super();
   }
@@ -142,8 +142,8 @@ export class ComputedImpl<T> extends Signal<T> implements Parent, Child {
 
   set value(val: T) {
     assert(
-        this.set !== undefined,
-        'value setter called on computed without set',
+      this.set !== undefined,
+      'value setter called on computed without set',
     );
     this.set(val);
   }

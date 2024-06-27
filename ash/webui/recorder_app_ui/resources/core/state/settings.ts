@@ -27,9 +27,9 @@ export const settings = signal(defaultSettings);
  */
 export function init(): void {
   bindSignal(
-      settings,
-      localStorage.Key.SETTINGS,
-      settingsSchema,
-      defaultSettings,
+    settings,
+    localStorage.Key.SETTINGS,
+    settingsSchema,
+    defaultSettings,
   );
 }

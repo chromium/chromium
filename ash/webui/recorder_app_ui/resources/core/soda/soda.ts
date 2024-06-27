@@ -78,8 +78,8 @@ function flattenEvent(ev: FinalResult): TextPart[] {
       }
       const startMs = toMs(part.alignment);
       const endMs = i !== hypothesisPart.length - 1 ?
-          toMs(assertExists(hypothesisPart[i + 1]).alignment) :
-          eventTimeRange.endMs - eventTimeRange.startMs;
+        toMs(assertExists(hypothesisPart[i + 1]).alignment) :
+        eventTimeRange.endMs - eventTimeRange.startMs;
       if (endMs === null) {
         return null;
       }

@@ -19,9 +19,9 @@ export function clamp(val: number, low: number, high: number): number {
  * TODO(pihsun): Unit test.
  */
 export function sliceWhen<T>(
-    values: T[],
-    shouldSlice: (before: T, after: T) => boolean,
-    ): T[][] {
+  values: T[],
+  shouldSlice: (before: T, after: T) => boolean,
+): T[][] {
   if (values.length === 0) {
     return [];
   }

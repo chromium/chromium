@@ -14,11 +14,11 @@ import {effect, Signal} from './signal.js';
  * change.
  */
 export function bindSignal<T extends JsonSerializable>(
-    s: Signal<T>,
-    key: Key,
-    schema: Schema<T>,
-    defaultValue: T,
-    ): void {
+  s: Signal<T>,
+  key: Key,
+  schema: Schema<T>,
+  defaultValue: T,
+): void {
   s.value = localStorage.get(key, schema, defaultValue);
 
   /**

@@ -102,10 +102,10 @@ export class RecordingSession {
   });
 
   constructor(
-      private readonly stream: MediaStream,
-      private readonly mediaRecorder: MediaRecorder,
-      private readonly audioProcessor: AudioWorkletNode,
-      private readonly sodaSession: SodaSession,
+    private readonly stream: MediaStream,
+    private readonly mediaRecorder: MediaRecorder,
+    private readonly audioProcessor: AudioWorkletNode,
+    private readonly sodaSession: SodaSession,
   ) {
     this.mediaRecorder.addEventListener('dataavailable', (e) => {
       this.onDataAvailable(e);
@@ -116,24 +116,23 @@ export class RecordingSession {
     this.mediaRecorder.start(TIME_SLICE_MS);
 
     this.audioProcessor.port.addEventListener(
-        'message',
-        (ev: MessageEvent<Float32Array>) => {
-          const samples = ev.data;
-          // Calculates the power of the slice. The value range is [0, 1].
-          const power = Math.sqrt(
-              samples.map((v) => v * v).reduce((x, y) => x + y, 0) /
-                  samples.length,
-          );
-          const scaledPower = clamp(
-              Math.floor(power * POWER_SCALE_FACTOR),
-              0,
-              POWER_SCALE_FACTOR - 1,
-          );
-          this.powers.mutate((d) => {
-            d.push(scaledPower);
-          });
-          this.sodaSession.addAudio(samples);
-        },
+      'message',
+      (ev: MessageEvent<Float32Array>) => {
+        const samples = ev.data;
+        // Calculates the power of the slice. The value range is [0, 1].
+        const power = Math.sqrt(
+          samples.map((v) => v * v).reduce((x, y) => x + y, 0) / samples.length,
+        );
+        const scaledPower = clamp(
+          Math.floor(power * POWER_SCALE_FACTOR),
+          0,
+          POWER_SCALE_FACTOR - 1,
+        );
+        this.powers.mutate((d) => {
+          d.push(scaledPower);
+        });
+        this.sodaSession.addAudio(samples);
+      },
     );
     this.audioProcessor.port.start();
     this.sodaSessionUnsubscribe = this.sodaSession.subscribeEvent((ev) => {
@@ -174,8 +173,8 @@ export class RecordingSession {
   }
 
   static async create(
-      config: RecordingSessionConfig,
-      ): Promise<RecordingSession> {
+    config: RecordingSessionConfig,
+  ): Promise<RecordingSession> {
     const sodaSession = await config.platformHandler.newSodaSession();
 
     const stream = await getStreamFromAudioSource(config.source);

@@ -32,7 +32,7 @@ export function formatDuration(duration: Duration, digits = 0): string {
 
   // There's no '.' in `secsStr` when digits === 0.
   const secsStr =
-      secs.toFixed(digits).padStart(digits === 0 ? 2 : 3 + digits, '0');
+    secs.toFixed(digits).padStart(digits === 0 ? 2 : 3 + digits, '0');
 
   if (hours > 0) {
     return `${hours}:${padZero(mins)}:${secsStr}`;

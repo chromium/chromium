@@ -90,7 +90,7 @@ export class DevPage extends ReactiveLitElement {
     }
     // TODO(shik): Add loading state.
     this.titles.value = await Promise.all(
-        this.loadedModels.value.map((m) => m.suggestTitles(value)),
+      this.loadedModels.value.map((m) => m.suggestTitles(value)),
     );
   }
 
@@ -103,7 +103,7 @@ export class DevPage extends ReactiveLitElement {
     this.modelLoading.value = true;
     try {
       this.loadedModels.value = await Promise.all(
-          modelIds.map((id) => this.platformHandler.loadModel(id)),
+        modelIds.map((id) => this.platformHandler.loadModel(id)),
       );
     } finally {
       // TODO(pihsun): Display / handle error better.
@@ -140,9 +140,9 @@ export class DevPage extends ReactiveLitElement {
           <span>${this.renderLoadModelResult()}</span>
         </div>
         ${
-        when(
-            this.loadedModels.value !== null,
-            () => html`
+      when(
+        this.loadedModels.value !== null,
+        () => html`
             <div class="section">
               <textarea ${ref(this.textareaRef)} rows=${5}></textarea>
               <pre>Titles: ${JSON.stringify(this.titles.value, null, 2)}</pre>
@@ -151,7 +151,7 @@ export class DevPage extends ReactiveLitElement {
               </md-filled-button>
             </div>
           `,
-            )}
+      )}
         ${this.platformHandler.renderDevUi()}
       </div>
     `;

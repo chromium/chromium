@@ -180,8 +180,8 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
       </div>`;
     }
     const suggestions = map(
-        this.suggestedTitles.value,
-        (s) => this.renderSuggestion(s),
+      this.suggestedTitles.value,
+      (s) => this.renderSuggestion(s),
     );
     return html`<div id="suggestions">${suggestions}</div>
       ${this.renderSuggestionFooter()}`;
@@ -206,8 +206,8 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
 }
 
 window.customElements.define(
-    'recording-title-suggestion',
-    RecordingTitleSuggestion,
+  'recording-title-suggestion',
+  RecordingTitleSuggestion,
 );
 
 declare global {

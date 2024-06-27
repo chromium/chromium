@@ -55,9 +55,9 @@ function createDraft<T>(base: T): Draft<T> {
             Reflect.deleteProperty(copy, key);
           } else {
             Reflect.set(
-                copy,
-                key,
-                isDraft(value) ? finalizeDraft(value) : value,
+              copy,
+              key,
+              isDraft(value) ? finalizeDraft(value) : value,
             );
           }
         }
@@ -78,8 +78,8 @@ function createDraft<T>(base: T): Draft<T> {
     },
     set(_target, prop, newValue) {
       shadowMap.set(
-          prop,
-          isDraftable(newValue) ? createDraft(newValue) : newValue,
+        prop,
+        isDraftable(newValue) ? createDraft(newValue) : newValue,
       );
       return true;
     },

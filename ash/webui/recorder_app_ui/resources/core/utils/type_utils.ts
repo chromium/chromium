@@ -28,5 +28,5 @@ export function forceCast<T>(x: unknown): T {
  * the type partially.
  */
 export type RecursiveExtraKey<T> = T extends Record<string, unknown>?
-    Record<string, unknown>&{[K in keyof T]: RecursiveExtraKey<T[K]>} :
-    T extends unknown[] ? {[K in keyof T]: RecursiveExtraKey<T[K]>} : T;
+  Record<string, unknown>&{[K in keyof T]: RecursiveExtraKey<T[K]>} :
+  T extends unknown[] ? {[K in keyof T]: RecursiveExtraKey<T[K]>} : T;

@@ -19,8 +19,8 @@ export class RecorderApp extends ReactiveLitElement {
   static override styles = css`
     :host {
       display: block;
-      width: 100%;
       height: 100%;
+      width: 100%;
     }
   `;
 

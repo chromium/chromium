@@ -11,9 +11,9 @@
  * @param optMessage A message to show on failure.
  */
 export function assert(
-    condition: boolean,
-    optMessage?: string,
-    ): asserts condition {
+  condition: boolean,
+  optMessage?: string,
+): asserts condition {
   if (!condition) {
     let message = 'Assertion failed';
     if (optMessage !== undefined) {
@@ -48,9 +48,9 @@ export function assert(
  * @param optMessage An optional error message to throw.
  */
 export function assertExhaustive(
-    value: never,
-    optMessage = `unexpected value ${value}`,
-    ): never {
+  value: never,
+  optMessage = `unexpected value ${value}`,
+): never {
   assert(false, optMessage);
 }
 
@@ -62,9 +62,9 @@ export function assertExhaustive(
  * @return The value if it's an enum variant, null otherwise.
  */
 export function checkEnumVariant<T extends {[key: string]: string}>(
-    enumType: T,
-    value: unknown,
-    ): T[keyof T]|null {
+  enumType: T,
+  value: unknown,
+): T[keyof T]|null {
   if (value === null || value === undefined || typeof value !== 'string' ||
       !Object.values<string>(enumType).includes(value)) {
     return null;
@@ -84,9 +84,9 @@ export function checkEnumVariant<T extends {[key: string]: string}>(
  * @return The value if it's an enum variant, throws assertion error otherwise.
  */
 export function assertEnumVariant<T extends string>(
-    enumType: {[key: string]: T},
-    value: unknown,
-    ): T {
+  enumType: {[key: string]: T},
+  value: unknown,
+): T {
   const ret = checkEnumVariant(enumType, value);
   assert(ret !== null, `${value} is not a valid enum variant`);
   return ret;
@@ -104,9 +104,9 @@ type Constructor<T> = new (...args: any[]) => T;
  * @param ctor A user-defined constructor.
  */
 export function checkInstanceof<T>(
-    value: unknown,
-    ctor: Constructor<T>,
-    ): T|null {
+  value: unknown,
+  ctor: Constructor<T>,
+): T|null {
   if (!(value instanceof ctor)) {
     return null;
   }
@@ -121,16 +121,16 @@ export function checkInstanceof<T>(
  * @param optMessage A message to show when this is hit.
  */
 export function assertInstanceof<T>(
-    value: unknown,
-    ctor: Constructor<T>,
-    optMessage?: string,
-    ): T {
+  value: unknown,
+  ctor: Constructor<T>,
+  optMessage?: string,
+): T {
   // We don't use assert immediately here so that we avoid constructing an error
   // message if we don't have to.
   if (!(value instanceof ctor)) {
     assert(
-        false,
-        optMessage ?? `Value ${value} is not a[n] ${ctor.name ?? typeof ctor}`,
+      false,
+      optMessage ?? `Value ${value} is not a[n] ${ctor.name ?? typeof ctor}`,
     );
   }
   return value;
@@ -143,9 +143,9 @@ export function assertInstanceof<T>(
  * @param optMessage A message to show when this is hit.
  */
 export function assertExists<T>(
-    value: T|null|undefined,
-    optMessage?: string,
-    ): T {
+  value: T|null|undefined,
+  optMessage?: string,
+): T {
   if (value === null || value === undefined) {
     assert(false, optMessage ?? `Value is ${value}`);
   }

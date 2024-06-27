@@ -13,9 +13,9 @@ export class IterableWeakSet<T extends object> {
   private readonly weakRefMap = new WeakMap<T, WeakRef<T>>();
 
   private readonly finalizationGroup = new FinalizationRegistry(
-      (ref: WeakRef<T>) => {
-        this.set.delete(ref);
-      },
+    (ref: WeakRef<T>) => {
+      this.set.delete(ref);
+    },
   );
 
   add(it: T): void {

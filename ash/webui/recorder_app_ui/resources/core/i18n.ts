@@ -51,10 +51,10 @@ const noArgStrings = [
 type NoArgStrings = (typeof noArgStrings)[number];
 
 const withArgsStrings = {
-    // This contains all the other strings that needs argument.
-    // Usage example:
-    // Add `fooBar: withArgs<[number, string]>(),` here,
-    // then `i18n.fooBar(1, '2')` works.
+  // This contains all the other strings that needs argument.
+  // Usage example:
+  // Add `fooBar: withArgs<[number, string]>(),` here,
+  // then `i18n.fooBar(1, '2')` works.
 } satisfies Record<string, I18nArgType[]>;
 type WithArgsStrings = typeof withArgsStrings;
 
@@ -76,23 +76,23 @@ type I18nType = Record<NoArgStrings, string>&{
 //
 // forceCast: The proxy wrapper changed the type of the target.
 export const i18n = forceCast<I18nType>(
-    new Proxy(
-        {},
-        {
-          get(_target, name) {
-            if (typeof name !== 'string') {
-              return;
-            }
-            if (upcast<readonly string[]>(noArgStrings).includes(name)) {
-              return usePlatformHandler().getStringF(name);
-            }
-            if (Object.hasOwn(withArgsStrings, name)) {
-              return (...args: I18nArgType[]) => {
-                return usePlatformHandler().getStringF(name, ...args);
-              };
-            }
-            return undefined;
-          },
-        },
-        ),
+  new Proxy(
+    {},
+    {
+      get(_target, name) {
+        if (typeof name !== 'string') {
+          return;
+        }
+        if (upcast<readonly string[]>(noArgStrings).includes(name)) {
+          return usePlatformHandler().getStringF(name);
+        }
+        if (Object.hasOwn(withArgsStrings, name)) {
+          return (...args: I18nArgType[]) => {
+            return usePlatformHandler().getStringF(name, ...args);
+          };
+        }
+        return undefined;
+      },
+    },
+  ),
 );

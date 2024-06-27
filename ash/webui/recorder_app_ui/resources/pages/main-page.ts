@@ -72,7 +72,7 @@ export class MainPage extends ReactiveLitElement {
   private readonly recordingDataManager = useRecordingDataManager();
 
   private readonly recordingMetadataMap =
-      this.recordingDataManager.getAllMetadata();
+    this.recordingDataManager.getAllMetadata();
 
   private get micSelectionMenu(): MicSelectionMenu|null {
     return this.shadowRoot?.querySelector('mic-selection-menu') ?? null;

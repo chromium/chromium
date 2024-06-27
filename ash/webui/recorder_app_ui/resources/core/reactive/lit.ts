@@ -98,9 +98,9 @@ export class ReactiveLitElement extends LitElement {
   }
 
   propSignal<T extends ReactiveLitElement, P extends string&keyof T>(
-      this: T,
-      prop: P,
-      ): ReadonlySignal<T[P]> {
+    this: T,
+    prop: P,
+  ): ReadonlySignal<T[P]> {
     const sig = signal(Reflect.get(this, prop));
     this.registerPropertySignal(sig, prop);
     return sig;
@@ -130,8 +130,8 @@ export class ScopedAsyncComputed<T> implements ReactiveController {
   // Note that only the signal values before the first async point of callback
   // is tracked.
   constructor(
-      host: ReactiveControllerHost,
-      private readonly callback: (signal: AbortSignal) => Promise<T>,
+    host: ReactiveControllerHost,
+    private readonly callback: (signal: AbortSignal) => Promise<T>,
   ) {
     host.addController(this);
   }
@@ -162,21 +162,21 @@ export class ScopedAsyncComputed<T> implements ReactiveController {
 
       this.stateInternal.value = ComputedState.RUNNING;
       this.callback(abortController.signal)
-          .then(
-              (val) => {
-                if (latestRun === thisRun) {
-                  this.valueInternal.value = val;
-                  this.stateInternal.value = ComputedState.DONE;
-                }
-              },
-              (e) => {
-                if (latestRun === thisRun) {
-                  console.error(e);
-                  // TODO(pihsun): Save the latest error.
-                  this.stateInternal.value = ComputedState.ERROR;
-                }
-              },
-          );
+        .then(
+          (val) => {
+            if (latestRun === thisRun) {
+              this.valueInternal.value = val;
+              this.stateInternal.value = ComputedState.DONE;
+            }
+          },
+          (e) => {
+            if (latestRun === thisRun) {
+              console.error(e);
+              // TODO(pihsun): Save the latest error.
+              this.stateInternal.value = ComputedState.ERROR;
+            }
+          },
+        );
     });
   }
 

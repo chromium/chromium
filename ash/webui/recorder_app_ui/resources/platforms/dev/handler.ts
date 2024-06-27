@@ -135,19 +135,20 @@ class SodaSessionDev implements SodaSession {
     const currentLine = assertExists(TRANSCRIPTION_LINES[this.currentLineIdx]);
     const timingEvent = {
       audioStartTime: timeDelta(
-          this.fakeTimeMs - (this.currentWordIdx + 1) * WORD_INTERVAL_MS,
-          ),
+        this.fakeTimeMs - (this.currentWordIdx + 1) * WORD_INTERVAL_MS,
+      ),
       eventEndTime: timeDelta(this.fakeTimeMs),
     };
 
     if (this.currentWordIdx === currentLine.length - 1 || finishLine) {
       const hypothesisPart =
-          currentLine.slice(0, this.currentWordIdx + 1)
-              .map((w, i) => ({
-                     text: [w],
-                     alignment: timeDelta(i * WORD_INTERVAL_MS),
-                     leadingSpace: true,
-                   }));
+        currentLine.slice(0, this.currentWordIdx + 1).map((w, i) => {
+          return {
+            text: [w],
+            alignment: timeDelta(i * WORD_INTERVAL_MS),
+            leadingSpace: true,
+          };
+        });
       this.observers.notify({
         finalResult: {
           finalHypotheses: currentLine,
@@ -208,12 +209,12 @@ class SodaSessionDev implements SodaSession {
  * ui/webui/resources/js/load_time_data.ts to avoid pulling those as
  * dependency for dev.
  */
-function substituteI18nString(
-    label: string, ...args: Array<number|string>): string {
+function substituteI18nString(label: string, ...args: Array<number|string>):
+  string {
   return label.replace(/\$(.|$|\n)/g, (m) => {
     assert(
-        m.match(/\$[$1-9]/) !== null,
-        'Unescaped $ found in localized string.',
+      m.match(/\$[$1-9]/) !== null,
+      'Unescaped $ found in localized string.',
     );
     if (m === '$$') {
       return '$';
@@ -255,8 +256,8 @@ export class PlatformHandler extends PlatformHandlerBase {
     function handleChange(ev: Event) {
       devSettings.mutate((s) => {
         s.forceTheme = assertEnumVariant(
-            ColorTheme,
-            assertInstanceof(ev.target, Dropdown).value,
+          ColorTheme,
+          assertInstanceof(ev.target, Dropdown).value,
         );
       });
     }

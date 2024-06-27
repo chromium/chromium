@@ -4,8 +4,8 @@
 
 import {Schema} from './schema.js';
 
-export type JsonSerializable = JsonSerializable[]|boolean|number|string|
-    {[key: string]: JsonSerializable}|null;
+export type JsonSerializable =|JsonSerializable[]|boolean|number|string|
+  {[key: string]: JsonSerializable}|null;
 
 /**
  * Keys for local storage.
@@ -24,10 +24,10 @@ export enum Key {
  * Gets a value from local storage.
  */
 export function get<T extends JsonSerializable>(
-    key: Key,
-    schema: Schema<T>,
-    defaultValue: T,
-    ): T {
+  key: Key,
+  schema: Schema<T>,
+  defaultValue: T,
+): T {
   const item = window.localStorage.getItem(key);
   if (item === null) {
     return defaultValue;

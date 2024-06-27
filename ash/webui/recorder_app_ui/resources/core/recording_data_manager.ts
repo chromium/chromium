@@ -78,7 +78,7 @@ type Transcription = Infer<typeof transcriptionSchema>;
  * recordings.
  */
 export type RecordingCreateParams =
-    Omit<AudioPower&BaseRecordingMetadata&Transcription, 'id'>;
+  Omit<AudioPower&BaseRecordingMetadata&Transcription, 'id'>;
 
 // TODO(pihsun): Type-safe wrapper for reading / writing specific type of file?
 function metadataName(id: string) {
@@ -153,8 +153,8 @@ export class RecordingDataManager {
 
   static async create(dataDir: DataDir): Promise<RecordingDataManager> {
     async function getMetadataFromFilename(
-        name: string,
-        ): Promise<RecordingMetadata> {
+      name: string,
+    ): Promise<RecordingMetadata> {
       const file = await dataDir.read(name);
       const text = await file.text();
       // TODO(shik): Add versioning, and error handling.
@@ -166,19 +166,19 @@ export class RecordingDataManager {
 
     const filenames = await dataDir.list();
     const metadataMap = Object.fromEntries(
-        await Promise.all(
-            filenames.filter((x) => x.endsWith('.meta.json')).map(async (x) => {
-              const meta = await getMetadataFromFilename(x);
-              return [meta.id, meta] as const;
-            }),
-            ),
+      await Promise.all(
+        filenames.filter((x) => x.endsWith('.meta.json')).map(async (x) => {
+          const meta = await getMetadataFromFilename(x);
+          return [meta.id, meta] as const;
+        }),
+      ),
     );
     return new RecordingDataManager(dataDir, metadataMap);
   }
 
   private constructor(
-      private readonly dataDir: DataDir,
-      metadata: RecordingMetadataMap,
+    private readonly dataDir: DataDir,
+    metadata: RecordingMetadataMap,
   ) {
     this.cachedMetadataMap.value = metadata;
   }
@@ -197,9 +197,9 @@ export class RecordingDataManager {
    * @return The created recording id.
    */
   async createRecording(
-      {textTokens, powers, ...meta}: RecordingCreateParams,
-      audio: Blob,
-      ): Promise<string> {
+    {textTokens, powers, ...meta}: RecordingCreateParams,
+    audio: Blob,
+  ): Promise<string> {
     const id = ulid();
     const description = calculateDescription(textTokens);
     const powerAverages = calculatePowerAverages(powers);
@@ -207,13 +207,13 @@ export class RecordingDataManager {
     this.setMetadata(id, fullMeta);
     await Promise.all([
       this.dataDir.write(
-          audioPowerName(id),
-          audioPowerSchema.stringifyJson({powers}),
-          ),
+        audioPowerName(id),
+        audioPowerSchema.stringifyJson({powers}),
+      ),
       this.dataDir.write(
-          transcriptionName(id),
-          transcriptionSchema.stringifyJson({textTokens}),
-          ),
+        transcriptionName(id),
+        transcriptionSchema.stringifyJson({textTokens}),
+      ),
       this.dataDir.write(audioName(id), audio),
     ]);
     return id;
@@ -236,8 +236,8 @@ export class RecordingDataManager {
     });
     this.getWriteQueueFor(id).push(async () => {
       await this.dataDir.write(
-          metadataName(id),
-          recordingMetadataSchema.stringifyJson(meta),
+        metadataName(id),
+        recordingMetadataSchema.stringifyJson(meta),
       );
     });
   }

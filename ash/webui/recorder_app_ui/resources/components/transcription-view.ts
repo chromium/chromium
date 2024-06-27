@@ -38,8 +38,9 @@ function inBetween(x: number, [low, high]: [number, number]): boolean {
   // Note that .scrollTo sometimes scroll slightly off to what's given as an
   // argument, so we add a margin.
   return (
-      x >= Math.min(low, high) - SCROLL_MARGIN &&
-      x <= Math.max(low, high) + SCROLL_MARGIN);
+    x >= Math.min(low, high) - SCROLL_MARGIN &&
+    x <= Math.max(low, high) + SCROLL_MARGIN
+  );
 }
 
 export class TranscriptionView extends ReactiveLitElement {
@@ -251,7 +252,7 @@ export class TranscriptionView extends ReactiveLitElement {
       // TODO(pihsun): We might need "fake" highlight blocks between speech so
       // it'll scroll to the part between speech?
       const highlightedElement =
-          this.shadowRoot?.querySelector('.highlight-word') ?? null;
+        this.shadowRoot?.querySelector('.highlight-word') ?? null;
       if (highlightedElement === null) {
         return;
       }
@@ -262,10 +263,10 @@ export class TranscriptionView extends ReactiveLitElement {
       // Element.scrollIntoView, so we can know the targetScrollTop for
       // autoscroll calculation.
       targetScrollTop = clamp(
-          highlightedElement.offsetTop + highlightedElement.offsetHeight / 2 -
-              container.clientHeight / 2,
-          0,
-          container.scrollHeight - container.offsetHeight,
+        highlightedElement.offsetTop + highlightedElement.offsetHeight / 2 -
+          container.clientHeight / 2,
+        0,
+        container.scrollHeight - container.offsetHeight,
       );
     } else {
       // Auto scroll to bottom.
@@ -283,28 +284,29 @@ export class TranscriptionView extends ReactiveLitElement {
 
   private renderSentence(sentence: TextPart[]) {
     return repeat(
-        sentence,
-        (_v, i) => i,
-        (part, i) => {
-          const highlightWord = (() => {
-            if (this.currentTime === null || part.timeRange === null) {
-              return false;
-            }
-            return (
-                this.currentTime >= part.timeRange.startMs / 1000 &&
-                this.currentTime < part.timeRange.endMs / 1000);
-          })();
-          // For the first word, the leadingSpace is already added at the
-          // sentence level. Otherwise we follows the leadingSpace for the part
-          // and treat missing field as having a space.
-          const leadingSpace = i === 0 ? false : part?.leadingSpace ?? true;
-          if (!highlightWord) {
-            return `${leadingSpace ? ' ' : ''}${part.text}`;
+      sentence,
+      (_v, i) => i,
+      (part, i) => {
+        const highlightWord = (() => {
+          if (this.currentTime === null || part.timeRange === null) {
+            return false;
           }
-          return html`${leadingSpace ? ' ' : ''}<span class="highlight-word"
+          return (
+            this.currentTime >= part.timeRange.startMs / 1000 &&
+            this.currentTime < part.timeRange.endMs / 1000
+          );
+        })();
+        // For the first word, the leadingSpace is already added at the
+        // sentence level. Otherwise we follows the leadingSpace for the part
+        // and treat missing field as having a space.
+        const leadingSpace = i === 0 ? false : part?.leadingSpace ?? true;
+        if (!highlightWord) {
+          return `${leadingSpace ? ' ' : ''}${part.text}`;
+        }
+        return html`${leadingSpace ? ' ' : ''}<span class="highlight-word"
             >${part.text}</span
           >`;
-        },
+      },
     );
   }
 
@@ -314,18 +316,18 @@ export class TranscriptionView extends ReactiveLitElement {
       return text.endsWith('.') || text.endsWith('?') || text.endsWith('!');
     });
     return repeat(
-        sentences,
-        (_v, i) => i,
-        (sentence, i) => {
-          // Use the leadingSpace field for the first word. If the leadingSpace
-          // field is missing, add space after the first sentence.
-          const leadingSpace = sentence[0]?.leadingSpace ?? i > 0;
-          return html`${leadingSpace ? ' ' : ''}<span
+      sentences,
+      (_v, i) => i,
+      (sentence, i) => {
+        // Use the leadingSpace field for the first word. If the leadingSpace
+        // field is missing, add space after the first sentence.
+        const leadingSpace = sentence[0]?.leadingSpace ?? i > 0;
+        return html`${leadingSpace ? ' ' : ''}<span
             class="sentence"
             data-start-ms=${ifDefined(sentence[0]?.timeRange?.startMs)}
             >${this.renderSentence(sentence)}</span
           >`;
-        },
+      },
     );
   }
 
@@ -336,13 +338,13 @@ export class TranscriptionView extends ReactiveLitElement {
       return;
     }
     const startMs = parseNumber(
-        assertInstanceof(parent, HTMLElement).dataset['startMs'],
+      assertInstanceof(parent, HTMLElement).dataset['startMs'],
     );
     if (startMs === null) {
       return;
     }
     this.dispatchEvent(
-        new CustomEvent('word-clicked', {detail: {startMs}}),
+      new CustomEvent('word-clicked', {detail: {startMs}}),
     );
     this.autoscrollEnabled.value = true;
   }
@@ -370,38 +372,40 @@ export class TranscriptionView extends ReactiveLitElement {
     });
 
     const content = repeat(
-        paragraphs,
-        (_tokens, i) => i,
-        (tokens) => {
-          const parts = tokens.filter(
-              (token): token is TextPart => token.kind === 'textPart',
-          );
-          if (parts.length === 0) {
-            return nothing;
-          }
-          const startTimeRange = assertExists(parts[0]).timeRange;
-          // TODO(pihsun): Check if there's any case that timestamp will be
-          // missing.
-          // TODO(pihsun): Handle keyboard event / a11y on the timestamp.
-          // TODO(pihsun): Check performance? Try to do CSS only highlight when
-          // only currentTime are changed, so the whole template don't need to
-          // be re-computed.
-          return html`
+      paragraphs,
+      (_tokens, i) => i,
+      (tokens) => {
+        const parts = tokens.filter(
+          (token): token is TextPart => token.kind === 'textPart',
+        );
+        if (parts.length === 0) {
+          return nothing;
+        }
+        const startTimeRange = assertExists(parts[0]).timeRange;
+        const startTimeDisplay =
+          startTimeRange === null ? '?' : formatDuration({
+            milliseconds: startTimeRange.startMs,
+          });
+        // TODO(pihsun): Check if there's any case that timestamp will be
+        // missing.
+        // TODO(pihsun): Handle keyboard event / a11y on the timestamp.
+        // TODO(pihsun): Check performance? Try to do CSS only highlight when
+        // only currentTime are changed, so the whole template don't need to
+        // be re-computed.
+        return html`
           <div class="row">
             <span
               class="timestamp"
               tabindex="0"
               data-start-ms=${ifDefined(startTimeRange?.startMs)}
             >
-              ${startTimeRange === null ? '?' : formatDuration({
-            milliseconds: startTimeRange.startMs,
-          })}
+              ${startTimeDisplay}
               <md-focus-ring></md-focus-ring>
             </span>
             <div class="paragraph">${this.renderParagraph(parts)}</div>
           </div>
         `;
-        },
+      },
     );
     const classes = {
       seekable: this.seekable,

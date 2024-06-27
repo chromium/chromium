@@ -70,7 +70,7 @@ export class Schema<T> {
     // If the test failed, ctx.issue should be non-null. Adding a default value
     // in case it's missing.
     throw new ValidationError(
-        ctx.issue ?? {path: ['$'], message: 'validation error'},
+      ctx.issue ?? {path: ['$'], message: 'validation error'},
     );
   }
 
@@ -169,8 +169,8 @@ function isObject<T>(spec: ObjectSpec<T>) {
       // We're deliberately casting to access arbitrary key of the object.
       /* eslint-disable @typescript-eslint/consistent-type-assertions */
       const value = Object.hasOwn(input, key) ?
-          (input as Record<string, unknown>)[key] :
-          undefined;
+        (input as Record<string, unknown>)[key] :
+        undefined;
       /* eslint-enable @typescript-eslint/consistent-type-assertions */
       if (!assertInstanceof(schema, Schema<unknown>).test(value, ctx)) {
         return false;
@@ -209,15 +209,15 @@ function isUnion<T extends SchemaArray>(schemas: T) {
 }
 
 type SchemaListToIntersection<S> =
-    S extends [Schema<infer Head>, ...infer Tail] ?
-    Head&SchemaListToIntersection<Tail>:
-    unknown;
+  S extends [Schema<infer Head>, ...infer Tail] ?
+  Head&SchemaListToIntersection<Tail>:
+  unknown;
 
 function isIntersection<T extends SchemaArray>(schemas: T) {
   function cond(
-      input: unknown,
-      ctx: Context,
-      ): input is SchemaListToIntersection<T> {
+    input: unknown,
+    ctx: Context,
+  ): input is SchemaListToIntersection<T> {
     // TODO(shik): Expose the issues found in alternatives.
     const altCtx = new Context();
     if (!schemas.every((s) => s.test(input, altCtx))) {
@@ -250,17 +250,16 @@ export const z = {
   'literal': <const T>(literal: T): Schema<T> => new Schema(isLiteral(literal)),
   'array': <T>(elem: Schema<T>): Schema<T[]> => new Schema(isArray(elem)),
   'object': <T>(spec: ObjectSpec<T>): Schema<Expand<ObjectOutput<T>>> =>
-      new Schema(isObject(spec)),
+    new Schema(isObject(spec)),
   'optional': <T>(schema: Schema<T>): Schema<T|undefined> =>
-      new Schema(isOptional(schema)),
+    new Schema(isOptional(schema)),
   'nullable': <T>(schema: Schema<T>): Schema<T|null> =>
-      new Schema(isNullable(schema)),
+    new Schema(isNullable(schema)),
   'union': <T extends SchemaArray>(schemas: T): Schema<Infer<T[number]>> =>
-      new Schema(isUnion(schemas)),
+    new Schema(isUnion(schemas)),
   'intersection': <T extends SchemaArray>(
-      schemas: T,
-      ): Schema<SchemaListToIntersection<T>> =>
-      new Schema(isIntersection(schemas)),
+    schemas: T,
+  ): Schema<SchemaListToIntersection<T>> => new Schema(isIntersection(schemas)),
   'nativeEnum': <T extends EnumObj>(enumObj: T): Schema<T[keyof T]> =>
-      new Schema(isNativeEnum(enumObj)),
+    new Schema(isNativeEnum(enumObj)),
 };

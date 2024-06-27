@@ -64,31 +64,31 @@ export class OnDeviceModel implements Model {
     const {promise, resolve} = Promise.withResolvers<string>();
     const response: string[] = [];
     const onResponseId = responseRouter.onResponse.addListener(
-        (chunk: ResponseChunk) => {
-          response.push(chunk.text);
-        },
+      (chunk: ResponseChunk) => {
+        response.push(chunk.text);
+      },
     );
     const onCompleteId = responseRouter.onComplete.addListener(
-        (_: ResponseSummary) => {
-          responseRouter.removeListener(onResponseId);
-          responseRouter.removeListener(onCompleteId);
-          responseRouter.$.close();
-          session.$.close();
-          resolve(response.join('').trimStart());
-        },
+      (_: ResponseSummary) => {
+        responseRouter.removeListener(onResponseId);
+        responseRouter.removeListener(onCompleteId);
+        responseRouter.$.close();
+        session.$.close();
+        resolve(response.join('').trimStart());
+      },
     );
     session.execute(
-        {
-          text,
-          ignoreContext: false,
-          maxTokens: null,
-          tokenOffset: null,
-          maxOutputTokens: null,
-          safetyInterval: null,
-          topK: 1,
-          temperature: 0,
-        },
-        responseRouter.$.bindNewPipeAndPassRemote(),
+      {
+        text,
+        ignoreContext: false,
+        maxTokens: null,
+        tokenOffset: null,
+        maxOutputTokens: null,
+        safetyInterval: null,
+        topK: 1,
+        temperature: 0,
+      },
+      responseRouter.$.bindNewPipeAndPassRemote(),
     );
     return promise;
   }
@@ -96,15 +96,15 @@ export class OnDeviceModel implements Model {
   async suggestTitles(content: string): Promise<string[]> {
     content = shorten(content, MAX_CONTENT_WORDS);
     const prompt = TITLE_SUGGESTION_PROMPT_TEMPLATE.replace(
-        PLACEHOLDER,
-        content,
+      PLACEHOLDER,
+      content,
     );
     const res = await this.execute(prompt);
     // Note this is NOT an underscore: ▁(U+2581)
     const lines = parseResponse(res)
-                      .replaceAll(/^\s*\d\.\s*/gm, '')
-                      .replaceAll(/TITLE\s*\d*:?\s*/gim, '')
-                      .split('\n');
+                    .replaceAll(/^\s*\d\.\s*/gm, '')
+                    .replaceAll(/TITLE\s*\d*:?\s*/gim, '')
+                    .split('\n');
 
     const titles: string[] = [];
     for (const line of lines) {

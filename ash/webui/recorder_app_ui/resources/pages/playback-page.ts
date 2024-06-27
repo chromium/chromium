@@ -290,7 +290,7 @@ export class PlaybackPage extends ReactiveLitElement {
       return null;
     }
     const {textTokens} = await this.recordingDataManager.getTranscription(
-        this.recordingMetadata.value.id,
+      this.recordingMetadata.value.id,
     );
     return textTokens;
   });
@@ -300,7 +300,7 @@ export class PlaybackPage extends ReactiveLitElement {
       return null;
     }
     const {powers} = await this.recordingDataManager.getAudioPower(
-        this.recordingMetadata.value.id,
+      this.recordingMetadata.value.id,
     );
     return powers;
   });
@@ -313,18 +313,18 @@ export class PlaybackPage extends ReactiveLitElement {
 
     // TODO(pihsun): These will look much better as decorator...
     this.addController(
-        new AnimationFrameController(() => {
-          // We use AnimationFrameController instead of the timeupdate event
-          // since timeupdate fires infrequently and doesn't look smooth while
-          // playing.
-          // TODO(shik): Pause/Resume the animation frame loop properly,
-          // especially when the audio is fully played and stopped so we
-          // won't
-          // keep the audio stream open as the audio server would be kept
-          // awake as well.
-          this.currentTime.value = this.audio.currentTime;
-          this.audioPlaying.value = !this.audio.paused;
-        }),
+      new AnimationFrameController(() => {
+        // We use AnimationFrameController instead of the timeupdate event
+        // since timeupdate fires infrequently and doesn't look smooth while
+        // playing.
+        // TODO(shik): Pause/Resume the animation frame loop properly,
+        // especially when the audio is fully played and stopped so we
+        // won't
+        // keep the audio stream open as the audio server would be kept
+        // awake as well.
+        this.currentTime.value = this.audio.currentTime;
+        this.audioPlaying.value = !this.audio.paused;
+      }),
     );
   }
 
@@ -367,10 +367,10 @@ export class PlaybackPage extends ReactiveLitElement {
       return nothing;
     }
     const recordingLength = formatDuration(
-        {
-          seconds: this.currentTime.value,
-        },
-        1,
+      {
+        seconds: this.currentTime.value,
+      },
+      1,
     );
     return html`
       <div>${recordingLength}</div>

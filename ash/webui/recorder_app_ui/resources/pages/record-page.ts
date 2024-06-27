@@ -268,7 +268,7 @@ export class RecordPage extends ReactiveLitElement {
       this.recordingSession.value = await RecordingSession.create({
         platformHandler: this.platformHandler,
         source: checkEnumVariant(AudioSource, this.audioSource) ??
-            AudioSource.USER_MEDIA,
+          AudioSource.USER_MEDIA,
       });
     } catch (e) {
       if (e instanceof DOMException &&
@@ -312,8 +312,8 @@ export class RecordPage extends ReactiveLitElement {
       textTokens: session.progress.value.textTokens,
     };
     const id = await this.recordingDataManager.createRecording(
-        params,
-        audioData,
+      params,
+      audioData,
     );
 
     this.recordingSession.value = null;
@@ -406,10 +406,10 @@ export class RecordPage extends ReactiveLitElement {
     }
 
     const recordingLength = formatDuration(
-        {
-          seconds: this.recordingSession.value.progress.value.length,
-        },
-        1,
+      {
+        seconds: this.recordingSession.value.progress.value.length,
+      },
+      1,
     );
     return html`<svg viewbox="0 0 12 12">
         <circle cx="6" cy="6" r="6" fill="currentColor" />

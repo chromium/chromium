@@ -64,6 +64,13 @@ export class MicSelectionMenu extends ReactiveLitElement {
   }
 
   override render(): RenderResult {
+    const {audioSource} = settings.value;
+    const selectUserMedia = () => {
+      this.onAudioSourceChange(AudioSource.USER_MEDIA);
+    };
+    const selectDisplayMedia = () => {
+      this.onAudioSourceChange(AudioSource.DISPLAY_MEDIA);
+    };
     // TODO(shik): Side sheet seems to be better than dialog, but Material Web
     // has no side sheet yet.
     // TODO: b/336963138 - Implement mic selection as in spec.
@@ -81,10 +88,8 @@ export class MicSelectionMenu extends ReactiveLitElement {
             <md-radio
               id="mic-radio"
               name="source"
-              ?checked=${settings.value.audioSource === AudioSource.USER_MEDIA}
-              @change=${() => {
-      this.onAudioSourceChange(AudioSource.USER_MEDIA);
-    }}
+              ?checked=${audioSource === AudioSource.USER_MEDIA}
+              @change=${selectUserMedia}
             >
             </md-radio>
             <label for="mic-radio">Microphone</label>
@@ -94,11 +99,8 @@ export class MicSelectionMenu extends ReactiveLitElement {
             <md-radio
               id="tab-radio"
               name="source"
-              ?checked=${
-        settings.value.audioSource === AudioSource.DISPLAY_MEDIA}
-              @change=${() => {
-      this.onAudioSourceChange(AudioSource.DISPLAY_MEDIA);
-    }}
+              ?checked=${audioSource === AudioSource.DISPLAY_MEDIA}
+              @change=${selectDisplayMedia}
             >
             </md-radio>
             <label for="tab-radio">Tab or Window</label>

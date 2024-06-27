@@ -77,8 +77,8 @@ export class AudioWaveform extends LitElement {
 
   get chart(): SVGElement {
     return assertInstanceof(
-        assertExists(this.shadowRoot).querySelector('#chart'),
-        SVGElement,
+      assertExists(this.shadowRoot).querySelector('#chart'),
+      SVGElement,
     );
   }
 
@@ -108,14 +108,14 @@ export class AudioWaveform extends LitElement {
   }
 
   private getBarLocation(
-      idx: number,
-      val: number,
-      minHeight: number,
-      maxHeight: number,
-      ): Rect {
+    idx: number,
+    val: number,
+    minHeight: number,
+    maxHeight: number,
+  ): Rect {
     const width = BAR_WIDTH;
     const height =
-        minHeight + (maxHeight - minHeight) * (val / (POWER_SCALE_FACTOR - 1));
+      minHeight + (maxHeight - minHeight) * (val / (POWER_SCALE_FACTOR - 1));
     const x = this.getBarX(idx) - width / 2;
     const y = -height / 2;
 
@@ -130,10 +130,10 @@ export class AudioWaveform extends LitElement {
     const ret: SVGTemplateResult[] = [];
     for (const [i, val] of this.values.entries()) {
       const rect = this.getBarLocation(
-          i,
-          val,
-          BAR_MIN_HEIGHT,
-          Math.min(this.size.height, BAR_MAX_HEIGHT),
+        i,
+        val,
+        BAR_MIN_HEIGHT,
+        Math.min(this.size.height, BAR_MAX_HEIGHT),
       );
       // TODO(pihsun): Optimize and directly calculate the index range.
       if (rect.x + rect.width < viewBox.x ||
@@ -142,10 +142,10 @@ export class AudioWaveform extends LitElement {
       }
       const classes = {
         after: this.currentTime !== null &&
-            this.barIndexToTimestamp(i) >= this.currentTime,
+          this.barIndexToTimestamp(i) >= this.currentTime,
       };
       ret.push(
-          svg`<rect
+        svg`<rect
           x=${rect.x}
           y=${rect.y}
           width=${rect.width}
@@ -158,11 +158,12 @@ export class AudioWaveform extends LitElement {
     if (this.currentTime !== null) {
       // Add the progress indicator at the current time.
       const idx = this.timestampToBarIndex(this.currentTime);
-      const x = this.getBarX(idx);
+      const x = this.getBarX(idx) - 1;
+      const y = -this.size.height / 2;
       ret.push(
-          svg`<rect
-          x=${x - 1}
-          y=${- this.size.height / 2}
+        svg`<rect
+          x=${x}
+          y=${y}
           width="2"
           height=${this.size.height}
           rx="1"

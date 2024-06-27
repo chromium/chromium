@@ -41,9 +41,9 @@ export class DataDir {
   async clear(): Promise<void> {
     const names = await this.list();
     await Promise.all(
-        names.map(async (name) => {
-          await this.root.removeEntry(name);
-        }),
+      names.map(async (name) => {
+        await this.root.removeEntry(name);
+      }),
     );
   }
 
