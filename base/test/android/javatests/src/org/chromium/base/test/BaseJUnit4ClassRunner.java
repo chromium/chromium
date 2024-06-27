@@ -98,6 +98,30 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         public void run(Context targetContext, FrameworkMethod testMethod);
     }
 
+    /** Makes it more obvious that all tests are being marked as failed. */
+    private static class BeforeClassException extends RuntimeException {
+        private BeforeClassException(boolean batchedTest, Throwable causedBy) {
+            super(
+                    "Exception in @BeforeClass."
+                            + (batchedTest
+                                    ? " All tests in this class will be marked as failed."
+                                    : ""),
+                    causedBy);
+        }
+    }
+
+    /** Makes it more obvious that all tests are being marked as failed. */
+    private static class AfterClassException extends RuntimeException {
+        private AfterClassException(boolean batchedTest, Throwable causedBy) {
+            super(
+                    "Exception in @AfterClass."
+                            + (batchedTest
+                                    ? " All tests in this class will be marked as failed."
+                                    : ""),
+                    causedBy);
+        }
+    }
+
     /**
      * Thrown if a prior test in the same batch also failed thus possibly causing the current test's
      * failure.
@@ -319,17 +343,17 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         BaseJUnit4ClassRunner.getApplication().getSystemService(JobScheduler.class).cancelAll();
     }
 
-    private static boolean isInUnitTestBatch(FrameworkMethod testMethod) {
-        Batch annotation = testMethod.getDeclaringClass().getAnnotation(Batch.class);
+    private static boolean isInUnitTestBatch(Class<?> testClass) {
+        Batch annotation = testClass.getAnnotation(Batch.class);
         return annotation != null && annotation.value().equals(Batch.UNIT_TESTS);
     }
 
-    private static boolean isBatchedTest(FrameworkMethod testMethod) {
-        return testMethod.getDeclaringClass().getAnnotation(Batch.class) != null;
+    private static boolean isBatchedTest(Class<?> testClass) {
+        return testClass.getAnnotation(Batch.class) != null;
     }
 
     private static void blockUnitTestsFromStartingBrowser(FrameworkMethod testMethod) {
-        if (isInUnitTestBatch(testMethod)) {
+        if (isInUnitTestBatch(testMethod.getDeclaringClass())) {
             if (testMethod.getAnnotation(RequiresRestart.class) != null) return;
             LibraryLoader.setBrowserProcessStartupBlockedForTesting();
         }
@@ -341,7 +365,14 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                onBeforeTestClass();
+                try {
+                    onBeforeTestClass();
+                } catch (Throwable t) {
+                    if (t instanceof AssumptionViolatedException) {
+                        throw t;
+                    }
+                    throw new BeforeClassException(isBatchedTest(getTestClass().getJavaClass()), t);
+                }
                 Throwable exception = null;
                 try {
                     innerStatement.evaluate();
@@ -359,7 +390,8 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
                     }
                 }
                 if (exception != null) {
-                    throw exception;
+                    throw new AfterClassException(
+                            isBatchedTest(getTestClass().getJavaClass()), exception);
                 }
             }
         };
@@ -403,7 +435,10 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     }
 
     private void markBatchTestFailed(FrameworkMethod method) {
-        if (mFailedBatchTestName == null && isBatchedTest(method) && !isInUnitTestBatch(method)) {
+        Class<?> testClass = method.getDeclaringClass();
+        if (mFailedBatchTestName == null
+                && isBatchedTest(testClass)
+                && !isInUnitTestBatch(testClass)) {
             mFailedBatchTestName = method.getName();
         }
     }
