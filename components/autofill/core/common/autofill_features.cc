@@ -556,7 +556,7 @@ BASE_FEATURE(kAutofillPopupDisablePaintChecks,
 // TODO: crbug.com/40279821 - Clean up when launched.
 BASE_FEATURE(kAutofillPopupMeasureTimeAfterPaint,
              "AutofillPopupMeasureTimeAfterPaint",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/334909042): Remove after cleanup.
 // If the feature is enabled, the Autofill popup widget is initialized with

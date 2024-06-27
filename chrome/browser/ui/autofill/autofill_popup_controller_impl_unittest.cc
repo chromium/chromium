@@ -39,8 +39,10 @@ using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::InSequence;
 using ::testing::Matcher;
 using ::testing::Mock;
+using ::testing::MockFunction;
 using ::testing::NiceMock;
 using ::testing::Return;
 
@@ -61,6 +63,90 @@ EqualsSuggestionPosition(
 using AutofillPopupControllerImplTest = AutofillSuggestionControllerTestBase<
     TestAutofillPopupControllerAutofillClient<>>;
 
+TEST_F(AutofillPopupControllerImplTest, AcceptSuggestionRespectsTimeout) {
+  // Calls before the threshold are ignored.
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
+  }
+
+  ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
+  client().popup_controller(manager()).OnPopupPainted();
+  client().popup_controller(manager()).AcceptSuggestion(0);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+  task_environment()->FastForwardBy(base::Milliseconds(400));
+
+  // Only now suggestions should be accepted.
+  check.Call();
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+}
+
+// Tests that the time threshold for accepting suggestions only starts counting
+// once the view is painted.
+TEST_F(AutofillPopupControllerImplTest, AcceptSuggestionRespectsWaitsForPaint) {
+  // Calls before the threshold are ignored.
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
+  }
+
+  ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
+
+  // No matter how long painting takes, the threshold starts counting only once
+  // the popup has been painted.
+  task_environment()->FastForwardBy(base::Seconds(2));
+  client().popup_controller(manager()).AcceptSuggestion(0);
+
+  client().popup_controller(manager()).OnPopupPainted();
+  client().popup_controller(manager()).AcceptSuggestion(0);
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+
+  // Only now suggestions should be accepted.
+  check.Call();
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+}
+
+// Tests that reshowing the suggestions resets the accept threshold.
+TEST_F(AutofillPopupControllerImplTest,
+       AcceptSuggestionTimeoutIsUpdatedOnPopupUpdate) {
+  // Calls before the threshold are ignored.
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
+  }
+
+  ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
+
+  client().popup_controller(manager()).OnPopupPainted();
+  // Calls before the threshold are ignored.
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+  task_environment()->FastForwardBy(base::Milliseconds(400));
+
+  // Show the suggestions again (simulating, e.g., a click somewhere slightly
+  // different).
+  ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
+
+  // The threshold timer does not start until the popup is painted.
+  task_environment()->FastForwardBy(base::Seconds(2));
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+  client().popup_controller(manager()).OnPopupPainted();
+
+  // After waiting again, suggestions become acceptable.
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  check.Call();
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+}
+
 TEST_F(AutofillPopupControllerImplTest, SubPopupIsCreatedWithViewFromParent) {
   base::WeakPtr<AutofillSuggestionController> sub_controller =
       client().popup_controller(manager()).OpenSubPopup(
@@ -78,6 +164,8 @@ TEST_F(AutofillPopupControllerImplTest,
       client().popup_controller(manager()).OpenSubPopup(
           {0, 0, 10, 10}, {Suggestion(SuggestionType::kAddressEntry)},
           AutoselectFirstSuggestion(false));
+  ASSERT_TRUE(sub_controller);
+  static_cast<AutofillPopupController&>(*sub_controller).OnPopupPainted();
   histogram_tester.ExpectBucketCount(
       "Autofill.PopupInteraction.PopupLevel.1.Address",
       PopupInteraction::kPopupShown, 1);
@@ -180,6 +268,7 @@ TEST_F(AutofillPopupControllerImplTest,
             user_action_tester.GetActionCount(
                 "Autofill_PopupInteraction_PopupLevel_0_SuggestionSelected"));
 
+  client().popup_controller(manager()).OnPopupPainted();
   task_environment()->FastForwardBy(base::Milliseconds(1000));
   client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
 

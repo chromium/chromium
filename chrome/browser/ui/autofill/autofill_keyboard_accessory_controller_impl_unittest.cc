@@ -26,7 +26,9 @@ namespace {
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::InSequence;
 using ::testing::Mock;
+using ::testing::MockFunction;
 using ::testing::Return;
 
 std::vector<Suggestion> CreateSuggestionsWithUndoOrClearEntry(
@@ -74,6 +76,56 @@ class AutofillKeyboardAccessoryControllerImplTest
 };
 
 }  // namespace
+
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       AcceptSuggestionRespectsTimeout) {
+  // Calls before the threshold are ignored.
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
+  }
+
+  ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
+  client().popup_controller(manager()).AcceptSuggestion(0);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+  task_environment()->FastForwardBy(base::Milliseconds(400));
+
+  // Only now suggestions should be accepted.
+  check.Call();
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+}
+
+// Tests that reshowing the suggestions resets the accept threshold.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       AcceptSuggestionTimeoutIsUpdatedOnUiUpdate) {
+  // Calls before the threshold are ignored.
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
+  }
+
+  ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
+  // Calls before the threshold are ignored.
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+  task_environment()->FastForwardBy(base::Milliseconds(400));
+
+  // Show the suggestions again (simulating, e.g., a click somewhere slightly
+  // different).
+  ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+
+  // After waiting again, suggestions become acceptable.
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  check.Call();
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+}
 
 // Tests that calling `Show()` on the controller shows the view.
 TEST_F(AutofillKeyboardAccessoryControllerImplTest, ShowCallsView) {

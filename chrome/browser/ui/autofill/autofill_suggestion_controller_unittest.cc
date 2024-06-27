@@ -394,46 +394,6 @@ TEST_F(AutofillSuggestionControllerTest, SelectInvalidSuggestion) {
       /*index=*/1);  // Out of bounds!
 }
 
-TEST_F(AutofillSuggestionControllerTest, AcceptSuggestionRespectsTimeout) {
-  base::HistogramTester histogram_tester;
-  ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
-
-  // Calls before the threshold are ignored.
-  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(0);
-  client().popup_controller(manager()).AcceptSuggestion(0);
-  task_environment()->FastForwardBy(base::Milliseconds(100));
-  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
-
-  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
-  task_environment()->FastForwardBy(base::Milliseconds(400));
-  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
-}
-
-TEST_F(AutofillSuggestionControllerTest,
-       AcceptSuggestionTimeoutIsUpdatedOnPopupMove) {
-  base::HistogramTester histogram_tester;
-  ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
-
-  // Calls before the threshold are ignored.
-  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(0);
-  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
-  task_environment()->FastForwardBy(base::Milliseconds(100));
-  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
-
-  task_environment()->FastForwardBy(base::Milliseconds(400));
-  // Show the suggestions again (simulating, e.g., a click somewhere slightly
-  // different).
-  ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
-
-  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(0);
-  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
-
-  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
-  // After waiting, suggestions are accepted again.
-  task_environment()->FastForwardBy(base::Milliseconds(500));
-  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
-}
-
 // Tests that when a picture-in-picture window is initialized, there is a call
 // to the popup view to check if the autofill popup bounds overlap with the
 // picture-in-picture window.
