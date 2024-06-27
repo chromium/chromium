@@ -529,9 +529,12 @@ inline constexpr char kComposeLearnMorePageURL[] =
     "https://support.google.com/chrome?p=help_me_write";
 
 // The URL for the "Learn more" links for pages related to History search.
-// TODO(crbug.com/328300718): Update help article URL.
 inline constexpr char kHistorySearchLearnMorePageURL[] =
-    "https://support.google.com/chrome";
+    "https://support.google.com/chrome?p=ai_history_search";
+
+// The URL for the Settings page to enable history search.
+inline constexpr char16_t kHistorySearchSettingURL[] =
+    u"chrome://settings/historySearch";
 
 // The URL for the "Learn more" link in the enterprise disclaimer for managed
 // profile in the Signin Intercept bubble.

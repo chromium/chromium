@@ -132,7 +132,10 @@
           <div id="historyEmbeddingsDisclaimer" class="history-cards"
               hidden$="[[!enableHistoryEmbeddings_]]">
             $i18n{historyEmbeddingsDisclaimer}
-            <a href="#" target="_blank">$i18n{learnMore}</a>
+            <a href="$i18n{historyEmbeddingsHelpArticleUrl}" target="_blank"
+                aria-describedby="historyEmbeddingsDisclaimer">
+              $i18n{learnMore}
+            </a>
           </div>
           <template is="dom-if" if="[[showTabs_]]">
             <div id="tabs">

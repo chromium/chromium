@@ -207,12 +207,14 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       {"thumbsDown", IDS_THUMBS_DOWN_OPENS_FEEDBACK_FORM_A11Y_LABEL},
   };
   source->AddLocalizedStrings(kHistoryEmbeddingsStrings);
-  source->AddString("historyEmbeddingsPromoBody",
-                    l10n_util::GetStringFUTF16(
-                        IDS_HISTORY_EMBEDDINGS_PROMO_BODY,
-                        base::UTF8ToUTF16(chrome::kChromeUISettingsURL)));
+  source->AddString(
+      "historyEmbeddingsPromoBody",
+      l10n_util::GetStringFUTF16(IDS_HISTORY_EMBEDDINGS_PROMO_BODY,
+                                 chrome::kHistorySearchSettingURL));
   source->AddInteger("historyEmbeddingsSearchMinimumWordCount",
                      history_embeddings::kSearchQueryMinimumWordCount.Get());
+  source->AddString("historyEmbeddingsHelpArticleUrl",
+                    chrome::kHistorySearchLearnMorePageURL);
 
   // History clusters
   HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/false);
