@@ -62,7 +62,7 @@ AppBoundEncryptionProviderWin::~AppBoundEncryptionProviderWin() = default;
 
 class AppBoundEncryptionProviderWin::COMWorker {
  public:
-  std::optional<const std::vector<const uint8_t>> EncryptKey(
+  std::optional<const std::vector<uint8_t>> EncryptKey(
       const std::vector<uint8_t>& decrypted_key) {
     std::string plaintext_string(decrypted_key.begin(), decrypted_key.end());
     std::string ciphertext;
@@ -88,11 +88,11 @@ class AppBoundEncryptionProviderWin::COMWorker {
       return std::nullopt;
     }
 
-    return std::vector<const uint8_t>(ciphertext.cbegin(), ciphertext.cend());
+    return std::vector<uint8_t>(ciphertext.cbegin(), ciphertext.cend());
   }
 
   std::optional<const std::vector<uint8_t>> DecryptKey(
-      const std::vector<const uint8_t>& encrypted_key) {
+      const std::vector<uint8_t>& encrypted_key) {
     DWORD last_error;
     std::string encrypted_key_string(encrypted_key.begin(),
                                      encrypted_key.end());
@@ -205,7 +205,7 @@ bool AppBoundEncryptionProviderWin::IsCompatibleWithOsCryptSync() {
   return false;
 }
 
-base::expected<std::vector<const uint8_t>,
+base::expected<std::vector<uint8_t>,
                AppBoundEncryptionProviderWin::KeyRetrievalStatus>
 AppBoundEncryptionProviderWin::RetrieveEncryptedKey() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -230,7 +230,7 @@ AppBoundEncryptionProviderWin::RetrieveEncryptedKey() {
   }
 
   // Trim off the key prefix.
-  return std::vector<const uint8_t>(
+  return std::vector<uint8_t>(
       encrypted_key_with_header->cbegin() + sizeof(kCryptAppBoundKeyPrefix),
       encrypted_key_with_header->cend());
 }
@@ -238,7 +238,7 @@ AppBoundEncryptionProviderWin::RetrieveEncryptedKey() {
 void AppBoundEncryptionProviderWin::StoreEncryptedKeyAndReply(
     const std::vector<uint8_t>& decrypted_key,
     KeyCallback callback,
-    const std::optional<std::vector<const uint8_t>>& encrypted_key) {
+    const std::optional<std::vector<uint8_t>>& encrypted_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!encrypted_key) {
     // Failure here causes the provider not to be registered.

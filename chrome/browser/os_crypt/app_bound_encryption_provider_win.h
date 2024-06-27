@@ -51,12 +51,12 @@ class AppBoundEncryptionProviderWin : public os_crypt_async::KeyProvider {
   bool UseForEncryption() override;
   bool IsCompatibleWithOsCryptSync() override;
 
-  base::expected<std::vector<const uint8_t>, KeyRetrievalStatus>
+  base::expected<std::vector<uint8_t>, KeyRetrievalStatus>
   RetrieveEncryptedKey();
   void StoreEncryptedKeyAndReply(
       const std::vector<uint8_t>& decrypted_key,
       KeyCallback callback,
-      const std::optional<std::vector<const uint8_t>>& encrypted_key);
+      const std::optional<std::vector<uint8_t>>& encrypted_key);
   static void ReplyWithKey(KeyCallback callback,
                            std::optional<std::vector<uint8_t>> decrypted_key);
 
