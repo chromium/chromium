@@ -4,8 +4,13 @@
 
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 
+#include "base/functional/bind_internal.h"
+#include "base/functional/callback_forward.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/consent_auditor/consent_auditor_factory.h"
+#include "chrome/browser/consent_auditor/consent_auditor_test_utils.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -13,11 +18,19 @@
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
+#include "chrome/browser/ui/webui/signin/login_ui_service.h"
+#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "components/consent_auditor/consent_auditor.h"
+#include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -35,6 +48,10 @@
 // Tests for the chrome://sync-confirmation WebUI page. They live here and not
 // in the webui directory because they manipulate views.
 namespace {
+
+using testing::AllOf;
+using testing::Contains;
+using testing::ElementsAre;
 
 // Configures the state of ::switches::kMinorModeRestrictionsForHistorySyncOptIn
 // that relies on can_show_history_sync_opt_ins_without_minor_mode_restrictions
@@ -308,3 +325,134 @@ INSTANTIATE_TEST_SUITE_P(,
                          SyncConfirmationUIDialogPixelTest,
                          testing::ValuesIn(kDialogTestParams),
                          &ParamToTestSuffix);
+
+enum class SyncConfirmationUIAction { kTurnSyncOn, kGoToSettings };
+
+class SyncConfirmationUITest : public SigninBrowserTestBase,
+                               public testing::WithParamInterface<
+                                   std::tuple<bool, SyncConfirmationUIAction>>,
+                               public LoginUIService::Observer {
+ public:
+  void SetUpOnMainThread() override {
+    SigninBrowserTestBase::SetUpOnMainThread();
+    CHECK(GetProfile());
+    // The test should close the sync confirmation dialog once the observer
+    // method is called to simulate the real behavior more closely.
+    login_ui_service_observation_.Observe(
+        LoginUIServiceFactory::GetForProfile(GetProfile()));
+  }
+
+  void TearDownOnMainThread() override {
+    // Stop observing the LoginUIService before destroying the profile.
+    login_ui_service_observation_.Reset();
+    SigninBrowserTestBase::TearDownOnMainThread();
+  }
+
+  // LoginUIService::Observer:
+  void OnSyncConfirmationUIClosed(
+      LoginUIService::SyncConfirmationUIClosedResult result) override {
+    browser()->signin_view_controller()->CloseModalSignin();
+  }
+
+  [[nodiscard]] AccountInfo FillAccountInfoWithEscapedHtmlCharacters(
+      const AccountInfo& account_info) {
+    AccountInfo new_account_info = account_info;
+    // The account name contains characters that are escaped in HTML.
+    new_account_info.full_name = "The name's <>&\"', James <>&\"'";
+    new_account_info.given_name = new_account_info.full_name;
+    //  Fill all required fields to make `AccountInfo` valid.
+    new_account_info.hosted_domain = kNoHostedDomainFound;
+    new_account_info.picture_url = "https://example.org/avatar";
+    CHECK(new_account_info.IsValid());
+    return new_account_info;
+  }
+
+  bool IsSigninIntercept() { return std::get<0>(GetParam()); }
+
+  SyncConfirmationUIAction GetAction() { return std::get<1>(GetParam()); }
+
+  consent_auditor::FakeConsentAuditor* consent_auditor() {
+    return static_cast<consent_auditor::FakeConsentAuditor*>(
+        ConsentAuditorFactory::GetForProfile(GetProfile()));
+  }
+
+  int GetActionButtonLabelId() {
+    switch (GetAction()) {
+      case SyncConfirmationUIAction::kTurnSyncOn:
+        return IsSigninIntercept()
+                   ? IDS_SYNC_CONFIRMATION_TURN_ON_SYNC_BUTTON_LABEL
+                   : IDS_SYNC_CONFIRMATION_CONFIRM_BUTTON_LABEL;
+      case SyncConfirmationUIAction::kGoToSettings:
+        return IDS_SYNC_CONFIRMATION_SETTINGS_BUTTON_LABEL;
+    }
+  }
+
+  int GetTitleId() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    return IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_LACROS;
+#else
+    return IsSigninIntercept()
+               ? IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_SIGNIN_INTERCEPT_V2
+               : IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  }
+
+  int GetDescriptionId() {
+    return IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_DESC;
+  }
+
+ protected:
+  void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) override {
+    SigninBrowserTestBase::OnWillCreateBrowserContextServices(context);
+    ConsentAuditorFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildFakeConsentAuditor));
+  }
+
+ private:
+  base::ScopedObservation<LoginUIService, LoginUIService::Observer>
+      login_ui_service_observation_{this};
+};
+
+// Regression test for https://crbug.com/325749258.
+IN_PROC_BROWSER_TEST_P(SyncConfirmationUITest,
+                       RecordConsentWithEscapedHtmlCharacters) {
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
+  account_info = FillAccountInfoWithEscapedHtmlCharacters(account_info);
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  browser()->signin_view_controller()->ShowModalSyncConfirmationDialog(
+      IsSigninIntercept(), /*is_sync_promo=*/true);
+  switch (GetAction()) {
+    case SyncConfirmationUIAction::kTurnSyncOn:
+      EXPECT_TRUE(
+          login_ui_test_utils::ConfirmSyncConfirmationDialog(browser()));
+      break;
+    case SyncConfirmationUIAction::kGoToSettings:
+      EXPECT_TRUE(
+          login_ui_test_utils::GoToSettingsSyncConfirmationDialog(browser()));
+      break;
+  }
+
+  EXPECT_THAT(consent_auditor()->recorded_confirmation_ids(),
+              ElementsAre(GetActionButtonLabelId()));
+  EXPECT_THAT(
+      consent_auditor()->recorded_id_vectors(),
+      ElementsAre(AllOf(Contains(GetTitleId()), Contains(GetDescriptionId()))));
+  EXPECT_THAT(consent_auditor()->recorded_features(),
+              ElementsAre(consent_auditor::Feature::CHROME_SYNC));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SyncConfirmationUITest,
+    testing::Combine(
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+        // Sign-in intercept is not supported on Lacros.
+        testing::Values(false),
+#else
+        testing::Bool(),
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+        testing::Values(SyncConfirmationUIAction::kTurnSyncOn,
+                        SyncConfirmationUIAction::kGoToSettings)));

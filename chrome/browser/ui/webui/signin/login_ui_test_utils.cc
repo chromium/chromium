@@ -192,7 +192,7 @@ bool ElementExistsByIdInSigninFrame(content::WebContents* web_contents,
   });
 }
 
-enum class SyncConfirmationDialogAction { kConfirm, kCancel };
+enum class SyncConfirmationDialogAction { kConfirm, kCancel, kSettings };
 
 enum class ReauthDialogAction { kConfirm, kCancel };
 
@@ -204,6 +204,8 @@ std::string GetButtonIdForSyncConfirmationDialogAction(
       return "confirmButton";
     case SyncConfirmationDialogAction::kCancel:
       return "notNowButton";
+    case SyncConfirmationDialogAction::kSettings:
+      return "settingsButton";
   }
 }
 
@@ -545,6 +547,12 @@ bool DismissSyncConfirmationDialog(Browser* browser,
 bool ConfirmSyncConfirmationDialog(Browser* browser, base::TimeDelta timeout) {
   return DismissSyncConfirmationDialog(browser, timeout,
                                        SyncConfirmationDialogAction::kConfirm);
+}
+
+bool GoToSettingsSyncConfirmationDialog(Browser* browser,
+                                        base::TimeDelta timeout) {
+  return DismissSyncConfirmationDialog(browser, timeout,
+                                       SyncConfirmationDialogAction::kSettings);
 }
 
 bool CancelSyncConfirmationDialog(Browser* browser, base::TimeDelta timeout) {
