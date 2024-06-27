@@ -1681,7 +1681,8 @@ RenderFrameHostManager::GetFrameHostForNavigation(
       CanIntentionallyDeferSpeculativeRFHForRequest(
           request, current_site_instance->GetBrowserContext(),
           frame_tree_node_)) {
-    if (features::kWarmupSpareProcessCreationWhenDeferRFH.Get()) {
+    if (features::kWarmupSpareProcessCreationWhenDeferRFH.Get() &&
+        !dest_site_instance->HasProcess()) {
       SpareRenderProcessHostManager::GetInstance().WarmupSpareRenderProcessHost(
           dest_site_instance->GetBrowserContext());
     }

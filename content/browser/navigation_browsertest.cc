@@ -9116,7 +9116,13 @@ class DeferSpeculativeRFHCreationRenderProcessTest
         GetRenderDocumentLevelName(RenderDocumentLevel::kAllFrames));
   }
 
-  bool warmup_spare_render_process() { return warmup_spare_render_process_; }
+  // A new renderer process will only be created for a cross-RFH navigation if
+  // it involves a SiteInstanceGroup change, which will happen if site isolation
+  // or BFCache is turned on
+  bool WillWarmupSpareRenderProcess() {
+    return warmup_spare_render_process_ &&
+           (AreAllSitesIsolatedForTesting() || IsBackForwardCacheEnabled());
+  }
 
   void SpareRenderProcessHostChanged(RenderProcessHost* render_process_host) {
     spare_render_process_host_ = render_process_host;
@@ -9149,16 +9155,8 @@ class DeferSpeculativeRFHCreationRenderProcessTest
 // Verify the common flow for with DeferSpeculativeRFHCreation feature.
 // The creation of the speculative RFH will be deferred until the network
 // request is sent.
-// TODO(crbug.com/348564931): Test is failing consistently on Android bfcache
-// bot.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_SpeculativeRFHCreationDeferred \
-  DISABLED_SpeculativeRFHCreationDeferred
-#else
-#define MAYBE_SpeculativeRFHCreationDeferred SpeculativeRFHCreationDeferred
-#endif
 IN_PROC_BROWSER_TEST_P(DeferSpeculativeRFHCreationRenderProcessTest,
-                       MAYBE_SpeculativeRFHCreationDeferred) {
+                       SpeculativeRFHCreationDeferred) {
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   WebContentsImpl* web_contents =
@@ -9178,11 +9176,11 @@ IN_PROC_BROWSER_TEST_P(DeferSpeculativeRFHCreationRenderProcessTest,
   ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, url));
   NavigationRequest* navigation_request =
       NavigationRequest::From(nav_manager.GetNavigationHandle());
-  if (warmup_spare_render_process()) {
+  if (WillWarmupSpareRenderProcess()) {
     WaitForSpareRenderProcessCreation();
   }
   RenderProcessHost* created_process = spare_render_process_host();
-  ASSERT_EQ(!!created_process, warmup_spare_render_process());
+  ASSERT_EQ(!!created_process, WillWarmupSpareRenderProcess());
   ASSERT_TRUE(navigation_request);
   // The navigation manager pauses the navigation in the WillStartRequest
   // throttle. The speculative RFH will be created after the throttle completes
@@ -9206,7 +9204,7 @@ IN_PROC_BROWSER_TEST_P(DeferSpeculativeRFHCreationRenderProcessTest,
   ASSERT_TRUE(speculative_rfh);
   ASSERT_EQ(navigation_request->GetAssociatedRFHType(),
             NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
-  if (warmup_spare_render_process()) {
+  if (WillWarmupSpareRenderProcess()) {
     ASSERT_EQ(speculative_rfh->GetSiteInstance()->GetProcess(),
               created_process);
   }
@@ -9375,15 +9373,13 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
 // Test that if there is a navigation pending for commit, the deferred
 // speculative RFH will not be created event after the request is sent. The new
 // navigation will be queued until the pending navigation commits.
-// TODO(crbug.com/348564931): Test is failing consistently on Android bfcache
-// bot.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_NavigateWithPendingCommit DISABLED_NavigateWithPendingCommit
-#else
-#define MAYBE_NavigateWithPendingCommit NavigateWithPendingCommit
-#endif
 IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
-                       MAYBE_NavigateWithPendingCommit) {
+                       NavigateWithPendingCommit) {
+  // TODO(crbug.com/349487596): Enable the test after fixing the unrepsonive
+  // renderer issue.
+  if (!AreAllSitesIsolatedForTesting() && !IsBackForwardCacheEnabled()) {
+    return;
+  }
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   WebContentsImpl* web_contents =
