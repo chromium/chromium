@@ -44,24 +44,18 @@ export enum AudioSource {
   USER_MEDIA = 'USER_MEDIA',
 }
 
-async function getStreamFromAudioSource(source: AudioSource) {
+function getStreamFromAudioSource(source: AudioSource): Promise<MediaStream> {
   switch (source) {
     case AudioSource.USER_MEDIA:
       return navigator.mediaDevices.getUserMedia({audio: true});
     case AudioSource.DISPLAY_MEDIA: {
-      // The video stream is required for getDisplayMedia(), so we need to
-      // remove the video tracks manually.
       // TODO(shik): Handle the case that user cancelled the dialog, or stopped
       // sharing while recording.
-      const stream = await navigator.mediaDevices.getDisplayMedia({
+      return navigator.mediaDevices.getDisplayMedia({
+        video: false,
         audio: true,
         systemAudio: 'include',
       });
-      const videoTracks = stream.getVideoTracks();
-      for (const videoTrack of videoTracks) {
-        stream.removeTrack(videoTrack);
-      }
-      return stream;
     }
     default:
       assertExhaustive(source);
@@ -122,7 +116,8 @@ export class RecordingSession {
     this.mediaRecorder.start(TIME_SLICE_MS);
 
     this.audioProcessor.port.addEventListener(
-        'message', (ev: MessageEvent<Float32Array>) => {
+        'message',
+        (ev: MessageEvent<Float32Array>) => {
           const samples = ev.data;
           // Calculates the power of the slice. The value range is [0, 1].
           const power = Math.sqrt(
@@ -138,7 +133,8 @@ export class RecordingSession {
             d.push(scaledPower);
           });
           this.sodaSession.addAudio(samples);
-        });
+        },
+    );
     this.audioProcessor.port.start();
     this.sodaSessionUnsubscribe = this.sodaSession.subscribeEvent((ev) => {
       this.sodaEventTransformer.addEvent(ev);
@@ -177,8 +173,9 @@ export class RecordingSession {
     return new Blob(this.dataChunks, {type: AUDIO_MIME_TYPE});
   }
 
-  static async create(config: RecordingSessionConfig):
-      Promise<RecordingSession> {
+  static async create(
+      config: RecordingSessionConfig,
+      ): Promise<RecordingSession> {
     const sodaSession = await config.platformHandler.newSodaSession();
 
     const stream = await getStreamFromAudioSource(config.source);

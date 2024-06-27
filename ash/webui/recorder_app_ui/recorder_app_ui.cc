@@ -68,7 +68,8 @@ RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
       url::Origin::Create(GURL(kChromeUIRecorderAppURL));
   allowlist->RegisterAutoGrantedPermission(
       host_origin, ContentSettingsType::MEDIASTREAM_MIC);
-  // TODO(pihsun): Auto grant other needed permission.
+  allowlist->RegisterAutoGrantedPermission(
+      host_origin, ContentSettingsType::DISPLAY_MEDIA_SYSTEM_AUDIO);
 
   // Setup the data source
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
