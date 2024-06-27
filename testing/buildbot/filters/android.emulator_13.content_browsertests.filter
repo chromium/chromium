@@ -12,10 +12,6 @@
 -WebRtcBrowserTest.NoCrashWhenConnectChromiumSinkToRemoteTrack
 -WebRtcDataBrowserTest.CallWithSctpDataAndMedia
 
-# crbug.com/1420817
--WebRtcMediaRecorderTest.PausePreventsDataavailableFromBeingFired
--WebRtcMediaRecorderTest.Start
-
 # crbug.com/1428296
 -All/WebRtcCaptureFromElementBrowserTest.CaptureFromMediaElement/0
 -All/WebRtcCaptureFromElementBrowserTest.CaptureFromMediaElement/2
