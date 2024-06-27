@@ -29,10 +29,10 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 
-/** Unit tests for {@link TabListEditorSelectTabsAction}. */
+/** Unit tests for {@link TabListEditorSelectArchivedTabsAction}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class TabListEditorSelectTabsActionUnitTest {
+public class TabListEditorSelectArchivedTabsActionUnitTest {
     @Mock private TabGroupModelFilter mTabModelFilter;
     @Mock private SelectionDelegate<Integer> mSelectionDelegate;
     @Mock private ActionDelegate mDelegate;
@@ -41,7 +41,7 @@ public class TabListEditorSelectTabsActionUnitTest {
     @Mock private ArchivedTabsDialogCoordinator.ArchiveDelegate mArchiveDelegate;
 
     private MockTabModel mTabModel;
-    private TabListEditorSelectTabsAction mAction;
+    private TabListEditorSelectArchivedTabsAction mAction;
     private Activity mActivity;
 
     @Before
@@ -49,8 +49,8 @@ public class TabListEditorSelectTabsActionUnitTest {
         MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).get();
         mAction =
-                (TabListEditorSelectTabsAction)
-                        TabListEditorSelectTabsAction.createAction(mActivity, mArchiveDelegate);
+                (TabListEditorSelectArchivedTabsAction)
+                        TabListEditorSelectArchivedTabsAction.createAction(mActivity, mArchiveDelegate);
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
         mAction.configure(() -> mTabModelFilter, mSelectionDelegate, mDelegate, false);
@@ -60,7 +60,7 @@ public class TabListEditorSelectTabsActionUnitTest {
     @SmallTest
     public void testInherentActionProperties() {
         Assert.assertEquals(
-                R.id.tab_list_editor_select_tabs_menu_item,
+                R.id.tab_list_editor_select_archived_tabs_menu_item,
                 mAction.getPropertyModel().get(TabListEditorActionProperties.MENU_ITEM_ID));
         Assert.assertEquals(
                 R.string.tab_selection_editor_toolbar_select_tabs,

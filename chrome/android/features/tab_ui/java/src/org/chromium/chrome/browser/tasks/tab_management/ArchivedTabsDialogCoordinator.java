@@ -45,6 +45,12 @@ public class ArchivedTabsDialogCoordinator {
 
         /** Start tab selection process. */
         void startTabSelection();
+
+        /** Restore the given list of tabs. */
+        void restoreArchivedTabs(List<Tab> tabs);
+
+        /** Close the given list of tabs. */
+        void closeArchivedTabs(List<Tab> tabs);
     }
 
     private final ArchiveDelegate mArchiveDelegate =
@@ -68,6 +74,16 @@ public class ArchivedTabsDialogCoordinator {
                 @Override
                 public void startTabSelection() {
                     moveToState(TabActionState.SELECTABLE);
+                }
+
+                @Override
+                public void restoreArchivedTabs(List<Tab> tabs) {
+                    // TODO(crbug.com/347795628): Implement this.
+                }
+
+                @Override
+                public void closeArchivedTabs(List<Tab> tabs) {
+                    // TODO(crbug.com/347795628): Implement this.
                 }
             };
 
@@ -161,18 +177,8 @@ public class ArchivedTabsDialogCoordinator {
         mRootView.addView(mView);
 
         TabListEditorController controller = mTabListEditorCoordinator.getController();
-        List<Tab> archivedTabs = TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel);
-        controller.show(archivedTabs, 0, null);
-
+        controller.show(TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel), 0, null);
         controller.setNavigationProvider(mNavigationProvider);
-
-        // Setup the closable menu.
-        List<TabListEditorAction> actions = new ArrayList<>();
-        actions.add(
-                TabListEditorRestoreAllArchivedTabsAction.createAction(mContext, mArchiveDelegate));
-        actions.add(TabListEditorSelectTabsAction.createAction(mContext, mArchiveDelegate));
-        actions.add(TabListEditorArchiveSettingsAction.createAction(mContext, mArchiveDelegate));
-        controller.configureToolbarWithMenuItems(actions);
 
         // Register the dialog to handle back press events.
         mBackPressManager.addHandler(controller, BackPressHandler.Type.ARCHIVED_TABS_DIALOG);
@@ -180,7 +186,7 @@ public class ArchivedTabsDialogCoordinator {
         // View is obscured by the TabListEditorCoordinator, so it needs to be brought to the front.
         mView.findViewById(R.id.close_all_tabs_button_container).bringToFront();
 
-        updateTitle();
+        moveToState(TabActionState.CLOSABLE);
     }
 
     public void hide() {
@@ -193,9 +199,26 @@ public class ArchivedTabsDialogCoordinator {
     void moveToState(@TabActionState int tabActionState) {
         mTabActionState = tabActionState;
         mTabListEditorCoordinator.getController().setTabActionState(mTabActionState);
+        updateTitle();
+
+        List<TabListEditorAction> actions = new ArrayList<>();
         if (mTabActionState == TabActionState.CLOSABLE) {
-            updateTitle();
+            actions.add(
+                    TabListEditorRestoreAllArchivedTabsAction.createAction(
+                            mContext, mArchiveDelegate));
+            actions.add(
+                    TabListEditorSelectArchivedTabsAction.createAction(mContext, mArchiveDelegate));
+            actions.add(
+                    TabListEditorArchiveSettingsAction.createAction(mContext, mArchiveDelegate));
+        } else if (mTabActionState == TabActionState.SELECTABLE) {
+            actions.add(
+                    TabListEditorRestoreArchivedTabsAction.createAction(
+                            mContext, mArchiveDelegate));
+            actions.add(
+                    TabListEditorCloseArchivedTabsAction.createAction(mContext, mArchiveDelegate));
         }
+
+        mTabListEditorCoordinator.getController().configureToolbarWithMenuItems(actions);
     }
 
     @VisibleForTesting

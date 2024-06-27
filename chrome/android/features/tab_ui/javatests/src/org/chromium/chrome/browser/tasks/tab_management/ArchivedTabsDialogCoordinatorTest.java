@@ -16,6 +16,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.ViewGroup;
 
+import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -197,6 +198,38 @@ public class ArchivedTabsDialogCoordinatorTest {
                 .verifyTabListEditorIsVisible()
                 .verifyAdapterHasItemCount(2)
                 .verifyToolbarSelectionText("2 inactive tabs");
+    }
+
+    @Test
+    @MediumTest
+    public void testSelectionModeMenuItems() {
+        addArchivedTab(new GURL("https://google.com"), "test 1");
+        addArchivedTab(new GURL("https://google.com"), "test 2");
+        showDialog(2);
+
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
+        mRobot.actionRobot.clickToolbarMenuButton();
+        mRobot.resultRobot
+                .verifyToolbarMenuItemState("Close tabs", false)
+                .verifyToolbarMenuItemState("Restore tabs", false);
+        Espresso.pressBack();
+
+        mRobot.actionRobot.clickItemAtAdapterPosition(0);
+        mRobot.resultRobot.verifyToolbarSelectionText("1 tab");
+
+        mRobot.actionRobot.clickToolbarMenuButton();
+        mRobot.resultRobot
+                .verifyToolbarMenuItemState("Close tab", true)
+                .verifyToolbarMenuItemState("Restore tab", true);
+        Espresso.pressBack();
+
+        mRobot.actionRobot.clickItemAtAdapterPosition(1);
+        mRobot.resultRobot.verifyToolbarSelectionText("2 tabs");
+
+        mRobot.actionRobot.clickToolbarMenuButton();
+        mRobot.resultRobot
+                .verifyToolbarMenuItemState("Close tabs", true)
+                .verifyToolbarMenuItemState("Restore tabs", true);
     }
 
     @Test

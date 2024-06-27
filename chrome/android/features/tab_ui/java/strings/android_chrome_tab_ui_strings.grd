@@ -808,7 +808,13 @@
       <message name="IDS_ARCHIVED_TABS_DIALOG_RESTORE_ALL_ACTION" desc="A menu item for the archived tabs dialog. Restores all archived tabs.">
         Restore all
       </message>
-      <message name="IDS_ARCHIVED_TABS_DIALOG_SETTINGS_ACTION" desc="A menu item for the archived tabs dialog. Restores all archived tabs.">
+      <message name="IDS_ARCHIVED_TABS_DIALOG_RESTORE_ACTION" desc="A menu item for the archived tabs dialog. Restores selected archived tabs.">
+        {TAB_COUNT, plural,
+          =1 {Restore tab}
+          other {Restore tabs}
+        }
+      </message>
+      <message name="IDS_ARCHIVED_TABS_DIALOG_SETTINGS_ACTION" desc="A menu item for the archived tabs dialog. Navigates to the settings activity.">
         Settings
       </message>
       <message name="IDS_ARCHIVE_SETTINGS_TITLE" desc="The title for the entry-point to declutter settings.">

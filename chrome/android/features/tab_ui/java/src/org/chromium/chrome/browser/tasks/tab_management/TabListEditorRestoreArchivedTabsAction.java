@@ -15,7 +15,7 @@ import org.chromium.chrome.tab_ui.R;
 import java.util.List;
 
 /** Restore all archived tabs action for the {@link TabListEditorMenu}. */
-public class TabListEditorRestoreAllArchivedTabsAction extends TabListEditorAction {
+public class TabListEditorRestoreArchivedTabsAction extends TabListEditorAction {
     private final @NonNull Context mContext;
     private final @NonNull ArchivedTabsDialogCoordinator.ArchiveDelegate mArchiveDelegate;
 
@@ -28,19 +28,19 @@ public class TabListEditorRestoreAllArchivedTabsAction extends TabListEditorActi
     public static TabListEditorAction createAction(
             @NonNull Context context,
             @NonNull ArchivedTabsDialogCoordinator.ArchiveDelegate archiveDelegate) {
-        return new TabListEditorRestoreAllArchivedTabsAction(context, archiveDelegate);
+        return new TabListEditorRestoreArchivedTabsAction(context, archiveDelegate);
     }
 
     @VisibleForTesting
-    TabListEditorRestoreAllArchivedTabsAction(
+    TabListEditorRestoreArchivedTabsAction(
             @NonNull Context context,
             @NonNull ArchivedTabsDialogCoordinator.ArchiveDelegate archiveDelegate) {
         super(
-                R.id.tab_list_editor_restore_all_archived_tabs_menu_item,
+                R.id.tab_list_editor_restore_archived_tabs_menu_item,
                 ShowMode.MENU_ONLY,
                 ButtonType.TEXT,
                 IconPosition.START,
-                R.string.archived_tabs_dialog_restore_all_action,
+                R.plurals.archived_tabs_dialog_restore_action,
                 null,
                 null);
 
@@ -55,12 +55,12 @@ public class TabListEditorRestoreAllArchivedTabsAction extends TabListEditorActi
 
     @Override
     public void onSelectionStateChange(List<Integer> tabIds) {
-        setEnabledAndItemCount(true, tabIds.size());
+        setEnabledAndItemCount(tabIds.size() > 0, tabIds.size());
     }
 
     @Override
     public boolean performAction(List<Tab> tabs) {
-        mArchiveDelegate.restoreAllArchivedTabs();
+        mArchiveDelegate.restoreArchivedTabs(tabs);
         // TODO(crbug.com/346436267): Record user action here.
         return true;
     }

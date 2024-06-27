@@ -23,16 +23,20 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionDelegate;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 
-/** Unit tests for {@link TabListEditorRestoreAllArchivedTabsAction}. */
+import java.util.ArrayList;
+import java.util.List;
+
+/** Unit tests for {@link TabListEditorRestoreArchivedTabsAction}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class TabListEditorRestoreAllArchivedTabsActionUnitTest {
+public class TabListEditorRestoreArchivedTabsActionUnitTest {
     @Mock private TabGroupModelFilter mTabModelFilter;
     @Mock private SelectionDelegate<Integer> mSelectionDelegate;
     @Mock private ActionDelegate mDelegate;
@@ -41,7 +45,7 @@ public class TabListEditorRestoreAllArchivedTabsActionUnitTest {
     @Mock private ArchivedTabsDialogCoordinator.ArchiveDelegate mArchiveDelegate;
 
     private MockTabModel mTabModel;
-    private TabListEditorRestoreAllArchivedTabsAction mAction;
+    private TabListEditorRestoreArchivedTabsAction mAction;
     private Activity mActivity;
 
     @Before
@@ -49,8 +53,8 @@ public class TabListEditorRestoreAllArchivedTabsActionUnitTest {
         MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).get();
         mAction =
-                (TabListEditorRestoreAllArchivedTabsAction)
-                        TabListEditorRestoreAllArchivedTabsAction.createAction(
+                (TabListEditorRestoreArchivedTabsAction)
+                        TabListEditorRestoreArchivedTabsAction.createAction(
                                 mActivity, mArchiveDelegate);
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
@@ -61,13 +65,13 @@ public class TabListEditorRestoreAllArchivedTabsActionUnitTest {
     @SmallTest
     public void testInherentActionProperties() {
         Assert.assertEquals(
-                R.id.tab_list_editor_restore_all_archived_tabs_menu_item,
+                R.id.tab_list_editor_restore_archived_tabs_menu_item,
                 mAction.getPropertyModel().get(TabListEditorActionProperties.MENU_ITEM_ID));
         Assert.assertEquals(
-                R.string.archived_tabs_dialog_restore_all_action,
+                R.plurals.archived_tabs_dialog_restore_action,
                 mAction.getPropertyModel().get(TabListEditorActionProperties.TITLE_RESOURCE_ID));
         Assert.assertEquals(
-                false,
+                true,
                 mAction.getPropertyModel().get(TabListEditorActionProperties.TITLE_IS_PLURAL));
         Assert.assertNull(
                 mAction.getPropertyModel()
@@ -78,7 +82,8 @@ public class TabListEditorRestoreAllArchivedTabsActionUnitTest {
     @Test
     @SmallTest
     public void testPerformAction() {
-        mAction.performAction(null);
-        verify(mArchiveDelegate).restoreAllArchivedTabs();
+        List<Tab> tabs = new ArrayList<>();
+        mAction.performAction(tabs);
+        verify(mArchiveDelegate).restoreArchivedTabs(tabs);
     }
 }
