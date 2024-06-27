@@ -216,15 +216,12 @@ NSString* HostnameFromGURL(GURL URL) {
 }
 
 // Tests that the tab resumption tile is correctly displayed for a local tab.
-// TODO(crbug.com/333500324): Test failing on iPad device.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testTabResumptionTileDisplayedForLocalTab \
-  testTabResumptionTileDisplayedForLocalTab
-#else
-#define MAYBE_testTabResumptionTileDisplayedForLocalTab \
-  FLAKY_testTabResumptionTileDisplayedForLocalTab
-#endif
-- (void)MAYBE_testTabResumptionTileDisplayedForLocalTab {
+- (void)testTabResumptionTileDisplayedForLocalTab {
+  // TODO(crbug.com/333500324): Test failing on iPad device and simulator.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test is flaky on iPad.")
+  }
+
   // Check that the tile is not displayed when there is no local tab.
   WaitUntilTabResumptionTileVisibleOrTimeout(false);
 
@@ -260,7 +257,7 @@ NSString* HostnameFromGURL(GURL URL) {
 
 // Tests that the tab resumption 2 tile is correctly displayed for a local tab.
 - (void)testTabResumptionTileDisplayedForLocalTabTR2 {
-  [self MAYBE_testTabResumptionTileDisplayedForLocalTab];
+  [self testTabResumptionTileDisplayedForLocalTab];
 }
 
 // Tests that interacting with the Magic Stack edit button works when the tab
@@ -340,15 +337,8 @@ NSString* HostnameFromGURL(GURL URL) {
 
 // Tests that the context menu has the correct action and correctly hides the
 // tile.
-// TODO(crbug.com/333500324): Test flaky on official devices on iOS 16.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testTabResumptionTileLongPressTR2 \
-  testTabResumptionTileLongPressTR2
-#else
-#define MAYBE_testTabResumptionTileLongPressTR2 \
-  FLAKY_testTabResumptionTileLongPressTR2
-#endif
-- (void)MAYBE_testTabResumptionTileLongPressTR2 {
+// TODO(crbug.com/333500324): Test is flaky.
+- (void)FLAKY_testTabResumptionTileLongPressTR2 {
   [self testTabResumptionTileLongPress];
 }
 
