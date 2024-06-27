@@ -271,8 +271,7 @@ class CONTENT_EXPORT PrefetchService {
       network::mojom::URLResponseHead* head);
 
   // Called when the response for |prefetch_container| has completed when using
-  // the streaming URL loader. Only used if |PrefetchUseStreamingURLLoader| is
-  // true.
+  // the streaming URL loader.
   void OnPrefetchResponseCompleted(
       base::WeakPtr<PrefetchContainer> prefetch_container,
       const network::URLLoaderCompletionStatus& completion_status);
