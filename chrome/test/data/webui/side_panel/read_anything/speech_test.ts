@@ -208,7 +208,7 @@ suite('Speech', () => {
     test(
         'after speech started, cancels speech and plays from selection',
         async () => {
-          app.speechPlayingState.speechStarted = true;
+          app.speechPlayingState.isSpeechTreeInitialized = true;
 
           await selectAndPlay(axTree, 5, 0, 5, 10);
 
@@ -274,7 +274,7 @@ suite('Speech', () => {
   suite('on pause via pause button', () => {
     setup(() => {
       chrome.readingMode.initAxPositionWithNode(2);
-      app.speechPlayingState.speechStarted = true;
+      app.speechPlayingState.isSpeechTreeInitialized = true;
       app.stopSpeech(PauseActionSource.BUTTON_CLICK);
     });
 
@@ -426,8 +426,8 @@ suite('Speech', () => {
   suite('while playing', () => {
     setup(() => {
       chrome.readingMode.initAxPositionWithNode(2);
-      app.speechPlayingState.speechStarted = true;
-      app.speechPlayingState.paused = false;
+      app.speechPlayingState.isSpeechTreeInitialized = true;
+      app.speechPlayingState.isSpeechActive = true;
     });
 
 

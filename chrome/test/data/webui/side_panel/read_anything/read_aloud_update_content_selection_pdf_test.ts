@@ -101,8 +101,8 @@ suite('ReadAloud_UpdateContentSelectionPDF', () => {
 
   suite('Before speech started', () => {
     test('inner html of container matches expected html', () => {
-      assertTrue(app.speechPlayingState.paused);
-      assertFalse(app.speechPlayingState.speechStarted);
+      assertFalse(app.speechPlayingState.isSpeechActive);
+      assertFalse(app.speechPlayingState.isSpeechTreeInitialized);
       // The expected HTML before any highlights are added.
       const expected = '<div><p>World</p><p>Friend!</p></div>';
       const innerHTML = app.$.container.innerHTML;
@@ -123,7 +123,7 @@ suite('ReadAloud_UpdateContentSelectionPDF', () => {
     test('container class correct', () => {
       assertEquals(
           app.$.container.className,
-          'user-select-disabled-when-speech-playing-false');
+          'user-select-disabled-when-speech-active-false');
       assertEquals('auto', window.getComputedStyle(app.$.container).userSelect);
     });
   });
@@ -135,8 +135,8 @@ suite('ReadAloud_UpdateContentSelectionPDF', () => {
     });
 
     test('inner html of container matches expected html', () => {
-      assertFalse(app.speechPlayingState.paused);
-      assertTrue(app.speechPlayingState.speechStarted);
+      assertTrue(app.speechPlayingState.isSpeechActive);
+      assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
       // The expected HTML with the current highlights.
       const expected = '<div><p><span class="parent-of-highlight">' +
           '<span class="current-read-highlight">World</span>' +
@@ -157,7 +157,7 @@ suite('ReadAloud_UpdateContentSelectionPDF', () => {
     test('container class correct', () => {
       assertEquals(
           app.$.container.className,
-          'user-select-disabled-when-speech-playing-true');
+          'user-select-disabled-when-speech-active-true');
       assertEquals('none', window.getComputedStyle(app.$.container).userSelect);
     });
   });
@@ -168,8 +168,8 @@ suite('ReadAloud_UpdateContentSelectionPDF', () => {
       app.stopSpeech(PauseActionSource.BUTTON_CLICK);
     });
     test('inner html of container matches expected html', () => {
-      assertTrue(app.speechPlayingState.paused);
-      assertTrue(app.speechPlayingState.speechStarted);
+      assertFalse(app.speechPlayingState.isSpeechActive);
+      assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
       // The expected HTML with the current highlights.
       const expected = '<div><p><span class="parent-of-highlight">' +
           '<span class="current-read-highlight">World</span>' +
@@ -190,7 +190,7 @@ suite('ReadAloud_UpdateContentSelectionPDF', () => {
     test('container class correct', () => {
       assertEquals(
           app.$.container.className,
-          'user-select-disabled-when-speech-playing-false');
+          'user-select-disabled-when-speech-active-false');
       assertEquals('auto', window.getComputedStyle(app.$.container).userSelect);
     });
   });

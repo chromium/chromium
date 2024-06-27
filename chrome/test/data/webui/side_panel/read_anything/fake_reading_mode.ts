@@ -140,7 +140,7 @@ export class FakeReadingMode {
   onCopy() {}
 
   // Called when speech is paused or played.
-  onSpeechPlayingStateChanged(_paused: boolean) {}
+  onSpeechPlayingStateChanged(_isSpeechActive: boolean) {}
 
   // Called when the Read Anything panel is scrolled.
   onScroll(_onSelection: boolean) {}

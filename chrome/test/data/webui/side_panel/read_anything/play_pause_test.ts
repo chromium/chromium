@@ -55,7 +55,7 @@ suite('PlayPause', () => {
 
   suite('when playing', () => {
     setup(() => {
-      toolbar.paused = false;
+      toolbar.isSpeechActive = true;
     });
 
     test('button indicates speech is playing', () => {
@@ -73,7 +73,7 @@ suite('PlayPause', () => {
 
   suite('when paused', () => {
     setup(() => {
-      toolbar.paused = true;
+      toolbar.isSpeechActive = false;
     });
 
     test('button indicates speech is paused', () => {

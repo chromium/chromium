@@ -1677,9 +1677,10 @@ void ReadAnythingAppController::ShouldShowUI() {
   page_handler_factory_->ShouldShowUI();
 }
 
-void ReadAnythingAppController::OnSpeechPlayingStateChanged(bool paused) {
-  read_aloud_model_.set_speech_playing(!paused);
-  if (paused && model_.requires_distillation()) {
+void ReadAnythingAppController::OnSpeechPlayingStateChanged(
+    bool is_speech_active) {
+  read_aloud_model_.set_speech_playing(is_speech_active);
+  if (!is_speech_active && model_.requires_distillation()) {
     // TODO: b/40927698 - Do something smarter than completely re-distilling
     // when the update is small. Right now this resets the speech position to
     // the beginning which is annoying if the page is mostly the same.

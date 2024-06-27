@@ -223,8 +223,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     controller_->model_.SetDistillationInProgress(in_progress);
   }
 
-  void OnSpeechPlayingStateChanged(bool paused) {
-    controller_->OnSpeechPlayingStateChanged(paused);
+  void OnSpeechPlayingStateChanged(bool is_speech_active) {
+    controller_->OnSpeechPlayingStateChanged(is_speech_active);
   }
 
   void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id,
@@ -1636,7 +1636,7 @@ TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceivedWhileSpeaking) {
   EXPECT_EQ("", GetTextContent(4));
 
   // Send three updates while playing.
-  OnSpeechPlayingStateChanged(/* paused= */ false);
+  OnSpeechPlayingStateChanged(/* is_speech_active= */ true);
   std::vector<ui::AXTreeUpdate> batch_updates;
   for (int i = 2; i < 5; i++) {
     ui::AXTreeUpdate update;
@@ -1657,7 +1657,7 @@ TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceivedWhileSpeaking) {
   // OnAXTreeDistilled would unserialize the pending updates. Since a11y events
   // happen asynchronously, they can come between the time distillation finishes
   // and pending updates are unserialized.
-  OnSpeechPlayingStateChanged(true);
+  OnSpeechPlayingStateChanged(/* is_speech_active= */ false);
   ui::AXTreeUpdate update_2;
   SetUpdateTreeID(&update_2);
   ui::AXNodeData final_node;
@@ -1995,7 +1995,7 @@ TEST_F(ReadAnythingAppControllerTest,
   // unserialized. Speech starts playing
   EXPECT_CALL(*distiller_, Distill).Times(0);
   ui::AXEvent load_complete_2(2, ax::mojom::Event::kLoadComplete);
-  OnSpeechPlayingStateChanged(/*paused=*/false);
+  OnSpeechPlayingStateChanged(/*is_speech_active=*/true);
   AccessibilityEventReceived({updates[2]}, {load_complete_2});
   EXPECT_EQ("23456", GetTextContent(1));
   Mock::VerifyAndClearExpectations(distiller_);
@@ -2009,7 +2009,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
   // Speech stops. We request distillation (deferred from above)
   EXPECT_CALL(*distiller_, Distill).Times(1);
-  OnSpeechPlayingStateChanged(/*paused=*/true);
+  OnSpeechPlayingStateChanged(/*is_speech_active=*/false);
   EXPECT_EQ("23456", GetTextContent(1));
   Mock::VerifyAndClearExpectations(distiller_);
 

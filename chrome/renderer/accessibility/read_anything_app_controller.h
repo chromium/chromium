@@ -223,7 +223,7 @@ class ReadAnythingAppController
   std::vector<std::string> GetSupportedFonts();
   void RequestImageDataUrl(ui::AXNodeID node_id) const;
   std::string GetImageDataUrl(ui::AXNodeID node_id) const;
-  void OnSpeechPlayingStateChanged(bool paused);
+  void OnSpeechPlayingStateChanged(bool is_speech_active);
   std::string GetValidatedFontName(const std::string& font) const;
   std::vector<std::string> GetAllFonts();
 

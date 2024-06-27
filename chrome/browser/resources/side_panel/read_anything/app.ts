@@ -94,18 +94,20 @@ export enum WordBoundaryMode {
 }
 
 export interface SpeechPlayingState {
-  // Did the user press play or pause
-  paused: boolean;
+  // The first time the user presses `play` on a page, we initialize the tree
+  // traversal used for speech.
+  isSpeechTreeInitialized: boolean;
+  // True when the user presses play, regardless of if audio has actually
+  // started yet.
+  isSpeechActive: boolean;
+  // When `isSpeechActive` is false, this indicates how it became false. e.g.
+  // via pause button click or because other speech settings were changed.
   pauseSource?: PauseActionSource;
-  // Has the user pressed `play` on this page.
-  // TODO rename `speechStarted`, `paused` and `speechActuallyPlaying` to be
-  // clearer.
-  speechStarted: boolean;
-  // Indicates that speech is currently playing. This differs from `paused`.
-  // When a user presses the play button, paused becomes false, but
-  // `speechActuallyPlaying` will tell us whether audio actually started playing
-  // yet.
-  speechActuallyPlaying: boolean;
+  // Indicates that audio is currently playing.
+  // When a user presses the play button, isSpeechActive becomes true, but
+  // `isAudioCurrentlyPlaying` will tell us whether audio actually started
+  // playing yet. This is a separate state because audio starting has a delay.
+  isAudioCurrentlyPlaying: boolean;
 }
 
 export interface WordBoundaryState {
@@ -264,10 +266,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // because there are bugs with window.speechSynthesis.paused and
   // window.speechSynthesis.speaking on some platforms.
   speechPlayingState: SpeechPlayingState = {
-    paused: true,
+    isSpeechTreeInitialized: false,
+    isSpeechActive: false,
     pauseSource: PauseActionSource.DEFAULT,
-    speechStarted: false,
-    speechActuallyPlaying: false,
+    isAudioCurrentlyPlaying: false,
   };
 
   maxSpeechLength = 175;
@@ -339,7 +341,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // When Read Aloud is playing, user-selection is disabled on the Read
       // Anything panel, so don't attempt to update selection, as this can
       // end up clearing selection in the main part of the browser.
-      if (!this.hasContent_ || !this.speechPlayingState.paused) {
+      if (!this.hasContent_ || this.speechPlayingState.isSpeechActive) {
         return;
       }
       const selection: Selection = this.getSelection();
@@ -563,7 +565,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // TODO(crbug.com/40910704): Potentially hide links during distillation.
   private shouldShowLinks(): boolean {
     // Links should only show when Read Aloud is paused.
-    return chrome.readingMode.linksEnabled && this.speechPlayingState.paused;
+    return chrome.readingMode.linksEnabled &&
+        !this.speechPlayingState.isSpeechActive;
   }
 
   private appendChildSubtrees_(node: Node, nodeId: number) {
@@ -1305,33 +1308,33 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     // TODO(b/323912186) Handle when menu is closed mid-preview and the user
     // presses play/pause button.
-    if (this.speechPlayingState.paused &&
+    if (!this.speechPlayingState.isSpeechActive &&
         event.detail.voicePlayingWhenMenuOpened) {
       this.playSpeech();
     }
   }
   private onPlayPauseClick_() {
-    if (this.speechPlayingState.paused) {
-      this.playSessionStartTime = Date.now();
-      this.recordPlayClick();
-      this.playSpeech();
-    } else {
+    if (this.speechPlayingState.isSpeechActive) {
       this.logSpeechPlaySession_();
       this.recordPauseClick();
       this.stopSpeech(PauseActionSource.BUTTON_CLICK);
+    } else {
+      this.playSessionStartTime = Date.now();
+      this.recordPlayClick();
+      this.playSpeech();
     }
   }
 
   private onSpeechPlayingStateChanged_() {
     chrome.readingMode.onSpeechPlayingStateChanged(
-        this.speechPlayingState.paused);
+        this.speechPlayingState.isSpeechActive);
   }
 
   stopSpeech(pauseSource: PauseActionSource) {
     this.speechPlayingState = {
       ...this.speechPlayingState,
-      paused: true,
-      speechActuallyPlaying: false,
+      isSpeechActive: false,
+      isAudioCurrentlyPlaying: false,
       pauseSource,
     };
 
@@ -1407,8 +1410,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         this.getSelection();
     const hasSelection =
         anchorNode !== focusNode || anchorOffset !== focusOffset;
-    if (this.speechPlayingState.speechStarted &&
-        this.speechPlayingState.paused) {
+    if (this.speechPlayingState.isSpeechTreeInitialized &&
+        !this.speechPlayingState.isSpeechActive) {
       const pausedFromButton = this.speechPlayingState.pauseSource ===
           PauseActionSource.BUTTON_CLICK;
 
@@ -1438,9 +1441,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       }
 
       this.speechPlayingState = {
-        paused: false,
-        speechStarted: true,
-        speechActuallyPlaying: this.speechPlayingState.speechActuallyPlaying,
+        isSpeechActive: true,
+        isSpeechTreeInitialized: true,
+        isAudioCurrentlyPlaying:
+            this.speechPlayingState.isAudioCurrentlyPlaying,
       };
 
       // Hide links when speech resumes. We only hide links when the page was
@@ -1472,9 +1476,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // inflate the speech played number.
       this.logger_.logNewPage(/*speechPlayed=*/ true);
       this.speechPlayingState = {
-        paused: false,
-        speechStarted: true,
-        speechActuallyPlaying: this.speechPlayingState.speechActuallyPlaying,
+        isSpeechActive: true,
+        isSpeechTreeInitialized: true,
+        isAudioCurrentlyPlaying:
+            this.speechPlayingState.isAudioCurrentlyPlaying,
       };
       // Hide links when speech begins playing.
       if (chrome.readingMode.linksEnabled) {
@@ -1792,10 +1797,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // we can enable the Read Aloud buttons.
       this.speechEngineLoaded = true;
 
-      if (!this.speechPlayingState.speechActuallyPlaying) {
+      if (!this.speechPlayingState.isAudioCurrentlyPlaying) {
         this.speechPlayingState = {
           ...this.speechPlayingState,
-          speechActuallyPlaying: true,
+          isAudioCurrentlyPlaying: true,
         };
       }
     };
@@ -2039,10 +2044,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   private clearReadAloudState() {
     this.speechPlayingState = {
-      paused: true,
+      isSpeechActive: false,
       pauseSource: PauseActionSource.DEFAULT,
-      speechStarted: false,
-      speechActuallyPlaying: false,
+      isSpeechTreeInitialized: false,
+      isAudioCurrentlyPlaying: false,
     };
     this.previousHighlights_ = [];
     this.resetToDefaultWordBoundaryState();
@@ -2102,11 +2107,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   private resetSpeechPostSettingChange_() {
     // Don't call stopSpeech() if initAxPositionWithNode hasn't been called
-    if (!this.speechPlayingState.speechStarted) {
+    if (!this.speechPlayingState.isSpeechTreeInitialized) {
       return;
     }
 
-    const playSpeechOnChange = !this.speechPlayingState.paused;
+    const playSpeechOnChange = this.speechPlayingState.isSpeechActive;
 
     // Cancel the queued up Utterance using the old speech settings
     this.stopSpeech(PauseActionSource.VOICE_SETTINGS_CHANGE);
@@ -2245,7 +2250,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // shouldn't happen often, so just skip selecting a new voice for now.
     // Another option would be to update the voice and the call
     // resetSpeechPostSettingsChange(), but that could be jarring.
-    if (this.speechPlayingState.speechStarted) {
+    if (this.speechPlayingState.isSpeechTreeInitialized) {
       return;
     }
 
@@ -2410,7 +2415,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   // If the screen is locked during speech, we should stop speaking.
   onLockScreen() {
-    if (!this.speechPlayingState.paused) {
+    if (this.speechPlayingState.isSpeechActive) {
       this.stopSpeech(PauseActionSource.DEFAULT);
     }
   }

@@ -41,11 +41,11 @@
 
   /* User select should be disabled on the Read Anything panel when Read Aloud
    * is playing audio and enabled otherwise. */
-  .user-select-disabled-when-speech-playing-true {
+  .user-select-disabled-when-speech-active-true {
     user-select: none;
   }
 
-  .user-select-disabled-when-speech-aloud-playing-false {
+  .user-select-disabled-when-speech-active-false {
     user-select: auto;
   }
 
@@ -115,8 +115,8 @@
 <div id="appFlexParent" on-keydown="onKeyDown_">
   <div id="toolbar-container" hidden="[[!isWebUIToolbarVisible_]]">
     <read-anything-toolbar
-      paused="[[speechPlayingState.paused]]"
-      speech-actually-playing="[[speechPlayingState.speechActuallyPlaying]]"
+      is-speech-active="[[speechPlayingState.isSpeechActive]]"
+      is-audio-currently-playing="[[speechPlayingState.isAudioCurrentlyPlaying]]"
       is-read-aloud-playable=
       "[[isReadAloudPlayable(
         hasContent_, selectedVoice, speechEngineLoaded, willDrawAgainSoon_)]]"
@@ -151,7 +151,7 @@
   <div id="container-parent" class="sp-card sp-scroller"
        hidden="[[!hasContent_]]">
     <div id="container" class$=
-    "user-select-disabled-when-speech-playing-[[!speechPlayingState.paused]]">
+    "user-select-disabled-when-speech-active-[[speechPlayingState.isSpeechActive]]">
   </div>
   </div>
   <div id="empty-state-container" hidden="[[hasContent_]]">

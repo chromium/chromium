@@ -66,12 +66,12 @@ suite('LinksToggle', () => {
     });
 
     test('when unpaused, button is disabled', () => {
-      toolbar.paused = false;
+      toolbar.isSpeechActive = true;
       assertTrue(menuButton.disabled);
     });
 
     test('when paused, button is enabled', () => {
-      toolbar.paused = true;
+      toolbar.isSpeechActive = false;
       assertFalse(menuButton.disabled);
     });
 
@@ -91,12 +91,12 @@ suite('LinksToggle', () => {
       });
 
       test('when unpaused, button is disabled', () => {
-        toolbar.paused = false;
+        toolbar.isSpeechActive = true;
         assertTrue(menuButton.disabled);
       });
 
       test('when paused, button is enabled', () => {
-        toolbar.paused = true;
+        toolbar.isSpeechActive = false;
         assertFalse(menuButton.disabled);
       });
     });

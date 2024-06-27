@@ -63,9 +63,9 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   enabledLangs: string[];
   availableVoices: SpeechSynthesisVoice[];
 
-  // If Read Aloud is in the paused state. This is set from the parent element
-  // via one way data binding.
-  private readonly paused: boolean;
+  // If Read Aloud is playing speech. This is set from the parent element via
+  // one way data binding.
+  private readonly isSpeechActive: boolean;
   private voicePlayingWhenMenuOpened_: boolean = false;
   private enabledVoices_: SpeechSynthesisVoice[];
 
@@ -106,7 +106,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   }
 
   onVoiceSelectionMenuClick(event: MouseEvent) {
-    this.voicePlayingWhenMenuOpened_ = !this.paused;
+    this.voicePlayingWhenMenuOpened_ = this.isSpeechActive;
     const target = event.target as HTMLElement;
     const menu = this.$.voiceSelectionMenu.get();
     openMenu(menu, target, {

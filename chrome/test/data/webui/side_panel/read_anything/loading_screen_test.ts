@@ -36,16 +36,16 @@ suite('LoadingScreen', () => {
 
   test('with flag clears read aloud state', () => {
     app.speechPlayingState = {
-      paused: false,
-      speechStarted: true,
-      speechActuallyPlaying: true,
+      isSpeechActive: true,
+      isSpeechTreeInitialized: true,
+      isAudioCurrentlyPlaying: true,
     };
 
     app.showLoading();
 
-    assertTrue(app.speechPlayingState.paused);
-    assertFalse(app.speechPlayingState.speechStarted);
-    assertFalse(app.speechPlayingState.speechActuallyPlaying);
+    assertFalse(app.speechPlayingState.isSpeechActive);
+    assertFalse(app.speechPlayingState.isSpeechTreeInitialized);
+    assertFalse(app.speechPlayingState.isAudioCurrentlyPlaying);
   });
 
   test('selection on loading screen does nothing', async () => {

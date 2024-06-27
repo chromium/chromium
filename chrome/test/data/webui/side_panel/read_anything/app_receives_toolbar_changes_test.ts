@@ -317,11 +317,11 @@ suite('AppReceivesToolbarChanges', () => {
   });
 
   suite('play/pause', () => {
-    let propagatedPauseState: boolean;
+    let propagatedActiveState: boolean;
 
     setup(() => {
-      chrome.readingMode.onSpeechPlayingStateChanged = paused => {
-        propagatedPauseState = paused;
+      chrome.readingMode.onSpeechPlayingStateChanged = isSpeechActive => {
+        propagatedActiveState = isSpeechActive;
       };
       app.updateContent();
     });
@@ -332,9 +332,9 @@ suite('AppReceivesToolbarChanges', () => {
 
     suite('by default', () => {
       test('is paused', () => {
-        assertTrue(app.speechPlayingState.paused);
-        assertFalse(app.speechPlayingState.speechStarted);
-        assertTrue(propagatedPauseState);
+        assertFalse(app.speechPlayingState.isSpeechActive);
+        assertFalse(app.speechPlayingState.isSpeechTreeInitialized);
+        assertFalse(propagatedActiveState);
       });
     });
 
@@ -344,9 +344,9 @@ suite('AppReceivesToolbarChanges', () => {
       });
 
       test('starts speech', () => {
-        assertFalse(app.speechPlayingState.paused);
-        assertTrue(app.speechPlayingState.speechStarted);
-        assertFalse(propagatedPauseState);
+        assertTrue(app.speechPlayingState.isSpeechActive);
+        assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
+        assertTrue(propagatedActiveState);
       });
     });
 
@@ -357,9 +357,9 @@ suite('AppReceivesToolbarChanges', () => {
       });
 
       test('stops speech', () => {
-        assertTrue(app.speechPlayingState.paused);
-        assertTrue(app.speechPlayingState.speechStarted);
-        assertTrue(propagatedPauseState);
+        assertFalse(app.speechPlayingState.isSpeechActive);
+        assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
+        assertFalse(propagatedActiveState);
       });
     });
 
@@ -372,15 +372,15 @@ suite('AppReceivesToolbarChanges', () => {
 
       test('first press plays', () => {
         app.$.appFlexParent!.dispatchEvent(kPress);
-        assertFalse(app.speechPlayingState.paused);
-        assertFalse(propagatedPauseState);
+        assertTrue(app.speechPlayingState.isSpeechActive);
+        assertTrue(propagatedActiveState);
       });
 
       test('second press pauses', () => {
         app.$.appFlexParent!.dispatchEvent(kPress);
         app.$.appFlexParent!.dispatchEvent(kPress);
-        assertTrue(app.speechPlayingState.paused);
-        assertTrue(propagatedPauseState);
+        assertFalse(app.speechPlayingState.isSpeechActive);
+        assertFalse(propagatedActiveState);
       });
     });
   });

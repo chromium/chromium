@@ -119,8 +119,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       rateOptions: Array,
       textStyleOptions_: Array,
       textStyleToggles_: Array,
-      paused: Boolean,
-      speechActuallyPlaying: Boolean,
+      isSpeechActive: Boolean,
+      isAudioCurrentlyPlaying: Boolean,
       isReadAloudPlayable: Boolean,
       selectedVoice: Object,
       voicePackInstallStatus: Map,
@@ -134,7 +134,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   static get observers() {
-    return ['onSpeechPlayingStateChanged_(paused, speechActuallyPlaying)'];
+    return [
+      'onSpeechPlayingStateChanged_(isSpeechActive, isAudioCurrentlyPlaying)',
+    ];
   }
 
   // This function has to be static because it's called from the ResizeObserver
@@ -351,14 +353,14 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private toolbarContainerObserver_: ResizeObserver|null;
   private windowResizeCallback_: () => void;
 
-  // If Read Aloud is in the paused state. This is set from the parent element
-  // via one way data binding.
-  paused: boolean;
+  // If Read Aloud is playing speech. This is set from the parent element via
+  // one way data binding.
+  isSpeechActive: boolean;
 
   // If speech is actually playing. Due to latency with the TTS engine, there
   // can be a delay between when the user presses play and speech actually
   // plays.
-  private speechActuallyPlaying: boolean;
+  private isAudioCurrentlyPlaying: boolean;
 
   private hideSpinner: boolean = true;
 
@@ -609,15 +611,18 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private playPauseButtonAriaLabel_() {
-    return loadTimeData.getString(this.paused ? 'playLabel' : 'pauseLabel');
+    return loadTimeData.getString(
+        this.isSpeechActive ? 'pauseLabel' : 'playLabel');
   }
 
   private playPauseButtonTitle_() {
-    return loadTimeData.getString(this.paused ? 'playTooltip' : 'pauseTooltip');
+    return loadTimeData.getString(
+        this.isSpeechActive ? 'pauseTooltip' : 'playTooltip');
   }
 
   private playPauseButtonIronIcon_() {
-    return this.paused ? 'read-anything-20:play' : 'read-anything-20:pause';
+    return this.isSpeechActive ? 'read-anything-20:pause' :
+                                 'read-anything-20:play';
   }
 
   private closeMenus_() {
@@ -987,14 +992,15 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     // Use a debouncer to reduce glitches. Even when audio is fast to respond to
     // the play button, there are still milliseconds of delay. To prevent the
     // spinner from quickly appearing and disappearing, we use a debouncer. If
-    // either the values of `paused` or `speechActuallyPlaying` change, the
-    // previously scheduled callback is canceled and a new callback is
-    // scheduled.
+    // either the values of `isSpeechActive` or `isAudioCurrentlyPlaying`
+    // change, the previously scheduled callback is canceled and a new callback
+    // is scheduled.
     // TODO (b/339860819) improve debouncer logic so that the spinner disappears
-    // immediately when speech starts playing, or when the paused button is hit.
+    // immediately when speech starts playing, or when the pause button is hit.
     this.debouncer_ = Debouncer.debounce(
         this.debouncer_, timeOut.after(spinnerDebounceTimeout), () => {
-          this.hideSpinner = this.paused || this.speechActuallyPlaying;
+          this.hideSpinner =
+              !this.isSpeechActive || this.isAudioCurrentlyPlaying;
         });
   }
 
