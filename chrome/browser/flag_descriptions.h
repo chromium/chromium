@@ -327,9 +327,6 @@ extern const char kAutofillEnableRankingFormulaAddressProfilesDescription[];
 extern const char kAutofillEnableRankingFormulaCreditCardsName[];
 extern const char kAutofillEnableRankingFormulaCreditCardsDescription[];
 
-extern const char kAutofillEnableRemadeDownstreamMetricsName[];
-extern const char kAutofillEnableRemadeDownstreamMetricsDescription[];
-
 extern const char kAutofillEnableSaveCardLoadingAndConfirmationName[];
 extern const char kAutofillEnableSaveCardLoadingAndConfirmationDescription[];
 

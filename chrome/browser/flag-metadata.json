@@ -734,11 +734,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "autofill-enable-remade-downstream-metrics",
-    "owners": [ "siyua@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "autofill-enable-save-card-loading-and-confirmation",
     "owners": [
       "darwinyang@chromium.org",

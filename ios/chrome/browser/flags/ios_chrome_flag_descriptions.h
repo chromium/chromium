@@ -73,11 +73,6 @@ extern const char kAutofillEnableRankingFormulaAddressProfilesDescription[];
 extern const char kAutofillEnableRankingFormulaCreditCardsName[];
 extern const char kAutofillEnableRankingFormulaCreditCardsDescription[];
 
-// Title and description for the flag that controls whether the remade Autofill
-// Downstream metrics are enabled.
-extern const char kAutofillEnableRemadeDownstreamMetricsName[];
-extern const char kAutofillEnableRemadeDownstreamMetricsDescription[];
-
 // Title and description for the flag to enable loading and confirmation
 // for save card.
 extern const char kAutofillEnableSaveCardLoadingAndConfirmationName[];

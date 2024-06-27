@@ -49,8 +49,6 @@ BASE_DECLARE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnablePrefetchingRiskDataForRetrieval);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillEnableRemadeDownstreamMetrics);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableSaveCardLoadingAndConfirmation);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableSaveCardLocalSaveFallback);

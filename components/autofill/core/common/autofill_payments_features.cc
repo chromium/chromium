@@ -113,11 +113,6 @@ BASE_FEATURE(kAutofillEnablePrefetchingRiskDataForRetrieval,
              "AutofillEnablePrefetchingRiskDataForRetrieval",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, some extra metrics logging for Autofill Downstream will start.
-BASE_FEATURE(kAutofillEnableRemadeDownstreamMetrics,
-             "AutofillEnableRemadeDownstreamMetrics",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, the save card screen will present a loading spinner when
 // uploading the card to the server and present a confirmation screen with the
 // result when completed.

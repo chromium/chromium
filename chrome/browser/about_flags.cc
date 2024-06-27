@@ -10129,13 +10129,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kEnableAndroidGamepadVibration)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"autofill-enable-remade-downstream-metrics",
-     flag_descriptions::kAutofillEnableRemadeDownstreamMetricsName,
-     flag_descriptions::kAutofillEnableRemadeDownstreamMetricsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableRemadeDownstreamMetrics)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-seamless-refresh-rate-switching",
      flag_descriptions::kEnableSeamlessRefreshRateSwitchingName,

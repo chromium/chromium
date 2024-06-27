@@ -533,12 +533,6 @@ const char kAutofillEnableRankingFormulaCreditCardsDescription[] =
     "When enabled, Autofill will use a new ranking formula to rank Autofill "
     "credit card suggestions.";
 
-const char kAutofillEnableRemadeDownstreamMetricsName[] =
-    "Enable remade Autofill Downstream metrics logging";
-const char kAutofillEnableRemadeDownstreamMetricsDescription[] =
-    "When enabled, some extra metrics logging for Autofill Downstream will "
-    "start.";
-
 const char kAutofillEnableSaveCardLoadingAndConfirmationName[] =
     "Enable save card loading and confirmation UX";
 const char kAutofillEnableSaveCardLoadingAndConfirmationDescription[] =

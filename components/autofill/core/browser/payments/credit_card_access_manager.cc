@@ -1657,24 +1657,9 @@ CreditCardAccessManager::GetCardUnmaskChallengeOptionForChallengeId(
 
 bool CreditCardAccessManager::ShouldLogServerCardUnmaskAttemptMetrics(
     CreditCard::RecordType record_type) {
-  // We always want to log virtual card unmask attempts.
-  if (record_type == CreditCard::RecordType::kVirtualCard) {
-    return true;
-  }
-
-  // We only want to log masked server card or full server card unmask
-  // attempts if the `kAutofillEnableRemadeDownstreamMetrics` feature flag is
-  // enabled, due to this being a histogram refactoring that we want to roll out
-  // slowly to ensure that it works properly.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableRemadeDownstreamMetrics)) {
-    return record_type == CreditCard::RecordType::kMaskedServerCard ||
-           record_type == CreditCard::RecordType::kFullServerCard;
-  }
-
-  // No conditions were met to log a server card unmasking attempt, so return
-  // false.
-  return false;
+  return record_type == CreditCard::RecordType::kMaskedServerCard ||
+      record_type == CreditCard::RecordType::kFullServerCard ||
+      record_type == CreditCard::RecordType::kVirtualCard;
 }
 
 void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
