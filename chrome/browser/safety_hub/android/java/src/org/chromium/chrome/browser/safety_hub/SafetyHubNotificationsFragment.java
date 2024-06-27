@@ -5,11 +5,14 @@
 package org.chromium.chrome.browser.safety_hub;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.favicon.LargeIconBridge;
 
 import java.util.List;
@@ -97,6 +100,15 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.safety_hub_subpage_menu_item) {
+            launchSiteSettingsActivity(SiteSettingsCategory.Type.NOTIFICATIONS);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     protected void updatePreferenceList() {
         if (mLargeIconBridge == null) {
             mLargeIconBridge = new LargeIconBridge(getProfile());
@@ -115,18 +127,23 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
     }
 
     @Override
-    protected int getTitleId() {
+    protected @StringRes int getTitleId() {
         return R.string.safety_hub_notifications_page_title;
     }
 
     @Override
-    protected int getHeaderId() {
+    protected @StringRes int getHeaderId() {
         return R.string.safety_hub_notifications_page_header;
     }
 
     @Override
-    protected int getButtonTextId() {
+    protected @StringRes int getButtonTextId() {
         return R.string.safety_hub_notifications_block_all_button;
+    }
+
+    @Override
+    protected @StringRes int getMenuItemTextId() {
+        return R.string.safety_hub_notifications_page_menu_text;
     }
 
     private void showSingleSiteSnackbar(int titleResId, String origin) {

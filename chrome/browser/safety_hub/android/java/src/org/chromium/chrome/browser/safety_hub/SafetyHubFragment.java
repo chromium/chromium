@@ -9,8 +9,6 @@ import android.os.Bundle;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
-import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -18,8 +16,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Fragment containing Safety hub. */
 public class SafetyHubFragment extends SafetyHubBaseFragment
-        implements FragmentSettingsLauncher,
-                UnusedSitePermissionsBridge.Observer,
+        implements UnusedSitePermissionsBridge.Observer,
                 NotificationPermissionReviewBridge.Observer {
     private static final String PREF_PASSWORDS = "passwords_account";
     private static final String PREF_UPDATE = "update_check";
@@ -28,7 +25,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private static final String PREF_SAFE_BROWSING = "safe_browsing";
 
     private SafetyHubModuleDelegate mDelegate;
-    private SettingsLauncher mSettingsLauncher;
     private UnusedSitePermissionsBridge mUnusedSitePermissionsBridge;
     private PropertyModel mPermissionsModel;
     private NotificationPermissionReviewBridge mNotificationPermissionReviewBridge;
@@ -105,9 +101,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         .with(SafetyHubModuleProperties.IS_VISIBLE, true)
                         .with(
                                 SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER,
-                                v ->
-                                        mSettingsLauncher.launchSettingsActivity(
-                                                getContext(), SafetyHubPermissionsFragment.class))
+                                v -> launchSettingsActivity(SafetyHubPermissionsFragment.class))
                         .build();
 
         PropertyModelChangeProcessor.create(
@@ -129,9 +123,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         .with(SafetyHubModuleProperties.IS_VISIBLE, true)
                         .with(
                                 SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER,
-                                v ->
-                                        mSettingsLauncher.launchSettingsActivity(
-                                                getContext(), SafetyHubNotificationsFragment.class))
+                                v -> launchSettingsActivity(SafetyHubNotificationsFragment.class))
                         .build();
 
         PropertyModelChangeProcessor.create(
@@ -152,14 +144,10 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         .with(SafetyHubModuleProperties.IS_VISIBLE, true)
                         .with(
                                 SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER,
-                                v ->
-                                        mSettingsLauncher.launchSettingsActivity(
-                                                getContext(), SafeBrowsingSettingsFragment.class))
+                                v -> launchSettingsActivity(SafeBrowsingSettingsFragment.class))
                         .with(
                                 SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
-                                v ->
-                                        mSettingsLauncher.launchSettingsActivity(
-                                                getContext(), SafeBrowsingSettingsFragment.class))
+                                v -> launchSettingsActivity(SafeBrowsingSettingsFragment.class))
                         .build();
 
         PropertyModelChangeProcessor.create(
@@ -185,11 +173,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     @Override
     public void notificationPermissionsChanged() {
         updateNotificationsReviewPreference();
-    }
-
-    @Override
-    public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
-        mSettingsLauncher = settingsLauncher;
     }
 
     public void setDelegate(SafetyHubModuleDelegate safetyHubModuleDelegate) {

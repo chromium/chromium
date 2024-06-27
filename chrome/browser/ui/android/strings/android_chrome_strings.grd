@@ -1783,7 +1783,13 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
        <message name="IDS_SAFETY_HUB_GO_TO_NOTIFICATIONS_BUTTON" translateable="false">
         Go to notifications
+      </message>      <message name="IDS_SAFETY_HUB_PERMISSIONS_PAGE_MENU_TEXT" translateable="false">
+        Go to site settings
       </message>
+      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_PAGE_MENU_TEXT" translateable="false">
+        Go to notification settings
+      </message>
+
 
        <!-- Safe Browsing preferences -->
       <message name="IDS_PREFS_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing preferences. [CHAR_LIMIT=32]">

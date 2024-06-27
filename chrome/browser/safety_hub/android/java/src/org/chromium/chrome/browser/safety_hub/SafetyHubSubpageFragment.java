@@ -6,12 +6,16 @@ package org.chromium.chrome.browser.safety_hub;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.preference.PreferenceCategory;
 
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -35,6 +39,7 @@ public abstract class SafetyHubSubpageFragment extends SafetyHubBaseFragment {
         headPreference.setSummary(getHeaderId());
 
         mPreferenceList = findPreference(PREF_LIST);
+        setHasOptionsMenu(true);
     }
 
     @NonNull
@@ -67,11 +72,25 @@ public abstract class SafetyHubSubpageFragment extends SafetyHubBaseFragment {
         updatePreferenceList();
     }
 
-    protected abstract int getTitleId();
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        MenuItem item =
+                menu.add(
+                        Menu.NONE,
+                        R.id.safety_hub_subpage_menu_item,
+                        Menu.NONE,
+                        getMenuItemTextId());
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+    }
 
-    protected abstract int getHeaderId();
+    protected abstract @StringRes int getTitleId();
 
-    protected abstract int getButtonTextId();
+    protected abstract @StringRes int getHeaderId();
+
+    protected abstract @StringRes int getButtonTextId();
+
+    protected abstract @StringRes int getMenuItemTextId();
 
     protected abstract void updatePreferenceList();
 }

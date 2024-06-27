@@ -55,6 +55,7 @@ android_library("java") {
     "//components/background_task_scheduler:factory_java",
     "//components/background_task_scheduler:public_java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/site_settings/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/content_settings/core/common:content_settings_types_java",
     "//components/favicon/android:java",
@@ -203,6 +204,7 @@ android_resources("java_resources") {
     "java/res/layout/safety_hub_button_widget.xml",
     "java/res/layout/safety_hub_expandable_preference.xml",
     "java/res/layout/safety_hub_list_menu_widget.xml",
+    "java/res/values/ids.xml",
     "java/res/xml/safety_hub_preferences.xml",
     "java/res/xml/safety_hub_subpage_preferences.xml",
   ]

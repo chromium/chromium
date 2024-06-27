@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.safety_hub;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -56,6 +57,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
+import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -250,6 +252,16 @@ public final class SafetyHubTest {
 
     @Test
     @LargeTest
+    @Feature({"SafetyHubPermissions"})
+    public void testPermissionsToSiteSettings() {
+        SettingsActivity activity = mPermissionsFragmentTestRule.startSettingsActivity();
+        openActionBarOverflowOrOptionsMenu(activity);
+        onViewWaiting(withText(R.string.safety_hub_permissions_page_menu_text)).perform(click());
+        onViewWaiting(withText(R.string.prefs_site_settings)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
     @Feature({"SafetyHubNotifications"})
     public void testNotificationBlock() {
         mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
@@ -346,6 +358,20 @@ public final class SafetyHubTest {
         // again.
         onViewWaiting(withText(R.string.undo)).perform(click());
         onViewWaiting(withText(notificationsTitle)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"SafetyHubNotifications"})
+    public void testNotificationsToNotificationSettings() {
+        SettingsActivity activity = mNotificationsFragmentTestRule.startSettingsActivity();
+        openActionBarOverflowOrOptionsMenu(activity);
+        onViewWaiting(withText(R.string.safety_hub_notifications_page_menu_text)).perform(click());
+        onViewWaiting(
+                        allOf(
+                                withText(R.string.push_notifications_permission_title),
+                                withParent(withId(R.id.action_bar))))
+                .check(matches(isDisplayed()));
     }
 
     @Test
