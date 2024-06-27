@@ -2655,16 +2655,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       [&]() { return controller->state() == State::kOff; }));
 }
 
-// TODO(b/340886492): Fix and reenable test on MSAN.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_OverlaySidePanelEdgeCaseInteractions \
-  DISABLED_OverlaySidePanelEdgeCaseInteractions
-#else
-#define MAYBE_OverlaySidePanelEdgeCaseInteractions \
-  OverlaySidePanelEdgeCaseInteractions
-#endif
+// TODO(b/340886492, b/349876638): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       MAYBE_OverlaySidePanelEdgeCaseInteractions) {
+                       DISABLED_OverlaySidePanelEdgeCaseInteractions) {
   WaitForPaint();
 
   // State should start in off.
