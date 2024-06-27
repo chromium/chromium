@@ -213,16 +213,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Http(s) scheme"/>
 </enum>
 
-<!-- LINT.IfChange(DeferSpeculativeRFHAction) -->
-
-<enum name="DeferSpeculativeRFHAction">
-  <int value="0" label="NotDeferred"/>
-  <int value="1" label="DeferredWithRenderProcessWarmUp"/>
-  <int value="2" label="DeferredWithoutRenderProcessWarmUp"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/renderer_host/render_frame_host_manager.h:DeferSpeculativeRFHAction) -->
-
 <enum name="EarlyRFHSwapType">
   <int value="0" label="No early swap"/>
   <int value="1" label="Early swap for the initial non-live RenderFrameHost"/>
