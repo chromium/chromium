@@ -125,7 +125,6 @@ std::unique_ptr<KeyedService> BuildSyncService(
       content::GetNetworkConnectionTracker();
   init_params.channel = chrome::GetChannel();
   init_params.debug_identifier = profile->GetDebugName();
-  init_params.sync_poll_immediately_on_every_startup = false;
 
   bool local_sync_backend_enabled = false;
 // Only check the local sync backend pref on the supported platforms of

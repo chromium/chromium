@@ -107,8 +107,6 @@ class SyncManager {
     std::string cache_guid;
     std::string birthday;
     std::string bag_of_chips;
-
-    bool sync_poll_immediately_on_every_startup = false;
   };
 
   // The state of sync the feature. If the user turned on sync explicitly, it

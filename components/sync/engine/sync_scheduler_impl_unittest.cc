@@ -276,7 +276,7 @@ class SyncSchedulerImplTest : public testing::Test {
     syncer_ = syncer.get();
     scheduler_ = std::make_unique<SyncSchedulerImpl>(
         "TestSyncScheduler", BackoffDelayProvider::FromDefaults(), context(),
-        std::move(syncer), false, false);
+        std::move(syncer), false);
     SetDefaultLocalChangeNudgeDelays();
   }
 
@@ -411,7 +411,7 @@ class SyncSchedulerImplTest : public testing::Test {
     syncer_ = syncer.get();
     scheduler_ = std::make_unique<SyncSchedulerImpl>(
         "TestSyncScheduler", BackoffDelayProvider::FromDefaults(), context(),
-        std::move(syncer), true, false);
+        std::move(syncer), true);
     SetDefaultLocalChangeNudgeDelays();
   }
 
@@ -422,14 +422,6 @@ class SyncSchedulerImplTest : public testing::Test {
   base::TimeDelta GetPendingWakeupTimerDelay() {
     EXPECT_TRUE(scheduler_->pending_wakeup_timer_.IsRunning());
     return scheduler_->pending_wakeup_timer_.GetCurrentDelay();
-  }
-
-  // Provide access for tests to private method.
-  base::Time ComputeLastPollOnStart(base::Time last_poll,
-                                    base::TimeDelta poll_interval,
-                                    base::Time now) {
-    return SyncSchedulerImpl::ComputeLastPollOnStart(last_poll, poll_interval,
-                                                     now, false);
   }
 
  protected:
@@ -1953,14 +1945,6 @@ TEST_F(SyncSchedulerImplTest, InterleavedNudgesStillRestart) {
   EXPECT_TRUE(BlockTimerIsRunning());
   EXPECT_LT(base::Seconds(50), GetPendingWakeupTimerDelay());
   EXPECT_TRUE(scheduler()->IsGlobalBackoff());
-}
-
-TEST_F(SyncSchedulerImplTest, PollOnStartUpAfterShortPause) {
-  base::Time now = base::Time::Now();
-  base::TimeDelta poll_interval = base::Hours(4);
-  base::Time last_poll = now - base::Hours(2);
-  EXPECT_THAT(ComputeLastPollOnStart(last_poll, poll_interval, now),
-              Eq(last_poll));
 }
 
 }  // namespace syncer

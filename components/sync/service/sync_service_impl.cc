@@ -244,9 +244,7 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
       network_connection_tracker_(
           std::move(init_params.network_connection_tracker)),
       create_http_post_provider_factory_cb_(
-          base::BindRepeating(&CreateHttpBridgeFactory)),
-      sync_poll_immediately_on_every_startup_(
-          init_params.sync_poll_immediately_on_every_startup) {
+          base::BindRepeating(&CreateHttpBridgeFactory)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sync_client_);
   DCHECK(IsLocalSyncEnabled() || identity_manager_ != nullptr);
@@ -705,8 +703,6 @@ void SyncServiceImpl::TryStartImpl() {
   params.engine_components_factory =
       std::make_unique<EngineComponentsFactoryImpl>(
           EngineSwitchesFromCommandLine());
-  params.sync_poll_immediately_on_every_startup =
-      sync_poll_immediately_on_every_startup_;
 
   if (!IsLocalSyncEnabled()) {
     auth_manager_->ConnectionOpened();

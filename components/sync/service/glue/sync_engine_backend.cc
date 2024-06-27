@@ -176,8 +176,6 @@ void SyncEngineBackend::DoInitialize(
   args.cache_guid = restored_local_transport_data.cache_guid;
   args.birthday = restored_local_transport_data.birthday;
   args.bag_of_chips = restored_local_transport_data.bag_of_chips;
-  args.sync_poll_immediately_on_every_startup =
-      params.sync_poll_immediately_on_every_startup;
   sync_manager_->Init(&args);
 
   LoadAndConnectNigoriController();
