@@ -4389,6 +4389,9 @@ enum WebFeature {
   kV8FileSystemObserver_Constructor = 5020,
   kV8FileSystemObserver_Observe_Method = 5021,
   kV8FileSystemObserver_Disconnect_Method = 5022,
+  kV8ML_CreateContext_Method = 5023,
+  kV8MLContext_Compute_Method = 5024,
+  kV8MLContext_Dispatch_Method = 5025,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

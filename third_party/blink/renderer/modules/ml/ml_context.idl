@@ -44,7 +44,8 @@ typedef record<DOMString, MLBuffer> MLNamedBuffers;
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
-    RaisesException
+    RaisesException,
+    Measure
   ] Promise<MLComputeResult> compute(
       MLGraph graph, MLNamedArrayBufferViews inputs, MLNamedArrayBufferViews outputs);
 
@@ -90,7 +91,8 @@ typedef record<DOMString, MLBuffer> MLNamedBuffers;
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
-    RaisesException
+    RaisesException,
+    Measure
   ] void dispatch(
       MLGraph graph, MLNamedBuffers inputs, MLNamedBuffers outputs);
   [

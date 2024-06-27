@@ -11121,6 +11121,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5020" label="V8FileSystemObserver_Constructor"/>
   <int value="5021" label="V8FileSystemObserver_Observe_Method"/>
   <int value="5022" label="V8FileSystemObserver_Disconnect_Method"/>
+  <int value="5023" label="V8ML_CreateContext_Method"/>
+  <int value="5024" label="V8MLContext_Compute_Method"/>
+  <int value="5025" label="V8MLContext_Dispatch_Method"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

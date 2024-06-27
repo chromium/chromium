@@ -12,6 +12,6 @@
   RuntimeEnabled=MachineLearningCommon,
   Exposed=(Window, DedicatedWorker)
 ] interface ML {
-  [CallWith=ScriptState, RaisesException]
+  [CallWith=ScriptState, RaisesException, Measure]
       Promise<MLContext> createContext(optional MLContextOptions options = {});
 };
