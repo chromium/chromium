@@ -4,6 +4,7 @@
 
 import 'chrome://resources/mwc/@material/web/iconbutton/filled-icon-button.js';
 import '../components/mic-selection-menu.js';
+import '../components/onboarding-dialog.js';
 import '../components/recording-file-list.js';
 import '../components/secondary-button.js';
 import '../components/settings-menu.js';
@@ -25,10 +26,8 @@ import {settings} from '../core/state/settings.js';
 export class MainPage extends ReactiveLitElement {
   static override styles = css`
     :host {
-      background-color: var(--cros-sys-header);
       display: block;
       height: 100%;
-      position: relative;
       width: 100%;
     }
 
@@ -36,6 +35,13 @@ export class MainPage extends ReactiveLitElement {
       inset: 0;
       margin: 0 16px 106px;
       position: absolute;
+    }
+
+    #root {
+      background-color: var(--cros-sys-header);
+      height: 100%;
+      position: relative;
+      width: 100%;
     }
 
     #actions {
@@ -129,24 +135,37 @@ export class MainPage extends ReactiveLitElement {
   }
 
   override render(): RenderResult {
-    return html`
-      <recording-file-list
-        .recordingMetadataMap=${this.recordingMetadataMap.value}
-        @recording-clicked=${(ev: CustomEvent<string>) => {
+    const onboarding = settings.value.onboardingDone !== true;
+    function onOnboardingDone() {
+      settings.mutate((s) => {
+        s.onboardingDone = true;
+      });
+    }
+    const onRecordingClick = (ev: CustomEvent<string>) => {
       this.onRecordingClick(ev.detail);
-    }}
-        @delete-recording-clicked=${(ev: CustomEvent<string>) => {
-      // TODO(pihsun): Better handling for async recording deletion.
+    };
+    const onDeleteRecordingClick = (ev: CustomEvent<string>) => {
       this.onDeleteRecordingClick(ev.detail);
-    }}
-      >
-      </recording-file-list>
-      <div id="actions">
-        ${this.renderMicSelectionButton()}${this.renderRecordButton()}
-        ${this.renderSettingsButton()}
+    };
+    return html`
+      <onboarding-dialog
+        ?open=${onboarding}
+        @close=${onOnboardingDone}
+      ></onboarding-dialog>
+      <div id="root" ?inert=${onboarding}>
+        <recording-file-list
+          .recordingMetadataMap=${this.recordingMetadataMap.value}
+          @recording-clicked=${onRecordingClick}
+          @delete-recording-clicked=${onDeleteRecordingClick}
+        >
+        </recording-file-list>
+        <div id="actions">
+          ${this.renderMicSelectionButton()}${this.renderRecordButton()}
+          ${this.renderSettingsButton()}
+        </div>
+        <mic-selection-menu></mic-selection-menu>
+        <settings-menu></settings-menu>
       </div>
-      <mic-selection-menu></mic-selection-menu>
-      <settings-menu></settings-menu>
     `;
   }
 }

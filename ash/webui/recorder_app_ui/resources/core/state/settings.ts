@@ -10,12 +10,14 @@ import {Infer, z} from '../utils/schema.js';
 
 const settingsSchema = z.object({
   audioSource: z.nativeEnum(AudioSource),
+  onboardingDone: z.boolean(),
 });
 
 type Settings = Infer<typeof settingsSchema>;
 
 const defaultSettings: Settings = {
   audioSource: AudioSource.USER_MEDIA,
+  onboardingDone: false,
 };
 
 export const settings = signal(defaultSettings);

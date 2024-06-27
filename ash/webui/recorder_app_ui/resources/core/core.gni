@@ -26,6 +26,7 @@ core_files = [
   "utils/async_job_queue.ts",
   "utils/datetime.ts",
   "utils/draft.ts",
+  "utils/event_handler.ts",
   "utils/iterable_weak_set.ts",
   "utils/local_storage.ts",
   "utils/observer_list.ts",

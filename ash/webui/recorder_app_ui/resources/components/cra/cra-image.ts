@@ -12,24 +12,21 @@ import {
 import {assertExists} from '../../core/utils/assert.js';
 
 /**
- * A SVG icon in the bundled images referred by the name.
+ * A SVG image in the bundled images referred by the name.
  *
- * The size of the icon is controlled by the parent, and the SVG fill is set to
- * current color.
+ * Image size is controlled by the SVG itself and without a default fill
+ * color.
  */
-export class CraIcon extends LitElement {
+export class CraImage extends LitElement {
   static override styles = css`
     :host {
       display: block;
+      height: fit-content;
+      width: fit-content;
     }
 
     svg {
       display: block;
-      fill: currentcolor;
-      height: 100%;
-      stroke-width: 0;
-      stroke: currentcolor;
-      width: 100%;
     }
   `;
 
@@ -42,8 +39,8 @@ export class CraIcon extends LitElement {
   override connectedCallback(): void {
     super.connectedCallback();
     if (!this.hasAttribute('aria-hidden')) {
-      // Set default of aria-hidden to true since the parent element of the SVG
-      // is typically a button and would handle a11y instead of the SVG itself.
+      // Set default of aria-hidden to true since the illustration is typically
+      // accompanied by other text descriptions.
       this.setAttribute('aria-hidden', 'true');
     }
   }
@@ -52,14 +49,14 @@ export class CraIcon extends LitElement {
     if (this.name === null) {
       return null;
     }
-    return assertExists(images.get(`icons/${this.name}`));
+    return assertExists(images.get(this.name));
   }
 }
 
-window.customElements.define('cra-icon', CraIcon);
+window.customElements.define('cra-image', CraImage);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'cra-icon': CraIcon;
+    'cra-image': CraImage;
   }
 }

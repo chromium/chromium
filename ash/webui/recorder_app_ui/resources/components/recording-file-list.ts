@@ -30,6 +30,7 @@ import {
   formatDuration,
   formatTime,
 } from '../core/utils/datetime.js';
+import {stopPropagation} from '../core/utils/event_handler.js';
 
 /**
  * A list of recording files.
@@ -186,9 +187,6 @@ export class RecordingFileList extends LitElement {
   }
 
   private renderRecording(recording: RecordingMetadata) {
-    function stopPropagation(ev: Event) {
-      ev.stopPropagation();
-    }
     function onPlayClick(ev: PointerEvent) {
       // TODO: b/336963138 - Implements inline playing.
       ev.preventDefault();

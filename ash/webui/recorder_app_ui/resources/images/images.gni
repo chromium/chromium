@@ -36,7 +36,11 @@ icons = [
   "volume_up.svg",
 ]
 
-images = []
+images = [
+  "onboarding_speaker_id.svg",
+  "onboarding_transcription.svg",
+  "onboarding_welcome.svg",
+]
 
 foreach(icon, icons) {
   images += [ "icons/${icon}" ]

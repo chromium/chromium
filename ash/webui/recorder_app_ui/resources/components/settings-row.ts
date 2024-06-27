@@ -9,6 +9,7 @@ import {classMap, css, html} from 'chrome://resources/mwc/lit/index.js';
 
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
+import {stopPropagation} from '../core/utils/event_handler.js';
 
 /**
  * A row in settings menu for Recording app.
@@ -95,10 +96,6 @@ export class SettingsRow extends ReactiveLitElement {
   }
 
   override render(): RenderResult {
-    // TODO(pihsun): This seems to be quite common, move this to util.
-    function stopPropagation(ev: Event) {
-      ev.stopPropagation();
-    }
     const classes = {
       interactive: this.interactive.value,
     };

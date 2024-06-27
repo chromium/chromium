@@ -14,6 +14,41 @@
   <message desc="Link to more information about generative AI disclaimer." name="IDS_RECORDER_GEN_AI_LEARN_MORE_LINK">
     Learn more
   </message>
+  <message desc="Button to enable speaker ID and go next step in the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_ALLOW_BUTTON">
+    Allow
+  </message>
+  <message desc="Description of the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_DESCRIPTION">
+    When you allow this, Recorder will process your audio recordings using advanced audio analysis.
+
+You can turn this off at anytime in Settings.
+  </message>
+  <message desc="Button to not enable speaker ID and go next step in the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_DISALLOW_BUTTON">
+    Don't allow
+  </message>
+  <message desc="Header of the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_HEADER">
+    Allow Recorder to identify speakers?
+  </message>
+  <message desc="Button to not enable transcription and go next step in the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_CANCEL_BUTTON">
+    Cancel
+  </message>
+  <message desc="Description of the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_DESCRIPTION">
+    Recorder can create transcriptions for recordings with speech. Download the transcription model (up to 100MB) to get these transcriptions.
+  </message>
+  <message desc="Header of the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_HEADER">
+    Turn on transcription and download transcription model?
+  </message>
+  <message desc="Button to enable transcription and go next step in the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_TURN_ON_BUTTON">
+    Turn on and download
+  </message>
+  <message desc="Description of the welcome step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_WELCOME_DESCRIPTION">
+    Automatically create transcriptions, get recording summaries using Google AI, and search audio. Create recordings even when you’re not connected to the internet.
+  </message>
+  <message desc="Header of the welcome step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_WELCOME_HEADER">
+    Easily record and share your audio
+  </message>
+  <message desc="Button to go next in the welcome step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_WELCOME_NEXT_BUTTON">
+    Next
+  </message>
   <message desc="Header of the recording list." name="IDS_RECORDER_RECORDING_LIST_HEADER">
     My Recordings
   </message>
@@ -44,6 +79,9 @@
   <message desc="Button to stop recording." name="IDS_RECORDER_RECORD_STOP_BUTTON">
     Stop recording
   </message>
+  <message desc="Header of the settings." name="IDS_RECORDER_SETTINGS_HEADER">
+    Recorder settings
+  </message>
   <message desc="Description of the do not disturb toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_DO_NOT_DISTURB_DESCRIPTION">
     Silence notifications while recording
   </message>
@@ -67,9 +105,6 @@
   </message>
   <message desc="Header of the transcription and summary section in settings." name="IDS_RECORDER_SETTINGS_SECTION_TRANSCRIPTION_SUMMARY_HEADER">
     Transcription and summary
-  </message>
-  <message desc="Header of the settings." name="IDS_RECORDER_SETTINGS_HEADER">
-    Recorder settings
   </message>
   <message desc="Header of the summary." name="IDS_RECORDER_SUMMARY_HEADER">
     Summary
