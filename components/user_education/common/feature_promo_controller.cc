@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
@@ -33,6 +34,7 @@
 #include "components/user_education/common/tutorial_service.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_platform.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -351,6 +353,11 @@ bool FeaturePromoControllerCommon::HasPromoBeenDismissed(
       }
       return base::Contains(data->shown_for_keys, params.key);
   }
+}
+
+bool FeaturePromoControllerCommon::CanAnchorBeHidden(
+    ui::ElementIdentifier anchor_id) const {
+  return true;
 }
 
 bool FeaturePromoControllerCommon::EndPromo(
@@ -931,6 +938,24 @@ void FeaturePromoControllerCommon::FinishContinuedPromo(
 void FeaturePromoControllerCommon::OnHelpBubbleClosed(
     HelpBubble* bubble,
     HelpBubble::CloseReason reason) {
+  // Record if an element that was expected to remain visible ended up being
+  // hidden.
+  if (reason == HelpBubble::CloseReason::kAnchorHidden) {
+    const auto& feature = *current_promo_->iph_feature();
+    const auto anchor_id =
+        registry_->GetParamsForFeature(feature)->anchor_element_id();
+    if (!CanAnchorBeHidden(anchor_id)) {
+      DUMP_WILL_BE_NOTREACHED()
+          << "Anchor element " << anchor_id << " for feature promo "
+          << feature.name
+          << " was not expected to be hidden. This check has been added to"
+             " help track down the high frequency of certain feature promos"
+             " aborting due to hidden anchors where the anchors are elements"
+             " that are not expected to become hidden. If this code is hit,"
+             " please direct bugs to the author.";
+    }
+  }
+
   // Since we're in the middle of processing callbacks we can't reset our
   // subscription but since it's a weak pointer (internally) and since we should
   // should only get called here once, it's not a big deal if we don't reset

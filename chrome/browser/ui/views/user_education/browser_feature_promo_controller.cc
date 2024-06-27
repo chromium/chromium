@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/headless/headless_mode_util.h"
@@ -15,8 +16,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/browser/user_education/user_education_service.h"
@@ -25,12 +28,47 @@
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
+
+namespace {
+
+// Returns if the browser is in a running state; that is, it has been created
+// and shown and is not in the process of closing.
+bool IsBrowserRunning(BrowserView* browser_view) {
+  // Handle the case where there is no browser view or it is incomplete.
+  if (!browser_view || !browser_view->GetWidget()) {
+    return false;
+  }
+
+  // Ask the browser if it is closing. This is the "nice" path for shutting
+  // down.
+  if (browser_view->browser()->IsBrowserClosing()) {
+    return false;
+  }
+
+  // In some cases when the browser terminates abnormally - and, unfortunately,
+  // in most browser tests - the "nice" shutdown path isn't used. However, the
+  // order states get updated appears to be different on different platforms, so
+  // check a few things that would indicate the browser is closing.
+  //
+  // IsVisible() might return false both if the browser hasn't started running
+  // yet or if the browser is shutting closing.
+  if (browser_view->GetWidget()->IsClosed() ||
+      !browser_view->GetWidget()->IsVisible()) {
+    return false;
+  }
+
+  // At this point we can be pretty sure the browser isn't closing.
+  return true;
+}
+
+}  // namespace
 
 BrowserFeaturePromoController::BrowserFeaturePromoController(
     BrowserView* browser_view,
@@ -76,8 +114,9 @@ ui::ElementContext BrowserFeaturePromoController::GetAnchorContext() const {
 bool BrowserFeaturePromoController::CanShowPromoForElement(
     ui::TrackedElement* anchor_element) const {
   // Trying to show an IPH while the browser is closing can cause problems;
-  // see crbug.com/346461762 for an example.
-  if (browser_view_->browser()->IsBrowserClosing()) {
+  // see crbug.com/346461762 for an example. In general, don't show promos if
+  // the browser isn't running for whatever reason.
+  if (!IsBrowserRunning(browser_view_)) {
     return false;
   }
 
@@ -223,4 +262,45 @@ BrowserFeaturePromoController::GetScreenReaderPromptPromoFeature() const {
 const char* BrowserFeaturePromoController::GetScreenReaderPromptPromoEventName()
     const {
   return feature_engagement::events::kFocusHelpBubbleAcceleratorPromoRead;
+}
+
+bool BrowserFeaturePromoController::CanAnchorBeHidden(
+    ui::ElementIdentifier anchor_id) const {
+  // Any element can be hidden in a browser that has stopped running.
+  if (!IsBrowserRunning(browser_view_)) {
+    return true;
+  }
+
+  // All browsers have a browser view, a top container, and a web contents.
+  if (anchor_id == kBrowserViewElementId ||
+      anchor_id == ContentsWebView::kContentsWebViewElementId) {
+    return false;
+  }
+
+  // All other elements can be hidden in immersive and some fullscreen modes.
+  if (browser_view_->IsImmersiveModeEnabled() ||
+      browser_view_->ShouldHideUIForFullscreen()) {
+    return true;
+  }
+
+  // Otherwise, top container is always visible.
+  if (anchor_id == kTopContainerElementId) {
+    return false;
+  }
+
+  // App menu is always visible in standard browsers.
+  if (anchor_id == kToolbarAppMenuButtonElementId &&
+      browser_view_->GetIsNormalType()) {
+    return false;
+  }
+
+  // Tab strip elements are always present in browser with tab strips.
+  if ((anchor_id == kTabStripElementId ||
+       anchor_id == kTabStripRegionElementId ||
+       anchor_id == kNewTabButtonElementId) &&
+      browser_view_->GetSupportsTabStrip()) {
+    return false;
+  }
+
+  return true;
 }

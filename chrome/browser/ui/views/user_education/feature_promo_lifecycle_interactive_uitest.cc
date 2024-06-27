@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
@@ -39,10 +40,12 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/events/event_modifiers.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 using ::testing::_;
@@ -54,6 +57,9 @@ using ::testing::Return;
 namespace {
 BASE_FEATURE(kFeaturePromoLifecycleTestPromo,
              "TEST_FeaturePromoLifecycleTestPromo",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kFeaturePromoLifecycleAlternateTestPromo,
+             "TEST_FeaturePromoLifecycleAletnerateTestPromo",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFeaturePromoLifecycleTestPromo2,
              "TEST_FeaturePromoLifecycleTestPromo2",
@@ -67,6 +73,7 @@ BASE_FEATURE(kFeaturePromoLifecycleTestAlert,
 BASE_FEATURE(kFeaturePromoLifecycleTestAlert2,
              "TEST_FeaturePromoLifecycleTestAlert2",
              base::FEATURE_ENABLED_BY_DEFAULT);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAlternateAnchorElementId);
 }  // namespace
 
 using TestBase = InteractiveFeaturePromoTestT<web_app::WebAppBrowserTestBase>;
@@ -93,6 +100,21 @@ class FeaturePromoLifecycleUiTest : public TestBase {
         user_education::FeaturePromoSpecification::CreateForSnoozePromo(
             kFeaturePromoLifecycleTestPromo, kToolbarAppMenuButtonElementId,
             IDS_TAB_GROUPS_NEW_GROUP_PROMO));
+    RegisterTestFeature(
+        browser(),
+        user_education::FeaturePromoSpecification::CreateForSnoozePromo(
+            kFeaturePromoLifecycleAlternateTestPromo, kAlternateAnchorElementId,
+            IDS_TAB_GROUPS_NEW_GROUP_PROMO));
+  }
+
+  auto AddAlternateAnchor() {
+    return WithView(kBrowserViewElementId, [](BrowserView* browser_view) {
+      auto* const anchor = browser_view->toolbar()->AddChildView(
+          std::make_unique<views::View>());
+      anchor->SetPreferredSize(gfx::Size(10, 10));
+      anchor->SetProperty(views::kElementIdentifierKey,
+                          kAlternateAnchorElementId);
+    });
   }
 
   auto InBrowser(base::OnceCallback<void(Browser*)> callback) {
@@ -128,13 +150,16 @@ class FeaturePromoLifecycleUiTest : public TestBase {
     return steps;
   }
 
-  auto CheckSnoozePrefs(bool is_dismissed, int show_count, int snooze_count) {
+  auto CheckSnoozePrefs(
+      bool is_dismissed,
+      int show_count,
+      int snooze_count,
+      const base::Feature* feature = &kFeaturePromoLifecycleTestPromo) {
     return std::move(
         CheckBrowser(base::BindLambdaForTesting([this, is_dismissed, show_count,
-                                                 snooze_count](
-                                                    Browser* browser) {
-          auto data = GetStorageService(browser)->ReadPromoData(
-              kFeaturePromoLifecycleTestPromo);
+                                                 snooze_count,
+                                                 feature](Browser* browser) {
+          auto data = GetStorageService(browser)->ReadPromoData(*feature);
 
           if (!data.has_value()) {
             return false;
@@ -370,7 +395,8 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest, WidgetCloseSetsPrefs) {
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest, AnchorViewHiddenSetsPrefs) {
   RunTestSequence(
-      ShowPromoRecordingTime(kFeaturePromoLifecycleTestPromo),
+      AddAlternateAnchor(),
+      ShowPromoRecordingTime(kFeaturePromoLifecycleAlternateTestPromo),
       WithView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
                [](user_education::HelpBubbleView* bubble) {
                  // This should yank the bubble out from under us.
@@ -380,22 +406,8 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest, AnchorViewHiddenSetsPrefs) {
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
       CheckSnoozePrefs(/* is_dismiss */ false,
                        /* show_count */ 1,
-                       /* snooze_count */ 0));
-}
-
-IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest, AnchorHideSetsPrefs) {
-  RunTestSequence(
-      ShowPromoRecordingTime(kFeaturePromoLifecycleTestPromo),
-      WithView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
-               base::BindOnce([](user_education::HelpBubbleView* bubble) {
-                 // This should yank the bubble out from under us.
-                 bubble->GetAnchorView()->SetVisible(false);
-               })),
-      WaitForHide(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-      CheckSnoozePrefs(/* is_dismiss */ false,
-                       /* show_count */ 1,
-                       /* snooze_count */ 0));
+                       /* snooze_count */ 0,
+                       &kFeaturePromoLifecycleAlternateTestPromo));
 }
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest, WorkWithoutNonClickerData) {
@@ -505,7 +517,8 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
                        AnchorHideRecordsHistogram) {
   RunTestSequence(
-      ShowPromoRecordingTime(kFeaturePromoLifecycleTestPromo),
+      AddAlternateAnchor(),
+      ShowPromoRecordingTime(kFeaturePromoLifecycleAlternateTestPromo),
       WithView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
                [](user_education::HelpBubbleView* bubble) {
                  // This should yank the bubble out from under us.
@@ -514,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
       WaitForHide(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
       CheckMessageActionHistogram(
-          kFeaturePromoLifecycleTestPromo,
+          kFeaturePromoLifecycleAlternateTestPromo,
           FeaturePromoClosedReason::kAbortedByAnchorHidden));
 }
 

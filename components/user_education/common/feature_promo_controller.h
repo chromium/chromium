@@ -33,6 +33,7 @@
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/common/product_messaging_controller.h"
 #include "components/user_education/common/tutorial_identifier.h"
+#include "ui/base/interaction/element_identifier.h"
 
 namespace ui {
 class AcceleratorProvider;
@@ -363,6 +364,11 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
       FeaturePromoSpecification::PromoType promo_type,
       ui::TrackedElement* anchor_element,
       bool is_critical_promo) const = 0;
+
+  // The assumption is that all anchor elements could become hidden causing a
+  // bubble to close. However, it is important to check assumptions. Default is
+  // true.
+  virtual bool CanAnchorBeHidden(ui::ElementIdentifier id) const;
 
   const FeaturePromoRegistry* registry() const { return registry_; }
   FeaturePromoRegistry* registry() { return registry_; }
