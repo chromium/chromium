@@ -74,6 +74,12 @@ void RecordTasksCompletedHistogram(const int tasks_completed_count) {
       tasks_completed_count);
 }
 
+void RecordPlaylistsPlayedHistogram(const int playlists_played_count) {
+  base::UmaHistogramCounts100(
+      focus_mode_histogram_names::kCountPlaylistsPlayedDuringSession,
+      playlists_played_count);
+}
+
 void RecordDNDStateOnFocusEndHistogram(
     bool has_user_interactions_on_dnd_in_focus_session) {
   auto* message_center = message_center::MessageCenter::Get();
@@ -253,6 +259,8 @@ void FocusModeMetricsRecorder::SetHasSelectedSoundType(
     case focus_mode_util::SoundType::kNone:
       NOTREACHED_IN_MIGRATION();
   }
+
+  playlists_played_count_++;
 }
 
 void FocusModeMetricsRecorder::RecordHistogramsOnStart(
@@ -268,6 +276,7 @@ void FocusModeMetricsRecorder::RecordHistogramsOnStart(
 void FocusModeMetricsRecorder::RecordHistogramsOnEnd() {
   RecordTasksSelectedHistogram(tasks_selected_count_);
   RecordTasksCompletedHistogram(tasks_completed_count_);
+  RecordPlaylistsPlayedHistogram(playlists_played_count_);
   RecordDNDStateOnFocusEndHistogram(
       has_user_interactions_on_dnd_in_focus_session_);
 

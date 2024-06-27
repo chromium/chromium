@@ -188,4 +188,46 @@ IN_PROC_BROWSER_TEST_F(FocusModeBrowserTest,
       /*expected_count=*/1);
 }
 
+IN_PROC_BROWSER_TEST_F(FocusModeBrowserTest,
+                       CheckPlaylistsPlayedDuringSessionHistogram) {
+  base::HistogramTester histogram_tester;
+
+  auto* controller = FocusModeController::Get();
+  auto* sounds_controller = controller->focus_mode_sounds_controller();
+
+  // 1. No playlist played during the session.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_TRUE(sounds_controller->selected_playlist().empty());
+
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::kCountPlaylistsPlayedDuringSession,
+      /*sample=*/0, /*expected_count=*/1);
+
+  // 2. Two playlists played during the session.
+  FocusModeSoundsController::SelectedPlaylist selected_playlist;
+  selected_playlist.id = "id0";
+  selected_playlist.type = focus_mode_util::SoundType::kYouTubeMusic;
+  sounds_controller->TogglePlaylist(selected_playlist);
+  EXPECT_FALSE(sounds_controller->selected_playlist().empty());
+
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+
+  selected_playlist.id = "id1";
+  selected_playlist.type = focus_mode_util::SoundType::kSoundscape;
+  sounds_controller->TogglePlaylist(selected_playlist);
+
+  // De-select the playlist and the histogram will not record it.
+  sounds_controller->TogglePlaylist(sounds_controller->selected_playlist());
+
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::kCountPlaylistsPlayedDuringSession,
+      /*sample=*/2, /*expected_count=*/1);
+}
+
 }  // namespace ash

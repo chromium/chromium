@@ -39,6 +39,8 @@ constexpr char kEndingMomentBubbleActionHistogram[] =
     "Ash.FocusMode.EndingMomentBubbleAction";
 constexpr char kPlaylistTypesSelectedDuringSession[] =
     "Ash.FocusMode.PlaylistTypesSelectedDuringSession";
+constexpr char kCountPlaylistsPlayedDuringSession[] =
+    "Ash.FocusMode.PlaylistsDuringSession";
 
 // This enum is used for metrics, so enum values should not be changed. New enum
 // values can be added, but existing enums must never be renumbered or deleted

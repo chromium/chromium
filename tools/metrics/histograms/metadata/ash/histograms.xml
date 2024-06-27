@@ -3804,6 +3804,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.FocusMode.PlaylistsDuringSession" units="count"
+    expires_after="2025-07-01">
+  <owner>nupurjain@google.com</owner>
+  <owner>richui@chromium.org</owner>
+  <owner>skau@chromium.org</owner>
+  <owner>hongyulong@chromium.org</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>
+    When a session ends, record how many playlists were played during the
+    session.
+  </summary>
+</histogram>
+
 <histogram name="Ash.FocusMode.PlaylistTypesSelectedDuringSession"
     enum="PlaylistTypesSelectedDuringSessionType" expires_after="2025-07-01">
   <owner>hongyulong@chromium.org</owner>

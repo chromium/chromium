@@ -57,6 +57,9 @@ class ASH_EXPORT FocusModeMetricsRecorder
   bool has_selected_soundscapes_ = false;
   // True if a youtube music playlist was played during this session.
   bool has_selected_youtube_music_ = false;
+
+  // Counts the number of playlists played during a session.
+  int playlists_played_count_ = 0;
 };
 
 }  // namespace ash
