@@ -92,10 +92,6 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
     return OnDeviceModelEligibilityReason::kFeatureExecutionNotEnabled;
   }
 
-  if (on_device_component_state_manager_) {
-    on_device_component_state_manager_->OnDeviceEligibleFeatureUsed(feature);
-  }
-
   if (!model_metadata_) {
     if (!on_device_component_state_manager_) {
       return OnDeviceModelEligibilityReason::kModelNotAvailable;
@@ -165,6 +161,12 @@ OnDeviceModelServiceController::CreateSession(
           {"OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.",
            GetStringNameForModelExecutionFeature(feature)}),
       reason);
+
+  if (on_device_component_state_manager_) {
+    on_device_component_state_manager_->OnDeviceEligibleFeatureUsed(feature);
+  }
+
+  // Return if we cannot do anything more for right now.
   if (reason != OnDeviceModelEligibilityReason::kSuccess) {
     return nullptr;
   }
