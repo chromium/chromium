@@ -37,7 +37,6 @@ namespace ash {
 class ProjectorClient;
 class ProjectorUiController;
 class ProjectorMetadataController;
-struct AnnotatorTool;
 
 // A controller to handle projector functionalities.
 class ASH_EXPORT ProjectorControllerImpl
@@ -92,15 +91,6 @@ class ASH_EXPORT ProjectorControllerImpl
   // then be synced to Drive by DriveFS. DriveFS only supports primary account.
   void CreateScreencastContainerFolder(
       CreateScreencastContainerFolderCallback callback);
-
-  // Enables the annotator tool.
-  void EnableAnnotatorTool();
-  // Sets the annotator tool.
-  void SetAnnotatorTool(const AnnotatorTool& tool);
-  // Reset and disable the the annotator tools.
-  void ResetTools();
-  // Returns true if annotator is active.
-  bool IsAnnotatorEnabled();
 
   // Notifies the ProjectorClient if the Projector SWA can trigger a
   // new Projector session. The preconditions are calculated in

@@ -9,6 +9,7 @@
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/magnifier_glass.h"
+#include "ash/annotator/annotator_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
@@ -5858,12 +5859,12 @@ TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidget) {
   auto* overlay_window = overlay_controller->GetOverlayNativeWindow();
   VerifyOverlayEnabledState(overlay_window, /*overlay_enabled_state=*/false);
 
-  auto* projector_controller = ProjectorControllerImpl::Get();
-  projector_controller->EnableAnnotatorTool();
+  auto* annotator_controller = Shell::Get()->annotator_controller();
+  annotator_controller->EnableAnnotatorTool();
   EXPECT_TRUE(overlay_controller->is_enabled());
   VerifyOverlayEnabledState(overlay_window, /*overlay_enabled_state=*/true);
 
-  projector_controller->ResetTools();
+  annotator_controller->ResetTools();
   EXPECT_FALSE(overlay_controller->is_enabled());
   VerifyOverlayEnabledState(overlay_window, /*overlay_enabled_state=*/false);
 }
@@ -5880,8 +5881,8 @@ TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayDockedMagnifier) {
   RecordingOverlayController* overlay_controller =
       test_api.GetRecordingOverlayController();
 
-  auto* projector_controller = ProjectorControllerImpl::Get();
-  projector_controller->EnableAnnotatorTool();
+  auto* annotator_controller = Shell::Get()->annotator_controller();
+  annotator_controller->EnableAnnotatorTool();
   EXPECT_TRUE(overlay_controller->is_enabled());
   auto* overlay_window = overlay_controller->GetOverlayNativeWindow();
 
@@ -5998,9 +5999,8 @@ TEST_P(ProjectorCaptureModeIntegrationTests, ProjectorBehavior) {
   EXPECT_TRUE(GetSettingsButton());
   EXPECT_TRUE(GetCloseButton());
 
-  ProjectorControllerImpl* projector_controller =
-      ProjectorControllerImpl::Get();
-  projector_controller->EnableAnnotatorTool();
+  auto* annotator_controller = Shell::Get()->annotator_controller();
+  annotator_controller->EnableAnnotatorTool();
   PressAndReleaseKey(ui::VKEY_RETURN);
   WaitForRecordingToStart();
   expected_behavior();
@@ -6048,8 +6048,8 @@ TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidgetTargeting) {
   RecordingOverlayController* overlay_controller =
       test_api.GetRecordingOverlayController();
 
-  auto* projector_controller = ProjectorControllerImpl::Get();
-  projector_controller->EnableAnnotatorTool();
+  auto* annotator_controller = Shell::Get()->annotator_controller();
+  annotator_controller->EnableAnnotatorTool();
   EXPECT_TRUE(overlay_controller->is_enabled());
   auto* overlay_window = overlay_controller->GetOverlayNativeWindow();
   VerifyOverlayEnabledState(overlay_window, /*overlay_enabled_state=*/true);
@@ -6112,7 +6112,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
   WaitForRecordingToStart();
 
   auto* event_generator = GetEventGenerator();
-  auto* projector_controller = ProjectorControllerImpl::Get();
+  auto* annotator_controller = Shell::Get()->annotator_controller();
 
   const gfx::Rect root_window_bounds_in_screen =
       root_window->GetBoundsInScreen();
@@ -6132,7 +6132,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
   for (const auto& test_case : kAlignmentTestCases) {
     SCOPED_TRACE(test_case.scope_trace);
     // Enable annotation.
-    projector_controller->EnableAnnotatorTool();
+    annotator_controller->EnableAnnotatorTool();
 
     // Verify shelf is invisible right now.
     EXPECT_FALSE(shelf->IsVisible());
@@ -6156,7 +6156,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
     EXPECT_TRUE(shelf->IsVisible());
 
     // Disable annotation.
-    projector_controller->ResetTools();
+    annotator_controller->ResetTools();
     // Move mouse to the outside of the shelf activation area, and wait for the
     // animation to hide shelf to finish.
     event_generator->MoveMouseTo(display_center);

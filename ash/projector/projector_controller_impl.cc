@@ -13,7 +13,6 @@
 #include "ash/projector/projector_metadata_controller.h"
 #include "ash/projector/projector_metrics.h"
 #include "ash/projector/projector_ui_controller.h"
-#include "ash/public/cpp/annotator/annotator_tool.h"
 #include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/public/cpp/projector/speech_recognition_availability.h"
@@ -339,17 +338,17 @@ void ProjectorControllerImpl::OnUndoRedoAvailabilityChanged(
 }
 
 void ProjectorControllerImpl::OnCanvasInitialized(bool success) {
-  ui_controller_->OnCanvasInitialized(success);
+  Shell::Get()->annotator_controller()->OnCanvasInitialized(success);
   if (on_canvas_initialized_callback_for_test_)
     std::move(on_canvas_initialized_callback_for_test_).Run();
 }
 
 bool ProjectorControllerImpl::GetAnnotatorAvailability() {
-  return ui_controller_->GetAnnotatorAvailability();
+  return Shell::Get()->annotator_controller()->GetAnnotatorAvailability();
 }
 
 void ProjectorControllerImpl::ToggleAnnotationTray() {
-  return ui_controller_->ToggleAnnotationTray();
+  return Shell::Get()->annotator_controller()->ToggleAnnotationTray();
 }
 
 void ProjectorControllerImpl::CreateScreencastContainerFolder(
@@ -369,26 +368,6 @@ void ProjectorControllerImpl::CreateScreencastContainerFolder(
       FROM_HERE, {base::MayBlock()}, base::BindOnce(&CreateDirectory, path),
       base::BindOnce(&ProjectorControllerImpl::OnContainerFolderCreated,
                      weak_factory_.GetWeakPtr(), path, std::move(callback)));
-}
-
-void ProjectorControllerImpl::EnableAnnotatorTool() {
-  DCHECK(ui_controller_);
-  ui_controller_->EnableAnnotatorTool();
-}
-
-void ProjectorControllerImpl::SetAnnotatorTool(const AnnotatorTool& tool) {
-  DCHECK(Shell::Get()->annotator_controller());
-  Shell::Get()->annotator_controller()->SetAnnotatorTool(tool);
-}
-
-void ProjectorControllerImpl::ResetTools() {
-  if (ui_controller_) {
-    ui_controller_->ResetCanvas();
-  }
-}
-
-bool ProjectorControllerImpl::IsAnnotatorEnabled() {
-  return ui_controller_ && ui_controller_->is_annotator_enabled();
 }
 
 void ProjectorControllerImpl::OnNewScreencastPreconditionChanged() {

@@ -7,6 +7,7 @@
 
 #include "ash/accelerators/keyboard_code_util.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
+#include "ash/annotator/annotator_controller.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -27,7 +28,6 @@
 #include "ash/capture_mode/video_recording_watcher.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/window_tree_host_manager.h"
-#include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -1406,13 +1406,13 @@ TEST_F(ProjectorCaptureModeDemoToolsTest,
   RecordingOverlayController* recording_overlay_controller =
       test_api.GetRecordingOverlayController();
 
-  auto* projector_controller = ProjectorControllerImpl::Get();
-  projector_controller->EnableAnnotatorTool();
+  auto* annotator_controller = Shell::Get()->annotator_controller();
+  annotator_controller->EnableAnnotatorTool();
   EXPECT_TRUE(recording_overlay_controller->is_enabled());
   mouse_highlight_test(/*annotating=*/true);
   touch_highlight_test(/*annotating=*/true);
 
-  projector_controller->ResetTools();
+  annotator_controller->ResetTools();
   EXPECT_TRUE(capture_mode_controller->is_recording_in_progress());
   EXPECT_FALSE(recording_overlay_controller->is_enabled());
   mouse_highlight_test(/*annotating=*/false);

@@ -4,6 +4,7 @@
 
 #include "ash/projector/projector_annotation_tray.h"
 
+#include "ash/annotator/annotator_controller.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/projector/projector_controller_impl.h"
@@ -64,10 +65,10 @@ constexpr SkColor kPenColors[] = {
 enum ProjectorTool { kToolNone, kToolPen };
 
 bool IsAnnotatorEnabled() {
-  auto* controller = Shell::Get()->projector_controller();
+  auto* controller = Shell::Get()->annotator_controller();
   // `controller` may not be available yet as the `ProjectorAnnotationTray`
   // is created before it.
-  return controller ? controller->IsAnnotatorEnabled() : false;
+  return controller && controller->is_annotator_enabled();
 }
 
 ProjectorTool GetCurrentTool() {
@@ -292,7 +293,7 @@ void ProjectorAnnotationTray::ToggleAnnotator() {
 }
 
 void ProjectorAnnotationTray::EnableAnnotatorWithPenColor() {
-  auto* controller = Shell::Get()->projector_controller();
+  auto* controller = Shell::Get()->annotator_controller();
   DCHECK(controller);
   AnnotatorTool tool;
   tool.color = current_pen_color_;
@@ -301,7 +302,7 @@ void ProjectorAnnotationTray::EnableAnnotatorWithPenColor() {
 }
 
 void ProjectorAnnotationTray::DeactivateActiveTool() {
-  auto* controller = Shell::Get()->projector_controller();
+  auto* controller = Shell::Get()->annotator_controller();
   DCHECK(controller);
   controller->ResetTools();
 }

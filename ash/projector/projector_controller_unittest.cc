@@ -283,19 +283,6 @@ TEST_F(ProjectorControllerTest, OnSpeechRecognitionAvailabilityChanged) {
   controller_->OnSpeechRecognitionAvailabilityChanged();
 }
 
-TEST_F(ProjectorControllerTest, EnableAnnotatorTool) {
-  // Verify that |OnMarkerPressed| in |ProjectorUiController| is called.
-  EXPECT_CALL(*mock_ui_controller_, EnableAnnotatorTool());
-  controller_->EnableAnnotatorTool();
-}
-
-TEST_F(ProjectorControllerTest, SetAnnotatorTool) {
-  AnnotatorTool tool;
-  // Verify that |SetTool| in |AnnotatorClient| is called.
-  EXPECT_CALL(mock_annotator_client_, SetTool(tool));
-  controller_->SetAnnotatorTool(tool);
-}
-
 TEST_F(ProjectorControllerTest, RecordingStarted) {
   EXPECT_CALL(mock_client_, StartSpeechRecognition());
   EXPECT_CALL(*mock_metadata_controller_, OnRecordingStarted());
