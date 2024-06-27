@@ -9,6 +9,12 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './hover_button.css.js';
 import {getHtml} from './hover_button.html.js';
 
+export interface HoverButtonElement {
+  $: {
+    hoverButton: HTMLDivElement,
+  };
+}
+
 export class HoverButtonElement extends CrLitElement {
   static get is() {
     return 'customize-chrome-hover-button';
@@ -35,6 +41,10 @@ export class HoverButtonElement extends CrLitElement {
   constructor() {
     super();
     this.addEventListener('keydown', this.onKeyDown_.bind(this));
+  }
+
+  override focus() {
+    this.$.hoverButton.focus();
   }
 
   private onKeyDown_(e: KeyboardEvent) {

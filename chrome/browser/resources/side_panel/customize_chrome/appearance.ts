@@ -152,13 +152,6 @@ export class AppearanceElement extends AppearanceElementBase {
     }
 
     this.showBottomDivider_ = this.computeShowBottomDivider_();
-  }
-
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
 
     // Announce when theme is set to Classic Chrome.
     // This should only be triggered if the classic chrome's button is hidden
@@ -169,6 +162,11 @@ export class AppearanceElement extends AppearanceElementBase {
         !this.showClassicChromeButton_) {
       const announcer = getAnnouncerInstance() as CrA11yAnnouncerElement;
       announcer.announce(this.i18n('updatedToClassicChrome'));
+      // If the classicChrome button has focus, change focus to editTheme
+      // button, since the button is disappearing.
+      if (this.shadowRoot!.activeElement === this.$.setClassicChromeButton) {
+        this.focusOnThemeButton();
+      }
     }
   }
 

@@ -162,6 +162,56 @@ suite('AppearanceTest', () => {
         'cr-a11y-announcer-messages-sent', updateAnnouncementCount);
   });
 
+  test(
+      'move focus to edit theme when classic chrome button disappears',
+      async () => {
+        // Arrange.
+        let theme = createTheme();
+        theme.backgroundImage = createBackgroundImage('chrome://theme/foo');
+
+        callbackRouterRemote.setTheme(theme);
+        await callbackRouterRemote.$.flushForTesting();
+
+        // Act.
+        appearanceElement.$.setClassicChromeButton.focus();
+        assertEquals(
+            appearanceElement.shadowRoot!.activeElement,
+            appearanceElement.$.setClassicChromeButton);
+
+        theme = createTheme();
+        callbackRouterRemote.setTheme(theme);
+        await callbackRouterRemote.$.flushForTesting();
+
+        // Assert.
+        assertEquals(
+            appearanceElement.shadowRoot!.activeElement,
+            appearanceElement.$.editThemeButton);
+      });
+
+  test(
+      'do not move focus if not on classic chrome button when set',
+      async () => {
+        // Arrange.
+        let theme = createTheme();
+        theme.backgroundImage = createBackgroundImage('chrome://theme/foo');
+
+        callbackRouterRemote.setTheme(theme);
+        await callbackRouterRemote.$.flushForTesting();
+        const focusedElement = appearanceElement.shadowRoot!.activeElement;
+        assertNotEquals(
+            focusedElement, appearanceElement.$.setClassicChromeButton);
+
+        // Act.
+        theme = createTheme();
+
+        callbackRouterRemote.setTheme(theme);
+        await callbackRouterRemote.$.flushForTesting();
+
+        // Assert.
+        assertEquals(
+            appearanceElement.shadowRoot!.activeElement, focusedElement);
+      });
+
   test('1P view shows when 3P theme info not set', async () => {
     const theme = createTheme();
 
