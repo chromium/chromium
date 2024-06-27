@@ -6095,19 +6095,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.NonEmbeddedMetrics.RetrieveMetricsTaskStatus"
-    enum="AndroidWebViewNonEmbeddedMetricsRetrieveMetricsTaskStatus"
-    expires_after="2024-07-23">
-  <owner>avvall@chromium.org</owner>
-  <owner>ntfschr@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Recorded by the non-embedded histogram service if it's unable to return
-    histograms. This is always recorded when a client connects to retrieve
-    histograms.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.NonEmbeddedMetrics.TransmissionResult"
     enum="AndroidWebViewDevUiMetricsTransmission" expires_after="2024-11-24">
   <owner>ntfschr@chromium.org</owner>

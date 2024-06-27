@@ -54,18 +54,6 @@ public class MetricsBridgeServiceUnitTest {
                     .build()
                     .toByteArray();
 
-    public static final byte[] RETRIEVE_METRICS_TASK_STATUS_SUCCESS_RECORD =
-            HistogramRecord.newBuilder()
-                    .setRecordType(RecordType.HISTOGRAM_LINEAR)
-                    .setHistogramName(
-                            "Android.WebView.NonEmbeddedMetrics.RetrieveMetricsTaskStatus")
-                    .setSample(MetricsBridgeService.RetrieveMetricsTaskStatus.SUCCESS)
-                    .setMin(1)
-                    .setMax(MetricsBridgeService.RetrieveMetricsTaskStatus.COUNT)
-                    .setNumBuckets(MetricsBridgeService.RetrieveMetricsTaskStatus.COUNT + 1)
-                    .build()
-                    .toByteArray();
-
     private File mTempFile;
 
     @Before
@@ -168,8 +156,7 @@ public class MetricsBridgeServiceUnitTest {
                     recordLinearProto.toByteArray(),
                     recordBooleanProto.toByteArray(),
                     PARSING_LOG_RESULT_SUCCESS_RECORD,
-                    recordBooleanProto.toByteArray(),
-                    RETRIEVE_METRICS_TASK_STATUS_SUCCESS_RECORD
+                    recordBooleanProto.toByteArray()
                 };
 
         // Assert file is deleted after the retrieve call

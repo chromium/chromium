@@ -369,12 +369,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="IOException"/>
 </enum>
 
-<enum name="AndroidWebViewNonEmbeddedMetricsRetrieveMetricsTaskStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="ExecutionException"/>
-  <int value="2" label="InterruptionException"/>
-</enum>
-
 <enum name="AndroidWebViewRenderProcessGoneResult">
   <int value="0" label="Java Exception thrown inside onRenderProcessGone()"/>
   <int value="1" label="Renderer crash not handled"/>

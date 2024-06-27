@@ -555,11 +555,8 @@ public final class AwBrowserProcess {
             IMetricsBridgeService metricsService = IMetricsBridgeService.Stub.asInterface(service);
 
             List<byte[]> data = metricsService.retrieveNonembeddedMetrics();
-            // Subtract one to avoid skewing NumHistograms because of
-            // the meta RetrieveMetricsTaskStatus histogram which is
-            // always added to the list.
             RecordHistogram.recordCount1000Histogram(
-                    "Android.WebView.NonEmbeddedMetrics.NumHistograms", data.size() - 1);
+                    "Android.WebView.NonEmbeddedMetrics.NumHistograms", data.size());
             long systemTime = System.currentTimeMillis();
             for (byte[] recordData : data) {
                 HistogramRecord record = HistogramRecord.parseFrom(recordData);

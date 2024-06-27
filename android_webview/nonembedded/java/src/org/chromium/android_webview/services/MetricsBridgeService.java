@@ -28,7 +28,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -214,9 +213,6 @@ public final class MetricsBridgeService extends Service {
                                         List<byte[]> list = mRecordsList;
                                         mRecordsList = new ArrayList<>();
                                         deleteMetricsLogFile();
-                                        list.add(
-                                                logRetrieveMetricsTaskStatus(
-                                                        RetrieveMetricsTaskStatus.SUCCESS));
                                         return list;
                                     });
                     sSequencedTaskRunner.postTask(retrieveFutureTask);
@@ -224,15 +220,10 @@ public final class MetricsBridgeService extends Service {
                         return retrieveFutureTask.get();
                     } catch (ExecutionException e) {
                         Log.e(TAG, "error executing retrieveNonembeddedMetrics future task", e);
-                        return Collections.singletonList(
-                                logRetrieveMetricsTaskStatus(
-                                        RetrieveMetricsTaskStatus.EXECUTION_EXCEPTION));
                     } catch (InterruptedException e) {
                         Log.e(TAG, "retrieveNonembeddedMetrics future task interrupted", e);
-                        return Collections.singletonList(
-                                logRetrieveMetricsTaskStatus(
-                                        RetrieveMetricsTaskStatus.INTERRUPTED_EXCEPTION));
                     }
+                    return new ArrayList<>();
                 }
             };
 
