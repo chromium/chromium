@@ -43808,7 +43808,7 @@ should be able to be added at any place in this file.
   <suffix name="TabSearch" label="For the tab search feature."/>
   <suffix name="TabSwitcherButton" label="For tab switcher button."/>
   <suffix name="TrackingProtectionOffboarding"
-      label="for tracking protection offboarding notice"/>
+      label="for tracking protection offboarding notice (obsolete)"/>
   <suffix name="TrackingProtectionOnboarding"
       label="for tracking protection onboarding notice"/>
   <suffix name="TrackingProtectionReminder"

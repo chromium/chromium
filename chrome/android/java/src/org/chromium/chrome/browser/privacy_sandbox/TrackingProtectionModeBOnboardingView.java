@@ -87,27 +87,16 @@ class TrackingProtectionModeBOnboardingView {
                         .with(
                                 MessageBannerProperties.TITLE,
                                 resources.getString(
-                                        noticeType == NoticeType.ONBOARDING
-                                                ? R.string
-                                                        .tracking_protection_onboarding_notice_title
-                                                : R.string
-                                                        .tracking_protection_offboarding_notice_title))
+                                        R.string.tracking_protection_onboarding_notice_title))
                         .with(
                                 MessageBannerProperties.DESCRIPTION,
                                 resources.getString(
-                                        noticeType == NoticeType.ONBOARDING
-                                                ? R.string
-                                                        .tracking_protection_onboarding_notice_body
-                                                : R.string
-                                                        .tracking_protection_offboarding_notice_body))
+                                        R.string.tracking_protection_onboarding_notice_body))
                         .with(
                                 MessageBannerProperties.PRIMARY_BUTTON_TEXT,
                                 resources.getString(
-                                        noticeType == NoticeType.ONBOARDING
-                                                ? R.string
-                                                        .tracking_protection_onboarding_notice_ack_button_label
-                                                : R.string
-                                                        .tracking_protection_offboarding_notice_ack_button_label))
+                                        R.string
+                                                .tracking_protection_onboarding_notice_ack_button_label))
                         .with(
                                 MessageBannerProperties.SECONDARY_MENU_BUTTON_DELEGATE,
                                 new SecondaryMenuButtonDelegate())
@@ -150,31 +139,21 @@ class TrackingProtectionModeBOnboardingView {
         @Override
         public ListMenu getListMenu() {
             Resources res = mContext.getResources();
-            int noticeType = mTrackingProtectionBridge.getRequiredNotice();
             ListItem settingsItem =
                     getMenuItem(
                             SETTINGS_ITEM_ID,
                             res.getString(
-                                    noticeType == NoticeType.ONBOARDING
-                                            ? R.string
-                                                    .tracking_protection_onboarding_notice_settings_button_label
-                                            : R.string
-                                                    .tracking_protection_offboarding_notice_settings_button_label));
+                                    R.string
+                                            .tracking_protection_onboarding_notice_settings_button_label));
             ListItem learnMoreItem =
                     getMenuItem(
                             LEARN_MORE_ITEM_ID,
                             res.getString(
-                                    noticeType == NoticeType.ONBOARDING
-                                            ? R.string
-                                                    .tracking_protection_onboarding_notice_learn_more_button_label
-                                            : R.string
-                                                    .tracking_protection_offboarding_notice_learn_more_button_label),
+                                    R.string
+                                            .tracking_protection_onboarding_notice_learn_more_button_label),
                             res.getString(
-                                    noticeType == NoticeType.ONBOARDING
-                                            ? R.string
-                                                    .tracking_protection_onboarding_notice_learn_more_button_a11y_label
-                                            : R.string
-                                                    .tracking_protection_offboarding_notice_learn_more_button_a11y_label));
+                                    R.string
+                                            .tracking_protection_onboarding_notice_learn_more_button_a11y_label));
 
             MVCListAdapter.ModelList menuItems = new MVCListAdapter.ModelList();
             menuItems.add(settingsItem);

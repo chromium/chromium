@@ -76,7 +76,6 @@ BASE_DECLARE_FEATURE(kIPHTabGroupsSaveV2IntroFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupsSaveV2CloseGroupFeature);
 BASE_DECLARE_FEATURE(kIPHTabOrganizationSuccessFeature);
 BASE_DECLARE_FEATURE(kIPHTabSearchFeature);
-BASE_DECLARE_FEATURE(kIPHTrackingProtectionOffboardingFeature);
 BASE_DECLARE_FEATURE(kIPHTrackingProtectionOnboardingFeature);
 BASE_DECLARE_FEATURE(kIPHTrackingProtectionReminderFeature);
 BASE_DECLARE_FEATURE(kIPHWebUITabStripFeature);

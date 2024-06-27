@@ -207,7 +207,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHTabGroupsSaveV2CloseGroupFeature,
     &kIPHTabOrganizationSuccessFeature,
     &kIPHTabSearchFeature,
-    &kIPHTrackingProtectionOffboardingFeature,
     &kIPHTrackingProtectionOnboardingFeature,
     &kIPHTrackingProtectionReminderFeature,
     &kIPHWebUITabStripFeature,

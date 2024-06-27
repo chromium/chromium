@@ -536,7 +536,7 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_TabSearch" summary="tab search discovery"/>
   <variant name="IPH_TabSwitcherButton" summary="tab switcher button"/>
   <variant name="IPH_TrackingProtectionOffboarding"
-      summary="tracking protection offboarding notice"/>
+      summary="(obsolete) tracking protection offboarding notice"/>
   <variant name="IPH_TrackingProtectionOnboarding"
       summary="tracking protection onboarding notice"/>
   <variant name="IPH_TrackingProtectionReminder"

@@ -2292,26 +2292,6 @@
     Learn more about Tracking Protection
   </message>
 
-  <!-- Tracking Protection: Offboarding -->
-  <message name="IDS_TRACKING_PROTECTION_OFFBOARDING_NOTICE_TITLE" desc="Title of the tracking protection offboarding notice" formatter_data="android_java">
-    Tracking Protection is temporarily unavailable
-  </message>
-  <message name="IDS_TRACKING_PROTECTION_OFFBOARDING_NOTICE_BODY" desc="Content of the tracking protection offboarding notice, informing the user that sites can temporarily use third party cookies while traking prootection is temporarily unavailable." formatter_data="android_java">
-    While Chrome is updating this feature, sites can temporarily use third-party cookies unless you block them in settings.
-  </message>
-  <message name="IDS_TRACKING_PROTECTION_OFFBOARDING_NOTICE_SETTINGS_BUTTON_LABEL" desc="The user can choose to click “Settings“ to visit chrome://settings/cookies. If they do, they will find the cookie controls reflecting the new tracking protections." formatter_data="android_java">
-    Settings
-  </message>
-  <message name="IDS_TRACKING_PROTECTION_OFFBOARDING_NOTICE_ACK_BUTTON_LABEL" desc="Tracking protection offboarding notice primary button text.ollback notice primary button text." formatter_data="android_java">
-    Got it
-  </message>
-  <message name="IDS_TRACKING_PROTECTION_OFFBOARDING_NOTICE_LEARN_MORE_BUTTON_LABEL" desc="Tracking protection offboarding notice secondary menu button text." formatter_data="android_java">
-    Learn more
-  </message>
-  <message name="IDS_TRACKING_PROTECTION_OFFBOARDING_NOTICE_LEARN_MORE_BUTTON_A11Y_LABEL" desc="Tracking protection offboarding notice secondary menu button content accessibility text." formatter_data="android_java" is_accessibility_with_no_ui="true">
-    Learn more about Tracking Protection availability
-  </message>
-
   <!-- Tracking Protection: Reminder -->
   <message name="IDS_TRACKING_PROTECTION_REMINDER_LABEL" desc="Text on the tracking protection reminder in-product help mentioning that tracking protection is on." translateable="false" >
     Tracking Protection is on, which means Chrome is limiting what sites can learn about you as you browse.

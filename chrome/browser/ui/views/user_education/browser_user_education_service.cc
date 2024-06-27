@@ -793,32 +793,6 @@ void MaybeRegisterChromeFeaturePromos(
                                  "Triggered once when there are more than 8 "
                                  "tabs in the tab strip.")));
 
-  // kIPHTrackingProtectionOffboardingFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForCustomAction(
-          feature_engagement::kIPHTrackingProtectionOffboardingFeature,
-          kLocationIconElementId,
-          IDS_TRACKING_PROTECTION_OFFBOARDING_NOTICE_BODY,
-          IDS_TRACKING_PROTECTION_ONBOARDING_NOTICE_SETTINGS_BUTTON_LABEL,
-          base::BindRepeating(
-              [](ui::ElementContext ctx,
-                 user_education::FeaturePromoHandle promo_handle) {
-                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
-                if (!browser) {
-                  return;
-                }
-                chrome::ShowSettingsSubPage(browser,
-                                            chrome::kCookieSettingsSubPage);
-              }))
-          .SetBubbleTitleText(IDS_TRACKING_PROTECTION_OFFBOARDING_NOTICE_TITLE)
-          .SetPromoSubtype(
-              FeaturePromoSpecification::PromoSubtype::kLegalNotice)
-          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
-          .SetCustomActionIsDefault(false)
-          .SetMetadata(
-              120, "boujane@chromium.org",
-              "Privacy standbox tracking protection rollback notice.")));
-
   // kIPHTrackingProtectionOnboardingFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
