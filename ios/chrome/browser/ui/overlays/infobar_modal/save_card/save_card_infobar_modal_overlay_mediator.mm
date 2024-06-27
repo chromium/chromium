@@ -98,7 +98,16 @@
 #pragma mark - Public
 
 - (void)creditCardUploadCompleted:(BOOL)card_saved {
-  // TODO(crbug.com/339887700): Implement showing confirmation result.
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
+    if (card_saved) {
+      [self.consumer showSuccess];
+    } else {
+      // On card save failure, this modal is dimissed and user is shown an error
+      // dialog triggered from IOSChromePaymentsAutofillClient.
+      [self dismissOverlay];
+    }
+  }
 }
 
 #pragma mark - OverlayRequestMediator

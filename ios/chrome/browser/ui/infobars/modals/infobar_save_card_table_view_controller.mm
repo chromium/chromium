@@ -350,6 +350,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self reconfigureCellsForItems:@[ self.saveCardButtonItem ]];
 }
 
+- (void)showSuccess {
+  // TODO(crbug.com/339887700): Implement showing card upload success.
+}
+
 #pragma mark - UITableViewDelegate
 
 - (CGFloat)tableView:(UITableView*)tableView

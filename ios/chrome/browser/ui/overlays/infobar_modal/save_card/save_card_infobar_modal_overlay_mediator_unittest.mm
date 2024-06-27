@@ -52,7 +52,10 @@ using ::testing::A;
     NSMutableArray<SaveCardMessageWithLinks*>* legalMessages;
 @property(nonatomic, assign) BOOL currentCardSaveAccepted;
 @property(nonatomic, assign) BOOL supportsEditing;
+
+// Fake consumer specific properties.
 @property(nonatomic, assign) BOOL inLoadingState;
+@property(nonatomic, assign) BOOL showingSuccess;
 @end
 
 @implementation FakeSaveCardModalConsumer
@@ -70,6 +73,10 @@ using ::testing::A;
 
 - (void)showLoadingState {
   self.inLoadingState = YES;
+}
+
+- (void)showSuccess {
+  self.showingSuccess = YES;
 }
 @end
 
@@ -235,4 +242,31 @@ TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
                          expirationYear:year];
 
   EXPECT_TRUE(consumer.inLoadingState);
+}
+
+// Tests that calling creditCardUploadCompleted with `card_saved` as true shows
+// success when loading and confirmation flag is enabled.
+TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
+       OnCreditCardUploadCompletedSuccess) {
+  FakeSaveCardModalConsumer* consumer =
+      [[FakeSaveCardModalConsumer alloc] init];
+  mediator_.consumer = consumer;
+
+  [mediator_ creditCardUploadCompleted:/*card_saved=*/true];
+
+  EXPECT_TRUE(consumer.showingSuccess);
+}
+
+// Tests that calling creditCardUploadCompleted with `card_saved` as false
+// dismisses the modal when loading and confirmation flag is enabled.
+TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
+       OnCreditCardUploadCompletedNonSuccess) {
+  FakeSaveCardModalConsumer* consumer =
+      [[FakeSaveCardModalConsumer alloc] init];
+  mediator_.consumer = consumer;
+
+  OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
+  [mediator_ creditCardUploadCompleted:/*card_saved=*/false];
+
+  EXPECT_FALSE(consumer.showingSuccess);
 }

@@ -27,6 +27,9 @@ extern NSString* const kDisplayedTargetAccountAvatarPrefKey;
 
 // Informs the consumer to show loading state after save card button is pressed.
 - (void)showLoadingState;
+
+// Informs the consumer to show card upload success.
+- (void)showSuccess;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_INFOBAR_SAVE_CARD_MODAL_CONSUMER_H_
