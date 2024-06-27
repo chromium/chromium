@@ -1592,7 +1592,7 @@ TEST_P(ScrollingTest, WheelEventHandlerChangeWithoutContent) {
   )HTML");
   ForceFullCompositingUpdate();
 
-  // Adding a blocking window event handler should create a touch action region.
+  // Adding a blocking window event handler should create a wheel event region.
   auto* listener = MakeGarbageCollected<ScrollingTestMockEventListener>();
   auto* resolved_options =
       MakeGarbageCollected<AddEventListenerOptionsResolved>();

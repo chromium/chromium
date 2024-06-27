@@ -896,10 +896,16 @@ void ConversionContext<cc::DisplayItemList>::EmitDrawScrollingContentsOp(
 
   EndTransform();
   scrolling_contents_list->Finalize();
+
+  gfx::Rect visual_rect = chunk_to_layer_mapper_.MapVisualRectFromState(
+      InfiniteIntRect(),
+      PropertyTreeState(scroll_translation,
+                        *scroll_translation.ScrollNode()->OverflowClipNode(),
+                        // The effect state doesn't matter.
+                        chunk_to_layer_mapper_.LayerState().Effect()));
   result_.PushDrawScrollingContentsOp(
       scroll_translation.ScrollNode()->GetCompositorElementId(),
-      std::move(scrolling_contents_list),
-      chunk_to_layer_mapper_.MapVisualRect(InfiniteIntRect()));
+      std::move(scrolling_contents_list), visual_rect);
 }
 
 template <>

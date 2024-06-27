@@ -37,6 +37,10 @@ class PLATFORM_EXPORT ChunkToLayerMapper {
   // Maps a visual rectangle in the current chunk space into the layer space.
   gfx::Rect MapVisualRect(const gfx::Rect&) const;
 
+  // Maps a visual rectangle from the give state into the layer space.
+  gfx::Rect MapVisualRectFromState(const gfx::Rect&,
+                                   const PropertyTreeState&) const;
+
   // Returns the combined transform from the current chunk to the layer.
   const gfx::Transform& Transform() const { return transform_; }
 

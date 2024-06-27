@@ -96,11 +96,17 @@ gfx::Rect ChunkToLayerMapper::MapVisualRect(const gfx::Rect& rect) const {
 // visual effects of the filters, though slowly.
 gfx::Rect ChunkToLayerMapper::MapUsingGeometryMapper(
     const gfx::Rect& rect) const {
+  return MapVisualRectFromState(rect, chunk_state_);
+}
+
+gfx::Rect ChunkToLayerMapper::MapVisualRectFromState(
+    const gfx::Rect& rect,
+    const PropertyTreeState& state) const {
   FloatClipRect visual_rect((gfx::RectF(rect)));
-  GeometryMapper::LocalToAncestorVisualRect(chunk_state_, layer_state_,
-                                            visual_rect);
-  if (visual_rect.Rect().IsEmpty())
+  GeometryMapper::LocalToAncestorVisualRect(state, layer_state_, visual_rect);
+  if (visual_rect.Rect().IsEmpty()) {
     return gfx::Rect();
+  }
 
   gfx::RectF result = visual_rect.Rect();
   result.Offset(-layer_offset_);
