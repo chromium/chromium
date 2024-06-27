@@ -74,6 +74,8 @@ void SetupCmdExe(UpdaterScope scope,
 // Creates an event accessible to all authenticated users on the machine.
 test::EventHolder CreateEveryoneWaitableEventForTest();
 
+int RunVPythonCommand(const base::CommandLine& command_line);
+
 }  // namespace updater::test
 
 #endif  // CHROME_UPDATER_TEST_UNIT_TEST_UTIL_WIN_H_

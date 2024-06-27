@@ -26,7 +26,6 @@ import argparse
 import filecmp
 import generate_group_policy_template_admx
 import os
-import os.path
 import sys
 
 

@@ -13,13 +13,15 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/process/launch.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_timeouts.h"
 #include "base/win/atl.h"
 #include "base/win/registry.h"
-#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/test/unit_test_util.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -169,6 +171,18 @@ test::EventHolder CreateEveryoneWaitableEventForTest() {
   return {base::WaitableEvent(base::win::ScopedHandle(
               ::CreateEvent(&sa, FALSE, FALSE, event_name.c_str()))),
           event_name};
+}
+
+int RunVPythonCommand(const base::CommandLine& command_line) {
+  base::CommandLine python_command = command_line;
+  python_command.PrependWrapper(FILE_PATH_LITERAL("vpython3.bat"));
+
+  int exit_code = -1;
+  base::Process process = base::LaunchProcess(python_command, {});
+  EXPECT_TRUE(process.IsValid());
+  EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
+                                             &exit_code));
+  return exit_code;
 }
 
 }  // namespace updater::test

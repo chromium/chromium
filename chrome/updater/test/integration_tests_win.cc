@@ -505,18 +505,6 @@ std::wstring GetAppVersionWebString(
   return version.Get();
 }
 
-int RunVPythonCommand(const base::CommandLine& command_line) {
-  base::CommandLine python_command = command_line;
-  python_command.PrependWrapper(FILE_PATH_LITERAL("vpython3.bat"));
-
-  int exit_code = -1;
-  base::Process process = base::LaunchProcess(python_command, {});
-  EXPECT_TRUE(process.IsValid());
-  EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
-                                             &exit_code));
-  return exit_code;
-}
-
 bool BuildTestAppInstaller(const base::FilePath& installer_script,
                            const base::FilePath& output_installer) {
   base::FilePath exe_path;
