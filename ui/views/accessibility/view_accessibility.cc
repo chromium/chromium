@@ -649,6 +649,11 @@ std::u16string ViewAccessibility::GetCachedDescription() const {
   return std::u16string();
 }
 
+void ViewAccessibility::SetPlaceholder(const std::string& placeholder) {
+  data_.AddStringAttribute(ax::mojom::StringAttribute::kPlaceholder,
+                           placeholder);
+}
+
 void ViewAccessibility::SetCheckedState(ax::mojom::CheckedState checked_state) {
   data_.SetCheckedState(checked_state);
 }

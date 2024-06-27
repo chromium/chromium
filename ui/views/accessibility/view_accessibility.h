@@ -286,6 +286,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // project is completed and we don't have ViewAXPlatformNodeDelegate anymore.
   std::u16string GetCachedDescription() const;
 
+  void SetPlaceholder(const std::string& placeholder);
+
   void SetCheckedState(ax::mojom::CheckedState checked_state);
   void RemoveCheckedState();
 
