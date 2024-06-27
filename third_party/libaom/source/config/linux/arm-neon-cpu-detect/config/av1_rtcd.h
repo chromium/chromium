@@ -253,8 +253,7 @@ void av1_dr_prediction_z1_neon(uint8_t *dst, ptrdiff_t stride, int bw, int bh, c
 RTCD_EXTERN void (*av1_dr_prediction_z1)(uint8_t *dst, ptrdiff_t stride, int bw, int bh, const uint8_t *above, const uint8_t *left, int upsample_above, int dx, int dy);
 
 void av1_dr_prediction_z2_c(uint8_t *dst, ptrdiff_t stride, int bw, int bh, const uint8_t *above, const uint8_t *left, int upsample_above, int upsample_left, int dx, int dy);
-void av1_dr_prediction_z2_neon(uint8_t *dst, ptrdiff_t stride, int bw, int bh, const uint8_t *above, const uint8_t *left, int upsample_above, int upsample_left, int dx, int dy);
-RTCD_EXTERN void (*av1_dr_prediction_z2)(uint8_t *dst, ptrdiff_t stride, int bw, int bh, const uint8_t *above, const uint8_t *left, int upsample_above, int upsample_left, int dx, int dy);
+#define av1_dr_prediction_z2 av1_dr_prediction_z2_c
 
 void av1_dr_prediction_z3_c(uint8_t *dst, ptrdiff_t stride, int bw, int bh, const uint8_t *above, const uint8_t *left, int upsample_left, int dx, int dy);
 void av1_dr_prediction_z3_neon(uint8_t *dst, ptrdiff_t stride, int bw, int bh, const uint8_t *above, const uint8_t *left, int upsample_left, int dx, int dy);
@@ -265,8 +264,7 @@ void av1_filter_intra_edge_neon(uint8_t *p, int sz, int strength);
 RTCD_EXTERN void (*av1_filter_intra_edge)(uint8_t *p, int sz, int strength);
 
 void av1_filter_intra_predictor_c(uint8_t *dst, ptrdiff_t stride, TX_SIZE tx_size, const uint8_t *above, const uint8_t *left, int mode);
-void av1_filter_intra_predictor_neon(uint8_t *dst, ptrdiff_t stride, TX_SIZE tx_size, const uint8_t *above, const uint8_t *left, int mode);
-RTCD_EXTERN void (*av1_filter_intra_predictor)(uint8_t *dst, ptrdiff_t stride, TX_SIZE tx_size, const uint8_t *above, const uint8_t *left, int mode);
+#define av1_filter_intra_predictor av1_filter_intra_predictor_c
 
 void av1_fwd_txfm2d_16x16_c(const int16_t *input, int32_t *output, int stride, TX_TYPE tx_type, int bd);
 void av1_fwd_txfm2d_16x16_neon(const int16_t *input, int32_t *output, int stride, TX_TYPE tx_type, int bd);
@@ -655,14 +653,10 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_NEON) av1_dist_wtd_convolve_y = av1_dist_wtd_convolve_y_neon;
     av1_dr_prediction_z1 = av1_dr_prediction_z1_c;
     if (flags & HAS_NEON) av1_dr_prediction_z1 = av1_dr_prediction_z1_neon;
-    av1_dr_prediction_z2 = av1_dr_prediction_z2_c;
-    if (flags & HAS_NEON) av1_dr_prediction_z2 = av1_dr_prediction_z2_neon;
     av1_dr_prediction_z3 = av1_dr_prediction_z3_c;
     if (flags & HAS_NEON) av1_dr_prediction_z3 = av1_dr_prediction_z3_neon;
     av1_filter_intra_edge = av1_filter_intra_edge_c;
     if (flags & HAS_NEON) av1_filter_intra_edge = av1_filter_intra_edge_neon;
-    av1_filter_intra_predictor = av1_filter_intra_predictor_c;
-    if (flags & HAS_NEON) av1_filter_intra_predictor = av1_filter_intra_predictor_neon;
     av1_fwd_txfm2d_16x16 = av1_fwd_txfm2d_16x16_c;
     if (flags & HAS_NEON) av1_fwd_txfm2d_16x16 = av1_fwd_txfm2d_16x16_neon;
     av1_fwd_txfm2d_16x32 = av1_fwd_txfm2d_16x32_c;
