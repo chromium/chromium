@@ -339,9 +339,6 @@ extern const char kAutofillEnableSaveCardLocalSaveFallbackDescription[];
 extern const char kAutofillEnableServerIbanName[];
 extern const char kAutofillEnableServerIbanDescription[];
 
-extern const char kAutofillEnableStickyManualFallbackForCardsName[];
-extern const char kAutofillEnableStickyManualFallbackForCardsDescription[];
-
 #if BUILDFLAG(IS_ANDROID)
 extern const char kAutofillEnableSyncingOfPixBankAccountsName[];
 extern const char kAutofillEnableSyncingOfPixBankAccountsDescription[];

@@ -562,12 +562,6 @@ const char kAutofillEnableServerIbanDescription[] =
     "When enabled, Autofill will attempt to offer upload save for IBANs "
     "(International Bank Account Numbers) and autofill server-based IBANs.";
 
-const char kAutofillEnableStickyManualFallbackForCardsName[] =
-    "Make manual fallback sticky for credit cards";
-const char kAutofillEnableStickyManualFallbackForCardsDescription[] =
-    "When enabled, if the user interacts with the manual fallback bottom "
-    "sheet, it'll remain sticky until the user dismisses it.";
-
 #if BUILDFLAG(IS_ANDROID)
 const char kAutofillEnableSyncingOfPixBankAccountsName[] =
     "Sync Pix bank accounts from Google Payments";
