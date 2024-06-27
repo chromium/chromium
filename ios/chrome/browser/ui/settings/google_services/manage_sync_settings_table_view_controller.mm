@@ -25,7 +25,6 @@
 namespace {
 
 // Table view customized header heights.
-CGFloat kSyncDataTypeSectionHeaderHeightPointSize = 48.;
 CGFloat kAdvancedSettingsSectionHeaderHeightPointSize = 26.;
 CGFloat kSignOutSectionHeaderHeightPointSize = 26.;
 CGFloat kDefaultSectionHeaderHeightPointSize = 10.;
@@ -234,7 +233,7 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
         [self.tableViewModel sectionIdentifierForSectionIndex:section];
     switch (sectionIdentifier) {
       case SyncDataTypeSectionIdentifier:
-        return kSyncDataTypeSectionHeaderHeightPointSize;
+        return UITableViewAutomaticDimension;
       case AdvancedSettingsSectionIdentifier:
         return kAdvancedSettingsSectionHeaderHeightPointSize;
       case ManageAndSignOutSectionIdentifier:
