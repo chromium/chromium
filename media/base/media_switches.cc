@@ -1784,7 +1784,7 @@ BASE_FEATURE(kD3D12VideoDecoder,
 // Allow MF-accelerated video encoding.
 BASE_FEATURE(kMediaFoundationAcceleratedEncodeOnArm64,
              "MediaFoundationAcceleratedEncodeOnArm64",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Convert SharedBitmap to SharedImage for media resources.

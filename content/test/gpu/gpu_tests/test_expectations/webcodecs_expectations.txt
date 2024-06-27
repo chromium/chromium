@@ -136,6 +136,12 @@ crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_Encode_camera_* [
 crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_TexImage2d_camera [ Failure ]
 crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_copyTo_camera [ Failure ]
 
+# Encoding rate control bitrate is too far off on older Windows Qualcomm GPUs.
+crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_constant_3000000 [ Failure ]
+crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_3000000 [ Failure ]
+crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_constant_2000000 [ Failure ]
+crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_constant_3000000 [ Failure ]
+crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_variable_3000000 [ Failure ]
 
 # finder:enable-unused
 
