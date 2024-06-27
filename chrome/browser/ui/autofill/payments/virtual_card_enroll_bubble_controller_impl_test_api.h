@@ -26,8 +26,8 @@ class VirtualCardEnrollBubbleControllerImplTestApi {
         bubble_shown_closure_for_testing;
   }
 
-  void SetFields(const VirtualCardEnrollmentFields& fields) {
-    controller_->ui_model_.enrollment_fields = fields;
+  void SetUiModel(std::unique_ptr<VirtualCardEnrollUiModel> ui_model) {
+    controller_->ui_model_ = std::move(ui_model);
   }
 
 #if BUILDFLAG(IS_ANDROID)

@@ -21,7 +21,7 @@ namespace autofill {
 class AutofillBottomSheetObserver;
 class CardUnmaskAuthenticationSelectionDialogControllerImpl;
 struct FormActivityParams;
-struct VirtualCardEnrollUiModel;
+class VirtualCardEnrollUiModel;
 }  // namespace autofill
 
 namespace web {
@@ -76,7 +76,7 @@ class AutofillBottomSheetTabHelper
 
   // Send a command to show the VCN enrollment Bottom Sheet.
   void ShowVirtualCardEnrollmentBottomSheet(
-      autofill::VirtualCardEnrollUiModel model,
+      std::unique_ptr<autofill::VirtualCardEnrollUiModel> model,
       autofill::VirtualCardEnrollmentCallbacks callbacks);
 
   // Send a command to show the bottom sheet to edit an address.

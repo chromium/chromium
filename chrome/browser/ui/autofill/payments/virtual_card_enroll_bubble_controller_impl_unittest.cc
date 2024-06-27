@@ -91,7 +91,7 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBottomSheetTest,
 
   auto expected_model = VirtualCardEnrollUiModel::Create(
       test_support.virtual_card_enrollment_fields());
-  EXPECT_EQ(test_support.controller()->GetUiModel(), expected_model);
+  EXPECT_EQ(*test_support.controller()->GetUiModel(), *expected_model);
 }
 
 TEST_F(VirtualCardEnrollBubbleControllerImplBottomSheetTest, ShowBubble) {

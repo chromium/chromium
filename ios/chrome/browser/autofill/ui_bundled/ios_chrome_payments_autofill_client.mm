@@ -148,7 +148,8 @@ void IOSChromePaymentsAutofillClient::ShowVirtualCardEnrollDialog(
   AutofillBottomSheetTabHelper* bottom_sheet_tab_helper =
       AutofillBottomSheetTabHelper::FromWebState(web_state_);
   bottom_sheet_tab_helper->ShowVirtualCardEnrollmentBottomSheet(
-      VirtualCardEnrollUiModel::Create(virtual_card_enrollment_fields),
+      std::make_unique<VirtualCardEnrollUiModel>(
+          virtual_card_enrollment_fields),
       VirtualCardEnrollmentCallbacks(std::move(accept_virtual_card_callback),
                                      std::move(decline_virtual_card_callback)));
 }

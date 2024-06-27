@@ -12,9 +12,10 @@
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"
 #import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
+#import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model_test_api.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/virtual_card_enrollment_bottom_sheet_consumer.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -36,6 +37,8 @@
 
 @end
 
+using autofill::test_api;
+
 class VirtualCardEnrollmentBottomSheetMediatorTest : public PlatformTest {
  public:
   VirtualCardEnrollmentBottomSheetMediatorTest()
@@ -46,21 +49,23 @@ class VirtualCardEnrollmentBottomSheetMediatorTest : public PlatformTest {
 
  protected:
   // Creates a virtual card enrollment model with required properties.
-  autofill::VirtualCardEnrollUiModel MakeModel() {
-    autofill::VirtualCardEnrollUiModel model;
+  std::unique_ptr<autofill::VirtualCardEnrollUiModel> MakeModel() {
     // The enrollment source cannot be kNone, so it is set to a default of
     // kDownstream here.
-    model.enrollment_fields.virtual_card_enrollment_source =
+    autofill::VirtualCardEnrollmentFields enrollment_fields;
+    enrollment_fields.virtual_card_enrollment_source =
         autofill::VirtualCardEnrollmentSource::kDownstream;
+    std::unique_ptr<autofill::VirtualCardEnrollUiModel> model =
+        std::make_unique<autofill::VirtualCardEnrollUiModel>(enrollment_fields);
     return model;
   }
 
   // Creates the mediator with the given model and mock callbacks and mock
   // commands.
   VirtualCardEnrollmentBottomSheetMediator* MakeMediator(
-      autofill::VirtualCardEnrollUiModel model) {
+      std::unique_ptr<autofill::VirtualCardEnrollUiModel> model) {
     return [[VirtualCardEnrollmentBottomSheetMediator alloc]
-                   initWithUiModel:model
+                   initWithUiModel:std::move(model)
                          callbacks:MakeFakeCallbacks()
         browserCoordinatorCommands:mock_commands_];
   }
@@ -85,28 +90,29 @@ class VirtualCardEnrollmentBottomSheetMediatorTest : public PlatformTest {
 };
 
 TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest, SetsCardDataOnConsumer) {
-  autofill::VirtualCardEnrollUiModel model(MakeModel());
-  model.window_title = std::u16string(u"Title");
-  model.explanatory_message =
+  std::unique_ptr<autofill::VirtualCardEnrollUiModel> model(MakeModel());
+  test_api(*model).window_title() = std::u16string(u"Title");
+  test_api(*model).explanatory_message() =
       std::u16string(u"Explanatory message. Learn More");
-  model.accept_action_text = std::u16string(u"Accept action");
-  model.cancel_action_text = std::u16string(u"Cancel action");
-  model.learn_more_link_text = std::u16string(u"Learn more");
-  model.enrollment_fields.google_legal_message =
+  test_api(*model).accept_action_text() = std::u16string(u"Accept action");
+  test_api(*model).cancel_action_text() = std::u16string(u"Cancel action");
+  test_api(*model).learn_more_link_text() = std::u16string(u"Learn more");
+  test_api(*model).enrollment_fields().google_legal_message =
       std::vector<autofill::LegalMessageLine>({autofill::TestLegalMessageLine(
           /*ascii_text=*/"Google legal message",
           /*links=*/{
               autofill::LegalMessageLine::Link(
                   /*start=*/2, /*end=*/3, /*url_spec=*/"https://google.test"),
           })});
-  model.enrollment_fields.issuer_legal_message =
+  test_api(*model).enrollment_fields().issuer_legal_message =
       std::vector<autofill::LegalMessageLine>({autofill::TestLegalMessageLine(
           /*ascii_text=*/"Issuer legal message",
           /*links=*/{
               autofill::LegalMessageLine::Link(
                   /*start=*/4, /*end=*/9, /*url_spec=*/"https://issuer.test"),
           })});
-  VirtualCardEnrollmentBottomSheetMediator* mediator = MakeMediator(model);
+  VirtualCardEnrollmentBottomSheetMediator* mediator =
+      MakeMediator(std::move(model));
   TestVirtualCardEnrollmentBottomSheetConsumer* consumer =
       [[TestVirtualCardEnrollmentBottomSheetConsumer alloc] init];
 
@@ -150,9 +156,10 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest, LogsShownMetric) {
 
 TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
        LogsCardArtAvailableMetric) {
-  autofill::VirtualCardEnrollUiModel model(MakeModel());
-  model.enrollment_fields.card_art_image = &fake_card_art_;
-  VirtualCardEnrollmentBottomSheetMediator* mediator = MakeMediator(model);
+  std::unique_ptr<autofill::VirtualCardEnrollUiModel> model(MakeModel());
+  test_api(*model).enrollment_fields().card_art_image = &fake_card_art_;
+  VirtualCardEnrollmentBottomSheetMediator* mediator =
+      MakeMediator(std::move(model));
 
   [mediator setConsumer:nil];
 

@@ -10,7 +10,7 @@
 namespace autofill {
 struct AutofillErrorDialogContext;
 struct FormActivityParams;
-struct VirtualCardEnrollUiModel;
+class VirtualCardEnrollUiModel;
 }  // namespace autofill
 
 // Commands related to the Autofill flows (passwords, addresses, payments etc).
@@ -36,7 +36,7 @@ struct VirtualCardEnrollUiModel;
 
 // Sends a command to show the VCN enrollment Bottom Sheet.
 - (void)showVirtualCardEnrollmentBottomSheet:
-    (const autofill::VirtualCardEnrollUiModel&)model;
+    (std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model;
 
 // Sends a command to show the bottom sheet to edit an address.
 - (void)showEditAddressBottomSheet;

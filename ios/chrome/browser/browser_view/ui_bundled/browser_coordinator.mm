@@ -1775,13 +1775,13 @@ enum class ToolbarKind {
 }
 
 - (void)showVirtualCardEnrollmentBottomSheet:
-    (const autofill::VirtualCardEnrollUiModel&)model {
+    (std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model {
   if (self.virtualCardEnrollmentBottomSheetCoordinator) {
     [self.virtualCardEnrollmentBottomSheetCoordinator stop];
   }
   self.virtualCardEnrollmentBottomSheetCoordinator =
       [[VirtualCardEnrollmentBottomSheetCoordinator alloc]
-             initWithUIModel:model
+             initWithUIModel:std::move(model)
           baseViewController:self.viewController
                      browser:self.browser];
   [self.virtualCardEnrollmentBottomSheetCoordinator start];

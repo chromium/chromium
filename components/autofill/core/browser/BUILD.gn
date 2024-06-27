@@ -972,6 +972,7 @@ static_library("test_support") {
     "ui/mock_autofill_suggestion_delegate.h",
     "ui/mock_fast_checkout_client.cc",
     "ui/mock_fast_checkout_client.h",
+    "ui/payments/virtual_card_enroll_ui_model_test_api.h",
     "ui/suggestion_test_helpers.cc",
     "ui/suggestion_test_helpers.h",
     "webdata/mock_autofill_webdata_backend.cc",

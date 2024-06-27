@@ -58,23 +58,28 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
     AutofillBottomSheetTabHelper::CreateForWebState(web_state);
     AutofillBottomSheetTabHelper::FromWebState(web_state)
         ->ShowVirtualCardEnrollmentBottomSheet(
-            model_, autofill::VirtualCardEnrollmentCallbacks(
-                        /*accept_callback=*/base::BindOnce(
-                            &VirtualCardEnrollmentBottomSheetCoordinatorTest::
-                                OnAcceptVirtualCard,
-                            weak_factory_.GetWeakPtr()),
-                        /*cancel_callback=*/base::BindOnce(
-                            &VirtualCardEnrollmentBottomSheetCoordinatorTest::
-                                OnDeclineVirtualCard,
-                            weak_factory_.GetWeakPtr())));
+            std::make_unique<autofill::VirtualCardEnrollUiModel>(
+                autofill::VirtualCardEnrollmentFields()),
+            autofill::VirtualCardEnrollmentCallbacks(
+                /*accept_callback=*/base::BindOnce(
+                    &VirtualCardEnrollmentBottomSheetCoordinatorTest::
+                        OnAcceptVirtualCard,
+                    weak_factory_.GetWeakPtr()),
+                /*cancel_callback=*/base::BindOnce(
+                    &VirtualCardEnrollmentBottomSheetCoordinatorTest::
+                        OnDeclineVirtualCard,
+                    weak_factory_.GetWeakPtr())));
 
     window_ = [[UIWindow alloc] init];
     window_.rootViewController = [[UIViewController alloc] init];
     [window_ addSubview:window_.rootViewController.view];
     UIView.animationsEnabled = NO;
 
-    model_.enrollment_fields.virtual_card_enrollment_source =
+    autofill::VirtualCardEnrollmentFields enrollment_fields;
+    enrollment_fields.virtual_card_enrollment_source =
         autofill::VirtualCardEnrollmentSource::kDownstream;
+    std::unique_ptr<autofill::VirtualCardEnrollUiModel> model =
+        std::make_unique<autofill::VirtualCardEnrollUiModel>(enrollment_fields);
 
     application_commands_ = OCMProtocolMock(@protocol(ApplicationCommands));
     [browser_->GetCommandDispatcher()
@@ -88,9 +93,9 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
                      forProtocol:@protocol(BrowserCoordinatorCommands)];
 
     coordinator_ = [[VirtualCardEnrollmentBottomSheetCoordinator alloc]
-             initWithUIModel:model_
-          baseViewController:window_.rootViewController
-                     browser:browser_.get()];
+           initWithUIModel:std::move(model)
+        baseViewController:window_.rootViewController
+                   browser:browser_.get()];
   }
 
  protected:
@@ -107,7 +112,6 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
   id<ApplicationCommands> application_commands_;
   UIWindow* window_;
   VirtualCardEnrollmentBottomSheetCoordinator* coordinator_;
-  autofill::VirtualCardEnrollUiModel model_;
   base::WeakPtrFactory<VirtualCardEnrollmentBottomSheetCoordinatorTest>
       weak_factory_{this};
 };

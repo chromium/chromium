@@ -19,7 +19,7 @@
 
 @interface VirtualCardEnrollmentBottomSheetMediator () {
   VirtualCardEnrollmentBottomSheetData* _bottomSheetData;
-  autofill::VirtualCardEnrollUiModel _model;
+  std::unique_ptr<autofill::VirtualCardEnrollUiModel> _model;
   std::optional<autofill::VirtualCardEnrollmentCallbacks> _callbacks;
   __weak id<BrowserCoordinatorCommands> _browserCoordinatorCommands;
 }
@@ -28,7 +28,7 @@
 
 @implementation VirtualCardEnrollmentBottomSheetMediator
 
-- (id)initWithUiModel:(autofill::VirtualCardEnrollUiModel)model
+- (id)initWithUiModel:(std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model
                      callbacks:
                          (autofill::VirtualCardEnrollmentCallbacks)callbacks
     browserCoordinatorCommands:
@@ -36,32 +36,32 @@
   self = [super init];
   if (self) {
     UIImage* icon = nil;
-    bool card_art_available = model.enrollment_fields.card_art_image;
+    bool card_art_available = model->enrollment_fields().card_art_image;
     if (card_art_available) {
-      icon = UIImageFromImageSkia(*model.enrollment_fields.card_art_image);
+      icon = UIImageFromImageSkia(*model->enrollment_fields().card_art_image);
     }
     autofill::VirtualCardEnrollMetricsLogger::OnCardArtAvailable(
         card_art_available,
-        model.enrollment_fields.virtual_card_enrollment_source);
+        model->enrollment_fields().virtual_card_enrollment_source);
     CreditCardData* creditCard = [[CreditCardData alloc]
-        initWithCreditCard:model.enrollment_fields.credit_card
+        initWithCreditCard:model->enrollment_fields().credit_card
                       icon:icon];
     _bottomSheetData = [[VirtualCardEnrollmentBottomSheetData alloc]
              initWithCreditCard:creditCard
-                          title:base::SysUTF16ToNSString(model.window_title)
+                          title:base::SysUTF16ToNSString(model->window_title())
              explanatoryMessage:base::SysUTF16ToNSString(
-                                    model.explanatory_message)
+                                    model->explanatory_message())
                acceptActionText:base::SysUTF16ToNSString(
-                                    model.accept_action_text)
+                                    model->accept_action_text())
                cancelActionText:base::SysUTF16ToNSString(
-                                    model.cancel_action_text)
+                                    model->cancel_action_text())
               learnMoreLinkText:base::SysUTF16ToNSString(
-                                    model.learn_more_link_text)
+                                    model->learn_more_link_text())
         googleLegalMessageLines:[SaveCardMessageWithLinks
-                                    convertFrom:model.enrollment_fields
+                                    convertFrom:model->enrollment_fields()
                                                     .google_legal_message]
         issuerLegalMessageLines:[SaveCardMessageWithLinks
-                                    convertFrom:model.enrollment_fields
+                                    convertFrom:model->enrollment_fields()
                                                     .issuer_legal_message]];
     _model = std::move(model);
     _callbacks = std::move(callbacks);
@@ -74,7 +74,7 @@
   _consumer = consumer;
   [self.consumer setCardData:_bottomSheetData];
   autofill::VirtualCardEnrollMetricsLogger::OnShown(
-      _model.enrollment_fields.virtual_card_enrollment_source,
+      _model->enrollment_fields().virtual_card_enrollment_source,
       /*is_reshow=*/false);
 }
 
@@ -112,8 +112,8 @@
 // Logs the result metric attaching additional parameters from the model.
 - (void)logResultMetric:(autofill::VirtualCardEnrollmentBubbleResult)result {
   autofill::VirtualCardEnrollMetricsLogger::OnDismissed(
-      result, _model.enrollment_fields.virtual_card_enrollment_source,
-      /*is_reshow=*/false, _model.enrollment_fields.previously_declined);
+      result, _model->enrollment_fields().virtual_card_enrollment_source,
+      /*is_reshow=*/false, _model->enrollment_fields().previously_declined);
 }
 
 @end

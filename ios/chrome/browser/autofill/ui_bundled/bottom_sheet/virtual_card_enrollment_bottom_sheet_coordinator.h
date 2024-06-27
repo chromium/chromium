@@ -19,7 +19,8 @@
     : ChromeCoordinator <VirtualCardEnrollmentBottomSheetDelegate>
 
 // Initialize this Coordinator with the model.
-- (instancetype)initWithUIModel:(autofill::VirtualCardEnrollUiModel)model
+- (instancetype)initWithUIModel:
+                    (std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model
              baseViewController:(UIViewController*)baseViewController
                         browser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 

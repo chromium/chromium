@@ -21,7 +21,7 @@
 @property(nonatomic) id<VirtualCardEnrollmentBottomSheetConsumer> consumer;
 
 // Initialize this mediator with the ui model and callbacks from autofill.
-- (id)initWithUiModel:(autofill::VirtualCardEnrollUiModel)model
+- (id)initWithUiModel:(std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model
                      callbacks:
                          (autofill::VirtualCardEnrollmentCallbacks)callbacks
     browserCoordinatorCommands:

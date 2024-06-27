@@ -15,22 +15,22 @@ namespace autofill {
 
 // Ensures default properties are set.
 TEST(VirtualCardEnrollUiModelTest, CreateDefaultProperties) {
-  VirtualCardEnrollUiModel model =
-      VirtualCardEnrollUiModel::Create(VirtualCardEnrollmentFields());
+  std::unique_ptr<VirtualCardEnrollUiModel> model =
+      std::make_unique<VirtualCardEnrollUiModel>(VirtualCardEnrollmentFields());
 
-  EXPECT_EQ(model.window_title,
+  EXPECT_EQ(model->window_title(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_TITLE_LABEL));
   EXPECT_EQ(
-      model.explanatory_message,
+      model->explanatory_message(),
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_CONTENT_LABEL,
           l10n_util::GetStringUTF16(
               IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL)));
-  EXPECT_EQ(model.accept_action_text,
+  EXPECT_EQ(model->accept_action_text(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_ACCEPT_BUTTON_LABEL));
-  EXPECT_EQ(model.learn_more_link_text,
+  EXPECT_EQ(model->learn_more_link_text(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL));
 }
@@ -51,10 +51,10 @@ TEST_P(VirtualCardEnrollUiModelCancelActionTextTest, CancelActionText) {
   enrollment_fields.virtual_card_enrollment_source = config.enrollment_source;
   enrollment_fields.last_show = config.last_show;
 
-  VirtualCardEnrollUiModel model =
-      VirtualCardEnrollUiModel::Create(enrollment_fields);
+  std::unique_ptr<VirtualCardEnrollUiModel> model =
+      std::make_unique<VirtualCardEnrollUiModel>(enrollment_fields);
 
-  EXPECT_EQ(model.cancel_action_text,
+  EXPECT_EQ(model->cancel_action_text(),
             l10n_util::GetStringUTF16(config.expected_string_resource));
 }
 
@@ -95,10 +95,10 @@ TEST(VirtualCardEnrollUiModelEnrollmentFieldsTest, CopiesEnrollmentFields) {
   enrollment_fields.issuer_legal_message =
       LegalMessageLines({TestLegalMessageLine("issuer_legal_message")});
 
-  VirtualCardEnrollUiModel model =
-      VirtualCardEnrollUiModel::Create(enrollment_fields);
+  std::unique_ptr<VirtualCardEnrollUiModel> model =
+      std::make_unique<VirtualCardEnrollUiModel>(enrollment_fields);
 
-  EXPECT_EQ(model.enrollment_fields, enrollment_fields);
+  EXPECT_EQ(model->enrollment_fields(), enrollment_fields);
 }
 
 }  // namespace autofill

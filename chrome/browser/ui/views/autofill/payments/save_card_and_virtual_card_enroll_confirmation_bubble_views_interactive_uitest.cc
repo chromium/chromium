@@ -286,7 +286,9 @@ IN_PROC_BROWSER_TEST_F(
   CreditCard card = test::GetCreditCard();
   VirtualCardEnrollmentFields enrollment_fields;
   enrollment_fields.credit_card = card;
-  test_api(*GetController()).SetFields(enrollment_fields);
+  test_api(*GetController())
+      .SetUiModel(
+          std::make_unique<VirtualCardEnrollUiModel>(enrollment_fields));
 
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));

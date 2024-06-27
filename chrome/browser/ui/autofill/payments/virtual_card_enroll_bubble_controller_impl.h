@@ -93,7 +93,7 @@ class VirtualCardEnrollBubbleControllerImpl
       VirtualCardEnrollBubbleControllerImpl>;
 
   // Contains the UI assets shown in the virtual card enrollment view.
-  VirtualCardEnrollUiModel ui_model_;
+  std::unique_ptr<VirtualCardEnrollUiModel> ui_model_;
 
   // Whether we should re-show the dialog when users return to the tab.
   bool reprompt_required_ = false;

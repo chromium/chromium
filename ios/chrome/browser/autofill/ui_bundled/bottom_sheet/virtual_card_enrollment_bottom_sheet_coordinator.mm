@@ -31,7 +31,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 @implementation VirtualCardEnrollmentBottomSheetCoordinator {
-  autofill::VirtualCardEnrollUiModel model_;
+  std::unique_ptr<autofill::VirtualCardEnrollUiModel> model_;
   std::optional<autofill::VirtualCardEnrollmentCallbacks> callbacks_;
   Browser* browser_;
   ChromeBrowserState* browser_state_;
@@ -44,14 +44,15 @@
 @synthesize mediator;
 @synthesize viewController;
 
-- (instancetype)initWithUIModel:(autofill::VirtualCardEnrollUiModel)model
+- (instancetype)initWithUIModel:
+                    (std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model
              baseViewController:(UIViewController*)baseViewController
                         browser:(Browser*)browser {
   self = [super initWithBaseViewController:baseViewController browser:browser];
   if (self) {
     web::WebState* activeWebState =
         self.browser->GetWebStateList()->GetActiveWebState();
-    self->model_ = model;
+    self->model_ = std::move(model);
     self->callbacks_ =
         AutofillBottomSheetTabHelper::FromWebState(activeWebState)
             ->GetVirtualCardEnrollmentCallbacks();
@@ -65,7 +66,7 @@
 
 - (void)start {
   self.mediator = [[VirtualCardEnrollmentBottomSheetMediator alloc]
-                 initWithUiModel:self->model_
+                 initWithUiModel:std::move(self->model_)
                        callbacks:std::move(callbacks_.value())
       browserCoordinatorCommands:HandlerForProtocol(
                                      self.browser->GetCommandDispatcher(),
