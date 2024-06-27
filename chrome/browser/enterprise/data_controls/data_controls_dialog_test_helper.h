@@ -28,8 +28,8 @@ class DataControlsDialogTestHelper : public DataControlsDialog::TestObserver {
   DataControlsDialog* dialog();
 
   // Mimics the user pressing either of the available dialog buttons.
-  void AcceptDialog();
-  void CancelDialog();
+  void BypassWarning();
+  void CloseDialogWithoutBypass();
 
   // Runs `dialog_init_loop_`.
   void WaitForDialogToInitialize();

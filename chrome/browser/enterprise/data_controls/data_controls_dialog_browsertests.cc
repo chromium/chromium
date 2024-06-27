@@ -39,7 +39,7 @@ class DataControlsDialogTest : public InProcessBrowserTest,
     ++constructor_called_count_;
 
     ASSERT_TRUE(dialog);
-    ASSERT_EQ(dialog->GetDefaultDialogButton(), ui::DIALOG_BUTTON_CANCEL);
+    ASSERT_EQ(dialog->GetDefaultDialogButton(), ui::DIALOG_BUTTON_OK);
     ASSERT_FALSE(base::Contains(dialog_close_loops_, dialog));
     ASSERT_FALSE(base::Contains(dialog_close_callbacks_, dialog));
 
@@ -66,7 +66,7 @@ class DataControlsDialogTest : public InProcessBrowserTest,
       // asynchronously.
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
-          base::BindOnce(&data_controls::DataControlsDialog::CancelDialog,
+          base::BindOnce(&data_controls::DataControlsDialog::AcceptDialog,
                          base::Unretained(dialog_and_loop.first)));
     }
 

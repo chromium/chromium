@@ -172,58 +172,53 @@ DataControlsDialog::DataControlsDialog(
     callbacks_.push_back(std::move(callback));
   }
 
+  // For warning dialogs, "cancel" means "ignore the warning and bypass" and
+  // "accept" means "accept the warning and stop copying/pasting".
   switch (type_) {
     case Type::kClipboardPasteBlock:
     case Type::kClipboardCopyBlock:
-      DialogDelegate::SetButtons(ui::DIALOG_BUTTON_CANCEL);
-      DialogDelegate::SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
-      DialogDelegate::SetButtonStyle(ui::DIALOG_BUTTON_CANCEL,
-                                     ui::ButtonStyle::kProminent);
-      DialogDelegate::SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                                     l10n_util::GetStringUTF16(IDS_OK));
+      SetButtons(ui::DIALOG_BUTTON_OK);
+      SetButtonLabel(ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(IDS_OK));
       break;
 
     case Type::kClipboardPasteWarn:
-      DialogDelegate::SetButtons(ui::DIALOG_BUTTON_CANCEL |
-                                 ui::DIALOG_BUTTON_OK);
-      DialogDelegate::SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
-      DialogDelegate::SetButtonStyle(ui::DIALOG_BUTTON_CANCEL,
-                                     ui::ButtonStyle::kProminent);
-      DialogDelegate::SetButtonLabel(
-          ui::DIALOG_BUTTON_CANCEL,
-          l10n_util::GetStringUTF16(
-              IDS_DATA_CONTROLS_PASTE_WARN_CANCEL_BUTTON));
-      DialogDelegate::SetButtonLabel(
-          ui::DIALOG_BUTTON_OK,
-          l10n_util::GetStringUTF16(
-              IDS_DATA_CONTROLS_PASTE_WARN_CONTINUE_BUTTON));
+      SetButtons(ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK);
+
+      SetButtonLabel(ui::DIALOG_BUTTON_OK,
+                     l10n_util::GetStringUTF16(
+                         IDS_DATA_CONTROLS_PASTE_WARN_CANCEL_BUTTON));
+
+      SetButtonStyle(ui::DIALOG_BUTTON_CANCEL, ui::ButtonStyle::kTonal);
+      SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+                     l10n_util::GetStringUTF16(
+                         IDS_DATA_CONTROLS_PASTE_WARN_CONTINUE_BUTTON));
       break;
 
     case Type::kClipboardCopyWarn:
-      DialogDelegate::SetButtons(ui::DIALOG_BUTTON_CANCEL |
-                                 ui::DIALOG_BUTTON_OK);
-      DialogDelegate::SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
-      DialogDelegate::SetButtonStyle(ui::DIALOG_BUTTON_CANCEL,
-                                     ui::ButtonStyle::kProminent);
-      DialogDelegate::SetButtonLabel(
-          ui::DIALOG_BUTTON_CANCEL,
-          l10n_util::GetStringUTF16(IDS_DATA_CONTROLS_COPY_WARN_CANCEL_BUTTON));
-      DialogDelegate::SetButtonLabel(
+      SetButtons(ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK);
+
+      SetButtonLabel(
           ui::DIALOG_BUTTON_OK,
-          l10n_util::GetStringUTF16(
-              IDS_DATA_CONTROLS_COPY_WARN_CONTINUE_BUTTON));
+          l10n_util::GetStringUTF16(IDS_DATA_CONTROLS_COPY_WARN_CANCEL_BUTTON));
+
+      SetButtonStyle(ui::DIALOG_BUTTON_CANCEL, ui::ButtonStyle::kTonal);
+      SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+                     l10n_util::GetStringUTF16(
+                         IDS_DATA_CONTROLS_COPY_WARN_CONTINUE_BUTTON));
       break;
   }
+  SetButtonStyle(ui::DIALOG_BUTTON_OK, ui::ButtonStyle::kProminent);
+  SetDefaultButton(ui::DIALOG_BUTTON_OK);
 
   if (!callbacks_.empty()) {
     DCHECK(type_ == Type::kClipboardPasteWarn ||
            type_ == Type::kClipboardCopyWarn);
     SetAcceptCallback(base::BindOnce(&DataControlsDialog::OnDialogButtonClicked,
                                      base::Unretained(this),
-                                     /*bypassed=*/true));
+                                     /*bypassed=*/false));
     SetCancelCallback(base::BindOnce(&DataControlsDialog::OnDialogButtonClicked,
                                      base::Unretained(this),
-                                     /*bypassed=*/false));
+                                     /*bypassed=*/true));
   }
 
   if (observer_for_testing_) {

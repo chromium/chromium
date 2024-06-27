@@ -563,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
   menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
 
   helper.WaitForDialogToInitialize();
-  helper.CancelDialog();
+  helper.CloseDialogWithoutBypass();
   helper.WaitForDialogToClose();
 
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
@@ -598,7 +598,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
   menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
 
   helper.WaitForDialogToInitialize();
-  helper.CancelDialog();
+  helper.CloseDialogWithoutBypass();
   helper.WaitForDialogToClose();
 
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
@@ -633,7 +633,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
   menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
 
   helper.WaitForDialogToInitialize();
-  helper.AcceptDialog();
+  helper.BypassWarning();
   helper.WaitForDialogToClose();
 
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();

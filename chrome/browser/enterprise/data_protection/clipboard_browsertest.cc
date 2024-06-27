@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
   EXPECT_TRUE(first_future.Wait());
   EXPECT_TRUE(first_future.Get().empty());
 
-  helper.CancelDialog();
+  helper.CloseDialogWithoutBypass();
   helper.WaitForDialogToClose();
 
   // No data should be in the clipboard after closing the dialog since the
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
   EXPECT_TRUE(first_future.Wait());
   EXPECT_TRUE(first_future.Get().empty());
 
-  helper.CancelDialog();
+  helper.CloseDialogWithoutBypass();
   helper.WaitForDialogToClose();
 
   // No data should be in the clipboard after closing the dialog since it wasn't
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
   EXPECT_TRUE(first_future.Wait());
   EXPECT_TRUE(first_future.Get().empty());
 
-  helper.AcceptDialog();
+  helper.BypassWarning();
   helper.WaitForDialogToClose();
   base::RunLoop().RunUntilIdle();
 
@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
       rfh(), R"(var pasted_text = navigator.clipboard.readText();)");
 
   helper.WaitForDialogToInitialize();
-  helper.CancelDialog();
+  helper.CloseDialogWithoutBypass();
   helper.WaitForDialogToClose();
 
   // No data should have been read from the clipboard after closing the dialog
@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
       rfh(), R"(var pasted_text = navigator.clipboard.readText();)");
 
   helper.WaitForDialogToInitialize();
-  helper.CancelDialog();
+  helper.CloseDialogWithoutBypass();
   helper.WaitForDialogToClose();
 
   // No data should have been read from the clipboard after closing the dialog
@@ -317,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
       rfh(), R"(var pasted_text = navigator.clipboard.readText();)");
 
   helper.WaitForDialogToInitialize();
-  helper.AcceptDialog();
+  helper.BypassWarning();
   helper.WaitForDialogToClose();
 
   // Data should be pasted in the page after closing the dialog since it was

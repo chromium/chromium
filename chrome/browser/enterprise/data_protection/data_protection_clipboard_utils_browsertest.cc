@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   EXPECT_FALSE(paste_data);
 
   helper.WaitForDialogToInitialize();
-  helper.CancelDialog();
+  helper.CloseDialogWithoutBypass();
   helper.WaitForDialogToClose();
 }
 
@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   EXPECT_FALSE(paste_data);
 
   helper.WaitForDialogToInitialize();
-  helper.CancelDialog();
+  helper.CloseDialogWithoutBypass();
   helper.WaitForDialogToClose();
 }
 
@@ -307,7 +307,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   // shouldn't be ready yet.
   EXPECT_FALSE(future.IsReady());
 
-  helper.AcceptDialog();
+  helper.BypassWarning();
   helper.WaitForDialogToClose();
 
   auto paste_data = future.Get();
@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   // shouldn't be ready yet.
   EXPECT_FALSE(future.IsReady());
 
-  helper.CancelDialog();
+  helper.CloseDialogWithoutBypass();
   helper.WaitForDialogToClose();
 
   auto paste_data = future.Get();
@@ -438,7 +438,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   EXPECT_FALSE(paste_data);
 
   helper.WaitForDialogToInitialize();
-  helper.CancelDialog();
+  helper.CloseDialogWithoutBypass();
   helper.WaitForDialogToClose();
 }
 
@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   // shouldn't be ready yet.
   EXPECT_FALSE(future.IsReady());
 
-  helper.AcceptDialog();
+  helper.BypassWarning();
   helper.WaitForDialogToClose();
 
   auto paste_data = future.Get();
@@ -556,7 +556,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   // shouldn't be ready yet.
   EXPECT_FALSE(future.IsReady());
 
-  helper.CancelDialog();
+  helper.CloseDialogWithoutBypass();
   helper.WaitForDialogToClose();
 
   auto paste_data = future.Get();
@@ -817,7 +817,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, CopyBlocked) {
       MakeClipboardPasteData("foo", "", {}), future.GetCallback());
 
   helper.WaitForDialogToInitialize();
-  helper.CancelDialog();
+  helper.CloseDialogWithoutBypass();
   helper.WaitForDialogToClose();
 
   EXPECT_FALSE(future.IsReady());
@@ -881,7 +881,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   // shouldn't be ready yet.
   EXPECT_FALSE(future.IsReady());
 
-  helper.CancelDialog();
+  helper.CloseDialogWithoutBypass();
   helper.WaitForDialogToClose();
 
   EXPECT_FALSE(future.IsReady());
@@ -948,7 +948,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   // shouldn't be ready yet.
   EXPECT_FALSE(future.IsReady());
 
-  helper.CancelDialog();
+  helper.CloseDialogWithoutBypass();
   helper.WaitForDialogToClose();
 
   EXPECT_FALSE(future.IsReady());
@@ -1034,7 +1034,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       /*profile_identifier=*/browser()->profile()->GetPath().AsUTF8Unsafe(),
       /*content_size=*/1234);
 
-  helper.AcceptDialog();
+  helper.BypassWarning();
   helper.WaitForDialogToClose();
 
   auto data = future.Get<content::ClipboardPasteData>();
@@ -1127,7 +1127,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       /*profile_identifier=*/browser()->profile()->GetPath().AsUTF8Unsafe(),
       /*content_size=*/1234);
 
-  helper.AcceptDialog();
+  helper.BypassWarning();
   helper.WaitForDialogToClose();
 
   auto data = future.Get<content::ClipboardPasteData>();

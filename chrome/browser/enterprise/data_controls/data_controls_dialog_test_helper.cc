@@ -48,23 +48,26 @@ DataControlsDialog* DataControlsDialogTestHelper::dialog() {
   return dialog_;
 }
 
-void DataControlsDialogTestHelper::AcceptDialog() {
+void DataControlsDialogTestHelper::BypassWarning() {
+  // Some platforms crash if the dialog has been accepted/cancelled before fully
+  // launching modally, so to avoid that issue accepting/cancelling the dialog
+  // is done asynchronously.
+  ASSERT_TRUE(dialog_);
+  ASSERT_TRUE(dialog_->type() ==
+                  DataControlsDialog::Type::kClipboardPasteWarn ||
+              dialog_->type() == DataControlsDialog::Type::kClipboardCopyWarn);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&DataControlsDialog::CancelDialog,
+                                base::Unretained(dialog_)));
+}
+
+void DataControlsDialogTestHelper::CloseDialogWithoutBypass() {
   // Some platforms crash if the dialog has been accepted/cancelled before fully
   // launching modally, so to avoid that issue accepting/cancelling the dialog
   // is done asynchronously.
   ASSERT_TRUE(dialog_);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&DataControlsDialog::AcceptDialog,
-                                base::Unretained(dialog_)));
-}
-
-void DataControlsDialogTestHelper::CancelDialog() {
-  // Some platforms crash if the dialog has been accepted/cancelled before fully
-  // launching modally, so to avoid that issue accepting/cancelling the dialog
-  // is done asynchronously.
-  ASSERT_TRUE(dialog_);
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&DataControlsDialog::CancelDialog,
                                 base::Unretained(dialog_)));
 }
 
