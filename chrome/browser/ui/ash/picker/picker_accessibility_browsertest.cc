@@ -1,0 +1,114 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/picker/metrics/picker_performance_metrics.h"
+#include "ash/picker/views/picker_key_event_handler.h"
+#include "ash/picker/views/picker_search_field_view.h"
+#include "ash/test/test_widget_builder.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/speech_monitor.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
+#include "extensions/browser/browsertest_util.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
+
+namespace {
+
+// These tests are not meant to be end-to-end tests.
+// They should test Picker view components on a low-level.
+// They are browser tests in order to bring in ChromeVox so that we can test
+// announcements.
+class PickerAccessibilityBrowserTest : public InProcessBrowserTest {
+ public:
+  PickerAccessibilityBrowserTest() = default;
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    ash::AccessibilityManager::Get()->EnableSpokenFeedback(true);
+    // Ignore the intro.
+    sm_.ExpectSpeechPattern("*");
+    // Disable earcons which can be annoying in tests.
+    sm_.Call([this]() {
+      ImportJSModuleForChromeVox("ChromeVox",
+                                 "/chromevox/background/chromevox.js");
+      DisableEarcons();
+    });
+  }
+
+  void TearDownOnMainThread() override {
+    ash::AccessibilityManager::Get()->EnableSpokenFeedback(false);
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+ protected:
+  ash::test::SpeechMonitor sm_;
+
+ private:
+  void ImportJSModuleForChromeVox(std::string_view name,
+                                  std::string_view path) {
+    extensions::browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
+        ash::AccessibilityManager::Get()->profile(),
+        extension_misc::kChromeVoxExtensionId,
+        base::ReplaceStringPlaceholders(
+            R"(import('$1').then(mod => {
+            globalThis.$2 = mod.$2;
+            window.domAutomationController.send('done');
+          }))",
+            {std::string(path), std::string(name)}, nullptr));
+  }
+
+  void DisableEarcons() {
+    extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
+        ash::AccessibilityManager::Get()->profile(),
+        extension_misc::kChromeVoxExtensionId,
+        "ChromeVox.earcons.playEarcon = function() {};");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       FocusingEmptySearchFieldAnnouncesPlaceholder) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  ash::PickerKeyEventHandler key_event_handler;
+  ash::PickerPerformanceMetrics metrics;
+  auto* view =
+      widget->SetContentsView(std::make_unique<ash::PickerSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  view->SetPlaceholderText(u"cat");
+
+  sm_.Call([view]() { view->RequestFocus(); });
+
+  sm_.ExpectSpeechPattern("Edit text");
+  sm_.ExpectSpeechPattern("cat");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       FocusingNonEmptySearchFieldAnnouncesPlaceholder) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  ash::PickerKeyEventHandler key_event_handler;
+  ash::PickerPerformanceMetrics metrics;
+  auto* view =
+      widget->SetContentsView(std::make_unique<ash::PickerSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  view->SetPlaceholderText(u"cat");
+  view->SetQueryText(u"query");
+
+  sm_.Call([view]() { view->RequestFocus(); });
+
+  sm_.ExpectSpeechPattern("Edit text");
+  sm_.ExpectSpeechPattern("cat");
+  sm_.Replay();
+}
+
+}  // namespace

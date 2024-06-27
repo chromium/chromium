@@ -4978,6 +4978,7 @@ if (!is_android) {
         "../browser/ui/ash/multi_user/test_multi_user_window_manager.cc",
         "../browser/ui/ash/multi_user/test_multi_user_window_manager.h",
         "../browser/ui/ash/network/network_portal_signin_controller_browsertest.cc",
+        "../browser/ui/ash/picker/picker_accessibility_browsertest.cc",
         "../browser/ui/ash/projector/pending_screencast_manager_browsertest.cc",
         "../browser/ui/ash/projector/projector_client_impl_browsertest.cc",
         "../browser/ui/ash/projector/projector_navigation_throttle_browsertest.cc",

@@ -350,8 +350,6 @@ IN_PROC_BROWSER_TEST_F(PickerSpokenFeedbackInteractiveUiTest,
       ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
       WaitForState(kSearchFieldFocusedState, true));
 
-  // TODO(b/309706053): Replace this once the strings are finalized.
-  sm_.ExpectSpeechPattern("placeholder");
   sm_.ExpectSpeechPattern("Edit text");
   sm_.ExpectSpeechPattern("window");
   sm_.Replay();

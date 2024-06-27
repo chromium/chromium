@@ -28,6 +28,16 @@ namespace {
 
 using PickerSearchFieldViewTest = views::ViewsTestBase;
 
+TEST_F(PickerSearchFieldViewTest, HasTextFieldRole) {
+  PickerKeyEventHandler key_event_handler;
+  PickerPerformanceMetrics metrics;
+  PickerSearchFieldView view(base::DoNothing(), base::DoNothing(),
+                             &key_event_handler, &metrics);
+
+  EXPECT_EQ(view.textfield_for_testing().GetAccessibleRole(),
+            ax::mojom::Role::kTextField);
+}
+
 TEST_F(PickerSearchFieldViewTest, DoesNotTriggerSearchOnConstruction) {
   base::test::TestFuture<const std::u16string&> future;
   PickerKeyEventHandler key_event_handler;
@@ -146,6 +156,7 @@ TEST_F(PickerSearchFieldViewTest,
   auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
       future.GetRepeatingCallback(), base::DoNothing(), &key_event_handler,
       &metrics));
+  view->SetPlaceholderText(u"placeholder");
   view->RequestFocus();
   PressAndReleaseKey(*widget, ui::KeyboardCode::VKEY_A);
   ASSERT_EQ(future.Take(), u"a");
@@ -168,6 +179,7 @@ TEST_F(PickerSearchFieldViewTest, ClickingBackButtonTriggersCallback) {
   auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
       base::DoNothing(), future.GetRepeatingCallback(), &key_event_handler,
       &metrics));
+  view->SetPlaceholderText(u"placeholder");
   view->SetBackButtonVisible(true);
 
   ViewDrawnWaiter().Wait(&view->back_button_for_testing());

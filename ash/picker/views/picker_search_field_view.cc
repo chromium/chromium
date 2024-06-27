@@ -76,9 +76,7 @@ PickerSearchFieldView::PickerSearchFieldView(
               .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
                   TypographyToken::kCrosBody2))
               .SetProperty(views::kBoxLayoutFlexKey,
-                           views::BoxLayoutFlexSpecification().WithWeight(1))
-              // TODO(b/309706053): Replace this once the strings are finalized.
-              .SetAccessibleName(u"placeholder"))
+                           views::BoxLayoutFlexSpecification().WithWeight(1)))
       .AddChild(
           views::Builder<views::ImageButton>(
               views::ImageButton::CreateIconButton(
