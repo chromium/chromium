@@ -4,15 +4,25 @@
 
 #include "device/fido/fido_device_authenticator.h"
 
+#include <array>
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/fido_constants.h"
@@ -20,26 +30,22 @@
 #include "device/fido/fido_types.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/pin.h"
-#include "device/fido/test_callback_receiver.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_fido_device.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
 
 namespace {
 
-using GetAssertionCallback = device::test::StatusAndValueCallbackReceiver<
-    CtapDeviceResponseCode,
-    std::vector<AuthenticatorGetAssertionResponse>>;
-using PinCallback = device::test::StatusAndValueCallbackReceiver<
-    CtapDeviceResponseCode,
-    std::optional<pin::TokenResponse>>;
-using GarbageCollectionCallback =
-    device::test::ValueCallbackReceiver<CtapDeviceResponseCode>;
-using TouchCallback = device::test::TestCallbackReceiver<>;
+using GetAssertionFuture =
+    base::test::TestFuture<CtapDeviceResponseCode,
+                           std::vector<AuthenticatorGetAssertionResponse>>;
+using PinFuture = base::test::TestFuture<CtapDeviceResponseCode,
+                                         std::optional<pin::TokenResponse>>;
+using GarbageCollectionFuture = base::test::TestFuture<CtapDeviceResponseCode>;
+using TouchFuture = base::test::TestFuture<void>;
 
 const std::string kRpId = "galaxy.example.com";
 const std::vector<uint8_t> kCredentialId1{1, 1, 1, 1};
@@ -84,9 +90,9 @@ class FidoDeviceAuthenticatorTest : public testing::Test {
     authenticator_ =
         std::make_unique<FidoDeviceAuthenticator>(std::move(virtual_device));
 
-    device::test::TestCallbackReceiver<> callback;
-    authenticator_->InitializeAuthenticator(callback.callback());
-    callback.WaitForCallback();
+    base::test::TestFuture<void> future;
+    authenticator_->InitializeAuthenticator(future.GetCallback());
+    EXPECT_TRUE(future.Wait());
   }
 
   cbor::Value::ArrayValue GetLargeBlobArray() {
@@ -99,14 +105,14 @@ class FidoDeviceAuthenticatorTest : public testing::Test {
   // further large blob operations will require the token.
   pin::TokenResponse GetPINToken() {
     virtual_device_->SetPin(kPin);
-    PinCallback pin_callback;
+    PinFuture pin_future;
     authenticator_->GetPINToken(
         kPin,
         {pin::Permissions::kLargeBlobWrite, pin::Permissions::kGetAssertion},
-        kRpId, pin_callback.callback());
-    pin_callback.WaitForCallback();
-    DCHECK_EQ(pin_callback.status(), CtapDeviceResponseCode::kSuccess);
-    return *pin_callback.value();
+        kRpId, pin_future.GetCallback());
+    EXPECT_TRUE(pin_future.Wait());
+    DCHECK_EQ(std::get<0>(pin_future.Get()), CtapDeviceResponseCode::kSuccess);
+    return *std::get<1>(pin_future.Get());
   }
 
   std::vector<AuthenticatorGetAssertionResponse> GetAssertion(
@@ -117,15 +123,15 @@ class FidoDeviceAuthenticatorTest : public testing::Test {
       request.allow_list.emplace_back(CredentialType::kPublicKey,
                                       credential_id);
     }
-    GetAssertionCallback callback;
+    GetAssertionFuture future;
     authenticator_->GetAssertion(std::move(request), std::move(options),
-                                 callback.callback());
-    callback.WaitForCallback();
-    CHECK_EQ(callback.status(), CtapDeviceResponseCode::kSuccess)
+                                 future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    CHECK_EQ(std::get<0>(future.Get()), CtapDeviceResponseCode::kSuccess)
         << " get assertion returned "
-        << static_cast<unsigned>(callback.status());
+        << static_cast<unsigned>(std::get<0>(future.Get()));
     std::vector<AuthenticatorGetAssertionResponse> response =
-        callback.TakeValue();
+        std::get<1>(future.Take());
     return response;
   }
 
@@ -365,12 +371,11 @@ TEST_F(FidoDeviceAuthenticatorTest, TestGarbageCollectLargeBlob) {
   ASSERT_EQ(large_blob_array.at(2).GetString(), "comet observatory");
 
   // Perform garbage collection.
-  GarbageCollectionCallback garbage_collection_callback;
+  GarbageCollectionFuture garbage_collection_future;
   authenticator_->GarbageCollectLargeBlob(
-      GetPINToken(), garbage_collection_callback.callback());
-  garbage_collection_callback.WaitForCallback();
-  EXPECT_EQ(garbage_collection_callback.value(),
-            CtapDeviceResponseCode::kSuccess);
+      GetPINToken(), garbage_collection_future.GetCallback());
+  EXPECT_TRUE(garbage_collection_future.Wait());
+  EXPECT_EQ(garbage_collection_future.Get(), CtapDeviceResponseCode::kSuccess);
 
   // The second blob, which was orphaned, should have been deleted.
   large_blob_array = GetLargeBlobArray();
@@ -392,12 +397,11 @@ TEST_F(FidoDeviceAuthenticatorTest, TestGarbageCollectLargeBlobNoChanges) {
   }
 
   // Perform garbage collection.
-  GarbageCollectionCallback gabarge_collection_callback;
+  GarbageCollectionFuture gabarge_collection_future;
   authenticator_->GarbageCollectLargeBlob(
-      GetPINToken(), gabarge_collection_callback.callback());
-  gabarge_collection_callback.WaitForCallback();
-  EXPECT_EQ(gabarge_collection_callback.value(),
-            CtapDeviceResponseCode::kSuccess);
+      GetPINToken(), gabarge_collection_future.GetCallback());
+  EXPECT_TRUE(gabarge_collection_future.Wait());
+  EXPECT_EQ(gabarge_collection_future.Get(), CtapDeviceResponseCode::kSuccess);
 
   // The blob should still be there.
   std::vector<AuthenticatorGetAssertionResponse> read = GetAssertionForRead();
@@ -414,12 +418,11 @@ TEST_F(FidoDeviceAuthenticatorTest, TestGarbageCollectLargeBlobInvalid) {
   authenticator_state_->large_blob[0] += 1;
 
   // Perform garbage collection.
-  GarbageCollectionCallback gabarge_collection_callback;
+  GarbageCollectionFuture gabarge_collection_future;
   authenticator_->GarbageCollectLargeBlob(
-      GetPINToken(), gabarge_collection_callback.callback());
-  gabarge_collection_callback.WaitForCallback();
-  EXPECT_EQ(gabarge_collection_callback.value(),
-            CtapDeviceResponseCode::kSuccess);
+      GetPINToken(), gabarge_collection_future.GetCallback());
+  EXPECT_TRUE(gabarge_collection_future.Wait());
+  EXPECT_EQ(gabarge_collection_future.Get(), CtapDeviceResponseCode::kSuccess);
 
   // The blob should now be valid again.
   EXPECT_EQ(authenticator_state_->large_blob, empty_large_blob);
@@ -439,12 +442,11 @@ TEST_F(FidoDeviceAuthenticatorTest, TestGarbageCollectLargeBlobNoCredentials) {
   ASSERT_EQ(large_blob_array.size(), 1u);
 
   // Perform garbage collection.
-  GarbageCollectionCallback garbage_collection_callback;
+  GarbageCollectionFuture garbage_collection_future;
   authenticator_->GarbageCollectLargeBlob(
-      GetPINToken(), garbage_collection_callback.callback());
-  garbage_collection_callback.WaitForCallback();
-  EXPECT_EQ(garbage_collection_callback.value(),
-            CtapDeviceResponseCode::kSuccess);
+      GetPINToken(), garbage_collection_future.GetCallback());
+  EXPECT_TRUE(garbage_collection_future.Wait());
+  EXPECT_EQ(garbage_collection_future.Get(), CtapDeviceResponseCode::kSuccess);
 
   // The large blob array should now be empty.
   large_blob_array = GetLargeBlobArray();
@@ -461,15 +463,15 @@ TEST_F(FidoDeviceAuthenticatorTest, TestGetTouch) {
     config.ctap2_versions = {version};
     SetUpAuthenticator(std::move(config));
 
-    TouchCallback callback;
+    TouchFuture future;
     bool touch_pressed = false;
     authenticator_state_->simulate_press_callback =
         base::BindLambdaForTesting([&](VirtualFidoDevice* device) {
           touch_pressed = true;
           return true;
         });
-    authenticator_->GetTouch(callback.callback());
-    callback.WaitForCallback();
+    authenticator_->GetTouch(future.GetCallback());
+    EXPECT_TRUE(future.Wait());
     EXPECT_TRUE(touch_pressed);
   }
 }

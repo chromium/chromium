@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -12,10 +15,14 @@
 #include "base/base64url.h"
 #include "base/callback_list.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/process/process.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_tokenizer.h"
@@ -24,6 +31,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/simple_test_clock.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -44,21 +52,23 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_server_network_resources.h"
-#include "components/trusted_vault/proto/vault.pb.h"
-#include "components/trusted_vault/proto_string_bytes_conversion.h"
-#include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/test/mock_trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
+#include "components/webauthn/core/browser/passkey_model.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
@@ -66,7 +76,9 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/enclave/constants.h"
 #include "device/fido/features.h"
-#include "device/fido/test_callback_receiver.h"
+#include "device/fido/fido_request_handler_base.h"
+#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/fido_types.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -84,7 +96,10 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
+#include "base/test/test_future.h"
 #include "chrome/common/chrome_version.h"
+#include "components/trusted_vault/proto/vault.pb.h"
+#include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "crypto/scoped_fake_apple_keychain_v2.h"
 #include "device/fido/enclave/icloud_recovery_key_mac.h"
 #include "device/fido/mac/util.h"
@@ -2460,14 +2475,14 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Enroll) {
   ASSERT_NE(icloud_member, security_domain_service_->members().end());
 
   // Find the recovery key on iCloud keychain.
-  device::test::ValueCallbackReceiver<
+  base::test::TestFuture<
       std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>>
-      callback;
+      future;
   device::enclave::ICloudRecoveryKey::Retrieve(
-      callback.callback(), kICloudKeychainRecoveryKeyAccessGroup);
-  callback.WaitForCallback();
+      future.GetCallback(), kICloudKeychainRecoveryKeyAccessGroup);
+  EXPECT_TRUE(future.Wait());
   std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>
-      recovery_keys = callback.TakeValue();
+      recovery_keys = future.Take();
   ASSERT_EQ(recovery_keys.size(), 1u);
   std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_key =
       std::move(recovery_keys.at(0));
@@ -2482,14 +2497,13 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Enroll) {
 IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest,
                        EnrollWithExistingKeyInICloud) {
   // Create an iCloud recovery key.
-  device::test::ValueCallbackReceiver<
-      std::unique_ptr<device::enclave::ICloudRecoveryKey>>
-      callback;
+  base::test::TestFuture<std::unique_ptr<device::enclave::ICloudRecoveryKey>>
+      future;
   device::enclave::ICloudRecoveryKey::Create(
-      callback.callback(), kICloudKeychainRecoveryKeyAccessGroup);
-  callback.WaitForCallback();
+      future.GetCallback(), kICloudKeychainRecoveryKeyAccessGroup);
+  EXPECT_TRUE(future.Wait());
   std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_key =
-      callback.TakeValue();
+      future.Take();
   ASSERT_TRUE(icloud_key);
 
   // Do a make credential request and enroll a PIN.
@@ -2536,14 +2550,14 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest,
             icloud_key->key()->public_key().ExportToBytes());
 
   // No additional key should be stored in iCloud keychain.
-  device::test::ValueCallbackReceiver<
+  base::test::TestFuture<
       std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>>
-      list_callback;
+      list_future;
   device::enclave::ICloudRecoveryKey::Retrieve(
-      list_callback.callback(), kICloudKeychainRecoveryKeyAccessGroup);
-  list_callback.WaitForCallback();
+      list_future.GetCallback(), kICloudKeychainRecoveryKeyAccessGroup);
+  EXPECT_TRUE(list_future.Wait());
   std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>
-      recovery_keys = list_callback.TakeValue();
+      recovery_keys = list_future.Take();
   EXPECT_EQ(recovery_keys.size(), 1u);
 }
 
@@ -2584,13 +2598,13 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Recovery) {
     delegate_observer()->WaitForDelegateDestruction();
 
     // Make sure a new recovery key was enrolled.
-    device::test::ValueCallbackReceiver<
+    base::test::TestFuture<
         std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>>
-        callback;
+        future;
     device::enclave::ICloudRecoveryKey::Retrieve(
-        callback.callback(), kICloudKeychainRecoveryKeyAccessGroup);
-    callback.WaitForCallback();
-    ASSERT_EQ(callback.value().size(), 1u);
+        future.GetCallback(), kICloudKeychainRecoveryKeyAccessGroup);
+    EXPECT_TRUE(future.Wait());
+    ASSERT_EQ(future.Get().size(), 1u);
   }
 
   // Unenroll the current device from the enclave.
@@ -2646,13 +2660,13 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Recovery) {
 
     delegate_observer()->WaitForDelegateDestruction();
     // Make sure a no new recovery key was enrolled.
-    device::test::ValueCallbackReceiver<
+    base::test::TestFuture<
         std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>>
-        callback;
+        future;
     device::enclave::ICloudRecoveryKey::Retrieve(
-        callback.callback(), kICloudKeychainRecoveryKeyAccessGroup);
-    callback.WaitForCallback();
-    ASSERT_EQ(callback.value().size(), 1u);
+        future.GetCallback(), kICloudKeychainRecoveryKeyAccessGroup);
+    EXPECT_TRUE(future.Wait());
+    ASSERT_EQ(future.Get().size(), 1u);
   }
 }
 

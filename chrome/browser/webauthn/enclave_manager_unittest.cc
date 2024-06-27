@@ -4,20 +4,33 @@
 
 #include "chrome/browser/webauthn/enclave_manager.h"
 
+#include <array>
+#include <cstddef>
+#include <cstdint>
 #include <memory>
+#include <optional>
+#include <string>
 #include <string_view>
+#include <tuple>
+#include <utility>
+#include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/process/process.h"
-#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/fake_magic_arch.h"
@@ -26,24 +39,27 @@
 #include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
 #include "chrome/browser/webauthn/test_util.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/trusted_vault/command_line_switches.h"
-#include "components/trusted_vault/proto/recovery_key_store.pb.h"
-#include "components/trusted_vault/proto/vault.pb.h"
-#include "components/trusted_vault/proto_string_bytes_conversion.h"
-#include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
-#include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
-#include "crypto/signature_verifier.h"
 #include "crypto/user_verifying_key.h"
+#include "device/fido/authenticator_get_assertion_response.h"
+#include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
+#include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/enclave/constants.h"
 #include "device/fido/enclave/enclave_authenticator.h"
 #include "device/fido/enclave/types.h"
-#include "device/fido/test_callback_receiver.h"
+#include "device/fido/fido_constants.h"
+#include "device/fido/fido_types.h"
+#include "device/fido/json_request.h"
+#include "device/fido/public_key_credential_descriptor.h"
+#include "device/fido/public_key_credential_params.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_status_code.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -52,14 +68,23 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/boringssl/src/include/openssl/hmac.h"
-#include "third_party/boringssl/src/include/openssl/sha.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "crypto/scoped_fake_apple_keychain_v2.h"
 #include "device/fido/enclave/icloud_recovery_key_mac.h"
 #include "device/fido/mac/scoped_touch_id_test_environment.h"
+#include "third_party/boringssl/src/include/openssl/hmac.h"
+#include "third_party/boringssl/src/include/openssl/sha.h"
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "base/run_loop.h"
+#include "components/trusted_vault/proto/recovery_key_store.pb.h"
+#include "components/trusted_vault/proto/vault.pb.h"
+#include "components/trusted_vault/proto_string_bytes_conversion.h"
+#include "components/trusted_vault/securebox.h"
+#include "crypto/signature_verifier.h"
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 // These tests are also disabled under MSAN. The enclave subprocess is written
 // in Rust and FFI from Rust to C++ doesn't work in Chromium at this time
@@ -67,8 +92,8 @@
 #if !defined(MEMORY_SANITIZER)
 
 namespace enclave = device::enclave;
-using NoArgCallback = device::test::TestCallbackReceiver<>;
-using BoolCallback = device::test::TestCallbackReceiver<bool>;
+using NoArgFuture = base::test::TestFuture<void>;
+using BoolFuture = base::test::TestFuture<bool>;
 
 namespace {
 
@@ -407,10 +432,10 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
   }
 
   bool Register() {
-    BoolCallback register_callback;
-    manager_.RegisterIfNeeded(register_callback.callback());
-    register_callback.WaitForCallback();
-    return std::get<0>(register_callback.result().value());
+    BoolFuture register_future;
+    manager_.RegisterIfNeeded(register_future.GetCallback());
+    EXPECT_TRUE(register_future.Wait());
+    return register_future.Get();
   }
 
   void CorruptDeviceId() {
@@ -446,19 +471,19 @@ TEST_F(EnclaveManagerTest, Basic) {
   ASSERT_FALSE(manager_.is_registered());
   ASSERT_FALSE(manager_.is_ready());
 
-  NoArgCallback loaded_callback;
-  manager_.Load(loaded_callback.callback());
-  loaded_callback.WaitForCallback();
+  NoArgFuture loaded_future;
+  manager_.Load(loaded_future.GetCallback());
+  EXPECT_TRUE(loaded_future.Wait());
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.is_loaded());
   ASSERT_FALSE(manager_.is_registered());
   ASSERT_FALSE(manager_.is_ready());
 
-  BoolCallback register_callback;
-  manager_.RegisterIfNeeded(register_callback.callback());
+  BoolFuture register_future;
+  manager_.RegisterIfNeeded(register_future.GetCallback());
   ASSERT_FALSE(manager_.is_idle());
-  register_callback.WaitForCallback();
-  ASSERT_TRUE(std::get<0>(register_callback.result().value()));
+  EXPECT_TRUE(register_future.Wait());
+  ASSERT_TRUE(register_future.Get());
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.is_loaded());
   ASSERT_TRUE(manager_.is_registered());
@@ -472,12 +497,12 @@ TEST_F(EnclaveManagerTest, Basic) {
   ASSERT_TRUE(manager_.has_pending_keys());
   EXPECT_EQ(stored_count_, 1u);
 
-  BoolCallback add_callback;
+  BoolFuture add_future;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
-      /*pin_metadata=*/std::nullopt, add_callback.callback()));
+      /*pin_metadata=*/std::nullopt, add_future.GetCallback()));
   ASSERT_FALSE(manager_.is_idle());
-  add_callback.WaitForCallback();
-  ASSERT_TRUE(std::get<0>(add_callback.result().value()));
+  EXPECT_TRUE(add_future.Wait());
+  ASSERT_TRUE(add_future.Get());
 
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.is_loaded());
@@ -503,10 +528,10 @@ TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationRequested) {
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/417);
-  BoolCallback add_callback;
+  BoolFuture add_future;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
-      /*pin_metadata=*/std::nullopt, add_callback.callback()));
-  add_callback.WaitForCallback();
+      /*pin_metadata=*/std::nullopt, add_future.GetCallback()));
+  EXPECT_TRUE(add_future.Wait());
 
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.is_loaded());
@@ -517,8 +542,8 @@ TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationRequested) {
 
 TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationCompleted) {
   security_domain_service_->pretend_there_are_members();
-  BoolCallback register_callback;
-  manager_.RegisterIfNeeded(register_callback.callback());
+  BoolFuture register_future;
+  manager_.RegisterIfNeeded(register_future.GetCallback());
   ASSERT_FALSE(manager_.is_registered());
 
   // Provide the domain secrets before the registration has completed. The
@@ -526,11 +551,11 @@ TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationCompleted) {
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/417);
-  BoolCallback add_callback;
+  BoolFuture add_future;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
-      /*pin_metadata=*/std::nullopt, add_callback.callback()));
-  add_callback.WaitForCallback();
-  register_callback.WaitForCallback();
+      /*pin_metadata=*/std::nullopt, add_future.GetCallback()));
+  EXPECT_TRUE(add_future.Wait());
+  EXPECT_TRUE(register_future.Wait());
 
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.is_loaded());
@@ -549,10 +574,10 @@ TEST_F(EnclaveManagerTest, RegistrationFailureAndRetry) {
   {
     device::enclave::ScopedEnclaveOverride override(
         TestWebAuthnEnclaveIdentity(/*port=*/100));
-    BoolCallback register_callback;
-    manager_.RegisterIfNeeded(register_callback.callback());
-    register_callback.WaitForCallback();
-    ASSERT_FALSE(std::get<0>(register_callback.result().value()));
+    BoolFuture register_future;
+    manager_.RegisterIfNeeded(register_future.GetCallback());
+    EXPECT_TRUE(register_future.Wait());
+    ASSERT_FALSE(register_future.Get());
   }
   ASSERT_FALSE(manager_.is_registered());
   const std::string public_key = manager_.local_state_for_testing()
@@ -561,11 +586,11 @@ TEST_F(EnclaveManagerTest, RegistrationFailureAndRetry) {
                                      ->second.hardware_public_key();
   ASSERT_FALSE(public_key.empty());
 
-  BoolCallback register_callback;
-  manager_.RegisterIfNeeded(register_callback.callback());
-  register_callback.WaitForCallback();
+  BoolFuture register_future;
+  manager_.RegisterIfNeeded(register_future.GetCallback());
+  EXPECT_TRUE(register_future.Wait());
   ASSERT_TRUE(manager_.is_registered());
-  ASSERT_TRUE(std::get<0>(register_callback.result().value()));
+  ASSERT_TRUE(register_future.Get());
 
   // The public key should not have changed because re-registration attempts
   // must try the same public key again in case they actually worked the first
@@ -583,9 +608,9 @@ TEST_F(EnclaveManagerTest, PrimaryUserChange) {
           .gaia;
 
   {
-    BoolCallback register_callback;
-    manager_.RegisterIfNeeded(register_callback.callback());
-    register_callback.WaitForCallback();
+    BoolFuture register_future;
+    manager_.RegisterIfNeeded(register_future.GetCallback());
+    EXPECT_TRUE(register_future.Wait());
   }
   ASSERT_TRUE(manager_.is_registered());
   EXPECT_THAT(GaiaAccountsInState(), testing::UnorderedElementsAre(gaia1));
@@ -598,9 +623,9 @@ TEST_F(EnclaveManagerTest, PrimaryUserChange) {
           .gaia;
   ASSERT_FALSE(manager_.is_registered());
   {
-    BoolCallback register_callback;
-    manager_.RegisterIfNeeded(register_callback.callback());
-    register_callback.WaitForCallback();
+    BoolFuture register_future;
+    manager_.RegisterIfNeeded(register_future.GetCallback());
+    EXPECT_TRUE(register_future.Wait());
   }
   ASSERT_TRUE(manager_.is_registered());
   EXPECT_THAT(GaiaAccountsInState(),
@@ -629,14 +654,14 @@ TEST_F(EnclaveManagerTest, PrimaryUserChangeDiscardsActions) {
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .gaia;
 
-  NoArgCallback loaded_callback;
-  manager_.Load(loaded_callback.callback());
-  loaded_callback.WaitForCallback();
+  NoArgFuture loaded_future;
+  manager_.Load(loaded_future.GetCallback());
+  EXPECT_TRUE(loaded_future.Wait());
 
-  BoolCallback register_callback1;
-  manager_.RegisterIfNeeded(register_callback1.callback());
-  BoolCallback register_callback2;
-  manager_.RegisterIfNeeded(register_callback2.callback());
+  BoolFuture register_future1;
+  manager_.RegisterIfNeeded(register_future1.GetCallback());
+  BoolFuture register_future2;
+  manager_.RegisterIfNeeded(register_future2.GetCallback());
 
   identity_test_env_.MakePrimaryAccountAvailable("test2@gmail.com",
                                                  signin::ConsentLevel::kSignin);
@@ -646,10 +671,10 @@ TEST_F(EnclaveManagerTest, PrimaryUserChangeDiscardsActions) {
   ASSERT_FALSE(manager_.is_registered());
   ASSERT_FALSE(manager_.is_ready());
 
-  register_callback1.WaitForCallback();
-  ASSERT_FALSE(std::get<0>(register_callback1.result().value()));
-  register_callback2.WaitForCallback();
-  ASSERT_FALSE(std::get<0>(register_callback2.result().value()));
+  EXPECT_TRUE(register_future1.Wait());
+  ASSERT_FALSE(register_future1.Get());
+  EXPECT_TRUE(register_future2.Wait());
+  ASSERT_FALSE(register_future2.Get());
 }
 
 TEST_F(EnclaveManagerTest, AddWithExistingPIN) {
@@ -658,13 +683,13 @@ TEST_F(EnclaveManagerTest, AddWithExistingPIN) {
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/417);
-  BoolCallback add_callback;
+  BoolFuture add_future;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
       trusted_vault::GpmPinMetadata(std::string(kTestPINPublicKey),
                                     GetTestWrappedPIN().SerializeAsString(),
                                     /*expiry=*/base::Time()),
-      add_callback.callback()));
-  add_callback.WaitForCallback();
+      add_future.GetCallback()));
+  EXPECT_TRUE(add_future.Wait());
 
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.is_loaded());
@@ -684,13 +709,13 @@ TEST_F(EnclaveManagerTest, InvalidWrappedPIN) {
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/417);
 
-  BoolCallback add_callback;
+  BoolFuture add_future;
   // A wrapped PIN that isn't a valid protobuf should be rejected.
   EXPECT_FALSE(manager_.AddDeviceToAccount(
       trusted_vault::GpmPinMetadata(std::string(kTestPINPublicKey),
                                     "nonsense wrapped PIN",
                                     /*expiry=*/base::Time()),
-      add_callback.callback()));
+      add_future.GetCallback()));
 
   // A valid protobuf, but which fails invariants, should be rejected.
   webauthn_pb::EnclaveLocalState::WrappedPIN wrapped_pin = GetTestWrappedPIN();
@@ -699,15 +724,15 @@ TEST_F(EnclaveManagerTest, InvalidWrappedPIN) {
       trusted_vault::GpmPinMetadata(std::string(kTestPINPublicKey),
                                     wrapped_pin.SerializeAsString(),
                                     /*expiry=*/base::Time()),
-      add_callback.callback()));
+      add_future.GetCallback()));
 }
 
 TEST_F(EnclaveManagerTest, SetupWithPIN) {
   const std::string pin = "123456";
 
-  BoolCallback setup_callback;
-  manager_.SetupWithPIN(pin, setup_callback.callback());
-  setup_callback.WaitForCallback();
+  BoolFuture setup_future;
+  manager_.SetupWithPIN(pin, setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
   ASSERT_TRUE(manager_.is_ready());
   ASSERT_TRUE(manager_.has_wrapped_pin());
   EXPECT_FALSE(manager_.wrapped_pin_is_arbitrary());
@@ -731,32 +756,32 @@ TEST_F(EnclaveManagerTest, SetupWithPIN) {
 TEST_F(EnclaveManagerTest, SetupWithPIN_SecurityDomainFailure) {
   security_domain_service_->fail_all_requests();
 
-  BoolCallback setup_callback;
-  manager_.SetupWithPIN("123456", setup_callback.callback());
-  setup_callback.WaitForCallback();
-  ASSERT_FALSE(std::get<0>(setup_callback.result().value()));
+  BoolFuture setup_future;
+  manager_.SetupWithPIN("123456", setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
+  ASSERT_FALSE(setup_future.Get());
   ASSERT_FALSE(manager_.is_ready());
 }
 
 TEST_F(EnclaveManagerTest, SetupWithPIN_CertXMLFailure) {
   recovery_key_store_->break_cert_xml_file();
 
-  BoolCallback setup_callback;
-  manager_.SetupWithPIN("123456", setup_callback.callback());
+  BoolFuture setup_future;
+  manager_.SetupWithPIN("123456", setup_future.GetCallback());
   // This test primarily shouldn't crash or hang.
-  setup_callback.WaitForCallback();
-  ASSERT_FALSE(std::get<0>(setup_callback.result().value()));
+  EXPECT_TRUE(setup_future.Wait());
+  ASSERT_FALSE(setup_future.Get());
   ASSERT_FALSE(manager_.is_ready());
 }
 
 TEST_F(EnclaveManagerTest, SetupWithPIN_SigXMLFailure) {
   recovery_key_store_->break_sig_xml_file();
 
-  BoolCallback setup_callback;
-  manager_.SetupWithPIN("123456", setup_callback.callback());
+  BoolFuture setup_future;
+  manager_.SetupWithPIN("123456", setup_future.GetCallback());
   // This test primarily shouldn't crash or hang.
-  setup_callback.WaitForCallback();
-  ASSERT_FALSE(std::get<0>(setup_callback.result().value()));
+  EXPECT_TRUE(setup_future.Wait());
+  ASSERT_FALSE(setup_future.Get());
   ASSERT_FALSE(manager_.is_ready());
 }
 
@@ -770,9 +795,9 @@ TEST_F(EnclaveManagerTest, AddDeviceAndPINToAccount) {
                      /*last_key_version=*/kSecretVersion);
   ASSERT_TRUE(manager_.has_pending_keys());
 
-  BoolCallback add_callback;
-  manager_.AddDeviceAndPINToAccount(pin, add_callback.callback());
-  add_callback.WaitForCallback();
+  BoolFuture add_future;
+  manager_.AddDeviceAndPINToAccount(pin, add_future.GetCallback());
+  EXPECT_TRUE(add_future.Wait());
   ASSERT_TRUE(manager_.is_ready());
   ASSERT_TRUE(manager_.has_wrapped_pin());
   EXPECT_TRUE(manager_.wrapped_pin_is_arbitrary());
@@ -804,19 +829,19 @@ TEST_F(EnclaveManagerTest, ChangePIN) {
                      /*last_key_version=*/kSecretVersion);
   ASSERT_TRUE(manager_.has_pending_keys());
 
-  BoolCallback add_callback;
-  manager_.AddDeviceAndPINToAccount(pin, add_callback.callback());
-  add_callback.WaitForCallback();
+  BoolFuture add_future;
+  manager_.AddDeviceAndPINToAccount(pin, add_future.GetCallback());
+  EXPECT_TRUE(add_future.Wait());
   ASSERT_TRUE(manager_.is_ready());
   ASSERT_TRUE(manager_.has_wrapped_pin());
   EXPECT_TRUE(manager_.wrapped_pin_is_arbitrary());
   const std::vector<uint8_t> security_domain_secret =
       std::move(manager_.TakeSecret()->second);
 
-  BoolCallback change_callback;
-  manager_.ChangePIN(new_pin, "rapt", change_callback.callback());
-  change_callback.WaitForCallback();
-  ASSERT_TRUE(std::get<0>(change_callback.result().value()));
+  BoolFuture change_future;
+  manager_.ChangePIN(new_pin, "rapt", change_future.GetCallback());
+  EXPECT_TRUE(change_future.Wait());
+  ASSERT_TRUE(change_future.Get());
 
   EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
   EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
@@ -839,10 +864,10 @@ TEST_F(EnclaveManagerTest, EnclaveForgetsClient_SetupWithPIN) {
   ASSERT_TRUE(Register());
   CorruptDeviceId();
 
-  BoolCallback setup_callback;
-  manager_.SetupWithPIN("1234", setup_callback.callback());
-  setup_callback.WaitForCallback();
-  EXPECT_FALSE(std::get<0>(setup_callback.result().value()));
+  BoolFuture setup_future;
+  manager_.SetupWithPIN("1234", setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
+  EXPECT_FALSE(setup_future.Get());
 }
 
 TEST_F(EnclaveManagerTest, EnclaveForgetsClient_AddDeviceToAccount) {
@@ -853,14 +878,14 @@ TEST_F(EnclaveManagerTest, EnclaveForgetsClient_AddDeviceToAccount) {
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/417);
-  BoolCallback add_callback;
+  BoolFuture add_future;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
       trusted_vault::GpmPinMetadata(std::string(kTestPINPublicKey),
                                     GetTestWrappedPIN().SerializeAsString(),
                                     /*expiry=*/base::Time()),
-      add_callback.callback()));
-  add_callback.WaitForCallback();
-  EXPECT_FALSE(std::get<0>(add_callback.result().value()));
+      add_future.GetCallback()));
+  EXPECT_TRUE(add_future.Wait());
+  EXPECT_FALSE(add_future.Get());
 }
 
 TEST_F(EnclaveManagerTest, EnclaveForgetsClient_AddDeviceAndPINToAccount) {
@@ -872,10 +897,10 @@ TEST_F(EnclaveManagerTest, EnclaveForgetsClient_AddDeviceAndPINToAccount) {
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/417);
-  BoolCallback add_callback;
-  manager_.AddDeviceAndPINToAccount("1234", add_callback.callback());
-  add_callback.WaitForCallback();
-  EXPECT_FALSE(std::get<0>(add_callback.result().value()));
+  BoolFuture add_future;
+  manager_.AddDeviceAndPINToAccount("1234", add_future.GetCallback());
+  EXPECT_TRUE(add_future.Wait());
+  EXPECT_FALSE(add_future.Get());
 }
 
 TEST_F(EnclaveManagerTest, RenewPIN) {
@@ -883,19 +908,19 @@ TEST_F(EnclaveManagerTest, RenewPIN) {
 
   const std::string pin = "123456";
 
-  BoolCallback setup_callback;
-  manager_.SetupWithPIN(pin, setup_callback.callback());
-  setup_callback.WaitForCallback();
+  BoolFuture setup_future;
+  manager_.SetupWithPIN(pin, setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
   ASSERT_TRUE(manager_.is_ready());
   ASSERT_TRUE(manager_.has_wrapped_pin());
 
   EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
   EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
 
-  BoolCallback renew_callback;
-  manager_.RenewPIN(renew_callback.callback());
-  renew_callback.WaitForCallback();
-  EXPECT_TRUE(std::get<0>(renew_callback.result().value()));
+  BoolFuture renew_future;
+  manager_.RenewPIN(renew_future.GetCallback());
+  EXPECT_TRUE(renew_future.Wait());
+  EXPECT_TRUE(renew_future.Get());
 
   // The number of PIN members must not have increased because the upload should
   // have reused the vault handle etc of the original.
@@ -912,9 +937,9 @@ TEST_F(EnclaveManagerTest, RenewPIN) {
 TEST_F(EnclaveManagerTest, EpochChanged) {
   ASSERT_TRUE(Register());
 
-  BoolCallback setup_callback;
-  manager_.SetupWithPIN("123456", setup_callback.callback());
-  setup_callback.WaitForCallback();
+  BoolFuture setup_future;
+  manager_.SetupWithPIN("123456", setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
   EXPECT_TRUE(manager_.is_ready());
 
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult state;
@@ -925,20 +950,20 @@ TEST_F(EnclaveManagerTest, EpochChanged) {
   EXPECT_TRUE(manager_.ConsiderSecurityDomainState(state, base::DoNothing()));
   EXPECT_TRUE(manager_.is_idle());
 
-  BoolCallback update_callback;
+  BoolFuture update_future;
   state.key_version = kSecretVersion + 1;
   EXPECT_FALSE(
-      manager_.ConsiderSecurityDomainState(state, update_callback.callback()));
-  update_callback.WaitForCallback();
+      manager_.ConsiderSecurityDomainState(state, update_future.GetCallback()));
+  EXPECT_TRUE(update_future.Wait());
   EXPECT_FALSE(manager_.is_ready());
 }
 
 TEST_F(EnclaveManagerTest, PINChanged) {
   ASSERT_TRUE(Register());
 
-  BoolCallback setup_callback;
-  manager_.SetupWithPIN("123456", setup_callback.callback());
-  setup_callback.WaitForCallback();
+  BoolFuture setup_future;
+  manager_.SetupWithPIN("123456", setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
   EXPECT_TRUE(manager_.is_ready());
 
   const webauthn_pb::EnclaveLocalState::User& user =
@@ -954,10 +979,10 @@ TEST_F(EnclaveManagerTest, PINChanged) {
                                  wrapped_pin.SerializeAsString(),
                                  /*expiry=*/base::Time::FromTimeT(1));
 
-  BoolCallback update_callback;
+  BoolFuture update_future;
   EXPECT_TRUE(
-      manager_.ConsiderSecurityDomainState(state, update_callback.callback()));
-  update_callback.WaitForCallback();
+      manager_.ConsiderSecurityDomainState(state, update_future.GetCallback()));
+  EXPECT_TRUE(update_future.Wait());
   EXPECT_TRUE(manager_.is_ready());
   const webauthn_pb::EnclaveLocalState::User& updated_user =
       manager_.local_state_for_testing().users().begin()->second;
@@ -1016,9 +1041,9 @@ TEST_F(EnclaveManagerTest, SigningFails) {
 TEST_F(EnclaveManagerTest, AddICloudRecoveryKey) {
   ASSERT_TRUE(Register());
 
-  BoolCallback setup_callback;
-  manager_.SetupWithPIN("123456", setup_callback.callback());
-  setup_callback.WaitForCallback();
+  BoolFuture setup_future;
+  manager_.SetupWithPIN("123456", setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
   ASSERT_TRUE(manager_.is_ready());
 
   std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_key =
@@ -1026,11 +1051,11 @@ TEST_F(EnclaveManagerTest, AddICloudRecoveryKey) {
   std::unique_ptr<trusted_vault::SecureBoxKeyPair> key =
       trusted_vault::SecureBoxKeyPair::CreateByPrivateKeyImport(
           icloud_key->key()->private_key().ExportToBytes());
-  BoolCallback icloud_callback;
+  BoolFuture icloud_future;
   manager_.AddICloudRecoveryKey(std::move(icloud_key),
-                                icloud_callback.callback());
-  icloud_callback.WaitForCallback();
-  EXPECT_TRUE(std::get<0>(icloud_callback.result().value()));
+                                icloud_future.GetCallback());
+  EXPECT_TRUE(icloud_future.Wait());
+  EXPECT_TRUE(icloud_future.Get());
 
   EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
   EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
@@ -1073,10 +1098,10 @@ TEST_F(EnclaveManagerTest, Unenroll) {
   ASSERT_TRUE(Register());
 
   ASSERT_TRUE(manager_.is_registered());
-  BoolCallback unenroll_callback;
-  manager_.Unenroll(unenroll_callback.callback());
-  unenroll_callback.WaitForCallback();
-  EXPECT_TRUE(std::get<0>(unenroll_callback.result().value()));
+  BoolFuture unenroll_future;
+  manager_.Unenroll(unenroll_future.GetCallback());
+  EXPECT_TRUE(unenroll_future.Wait());
+  EXPECT_TRUE(unenroll_future.Get());
   ASSERT_FALSE(manager_.is_registered());
 
   // Things should be in a good state such that we can register again.
@@ -1090,27 +1115,27 @@ TEST_F(EnclaveManagerTest, UnenrollRace) {
   // Should be safe to race multiple unenroll requests. The ones after the first
   // will fail when pending requests are cancelled.
   ASSERT_TRUE(manager_.is_registered());
-  BoolCallback unenroll_callback1;
-  BoolCallback unenroll_callback2;
-  BoolCallback unenroll_callback3;
-  manager_.Unenroll(unenroll_callback1.callback());
-  manager_.Unenroll(unenroll_callback2.callback());
-  manager_.Unenroll(unenroll_callback3.callback());
-  unenroll_callback1.WaitForCallback();
-  unenroll_callback2.WaitForCallback();
-  unenroll_callback3.WaitForCallback();
-  EXPECT_TRUE(std::get<0>(unenroll_callback1.result().value()));
-  EXPECT_FALSE(std::get<0>(unenroll_callback2.result().value()));
-  EXPECT_FALSE(std::get<0>(unenroll_callback3.result().value()));
+  BoolFuture unenroll_future1;
+  BoolFuture unenroll_future2;
+  BoolFuture unenroll_future3;
+  manager_.Unenroll(unenroll_future1.GetCallback());
+  manager_.Unenroll(unenroll_future2.GetCallback());
+  manager_.Unenroll(unenroll_future3.GetCallback());
+  EXPECT_TRUE(unenroll_future1.Wait());
+  EXPECT_TRUE(unenroll_future2.Wait());
+  EXPECT_TRUE(unenroll_future3.Wait());
+  EXPECT_TRUE(unenroll_future1.Get());
+  EXPECT_FALSE(unenroll_future2.Get());
+  EXPECT_FALSE(unenroll_future3.Get());
   ASSERT_FALSE(manager_.is_registered());
 }
 
 TEST_F(EnclaveManagerTest, UnenrollWithoutRegistering) {
   ASSERT_FALSE(manager_.is_registered());
-  BoolCallback unenroll_callback;
-  manager_.Unenroll(unenroll_callback.callback());
-  unenroll_callback.WaitForCallback();
-  EXPECT_TRUE(std::get<0>(unenroll_callback.result().value()));
+  BoolFuture unenroll_future;
+  manager_.Unenroll(unenroll_future.GetCallback());
+  EXPECT_TRUE(unenroll_future.Wait());
+  EXPECT_TRUE(unenroll_future.Get());
   ASSERT_FALSE(manager_.is_registered());
 }
 
@@ -1125,14 +1150,14 @@ TEST_F(EnclaveManagerTest, UnenrollWithoutRegistering) {
 TEST_F(EnclaveManagerTest, MAYBE_HardwareKeyLost) {
   crypto::ScopedFakeUserVerifyingKeyProvider scoped_uv_key_provider;
   security_domain_service_->pretend_there_are_members();
-  NoArgCallback loaded_callback;
-  manager_.Load(loaded_callback.callback());
-  loaded_callback.WaitForCallback();
+  NoArgFuture loaded_future;
+  manager_.Load(loaded_future.GetCallback());
+  EXPECT_TRUE(loaded_future.Wait());
 
-  BoolCallback register_callback;
-  manager_.RegisterIfNeeded(register_callback.callback());
+  BoolFuture register_future;
+  manager_.RegisterIfNeeded(register_future.GetCallback());
   ASSERT_FALSE(manager_.is_idle());
-  register_callback.WaitForCallback();
+  EXPECT_TRUE(register_future.Wait());
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());
@@ -1141,11 +1166,11 @@ TEST_F(EnclaveManagerTest, MAYBE_HardwareKeyLost) {
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.has_pending_keys());
 
-  BoolCallback add_callback;
+  BoolFuture add_future;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
-      /*pin_metadata=*/std::nullopt, add_callback.callback()));
+      /*pin_metadata=*/std::nullopt, add_future.GetCallback()));
   ASSERT_FALSE(manager_.is_idle());
-  add_callback.WaitForCallback();
+  EXPECT_TRUE(add_future.Wait());
 
   base::RepeatingClosure quit_closure;
 #if BUILDFLAG(IS_WIN)
@@ -1249,14 +1274,14 @@ class EnclaveUVTest : public EnclaveManagerTest {
 
 TEST_F(EnclaveUVTest, UserVerifyingKeyAvailable) {
   security_domain_service_->pretend_there_are_members();
-  NoArgCallback loaded_callback;
-  manager_.Load(loaded_callback.callback());
-  loaded_callback.WaitForCallback();
+  NoArgFuture loaded_future;
+  manager_.Load(loaded_future.GetCallback());
+  EXPECT_TRUE(loaded_future.Wait());
 
-  BoolCallback register_callback;
-  manager_.RegisterIfNeeded(register_callback.callback());
+  BoolFuture register_future;
+  manager_.RegisterIfNeeded(register_future.GetCallback());
   ASSERT_FALSE(manager_.is_idle());
-  register_callback.WaitForCallback();
+  EXPECT_TRUE(register_future.Wait());
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());
@@ -1265,11 +1290,11 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyAvailable) {
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.has_pending_keys());
 
-  BoolCallback add_callback;
+  BoolFuture add_future;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
-      /*pin_metadata=*/std::nullopt, add_callback.callback()));
+      /*pin_metadata=*/std::nullopt, add_future.GetCallback()));
   ASSERT_FALSE(manager_.is_idle());
-  add_callback.WaitForCallback();
+  EXPECT_TRUE(add_future.Wait());
 
 #if BUILDFLAG(IS_WIN)
   EXPECT_EQ(manager_.uv_key_state(),
@@ -1282,14 +1307,14 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyAvailable) {
 TEST_F(EnclaveUVTest, UserVerifyingKeyUnavailable) {
   DisableUVKeySupport();
   security_domain_service_->pretend_there_are_members();
-  NoArgCallback loaded_callback;
-  manager_.Load(loaded_callback.callback());
-  loaded_callback.WaitForCallback();
+  NoArgFuture loaded_future;
+  manager_.Load(loaded_future.GetCallback());
+  EXPECT_TRUE(loaded_future.Wait());
 
-  BoolCallback register_callback;
-  manager_.RegisterIfNeeded(register_callback.callback());
+  BoolFuture register_future;
+  manager_.RegisterIfNeeded(register_future.GetCallback());
   ASSERT_FALSE(manager_.is_idle());
-  register_callback.WaitForCallback();
+  EXPECT_TRUE(register_future.Wait());
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());
@@ -1298,25 +1323,25 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyUnavailable) {
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.has_pending_keys());
 
-  BoolCallback add_callback;
+  BoolFuture add_future;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
-      /*pin_metadata=*/std::nullopt, add_callback.callback()));
+      /*pin_metadata=*/std::nullopt, add_future.GetCallback()));
   ASSERT_FALSE(manager_.is_idle());
-  add_callback.WaitForCallback();
+  EXPECT_TRUE(add_future.Wait());
   ASSERT_TRUE(manager_.is_registered());
   EXPECT_EQ(manager_.uv_key_state(), EnclaveManager::UvKeyState::kNone);
 }
 
 TEST_F(EnclaveUVTest, UserVerifyingKeyLost) {
   security_domain_service_->pretend_there_are_members();
-  NoArgCallback loaded_callback;
-  manager_.Load(loaded_callback.callback());
-  loaded_callback.WaitForCallback();
+  NoArgFuture loaded_future;
+  manager_.Load(loaded_future.GetCallback());
+  EXPECT_TRUE(loaded_future.Wait());
 
-  BoolCallback register_callback;
-  manager_.RegisterIfNeeded(register_callback.callback());
+  BoolFuture register_future;
+  manager_.RegisterIfNeeded(register_future.GetCallback());
   ASSERT_FALSE(manager_.is_idle());
-  register_callback.WaitForCallback();
+  EXPECT_TRUE(register_future.Wait());
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());
@@ -1325,11 +1350,11 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyLost) {
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.has_pending_keys());
 
-  BoolCallback add_callback;
+  BoolFuture add_future;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
-      /*pin_metadata=*/std::nullopt, add_callback.callback()));
+      /*pin_metadata=*/std::nullopt, add_future.GetCallback()));
   ASSERT_FALSE(manager_.is_idle());
-  add_callback.WaitForCallback();
+  EXPECT_TRUE(add_future.Wait());
 
   base::RepeatingClosure quit_closure;
 #if BUILDFLAG(IS_WIN)
@@ -1368,33 +1393,31 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyLost) {
 
 TEST_F(EnclaveUVTest, UserVerifyingKeyUseExisting) {
   security_domain_service_->pretend_there_are_members();
-  NoArgCallback loaded_callback;
-  manager_.Load(loaded_callback.callback());
-  loaded_callback.WaitForCallback();
+  NoArgFuture loaded_future;
+  manager_.Load(loaded_future.GetCallback());
+  EXPECT_TRUE(loaded_future.Wait());
 
-  device::test::ValueCallbackReceiver<
-      std::unique_ptr<crypto::UserVerifyingSigningKey>>
-      key_callback;
+  base::test::TestFuture<std::unique_ptr<crypto::UserVerifyingSigningKey>>
+      key_future;
   std::unique_ptr<crypto::UserVerifyingKeyProvider> key_provider =
       crypto::GetUserVerifyingKeyProvider(/*config=*/{});
   key_provider->GenerateUserVerifyingSigningKey(
       std::array{crypto::SignatureVerifier::ECDSA_SHA256},
-      key_callback.callback());
-  key_callback.WaitForCallback();
+      key_future.GetCallback());
+  EXPECT_TRUE(key_future.Wait());
   manager_.local_state_for_testing()
       .mutable_users()
       ->begin()
-      ->second.set_uv_public_key(
-          ToString(key_callback.value()->GetPublicKey()));
+      ->second.set_uv_public_key(ToString(key_future.Get()->GetPublicKey()));
   manager_.local_state_for_testing()
       .mutable_users()
       ->begin()
-      ->second.set_wrapped_uv_private_key(key_callback.value()->GetKeyLabel());
+      ->second.set_wrapped_uv_private_key(key_future.Get()->GetKeyLabel());
 
-  BoolCallback register_callback;
-  manager_.RegisterIfNeeded(register_callback.callback());
+  BoolFuture register_future;
+  manager_.RegisterIfNeeded(register_future.GetCallback());
   ASSERT_FALSE(manager_.is_idle());
-  register_callback.WaitForCallback();
+  EXPECT_TRUE(register_future.Wait());
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());
@@ -1403,11 +1426,11 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyUseExisting) {
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.has_pending_keys());
 
-  BoolCallback add_callback;
+  BoolFuture add_future;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
-      /*pin_metadata=*/std::nullopt, add_callback.callback()));
+      /*pin_metadata=*/std::nullopt, add_future.GetCallback()));
   ASSERT_FALSE(manager_.is_idle());
-  add_callback.WaitForCallback();
+  EXPECT_TRUE(add_future.Wait());
 
   ASSERT_EQ(manager_.uv_key_state(), EnclaveManager::UvKeyState::kUsesSystemUI);
 }
@@ -1417,14 +1440,14 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyUseExisting) {
 // the user for biometrics.
 TEST_F(EnclaveUVTest, ChromeHandlesBiometrics) {
   security_domain_service_->pretend_there_are_members();
-  NoArgCallback loaded_callback;
-  manager_.Load(loaded_callback.callback());
-  loaded_callback.WaitForCallback();
+  NoArgFuture loaded_future;
+  manager_.Load(loaded_future.GetCallback());
+  EXPECT_TRUE(loaded_future.Wait());
 
-  BoolCallback register_callback;
-  manager_.RegisterIfNeeded(register_callback.callback());
+  BoolFuture register_future;
+  manager_.RegisterIfNeeded(register_future.GetCallback());
   ASSERT_FALSE(manager_.is_idle());
-  register_callback.WaitForCallback();
+  EXPECT_TRUE(register_future.Wait());
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());
@@ -1433,11 +1456,11 @@ TEST_F(EnclaveUVTest, ChromeHandlesBiometrics) {
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.has_pending_keys());
 
-  BoolCallback add_callback;
+  BoolFuture add_future;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
-      /*pin_metadata=*/std::nullopt, add_callback.callback()));
+      /*pin_metadata=*/std::nullopt, add_future.GetCallback()));
   ASSERT_FALSE(manager_.is_idle());
-  add_callback.WaitForCallback();
+  EXPECT_TRUE(add_future.Wait());
 
   scoped_fake_apple_keychain_.SetUVMethod(
       crypto::ScopedFakeAppleKeychainV2::UVMethod::kBiometrics);
@@ -1459,14 +1482,14 @@ TEST_F(EnclaveUVTest, ChromeHandlesBiometrics) {
 #if BUILDFLAG(IS_WIN)
 TEST_F(EnclaveUVTest, DeferredUVKeyCreation) {
   security_domain_service_->pretend_there_are_members();
-  NoArgCallback loaded_callback;
-  manager_.Load(loaded_callback.callback());
-  loaded_callback.WaitForCallback();
+  NoArgFuture loaded_future;
+  manager_.Load(loaded_future.GetCallback());
+  EXPECT_TRUE(loaded_future.Wait());
 
-  BoolCallback register_callback;
-  manager_.RegisterIfNeeded(register_callback.callback());
+  BoolFuture register_future;
+  manager_.RegisterIfNeeded(register_future.GetCallback());
   ASSERT_FALSE(manager_.is_idle());
-  register_callback.WaitForCallback();
+  EXPECT_TRUE(register_future.Wait());
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());
@@ -1475,11 +1498,11 @@ TEST_F(EnclaveUVTest, DeferredUVKeyCreation) {
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.has_pending_keys());
 
-  BoolCallback add_callback;
+  BoolFuture add_future;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
-      /*pin_metadata=*/std::nullopt, add_callback.callback()));
+      /*pin_metadata=*/std::nullopt, add_future.GetCallback()));
   ASSERT_FALSE(manager_.is_idle());
-  add_callback.WaitForCallback();
+  EXPECT_TRUE(add_future.Wait());
 
   EXPECT_EQ(manager_.uv_key_state(),
             EnclaveManager::UvKeyState::kUsesSystemUIDeferredCreation);
@@ -1505,14 +1528,14 @@ TEST_F(EnclaveUVTest, DeferredUVKeyCreation) {
 
 TEST_F(EnclaveUVTest, UnregisterOnFailedDeferredUVKeyCreation) {
   security_domain_service_->pretend_there_are_members();
-  NoArgCallback loaded_callback;
-  manager_.Load(loaded_callback.callback());
-  loaded_callback.WaitForCallback();
+  NoArgFuture loaded_future;
+  manager_.Load(loaded_future.GetCallback());
+  EXPECT_TRUE(loaded_future.Wait());
 
-  BoolCallback register_callback;
-  manager_.RegisterIfNeeded(register_callback.callback());
+  BoolFuture register_future;
+  manager_.RegisterIfNeeded(register_future.GetCallback());
   ASSERT_FALSE(manager_.is_idle());
-  register_callback.WaitForCallback();
+  EXPECT_TRUE(register_future.Wait());
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());
@@ -1521,11 +1544,11 @@ TEST_F(EnclaveUVTest, UnregisterOnFailedDeferredUVKeyCreation) {
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.has_pending_keys());
 
-  BoolCallback add_callback;
+  BoolFuture add_future;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
-      /*pin_metadata=*/std::nullopt, add_callback.callback()));
+      /*pin_metadata=*/std::nullopt, add_future.GetCallback()));
   ASSERT_FALSE(manager_.is_idle());
-  add_callback.WaitForCallback();
+  EXPECT_TRUE(add_future.Wait());
 
   EXPECT_EQ(manager_.uv_key_state(),
             EnclaveManager::UvKeyState::kUsesSystemUIDeferredCreation);

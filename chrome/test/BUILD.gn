@@ -2105,6 +2105,7 @@ if (!is_android) {
       "//components/webapps/browser:test_support",
       "//components/webapps/common:common",
       "//components/webapps/services/web_app_origin_association/test:test_support",
+      "//components/webauthn/core/browser:passkey_model",
       "//components/webauthn/core/browser:test_support",
       "//components/webrtc",
       "//components/webrtc_logging/browser",

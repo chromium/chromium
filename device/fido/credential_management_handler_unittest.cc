@@ -30,7 +30,6 @@
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
-#include "device/fido/test_callback_receiver.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_fido_device.h"
 #include "device/fido/virtual_fido_device_factory.h"
@@ -62,7 +61,7 @@ class CredentialManagementHandlerTest : public ::testing::Test {
         ready_future_.GetCallback(),
         base::BindRepeating(&CredentialManagementHandlerTest::GetPIN,
                             base::Unretained(this)),
-        finished_callback_.callback());
+        finished_future_.GetCallback());
     return handler;
   }
 
@@ -75,15 +74,14 @@ class CredentialManagementHandlerTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   base::test::TestFuture<void> ready_future_;
-  test::StatusAndValuesCallbackReceiver<
+  base::test::TestFuture<
       CtapDeviceResponseCode,
       std::optional<std::vector<AggregatedEnumerateCredentialsResponse>>,
       std::optional<size_t>>
-      get_credentials_callback_;
-  test::ValueCallbackReceiver<CtapDeviceResponseCode> delete_callback_;
-  test::ValueCallbackReceiver<CtapDeviceResponseCode>
-      update_user_info_callback_;
-  test::ValueCallbackReceiver<CredentialManagementStatus> finished_callback_;
+      get_credentials_future_;
+  base::test::TestFuture<CtapDeviceResponseCode> delete_future_;
+  base::test::TestFuture<CtapDeviceResponseCode> update_user_info_future_;
+  base::test::TestFuture<CredentialManagementStatus> finished_future_;
   test::VirtualFidoDeviceFactory virtual_device_factory_;
 };
 
@@ -108,10 +106,10 @@ TEST_F(CredentialManagementHandlerTest, TestDeleteCredentials) {
   auto handler = MakeHandler();
   ASSERT_TRUE(ready_future_.Wait());
 
-  handler->GetCredentials(get_credentials_callback_.callback());
-  get_credentials_callback_.WaitForCallback();
+  handler->GetCredentials(get_credentials_future_.GetCallback());
+  EXPECT_TRUE(get_credentials_future_.Wait());
 
-  auto result = get_credentials_callback_.TakeResult();
+  auto result = get_credentials_future_.Take();
   ASSERT_EQ(std::get<0>(result), CtapDeviceResponseCode::kSuccess);
   auto opt_response = std::move(std::get<1>(result));
   ASSERT_TRUE(opt_response);
@@ -126,12 +124,12 @@ TEST_F(CredentialManagementHandlerTest, TestDeleteCredentials) {
 
   handler->DeleteCredentials(
       {opt_response->front().credentials.front().credential_id},
-      delete_callback_.callback());
+      delete_future_.GetCallback());
 
-  delete_callback_.WaitForCallback();
-  ASSERT_EQ(CtapDeviceResponseCode::kSuccess, delete_callback_.value());
+  EXPECT_TRUE(delete_future_.Wait());
+  ASSERT_EQ(CtapDeviceResponseCode::kSuccess, delete_future_.Get());
   EXPECT_EQ(virtual_device_factory_.mutable_state()->registrations.size(), 0u);
-  EXPECT_FALSE(finished_callback_.was_called());
+  EXPECT_FALSE(finished_future_.IsReady());
 }
 
 // Tests that the credential management handler performs garbage collection when
@@ -212,9 +210,9 @@ TEST_F(CredentialManagementHandlerTest, TestGarbageCollectLargeBlob_Delete) {
 
   PublicKeyCredentialDescriptor credential(CredentialType::kPublicKey,
                                            credential_id);
-  handler->DeleteCredentials({credential}, delete_callback_.callback());
-  delete_callback_.WaitForCallback();
-  ASSERT_EQ(CtapDeviceResponseCode::kSuccess, delete_callback_.value());
+  handler->DeleteCredentials({credential}, delete_future_.GetCallback());
+  EXPECT_TRUE(delete_future_.Wait());
+  ASSERT_EQ(CtapDeviceResponseCode::kSuccess, delete_future_.Get());
   EXPECT_EQ(virtual_device_factory_.mutable_state()->registrations.size(), 0u);
   EXPECT_EQ(virtual_device_factory_.mutable_state()->large_blob,
             empty_large_blob);
@@ -262,10 +260,10 @@ TEST_F(CredentialManagementHandlerTest,
   // trigger garbage collection.
   PublicKeyCredentialDescriptor credential(CredentialType::kPublicKey,
                                            credential_id);
-  handler->DeleteCredentials({credential}, delete_callback_.callback());
-  delete_callback_.WaitForCallback();
+  handler->DeleteCredentials({credential}, delete_future_.GetCallback());
+  EXPECT_TRUE(delete_future_.Wait());
   ASSERT_EQ(CtapDeviceResponseCode::kCtap2ErrNoCredentials,
-            delete_callback_.value());
+            delete_future_.Get());
   EXPECT_NE(virtual_device_factory_.mutable_state()->large_blob,
             empty_large_blob);
 }
@@ -301,16 +299,15 @@ TEST_F(CredentialManagementHandlerTest, TestUpdateUserInformation) {
   handler->UpdateUserInformation(
       device::PublicKeyCredentialDescriptor(device::CredentialType::kPublicKey,
                                             credential_id),
-      updated_user, update_user_info_callback_.callback());
-  update_user_info_callback_.WaitForCallback();
-  ASSERT_EQ(CtapDeviceResponseCode::kSuccess,
-            update_user_info_callback_.value());
+      updated_user, update_user_info_future_.GetCallback());
+  EXPECT_TRUE(update_user_info_future_.Wait());
+  ASSERT_EQ(CtapDeviceResponseCode::kSuccess, update_user_info_future_.Get());
 
   EXPECT_EQ(virtual_device_factory_.mutable_state()
                 ->registrations[credential_id]
                 .user,
             updated_user);
-  EXPECT_FALSE(finished_callback_.was_called());
+  EXPECT_FALSE(finished_future_.IsReady());
 }
 
 TEST_F(CredentialManagementHandlerTest, TestForcePINChange) {
@@ -328,8 +325,8 @@ TEST_F(CredentialManagementHandlerTest, TestForcePINChange) {
   virtual_device_factory_.SetSupportedProtocol(device::ProtocolVersion::kCtap2);
 
   auto handler = MakeHandler();
-  finished_callback_.WaitForCallback();
-  ASSERT_EQ(finished_callback_.value(),
+  EXPECT_TRUE(finished_future_.Wait());
+  ASSERT_EQ(finished_future_.Get(),
             CredentialManagementStatus::kForcePINChange);
 }
 
@@ -374,10 +371,10 @@ TEST_F(CredentialManagementHandlerTest,
 
   auto handler = MakeHandler();
   EXPECT_TRUE(ready_future_.Wait());
-  handler->GetCredentials(get_credentials_callback_.callback());
-  get_credentials_callback_.WaitForCallback();
+  handler->GetCredentials(get_credentials_future_.GetCallback());
+  EXPECT_TRUE(get_credentials_future_.Wait());
 
-  auto result = get_credentials_callback_.TakeResult();
+  auto result = get_credentials_future_.Take();
   ASSERT_EQ(std::get<0>(result), CtapDeviceResponseCode::kSuccess);
   auto opt_response = std::move(std::get<1>(result));
   ASSERT_TRUE(opt_response);
@@ -424,10 +421,10 @@ TEST_F(CredentialManagementHandlerTest, EnumerateCredentialsMultipleRPs) {
   auto handler = MakeHandler();
   EXPECT_TRUE(ready_future_.Wait());
 
-  handler->GetCredentials(get_credentials_callback_.callback());
-  get_credentials_callback_.WaitForCallback();
+  handler->GetCredentials(get_credentials_future_.GetCallback());
+  EXPECT_TRUE(get_credentials_future_.Wait());
 
-  auto result = get_credentials_callback_.TakeResult();
+  auto result = get_credentials_future_.Take();
   ASSERT_EQ(std::get<0>(result), CtapDeviceResponseCode::kSuccess);
 
   std::vector<AggregatedEnumerateCredentialsResponse> responses =
