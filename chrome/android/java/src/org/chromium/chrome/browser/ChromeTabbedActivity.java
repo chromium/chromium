@@ -189,7 +189,6 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
-import org.chromium.chrome.browser.tabmodel.ChromeTabCreator.OverviewNtpCreator;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
@@ -2547,27 +2546,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     protected Pair<ChromeTabCreator, ChromeTabCreator> createTabCreators() {
-        OverviewNtpCreator overviewNtpCreator = null;
-
-        if (ReturnToChromeUtil.isStartSurfaceEnabled(this)) {
-            overviewNtpCreator =
-                    new OverviewNtpCreator() {
-                        @Override
-                        public boolean handleCreateNtpIfNeeded(
-                                boolean isNtp,
-                                boolean incognito,
-                                Tab parentTab,
-                                @NewTabPageLaunchOrigin int launchOrigin) {
-                            boolean shouldShowStart =
-                                    showStartSurfaceHomeForNtp(
-                                            isNtp, incognito, parentTab, launchOrigin);
-                            if (shouldShowStart) {
-                                mStartSurfaceParentTabSupplier.set(parentTab);
-                            }
-                            return shouldShowStart;
-                        }
-                    };
-        }
         return Pair.create(
                 new ChromeTabCreator(
                         this,
@@ -2575,7 +2553,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         this::getTabDelegateFactory,
                         getProfileProviderSupplier(),
                         false,
-                        overviewNtpCreator,
                         AsyncTabParamsManagerSingleton.getInstance(),
                         getTabModelSelectorSupplier(),
                         getCompositorViewHolderSupplier(),
@@ -2588,7 +2565,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         this::getTabDelegateFactory,
                         getProfileProviderSupplier(),
                         true,
-                        overviewNtpCreator,
                         AsyncTabParamsManagerSingleton.getInstance(),
                         getTabModelSelectorSupplier(),
                         getCompositorViewHolderSupplier(),
@@ -3405,27 +3381,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // Don't hide overview if current tab stack is empty()
             mLayoutManager.showLayout(LayoutType.BROWSING, false);
         }
-    }
-
-    /**
-     * @return Whether opening a new tab is handled by the Start surface.
-     */
-    private boolean showStartSurfaceHomeForNtp(
-            boolean isNtp,
-            boolean incognito,
-            Tab parentTab,
-            @NewTabPageLaunchOrigin int launchOrigin) {
-        if (!isNtp
-                || !ReturnToChromeUtil.shouldShowStartSurfaceHomeAsNewTab(
-                        this, incognito, isTablet())) {
-            return false;
-        }
-
-        getTabModelSelector().selectModel(incognito);
-        if ((getTabModelSelector().isTabStateInitialized() && isLayoutManagerCreated())) {
-            showOverview(StartSurfaceState.SHOWING_HOMEPAGE, launchOrigin);
-        }
-        return true;
     }
 
     @Override

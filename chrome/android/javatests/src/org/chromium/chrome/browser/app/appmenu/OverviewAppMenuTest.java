@@ -165,27 +165,6 @@ public class OverviewAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main"})
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
-    @CommandLineFlags.Add({
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:open_ntp_instead_of_start/true"
-    })
-    public void testNewTabIsEnabledWithStartSurfaceV2() throws Exception {
-        openTabSwitcher();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    AppMenuTestSupport.showAppMenu(
-                            mActivityTestRule.getAppMenuCoordinator(), null, false);
-                });
-
-        assertNotNull(
-                AppMenuTestSupport.getMenuItemPropertyModel(
-                        mActivityTestRule.getAppMenuCoordinator(), R.id.new_tab_menu_id));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Browser", "Main"})
     public void testSelectTabsIsEnabledWithStartSurface() throws Exception {
         openTabSwitcher();
         TestThreadUtils.runOnUiThreadBlocking(

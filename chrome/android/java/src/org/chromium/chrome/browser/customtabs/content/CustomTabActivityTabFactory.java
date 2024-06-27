@@ -141,7 +141,6 @@ public class CustomTabActivityTabFactory {
                 mCustomTabDelegateFactory::get,
                 mProfileProviderSupplier,
                 incognito,
-                null,
                 AsyncTabParamsManagerSingleton.getInstance(),
                 mTabModelSelectorSupplier,
                 mCompositorViewHolderSupplier,

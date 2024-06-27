@@ -29,10 +29,6 @@ public class StartSurfaceConfiguration {
                             "hide_switch_when_no_incognito_tabs",
                             true);
 
-    public static final BooleanCachedFieldTrialParameter START_SURFACE_OPEN_NTP_INSTEAD_OF_START =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.START_SURFACE_ANDROID, "open_ntp_instead_of_start", true);
-
     public static final BooleanCachedFieldTrialParameter START_SURFACE_OPEN_START_AS_HOMEPAGE =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_ANDROID, "open_start_as_homepage", false);

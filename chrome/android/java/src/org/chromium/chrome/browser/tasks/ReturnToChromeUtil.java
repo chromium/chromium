@@ -34,7 +34,6 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
-import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -526,15 +525,6 @@ public final class ReturnToChromeUtil {
         return !isTablet && shouldShowStartSurfaceAsTheHomePage(context);
     }
 
-    /** Returns whether Start Surface should be shown as a new Tab. */
-    public static boolean shouldShowStartSurfaceHomeAsNewTab(
-            Context context, boolean incognito, boolean isTablet) {
-        return !incognito
-                && !isTablet
-                && isStartSurfaceEnabled(context)
-                && !StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START.getValue();
-    }
-
     /**
      * Returns whether Start Surface is enabled in the given context. This includes checks of: 1)
      * whether home page is enabled; 2) whether it is on phone; 3) whether show NTP at start up is
@@ -574,20 +564,6 @@ public final class ReturnToChromeUtil {
             boolean isTablet) {
         // Neither Start surface or GTS should be shown on Tablet at startup.
         if (isTablet) return false;
-
-        String intentUrl = IntentHandler.getUrlFromIntent(intent);
-
-        // If user launches Chrome by tapping the app icon, the intentUrl is NULL;
-        // If user taps the "New Tab" item from the app icon, the intentUrl will be chrome://newtab,
-        // and UrlUtilities.isCanonicalizedNtpUrl(intentUrl) returns true.
-        // If user taps the "New Incognito Tab" item from the app icon, skip here and continue the
-        // following checks.
-        if (UrlUtilities.isCanonicalizedNtpUrl(intentUrl)
-                && ReturnToChromeUtil.shouldShowStartSurfaceHomeAsNewTab(
-                        context, tabModelSelector.isIncognitoSelected(), isTablet)
-                && !intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)) {
-            return true;
-        }
 
         // If Start surface isn't enabled, return false.
         if (!ReturnToChromeUtil.isStartSurfaceEnabled(context)) return false;

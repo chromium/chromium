@@ -119,7 +119,6 @@ public class ChromeCachedFlags {
                                 .SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS,
                         StartSurfaceConfiguration.SIGNIN_PROMO_NTP_RESET_AFTER_HOURS,
                         StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB,
-                        StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START,
                         StartSurfaceConfiguration.START_SURFACE_OPEN_START_AS_HOMEPAGE,
                         StartSurfaceConfiguration.LOGO_POLISH_LARGE_SIZE,
                         StartSurfaceConfiguration.LOGO_POLISH_MEDIUM_SIZE,
