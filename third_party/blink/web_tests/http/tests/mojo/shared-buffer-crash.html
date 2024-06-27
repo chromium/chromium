@@ -9,8 +9,7 @@ let kBufferSize = 32;
 test(() => {
   let {handle} = Mojo.createSharedBuffer(kBufferSize);
   let {result, buffer} = handle.mapBuffer(kBufferSize, kBufferSize);
-  assert_equals(result, Mojo.RESULT_OK);
-  assert_true(buffer instanceof ArrayBuffer);
+  assert_equals(result, Mojo.RESULT_INVALID_ARGUMENT);
+  assert_equals(buffer, undefined);
 }, "Attempt to map beyond buffer size does not crash");
-
 </script>
