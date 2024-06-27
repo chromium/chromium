@@ -4459,6 +4459,11 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Shown"/>
 </enum>
 
+<enum name="BooleanFieldClassificationType">
+  <int value="0" label="Unclassified."/>
+  <int value="1" label="Classified."/>
+</enum>
+
 <enum name="BooleanHadPredictions">
   <int value="0" label="No predictions"/>
   <int value="1" label="Has predictions"/>

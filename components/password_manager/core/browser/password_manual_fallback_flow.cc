@@ -178,8 +178,7 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
               .password));
       break;
     case autofill::SuggestionType::kPasswordFieldByFieldFilling:
-      password_manager_driver_->FillField(field_id_,
-                                          suggestion.main_text.value);
+      password_manager_driver_->FillField(suggestion.main_text.value);
       break;
     case autofill::SuggestionType::kFillPassword: {
       Suggestion::PasswordSuggestionDetails payload =
@@ -188,7 +187,7 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
           &PasswordManualFallbackFlow::MaybeAuthenticateBeforeFilling,
           weak_ptr_factory_.GetWeakPtr(),
           base::BindOnce(&PasswordManagerDriver::FillField,
-                         base::Unretained(password_manager_driver_), field_id_,
+                         base::Unretained(password_manager_driver_),
                          payload.password));
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \

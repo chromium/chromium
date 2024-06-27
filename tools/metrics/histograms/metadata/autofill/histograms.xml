@@ -2348,6 +2348,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.FilledFieldType.Password"
+    enum="BooleanFieldClassificationType" expires_after="2024-11-20">
+  <owner>theocristea@google.com</owner>
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records for each field filled with passwords data, whether it is classified
+    as target filling password or not. Emitted at the time of the filling.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FilledFieldType.{FormType}"
     enum="FieldClassificationType" expires_after="2024-12-12">
   <owner>jihadghanna@google.com</owner>

@@ -70,8 +70,7 @@ class ContentPasswordManagerDriver final
       autofill::FieldRendererId generation_element_id,
       const std::u16string& password) override;
   void FocusNextFieldAfterPasswords() override;
-  void FillField(autofill::FieldRendererId field_id,
-                 const std::u16string& value) override;
+  void FillField(const std::u16string& value) override;
   void FillSuggestion(const std::u16string& username,
                       const std::u16string& password) override;
   void FillIntoFocusedField(bool is_password,
@@ -160,6 +159,8 @@ class ContentPasswordManagerDriver final
                              int32_t result) override;
 
  private:
+  void LogFilledFieldType();
+
   const mojo::AssociatedRemote<autofill::mojom::AutofillAgent>&
   GetAutofillAgent();
 
@@ -175,6 +176,7 @@ class ContentPasswordManagerDriver final
   PasswordAutofillManager password_autofill_manager_;
 
   int id_;
+  autofill::FieldRendererId last_triggering_field_id_;
 
   mojo::AssociatedRemote<autofill::mojom::PasswordAutofillAgent>
       password_autofill_agent_;

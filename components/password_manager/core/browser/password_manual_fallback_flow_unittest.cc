@@ -89,10 +89,7 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
               FillSuggestion,
               (const std::u16string&, const std::u16string&),
               (override));
-  MOCK_METHOD(void,
-              FillField,
-              (FieldRendererId, const std::u16string&),
-              (override));
+  MOCK_METHOD(void, FillField, (const std::u16string&), (override));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const override));
 };
 
@@ -546,8 +543,7 @@ TEST_F(PasswordManualFallbackFlowTest, AcceptUsernameFieldByFieldSuggestion) {
   const FieldRendererId field_id = MakeFieldRendererId();
   flow().RunFlow(field_id, gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
 
-  EXPECT_CALL(driver(),
-              FillField(field_id, std::u16string(u"username@example.com")));
+  EXPECT_CALL(driver(), FillField(std::u16string(u"username@example.com")));
   EXPECT_CALL(
       autofill_client(),
       HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion));
@@ -813,7 +809,7 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthNotAvailable) {
 
   EXPECT_CALL(password_manager_client(), CanUseBiometricAuthForFilling)
       .WillOnce(Return(false));
-  EXPECT_CALL(driver(), FillField(field_id, std::u16string(u"password")));
+  EXPECT_CALL(driver(), FillField(std::u16string(u"password")));
   flow().DidAcceptSuggestion(
       autofill::test::CreateAutofillSuggestion(
           SuggestionType::kFillPassword, u"Fill password",
@@ -905,7 +901,7 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthSucceeds) {
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
-  EXPECT_CALL(driver(), FillField(field_id, std::u16string(u"password")));
+  EXPECT_CALL(driver(), FillField(std::u16string(u"password")));
   base::HistogramTester histograms;
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;
   flow().DidAcceptSuggestion(
