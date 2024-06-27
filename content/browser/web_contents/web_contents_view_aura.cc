@@ -940,11 +940,6 @@ DropData* WebContentsViewAura::GetDropData() const {
   return current_drag_data_.get();
 }
 
-void WebContentsViewAura::TransferDragSecurityInfo(WebContentsView* view) {
-  WebContentsViewAura* view_aura = static_cast<WebContentsViewAura*>(view);
-  drag_security_info_ = view_aura->drag_security_info_;
-}
-
 gfx::Rect WebContentsViewAura::GetViewBounds() const {
   return GetNativeView()->GetBoundsInScreen();
 }

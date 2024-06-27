@@ -230,11 +230,6 @@ DropData* WebContentsViewAndroid::GetDropData() const {
   return NULL;
 }
 
-// TODO(crbug.com/40934697): Implement this.
-void WebContentsViewAndroid::TransferDragSecurityInfo(WebContentsView*) {
-  NOTIMPLEMENTED();
-}
-
 gfx::Rect WebContentsViewAndroid::GetViewBounds() const {
   return gfx::Rect(view_.GetSize());
 }

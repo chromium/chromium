@@ -178,10 +178,6 @@ DropData* WebContentsViewChildFrame::GetDropData() const {
   return nullptr;
 }
 
-void WebContentsViewChildFrame::TransferDragSecurityInfo(WebContentsView*) {
-  NOTREACHED_IN_MIGRATION();
-}
-
 void WebContentsViewChildFrame::UpdateDragOperation(
     ui::mojom::DragOperation operation,
     bool document_is_handling_drag) {

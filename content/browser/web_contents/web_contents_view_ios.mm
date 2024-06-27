@@ -157,10 +157,6 @@ DropData* WebContentsViewIOS::GetDropData() const {
   return nullptr;
 }
 
-void WebContentsViewIOS::TransferDragSecurityInfo(WebContentsView* view) {
-  NOTIMPLEMENTED();
-}
-
 gfx::Rect WebContentsViewIOS::GetViewBounds() const {
   return gfx::Rect();
 }

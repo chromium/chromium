@@ -250,11 +250,6 @@ DropData* WebContentsViewMac::GetDropData() const {
   return [drag_dest_ currentDropData];
 }
 
-void WebContentsViewMac::TransferDragSecurityInfo(WebContentsView* view) {
-  WebContentsViewMac* view_mac = static_cast<WebContentsViewMac*>(view);
-  [drag_dest_ setDragSecurityInfo:[view_mac->drag_dest_ dragSecurityInfo]];
-}
-
 void WebContentsViewMac::UpdateDragOperation(ui::mojom::DragOperation operation,
                                              bool document_is_handling_drag) {
   [drag_dest_ setCurrentOperation:operation
