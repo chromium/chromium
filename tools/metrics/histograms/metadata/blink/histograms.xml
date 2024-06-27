@@ -2697,29 +2697,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.IntersectionObservation.MinScrollDeltaToUpdateX"
-    units="pixels" expires_after="2024-06-30">
-  <owner>wangxianzhu@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Reports IntersectionGeometry::min_scroll_delta_to_update_.x() after an
-    intersection observation update. The frequency is number of geometry
-    observers per frame times the frequency of
-    Blink.UpdateViewportIntersection.UpdateTime.
-  </summary>
-</histogram>
-
-<histogram name="Blink.IntersectionObservation.MinScrollDeltaToUpdateY"
-    units="pixels" expires_after="2024-06-30">
-  <owner>wangxianzhu@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Reports IntersectionGeometry::min_scroll_delta_to_update_.y() after an
-    intersection observation update. The frequency is the same as
-    Blink.IntersectionObservation.MinScrollDeltaToUpdateX.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Blink.IntersectionObservation.UpdateTime"
     units="microseconds" expires_after="2024-12-08">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
@@ -2738,17 +2715,6 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
-  </summary>
-</histogram>
-
-<histogram name="Blink.IntersectionObservation.UpdateType"
-    enum="IntersectionObservationUpdateType" expires_after="2024-06-30">
-  <owner>wangxianzhu@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Reports the type of update of each IntersectionObservation::
-    ComputeIntersection(). The frequency is the same as
-    Blink.IntersectionObservation.MinScrollDeltaToUpdateX.
   </summary>
 </histogram>
 

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observation.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
@@ -73,33 +72,16 @@ int64_t IntersectionObservation::ComputeIntersection(
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
   std::optional<IntersectionGeometry::CachedRects> cached_rects_backup;
 #endif
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    enum UpdateType {
-      kNoUpdate = 0,
-      kScrollOnly = 1,
-      kCachedRectInvalid_Unused = 2,
-      kFullUpdate = 3,
-      kMaxValue = 3,
-    };
-    UpdateType update_type = kNoUpdate;
-    if (has_pending_update || !(compute_flags & kScrollAndVisibilityOnly)) {
-      update_type = kFullUpdate;
-    } else if (cached_rects_.min_scroll_delta_to_update.x() <= 0 ||
-               cached_rects_.min_scroll_delta_to_update.y() <= 0) {
-      update_type = kScrollOnly;
-    }
-    UMA_HISTOGRAM_ENUMERATION("Blink.IntersectionObservation.UpdateType",
-                              update_type);
-    if (update_type == kNoUpdate) {
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled() &&
+      !has_pending_update && (compute_flags & kScrollAndVisibilityOnly) &&
+      cached_rects_.min_scroll_delta_to_update.x() > 0 &&
+      cached_rects_.min_scroll_delta_to_update.y() > 0) {
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
-      cached_rects_backup.emplace(cached_rects_);
+    cached_rects_backup.emplace(cached_rects_);
 #else
-      // This is equivalent to a full update.
-      return 1;
+    // This is equivalent to a full update.
+    return 1;
 #endif
-    }
   }
 
   unsigned geometry_flags = GetIntersectionGeometryFlags(compute_flags);

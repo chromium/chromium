@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/intersection_observer/intersection_geometry.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -720,15 +719,6 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
         root_and_target, target_to_view_transform,
         root_geometry.root_to_view_transform, thresholds, scroll_margin);
     cached_rects->valid = true;
-
-    UMA_HISTOGRAM_COUNTS_1000(
-        "Blink.IntersectionObservation.MinScrollDeltaToUpdateX",
-        base::saturated_cast<int>(
-            cached_rects->min_scroll_delta_to_update.x()));
-    UMA_HISTOGRAM_COUNTS_1000(
-        "Blink.IntersectionObservation.MinScrollDeltaToUpdateY",
-        base::saturated_cast<int>(
-            cached_rects->min_scroll_delta_to_update.y()));
 
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
     // TODO(wangxianzhu): Remove or clean up this code after fixing
