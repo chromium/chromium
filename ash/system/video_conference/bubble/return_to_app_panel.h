@@ -77,6 +77,7 @@ class ASH_EXPORT ReturnToAppButton : public ReturnToAppButtonBase {
  private:
   FRIEND_TEST_ALL_PREFIXES(ReturnToAppPanelTest, ExpandCollapse);
 
+  // Creates an expand button for the top row and adds it as a child view.
   ReturnToAppExpandButton* CreateExpandIndicator();
 
   void UpdateAccessibleName();
@@ -116,6 +117,7 @@ class ASH_EXPORT ReturnToAppPanel : public views::FlexLayoutView {
 
   int max_capturing_count() const { return max_capturing_count_; }
 
+  // Updates the expanded state and repaint the view if needed.
   void OnExpandedStateChanged(bool expanded);
 
  private:
