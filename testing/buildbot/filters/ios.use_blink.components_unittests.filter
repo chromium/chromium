@@ -294,3 +294,7 @@
 -All/ThrottleManagerEnabledTest.ThrottleManagerLifetime_Subframe/0
 -All/ThrottleManagerEnabledTest.ThrottleManagerLifetime_Subframe/1
 -FingerprintingProtectionPageActivationThrottleTest.FlagEnabledDefaultActivatedParams_IsActivated
+
+# TODO(crbug.com/349640009): Currently fail with use_blink due to spinning up on
+# an unexpected thread after https://crrev.com/c/5622258 added the tests.
+-UkmUrlRecorderTest.ReusedNavigationContext
