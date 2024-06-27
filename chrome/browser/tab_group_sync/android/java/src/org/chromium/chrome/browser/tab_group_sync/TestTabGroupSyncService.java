@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 
+import org.chromium.components.tab_group_sync.EventDetails;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -17,6 +20,7 @@ import java.util.List;
 /** Test implementation of {@link TabGroupSyncService} that can be used for unit tests. */
 class TestTabGroupSyncService implements TabGroupSyncService {
     public static final String SYNC_ID_1 = "SYNC_ID_1";
+    public static final String LOCAL_DEVICE_CACHE_GUID = "LocalDevice";
 
     private List<SavedTabGroup> mTabGroups = new ArrayList<>();
 
@@ -59,6 +63,9 @@ class TestTabGroupSyncService implements TabGroupSyncService {
     public void moveTab(LocalTabGroupId tabGroupId, int tabId, int newIndexInGroup) {}
 
     @Override
+    public void onTabSelected(LocalTabGroupId tabGroupId, int tabId) {}
+
+    @Override
     public String[] getAllGroupIds() {
         return new String[0];
     }
@@ -92,4 +99,15 @@ class TestTabGroupSyncService implements TabGroupSyncService {
 
     @Override
     public void updateLocalTabId(LocalTabGroupId localGroupId, String syncTabId, int localTabId) {}
+
+    @Override
+    public boolean isRemoteDevice(String syncCacheGuid) {
+        boolean isLocal =
+                TextUtils.isEmpty(syncCacheGuid)
+                        || TextUtils.equals(LOCAL_DEVICE_CACHE_GUID, syncCacheGuid);
+        return !isLocal;
+    }
+
+    @Override
+    public void recordTabGroupEvent(EventDetails eventDetails) {}
 }

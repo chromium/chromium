@@ -87,6 +87,11 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
                jint j_tab_id,
                int j_new_index_in_group);
 
+  void OnTabSelected(JNIEnv* env,
+                     const JavaParamRef<jobject>& j_caller,
+                     const JavaParamRef<jobject>& j_group_id,
+                     jint j_tab_id);
+
   // Accessor methods.
   ScopedJavaLocalRef<jobjectArray> GetAllGroupIds(
       JNIEnv* env,
@@ -119,6 +124,18 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
                         const JavaParamRef<jobject>& j_group_id,
                         const JavaParamRef<jstring>& j_sync_tab_id,
                         jint j_local_tab_id);
+
+  // Helper methods for attributions.
+  bool IsRemoteDevice(JNIEnv* env,
+                      const JavaParamRef<jobject>& j_caller,
+                      const JavaParamRef<jstring>& j_sync_cache_guid);
+  void RecordTabGroupEvent(JNIEnv* env,
+                           const JavaParamRef<jobject>& j_caller,
+                           jint j_event_type,
+                           const JavaParamRef<jobject>& j_local_group_id,
+                           jint j_local_tab_id,
+                           jint j_opening_source,
+                           jint j_closing_source);
 
  private:
   // A reference to the Java counterpart of this class.  See
