@@ -29,11 +29,6 @@ void QuickStartScreenHandler::SetQRCode(base::Value::List blob,
   CallExternalAPI("setQRCode", std::move(blob), url);
 }
 
-void QuickStartScreenHandler::SetDiscoverableName(
-    const std::string& discoverable_name) {
-  CallExternalAPI("setDiscoverableName", discoverable_name);
-}
-
 void QuickStartScreenHandler::ShowInitialUiStep() {
   CallExternalAPI("showInitialUiStep");
 }

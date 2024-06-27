@@ -2035,7 +2035,6 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
         {
           id: 'PinVerification',
           trigger: (screen) => {
-            screen.setDiscoverableName('Chromebook (123)');
             screen.setPin('1234');
           },
         },

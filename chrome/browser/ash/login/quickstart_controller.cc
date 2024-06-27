@@ -398,7 +398,6 @@ void QuickStartController::InitTargetDeviceBootstrapController() {
 
   // Start observing and determine the discoverable name.
   bootstrap_controller_->AddObserver(this);
-  discoverable_name_ = bootstrap_controller_->GetDiscoverableName();
 }
 
 void QuickStartController::OnGetQuickStartFeatureSupportStatus(

@@ -132,7 +132,6 @@ class QuickStartController
   // to retrieve these values when they do not exist.
   QRCode GetQrCode() { return qr_code_.value(); }
   std::string GetPin() { return pin_.value(); }
-  std::string GetDiscoverableName() { return discoverable_name_.value(); }
   UserInfo GetUserInfo() { return user_info_; }
   std::string GetWiFiName() { return wifi_name_.value(); }
   std::string GetFallbackUrl() { return fallback_url_.value(); }
@@ -242,9 +241,6 @@ class QuickStartController
 
   // Bookkeeping where the quick start flow started and ended.
   std::optional<EntryPoint> entry_point_, exit_point_;
-
-  // Discoverable name to be used on the UI. e.g.: Chromebook (123)
-  std::optional<std::string> discoverable_name_;
 
   // QR Code to be shown on the UI when requested.
   std::optional<QRCode> qr_code_;

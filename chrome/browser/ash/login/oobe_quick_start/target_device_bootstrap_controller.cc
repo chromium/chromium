@@ -12,7 +12,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/account_transfer_client_data.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
@@ -203,12 +202,6 @@ void TargetDeviceBootstrapController::OnConnectionClosed(
 
   authenticated_connection_.reset();
   CleanupIfNeeded();
-}
-
-std::string TargetDeviceBootstrapController::GetDiscoverableName() {
-  std::string device_type = base::UTF16ToUTF8(ui::GetChromeOSDeviceName());
-  std::string code = connection_broker_->GetAdvertisingIdDisplayCode();
-  return device_type + " (" + code + ")";
 }
 
 void TargetDeviceBootstrapController::UpdateStatus(Step step, Payload payload) {

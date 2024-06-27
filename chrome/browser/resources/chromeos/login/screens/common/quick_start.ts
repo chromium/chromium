@@ -58,10 +58,6 @@ export class QuickStartScreen extends QuickStartScreenBase {
 
   static get properties(): PolymerElementProperties {
     return {
-      discoverableName: {
-        type: String,
-        value: '',
-      },
       pin: {
         type: String,
         value: '0000',
@@ -104,7 +100,6 @@ export class QuickStartScreen extends QuickStartScreenBase {
     };
   }
 
-  private discoverableName: string;
   private pin: string;
   private usePinInsteadOfQrForVerification: boolean;
   private userEmail: string;
@@ -129,7 +124,6 @@ export class QuickStartScreen extends QuickStartScreenBase {
       'showBluetoothDialog',
       'showConnectingToPhoneStep',
       'showConnectingToWifi',
-      'setDiscoverableName',
       'showConfirmGoogleAccount',
       'showSigningInStep',
       'showCreatingAccountStep',
@@ -244,10 +238,6 @@ export class QuickStartScreen extends QuickStartScreenBase {
     this.setUIStep(QuickStartUiState.VERIFICATION);
     assert(pin.length === 4);
     this.pin = pin;
-  }
-
-  setDiscoverableName(discoverableName: string): void {
-    this.discoverableName = discoverableName;
   }
 
   showConfirmGoogleAccount(): void {

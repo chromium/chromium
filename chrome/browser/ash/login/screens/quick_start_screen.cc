@@ -114,9 +114,6 @@ void QuickStartScreen::OnUiUpdateRequested(
     return;
   }
 
-  // Update discoverable name
-  view_->SetDiscoverableName(controller_->GetDiscoverableName());
-
   switch (state) {
     case ash::quick_start::QuickStartController::UiState::SHOWING_QR:
       view_->SetWillRequestWiFi(controller_->WillRequestWiFi());

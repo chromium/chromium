@@ -167,7 +167,6 @@ class TargetDeviceBootstrapController
   void OnConnectionRejected() override;
   void OnConnectionClosed(ConnectionClosedReason reason) override;
 
-  std::string GetDiscoverableName();
   void AttemptWifiCredentialTransfer();
 
   // The first step in the account transfer is to request basic account info via
