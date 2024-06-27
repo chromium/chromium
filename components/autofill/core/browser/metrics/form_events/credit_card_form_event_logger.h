@@ -76,7 +76,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   void OnDidShowSuggestions(
       const FormStructure& form,
       const AutofillField& field,
-      const base::TimeTicks& form_parsed_timestamp,
+      base::TimeTicks form_parsed_timestamp,
       AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
       bool off_the_record) override;
 

@@ -117,7 +117,7 @@ enum class UploadIbanActionMetric {
 void LogStoredIbanMetrics(
     const std::vector<std::unique_ptr<Iban>>& local_ibans,
     const std::vector<std::unique_ptr<Iban>>& server_ibans,
-    const base::TimeDelta& disused_data_threshold);
+    base::TimeDelta disused_data_threshold);
 
 // Logs the number of days since the given IBAN was last used.
 void LogDaysSinceLastIbanUse(const Iban& iban);

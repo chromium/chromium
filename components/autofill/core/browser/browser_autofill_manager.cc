@@ -2858,7 +2858,7 @@ void BrowserAutofillManager::OnFormProcessed(
 }
 
 void BrowserAutofillManager::UpdateInitialInteractionTimestamp(
-    const base::TimeTicks& interaction_timestamp) {
+    base::TimeTicks interaction_timestamp) {
   if (initial_interaction_timestamp_.is_null() ||
       interaction_timestamp < initial_interaction_timestamp_) {
     initial_interaction_timestamp_ = interaction_timestamp;

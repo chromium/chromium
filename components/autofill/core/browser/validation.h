@@ -30,13 +30,11 @@ enum class CvcType {
 
 // Returns true if |year| and |month| describe a date later than |now|.
 // |year| must have 4 digits.
-bool IsValidCreditCardExpirationDate(int year,
-                                     int month,
-                                     const base::Time& now);
+bool IsValidCreditCardExpirationDate(int year, int month, base::Time now);
 
 // Returns true if |year| describes a year later than or equal to |now|'s year.
 // |year| must have 4 digits.
-bool IsValidCreditCardExpirationYear(int year, const base::Time& now);
+bool IsValidCreditCardExpirationYear(int year, base::Time now);
 
 // Returns true if |code| looks like a valid credit card security code
 // for the given credit card network.

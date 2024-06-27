@@ -36,10 +36,10 @@ enum class FormTypeForAblationStudy {
 };
 
 #if defined(UNIT_TEST)
-int DaysSinceLocalWindowsEpoch(const base::Time& now);
+int DaysSinceLocalWindowsEpoch(base::Time now);
 uint64_t GetAblationHash(const std::string& seed,
                          const GURL& url,
-                         const base::Time& now);
+                         base::Time now);
 #endif  // defined(UNIT_TEST)
 
 // A class to control the ablation study. The decision whether a given form
@@ -62,7 +62,7 @@ class AutofillAblationStudy {
 
  private:
   AblationGroup GetAblationGroupImpl(const GURL& url,
-                                     const base::Time& now,
+                                     base::Time now,
                                      uint32_t ablation_weight_per_mille) const;
 
   // Random seed so that different users (and browsing experiences) don't have

@@ -143,8 +143,7 @@ void LogVirtualCardEnrollBubbleCardArtAvailable(
       card_art_available);
 }
 
-void LogVirtualCardEnrollBubbleLatencySinceUpstream(
-    const base::TimeDelta& latency) {
+void LogVirtualCardEnrollBubbleLatencySinceUpstream(base::TimeDelta latency) {
   base::UmaHistogramTimes(
       "Autofill.VirtualCardEnrollBubble.LatencySinceUpstream", latency);
 }

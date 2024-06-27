@@ -124,9 +124,9 @@ void LogPreFillMetrics(const FormStructure& form) {
 // Logs metrics related to how long it took the user from load/interaction time
 // till form submission.
 void LogDurationMetrics(const FormStructure& form,
-                        const base::TimeTicks& load_time,
-                        const base::TimeTicks& interaction_time,
-                        const base::TimeTicks& submission_time) {
+                        base::TimeTicks load_time,
+                        base::TimeTicks interaction_time,
+                        base::TimeTicks submission_time) {
   size_t num_detected_field_types =
       base::ranges::count_if(form, &FieldHasMeaningfulPossibleFieldTypes,
                              &std::unique_ptr<AutofillField>::operator*);
@@ -244,9 +244,9 @@ void LogFillingMetrics(
 
 void LogQualityMetrics(
     const FormStructure& form_structure,
-    const base::TimeTicks& load_time,
-    const base::TimeTicks& interaction_time,
-    const base::TimeTicks& submission_time,
+    base::TimeTicks load_time,
+    base::TimeTicks interaction_time,
+    base::TimeTicks submission_time,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     bool observed_submission) {
   // Use the same timestamp on UKM Metrics generated within this method's scope.

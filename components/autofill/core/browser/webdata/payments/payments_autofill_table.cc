@@ -257,7 +257,7 @@ void BindEncryptedValueToColumn(sql::Statement* s,
 }
 
 void BindCreditCardToStatement(const CreditCard& credit_card,
-                               const base::Time& modification_date,
+                               base::Time modification_date,
                                sql::Statement* s,
                                const AutofillTableEncryptor& encryptor) {
   DCHECK(base::Uuid::ParseCaseInsensitive(credit_card.guid()).is_valid());
@@ -281,7 +281,7 @@ void BindCreditCardToStatement(const CreditCard& credit_card,
 
 void BindLocalStoredCvcToStatement(const std::string& guid,
                                    const std::u16string& cvc,
-                                   const base::Time& modification_date,
+                                   base::Time modification_date,
                                    sql::Statement* s,
                                    const AutofillTableEncryptor& encryptor) {
   CHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
@@ -428,7 +428,7 @@ WebDatabaseTable::TypeKey GetKey() {
   return reinterpret_cast<void*>(&table_key);
 }
 
-time_t GetEndTime(const base::Time& end) {
+time_t GetEndTime(base::Time end) {
   if (end.is_null() || end == base::Time::Max())
     return std::numeric_limits<time_t>::max();
 
@@ -1543,8 +1543,8 @@ bool PaymentsAutofillTable::ClearAllServerData() {
 }
 
 bool PaymentsAutofillTable::RemoveAutofillDataModifiedBetween(
-    const base::Time& delete_begin,
-    const base::Time& delete_end,
+    base::Time delete_begin,
+    base::Time delete_end,
     std::vector<std::unique_ptr<CreditCard>>* credit_cards) {
   DCHECK(delete_end.is_null() || delete_begin < delete_end);
 
@@ -1586,8 +1586,8 @@ bool PaymentsAutofillTable::RemoveAutofillDataModifiedBetween(
 }
 
 bool PaymentsAutofillTable::RemoveOriginURLsModifiedBetween(
-    const base::Time& delete_begin,
-    const base::Time& delete_end) {
+    base::Time delete_begin,
+    base::Time delete_end) {
   DCHECK(delete_end.is_null() || delete_begin < delete_end);
 
   time_t delete_begin_t = delete_begin.ToTimeT();

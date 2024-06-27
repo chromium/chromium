@@ -80,8 +80,8 @@ WebDataServiceBase::Handle AutofillWebDataService::GetFormValuesForElementName(
 }
 
 void AutofillWebDataService::RemoveFormElementsAddedBetween(
-    const base::Time& delete_begin,
-    const base::Time& delete_end) {
+    base::Time delete_begin,
+    base::Time delete_end) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
       base::BindOnce(
@@ -139,8 +139,8 @@ WebDataServiceBase::Handle AutofillWebDataService::GetAutofillProfiles(
 
 WebDataServiceBase::Handle
 AutofillWebDataService::GetCountOfValuesContainedBetween(
-    const base::Time& begin,
-    const base::Time& end,
+    base::Time begin,
+    base::Time end,
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
@@ -354,8 +354,8 @@ void AutofillWebDataService::UpdateServerCardMetadata(
 }
 
 void AutofillWebDataService::RemoveAutofillDataModifiedBetween(
-    const base::Time& delete_begin,
-    const base::Time& delete_end) {
+    base::Time delete_begin,
+    base::Time delete_end) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
       base::BindOnce(
@@ -364,8 +364,8 @@ void AutofillWebDataService::RemoveAutofillDataModifiedBetween(
 }
 
 void AutofillWebDataService::RemoveOriginURLsModifiedBetween(
-    const base::Time& delete_begin,
-    const base::Time& delete_end) {
+    base::Time delete_begin,
+    base::Time delete_end) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
       base::BindOnce(

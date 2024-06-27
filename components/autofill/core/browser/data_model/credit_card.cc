@@ -1161,7 +1161,7 @@ void CreditCard::RecordAndLogUse() {
   set_use_count(use_count() + 1);
 }
 
-bool CreditCard::IsExpired(const base::Time& current_time) const {
+bool CreditCard::IsExpired(base::Time current_time) const {
   return !IsValidCreditCardExpirationDate(expiration_year_, expiration_month_,
                                           current_time);
 }

@@ -132,7 +132,7 @@ enum class WebauthnResultMetric {
 // indicates whether the unmasking request was successful or not. |card_type|
 // indicates the type of the credit card that the request fetched.
 void LogCardUnmaskDurationAfterWebauthn(
-    const base::TimeDelta& duration,
+    base::TimeDelta duration,
     payments::PaymentsAutofillClient::PaymentsRpcResult result,
     payments::PaymentsAutofillClient::PaymentsRpcCardType card_type);
 
@@ -150,7 +150,7 @@ void LogCardUnmaskPreflightCalled(bool is_user_opted_in);
 
 // Logs the duration of the PaymentsNetworkInterface::GetUnmaskDetails() call
 // (aka GetDetailsForGetRealPan).
-void LogCardUnmaskPreflightDuration(const base::TimeDelta& duration);
+void LogCardUnmaskPreflightDuration(base::TimeDelta duration);
 
 // Logs which unmask type was used for a user with FIDO authentication
 // enabled.
@@ -179,7 +179,7 @@ void LogUserPerceivedLatencyOnCardSelectionTimedOut(bool did_time_out);
 // Logs the duration of WebAuthn's
 // IsUserVerifiablePlatformAuthenticatorAvailable() call. It is supposedly an
 // extremely quick IPC.
-void LogUserVerifiabilityCheckDuration(const base::TimeDelta& duration);
+void LogUserVerifiabilityCheckDuration(base::TimeDelta duration);
 
 // Logs the count of calls to PaymentsNetworkInterface::OptChange() (aka
 // UpdateAutofillUserPreference).

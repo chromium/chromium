@@ -513,8 +513,7 @@ class BrowserAutofillManager : public AutofillManager {
   // If |initial_interaction_timestamp_| is unset or is set to a later time than
   // |interaction_timestamp|, updates the cached timestamp.  The latter check is
   // needed because IPC messages can arrive out of order.
-  void UpdateInitialInteractionTimestamp(
-      const base::TimeTicks& interaction_timestamp);
+  void UpdateInitialInteractionTimestamp(base::TimeTicks interaction_timestamp);
 
   // Examines |form| and returns true if it is in a non-secure context or
   // its action attribute targets a HTTP url.

@@ -527,15 +527,15 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // TODO(crbug.com/40151750): This function is solely used to remove browsing
   // data. Once explicit save dialogs are fully launched, it can be removed.
   bool RemoveAutofillDataModifiedBetween(
-      const base::Time& delete_begin,
-      const base::Time& delete_end,
+      base::Time delete_begin,
+      base::Time delete_end,
       std::vector<std::unique_ptr<CreditCard>>* credit_cards);
 
   // Removes origin URLs from the credit_cards tables if they were written on or
   // after `delete_begin` and strictly before `delete_end`. Returns true if all
   // rows were successfully updated and false on a database error.
-  bool RemoveOriginURLsModifiedBetween(const base::Time& delete_begin,
-                                       const base::Time& delete_end);
+  bool RemoveOriginURLsModifiedBetween(base::Time delete_begin,
+                                       base::Time delete_end);
 
   // Set, get, and clear the `credit_card_benefits` table and the
   // 'benefit_merchant_domains' table. Return true if the operation

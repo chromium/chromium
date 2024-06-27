@@ -81,8 +81,8 @@ class AutocompleteTable : public WebDatabaseTable {
   // new_date_last_used] lies entirely outside of [delete_begin, delete_end),
   // updating the count accordingly. A list of all changed keys and whether
   // each was updater or removed is returned in the changes out parameter.
-  bool RemoveFormElementsAddedBetween(const base::Time& delete_begin,
-                                      const base::Time& delete_end,
+  bool RemoveFormElementsAddedBetween(base::Time delete_begin,
+                                      base::Time delete_end,
                                       std::vector<AutocompleteChange>& changes);
 
   // Removes rows from the autocomplete table if they were last accessed

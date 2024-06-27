@@ -290,8 +290,8 @@ AutofillWebDataBackendImpl::GetFormValuesForElementName(
 }
 
 WebDatabase::State AutofillWebDataBackendImpl::RemoveFormElementsAddedBetween(
-    const base::Time& delete_begin,
-    const base::Time& delete_end,
+    base::Time delete_begin,
+    base::Time delete_end,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   AutocompleteChangeList changes;
@@ -450,10 +450,9 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetAutofillProfiles(
 }
 
 std::unique_ptr<WDTypedResult>
-AutofillWebDataBackendImpl::GetCountOfValuesContainedBetween(
-    const base::Time& begin,
-    const base::Time& end,
-    WebDatabase* db) {
+AutofillWebDataBackendImpl::GetCountOfValuesContainedBetween(base::Time begin,
+                                                             base::Time end,
+                                                             WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   int value =
       AutocompleteTable::FromWebDatabase(db)->GetCountOfValuesContainedBetween(
@@ -869,8 +868,8 @@ WebDatabase::State AutofillWebDataBackendImpl::ClearAllServerData(
 
 WebDatabase::State
 AutofillWebDataBackendImpl::RemoveAutofillDataModifiedBetween(
-    const base::Time& delete_begin,
-    const base::Time& delete_end,
+    base::Time delete_begin,
+    base::Time delete_end,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
@@ -911,8 +910,8 @@ AutofillWebDataBackendImpl::RemoveAutofillDataModifiedBetween(
 }
 
 WebDatabase::State AutofillWebDataBackendImpl::RemoveOriginURLsModifiedBetween(
-    const base::Time& delete_begin,
-    const base::Time& delete_end,
+    base::Time delete_begin,
+    base::Time delete_end,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   if (!PaymentsAutofillTable::FromWebDatabase(db)

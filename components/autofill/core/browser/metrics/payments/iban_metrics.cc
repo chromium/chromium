@@ -18,7 +18,7 @@ namespace autofill::autofill_metrics {
 void LogStoredIbanMetrics(
     const std::vector<std::unique_ptr<Iban>>& local_ibans,
     const std::vector<std::unique_ptr<Iban>>& server_ibans,
-    const base::TimeDelta& disused_data_threshold) {
+    base::TimeDelta disused_data_threshold) {
   auto LogStoredIban = [disused_data_threshold](
                            const std::vector<std::unique_ptr<Iban>>& ibans) {
     if (ibans.empty()) {

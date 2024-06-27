@@ -63,8 +63,7 @@ class TimestampedSameOriginQueue {
   // This is not done as part of `Push()`, as outdated items (for example in the
   // multi-step import use-case) should be deleted as soon as possible for
   // privacy reasons, even when no `Push()` happens.
-  void RemoveOutdatedItems(const base::TimeDelta& ttl,
-                           const url::Origin& new_origin) {
+  void RemoveOutdatedItems(base::TimeDelta ttl, const url::Origin& new_origin) {
     if (origin_ && *origin_ != new_origin) {
       Clear();
     } else {

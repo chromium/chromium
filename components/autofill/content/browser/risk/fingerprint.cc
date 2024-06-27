@@ -189,10 +189,10 @@ class FingerprintDataLoader : public content::GpuDataManagerObserver {
       const std::string& version,
       const std::string& charset,
       const std::string& accept_languages,
-      const base::Time& install_time,
+      base::Time install_time,
       const std::string& app_locale,
       const std::string& user_agent,
-      const base::TimeDelta& timeout,
+      base::TimeDelta timeout,
       base::OnceCallback<void(std::unique_ptr<Fingerprint>)> callback);
 
   FingerprintDataLoader(const FingerprintDataLoader&) = delete;
@@ -267,10 +267,10 @@ FingerprintDataLoader::FingerprintDataLoader(
     const std::string& version,
     const std::string& charset,
     const std::string& accept_languages,
-    const base::Time& install_time,
+    base::Time install_time,
     const std::string& app_locale,
     const std::string& user_agent,
-    const base::TimeDelta& timeout,
+    base::TimeDelta timeout,
     base::OnceCallback<void(std::unique_ptr<Fingerprint>)> callback)
     : gpu_data_manager_(content::GpuDataManager::GetInstance()),
       obfuscated_gaia_id_(obfuscated_gaia_id),
@@ -451,10 +451,10 @@ void GetFingerprintInternal(
     const std::string& version,
     const std::string& charset,
     const std::string& accept_languages,
-    const base::Time& install_time,
+    base::Time install_time,
     const std::string& app_locale,
     const std::string& user_agent,
-    const base::TimeDelta& timeout,
+    base::TimeDelta timeout,
     base::OnceCallback<void(std::unique_ptr<Fingerprint>)> callback) {
   // Begin loading all of the data that we need to load asynchronously.
   // This class is responsible for freeing its own memory.
@@ -473,7 +473,7 @@ void GetFingerprint(
     const std::string& version,
     const std::string& charset,
     const std::string& accept_languages,
-    const base::Time& install_time,
+    base::Time install_time,
     const std::string& app_locale,
     const std::string& user_agent,
     base::OnceCallback<void(std::unique_ptr<Fingerprint>)> callback) {

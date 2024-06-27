@@ -667,7 +667,7 @@ class AutofillMetrics {
                                FormSignature form_signature);
     void LogSuggestionsShown(const FormStructure& form,
                              const AutofillField& field,
-                             const base::TimeTicks& form_parsed_timestamp,
+                             base::TimeTicks form_parsed_timestamp,
                              bool off_the_record);
     // For address suggestions, the `record_type` is irrelevant.
     void LogDidFillSuggestion(
@@ -681,7 +681,7 @@ class AutofillMetrics {
     void LogFieldFillStatus(const FormStructure& form,
                             const AutofillField& field,
                             QualityMetricType metric_type);
-    void LogFieldType(const base::TimeTicks& form_parsed_timestamp,
+    void LogFieldType(base::TimeTicks form_parsed_timestamp,
                       FormSignature form_signature,
                       FieldSignature field_signature,
                       QualityMetricPredictionSource prediction_source,
@@ -695,8 +695,8 @@ class AutofillMetrics {
     void LogAutofillFormSummaryAtFormRemove(
         const FormStructure& form_structure,
         FormEventSet form_events,
-        const base::TimeTicks& initial_interaction_timestamp,
-        const base::TimeTicks& form_submitted_timestamp);
+        base::TimeTicks initial_interaction_timestamp,
+        base::TimeTicks form_submitted_timestamp);
     void LogKeyMetrics(const DenseSet<FormTypeNameForLogging>& form_types,
                        bool data_to_fill_available,
                        bool suggestions_shown,
@@ -707,7 +707,7 @@ class AutofillMetrics {
                        std::optional<int64_t> fast_checkout_run_id);
     void LogFormEvent(autofill_metrics::FormEvent form_event,
                       const DenseSet<FormTypeNameForLogging>& form_types,
-                      const base::TimeTicks& form_parsed_timestamp);
+                      base::TimeTicks form_parsed_timestamp);
 
     // Logs whether the autofill decided to skip or to fill each
     // hidden/representational field.
@@ -733,7 +733,7 @@ class AutofillMetrics {
    private:
     bool CanLog() const;
     int64_t MillisecondsSinceFormParsed(
-        const base::TimeTicks& form_parsed_timestamp) const;
+        base::TimeTicks form_parsed_timestamp) const;
 
     ukm::SourceId GetSourceId();
 
@@ -847,7 +847,7 @@ class AutofillMetrics {
   // the time elapsed between launching the credit card scanner and getting back
   // the result. |completed| should be true if a credit card was scanned, false
   // if the scan was cancelled.
-  static void LogScanCreditCardCompleted(const base::TimeDelta& duration,
+  static void LogScanCreditCardCompleted(base::TimeDelta duration,
                                          bool completed);
 
   static void LogDeveloperEngagementMetric(DeveloperEngagementMetric metric);
@@ -889,14 +889,14 @@ class AutofillMetrics {
 
   // Logs the time elapsed between the unmask prompt being shown and it
   // being closed.
-  static void LogUnmaskPromptEventDuration(const base::TimeDelta& duration,
+  static void LogUnmaskPromptEventDuration(base::TimeDelta duration,
                                            UnmaskPromptEvent close_event,
                                            bool has_valid_nickname);
 
   // Logs the time elapsed between the user clicking Verify and
   // hitting cancel when abandoning a pending unmasking operation
   // (aka GetRealPan).
-  static void LogTimeBeforeAbandonUnmasking(const base::TimeDelta& duration,
+  static void LogTimeBeforeAbandonUnmasking(base::TimeDelta duration,
                                             bool has_valid_nickname);
 
   // Logs |result| to the get real pan result histogram. |card_type| indicates
@@ -908,33 +908,32 @@ class AutofillMetrics {
   // Logs |result| to duration of the GetRealPan RPC. |card_type| indicates the
   // type of the credit card that the request fetched.
   static void LogRealPanDuration(
-      const base::TimeDelta& duration,
+      base::TimeDelta duration,
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
       payments::PaymentsAutofillClient::PaymentsRpcCardType card_type);
 
   // Logs |result| to the get real pan result histogram. |card_type| indicates
   // the type of the credit card that the request fetched.
   static void LogUnmaskingDuration(
-      const base::TimeDelta& duration,
+      base::TimeDelta duration,
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
       payments::PaymentsAutofillClient::PaymentsRpcCardType card_type);
 
   // This should be called when a form that has been Autofilled is submitted.
   // |duration| should be the time elapsed between form load and submission.
-  static void LogFormFillDurationFromLoadWithAutofill(
-      const base::TimeDelta& duration);
+  static void LogFormFillDurationFromLoadWithAutofill(base::TimeDelta duration);
 
   // This should be called when a fillable form that has not been Autofilled is
   // submitted.  |duration| should be the time elapsed between form load and
   // submission.
   static void LogFormFillDurationFromLoadWithoutAutofill(
-      const base::TimeDelta& duration);
+      base::TimeDelta duration);
 
   // This should be called when a form with |autocomplete="one-time-code"| is
   // submitted. |duration| should be the time elapsed between form load and
   // submission.
   static void LogFormFillDurationFromLoadForOneTimeCode(
-      const base::TimeDelta& duration);
+      base::TimeDelta duration);
 
   // This should be called when a form is submitted. |duration| should be the
   // time elapsed between the initial form interaction and submission. This
@@ -942,16 +941,16 @@ class AutofillMetrics {
   static void LogFormFillDurationFromInteraction(
       const DenseSet<FormType>& form_types,
       bool used_autofill,
-      const base::TimeDelta& duration);
+      base::TimeDelta duration);
 
   // This should be called when a form with |autocomplete="one-time-code"| is
   // submitted. |duration| should be the time elapsed between the initial form
   // interaction and submission.
   static void LogFormFillDurationFromInteractionForOneTimeCode(
-      const base::TimeDelta& duration);
+      base::TimeDelta duration);
 
   static void LogFormFillDuration(const std::string& metric,
-                                  const base::TimeDelta& duration);
+                                  base::TimeDelta duration);
 
   // Logs various metrics about the local and server cards associated with a
   // profile. This should be called each time a new chrome profile is launched.
@@ -1045,11 +1044,10 @@ class AutofillMetrics {
 
   // Logs the time delta between a form being parsed and the user
   // interacting with any field in it.
-  static void LogParsedFormUntilInteractionTiming(
-      const base::TimeDelta& duration);
+  static void LogParsedFormUntilInteractionTiming(base::TimeDelta duration);
 
   // This should be called when parsing each form.
-  static void LogParseFormTiming(const base::TimeDelta& duration);
+  static void LogParseFormTiming(base::TimeDelta duration);
 
   // Logs whether the Autofill query on a credit card form is made in a secure
   // context.
@@ -1132,7 +1130,7 @@ class AutofillMetrics {
   // Logs the image fetching result for one image in AutofillImageFetcher.
   static void LogImageFetchResult(bool succeeded);
   // Logs the roundtrip latency for fetching an image in AutofillImageFetcher.
-  static void LogImageFetcherRequestLatency(const base::TimeDelta& latency);
+  static void LogImageFetcherRequestLatency(base::TimeDelta latency);
 
   // Logs a field's (PredictionState, AutocompleteState) pair on form submit.
   static void LogAutocompletePredictionCollisionState(
@@ -1177,7 +1175,7 @@ class AutofillMetrics {
       ukm::UkmRecorder* ukm_recorder,
       ukm::SourceId source_id,
       const FormStructure& form,
-      const base::TimeTicks& form_submitted_timestamp);
+      base::TimeTicks form_submitted_timestamp);
 
   // This metric is recorded when an address is deleted from a first-level popup
   // using shift+delete.
@@ -1190,7 +1188,7 @@ class AutofillMetrics {
   static void LogAutocompleteEvent(AutocompleteEvent event);
 
   static void LogAutofillPopupVisibleDuration(FillingProduct filling_product,
-                                              const base::TimeDelta& duration);
+                                              base::TimeDelta duration);
 };
 
 #if defined(UNIT_TEST)

@@ -133,8 +133,8 @@ class AddressAutofillTable : public WebDatabaseTable {
   // data. Once explicit save dialogs are fully launched, it can be removed. For
   // this reason profiles in the `contact_info` table are not considered.
   bool RemoveAutofillDataModifiedBetween(
-      const base::Time& delete_begin,
-      const base::Time& delete_end,
+      base::Time delete_begin,
+      base::Time delete_end,
       std::vector<std::unique_ptr<AutofillProfile>>* profiles);
 
   // Table migration functions. NB: These do not and should not rely on other

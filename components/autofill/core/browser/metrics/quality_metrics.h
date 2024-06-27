@@ -22,9 +22,9 @@ namespace autofill::autofill_metrics {
 // triggered after a form was unfocused or a navigation occurred).
 void LogQualityMetrics(
     const FormStructure& form_structure,
-    const base::TimeTicks& load_time,
-    const base::TimeTicks& interaction_time,
-    const base::TimeTicks& submission_time,
+    base::TimeTicks load_time,
+    base::TimeTicks interaction_time,
+    base::TimeTicks submission_time,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     bool observed_submission);
 

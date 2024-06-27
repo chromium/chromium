@@ -1793,9 +1793,7 @@ constexpr base::TimeDelta kCurrent = base::Days(0);
 constexpr base::TimeDelta kOneYear = base::Days(365);
 constexpr base::TimeDelta kOneMonth = base::Days(31);
 
-void MonthAndYearFromDelta(const base::TimeDelta& time_delta,
-                           int& month,
-                           int& year) {
+void MonthAndYearFromDelta(base::TimeDelta time_delta, int& month, int& year) {
   base::Time now = AutofillClock::Now();
   autofill::TestAutofillClock test_clock;
   test_clock.SetNow(now);

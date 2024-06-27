@@ -48,7 +48,7 @@ class AutofillOfferData {
   // Returns an AutofillOfferData for a GPay card-linked offer.
   static AutofillOfferData GPayCardLinkedOffer(
       int64_t offer_id,
-      const base::Time& expiry,
+      base::Time expiry,
       const std::vector<GURL>& merchant_origins,
       const GURL& offer_details_url,
       const DisplayStrings& display_strings,
@@ -57,7 +57,7 @@ class AutofillOfferData {
   // Returns an AutofillOfferData for a free-listing coupon offer.
   static AutofillOfferData FreeListingCouponOffer(
       int64_t offer_id,
-      const base::Time& expiry,
+      base::Time expiry,
       const std::vector<GURL>& merchant_origins,
       const GURL& offer_details_url,
       const DisplayStrings& display_strings,
@@ -67,7 +67,7 @@ class AutofillOfferData {
   // Returns an AutofillOfferData for a GPay promo code offer.
   static AutofillOfferData GPayPromoCodeOffer(
       int64_t offer_id,
-      const base::Time& expiry,
+      base::Time expiry,
       const std::vector<GURL>& merchant_origins,
       const GURL& offer_details_url,
       const DisplayStrings& display_strings,
@@ -109,7 +109,7 @@ class AutofillOfferData {
 
   OfferType GetOfferType() const { return offer_type_; }
   int64_t GetOfferId() const { return offer_id_; }
-  const base::Time& GetExpiry() const { return expiry_; }
+  base::Time GetExpiry() const { return expiry_; }
   const std::vector<GURL>& GetMerchantOrigins() const {
     return merchant_origins_;
   }
@@ -151,7 +151,7 @@ class AutofillOfferData {
  private:
   // Constructs an AutofillOfferData for a card-linked offer.
   AutofillOfferData(int64_t offer_id,
-                    const base::Time& expiry,
+                    base::Time expiry,
                     const std::vector<GURL>& merchant_origins,
                     const GURL& offer_details_url,
                     const DisplayStrings& display_strings,
@@ -161,7 +161,7 @@ class AutofillOfferData {
   AutofillOfferData(
       OfferType offer_type,
       int64_t offer_id,
-      const base::Time& expiry,
+      base::Time expiry,
       const std::vector<GURL>& merchant_origins,
       const GURL& offer_details_url,
       const DisplayStrings& display_strings,

@@ -156,7 +156,7 @@ void LogLocalCardMigrationDialogOfferMetric(
     LocalCardMigrationDialogOfferMetric metric);
 
 void LogLocalCardMigrationDialogUserInteractionMetric(
-    const base::TimeDelta& duration,
+    base::TimeDelta duration,
     LocalCardMigrationDialogUserInteractionMetric metric);
 
 void LogLocalCardMigrationDialogUserSelectionPercentageMetric(int selected,

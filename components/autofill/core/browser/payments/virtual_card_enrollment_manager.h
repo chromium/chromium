@@ -188,7 +188,7 @@ class VirtualCardEnrollmentManager {
   // Sets |save_card_bubble_accepted_timestamp_|, which will be the start time
   // for the LatencySinceUpstream metrics.
   void SetSaveCardBubbleAcceptedTimestamp(
-      const base::Time& save_card_bubble_accepted_timestamp);
+      base::Time save_card_bubble_accepted_timestamp);
 
  protected:
   // Handles the response from the UpdateVirtualCardEnrollmentRequest. |type|

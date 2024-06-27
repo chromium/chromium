@@ -24,9 +24,7 @@
 
 namespace autofill {
 
-bool IsValidCreditCardExpirationDate(int year,
-                                     int month,
-                                     const base::Time& now) {
+bool IsValidCreditCardExpirationDate(int year, int month, base::Time now) {
   if (month < 1 || month > 12)
     return false;
 
@@ -36,7 +34,7 @@ bool IsValidCreditCardExpirationDate(int year,
          (year == now_exploded.year && month >= now_exploded.month);
 }
 
-bool IsValidCreditCardExpirationYear(int year, const base::Time& now) {
+bool IsValidCreditCardExpirationYear(int year, base::Time now) {
   base::Time::Exploded now_exploded;
   now.LocalExplode(&now_exploded);
   return year >= now_exploded.year;

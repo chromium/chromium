@@ -136,13 +136,13 @@ void LogOtpAuthRetriableError(OtpAuthEvent event,
 
 // Logs the roundtrip latency for UnmaskCardRequest sent by OTP
 // authentication.
-void LogOtpAuthUnmaskCardRequestLatency(const base::TimeDelta& latency,
+void LogOtpAuthUnmaskCardRequestLatency(base::TimeDelta latency,
                                         CardUnmaskChallengeOptionType type);
 
 // Logs the roundtrip latency for SelectChallengeOptionRequest sent by OTP
 // authentication.
 void LogOtpAuthSelectChallengeOptionRequestLatency(
-    const base::TimeDelta& latency,
+    base::TimeDelta latency,
     CardUnmaskChallengeOptionType type);
 
 // Logs whenever the OTP input dialog is triggered and it is shown.

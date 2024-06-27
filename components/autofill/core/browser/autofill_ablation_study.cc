@@ -43,7 +43,7 @@ constexpr size_t kSeedLengthInBytes = 8;
 // Returns the number of days since Windows epoch but aligns timezones so that
 // the first day starts at midnight in the local timezone (ignoring daylight
 // saving time).
-int DaysSinceLocalWindowsEpoch(const base::Time& now) {
+int DaysSinceLocalWindowsEpoch(base::Time now) {
   base::TimeDelta delta = now.ToDeltaSinceWindowsEpoch();
 
   // Windows Epoch coincides with 1601-01-01 00:00:00 UTC.
@@ -68,7 +68,7 @@ int DaysSinceLocalWindowsEpoch(const base::Time& now) {
 // ablation.
 uint64_t GetAblationHash(const std::string& seed,
                          const GURL& url,
-                         const base::Time& now) {
+                         base::Time now) {
   // Derive a random number from |seed|, |url|'s security origin and today's
   // date.
   base::MD5Context ctx;
@@ -148,7 +148,7 @@ AblationGroup AutofillAblationStudy::GetAblationGroup(
 
 AblationGroup AutofillAblationStudy::GetAblationGroupImpl(
     const GURL& url,
-    const base::Time& now,
+    base::Time now,
     uint32_t ablation_weight_per_mille) const {
   uint64_t hash = GetAblationHash(seed_, url, now) % 1000;
   if (hash < ablation_weight_per_mille)

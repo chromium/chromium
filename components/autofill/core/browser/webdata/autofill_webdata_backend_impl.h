@@ -104,10 +104,9 @@ class AutofillWebDataBackendImpl
       WebDatabase* db);
 
   // Removes form elements recorded for Autocomplete from the database.
-  WebDatabase::State RemoveFormElementsAddedBetween(
-      const base::Time& delete_begin,
-      const base::Time& delete_end,
-      WebDatabase* db);
+  WebDatabase::State RemoveFormElementsAddedBetween(base::Time delete_begin,
+                                                    base::Time delete_end,
+                                                    WebDatabase* db);
 
   // Removes the Form-value |value| which has been entered in form input fields
   // named |name| from the database.
@@ -138,8 +137,8 @@ class AutofillWebDataBackendImpl
   // value, the interval between creation date and last usage is entirely
   // contained between [|begin|, |end|).
   std::unique_ptr<WDTypedResult> GetCountOfValuesContainedBetween(
-      const base::Time& begin,
-      const base::Time& end,
+      base::Time begin,
+      base::Time end,
       WebDatabase* db);
 
   // Updates autocomplete entries in the web database.
@@ -223,17 +222,15 @@ class AutofillWebDataBackendImpl
 
   // Removes Autofill records from the database. Valid only for local cards and
   // kLocalOrSyncable profiles.
-  WebDatabase::State RemoveAutofillDataModifiedBetween(
-      const base::Time& delete_begin,
-      const base::Time& delete_end,
-      WebDatabase* db);
+  WebDatabase::State RemoveAutofillDataModifiedBetween(base::Time delete_begin,
+                                                       base::Time delete_end,
+                                                       WebDatabase* db);
 
   // Removes origin URLs associated with local credit cards from the database.
   // Autofill profiles don't store an origin, so this doesn't apply to them.
-  WebDatabase::State RemoveOriginURLsModifiedBetween(
-      const base::Time& delete_begin,
-      const base::Time& delete_end,
-      WebDatabase* db);
+  WebDatabase::State RemoveOriginURLsModifiedBetween(base::Time delete_begin,
+                                                     base::Time delete_end,
+                                                     WebDatabase* db);
 
   // Clears all the credit card benefits from the database.
   WebDatabase::State ClearAllCreditCardBenefits(WebDatabase* db);

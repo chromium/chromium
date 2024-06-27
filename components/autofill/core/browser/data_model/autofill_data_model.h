@@ -32,15 +32,13 @@ class AutofillDataModel : public FormGroup {
   // Writing in and reading from database converts dates between time_t and
   // Time, therefore the microseconds get lost. Therefore, we need to round the
   // dates to seconds for both |use_date_| and |modification_date_|.
-  const base::Time& use_date() const { return use_date_; }
-  void set_use_date(const base::Time& time) { use_date_ = time; }
+  base::Time use_date() const { return use_date_; }
+  void set_use_date(base::Time time) { use_date_ = time; }
 
   bool UseDateEqualsInSeconds(const AutofillDataModel* other) const;
 
-  const base::Time& modification_date() const { return modification_date_; }
-  void set_modification_date(const base::Time& time) {
-    modification_date_ = time;
-  }
+  base::Time modification_date() const { return modification_date_; }
+  void set_modification_date(base::Time time) { modification_date_ = time; }
 
   // Compares two data models according to their ranking score. The score uses
   // a combination of use count and days since last use to determine the

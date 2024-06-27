@@ -90,7 +90,7 @@ inline constexpr base::TimeDelta kMultiStepImportTTL = base::Minutes(5);
 
 // Returns if the entry with the given |use_date| is deletable? (i.e. has not
 // been used for a long time).
-bool IsAutofillEntryWithUseDateDeletable(const base::Time& use_date);
+bool IsAutofillEntryWithUseDateDeletable(base::Time use_date);
 
 // The period after which autocomplete entries should be cleaned-up in days.
 // Equivalent to roughly 14 months.

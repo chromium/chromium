@@ -106,8 +106,8 @@ class AutocompleteHistoryManagerTest : public testing::Test {
   AutocompleteEntry GetAutocompleteEntry(
       const std::u16string& name,
       const std::u16string& value,
-      const base::Time& date_created = AutofillClock::Now(),
-      const base::Time& date_last_used = AutofillClock::Now()) {
+      base::Time date_created = AutofillClock::Now(),
+      base::Time date_last_used = AutofillClock::Now()) {
     return AutocompleteEntry(AutocompleteKey(name, value), date_created,
                              date_last_used);
   }

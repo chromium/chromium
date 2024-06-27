@@ -299,7 +299,7 @@ class CreditCard : public AutofillDataModel {
   void RecordAndLogUse();
 
   // Returns whether the card is expired based on |current_time|.
-  bool IsExpired(const base::Time& current_time) const;
+  bool IsExpired(base::Time current_time) const;
 
   // Returns whether the card is a masked card. Such cards will only have
   // the last 4 digits of the card number.

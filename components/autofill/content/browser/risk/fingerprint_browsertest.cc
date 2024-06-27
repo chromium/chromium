@@ -42,10 +42,10 @@ void GetFingerprintInternal(
     const std::string& version,
     const std::string& charset,
     const std::string& accept_languages,
-    const base::Time& install_time,
+    base::Time install_time,
     const std::string& app_locale,
     const std::string& user_agent,
-    const base::TimeDelta& timeout,
+    base::TimeDelta timeout,
     base::OnceCallback<void(std::unique_ptr<Fingerprint>)> callback);
 
 }  // namespace internal

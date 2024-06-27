@@ -250,7 +250,7 @@ void VirtualCardEnrollmentManager::
 }
 
 void VirtualCardEnrollmentManager::SetSaveCardBubbleAcceptedTimestamp(
-    const base::Time& save_card_bubble_accepted_timestamp) {
+    base::Time save_card_bubble_accepted_timestamp) {
   save_card_bubble_accepted_timestamp_ =
       std::move(save_card_bubble_accepted_timestamp);
 }

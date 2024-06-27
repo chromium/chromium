@@ -70,7 +70,7 @@ WebDatabaseTable::TypeKey GetKey() {
   return reinterpret_cast<void*>(&table_key);
 }
 
-time_t GetEndTime(const base::Time& end) {
+time_t GetEndTime(base::Time end) {
   if (end.is_null() || end == base::Time::Max()) {
     return std::numeric_limits<time_t>::max();
   }
@@ -156,8 +156,8 @@ bool AutocompleteTable::GetFormValuesForElementName(
 }
 
 bool AutocompleteTable::RemoveFormElementsAddedBetween(
-    const base::Time& delete_begin,
-    const base::Time& delete_end,
+    base::Time delete_begin,
+    base::Time delete_end,
     std::vector<AutocompleteChange>& changes) {
   const time_t delete_begin_time_t = delete_begin.ToTimeT();
   const time_t delete_end_time_t = GetEndTime(delete_end);

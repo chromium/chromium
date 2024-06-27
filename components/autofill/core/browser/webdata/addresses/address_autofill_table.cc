@@ -305,7 +305,7 @@ WebDatabaseTable::TypeKey GetKey() {
   return reinterpret_cast<void*>(&table_key);
 }
 
-time_t GetEndTime(const base::Time& end) {
+time_t GetEndTime(base::Time end) {
   if (end.is_null() || end == base::Time::Max()) {
     return std::numeric_limits<time_t>::max();
   }
@@ -757,8 +757,8 @@ bool AddressAutofillTable::GetAutofillProfilesFromLegacyTable(
 }
 
 bool AddressAutofillTable::RemoveAutofillDataModifiedBetween(
-    const base::Time& delete_begin,
-    const base::Time& delete_end,
+    base::Time delete_begin,
+    base::Time delete_end,
     std::vector<std::unique_ptr<AutofillProfile>>* profiles) {
   DCHECK(delete_end.is_null() || delete_begin < delete_end);
 

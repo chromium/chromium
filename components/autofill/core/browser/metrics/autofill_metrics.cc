@@ -969,9 +969,8 @@ void AutofillMetrics::LogScanCreditCardPromptMetric(
 }
 
 // static
-void AutofillMetrics::LogScanCreditCardCompleted(
-    const base::TimeDelta& duration,
-    bool completed) {
+void AutofillMetrics::LogScanCreditCardCompleted(base::TimeDelta duration,
+                                                 bool completed) {
   std::string suffix = completed ? "Completed" : "Cancelled";
   base::UmaHistogramLongTimes("Autofill.ScanCreditCard.Duration_" + suffix,
                               duration);
@@ -1049,7 +1048,7 @@ void AutofillMetrics::LogExpirationDateFixFlowPromptShown() {
 
 // static
 void AutofillMetrics::LogUnmaskPromptEventDuration(
-    const base::TimeDelta& duration,
+    base::TimeDelta duration,
     UnmaskPromptEvent close_event,
     bool has_valid_nickname) {
   std::string suffix;
@@ -1085,9 +1084,8 @@ void AutofillMetrics::LogUnmaskPromptEventDuration(
 }
 
 // static
-void AutofillMetrics::LogTimeBeforeAbandonUnmasking(
-    const base::TimeDelta& duration,
-    bool has_valid_nickname) {
+void AutofillMetrics::LogTimeBeforeAbandonUnmasking(base::TimeDelta duration,
+                                                    bool has_valid_nickname) {
   base::UmaHistogramLongTimes(
       "Autofill.UnmaskPrompt.TimeBeforeAbandonUnmasking", duration);
   if (has_valid_nickname) {
@@ -1149,7 +1147,7 @@ void AutofillMetrics::LogRealPanResult(PaymentsRpcResult result,
 }
 
 // static
-void AutofillMetrics::LogRealPanDuration(const base::TimeDelta& duration,
+void AutofillMetrics::LogRealPanDuration(base::TimeDelta duration,
                                          PaymentsRpcResult result,
                                          PaymentsRpcCardType card_type) {
   std::string result_suffix;
@@ -1199,7 +1197,7 @@ void AutofillMetrics::LogRealPanDuration(const base::TimeDelta& duration,
 }
 
 // static
-void AutofillMetrics::LogUnmaskingDuration(const base::TimeDelta& duration,
+void AutofillMetrics::LogUnmaskingDuration(base::TimeDelta duration,
                                            PaymentsRpcResult result,
                                            PaymentsRpcCardType card_type) {
   std::string result_suffix;
@@ -1368,20 +1366,20 @@ void AutofillMetrics::LogServerQueryMetric(ServerQueryMetric metric) {
 
 // static
 void AutofillMetrics::LogFormFillDurationFromLoadWithAutofill(
-    const base::TimeDelta& duration) {
+    base::TimeDelta duration) {
   LogFormFillDuration("Autofill.FillDuration.FromLoad.WithAutofill", duration);
 }
 
 // static
 void AutofillMetrics::LogFormFillDurationFromLoadWithoutAutofill(
-    const base::TimeDelta& duration) {
+    base::TimeDelta duration) {
   LogFormFillDuration("Autofill.FillDuration.FromLoad.WithoutAutofill",
                       duration);
 }
 
 // static
 void AutofillMetrics::LogFormFillDurationFromLoadForOneTimeCode(
-    const base::TimeDelta& duration) {
+    base::TimeDelta duration) {
   LogFormFillDuration("Autofill.WebOTP.OneTimeCode.FillDuration.FromLoad",
                       duration);
 }
@@ -1390,7 +1388,7 @@ void AutofillMetrics::LogFormFillDurationFromLoadForOneTimeCode(
 void AutofillMetrics::LogFormFillDurationFromInteraction(
     const DenseSet<FormType>& form_types,
     bool used_autofill,
-    const base::TimeDelta& duration) {
+    base::TimeDelta duration) {
   std::string parent_metric;
   if (used_autofill) {
     parent_metric = "Autofill.FillDuration.FromInteraction.WithAutofill";
@@ -1414,14 +1412,14 @@ void AutofillMetrics::LogFormFillDurationFromInteraction(
 
 // static
 void AutofillMetrics::LogFormFillDurationFromInteractionForOneTimeCode(
-    const base::TimeDelta& duration) {
+    base::TimeDelta duration) {
   LogFormFillDuration(
       "Autofill.WebOTP.OneTimeCode.FillDuration.FromInteraction", duration);
 }
 
 // static
 void AutofillMetrics::LogFormFillDuration(const std::string& metric,
-                                          const base::TimeDelta& duration) {
+                                          base::TimeDelta duration) {
   base::UmaHistogramCustomTimes(metric, duration, base::Milliseconds(100),
                                 base::Minutes(10), 50);
 }
@@ -1953,13 +1951,13 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtSubmissionTime(
 }
 
 // static
-void AutofillMetrics::LogParseFormTiming(const base::TimeDelta& duration) {
+void AutofillMetrics::LogParseFormTiming(base::TimeDelta duration) {
   UMA_HISTOGRAM_TIMES("Autofill.Timing.ParseForm", duration);
 }
 
 // static
 void AutofillMetrics::LogParsedFormUntilInteractionTiming(
-    const base::TimeDelta& duration) {
+    base::TimeDelta duration) {
   base::UmaHistogramLongTimes("Autofill.Timing.ParseFormUntilInteraction2",
                               duration);
 }
@@ -2005,7 +2003,7 @@ void AutofillMetrics::LogAutocompleteEvent(AutocompleteEvent event) {
 // static
 void AutofillMetrics::LogAutofillPopupVisibleDuration(
     FillingProduct filling_product,
-    const base::TimeDelta& duration) {
+    base::TimeDelta duration) {
   base::UmaHistogramTimes("Autofill.Popup.VisibleDuration", duration);
   base::UmaHistogramTimes(
       base::StrCat({"Autofill.Popup.VisibleDuration.",
@@ -2111,7 +2109,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogInteractedWithForm(
 void AutofillMetrics::FormInteractionsUkmLogger::LogSuggestionsShown(
     const FormStructure& form,
     const AutofillField& field,
-    const base::TimeTicks& form_parsed_timestamp,
+    base::TimeTicks form_parsed_timestamp,
     bool off_the_record) {
   if (!CanLog())
     return;
@@ -2205,7 +2203,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogFieldFillStatus(
 // TODO(szhangcs): Take FormStructure and AutofillField and extract
 // FormSignature and TimeTicks inside the function.
 void AutofillMetrics::FormInteractionsUkmLogger::LogFieldType(
-    const base::TimeTicks& form_parsed_timestamp,
+    base::TimeTicks form_parsed_timestamp,
     FormSignature form_signature,
     FieldSignature field_signature,
     QualityMetricPredictionSource prediction_source,
@@ -2577,7 +2575,7 @@ void AutofillMetrics::LogAutofillFieldInfoAfterSubmission(
     ukm::UkmRecorder* ukm_recorder,
     ukm::SourceId source_id,
     const FormStructure& form,
-    const base::TimeTicks& form_submitted_timestamp) {
+    base::TimeTicks form_submitted_timestamp) {
   for (const auto& field : form) {
     // The possible field submitted types determined by comparing the submitted
     // value in the field with the data stored in the Autofill server. We will
@@ -2619,8 +2617,8 @@ void AutofillMetrics::FormInteractionsUkmLogger::
     LogAutofillFormSummaryAtFormRemove(
         const FormStructure& form_structure,
         FormEventSet form_events,
-        const base::TimeTicks& initial_interaction_timestamp,
-        const base::TimeTicks& form_submitted_timestamp) {
+        base::TimeTicks initial_interaction_timestamp,
+        base::TimeTicks form_submitted_timestamp) {
   if (!CanLog()) {
     return;
   }
@@ -2784,7 +2782,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogKeyMetrics(
 void AutofillMetrics::FormInteractionsUkmLogger::LogFormEvent(
     autofill_metrics::FormEvent form_event,
     const DenseSet<FormTypeNameForLogging>& form_types,
-    const base::TimeTicks& form_parsed_timestamp) {
+    base::TimeTicks form_parsed_timestamp) {
   if (!CanLog())
     return;
 
@@ -2804,7 +2802,7 @@ bool AutofillMetrics::FormInteractionsUkmLogger::CanLog() const {
 }
 
 int64_t AutofillMetrics::FormInteractionsUkmLogger::MillisecondsSinceFormParsed(
-    const base::TimeTicks& form_parsed_timestamp) const {
+    base::TimeTicks form_parsed_timestamp) const {
   DCHECK(!form_parsed_timestamp.is_null());
   // Use the pinned timestamp as the current time if it's set.
   base::TimeTicks now =
@@ -2906,8 +2904,7 @@ void AutofillMetrics::LogImageFetchResult(bool succeeded) {
 }
 
 // static
-void AutofillMetrics::LogImageFetcherRequestLatency(
-    const base::TimeDelta& duration) {
+void AutofillMetrics::LogImageFetcherRequestLatency(base::TimeDelta duration) {
   base::UmaHistogramLongTimes("Autofill.ImageFetcher.RequestLatency", duration);
 }
 

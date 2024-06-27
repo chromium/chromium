@@ -12,7 +12,7 @@ namespace autofill {
 
 const char kSettingsOrigin[] = "Chrome settings";
 
-bool IsAutofillEntryWithUseDateDeletable(const base::Time& use_date) {
+bool IsAutofillEntryWithUseDateDeletable(base::Time use_date) {
   return use_date < AutofillClock::Now() - kDisusedDataModelDeletionTimeDelta;
 }
 

@@ -54,7 +54,7 @@ void LogOtpAuthRetriableError(OtpAuthEvent event,
       "Autofill.OtpAuth." + GetOtpAuthType(type) + ".RetriableError", event);
 }
 
-void LogOtpAuthUnmaskCardRequestLatency(const base::TimeDelta& duration,
+void LogOtpAuthUnmaskCardRequestLatency(base::TimeDelta duration,
                                         CardUnmaskChallengeOptionType type) {
   base::UmaHistogramLongTimes("Autofill.OtpAuth." + GetOtpAuthType(type) +
                                   ".RequestLatency.UnmaskCardRequest",
@@ -62,7 +62,7 @@ void LogOtpAuthUnmaskCardRequestLatency(const base::TimeDelta& duration,
 }
 
 void LogOtpAuthSelectChallengeOptionRequestLatency(
-    const base::TimeDelta& duration,
+    base::TimeDelta duration,
     CardUnmaskChallengeOptionType type) {
   base::UmaHistogramLongTimes(
       "Autofill.OtpAuth." + GetOtpAuthType(type) +
