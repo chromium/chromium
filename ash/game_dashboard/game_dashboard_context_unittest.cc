@@ -738,6 +738,26 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     EXPECT_EQ(test_api_->GetToolbarSnapLocation(), desired_location);
   }
 
+  void CreateAnArcAppInFullscreen() {
+    // Create an ARC game window.
+    SetAppBounds(gfx::Rect(50, 50, 800, 700));
+    CreateGameWindow(/*is_arc_window=*/true,
+                     /*set_arc_game_controls_flags_prop=*/true);
+
+    auto* window_state = WindowState::Get(game_window_.get());
+    ASSERT_TRUE(window_state->IsNormalStateType());
+    views::Widget* button_widget = test_api_->GetGameDashboardButtonWidget();
+    CHECK(button_widget);
+
+    // Set initial state to fullscreen and verify Game Dashboard button widget
+    // is not visible.
+    ASSERT_FALSE(test_api_->GetGameDashboardButtonRevealController());
+    ToggleFullScreen(window_state, /*delegate=*/nullptr);
+    ASSERT_TRUE(window_state->IsFullscreen());
+    ASSERT_FALSE(button_widget->IsVisible());
+    ASSERT_TRUE(test_api_->GetGameDashboardButtonRevealController());
+  }
+
  protected:
   void DragToolbarToPoint(Movement move_type,
                           const gfx::Point& new_location,
@@ -1490,7 +1510,8 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen) {
   ASSERT_FALSE(window_state->IsFullscreen());
   ASSERT_TRUE(button_widget->IsVisible());
 
-  // Switch to fullscreen and verify Game Dashboard button widget is visible.
+  // Switch to fullscreen and verify Game Dashboard button widget is not
+  // visible.
   ToggleFullScreen(window_state, /*delegate=*/nullptr);
   ASSERT_TRUE(window_state->IsFullscreen());
   ASSERT_FALSE(button_widget->IsVisible());
@@ -1557,41 +1578,23 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreenWithMainMenu) {
 
 TEST_F(GameDashboardContextTest,
        GameDashboardButtonFullscreen_MouseOverAndTouchGesture) {
-  // Create an ARC game window.
-  SetAppBounds(gfx::Rect(50, 50, 800, 700));
-  CreateGameWindow(/*is_arc_window=*/true,
-                   /*set_arc_game_controls_flags_prop=*/true);
-
-  auto* event_generator = GetEventGenerator();
-  auto app_bounds = game_window_->GetBoundsInScreen();
-  auto* window_state = WindowState::Get(game_window_.get());
-  ASSERT_TRUE(window_state->IsNormalStateType());
+  CreateAnArcAppInFullscreen();
   views::Widget* button_widget = test_api_->GetGameDashboardButtonWidget();
   CHECK(button_widget);
 
-  // Set initial state to fullscreen and verify Game Dashboard button widget is
-  // not visible.
-  ASSERT_FALSE(test_api_->GetGameDashboardButtonRevealController());
-  ToggleFullScreen(window_state, /*delegate=*/nullptr);
-  ASSERT_TRUE(window_state->IsFullscreen());
-  ASSERT_FALSE(button_widget->IsVisible());
-  ASSERT_TRUE(test_api_->GetGameDashboardButtonRevealController());
-  ASSERT_FALSE(test_api_->GetGameDashboardButtonWidget()->IsVisible());
-
   // Move mouse to top edge of window.
-  app_bounds = game_window_->GetBoundsInScreen();
+  const auto app_bounds = game_window_->GetBoundsInScreen();
+  auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(app_bounds.top_center());
   base::OneShotTimer& top_edge_hover_timer =
       test_api_->GetRevealControllerTopEdgeHoverTimer();
   ASSERT_TRUE(top_edge_hover_timer.IsRunning());
   top_edge_hover_timer.FireNow();
   ASSERT_TRUE(button_widget->IsVisible());
-  ASSERT_TRUE(test_api_->GetGameDashboardButtonWidget()->IsVisible());
 
   // Move mouse to the center of the app, and verify Game Dashboard button
   // widget is not visible.
   event_generator->MoveMouseTo(app_bounds.CenterPoint());
-  ASSERT_FALSE(test_api_->GetGameDashboardButtonWidget()->IsVisible());
   ASSERT_FALSE(button_widget->IsVisible());
 
   // Touch drag from top edge of window.
@@ -1599,13 +1602,11 @@ TEST_F(GameDashboardContextTest,
                                          app_bounds.CenterPoint(),
                                          kTouchDragDuration, kTouchDragSteps);
   ASSERT_TRUE(button_widget->IsVisible());
-  ASSERT_TRUE(test_api_->GetGameDashboardButtonWidget()->IsVisible());
 
   // Touch drag to top edge of window.
   event_generator->GestureScrollSequence(app_bounds.CenterPoint(),
                                          app_bounds.top_center(),
                                          kTouchDragDuration, kTouchDragSteps);
-  ASSERT_FALSE(test_api_->GetGameDashboardButtonWidget()->IsVisible());
   ASSERT_FALSE(button_widget->IsVisible());
 
   // Re-open the game dashboard button and touch drag to bottom edge of window.
@@ -1613,12 +1614,10 @@ TEST_F(GameDashboardContextTest,
                                          app_bounds.CenterPoint(),
                                          kTouchDragDuration, kTouchDragSteps);
   ASSERT_TRUE(button_widget->IsVisible());
-  ASSERT_TRUE(test_api_->GetGameDashboardButtonWidget()->IsVisible());
 
   event_generator->GestureScrollSequence(app_bounds.CenterPoint(),
                                          app_bounds.bottom_center(),
                                          kTouchDragDuration, kTouchDragSteps);
-  ASSERT_FALSE(test_api_->GetGameDashboardButtonWidget()->IsVisible());
   ASSERT_FALSE(button_widget->IsVisible());
 
   // Touch drag to bottom edge of window while the game dashboard button is
@@ -1626,7 +1625,29 @@ TEST_F(GameDashboardContextTest,
   event_generator->GestureScrollSequence(app_bounds.CenterPoint(),
                                          app_bounds.bottom_center(),
                                          kTouchDragDuration, kTouchDragSteps);
-  ASSERT_FALSE(test_api_->GetGameDashboardButtonWidget()->IsVisible());
+  ASSERT_FALSE(button_widget->IsVisible());
+}
+
+TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen_TouchEvent) {
+  CreateAnArcAppInFullscreen();
+  views::Widget* button_widget = test_api_->GetGameDashboardButtonWidget();
+  CHECK(button_widget);
+
+  // Move mouse to top edge of window, and verify Game Dashboard button
+  // widget is visible.
+  const auto app_bounds = game_window_->GetBoundsInScreen();
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(app_bounds.top_center());
+  base::OneShotTimer& top_edge_hover_timer =
+      test_api_->GetRevealControllerTopEdgeHoverTimer();
+  ASSERT_TRUE(top_edge_hover_timer.IsRunning());
+  top_edge_hover_timer.FireNow();
+  ASSERT_TRUE(button_widget->IsVisible());
+
+  // Touch outside the Game Dashboard button widget's bounds and verify the
+  // widget is hidden.
+  event_generator->PressTouch(app_bounds.right_center());
+  event_generator->ReleaseTouch();
   ASSERT_FALSE(button_widget->IsVisible());
 }
 

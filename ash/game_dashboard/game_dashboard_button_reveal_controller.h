@@ -37,6 +37,7 @@ class GameDashboardButtonRevealController : public ui::EventHandler {
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
+  void OnTouchEvent(ui::TouchEvent* event) override;
 
  private:
   friend class GameDashboardContextTestApi;

@@ -131,6 +131,26 @@ void GameDashboardButtonRevealController::OnGestureEvent(
   }
 }
 
+void GameDashboardButtonRevealController::OnTouchEvent(ui::TouchEvent* event) {
+  // If the main menu is open, or the Game Dashboard button is not visible, do
+  // nothing.
+  if (event->type() != ui::ET_TOUCH_PRESSED || context_->IsMainMenuOpen() ||
+      !context_->game_dashboard_button_widget()->IsVisible()) {
+    return;
+  }
+  // If the touch event is within the Game Dashboard button, do nothing.
+  const gfx::Point touch_event_location =
+      event->target()->GetScreenLocation(*event);
+  if (context_->game_dashboard_button_widget()
+          ->GetWindowBoundsInScreen()
+          .Contains(touch_event_location)) {
+    return;
+  }
+
+  // Hide the button. The touch event is outside the Game Dashboard button.
+  UpdateVisibility(/*target_visibility=*/false, /*animate=*/true);
+}
+
 bool GameDashboardButtonRevealController::CanShowGameDashboardButton(
     const gfx::Point& mouse_screen_location) {
   return !context_->game_dashboard_button_widget()->IsVisible() &&
