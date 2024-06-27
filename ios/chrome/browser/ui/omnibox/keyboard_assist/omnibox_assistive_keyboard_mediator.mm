@@ -68,6 +68,11 @@
 }
 
 - (void)keyPressed:(NSString*)title {
+  // Event can happen when the textfield is not editing (crbug.com/349002705).
+  if (!self.omniboxTextField.isEditing) {
+    return;
+  }
+
   NSString* text = [self updateTextForDotCom:title];
   [self.omniboxTextField insertTextWhileEditing:text];
 }
