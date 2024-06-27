@@ -805,14 +805,101 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TabGroups.Sync.SavedTabGroupActiveCount" units="groups"
+<histogram name="TabGroups.Sync.ActiveTabGroupCount.{NumberOfDays}Day"
+    units="groups" expires_after="2024-11-15">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Tracks the number of active tab groups on startup. A group is active iff
+    there was explicit user interaction with the group in last {NumberOfDays}
+    days. An explicit user interaction is currently defined as a tab addition,
+    tab removal or a tab navigation inside the group.
+
+    Recorded on startup 10 seconds after TabGroupSyncService initialization.
+    Android only.
+  </summary>
+  <token key="NumberOfDays">
+    <variant name="1" summary="1 day"/>
+    <variant name="7" summary="7 day"/>
+    <variant name="28" summary="28 day"/>
+  </token>
+</histogram>
+
+<histogram name="TabGroups.Sync.ClosedTabGroupCount" units="groups"
     expires_after="2024-11-15">
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
-    Tracks the total number of active groups (groups that have been modified
-    within the last 30 days) saved in the profile. Recorded on startup 10
-    seconds after TabGroupSyncService initialization. Android only.
+    Tracks the number of closed tab groups on startup.
+
+    Recorded on startup 10 seconds after TabGroupSyncService initialization.
+    Android only.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.GroupClosedByUser.HasTitle"
+    enum="BooleanHasTitle" expires_after="2024-12-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-multiplayer-eng@google.com</owner>
+  <summary>
+    Records whether a tab group that was closed by user has non-empty title.
+    Recorded when the group is closed due to the user action which could be a
+    deletion, ungroup or close action via UI.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.GroupOpenedByUser.HasTitle"
+    enum="BooleanHasTitle" expires_after="2024-12-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-multiplayer-eng@google.com</owner>
+  <summary>
+    Records whether a tab group that was opened by user has non-empty title.
+    Recorded when the group is opened from revisit surface.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.OpenTabGroupCount" units="groups"
+    expires_after="2024-11-15">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Tracks the number of open tab groups on startup.
+
+    Recorded on startup 10 seconds after TabGroupSyncService initialization.
+    Android only.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.RemoteActiveTabGroupCount.{NumberOfDays}Day"
+    units="groups" expires_after="2024-11-15">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Tracks the number of active tab groups on startup that were remotely
+    created. A group is active iff there was explicit user interaction with the
+    group in last {NumberOfDays} days. An explicit user interaction is currently
+    defined as a tab addition, tab removal or a tab navigation inside the group.
+
+    Recorded on startup 10 seconds after TabGroupSyncService initialization.
+    Android only.
+  </summary>
+  <token key="NumberOfDays">
+    <variant name="1" summary="1 day"/>
+    <variant name="7" summary="7 day"/>
+    <variant name="28" summary="28 day"/>
+  </token>
+</histogram>
+
+<histogram name="TabGroups.Sync.RemoteTabGroupCount" units="groups"
+    expires_after="2024-11-15">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Tracks the number of active tab groups on startup that were remotely
+    created.
+
+    Recorded on startup 10 seconds after TabGroupSyncService initialization.
+    Android only.
   </summary>
 </histogram>
 
@@ -821,18 +908,9 @@ chromium-metrics-reviews@google.com.
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
-    Tracks the age of a SavedTabGroup (since creation). Recorded on startup 10
-    seconds after TabGroupSyncService initialization. Android only.
-  </summary>
-</histogram>
-
-<histogram name="TabGroups.Sync.SavedTabGroupCount" units="groups"
-    expires_after="2024-11-15">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>clank-tab-dev@google.com</owner>
-  <summary>
-    Tracks the total number of groups saved in the profile. Recorded on startup
-    10 seconds after TabGroupSyncService initialization. Android only.
+    Tracks the age of a SavedTabGroup (since creation). Recorded once per group
+    on startup 10 seconds after TabGroupSyncService initialization. Android
+    only.
   </summary>
 </histogram>
 
@@ -843,8 +921,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks the number of tabs in a SavedTabGroup.
 
-    Recorded on startup 10 seconds after TabGroupSyncService initialization.
-    Android only.
+    Recorded once per group on startup 10 seconds after TabGroupSyncService
+    initialization. Android only.
   </summary>
 </histogram>
 
@@ -855,20 +933,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks the duration since a saved tab's last modification.
 
-    Recorded on startup 10 seconds after TabGroupSyncService initialization.
-    Android only.
-  </summary>
-</histogram>
-
-<histogram name="TabGroups.Sync.SavedTabGroupTimeSinceModification"
-    units="minutes" expires_after="2024-11-15">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>clank-tab-dev@google.com</owner>
-  <summary>
-    Tracks the duration since a saved group's last modification.
-
-    Recorded on startup 10 seconds after TabGroupSyncService initialization.
-    Android only.
+    Recorded once per tab on startup 10 seconds after TabGroupSyncService
+    initialization. Android only.
   </summary>
 </histogram>
 
@@ -878,7 +944,19 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-multiplayer-eng@google.com</owner>
   <summary>
     Records the DeviceType of the device in which a tab group was created.
-    Recorded when the group is closed.
+    Recorded when the group is closed. This includes all types of group closures
+    initiated by the user such as close, ungroup or delete event on the group.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.TabGroup.Closed.Reason" enum="GroupCloseReason"
+    expires_after="2024-11-03">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records the source from which a tab group was closed. Recorded whenever a
+    group is being closed in the UI which could be due to various trigger
+    sources such as manually closed by user or deletion from sync.
   </summary>
 </histogram>
 
@@ -898,7 +976,19 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-multiplayer-eng@google.com</owner>
   <summary>
     Records the DeviceType of the device in which a tab group was created.
-    Recorded when the group is opened.
+    Recorded when the group is opened due to user action such as opening the
+    group from revisit surface.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.TabGroup.Opened.Reason" enum="GroupOpenReason"
+    expires_after="2024-11-03">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records the source from which a tab group was opened. Recorded whenever a
+    group is being opened in the UI which could be due to various trigger
+    sources such as manually opened by user or auto-opened from sync.
   </summary>
 </histogram>
 
@@ -942,6 +1032,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.Sync.TabGroup.TabSelected.GroupCreateOrigin"
+    enum="DeviceType" expires_after="2024-12-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-multiplayer-eng@google.com</owner>
+  <summary>
+    Records the DeviceType of the device in which a tab group was created.
+    Recorded when the a tab is selected by user action. Note that this can
+    happen multiple times during a user session.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.TabGroup.TabSelected.TabCreateOrigin"
+    enum="DeviceType" expires_after="2024-12-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-multiplayer-eng@google.com</owner>
+  <summary>
+    Records the DeviceType of the device in which a tab was created. Recorded
+    when the a tab is selected by user action. Note that this can happen
+    multiple times during a user session.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.Sync.TabGroup.TabsReordered.GroupCreateOrigin"
     enum="DeviceType" expires_after="2024-12-01">
   <owner>shaktisahu@chromium.org</owner>
@@ -952,6 +1064,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.Sync.TabGroup.UserInteracted.GroupCreateOrigin"
+    enum="DeviceType" expires_after="2024-12-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-multiplayer-eng@google.com</owner>
+  <summary>
+    Records the DeviceType of the device in which a tab group was created.
+    Recorded when the group is interacted with by user. Tab addition, removal
+    and selection are considered as user interaction
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.TabGroup.UserInteracted.HasTitle"
+    enum="BooleanHasTitle" expires_after="2024-12-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-multiplayer-eng@google.com</owner>
+  <summary>
+    Records whether a tab group that was interacted by user has non-empty title.
+    Tab addition, removal and selection are considered as user interaction. Note
+    that this can happen multiple times during a user session.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.Sync.TabGroup.VisualsChanged.GroupCreateOrigin"
     enum="DeviceType" expires_after="2024-12-01">
   <owner>shaktisahu@chromium.org</owner>
@@ -959,6 +1093,44 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the DeviceType of the device in which a tab group was created.
     Recorded when the group visuals (title or color) is changed.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.TabGroupTitleLength" units="characters"
+    expires_after="2024-11-03">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records the number of characters in the tab group title. Recorded when
+    TabGroupSyncService::UpdateVisualData is invoked which is typically invoked
+    whenever there is any change to title, color, or even when tab group dialog
+    is closed.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.TimeSinceLastUserInteractionWithGroup"
+    units="minutes" expires_after="2024-11-15">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Tracks the duration since a saved group's last user interaction which is
+    typically defined as tab addition, tab removal or tab navigation.
+
+    Recorded once per group on startup 10 seconds after TabGroupSyncService
+    initialization. Android only.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.TotalTabGroupCount" units="groups"
+    expires_after="2024-11-15">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Tracks the number of total tab groups on startup which includes both open
+    and closed tab groups.
+
+    Recorded on startup 10 seconds after TabGroupSyncService initialization.
+    Android only.
   </summary>
 </histogram>
 

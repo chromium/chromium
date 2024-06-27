@@ -8,12 +8,15 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/saved_tab_groups/types.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_tracker.h"
 
 namespace tab_groups {
+class SavedTabGroup;
+class SavedTabGroupTab;
 
 // LINT.IfChange(DeviceType)
 // Represents device types which can be a local device or a remote device.
@@ -46,11 +49,10 @@ class TabGroupSyncMetricsLogger {
       syncer::DeviceInfoTracker* device_info_tracker);
   ~TabGroupSyncMetricsLogger();
 
-  // Central method to log various tab group events and their associated
-  // DeviceType.
-  void LogEvent(TabGroupEvent event,
-                const std::optional<std::string>& group_create_origin,
-                const std::optional<std::string>& tab_create_origin);
+  // Central method to log various tab group events.
+  void LogEvent(const EventDetails& event_details,
+                const SavedTabGroup* group,
+                const SavedTabGroupTab* tab);
 
   // Returns the DeviceType based on the sync cache guid which can resolve to a
   // local device or a remote device with a specific OS and form factor. The
@@ -62,6 +64,13 @@ class TabGroupSyncMetricsLogger {
   // Returns the DeviceType based on the OS and form factor.
   DeviceType GetDeviceTypeFromDeviceInfo(
       const syncer::DeviceInfo& device_info) const;
+
+  // Records metrics about the state of service such as the number of active,
+  // inactive, open, closed, remote saved groups on startup. Recorded 10 seconds
+  // after startup.
+  void RecordMetricsOnStartup(
+      const std::vector<SavedTabGroup>& saved_tab_groups,
+      const std::vector<bool>& is_remote);
 
  private:
   // For resolving device information.

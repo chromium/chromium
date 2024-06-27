@@ -7,9 +7,12 @@
 
 #include <stddef.h>
 
+#include "components/saved_tab_groups/types.h"
+
 namespace tab_groups {
 
 class SavedTabGroupModel;
+class TabGroupVisualData;
 
 namespace stats {
 
@@ -42,12 +45,9 @@ enum class MigrationResult {
 
 // Records metrics about the state of model such as the number of saved groups,
 // the number of tabs in each group, and more.
+// Only used for desktop code that uses SavedTabGroupKeyedService. Soon to be
+// deprecated.
 void RecordSavedTabGroupMetrics(SavedTabGroupModel* model);
-
-// Records metrics about the state of model such as the number of saved groups,
-// the number of tabs in each group, and more. Invoked from TabGroupSyncService
-// which is currently enabled on Android only.
-void RecordSyncedTabGroupMetrics(SavedTabGroupModel* model);
 
 // Records the difference in the number of tabs between local group and the
 // synced version when the local tab group is connected with the synced one.
@@ -66,6 +66,10 @@ void RecordSpecificsParseFailureCount(int parse_failure_count,
 // SavedTabGroupData in the final stage of startup.
 void RecordParsedSavedTabGroupDataCount(int parsed_entries_count,
                                         int total_entries);
+
+// Records metrics related to tab group creation dialog.
+void RecordTabGroupVisualsMetrics(
+    const tab_groups::TabGroupVisualData* visual_data);
 
 }  // namespace stats
 }  // namespace tab_groups
