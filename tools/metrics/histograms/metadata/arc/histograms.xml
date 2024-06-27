@@ -1094,45 +1094,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.Fixup.Entire.Failures" units="units"
-    expires_after="2024-07-07">
-  <owner>momohatt@google.com</owner>
-  <owner>arc-storage@google.com</owner>
-  <summary>
-    The number of apps that have at least one file or directory that is failed
-    to be fixed during the fixup process that is triggered after ARC P to ARCVM
-    R upgrade.
-  </summary>
-</histogram>
-
-<histogram name="Arc.Fixup.{Scale}.Directories" units="units"
-    expires_after="2024-12-15">
-  <owner>momohatt@google.com</owner>
-  <owner>arc-storage@google.com</owner>
-  <summary>
-    The number of directories that are fixed during the {Scale} fixup process
-    that is triggered after ARC P to ARCVM R upgrade.
-  </summary>
-  <token key="Scale">
-    <variant name="Entire" summary="the entire fixup process"/>
-    <variant name="PerApp" summary="per Android app"/>
-  </token>
-</histogram>
-
-<histogram name="Arc.Fixup.{Scale}.Duration" units="ms"
-    expires_after="2024-11-17">
-  <owner>momohatt@google.com</owner>
-  <owner>arc-storage@google.com</owner>
-  <summary>
-    The duration of the {Scale} fixup process that is triggered after ARC P to
-    ARCVM R upgrade.
-  </summary>
-  <token key="Scale">
-    <variant name="Entire" summary="the entire fixup process"/>
-    <variant name="PerApp" summary="per Android app"/>
-  </token>
-</histogram>
-
 <histogram name="Arc.GameControls.ButtonOptionsMenuFunctionTriggered"
     enum="GameControlsButtonOptionsMenuFunction" expires_after="2025-04-07">
   <owner>cuicuiruan@google.com</owner>

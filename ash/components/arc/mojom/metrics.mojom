@@ -380,7 +380,7 @@ enum AppErrorDialogType {
 
 // This interface is implemented in ash by ArcMetricsService. It is called by
 // ARC side.
-// Deprecated method IDs: 8, 18, 25, 26, 27, 28, 29
+// Deprecated method IDs: 8, 14, 15, 18, 25, 26, 27, 28, 29
 // Next method ID: 39
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
@@ -424,20 +424,6 @@ interface MetricsHost {
   // Reports prediction target used in Low-latency Stylus Library.
   [MinVersion=11] ReportLowLatencyStylusLibPredictionTarget@13(
     LowLatencyStylusLibPredictionTarget prediction_target);
-
-  // Reports the metrics to perform the entire fixup for P to R upgrade: the
-  // duration, the number of fixed directories, and the number of apps that
-  // contains at least one file or directory that is failed to be fixed.
-  [MinVersion=12] ReportEntireFixupMetrics@14(
-      mojo_base.mojom.TimeDelta duration,
-      uint32 number_of_directories,
-      uint32 number_of_failures);
-
-  // Reports the metrics to perform fixup per app for P to R upgrade: the
-  // duration and the number of fixed directories.
-  [MinVersion=12] ReportPerAppFixupMetrics@15(
-      mojo_base.mojom.TimeDelta duration,
-      uint32 number_of_directories);
 
   // Reports the result of DNS query inside ARC.
   [MinVersion=13] ReportDnsQueryResult@16(

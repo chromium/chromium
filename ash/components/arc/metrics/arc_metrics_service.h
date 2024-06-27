@@ -142,11 +142,6 @@ class ArcMetricsService : public KeyedService,
       mojom::VpnServiceBuilderCompatApiId api_id) override;
   void ReportNewQosSocketCount(int count) override;
   void ReportQosSocketPercentage(int perc) override;
-  void ReportEntireFixupMetrics(base::TimeDelta duration,
-                                uint32_t number_of_directories,
-                                uint32_t number_of_failures) override;
-  void ReportPerAppFixupMetrics(base::TimeDelta duration,
-                                uint32_t number_of_directories) override;
   void ReportMainAccountHashMigrationMetrics(
       mojom::MainAccountHashMigrationStatus status) override;
   void ReportArcNetworkEvent(mojom::ArcNetworkEvent event) override;
