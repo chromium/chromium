@@ -70,9 +70,10 @@ void RegisterNearbySharingPrefs(PrefRegistrySimple* registry) {
           nearby_share::mojom::FastInitiationNotificationState::kEnabled));
   registry->RegisterBooleanPref(prefs::kNearbySharingOnboardingCompletePrefName,
                                 /*default_value=*/false);
-  registry->RegisterIntegerPref(prefs::kNearbySharingBackgroundVisibilityName,
-                                /*default_value=*/static_cast<int>(
-                                    nearby_share::mojom::Visibility::kUnknown));
+  registry->RegisterIntegerPref(
+      prefs::kNearbySharingBackgroundVisibilityName,
+      /*default_value=*/static_cast<int>(
+          nearby_share::mojom::Visibility::kYourDevices));
   registry->RegisterIntegerPref(prefs::kNearbySharingDataUsageName,
                                 /*default_value=*/static_cast<int>(
                                     nearby_share::mojom::DataUsage::kWifiOnly));

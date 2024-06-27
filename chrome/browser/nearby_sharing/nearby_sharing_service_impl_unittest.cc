@@ -560,7 +560,9 @@ class NearbySharingServiceImplTestBase : public testing::Test {
     service_ = CreateService();
     SetFakeFastInitiationAdvertiserFactory(/*should_succeed_on_start=*/true);
 
-    EXPECT_FALSE(IsVisibilityReminderTimerRunning());
+    // Visibility timer starts on |service_| creation because default visibility
+    // is 'Your Devices'.
+    EXPECT_TRUE(IsVisibilityReminderTimerRunning());
 
     service_->set_free_disk_space_for_testing(kFreeDiskSpace);
 
@@ -1521,6 +1523,11 @@ class NearbySharingServiceImplTestBase : public testing::Test {
     return service_->visibility_reminder_timer_.IsRunning();
   }
 
+  void ShutdownNearbyProcess(NearbyProcessShutdownReason shutdown_reason) {
+    fake_nearby_connections_manager_->CleanupForProcessStopped();
+    std::move(process_stopped_callback_).Run(shutdown_reason);
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
   // We need to ensure that |network_notifier_| is created and destroyed after
@@ -1760,7 +1767,7 @@ TEST_P(NearbySharingServiceImplTest,
 TEST_P(NearbySharingServiceImplTest,
        StartFastInitiationAdvertising_BluetoothNotPresent) {
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
-  is_bluetooth_present_ = false;
+  SetBluetoothIsPresent(false);
   MockTransferUpdateCallback transfer_callback;
   MockShareTargetDiscoveredCallback discovery_callback;
   EXPECT_EQ(
@@ -1827,7 +1834,7 @@ TEST_P(NearbySharingServiceImplTest,
 
 TEST_P(NearbySharingServiceImplTest, RegisterSendSurface_BluetoothNotPresent) {
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_NONE);
-  is_bluetooth_present_ = false;
+  SetBluetoothIsPresent(false);
   MockTransferUpdateCallback transfer_callback;
   MockShareTargetDiscoveredCallback discovery_callback;
   EXPECT_EQ(
@@ -2183,10 +2190,6 @@ TEST_P(NearbySharingServiceImplTest, UnregisterSendSurfaceStopsDiscovering) {
       NearbySharingService::StatusCodes::kOk,
       service_->UnregisterSendSurface(&transfer_callback, &discovery_callback));
   EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
-  EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
-  EXPECT_TRUE(IsBoundToProcess());
-  FireProcessShutdownIfRunning();
-  EXPECT_FALSE(IsBoundToProcess());
 }
 
 TEST_P(NearbySharingServiceImplTest,
@@ -2209,6 +2212,8 @@ TEST_P(NearbySharingServiceImplTest,
 }
 
 TEST_P(NearbySharingServiceImplTest, UnregisterSendSurfaceNeverRegistered) {
+  // Set visibility to Hidden to stop advertising.
+  SetVisibility(nearby_share::mojom::Visibility::kNoOne);
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
 
   MockTransferUpdateCallback transfer_callback;
@@ -2485,7 +2490,7 @@ TEST_P(NearbySharingServiceImplTest,
 
 TEST_P(NearbySharingServiceImplTest,
        NoBluetoothNoNetworkRegisterForegroundReceiveSurfaceNotAdvertising) {
-  is_bluetooth_present_ = false;
+  SetBluetoothIsPresent(false);
   MockTransferUpdateCallback callback;
   NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
       &callback, NearbySharingService::ReceiveSurfaceState::kForeground);
@@ -2497,7 +2502,7 @@ TEST_P(NearbySharingServiceImplTest,
 
 TEST_P(NearbySharingServiceImplTest,
        NoBluetoothNoNetworkRegisterBackgroundReceiveSurfaceWorks) {
-  is_bluetooth_present_ = false;
+  SetBluetoothIsPresent(false);
   MockTransferUpdateCallback callback;
   NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
       &callback, NearbySharingService::ReceiveSurfaceState::kBackground);
@@ -2537,7 +2542,7 @@ TEST_P(NearbySharingServiceImplTest,
 
 TEST_P(NearbySharingServiceImplTest,
        NoBluetoothWifiReceiveSurfaceIsAdvertising) {
-  is_bluetooth_present_ = false;
+  SetBluetoothIsPresent(false);
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
   MockTransferUpdateCallback callback;
   NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
@@ -2552,7 +2557,7 @@ TEST_P(NearbySharingServiceImplTest,
 
 TEST_P(NearbySharingServiceImplTest,
        NoBluetoothEthernetReceiveSurfaceIsAdvertising) {
-  is_bluetooth_present_ = false;
+  SetBluetoothIsPresent(false);
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_ETHERNET);
   MockTransferUpdateCallback callback;
   NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
@@ -2567,7 +2572,7 @@ TEST_P(NearbySharingServiceImplTest,
 
 TEST_P(NearbySharingServiceImplTest,
        NoBluetoothThreeGReceiveSurfaceNotAdvertising) {
-  is_bluetooth_present_ = false;
+  SetBluetoothIsPresent(false);
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_3G);
   MockTransferUpdateCallback callback;
   NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
@@ -2725,6 +2730,8 @@ TEST_P(NearbySharingServiceImplTest,
 }
 
 TEST_P(NearbySharingServiceImplTest, UnregisterReceiveSurfaceStopsAdvertising) {
+  // Set visibility to Hidden to stop advertising.
+  SetVisibility(nearby_share::mojom::Visibility::kNoOne);
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
   MockTransferUpdateCallback callback;
   NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
@@ -2759,6 +2766,8 @@ TEST_P(NearbySharingServiceImplTest,
 }
 
 TEST_P(NearbySharingServiceImplTest, UnregisterReceiveSurfaceNeverRegistered) {
+  // Set visibility to Hidden to stop advertising.
+  SetVisibility(nearby_share::mojom::Visibility::kNoOne);
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
 
   MockTransferUpdateCallback callback;
@@ -5050,7 +5059,7 @@ TEST_P(NearbySharingServiceImplRestartTest, RestartsServiceWhenAppropriate) {
   // If the feature is disabled, the saved process_stopped_callback_ is invalid
   // and shouldn't be called.
   if (is_enabled) {
-    std::move(process_stopped_callback_).Run(shutdown_reason);
+    ShutdownNearbyProcess(shutdown_reason);
   }
 }
 
@@ -5074,6 +5083,10 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Range<size_t>(0, 1 << kTestFeatures.size())));
 
 TEST_P(NearbySharingServiceImplTest, ProcessShutdownTimerDoesNotRestart) {
+  // Set visibility to Hidden to deactivate advertising to start the process
+  // shutdown timer.
+  SetVisibility(nearby_share::mojom::Visibility::kNoOne);
+
   EXPECT_TRUE(IsBoundToProcess());
   EXPECT_TRUE(IsProcessShutdownTimerRunning());
 
@@ -5101,9 +5114,9 @@ TEST_P(NearbySharingServiceImplTest, ProcessShutdownTimerDoesNotRestart) {
 }
 
 TEST_P(NearbySharingServiceImplTest, NoShutdownTimerWithoutProcessRef) {
-  EXPECT_TRUE(IsBoundToProcess());
-  EXPECT_TRUE(IsProcessShutdownTimerRunning());
   FireProcessShutdownIfRunning();
+  // Reset process reference.
+  SetIsEnabled(false);
   EXPECT_FALSE(IsBoundToProcess());
   EXPECT_FALSE(IsProcessShutdownTimerRunning());
 
