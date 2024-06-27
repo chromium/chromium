@@ -701,7 +701,7 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
   ReadSimple(&ref.end_point_);
   ReadSimple(&ref.start_degrees_);
   ReadSimple(&ref.end_degrees_);
-  ReadSimple(&ref.gradient_interpolation_);
+  Read(&ref.gradient_interpolation_);
   Read(&ref.image_, PaintFlags::DynamicRangeLimitMixture(
                         PaintFlags::DynamicRangeLimit::kHigh));
   bool has_record = false;
@@ -890,6 +890,18 @@ void PaintOpReader::Read(gfx::HDRMetadata* hdr_metadata) {
     SetInvalid(DeserializationError::kHdrMetadataDeserializeFailure);
   }
   DidRead(size);
+}
+
+void PaintOpReader::Read(SkGradientShader::Interpolation* interpolation) {
+  ReadEnum<SkGradientShader::Interpolation::InPremul,
+           SkGradientShader::Interpolation::InPremul::kYes>(
+      &interpolation->fInPremul);
+  ReadEnum<SkGradientShader::Interpolation::ColorSpace,
+           SkGradientShader::Interpolation::ColorSpace::kLastColorSpace>(
+      &interpolation->fColorSpace);
+  ReadEnum<SkGradientShader::Interpolation::HueMethod,
+           SkGradientShader::Interpolation::HueMethod::kLastHueMethod>(
+      &interpolation->fHueMethod);
 }
 
 void PaintOpReader::Read(scoped_refptr<SkottieWrapper>* skottie) {

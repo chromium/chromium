@@ -448,6 +448,13 @@ void PaintOpWriter::Write(const SkSamplingOptions& sampling) {
   }
 }
 
+void PaintOpWriter::Write(
+    const SkGradientShader::Interpolation& interpolation) {
+  WriteEnum(interpolation.fInPremul);
+  WriteEnum(interpolation.fColorSpace);
+  WriteEnum(interpolation.fHueMethod);
+}
+
 void PaintOpWriter::Write(const SkColorSpace* color_space) {
   if (!color_space) {
     WriteSize(static_cast<size_t>(0));
@@ -615,7 +622,7 @@ void PaintOpWriter::Write(const PaintShader* shader,
   WriteSimple(shader->end_point_);
   WriteSimple(shader->start_degrees_);
   WriteSimple(shader->end_degrees_);
-  WriteSimple(shader->gradient_interpolation_);
+  Write(shader->gradient_interpolation_);
 
   if (enable_security_constraints_) {
     DrawImage draw_image(shader->image_, false, MakeSrcRect(shader->image_),

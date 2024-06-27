@@ -1266,6 +1266,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="54" label="SkGainmapInfo deserialize failure"/>
   <int value="55" label="HdrMetadata deserialize failure"/>
   <int value="56" label="SkColor4f has non-finite values"/>
+  <int value="57" label="SkColor4f has invalid alpha value"/>
 </enum>
 
 <enum name="ParseEdidFailure">
