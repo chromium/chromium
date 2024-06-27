@@ -5062,6 +5062,30 @@
             ]
         }
     ],
+    "ChromeWallpaperSearchGlobal": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "WallpaperSearchGlobal",
+                    "enable_features": [
+                        "CustomizeChromeWallpaperSearch",
+                        "CustomizeChromeWallpaperSearchInspirationCard",
+                        "WallpaperSearchGraduated"
+                    ],
+                    "disable_features": [
+                        "WallpaperSearchSettingsVisibility"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeWallpaperSearchHaTS": [
         {
             "platforms": [
