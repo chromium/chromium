@@ -178,6 +178,7 @@ ModelTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::ExtractChanges() {
 
 // Explicit instantiations for all required entry types.
 template class ModelTypeStoreWithInMemoryCache<sync_pb::SecurityEventSpecifics>;
+template class ModelTypeStoreWithInMemoryCache<sync_pb::UserConsentSpecifics>;
 template class ModelTypeStoreWithInMemoryCache<sync_pb::UserEventSpecifics>;
 
 }  // namespace syncer
