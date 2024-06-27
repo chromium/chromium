@@ -132,6 +132,14 @@ id<GREYMatcher> TabGroupOverflowMenuButtonMatcher() {
                     grey_sufficientlyVisible(), nil);
 }
 
+// Returns the matcher for the back button of the tab group view.
+id<GREYMatcher> TabGroupBackButtonMatcher() {
+  return grey_allOf(ButtonWithAccessibilityLabel(
+                        l10n_util::GetNSString(IDS_IOS_ICON_ARROW_BACK)),
+                    grey_kindOfClassName(@"UIAccessibilityBackButtonElement"),
+                    nil);
+}
+
 // Creates a group with default title from a tab cell at index `tab_cell_index`
 // when no group is in the grid.
 void CreateDefaultFirstGroupFromTabCellAtIndex(int tab_cell_index) {
@@ -978,6 +986,65 @@ void DeleteGroupAtIndex(int group_cell_index) {
   // Cancel the creation.
   [[EarlGrey selectElementWithMatcher:CreateTabGroupCancelButtonMatcher()]
       performAction:grey_tap()];
+}
+
+// Tests opening a tab from the group view.
+- (void)testOpenTabFromGroupView {
+  std::string URL1 = "chrome://version";
+  std::string URL2 = "chrome://about";
+  std::string content1 = "Revision";
+  std::string content2 = "List of Chrome URLs";
+
+  // Load the first website.
+  [ChromeEarlGrey loadURL:GURL(URL1)];
+  [ChromeEarlGrey waitForWebStateContainingText:content1];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(URL1)]
+      assertWithMatcher:grey_notNil()];
+  NSString* versionTabTitle = [ChromeEarlGrey currentTabTitle];
+
+  // Load the second website and this one should be the selected one.
+  [ChromeEarlGreyUI openNewTab];
+  [ChromeEarlGrey loadURL:GURL(URL2)];
+  [ChromeEarlGrey waitForWebStateContainingText:content2];
+  NSString* aboutTabTitle = [ChromeEarlGrey currentTabTitle];
+
+  // Create and open the group with the first loaded website.
+  [ChromeEarlGreyUI openTabGrid];
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+  OpenTabGroupAtIndex(0);
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(versionTabTitle)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(aboutTabTitle)]
+      assertWithMatcher:grey_nil()];
+
+  // Open the tab (currently not the selected one) and ensure this is the same
+  // website loaded previously.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(versionTabTitle)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateContainingText:content1];
+
+  // Open it again as it is the selected one now.
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(versionTabTitle)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateContainingText:content1];
+
+  // Go back to tab grid and check the group view is open.
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(versionTabTitle)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(aboutTabTitle)]
+      assertWithMatcher:grey_nil()];
+
+  // Go back to the tab grid.
+  [[EarlGrey selectElementWithMatcher:TabGroupBackButtonMatcher()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGridGroupCellAtIndex(0)];
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(versionTabTitle)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(aboutTabTitle)]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end
