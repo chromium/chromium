@@ -37,18 +37,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void SetLacrosInitParams(bool disable_compose) {
-  crosapi::mojom::BrowserInitParamsPtr init_params =
-      chromeos::BrowserInitParams::GetForTests()->Clone();
-  init_params->should_disable_chrome_compose_on_chromeos = disable_compose;
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-}
-#endif
 
 class ComposeEnablingBrowserTestBase : public InProcessBrowserTest {
  public:
@@ -122,18 +110,14 @@ class ComposeEnablingBrowserTest : public ComposeEnablingBrowserTestBase {
         /*disabled_features=*/
         {
             optimization_guide::features::internal::kComposeGraduated,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
             // All of these flags must be disabled for Compose to be enabled on
-            // ChromeOS Ash.
+            // ChromeOS.
             chromeos::features::kFeatureManagementDisableChromeCompose,
             chromeos::features::kOrca,
             chromeos::features::kOrcaDogfood,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
         });
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    SetLacrosInitParams(/*disable_compose=*/false);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 };
 
@@ -167,18 +151,14 @@ class GraduatedComposeEnablingBrowserTest
         /*disabled_features=*/
         {
             optimization_guide::features::internal::kComposeSettingsVisibility,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
             // All of these flags must be disabled for Compose to be enabled on
-            // ChromeOS Ash.
+            // ChromeOS.
             chromeos::features::kFeatureManagementDisableChromeCompose,
             chromeos::features::kOrca,
             chromeos::features::kOrcaDogfood,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
         });
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    SetLacrosInitParams(/*disable_compose=*/false);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 };
 
@@ -202,19 +182,15 @@ class ComposeOnChromeOS : public ComposeEnablingBrowserTestBase {
         {
             optimization_guide::features::kOptimizationGuideModelExecution,
             optimization_guide::features::internal::kComposeSettingsVisibility,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
             chromeos::features::kFeatureManagementDisableChromeCompose,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
         },
         /*disabled_features=*/{
             optimization_guide::features::internal::kComposeGraduated,
             chromeos::features::kOrca,
             chromeos::features::kOrcaDogfood,
         });
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    SetLacrosInitParams(/*disable_compose=*/true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 };
 
@@ -246,19 +222,15 @@ class GraduatedComposeOnChromeOS : public ComposeEnablingBrowserTestBase {
         {
             optimization_guide::features::kOptimizationGuideModelExecution,
             optimization_guide::features::internal::kComposeGraduated,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
             chromeos::features::kFeatureManagementDisableChromeCompose,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
         },
         /*disabled_features=*/{
             optimization_guide::features::internal::kComposeSettingsVisibility,
             chromeos::features::kOrca,
             chromeos::features::kOrcaDogfood,
         });
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    SetLacrosInitParams(/*disable_compose=*/true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 };
 

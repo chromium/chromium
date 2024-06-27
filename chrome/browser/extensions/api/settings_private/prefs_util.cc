@@ -34,6 +34,7 @@
 #include "components/browsing_data/core/pref_names.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/component_updater/pref_names.h"
+#include "components/compose/buildflags.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/dom_distiller/core/pref_names.h"
 #include "components/drive/drive_pref_names.h"
@@ -478,10 +479,13 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)
       [::permissions::prefs::kUnusedSitePermissionsRevocationEnabled] =
           settings_api::PrefType::kBoolean;
+
+#if BUILDFLAG(ENABLE_COMPOSE)
   (*s_allowlist)[prefs::kEnableProactiveNudge] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[prefs::kProactiveNudgeDisabledSitesWithTime] =
       settings_api::PrefType::kDictionary;
+#endif  // BUILDFLAG(ENABLE_COMPOSE)
 
   // Clear browsing data settings.
   (*s_allowlist)[browsing_data::prefs::kDeleteBrowsingHistory] =

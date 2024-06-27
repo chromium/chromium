@@ -75,13 +75,7 @@ IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, LifetimeOfBubbleWrapper) {
                                                    TabCloseTypes::CLOSE_NONE);
 }
 
-// TODO(b/328139715): Add support for ChromeOS lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_OpenFeedbackPage DISABLED_OpenFeedbackPage
-#else
-#define MAYBE_OpenFeedbackPage OpenFeedbackPage
-#endif
-IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, MAYBE_OpenFeedbackPage) {
+IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, OpenFeedbackPage) {
   // Feedback page can only be opened from a dialog state where MSSB is enabled.
   // TODO(b/316601302): Without directly setting the MSBB pref value this test
   // is flaky on Linux MSan builders. This requires further investigation, but

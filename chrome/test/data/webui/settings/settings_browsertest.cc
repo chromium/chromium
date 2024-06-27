@@ -9,6 +9,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "components/compose/buildflags.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/permissions/features.h"
@@ -489,9 +490,11 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, ToggleButton) {
   RunTest("settings/settings_toggle_button_test.js", "mocha.run()");
 }
 
+#if BUILDFLAG(ENABLE_COMPOSE)
 IN_PROC_BROWSER_TEST_F(SettingsTest, OfferWritingHelpPage) {
   RunTest("settings/offer_writing_help_page_test.js", "mocha.run()");
 }
+#endif  // BUILDFLAG(ENABLE_COMPOSE)
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, ZoomLevels) {
   RunTest("settings/zoom_levels_test.js", "mocha.run()");
