@@ -48,7 +48,6 @@ class ServiceWorkerObjectHost;
 class ServiceWorkerRegistrationObjectHost;
 class ServiceWorkerVersion;
 struct GlobalRenderFrameHostId;
-struct SubresourceLoaderParams;
 
 // Manager classes that manages *Host objects associated with a
 // `ServiceWorkerContainerHost`. These objects are owned by, corresponds 1:1 to,
@@ -419,12 +418,6 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // created with a blob URL.
   void InheritControllerFrom(ServiceWorkerClient& creator_host,
                              const GURL& blob_url);
-
-  // Returns params with the ControllerServiceWorkerInfoPtr if we have found
-  // a matching controller service worker for non-null |container_host|.
-  // Otherwise this returns std::nullopt.
-  static SubresourceLoaderParams MaybeCreateSubresourceLoaderParams(
-      base::WeakPtr<ServiceWorkerClient> service_worker_client);
 
   void SetContainerReady();
 

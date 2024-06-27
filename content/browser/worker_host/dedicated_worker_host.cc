@@ -467,8 +467,6 @@ void DedicatedWorkerHost::DidStartScriptLoad(
       DedicatedWorkerDevToolsAgentHost::GetFor(this)->devtools_worker_token(),
       network::URLLoaderCompletionStatus(net::OK));
 
-  SubresourceLoaderParams::CheckWithMainResourceHandle(
-      service_worker_handle_.get(), result->service_worker_client.get());
   blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info;
   blink::mojom::ControllerServiceWorkerInfoPtr controller;
   if (service_worker_handle_->service_worker_client()) {

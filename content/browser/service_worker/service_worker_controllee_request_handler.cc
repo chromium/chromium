@@ -548,8 +548,7 @@ void ServiceWorkerControlleeRequestHandler::CreateLoaderAndStartRequest(
           base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
               base::BindOnce(&ServiceWorkerMainResourceLoader::StartRequest,
                              loader_wrapper_->get()->AsWeakPtr())),
-          ServiceWorkerClient::MaybeCreateSubresourceLoaderParams(
-              service_worker_client_)));
+          SubresourceLoaderParams()));
 }
 
 void ServiceWorkerControlleeRequestHandler::DidStartWorker(

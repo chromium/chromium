@@ -2065,13 +2065,6 @@ ServiceWorkerClient::GetRunningStatusCallbackReceiver() {
   return receiver;
 }
 
-SubresourceLoaderParams ServiceWorkerClient::MaybeCreateSubresourceLoaderParams(
-    base::WeakPtr<ServiceWorkerClient> service_worker_client) {
-  SubresourceLoaderParams params;
-  params.service_worker_client = service_worker_client;
-  return params;
-}
-
 void ServiceWorkerClient::SetContainerReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TransitionToClientPhase(ClientPhase::kContainerReady);

@@ -74,6 +74,18 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
   }
 
  private:
+  // In term of the spec, this is the request's reserved client
+  // https://fetch.spec.whatwg.org/#concept-request-reserved-client
+  // that works as the service worker client during the main resource fetch
+  // https://w3c.github.io/ServiceWorker/#dfn-service-worker-client
+  // and subsequently passed as navigation param's reserved environment
+  // https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigation-params-reserved-environment
+  //
+  // The controller of `service_worker_client` can change during navigation
+  // fetch (e.g. when controller is lost or `skipWaiting()` is called) and thus
+  // can be different from the `ServiceWorkerVersion` that intercepted the main
+  // resource request, and the latest controller should be used as the initial
+  // controller of the to-be-created global scope.
   std::unique_ptr<ScopedServiceWorkerClient> scoped_service_worker_client_;
 
   // Only set and used for workers with a blob URL.

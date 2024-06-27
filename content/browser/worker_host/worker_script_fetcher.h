@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/functional/callback.h"
-#include "content/browser/navigation_subresource_loader_params.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/service_worker_client_info.h"
@@ -20,7 +19,6 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 #include "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom.h"
 
 namespace net {
@@ -47,7 +45,6 @@ class ServiceWorkerContextWrapper;
 class ServiceWorkerMainResourceHandle;
 class StoragePartitionImpl;
 class WorkerScriptLoaderFactory;
-struct SubresourceLoaderParams;
 
 // Contains the result of successful worker script fetch. On fetch failure,
 // `std::nullopt` is used instead.
@@ -57,7 +54,6 @@ struct CONTENT_EXPORT WorkerScriptFetcherResult final {
           subresource_loader_factories,
       blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
       PolicyContainerPolicies policy_container_policies,
-      base::WeakPtr<ServiceWorkerClient> service_worker_client,
       const GURL& final_response_url);
   ~WorkerScriptFetcherResult();
 
@@ -78,9 +74,6 @@ struct CONTENT_EXPORT WorkerScriptFetcherResult final {
   blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params;
 
   PolicyContainerPolicies policy_container_policies;
-
-  // Plumbed from `SubresourceLoaderParams`.
-  base::WeakPtr<ServiceWorkerClient> service_worker_client;
 
   // The script response URL.
   // https://fetch.spec.whatwg.org/#concept-response-url
@@ -185,17 +178,14 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
   // In case of success:
   //
   // - `main_script_load_params` is not nullptr.
-  // - `subresource_loader_params` may be nullopt.
   // - `completion_status` is nullptr.
   //
   // In case of error:
   //
   // - `main_script_load_params` is nullptr.
-  // - `subresource_loader_params` is nullopt.
   // - `completion_status` is not nullptr.
   using CreateAndStartCallback = base::OnceCallback<void(
       blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
-      SubresourceLoaderParams subresource_loader_params,
       const network::URLLoaderCompletionStatus* completion_status)>;
 
   WorkerScriptFetcher(
@@ -259,7 +249,6 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
   std::unique_ptr<blink::ThrottlingURLLoader> url_loader_;
 
   blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params_;
-  SubresourceLoaderParams subresource_loader_params_;
 
   std::vector<net::RedirectInfo> redirect_infos_;
   std::vector<network::mojom::URLResponseHeadPtr> redirect_response_heads_;

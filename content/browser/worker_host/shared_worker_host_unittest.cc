@@ -137,17 +137,16 @@ class SharedWorkerHostTest : public testing::Test {
     host->SetServiceWorkerHandle(std::move(service_worker_handle));
 
     TestContentBrowserClient client;
-    host->Start(
-        std::move(factory),
-        blink::mojom::FetchClientSettingsObject::New(
-            network::mojom::ReferrerPolicy::kDefault,
-            /*outgoing_referrer=*/GURL(),
-            blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
-        &client,
-        WorkerScriptFetcherResult(
-            std::move(subresource_loader_factories),
-            std::move(main_script_load_params), PolicyContainerPolicies(),
-            /*service_worker_client=*/nullptr, final_response_url));
+    host->Start(std::move(factory),
+                blink::mojom::FetchClientSettingsObject::New(
+                    network::mojom::ReferrerPolicy::kDefault,
+                    /*outgoing_referrer=*/GURL(),
+                    blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
+                &client,
+                WorkerScriptFetcherResult(
+                    std::move(subresource_loader_factories),
+                    std::move(main_script_load_params),
+                    PolicyContainerPolicies(), final_response_url));
   }
 
   MessagePortChannel AddClient(

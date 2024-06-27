@@ -340,8 +340,6 @@ void SharedWorkerHost::Start(
   result.subresource_loader_factories->set_bypass_redirect_checks(
       bypass_redirect_checks);
 
-  SubresourceLoaderParams::CheckWithMainResourceHandle(
-      service_worker_handle_.get(), result.service_worker_client.get());
   blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info;
   blink::mojom::ControllerServiceWorkerInfoPtr controller;
   if (service_worker_handle_->service_worker_client()) {

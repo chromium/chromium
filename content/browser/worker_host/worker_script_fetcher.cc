@@ -15,7 +15,6 @@
 #include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/loader/file_url_loader_factory.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
-#include "content/browser/navigation_subresource_loader_params.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -123,7 +122,6 @@ void DidCreateScriptLoader(
     std::optional<GlobalRenderFrameHostId> ancestor_render_frame_host_id,
     const GURL& initial_request_url,
     blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
-    SubresourceLoaderParams subresource_loader_params,
     const network::URLLoaderCompletionStatus* completion_status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_NE(main_script_load_params.is_null(), completion_status == nullptr);
@@ -173,7 +171,6 @@ void DidCreateScriptLoader(
     std::move(callback).Run(std::make_optional<WorkerScriptFetcherResult>(
         std::move(subresource_loader_factories),
         std::move(main_script_load_params), PolicyContainerPolicies(),
-        std::move(subresource_loader_params.service_worker_client),
         final_response_url));
   } else {
     std::move(callback).Run(std::nullopt);
@@ -205,12 +202,10 @@ WorkerScriptFetcherResult::WorkerScriptFetcherResult(
         subresource_loader_factories,
     blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
     PolicyContainerPolicies policy_container_policies,
-    base::WeakPtr<ServiceWorkerClient> service_worker_client,
     const GURL& final_response_url)
     : subresource_loader_factories(std::move(subresource_loader_factories)),
       main_script_load_params(std::move(main_script_load_params)),
       policy_container_policies(std::move(policy_container_policies)),
-      service_worker_client(std::move(service_worker_client)),
       final_response_url(final_response_url) {
   CHECK(this->main_script_load_params);
   CHECK(this->main_script_load_params->response_head);
@@ -674,13 +669,9 @@ void WorkerScriptFetcher::OnReceiveResponse(
   main_script_load_params_->redirect_response_heads =
       std::move(redirect_response_heads_);
 
-  subresource_loader_params_ =
-      script_loader_factory_->GetScriptLoader()->TakeSubresourceLoaderParams();
-
   // Currently `parsed_headers` is null when FileURLLoader is used.
   if (main_script_load_params_->response_head->parsed_headers) {
     std::move(callback_).Run(std::move(main_script_load_params_),
-                             std::move(subresource_loader_params_),
                              nullptr /* completion_status */);
     script_loader_factory_->GetScriptLoader()->OnFetcherCallbackCalled();
     delete this;
@@ -727,8 +718,7 @@ void WorkerScriptFetcher::OnComplete(
   // `WorkerScriptFetcher`.
   CHECK_NE(status.error_code, net::OK);
 
-  std::move(callback_).Run(/*main_script_load_params=*/nullptr,
-                           /*subresource_loader_params=*/{}, &status);
+  std::move(callback_).Run(/*main_script_load_params=*/nullptr, &status);
   script_loader_factory_->GetScriptLoader()->OnFetcherCallbackCalled();
   delete this;
 }
@@ -742,7 +732,6 @@ void WorkerScriptFetcher::DidParseHeaders(
       std::move(parsed_headers);
 
   std::move(callback_).Run(std::move(main_script_load_params_),
-                           std::move(subresource_loader_params_),
                            nullptr /* completion_status */);
   script_loader_factory_->GetScriptLoader()->OnFetcherCallbackCalled();
   delete this;

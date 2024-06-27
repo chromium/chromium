@@ -265,9 +265,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::CompleteWithoutLoader(
   if (service_worker_client && service_worker_client->controller()) {
     std::move(loader_callback)
         .Run(NavigationLoaderInterceptor::Result(
-            /*factory=*/nullptr,
-            ServiceWorkerClient::MaybeCreateSubresourceLoaderParams(
-                service_worker_client)));
+            /*factory=*/nullptr, SubresourceLoaderParams()));
     return;
   }
 

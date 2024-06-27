@@ -6110,9 +6110,6 @@ void NavigationRequest::CommitNavigation() {
   blink::mojom::ServiceWorkerContainerInfoForClientPtr
       service_worker_container_info;
   blink::mojom::ControllerServiceWorkerInfoPtr controller;
-  SubresourceLoaderParams::CheckWithMainResourceHandle(
-      service_worker_handle_.get(),
-      subresource_loader_params_.service_worker_client.get());
 
   // Notify the service worker navigation handle that navigation commit is
   // about to go.
