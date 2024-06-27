@@ -440,6 +440,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   int ClientTopNoLayout() const;
   int clientWidth();
   int clientHeight();
+  double currentCSSZoom();
   double scrollLeft();
   double scrollTop();
   void setScrollLeft(double);

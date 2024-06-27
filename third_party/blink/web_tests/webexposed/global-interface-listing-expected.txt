@@ -2535,6 +2535,7 @@ interface Element : Node
     getter clientWidth
     getter computedName
     getter computedRole
+    getter currentCSSZoom
     getter elementTiming
     getter firstElementChild
     getter id

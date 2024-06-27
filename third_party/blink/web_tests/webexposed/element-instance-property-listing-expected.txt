@@ -113,6 +113,7 @@ namespace http://www.w3.org/1999/xhtml
     property computedStyleMap
     property contains
     property contentEditable
+    property currentCSSZoom
     property dataset
     property dir
     property dispatchEvent
@@ -1408,6 +1409,7 @@ namespace http://www.w3.org/2000/svg
     property computedRole
     property computedStyleMap
     property contains
+    property currentCSSZoom
     property dataset
     property dispatchEvent
     property elementTiming

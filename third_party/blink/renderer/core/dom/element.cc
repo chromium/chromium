@@ -1789,6 +1789,15 @@ int Element::clientHeight() {
   return result;
 }
 
+double Element::currentCSSZoom() {
+  GetDocument().UpdateStyleAndLayoutTreeForElement(
+      this, DocumentUpdateReason::kComputedStyle);
+  if (const auto* layout_object = GetLayoutObject()) {
+    return layout_object->StyleRef().EffectiveZoom();
+  }
+  return 1.0;
+}
+
 LayoutBox* Element::GetLayoutBoxForScrolling() const {
   LayoutBox* box = GetLayoutBox();
   if (box && box->IsScrollContainerWithMarkers()) {
