@@ -513,6 +513,14 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreasOverviewMode) {
 }
 
 TEST_F(DockedMagnifierTest, OverviewTabbing) {
+  // In production code, `DockedMagnifierController::CenterOnPoint()` is called
+  // via an extension function. This code path will not be triggered in ash unit
+  // tests.
+  if (features::IsOverviewNewFocusEnabled()) {
+    GTEST_SKIP() << "Overview new focus uses `views::View::RequestFocus()` and "
+                    "has no custom magnifier logic anymore.";
+  }
+
   auto window = CreateTestWindow();
   controller()->SetEnabled(true);
 

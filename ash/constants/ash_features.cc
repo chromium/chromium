@@ -2294,7 +2294,7 @@ BASE_FEATURE(kOverviewDeskNavigation,
 
 BASE_FEATURE(kOverviewNewFocus,
              "OverviewNewFocus",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Jelly colors and components to appear in the Parent Access Widget
 // if jelly-colors is also enabled.

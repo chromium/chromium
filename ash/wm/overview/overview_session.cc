@@ -1053,16 +1053,8 @@ aura::Window* OverviewSession::GetFocusedWindow() const {
     return nullptr;
   }
 
-  const views::Widget* item_widget = item_view->GetWidget();
-  for (const std::unique_ptr<OverviewGrid>& overview_grid : grid_list_) {
-    for (const auto& overview_item : overview_grid->window_list()) {
-      if (overview_item->item_widget() == item_widget) {
-        return overview_item->GetWindow();
-      }
-    }
-  }
-
-  return nullptr;
+  OverviewItemBase* item = item_view->GetOverviewItem();
+  return item ? item->GetWindow() : nullptr;
 }
 
 void OverviewSession::SuspendReposition() {

@@ -95,6 +95,31 @@ class ScopedActivatable : public views::WidgetObserver {
     observation_.Reset();
   }
 
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override {
+    if (!active) {
+      return;
+    }
+
+    // If an overview item received focus, we need to restack the original
+    // window above the overview item widget, otherwise the overview backdrop
+    // would end up covering the original window.
+    auto* item_view =
+        views::AsViewClass<OverviewItemView>(widget->GetContentsView());
+    if (!item_view) {
+      return;
+    }
+
+    OverviewItemBase* item = item_view->GetOverviewItem();
+    if (!item) {
+      return;
+    }
+
+    aura::Window* parent = widget->GetNativeWindow()->parent();
+    if (parent == item->GetWindow()->parent()) {
+      parent->StackChildAbove(item->GetWindow(), widget->GetNativeWindow());
+    }
+  }
+
  private:
   base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
       this};
