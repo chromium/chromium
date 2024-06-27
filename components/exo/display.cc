@@ -41,16 +41,6 @@
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace exo {
-namespace {
-
-// This flag allows Exo::Display to create Exo::Buffer using GMBHandle instead
-// of GMB. This is required for MappableSI which aims to remove all usages of
-// GMB directly by clients.
-BASE_FEATURE(kAlwaysUseGMBHandleForPixmapExoBuffer,
-             "AlwaysUseGMBHandleForPixmapExoBuffer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // Display, public:
@@ -122,23 +112,9 @@ std::unique_ptr<Buffer> Display::CreateLinuxDMABufBuffer(
   const bool use_zero_copy = true;
   const bool is_overlay_candidate = true;
 
-  if (base::FeatureList::IsEnabled(kAlwaysUseGMBHandleForPixmapExoBuffer)) {
-    return Buffer::CreateBufferFromGMBHandle(
-        std::move(gmb_handle), size, format, buffer_usage, query_type,
-        use_zero_copy, is_overlay_candidate, y_invert);
-  }
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
-      gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandle(
-          client_native_pixmap_factory_.get(), std::move(gmb_handle), size,
-          format, buffer_usage,
-          gpu::GpuMemoryBufferImpl::DestructionCallback());
-  if (!gpu_memory_buffer) {
-    LOG(ERROR) << "Failed to create GpuMemoryBuffer from handle";
-    return nullptr;
-  }
-  return base::WrapUnique(new Buffer(std::move(gpu_memory_buffer), query_type,
-                                     use_zero_copy, is_overlay_candidate,
-                                     y_invert));
+  return Buffer::CreateBufferFromGMBHandle(
+      std::move(gmb_handle), size, format, buffer_usage, query_type,
+      use_zero_copy, is_overlay_candidate, y_invert);
 }
 
 std::unique_ptr<ShellSurface> Display::CreateShellSurface(Surface* surface) {
