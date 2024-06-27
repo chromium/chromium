@@ -4259,6 +4259,13 @@ String AXNodeObject::GetValueForControl(AXObjectSet& visited) const {
     // and "selectionEnd" indices will not match with the text in the sanitized
     // value.
     String inner_text = ToTextControl(*node).InnerEditorValue();
+    unsigned int unmasked_text_length = inner_text.length();
+    // If the inner text is empty, we return a null string to let the text
+    // alternative algorithm continue searching for an accessible name.
+    if (!unmasked_text_length) {
+      return String();
+    }
+
     if (!IsPasswordFieldAndShouldHideValue())
       return inner_text;
 
@@ -4268,10 +4275,6 @@ String AXNodeObject::GetValueForControl(AXObjectSet& visited) const {
     const ComputedStyle* style = GetLayoutObject()->Style();
     if (!style)
       return inner_text;
-
-    unsigned int unmasked_text_length = inner_text.length();
-    if (!unmasked_text_length)
-      return String();
 
     UChar mask_character = 0;
     switch (style->TextSecurity()) {
@@ -4683,6 +4686,7 @@ String AXNodeObject::TextAlternative(
   // node has already been visited.
   if (recursive && !visited.Contains(this)) {
     String value_for_name = GetValueContributionToName(visited);
+    // TODO(accessibility): Consider using `empty` check instead of `IsNull`.
     if (!value_for_name.IsNull())
       return value_for_name;
   }
