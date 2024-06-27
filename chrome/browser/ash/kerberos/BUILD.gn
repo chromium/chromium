@@ -63,3 +63,21 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "kerberos_credentials_manager_factory_browsertest.cc" ]
+
+  deps = [
+    ":kerberos",
+    "//ash/constants",
+    "//chrome/browser/ash",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+  ]
+}
