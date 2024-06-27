@@ -172,7 +172,7 @@ id<GREYMatcher> GetMatcherForEmailDescription(NSString* email) {
   // The request to reserve a plus address is hitting the test server, and
   // should fail immediately.
   NSString* error_message = l10n_util::GetNSString(
-      IDS_PLUS_ADDRESS_MODAL_REPORT_ERROR_INSTRUCTION_IOS);
+      IDS_PLUS_ADDRESS_BOTTOMSHEET_REPORT_ERROR_INSTRUCTION_IOS);
   id<GREYMatcher> parsed_error_message =
       grey_text(ParseStringWithLinks(error_message).string);
   // Ensure error message with link is shown and correctly parsed.
