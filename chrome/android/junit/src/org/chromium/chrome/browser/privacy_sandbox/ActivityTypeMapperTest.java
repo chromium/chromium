@@ -38,7 +38,7 @@ public class ActivityTypeMapperTest {
     @Test
     public void testPreFirstTabActivity() {
         assertEquals(
-                -1,
+                PrivacySandboxStorageActivityType.PRE_FIRST_TAB,
                 ActivityTypeMapper.toPrivacySandboxStorageActivityType(
                         ActivityType.PRE_FIRST_TAB, mMockIntentDataProvider));
     }
@@ -73,7 +73,7 @@ public class ActivityTypeMapperTest {
                 .thenReturn("com.google.android.googlequicksearchbox");
         when(mMockIntentDataProvider.isPartialCustomTab()).thenReturn(true);
         assertEquals(
-                -1,
+                PrivacySandboxStorageActivityType.OTHER,
                 ActivityTypeMapper.toPrivacySandboxStorageActivityType(
                         ActivityType.CUSTOM_TAB, mMockIntentDataProvider));
     }
@@ -127,16 +127,18 @@ public class ActivityTypeMapperTest {
     @Test
     public void testUnmappedActivity() {
         assertEquals(
-                -1,
+                PrivacySandboxStorageActivityType.OTHER,
                 ActivityTypeMapper.toPrivacySandboxStorageActivityType(
                         102, mMockIntentDataProvider));
-        assertEquals(-1, ActivityTypeMapper.toPrivacySandboxStorageActivityType(102));
+        assertEquals(
+                PrivacySandboxStorageActivityType.OTHER,
+                ActivityTypeMapper.toPrivacySandboxStorageActivityType(102));
     }
 
     @Test
     public void testCustomTabWithoutIntentProvider() {
         assertEquals(
-                -1,
+                PrivacySandboxStorageActivityType.OTHER,
                 ActivityTypeMapper.toPrivacySandboxStorageActivityType(ActivityType.CUSTOM_TAB));
     }
 }

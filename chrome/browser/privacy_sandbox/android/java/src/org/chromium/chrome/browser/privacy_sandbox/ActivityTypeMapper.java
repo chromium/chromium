@@ -15,9 +15,6 @@ import org.chromium.chrome.browser.flags.ActivityType;
  * used for tracking privacy-related data.
  */
 public class ActivityTypeMapper {
-    /** Represents an invalid or unsupported activity type. */
-    public static final int INVALID_ACTIVITY_TYPE = -1;
-
     /**
      * Maps a browser activity type to a corresponding privacy sandbox storage activity type.
      *
@@ -31,10 +28,6 @@ public class ActivityTypeMapper {
      */
     public static int toPrivacySandboxStorageActivityType(
             @ActivityType int activityType, BrowserServicesIntentDataProvider intentDataProvider) {
-        if (activityType == ActivityType.PRE_FIRST_TAB) {
-            return INVALID_ACTIVITY_TYPE;
-        }
-
         if (activityType == ActivityType.CUSTOM_TAB) {
             if (intentDataProvider != null
                     && intentDataProvider.getClientPackageName() != null
@@ -44,7 +37,7 @@ public class ActivityTypeMapper {
                     && !intentDataProvider.isPartialCustomTab()) {
                 return PrivacySandboxStorageActivityType.AGSA_CUSTOM_TAB;
             } else if (intentDataProvider != null && intentDataProvider.isPartialCustomTab()) {
-                return INVALID_ACTIVITY_TYPE;
+                return PrivacySandboxStorageActivityType.OTHER;
             } else {
                 return PrivacySandboxStorageActivityType.NON_AGSA_CUSTOM_TAB;
             }
@@ -74,8 +67,11 @@ public class ActivityTypeMapper {
             case ActivityType.TABBED -> {
                 return PrivacySandboxStorageActivityType.TABBED;
             }
+            case ActivityType.PRE_FIRST_TAB -> {
+                return PrivacySandboxStorageActivityType.PRE_FIRST_TAB;
+            }
             default -> {
-                return INVALID_ACTIVITY_TYPE;
+                return PrivacySandboxStorageActivityType.OTHER;
             }
         }
     }

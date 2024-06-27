@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.customtabs;
 
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType.INCOGNITO;
-import static org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper.INVALID_ACTIVITY_TYPE;
 
 import android.content.Intent;
 import android.graphics.Rect;
@@ -806,7 +805,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         int privacySandboxStorageActivityType =
                 ActivityTypeMapper.toPrivacySandboxStorageActivityType(
                         mActivityType, mIntentDataProvider.get());
-        if (privacySandboxStorageActivityType == INVALID_ACTIVITY_TYPE) return;
 
         PrivacySandboxBridge privacySandboxBridge =
                 new PrivacySandboxBridge(mProfileSupplier.get());

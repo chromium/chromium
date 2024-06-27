@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
-import static org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper.INVALID_ACTIVITY_TYPE;
-
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -862,7 +860,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_ACTIVITY_TYPE_STORAGE)) {
             int privacySandboxStorageActivityType =
                     ActivityTypeMapper.toPrivacySandboxStorageActivityType(mActivityType);
-            if (privacySandboxStorageActivityType == INVALID_ACTIVITY_TYPE) return;
 
             PrivacySandboxBridge privacySandboxBridge = new PrivacySandboxBridge(profile);
             privacySandboxBridge.recordActivityType(privacySandboxStorageActivityType);
