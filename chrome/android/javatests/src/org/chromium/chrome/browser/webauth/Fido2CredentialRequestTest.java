@@ -21,6 +21,7 @@ import android.util.Log;
 import android.util.Pair;
 
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -40,6 +41,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
+import org.chromium.base.PackageUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterProvider;
@@ -47,7 +49,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.blink.mojom.AuthenticatorAttachment;
 import org.chromium.blink.mojom.AuthenticatorStatus;
@@ -100,11 +101,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /** Unit tests for {@link Fido2CredentialRequestTest}. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@DisabledTest(message = "Disable whole test class for crbug.com/347310677")
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
@@ -456,10 +457,28 @@ public class Fido2CredentialRequestTest {
         }
     }
 
+    private static final String FIDO_OVERRIDE_COMMAND =
+            "su root am broadcast -a com.google.android.gms.phenotype.FLAG_OVERRIDE --es package"
+                    + " com.google.android.gms.fido --es user * --esa flags"
+                    + " Fido2ApiKnownBrowsers__fingerprints --esa values"
+                    + " %s --esa types"
+                    + " string --ez commit true --user 0 com.google.android.gms";
+
     @Before
     public void setUp() throws Exception {
         Assume.assumeTrue(GmsCoreUtils.isWebauthnSupported());
+
         mContext = ContextUtils.getApplicationContext();
+
+        String fingerprints =
+                PackageUtils.getCertificateSHA256FingerprintForPackage(mContext.getPackageName())
+                        .stream()
+                        .map(s -> s.replaceAll(":", ""))
+                        .collect(Collectors.joining(","));
+        InstrumentationRegistry.getInstrumentation()
+                .getUiAutomation()
+                .executeShellCommand(String.format(FIDO_OVERRIDE_COMMAND, fingerprints));
+
         mIntentSender = new MockIntentSender();
         mTestServer = sActivityTestRule.getTestServer();
         mCallback = Fido2ApiTestHelper.getAuthenticatorCallback();
