@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/safe_browsing/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -227,17 +228,19 @@ if (is_android) {
 }
 
 source_set("v4_rice") {
-  sources = [
-    "v4_rice.cc",
-    "v4_rice.h",
-  ]
+  if (safe_browsing_mode != 0 || is_ios) {
+    sources = [
+      "v4_rice.cc",
+      "v4_rice.h",
+    ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//base",
-    "//third_party/protobuf:protobuf_lite",
-  ]
+    deps = [
+      "//base",
+      "//third_party/protobuf:protobuf_lite",
+    ]
+  }
 }
 
 source_set("v4_store") {

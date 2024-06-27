@@ -56,7 +56,7 @@ message RTLookupRequest {
     OS_TYPE_UNSPECIFIED = 0;
     OS_TYPE_ANDROID = 1;
     OS_TYPE_CHROME_OS = 2;
-    OS_TYPE_FUCHSIA = 3;
+    // Deprecated: OS_TYPE_FUCHSIA = 3;
     OS_TYPE_IOS = 4;
     OS_TYPE_LINUX = 5;
     OS_TYPE_MAC = 6;

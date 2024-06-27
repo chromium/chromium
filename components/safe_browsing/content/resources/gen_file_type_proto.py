@@ -36,8 +36,6 @@ def PlatformTypes():
         download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_ANDROID,
         "chromeos":
         download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_CHROME_OS,
-        "fuchsia":
-        download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_FUCHSIA,
         "linux": download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_LINUX,
         "mac": download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_MAC,
         "win": download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_WINDOWS,

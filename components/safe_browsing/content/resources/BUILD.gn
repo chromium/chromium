@@ -32,8 +32,6 @@ action("make_file_types_protobuf") {
     target_arch = "mac"
   } else if (is_linux) {
     target_arch = "linux"
-  } else if (is_fuchsia) {
-    target_arch = "fuchsia"
   } else {
     # This will cause the script to fail.
     target_arch = "unknown_target_arch"
@@ -76,10 +74,10 @@ action("make_all_file_types_protobuf") {
     # LINT.IfChange(PlatformTypes)
     "$output_dir/android/download_file_types.pb",
     "$output_dir/chromeos/download_file_types.pb",
-    "$output_dir/fuchsia/download_file_types.pb",
     "$output_dir/linux/download_file_types.pb",
     "$output_dir/mac/download_file_types.pb",
     "$output_dir/win/download_file_types.pb",
+
     # LINT.ThenChange(gen_file_type_proto.py:PlatformTypes)
   ]
   python_path_root = "$root_build_dir/pyproto"

@@ -2595,9 +2595,6 @@ std::string SerializeURTLookupPing(const URTLookupRequest& ping) {
     case RTLookupRequest::OS_TYPE_CHROME_OS:
       os = "CHROME_OS";
       break;
-    case RTLookupRequest::OS_TYPE_FUCHSIA:
-      os = "FUCHSIA";
-      break;
   }
   request_dict.Set("os", os);
 

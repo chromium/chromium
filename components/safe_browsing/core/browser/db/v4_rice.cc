@@ -13,7 +13,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <winsock2.h>
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
 #include <arpa/inet.h>
 #endif
 

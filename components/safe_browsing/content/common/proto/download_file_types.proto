@@ -42,7 +42,7 @@ message DownloadFileType {
     PLATFORM_TYPE_LINUX = 3;
     PLATFORM_TYPE_MAC = 4;
     PLATFORM_TYPE_WINDOWS = 5;
-    PLATFORM_TYPE_FUCHSIA = 6;
+    // Deprecated: PLATFORM_TYPE_FUCHSIA = 6;
   }
 
   // Next id: 6

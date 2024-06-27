@@ -69,7 +69,7 @@ def main():
 
     # Sanity check that we're in the right place
     dirs = os.listdir('.')
-    assert sorted(dirs) == ['android', 'chromeos', 'fuchsia', 'linux', 'mac', 'win'], (
+    assert sorted(dirs) == ['android', 'chromeos', 'linux', 'mac', 'win'], (
         "Confused by wrong platform dirs under " + all_dir)
 
     # Push the files with their directories, in the form

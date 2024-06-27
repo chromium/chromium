@@ -129,15 +129,17 @@ source_set("mock_password_protection") {
 
 source_set("test_support") {
   testonly = true
-  sources = [
-    "password_protection_test_util.cc",
-    "password_protection_test_util.h",
-  ]
-  deps = [
-    ":mock_password_protection",
-    ":password_protection",
-    "//base",
-    "//content/public/browser",
-    "//testing/gmock",
-  ]
+  if (safe_browsing_mode > 0) {
+    sources = [
+      "password_protection_test_util.cc",
+      "password_protection_test_util.h",
+    ]
+    deps = [
+      ":mock_password_protection",
+      ":password_protection",
+      "//base",
+      "//content/public/browser",
+      "//testing/gmock",
+    ]
+  }
 }

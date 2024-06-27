@@ -574,12 +574,6 @@ test("components_unittests") {
       "//components/permissions/prediction_service:unit_tests",
       "//components/privacy_sandbox:unit_tests",
       "//components/privacy_sandbox/privacy_sandbox_attestations:unit_tests",
-
-      # TODO(chromium: 1169835) components / reporting / storage / resources: unit_tests
-      # can't be run on iOS until they are updated.
-      "//components/safe_browsing/content/browser/password_protection:password_protection_unittest",
-      "//components/safe_browsing/content/browser/triggers:unit_tests",
-      "//components/safe_browsing/content/browser/web_ui:unit_tests",
       "//components/safety_check:unit_tests",
       "//components/security_interstitials/content:unit_tests",
       "//components/services/quarantine:unit_tests",
@@ -773,27 +767,29 @@ test("components_unittests") {
 
   if (safe_browsing_mode != 0) {
     deps += [
+      "//components/safe_browsing/content/browser:unit_tests",
+      "//components/safe_browsing/content/browser/download:unittests",
+      "//components/safe_browsing/content/common:file_type_policies_unittest",
       "//components/safe_browsing/content/common:unit_tests",
       "//components/safe_browsing/core/browser:safe_browsing_url_checker_unittest",
     ]
   }
 
-  # TODO(crbug / 1056278): Enable this on Fuchsia and merge with the above
-  # conditional.
-  if (safe_browsing_mode != 0 && !is_fuchsia) {
+  if (safe_browsing_mode != 0 && !is_ios) {
     deps += [
-      "//components/safe_browsing/content/browser/download:unittests",
-      "//components/safe_browsing/content/common:file_type_policies_unittest",
+      # TODO(chromium: 1169835) components / reporting / storage / resources: unit_tests
+      # can't be run on iOS until they are updated.
+      "//components/safe_browsing/content/browser/password_protection:password_protection_unittest",
+      "//components/safe_browsing/content/browser/triggers:unit_tests",
+      "//components/safe_browsing/content/browser/web_ui:unit_tests",
+      "//components/safe_browsing/content/common:file_type_policies_policy_util_unittest",
     ]
-  }
-
-  if (safe_browsing_mode != 0 && !is_ios && !is_fuchsia) {
-    deps += [ "//components/safe_browsing/content/common:file_type_policies_policy_util_unittest" ]
   }
 
   if (safe_browsing_mode == 1) {
     deps += [
       "//components/safe_browsing/content/renderer:throttles_unittest",
+      "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests",
       "//components/safe_browsing/core/browser:ping_manager_unittest",
       "//components/safe_browsing/core/browser:user_population_unittest",
       "//components/safe_browsing/core/browser:verdict_cache_manager_unittest",
@@ -808,15 +804,6 @@ test("components_unittests") {
       "//components/safe_browsing/android:native_java_unittests_java",
       "//components/safe_browsing/android:unit_tests_mobile",
     ]
-  }
-
-  if (safe_browsing_mode == 1) {
-    deps += [
-      "//components/safe_browsing/content/browser:unit_tests",
-      "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests",
-    ]
-  } else if (safe_browsing_mode == 2) {
-    deps += [ "//components/safe_browsing/content/browser:unit_tests" ]
   }
 
   if (use_dbus) {
@@ -1224,7 +1211,7 @@ if (use_blink) {
       ]
     }
 
-    if (!is_android) {
+    if (safe_browsing_mode == 1 || is_ios) {
       sources += [ "safe_browsing/core/browser/db/v4_store_perftest.cc" ]
       deps += [
         "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
