@@ -69,6 +69,7 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   class BeginFrameRequestObserverImpl;
 
   bool OnBeginFrame(const BeginFrameArgs& args);
+  void OnBeginFrameContinuation(const BeginFrameArgs& args);
   int MaxPendingSwaps() const;
 
   base::TimeTicks current_frame_display_time() const {

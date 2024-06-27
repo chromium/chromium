@@ -248,26 +248,44 @@ bool DisplayScheduler::OnBeginFrame(const BeginFrameArgs& args) {
   // it.
   missed_begin_frame_task_.Cancel();
 
+  // Although this always runs "in sequence" with the VizCompositorThread, it
+  // may run on another thread (see use of `RunOrPostTask` in
+  // `ExternalBeginFrameSourceWin`). To keep that other thread responsive, run
+  // the continuation on the VizCompositorThread if a potentially expensive call
+  // to `OnBeginFrameDeadline()` is needed.
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (inside_begin_frame_deadline_interval_ &&
+      !task_runner_->BelongsToCurrentThread()) {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&DisplayScheduler::OnBeginFrameContinuation,
+                                  weak_ptr_factory_.GetWeakPtr(), save_args));
+  } else {
+    OnBeginFrameContinuation(save_args);
+  }
+
+  return true;
+}
+
+void DisplayScheduler::OnBeginFrameContinuation(const BeginFrameArgs& args) {
   // If we get another BeginFrame before the previous deadline,
   // synchronously trigger the previous deadline before progressing.
-  if (inside_begin_frame_deadline_interval_)
+  if (inside_begin_frame_deadline_interval_) {
     OnBeginFrameDeadline();
+  }
 
   // Schedule the deadline.
-  current_begin_frame_args_ = save_args;
+  current_begin_frame_args_ = args;
   if (hint_session_) {
-    hint_session_->UpdateTargetDuration(ComputeAdpfTarget(save_args));
+    hint_session_->UpdateTargetDuration(ComputeAdpfTarget(args));
   }
 
   current_begin_frame_args_.deadline -=
-      BeginFrameArgs::DefaultEstimatedDisplayDrawTime(save_args.interval);
+      BeginFrameArgs::DefaultEstimatedDisplayDrawTime(args.interval);
 
   inside_begin_frame_deadline_interval_ = true;
 
   UpdateHasPendingSurfaces();
   ScheduleBeginFrameDeadline();
-
-  return true;
 }
 
 int DisplayScheduler::MaxPendingSwaps() const {
