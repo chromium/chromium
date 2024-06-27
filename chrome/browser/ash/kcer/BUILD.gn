@@ -36,3 +36,28 @@ source_set("kcer") {
 
   allow_circular_includes_from = [ "//chrome/browser/ash/kcer/nssdb_migration" ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "kcer_factory_no_nss_ash_browsertest.cc" ]
+
+  deps = [
+    ":kcer",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/components/kcer",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -4615,7 +4615,6 @@ if (!is_android) {
         "../browser/ash/input_method/textinput_surroundingtext_browsertest.cc",
         "../browser/ash/input_method/textinput_test_helper.cc",
         "../browser/ash/input_method/textinput_test_helper.h",
-        "../browser/ash/kcer/kcer_factory_no_nss_ash_browsertest.cc",
         "../browser/ash/kerberos/kerberos_credentials_manager_factory_browsertest.cc",
         "../browser/ash/logging_browsertest.cc",
         "../browser/ash/login/accessibility_browsertest.cc",
