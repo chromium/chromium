@@ -3821,6 +3821,7 @@ static_library("ui") {
       "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
       "//chrome/browser/ash/customization",
+      "//chrome/browser/ash/device_name",
       "//chrome/browser/ash/eche_app",
       "//chrome/browser/ash/geolocation",
       "//chrome/browser/ash/growth",
