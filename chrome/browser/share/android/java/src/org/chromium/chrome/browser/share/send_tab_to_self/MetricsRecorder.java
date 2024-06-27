@@ -13,7 +13,7 @@ import org.chromium.base.metrics.RecordUserAction;
 @JNINamespace("send_tab_to_self")
 class MetricsRecorder {
     public static void recordSendingEvent(@SendingEvent int sendingEvent) {
-        RecordUserAction.record("MobileCrossDeviceTabOpenedOrSent");
+        RecordUserAction.record("MobileCrossDeviceTabJourney");
         MetricsRecorderJni.get().recordSendingEvent(sendingEvent);
     }
 
@@ -22,7 +22,7 @@ class MetricsRecorder {
     }
 
     public static void recordNotificationOpened() {
-        RecordUserAction.record("MobileCrossDeviceTabOpenedOrSent");
+        RecordUserAction.record("MobileCrossDeviceTabJourney");
         MetricsRecorderJni.get().recordNotificationOpened();
     }
 

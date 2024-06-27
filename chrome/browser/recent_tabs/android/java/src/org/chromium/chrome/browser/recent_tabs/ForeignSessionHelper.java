@@ -11,6 +11,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.CollectionUtil;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -286,6 +287,7 @@ public class ForeignSessionHelper {
 
         for (ForeignSessionTab tab : sessionTabs) {
             tabIds.add(tab.id);
+            RecordUserAction.record("MobileCrossDeviceTabJourney");
         }
         if (tabIds.size() == 0) {
             return 0;
