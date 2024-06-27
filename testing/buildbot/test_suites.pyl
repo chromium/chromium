@@ -2255,14 +2255,7 @@
     },
 
     'gpu_angle_fuchsia_unittests_isolated_scripts': {
-      'angle_unittests': {
-        'mixins': [
-          'fuchsia_logs',
-        ],
-        'args': [
-          'bin/run_angle_unittests',
-        ],
-      },
+      'angle_unittests': {},
     },
 
     'gpu_angle_ios_end2end_gtests': {

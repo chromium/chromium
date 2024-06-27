@@ -448,11 +448,6 @@
       ],
     },
   },
-  'fuchsia_logs': {
-    'args': [
-      '--logs-dir=${ISOLATED_OUTDIR}/logs',
-    ],
-  },
   'gce': {
     'swarming': {
       'dimensions': {

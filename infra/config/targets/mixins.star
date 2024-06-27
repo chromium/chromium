@@ -582,13 +582,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "fuchsia_logs",
-    args = [
-        "--logs-dir=${ISOLATED_OUTDIR}/logs",
-    ],
-)
-
-targets.mixin(
     name = "gce",
     swarming = targets.swarming(
         dimensions = {

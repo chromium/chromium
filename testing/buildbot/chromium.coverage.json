@@ -8719,8 +8719,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "bin/run_angle_unittests",
-          "--logs-dir=${ISOLATED_OUTDIR}/logs",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
           "--device-spec=virtual_device_large"
         ],

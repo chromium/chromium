@@ -257,10 +257,6 @@
     ],
     "isolated_scripts": [
       {
-        "args": [
-          "bin/run_angle_unittests",
-          "--logs-dir=${ISOLATED_OUTDIR}/logs"
-        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -354,10 +350,6 @@
     ],
     "isolated_scripts": [
       {
-        "args": [
-          "bin/run_angle_unittests",
-          "--logs-dir=${ISOLATED_OUTDIR}/logs"
-        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },

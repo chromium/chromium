@@ -2167,14 +2167,7 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "gpu_angle_fuchsia_unittests_isolated_scripts",
     tests = {
-        "angle_unittests": targets.legacy_test_config(
-            mixins = [
-                "fuchsia_logs",
-            ],
-            args = [
-                "bin/run_angle_unittests",
-            ],
-        ),
+        "angle_unittests": targets.legacy_test_config(),
     },
 )
 
