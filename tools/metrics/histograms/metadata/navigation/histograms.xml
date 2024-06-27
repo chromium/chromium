@@ -642,6 +642,17 @@ chromium-metrics-reviews@google.com.
   <token key="Stage" variants="NavigationStage"/>
 </histogram>
 
+<histogram name="Navigation.DeferSpeculativeRFHAction"
+    enum="DeferSpeculativeRFHAction" expires_after="2024-11-03">
+  <owner>gjc@google.com</owner>
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-navigation@google.com</owner>
+  <summary>
+    Records whether the speculative RFH is deferred when the navigation starts
+    and whether a spare render process is warmed up.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.DidCommitSameDocumentNavigation.Duration"
     units="ms" expires_after="2024-11-03">
   <owner>peilinwang@google.com</owner>

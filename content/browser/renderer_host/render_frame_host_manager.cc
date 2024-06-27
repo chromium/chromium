@@ -1677,17 +1677,33 @@ RenderFrameHostManager::GetFrameHostForNavigation(
   }
 
   if (base::FeatureList::IsEnabled(features::kDeferSpeculativeRFHCreation) &&
-      !use_current_rfh &&
-      CanIntentionallyDeferSpeculativeRFHForRequest(
-          request, current_site_instance->GetBrowserContext(),
-          frame_tree_node_)) {
-    if (features::kWarmupSpareProcessCreationWhenDeferRFH.Get() &&
-        !dest_site_instance->HasProcess()) {
-      SpareRenderProcessHostManager::GetInstance().WarmupSpareRenderProcessHost(
-          dest_site_instance->GetBrowserContext());
+      !use_current_rfh) {
+    DeferSpeculativeRFHAction defer_action =
+        DeferSpeculativeRFHAction::kNotDeferred;
+    if (CanIntentionallyDeferSpeculativeRFHForRequest(
+            request, current_site_instance->GetBrowserContext(),
+            frame_tree_node_)) {
+      if (features::kWarmupSpareProcessCreationWhenDeferRFH.Get() &&
+          !dest_site_instance->HasProcess()) {
+        SpareRenderProcessHostManager::GetInstance()
+            .WarmupSpareRenderProcessHost(
+                dest_site_instance->GetBrowserContext());
+        defer_action =
+            DeferSpeculativeRFHAction::kDeferredWithRenderProcessWarmUp;
+      } else {
+        defer_action =
+            DeferSpeculativeRFHAction::kDeferredWithoutRenderProcessWarmUp;
+      }
     }
-    AppendReason(reason, "GetFrameHostForNavigation / intentional-defer");
-    return base::unexpected(GetFrameHostForNavigationFailed::kIntentionalDefer);
+    if (request->state() == NavigationRequest::NavigationState::NOT_STARTED) {
+      base::UmaHistogramEnumeration("Navigation.DeferSpeculativeRFHAction",
+                                    defer_action);
+    }
+    if (defer_action != DeferSpeculativeRFHAction::kNotDeferred) {
+      AppendReason(reason, "GetFrameHostForNavigation / intentional-defer");
+      return base::unexpected(
+          GetFrameHostForNavigationFailed::kIntentionalDefer);
+    }
   }
 
   // We only do this if the policy allows it and are recovering a crashed frame.
