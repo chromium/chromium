@@ -555,6 +555,12 @@ ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
   plural_string_handler->AddLocalizedString(
       "mv2DeprecationPanelWarningSubtitle",
       IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_WARNING_SUBTITLE);
+  plural_string_handler->AddLocalizedString(
+      "mv2DeprecationPanelDisabledHeader",
+      IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_DISABLED_HEADER);
+  plural_string_handler->AddLocalizedString(
+      "mv2DeprecationPanelDisabledSubtitle",
+      IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_DISABLED_SUBTITLE);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 }
 

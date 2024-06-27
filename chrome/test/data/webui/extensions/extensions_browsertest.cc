@@ -60,8 +60,14 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsTest, HostPermissionsToggleList) {
   RunTest("extensions/host_permissions_toggle_list_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(CrExtensionsTest, ExtensionsMV2DeprecationPanel) {
-  RunTest("extensions/mv2_deprecation_panel_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest,
+                       ExtensionsMV2DeprecationPanelWarningStage) {
+  RunTest("extensions/mv2_deprecation_panel_warning_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest,
+                       ExtensionsMV2DeprecationPanelDisabledStage) {
+  RunTest("extensions/mv2_deprecation_panel_disabled_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsTest, SafetyCheckReviewPanel) {

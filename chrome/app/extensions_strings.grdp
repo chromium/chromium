@@ -617,6 +617,18 @@
       other {Remove or replace them with similar extensions from the <ph name="BEGIN_LINK">&lt;a href='https://chromewebstore.google.com/category/extensions'&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>}
     }
   </message>
+  <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_DISABLED_HEADER" desc="Header text displayed in the manifest v2 deprecation panel for the disabled stage.">
+    {NUM_EXTENSIONS, plural,
+      =1 {This extension was turned off because it's no longer supported}
+      other {These extensions were turned off because they're no longer supported}
+    }
+  </message>
+  <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_DISABLED_SUBTITLE" desc="Subtitle text displayed in the manifest v2 deprecation panel for the disabled stage.">
+    {NUM_EXTENSIONS, plural,
+      =1 {Chrome recommends that you remove it. <ph name="BEGIN_LINK">&lt;a href='https://chromewebstore.google.com/category/extensions'&gt;</ph>Learn more about supported extensions.<ph name="END_LINK">&lt;/a&gt;</ph>}
+      other {Chrome recommends that you remove them. <ph name="BEGIN_LINK">&lt;a href='https://chromewebstore.google.com/category/extensions'&gt;</ph>Learn more about supported extensions.<ph name="END_LINK">&lt;/a&gt;</ph>}
+    }
+  </message>
   <message name="IDS_EXTENSIONS_MV2_DEPRECATION_MESSAGE_WARNING_HEADER" desc="Header text displayed in the manifest v2 deprecation message for a specific extension during the warning stage.">
     This extension may soon no longer be supported
   </message>

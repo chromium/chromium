@@ -15,7 +15,7 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 import {TestService} from './test_service.js';
 import {createExtensionInfo} from './test_util.js';
 
-suite('ExtensionsMV2DeprecationPanel', function() {
+suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
   let panelElement: ExtensionsMv2DeprecationPanelElement;
   let mockDelegate: TestService;
 
@@ -29,6 +29,8 @@ suite('ExtensionsMV2DeprecationPanel', function() {
       isAffectedByMV2Deprecation: true,
       mustRemainInstalled: false,
     })];
+    // Stage 1 represents Mv2ExperimentStage.WARNING.
+    panelElement.mv2ExperimentStage = 1;
     panelElement.delegate = mockDelegate;
     document.body.appendChild(panelElement);
 
@@ -47,7 +49,6 @@ suite('ExtensionsMV2DeprecationPanel', function() {
     assertTrue(!!extension);
     return extension;
   }
-
 
   test('header content is always visible', function() {
     assertTrue(isVisible(

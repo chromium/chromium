@@ -9,7 +9,7 @@ import './shared_style.css.js';
 
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -17,6 +17,7 @@ import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polym
 
 import type {ItemDelegate} from './item.js';
 import {getTemplate} from './mv2_deprecation_panel.html.js';
+import {Mv2ExperimentStage} from './mv2_deprecation_util.js';
 
 export interface Mv2DeprecationPanelDelegate {
   dismissMv2DeprecationWarning(): void;
@@ -51,6 +52,11 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
         notify: true,
       },
 
+      /*
+       * Current Manifest V2 experiment stage.
+       */
+      mv2ExperimentStage: Number,
+
       /**
        * Whether the panel title should be shown.
        */
@@ -79,6 +85,7 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
 
   extensions: chrome.developerPrivate.ExtensionInfo[];
   delegate: ItemDelegate&Mv2DeprecationPanelDelegate;
+  mv2ExperimentStage: Mv2ExperimentStage;
   showTitle: boolean;
   private headerString_: string;
   private subtitleString_: string;
@@ -88,20 +95,61 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
    * Updates properties after extensions change.
    */
   private async onExtensionsChanged_(): Promise<void> {
+    let headerVar: string;
+    let subtitleVar: string;
+    switch (this.mv2ExperimentStage) {
+      case Mv2ExperimentStage.NONE:
+        assertNotReached();
+      case Mv2ExperimentStage.WARNING:
+        headerVar = 'mv2DeprecationPanelWarningHeader';
+        subtitleVar = 'mv2DeprecationPanelWarningSubtitle';
+        break;
+      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+        headerVar = 'mv2DeprecationPanelDisabledHeader';
+        subtitleVar = 'mv2DeprecationPanelDisabledSubtitle';
+        break;
+      default:
+        assertNotReached();
+    }
+
     this.headerString_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'mv2DeprecationPanelWarningHeader', this.extensions.length);
+            headerVar, this.extensions.length);
     this.subtitleString_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'mv2DeprecationPanelWarningSubtitle', this.extensions.length);
+            subtitleVar, this.extensions.length);
   }
 
   /**
-   * Returns the HTML representation of the subtitle string. We need the HTML
-   * representation instead of the string since the string holds a link.
+   * Returns whether the dismiss button should be displayed.
    */
-  private getSubtitleString_(): TrustedHTML {
-    return sanitizeInnerHtml(this.subtitleString_);
+  private showDismissButton_(): boolean {
+    // Button is only visible for the warning stage.
+    // TODO(crbug.com/339061151): Button should also be visible for the
+    // disabled stage (and have a different callback).
+    return this.mv2ExperimentStage === Mv2ExperimentStage.WARNING;
+  }
+
+  /**
+   * Returns whether the extensions find alternative button should be
+   * displayed.
+   */
+  private showExtensionFindAlternativeButton_(
+      extension: chrome.developerPrivate.ExtensionInfo): boolean {
+    // Button is only visible for the warning stage iff extension has a
+    // recommendations url.
+    return this.mv2ExperimentStage === Mv2ExperimentStage.WARNING &&
+        !!extension.recommendationsUrl;
+  }
+
+  /**
+   * Returns whether the extensions action menu button should be displayed.
+   */
+  private showExtensionActionMenuButton_(): boolean {
+    // Button is only visible for the warning stage.
+    // TODO(crbug.com/339061151): Button should also be visible for the
+    // disabled stage (and have a different callback).
+    return this.mv2ExperimentStage === Mv2ExperimentStage.WARNING;
   }
 
   /**
@@ -114,8 +162,16 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
   }
 
   /**
-   * Returns the accessible label for the find alternative button corresponding
-   * to `extensionName`.
+   * Returns the HTML representation of the subtitle string. We need the HTML
+   * representation instead of the string since the string holds a link.
+   */
+  private getSubtitleString_(): TrustedHTML {
+    return sanitizeInnerHtml(this.subtitleString_);
+  }
+
+  /**
+   * Returns the accessible label for the find alternative button
+   * corresponding to `extensionName`.
    */
   private getFindAlternativeButtonLabelFor_(extensionName: string): string {
     return this.i18n(
@@ -126,6 +182,7 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
    * Triggers the panel dismissal when the dismiss button is clicked.
    */
   private onDismissButtonClick_() {
+    assert(this.mv2ExperimentStage === Mv2ExperimentStage.WARNING);
     chrome.metricsPrivate.recordUserAction(
         'Extensions.Mv2Deprecation.Warning.Dismissed');
     this.delegate.dismissMv2DeprecationWarning();
@@ -137,6 +194,7 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
    */
   private onFindAlternativeButtonClick_(
       event: DomRepeatEvent<chrome.developerPrivate.ExtensionInfo>): void {
+    assert(this.mv2ExperimentStage === Mv2ExperimentStage.WARNING);
     chrome.metricsPrivate.recordUserAction(
         'Extensions.Mv2Deprecation.Warning.FindAlternativeForExtension');
     const recommendationsUrl: string|undefined =
@@ -151,6 +209,7 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
    */
   private onExtensionActionMenuClick_(
       event: DomRepeatEvent<chrome.developerPrivate.ExtensionInfo>): void {
+    assert(this.mv2ExperimentStage === Mv2ExperimentStage.WARNING);
     this.extensionWithActionMenuOpened_ = event.model.item;
     this.$.actionMenu.showAt(event.target as HTMLElement);
   }
@@ -160,6 +219,7 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
    * extension.
    */
   private onRemoveExtensionActionClicked_(): void {
+    assert(this.mv2ExperimentStage === Mv2ExperimentStage.WARNING);
     chrome.metricsPrivate.recordUserAction(
         'Extensions.Mv2Deprecation.Warning.RemoveExtension');
     this.$.actionMenu.close();
@@ -170,6 +230,7 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
    * Dismisses the warning for a given extension. It will not be shown again.
    */
   private onKeepExtensionActionClick_(): void {
+    assert(this.mv2ExperimentStage === Mv2ExperimentStage.WARNING);
     chrome.metricsPrivate.recordUserAction(
         'Extensions.Mv2Deprecation.Warning.DismissedForExtension');
     this.$.actionMenu.close();

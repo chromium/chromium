@@ -315,13 +315,37 @@ suite('ExtensionItemListTest', function() {
   });
 
   test('ManifestV2DeprecationPanel_DisableWithReEnable', async function() {
-    // Panel is hidden for experiment on stage 2 (disable with re-enable).
-    // TODO(crbug.com/339061151): verify panel is visible once functionality is
-    // added.
+    // Panel is hidden for experiment on stage 2 (disable with re-enable) when
+    // it has no extensions affected by the MV2 deprecation.
     loadTimeData.overrideValues({MV2ExperimentStage: 2});
     setupElement();
     flush();
     boundTestVisible('extensions-mv2-deprecation-panel', false);
+
+    // Panel is visible for experiment on stage 2 (disable with re-enable) and
+    // has at least one extension affected by the MV2 deprecation.
+    itemList.push('extensions', createExtensionInfo({
+                    name: 'Extension G',
+                    id: 'g'.repeat(32),
+                    isAffectedByMV2Deprecation: true,
+                  }));
+    flush();
+    boundTestVisible('extensions-mv2-deprecation-panel', true);
+    const mv2DeprecationPanel =
+        itemList.shadowRoot!.querySelector('extensions-mv2-deprecation-panel');
+    assertTrue(!!mv2DeprecationPanel);
+    assertEquals(1, mv2DeprecationPanel.extensions.length);
+
+    // Panel is visible for experiment on stage 2 (disable with re-enable) and
+    // has multiple extensions affected by the MV2 deprecation.
+    itemList.push('extensions', createExtensionInfo({
+                    name: 'Extension H',
+                    id: 'h'.repeat(32),
+                    isAffectedByMV2Deprecation: true,
+                  }));
+    flush();
+    boundTestVisible('extensions-mv2-deprecation-panel', true);
+    assertEquals(2, mv2DeprecationPanel.extensions.length);
   });
 
   test('ManifestV2DeprecationPanel_TitleVisibility', function() {

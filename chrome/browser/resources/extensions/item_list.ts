@@ -10,6 +10,7 @@ import './review_panel.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -213,14 +214,21 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
   private computeMv2DeprecatedExtensions_():
       chrome.developerPrivate.ExtensionInfo[] {
     return this.extensions.filter((extension) => {
-      if (this.mv2ExperimentStage_ === Mv2ExperimentStage.WARNING) {
-        return extension.isAffectedByMV2Deprecation &&
-            !extension.didAcknowledgeMV2DeprecationWarning;
+      if (!extension.isAffectedByMV2Deprecation) {
+        return false;
       }
 
-      // TODO(crbug.com/339061151): Add functionality for
-      // Mv2ExperimentStage.DISABLE_WITH_REENABLE.
-      return false;
+      switch (this.mv2ExperimentStage_) {
+        case Mv2ExperimentStage.NONE:
+          assertNotReached();
+        case Mv2ExperimentStage.WARNING:
+          return !extension.didAcknowledgeMV2DeprecationWarning;
+        case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+          // TODO(crbug.com/339061151): Verify extension has not been dismissed
+          // for Mv2ExperimentStage.DISABLE_WITH_REENABLE, once that
+          // functionality is added.
+          return true;
+      }
     });
   }
 
@@ -281,21 +289,21 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
    * Returns whether the manifest v2 deprecation panel should be visible.
    */
   private computeShowMv2DeprecationPanel_(): boolean {
-    // Panel is hidden if the experiment stage is none.
-    if (this.mv2ExperimentStage_ === Mv2ExperimentStage.NONE) {
-      return false;
+    switch (this.mv2ExperimentStage_) {
+      case Mv2ExperimentStage.NONE:
+        return false;
+      case Mv2ExperimentStage.WARNING:
+        // Panel is visible when it has not been dismissed for this stage and at
+        // least one extension is affected by the MV2 deprecation.
+        return !this.isMv2DeprecationWarningDismissed &&
+            this.mv2DeprecatedExtensions_?.length !== 0;
+      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+        // Panel is visible when at least one extension is affected by the MV2
+        // deprecation.
+        // TODO(crbug.com/339061151): verify panel has not been dismissed for
+        // the disabled stage once that functionality is added.
+        return this.mv2DeprecatedExtensions_?.length !== 0;
     }
-
-    if (this.mv2ExperimentStage_ === Mv2ExperimentStage.WARNING) {
-      // Panel is visible when it hasn't been hidden for the current stage and
-      // at least one extension is affected by the MV2 deprecation.
-      return !this.isMv2DeprecationWarningDismissed &&
-          this.mv2DeprecatedExtensions_?.length !== 0;
-    }
-
-    // TODO(crbug.com/339061151): add functionality for
-    // Mv2ExperimentStage.DISABLE_WITH_REENABLE.
-    return false;
   }
 
   private shouldShowEmptyItemsMessage_() {
