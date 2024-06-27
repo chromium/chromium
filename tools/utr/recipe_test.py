@@ -143,6 +143,29 @@ class LegacyRunnerTests(unittest.TestCase):
       self.assertIsNone(error_msg)
       self.mock_input.assert_not_called()
 
+  def testRerunsWithOverwrite(self):
+    runner = recipe.LegacyRunner(self.tmp_dir, {},
+                                 'some-project',
+                                 'some-bucket',
+                                 'some-builder', [],
+                                 False,
+                                 False,
+                                 False,
+                                 skip_coverage=True)
+    with mock.patch('asyncio.create_subprocess_exec',
+                    return_value=self.subp_mock):
+      self.mock_input.return_value = 'n'
+      with open(self.tmp_dir.joinpath('rerun_props.json'), 'w') as f:
+        json.dump([['y', {'some-new-prop': 'some-val'}], ['n', {}]], f)
+      runner.run_recipe()
+
+      # The first run of the recipe should have coverage-related fields off
+      # due to skip_coverage=True.
+      stdin_write = self.subp_mock.mock_calls[0]
+      input_props = json.loads(stdin_write.args[0])
+      self.assertTrue(input_props['rerun_options']['bypass_branch_check'])
+      self.assertTrue(input_props['rerun_options']['skip_instrumentation'])
+
 
 if __name__ == '__main__':
   unittest.main()

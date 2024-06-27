@@ -93,6 +93,12 @@ def add_compile_args(parser):
       action='store_true',
       help='Disables the use of siso ("use_siso" GN arg) in the compile. '
       "Will use the builder's settings if not specified.")
+  parser.add_argument(
+      '--no-coverage-instrumentation',
+      action='store_true',
+      help='Skips instrumenting code-coverage, even if the builder is '
+      'configured to instrument. Instrumentation can inflate both build sizes '
+      "and runtimes. But some failures may only occur when it's enabled.")
 
 
 def add_test_args(parser):
@@ -198,6 +204,7 @@ def main():
       args.build_dir,
       additional_test_args=None if skip_test else args.additional_test_args,
       reuse_task=args.reuse_task,
+      skip_coverage=not skip_compile and args.no_coverage_instrumentation,
   )
   exit_code, error_msg = recipe_runner.run_recipe(
       filter_stdout=args.verbosity < 2)
