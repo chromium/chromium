@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "android_webview/browser/aw_media_url_interceptor.h"
+
 #include <string>
 
-#include "android_webview/browser/aw_media_url_interceptor.h"
+#include "android_webview/browser/aw_asset_reader.h"
 #include "android_webview/common/url_constants.h"
 #include "base/android/apk_assets.h"
 #include "base/strings/string_util.h"
@@ -26,7 +28,8 @@ bool AwMediaUrlInterceptor::Intercept(const std::string& url,
                                            "assets/");
     base::MemoryMappedFile::Region region =
         base::MemoryMappedFile::Region::kWholeFile;
-    *fd = base::android::OpenApkAsset(filename, &region);
+    std::unique_ptr<AwAssetReader> reader;
+    *fd = reader->OpenApkAsset(filename, &region);
     *offset = region.offset;
     *size = region.size;
     return *fd != -1;

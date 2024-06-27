@@ -83,6 +83,20 @@ public class ClassLoaderContextWrapperFactory {
         return wrapper;
     }
 
+    /**
+     * Should be used by WebView code only to lookup files in the Resources/Assets folder or for
+     * algorithmic darkening code.
+     *
+     * @param context the Context. If this is not a ClassLoaderContextWrapper, it is returned.
+     * @return the Context for the embedding application or {@code context}.
+     */
+    public static Context getOriginalApplicationContext(Context context) {
+        if (context instanceof ClassLoaderContextWrapper wrapper) {
+            return wrapper.getBaseContext();
+        }
+        return context;
+    }
+
     private static class ClassLoaderContextWrapper extends ContextWrapper {
         private Context mApplicationContext;
 

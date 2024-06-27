@@ -27,6 +27,8 @@ source_set("browser") {
     "aw_apk_type.h",
     "aw_app_defined_websites.cc",
     "aw_app_defined_websites.h",
+    "aw_asset_reader.cc",
+    "aw_asset_reader.h",
     "aw_backforward_cache_not_restored_reason.h",
     "aw_browser_context.cc",
     "aw_browser_context.h",
