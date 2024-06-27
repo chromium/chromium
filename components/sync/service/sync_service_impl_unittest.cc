@@ -1828,8 +1828,6 @@ TEST_F(SyncServiceImplTest, ShouldReturnErrorDownloadStatus) {
 }
 
 TEST_F(SyncServiceImplTest, ShouldReturnErrorDownloadStatusWhenSyncDisabled) {
-  base::HistogramTester histogram_tester;
-
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
   SignInWithSyncConsent();
@@ -1841,8 +1839,6 @@ TEST_F(SyncServiceImplTest, ShouldReturnErrorDownloadStatusWhenSyncDisabled) {
   service()->OnInvalidationStatusChanged();
   EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
             SyncService::ModelTypeDownloadStatus::kError);
-  histogram_tester.ExpectTotalCount("Sync.ModelTypeUpToDateTime",
-                                    /*expected_count=*/0);
 }
 
 TEST_F(SyncServiceImplTest, ShouldReturnWaitingDownloadStatus) {
@@ -1884,8 +1880,6 @@ TEST_F(SyncServiceImplTest, ShouldReturnWaitingDownloadStatus) {
 }
 
 TEST_F(SyncServiceImplTest, ShouldReturnErrorWhenDataTypeDisabled) {
-  base::HistogramTester histogram_tester;
-
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
   InitializeService();
@@ -1906,10 +1900,8 @@ TEST_F(SyncServiceImplTest, ShouldReturnErrorWhenDataTypeDisabled) {
             SyncService::ModelTypeDownloadStatus::kError);
 
   SetInvalidationsEnabled();
-  histogram_tester.ExpectTotalCount("Sync.ModelTypeUpToDateTime.BOOKMARK",
-                                    /*expected_count=*/0);
-  histogram_tester.ExpectTotalCount("Sync.ModelTypeUpToDateTime",
-                                    /*expected_count=*/1);
+  EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
+            SyncService::ModelTypeDownloadStatus::kError);
 }
 
 TEST_F(SyncServiceImplTest, ShouldWaitUntilNoInvalidations) {
@@ -1944,8 +1936,6 @@ TEST_F(SyncServiceImplTest, ShouldWaitForInitializedInvalidations) {
 }
 
 TEST_F(SyncServiceImplTest, ShouldWaitForPollRequest) {
-  base::HistogramTester histogram_tester;
-
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
   InitializeService();
@@ -1955,11 +1945,6 @@ TEST_F(SyncServiceImplTest, ShouldWaitForPollRequest) {
 
   ASSERT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
             SyncService::ModelTypeDownloadStatus::kUpToDate);
-
-  histogram_tester.ExpectTotalCount("Sync.ModelTypeUpToDateTime.BOOKMARK",
-                                    /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount("Sync.ModelTypeUpToDateTime",
-                                    /*expected_count=*/1);
 
   // OnInvalidationStatusChanged() is used to only notify observers, this is
   // required for metrics since they are calculated only when SyncService state
@@ -1973,12 +1958,6 @@ TEST_F(SyncServiceImplTest, ShouldWaitForPollRequest) {
   service()->OnInvalidationStatusChanged();
   EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
             SyncService::ModelTypeDownloadStatus::kUpToDate);
-
-  // The histograms should be recorded only once.
-  histogram_tester.ExpectTotalCount("Sync.ModelTypeUpToDateTime.BOOKMARK",
-                                    /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount("Sync.ModelTypeUpToDateTime",
-                                    /*expected_count=*/1);
 
   // Ignore following poll requests once the first sync cycle is completed.
   service()->OnSyncCycleCompleted(MakeDefaultSyncCycleSnapshot());

@@ -293,37 +293,6 @@ class SyncServiceImpl : public SyncService,
   static bool ShouldClearTransportDataForAccount(
       ResetEngineReason reset_reason);
 
-  // Records UMA histograms related to download status during browser startup.
-  class DownloadStatusRecorder : public SyncServiceObserver {
-   public:
-    DownloadStatusRecorder(SyncServiceImpl* sync_service,
-                           base::OnceClosure on_finished_callback,
-                           ModelTypeSet data_types_to_track);
-    DownloadStatusRecorder(const DownloadStatusRecorder&) = delete;
-    DownloadStatusRecorder& operator=(const DownloadStatusRecorder&) = delete;
-    ~DownloadStatusRecorder() override;
-
-    // SyncServiceObserver implementation.
-    void OnStateChanged(SyncService* service) override;
-    void OnSyncShutdown(SyncService* service) override;
-
-   private:
-    void OnTimeout();
-
-    raw_ptr<SyncServiceImpl> sync_service_ = nullptr;
-
-    // Set on browser startup to report metrics related to sync configuration.
-    base::OneShotTimer startup_metrics_timer_;
-
-    // Used to notify once all the browser startup related histograms are
-    // recorded.
-    base::OnceClosure on_finished_callback_;
-
-    // Used to track data types they are in kWaitingForUpdates download status
-    // during browser startup. Used for metrics only.
-    ModelTypeSet data_types_to_track_;
-  };
-
   void StopAndClear(ResetEngineReason reset_engine_reason);
 
   // Callbacks for SyncAuthManager.
@@ -404,9 +373,6 @@ class SyncServiceImpl : public SyncService,
   // Records (or may record) histograms related to trusted vault passphrase
   // type.
   void MaybeRecordTrustedVaultHistograms();
-
-  // Clean up download status recorder.
-  void OnDownloadStatusRecorderFinished();
 
   // Returns current download status for `type`. Records a histogram if the data
   // type is waiting for updates and `waiting_for_updates_histogram_name` is not
@@ -544,9 +510,6 @@ class SyncServiceImpl : public SyncService,
   // Cleared on the first start attempt, regardless of success and who triggered
   // that attempt (the posted task or a new TryStart()).
   base::Time deferring_first_start_since_;
-
-  // Used to track download status changes during browser startup.
-  std::unique_ptr<DownloadStatusRecorder> download_status_recorder_;
 
   std::unique_ptr<SyncFeatureStatusForMigrationsRecorder> sync_status_recorder_;
 
