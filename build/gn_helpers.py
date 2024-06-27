@@ -556,7 +556,7 @@ def CreateBuildCommand(output_directory):
   if not shutil.which(f'autoninja{suffix}'):
     third_party_prefix = os.path.join(_CHROMIUM_ROOT, 'third_party')
     ninja_prefix = os.path.join(third_party_prefix, 'ninja', '')
-    siso_prefix = os.path.join(third_party_prefix, 'siso', '')
+    siso_prefix = os.path.join(third_party_prefix, 'siso', 'cipd', '')
     # Also - bots configure reclient manually, and so do not use the "auto"
     # wrappers.
     ninja_cmd = [f'{ninja_prefix}ninja{suffix}']
