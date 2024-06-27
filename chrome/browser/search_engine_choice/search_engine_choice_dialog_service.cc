@@ -404,3 +404,24 @@ void SearchEngineChoiceDialogService::NotifyLearnMoreLinkClicked(
   }
   RecordChoiceScreenEvent(event);
 }
+
+void SearchEngineChoiceDialogService::NotifyMoreButtonClicked(
+    EntryPoint entry_point) {
+  search_engines::SearchEngineChoiceScreenEvents event;
+
+  switch (entry_point) {
+    case EntryPoint::kDialog:
+      event =
+          search_engines::SearchEngineChoiceScreenEvents::kMoreButtonClicked;
+      break;
+    case EntryPoint::kFirstRunExperience:
+      event =
+          search_engines::SearchEngineChoiceScreenEvents::kFreMoreButtonClicked;
+      break;
+    case EntryPoint::kProfileCreation:
+      event = search_engines::SearchEngineChoiceScreenEvents::
+          kProfileCreationMoreButtonClicked;
+      break;
+  }
+  RecordChoiceScreenEvent(event);
+}

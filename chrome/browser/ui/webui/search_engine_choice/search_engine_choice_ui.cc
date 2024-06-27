@@ -160,6 +160,13 @@ void SearchEngineChoiceUI::HandleLearnMoreLinkClicked() {
   search_engine_choice_dialog_service->NotifyLearnMoreLinkClicked(entry_point_);
 }
 
+void SearchEngineChoiceUI::HandleMoreButtonClicked() {
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(&profile_.get());
+
+  search_engine_choice_dialog_service->NotifyMoreButtonClicked(entry_point_);
+}
+
 void SearchEngineChoiceUI::CreatePageHandler(
     mojo::PendingReceiver<search_engine_choice::mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<SearchEngineChoiceHandler>(
@@ -167,5 +174,7 @@ void SearchEngineChoiceUI::CreatePageHandler(
       base::BindOnce(&SearchEngineChoiceUI::HandleSearchEngineChoiceMade,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&SearchEngineChoiceUI::HandleLearnMoreLinkClicked,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&SearchEngineChoiceUI::HandleMoreButtonClicked,
+                     weak_ptr_factory_.GetWeakPtr()));
 }

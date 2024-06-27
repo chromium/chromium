@@ -174,7 +174,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::ValuesIn(kTestParams),
                          &ParamToTestSuffix);
 
-TEST_F(SearchEngineChoiceDialogServiceTest, HandleLearnMoreLinkClicked) {
+TEST_F(SearchEngineChoiceDialogServiceTest, NotifyLearnMoreLinkClicked) {
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
       GetSearchEngineChoiceDialogService();
 
@@ -198,6 +198,31 @@ TEST_F(SearchEngineChoiceDialogServiceTest, HandleLearnMoreLinkClicked) {
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::
           kProfileCreationLearnMoreDisplayed,
+      1);
+}
+
+TEST_F(SearchEngineChoiceDialogServiceTest, NotifyMoreButtonClicked) {
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      GetSearchEngineChoiceDialogService();
+
+  search_engine_choice_dialog_service->NotifyMoreButtonClicked(
+      SearchEngineChoiceDialogService::EntryPoint::kDialog);
+  histogram_tester().ExpectBucketCount(
+      search_engines::kSearchEngineChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::kMoreButtonClicked, 1);
+
+  search_engine_choice_dialog_service->NotifyMoreButtonClicked(
+      SearchEngineChoiceDialogService::EntryPoint::kFirstRunExperience);
+  histogram_tester().ExpectBucketCount(
+      search_engines::kSearchEngineChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::kFreMoreButtonClicked, 1);
+
+  search_engine_choice_dialog_service->NotifyMoreButtonClicked(
+      SearchEngineChoiceDialogService::EntryPoint::kProfileCreation);
+  histogram_tester().ExpectBucketCount(
+      search_engines::kSearchEngineChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::
+          kProfileCreationMoreButtonClicked,
       1);
 }
 
