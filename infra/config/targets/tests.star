@@ -23,8 +23,6 @@ targets.tests.gtest_test(
 targets.tests.isolated_script_test(
     name = "android_blink_wpt_tests",
     args = [
-        "--test-list",
-        "../../third_party/blink/web_tests/TestLists/android.filter",
     ],
     binary = "chrome_public_wpt",
 )
@@ -2706,8 +2704,6 @@ targets.tests.gtest_test(
 targets.tests.isolated_script_test(
     name = "webview_blink_wpt_tests",
     args = [
-        "--test-list",
-        "../../third_party/blink/web_tests/TestLists/android.filter",
     ],
     binary = "trichrome_webview_wpt_64",
 )

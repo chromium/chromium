@@ -64,6 +64,13 @@ class AndroidPort(linux.LinuxPort):
         # Test against a single device by default to avoid timeouts
         return 1
 
+    def default_smoke_test_only(self):
+        return True
+
+    def path_to_smoke_tests_file(self):
+        return self._filesystem.join(self.web_tests_dir(), 'TestLists',
+                                     'android.filter')
+
 
 # product constants used by the wpt runner.
 ANDROID_WEBVIEW = 'android_webview'

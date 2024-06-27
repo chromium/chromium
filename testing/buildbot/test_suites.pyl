@@ -5628,10 +5628,6 @@
       'android_blink_wpt_tests': {
         'test': 'chrome_public_wpt',
         'results_handler': 'layout tests',
-        'args': [
-          '--test-list',
-          '../../third_party/blink/web_tests/TestLists/android.filter',
-        ],
         'swarming': {
           'shards': 4,
         },
@@ -5645,10 +5641,6 @@
       'webview_blink_wpt_tests': {
         'test': 'trichrome_webview_wpt_64',
         'results_handler': 'layout tests',
-        'args': [
-          '--test-list',
-          '../../third_party/blink/web_tests/TestLists/android.filter',
-        ],
         'swarming': {
           'shards': 4,
         },

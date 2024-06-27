@@ -181,7 +181,9 @@ class WPTAdapter:
         return WPTAdapter(product, port, options, tests)
 
     def set_up_derived_options(self):
-        if not self.paths and not self.options.test_list and self.options.smoke is None:
+        explicit_tests = self.paths or self.options.test_list
+        if (not explicit_tests and self.options.smoke is None
+                and not self.using_upstream_wpt):
             self.options.smoke = self.port.default_smoke_test_only()
         if self.options.smoke:
             if not self.paths and not self.options.test_list and self.options.num_retries is None:
