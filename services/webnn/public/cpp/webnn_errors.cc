@@ -76,7 +76,7 @@ std::string NotSupportedInputTypeError(std::string_view input_name,
                                        OperandDataType type,
                                        SupportedDataTypes supported_types) {
   return base::StrCat({"Unsupported data type ", DataTypeToString(type),
-                       " for input operand ", input_name,
+                       " for input operand named '", input_name, "'",
                        SupportedDataTypesString(supported_types)});
 }
 

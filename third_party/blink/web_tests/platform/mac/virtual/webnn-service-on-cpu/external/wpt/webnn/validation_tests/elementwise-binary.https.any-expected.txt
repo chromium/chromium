@@ -1,32 +1,32 @@
 This is a testharness.js-based test.
 Found 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [add] TypeError is expected if two inputs aren't of same data type
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand inputB3, must be one of [float32, float16, int32]."
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand named 'inputB3', must be one of [float32, float16, int32]."
 [FAIL] [add] TypeError is expected if two inputs aren't broadcastable
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand inputA17, must be one of [float32, float16, int32]."
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand named 'inputA17', must be one of [float32, float16, int32]."
 [FAIL] [sub] TypeError is expected if two inputs aren't of same data type
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand inputB192, must be one of [float32, float16, int32]."
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand named 'inputB192', must be one of [float32, float16, int32]."
 [FAIL] [sub] TypeError is expected if two inputs aren't broadcastable
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand inputA34, must be one of [float32, float16, int32]."
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand named 'inputA34', must be one of [float32, float16, int32]."
 [FAIL] [mul] TypeError is expected if two inputs aren't of same data type
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand inputB381, must be one of [float32, float16, int32]."
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand named 'inputB381', must be one of [float32, float16, int32]."
 [FAIL] [mul] TypeError is expected if two inputs aren't broadcastable
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand inputA51, must be one of [float32, float16, int32]."
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand named 'inputA51', must be one of [float32, float16, int32]."
 [FAIL] [div] TypeError is expected if two inputs aren't of same data type
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand inputB570, must be one of [float32, float16, int32]."
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand named 'inputB570', must be one of [float32, float16, int32]."
 [FAIL] [div] TypeError is expected if two inputs aren't broadcastable
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand inputA68, must be one of [float32, float16, int32]."
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand named 'inputA68', must be one of [float32, float16, int32]."
 [FAIL] [max] TypeError is expected if two inputs aren't of same data type
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand inputB759, must be one of [float32, float16, int32]."
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand named 'inputB759', must be one of [float32, float16, int32]."
 [FAIL] [max] TypeError is expected if two inputs aren't broadcastable
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand inputA85, must be one of [float32, float16, int32]."
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand named 'inputA85', must be one of [float32, float16, int32]."
 [FAIL] [min] TypeError is expected if two inputs aren't of same data type
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand inputB948, must be one of [float32, float16, int32]."
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand named 'inputB948', must be one of [float32, float16, int32]."
 [FAIL] [min] TypeError is expected if two inputs aren't broadcastable
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand inputA102, must be one of [float32, float16, int32]."
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand named 'inputA102', must be one of [float32, float16, int32]."
 [FAIL] [pow] TypeError is expected if two inputs aren't of same data type
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand inputB1137, must be one of [float32, float16, int32]."
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand named 'inputB1137', must be one of [float32, float16, int32]."
 [FAIL] [pow] TypeError is expected if two inputs aren't broadcastable
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand inputA119, must be one of [float32, float16, int32]."
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand named 'inputA119', must be one of [float32, float16, int32]."
 Harness: the test ran to completion.
 
