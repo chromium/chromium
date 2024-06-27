@@ -12,6 +12,8 @@
 #include "ash/picker/search/picker_search_source.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
+#include "base/containers/flat_set.h"
+#include "base/functional/overloaded.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -45,6 +47,24 @@ PickerSectionType SectionTypeFromSearchSource(PickerSearchSource source) {
     case PickerSearchSource::kEditorRewrite:
       return PickerSectionType::kEditorRewrite;
   }
+}
+
+bool ShouldPromote(const PickerSearchResult& result) {
+  return std::visit(
+      base::Overloaded{[](const PickerSearchResult::ClipboardData& data) {
+                         return data.is_recent;
+                       },
+                       [](const PickerSearchResult::BrowsingHistoryData& data) {
+                         return data.best_match;
+                       },
+                       [](const PickerSearchResult::LocalFileData& data) {
+                         return data.best_match;
+                       },
+                       [](const PickerSearchResult::DriveFileData& data) {
+                         return data.best_match;
+                       },
+                       [](const auto& data) { return false; }},
+      result.data());
 }
 
 }  // namespace
@@ -108,6 +128,23 @@ bool PickerSearchAggregator::IsPostBurnIn() const {
 
 void PickerSearchAggregator::PublishBurnInResults() {
   std::vector<PickerSearchResultsSection> sections;
+  base::flat_set<PickerSectionType> published_types;
+
+  for (PickerSectionType type : {
+           PickerSectionType::kSuggestions,
+           PickerSectionType::kLinks,
+           PickerSectionType::kFiles,
+           PickerSectionType::kDriveFiles,
+       }) {
+    if (auto it = results_.find(type);
+        it != results_.end() &&
+        base::ranges::any_of(it->second.results, &ShouldPromote)) {
+      sections.emplace_back(type, std::move(it->second.results),
+                            it->second.has_more);
+      published_types.insert(type);
+    }
+  }
+
   for (PickerSectionType type : {
            PickerSectionType::kSuggestions,
            PickerSectionType::kCategories,
@@ -119,6 +156,9 @@ void PickerSearchAggregator::PublishBurnInResults() {
            PickerSectionType::kDriveFiles,
            PickerSectionType::kGifs,
        }) {
+    if (published_types.contains(type)) {
+      continue;
+    }
     if (auto it = results_.find(type);
         it != results_.end() && !it->second.results.empty()) {
       sections.emplace_back(type, std::move(it->second.results),

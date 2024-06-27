@@ -257,7 +257,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
 }
 
 TEST_F(PickerSearchAggregatorMultipleSourcesTest,
-       CombinesSearchResultsInNewOrderBeforeBurnIn) {
+       CombinesSearchResultsWithPredefinedTypeOrderBeforeBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(
       search_results_callback,
@@ -268,6 +268,12 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
               Property(
                   "results", &PickerSearchResultsSection::results,
                   ElementsAre(
+                      Property(
+                          "data", &PickerSearchResult::data,
+                          VariantWith<PickerSearchResult::ClipboardData>(Field(
+                              "display_text",
+                              &PickerSearchResult::ClipboardData::display_text,
+                              u"clipboard"))),
                       Property("data", &PickerSearchResult::data,
                                VariantWith<PickerSearchResult::TextData>(Field(
                                    "primary_text",
@@ -325,13 +331,13 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                  u"omnibox")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kFiles),
-                Property("results", &PickerSearchResultsSection::results,
-                         ElementsAre(Property(
-                             "data", &PickerSearchResult::data,
-                             VariantWith<PickerSearchResult::TextData>(Field(
-                                 "primary_text",
-                                 &PickerSearchResult::TextData::primary_text,
-                                 u"local")))))),
+                Property(
+                    "results", &PickerSearchResultsSection::results,
+                    ElementsAre(Property(
+                        "data", &PickerSearchResult::data,
+                        VariantWith<PickerSearchResult::LocalFileData>(Field(
+                            "title", &PickerSearchResult::LocalFileData::title,
+                            u"local")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kDriveFiles),
                 Property("results", &PickerSearchResultsSection::results,
@@ -366,15 +372,25 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   aggregator.HandleSearchSourceResults(PickerSearchSource::kEmoji,
                                        {PickerSearchResult::Text(u"emoji")},
                                        /*has_more_results=*/false);
+  aggregator.HandleSearchSourceResults(
+      PickerSearchSource::kDate,
+      {PickerSearchResult::Clipboard(
+          base::UnguessableToken::Create(),
+          PickerSearchResult::ClipboardData::DisplayFormat::kText, u"clipboard",
+          std::nullopt,
+          /*is_recent=*/false)},
+      /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kDate,
                                        {PickerSearchResult::Text(u"date")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kCategory,
                                        {PickerSearchResult::Text(u"category")},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kLocalFile,
-                                       {PickerSearchResult::Text(u"local")},
-                                       /*has_more_results=*/false);
+  aggregator.HandleSearchSourceResults(
+      PickerSearchSource::kLocalFile,
+      {PickerSearchResult::LocalFile(u"local", base::FilePath("fake_path"),
+                                     /*best_match=*/false)},
+      /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive,
                                        {PickerSearchResult::Text(u"drive")},
                                        /*has_more_results=*/false);
@@ -386,6 +402,150 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kEditorRewrite,
                                        {PickerSearchResult::Text(u"rewrite")},
+                                       /*has_more_results=*/false);
+  task_environment().FastForwardBy(kBurnInPeriod);
+}
+
+TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+       CombinesSearchResultsAndPromotesBestMatchBeforeBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(
+      search_results_callback,
+      Call(ElementsAre(
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kFiles),
+                Property(
+                    "results", &PickerSearchResultsSection::results,
+                    ElementsAre(Property(
+                        "data", &PickerSearchResult::data,
+                        VariantWith<PickerSearchResult::LocalFileData>(Field(
+                            "title", &PickerSearchResult::LocalFileData::title,
+                            u"local")))))),
+          AllOf(
+              Property("type", &PickerSearchResultsSection::type,
+                       PickerSectionType::kSuggestions),
+              Property("results", &PickerSearchResultsSection::results,
+                       ElementsAre(Property(
+                           "data", &PickerSearchResult::data,
+                           VariantWith<PickerSearchResult::ClipboardData>(Field(
+                               "display_text",
+                               &PickerSearchResult::ClipboardData::display_text,
+                               u"clipboard")))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kEditorWrite),
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(Property(
+                             "data", &PickerSearchResult::data,
+                             VariantWith<PickerSearchResult::TextData>(Field(
+                                 "primary_text",
+                                 &PickerSearchResult::TextData::primary_text,
+                                 u"write")))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kLinks),
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(Property(
+                             "data", &PickerSearchResult::data,
+                             VariantWith<PickerSearchResult::TextData>(Field(
+                                 "primary_text",
+                                 &PickerSearchResult::TextData::primary_text,
+                                 u"omnibox")))))))))
+      .Times(1);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox,
+                                       {PickerSearchResult::Text(u"omnibox")},
+                                       /*has_more_results=*/false);
+  aggregator.HandleSearchSourceResults(
+      PickerSearchSource::kDate,
+      {PickerSearchResult::Clipboard(
+          base::UnguessableToken::Create(),
+          PickerSearchResult::ClipboardData::DisplayFormat::kText, u"clipboard",
+          std::nullopt,
+          /*is_recent=*/false)},
+      /*has_more_results=*/false);
+  aggregator.HandleSearchSourceResults(
+      PickerSearchSource::kLocalFile,
+      {PickerSearchResult::LocalFile(u"local", base::FilePath("fake_path"),
+                                     /*best_match=*/true)},
+      /*has_more_results=*/false);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kEditorWrite,
+                                       {PickerSearchResult::Text(u"write")},
+                                       /*has_more_results=*/false);
+  task_environment().FastForwardBy(kBurnInPeriod);
+}
+
+TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+       CombinesSearchResultsAndPromotesRecentClipboardBeforeBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(
+      search_results_callback,
+      Call(ElementsAre(
+          AllOf(
+              Property("type", &PickerSearchResultsSection::type,
+                       PickerSectionType::kSuggestions),
+              Property("results", &PickerSearchResultsSection::results,
+                       ElementsAre(Property(
+                           "data", &PickerSearchResult::data,
+                           VariantWith<PickerSearchResult::ClipboardData>(Field(
+                               "display_text",
+                               &PickerSearchResult::ClipboardData::display_text,
+                               u"clipboard")))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kFiles),
+                Property(
+                    "results", &PickerSearchResultsSection::results,
+                    ElementsAre(Property(
+                        "data", &PickerSearchResult::data,
+                        VariantWith<PickerSearchResult::LocalFileData>(Field(
+                            "title", &PickerSearchResult::LocalFileData::title,
+                            u"local")))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kEditorWrite),
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(Property(
+                             "data", &PickerSearchResult::data,
+                             VariantWith<PickerSearchResult::TextData>(Field(
+                                 "primary_text",
+                                 &PickerSearchResult::TextData::primary_text,
+                                 u"write")))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kLinks),
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(Property(
+                             "data", &PickerSearchResult::data,
+                             VariantWith<PickerSearchResult::TextData>(Field(
+                                 "primary_text",
+                                 &PickerSearchResult::TextData::primary_text,
+                                 u"omnibox")))))))))
+      .Times(1);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox,
+                                       {PickerSearchResult::Text(u"omnibox")},
+                                       /*has_more_results=*/false);
+  aggregator.HandleSearchSourceResults(
+      PickerSearchSource::kDate,
+      {PickerSearchResult::Clipboard(
+          base::UnguessableToken::Create(),
+          PickerSearchResult::ClipboardData::DisplayFormat::kText, u"clipboard",
+          std::nullopt,
+          /*is_recent=*/true)},
+      /*has_more_results=*/false);
+  aggregator.HandleSearchSourceResults(
+      PickerSearchSource::kLocalFile,
+      {PickerSearchResult::LocalFile(u"local", base::FilePath("fake_path"),
+                                     /*best_match=*/true)},
+      /*has_more_results=*/false);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kEditorWrite,
+                                       {PickerSearchResult::Text(u"write")},
                                        /*has_more_results=*/false);
   task_environment().FastForwardBy(kBurnInPeriod);
 }
