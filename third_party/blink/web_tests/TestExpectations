@@ -2566,11 +2566,6 @@ crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-video-jitterBufferTarget-
 crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-audio-jitterBufferTarget-stats.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/349655179 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-display-type-001.html [ Failure ]
-crbug.com/349655179 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-display-type-002.html [ Failure ]
-crbug.com/349655179 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-001.html [ Failure ]
-crbug.com/349655179 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-002.html [ Failure ]
-crbug.com/349655179 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-003.html [ Failure ]
 crbug.com/349505546 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/permission-geolocation.https.html [ Timeout ]
 crbug.com/349414749 [ Mac13 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/wide--contain--nonpercent-width-nonpercent-height.html [ Failure ]
 crbug.com/349414735 [ Win11-arm64 ] external/wpt/content-security-policy/inheritance/history-iframe.sub.html [ Timeout ]
@@ -4299,8 +4294,6 @@ crbug.com/1405829 [ Mac12-arm64 ] virtual/threaded/external/wpt/css/css-transfor
 crbug.com/1405829 [ Mac13-arm64 ] virtual/threaded/external/wpt/css/css-transforms/animation/canvas-webgl-translate-in-animation.html [ Failure Timeout ]
 
 # Tests that expect the DetailsStyling feature to be disabled:
-crbug.com/1469418 external/wpt/html/rendering/the-details-element/details-display-property-is-ignored.html [ Failure ]
-crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-display-property-is-ignored.html [ Pass ]
 crbug.com/1469418 fast/multicol/span/summary-split.html [ Failure ]
 crbug.com/1469418 virtual/details-styling-disabled/fast/multicol/span/summary-split.html [ Pass ]
 crbug.com/1469418 html/details_summary/details-inline.html [ Failure ]
@@ -4308,11 +4301,11 @@ crbug.com/1469418 virtual/details-styling-disabled/html/details_summary/details-
 crbug.com/1469418 wpt_internal/html/rendering/the-details-element/details-pseudo-elements-disabled-001.tentative.html [ Failure ]
 crbug.com/1469418 virtual/details-styling-disabled/wpt_internal/html/rendering/the-details-element/details-pseudo-elements-disabled-001.tentative.html [ Pass ]
 # A test that expects the DetailsStyling feature to be enabled:
-crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-display-type-001.tentative.html [ Failure ]
-crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-display-type-002.tentative.html [ Failure ]
-crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-001.tentative.html [ Failure ]
-crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-002.tentative.html [ Failure ]
-crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-003.tentative.html [ Failure ]
+crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-display-type-001.html [ Failure ]
+crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-display-type-002.html [ Failure ]
+crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-001.html [ Failure ]
+crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-002.html [ Failure ]
+crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-003.html [ Failure ]
 
 # "in-multicol-child.html" is laid out in legacy layout due by "multicol" but
 # reference is laid out by LayoutNG.
