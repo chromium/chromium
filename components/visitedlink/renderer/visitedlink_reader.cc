@@ -34,11 +34,17 @@ uint64_t VisitedLinkReader::ComputePartitionedFingerprint(
     std::string_view canonical_link_url,
     const net::SchemefulSite& top_level_site,
     const url::Origin& frame_origin) {
+  // Ensure that we can determine a valid triple-partition key for this link. If
+  // invalid, we return the null fingerprint.
+  const VisitedLink link = {GURL(canonical_link_url), top_level_site,
+                            frame_origin};
+  if (!link.IsValid()) {
+    return 0;
+  }
   // Determine the per-origin salt used for this fingerprint.
   auto it = salts_.find(frame_origin);
   if (it != salts_.end()) {
-    return VisitedLinkCommon::ComputePartitionedFingerprint(
-        GURL(canonical_link_url), top_level_site, frame_origin, it->second);
+    return VisitedLinkCommon::ComputePartitionedFingerprint(link, it->second);
   }
   // If we cannot determine the per-origin salt, we cannot read the hashtable,
   // so we must return the null fingerprint.

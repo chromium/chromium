@@ -444,6 +444,7 @@ void PartitionedVisitedLinkWriter::OnTableBuildComplete(
       // Also add anything that was added while we were asynchronously
       // generating the new table.
       for (const auto& link : added_during_build_) {
+        CHECK(link.IsValid());
         const std::optional<uint64_t> salt =
             GetOrAddOriginSalt(link.frame_origin);
         CHECK(salt.has_value());
@@ -455,6 +456,7 @@ void PartitionedVisitedLinkWriter::OnTableBuildComplete(
       // Now handle deletions. Do not shrink the table now, we'll shrink it when
       // adding or deleting a visited link the next time.
       for (const auto& link : deleted_during_build_) {
+        CHECK(link.IsValid());
         const std::optional<uint64_t> salt =
             GetOrAddOriginSalt(link.frame_origin);
         CHECK(salt.has_value());

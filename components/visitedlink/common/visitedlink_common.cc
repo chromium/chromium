@@ -60,18 +60,22 @@ bool VisitedLinkCommon::IsVisited(const GURL& url) const {
 }
 
 bool VisitedLinkCommon::IsVisited(const VisitedLink& link, uint64_t salt) {
-  return IsVisited(link.link_url, link.top_level_site, link.frame_origin, salt);
+  if (!hash_table_ || table_length_ == 0) {
+    return false;
+  }
+  if (!link.IsValid()) {
+    return false;
+  }
+  return IsVisited(ComputePartitionedFingerprint(
+      link.link_url, link.top_level_site, link.frame_origin, salt));
 }
 
 bool VisitedLinkCommon::IsVisited(const GURL& link_url,
                                   const net::SchemefulSite& top_level_site,
                                   const url::Origin& frame_origin,
                                   uint64_t salt) {
-  if (!hash_table_ || table_length_ == 0) {
-    return false;
-  }
-  return IsVisited(ComputePartitionedFingerprint(link_url, top_level_site,
-                                                 frame_origin, salt));
+  const VisitedLink link = {link_url, top_level_site, frame_origin};
+  return IsVisited(link, salt);
 }
 
 bool VisitedLinkCommon::IsVisited(Fingerprint fingerprint) const {
