@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/public/cpp/ime_controller.h"
 #include "ash/public/cpp/ime_controller_client.h"
 #include "ash/public/cpp/ime_info.h"
@@ -30,7 +31,8 @@ class ModeIndicatorObserver;
 
 // Connects ash IME users (e.g. the system tray) to the IME implementation,
 // which might live in Chrome browser or in a separate mojo service.
-class ASH_EXPORT ImeControllerImpl : public ImeController {
+class ASH_EXPORT ImeControllerImpl : public ImeController,
+                                     public KeyboardControllerObserver {
  public:
   class Observer {
    public:
@@ -103,6 +105,7 @@ class ASH_EXPORT ImeControllerImpl : public ImeController {
   void ShowImeMenuOnShelf(bool show) override;
   void UpdateCapsLockState(bool caps_enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string& layout_name) override;
+  void OnKeyboardEnabledChanged(bool is_enabled) override;
 
   void SetExtraInputOptionsEnabledState(bool is_extra_input_options_enabled,
                                         bool is_emoji_enabled,

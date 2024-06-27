@@ -183,6 +183,12 @@ void ImeControllerImpl::OnKeyboardLayoutNameChanged(
     observer.OnKeyboardLayoutNameChanged(layout_name);
 }
 
+void ImeControllerImpl::OnKeyboardEnabledChanged(bool is_enabled) {
+  if (!is_enabled) {
+    OverrideKeyboardKeyset(input_method::ImeKeyset::kNone);
+  }
+}
+
 void ImeControllerImpl::SetExtraInputOptionsEnabledState(
     bool is_extra_input_options_enabled,
     bool is_emoji_enabled,

@@ -712,6 +712,7 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
   PowerStatus::Initialize();
 
   session_controller_->AddObserver(this);
+  keyboard_controller_->AddObserver(ime_controller_.get());
 }
 
 Shell::~Shell() {
@@ -819,6 +820,7 @@ Shell::~Shell() {
   screen_orientation_controller_.reset();
   screen_layout_observer_.reset();
 
+  keyboard_controller_->RemoveObserver(ime_controller_.get());
   // Destroy the virtual keyboard controller before the tablet mode controller
   // since the latters destructor triggers events that the former is listening
   // to but no longer cares about.

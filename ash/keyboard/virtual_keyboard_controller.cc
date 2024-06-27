@@ -154,15 +154,6 @@ void VirtualKeyboardController::ForceShowKeyboard() {
   keyboard_controller->ShowKeyboard(false);
 }
 
-void VirtualKeyboardController::OnKeyboardEnabledChanged(bool is_enabled) {
-  if (!is_enabled) {
-    // TODO(shend/shuchen): Consider moving this logic to ImeController.
-    // https://crbug.com/896284.
-    Shell::Get()->ime_controller()->OverrideKeyboardKeyset(
-        input_method::ImeKeyset::kNone);
-  }
-}
-
 void VirtualKeyboardController::OnKeyboardHidden(bool is_temporary_hide) {
   // The keyboard may temporarily hide (e.g. to change container behaviors).
   // The keyset should not be reset in this case.

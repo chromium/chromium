@@ -53,7 +53,6 @@ class ASH_EXPORT VirtualKeyboardController
   void ToggleIgnoreExternalKeyboard();
 
   // KeyboardControllerObserver:
-  void OnKeyboardEnabledChanged(bool is_enabled) override;
   void OnKeyboardHidden(bool is_temporary_hide) override;
 
   // SessionObserver:
