@@ -221,7 +221,8 @@ void MessagePumpAndroid::DoNonDelayedLooperWork(bool do_idle_work) {
     // hint false negatives" happen, for example, during initialization, in
     // multi-window cases, or when a previous value is cached to throttle
     // polling the input channel.
-    if (is_type_ui_ && android::InputHintChecker::HasInput()) {
+    if (is_type_ui_ && next_work_info.is_immediate() &&
+        android::InputHintChecker::HasInput()) {
       ScheduleWork();
       return;
     }

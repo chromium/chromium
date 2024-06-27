@@ -272,10 +272,8 @@ TEST_P(MessagePumpTest, DetectingHasInputYieldsOnUi) {
                                                    TimeTicks::Max()};
   }));
 
-  if (pump_type == MessagePumpType::UI) {
-    EXPECT_CALL(hint_checker_mock, HasInputImplWithThrottling())
-        .WillOnce(Return(false));
-  }
+  // No immediate next_work_info remaining before the yield. Not expecting
+  // to observe an input hint check.
   EXPECT_CALL(delegate, DoIdleWork()).Times(0);
 
   message_pump_->Run(&delegate);
