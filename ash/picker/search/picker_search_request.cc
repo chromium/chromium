@@ -165,9 +165,10 @@ PickerSearchRequest::PickerSearchRequest(
 }
 
 PickerSearchRequest::~PickerSearchRequest() {
-  // Ensure that any bound callbacks to `Handle*SearchResults` will not get
-  // called by stopping searches.
+  // Ensure that any bound callbacks to `Handle*SearchResults` - and therefore
+  // `current_callback_` - will not get called by stopping searches.
   weak_ptr_factory_.InvalidateWeakPtrs();
+  current_callback_.Reset();
   client_->StopCrosQuery();
   client_->StopGifSearch();
 }
@@ -186,7 +187,7 @@ void PickerSearchRequest::HandleSearchSourceResults(
   MarkSearchEnded(source);
   // This method is only called from `Handle*SearchResults` methods (one for
   // each search source), and the only time `current_callback_` is null is when
-  // the search is stopped.
+  // this request is being destructed.
   // As our `WeakPtrFactory` should have invalidated any bound callbacks to
   // `Handle*SearchResults` before resetting the callback to null, this method
   // should - in theory - never be called after `current_callback_` is reset.
