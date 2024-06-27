@@ -147,7 +147,6 @@
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
-#include "chrome/browser/ui/webui/side_panel/history_clusters/history_clusters_side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/performance_controls/performance_side_panel_ui.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui.h"
@@ -546,10 +545,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       return &NewWebUI<NewTabPageUI>;
     if (url.host_piece() == chrome::kChromeUINewTabPageThirdPartyHost)
       return &NewWebUI<NewTabPageThirdPartyUI>;
-  }
-  if (base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys)) {
-    if (url.host_piece() == chrome::kChromeUIHistoryClustersSidePanelHost)
-      return &NewWebUI<HistoryClustersSidePanelUI>;
   }
   if (url.host_piece() == chrome::kChromeUIPerformanceSidePanelHost) {
     return &NewWebUI<PerformanceSidePanelUI>;
