@@ -96,6 +96,8 @@ class PrintJobSubmitter {
   void OnPdfReadAndFlattened(
       std::unique_ptr<printing::FlattenPdfResult> result);
 
+  void OnImageDataRead(std::string data, int64_t);
+
   void ShowPrintJobConfirmationDialog(const gfx::Image& extension_icon);
 
   void OnPrintJobConfirmationDialogClosed(bool accepted);
