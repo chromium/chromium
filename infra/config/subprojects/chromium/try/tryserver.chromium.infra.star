@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the tryserver.chromium.infra builder group."""
 
+load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "siso")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
@@ -104,6 +105,20 @@ try_.builder(
     name = "linux-utr-tester",
     description_html = "Tests the <a href=\"https://chromium.googlesource.com/chromium/src/+/HEAD/tools/utr/README.md\">Universal Test Runner</a> against cli changes.",
     executable = "recipe:chromium/universal_test_runner_test",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+    ),
     builderless = True,
     cores = 8,
     os = os.LINUX_DEFAULT,
@@ -143,6 +158,20 @@ try_.builder(
     name = "win-utr-tester",
     description_html = "Tests the <a href=\"https://chromium.googlesource.com/chromium/src/+/HEAD/tools/utr/README.md\">Universal Test Runner</a> against cli changes.",
     executable = "recipe:chromium/universal_test_runner_test",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+    ),
     builderless = True,
     cores = 8,
     os = os.WINDOWS_DEFAULT,
