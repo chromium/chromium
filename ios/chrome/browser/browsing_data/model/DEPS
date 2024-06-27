@@ -17,4 +17,6 @@ include_rules = [
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/snapshots/model",
   "+ios/chrome/browser/web/model/font_size",
+  "+ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h",
+  "+ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h",
 ]

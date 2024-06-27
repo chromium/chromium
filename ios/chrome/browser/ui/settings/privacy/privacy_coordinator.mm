@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
@@ -86,8 +85,6 @@
       HandlerForProtocol(dispatcher, ApplicationCommands);
   viewController.browserHandler =
       HandlerForProtocol(dispatcher, BrowserCommands);
-  viewController.browsingDataHandler =
-      HandlerForProtocol(dispatcher, BrowsingDataCommands);
   viewController.settingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
   viewController.snackbarHandler =

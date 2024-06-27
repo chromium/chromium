@@ -28,7 +28,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
@@ -43,7 +42,6 @@
   __weak SceneState* _sceneState;
   __weak id<ApplicationCommands> _applicationEndpoint;
   __weak id<SettingsCommands> _settingsEndpoint;
-  __weak id<BrowsingDataCommands> _browsingDataEndpoint;
 
   std::unique_ptr<Browser> _mainBrowser;
   std::unique_ptr<Browser> _otrBrowser;
@@ -54,18 +52,16 @@
   BOOL _isShutdown;
 }
 
-- (instancetype)
-    initWithBrowserState:(ChromeBrowserState*)browserState
-              sceneState:(SceneState*)sceneState
-     applicationEndpoint:(id<ApplicationCommands>)applicationEndpoint
-        settingsEndpoint:(id<SettingsCommands>)settingsEndpoint
-    browsingDataEndpoint:(id<BrowsingDataCommands>)browsingDataEndpoint {
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
+                          sceneState:(SceneState*)sceneState
+                 applicationEndpoint:
+                     (id<ApplicationCommands>)applicationEndpoint
+                    settingsEndpoint:(id<SettingsCommands>)settingsEndpoint {
   if ((self = [super init])) {
     _browserState = browserState;
     _sceneState = sceneState;
     _applicationEndpoint = applicationEndpoint;
     _settingsEndpoint = settingsEndpoint;
-    _browsingDataEndpoint = browsingDataEndpoint;
 
     // Create all browsers.
     _mainBrowser = Browser::Create(_browserState, _sceneState);
@@ -285,8 +281,6 @@
                            forProtocol:@protocol(ApplicationCommands)];
   [dispatcher startDispatchingToTarget:_settingsEndpoint
                            forProtocol:@protocol(SettingsCommands)];
-  [dispatcher startDispatchingToTarget:_browsingDataEndpoint
-                           forProtocol:@protocol(BrowsingDataCommands)];
 }
 
 // Sets up an existing browser.

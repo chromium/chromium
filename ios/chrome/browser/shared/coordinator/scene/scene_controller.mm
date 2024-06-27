@@ -105,7 +105,6 @@
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
@@ -492,18 +491,12 @@ void OnListFamilyMembersResponse(
 
 #pragma mark - Setters and getters
 
-- (id<BrowsingDataCommands>)browsingDataCommandsHandler {
-  return HandlerForProtocol(self.sceneState.appState.appCommandDispatcher,
-                            BrowsingDataCommands);
-}
-
 - (TabGridCoordinator*)mainCoordinator {
   if (!_mainCoordinator) {
     // Lazily create the main coordinator.
     TabGridCoordinator* tabGridCoordinator = [[TabGridCoordinator alloc]
                      initWithWindow:self.sceneState.window
          applicationCommandEndpoint:self
-        browsingDataCommandEndpoint:self.browsingDataCommandsHandler
                      regularBrowser:self.mainInterface.browser
                     inactiveBrowser:self.mainInterface.inactiveBrowser
                    incognitoBrowser:self.incognitoInterface.browser];
@@ -987,12 +980,11 @@ void OnListFamilyMembersResponse(
       GetApplicationContext()
           ->GetChromeBrowserStateManager()
           ->GetLastUsedBrowserStateDeprecatedDoNotUse();
-  self.browserViewWrangler = [[BrowserViewWrangler alloc]
-      initWithBrowserState:browserState
-                sceneState:sceneState
-       applicationEndpoint:self
-          settingsEndpoint:self
-      browsingDataEndpoint:self.browsingDataCommandsHandler];
+  self.browserViewWrangler =
+      [[BrowserViewWrangler alloc] initWithBrowserState:browserState
+                                             sceneState:sceneState
+                                    applicationEndpoint:self
+                                       settingsEndpoint:self];
 
   // Create and start the BVC.
   [self.browserViewWrangler createMainCoordinatorAndInterface];
@@ -3819,13 +3811,15 @@ using UserFeedbackDataCallback =
       self.sceneState.browserProviderInterface.mainBrowserProvider.browser
           ->GetBrowserState()
           ->GetOffTheRecordChromeBrowserState();
-  [self.browsingDataCommandsHandler
-      removeBrowsingDataForBrowserState:otrBrowserState
-                             timePeriod:browsing_data::TimePeriod::ALL_TIME
-                             removeMask:BrowsingDataRemoveMask::REMOVE_ALL
-                        completionBlock:^{
-                          [self activateBVCAndMakeCurrentBVCPrimary];
-                        }];
+
+  __weak SceneController* weakSelf = self;
+  BrowsingDataRemover* browsingDataRemover =
+      BrowsingDataRemoverFactory::GetForBrowserState(otrBrowserState);
+  browsingDataRemover->Remove(browsing_data::TimePeriod::ALL_TIME,
+                              BrowsingDataRemoveMask::REMOVE_ALL,
+                              base::BindOnce(^{
+                                [weakSelf activateBVCAndMakeCurrentBVCPrimary];
+                              }));
 }
 
 - (void)activateBVCAndMakeCurrentBVCPrimary {

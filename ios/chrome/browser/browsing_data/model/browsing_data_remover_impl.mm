@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/history/model/web_history_service_factory.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/language/model/url_language_histogram_factory.h"
+#import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
@@ -55,9 +56,15 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
+#import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
@@ -131,6 +138,25 @@ void ClearCookies(
   cookie_store->DeleteAllCreatedInTimeRangeAsync(
       creation_range,
       base::BindOnce(&DeleteCallbackAdapter, std::move(callback)));
+}
+
+std::set<Browser*> GetAllBrowsersForBrowserState(
+    ChromeBrowserState* browser_state) {
+  BrowserList* browser_list =
+      BrowserListFactory::GetForBrowserState(browser_state);
+  std::set<Browser*> all_browsers = browser_list->AllRegularBrowsers();
+  std::set<Browser*> all_incognito_browsers =
+      browser_list->AllIncognitoBrowsers();
+  all_browsers.insert(all_incognito_browsers.begin(),
+                      all_incognito_browsers.end());
+
+  return all_browsers;
+}
+
+bool IsActivityIndicatorNeeded(bool isOffTheRecord,
+                               BrowsingDataRemoveMask mask) {
+  return !isOffTheRecord &&
+         IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_SITE_DATA);
 }
 
 }  // namespace
@@ -288,8 +314,69 @@ void BrowsingDataRemoverImpl::RunNextTask() {
   DCHECK(!removal_queue_.empty());
   RemovalTask& removal_task = removal_queue_.front();
   removal_task.task_started = base::Time::Now();
+
+  PrepareForRemoval(removal_task.mask);
   RemoveImpl(removal_task.delete_begin, removal_task.delete_end,
              removal_task.mask);
+}
+
+void BrowsingDataRemoverImpl::PrepareForRemoval(BrowsingDataRemoveMask mask) {
+  if (!IsActivityIndicatorNeeded(browser_state_->IsOffTheRecord(), mask)) {
+    return;
+  }
+
+  std::set<Browser*> all_browsers =
+      GetAllBrowsersForBrowserState(browser_state_);
+
+  for (Browser* browser : all_browsers) {
+    CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+    // Not all browsers have a handler for the protocol
+    // BrowserCoordinatorCommands.
+    if ([dispatcher
+            dispatchingForProtocol:@protocol(BrowserCoordinatorCommands)]) {
+      id<BrowserCoordinatorCommands> handler =
+          HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
+      [handler showActivityOverlay];
+    }
+  }
+}
+
+void BrowsingDataRemoverImpl::CleanupAfterRemoval(BrowsingDataRemoveMask mask) {
+  // Activates browsing and enables web views.
+  // Must be called only on the main thread.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::set<Browser*> all_browsers =
+      GetAllBrowsersForBrowserState(browser_state_);
+
+  const bool activity_indicator_needed =
+      IsActivityIndicatorNeeded(browser_state_->IsOffTheRecord(), mask);
+
+  for (Browser* browser : all_browsers) {
+    if (activity_indicator_needed) {
+      // User interaction still needs to be disabled as a way to
+      // force reload all the web states and to reset NTPs.
+      WebUsageEnablerBrowserAgent::FromBrowser(browser)->SetWebUsageEnabled(
+          false);
+
+      CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+      // Not all browsers have a handler for the protocol
+      // BrowserCoordinatorCommands.
+      if ([dispatcher
+              dispatchingForProtocol:@protocol(BrowserCoordinatorCommands)]) {
+        id<BrowserCoordinatorCommands> handler =
+            HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
+        [handler hideActivityOverlay];
+      }
+    }
+
+    WebUsageEnablerBrowserAgent::FromBrowser(browser)->SetWebUsageEnabled(true);
+
+    if (TabUsageRecorderBrowserAgent* tab_usage_recorder =
+            TabUsageRecorderBrowserAgent::FromBrowser(browser)) {
+      tab_usage_recorder->RecordPrimaryBrowserChange(true);
+    }
+  }
 }
 
 void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
@@ -683,6 +770,8 @@ void BrowsingDataRemoverImpl::NotifyRemovalComplete() {
       }
     }
     removal_queue_.pop();
+
+    CleanupAfterRemoval(task.mask);
 
     // Schedule the task to be executed soon. This ensure that the IsRemoving()
     // value is correct when the callback is invoked.

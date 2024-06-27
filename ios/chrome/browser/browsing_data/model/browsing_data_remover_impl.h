@@ -82,6 +82,12 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
   // or directly from Remove.
   void RunNextTask();
 
+  // If necessary, shows an activity indicator while the deletion is ongoing.
+  void PrepareForRemoval(BrowsingDataRemoveMask mask);
+
+  // Removes the activity indicator, reloads all web states and resets NTPs.
+  void CleanupAfterRemoval(BrowsingDataRemoveMask mask);
+
   // Removes the specified items related to browsing.
   void RemoveImpl(base::Time delete_begin,
                   base::Time delete_end,

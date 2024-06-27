@@ -62,7 +62,6 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
 @synthesize applicationHandler = _applicationHandler;
 @synthesize browserHandler = _browserHandler;
-@synthesize browsingDataHandler = _browsingDataHandler;
 @synthesize settingsHandler = _settingsHandler;
 @synthesize snackbarHandler = _snackbarHandler;
 
@@ -142,7 +141,6 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
     (id<SettingsRootViewControlling>)controller {
   controller.applicationHandler = self.applicationHandler;
   controller.browserHandler = self.browserHandler;
-  controller.browsingDataHandler = self.browsingDataHandler;
   controller.settingsHandler = self.settingsHandler;
   controller.snackbarHandler = self.snackbarHandler;
 }

@@ -11,6 +11,7 @@
 #import "components/crash/core/common/reporter_running_ios.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/metrics/metrics_service.h"
+#import "components/prefs/pref_member.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/previous_session_info/previous_session_info_private.h"
 #import "ios/chrome/app/application_delegate/app_state.h"

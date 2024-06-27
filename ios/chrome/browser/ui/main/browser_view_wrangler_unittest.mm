@@ -161,8 +161,7 @@ TEST_F(BrowserViewWranglerTest, TestInitNilObserver) {
         [[BrowserViewWrangler alloc] initWithBrowserState:chrome_browser_state()
                                                sceneState:scene_state()
                                       applicationEndpoint:nil
-                                         settingsEndpoint:nil
-                                     browsingDataEndpoint:nil];
+                                         settingsEndpoint:nil];
     [wrangler createMainCoordinatorAndInterface];
 
     // Test that BVC is created on demand.
@@ -201,8 +200,7 @@ TEST_F(BrowserViewWranglerTest, TestBrowserList) {
       [[BrowserViewWrangler alloc] initWithBrowserState:chrome_browser_state()
                                              sceneState:scene_state()
                                     applicationEndpoint:nil
-                                       settingsEndpoint:nil
-                                   browsingDataEndpoint:nil];
+                                       settingsEndpoint:nil];
 
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(chrome_browser_state());
@@ -270,8 +268,7 @@ TEST_F(BrowserViewWranglerTest, TestInactiveInterface) {
       [[BrowserViewWrangler alloc] initWithBrowserState:chrome_browser_state()
                                              sceneState:scene_state()
                                     applicationEndpoint:nil
-                                       settingsEndpoint:nil
-                                   browsingDataEndpoint:nil];
+                                       settingsEndpoint:nil];
 
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(chrome_browser_state());
@@ -292,8 +289,7 @@ TEST_F(BrowserViewWranglerTest, TestSessionRestorationLogic) {
       [[BrowserViewWrangler alloc] initWithBrowserState:chrome_browser_state()
                                              sceneState:scene_state()
                                     applicationEndpoint:nil
-                                       settingsEndpoint:nil
-                                   browsingDataEndpoint:nil];
+                                       settingsEndpoint:nil];
 
   // Create the coordinator and interface. This is required to get access
   // to the Browser via the -mainInterface/-incognitoInterface providers.

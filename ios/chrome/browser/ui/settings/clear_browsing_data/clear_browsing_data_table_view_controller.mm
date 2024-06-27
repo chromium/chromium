@@ -14,6 +14,8 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
@@ -24,7 +26,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/ui/elements/chrome_activity_overlay_coordinator.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_link_item.h"
@@ -479,11 +480,9 @@
         ->BrowsingHistoryCleared();
   }
 
-  [self.dispatcher
-      removeBrowsingDataForBrowserState:browserState
-                             timePeriod:timePeriod
-                             removeMask:removeMask
-                        completionBlock:removeBrowsingDidFinishCompletionBlock];
+  BrowsingDataRemoverFactory::GetForBrowserState(browserState)
+      ->Remove(timePeriod, removeMask,
+               base::BindOnce(removeBrowsingDidFinishCompletionBlock));
 }
 
 - (void)showBrowsingHistoryRemovedDialog {

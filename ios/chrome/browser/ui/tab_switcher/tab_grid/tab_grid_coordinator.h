@@ -21,8 +21,6 @@ class Browser;
 - (instancetype)initWithWindow:(UIWindow*)window
      applicationCommandEndpoint:
          (id<ApplicationCommands>)applicationCommandEndpoint
-    browsingDataCommandEndpoint:
-        (id<BrowsingDataCommands>)browsingDataCommandEndpoint
                  regularBrowser:(Browser*)regularBrowser
                 inactiveBrowser:(Browser*)inactiveBrowser
                incognitoBrowser:(Browser*)incognitoBrowser

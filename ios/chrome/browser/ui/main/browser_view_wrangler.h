@@ -12,7 +12,6 @@
 
 @protocol ApplicationCommands;
 @protocol SettingsCommands;
-@protocol BrowsingDataCommands;
 class Browser;
 class ChromeBrowserState;
 @class SceneState;
@@ -38,7 +37,6 @@ class ChromeBrowserState;
               sceneState:(SceneState*)sceneState
      applicationEndpoint:(id<ApplicationCommands>)applicationEndpoint
         settingsEndpoint:(id<SettingsCommands>)settingsEndpoint
-    browsingDataEndpoint:(id<BrowsingDataCommands>)browsingDataEndpoint
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

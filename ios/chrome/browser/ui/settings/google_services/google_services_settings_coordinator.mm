@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -106,8 +105,6 @@ using signin_metrics::PromoAction;
       HandlerForProtocol(dispatcher, ApplicationCommands);
   viewController.browserHandler =
       HandlerForProtocol(dispatcher, BrowserCommands);
-  viewController.browsingDataHandler =
-      HandlerForProtocol(dispatcher, BrowsingDataCommands);
   viewController.settingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
   viewController.snackbarHandler =

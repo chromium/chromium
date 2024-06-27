@@ -13,7 +13,6 @@ source_set("commands") {
     "bring_android_tabs_commands.h",
     "browser_commands.h",
     "browser_coordinator_commands.h",
-    "browsing_data_commands.h",
     "command_dispatcher.h",
     "command_dispatcher.mm",
     "contextual_panel_entrypoint_iph_commands.h",

@@ -255,8 +255,7 @@ class MainControllerAuthenticationServiceDelegate
     : public AuthenticationServiceDelegate {
  public:
   MainControllerAuthenticationServiceDelegate(
-      ChromeBrowserState* browser_state,
-      id<BrowsingDataCommands> browsing_data_handler);
+      ChromeBrowserState* browser_state);
 
   MainControllerAuthenticationServiceDelegate(
       const MainControllerAuthenticationServiceDelegate&) = delete;
@@ -272,26 +271,23 @@ class MainControllerAuthenticationServiceDelegate
 
  private:
   raw_ptr<ChromeBrowserState> browser_state_ = nullptr;
-  __weak id<BrowsingDataCommands> browsing_data_handler_ = nil;
 };
 
 MainControllerAuthenticationServiceDelegate::
     MainControllerAuthenticationServiceDelegate(
-        ChromeBrowserState* browser_state,
-        id<BrowsingDataCommands> browsing_data_handler)
-    : browser_state_(browser_state),
-      browsing_data_handler_(browsing_data_handler) {}
+        ChromeBrowserState* browser_state)
+    : browser_state_(browser_state) {}
 
 MainControllerAuthenticationServiceDelegate::
     ~MainControllerAuthenticationServiceDelegate() = default;
 
 void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     base::OnceClosure completion) {
-  [browsing_data_handler_
-      removeBrowsingDataForBrowserState:browser_state_
-                             timePeriod:browsing_data::TimePeriod::ALL_TIME
-                             removeMask:BrowsingDataRemoveMask::REMOVE_ALL
-                        completionBlock:CallbackToBlock(std::move(completion))];
+  BrowsingDataRemover* browsingDataRemover =
+      BrowsingDataRemoverFactory::GetForBrowserState(browser_state_);
+  browsingDataRemover->Remove(browsing_data::TimePeriod::ALL_TIME,
+                              BrowsingDataRemoveMask::REMOVE_ALL,
+                              (std::move(completion)));
 }
 
 void MainControllerAuthenticationServiceDelegate::
@@ -301,14 +297,12 @@ void MainControllerAuthenticationServiceDelegate::
 
   // If `kLastSigninTimestamp` has the default base::Time() value, data will be
   // cleared for all time, which is intended to happen in this case.
-  [browsing_data_handler_
-      removeBrowsingDataInRangeForBrowserState:browser_state_
-                                     startTime:last_signin_timestamp
-                                       endTime:base::Time::Now()
-                                    removeMask:BrowsingDataRemoveMask::
-                                                   REMOVE_ALL_FOR_TIME_PERIOD
-                               completionBlock:base::CallbackToBlock(
-                                                   std::move(completion))];
+  BrowsingDataRemover* browsingDataRemover =
+      BrowsingDataRemoverFactory::GetForBrowserState(browser_state_);
+  browsingDataRemover->RemoveInRange(
+      last_signin_timestamp, base::Time::Now(),
+      BrowsingDataRemoveMask::REMOVE_ALL_FOR_TIME_PERIOD,
+      std::move(completion));
 }
 
 }  // namespace
@@ -465,9 +459,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
   [self.appState.appCommandDispatcher
       startDispatchingToTarget:self
                    forProtocol:@protocol(BlockingSceneCommands)];
-  [self.appState.appCommandDispatcher
-      startDispatchingToTarget:self
-                   forProtocol:@protocol(BrowsingDataCommands)];
 }
 
 - (void)startUpBrowserBackgroundInitialization {
@@ -727,7 +718,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
   AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
       browserState,
       std::make_unique<MainControllerAuthenticationServiceDelegate>(
-          browserState, self));
+          browserState));
 
   // Force desktop mode when raccoon is enabled.
   if (ios::provider::IsRaccoonEnabled()) {
@@ -1528,140 +1519,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
   ios::provider::ScheduleAppDistributionNotifications(URLLoaderFactory,
                                                       isFirstRun);
   ios::provider::InitializeFirebase(installDate, isFirstRun);
-}
-
-#pragma mark - BrowsingDataCommands
-
-// TODO(crbug.com/325612973): Rewrite this completely to handle multi-profile
-// and not be part of MainController, or indeed to be driven by a command
-// protocol.
-- (void)removeBrowsingDataForBrowserState:(ChromeBrowserState*)browserState
-                               timePeriod:(browsing_data::TimePeriod)timePeriod
-                               removeMask:(BrowsingDataRemoveMask)removeMask
-                          completionBlock:(ProceduralBlock)completionBlock {
-  base::OnceClosure removalCompletion =
-      [self browsingDataRemovalCompletion:browserState->IsOffTheRecord()
-                               removeMask:removeMask
-                          completionBlock:completionBlock];
-
-  BrowsingDataRemoverFactory::GetForBrowserState(browserState)
-      ->Remove(timePeriod, removeMask, std::move(removalCompletion));
-}
-
-// TODO(crbug.com/325612973): Rewrite this completely to handle multi-profile
-// and not be part of MainController, or indeed to be driven by a command
-// protocol.
-- (void)
-    removeBrowsingDataInRangeForBrowserState:(ChromeBrowserState*)browserState
-                                   startTime:(base::Time)startTime
-                                     endTime:(base::Time)endTime
-                                  removeMask:(BrowsingDataRemoveMask)removeMask
-                             completionBlock:(ProceduralBlock)completionBlock {
-  base::OnceClosure removalCompletion =
-      [self browsingDataRemovalCompletion:browserState->IsOffTheRecord()
-                               removeMask:removeMask
-                          completionBlock:completionBlock];
-
-  BrowsingDataRemoverFactory::GetForBrowserState(browserState)
-      ->RemoveInRange(startTime, endTime, removeMask,
-                      std::move(removalCompletion));
-}
-
-- (void)cleanupAfterBrowsingDataRemoval:(BOOL)didShowActivityIndicator
-              isActivityIndicatorNeeded:(BOOL)isActivityIndicatorNeeded
-                        completionBlock:(ProceduralBlock)completionBlock {
-  // Activates browsing and enables web views.
-  // Must be called only on the main thread.
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-
-  for (SceneState* sceneState in self.appState.connectedScenes) {
-    // Assumes all scenes share `browserState`.
-    id<BrowserProviderInterface> browserProviderInterface =
-        sceneState.browserProviderInterface;
-
-    if (isActivityIndicatorNeeded) {
-      // User interaction still needs to be disabled as a way to
-      // force reload all the web states and to reset NTPs.
-      if (Browser* mainBrowser =
-              browserProviderInterface.mainBrowserProvider.browser) {
-        WebUsageEnablerBrowserAgent::FromBrowser(mainBrowser)
-            ->SetWebUsageEnabled(false);
-      }
-      if (Browser* incognitoBrowser =
-              browserProviderInterface.incognitoBrowserProvider.browser) {
-        WebUsageEnablerBrowserAgent::FromBrowser(incognitoBrowser)
-            ->SetWebUsageEnabled(false);
-      }
-
-      if (didShowActivityIndicator &&
-          browserProviderInterface.mainBrowserProvider.browser) {
-        id<BrowserCoordinatorCommands> handler =
-            HandlerForProtocol(browserProviderInterface.mainBrowserProvider
-                                   .browser->GetCommandDispatcher(),
-                               BrowserCoordinatorCommands);
-        [handler hideActivityOverlay];
-      }
-    }
-    if (Browser* mainBrowser =
-            browserProviderInterface.mainBrowserProvider.browser) {
-      WebUsageEnablerBrowserAgent::FromBrowser(mainBrowser)
-          ->SetWebUsageEnabled(true);
-    }
-    if (Browser* incognitoBrowser =
-            browserProviderInterface.incognitoBrowserProvider.browser) {
-      WebUsageEnablerBrowserAgent::FromBrowser(incognitoBrowser)
-          ->SetWebUsageEnabled(true);
-    }
-    if (browserProviderInterface.currentBrowserProvider) {
-      TabUsageRecorderBrowserAgent* tabUsageRecorder =
-          TabUsageRecorderBrowserAgent::FromBrowser(
-              browserProviderInterface.currentBrowserProvider.browser);
-      if (tabUsageRecorder) {
-        tabUsageRecorder->RecordPrimaryBrowserChange(true);
-      }
-    }
-  }
-  // `completionBlock` is run once, not once per scene.
-  if (completionBlock) {
-    completionBlock();
-  }
-}
-
-- (base::OnceClosure)
-    browsingDataRemovalCompletion:(BOOL)offTheRecord
-                       removeMask:(BrowsingDataRemoveMask)removeMask
-                  completionBlock:(ProceduralBlock)completionBlock {
-  BOOL isActivityIndicatorNeeded =
-      !offTheRecord &&
-      IsRemoveDataMaskSet(removeMask, BrowsingDataRemoveMask::REMOVE_SITE_DATA);
-
-  BOOL didShowActivityIndicator = NO;
-
-  if (isActivityIndicatorNeeded) {
-    for (SceneState* sceneState in self.appState.connectedScenes) {
-      // Assumes all scenes share `browserState`.
-      id<BrowserProviderInterface> browserProviderInterface =
-          sceneState.browserProviderInterface;
-
-      // Show activity overlay so users know that clear browsing data is in
-      // progress.
-      if (browserProviderInterface.mainBrowserProvider.browser) {
-        didShowActivityIndicator = YES;
-        id<BrowserCoordinatorCommands> handler =
-            HandlerForProtocol(browserProviderInterface.mainBrowserProvider
-                                   .browser->GetCommandDispatcher(),
-                               BrowserCoordinatorCommands);
-        [handler showActivityOverlay];
-      }
-    }
-  }
-
-  __weak __typeof(self) weakSelf = self;
-  return base::BindOnce(^{
-    [weakSelf cleanupAfterBrowsingDataRemoval:didShowActivityIndicator
-                    isActivityIndicatorNeeded:isActivityIndicatorNeeded
-                              completionBlock:completionBlock];
-  });
 }
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)

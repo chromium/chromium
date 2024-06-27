@@ -39,7 +39,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -273,8 +272,6 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
         [OCMockObject mockForProtocol:@protocol(ApplicationCommands)];
     mock_settings_commands_handler_ =
         [OCMockObject mockForProtocol:@protocol(SettingsCommands)];
-    mock_browsing_data_commands_handler_ =
-        [OCMockObject mockForProtocol:@protocol(BrowsingDataCommands)];
 
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_application_commands_handler_
@@ -282,9 +279,6 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_settings_commands_handler_
                      forProtocol:@protocol(SettingsCommands)];
-    [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_browsing_data_commands_handler_
-                     forProtocol:@protocol(BrowsingDataCommands)];
 
     [coordinator_ start];
 
@@ -323,7 +317,6 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
   RecentTabsCoordinator* coordinator_;
   id<ApplicationCommands> mock_application_commands_handler_;
   id<SettingsCommands> mock_settings_commands_handler_;
-  id<BrowsingDataCommands> mock_browsing_data_commands_handler_;
 };
 
 TEST_F(RecentTabsTableCoordinatorTest, TestConstructorDestructor) {

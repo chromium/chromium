@@ -51,7 +51,6 @@
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bring_android_tabs_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
@@ -272,8 +271,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 - (instancetype)initWithWindow:(nullable UIWindow*)window
      applicationCommandEndpoint:
          (id<ApplicationCommands>)applicationCommandEndpoint
-    browsingDataCommandEndpoint:
-        (id<BrowsingDataCommands>)browsingDataCommandEndpoint
                  regularBrowser:(Browser*)regularBrowser
                 inactiveBrowser:(Browser*)inactiveBrowser
                incognitoBrowser:(Browser*)incognitoBrowser {
@@ -283,12 +280,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     [_dispatcher startDispatchingToTarget:applicationCommandEndpoint
                               forProtocol:@protocol(ApplicationCommands)];
     // -startDispatchingToTarget:forProtocol: doesn't pick up protocols the
-    // passed protocol conforms to, so SettingsCommands and
-    // BrowsingDataCommands are explicitly dispatched to the endpoint as well.
+    // passed protocol conforms to, so SettingsCommands is explicitly dispatched
+    // to the endpoint as well.
     [_dispatcher startDispatchingToTarget:applicationCommandEndpoint
                               forProtocol:@protocol(SettingsCommands)];
-    [_dispatcher startDispatchingToTarget:browsingDataCommandEndpoint
-                              forProtocol:@protocol(BrowsingDataCommands)];
 
     _regularBrowser = regularBrowser;
     _inactiveBrowser = inactiveBrowser;
@@ -1033,7 +1028,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   self.sharingCoordinator = nil;
   [self.dispatcher stopDispatchingForProtocol:@protocol(ApplicationCommands)];
   [self.dispatcher stopDispatchingForProtocol:@protocol(SettingsCommands)];
-  [self.dispatcher stopDispatchingForProtocol:@protocol(BrowsingDataCommands)];
 
   [_toolbarsCoordinator stop];
   _toolbarsCoordinator = nil;

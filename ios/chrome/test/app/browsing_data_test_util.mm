@@ -14,9 +14,10 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "ios/chrome/app/main_controller.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/web/public/security/certificate_policy_cache.h"
 #import "ios/web/public/thread/web_task_traits.h"
@@ -32,13 +33,13 @@ bool ClearBrowsingData(bool off_the_record, BrowsingDataRemoveMask mask) {
                      : chrome_test_util::GetOriginalBrowserState();
 
   __block bool did_complete = false;
-  [chrome_test_util::GetMainController()
-      removeBrowsingDataForBrowserState:browser_state
-                             timePeriod:browsing_data::TimePeriod::ALL_TIME
-                             removeMask:mask
-                        completionBlock:^{
-                          did_complete = true;
-                        }];
+  BrowsingDataRemover* browsingDataRemover =
+      BrowsingDataRemoverFactory::GetForBrowserState(browser_state);
+  browsingDataRemover->Remove(browsing_data::TimePeriod::ALL_TIME, mask,
+                              base::BindOnce(^{
+                                did_complete = true;
+                              }));
+
   return WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForClearBrowsingDataTimeout, ^{
         return did_complete;

@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/functional/callback.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"

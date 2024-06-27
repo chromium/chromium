@@ -146,8 +146,7 @@ class SceneControllerTest : public PlatformTest {
         [[BrowserViewWrangler alloc] initWithBrowserState:browser_state_.get()
                                                sceneState:scene_state_
                                       applicationEndpoint:nil
-                                         settingsEndpoint:nil
-                                     browsingDataEndpoint:nil];
+                                         settingsEndpoint:nil];
     [scene_controller_.browserViewWrangler createMainCoordinatorAndInterface];
 
     scene_controller_.browser = browser_.get();

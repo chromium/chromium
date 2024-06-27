@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -81,8 +80,6 @@ void ConfigureHandlers(id<SettingsRootViewControlling> controller,
   controller.applicationHandler =
       HandlerForProtocol(dispatcher, ApplicationCommands);
   controller.browserHandler = HandlerForProtocol(dispatcher, BrowserCommands);
-  controller.browsingDataHandler =
-      HandlerForProtocol(dispatcher, BrowsingDataCommands);
   controller.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
   controller.snackbarHandler = HandlerForProtocol(dispatcher, SnackbarCommands);
 }

@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -75,9 +74,7 @@ using password_manager::WarningType;
 @property(nonatomic, strong) ReauthenticationModule* reauthModule;
 
 // The dispatcher used by `viewController`.
-@property(nonatomic, weak)
-    id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>
-        dispatcher;
+@property(nonatomic, weak) id<ApplicationCommands, BrowserCommands> dispatcher;
 
 // Coordinator for Password Checkup.
 @property(nonatomic, strong)
@@ -128,8 +125,7 @@ using password_manager::WarningType;
                                    browser:browser];
   if (self) {
     _baseNavigationController = navigationController;
-    _dispatcher = static_cast<
-        id<BrowserCommands, ApplicationCommands, BrowsingDataCommands>>(
+    _dispatcher = static_cast<id<BrowserCommands, ApplicationCommands>>(
         browser->GetCommandDispatcher());
   }
   return self;
@@ -180,8 +176,6 @@ using password_manager::WarningType;
       HandlerForProtocol(dispatcher, ApplicationCommands);
   passwordsViewController.browserHandler =
       HandlerForProtocol(dispatcher, BrowserCommands);
-  passwordsViewController.browsingDataHandler =
-      HandlerForProtocol(dispatcher, BrowsingDataCommands);
   passwordsViewController.settingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
   passwordsViewController.snackbarHandler =

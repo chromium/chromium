@@ -10,7 +10,6 @@
 @protocol ApplicationCommands;
 @protocol SettingsCommands;
 @protocol BrowserCommands;
-@protocol BrowsingDataCommands;
 @protocol SnackbarCommands;
 
 // Protocol allowing the dispatcher to be passed to the settings ViewController.
@@ -20,9 +19,6 @@
 
 // BrowserCommands handler.
 @property(nonatomic, weak) id<BrowserCommands> browserHandler;
-
-// BrowsingDataCommands handler.
-@property(nonatomic, weak) id<BrowsingDataCommands> browsingDataHandler;
 
 // SettingsCommands handler.
 @property(nonatomic, weak) id<SettingsCommands> settingsHandler;
