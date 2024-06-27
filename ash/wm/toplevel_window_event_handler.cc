@@ -881,6 +881,14 @@ aura::Window* ToplevelWindowEventHandler::GetTargetForClientAreaGesture(
   return nullptr;
 }
 
+void ToplevelWindowEventHandler::CompleteDragForTesting(DragResult result) {
+  CompleteDrag(result);
+}
+
+void ToplevelWindowEventHandler::ResetWindowResizerForTesting() {
+  window_resizer_.reset();
+}
+
 bool ToplevelWindowEventHandler::PrepareForDrag(
     aura::Window* window,
     const gfx::PointF& point_in_parent,
@@ -1009,15 +1017,17 @@ void ToplevelWindowEventHandler::HandleDrag(aura::Window* target,
   if (event->phase() != ui::EP_PRETARGET)
     return;
 
-  if (!window_resizer_)
-    return;
-
-  // Hide the divider when dragging a window out from a snap group.
+  // Break the Snap Group when dragging a window out of it.
   if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
     if (SnapGroup* snap_group =
             snap_group_controller->GetSnapGroupForGivenWindow(target)) {
       snap_group->OnLocatedEvent(event);
     }
+  }
+
+  // `window_resizer_` may have been reset, early return in this case.
+  if (!window_resizer_) {
+    return;
   }
 
   gfx::PointF location_in_parent = event->location_f();

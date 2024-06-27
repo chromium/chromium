@@ -59,6 +59,8 @@
 #include "ash/wm/snap_group/snap_group_constants.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_metrics.h"
+#include "ash/wm/snap_group/snap_group_observer.h"
+#include "ash/wm/splitview/faster_split_view.h"
 #include "ash/wm/splitview/faster_split_view_old.h"
 #include "ash/wm/splitview/layout_divider_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
@@ -70,6 +72,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/test/test_non_client_frame_view_ash.h"
+#include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_cycle/window_cycle_view.h"
@@ -2600,15 +2603,89 @@ TEST_F(SnapGroupTest, SnapToTheOppositeSideToExit) {
 // and removes the divider.
 TEST_F(SnapGroupTest, DragWindowOutToBreakSnapGroup) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
-  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+
+  // Create `w2` with `HTCAPTION`. This ensures that dragging behavior is
+  // initiated from the caption region. `SnapGroup::OnLocatedEvent()` will
+  // process of this event.
+  aura::test::TestWindowDelegate test_window_delegate;
+  test_window_delegate.set_window_component(HTCAPTION);
+  std::unique_ptr<aura::Window> w2(CreateTestWindowInShellWithDelegate(
+      &test_window_delegate, aura::client::WINDOW_TYPE_NORMAL,
+      gfx::Rect(400, 5, 100, 50)));
+  w2->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
+
   SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
   SnapGroupController* snap_group_controller = SnapGroupController::Get();
   EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
   EXPECT_TRUE(snap_group_divider());
 
   auto* event_generator = GetEventGenerator();
-  event_generator->set_current_screen_location(GetDragPoint(w2.get()));
+  event_generator->set_current_screen_location(
+      w2->GetBoundsInScreen().top_center());
   event_generator->DragMouseTo(work_area_bounds().CenterPoint());
+  EXPECT_FALSE(snap_group_divider());
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+}
+
+// This class simulates a crash scenario that can occur within the
+// `ToplevelWindowEventHandler`. Specifically, when a window belonging to a Snap
+// Group is dragged out to break the group, the `window_resizer_` can be reset,
+// leading to a crash.
+class ToplevelWindowEventHandlerCrashSimulator : public SnapGroupObserver {
+ public:
+  ToplevelWindowEventHandlerCrashSimulator() {
+    SnapGroupController::Get()->AddObserver(this);
+  }
+  ToplevelWindowEventHandlerCrashSimulator(
+      const ToplevelWindowEventHandlerCrashSimulator&) = delete;
+  ToplevelWindowEventHandlerCrashSimulator& operator=(
+      const ToplevelWindowEventHandlerCrashSimulator&) = delete;
+  ~ToplevelWindowEventHandlerCrashSimulator() override {
+    SnapGroupController::Get()->RemoveObserver(this);
+  }
+
+  // SnapGroupObserver:
+  void OnSnapGroupRemoving(SnapGroup* snap_group,
+                           SnapGroupExitPoint exit_pint) override {
+    if (exit_pint != SnapGroupExitPoint::kDragWindowOut) {
+      return;
+    }
+
+    // Explicitly reset the `window_resizier_` on window drag out from a Snap
+    // Group to simulate the scenario that may possibly lead to crash, reported
+    // in http://b/348673912.
+    ToplevelWindowEventHandler* toplevel_window_event_handler =
+        Shell::Get()->toplevel_window_event_handler();
+    toplevel_window_event_handler->ResetWindowResizerForTesting();
+  }
+};
+
+// Tests that dragging a window out of a Snap Group does not cause a crash,
+// even if the window_resizer_ is reset during the process. Regression test for
+// http://b/348673912.
+TEST_F(SnapGroupTest, ToplevelWindowEventHandlerDragCrashFix) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+
+  aura::test::TestWindowDelegate test_window_delegate;
+  test_window_delegate.set_window_component(HTCAPTION);
+  std::unique_ptr<aura::Window> w2(CreateTestWindowInShellWithDelegate(
+      &test_window_delegate, aura::client::WINDOW_TYPE_NORMAL,
+      gfx::Rect(400, 5, 100, 50)));
+  w2->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
+
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_TRUE(snap_group_divider());
+
+  ToplevelWindowEventHandlerCrashSimulator toplevel_window_drag_simulator;
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(
+      w2->GetBoundsInScreen().top_center());
+  event_generator->DragMouseTo(work_area_bounds().CenterPoint());
+
   EXPECT_FALSE(snap_group_divider());
   EXPECT_FALSE(
       snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));

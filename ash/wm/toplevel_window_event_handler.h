@@ -129,7 +129,9 @@ class ASH_EXPORT ToplevelWindowEventHandler
 
   bool in_pinch() const { return in_pinch_; }
 
-  void CompleteDragForTesting(DragResult result) { CompleteDrag(result); }
+  void CompleteDragForTesting(DragResult result);
+
+  void ResetWindowResizerForTesting();
 
  private:
   class ScopedWindowResizer;
