@@ -1389,6 +1389,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.OfficeFiles.Setup.OfficeWebAppInstallation"
+    enum="WebAppInstallResultCode" expires_after="2025-05-01">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: Records installation result code for the
+    installation attempt for the Office web app initiated through the Office
+    setup flow.
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.OfficeFiles.TaskResult.{CloudProvider}"
     enum="OfficeTaskResult" expires_after="2025-05-01">
   <owner>simmonsjosh@google.com</owner>

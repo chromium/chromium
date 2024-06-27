@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/office_web_app/office_web_app.h"
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/web_applications/external_install_options.h"
@@ -27,6 +28,8 @@ void OnOfficeWebAppInstalled(
     base::OnceCallback<void(webapps::InstallResultCode)> callback,
     const GURL& install_url,
     web_app::ExternallyManagedAppManager::InstallResult result) {
+  UMA_HISTOGRAM_ENUMERATION(
+      "FileBrowser.OfficeFiles.Setup.OfficeWebAppInstallation", result.code);
   if (webapps::IsSuccess(result.code)) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
     proxy->SetSupportedLinksPreference(*result.app_id);
