@@ -23,16 +23,7 @@ def main(argv):
 
   driver = create_chrome_webdriver(chrome_options=options)
 
-  # Give some time for browser to enroll and to send heartbeat events.
-  time.sleep(25)
-
   try:
-    # Print CHROME_LOG_FILE
-    print("PRINTING CHROME LOG FILE....")
-    with open(os.environ["CHROME_LOG_FILE"]) as file:
-      content = file.read()
-      print(content)
-    print("DONE PRINTING CHROME LOG FILE.")
 
     # Verify Policy status legend in chrome://policy page
     policy_url = "chrome://policy"
@@ -53,6 +44,16 @@ def main(argv):
   except Exception as error:
     print(error)
   finally:
+    # Give the browser some time to send heartbeat events.
+    time.sleep(20)
+
+    # Print CHROME_LOG_FILE
+    print("PRINTING CHROME LOG FILE....")
+    with open(os.environ["CHROME_LOG_FILE"]) as file:
+      content = file.read()
+      print(content)
+    print("DONE PRINTING CHROME LOG FILE.")
+
     driver.quit()
 
 
