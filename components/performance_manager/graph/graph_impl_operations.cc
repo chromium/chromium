@@ -4,12 +4,64 @@
 
 #include "components/performance_manager/graph/graph_impl_operations.h"
 
+#include <set>
+
 #include "base/memory/raw_ptr.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/graph/worker_node_impl.h"
 
 namespace performance_manager {
+
+namespace {
+
+bool VisitWorkerClientFrames(
+    const WorkerNodeImpl* worker,
+    GraphImplOperations::FrameNodeImplVisitor frame_visitor,
+    std::set<const FrameNodeImpl*>& visited_frames) {
+  for (FrameNodeImpl* f : worker->client_frames()) {
+    // Mark this frame as visited.
+    const auto [_, inserted] = visited_frames.insert(f);
+    if (!inserted) {
+      // Already visited.
+      continue;
+    }
+    if (!frame_visitor(f)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool VisitWorkerAndClients(
+    WorkerNodeImpl* worker,
+    GraphImplOperations::FrameNodeImplVisitor frame_visitor,
+    GraphImplOperations::WorkerNodeImplVisitor worker_visitor,
+    std::set<const FrameNodeImpl*>& visited_frames,
+    std::set<const WorkerNodeImpl*>& visited_workers) {
+  // Mark this worker as visited.
+  const auto [_, inserted] = visited_workers.insert(worker);
+  if (!inserted) {
+    // Already visited.
+    return true;
+  }
+  if (!worker_visitor(worker)) {
+    return false;
+  }
+  if (!VisitWorkerClientFrames(worker, frame_visitor, visited_frames)) {
+    return false;
+  }
+  for (WorkerNodeImpl* w : worker->client_workers()) {
+    if (!VisitWorkerAndClients(w, frame_visitor, worker_visitor, visited_frames,
+                               visited_workers)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+}  // namespace
 
 // static
 base::flat_set<raw_ptr<PageNodeImpl, CtnExperimental>>
@@ -126,6 +178,26 @@ bool GraphImplOperations::HasFrame(const PageNodeImpl* page,
     return true;
   });
   return has_frame;
+}
+
+// static
+bool GraphImplOperations::VisitAllWorkerClients(
+    const WorkerNodeImpl* worker,
+    FrameNodeImplVisitor frame_visitor,
+    WorkerNodeImplVisitor worker_visitor) {
+  std::set<const FrameNodeImpl*> visited_frames;
+  std::set<const WorkerNodeImpl*> visited_workers;
+  // Don't visit `worker` itself.
+  if (!VisitWorkerClientFrames(worker, frame_visitor, visited_frames)) {
+    return false;
+  }
+  for (WorkerNodeImpl* w : worker->client_workers()) {
+    if (!VisitWorkerAndClients(w, frame_visitor, worker_visitor, visited_frames,
+                               visited_workers)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // namespace performance_manager

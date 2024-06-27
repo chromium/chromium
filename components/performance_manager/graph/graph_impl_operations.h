@@ -14,11 +14,13 @@ namespace performance_manager {
 class FrameNodeImpl;
 class PageNodeImpl;
 class ProcessNodeImpl;
+class WorkerNodeImpl;
 
 // A collection of utilities for performing common queries and traversals on a
 // graph.
 struct GraphImplOperations {
   using FrameNodeImplVisitor = base::FunctionRef<bool(FrameNodeImpl*)>;
+  using WorkerNodeImplVisitor = base::FunctionRef<bool(WorkerNodeImpl*)>;
 
   // Returns the collection of page nodes that are associated with the given
   // |process|. A page is associated with a process if the page's frame tree
@@ -60,6 +62,14 @@ struct GraphImplOperations {
   // Returns true if the given |frame| is in the frame tree associated with the
   // given |page|.
   static bool HasFrame(const PageNodeImpl* page, FrameNodeImpl* frame);
+
+  // Recursively visits all frames and workers that are clients of the given
+  // `worker`. Each client will only be visited once. If the visitor returns
+  // false then the iteration is halted. Returns true if all calls to the
+  // visitor returned true, false otherwise.
+  static bool VisitAllWorkerClients(const WorkerNodeImpl* worker,
+                                    FrameNodeImplVisitor frame_visitor,
+                                    WorkerNodeImplVisitor worker_visitor);
 };
 
 }  // namespace performance_manager
