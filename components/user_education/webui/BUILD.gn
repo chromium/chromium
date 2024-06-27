@@ -12,6 +12,8 @@ source_set("webui") {
     "help_bubble_webui.h",
     "tracked_element_webui.cc",
     "tracked_element_webui.h",
+    "whats_new_registry.cc",
+    "whats_new_registry.h",
   ]
 
   deps = [
@@ -28,13 +30,17 @@ source_set("webui") {
     "//ui/views",
     "//ui/views/controls/webview",
     "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
+    "//ui/webui/resources/js/browser_command:mojo_bindings",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "help_bubble_handler_unittest.cc" ]
+  sources = [
+    "help_bubble_handler_unittest.cc",
+    "whats_new_registry_unittest.cc",
+  ]
 
   deps = [
     ":webui",
@@ -55,5 +61,6 @@ source_set("unit_tests") {
     "//ui/base",
     "//ui/base:test_support",
     "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
+    "//ui/webui/resources/js/browser_command:mojo_bindings",
   ]
 }

@@ -2646,6 +2646,7 @@ static_library("browser") {
       "//components/manta",
       "//components/manta/proto",
       "//components/user_education/common",
+      "//components/user_education/webui:webui",
     ]
 
     allow_circular_includes_from += [

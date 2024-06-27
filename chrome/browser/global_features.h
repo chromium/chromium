@@ -6,6 +6,11 @@
 #define CHROME_BROWSER_GLOBAL_FEATURES_H_
 
 #include "base/functional/callback.h"
+#include "build/build_config.h"
+
+namespace whats_new {
+class WhatsNewRegistry;
+}  // namespace whats_new
 
 // This class owns the core controllers for features that are globally
 // scoped on desktop. It can be subclassed by tests to perform
@@ -39,6 +44,10 @@ class GlobalFeatures {
  private:
   // Features will each have a controller. e.g.
   // std::unique_ptr<FooFeature> foo_feature_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<whats_new::WhatsNewRegistry> whats_new_registry_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 #endif  // CHROME_BROWSER_GLOBAL_FEATURES_H_

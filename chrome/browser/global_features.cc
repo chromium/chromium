@@ -7,6 +7,14 @@
 #include "base/check_is_test.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "build/build_config.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+// This causes a gn error on Android builds, because gn does not understand
+// buildflags.
+#include "components/user_education/common/user_education_features.h"  // nogncheck
+#include "components/user_education/webui/whats_new_registry.h"  // nogncheck
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -38,6 +46,12 @@ void GlobalFeatures::ReplaceGlobalFeaturesForTesting(
   f = std::move(factory);
 }
 
-void GlobalFeatures::Init() {}
+void GlobalFeatures::Init() {
+#if !BUILDFLAG(IS_ANDROID)
+  if (user_education::features::IsWhatsNewV2()) {
+    whats_new_registry_ = std::make_unique<whats_new::WhatsNewRegistry>();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
 
 GlobalFeatures::GlobalFeatures() = default;
