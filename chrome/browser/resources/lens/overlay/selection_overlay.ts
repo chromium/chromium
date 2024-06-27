@@ -229,6 +229,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       BrowserProxyImpl.getInstance()
           .callbackRouter.notifyOverlayClosing.addListener(() => {
             this.isClosing = true;
+            this.removeDragListeners();
           }),
     ];
     this.eventTracker_.add(
@@ -639,6 +640,9 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
   // Returns if the given PointerEvent should be ignored.
   private shouldIgnoreEvent(event: PointerEvent) {
+    if (this.isClosing) {
+      return true;
+    }
     const elementsAtPoint =
         this.shadowRoot!.elementsFromPoint(event.clientX, event.clientY);
     // Do not intercept events that should go to the following elements.
