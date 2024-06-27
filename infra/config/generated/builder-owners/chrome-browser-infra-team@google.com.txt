@@ -1,6 +1,7 @@
 ci/3pp-windows-amd64-packager
 ci/linux-archive-rel
 ci/linux-presubmit
+ci/linux-rr-orchestrator-fyi
 ci/win-presubmit
 try/3pp-windows-amd64-packager
 try/gn-args-verifier
