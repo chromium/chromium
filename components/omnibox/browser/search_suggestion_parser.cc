@@ -922,8 +922,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
                     .enabled &&
                 answer_type != SuggestionAnswer::ANSWER_TYPE_INVALID &&
                 omnibox::answer_data_parser::ParseJsonToAnswerData(
-                    *answer_json, base::UTF8ToUTF16(*answer_type_str),
-                    &answer_template)) {
+                    *answer_json, &answer_template)) {
             } else if (SuggestionAnswer::ParseAnswer(
                            *answer_json, base::UTF8ToUTF16(*answer_type_str),
                            &answer)) {

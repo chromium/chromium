@@ -83,14 +83,6 @@ void SetColorType(int text_type,
   }
 }
 
-std::optional<omnibox::RichAnswerTemplate::AnswerType> AnswerTypeForNumber(
-    int value) {
-  if (omnibox::RichAnswerTemplate_AnswerType_IsValid(value)) {
-    return static_cast<omnibox::RichAnswerTemplate::AnswerType>(value);
-  }
-  return std::nullopt;
-}
-
 bool ParseJsonToFormattedStringFragment(
     const base::Value::Dict& field_json,
     omnibox::FormattedString* formatted_string) {
@@ -177,20 +169,7 @@ bool ParseJsonToFormattedString(const base::Value::Dict& line_json,
 }
 
 bool ParseJsonToAnswerData(const base::Value::Dict& answer_json,
-                           const std::u16string& answer_type_str,
                            omnibox::RichAnswerTemplate* answer_template) {
-  int answer_type = 0;
-  if (!base::StringToInt(answer_type_str, &answer_type)) {
-    return false;
-  }
-  // Ensure answer type is valid.
-  std::optional<omnibox::RichAnswerTemplate::AnswerType> type =
-      AnswerTypeForNumber(answer_type);
-  if (!type.has_value()) {
-    return false;
-  }
-  answer_template->set_answer_type(type.value());
-
   // Ensure there are exactly two lines in the response.
   const base::Value::List* lines_json = answer_json.FindList(kAnswerJsonLines);
   if (!lines_json || lines_json->size() != 2) {

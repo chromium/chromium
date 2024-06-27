@@ -55,7 +55,6 @@ enum TextType {
 GURL GetFormattedURL(const std::string* url_string);
 
 bool ParseJsonToAnswerData(const base::Value::Dict& answer_json,
-                           const std::u16string& answer_type_str,
                            omnibox::RichAnswerTemplate* answer_template);
 
 }  // namespace omnibox::answer_data_parser

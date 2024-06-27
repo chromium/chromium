@@ -28,15 +28,14 @@ bool ParseAnswer(const std::string& answer_json, SuggestionAnswer* answer) {
 }
 
 bool ParseJsonToAnswerData(const std::string& answer_json,
-                           omnibox::RichAnswerTemplate* answer_template,
-                           std::u16string answer_type = u"8") {
+                           omnibox::RichAnswerTemplate* answer_template) {
   std::optional<base::Value> value = base::JSONReader::Read(answer_json);
   if (!value || !value->is_dict()) {
     return false;
   }
 
-  return omnibox::answer_data_parser::ParseJsonToAnswerData(
-      value->GetDict(), answer_type, answer_template);
+  return omnibox::answer_data_parser::ParseJsonToAnswerData(value->GetDict(),
+                                                            answer_template);
 }
 
 }  // namespace
@@ -517,14 +516,8 @@ TEST(SuggestionAnswerTest, AnswerData_ValidPropertyValues) {
       "              \"at\": { \"t\": \"slatfatf\", \"tt\": 6 }, "
       "              \"st\": { \"t\": \"oh hi, Mark\", \"tt\": 729347 } } } "
       "] }";
-  ASSERT_TRUE(ParseJsonToAnswerData(json, &answer_template, u"1"));
+  ASSERT_TRUE(ParseJsonToAnswerData(json, &answer_template));
   ASSERT_TRUE(ParseAnswer(json, &answer));
-
-  // SuggestionAnswer and RichAnswerTemplate answer types should be equal.
-  answer.set_type(1);
-  EXPECT_EQ(omnibox::RichAnswerTemplate::DICTIONARY,
-            answer_template.answer_type());
-  EXPECT_EQ(answer.type(), answer_template.answer_type());
 
   const omnibox::AnswerData& answer_data = answer_template.answers(0);
   const omnibox::FormattedString& headline = answer_data.headline();
