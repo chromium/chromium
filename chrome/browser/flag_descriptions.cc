@@ -1349,11 +1349,6 @@ const char
         "Updates the text and layout on both the privacy guide and the "
         "security settings page.";
 
-const char kEnableRedInterstitialFaceliftName[] = "Red interstitial facelift";
-const char kEnableRedInterstitialFaceliftDescription[] =
-    "Enables red interstitial facelift UI changes, including icon, string, and "
-    "style changes.";
-
 const char kEnableSearchEngineChoiceName[] = "Search engine choice";
 const char kEnableSearchEngineChoiceDescription[] =
     "Enables the search engine choice screen and related features."

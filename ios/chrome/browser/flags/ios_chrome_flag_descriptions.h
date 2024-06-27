@@ -353,11 +353,6 @@ extern const char
 extern const char kDisableLensCameraName[];
 extern const char kDisableLensCameraDescription[];
 
-// Title and description for the flag to enable red interstitial facelift UI
-// changes.
-extern const char kEnableRedInterstitialFaceliftName[];
-extern const char kEnableRedInterstitialFaceliftDescription[];
-
 // Title and description for the flag to enable kEditPasswordsInSettings flag on
 // iOS.
 extern const char kEditPasswordsInSettingsName[];

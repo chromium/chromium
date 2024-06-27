@@ -16,22 +16,7 @@
   <message name="IDS_PAGE_INFO_NOT_SECURE_SUMMARY_SHORT" desc="A shorter one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the connection to the current website is not secure.">
     Connection is not secure
   </message>
-  <message name="IDS_PAGE_INFO_MALWARE_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the current website has been flagged as containing malware.">
-    This site contains malware
-  </message>
-  <message name="IDS_PAGE_INFO_MALWARE_SUMMARY_NEW" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the current website has been flagged as containing malware.">
-    Dangerous site
-  </message>
-  <message name="IDS_PAGE_INFO_SOCIAL_ENGINEERING_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the current website has been flagged as social engineering.">
-    This site is deceptive
-  </message>
-  <message name="IDS_PAGE_INFO_SOCIAL_ENGINEERING_SUMMARY_NEW" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the current website has been flagged as social engineering.">
-    Dangerous site
-  </message>
-  <message name="IDS_PAGE_INFO_UNWANTED_SOFTWARE_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the current website has been flagged as containing unwanted software.">
-    This site contains harmful programs
-  </message>
-  <message name="IDS_PAGE_INFO_UNWANTED_SOFTWARE_SUMMARY_NEW" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the current website has been flagged as containing unwanted software.">
+  <message name="IDS_PAGE_INFO_SAFE_BROWSING_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the current website has been flagged as unsafe.">
     Dangerous site
   </message>
 
@@ -89,21 +74,12 @@
     You should not enter any sensitive information on this site (for example, passwords or credit cards), because it could be stolen by attackers.
   </message>
   <message name="IDS_PAGE_INFO_MALWARE_DETAILS" desc="A short paragraph explaining to the user that the current website has been flagged as containing malware.">
-    Attackers on this site might attempt to install dangerous programs on your computer that steal or delete your information (for example, photos, passwords, messages, and credit cards).
-  </message>
-  <message name="IDS_PAGE_INFO_MALWARE_DETAILS_NEW" desc="A short paragraph explaining to the user that the current website has been flagged as containing malware.">
     Attackers on the site you're trying to visit might install harmful software that steals or deletes things like your password, photos, messages, or credit card number.
   </message>
   <message name="IDS_PAGE_INFO_SOCIAL_ENGINEERING_DETAILS" desc="A short paragraph explaining to the user that the current website has been flagged as social engineering.">
-    Attackers on this site may trick you into doing something dangerous like installing software or revealing your personal information (for example, passwords, phone numbers, or credit cards).
-  </message>
-  <message name="IDS_PAGE_INFO_SOCIAL_ENGINEERING_DETAILS_NEW" desc="A short paragraph explaining to the user that the current website has been flagged as social engineering.">
     Attackers on the site you're trying to visit might trick you into installing software or revealing things like your password, phone, or credit card number.
   </message>
   <message name="IDS_PAGE_INFO_UNWANTED_SOFTWARE_DETAILS" desc="A short paragraph explaining to the user that the current website has been flagged as containing unwanted software.">
-    Attackers on this site might try to trick you into installing programs that harm your browsing experience (for example, by changing your homepage or showing extra ads on sites you visit).
-  </message>
-  <message name="IDS_PAGE_INFO_UNWANTED_SOFTWARE_DETAILS_NEW" desc="A short paragraph explaining to the user that the current website has been flagged as containing unwanted software.">
     Attackers on the site you're trying to visit might trick you into installing harmful software that affects the way you browse — for example, by changing your homepage or showing you extra ads on sites you visit.
   </message>
 

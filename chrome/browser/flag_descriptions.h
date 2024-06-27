@@ -782,9 +782,6 @@ extern const char kEnableFriendlierSafeBrowsingSettingsStandardProtectionName[];
 extern const char
     kEnableFriendlierSafeBrowsingSettingsStandardProtectionDescription[];
 
-extern const char kEnableRedInterstitialFaceliftName[];
-extern const char kEnableRedInterstitialFaceliftDescription[];
-
 extern const char kEnableSearchEngineChoiceName[];
 extern const char kEnableSearchEngineChoiceDescription[];
 

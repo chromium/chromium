@@ -3743,11 +3743,6 @@
     "expiry_milestone": 119
   },
   {
-    "name": "enable-red-interstitial-facelift",
-    "owners": ["skrakowi@chromium.org", "chrome-counter-abuse-alerts@google.com" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "enable-remove-stale-policy-pinned-apps-from-shelf",
     "owners": [ "greengrape@google.com" ],
     "expiry_milestone": 125

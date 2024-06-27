@@ -2373,11 +2373,11 @@ IN_PROC_BROWSER_TEST_P(TrustSafetySentimentSurveyV2BrowserTest,
   observer.WaitForNavigationFinished();
 }
 
-using RedInterstitialFaceliftBrowserTest = SafeBrowsingBlockingPageBrowserTest;
+using RedInterstitialUIBrowserTest = SafeBrowsingBlockingPageBrowserTest;
 
 INSTANTIATE_TEST_SUITE_P(
-    RedInterstitialFaceliftBrowserTestWithThreatTypeAndIsolationSetting,
-    RedInterstitialFaceliftBrowserTest,
+    RedInterstitialUIBrowserTestWithThreatTypeAndIsolationSetting,
+    RedInterstitialUIBrowserTest,
     testing::Combine(
         testing::Values(
             SBThreatType::SB_THREAT_TYPE_URL_PHISHING,  // Threat types
@@ -2386,7 +2386,7 @@ INSTANTIATE_TEST_SUITE_P(
             SBThreatType::SB_THREAT_TYPE_URL_UNWANTED),
         testing::Bool()));  // If isolate all sites for testing.
 
-IN_PROC_BROWSER_TEST_P(RedInterstitialFaceliftBrowserTest,
+IN_PROC_BROWSER_TEST_P(RedInterstitialUIBrowserTest,
                        TestInterstitialPageStringsEnhancedEnabled) {
   safe_browsing::SetSafeBrowsingState(
       browser()->profile()->GetPrefs(),
@@ -2407,7 +2407,7 @@ IN_PROC_BROWSER_TEST_P(RedInterstitialFaceliftBrowserTest,
   base::Value::Dict load_time_data;
   temp_var->PopulateStringsForHtml(load_time_data);
 
-  // Safe browsing blocking page should use new heading and primary,
+  // Safe browsing blocking page should use correct heading and primary,
   // explanation, and proceed paragraph strings.
   ASSERT_EQ(
       load_time_data.Find("heading")->GetString(),
@@ -2447,7 +2447,7 @@ IN_PROC_BROWSER_TEST_P(RedInterstitialFaceliftBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(RedInterstitialFaceliftBrowserTest,
+IN_PROC_BROWSER_TEST_P(RedInterstitialUIBrowserTest,
                        TestInterstitialPageStringsStandardEnabled) {
   safe_browsing::SetSafeBrowsingState(
       browser()->profile()->GetPrefs(),
@@ -2468,8 +2468,8 @@ IN_PROC_BROWSER_TEST_P(RedInterstitialFaceliftBrowserTest,
   base::Value::Dict load_time_data;
   temp_var->PopulateStringsForHtml(load_time_data);
 
-  // Safe browsing blocking page should use new header and enhanced protection
-  // promo message strings.
+  // Safe browsing blocking page should use correct header and enhanced
+  // protection promo message strings.
   ASSERT_EQ(
       load_time_data.Find("heading")->GetString(),
       base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_SAFEBROWSING_HEADING)));

@@ -460,21 +460,19 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
       break;
     case PageInfo::SAFE_BROWSING_STATUS_MALWARE:
       return CreateSecurityDescription(SecuritySummaryColor::RED,
-                                       IDS_PAGE_INFO_MALWARE_SUMMARY_NEW,
-                                       IDS_PAGE_INFO_MALWARE_DETAILS_NEW,
+                                       IDS_PAGE_INFO_SAFE_BROWSING_SUMMARY,
+                                       IDS_PAGE_INFO_MALWARE_DETAILS,
                                        SecurityDescriptionType::SAFE_BROWSING);
     case PageInfo::SAFE_BROWSING_STATUS_SOCIAL_ENGINEERING:
-      return CreateSecurityDescription(
-          SecuritySummaryColor::RED,
-          IDS_PAGE_INFO_SOCIAL_ENGINEERING_SUMMARY_NEW,
-          IDS_PAGE_INFO_SOCIAL_ENGINEERING_DETAILS_NEW,
-          SecurityDescriptionType::SAFE_BROWSING);
+      return CreateSecurityDescription(SecuritySummaryColor::RED,
+                                       IDS_PAGE_INFO_SAFE_BROWSING_SUMMARY,
+                                       IDS_PAGE_INFO_SOCIAL_ENGINEERING_DETAILS,
+                                       SecurityDescriptionType::SAFE_BROWSING);
     case PageInfo::SAFE_BROWSING_STATUS_UNWANTED_SOFTWARE:
-      return CreateSecurityDescription(
-          SecuritySummaryColor::RED,
-          IDS_PAGE_INFO_UNWANTED_SOFTWARE_SUMMARY_NEW,
-          IDS_PAGE_INFO_UNWANTED_SOFTWARE_DETAILS_NEW,
-          SecurityDescriptionType::SAFE_BROWSING);
+      return CreateSecurityDescription(SecuritySummaryColor::RED,
+                                       IDS_PAGE_INFO_SAFE_BROWSING_SUMMARY,
+                                       IDS_PAGE_INFO_UNWANTED_SOFTWARE_DETAILS,
+                                       SecurityDescriptionType::SAFE_BROWSING);
     case PageInfo::SAFE_BROWSING_STATUS_SAVED_PASSWORD_REUSE: {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
       auto security_description = CreateSecurityDescription(
