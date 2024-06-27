@@ -7127,6 +7127,7 @@ crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversa
 [ Debug Mac14 ] external/wpt/upgrade-insecure-requests/link-upgrade.sub.https.html [ Failure Pass ]
 [ Debug Mac14 ] media/controls/closed-captions-dynamic-update.html [ Failure Pass ]
 [ Debug Mac14 ] editing/selection/editable-links.html [ Failure Pass ]
+[ Debug Mac14 ] virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html [ Failure Pass Timeout ]
 [ Debug Mac14 ] virtual/prefer_compositing_to_lcd_text/scrollbars/custom-scrollbar-thumb-inactive-pseudo.html [ Failure Pass ]
 [ Debug Mac14 ] virtual/raster-inducing-scroll/scrollbars/custom-scrollbar-thumb-focus-iframe-inactive-pseudo.html [ Failure Pass ]
 [ Debug Mac14 ] fast/canvas/synchronous-create-pattern.html [ Failure Pass ]
