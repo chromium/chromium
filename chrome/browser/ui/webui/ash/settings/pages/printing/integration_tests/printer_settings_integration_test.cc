@@ -11,6 +11,7 @@
 #include "base/json/string_escape.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -22,6 +23,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chromeos/ash/components/dbus/printscanmgr/printscanmgr_client.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "printing/printing_features.h"
 
 namespace ash {
 
@@ -136,6 +138,8 @@ class PrinterSettingsIntegrationTest : public AshIntegrationTest {
       kPrinterSettingsPage + "#noSavedPrinters";
 
   PrinterSettingsIntegrationTest() {
+    feature_list_.InitAndEnableFeature(
+        printing::features::kAddPrinterViaPrintscanmgr);
     // Keep test running after dismissing login screen.
     set_exit_when_last_browser_closes(false);
     login_mixin().SetMode(ChromeOSIntegrationLoginMixin::Mode::kTestLogin);
@@ -317,6 +321,8 @@ class PrinterSettingsIntegrationTest : public AshIntegrationTest {
         Log("Saving the edited printer"),
         ClickElement(kSettingsWebContentsId, kEditSaveButtonQuery));
   }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrinterSettingsIntegrationTest, ViewPpd) {
