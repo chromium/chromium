@@ -966,7 +966,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Isolated.InstallError"
-    enum="IsolatedWebAppReadResponseHeadError" expires_after="2025-05-31">
+    enum="IsolatedWebAppInstallError" expires_after="2025-05-31">
   <owner>giovax@chromium.org</owner>
   <owner>pwa-commercial@google.com</owner>
   <summary>
