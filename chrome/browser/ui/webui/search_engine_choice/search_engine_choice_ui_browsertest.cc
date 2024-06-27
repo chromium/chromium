@@ -6,9 +6,12 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_timeouts.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
@@ -112,6 +115,7 @@ struct TestParam {
   bool select_first_search_engine = false;
   bool first_snippet_text_larger = false;
   bool display_info_dialog = false;
+  bool wait_for_banners_displayed = true;
   gfx::Size dialog_dimensions = gfx::Size(988, 900);
 };
 
@@ -128,9 +132,14 @@ const TestParam kTestParams[] = {
     {.test_suffix = "Default"},
     {.test_suffix = "DarkTheme", .use_dark_theme = true},
     {.test_suffix = "RightToLeft", .use_right_to_left_language = true},
-    {.test_suffix = "MediumSize", .dialog_dimensions = gfx::Size(800, 700)},
-    {.test_suffix = "NarrowSize", .dialog_dimensions = gfx::Size(300, 900)},
+    {.test_suffix = "MediumSize",
+     .wait_for_banners_displayed = false,
+     .dialog_dimensions = gfx::Size(800, 700)},
+    {.test_suffix = "NarrowSize",
+     .wait_for_banners_displayed = false,
+     .dialog_dimensions = gfx::Size(300, 900)},
     {.test_suffix = "ShortAndNarrowSize",
+     .wait_for_banners_displayed = false,
      .dialog_dimensions = gfx::Size(500, 500)},
     {.test_suffix = "LargerFirstEngineSnippet",
      .first_snippet_text_larger = true},
@@ -199,6 +208,31 @@ const char kRemoveHoverPropertyJsString[] =
     "radioButtons.forEach(button => button.classList.remove('hoverable'));"
     "return true;"
     "})();";
+
+const char kAreBannersDisplayedJsString[] =
+    "(() => {"
+    "const app = document.querySelector('search-engine-choice-app');"
+    "const leftBannerStyle = "
+    "getComputedStyle(app.shadowRoot.querySelector('#leftBanner'));"
+    "const rightBannerStyle = "
+    "getComputedStyle(app.shadowRoot.querySelector('#rightBanner'));"
+    "return rightBannerStyle.display === 'block' && leftBannerStyle.display "
+    "=== 'block';"
+    "})();";
+
+void WaitForBannersDisplayed(content::WebContents* web_contents,
+                             base::OnceClosure quit_closure) {
+  if (content::EvalJs(web_contents, kAreBannersDisplayedJsString) == true) {
+    std::move(quit_closure).Run();
+    return;
+  }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&WaitForBannersDisplayed, web_contents,
+                     std::move(quit_closure)),
+      TestTimeouts::tiny_timeout());
+}
+
 }  // namespace
 
 class SearchEngineChoiceUIPixelTest
@@ -271,6 +305,7 @@ class SearchEngineChoiceUIPixelTest
 
     EXPECT_EQ(true,
               content::EvalJs(web_contents, kRemoveHoverPropertyJsString));
+
     if (GetParam().select_first_search_engine) {
       EXPECT_EQ(true, content::EvalJs(web_contents,
                                       kSelectFirstSearchEngineJsString));
@@ -286,6 +321,12 @@ class SearchEngineChoiceUIPixelTest
                 content::EvalJs(web_contents, kDisplayInfoDialogJsString));
     }
 
+    if (GetParam().wait_for_banners_displayed) {
+      base::RunLoop run_loop;
+      WaitForBannersDisplayed(web_contents, run_loop.QuitClosure());
+      run_loop.Run();
+    }
+
     observer.Wait();
   }
 
@@ -297,13 +338,7 @@ class SearchEngineChoiceUIPixelTest
   base::CallbackListSubscription create_services_subscription_;
 };
 
-// TODO(crbug.com/335549659): Re-enable test.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
-#else
-#define MAYBE_InvokeUi_default InvokeUi_default
-#endif
-IN_PROC_BROWSER_TEST_P(SearchEngineChoiceUIPixelTest, MAYBE_InvokeUi_default) {
+IN_PROC_BROWSER_TEST_P(SearchEngineChoiceUIPixelTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
