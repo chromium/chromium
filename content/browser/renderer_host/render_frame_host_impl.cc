@@ -1889,16 +1889,18 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
         CHECK(navigation_request->IsServedFromBackForwardCache());
         frame_tree_node_->RestartBackForwardCachedNavigationAsync(
             navigation_request->nav_entry_id());
-      } else if (navigation_request->state() >=
-                     NavigationRequest::WILL_PROCESS_RESPONSE &&
+      } else if (navigation_request->HasRenderFrameHost() &&
                  navigation_request->GetRenderFrameHost() == this) {
-        // As we are unable to come up with a case that will lead to this path,
-        // we instead record the dumps for debugging the scenario.
-        // TODO(crbug.com/40263181): if we verify that this path is impossible,
-        // replace the `DumpWithoutCrashing` with a `CHECK`. Otherwise, add a
-        // new browser test for it.
-        base::debug::DumpWithoutCrashing();
-        NOTREACHED_IN_MIGRATION();
+        // If the navigation has picked its final RenderFrameHost and that RFH
+        // gets destructed, the NavigationRequest can no longer commit in that
+        // RFH. Note that there's a similar reset in
+        // `RenderFrameHostManager::DiscardSpeculativeRFH()`, which will
+        // trigger earlier, so we'll not get here when the RFH deleted is a
+        // speculative / pending commit RFH.
+        CHECK_NE(lifecycle_state(), LifecycleStateImpl::kSpeculative);
+        CHECK_NE(lifecycle_state(), LifecycleStateImpl::kPendingCommit);
+        frame_tree_node_->ResetNavigationRequestButKeepState(
+            NavigationDiscardReason::kRenderFrameHostDestruction);
       }
     }
   }

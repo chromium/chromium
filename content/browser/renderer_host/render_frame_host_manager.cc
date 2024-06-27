@@ -2019,6 +2019,19 @@ void RenderFrameHostManager::DiscardSpeculativeRFH(
         RenderFrameHostImpl::LifecycleStateImplToString(
             speculative_render_frame_host_->lifecycle_state()));
 
+    if (NavigationRequest* navigation_request =
+            frame_tree_node_->navigation_request()) {
+      if (navigation_request->HasRenderFrameHost() &&
+          navigation_request->GetRenderFrameHost() ==
+              speculative_render_frame_host_.get()) {
+        // Ensure that there are no ongoing NavigationRequest pointing to the
+        // about-to-be-deleted speculative RFH. Note that NavigationRequests
+        // that are associated with a non-speculative RFH and pending-commit
+        // NavigationRequests that are already owned by a pending-commit RFH
+        // will be deleted separately in the RenderFrameHost destructor.
+        frame_tree_node_->ResetNavigationRequestButKeepState(reason);
+      }
+    }
     DiscardUnusedFrame(UnsetSpeculativeRenderFrameHost(reason));
     // If we were navigating away from a crashed main frame then we will have
     // set the RVH's main frame routing ID to MSG_ROUTING_NONE. We need to set
