@@ -7,8 +7,8 @@ This is a wdspec test.
   TypeError: close() got an unexpected keyword argument 'prompt_unload'
 [FAIL] test_prompt_unload_not_triggering_dialog[False-tab]
   TypeError: close() got an unexpected keyword argument 'prompt_unload'
-[FAIL] test_prompt_unload_triggering_dialog[window]
-  asyncio.exceptions.TimeoutError
-[FAIL] test_prompt_unload_triggering_dialog[tab]
-  asyncio.exceptions.TimeoutError
+[ERROR] test_prompt_unload_triggering_dialog[capabilities0-window]
+  setup error: webdriver.error.InvalidArgumentException: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[ERROR] test_prompt_unload_triggering_dialog[capabilities0-tab]
+  setup error: webdriver.error.InvalidArgumentException: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
 Harness: the test ran to completion.

@@ -20838,6 +20838,19 @@
         {}
        ]
       ],
+      "background-001-print.html": [
+       "66560fce099c6848670fcb0d766435fb2afadf28",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/background-001-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "content-001-print.html": [
        "efaa71b8c848bc13733f191a3c1f004edca80f29",
        [
@@ -20845,6 +20858,19 @@
         [
          [
           "/css/css-page/margin-boxes/content-001-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-003-print.html": [
+       "8e87e418219cacf12f0a5e16d29c239c855e7d9f",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/content-003-print-ref.html",
           "=="
          ]
         ],
@@ -274021,19 +274047,6 @@
         {}
        ]
       ],
-      "details-display-property-is-ignored.html": [
-       "445b4e483d00c8aabfa76a946d8cb0871e479c7d",
-       [
-        null,
-        [
-         [
-          "/html/rendering/the-details-element/details-display-property-is-ignored-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
       "details-display-type-001-ref.html": [
        "925ee19f775fd07ac6e679598329d05f609e5335",
        [
@@ -274047,7 +274060,7 @@
         {}
        ]
       ],
-      "details-display-type-001.tentative.html": [
+      "details-display-type-001.html": [
        "3188c1eafda1bbb4e43a5c048bc9d33647b6e444",
        [
         null,
@@ -274060,7 +274073,7 @@
         {}
        ]
       ],
-      "details-display-type-002.tentative.html": [
+      "details-display-type-002.html": [
        "6426e1c524f0b12b88330678263951af1b1e42d7",
        [
         null,
@@ -274073,7 +274086,7 @@
         {}
        ]
       ],
-      "details-pseudo-elements-001.tentative.html": [
+      "details-pseudo-elements-001.html": [
        "8ea3d0f85af933b6202f15ee00b9fdac451ab0c9",
        [
         null,
@@ -274086,7 +274099,7 @@
         {}
        ]
       ],
-      "details-pseudo-elements-002.tentative.html": [
+      "details-pseudo-elements-002.html": [
        "0f1176a3316bb08f9a49c63544d4ae090d878e40",
        [
         null,
@@ -274099,7 +274112,7 @@
         {}
        ]
       ],
-      "details-pseudo-elements-003.tentative.html": [
+      "details-pseudo-elements-003.html": [
        "ee5b42f13ac166f65ee2884722ab76cf0e2a1ba1",
        [
         null,
@@ -293907,7 +293920,7 @@
       []
      ],
      "helpers.js": [
-      "7157742e6e5c98746ec73933f4e0d6812eef12fb",
+      "0f20a71237c83589f676afeacb4660b39457fea3",
       []
      ],
      "reporting_origin.py": [
@@ -329507,8 +329520,16 @@
        "252633b0581a6b2cd09244b0b000b7e7f7effdb8",
        []
       ],
+      "background-001-print-ref.html": [
+       "d43af0ca4bfef4f4ed8f24cec818741c4fd61c5c",
+       []
+      ],
       "content-001-print-ref.html": [
        "bd3ba7e0ccf47a6b18b548cccf0b01ae62e5212b",
+       []
+      ],
+      "content-003-print-ref.html": [
+       "ba45b88cd4d84e429c97796d5941fe999e0143fd",
        []
       ],
       "dimensions-001-print-ref.html": [
@@ -371765,10 +371786,6 @@
        "b2a03da5103ec6c1b18064b2e979bf9e7d563ee1",
        []
       ],
-      "details-display-property-is-ignored-ref.html": [
-       "6ebed6075de1e8cf62db7bee756b05d3e425e0ab",
-       []
-      ],
       "details-display-type-001-ref2.html": [
        "4349df38d6aabc9bcc98a5a2666139a6d52a8881",
        []
@@ -400938,7 +400955,7 @@
      },
      "support": {
       "__init__.py": [
-       "0535edd2142e39aad37cc1a0ca58dca1fa01164a",
+       "8b137891791fe96927ad78e64b0aad7bded08bdc",
        []
       ],
       "asserts.py": [
@@ -400954,7 +400971,7 @@
        []
       ],
       "fixtures.py": [
-       "55256425f391b3959fa342d4b651329b94d48b89",
+       "a8f1f2959d4acb02776fc7cc2440fc00f408f50c",
        []
       ],
       "fixtures_bidi.py": [
@@ -401943,7 +401960,7 @@
       []
      ],
      "utils_validation.js": [
-      "7ef52497a9ab521f7c48e26a29b2d075e234e822",
+      "2ac308242a133772b3735b408937730b8b0bbb92",
       []
      ]
     }
@@ -422272,7 +422289,7 @@
      ]
     ],
     "header-parsing-error-debug-report.sub.https.html": [
-     "3c3ebe48d9f4664b0e5813918020855bacc4015d",
+     "fb674c9720e812efb0087a922e7c7a2cac2a8fe6",
      [
       null,
       {
@@ -422281,7 +422298,7 @@
      ]
     ],
     "referrer-policy.sub.https.html": [
-     "ee4e0c9a8c1e54f442d9b2d6f9de509351bab71b",
+     "5f5857e2c415f73bbe961e551175835acc02d0b3",
      [
       "attribution-reporting/referrer-policy.sub.https.html?method=a",
       {
@@ -422340,7 +422357,7 @@
      ]
     ],
     "request-format.sub.https.html": [
-     "83a2d8f6bdfe786c7f01862840b4ed716ddae813",
+     "5965f53299af7d5512b0024b1692591ef1ba77a1",
      [
       "attribution-reporting/request-format.sub.https.html?method=a&expected-eligible=navigation-source",
       {
@@ -477710,6 +477727,13 @@
        ]
       ]
      },
+     "various-values-important.html": [
+      "2dc34bf446f1cfdcdd3118573b7182315dc16756",
+      [
+       null,
+       {}
+      ]
+     ],
      "viewport-relative-lengths-scaled-viewport.html": [
       "dba2af8fa07b07d2ab7c6ca9f657b6e170cd9a41",
       [
@@ -578252,7 +578276,7 @@
         {}
        ]
       ],
-      "details-display.tentative.html": [
+      "details-display.html": [
        "27573bcdc695f057b754c5264342b8390801fee2",
        [
         null,
@@ -733621,7 +733645,7 @@
          ]
         ],
         "prompt_unload.py": [
-         "f4d8a249e734907dadf76d0bda48a6e777cf1b36",
+         "2dc241ba396fd5988c6c95f36afedcab950077b6",
          [
           null,
           {}
@@ -733747,7 +733771,7 @@
        },
        "handle_user_prompt": {
         "handle_user_prompt.py": [
-         "6dbe7446b634d69ea84541f8f7797b085800f917",
+         "c562ddbd9a259b3bb9f5c2863a3b384624f8e043",
          [
           null,
           {}
@@ -734037,14 +734061,14 @@
        },
        "user_prompt_closed": {
         "beforeunload.py": [
-         "4550472832bb9ad3b080ecfffdc7c4d3efc0a47d",
+         "6b2e788a05879aa6a2326196f415701d7449573d",
          [
           null,
           {}
          ]
         ],
         "user_prompt_closed.py": [
-         "ac2053ec4178303877a322f2031f12fda4fa57ae",
+         "fdb9e8b3ca7d5cc642ec69517f065887b16cdc24",
          [
           null,
           {}
@@ -734060,7 +734084,7 @@
          ]
         ],
         "user_prompt_opened.py": [
-         "e4e633e4564b46f0ed07cbf9e34cdbabe02da2e8",
+         "3a995b150388909587ee8ed834030574de1e4003",
          [
           null,
           {}
@@ -735823,7 +735847,7 @@
       },
       "get_current_url": {
        "file.py": [
-        "ef6ae2383550330bfd41c10fffb41b4545d7007d",
+        "e94cbcfe5517f215e75ae80b25d133d8ad16210a",
         [
          null,
          {}
@@ -736208,7 +736232,7 @@
       },
       "navigate_to": {
        "file.py": [
-        "5dae5f5c4d0edfed3113d5d50511b52dfbd111c5",
+        "213162c7b9228a7f88e08f08aeaa29999fe1b762",
         [
          null,
          {}
@@ -736267,7 +736291,7 @@
         ]
        ],
        "merge.py": [
-        "857d289fcaf054492e17ba730c6f530d55fe2640",
+        "4d36926fd3f063aed95fe5a7f477fd215686f698",
         [
          null,
          {
@@ -736290,7 +736314,7 @@
         ]
        ],
        "platform_name.py": [
-        "54fe4743bed44e75d6771ede5d4b7bf2f267bb95",
+        "fb87d9d682a2b440237f31cf7db6f699323f2fa5",
         [
          null,
          {}

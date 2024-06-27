@@ -1,4 +1,20 @@
 This is a wdspec test.
-[FAIL] test_beforeunload[False]
-  webdriver.bidi.error.UnknownErrorException: unknown error (net::ERR_ABORTED)
+[ERROR] test_alert[capabilities0]
+  setup error: webdriver.error.InvalidArgumentException: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[ERROR] test_confirm[capabilities0-True]
+  setup error: webdriver.error.InvalidArgumentException: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[ERROR] test_confirm[capabilities0-False]
+  setup error: webdriver.error.InvalidArgumentException: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[ERROR] test_prompt[capabilities0-True]
+  setup error: webdriver.error.InvalidArgumentException: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[ERROR] test_prompt[capabilities0-False]
+  setup error: webdriver.error.InvalidArgumentException: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[ERROR] test_beforeunload[capabilities0-False]
+  setup error: webdriver.error.InvalidArgumentException: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[ERROR] test_two_top_level_contexts[capabilities0-tab]
+  setup error: webdriver.error.InvalidArgumentException: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[ERROR] test_two_top_level_contexts[capabilities0-window]
+  setup error: webdriver.error.InvalidArgumentException: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[ERROR] test_multiple_frames[capabilities0]
+  setup error: webdriver.error.InvalidArgumentException: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
 Harness: the test ran to completion.

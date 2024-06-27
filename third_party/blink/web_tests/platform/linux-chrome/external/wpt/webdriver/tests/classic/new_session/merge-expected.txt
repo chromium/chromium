@@ -1,0 +1,8 @@
+This is a wdspec test.
+[ERROR] test_platform_name[alwaysMatch]
+  setup error: KeyError: 'target_platform'
+[ERROR] test_platform_name[firstMatch]
+  setup error: KeyError: 'target_platform'
+[ERROR] test_merge_platform_name
+  setup error: KeyError: 'target_platform'
+Harness: the test ran to completion.
