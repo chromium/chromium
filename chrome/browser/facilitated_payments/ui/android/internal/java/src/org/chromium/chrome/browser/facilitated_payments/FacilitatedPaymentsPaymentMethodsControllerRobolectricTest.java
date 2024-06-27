@@ -17,11 +17,12 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_NAME;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.ON_BANK_ACCOUNT_CLICK_ACTION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FopSelectorProperties.SCREEN_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.ADDITIONAL_INFO;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SHEET_ITEMS;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
 
 import android.app.Activity;
@@ -121,8 +122,11 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testCreatesValidDefaultPropertyModel() {
-        assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(SHEET_ITEMS));
-        ModelList itemList = mFacilitatedPaymentsPaymentMethodsModel.get(SHEET_ITEMS);
+        assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
+        assertNotNull(
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS));
+        ModelList itemList =
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
         assertThat(itemList.size(), is(0));
         assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(DISMISS_HANDLER));
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE), is(false));
@@ -130,8 +134,11 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testBankAccountsShown() {
-        assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(SHEET_ITEMS));
-        ModelList itemList = mFacilitatedPaymentsPaymentMethodsModel.get(SHEET_ITEMS);
+        assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
+        assertNotNull(
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS));
+        ModelList itemList =
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
         assertThat(itemList.size(), is(0));
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE), is(false));
 
@@ -149,7 +156,8 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     public void testSingleBankAccountsShown() {
         mCoordinator.showSheet(List.of(BANK_ACCOUNT_1));
 
-        ModelList itemList = mFacilitatedPaymentsPaymentMethodsModel.get(SHEET_ITEMS);
+        ModelList itemList =
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
         assertThat(itemList.size(), is(4));
         assertEquals(itemList.get(0).type, HEADER);
         assertEquals(itemList.get(1).type, BANK_ACCOUNT);
@@ -174,7 +182,8 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     public void testShowsContinueButtonWhenOneBankAccount() {
         mCoordinator.showSheet(List.of(BANK_ACCOUNT_1));
 
-        ModelList itemList = mFacilitatedPaymentsPaymentMethodsModel.get(SHEET_ITEMS);
+        ModelList itemList =
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
         assertEquals(getModelsOfType(itemList, CONTINUE_BUTTON).size(), 1);
     }
 
@@ -182,14 +191,16 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     public void testNoContinueButtonWhenManyBankAccounts() {
         mCoordinator.showSheet(List.of(BANK_ACCOUNT_1, BANK_ACCOUNT_2));
 
-        ModelList itemList = mFacilitatedPaymentsPaymentMethodsModel.get(SHEET_ITEMS);
+        ModelList itemList =
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
         assertEquals(getModelsOfType(itemList, CONTINUE_BUTTON).size(), 0);
     }
 
     @Test
     public void testContinueButtonClickForBankAccount() {
         mCoordinator.showSheet(List.of(BANK_ACCOUNT_1));
-        ModelList itemList = mFacilitatedPaymentsPaymentMethodsModel.get(SHEET_ITEMS);
+        ModelList itemList =
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
 
         mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
         getModelsOfType(itemList, CONTINUE_BUTTON).get(0).get(ON_BANK_ACCOUNT_CLICK_ACTION).run();
@@ -204,7 +215,10 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
         Optional<PropertyModel> bankAccountModel =
                 getBankAccountModelByBankName(
-                        mFacilitatedPaymentsPaymentMethodsModel.get(SHEET_ITEMS), BANK_ACCOUNT_1);
+                        mFacilitatedPaymentsPaymentMethodsModel
+                                .get(SCREEN_VIEW_MODEL)
+                                .get(SCREEN_ITEMS),
+                        BANK_ACCOUNT_1);
         assertNotNull(bankAccountModel.get().get(ON_BANK_ACCOUNT_CLICK_ACTION));
 
         mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
@@ -219,7 +233,10 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
         Optional<PropertyModel> bankAccountModel =
                 getBankAccountModelByBankName(
-                        mFacilitatedPaymentsPaymentMethodsModel.get(SHEET_ITEMS), BANK_ACCOUNT_1);
+                        mFacilitatedPaymentsPaymentMethodsModel
+                                .get(SCREEN_VIEW_MODEL)
+                                .get(SCREEN_ITEMS),
+                        BANK_ACCOUNT_1);
         assertNotNull(bankAccountModel.get().get(ON_BANK_ACCOUNT_CLICK_ACTION));
 
         // Clicking after an interval less than the threshold should be a no-op.

@@ -9,9 +9,11 @@ import android.graphics.Bitmap;
 import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /**
  * Properties defined here reflect the visible state of the facilitated payments bottom sheet
@@ -19,13 +21,14 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
  */
 class FacilitatedPaymentsPaymentMethodsProperties {
     static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey("visible");
-    static final ReadableObjectPropertyKey<ModelList> SHEET_ITEMS =
-            new ReadableObjectPropertyKey("sheet_items");
+    static final WritableObjectPropertyKey<PropertyModel> SCREEN_VIEW_MODEL =
+            new WritableObjectPropertyKey("screen_view_model");
     static final ReadableObjectPropertyKey<Callback<Integer>> DISMISS_HANDLER =
             new ReadableObjectPropertyKey<>("dismiss_handler");
 
-    static final PropertyKey[] ALL_KEYS = {VISIBLE, SHEET_ITEMS, DISMISS_HANDLER};
+    static final PropertyKey[] ALL_KEYS = {VISIBLE, SCREEN_VIEW_MODEL, DISMISS_HANDLER};
 
+    // TODO: b/348595414 - Rename to FopSelectorItemType and move to a separate directory.
     @interface ItemType {
         // The header at the top of the FacilitatedPayments bottom sheet.
         int HEADER = 0;
@@ -42,6 +45,21 @@ class FacilitatedPaymentsPaymentMethodsProperties {
 
         // A footer section containing additional actions.
         int FOOTER = 3;
+    }
+
+    /**
+     * Properties defined here reflect the visible state of the FOP selector view shown in a bottom
+     * sheet.
+     */
+    static class FopSelectorProperties {
+        /** A list containing all the view items. They will be shown in a {@link RecyclerView}. */
+        static final ReadableObjectPropertyKey<ModelList> SCREEN_ITEMS =
+                new ReadableObjectPropertyKey("screen_items");
+
+        /** All the properties of FOP selector screen. */
+        static final PropertyKey[] ALL_KEYS = {SCREEN_ITEMS};
+
+        private FopSelectorProperties() {}
     }
 
     /** Properties for a payment instrument entry in the facilitated payments bottom sheet. */

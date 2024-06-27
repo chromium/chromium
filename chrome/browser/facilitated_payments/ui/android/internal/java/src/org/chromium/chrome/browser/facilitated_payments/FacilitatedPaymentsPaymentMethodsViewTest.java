@@ -8,9 +8,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.is;
 
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FopSelectorProperties.SCREEN_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SHEET_ITEMS;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
@@ -39,7 +40,6 @@ import org.chromium.components.autofill.payments.PaymentRail;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -96,10 +96,10 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         mMediator = new FacilitatedPaymentsPaymentMethodsMediator();
         runOnUiThreadBlocking(
                 () -> {
-                    mModel = createFacilitatedPaymentsPaymentMethodsModel();
                     mView =
                             new FacilitatedPaymentsPaymentMethodsView(
                                     mActivityTestRule.getActivity(), mBottomSheetController);
+                    mModel = createFacilitatedPaymentsPaymentMethodsModel(mView);
                     PropertyModelChangeProcessor.create(
                             mModel,
                             mView,
@@ -113,7 +113,8 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
     public void testVisibilityChangedByModel() {
         runOnUiThreadBlocking(
                 () -> {
-                    mModel.get(SHEET_ITEMS)
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
                             .add(
                                     new ListItem(
                                             BANK_ACCOUNT, createBankAccountModel(BANK_ACCOUNT_1)));
@@ -128,12 +129,14 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
     public void testBankAccountShown() {
         runOnUiThreadBlocking(
                 () -> {
-                    mModel.get(SHEET_ITEMS)
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
                             .add(
                                     new ListItem(
                                             BANK_ACCOUNT, createBankAccountModel(BANK_ACCOUNT_1)));
                     mModel.set(VISIBLE, true);
-                    mModel.get(SHEET_ITEMS)
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
                             .add(
                                     new ListItem(
                                             BANK_ACCOUNT, createBankAccountModel(BANK_ACCOUNT_2)));
@@ -157,7 +160,8 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
     public void testDescriptionLine1() {
         runOnUiThreadBlocking(
                 () -> {
-                    mModel.get(SHEET_ITEMS)
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
                             .add(FacilitatedPaymentsPaymentMethodsMediator.buildAdditionalInfo());
                     mModel.set(VISIBLE, true);
                 });
@@ -175,8 +179,12 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         runOnUiThreadBlocking(
                 () -> {
                     PropertyModel bankAccountModel = createBankAccountModel(BANK_ACCOUNT_1);
-                    mModel.get(SHEET_ITEMS).add(new ListItem(BANK_ACCOUNT, bankAccountModel));
-                    mModel.get(SHEET_ITEMS).add(new ListItem(CONTINUE_BUTTON, bankAccountModel));
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(new ListItem(BANK_ACCOUNT, bankAccountModel));
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(new ListItem(CONTINUE_BUTTON, bankAccountModel));
                     mModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -185,10 +193,11 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         assertThat(buttonText.getText(), is("Continue"));
     }
 
-    private PropertyModel createFacilitatedPaymentsPaymentMethodsModel() {
+    private PropertyModel createFacilitatedPaymentsPaymentMethodsModel(
+            FacilitatedPaymentsPaymentMethodsView view) {
         return new PropertyModel.Builder(FacilitatedPaymentsPaymentMethodsProperties.ALL_KEYS)
                 .with(VISIBLE, false)
-                .with(SHEET_ITEMS, new ModelList())
+                .with(SCREEN_VIEW_MODEL, view.getCurrentScreen().getModel())
                 .build();
     }
 

@@ -28,7 +28,8 @@ interface FacilitatedPaymentsSequenceView {
     View getView();
 
     /**
-     * @return The {@link PropertyModel} that can be used to manipulate {@link View} contents.
+     * @return The {@link PropertyModel} that can be used to manipulate the view returned by {@link
+     *     #getView()}.
      */
     PropertyModel getModel();
 

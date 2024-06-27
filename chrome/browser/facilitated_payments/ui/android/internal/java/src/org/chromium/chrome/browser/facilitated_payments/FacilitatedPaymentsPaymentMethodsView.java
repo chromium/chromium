@@ -11,7 +11,6 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -74,15 +73,6 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
     }
 
     /**
-     * Sets the {@link RecyclerView.Adapter} for the {@link RecyclerView}.
-     *
-     * @param adapter The {@link RecyclerView.Adapter} to add items to the view.
-     */
-    public void setSheetItemListAdapter(RecyclerView.Adapter adapter) {
-        ((RecyclerView) mCurrentScreen.getView()).setAdapter(adapter);
-    }
-
-    /**
      * If set to true, requests to show the bottom sheet. Otherwise, requests to hide the sheet.
      *
      * @param isVisible A boolean describing whether to show or hide the sheet.
@@ -108,6 +98,15 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
      */
     public void setDismissHandler(Callback<Integer> dismissHandler) {
         mDismissHandler = dismissHandler;
+    }
+
+    // TODO(b/348142774): Undo temporary change when FacilitatedPaymentsPaymentMethodsViewBinder is
+    // able to get the model from the screen to be shown.
+    /**
+     * @return The screen currently being shown in the bottom sheet.
+     */
+    public FacilitatedPaymentsSequenceView getCurrentScreen() {
+        return mCurrentScreen;
     }
 
     @Override

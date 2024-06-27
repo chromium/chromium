@@ -14,7 +14,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.DESCRIPTION_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.TITLE_ID;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SHEET_ITEMS;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
 
 import android.view.LayoutInflater;
@@ -48,8 +48,9 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
             view.setDismissHandler(model.get(DISMISS_HANDLER));
         } else if (propertyKey == VISIBLE) {
             view.setVisible(model.get(VISIBLE));
-        } else if (propertyKey == SHEET_ITEMS) {
-            FacilitatedPaymentsPaymentMethodsCoordinator.setUpPaymentMethodsItems(model, view);
+        } else if (propertyKey == SCREEN_VIEW_MODEL) {
+            // When a new screen is to be shown, its model is saved in this property. There's no
+            // need to update the bottom sheet for this property. Intentional fall-through.
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

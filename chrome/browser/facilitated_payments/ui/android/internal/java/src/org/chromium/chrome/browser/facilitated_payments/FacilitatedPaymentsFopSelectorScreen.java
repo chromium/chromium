@@ -4,6 +4,12 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FopSelectorProperties.SCREEN_ITEMS;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.ADDITIONAL_INFO;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -12,15 +18,17 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FopSelectorProperties;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /**
- * This class is responsible for showing a user's Facilitated Payments instruments in a bottom
- * sheet.
+ * This class can be used to show a list of items in a bottom sheet, for e.g. a user's payment
+ * instruments.
  */
 public class FacilitatedPaymentsFopSelectorScreen implements FacilitatedPaymentsSequenceView {
     private RecyclerView mView;
-    private PropertyModel mModel;
 
     @Override
     public void setupView(FrameLayout viewContainer) {
@@ -44,9 +52,6 @@ public class FacilitatedPaymentsFopSelectorScreen implements FacilitatedPayments
                             RecyclerView.State state,
                             AccessibilityNodeInfoCompat info) {}
                 });
-
-        // TODO(crbug.com/348195145): Create the FOP selector model, and bind it to the view.
-        mModel = new PropertyModel();
     }
 
     @Override
@@ -54,9 +59,37 @@ public class FacilitatedPaymentsFopSelectorScreen implements FacilitatedPayments
         return mView;
     }
 
+    /**
+     * The {@link PropertyModel} for the FOP selector has a single property:
+     *
+     * <p>SCREEN_ITEMS: A {@Llink ModelList} to which items of different view types can be added to
+     * show them in a list. To show a new view type, register it with the adapter.
+     */
     @Override
     public PropertyModel getModel() {
-        return mModel;
+        ModelList viewData = new ModelList();
+        SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(viewData);
+        // TODO: b/348595414 - Create a new view binder class.
+        adapter.registerType(
+                HEADER,
+                FacilitatedPaymentsPaymentMethodsViewBinder::createHeaderItemView,
+                FacilitatedPaymentsPaymentMethodsViewBinder::bindHeaderView);
+        adapter.registerType(
+                BANK_ACCOUNT,
+                BankAccountViewBinder::createBankAccountItemView,
+                BankAccountViewBinder::bindBankAccountItemView);
+        adapter.registerType(
+                ADDITIONAL_INFO,
+                FacilitatedPaymentsPaymentMethodsViewBinder::createAdditionalInfoView,
+                FacilitatedPaymentsPaymentMethodsViewBinder::bindAdditionalInfoView);
+        adapter.registerType(
+                CONTINUE_BUTTON,
+                FacilitatedPaymentsPaymentMethodsViewBinder::createContinueButtonView,
+                FacilitatedPaymentsPaymentMethodsViewBinder::bindContinueButtonView);
+        mView.setAdapter(adapter);
+        return new PropertyModel.Builder(FopSelectorProperties.ALL_KEYS)
+                .with(SCREEN_ITEMS, viewData)
+                .build();
     }
 
     @Override
