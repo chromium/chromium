@@ -780,7 +780,7 @@ void HTMLFormElement::CollectListedElements(
       }
     }
   }
-  for (HTMLElement& element : Traversal<HTMLElement>::StartsAfter(root)) {
+  for (HTMLElement& element : Traversal<HTMLElement>::DescendantsOf(root)) {
     if (ListedElement* listed_element = ListedElement::From(element)) {
       // There are two scenarios:
       // - If `kAutofillIncludeFormElementsInShadowDom` is disabled, then we
@@ -866,7 +866,7 @@ void HTMLFormElement::CollectImageElements(
     HeapVector<Member<HTMLImageElement>>& elements) {
   elements.clear();
   for (HTMLImageElement& image :
-       Traversal<HTMLImageElement>::StartsAfter(root)) {
+       Traversal<HTMLImageElement>::DescendantsOf(root)) {
     if (image.formOwner() == this)
       elements.push_back(&image);
   }

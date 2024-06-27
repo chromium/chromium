@@ -294,6 +294,33 @@ TEST_F(HTMLFormElementTest, ListedElementsAfterIncludeShadowTrees) {
   EXPECT_THAT(form1->ListedElements(), ElementsAre(GetListedElement("input1")));
 }
 
+// Regression test for crbug.com/349121116: If there are no "form" attributes,
+// the traversal in CollectListedElements() must only collect descendants of the
+// form element.
+TEST_F(HTMLFormElementTest, ListedElementsIncludesOnlyDescendants) {
+  HTMLBodyElement* body = GetDocument().FirstBodyElement();
+  body->setHTMLUnsafe(R"HTML(
+    <form id=form1>
+      <div id=div1>
+        <template shadowrootmode=open>
+          <input id=input1>
+        </template>
+      </div>
+    </form>
+    <div id=div2>
+      <template shadowrootmode=open>
+        <input id=input2>
+      </template>
+    </div>
+  )HTML");
+
+  HTMLFormElement* form1 = GetFormElement("form1");
+  ASSERT_NE(form1, nullptr);
+  EXPECT_THAT(form1->ListedElements(/*include_shadow_trees=*/true),
+              ElementsAre(GetListedElement(
+                  "input1", GetElementById("div1")->GetShadowRoot())));
+}
+
 // Tests that form control elements inside nested forms are extracted if
 // `kAutofillIncludeFormElementsInShadowDom` is enabled.
 TEST_F(HTMLFormElementTest, ListedElementsInNestedForms) {

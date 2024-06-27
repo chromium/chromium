@@ -2203,8 +2203,7 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormInShadowDomWithoutFormInShadowDom) {
   EXPECT_EQ(GetOwningForm(t1), f1);
   EXPECT_EQ(GetOwningForm(t2), f1);
   EXPECT_EQ(GetOwningForm(t3), f_unowned);
-  // TODO: crbug.com/349121116 - `t3` should not be owned by `f1`.
-  EXPECT_THAT(GetFormControlElements(doc, f1), ElementsAre(t1, t2, t3));
+  EXPECT_THAT(GetFormControlElements(doc, f1), ElementsAre(t1, t2));
   EXPECT_THAT(GetFormControlElements(doc, f_unowned), ElementsAre(t3));
 }
 
@@ -2253,8 +2252,7 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormInShadowDomWithFormInShadowDom) {
   EXPECT_EQ(GetOwningForm(t1), f1);
   EXPECT_EQ(GetOwningForm(t2), f1);
   EXPECT_EQ(GetOwningForm(t3), f3);
-  // TODO: crbug.com/349121116 - `t3` should not be owned by `f1`.
-  EXPECT_THAT(GetFormControlElements(doc, f1), ElementsAre(t1, t2, t3));
+  EXPECT_THAT(GetFormControlElements(doc, f1), ElementsAre(t1, t2));
   EXPECT_THAT(GetFormControlElements(doc, f3), ElementsAre(t3));
   EXPECT_THAT(GetFormControlElements(doc, f_unowned), IsEmpty());
 }
@@ -2370,9 +2368,8 @@ TEST_F(FormAutofillUtilsTest,
   EXPECT_EQ(GetOwningForm(t5), f1);
   EXPECT_EQ(GetOwningForm(t6), f1);
   EXPECT_EQ(GetOwningForm(t7), f4);
-  // TODO: crbug.com/349121116 - `t7` should not be owned by `f1`.
   EXPECT_THAT(GetFormControlElements(doc, f1),
-              ElementsAre(t1, t2, t3, t4, t5, t6, t7));
+              ElementsAre(t1, t2, t3, t4, t5, t6));
   EXPECT_THAT(GetFormControlElements(doc, f4), ElementsAre(t7));
   EXPECT_THAT(GetFormControlElements(doc, f_unowned), IsEmpty());
 }
