@@ -251,6 +251,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kNewTabPageAndroidTriggerForPrerender2,
     &kNotificationPermissionVariant,
     &kNotificationPermissionBottomSheet,
+    &kTinkerTankBottomSheet,
     &kPageAnnotationsService,
     &kPreconnectOnTabCreation,
     &kPriceChangeModule,
@@ -495,6 +496,10 @@ BASE_FEATURE(kAsyncNotificationManager,
 
 BASE_FEATURE(kAuxiliarySearchDonation,
              "AuxiliarySearchDonation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTinkerTankBottomSheet,
+             "TinkerTankBottomSheet",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBackgroundThreadPool,
