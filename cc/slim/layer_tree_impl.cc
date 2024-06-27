@@ -620,9 +620,15 @@ void LayerTreeImpl::Draw(Layer& layer,
 
   // Compute new clip in layer space.
   gfx::RectF clip_in_layer;
+  std::optional<base::AutoReset<viz::OffsetTag>> offset_tag_reset;
   if (layer.offset_tag()) {
     // A layer can't have a different offset tag than it's ancestor.
     CHECK(!data.offset_tag);
+    // The OffsetTag must be registered with a SurfaceLayer before tagging
+    // layers.
+    CHECK(registered_offset_tags_.contains(layer.offset_tag()));
+
+    offset_tag_reset.emplace(&data.offset_tag, layer.offset_tag());
 
     // If `layer` has an offset tag then the position `layer` will be drawn at
     // isn't fixed and `transform_to_target` and `transform_to_parent` might be
@@ -878,14 +884,6 @@ void LayerTreeImpl::DrawChildrenAndAppendQuads(
                              layer.gradient_mask());
     info.ApplyTransform(transform_to_target);
     auto_reset_mask_filter_info.emplace(&data.mask_filter_info_in_target, info);
-  }
-
-  std::optional<base::AutoReset<viz::OffsetTag>> offset_tag_reset;
-  if (layer.offset_tag()) {
-    // The OffsetTag must be registered with a SurfaceLayer before tagging
-    // layers.
-    CHECK(registered_offset_tags_.contains(layer.offset_tag()));
-    offset_tag_reset.emplace(&data.offset_tag, layer.offset_tag());
   }
 
   {
