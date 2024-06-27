@@ -143,10 +143,6 @@ class MockSyncService : public SyncService {
               (ModelType type),
               (const override));
   MOCK_METHOD(void,
-              RecordReasonIfWaitingForUpdates,
-              (ModelType, const std::string&),
-              (const override));
-  MOCK_METHOD(void,
               GetTypesWithUnsyncedData,
               (ModelTypeSet, base::OnceCallback<void(ModelTypeSet)>),
               (const override));

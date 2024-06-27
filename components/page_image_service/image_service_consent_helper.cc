@@ -133,14 +133,6 @@ void ImageServiceConsentHelper::OnTimeoutExpired() {
         ConsentStatusToUmaStatus(GetConsentStatus());
     base::UmaHistogramEnumeration("PageImageService.ConsentStatusOnTimeout",
                                   consent_status);
-    if (sync_service_) {
-      sync_service_->RecordReasonIfWaitingForUpdates(
-          model_type_, kConsentTimeoutReasonHistogramName);
-      sync_service_->RecordReasonIfWaitingForUpdates(
-          model_type_,
-          std::string(kConsentTimeoutReasonHistogramName) + "." +
-              ClientIdToString(request_callback_with_client_id.second));
-    }
     std::move(request_callback_with_client_id.first).Run(consent_status);
   }
 }

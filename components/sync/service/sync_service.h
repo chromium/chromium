@@ -565,12 +565,6 @@ class SyncService : public KeyedService {
   // called for real data types only.
   virtual ModelTypeDownloadStatus GetDownloadStatusFor(
       ModelType type) const = 0;
-
-  // TODO(crbug.com/40260698): remove once investigation of timeouts complete.
-  // Records the reason if the `type` is waiting for updates to be downloaded.
-  virtual void RecordReasonIfWaitingForUpdates(
-      ModelType type,
-      const std::string& histogram_name) const = 0;
 };
 
 }  // namespace syncer

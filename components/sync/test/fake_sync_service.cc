@@ -164,10 +164,6 @@ SyncService::ModelTypeDownloadStatus FakeSyncService::GetDownloadStatusFor(
   return ModelTypeDownloadStatus::kUpToDate;
 }
 
-void FakeSyncService::RecordReasonIfWaitingForUpdates(
-    ModelType type,
-    const std::string& histogram_name) const {}
-
 void FakeSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {}
 
 bool FakeSyncService::SupportsExplicitPassphrasePlatformClient() {

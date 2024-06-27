@@ -6891,18 +6891,6 @@ chromium-metrics-reviews@google.com.
   <token key="ClientId" variants="PageImageServiceClientId"/>
 </histogram>
 
-<histogram name="PageImageService.ConsentTimeoutReason{ClientId}"
-    enum="SyncDownloadStatusWaitingForUpdatesReason" expires_after="2024-11-03">
-  <owner>wylieb@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>1457319</component>
-  <summary>
-    Records the reason of the URL consent check timeout ({ClientId}). Recorded
-    for each request which was enqueued by the time when timeout happened.
-  </summary>
-  <token key="ClientId" variants="PageImageServiceClientId"/>
-</histogram>
-
 <histogram name="PaintHolding.CommitTrigger2" enum="PaintHoldingCommitTrigger2"
     expires_after="2023-08-08">
   <owner>pdr@chromium.org</owner>

@@ -204,15 +204,6 @@ base::TimeDelta GetDeferredInitDelay() {
   return base::Seconds(10);
 }
 
-void LogWaitingForUpdatesReasonIfNeeded(
-    DownloadStatusWaitingForUpdatesReason reason,
-    ModelType type,
-    const std::string& waiting_for_updates_histogram_name) {
-  if (!waiting_for_updates_histogram_name.empty()) {
-    base::UmaHistogramEnumeration(waiting_for_updates_histogram_name, reason);
-  }
-}
-
 }  // namespace
 
 SyncServiceImpl::InitParams::InitParams() = default;
@@ -724,14 +715,6 @@ void SyncServiceImpl::Shutdown() {
   observers_.reset();
 
   auth_manager_.reset();
-}
-
-void SyncServiceImpl::RecordReasonIfWaitingForUpdates(
-    ModelType type,
-    const std::string& histogram_name) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Ignore the actual returned status.
-  GetDownloadStatusForImpl(type, histogram_name);
 }
 
 std::unique_ptr<SyncEngine> SyncServiceImpl::ResetEngine(
@@ -2092,14 +2075,6 @@ void SyncServiceImpl::GetAllNodesForDebugging(
 SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusFor(
     ModelType type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetDownloadStatusForImpl(
-      type,
-      /*waiting_for_updates_histogram_name=*/std::string());
-}
-
-SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusForImpl(
-    ModelType type,
-    const std::string& waiting_for_updates_histogram_name) const {
   // Download status doesn't make sense for non-real data types.
   CHECK(IsRealDataType(type));
 
@@ -2110,9 +2085,6 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusForImpl(
     if (!auth_manager_->IsActiveAccountInfoFullyLoaded()) {
       DVLOG(1) << "Waiting for refresh tokens to be loaded from the disk";
       // GetDisableReasons() won't be empty until then.
-      LogWaitingForUpdatesReasonIfNeeded(
-          DownloadStatusWaitingForUpdatesReason::kRefreshTokensNotLoaded, type,
-          waiting_for_updates_histogram_name);
       return ModelTypeDownloadStatus::kWaitingForUpdates;
     }
 
@@ -2133,9 +2105,6 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusForImpl(
 
   if (!engine_ || !engine_->IsInitialized()) {
     DVLOG(1) << "Waiting for the sync engine to be fully initialized";
-    LogWaitingForUpdatesReasonIfNeeded(
-        DownloadStatusWaitingForUpdatesReason::kSyncEngineNotInitialized, type,
-        waiting_for_updates_histogram_name);
     return ModelTypeDownloadStatus::kWaitingForUpdates;
   }
 
@@ -2146,17 +2115,11 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusForImpl(
 
   if (!GetActiveDataTypes().Has(type)) {
     DVLOG(1) << "Data type is not active yet";
-    LogWaitingForUpdatesReasonIfNeeded(
-        DownloadStatusWaitingForUpdatesReason::kDataTypeNotActive, type,
-        waiting_for_updates_histogram_name);
     return ModelTypeDownloadStatus::kWaitingForUpdates;
   }
 
   if (!engine_->GetDetailedStatus().notifications_enabled) {
     DVLOG(1) << "Waiting for invalidations to be initialized";
-    LogWaitingForUpdatesReasonIfNeeded(
-        DownloadStatusWaitingForUpdatesReason::kInvalidationsNotInitialized,
-        type, waiting_for_updates_histogram_name);
     return ModelTypeDownloadStatus::kWaitingForUpdates;
   }
 
@@ -2165,9 +2128,6 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusForImpl(
   if (engine_->GetDetailedStatus().invalidated_data_types.Has(type)) {
     DVLOG(1) << "There are incoming invalidations for: "
              << ModelTypeToDebugString(type);
-    LogWaitingForUpdatesReasonIfNeeded(
-        DownloadStatusWaitingForUpdatesReason::kIncomingInvalidation, type,
-        waiting_for_updates_histogram_name);
     return ModelTypeDownloadStatus::kWaitingForUpdates;
   }
 
@@ -2179,9 +2139,6 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusForImpl(
   // `kWaitingForUpdates` status.
   if (!HasCompletedSyncCycle() && engine_->IsNextPollTimeInThePast()) {
     DVLOG(1) << "Waiting for updates due an upcoming poll request";
-    LogWaitingForUpdatesReasonIfNeeded(
-        DownloadStatusWaitingForUpdatesReason::kPollRequestScheduled, type,
-        waiting_for_updates_histogram_name);
     return ModelTypeDownloadStatus::kWaitingForUpdates;
   }
 

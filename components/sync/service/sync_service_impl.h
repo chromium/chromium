@@ -156,9 +156,6 @@ class SyncServiceImpl : public SyncService,
   void GetAllNodesForDebugging(
       base::OnceCallback<void(base::Value::List)> callback) override;
   ModelTypeDownloadStatus GetDownloadStatusFor(ModelType type) const override;
-  void RecordReasonIfWaitingForUpdates(
-      ModelType type,
-      const std::string& histogram_name) const override;
   void GetTypesWithUnsyncedData(
       ModelTypeSet requested_types,
       base::OnceCallback<void(ModelTypeSet)> callback) const override;
@@ -373,13 +370,6 @@ class SyncServiceImpl : public SyncService,
   // Records (or may record) histograms related to trusted vault passphrase
   // type.
   void MaybeRecordTrustedVaultHistograms();
-
-  // Returns current download status for `type`. Records a histogram if the data
-  // type is waiting for updates and `waiting_for_updates_histogram_name` is not
-  // empty.
-  ModelTypeDownloadStatus GetDownloadStatusForImpl(
-      ModelType type,
-      const std::string& waiting_for_updates_histogram_name) const;
 
   void OnPasswordSyncAllowedChanged();
 
