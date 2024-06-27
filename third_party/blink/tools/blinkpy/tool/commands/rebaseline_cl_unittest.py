@@ -852,6 +852,40 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 self._expand('platform/test-mac-mac10.11/'
                              'one/flaky-fail-expected.wav')))
 
+    def test_detect_flaky_status(self):
+        result = WebTestResult('one/flaky-fail.html', {
+            'actual': 'FAIL TIMEOUT',
+            'is_unexpected': True,
+        }, {
+            'actual_audio': [
+                Artifact('https://results.usercontent.cr.dev/1/actual_audio'),
+            ],
+        })
+        self.tool.results_fetcher.set_results(
+            Build('MOCK Try Mac', 4000, 'Build-2'),
+            WebTestResults([result], step_name='blink_web_tests'))
+        exit_code = self.command.execute(self.command_options(),
+                                         ['one/flaky-fail.html'], self.tool)
+        self.assertEqual(exit_code, 0)
+        self.assertLog([
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: All builds finished.\n',
+            'INFO: Fetching test results for 4 suites.\n',
+            'INFO: Rebaselining 1 test.\n',
+            "INFO: Copied baselines for 'one/flaky-fail.html' (wav) (1/1)\n",
+            "INFO: Downloaded baselines for 'one/flaky-fail.html' (1/1)\n",
+            'WARNING: Some test failures should be suppressed in '
+            'TestExpectations instead of being rebaselined.\n',
+            'WARNING: Consider adding the following lines to '
+            '/mock-checkout/third_party/blink/web_tests/TestExpectations:\n'
+            '[ Mac10.11 ] one/flaky-fail.html [ Pass Timeout ]\n',
+            'INFO: Staging 0 baselines with git.\n',
+        ])
+        self.assertTrue(
+            self.tool.filesystem.exists(
+                self._expand('platform/test-mac-mac10.11/'
+                             'one/flaky-fail-expected.wav')))
+
     def test_detect_flaky_but_within_existing_fuzzy_params(self):
         self._write('two/image-fail.html',
                     '<meta name="fuzzy" content="0-5;0-100">')

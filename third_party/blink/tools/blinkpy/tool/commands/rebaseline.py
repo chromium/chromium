@@ -37,6 +37,7 @@ from typing import (
     ClassVar,
     Collection,
     Dict,
+    Iterator,
     List,
     NamedTuple,
     Optional,
@@ -320,15 +321,31 @@ class TestBaselineSet(collections.abc.Set):
         return self._build_steps
 
 
-class RebaselineFailureReason(enum.Enum):
-    TIMEOUT_OR_CRASH = 'May not run to completion'
-    REFTEST_IMAGE_FAILURE = 'Reftest image failure'
-    FLAKY_OUTPUT = 'Flaky output'
-    LOCAL_BASELINE_NOT_FOUND = 'Missing from local results directory'
+class RebaselineFailureReason(enum.Flag):
+    TIMEOUT_OR_CRASH = enum.auto()
+    REFTEST_IMAGE_FAILURE = enum.auto()
+    FLAKY_OUTPUT = enum.auto()
+    LOCAL_BASELINE_NOT_FOUND = enum.auto()
+
+    def __iter__(self) -> Iterator['RebaselineFailureReason']:
+        # TODO(crbug.com/40209595): Remove this handcrafted `__iter__` after
+        # python3.11+ when `enum.Flag` instances become iterable over their
+        # members.
+        for reason in self.__class__:
+            if reason in self:
+                yield reason
 
 
 RebaselineGroup = Dict[RebaselineTask, WebTestResult]
 RebaselineFailures = Dict[RebaselineTask, RebaselineFailureReason]
+RebaselineFailureReason.DESCRIPTIONS = {
+    RebaselineFailureReason.REFTEST_IMAGE_FAILURE:
+    'reftest image failure',
+    RebaselineFailureReason.FLAKY_OUTPUT:
+    'flaky output',
+    RebaselineFailureReason.LOCAL_BASELINE_NOT_FOUND:
+    'missing from local results directory',
+}
 
 
 class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
@@ -368,9 +385,12 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             if (build.builder_name,
                     step_name) not in build_steps_to_fetch_from:
                 continue
-            suffixes = self._suffixes_for_actual_failures(
-                test, build, step_name)
-            if suffixes:
+            result = self._result_for_test(test, build, step_name)
+            if result and set(result.actual_results()) & {
+                    ResultType.Failure,
+                    ResultType.Crash,
+                    ResultType.Timeout,
+            }:
                 rebaselinable_set.add(test, build, step_name, port_name)
         return rebaselinable_set
 
@@ -654,17 +674,31 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         return tasks_by_exp_file
 
     def _format_line(self, task: RebaselineTask) -> str:
-        result = self._result_for_test(task.test, task.build, task.step_name)
+        results = set(
+            self._result_for_test(task.test, task.build,
+                                  task.step_name).actual_results())
         # This assertion holds because we only request unexpected non-PASS
         # results from ResultDB. This precondition ensures `result_tags` is not
         # `[ Pass ]` or empty.
-        assert set(result.actual_results()) - {ResultType.Pass}
+        assert results - {ResultType.Pass}
         specifier = self._tool.builders.version_specifier_for_port_name(
             task.port_name)
-        results = sorted(set(result.actual_results()))
-        result_tags = ' '.join(RESULT_TAGS[result] for result in results)
-        reason = self._rebaseline_failures[task].value
-        line = f'{task.test} [ {result_tags} ]  # {reason}'
+        reasons = self._rebaseline_failures[task]
+        if (reasons == RebaselineFailureReason.TIMEOUT_OR_CRASH
+                and ResultType.Failure in results):
+            # If no other rebaseline failure reason is present, the test failure
+            # was successfully rebaselined and will pass going forward.
+            results.remove(ResultType.Failure)
+            results.add(ResultType.Pass)
+        result_tags = ' '.join(RESULT_TAGS[result]
+                               for result in sorted(results))
+        line = f'{task.test} [ {result_tags} ]'
+        descriptions = list(
+            filter(None, map(RebaselineFailureReason.DESCRIPTIONS.get,
+                             reasons)))
+        if descriptions:
+            comment = ', '.join(descriptions).capitalize()
+            line += f'  # {comment}'
         return f'[ {specifier} ] {line}' if specifier else line
 
     def unstaged_baselines(self):
@@ -1026,6 +1060,12 @@ class Worker:
         self._baseline_loader.clear()
         rebaseline_failures = {}
         for task, result in group.items():
+            failure_reason = RebaselineFailureReason(0)
+            if set(result.actual_results()) & {
+                    ResultType.Crash,
+                    ResultType.Timeout,
+            }:
+                failure_reason |= RebaselineFailureReason.TIMEOUT_OR_CRASH
             for suffix, artifacts in result.baselines_by_suffix().items():
                 try:
                     contents = self._baseline_loader.choose_valid_baseline(
@@ -1033,7 +1073,9 @@ class Worker:
                     self._write_baseline(task, suffix, artifacts[0].url,
                                          contents)
                 except RebaselineFailure as error:
-                    rebaseline_failures[task] = error.reason
+                    failure_reason |= error.reason
+            if failure_reason:
+                rebaseline_failures[task] = failure_reason
         return base_test, rebaseline_failures
 
     def _write_baseline(self, task: RebaselineTask, suffix: BaselineSuffix,
