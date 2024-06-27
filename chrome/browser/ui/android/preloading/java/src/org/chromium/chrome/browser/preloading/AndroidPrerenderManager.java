@@ -32,7 +32,8 @@ public class AndroidPrerenderManager {
                 public void onContentChanged(Tab tab) {
                     // Opening or navigating back to a new tab page will trigger onContentChanged as
                     // well, resetting variables in this scenario should be avoided.
-                    if (tab.getUrl().getSpec().equals(UrlConstants.NTP_URL)) {
+                    if (tab.getUrl().getSpec().equals(UrlConstants.NTP_URL)
+                            || tab.getUrl().getSpec().equals("")) {
                         return;
                     }
                     sAndroidPrerenderManager = null;
