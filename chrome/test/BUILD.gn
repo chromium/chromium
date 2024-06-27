@@ -4801,7 +4801,6 @@ if (!is_android) {
         "../browser/ash/login/wizard_controller_browsertest.cc",
         "../browser/ash/network_change_manager_client_browsertest.cc",
         "../browser/ash/note_taking_helper_browsertest.cc",
-        "../browser/ash/os_feedback/chrome_os_feedback_delegate_browsertest.cc",
         "../browser/ash/os_url_handler_browsertest.cc",
         "../browser/ash/platform_keys/key_permissions/key_permissions_manager_browsertest.cc",
         "../browser/ash/platform_keys/platform_keys_service_browsertest.cc",

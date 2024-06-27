@@ -57,3 +57,34 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "chrome_os_feedback_delegate_browsertest.cc" ]
+
+  deps = [
+    ":os_feedback",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/test:test_support",
+    "//components/feedback",
+    "//components/feedback/content",
+    "//components/feedback/content:factory",
+    "//components/prefs",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/aura",
+    "//ui/views",
+    "//url",
+  ]
+}
