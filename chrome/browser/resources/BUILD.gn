@@ -98,7 +98,10 @@ group("resources") {
   }
 
   if (is_mac) {
-    public_deps += [ "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component" ]
+    public_deps += [
+      "//chrome/browser/resources/media/mei_preload:component",
+      "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component",
+    ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos_ash) {

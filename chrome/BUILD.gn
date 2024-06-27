@@ -1208,7 +1208,6 @@ if (is_win) {
       ":optimization_guide_library",
       ":swiftshader_binaries",
       ":widevine_cdm_library",
-      "//chrome/browser/resources/media/mei_preload:component_bundle",
     ]
 
     if (is_chrome_branded) {
