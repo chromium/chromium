@@ -13,8 +13,6 @@
 #include <string_view>
 
 #include "base/check_op.h"
-#include "base/feature_list.h"
-#include "base/features.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -540,21 +538,9 @@ std::string UnescapeBinaryURLComponent(std::string_view escaped_text,
   DCHECK(!(rules &
            ~(UnescapeRule::NORMAL | UnescapeRule::REPLACE_PLUS_WITH_SPACE)));
 
-  // It is not possible to read the feature state when this function is invoked
-  // before FeatureList initialization. In that case, fallback to the feature's
-  // default state.
-  //
-  // TODO(crbug.com/40224104): Cleanup this feature.
-  const bool optimize_data_urls_feature_is_enabled =
-      base::FeatureList::GetInstance()
-          ? base::FeatureList::IsEnabled(features::kOptimizeDataUrls)
-          : features::kOptimizeDataUrls.default_state ==
-                base::FEATURE_ENABLED_BY_DEFAULT;
-
   // If there are no '%' characters in the string, there will be nothing to
   // unescape, so we can take the fast path.
-  if (optimize_data_urls_feature_is_enabled &&
-      escaped_text.find('%') == StringPiece::npos) {
+  if (escaped_text.find('%') == StringPiece::npos) {
     std::string unescaped_text(escaped_text);
     if (rules & UnescapeRule::REPLACE_PLUS_WITH_SPACE)
       std::replace(unescaped_text.begin(), unescaped_text.end(), '+', ' ');

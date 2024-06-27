@@ -10,8 +10,6 @@
 #include <string_view>
 
 #include "base/base64.h"
-#include "base/feature_list.h"
-#include "base/features.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
@@ -54,15 +52,8 @@ bool DataURL::Parse(const GURL& url,
   DCHECK(charset->empty());
   DCHECK(!data || data->empty());
 
-  std::string_view content;
-  std::string content_string;
-  if (base::FeatureList::IsEnabled(base::features::kOptimizeDataUrls)) {
-    // Avoid copying the URL content which can be expensive for large URLs.
-    content = url.GetContentPiece();
-  } else {
-    content_string = url.GetContent();
-    content = content_string;
-  }
+  // Avoid copying the URL content which can be expensive for large URLs.
+  std::string_view content = url.GetContentPiece();
 
   std::string_view::const_iterator comma = base::ranges::find(content, ',');
   if (comma == content.end())
@@ -137,8 +128,7 @@ bool DataURL::Parse(const GURL& url,
     // could be part of the payload, so don't strip it.
     if (base64_encoded) {
       // If the data URL is well formed, we can decode it immediately.
-      if (base::FeatureList::IsEnabled(base::features::kOptimizeDataUrls) &&
-          IsDataURLReadyForDecode(raw_body)) {
+      if (IsDataURLReadyForDecode(raw_body)) {
         if (!base::Base64Decode(raw_body, data))
           return false;
       } else {

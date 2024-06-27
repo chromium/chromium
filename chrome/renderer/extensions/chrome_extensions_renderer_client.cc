@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_functions.h"
@@ -238,8 +237,7 @@ void ChromeExtensionsRendererClient::WillSendRequest(
   }
 
   // The rest of this method is only concerned with extensions URLs.
-  if (base::FeatureList::IsEnabled(base::features::kOptimizeDataUrls) &&
-      !url.ProtocolIs(extensions::kExtensionScheme)) {
+  if (!url.ProtocolIs(extensions::kExtensionScheme)) {
     return;
   }
 

@@ -50,9 +50,6 @@ BASE_FEATURE(kNotReachedIsFatal,
              "NotReachedIsFatal",
              FEATURE_ENABLED_BY_DEFAULT);
 
-// Optimizes parsing and loading of data: URLs.
-BASE_FEATURE(kOptimizeDataUrls, "OptimizeDataUrls", FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUseRustJsonParser,
              "UseRustJsonParser",
              FEATURE_DISABLED_BY_DEFAULT);

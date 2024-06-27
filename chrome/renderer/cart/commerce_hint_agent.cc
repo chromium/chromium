@@ -6,7 +6,6 @@
 
 #include <string_view>
 
-#include "base/features.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/field_trial_params.h"
@@ -996,10 +995,8 @@ void CommerceHintAgent::WillSendRequest(const blink::WebURLRequest& request) {
 
   // The rest of this method is not concerned with data URLs but makes a copy of
   // the URL which can be expensive for large data URLs.
-  // TODO(crbug.com/40224104): Clean up this method to avoid copies once this
-  // optimization has been measured in the field and launches.
-  if (base::FeatureList::IsEnabled(base::features::kOptimizeDataUrls) &&
-      request.Url().ProtocolIs(url::kDataScheme)) {
+  // TODO(crbug.com/40224104): Clean up this method to avoid copies.
+  if (request.Url().ProtocolIs(url::kDataScheme)) {
     return;
   }
 

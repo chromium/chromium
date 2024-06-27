@@ -32,7 +32,6 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/features.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -229,8 +228,7 @@ bool IsUrlPotentiallyTrustworthy(const KURL& url) {
   // This saves a copy of the url, which can be expensive for large data URLs.
   // TODO(crbug.com/1322100): Remove this logic once
   // network::IsUrlPotentiallyTrustworthy() doesn't copy the URL.
-  if (base::FeatureList::IsEnabled(base::features::kOptimizeDataUrls) &&
-      url.ProtocolIsData()) {
+  if (url.ProtocolIsData()) {
     DCHECK(network::IsUrlPotentiallyTrustworthy(GURL(url)));
     return true;
   }
