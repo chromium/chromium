@@ -19,7 +19,7 @@ class ChromeSyncablePrefsDatabase
   // Returns the metadata associated to the pref or null if `pref_name` is not
   // syncable.
   std::optional<sync_preferences::SyncablePrefMetadata> GetSyncablePrefMetadata(
-      const std::string& pref_name) const override;
+      std::string_view pref_name) const override;
 
   std::map<std::string_view, sync_preferences::SyncablePrefMetadata>
   GetAllSyncablePrefsForTest() const;

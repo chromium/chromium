@@ -50,30 +50,26 @@ const char kStringOsPriorityPrefName[] = "os.priority.pref.string";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Assigning an id of 0 to all the test prefs.
-const std::unordered_map<std::string, SyncablePrefMetadata>
-    kSyncablePrefsDatabase = {
-        {kStringPrefName,
-         {0, syncer::PREFERENCES, PrefSensitivity::kNone,
-          MergeBehavior::kNone}},
-        {kListPrefName,
-         {0, syncer::PREFERENCES, PrefSensitivity::kNone,
-          MergeBehavior::kMergeableListWithRewriteOnUpdate}},
-        {kDictionaryPrefName,
-         {0, syncer::PREFERENCES, PrefSensitivity::kNone,
-          MergeBehavior::kMergeableDict}},
-        {kCustomMergePrefName,
-         {0, syncer::PREFERENCES, PrefSensitivity::kNone,
-          MergeBehavior::kCustom}},
-        {kStringPriorityPrefName,
-         {0, syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
-          MergeBehavior::kNone}},
+const TestSyncablePrefsDatabase::PrefsMap kSyncablePrefsDatabase = {
+    {kStringPrefName,
+     {0, syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+    {kListPrefName,
+     {0, syncer::PREFERENCES, PrefSensitivity::kNone,
+      MergeBehavior::kMergeableListWithRewriteOnUpdate}},
+    {kDictionaryPrefName,
+     {0, syncer::PREFERENCES, PrefSensitivity::kNone,
+      MergeBehavior::kMergeableDict}},
+    {kCustomMergePrefName,
+     {0, syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kCustom}},
+    {kStringPriorityPrefName,
+     {0, syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
+      MergeBehavior::kNone}},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-        {kStringOsPrefName,
-         {0, syncer::OS_PREFERENCES, PrefSensitivity::kNone,
-          MergeBehavior::kNone}},
-        {kStringOsPriorityPrefName,
-         {0, syncer::OS_PRIORITY_PREFERENCES, PrefSensitivity::kNone,
-          MergeBehavior::kNone}},
+    {kStringOsPrefName,
+     {0, syncer::OS_PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+    {kStringOsPriorityPrefName,
+     {0, syncer::OS_PRIORITY_PREFERENCES, PrefSensitivity::kNone,
+      MergeBehavior::kNone}},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 

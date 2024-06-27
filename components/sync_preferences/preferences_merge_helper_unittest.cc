@@ -18,14 +18,13 @@ namespace {
 const char kMergeableDictPref[] = "mergeable.dict.pref";
 const char kMergeableListPref[] = "mergeable.list.pref";
 
-const std::unordered_map<std::string, SyncablePrefMetadata>
-    kSyncablePrefsDatabase = {
-        {kMergeableListPref,
-         {/*syncable_pref_id=*/1, syncer::PREFERENCES, PrefSensitivity::kNone,
-          MergeBehavior::kMergeableListWithRewriteOnUpdate}},
-        {kMergeableDictPref,
-         {/*syncable_pref_id=*/2, syncer::PREFERENCES, PrefSensitivity::kNone,
-          MergeBehavior::kMergeableDict}},
+const TestSyncablePrefsDatabase::PrefsMap kSyncablePrefsDatabase = {
+    {kMergeableListPref,
+     {/*syncable_pref_id=*/1, syncer::PREFERENCES, PrefSensitivity::kNone,
+      MergeBehavior::kMergeableListWithRewriteOnUpdate}},
+    {kMergeableDictPref,
+     {/*syncable_pref_id=*/2, syncer::PREFERENCES, PrefSensitivity::kNone,
+      MergeBehavior::kMergeableDict}},
 };
 
 TEST(PreferencesMergeHelperTest, MergeListValues) {

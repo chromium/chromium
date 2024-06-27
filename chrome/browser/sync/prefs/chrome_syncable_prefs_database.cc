@@ -1538,7 +1538,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
 
 std::optional<sync_preferences::SyncablePrefMetadata>
 ChromeSyncablePrefsDatabase::GetSyncablePrefMetadata(
-    const std::string& pref_name) const {
+    std::string_view pref_name) const {
   const auto it = kChromeSyncablePrefsAllowlist.find(pref_name);
   if (it != kChromeSyncablePrefsAllowlist.end()) {
     DCHECK(!common_syncable_prefs_database_.GetSyncablePrefMetadata(pref_name)

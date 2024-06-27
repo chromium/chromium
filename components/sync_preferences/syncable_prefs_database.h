@@ -7,7 +7,7 @@
 
 #include <optional>
 #include <ostream>
-#include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "build/build_config.h"
@@ -104,15 +104,15 @@ class SyncablePrefsDatabase {
   // Returns the metadata associated to the pref and null if `pref_name` is not
   // syncable.
   virtual std::optional<SyncablePrefMetadata> GetSyncablePrefMetadata(
-      const std::string& pref_name) const = 0;
+      std::string_view pref_name) const = 0;
 
   // Returns true if `pref_name` is part of the allowlist of syncable
   // preferences.
-  bool IsPreferenceSyncable(const std::string& pref_name) const;
+  bool IsPreferenceSyncable(std::string_view pref_name) const;
 
   // Return true if `pref_name` is a mergeable syncable preference.
   // Note: `pref_name` must be syncable.
-  bool IsPreferenceMergeable(const std::string& pref_name) const;
+  bool IsPreferenceMergeable(std::string_view pref_name) const;
 };
 
 }  // namespace sync_preferences

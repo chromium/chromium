@@ -102,7 +102,7 @@ constexpr auto kIOSChromeSyncablePrefsAllowlist =
 
 std::optional<sync_preferences::SyncablePrefMetadata>
 IOSChromeSyncablePrefsDatabase::GetSyncablePrefMetadata(
-    const std::string& pref_name) const {
+    std::string_view pref_name) const {
   const auto it = kIOSChromeSyncablePrefsAllowlist.find(pref_name);
   if (it != kIOSChromeSyncablePrefsAllowlist.end()) {
     DCHECK(!common_syncable_prefs_database_.GetSyncablePrefMetadata(pref_name)
