@@ -1055,7 +1055,9 @@ TEST(StaticAVIFTests, GetAdobeGainmapInfoAndData) {
   EXPECT_TRUE(gainmap_frame);
 }
 
-TEST(StaticAVIFTests, GetIsoGainmapInfoAndData) {
+// TODO(b/338342146): Re-enable this test once libavif and the test images are
+// updated to the ISO specification.
+TEST(StaticAVIFTests, DISABLED_GetIsoGainmapInfoAndData) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kGainmapHdrImages,
