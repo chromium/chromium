@@ -78,16 +78,17 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
         boolean suggestionTextColorReversal = checkColorReversalRequired(answerType);
         AnswerText[] details;
         if (suggestion.getAnswerTemplate() != null) {
+            boolean useLargeDecoration =
+                    OmniboxFeatures.shouldShowRichAnswerCard()
+                            && suggestion.getActions().size() > 0;
             details =
                     RichAnswerText.from(
                             mContext,
                             suggestion.getAnswerTemplate(),
                             answerType,
-                            suggestionTextColorReversal);
+                            suggestionTextColorReversal,
+                            useLargeDecoration);
 
-            boolean useLargeDecoration =
-                    OmniboxFeatures.shouldShowRichAnswerCard()
-                            && suggestion.getActions().size() > 0;
             model.set(BaseSuggestionViewProperties.USE_LARGE_DECORATION, useLargeDecoration);
             if (useLargeDecoration) {
                 model.set(

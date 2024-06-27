@@ -50,6 +50,7 @@ if (is_android) {
       "//base:base_cached_flags_java",
       "//base:base_java",
       "//third_party/jni_zero:jni_zero_java",
+      "//third_party/omnibox_proto:omnibox_proto_java",
     ]
   }
 }

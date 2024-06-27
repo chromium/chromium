@@ -38,6 +38,7 @@ class RichAnswerText implements AnswerText {
     private String mAccessibilityDescription;
     private int mMaxLines = 1;
     @AnswerType private final int mAnswerType;
+    private boolean mUseRichAnswerCard;
 
     @Override
     public SpannableStringBuilder getText() {
@@ -59,7 +60,8 @@ class RichAnswerText implements AnswerText {
             @NonNull Context context,
             @NonNull RichAnswerTemplate richAnswerTemplate,
             @AnswerType int answerType,
-            boolean reverseStockTextColor) {
+            boolean reverseStockTextColor,
+            boolean useRichAnswerCard) {
         RichAnswerText[] result = new RichAnswerText[2];
 
         int maxLines = getMaxLinesForAnswerType(answerType);
@@ -70,14 +72,16 @@ class RichAnswerText implements AnswerText {
                             richAnswerTemplate.getAnswers(0).getHeadline(),
                             answerType,
                             /* isAnswerLine= */ true,
-                            reverseStockTextColor);
+                            reverseStockTextColor,
+                            useRichAnswerCard);
             result[1] =
                     new RichAnswerText(
                             context,
                             richAnswerTemplate.getAnswers(0).getSubhead(),
                             answerType,
                             /* isAnswerLine= */ false,
-                            reverseStockTextColor);
+                            reverseStockTextColor,
+                            useRichAnswerCard);
             result[1].mMaxLines = maxLines;
             return result;
         }
@@ -99,14 +103,16 @@ class RichAnswerText implements AnswerText {
                         firstLine,
                         answerType,
                         /* isAnswerLine= */ true,
-                        reverseStockTextColor);
+                        reverseStockTextColor,
+                        useRichAnswerCard);
         result[1] =
                 new RichAnswerText(
                         context,
                         secondLine,
                         answerType,
                         /* isAnswerLine= */ false,
-                        reverseStockTextColor);
+                        reverseStockTextColor,
+                        useRichAnswerCard);
         result[0].mMaxLines = maxLines;
 
         // Note: Despite Answers in Suggest being presented in reverse order (first answer, then
@@ -123,11 +129,13 @@ class RichAnswerText implements AnswerText {
             FormattedString formattedString,
             int answerType,
             boolean isAnswerLine,
-            boolean reverseStockTextColor) {
+            boolean reverseStockTextColor,
+            boolean useRichAnswerCard) {
         mContext = context;
         mAnswerType = answerType;
         mIsAnswerLine = isAnswerLine;
         mReverseStockTextColor = reverseStockTextColor;
+        mUseRichAnswerCard = useRichAnswerCard;
         mText = processFormattedString(formattedString);
         mAccessibilityDescription = mText.toString();
     }
@@ -174,7 +182,11 @@ class RichAnswerText implements AnswerText {
     private MetricAffectingSpan getAppearanceForText(ColorType colorType) {
         return mIsAnswerLine
                 ? getAppearanceForAnswerText(
-                        mContext, colorType, mAnswerType, mReverseStockTextColor)
+                        mContext,
+                        colorType,
+                        mAnswerType,
+                        mReverseStockTextColor,
+                        mUseRichAnswerCard)
                 : getAppearanceForQueryText();
     }
 
@@ -190,10 +202,11 @@ class RichAnswerText implements AnswerText {
             Context context,
             ColorType colorType,
             @AnswerType int answerType,
-            boolean reverseStockTextColor) {
+            boolean reverseStockTextColor,
+            boolean useRichAnswerCard) {
         @StyleRes
         int largeRes =
-                OmniboxFeatures.shouldShowRichAnswerCard()
+                useRichAnswerCard
                         ? org.chromium.chrome.browser.omnibox.R.style
                                 .TextAppearance_OmniboxAnswerCardPrimaryMedium
                         : org.chromium.chrome.browser.omnibox.R.style
@@ -231,7 +244,7 @@ class RichAnswerText implements AnswerText {
     private MetricAffectingSpan getAppearanceForQueryText() {
         @StyleRes
         int res =
-                OmniboxFeatures.shouldShowRichAnswerCard()
+                mUseRichAnswerCard
                         ? org.chromium.chrome.browser.omnibox.R.style
                                 .TextAppearance_TextLarge_Secondary
                         : org.chromium.chrome.browser.omnibox.R.style

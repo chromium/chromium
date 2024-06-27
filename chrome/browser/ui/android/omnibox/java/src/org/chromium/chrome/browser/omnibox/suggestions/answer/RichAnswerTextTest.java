@@ -28,6 +28,8 @@ import org.chromium.components.omnibox.AnswerType;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
+import org.chromium.components.omnibox.RichAnswerTemplateProto.SuggestionEnhancement;
+import org.chromium.components.omnibox.RichAnswerTemplateProto.SuggestionEnhancements;
 
 /** Tests for {@link RichAnswerText}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -96,7 +98,8 @@ public class RichAnswerTextTest {
                         .build();
 
         int answerType = AnswerType.DICTIONARY;
-        AnswerText[] texts = RichAnswerText.from(mContext, richAnswerTemplate, answerType, false);
+        AnswerText[] texts =
+                RichAnswerText.from(mContext, richAnswerTemplate, answerType, false, false);
         Assert.assertEquals(texts[0].getMaxLines(), 1);
         Assert.assertEquals(texts[1].getMaxLines(), 3);
         Assert.assertEquals(texts[0].getAccessibilityDescription(), "define adroit • /əˈdroit/");
@@ -154,7 +157,8 @@ public class RichAnswerTextTest {
                         .build();
 
         int answerType = AnswerType.FINANCE;
-        AnswerText[] texts = RichAnswerText.from(mContext, richAnswerTemplate, answerType, false);
+        AnswerText[] texts =
+                RichAnswerText.from(mContext, richAnswerTemplate, answerType, false, false);
         // A11y descriptions are reverse of visual ordering.
         Assert.assertEquals(
                 texts[0].getAccessibilityDescription(), "goog stock GOOG(NASDAQ), 3:22 PM EDT");
@@ -199,7 +203,7 @@ public class RichAnswerTextTest {
                                         .setHeadline(headline)
                                         .setSubhead(negativeSubhead))
                         .build();
-        texts = RichAnswerText.from(mContext, negativeRichAnswerTemplate, answerType, false);
+        texts = RichAnswerText.from(mContext, negativeRichAnswerTemplate, answerType, false, false);
         primaryText = texts[0].getText();
 
         Assert.assertEquals(primaryText.toString(), "100.00 -1.00");
@@ -244,7 +248,8 @@ public class RichAnswerTextTest {
                         .build();
 
         int answerType = AnswerType.FINANCE;
-        AnswerText[] texts = RichAnswerText.from(mContext, richAnswerTemplate, answerType, true);
+        AnswerText[] texts =
+                RichAnswerText.from(mContext, richAnswerTemplate, answerType, true, false);
         SpannableStringBuilder primaryText = texts[0].getText();
 
         Assert.assertEquals(primaryText.toString(), "100.00 +1.00");
@@ -276,7 +281,7 @@ public class RichAnswerTextTest {
                                         .setSubhead(negativeSubhead))
                         .build();
 
-        texts = RichAnswerText.from(mContext, negativeRichAnswerTemplate, answerType, true);
+        texts = RichAnswerText.from(mContext, negativeRichAnswerTemplate, answerType, true, false);
         primaryText = texts[0].getText();
 
         Assert.assertEquals(primaryText.toString(), "100.00 -1.00");
@@ -313,7 +318,8 @@ public class RichAnswerTextTest {
                         .build();
 
         int answerType = AnswerType.WEATHER;
-        AnswerText[] texts = RichAnswerText.from(mContext, richAnswerTemplate, answerType, false);
+        AnswerText[] texts =
+                RichAnswerText.from(mContext, richAnswerTemplate, answerType, false, false);
         Assert.assertEquals(texts[0].getMaxLines(), 1);
         Assert.assertEquals(texts[1].getMaxLines(), 1);
 
@@ -359,7 +365,8 @@ public class RichAnswerTextTest {
                         .build();
 
         int answerType = AnswerType.TRANSLATION;
-        AnswerText[] texts = RichAnswerText.from(mContext, richAnswerTemplate, answerType, false);
+        AnswerText[] texts =
+                RichAnswerText.from(mContext, richAnswerTemplate, answerType, false, false);
         Assert.assertEquals(texts[0].getMaxLines(), 3);
         Assert.assertEquals(texts[1].getMaxLines(), 1);
     }
@@ -389,7 +396,8 @@ public class RichAnswerTextTest {
                         .build();
 
         int answerType = AnswerType.CURRENCY;
-        AnswerText[] texts = RichAnswerText.from(mContext, richAnswerTemplate, answerType, false);
+        AnswerText[] texts =
+                RichAnswerText.from(mContext, richAnswerTemplate, answerType, false, false);
         SpannableStringBuilder primaryText = texts[0].getText();
         SpannableStringBuilder secondaryText = texts[1].getText();
 
@@ -417,7 +425,8 @@ public class RichAnswerTextTest {
                         .build();
 
         int answerType = AnswerType.WEATHER;
-        AnswerText[] texts = RichAnswerText.from(mContext, richAnswerTemplate, answerType, false);
+        AnswerText[] texts =
+                RichAnswerText.from(mContext, richAnswerTemplate, answerType, false, false);
         SpannableStringBuilder primaryText = texts[0].getText();
         SpannableStringBuilder secondaryText = texts[1].getText();
 
@@ -447,13 +456,20 @@ public class RichAnswerTextTest {
 
         RichAnswerTemplate richAnswerTemplate =
                 RichAnswerTemplate.newBuilder()
+                        .setEnhancements(
+                                SuggestionEnhancements.newBuilder()
+                                        .addEnhancements(
+                                                SuggestionEnhancement.newBuilder()
+                                                        .setDisplayText("7 day forecast"))
+                                        .build())
                         .addAnswers(
                                 0,
                                 AnswerData.newBuilder().setHeadline(headline).setSubhead(subhead))
                         .build();
 
         int answerType = AnswerType.WEATHER;
-        AnswerText[] texts = RichAnswerText.from(mContext, richAnswerTemplate, answerType, false);
+        AnswerText[] texts =
+                RichAnswerText.from(mContext, richAnswerTemplate, answerType, false, true);
         SpannableStringBuilder primaryText = texts[0].getText();
         SpannableStringBuilder secondaryText = texts[1].getText();
 
