@@ -378,8 +378,6 @@ blink_core_sources_layout = [
   "layout_ruby_column.h",
   "layout_ruby_text.cc",
   "layout_ruby_text.h",
-  "layout_scroll_container_with_markers.cc",
-  "layout_scroll_container_with_markers.h",
   "layout_shift_region.cc",
   "layout_shift_region.h",
   "layout_shift_tracker.cc",

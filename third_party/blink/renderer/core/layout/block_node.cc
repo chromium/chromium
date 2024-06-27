@@ -1095,7 +1095,8 @@ BlockNode BlockNode::GetRenderedLegend() const {
 BlockNode BlockNode::GetFieldsetContent() const {
   if (!IsFieldsetContainer())
     return nullptr;
-  return BlockNode(box_->FindAnonymousContentBox());
+  return BlockNode(
+      To<LayoutFieldset>(box_.Get())->FindAnonymousFieldsetContentBox());
 }
 
 LayoutUnit BlockNode::EmptyLineBlockSize(

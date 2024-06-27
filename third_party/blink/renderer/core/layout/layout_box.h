@@ -257,10 +257,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // relative to.
   virtual LayoutBox* LocationContainer() const;
 
-  // Find anonymous content box for fieldset and scroll container with
-  // ::scroll-marker-group (carousel) wrappers.
-  LayoutBlock* FindAnonymousContentBox() const;
-
   // Note that those functions have their origin at this box's CSS border box.
   // As such their location doesn't account for 'top'/'left'. About its
   // coordinate space, it can be treated as in either physical coordinates

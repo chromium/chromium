@@ -721,8 +721,7 @@ void LayoutBlockFlow::CreateOrDestroyMultiColumnFlowThreadIfNeeded(
   // For LayoutNG, the multi-column display type will be applied to the
   // anonymous content box. Thus, the flow thread should be added to the
   // anonymous content box instead of the fieldset itself.
-  // Same applies to scroll container with ::scroll-marker-group.
-  if (HasAnonymousContentBox()) {
+  if (IsFieldset()) {
     return;
   }
 

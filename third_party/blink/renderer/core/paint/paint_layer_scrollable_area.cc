@@ -1104,7 +1104,7 @@ Element* PaintLayerScrollableArea::GetElementForScrollStart() const {
   }
 
   Node* node = box->GetNode();
-  if (box->IsAnonymousContentBox()) {
+  if (!node && box->Parent() && box->Parent()->IsFieldset()) {
     return DynamicTo<Element>(box->Parent()->GetNode());
   }
 

@@ -168,7 +168,7 @@ LayoutObject* HTMLFieldSetElement::CreateLayoutObject(const ComputedStyle&) {
 
 LayoutBox* HTMLFieldSetElement::GetLayoutBoxForScrolling() const {
   if (const auto* ng_fieldset = DynamicTo<LayoutFieldset>(GetLayoutBox())) {
-    if (auto* content = ng_fieldset->FindAnonymousContentBox()) {
+    if (auto* content = ng_fieldset->FindAnonymousFieldsetContentBox()) {
       return content;
     }
   }

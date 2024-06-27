@@ -99,7 +99,6 @@
 #include "third_party/blink/renderer/core/layout/layout_ruby_as_block.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_column.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_text.h"
-#include "third_party/blink/renderer/core/layout/layout_scroll_container_with_markers.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
@@ -353,8 +352,6 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
       return MakeGarbageCollected<LayoutInsideListMarker>(element);
     }
     return MakeGarbageCollected<LayoutOutsideListMarker>(element);
-  } else if (style.IsScrollContainerWithMarkers()) {
-    return MakeGarbageCollected<LayoutScrollContainerWithMarkers>(element);
   }
 
   switch (style.Display()) {
@@ -4032,9 +4029,8 @@ void LayoutObject::DestroyAndCleanupAnonymousWrappers(
     if (destroy_root_parent->IsLayoutFlowThread())
       break;
     // The anonymous fieldset contents wrapper should be kept.
-    // The anonymous scroll container with ::scroll-marker-group contents
-    // wrapper should be kept.
-    if (destroy_root_parent->IsAnonymousContentBox()) {
+    if (destroy_root_parent->Parent() &&
+        destroy_root_parent->Parent()->IsFieldset()) {
       break;
     }
     // RubyBase should be kept if RubyText exists

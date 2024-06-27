@@ -1800,11 +1800,6 @@ double Element::currentCSSZoom() {
 
 LayoutBox* Element::GetLayoutBoxForScrolling() const {
   LayoutBox* box = GetLayoutBox();
-  if (box && box->IsScrollContainerWithMarkers()) {
-    if (LayoutBlock* content = box->FindAnonymousContentBox()) {
-      return content;
-    }
-  }
   if (!box || !box->IsScrollContainer()) {
     return nullptr;
   }

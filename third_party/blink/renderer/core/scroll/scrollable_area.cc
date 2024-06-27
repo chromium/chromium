@@ -1131,7 +1131,7 @@ ScrollableArea::GetCompositorTaskRunner() {
 Node* ScrollableArea::EventTargetNode() const {
   const LayoutBox* box = GetLayoutBox();
   Node* node = box->GetNode();
-  if (box->IsAnonymousContentBox()) {
+  if (!node && box->Parent() && box->Parent()->IsFieldset()) {
     node = box->Parent()->GetNode();
   }
   if (auto* element = DynamicTo<Element>(node)) {

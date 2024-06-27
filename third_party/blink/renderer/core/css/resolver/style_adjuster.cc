@@ -643,8 +643,7 @@ static void AdjustStyleForDisplay(ComputedStyleBuilder& builder,
   // dedicated LayoutObject and it assumes only block children.
   if (layout_parent_style.InlinifiesChildren() &&
       !builder.HasOutOfFlowPosition() &&
-      !(element && (IsA<HTMLFieldSetElement>(element->parentNode()) ||
-                    layout_parent_style.IsScrollContainerWithMarkers()))) {
+      !(element && IsA<HTMLFieldSetElement>(element->parentNode()))) {
     if (RuntimeEnabledFeatures::RubyLineBreakableEnabled() &&
         builder.IsFloating()) {
       builder.SetFloating(EFloat::kNone);
@@ -662,10 +661,6 @@ static void AdjustStyleForDisplay(ComputedStyleBuilder& builder,
       builder.SetIsInInlinifyingDisplay();
       builder.SetDisplay(EquivalentInlineDisplay(builder.Display()));
     }
-  }
-
-  if (builder.StyleType() == kPseudoIdScrollMarkerGroup) {
-    builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
   }
 
   if (builder.Display() == EDisplay::kBlock) {

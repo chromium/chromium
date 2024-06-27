@@ -1759,10 +1759,6 @@ class ComputedStyle final : public ComputedStyleBase {
            OverflowX() != EOverflow::kClip;
   }
 
-  bool IsScrollContainerWithMarkers() const {
-    return IsScrollContainer() && !ScrollMarkersNone();
-  }
-
   // Returns true if object-fit, object-position and object-view-box would avoid
   // replaced contents overflow.
   bool ObjectPropertiesPreventReplacedOverflow() const {
