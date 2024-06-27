@@ -37,6 +37,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Queried"/>
 </enum>
 
+<!-- LINT.IfChange(BrowsingDataRemoverTasks) -->
+
 <enum name="BrowsingDataRemoverTasks">
   <int value="1" label="kSynchronous"/>
   <int value="2" label="kEmbedderData"/>
@@ -56,6 +58,10 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="kPreflightCache"/>
   <int value="17" label="kSharedDictionary"/>
 </enum>
+
+<!--LINT.ThenChange(//tools/metrics/histograms/metadata/history/histograms.xml:History.ClearBrowsingData.Duration.Task.{Task}) -->
+
+<!-- LINT.IfChange(ChromeBrowsingDataRemoverTasks) -->
 
 <enum name="ChromeBrowsingDataRemoverTasks">
   <int value="1" label="kSynchronous"/>
@@ -107,6 +113,8 @@ chromium-metrics-reviews@google.com.
   <int value="45" label="kMediaDeviceSalts"/>
   <int value="46" label="kDisableAutoSigninForAccountPasswords"/>
 </enum>
+
+<!--LINT.ThenChange(//tools/metrics/histograms/metadata/history/histograms.xml:History.ClearBrowsingData.Duration.ChromeTask.{Task}) -->
 
 <enum name="ClearBrowsingDataTab">
   <int value="0" label="Basic"/>
@@ -228,6 +236,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="ManualSubframe"/>
 </enum>
 
+<!-- LINT.IfChange(StoragePartitionRemoverTasks) -->
+
 <enum name="StoragePartitionRemoverTasks">
   <int value="1" label="kSynchronous"/>
   <int value="2" label="kCookies"/>
@@ -244,6 +254,8 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="kInterestGroups"/>
   <int value="14" label="kCdmStorage"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/storage_partition_impl.cc:TracingDataType) -->
 
 </enums>
 

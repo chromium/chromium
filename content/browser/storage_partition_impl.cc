@@ -963,7 +963,7 @@ class StoragePartitionImpl::DataDeletionHelper {
  private:
   // For debugging purposes. Please add new deletion tasks at the end.
   // This enum is recorded in a histogram, so don't change or reuse ids.
-  // Entries must also be added to StoragePartitionRemoverTasks in enums.xml.
+  // LINT.IfChange(TracingDataType)
   enum class TracingDataType {
     kSynchronous = 1,
     kCookies = 2,
@@ -981,6 +981,7 @@ class StoragePartitionImpl::DataDeletionHelper {
     kCdmStorage = 14,
     kMaxValue = kCdmStorage,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/history/enums.xml:StoragePartitionRemoverTasks)
 
   base::OnceClosure CreateTaskCompletionClosure(TracingDataType data_type);
 

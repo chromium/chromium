@@ -125,9 +125,7 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
 
   // For debugging purposes. Please add new deletion tasks at the end.
   // This enum is recorded in a histogram, so don't change or reuse ids.
-  // Entries must also be added to BrowsingDataRemoverTasks in enums.xml and
-  // History.ClearBrowsingData.Duration.Task.{Task} in
-  // histograms/metadata/history/histograms.xml.
+  // LINT.IfChange(TracingDataType)
   enum class TracingDataType {
     kSynchronous = 1,
     kEmbedderData = 2,
@@ -148,6 +146,7 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
     kSharedDictionary = 17,
     kMaxValue = kSharedDictionary,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/history/enums.xml:BrowsingDataRemoverTasks)
 
   // Returns the suffix for the History.ClearBrowsingData.Duration.Task.{Task}
   // histogram

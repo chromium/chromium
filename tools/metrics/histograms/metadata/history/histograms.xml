@@ -117,6 +117,8 @@ chromium-metrics-reviews@google.com.
     Records the duration of a ChromeBrowsingDataRemoverDelegate task for {Task}
     deletion.
   </summary>
+<!--LINT.IfChange(History.ClearBrowsingData.Duration.ChromeTask.{Task}) -->
+
   <token key="Task">
     <variant name="AccountPasswords" summary="AccountPasswords"/>
     <variant name="AccountPasswordsSynced" summary="AccountPasswordsSynced"/>
@@ -153,6 +155,8 @@ chromium-metrics-reviews@google.com.
     <variant name="WebrtcEventLogs" summary="WebrtcEventLogs"/>
     <variant name="WebrtcLogs" summary="WebrtcLogs"/>
   </token>
+<!-- LINT.ThenChange(//chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h:TracingDataType) -->
+
 </histogram>
 
 <histogram name="History.ClearBrowsingData.Duration.FilteredDeletion"
@@ -240,6 +244,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the duration of a BrowsingDataRemoverImpl task for {Task} deletion.
   </summary>
+<!--LINT.IfChange(History.ClearBrowsingData.Duration.Task.{Task}) -->
+
   <token key="Task">
     <variant name="AuthCache" summary="AuthCache"/>
     <variant name="ChannelIds" summary="ChannelIds"/>
@@ -259,6 +265,8 @@ chromium-metrics-reviews@google.com.
     <variant name="Synchronous" summary="Synchronous"/>
     <variant name="TrustTokens" summary="TrustTokens"/>
   </token>
+<!-- LINT.ThenChange(//content/browser/browsing_data/browsing_data_remover_impl.h:TracingDataType) -->
+
 </histogram>
 
 <histogram name="History.ClearBrowsingData.Duration.TimeRangeDeletion"
