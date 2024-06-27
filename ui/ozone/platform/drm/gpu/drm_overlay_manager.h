@@ -27,8 +27,8 @@ class OverlaySurfaceCandidate;
 // of recent configurations.
 class DrmOverlayManager : public OverlayManagerOzone {
  public:
-  explicit DrmOverlayManager(
-      bool allow_sync_and_real_buffer_page_flip_testing = true);
+  DrmOverlayManager(bool handle_overlays_swap_failure,
+                    bool allow_sync_and_real_buffer_page_flip_testing);
 
   DrmOverlayManager(const DrmOverlayManager&) = delete;
   DrmOverlayManager& operator=(const DrmOverlayManager&) = delete;
@@ -142,6 +142,14 @@ class DrmOverlayManager : public OverlayManagerOzone {
 
   // A simple queue of bools that helps to identify buffer swaps.
   base::circular_deque<std::vector<gfx::OverlayType>> in_flight_overlay_types_;
+
+  // Tell the manager to handle overlay swap failures.
+  // TODO(b/331237773): Unfortunately, the kHandleOverlaysSwapFailure feature
+  // cannot be checked by the this overlay manager in ozone directly as it
+  // creates a circular dependency. That's why this control bool is here. Remove
+  // this once kHandleOverlaysSwapFailure is removed and DrmOverlayManager is
+  // always handling swap failures.
+  const bool handle_overlays_swap_failure_;
 
   THREAD_CHECKER(thread_checker_);
 };

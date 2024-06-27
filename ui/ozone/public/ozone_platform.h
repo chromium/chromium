@@ -92,6 +92,13 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // TODO(fangzhoug): Some Chrome OS boards still use the legacy video
     // decoder. Remove this once ChromeOSVideoDecoder is on everywhere.
     bool allow_sync_and_real_buffer_page_flip_testing = false;
+
+    // TODO(b/331237773): Unfortunately, the kHandleOverlaysSwapFailure feature
+    // cannot be checked by the overlay manager in ozone/drm directly as it
+    // creates a circular dependency that gn complains about. That's why this
+    // control bool is here. Remove this once kHandleOverlaysSwapFailure is
+    // removed and DrmOverlayManager is always handling swap failures.
+    bool handle_overlays_swap_failure = false;
   };
 
   // Struct used to indicate platform properties.

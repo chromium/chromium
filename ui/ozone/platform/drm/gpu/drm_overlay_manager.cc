@@ -43,7 +43,9 @@ std::vector<OverlaySurfaceCandidate> ToCacheKey(
 }  // namespace
 
 DrmOverlayManager::DrmOverlayManager(
-    bool allow_sync_and_real_buffer_page_flip_testing) {
+    bool handle_overlays_swap_failure,
+    bool allow_sync_and_real_buffer_page_flip_testing)
+    : handle_overlays_swap_failure_(handle_overlays_swap_failure) {
   allow_sync_and_real_buffer_page_flip_testing_ =
       allow_sync_and_real_buffer_page_flip_testing;
   DETACH_FROM_THREAD(thread_checker_);
@@ -231,6 +233,10 @@ void DrmOverlayManager::OnSwapBuffersComplete(gfx::SwapResult swap_result) {
   if (swap_result != gfx::SwapResult::SWAP_NON_SIMPLE_OVERLAYS_FAILED) {
     return;
   }
+
+  LOG_IF(FATAL, !handle_overlays_swap_failure_)
+      << "Handling non-simple overlays' swap failure requires the "
+         "kHandleOverlaysSwapFailure feature to be enabled.";
 
   NOTIMPLEMENTED_LOG_ONCE();
 }

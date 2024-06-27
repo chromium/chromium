@@ -455,6 +455,8 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   params.single_process = false;
   params.enable_native_gpu_memory_buffers =
       gpu_preferences_.enable_native_gpu_memory_buffers;
+  params.handle_overlays_swap_failure =
+      base::FeatureList::IsEnabled(features::kHandleOverlaysSwapFailure);
 
   // Page flip testing will only happen in ash-chrome, not in lacros-chrome.
   // Therefore, we only allow or disallow sync and real buffer page flip
@@ -973,6 +975,8 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
 #if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
+  params.handle_overlays_swap_failure =
+      base::FeatureList::IsEnabled(features::kHandleOverlaysSwapFailure);
 
   // Page flip testing will only happen in ash-chrome, not in lacros-chrome.
   // Therefore, we only allow or disallow sync and real buffer page flip

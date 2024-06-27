@@ -21,8 +21,9 @@ class TestDrmOverlayManager : public DrmOverlayManager {
  public:
   explicit TestDrmOverlayManager(
       bool allow_sync_and_real_buffer_page_flip_testing)
-      : DrmOverlayManager(allow_sync_and_real_buffer_page_flip_testing) {}
-  TestDrmOverlayManager() : DrmOverlayManager(false) {}
+      : DrmOverlayManager(/*handle_overlays_swap_failure=*/false,
+                          allow_sync_and_real_buffer_page_flip_testing) {}
+  TestDrmOverlayManager() : TestDrmOverlayManager(false) {}
   ~TestDrmOverlayManager() override = default;
 
   using DrmOverlayManager::UpdateCacheForOverlayCandidates;
