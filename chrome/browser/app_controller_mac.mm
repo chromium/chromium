@@ -379,23 +379,6 @@ base::FilePath GetStartupProfilePathMac() {
   return profile_path_info.path;
 }
 
-void OpenUrlsInBrowserWithProfileName(const std::vector<GURL>& urls,
-                                      const base::FilePath& profile_name) {
-  g_browser_process->profile_manager()->LoadProfile(
-      profile_name, /*incognito=*/false,
-      base::BindOnce(
-          [](const std::vector<GURL>& urls, Profile* profile) {
-            if (profile) {
-              OpenUrlsInBrowserWithProfile(urls, profile);
-            } else {
-              app_controller_mac::RunInLastProfileSafely(
-                  base::BindOnce(&OpenUrlsInBrowserWithProfile, urls),
-                  app_controller_mac::kShowProfilePickerOnFailure);
-            }
-          },
-          urls));
-}
-
 // Open the urls in the last used browser. Loads the profile asynchronously if
 // needed.
 void OpenUrlsInBrowser(const std::vector<GURL>& urls) {
@@ -440,9 +423,30 @@ void OpenUrlsInBrowser(const std::vector<GURL>& urls) {
           base::BindOnce(
               [](const base::flat_map<base::FilePath, std::vector<GURL>>
                      profile_url_map) {
+                const base::FilePath& user_data_dir =
+                    g_browser_process->profile_manager()->user_data_dir();
+                ProfileAttributesStorage& profile_attributes_storage =
+                    g_browser_process->profile_manager()
+                        ->GetProfileAttributesStorage();
                 for (const auto& [profile, urls_for_profile] :
                      profile_url_map) {
-                  OpenUrlsInBrowserWithProfileName(urls_for_profile, profile);
+                  const base::FilePath profile_path =
+                      user_data_dir.Append(profile);
+                  if (profile_attributes_storage.GetProfileAttributesWithPath(
+                          profile_path)) {
+                    RunInProfileSafely(
+                        profile_path,
+                        base::BindOnce(&OpenUrlsInBrowserWithProfile,
+                                       urls_for_profile),
+                        app_controller_mac::kShowProfilePickerOnFailure);
+                  } else {
+                    // If the target profile doesn't exist, fall back to the
+                    // last profile.
+                    RunInLastProfileSafely(
+                        base::BindOnce(&OpenUrlsInBrowserWithProfile,
+                                       urls_for_profile),
+                        app_controller_mac::kShowProfilePickerOnFailure);
+                  }
                 }
               }));
     }
@@ -2357,7 +2361,6 @@ void OpenUrlsInBrowserWithProfile(const std::vector<GURL>& urls,
 
 // Returns the profile to be used for new windows (or nullptr if it fails).
 Profile* GetSafeProfile(Profile* loaded_profile) {
-  DCHECK(loaded_profile);
   return
       [AppController.sharedController safeProfileForNewWindows:loaded_profile];
 }
@@ -2430,10 +2433,8 @@ void RunInProfileSafely(const base::FilePath& profile_dir,
     OnProfileLoaded(std::move(callback), on_failure, profile);
     return;
   }
-  // Pass the OnceCallback by reference because CreateProfileAsync() needs a
-  // repeating callback. It will be called at most once.
-  g_browser_process->profile_manager()->CreateProfileAsync(
-      profile_dir,
+  g_browser_process->profile_manager()->LoadProfileByPath(
+      profile_dir, /*incognito=*/false,
       base::BindOnce(&OnProfileLoaded, std::move(callback), on_failure));
 }
 

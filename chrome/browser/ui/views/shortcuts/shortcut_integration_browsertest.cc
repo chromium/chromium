@@ -2,16 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/shortcuts/shortcut_creation_test_support.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/views/shortcuts/shortcut_integration_browsertest_base.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
 
 namespace shortcuts {
@@ -125,7 +131,7 @@ class ShortcutIntegrationMultiProfileBrowserTest
     return embedded_https_test_server().GetURL("/shortcuts/no_icons_page.html");
   }
 
-  // Returns a step thet behaves as if the user deleted the given profile.
+  // Returns a step that behaves as if the user deleted the given profile.
   [[nodiscard]] static MultiStep DeleteProfile(Profile* profile) {
     base::FilePath profile_path = profile->GetPath();
     return Steps(FlushEvents(), Do([profile_path] {
@@ -135,6 +141,20 @@ class ShortcutIntegrationMultiProfileBrowserTest
                        .MaybeScheduleProfileForDeletion(
                            profile_path, base::DoNothing(),
                            ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
+                 }));
+  }
+
+  // Returns a step that locks the given profile.
+  [[nodiscard]] static MultiStep LockProfile(Profile* profile) {
+    base::FilePath profile_path = profile->GetPath();
+    return Steps(FlushEvents(), Do([profile_path] {
+                   ProfileAttributesEntry* entry =
+                       g_browser_process->profile_manager()
+                           ->GetProfileAttributesStorage()
+                           .GetProfileAttributesWithPath(profile_path);
+                   ASSERT_NE(entry, nullptr);
+                   entry->LockForceSigninProfile(true);
+                   EXPECT_TRUE(entry->IsSigninRequired());
                  }));
   }
 
@@ -212,6 +232,25 @@ IN_PROC_BROWSER_TEST_F(ShortcutIntegrationMultiProfileBrowserTest,
       WaitForWebContentsNavigation(kNewTabId, profile2_shortcut_url()),
       InAnyContext(CheckElement(kNewTabId, &ProfilePathFromWebContents,
                                 ::testing::Eq(profile1()->GetPath()))));
+}
+
+IN_PROC_BROWSER_TEST_F(ShortcutIntegrationMultiProfileBrowserTest,
+                       DontLaunchInLockedProfile) {
+  signin_util::ScopedForceSigninSetterForTesting signin_setter(true);
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kProfilePickerViewId);
+  ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
+      base::BindLambdaForTesting([kProfilePickerViewId] {
+        ProfilePicker::GetViewForTesting()->SetProperty(
+            views::kElementIdentifierKey, kProfilePickerViewId);
+      }));
+
+  RunTestSequence(
+      CreateShortcuts(),
+
+      // Shortcut from locked profile 2 should cause profile picker to open.
+      LockProfile(profile2()), LaunchShortcut(kProfile2ShortcutId),
+      InAnyContext(WaitForShow(kProfilePickerViewId)));
 }
 
 }  // namespace shortcuts

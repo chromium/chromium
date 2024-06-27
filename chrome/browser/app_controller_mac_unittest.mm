@@ -16,6 +16,8 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/common/chrome_constants.h"
@@ -449,15 +451,45 @@ TEST_F(AppControllerSafeProfileTest, SpecificProfileNotLoaded) {
   AppController* app_controller = AppController.sharedController;
   ASSERT_EQ(profile_, app_controller.lastProfileIfLoaded);
 
+  // Add a profile in the cache (simulate another profile on disk).
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ProfileAttributesStorage* profile_storage =
+      &profile_manager->GetProfileAttributesStorage();
+  const base::FilePath profile_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  ProfileAttributesInitParams params;
+  params.profile_path = profile_path;
+  params.profile_name = u"New Profile 2";
+  profile_storage->AddProfile(std::move(params));
+
   base::RunLoop run_loop;
   app_controller_mac::RunInProfileSafely(
-      profile_manager_.profiles_dir().AppendASCII("New Profile 2"),
-      base::BindLambdaForTesting([&](Profile* profile) {
+      profile_path, base::BindLambdaForTesting([&](Profile* profile) {
         // This should run with the specific profile we asked for, rather than
         // the last-used profile.
         EXPECT_NE(profile, nullptr);
         EXPECT_NE(profile, profile_.get());
-        EXPECT_EQ(profile->GetBaseName().MaybeAsASCII(), "New Profile 2");
+        EXPECT_EQ(profile->GetPath(), profile_path);
+        run_loop.Quit();
+      }),
+      app_controller_mac::kIgnoreOnFailure);
+  run_loop.Run();
+}
+
+// Tests that RunInProfileSafely() returns nullptr if a profle doesn't exist.
+TEST_F(AppControllerSafeProfileTest, SpecificProfileDoesNotExist) {
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetString(prefs::kProfileLastUsed,
+                         profile_->GetPath().BaseName().MaybeAsASCII());
+
+  AppController* app_controller = AppController.sharedController;
+  ASSERT_EQ(profile_, app_controller.lastProfileIfLoaded);
+
+  base::RunLoop run_loop;
+  app_controller_mac::RunInProfileSafely(
+      profile_manager_.profiles_dir().AppendASCII("Non-existent Profile"),
+      base::BindLambdaForTesting([&](Profile* profile) {
+        EXPECT_EQ(profile, nullptr);
         run_loop.Quit();
       }),
       app_controller_mac::kIgnoreOnFailure);
