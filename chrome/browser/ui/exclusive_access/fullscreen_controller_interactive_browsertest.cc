@@ -761,7 +761,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   Browser* popup = ui_test_utils::WaitForBrowserToOpen();
   EXPECT_EQ(2u, browser_list->size());
   ui_test_utils::BrowserActivationWaiter(popup).WaitForActivation();
-  EXPECT_EQ(popup, browser_list->GetLastActive());
+  EXPECT_TRUE(ui_test_utils::IsBrowserActive(popup));
   ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
 }
 
@@ -824,9 +824,9 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   EXPECT_EQ(1u, browser_list->size());
   content::ExecuteScriptAsync(tab, "open('.', '', 'popup')");
   Browser* popup = ui_test_utils::WaitForBrowserToOpen();
-  ui_test_utils::WaitForBrowserSetLastActive(popup);
+  ASSERT_TRUE(popup);
+  ui_test_utils::WaitUntilBrowserBecomeActive(popup);
   EXPECT_EQ(2u, browser_list->size());
-  EXPECT_EQ(popup, browser_list->GetLastActive());
   EXPECT_EQ(tab->GetDelegate()->GetFullscreenState(tab).target_mode,
             content::FullscreenMode::kPseudoContent);
 }
@@ -936,7 +936,9 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
     return result.error.empty() && !browser->window()->IsFullscreen();
   }
 
-  bool OpenPopupAndRequestFullscreenOnLoad() {
+  std::pair<bool, Browser*> OpenPopupAndRequestFullscreenOnLoad() {
+    ui_test_utils::BrowserChangeObserver popup_observer(
+        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
     const std::string script = R"((() => {
       let w = open(location.href, '', 'popup');
       return new Promise(resolve => {
@@ -958,13 +960,17 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
     })())";
     Browser* browser = chrome::FindBrowserWithTab(web_contents_);
     auto result = EvalJs(web_contents_, script);
-    Browser* popup = BrowserList::GetInstance()->GetLastActive();
+    Browser* popup = popup_observer.Wait();
+    if (!popup) {
+      return std::make_pair(false, nullptr);
+    }
     EXPECT_NE(popup, browser);
+    ui_test_utils::WaitUntilBrowserBecomeActive(popup);
     ui_test_utils::FullscreenWaiter waiter(popup, {.tab_fullscreen = true});
     if (result.error.empty() && result.ExtractBool()) {
       waiter.Wait();
     }
-    return popup->window()->IsFullscreen();
+    return std::make_pair(popup->window()->IsFullscreen(), popup);
   }
 
   std::string QueryPermission(
@@ -1032,7 +1038,7 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, EventuallyAfterExit) {
 }
 
 IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, Popup) {
-  EXPECT_TRUE(OpenPopupAndRequestFullscreenOnLoad());
+  EXPECT_TRUE(OpenPopupAndRequestFullscreenOnLoad().first);
 }
 
 IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, PopupImmediatelyAfterExit) {
@@ -1040,7 +1046,7 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, PopupImmediatelyAfterExit) {
   const base::TimeTicks exit = base::TimeTicks::Now();
   EXPECT_TRUE(ExitFullscreen());
   EXPECT_LT(base::TimeTicks::Now() - exit, base::Seconds(5));
-  EXPECT_FALSE(OpenPopupAndRequestFullscreenOnLoad());
+  EXPECT_FALSE(OpenPopupAndRequestFullscreenOnLoad().first);
 }
 
 IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, PopupEventuallyAfterExit) {
@@ -1051,12 +1057,13 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, PopupEventuallyAfterExit) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(5300));
   run_loop.Run();
-  EXPECT_TRUE(OpenPopupAndRequestFullscreenOnLoad());
+  EXPECT_TRUE(OpenPopupAndRequestFullscreenOnLoad().first);
 }
 
 IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, ImmediatelyAfterPopupExit) {
-  EXPECT_TRUE(OpenPopupAndRequestFullscreenOnLoad());
-  Browser* popup = BrowserList::GetInstance()->GetLastActive();
+  auto [success, popup] = OpenPopupAndRequestFullscreenOnLoad();
+  EXPECT_TRUE(success);
+  ASSERT_TRUE(popup);
   const base::TimeTicks exit = base::TimeTicks::Now();
   ExitFullscreen(popup->tab_strip_model()->GetActiveWebContents());
   EXPECT_LT(base::TimeTicks::Now() - exit, base::Seconds(5));
@@ -1069,8 +1076,9 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, ImmediatelyAfterPopupExit) {
 }
 
 IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, EventuallyAfterPopupExit) {
-  EXPECT_TRUE(OpenPopupAndRequestFullscreenOnLoad());
-  Browser* popup = BrowserList::GetInstance()->GetLastActive();
+  auto [success, popup] = OpenPopupAndRequestFullscreenOnLoad();
+  EXPECT_TRUE(success);
+  ASSERT_TRUE(popup);
   ExitFullscreen(popup->tab_strip_model()->GetActiveWebContents());
   base::RunLoop run_loop;
   // TODO(crbug.com/333133285): Avoid waiting this long in wall-clock time.
@@ -1761,10 +1769,10 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
   // The opener should still be fullscreen.
   EXPECT_TRUE(IsWindowFullscreenForTabOrPending());
   // Popup window activation is delayed until its opener exits fullscreen.
-  EXPECT_EQ(browser(), browser_list->GetLastActive());
+  EXPECT_FALSE(ui_test_utils::IsBrowserActive(popup));
   ToggleTabFullscreen(/*enter_fullscreen=*/false);
   ui_test_utils::BrowserActivationWaiter(popup).WaitForActivation();
-  EXPECT_EQ(popup, browser_list->GetLastActive());
+  EXPECT_TRUE(ui_test_utils::IsBrowserActive(popup));
 }
 
 // TODO(crbug.com/40111905): Disabled on Windows, where views::FullscreenHandler
@@ -1840,10 +1848,10 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
   EXPECT_NE(GetCurrentDisplay(browser()).id(), GetCurrentDisplay(popup).id());
 
   // Popup window activation is delayed until its opener exits fullscreen.
-  EXPECT_EQ(browser(), browser_list->GetLastActive());
+  EXPECT_FALSE(ui_test_utils::IsBrowserActive(popup));
   ToggleTabFullscreen(/*enter_fullscreen=*/false);
   ui_test_utils::BrowserActivationWaiter(popup).WaitForActivation();
-  EXPECT_EQ(popup, browser_list->GetLastActive());
+  EXPECT_TRUE(ui_test_utils::IsBrowserActive(popup));
 }
 
 // Tests FullscreenController support for fullscreen on screenschange events.

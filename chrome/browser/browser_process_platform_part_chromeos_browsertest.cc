@@ -14,6 +14,7 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
@@ -229,12 +230,13 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartChromeOSBrowsertest,
   testing::SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 1);
   run_loop.Run();
 
-  ui_test_utils::WaitForBrowserSetLastActive(new_browser_observer.Wait());
+  auto* pref_urls_opened_browser = new_browser_observer.Wait();
+  ASSERT_TRUE(pref_urls_opened_browser);
+  EXPECT_EQ(pref_urls_opened_browser->profile(), profile);
+  ui_test_utils::WaitUntilBrowserBecomeActive(pref_urls_opened_browser);
 
   ASSERT_EQ(2u, chrome::GetBrowserCount(profile));
 
-  auto* pref_urls_opened_browser = chrome::FindLastActiveWithProfile(profile);
-  ASSERT_TRUE(pref_urls_opened_browser);
   auto* last_session_opened_browser =
       FindOneOtherBrowserForProfile(profile, pref_urls_opened_browser);
   ASSERT_TRUE(last_session_opened_browser);
@@ -394,14 +396,14 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartChromeOSBrowsertest,
     testing::SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 1);
     run_loop.Run();
 
-    ui_test_utils::WaitForBrowserSetLastActive(restore_browser_observer.Wait());
+    auto* pref_urls_opened_browser = restore_browser_observer.Wait();
+    ASSERT_TRUE(pref_urls_opened_browser);
+    EXPECT_EQ(pref_urls_opened_browser->profile(), profile_last_and_urls);
+    ui_test_utils::WaitUntilBrowserBecomeActive(pref_urls_opened_browser);
 
     ASSERT_EQ(2u, chrome::GetBrowserCount(profile_urls));
     ASSERT_EQ(2u, chrome::GetBrowserCount(profile_last_and_urls));
 
-    auto* pref_urls_opened_browser =
-        chrome::FindLastActiveWithProfile(profile_last_and_urls);
-    ASSERT_TRUE(pref_urls_opened_browser);
     auto* last_session_opened_browser = FindOneOtherBrowserForProfile(
         profile_last_and_urls, pref_urls_opened_browser);
     ASSERT_TRUE(last_session_opened_browser);
