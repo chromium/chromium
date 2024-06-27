@@ -27,6 +27,15 @@
   #summary-row-template .td {
     text-align: center;
   }
+
+  #search-error-msg{
+    display: none;
+    color: rgb(229, 26, 67);
+  }
+
+  #search-bar {
+    width: fit-content;
+  }
 </style>
 
 <h2>Structured Metrics Summary</h2>
@@ -34,10 +43,14 @@
   <tbody id="sm-summary-body"></tbody>
 </table>
 <h2>Structured Metrics Events</h2>
-<p>Events are only collected once this page is open.</p>
 <p>Events are not polled, please refresh to view new events.</p>
 <button id="sm-refresh-events">Refresh</button>
-<table>
+<h3>Search:</h3>
+<p>Searching is implemented as key-value pair search param in the format of 'key:value'.</p>
+<p>Valid keys are: project, event, metric.</p>
+<input id="search-bar" type="search"></input>
+<p id="search-error-msg"></p>
+<table class="event-table">
   <thead>
     <tr>
       <th>Project</th>

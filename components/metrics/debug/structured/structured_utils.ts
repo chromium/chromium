@@ -43,6 +43,13 @@ export interface StructuredMetricsSummary {
 }
 
 /**
+ * Contains the search parameters by category.
+ *
+ * Valid categories are: project, event, metric.
+ */
+export type SearchParams = Map<string, string>;
+
+/**
  * Updates the Summary table with new information.
  *
  * @param summaryBody Body of the summary table.
@@ -73,12 +80,14 @@ export function updateStructuredMetricsSummary(
  *
  * @param eventBody Body of the event table.
  * @param events List of events to populate the table.
+ * @param searchParams Optional search parameters.
  * @param template HTML template for the event table row.
  * @param kvTemplate Key-Value pair HTML template.
  */
 export function updateStructuredMetricsEvents(
     eventBody: HTMLElement, events: StructuredMetricEvent[],
-    eventTemplate: HTMLTemplateElement, detailsTemplate: HTMLTemplateElement,
+    searchParams: SearchParams|null, eventTemplate: HTMLTemplateElement,
+    detailsTemplate: HTMLTemplateElement,
     kvTemplate: HTMLTemplateElement): void {
   // If chrome://metrics-internal is opened on Windows, Mac, or Linux and
   // Structured Metrics is disabled, we should do nothing.
@@ -89,6 +98,12 @@ export function updateStructuredMetricsEvents(
   eventBody.replaceChildren();
 
   for (const event of events) {
+    // If there is a |searchParams| and the event doesn't satisfy the
+    // |searchParams| then it can be skipped.
+    if (searchParams !== null && !checkSearch(event, searchParams)) {
+      continue;
+    }
+
     const row = eventTemplate.content.cloneNode(true) as HTMLElement;
     const [project, evn, type, uptime] = row.querySelectorAll('td');
 
@@ -147,6 +162,32 @@ function updateEventDetailsTable(
   detailTable.append(resetCounterRow);
   detailTable.append(systemUptimeRow);
   detailTable.append(eventIdRow);
+}
+
+function checkSearch(
+    event: StructuredMetricEvent, searchParams: SearchParams): boolean {
+  const projectSearch = searchParams.get('project');
+  const eventSearch = searchParams.get('event');
+  const metricSearch = searchParams.get('metric');
+
+  if (projectSearch &&
+      event.project.toLowerCase().indexOf(projectSearch.toLowerCase()) === -1) {
+    return false;
+  }
+
+  if (eventSearch &&
+      event.event.toLowerCase().indexOf(eventSearch.toLowerCase()) === -1) {
+    return false;
+  }
+
+  if (metricSearch &&
+      event.metrics.find(
+          (metric: KeyValue) =>
+              metric.key.toLowerCase().indexOf(metricSearch.toLowerCase()) !==
+              -1) === undefined) {
+    return false;
+  }
+  return true;
 }
 
 function updateEventMetricsTable(

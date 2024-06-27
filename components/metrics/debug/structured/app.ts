@@ -2,12 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {getTemplate} from './app.html.js';
 import {StructuredMetricsBrowserProxyImpl} from './structured_metrics_browser_proxy.js';
-import type {StructuredMetricEvent, StructuredMetricsSummary} from './structured_utils.js';
+import type {SearchParams, StructuredMetricEvent, StructuredMetricsSummary} from './structured_utils.js';
 import {updateStructuredMetricsEvents, updateStructuredMetricsSummary} from './structured_utils.js';
+
+/**
+ * Gets search params from search url.
+ */
+function getSearchParams(): string {
+  return window.location.search.substring(1);
+}
 
 export class StructuredMetricsInternalsAppElement extends CustomElement {
   static get is(): string {
@@ -24,8 +32,19 @@ export class StructuredMetricsInternalsAppElement extends CustomElement {
 
   initPromise: Promise<void>;
 
+  textSearch: HTMLInputElement;
+
+  searchQuery: SearchParams|null = null;
+
+  searchError: boolean = false;
+
   constructor() {
     super();
+
+    // This must be set before |initSearchParams_| is called.
+    this.textSearch = this.getRequiredElement<HTMLInputElement>('#search-bar');
+    this.initSearchParams_();
+
     this.initPromise = this.init_();
 
     // Create periodic callbacks.
@@ -80,8 +99,117 @@ export class StructuredMetricsInternalsAppElement extends CustomElement {
     const eventTableBody = this.getRequiredElement('#sm-events-body');
 
     updateStructuredMetricsEvents(
-        eventTableBody, events, eventTemplate, eventDetailsTemplate,
-        kvTemplate);
+        eventTableBody, events, this.searchQuery, eventTemplate,
+        eventDetailsTemplate, kvTemplate);
+  }
+
+  /**
+   * Initializes search params from the URL.
+   */
+  private initSearchParams_() {
+    const searchString = this.sanitizeUrlToSearch_();
+    this.searchQuery = this.parseSearchString_(searchString);
+
+    this.textSearch.value = searchString;
+    this.textSearch.addEventListener('search', () => {
+      this.updateSearchCriteria_();
+    });
+  }
+
+
+  /**
+   * Updates the windows search url.
+   */
+  private updateSearchCriteria_() {
+    // Update the url to reflect the search string. This will redirect the new
+    // url page, updating the searchQuery.
+    window.location.search = '?' + this.sanitizeSearchToUrl_();
+  }
+
+  /**
+   * Sanitize the search format into a valid format for the URL.
+   */
+  private sanitizeSearchToUrl_(): string {
+    return this.textSearch.value.replace(/\s+/gi, '&').replace(/:/gi, '=');
+  }
+
+  /**
+   * Sanitize the URL search parameters into the search format.
+   */
+  private sanitizeUrlToSearch_(): string {
+    return getSearchParams().replace(/&/gi, ' ').replace(/=/gi, ':');
+  }
+
+  /**
+   * Parse search format into an object.
+   *
+   * The format is a space separated lists of "key:value" pairs. Currently, a
+   * single search term is not supported.
+   */
+  private parseSearchString_(text: string): SearchParams|null {
+    // Page should be rebuilt on a new search query, but leaving it because it
+    // is better to be safe then have an error message that doesn't disappear
+    // when the page is refreshed..
+    if (this.searchError) {
+      this.hideSearchErrorMessage_();
+    }
+
+    if (text.length == 0) {
+      return null;
+    }
+
+    // If an ':' is not found then we are doing a full text search. The string
+    // is the query as is.
+    if (text.indexOf(':') == -1) {
+      return null;
+    }
+
+    // If it is found, then we are doing a categorical search, this parses the
+    // string into a map of category and search value.
+    const categories = new Map<string, string>();
+    const validSearchKeys = ['project', 'event', 'metric'];
+
+    text.split(' ').forEach((cat) => {
+      const [key, value] = cat.split(':', 2);
+      if (key !== undefined && value !== undefined) {
+        if (validSearchKeys.find((value) => value === key) === undefined) {
+          this.setSearchErrorMessage_(`invalid search key: ${
+              key}. valid keys are project, event, metric`);
+          return;
+        }
+        categories.set(key, value);
+      }
+    });
+
+    return categories;
+  }
+
+  /**
+   * Hides the search error message.
+   */
+  private hideSearchErrorMessage_(): void {
+    this.searchError = false;
+
+    const errorMsg =
+        this.getRequiredElement<HTMLParagraphElement>('#search-error-msg');
+    assert(errorMsg);
+    errorMsg.style.display = 'none';
+  }
+
+  /**
+   * Sets and shows the error message.
+   */
+  private setSearchErrorMessage_(msg: string): void {
+    this.searchError = true;
+
+    // Set the content of the error message.
+    const errorMsg =
+        this.getRequiredElement<HTMLParagraphElement>('#search-error-msg');
+    assert(errorMsg);
+    errorMsg.innerText = msg;
+
+    // Shows the error message
+    errorMsg.style.display = 'block';
   }
 }
 
