@@ -71,6 +71,9 @@ class ModelTypeStoreWithInMemoryCache {
     return in_memory_data_;
   }
 
+  static std::unique_ptr<ModelTypeStore> ExtractUnderlyingStoreForTest(
+      std::unique_ptr<ModelTypeStoreWithInMemoryCache> store);
+
  private:
   class WriteBatchImpl : public WriteBatch {
    public:
@@ -100,7 +103,7 @@ class ModelTypeStoreWithInMemoryCache {
       std::unique_ptr<ModelTypeStore> underlying_store,
       std::unique_ptr<ModelTypeStoreBase::RecordList> data_records);
 
-  const std::unique_ptr<ModelTypeStore> underlying_store_;
+  std::unique_ptr<ModelTypeStore> underlying_store_;
   std::map<std::string, Entry> in_memory_data_;
 };
 

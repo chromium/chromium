@@ -169,6 +169,8 @@ void SecurityEventSyncBridgeImpl::OnStoreLoaded(
     const std::optional<syncer::ModelError>& error,
     std::unique_ptr<StoreWithCache> store,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
+  TRACE_EVENT0("sync", "syncer::SecurityEventSyncBridgeImpl::OnStoreLoaded");
+
   if (error) {
     change_processor()->ReportError(*error);
     return;

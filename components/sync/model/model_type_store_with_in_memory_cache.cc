@@ -11,6 +11,7 @@
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/security_event_specifics.pb.h"
+#include "components/sync/protocol/user_event_specifics.pb.h"
 
 namespace syncer {
 
@@ -116,6 +117,14 @@ void ModelTypeStoreWithInMemoryCache<Entry>::DeleteAllDataAndMetadata(
   underlying_store_->DeleteAllDataAndMetadata(std::move(callback));
 }
 
+// static
+template <typename Entry>
+std::unique_ptr<ModelTypeStore>
+ModelTypeStoreWithInMemoryCache<Entry>::ExtractUnderlyingStoreForTest(
+    std::unique_ptr<ModelTypeStoreWithInMemoryCache> store) {
+  return std::move(store->underlying_store_);
+}
+
 template <typename Entry>
 ModelTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::WriteBatchImpl(
     std::unique_ptr<ModelTypeStoreBase::WriteBatch> underlying_batch)
@@ -169,5 +178,6 @@ ModelTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::ExtractChanges() {
 
 // Explicit instantiations for all required entry types.
 template class ModelTypeStoreWithInMemoryCache<sync_pb::SecurityEventSpecifics>;
+template class ModelTypeStoreWithInMemoryCache<sync_pb::UserEventSpecifics>;
 
 }  // namespace syncer

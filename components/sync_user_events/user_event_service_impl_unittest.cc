@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
@@ -69,9 +70,15 @@ class UserEventServiceImplTest : public testing::Test {
   }
 
   std::unique_ptr<UserEventSyncBridge> MakeBridge() {
-    return std::make_unique<UserEventSyncBridge>(
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_processor_, ModelReadyToSync).WillOnce([&run_loop]() {
+      run_loop.Quit();
+    });
+    auto bridge = std::make_unique<UserEventSyncBridge>(
         ModelTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
         mock_processor_.CreateForwardingProcessor(), &mapper_);
+    run_loop.Run();
+    return bridge;
   }
 
   syncer::TestSyncService* sync_service() { return &sync_service_; }

@@ -11,12 +11,12 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_store.h"
+#include "components/sync/model/model_type_store_with_in_memory_cache.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync_user_events/global_id_mapper.h"
 
@@ -57,27 +57,23 @@ class UserEventSyncBridge : public ModelTypeSyncBridge {
   std::unique_ptr<ModelTypeStore> StealStoreForTest();
 
  private:
+  using StoreWithCache =
+      syncer::ModelTypeStoreWithInMemoryCache<sync_pb::UserEventSpecifics>;
+
   void RecordUserEventImpl(
       std::unique_ptr<sync_pb::UserEventSpecifics> specifics);
 
-  void OnStoreCreated(const std::optional<ModelError>& error,
-                      std::unique_ptr<ModelTypeStore> store);
-  void OnReadAllMetadata(const std::optional<ModelError>& error,
-                         std::unique_ptr<MetadataBatch> metadata_batch);
-  void OnCommit(const std::optional<ModelError>& error);
-  void OnReadData(DataCallback callback,
-                  const std::optional<ModelError>& error,
-                  std::unique_ptr<ModelTypeStore::RecordList> data_records,
-                  std::unique_ptr<ModelTypeStore::IdList> missing_id_list);
-  void OnReadAllData(DataCallback callback,
-                     const std::optional<ModelError>& error,
-                     std::unique_ptr<ModelTypeStore::RecordList> data_records);
+  void OnStoreLoaded(const std::optional<syncer::ModelError>& error,
+                     std::unique_ptr<StoreWithCache> store,
+                     std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+  void OnStoreCommit(const std::optional<ModelError>& error);
 
   void HandleGlobalIdChange(int64_t old_global_id, int64_t new_global_id);
 
   // Persistent storage for in flight events. Should remain quite small, as we
   // delete upon commit confirmation.
-  std::unique_ptr<ModelTypeStore> store_;
+  // Null upon construction, until the store is successfully initialized.
+  std::unique_ptr<StoreWithCache> store_;
 
   // The key is the global_id of the navigation the event is linked to.
   std::multimap<int64_t, sync_pb::UserEventSpecifics>
