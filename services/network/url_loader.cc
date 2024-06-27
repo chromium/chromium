@@ -1887,8 +1887,6 @@ void URLLoader::ReadMore() {
         break;
       case MOJO_RESULT_SHOULD_WAIT:
         CHECK(!pending_write_);
-        // SlopBucket is incompatible with the network service memory cache,
-        // so don't use it if the memory cache is in use.
         if (base::FeatureList::IsEnabled(kSlopBucket) && !slop_bucket_) {
           slop_bucket_ = SlopBucket::RequestSlopBucket(url_request_.get());
         }
