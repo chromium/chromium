@@ -393,6 +393,8 @@ void RenderInputRouter::OnTouchEventAck(
     input_event_router->ProcessAckedTouchEvent(event, ack_result,
                                                view_input_.get());
   } else if (view_input_) {
+    // Check if |view_input_| is a root view.
+    CHECK(!view_input_->GetParentViewInput());
     view_input_->ProcessAckedTouchEvent(event, ack_result);
   }
 }

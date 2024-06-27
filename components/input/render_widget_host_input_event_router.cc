@@ -162,7 +162,8 @@ void TouchEventAckQueue::MarkAcked(
     // RenderWidgetHostInputEventRouter, as is the case with AndroidWebView,
     // then we must ack it directly.
     if (target_view)
-      target_view->ProcessAckedTouchEvent(touch_event, ack_result);
+      target_view->GetRootView()->ProcessAckedTouchEvent(touch_event,
+                                                         ack_result);
     return;
   }
 
