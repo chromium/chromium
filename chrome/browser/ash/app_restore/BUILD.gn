@@ -112,16 +112,39 @@ source_set("app_restore") {
   ]
 }
 
-source_set("browser_tests") {
+static_library("test_support") {
   testonly = true
-
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
     "app_restore_arc_test_helper.cc",
     "app_restore_arc_test_helper.h",
     "app_restore_test_util.cc",
     "app_restore_test_util.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc/mojom",
+    "//base",
+    "//chrome/browser/ash",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//components/app_restore",
+    "//components/exo",
+    "//content/test:test_support",
+    "//ui/aura",
+    "//ui/views",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
     "full_restore_app_launch_handler_browsertest.cc",
     "full_restore_policy_browsertest.cc",
     "informed_restore_browsertest.cc",
@@ -129,6 +152,7 @@ source_set("browser_tests") {
 
   deps = [
     ":app_restore",
+    ":test_support",
     "//ash",
     "//ash:test_support",
     "//ash/components/arc:arc_test_support",

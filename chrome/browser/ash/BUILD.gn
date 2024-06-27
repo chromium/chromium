@@ -6155,6 +6155,25 @@ source_set("unit_tests") {
   ]
 }
 
+group("browser_tests") {
+  testonly = true
+
+  deps = [
+    "//chrome/browser/ash/accessibility:browser_tests",
+    "//chrome/browser/ash/app_restore:browser_tests",
+    "//chrome/browser/ash/apps:browser_tests",
+    "//chrome/browser/ash/bruschetta:browser_tests",
+    "//chrome/browser/ash/customization:browser_tests",
+    "//chrome/browser/ash/display:browser_tests",
+    "//chrome/browser/ash/eche_app:browser_tests",
+    "//chrome/browser/ash/geolocation:browser_tests",
+    "//chrome/browser/ash/lock_screen_apps:browser_tests",
+    "//chrome/browser/ash/privacy_hub:browser_tests",
+    "//chrome/browser/ash/system_web_apps:browser_tests",
+    "//chrome/browser/ash/wallpaper:browser_tests",
+  ]
+}
+
 proto_library("app_install_events_proto") {
   proto_in_dir = "//"
   sources =
