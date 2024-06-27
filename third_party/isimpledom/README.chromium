@@ -1,22 +1,27 @@
 Name: ISimpleDOM COM interfaces for accessibility
 Short Name: ISimpleDOM
-URL: https://searchfox.org/mozilla-central/source/accessible/interfaces/msaa/
+URL: https://github.com/mozilla/gecko-dev
 Version: N/A
 Date: 2010-07-02
+Revision: 3f397dafbaa9dbc7d740e440c7a5112e094588eb
 License: MPL 1.1/GPL 2.0/LGPL 2.1
 License File: LICENSE
 Security Critical: yes
 Shipped: yes
 
 Description:
-  This directory contains the ISimpleDOM API, which is needed
-  in order to fully support Windows screenreaders.  The definitions
-  come directly from the Mozilla source repository, and consists of the
-  following files:
+
+  This directory contains the legacy ISimpleDOM API, which was previously needed
+  to fully support Windows screenreaders. The definitions come directly from the
+  Mozilla source repository, and consist of the following files from the
+  accessible/public/msaa directory:
 
     ISimpleDOMDocument.idl
     ISimpleDOMNode.idl
     ISimpleDOMText.idl
+
+  Modern screenreaders should use the Microsoft UI Automation framework or
+  Microsoft Active Accessibility with IAccessible2.
 
 Local modifications:
   None.
