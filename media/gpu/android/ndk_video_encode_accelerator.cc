@@ -4,6 +4,8 @@
 
 #include "media/gpu/android/ndk_video_encode_accelerator.h"
 
+#include <optional>
+
 #include "base/bits.h"
 #include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -18,6 +20,8 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/android/video_accelerator_util.h"
+#include "media/parsers/h264_level_limits.h"
+#include "media/parsers/h264_parser.h"
 #include "media/parsers/temporal_scalability_id_extractor.h"
 #include "third_party/libyuv/include/libyuv.h"
 
@@ -51,8 +55,6 @@ struct AMediaFormatDeleter {
   }
 };
 
-// TODO(crbug.com/343199623): Uncomment once we also set level.
-#if 0
 enum class CodecProfileLevel {
   // Subset of MediaCodecInfo.CodecProfileLevel
   AVCProfileBaseline = 0x01,
@@ -64,6 +66,27 @@ enum class CodecProfileLevel {
   AVCProfileHigh444 = 0x40,
   AVCProfileConstrainedBaseline = 0x10000,
   AVCProfileConstrainedHigh = 0x80000,
+
+  AVCLevel1 = 0x01,
+  AVCLevel1b = 0x02,
+  AVCLevel11 = 0x04,
+  AVCLevel12 = 0x08,
+  AVCLevel13 = 0x10,
+  AVCLevel2 = 0x20,
+  AVCLevel21 = 0x40,
+  AVCLevel22 = 0x80,
+  AVCLevel3 = 0x100,
+  AVCLevel31 = 0x200,
+  AVCLevel32 = 0x400,
+  AVCLevel4 = 0x800,
+  AVCLevel41 = 0x1000,
+  AVCLevel42 = 0x2000,
+  AVCLevel5 = 0x4000,
+  AVCLevel51 = 0x8000,
+  AVCLevel52 = 0x10000,
+  AVCLevel6 = 0x20000,
+  AVCLevel61 = 0x40000,
+  AVCLevel62 = 0x80000,
 
   VP9Profile0 = 0x01,
   VP9Profile1 = 0x02,
@@ -130,7 +153,76 @@ CodecProfileLevel GetAndroidVideoProfile(VideoCodecProfile profile,
       return CodecProfileLevel::Unknown;
   }
 }
-#endif
+
+std::optional<CodecProfileLevel> GetAndroidAvcLevel(
+    std::optional<uint8_t> level) {
+  if (!level.has_value()) {
+    return {};
+  }
+  switch (level.value()) {
+    case H264SPS::kLevelIDC1p0:
+      return CodecProfileLevel::AVCLevel1;
+    case H264SPS::kLevelIDC1B:
+      return CodecProfileLevel::AVCLevel1b;
+    case H264SPS::kLevelIDC1p1:
+      return CodecProfileLevel::AVCLevel11;
+    case H264SPS::kLevelIDC1p2:
+      return CodecProfileLevel::AVCLevel12;
+    case H264SPS::kLevelIDC1p3:
+      return CodecProfileLevel::AVCLevel13;
+    case H264SPS::kLevelIDC2p0:
+      return CodecProfileLevel::AVCLevel2;
+    case H264SPS::kLevelIDC2p1:
+      return CodecProfileLevel::AVCLevel21;
+    case H264SPS::kLevelIDC2p2:
+      return CodecProfileLevel::AVCLevel22;
+    case H264SPS::kLevelIDC3p0:
+      return CodecProfileLevel::AVCLevel3;
+    case H264SPS::kLevelIDC3p1:
+      return CodecProfileLevel::AVCLevel31;
+    case H264SPS::kLevelIDC3p2:
+      return CodecProfileLevel::AVCLevel32;
+    case H264SPS::kLevelIDC4p0:
+      return CodecProfileLevel::AVCLevel4;
+    case H264SPS::kLevelIDC4p1:
+      return CodecProfileLevel::AVCLevel41;
+    case H264SPS::kLevelIDC4p2:
+      return CodecProfileLevel::AVCLevel42;
+    case H264SPS::kLevelIDC5p0:
+      return CodecProfileLevel::AVCLevel5;
+    case H264SPS::kLevelIDC5p1:
+      return CodecProfileLevel::AVCLevel51;
+    case H264SPS::kLevelIDC5p2:
+      return CodecProfileLevel::AVCLevel52;
+    case H264SPS::kLevelIDC6p0:
+      return CodecProfileLevel::AVCLevel6;
+    case H264SPS::kLevelIDC6p1:
+      return CodecProfileLevel::AVCLevel61;
+    case H264SPS::kLevelIDC6p2:
+      return CodecProfileLevel::AVCLevel62;
+    default:
+      return {};
+  }
+}
+
+std::optional<uint8_t> FindSuitableH264Level(
+    const VideoEncodeAccelerator::Config& config,
+    int framerate,
+    const gfx::Size& frame_size,
+    const Bitrate& bitrate) {
+  constexpr uint32_t kH264MbSize = 16;
+  uint32_t mb_width =
+      base::bits::AlignUp(static_cast<uint32_t>(frame_size.width()),
+                          kH264MbSize) /
+      kH264MbSize;
+  uint32_t mb_height =
+      base::bits::AlignUp(static_cast<uint32_t>(frame_size.height()),
+                          kH264MbSize) /
+      kH264MbSize;
+
+  return FindValidH264Level(config.output_profile, bitrate.target_bps(),
+                            framerate, mb_width * mb_height);
+}
 
 bool GetAndroidColorValues(const gfx::ColorSpace& cs,
                            int* standard,
@@ -208,14 +300,27 @@ MediaFormatPtr CreateVideoFormat(const VideoEncodeAccelerator::Config& config,
                                  int num_temporal_layers,
                                  PixelFormat format) {
   int iframe_interval = config.gop_length.value_or(kDefaultGOPLength);
-  auto mime = MediaCodecUtil::CodecToAndroidMimeType(
-      VideoCodecProfileToVideoCodec(config.output_profile));
+  const auto codec = VideoCodecProfileToVideoCodec(config.output_profile);
+  const auto mime = MediaCodecUtil::CodecToAndroidMimeType(codec);
   MediaFormatPtr result(AMediaFormat_new());
   AMediaFormat_setString(result.get(), AMEDIAFORMAT_KEY_MIME, mime.c_str());
-  // TODO(crbug.com/343199623): Uncomment once we also set level.
-  // int profile = static_cast<int>(GetAndroidVideoProfile(
-  //     config.output_profile, config.is_constrained_h264));
-  // AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_PROFILE, profile);
+
+  if (codec == VideoCodec::kH264) {
+    std::optional<uint8_t> level = config.h264_output_level;
+    if (!level.has_value()) {
+      level = FindSuitableH264Level(config, framerate, frame_size, bitrate);
+    }
+    auto android_level = GetAndroidAvcLevel(level);
+    if (!android_level.has_value()) {
+      DLOG(ERROR) << "Invalid level, can't create MediaFormat.";
+      return nullptr;
+    }
+    int profile = static_cast<int>(GetAndroidVideoProfile(
+        config.output_profile, config.is_constrained_h264));
+    AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_PROFILE, profile);
+    AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_LEVEL,
+                          static_cast<int>(android_level.value()));
+  }
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_WIDTH,
                         frame_size.width());
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_HEIGHT,
@@ -958,6 +1063,11 @@ bool NdkVideoEncodeAccelerator::ResetMediaCodec() {
       CreateVideoFormat(config_, effective_framerate_, configured_size,
                         effective_bitrate_, encoder_color_space_,
                         num_temporal_layers_, COLOR_FORMAT_YUV420_SEMIPLANAR);
+  if (!media_format) {
+    MEDIA_LOG(ERROR, log_) << "Fail to create media format for: "
+                           << config_.AsHumanReadableString();
+    return false;
+  }
 
   // We do the following in a loop since we may need to recreate the MediaCodec
   // if it doesn't unaligned resolutions.
