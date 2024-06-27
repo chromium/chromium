@@ -18,7 +18,7 @@ namespace features {
 // Add printers via printscanmgr instead of debugd.
 BASE_FEATURE(kAddPrinterViaPrintscanmgr,
              "AddPrinterViaPrintscanmgr",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)

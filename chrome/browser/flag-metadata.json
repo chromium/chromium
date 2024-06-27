@@ -69,7 +69,7 @@
   {
     "name": "add-printer-via-printscanmgr",
     "owners": [ "pmoy@chromium.org", "project-bolton-eng@google.com" ],
-    "expiry_milestone": 126
+    "expiry_milestone": 129
   },
   {
     "name": "add-to-homescreen-iph",
