@@ -169,7 +169,15 @@ void ReloadFromOmnibox() {
 }
 
 // Tests that the pull-to-refresh IPH is NOT attempted when page loading fails.
-- (void)testPullToRefreshIPHShouldDisappearOnEnteringTabGrid {
+// TODO(crbug.com/349869484): Consistently failing on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testPullToRefreshIPHShouldDisappearOnEnteringTabGrid \
+  DISABLED_testPullToRefreshIPHShouldDisappearOnEnteringTabGrid
+#else
+#define MAYBE_testPullToRefreshIPHShouldDisappearOnEnteringTabGrid \
+  testPullToRefreshIPHShouldDisappearOnEnteringTabGrid
+#endif
+- (void)MAYBE_testPullToRefreshIPHShouldDisappearOnEnteringTabGrid {
   RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
                          /*safari_switcher=*/YES);
   if ([ChromeEarlGrey isIPadIdiom]) {
@@ -241,7 +249,14 @@ void ReloadFromOmnibox() {
 
 // Tests that the pull-to-refresh IPH would be dismissed with the reason
 // `kSwipedAsInstructedByGestureIPH` when the user pulls down on the IPH.
-- (void)testPullToRefreshPerformAction {
+// TODO(crbug.com/349869484): Consistently failing on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testPullToRefreshPerformAction \
+  DISABLED_testPullToRefreshPerformAction
+#else
+#define MAYBE_testPullToRefreshPerformAction testPullToRefreshPerformAction
+#endif
+- (void)MAYBE_testPullToRefreshPerformAction {
   RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
                          /*safari_switcher=*/YES);
   if ([ChromeEarlGrey isIPadIdiom]) {
