@@ -203,10 +203,12 @@ class HotspotControllerConcurrencyApiTest : public ::testing::Test {
     run_loop.RunUntilIdle();
   }
 
-  void EnableAndAbortHotspot(
-      hotspot_config::mojom::HotspotControlResult& enable_result,
-      hotspot_config::mojom::HotspotControlResult& disable_result) {
+  void EnableAndAbortHotspot() {
     base::RunLoop run_loop;
+    hotspot_config::mojom::HotspotControlResult enable_result =
+        hotspot_config::mojom::HotspotControlResult::kUnknownFailure;
+    hotspot_config::mojom::HotspotControlResult disable_result =
+        hotspot_config::mojom::HotspotControlResult::kUnknownFailure;
     hotspot_controller_->EnableHotspot(base::BindLambdaForTesting(
         [&](hotspot_config::mojom::HotspotControlResult result) {
           enable_result = result;
@@ -221,6 +223,11 @@ class HotspotControllerConcurrencyApiTest : public ::testing::Test {
         hotspot_config::mojom::DisableReason::kUserInitiated);
     run_loop.Run();
     FlushMojoCalls();
+
+    EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kAborted,
+              enable_result);
+    EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kAlreadyFulfilled,
+              disable_result);
   }
 
   void FlushMojoCalls() { base::RunLoop().RunUntilIdle(); }
@@ -282,43 +289,22 @@ TEST_F(HotspotControllerConcurrencyApiTest, EnableTetheringSuccess) {
       1);
 }
 
-// TODO(crbug.com/349291155): Re-enable this test.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_AbortEnableTethering DISABLED_AbortEnableTethering
-#else
-#define MAYBE_AbortEnableTethering AbortEnableTethering
-#endif
-TEST_F(HotspotControllerConcurrencyApiTest, MAYBE_AbortEnableTethering) {
+TEST_F(HotspotControllerConcurrencyApiTest, AbortEnableTethering) {
   SetHotspotAllowed();
   AddActiveCellularService();
   network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
       FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
   base::RunLoop().RunUntilIdle();
 
-  hotspot_config::mojom::HotspotControlResult enable_result, disable_result;
-  EnableAndAbortHotspot(enable_result, disable_result);
-  EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kAborted,
-            enable_result);
-  EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kSuccess,
-            disable_result);
+  EnableAndAbortHotspot();
 
   histogram_tester_.ExpectBucketCount(
       HotspotMetricsHelper::kHotspotEnableResultHistogram,
       HotspotMetricsHelper::HotspotMetricsSetEnabledResult::kAborted, 1);
 }
 
-// TODO(crbug.com/349291155): MemorySanitizer: use-of-uninitialized-value
-// Uninitialized value was created by an allocation of 'disable_result' in the
-// stack frame.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_ShillOperationFailureWhileAborting \
-  DISABLED_ShillOperationFailureWhileAborting
-#else
-#define MAYBE_ShillOperationFailureWhileAborting \
-  ShillOperationFailureWhileAborting
-#endif
 TEST_F(HotspotControllerConcurrencyApiTest,
-       MAYBE_ShillOperationFailureWhileAborting) {
+       ShillOperationFailureWhileAborting) {
   SetHotspotAllowed();
   AddActiveCellularService();
   base::RunLoop().RunUntilIdle();
@@ -328,12 +314,7 @@ TEST_F(HotspotControllerConcurrencyApiTest,
       shill::kTetheringEnableResultNetworkSetupFailure);
   base::RunLoop().RunUntilIdle();
 
-  hotspot_config::mojom::HotspotControlResult enable_result, disable_result;
-  EnableAndAbortHotspot(enable_result, disable_result);
-  EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kAborted,
-            enable_result);
-  EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kSuccess,
-            disable_result);
+  EnableAndAbortHotspot();
 
   histogram_tester_.ExpectBucketCount(
       HotspotMetricsHelper::kHotspotEnableResultHistogram,

@@ -16,9 +16,13 @@
 
 namespace ash {
 
+using hotspot_config::mojom::DisableReason;
+using hotspot_config::mojom::HotspotControlResult;
+using hotspot_config::mojom::HotspotState;
+
 HotspotController::HotspotControlRequest::HotspotControlRequest(
     bool enabled,
-    std::optional<hotspot_config::mojom::DisableReason> disable_reason,
+    std::optional<DisableReason> disable_reason,
     HotspotControlCallback callback)
     : enabled(enabled),
       disable_reason(disable_reason),
@@ -55,17 +59,14 @@ void HotspotController::EnableHotspot(HotspotControlCallback callback) {
     NET_LOG(ERROR) << "Failed to enable hotspot as an existing disable "
                       "request is in progress";
     HotspotMetricsHelper::RecordSetTetheringEnabledResult(
-        /*enabled=*/true,
-        hotspot_config::mojom::HotspotControlResult::kInvalid);
+        /*enabled=*/true, HotspotControlResult::kInvalid);
     return;
   }
   if (!current_enable_request_) {
     current_enable_request_ = std::make_unique<HotspotControlRequest>(
         /*enabled=*/true, /*disable_reason=*/std::nullopt, std::move(callback));
-    if (hotspot_state_handler_->GetHotspotState() ==
-        hotspot_config::mojom::HotspotState::kEnabled) {
-      CompleteEnableRequest(
-          hotspot_config::mojom::HotspotControlResult::kAlreadyFulfilled);
+    if (hotspot_state_handler_->GetHotspotState() == HotspotState::kEnabled) {
+      CompleteEnableRequest(HotspotControlResult::kAlreadyFulfilled);
       return;
     }
     current_enable_request_->enable_latency_timer = base::ElapsedTimer();
@@ -75,26 +76,29 @@ void HotspotController::EnableHotspot(HotspotControlCallback callback) {
   }
 }
 
-void HotspotController::DisableHotspot(
-    HotspotControlCallback callback,
-    hotspot_config::mojom::DisableReason disable_reason) {
+void HotspotController::DisableHotspot(HotspotControlCallback callback,
+                                       DisableReason disable_reason) {
   if (current_enable_request_) {
     current_enable_request_->abort = true;
-    if (hotspot_state_handler_->GetHotspotState() ==
-        hotspot_config::mojom::HotspotState::kEnabling) {
+    if (hotspot_state_handler_->GetHotspotState() == HotspotState::kEnabling) {
       current_disable_request_ = std::make_unique<HotspotControlRequest>(
           /*enabled=*/false, disable_reason, std::move(callback));
       PerformSetTetheringEnabled(/*enabled=*/false);
+      return;
     }
+
+    // If it goes here, it means disable hotspot request comes in before
+    // calling into enable hotspot in Shill, e.g.: when still doing tethering
+    // readiness, we'll just need to run the callback since hotspot is not
+    // enabled yet.
+    std::move(callback).Run(HotspotControlResult::kAlreadyFulfilled);
     return;
   }
   if (!current_disable_request_) {
     current_disable_request_ = std::make_unique<HotspotControlRequest>(
         /*enabled=*/false, disable_reason, std::move(callback));
-    if (hotspot_state_handler_->GetHotspotState() ==
-        hotspot_config::mojom::HotspotState::kDisabled) {
-      CompleteDisableRequest(
-          hotspot_config::mojom::HotspotControlResult::kAlreadyFulfilled);
+    if (hotspot_state_handler_->GetHotspotState() == HotspotState::kDisabled) {
+      CompleteDisableRequest(HotspotControlResult::kAlreadyFulfilled);
       return;
     }
     PerformSetTetheringEnabled(/*enabled=*/false);
@@ -117,20 +121,17 @@ void HotspotController::OnCheckTetheringReadiness(
     HotspotCapabilitiesProvider::CheckTetheringReadinessResult result) {
   if (current_enable_request_->abort) {
     NET_LOG(ERROR) << "Aborting in check tethering readiness";
-    CompleteEnableRequest(
-        hotspot_config::mojom::HotspotControlResult::kAborted);
+    CompleteEnableRequest(HotspotControlResult::kAborted);
     return;
   }
   if (result == HotspotCapabilitiesProvider::CheckTetheringReadinessResult::
                     kUpstreamNetworkNotAvailable) {
-    CompleteEnableRequest(
-        hotspot_config::mojom::HotspotControlResult::kUpstreamNotAvailable);
+    CompleteEnableRequest(HotspotControlResult::kUpstreamNotAvailable);
     return;
   }
   if (result !=
       HotspotCapabilitiesProvider::CheckTetheringReadinessResult::kReady) {
-    CompleteEnableRequest(
-        hotspot_config::mojom::HotspotControlResult::kReadinessCheckFailed);
+    CompleteEnableRequest(HotspotControlResult::kReadinessCheckFailed);
     return;
   }
   technology_state_controller_->PrepareEnableHotspot(
@@ -141,16 +142,14 @@ void HotspotController::OnCheckTetheringReadiness(
 void HotspotController::OnPrepareEnableHotspotCompleted(bool prepare_success,
                                                         bool wifi_turned_off) {
   if (current_enable_request_->abort) {
-    CompleteEnableRequest(
-        hotspot_config::mojom::HotspotControlResult::kAborted);
+    CompleteEnableRequest(HotspotControlResult::kAborted);
     return;
   }
   NET_LOG(EVENT) << "Prepare enable hotspot completed, success: "
                  << prepare_success << ", wifi turned off " << wifi_turned_off;
   wifi_turned_off_ = wifi_turned_off;
   if (!prepare_success) {
-    CompleteEnableRequest(
-        hotspot_config::mojom::HotspotControlResult::kDisableWifiFailed);
+    CompleteEnableRequest(HotspotControlResult::kDisableWifiFailed);
     return;
   }
   PerformSetTetheringEnabled(/*enabled=*/true);
@@ -158,8 +157,7 @@ void HotspotController::OnPrepareEnableHotspotCompleted(bool prepare_success,
 
 void HotspotController::PerformSetTetheringEnabled(bool enabled) {
   if (enabled && current_enable_request_->abort) {
-    CompleteEnableRequest(
-        hotspot_config::mojom::HotspotControlResult::kAborted);
+    CompleteEnableRequest(HotspotControlResult::kAborted);
     return;
   }
 
@@ -205,19 +203,14 @@ void HotspotController::OnSetTetheringEnabledFailure(
   NET_LOG(ERROR) << "Enable/disable tethering failed: " << error_name
                  << ", message: " << error_message;
   if (enabled) {
-    CompleteEnableRequest(
-        hotspot_config::mojom::HotspotControlResult::kShillOperationFailed);
+    CompleteEnableRequest(HotspotControlResult::kShillOperationFailed);
   } else {
-    CompleteDisableRequest(
-        hotspot_config::mojom::HotspotControlResult::kShillOperationFailed);
+    CompleteDisableRequest(HotspotControlResult::kShillOperationFailed);
   }
 }
 
-void HotspotController::CompleteEnableRequest(
-    hotspot_config::mojom::HotspotControlResult result) {
+void HotspotController::CompleteEnableRequest(HotspotControlResult result) {
   DCHECK(current_enable_request_);
-  using hotspot_config::mojom::HotspotControlResult;
-
   if (result != HotspotControlResult::kAlreadyFulfilled) {
     HotspotMetricsHelper::RecordEnableHotspotLatency(
         current_enable_request_->enable_latency_timer->Elapsed());
@@ -250,10 +243,8 @@ void HotspotController::CompleteEnableRequest(
   }
 }
 
-void HotspotController::CompleteDisableRequest(
-    hotspot_config::mojom::HotspotControlResult result) {
+void HotspotController::CompleteDisableRequest(HotspotControlResult result) {
   DCHECK(current_disable_request_);
-  using hotspot_config::mojom::HotspotControlResult;
 
   HotspotMetricsHelper::RecordSetTetheringEnabledResult(
       /*enabled=*/false, result);
@@ -276,19 +267,16 @@ void HotspotController::SetPolicyAllowHotspot(bool allow_hotspot) {
 
   allow_hotspot_ = allow_hotspot;
   hotspot_capabilities_provider_->SetPolicyAllowed(allow_hotspot);
-  if (!allow_hotspot && hotspot_state_handler_->GetHotspotState() !=
-                            hotspot_config::mojom::HotspotState::kDisabled) {
-    DisableHotspot(base::DoNothing(),
-                   hotspot_config::mojom::DisableReason::kProhibitedByPolicy);
+  if (!allow_hotspot &&
+      hotspot_state_handler_->GetHotspotState() != HotspotState::kDisabled) {
+    DisableHotspot(base::DoNothing(), DisableReason::kProhibitedByPolicy);
   }
 }
 
 void HotspotController::PrepareEnableWifi(
     base::OnceCallback<void(bool prepare_success)> callback) {
-  if (hotspot_state_handler_->GetHotspotState() ==
-          hotspot_config::mojom::HotspotState::kEnabled ||
-      hotspot_state_handler_->GetHotspotState() ==
-          hotspot_config::mojom::HotspotState::kEnabling ||
+  if (hotspot_state_handler_->GetHotspotState() == HotspotState::kEnabled ||
+      hotspot_state_handler_->GetHotspotState() == HotspotState::kEnabling ||
       current_enable_request_) {
     if (current_enable_request_) {
       current_enable_request_->abort = true;
@@ -296,7 +284,7 @@ void HotspotController::PrepareEnableWifi(
     DisableHotspot(
         base::BindOnce(&HotspotController::OnPrepareEnableWifiCompleted,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        hotspot_config::mojom::DisableReason::kWifiEnabled);
+        DisableReason::kWifiEnabled);
     return;
   }
   std::move(callback).Run(/*prepare_success=*/true);
@@ -304,8 +292,8 @@ void HotspotController::PrepareEnableWifi(
 
 void HotspotController::OnPrepareEnableWifiCompleted(
     base::OnceCallback<void(bool prepare_success)> callback,
-    hotspot_config::mojom::HotspotControlResult control_result) {
-  if (control_result == hotspot_config::mojom::HotspotControlResult::kSuccess) {
+    HotspotControlResult control_result) {
+  if (control_result == HotspotControlResult::kSuccess) {
     std::move(callback).Run(/*prepare_success=*/true);
     return;
   }
@@ -317,13 +305,12 @@ void HotspotController::OnHotspotStatusChanged() {
     return;
   }
 
-  hotspot_config::mojom::HotspotState hotspot_state =
-      hotspot_state_handler_->GetHotspotState();
-  if (hotspot_state != hotspot_config::mojom::HotspotState::kDisabled) {
+  HotspotState hotspot_state = hotspot_state_handler_->GetHotspotState();
+  if (hotspot_state != HotspotState::kDisabled) {
     return;
   }
 
-  std::optional<hotspot_config::mojom::DisableReason> disable_reason =
+  std::optional<DisableReason> disable_reason =
       hotspot_state_handler_->GetDisableReason();
   if (disable_reason) {
     NET_LOG(EVENT)
@@ -345,8 +332,7 @@ void HotspotController::NotifyHotspotTurnedOn() {
   }
 }
 
-void HotspotController::NotifyHotspotTurnedOff(
-    hotspot_config::mojom::DisableReason disable_reason) {
+void HotspotController::NotifyHotspotTurnedOff(DisableReason disable_reason) {
   for (auto& observer : observer_list_) {
     observer.OnHotspotTurnedOff(disable_reason);
   }

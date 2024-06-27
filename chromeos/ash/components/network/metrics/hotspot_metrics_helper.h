@@ -66,6 +66,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
 
  private:
   friend class HotspotMetricsHelperTest;
+  friend class HotspotControllerTest;
+  friend class HotspotControllerConcurrencyApiTest;
+
   FRIEND_TEST_ALL_PREFIXES(HotspotMetricsHelperTest,
                            HotspotAllowStatusHistogram);
   FRIEND_TEST_ALL_PREFIXES(HotspotMetricsHelperTest,
