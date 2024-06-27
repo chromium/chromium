@@ -26,15 +26,15 @@ class COMPONENTS_PREFS_EXPORT PrefStore : public base::RefCounted<PrefStore> {
   class COMPONENTS_PREFS_EXPORT Observer {
    public:
     // Called when the value for the given |key| in the store changes.
-    virtual void OnPrefValueChanged(const std::string& key) = 0;
+    virtual void OnPrefValueChanged(const std::string& key) {}
     // Notification about the PrefStore being fully initialized.
-    virtual void OnInitializationCompleted(bool succeeded) = 0;
+    virtual void OnInitializationCompleted(bool succeeded) {}
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
-  PrefStore() {}
+  PrefStore() = default;
 
   PrefStore(const PrefStore&) = delete;
   PrefStore& operator=(const PrefStore&) = delete;
@@ -58,7 +58,7 @@ class COMPONENTS_PREFS_EXPORT PrefStore : public base::RefCounted<PrefStore> {
 
  protected:
   friend class base::RefCounted<PrefStore>;
-  virtual ~PrefStore() {}
+  virtual ~PrefStore() = default;
 };
 
 #endif  // COMPONENTS_PREFS_PREF_STORE_H_
