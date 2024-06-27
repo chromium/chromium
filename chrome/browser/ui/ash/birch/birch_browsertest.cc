@@ -72,6 +72,40 @@ class TestCalendarProvider : public BirchDataProvider {
   }
 };
 
+// A provider that provides a single attachment.
+class TestCalendarAttachmentProvider : public BirchDataProvider {
+ public:
+  TestCalendarAttachmentProvider() = default;
+  ~TestCalendarAttachmentProvider() override = default;
+
+  // BirchDataProvider:
+  void RequestBirchDataFetch() override {
+    // Also set calendar items, which are normally fetched with attachments.
+    Shell::Get()->birch_model()->SetCalendarItems({});
+
+    std::vector<BirchAttachmentItem> items;
+    items.emplace_back(u"Attachment 0",
+                       /*file_url=*/GURL("http://attachment.com/"),
+                       /*icon_url=*/GURL("http://favicon.com/"),
+                       /*start_time=*/base::Time::Now() - base::Minutes(30),
+                       /*end_time=*/base::Time::Now() + base::Minutes(30),
+                       /*file_id=*/"file_id0");
+    Shell::Get()->birch_model()->SetAttachmentItems(std::move(items));
+  }
+};
+
+// A file suggest provider that provides no files.
+class EmptyFileSuggestProvider : public BirchDataProvider {
+ public:
+  EmptyFileSuggestProvider() = default;
+  ~EmptyFileSuggestProvider() override = default;
+
+  // BirchDataProvider:
+  void RequestBirchDataFetch() override {
+    Shell::Get()->birch_model()->SetFileSuggestItems({});
+  }
+};
+
 // A file suggest provider that provides a single file.
 class TestFileSuggestProvider : public BirchDataProvider {
  public:
@@ -377,6 +411,51 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, CalendarChip) {
 
   EXPECT_EQ(mock_new_window_delegate_->opened_url_,
             GURL("http://example.com/"));
+}
+
+IN_PROC_BROWSER_TEST_F(BirchBrowserTest, AttachmentChip) {
+  // Set up a calendar provider that provides a single attachment.
+  auto* birch_keyed_service = GetBirchKeyedService();
+  TestCalendarAttachmentProvider attachment_provider;
+  birch_keyed_service->set_calendar_provider_for_test(&attachment_provider);
+
+  // The file suggest pref must be enabled to fetch attachments, so we must also
+  // have a file suggest provider.
+  EmptyFileSuggestProvider file_suggest_provider;
+  birch_keyed_service->set_file_suggest_provider_for_test(
+      &file_suggest_provider);
+
+  // Disable the prefs for data providers other than file suggest, which
+  // controls attachments. This ensures the data is fresh once the attachment
+  // provider replies.
+  DisableAllDataTypePrefsExcept(prefs::kBirchUseFileSuggest);
+
+  // Ensure the item remover is initialized, otherwise data fetches won't
+  // complete.
+  EnsureItemRemoverInitialized();
+
+  // Set up a callback for a birch data fetch.
+  base::RunLoop birch_data_fetch_waiter;
+  Shell::Get()->birch_model()->SetDataFetchCallbackForTest(
+      birch_data_fetch_waiter.QuitClosure());
+
+  // Enter overview, which triggers a birch data fetch.
+  ToggleOverview();
+  WaitForOverviewEntered();
+
+  // Wait for fetch callback to complete.
+  birch_data_fetch_waiter.Run();
+
+  // The birch bar is created with a single attachment chip.
+  BirchChipButtonBase* button = GetBirchChipButton();
+  EXPECT_EQ(button->GetItem()->GetType(), BirchItemType::kAttachment);
+
+  // Clicking the button closes overview and destroys the button, so avoid
+  // dangling pointers with std::exchange.
+  ClickOnView(std::exchange(button, nullptr));
+
+  EXPECT_EQ(mock_new_window_delegate_->opened_url_,
+            GURL("http://attachment.com/"));
 }
 
 IN_PROC_BROWSER_TEST_F(BirchBrowserTest, FileSuggestChip) {
