@@ -348,6 +348,10 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
     }
 
     this.onCloseDialog_(e);
+    const toFocus =
+        this.shadowRoot!.querySelector<HTMLElement>('#resetSettingsButton');
+    assert(toFocus);
+    focusWithoutInk(toFocus);
   }
 
   /**
