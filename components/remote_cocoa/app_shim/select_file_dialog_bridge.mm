@@ -28,6 +28,24 @@ namespace {
 
 const int kFileTypePopupTag = 1234;
 
+// Returns whether the Uniform Type system considers `ext` to be a valid file
+// extension.
+bool IsValidExtension(const base::FilePath::StringType& ext) {
+  if (@available(macOS 11, *)) {
+    UTType* type =
+        [UTType typeWithFilenameExtension:base::SysUTF8ToNSString(ext)];
+    return !!type;
+  } else {
+    base::apple::ScopedCFTypeRef<CFStringRef> ext_cf =
+        base::SysUTF8ToCFStringRef(ext);
+    base::apple::ScopedCFTypeRef<CFStringRef> uti(
+        UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension,
+                                              ext_cf.get(),
+                                              /*inConformingToUTI=*/nullptr));
+    return !!uti;
+  }
+}
+
 NSString* GetDescriptionFromExtension(const base::FilePath::StringType& ext) {
   if (@available(macOS 11, *)) {
     UTType* type =
@@ -249,14 +267,17 @@ NSSavePanel* __weak g_last_created_panel_for_testing = nil;
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  if (index < _fileExtensionLists.count) {
+  if (index < _fileExtensionLists.count && _fileExtensionLists[index].count) {
     // For save dialogs, this causes the first item in the allowedFileTypes
     // array to be used as the extension for the save panel.
     _dialog.allowedFileTypes = _fileExtensionLists[index];
   } else {
-    // The user selected "All files" option. (Note that nil is "all types" and
-    // an empty array is an error, unlike with -allowedContentTypes, where an
-    // empty array is "all types" and nil is an error.)
+    // The user selected "All files" option (or this is the error case where the
+    // page specified literally no valid extensions).
+    //
+    // (API note: nil is "all types" and an empty array is an error, unlike with
+    // -allowedContentTypes, where an empty array is "all types" and nil is an
+    // error.)
     _dialog.allowedFileTypes = nil;
   }
 #pragma clang diagnostic pop
@@ -462,6 +483,13 @@ void SelectFileDialogBridge::SetAccessoryView(
     // Store different extensions in the current extension group.
     NSMutableArray<NSString*>* file_extensions_array = [NSMutableArray array];
     for (const base::FilePath::StringType& ext : ext_list) {
+      // If an extension can't be mapped to a UTType (not even a dynamic one)
+      // then attempting to use it with a save panel will cause the save panel
+      // service to fail (see https://crbug.com/40900143).
+      if (!IsValidExtension(ext)) {
+        continue;
+      }
+
       if (ext == default_extension) {
         default_extension_index = i;
       }
