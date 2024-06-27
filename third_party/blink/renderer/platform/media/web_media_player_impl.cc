@@ -613,6 +613,13 @@ WebMediaPlayerImpl::~WebMediaPlayerImpl() {
   // If we're in the middle of an observation, then finish it.
   will_play_helper_.CompleteObservationIfNeeded(learning::TargetValue(false));
 
+  // Explicitly reset `pipeline_controller_` to guarantee its destruction
+  // before DestructionHelper runs on `media_task_runner_`.
+  // This prevents possible dangling ptr's if `compositor` is destroyed
+  // before `pipeline_controller_`, which holds a VideoRendererSink
+  // in MediaFoundationRendererClient.
+  pipeline_controller_.reset();
+
   // Handle destruction of things that need to be destructed after the pipeline
   // completes stopping on the media thread.
   media_task_runner_->PostTask(
