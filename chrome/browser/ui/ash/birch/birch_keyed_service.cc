@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/birch/birch_calendar_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_file_suggest_provider.h"
@@ -23,6 +24,8 @@
 #include "chrome/browser/ui/ash/birch/birch_self_share_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_weather_v2_provider.h"
 #include "chrome/browser/ui/ash/birch/refresh_token_waiter.h"
+#include "components/favicon/core/favicon_service.h"
+#include "components/favicon_base/favicon_types.h"
 
 namespace ash {
 
@@ -30,6 +33,16 @@ namespace {
 
 // The file within the cryptohome to save removed items into.
 constexpr char kRemovedBirchItemsFile[] = "birch/removed_items.pb";
+
+// Callback for FaviconService icon lookup.
+void OnGotFaviconImage(base::OnceCallback<void(const ui::ImageModel&)> callback,
+                       const favicon_base::FaviconImageResult& image_result) {
+  if (image_result.image.IsEmpty()) {
+    std::move(callback).Run(ui::ImageModel());
+    return;
+  }
+  std::move(callback).Run(ui::ImageModel::FromImage(image_result.image));
+}
 
 }  // namespace
 
@@ -139,6 +152,17 @@ void BirchKeyedService::RemoveFileItemFromLauncher(const base::FilePath& path) {
   auto* file_suggest_keyed_service =
       FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile_);
   file_suggest_keyed_service->RemoveSuggestionsAndNotify(file_paths);
+}
+
+void BirchKeyedService::GetFaviconImage(
+    const GURL& url,
+    base::OnceCallback<void(const ui::ImageModel&)> callback) {
+  favicon::FaviconService* service =
+      FaviconServiceFactory::GetInstance()->GetForProfile(
+          profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  service->GetFaviconImage(
+      url, base::BindOnce(&OnGotFaviconImage, std::move(callback)),
+      &cancelable_task_tracker_);
 }
 
 void BirchKeyedService::ShutdownBirch() {

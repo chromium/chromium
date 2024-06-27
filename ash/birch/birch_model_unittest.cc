@@ -132,6 +132,9 @@ class StubBirchClient : public BirchClient {
   void RemoveFileItemFromLauncher(const base::FilePath& path) override {
     last_removed_path_ = path;
   }
+  void GetFaviconImage(
+      const GURL& url,
+      base::OnceCallback<void(const ui::ImageModel&)> callback) override {}
 
   StubBirchDataProvider calendar_provider_;
   StubBirchDataProvider file_suggest_provider_;

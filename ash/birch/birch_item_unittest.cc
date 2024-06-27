@@ -59,6 +59,35 @@ class TestNewWindowDelegateImpl : public TestNewWindowDelegate {
   base::FilePath last_opened_file_path_;
 };
 
+class StubBirchClient : public BirchClient {
+ public:
+  StubBirchClient() = default;
+  ~StubBirchClient() override = default;
+
+  // BirchClient:
+  BirchDataProvider* GetCalendarProvider() override { return nullptr; }
+  BirchDataProvider* GetFileSuggestProvider() override { return nullptr; }
+  BirchDataProvider* GetRecentTabsProvider() override { return nullptr; }
+  BirchDataProvider* GetLastActiveProvider() override { return nullptr; }
+  BirchDataProvider* GetMostVisitedProvider() override { return nullptr; }
+  BirchDataProvider* GetSelfShareProvider() override { return nullptr; }
+  BirchDataProvider* GetLostMediaProvider() override { return nullptr; }
+  BirchDataProvider* GetReleaseNotesProvider() override { return nullptr; }
+  BirchDataProvider* GetWeatherV2Provider() override { return nullptr; }
+  void WaitForRefreshTokens(base::OnceClosure callback) override {}
+  base::FilePath GetRemovedItemsFilePath() override { return base::FilePath(); }
+  void RemoveFileItemFromLauncher(const base::FilePath& path) override {}
+
+  void GetFaviconImage(
+      const GURL& url,
+      base::OnceCallback<void(const ui::ImageModel&)> callback) override {
+    did_get_favicon_image_ = true;
+    std::move(callback).Run(ui::ImageModel());
+  }
+
+  bool did_get_favicon_image_ = false;
+};
+
 class BirchItemTest : public testing::Test {
  public:
   BirchItemTest()
@@ -534,6 +563,17 @@ class BirchItemIconTest : public AshTestBase {
     feature_list_.InitAndEnableFeature(features::kForestFeature);
   }
 
+  void SetUp() override {
+    AshTestBase::SetUp();
+    Shell::Get()->birch_model()->SetClientAndInit(&stub_birch_client_);
+  }
+
+  void TearDown() override {
+    Shell::Get()->birch_model()->SetClientAndInit(nullptr);
+    AshTestBase::TearDown();
+  }
+
+  StubBirchClient stub_birch_client_;
   TestImageDownloader image_downloader_;
   base::test::ScopedFeatureList feature_list_;
 };
@@ -597,6 +637,8 @@ TEST_F(BirchItemIconTest, Tab_LoadIcon) {
                     BirchTabItem::DeviceFormFactor::kDesktop);
   base::test::TestFuture<const ui::ImageModel&, bool> future;
   item.LoadIcon(future.GetCallback());
+  // The favicon service was queried.
+  EXPECT_TRUE(stub_birch_client_.did_get_favicon_image_);
   // The icon is not empty.
   EXPECT_FALSE(future.Get<0>().IsEmpty());
   // Success is true.
@@ -659,6 +701,24 @@ TEST_F(BirchItemIconTest, File_LoadIcon) {
   auto* icon_cache = Shell::Get()->birch_model()->icon_cache();
   EXPECT_EQ(icon_cache->size_for_test(), 1u);
   EXPECT_FALSE(icon_cache->Get(icon_url).isNull());
+}
+
+TEST_F(BirchItemIconTest, SelfShare_LoadIcon) {
+  BirchSelfShareItem item(
+      u"self share guid", u"self share tab", GURL("https://www.example.com/"),
+      base::Time(), u"my device", GURL("http://icon.com/"), base::DoNothing());
+  base::test::TestFuture<const ui::ImageModel&, bool> future;
+  item.LoadIcon(future.GetCallback());
+  // The favicon service was queried.
+  EXPECT_TRUE(stub_birch_client_.did_get_favicon_image_);
+  // The icon is not empty.
+  EXPECT_FALSE(future.Get<0>().IsEmpty());
+  // Success is true.
+  EXPECT_TRUE(future.Get<1>());
+
+  auto* icon_cache = Shell::Get()->birch_model()->icon_cache();
+  EXPECT_EQ(icon_cache->size_for_test(), 1u);
+  EXPECT_FALSE(icon_cache->Get("http://icon.com/").isNull());
 }
 
 }  // namespace

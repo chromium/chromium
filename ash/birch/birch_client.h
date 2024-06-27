@@ -6,10 +6,16 @@
 #define ASH_BIRCH_BIRCH_CLIENT_H_
 
 #include "ash/ash_export.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
+
+class GURL;
 
 namespace base {
 class FilePath;
+}
+
+namespace ui {
+class ImageModel;
 }
 
 namespace ash {
@@ -41,6 +47,13 @@ class ASH_EXPORT BirchClient {
   // Drive files the path looks like:
   // /media/fuse/drivefs-48de6bc248c2f6d8e809521347ef6190/root/Test doc.gdoc
   virtual void RemoveFileItemFromLauncher(const base::FilePath& path) = 0;
+
+  // Attempts to load the favicon at `url` out of the FaviconService cache.
+  // Invokes the callback either with a valid image (success) or an empty image
+  // (failure).
+  virtual void GetFaviconImage(
+      const GURL& url,
+      base::OnceCallback<void(const ui::ImageModel&)> callback) = 0;
 
   virtual ~BirchClient() = default;
 };

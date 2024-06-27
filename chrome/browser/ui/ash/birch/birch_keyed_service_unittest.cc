@@ -861,4 +861,11 @@ TEST_F(BirchKeyedServiceTest, RemoveFileItemFromLauncher) {
   birch_keyed_service()->RemoveFileItemFromLauncher(test_path);
 }
 
+// Verifies that GetFaviconImage calls the favicon service.
+TEST_F(BirchKeyedServiceTest, GetFaviconImage) {
+  GURL url("http://example.com/favicon.ico");
+  EXPECT_CALL(*favicon_service(), GetFaviconImage(url, testing::_, testing::_));
+  birch_keyed_service()->GetFaviconImage(url, base::DoNothing());
+}
+
 }  // namespace ash

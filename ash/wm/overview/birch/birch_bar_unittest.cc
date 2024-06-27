@@ -281,6 +281,10 @@ class TestBirchClient : public BirchClient {
 
   void RemoveFileItemFromLauncher(const base::FilePath& path) override {}
 
+  void GetFaviconImage(
+      const GURL& url,
+      base::OnceCallback<void(const ui::ImageModel&)> callback) override {}
+
  private:
   void HandleCalendarFetch(const std::vector<BirchCalendarItem>& items) {
     // The production calendar provider sets both calendar items and attachment

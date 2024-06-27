@@ -118,6 +118,32 @@ void DownloadImageFromUrl(
       base::BindOnce(&OnImageDownloaded, url, std::move(callback)));
 }
 
+// Callback for the favicon load request in `GetFaviconImage()`. If the load
+// failed, requests the icon off the network.
+void OnGotFaviconImage(
+    const GURL& url,
+    base::OnceCallback<void(const ui::ImageModel&, bool)> load_icon_callback,
+    const ui::ImageModel& image) {
+  // Favicon lookup in the FaviconService failed. Fall back to downloading the
+  // asset off the network.
+  if (image.IsEmpty()) {
+    DownloadImageFromUrl(url, std::move(load_icon_callback));
+    return;
+  }
+  // FaviconService lookup succeeded. No need to hit the network.
+  std::move(load_icon_callback).Run(image, /*success=*/true);
+}
+
+// Loads a favicon image. First tries the browser's FaviconService cache, then
+// if not found downloads off the network.
+void GetFaviconImage(
+    const GURL& url,
+    base::OnceCallback<void(const ui::ImageModel&, bool)> load_icon_callback) {
+  BirchClient* client = Shell::Get()->birch_model()->birch_client();
+  client->GetFaviconImage(url, base::BindOnce(&OnGotFaviconImage, url,
+                                              std::move(load_icon_callback)));
+}
+
 // Returns the pref service to use for Birch item prefs.
 PrefService* GetPrefService() {
   if (!Shell::HasInstance()) {
@@ -558,7 +584,7 @@ void BirchTabItem::PerformSecondaryAction() {
 }
 
 void BirchTabItem::LoadIcon(LoadIconCallback callback) const {
-  DownloadImageFromUrl(favicon_url_, std::move(callback));
+  GetFaviconImage(favicon_url_, std::move(callback));
 }
 
 // static
@@ -779,7 +805,7 @@ void BirchSelfShareItem::PerformSecondaryAction() {
 
 void BirchSelfShareItem::LoadIcon(LoadIconCallback callback) const {
   // TODO(b/333412417): Set a generic website icon if empty image result.
-  DownloadImageFromUrl(favicon_url_, std::move(callback));
+  GetFaviconImage(favicon_url_, std::move(callback));
 }
 
 // static
