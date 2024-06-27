@@ -173,7 +173,7 @@ public class ActivityFinisher {
         }
 
         try {
-            doneCallback.waitForFirst();
+            doneCallback.waitForNext();
             return true;
         } catch (TimeoutException e) {
             Log.w(TAG, "Timed out trying to close leftover activities: %s", remaining);
