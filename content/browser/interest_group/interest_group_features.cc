@@ -34,7 +34,7 @@ BASE_FEATURE(kFledgePrefetchBandAKeys,
 // database.
 BASE_FEATURE(kFledgeStoreBandAKeysInDB,
              "FledgeStoreBandAKeysInDB",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable detecting inconsistency in the `PageImpl` used in the auction. Abort
 // the auction when detected.
