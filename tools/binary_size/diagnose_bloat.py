@@ -325,13 +325,13 @@ class _BuildHelper:
     return self.apk_name + '.size'
 
   def _SetDefaults(self):
-    has_internal = os.path.exists(os.path.join(_SRC_ROOT, 'internal'))
+    has_internal = os.path.exists(os.path.join(_SRC_ROOT, 'internal', 'OWNERS'))
     if has_internal:
       self.extra_gn_args_str = (
           'is_chrome_branded=true ' + self.extra_gn_args_str)
     else:
       self.extra_gn_args_str = (
-          'ffmpeg_branding="Chrome" proprietary_codecs=true' +
+          'ffmpeg_branding="Chrome" proprietary_codecs=true ' +
           self.extra_gn_args_str)
     if self.IsLinux():
       self.extra_gn_args_str = (
