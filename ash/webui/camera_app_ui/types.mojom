@@ -5,12 +5,18 @@
 module ash.camera_app.mojom;
 
 // Wi-Fi security type.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(WifiSecurityType)
 enum WifiSecurityType {
-  kNone,
-  kEap,
-  kWep,
-  kWpa,
+  kNone = 0,
+  kEap = 1,
+  kWep = 2,
+  kWpa = 3,
 };
+
+// LINT.ThenChange(//tools/metrics/structured/sync/structured.xml)
 
 // EAP methods.
 enum WifiEapMethod {
