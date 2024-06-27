@@ -184,7 +184,7 @@ MultiWordSuggester::MultiWordSuggester(
   suggestion_button_.id = ui::ime::ButtonId::kSuggestion;
   suggestion_button_.window_type =
       ash::ime::AssistiveWindowType::kMultiWordSuggestion;
-  suggestion_button_.index = 0;
+  suggestion_button_.suggestion_index = 0;
 }
 
 MultiWordSuggester::~MultiWordSuggester() = default;

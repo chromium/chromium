@@ -80,7 +80,7 @@ AssistiveWindowButton CreateDiacriticsButtonFor(
       .id = ui::ime::ButtonId::kSuggestion,
       .window_type =
           ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion,
-      .index = index,
+      .suggestion_index = index,
       .announce_string = announce_string,
   };
   return button;

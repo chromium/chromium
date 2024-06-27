@@ -288,7 +288,7 @@ void EmojiSuggester::ShowSuggestion(const std::string& text) {
 
   buttons_.clear();
   for (size_t i = 0; i < candidates_.size(); i++) {
-    suggestion_button_.index = i;
+    suggestion_button_.suggestion_index = i;
     suggestion_button_.announce_string = l10n_util::GetStringFUTF16(
         IDS_SUGGESTION_EMOJI_CHOSEN, candidates_[i], base::FormatNumber(i + 1),
         base::FormatNumber(candidates_.size()));

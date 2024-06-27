@@ -1192,7 +1192,7 @@ void NativeInputMethodEngineObserver::OnAssistiveWindowButtonClicked(
       break;
     case ui::ime::ButtonId::kSuggestion:
       if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
-        assistive_suggester_->AcceptSuggestion(button.index);
+        assistive_suggester_->AcceptSuggestion(button.suggestion_index);
       }
       if (grammar_manager_->IsOnDeviceGrammarEnabled()) {
         grammar_manager_->AcceptSuggestion();

@@ -28,14 +28,13 @@ struct AssistiveWindowButton {
   ButtonId id = ButtonId::kNone;
   ash::ime::AssistiveWindowType window_type =
       ash::ime::AssistiveWindowType::kNone;
-  // TODO(crbug.com/40138533): Rename index to suggestion_index for further
-  // clarity. Currently index is only considered when ButtonId is kSuggestion.
-  size_t index = -1;
+  size_t suggestion_index = -1;
   std::u16string announce_string;
 
   bool operator==(const AssistiveWindowButton& other) const {
     return id == other.id && window_type == other.window_type &&
-           index == other.index && announce_string == other.announce_string;
+           suggestion_index == other.suggestion_index &&
+           announce_string == other.announce_string;
   }
 };
 

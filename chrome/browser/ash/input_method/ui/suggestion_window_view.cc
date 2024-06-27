@@ -131,9 +131,9 @@ void SuggestionWindowView::SetButtonHighlighted(
     } else {
       const views::View::Views& candidate_buttons =
           multiple_candidate_area_->children();
-      if (button.index < candidate_buttons.size()) {
+      if (button.suggestion_index < candidate_buttons.size()) {
         SetCandidateHighlighted(static_cast<IndexedSuggestionCandidateButton*>(
-                                    candidate_buttons[button.index]),
+                                    candidate_buttons[button.suggestion_index]),
                                 highlighted);
       }
     }
@@ -209,7 +209,7 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
           &AssistiveDelegate::AssistiveWindowButtonClicked,
           base::Unretained(delegate_),
           AssistiveWindowButton{.id = ui::ime::ButtonId::kSuggestion,
-                                .index = 0})));
+                                .suggestion_index = 0})));
   completion_view_->SetVisible(false);
   multiple_candidate_area_ = AddChildView(std::make_unique<views::View>());
   multiple_candidate_area_->SetVisible(false);
@@ -278,7 +278,7 @@ void SuggestionWindowView::ResizeCandidateArea(
                 &AssistiveDelegate::AssistiveWindowButtonClicked,
                 base::Unretained(delegate_),
                 AssistiveWindowButton{.id = ui::ime::ButtonId::kSuggestion,
-                                      .index = index}),
+                                      .suggestion_index = index}),
             /* candidate_text=*/new_candidates[index],
             // Label indexes start from "1", hence we increment index by one.
             /* index_text=*/base::FormatNumber(index + 1),

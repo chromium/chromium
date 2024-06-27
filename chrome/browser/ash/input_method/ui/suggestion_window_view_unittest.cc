@@ -121,7 +121,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(SuggestionWindowViewTest, HighlightOneCandidateWhenIndexIsValid) {
   suggestion_window_view_->ShowMultipleCandidates(window_, GetParam());
   for (int index = 0; index < static_cast<int>(candidates_.size()); index++) {
-    candidate_button_.index = index;
+    candidate_button_.suggestion_index = index;
     suggestion_window_view_->SetButtonHighlighted(candidate_button_, true);
 
     EXPECT_EQ(1u, GetHighlightedCount());
@@ -132,7 +132,7 @@ TEST_P(SuggestionWindowViewTest, HighlightOneCandidateWhenIndexIsValid) {
 TEST_P(SuggestionWindowViewTest, HighlightNoCandidateWhenIndexIsInvalid) {
   suggestion_window_view_->ShowMultipleCandidates(window_, GetParam());
   for (int index : {-1, static_cast<int>(candidates_.size())}) {
-    candidate_button_.index = index;
+    candidate_button_.suggestion_index = index;
     suggestion_window_view_->SetButtonHighlighted(candidate_button_, true);
 
     EXPECT_EQ(0u, GetHighlightedCount());
@@ -143,7 +143,7 @@ TEST_P(SuggestionWindowViewTest, HighlightNoCandidateWhenIndexIsInvalid) {
 TEST_P(SuggestionWindowViewTest, HighlightTheSameCandidateWhenCalledTwice) {
   suggestion_window_view_->ShowMultipleCandidates(window_, GetParam());
   int highlight_index = 0;
-  candidate_button_.index = highlight_index;
+  candidate_button_.suggestion_index = highlight_index;
   suggestion_window_view_->SetButtonHighlighted(candidate_button_, true);
   suggestion_window_view_->SetButtonHighlighted(candidate_button_, true);
 
@@ -155,9 +155,9 @@ TEST_P(SuggestionWindowViewTest,
        HighlightValidCandidateAfterGivingInvalidIndexThenValidIndex) {
   suggestion_window_view_->ShowMultipleCandidates(window_, GetParam());
   int valid_index = 0;
-  candidate_button_.index = candidates_.size();
+  candidate_button_.suggestion_index = candidates_.size();
   suggestion_window_view_->SetButtonHighlighted(candidate_button_, true);
-  candidate_button_.index = valid_index;
+  candidate_button_.suggestion_index = valid_index;
   suggestion_window_view_->SetButtonHighlighted(candidate_button_, true);
 
   EXPECT_EQ(1u, GetHighlightedCount());
@@ -168,9 +168,9 @@ TEST_P(SuggestionWindowViewTest,
        KeepHighlightingValidCandidateWhenGivingValidThenInvalidIndex) {
   suggestion_window_view_->ShowMultipleCandidates(window_, GetParam());
   int valid_index = 0;
-  candidate_button_.index = valid_index;
+  candidate_button_.suggestion_index = valid_index;
   suggestion_window_view_->SetButtonHighlighted(candidate_button_, true);
-  candidate_button_.index = candidates_.size();
+  candidate_button_.suggestion_index = candidates_.size();
   suggestion_window_view_->SetButtonHighlighted(candidate_button_, true);
 
   EXPECT_EQ(1u, GetHighlightedCount());
@@ -179,7 +179,7 @@ TEST_P(SuggestionWindowViewTest,
 
 TEST_P(SuggestionWindowViewTest, UnhighlightCandidateIfCurrentlyHighlighted) {
   suggestion_window_view_->ShowMultipleCandidates(window_, GetParam());
-  candidate_button_.index = 0;
+  candidate_button_.suggestion_index = 0;
   suggestion_window_view_->SetButtonHighlighted(candidate_button_, true);
   suggestion_window_view_->SetButtonHighlighted(candidate_button_, false);
 
@@ -191,9 +191,9 @@ TEST_P(SuggestionWindowViewTest,
        DoesNotUnhighlightCandidateIfNotCurrentlyHighlighted) {
   suggestion_window_view_->ShowMultipleCandidates(window_, GetParam());
   int highlight_index = 0;
-  candidate_button_.index = highlight_index;
+  candidate_button_.suggestion_index = highlight_index;
   suggestion_window_view_->SetButtonHighlighted(candidate_button_, true);
-  candidate_button_.index = -1;
+  candidate_button_.suggestion_index = -1;
   suggestion_window_view_->SetButtonHighlighted(candidate_button_, false);
 
   EXPECT_EQ(1u, GetHighlightedCount());
@@ -203,11 +203,11 @@ TEST_P(SuggestionWindowViewTest,
 TEST_P(SuggestionWindowViewTest, DoesNotUnhighlightCandidateIfOutOfRange) {
   suggestion_window_view_->ShowMultipleCandidates(window_, GetParam());
   int highlight_index = 0;
-  candidate_button_.index = highlight_index;
+  candidate_button_.suggestion_index = highlight_index;
   suggestion_window_view_->SetButtonHighlighted(candidate_button_, true);
 
   for (int index : {-1, static_cast<int>(candidates_.size())}) {
-    candidate_button_.index = index;
+    candidate_button_.suggestion_index = index;
     suggestion_window_view_->SetButtonHighlighted(candidate_button_, false);
 
     EXPECT_EQ(1u, GetHighlightedCount());
