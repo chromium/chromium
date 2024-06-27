@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Note that scripts/cra/build.py parse this file by heuristic, so if the
+# variable names / structure change, the script needs to be changed too.
 icons = [
   "arrow_back.svg",
   "chevron_down.svg",
@@ -33,3 +35,9 @@ icons = [
   "thumb_up_filled.svg",
   "volume_up.svg",
 ]
+
+images = []
+
+foreach(icon, icons) {
+  images += [ "icons/${icon}" ]
+}

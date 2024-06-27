@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {icons} from '/icons/icons.js';
+import {images} from '/images/images.js';
 import {
   css,
   LitElement,
@@ -46,7 +46,7 @@ export class CraIcon extends LitElement {
     if (this.name === null) {
       return null;
     }
-    return assertExists(icons.get(this.name));
+    return assertExists(images.get(`icons/${this.name}`));
   }
 }
 

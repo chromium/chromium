@@ -42,6 +42,7 @@ export class ErrorView extends LitElement {
     }
 
     div {
+      background: var(--cros-sys-surface);
       max-width: 960px;
       pointer-events: auto;
     }

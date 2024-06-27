@@ -123,12 +123,12 @@ class RequestHandler:
         return (f"export const strings = {json.dumps(grd_strings)};".encode(),
                 "text/javascript")
 
-    def _handle_icons_js(self,
-                         request_path: _RequestPath) -> tuple[bytes, str]:
+    def _handle_images_js(self,
+                          request_path: _RequestPath) -> tuple[bytes, str]:
         # TODO(pihsun): With watch, we can cache the result and only
         # re-generate when any image files are changed.
         return (self._transform_js(request_path,
-                                   build.gen_icons_js()).encode(),
+                                   build.gen_images_js()).encode(),
                 "text/javascript")
 
     def _handle_static_file(
@@ -200,8 +200,8 @@ class RequestHandler:
             ),
             # All static files.
             _Route(re.compile(r"static/.*"), self._handle_static_file),
-            # icons.js are dynamically generated from icons.
-            _Route(_RequestPath("icons/icons.js"), self._handle_icons_js),
+            # images.js are dynamically generated from images.
+            _Route(_RequestPath("images/images.js"), self._handle_images_js),
             # init.js needs special transform to change the platform used.
             _Route(
                 _RequestPath("init.js"),

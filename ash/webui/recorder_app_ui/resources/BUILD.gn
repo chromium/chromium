@@ -4,7 +4,7 @@
 
 import("//ash/webui/recorder_app_ui/resources/components/components.gni")
 import("//ash/webui/recorder_app_ui/resources/core/core.gni")
-import("//ash/webui/recorder_app_ui/resources/icons/icons.gni")
+import("//ash/webui/recorder_app_ui/resources/images/images.gni")
 import("//ash/webui/recorder_app_ui/resources/pages/pages.gni")
 import("//ash/webui/recorder_app_ui/resources/platforms/platforms.gni")
 import("//ash/webui/recorder_app_ui/resources/static/static.gni")
@@ -14,32 +14,34 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos_ash)
 
-action("gen_icons_js") {
-  script = "scripts/gen_icons_js.py"
+action("gen_images_js") {
+  script = "scripts/gen_images_js.py"
 
-  icon_paths = []
-  foreach(icon, icons) {
-    icon_paths += [ "icons/$icon" ]
+  image_paths = []
+  foreach(image, images) {
+    image_paths += [ "images/$image" ]
   }
 
-  inputs = icon_paths
+  inputs = image_paths
 
-  outputs = [ "$target_gen_dir/icons/icons.js" ]
-  response_file_contents = rebase_path(icon_paths)
+  outputs = [ "$target_gen_dir/images/images.js" ]
+  response_file_contents = rebase_path(image_paths)
   args = [
     "--output_file",
     rebase_path(outputs[0], root_build_dir),
-    "--icons_file={{response_file_name}}",
+    "--images_file={{response_file_name}}",
+    "--root_dir",
+    rebase_path("images"),
   ]
 }
 
 generated_grdp_file = "$target_gen_dir/generated.grdp"
 
 generate_grd("build_generated_grdp") {
-  deps = [ ":gen_icons_js" ]
+  deps = [ ":gen_images_js" ]
   grd_prefix = "generated"
   input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
-  input_files = [ "icons/icons.js" ]
+  input_files = [ "images/images.js" ]
   out_grd = generated_grdp_file
 }
 
@@ -88,7 +90,7 @@ build_webui("build") {
 
   ts_definitions = [
     "core/externs.d.ts",
-    "icons/icons.d.ts",
+    "images/images.d.ts",
   ]
 
   ts_deps = [
@@ -102,11 +104,11 @@ build_webui("build") {
 
   ts_tsconfig_base = "tsconfig_base.json"
 
-  icons_dir = rebase_path("icons", target_gen_dir)
+  images_dir = rebase_path("images", target_gen_dir)
 
-  # This is needed so the build_ts compilation can use the icons.d.ts file as
-  # dependency, and don't need to refer to the generated icons.js file.
-  ts_path_mappings = [ "/icons/*|$icons_dir/*" ]
+  # This is needed so the build_ts compilation can use the images.d.ts file as
+  # dependency, and don't need to refer to the generated images.js file.
+  ts_path_mappings = [ "/images/*|$images_dir/*" ]
 
   mojo_files = [
     "$root_gen_dir/services/on_device_model/public/mojom/on_device_model.mojom-webui.ts",

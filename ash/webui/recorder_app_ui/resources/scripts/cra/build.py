@@ -8,21 +8,25 @@ import pathlib
 import re
 
 from cra import util
-import gen_icons_js as gen_icons_js_module
+import gen_images_js as gen_images_js_module
 
 
-def gen_icons_js() -> str:
-    icons_base = util.get_cra_root() / "icons"
+def gen_images_js() -> str:
+    images_base = util.get_cra_root() / "images"
 
-    with open(icons_base / "icons.gni") as f:
+    with open(images_base / "images.gni") as f:
         gn = f.read()
+        match = re.search(r"images\s*=\s*(\[.*?\])", gn, re.DOTALL)
+        assert match is not None
+        images = ast.literal_eval(match.group(1))
         match = re.search(r"icons\s*=\s*(\[.*?\])", gn, re.DOTALL)
         assert match is not None
         icons = ast.literal_eval(match.group(1))
+        images += [f"icons/{icon}" for icon in icons]
 
-    icons = [icons_base / icon for icon in icons]
+    images = [images_base / image for image in images]
 
-    return gen_icons_js_module.gen_icons_js(icons)
+    return gen_images_js_module.gen_images_js(images, images_base)
 
 
 # TODO(pihsun): This & _get_tsc_references is getting more and more
@@ -30,7 +34,7 @@ def gen_icons_js() -> str:
 # modify the path to point to the correct location instead.
 def _get_tsc_paths(build_dir: pathlib.Path) -> dict[str, list[str]]:
     root_dir = util.get_chromium_root()
-    icons_dir = util.get_cra_root() / "icons"
+    images_dir = util.get_cra_root() / "images"
 
     resources_dir = build_dir / "gen/ui/webui/resources/tsc"
 
@@ -47,7 +51,7 @@ def _get_tsc_paths(build_dir: pathlib.Path) -> dict[str, list[str]]:
         "chrome://resources/mwc/@material/*": [str(mwc_components_dir / "*")],
         "chrome://resources/cros_components/*":
         [str(cros_components_dir / "*")],
-        "/icons/*": [str(icons_dir / "*")],
+        "/images/*": [str(images_dir / "*")],
     }
 
 
