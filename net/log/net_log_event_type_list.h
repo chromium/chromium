@@ -954,6 +954,18 @@ EVENT_TYPE(SOCKET_POOL_CONNECTING_N_SOCKETS)
 EVENT_TYPE(SOCKET_POOL_CLOSING_SOCKET)
 
 // ------------------------------------------------------------------------
+// StreamAttempt and subclasses
+// ------------------------------------------------------------------------
+
+// Marks the creation/destruction of a TcpStreamAttempt.
+// For the END phase, if there was an error, the following parameters are
+// attached:
+//   {
+//      "net_error": <Net error code of the failure>,
+//   }
+EVENT_TYPE(TCP_STREAM_ATTEMPT_ALIVE)
+
+// ------------------------------------------------------------------------
 // URLRequest
 // ------------------------------------------------------------------------
 
