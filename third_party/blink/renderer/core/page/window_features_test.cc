@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/page/create_window.h"
-
 #include <gtest/gtest.h>
 
 #include "third_party/blink/public/web/web_window_features.h"
+#include "third_party/blink/renderer/core/page/create_window.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -64,6 +64,38 @@ TEST_F(WindowFeaturesTest, NoReferrer) {
               GetWindowFeaturesFromString(test.feature_string,
                                           /*dom_window=*/nullptr)
                   .noreferrer)
+        << "Testing '" << test.feature_string << "'";
+  }
+}
+
+TEST_F(WindowFeaturesTest, Opener) {
+  ScopedRelOpenerBcgDependencyHintForTest explicit_opener_enabled{true};
+
+  static const struct {
+    const char* feature_string;
+    bool explicit_opener;
+  } kCases[] = {
+      {"", false},
+      {"something", false},
+      {"notopener", false},
+      {"noopener", false},
+      {"opener", true},
+      {"something, opener", true},
+      {"opener, something", true},
+      {"OpEnEr", true},
+      {"noopener, opener", false},
+      {"opener, noopener", false},
+      {"noreferrer, opener", false},
+      {"opener, noreferrer", false},
+      {"noopener=0", false},
+      {"noopener=0, opener", true},
+  };
+
+  for (const auto& test : kCases) {
+    EXPECT_EQ(test.explicit_opener,
+              GetWindowFeaturesFromString(test.feature_string,
+                                          /*dom_window=*/nullptr)
+                  .explicit_opener)
         << "Testing '" << test.feature_string << "'";
   }
 }

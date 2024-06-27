@@ -750,13 +750,15 @@ class CONTENT_EXPORT RenderFrameHostManager {
       IsSameSiteGetter& is_same_site,
       CoopSwapResult coop_swap_result,
       bool was_server_redirect,
-      bool should_replace_current_entry);
+      bool should_replace_current_entry,
+      bool has_rel_opener);
 
   BrowsingContextGroupSwap ShouldProactivelySwapBrowsingInstance(
       const UrlInfo& destination_url_info,
       bool is_reload,
       IsSameSiteGetter& is_same_site,
-      bool should_replace_current_entry);
+      bool should_replace_current_entry,
+      bool has_rel_opener);
 
   // Returns the SiteInstance to use for the navigation.
   //
@@ -776,6 +778,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
       CoopSwapResult coop_swap_result,
       bool should_replace_current_entry,
       bool force_new_browsing_instance,
+      bool has_rel_opener,
       BrowsingContextGroupSwap* browsing_context_group_swap,
       std::string* reason);
 

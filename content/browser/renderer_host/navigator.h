@@ -136,7 +136,8 @@ class CONTENT_EXPORT Navigator {
       blink::mojom::TriggeringEventInfo triggering_event_info,
       const std::string& href_translate,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-      const std::optional<blink::Impression>& impression);
+      const std::optional<blink::Impression>& impression,
+      bool has_rel_opener);
 
   // Called when a document requests a navigation in another document through a
   // `blink::RemoteFrame`. If `method` is "POST", then `post_body` needs to
@@ -168,6 +169,7 @@ class CONTENT_EXPORT Navigator {
       bool is_unfenced_top_navigation = false,
       bool force_new_browsing_instance = false,
       bool is_container_initiated = false,
+      bool has_rel_opener = false,
       std::optional<std::u16string> embedder_shared_storage_context =
           std::nullopt);
 

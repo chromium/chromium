@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/network/form_data_encoder.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
@@ -166,6 +167,7 @@ inline FormSubmission::FormSubmission(
     WebFrameLoadType load_type,
     LocalDOMWindow* origin_window,
     const LocalFrameToken& initiator_frame_token,
+    bool has_rel_opener,
     std::unique_ptr<SourceLocation> source_location,
     mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
         initiator_navigation_state_keep_alive_handle)
@@ -183,6 +185,7 @@ inline FormSubmission::FormSubmission(
       load_type_(load_type),
       origin_window_(origin_window),
       initiator_frame_token_(initiator_frame_token),
+      has_rel_opener_(has_rel_opener),
       source_location_(std::move(source_location)),
       initiator_navigation_state_keep_alive_handle_(
           std::move(initiator_navigation_state_keep_alive_handle)) {}
@@ -354,6 +357,12 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
            ->GetTargetBlankImpliesNoOpenerEnabledWillBeRemoved())) {
     frame_request.SetNoOpener();
   }
+  if (RuntimeEnabledFeatures::RelOpenerBcgDependencyHintEnabled(
+          document.domWindow()) &&
+      form->HasRel(HTMLFormElement::kOpener) &&
+      !frame_request.GetWindowFeatures().noopener) {
+    frame_request.SetExplicitOpener();
+  }
 
   Frame* target_frame =
       form_local_frame->Tree()
@@ -375,6 +384,7 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
       event, frame_request.GetNavigationPolicy(), triggering_event_info, reason,
       std::move(resource_request), target_frame, load_type,
       form->GetDocument().domWindow(), form_local_frame->GetLocalFrameToken(),
+      frame_request.GetWindowFeatures().explicit_opener,
       CaptureSourceLocation(form->GetDocument().domWindow()),
       form_local_frame->IssueKeepAliveHandle());
 }
@@ -395,6 +405,9 @@ void FormSubmission::Navigate() {
   frame_request.SetInitiatorNavigationStateKeepAliveHandle(
       std::move(initiator_navigation_state_keep_alive_handle_));
   frame_request.SetSourceLocation(std::move(source_location_));
+  if (has_rel_opener_) {
+    frame_request.SetExplicitOpener();
+  }
 
   if (target_frame_ && !target_frame_->GetPage())
     return;

@@ -150,6 +150,10 @@ struct OpenURLParams {
   // Note: when relying on this in the browser process, also make sure to check
   // that this comes from the renderer process of the parent frame.
   bool is_container_initiated = false;
+
+  // True if the initiator explicitly asked for opener relationships to be
+  // preserved, via rel="opener".
+  bool has_rel_opener = false;
 };
 
 // Implemented in Browser, this interface defines frame-specific methods that

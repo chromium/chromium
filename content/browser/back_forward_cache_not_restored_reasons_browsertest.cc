@@ -516,6 +516,70 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
   EXPECT_TRUE(rfh_b->IsInBackForwardCache());
 }
 
+class BackForwardCacheBrowserTestWithNotRestoredReasonsProactiveSwapOptOut
+    : public BackForwardCacheBrowserTestWithNotRestoredReasons {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(blink::features::kRelOpenerBcgDependencyHint, "",
+                              "");
+    BackForwardCacheBrowserTestWithNotRestoredReasons::SetUpCommandLine(
+        command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTestWithNotRestoredReasonsProactiveSwapOptOut,
+    NavigateWithRelOpener) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url_1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  const GURL url_2(embedded_test_server()->GetURL("a.com", "/title2.html"));
+
+  ASSERT_TRUE(NavigateToURL(shell(), url_1));
+  current_frame_host()->GetBackForwardCacheMetrics()->SetObserverForTesting(
+      this);
+
+  // The document can't enter the BackForwardCache because rel=opener opts out
+  // of the proactive BrowsingInstance swap.
+  TestNavigationObserver nav_observer(web_contents());
+  EXPECT_TRUE(ExecJs(web_contents(), JsReplace(R"(
+    let anchor = document.createElement('a');
+    anchor.href = $1;
+    anchor.rel = 'opener';
+    anchor.text = 'Link';
+    document.body.appendChild(anchor);
+    anchor.click();
+  )",
+                                               url_2)));
+  nav_observer.Wait();
+
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+
+  ExpectNotRestored(
+      {NotRestoredReason::kBrowsingInstanceNotSwapped}, {},
+      {ShouldSwapBrowsingInstance::kNo_InitiatorRequestedNoProactiveSwap}, {},
+      {}, FROM_HERE);
+  // Make sure that the tree result also has the same reasons. BrowsingInstance
+  // NotSwapped can only be known at commit time.
+  EXPECT_THAT(
+      GetTreeResult()->GetDocumentResult(),
+      MatchesDocumentResult(
+          NotRestoredReasons({NotRestoredReason::kBrowsingInstanceNotSwapped}),
+          BlockListedFeatures()));
+
+  // The reason is recorded and sent to the renderer.
+  // TODO(crbug.com/40275090): BrowsingInstanceNotSwapped should not be reported
+  // as internal-error.
+  auto reasons = MatchesNotRestoredReasons(
+      /*id=*/"",
+      /*name=*/"", /*src=*/"",
+      /*reasons=*/
+      {MatchesDetailedReason("masked", /*source=*/std::nullopt)},
+      MatchesSameOriginDetails(
+          /*url=*/url_1,
+          /*children=*/{}));
+  EXPECT_THAT(current_frame_host()->NotRestoredReasonsForTesting(), reasons);
+}
+
 class BackForwardCacheBrowserTestWithNotRestoredReasonsMaskCrossOrigin
     : public BackForwardCacheBrowserTest {
  protected:

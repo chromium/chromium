@@ -181,7 +181,7 @@ void FencedFrame::Navigate(
       /*is_embedder_initiated_fenced_frame_navigation=*/true,
       /*is_unfenced_top_navigation=*/false,
       /*force_new_browsing_instance=*/true, /*is_container_initiated=*/false,
-      embedder_shared_storage_context);
+      /*has_rel_opener=*/false, embedder_shared_storage_context);
 }
 
 bool FencedFrame::IsHidden() {

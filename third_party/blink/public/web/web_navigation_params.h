@@ -127,6 +127,10 @@ struct BLINK_EXPORT WebNavigationInfo {
   // by the window.open'd frame.
   bool is_opener_navigation = false;
 
+  // True if the initiator explicitly asked for opener relationships to be
+  // preserved, via rel="opener".
+  bool has_rel_opener = false;
+
   // Whether this is a navigation to _unfencedTop, i.e. to the top-level frame
   // from a renderer process that does not get a handle to the frame.
   // The browser should ignore the specified target frame and pick (and

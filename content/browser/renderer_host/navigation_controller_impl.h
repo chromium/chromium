@@ -244,6 +244,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool is_unfenced_top_navigation = false,
       bool force_new_browsing_instance = false,
       bool is_container_initiated = false,
+      bool has_rel_opener = false,
       std::optional<std::u16string> embedder_shared_storage_context =
           std::nullopt);
 

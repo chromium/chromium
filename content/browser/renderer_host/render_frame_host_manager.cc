@@ -283,6 +283,9 @@ ShouldSwapBrowsingInstanceToProto(ShouldSwapBrowsingInstance result) {
     case ShouldSwapBrowsingInstance::kNo_NotPrimaryMainFrame:
       return ProtoLevel::
           SHOULD_SWAP_BROWSING_INSTANCE_NO_NOT_PRIMARY_MAIN_FRAME;
+    case ShouldSwapBrowsingInstance::kNo_InitiatorRequestedNoProactiveSwap:
+      return ProtoLevel::
+          SHOULD_SWAP_BROWSING_INSTANCE_NO_INITIATOR_REQUESTED_NO_PROACTIVE_SWAP;
   }
 }
 
@@ -2334,7 +2337,8 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
     IsSameSiteGetter& is_same_site,
     CoopSwapResult coop_swap_result,
     bool was_server_redirect,
-    bool should_replace_current_entry) {
+    bool should_replace_current_entry,
+    bool has_rel_opener) {
   const GURL& destination_url = destination_url_info.url;
   // A subframe must stay in the same BrowsingInstance as its parent.
   bool is_main_frame = frame_tree_node_->IsMainFrame();
@@ -2544,9 +2548,9 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
 
   // Experimental mode to swap BrowsingInstances on most navigations when there
   // are no other windows in the BrowsingInstance.
-  return ShouldProactivelySwapBrowsingInstance(destination_url_info, is_reload,
-                                               is_same_site,
-                                               should_replace_current_entry);
+  return ShouldProactivelySwapBrowsingInstance(
+      destination_url_info, is_reload, is_same_site,
+      should_replace_current_entry, has_rel_opener);
 }
 
 BrowsingContextGroupSwap
@@ -2554,12 +2558,17 @@ RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
     const UrlInfo& destination_url_info,
     bool is_reload,
     IsSameSiteGetter& is_same_site,
-    bool should_replace_current_entry) {
+    bool should_replace_current_entry,
+    bool has_rel_opener) {
   // If we've disabled proactive BrowsingInstance swap for this RenderFrameHost,
   // we should not try to do a proactive swap.
-  if (render_frame_host_->HasTestDisabledProactiveBrowsingInstanceSwap())
+  // TODO(crbug.com/333743493): After
+  // `blink::features::kRelOpenerBcgDependencyHint` ships, we could replace
+  // usage of this test specific code path with the use of `has_rel_opener`.
+  if (render_frame_host_->HasTestDisabledProactiveBrowsingInstanceSwap()) {
     return BrowsingContextGroupSwap::CreateNoSwap(
         ShouldSwapBrowsingInstance::kNo_ProactiveSwapDisabled);
+  }
   // We should only do proactive swap if it's needed for
   // the back-forward cache (and the bfcache flag is enabled).
   if (!IsBackForwardCacheEnabled()) {
@@ -2585,6 +2594,18 @@ RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
   if (current_instance->GetRelatedActiveContentsCount() > 1u) {
     return BrowsingContextGroupSwap::CreateNoSwap(
         ShouldSwapBrowsingInstance::kNo_HasRelatedActiveContents);
+  }
+
+  // Even if there are currently no other windows, the destination page may open
+  // a window, then if the user navigates back, the previous page may expect to
+  // be able to script the opened window. A proactive swap for the first
+  // navigation would break scripting in this case. See crbug.com/40281878 for
+  // an example. For pages that could be affected by this, the intended
+  // mechanism to opt-out of proactive swaps is to use an explicit "opener" rel,
+  // which signals that interactions with the opener are expected.
+  if (has_rel_opener) {
+    return BrowsingContextGroupSwap::CreateNoSwap(
+        ShouldSwapBrowsingInstance::kNo_InitiatorRequestedNoProactiveSwap);
   }
 
   // "about:blank" and chrome-native-URL do not "use" a SiteInstance. This
@@ -2691,6 +2712,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
     CoopSwapResult coop_swap_result,
     bool should_replace_current_entry,
     bool force_new_browsing_instance,
+    bool has_rel_opener,
     BrowsingContextGroupSwap* should_swap_result,
     std::string* reason) {
   // On renderer-initiated navigations, when the frame initiating the navigation
@@ -2743,7 +2765,8 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
                 source_instance, current_instance, dest_instance, dest_url_info,
                 dest_is_view_source_mode, transition, error_page_process,
                 is_reload, is_same_document, is_same_site, coop_swap_result,
-                was_server_redirect, should_replace_current_entry);
+                was_server_redirect, should_replace_current_entry,
+                has_rel_opener);
 
   TraceShouldSwapBrowsingInstanceResult(frame_tree_node_->frame_tree_node_id(),
                                         should_swap_result->reason());
@@ -4385,7 +4408,8 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
           request->commit_params().is_view_source, request->WasServerRedirect(),
           request->coop_status().browsing_instance_swap_result(),
           request->common_params().should_replace_current_entry,
-          request->force_new_browsing_instance(), browsing_context_group_swap,
+          request->force_new_browsing_instance(),
+          request->begin_params().has_rel_opener, browsing_context_group_swap,
           reason);
 
   // If the NavigationRequest's dest_site_instance was present but incorrect,

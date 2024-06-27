@@ -84,6 +84,8 @@ const char* BrowsingInstanceSwapResultToString(
       return "BI not swapped - hasn't committed any navigation";
     case ShouldSwapBrowsingInstance::kNo_NotPrimaryMainFrame:
       return "BI not swapped - not a primary main frame";
+    case ShouldSwapBrowsingInstance::kNo_InitiatorRequestedNoProactiveSwap:
+      return "BI not swapped - initiator requested no proactive swap";
   }
 }
 

@@ -554,7 +554,7 @@ void NavigateClient(const GURL& url,
       false /* should_replace_current_entry */, false /* user_gesture */,
       blink::mojom::TriggeringEventInfo::kUnknown,
       std::string() /* href_translate */, nullptr /* blob_url_loader_factory */,
-      std::nullopt);
+      std::nullopt, false /* has_rel_opener */);
   new OpenURLObserver(web_contents, frame_tree_node_id,
                       base::BindOnce(&DidNavigate, context, script_url, key,
                                      std::move(callback)));

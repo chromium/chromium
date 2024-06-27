@@ -585,7 +585,8 @@ void LocalFrameClientImpl::BeginNavigation(
     std::unique_ptr<SourceLocation> source_location,
     mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
         initiator_navigation_state_keep_alive_handle,
-    bool is_container_initiated) {
+    bool is_container_initiated,
+    bool has_rel_opener) {
   if (!web_frame_->Client())
     return;
 
@@ -678,6 +679,8 @@ void LocalFrameClientImpl::BeginNavigation(
     navigation_info->initiator_frame_is_ad = origin_frame->IsAdFrame();
     navigation_info->is_ad_script_in_stack = origin_frame->IsAdScriptInStack();
   }
+
+  navigation_info->has_rel_opener = has_rel_opener;
 
   // The frame has navigated either by itself or by the action of the
   // |origin_window| when it is defined. |source_location| represents the

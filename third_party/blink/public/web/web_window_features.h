@@ -57,6 +57,7 @@ struct WebWindowFeatures {
   bool resizable = true;
 
   bool noopener = false;
+  bool explicit_opener = false;
   bool noreferrer = false;
   bool background = false;
   bool persistent = false;

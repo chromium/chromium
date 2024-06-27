@@ -41,7 +41,8 @@ NavigationController::LoadURLParams::LoadURLParams(const OpenURLParams& input)
       href_translate(input.href_translate),
       reload_type(input.reload_type),
       impression(input.impression),
-      is_pdf(input.is_pdf) {
+      is_pdf(input.is_pdf),
+      has_rel_opener(input.has_rel_opener) {
 #if DCHECK_IS_ON()
   DCHECK(input.Valid());
 #endif
@@ -77,8 +78,7 @@ NavigationController::LoadURLParams::LoadURLParams(const OpenURLParams& input)
   //     triggering_event_info
 }
 
-NavigationController::LoadURLParams::~LoadURLParams() {
-}
+NavigationController::LoadURLParams::~LoadURLParams() = default;
 
 NavigationController::LoadURLParams&
 NavigationController::LoadURLParams::operator=(

@@ -326,13 +326,17 @@ class NavigationController {
     // this is used in web platform tests to guarantee that each test starts in
     // a fresh BrowsingInstance.
     bool force_new_browsing_instance = false;
+
+    // True if the initiator explicitly asked for opener relationships to be
+    // preserved, via rel="opener".
+    bool has_rel_opener = false;
   };
 
   // Disables checking for a repost and prompting the user. This is used during
   // testing.
   CONTENT_EXPORT static void DisablePromptOnRepost();
 
-  virtual ~NavigationController() {}
+  virtual ~NavigationController() = default;
 
   // Get the browser context for this controller. It can never be nullptr.
   virtual BrowserContext* GetBrowserContext() = 0;

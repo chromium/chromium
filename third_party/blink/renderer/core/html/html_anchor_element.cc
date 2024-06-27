@@ -550,6 +550,11 @@ void HTMLAnchorElement::NavigateToHyperlink(ResourceRequest request,
            ->GetTargetBlankImpliesNoOpenerEnabledWillBeRemoved())) {
     frame_request.SetNoOpener();
   }
+  if (RuntimeEnabledFeatures::RelOpenerBcgDependencyHintEnabled(
+          GetExecutionContext()) &&
+      HasRel(kRelationOpener) && !frame_request.GetWindowFeatures().noopener) {
+    frame_request.SetExplicitOpener();
+  }
 
   frame_request.SetTriggeringEventInfo(
       is_trusted ? mojom::blink::TriggeringEventInfo::kFromTrustedEvent

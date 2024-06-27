@@ -3296,6 +3296,9 @@
       status: {"Android": "", "default": "stable"},
     },
     {
+      name: "RelOpenerBcgDependencyHint",
+    },
+    {
       name: "RemotePlayback",
       public: true,
       status: "stable",

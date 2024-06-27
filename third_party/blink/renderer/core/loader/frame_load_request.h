@@ -172,6 +172,7 @@ struct CORE_EXPORT FrameLoadRequest {
   }
 
   void SetNoOpener() { window_features_.noopener = true; }
+  void SetExplicitOpener() { window_features_.explicit_opener = true; }
   void SetNoReferrer() {
     should_send_referrer_ = kNeverSendReferrer;
     resource_request_.SetReferrerString(Referrer::NoReferrer());

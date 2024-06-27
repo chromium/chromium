@@ -40,8 +40,9 @@ enum class ShouldSwapBrowsingInstance {
   // triggering BrowsingInstance swap anymore. See
   // https://groups.google.com/a/google.com/g/chrome-bfcache/c/L-ZreZDY4n0
   kNo_NotPrimaryMainFrame = 21,
+  kNo_InitiatorRequestedNoProactiveSwap = 22,
 
-  kMaxValue = kNo_NotPrimaryMainFrame
+  kMaxValue = kNo_InitiatorRequestedNoProactiveSwap
 };
 
 }  // namespace content

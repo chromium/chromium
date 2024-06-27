@@ -5823,6 +5823,8 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
           info->url_request.HasUserGesture(), info->initiator_frame_is_ad,
           info->is_ad_script_in_stack);
 
+  params->has_rel_opener = info->has_rel_opener;
+
   GetFrameHost()->OpenURL(std::move(params));
 }
 
@@ -6120,7 +6122,8 @@ void RenderFrameImpl::BeginNavigationInternal(
               : nullptr,
           info->impression, renderer_before_unload_start,
           renderer_before_unload_end, initiator_activation_and_ad_status,
-          info->is_container_initiated, info->has_storage_access);
+          info->is_container_initiated, info->has_storage_access,
+          info->has_rel_opener);
 
   mojo::PendingAssociatedRemote<mojom::NavigationClient>
       navigation_client_remote;

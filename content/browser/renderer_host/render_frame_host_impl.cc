@@ -8368,7 +8368,8 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
         params->initiator_activation_and_ad_status, base::TimeTicks::Now(),
         /*is_embedder_initiated_fenced_frame_navigation=*/false,
         /*is_unfenced_top_navigation=*/true,
-        /*force_new_browsing_instance=*/true);
+        /*force_new_browsing_instance=*/true, /*is_container_initiated=*/false,
+        params->has_rel_opener);
     return;
   }
 
@@ -8402,7 +8403,8 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
       params->referrer.To<content::Referrer>(), params->disposition,
       params->should_replace_current_entry, params->user_gesture,
       params->triggering_event_info, params->href_translate,
-      std::move(blob_url_loader_factory), params->impression);
+      std::move(blob_url_loader_factory), params->impression,
+      params->has_rel_opener);
 }
 
 void RenderFrameHostImpl::GetAssociatedInterface(

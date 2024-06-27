@@ -127,7 +127,9 @@ message RenderFrameImplDeletion {
   optional uint64 frame_tree_node_id = 4;
 }
 
-// Matches content::ShouldSwapBrowsingInstance.
+// Corresponds to `content::ShouldSwapBrowsingInstance`.
+// Note that the enum values here are not equivalent to the content enum and
+// must be converted explicitly. See `ShouldSwapBrowsingInstanceToProto`.
 enum ShouldSwapBrowsingInstance {
   // Was used for all "no BrowsingInstance swap" scenarios, now broken down in
   // separate reasons.
@@ -163,6 +165,7 @@ enum ShouldSwapBrowsingInstance {
   SHOULD_SWAP_BROWSING_INSTANCE_NO_UNLOAD_HANDLER_EXISTS_ON_SAME_SITE_NAVIGATION =
       21;
   SHOULD_SWAP_BROWSING_INSTANCE_NO_NOT_PRIMARY_MAIN_FRAME = 22;
+  SHOULD_SWAP_BROWSING_INSTANCE_NO_INITIATOR_REQUESTED_NO_PROACTIVE_SWAP = 23;
 }
 
 message ShouldSwapBrowsingInstancesResult {

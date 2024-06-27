@@ -2768,6 +2768,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     bool is_unfenced_top_navigation,
     bool force_new_browsing_instance,
     bool is_container_initiated,
+    bool has_rel_opener,
     std::optional<std::u16string> embedder_shared_storage_context) {
   if (is_renderer_initiated)
     DCHECK(initiator_origin.has_value());
@@ -2887,6 +2888,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   params.is_form_submission = is_form_submission;
   params.initiator_activation_and_ad_status =
       initiator_activation_and_ad_status;
+  params.has_rel_opener = has_rel_opener;
 
   std::unique_ptr<NavigationRequest> request =
       CreateNavigationRequestFromLoadParams(
@@ -4072,7 +4074,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
       params.navigation_ui_data ? params.navigation_ui_data->Clone() : nullptr,
       params.impression, params.initiator_activation_and_ad_status,
       params.is_pdf, is_embedder_initiated_fenced_frame_navigation,
-      is_container_initiated, embedder_shared_storage_context);
+      is_container_initiated, params.has_rel_opener,
+      embedder_shared_storage_context);
   navigation_request->set_from_download_cross_origin_redirect(
       params.from_download_cross_origin_redirect);
   navigation_request->set_force_new_browsing_instance(

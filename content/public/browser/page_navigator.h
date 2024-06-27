@@ -165,11 +165,15 @@ struct CONTENT_EXPORT OpenURLParams {
 
   // Indicates that this navigation is for PDF content in a renderer.
   bool is_pdf = false;
+
+  // True if the initiator explicitly asked for opener relationships to be
+  // preserved, via rel="opener".
+  bool has_rel_opener = false;
 };
 
 class PageNavigator {
  public:
-  virtual ~PageNavigator() {}
+  virtual ~PageNavigator() = default;
 
   // Opens a URL using parameters from `params`.
   // Returns:

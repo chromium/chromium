@@ -127,6 +127,7 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
       WebFrameLoadType load_type,
       LocalDOMWindow* origin_window,
       const LocalFrameToken& initiator_frame_token,
+      bool has_rel_opener,
       std::unique_ptr<SourceLocation> source_location,
       mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
           initiator_navigation_state_keep_alive_handle);
@@ -164,6 +165,7 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
   WebFrameLoadType load_type_;
   Member<LocalDOMWindow> origin_window_;
   LocalFrameToken initiator_frame_token_;
+  bool has_rel_opener_ = false;
 
   // Since form submissions are scheduled asynchronously, we need to store the
   // source location when we create the form submission and then pass it over to

@@ -353,7 +353,8 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
       const LocalFrameToken* initiator_frame_token,
       std::unique_ptr<SourceLocation>,
       mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>,
-      bool is_container_initiated) override;
+      bool is_container_initiated,
+      bool has_rel_opener) override;
 
   void DispatchWillSendSubmitEvent(HTMLFormElement*) override;
 

@@ -71,11 +71,13 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
                                               LocalDOMWindow* dom_window) {
   WebWindowFeatures window_features;
 
-  bool attribution_reporting_enabled =
+  const bool attribution_reporting_enabled =
       dom_window &&
       (RuntimeEnabledFeatures::AttributionReportingEnabled(dom_window) ||
        RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(
            dom_window));
+  const bool explicit_opener_enabled =
+      RuntimeEnabledFeatures::RelOpenerBcgDependencyHintEnabled(dom_window);
 
   // This code follows the HTML spec, specifically
   // https://html.spec.whatwg.org/C/#concept-window-open-features-tokenize
@@ -162,6 +164,7 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
     }
 
     if (!ui_features_were_disabled && key_string != "noopener" &&
+        (!explicit_opener_enabled || key_string != "opener") &&
         key_string != "noreferrer" &&
         (!attribution_reporting_enabled || key_string != "attributionsrc")) {
       ui_features_were_disabled = true;
@@ -198,6 +201,8 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
       window_features.resizable = value;
     } else if (key_string == "noopener") {
       window_features.noopener = value;
+    } else if (explicit_opener_enabled && key_string == "opener") {
+      window_features.explicit_opener = value;
     } else if (key_string == "noreferrer") {
       window_features.noreferrer = value;
     } else if (key_string == "background") {
@@ -237,6 +242,10 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
 
   if (window_features.noreferrer)
     window_features.noopener = true;
+
+  if (window_features.noopener) {
+    window_features.explicit_opener = false;
+  }
 
   return window_features;
 }

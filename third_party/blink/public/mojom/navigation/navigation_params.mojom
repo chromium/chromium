@@ -189,6 +189,10 @@ struct BeginNavigationParams {
   // created by the browser process. (Also note that the Storage Access API is
   // only relevant when third-party cookies are blocked.)
   bool has_storage_access = false;
+
+  // True if the initiator explicitly asked for opener relationships to be
+  // preserved, via rel="opener".
+  bool has_rel_opener = false;
 };
 
 // Provided by the browser or the renderer -------------------------------------

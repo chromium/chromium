@@ -129,7 +129,8 @@ void EmptyLocalFrameClient::BeginNavigation(
     const LocalFrameToken* initiator_frame_token,
     std::unique_ptr<SourceLocation>,
     mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>,
-    bool is_container_initiated) {}
+    bool is_container_initiated,
+    bool has_rel_opener) {}
 
 void EmptyLocalFrameClient::DispatchWillSendSubmitEvent(HTMLFormElement*) {}
 

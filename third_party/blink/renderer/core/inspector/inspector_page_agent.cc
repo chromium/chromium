@@ -207,6 +207,9 @@ std::unique_ptr<protocol::Array<String>> GetEnabledWindowFeatures(
     feature_strings->emplace_back("resizable");
   if (window_features.noopener)
     feature_strings->emplace_back("noopener");
+  if (window_features.explicit_opener) {
+    feature_strings->emplace_back("opener");
+  }
   if (window_features.background)
     feature_strings->emplace_back("background");
   if (window_features.persistent)
