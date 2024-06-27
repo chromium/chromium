@@ -20,6 +20,11 @@ namespace ui {
 
 namespace {
 
+// The amount of time during which the manager cannot skip drm testing of
+// fullscreen overlays if overlay swap failure handling is enabled.
+constexpr base::TimeDelta kDisallowSkipFullscreenOverlaysDRMTestTime =
+    base::Hours(2);
+
 // Maximum number of overlay configurations to keep in MRU cache.
 constexpr size_t kMaxCacheSize = 100;
 
@@ -138,7 +143,16 @@ void DrmOverlayManager::CheckOverlaySupport(
     }
   }
 
+  // Check if we can skip fullscreen overlay drm test in case if it was
+  // disallowed some time ago because of a failure.
+  if (!allow_skip_fullscreen_overlay_drm_test_ &&
+      base::TimeTicks::Now() >= disallow_fullscreen_overlays_end_time_) {
+    allow_skip_fullscreen_overlay_drm_test_ = true;
+    disallow_fullscreen_overlays_end_time_ = base::TimeTicks();
+  }
+
   std::vector<OverlaySurfaceCandidate> result_candidates;
+  bool can_skip_fullscreen_overlay_drm_test = false;
   for (size_t i = 0; i < candidates->size(); i++) {
     auto& candidate = (*candidates)[i];
     bool can_handle =
@@ -160,6 +174,22 @@ void DrmOverlayManager::CheckOverlaySupport(
     result_candidates.push_back(can_handle ? candidate
                                            : OverlaySurfaceCandidate());
     result_candidates.back().overlay_handled = can_handle;
+
+    can_skip_fullscreen_overlay_drm_test =
+        handle_overlays_swap_failure_ &&
+        allow_skip_fullscreen_overlay_drm_test_ &&
+        result_candidates.back().overlay_type == gfx::OverlayType::kFullScreen;
+  }
+
+  // This is a fast path for the fullscreen overlays, which avoids drm page flip
+  // test and relies on a real swap. If swap fails, fullscreen overlays are
+  // again drm tested for |kDisallowSkipFullscreenOverlaysDRMTestTime|.
+  if (can_skip_fullscreen_overlay_drm_test) {
+    // Fullscreen candidates are tested individually. Other candidates are not
+    // expected here.
+    DCHECK_EQ(1U, candidates->size());
+    candidates->front().overlay_handled = true;
+    return;
   }
 
   if (allow_sync_and_real_buffer_page_flip_testing_ &&
@@ -238,7 +268,19 @@ void DrmOverlayManager::OnSwapBuffersComplete(gfx::SwapResult swap_result) {
       << "Handling non-simple overlays' swap failure requires the "
          "kHandleOverlaysSwapFailure feature to be enabled.";
 
-  NOTIMPLEMENTED_LOG_ONCE();
+  if (committed_overlay_types.size() == 1U &&
+      committed_overlay_types.front() == gfx::kFullScreen) {
+    if (allow_skip_fullscreen_overlay_drm_test_) {
+      allow_skip_fullscreen_overlay_drm_test_ = false;
+      disallow_fullscreen_overlays_end_time_ =
+          base::TimeTicks::Now() + kDisallowSkipFullscreenOverlaysDRMTestTime;
+    } else {
+      NOTREACHED_NORETURN() << "It's not expected to receive swap failures for "
+                               "fullscreen overlays as they are drm tested.";
+    }
+  } else {
+    NOTREACHED_NORETURN() << "Only fullscreen overlays are treated specially.";
+  }
 }
 
 void DrmOverlayManager::SetSupportedBufferFormats(
