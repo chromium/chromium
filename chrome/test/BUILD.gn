@@ -4518,6 +4518,7 @@ if (!is_android) {
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_ash_browsertest.cc",
       ]
       deps += [
+        "//chrome/browser/ash/magic_boost",
         "//chrome/browser/ash/mahi",
         "//chrome/browser/ash/net",
         "//chrome/browser/ash/notifications",
@@ -8936,6 +8937,8 @@ test("unit_tests") {
       "//chrome/browser/ash/crosapi:unit_tests",
       "//chrome/browser/ash/customization",
       "//chrome/browser/ash/eche_app",
+      "//chrome/browser/ash/magic_boost",
+      "//chrome/browser/ash/magic_boost:test_support",
       "//chrome/browser/ash/multidevice_setup",
       "//chrome/browser/ash/ownership",
       "//chrome/browser/ash/system_web_apps/apps/camera_app",

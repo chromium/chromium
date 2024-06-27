@@ -39,6 +39,7 @@ source_set("magic_boost") {
     deps += [
       "//chrome/browser/ash",
       "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/magic_boost",
     ]
   }
 
