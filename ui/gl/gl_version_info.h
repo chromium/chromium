@@ -38,9 +38,6 @@ struct GL_EXPORT GLVersionInfo {
 
   bool BehavesLikeGLES() const { return is_es; }
 
-  bool SupportsFixedType() const {
-    return is_es || IsAtLeastGL(4, 1);
-  }
   struct VersionStrings {
     const char* gl_version;
     const char* glsl_version;

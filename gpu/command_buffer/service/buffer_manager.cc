@@ -24,7 +24,6 @@
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/transform_feedback_manager.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_version_info.h"
 #include "ui/gl/trace_util.h"
 
 namespace gpu {
@@ -403,14 +402,11 @@ bool BufferManager::UseNonZeroSizeForClientSideArrayBuffer() {
 
 bool BufferManager::UseShadowBuffer(GLenum target, GLenum usage) {
   const bool is_client_side_array = IsUsageClientSideArray(usage);
-  // feature_info_ can be null in some unit tests.
-  const bool support_fixed_attribs =
-      !feature_info_ || feature_info_->gl_version_info().SupportsFixedType();
 
   // TODO(zmo): Don't shadow buffer data on ES3. crbug.com/491002.
   return (
       target == GL_ELEMENT_ARRAY_BUFFER || allow_buffers_on_multiple_targets_ ||
-      (allow_fixed_attribs_ && !support_fixed_attribs) || is_client_side_array);
+      is_client_side_array);
 }
 
 void BufferManager::SetInfo(Buffer* buffer,

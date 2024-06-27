@@ -11438,9 +11438,7 @@ error::Error GLES2DecoderImpl::HandleVertexAttribPointer(
                       stride != 0 ? stride : group_size,
                       offset,
                       GL_FALSE);
-  if (type != GL_FIXED || gl_version_info().SupportsFixedType()) {
-    api()->glVertexAttribPointerFn(indx, size, type, normalized, stride, ptr);
-  }
+  api()->glVertexAttribPointerFn(indx, size, type, normalized, stride, ptr);
   return error::kNoError;
 }
 
