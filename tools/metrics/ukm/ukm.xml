@@ -1535,7 +1535,7 @@ be describing additional metrics about the same event.
       interest group, the additional bid may participate in the auction where
       the intent was for it be suppressed by negative targeting. This
       &quot;failing open&quot; ensures that only the owner of the negative
-      interest group, who created the additonalBidKey, is allowed to negatively
+      interest group, who created the additionalBidKey, is allowed to negatively
       target the interest group, and that nobody else can learn whether the
       interest group is present on the device.
     </summary>
@@ -2550,7 +2550,7 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="TotalClicks">
     <summary>
-      Total number of clicks launching this app in this sesion. Bucketing:
+      Total number of clicks launching this app in this session. Bucketing:
       values above 20 rounded down to the nearest 10. Maximum value of 200.
     </summary>
   </metric>
@@ -4604,7 +4604,7 @@ be describing additional metrics about the same event.
   <metric name="Status.MediationRequirement"
       enum="CredentialManagerMediationRequirement">
     <summary>
-      Records the the mediation requirement of a request token call to the FedCM
+      Records the mediation requirement of a request token call to the FedCM
       API. Records a sample when the call is completed, i.e. at the same time as
       Status.RequestIdToken.
     </summary>
@@ -4828,7 +4828,7 @@ be describing additional metrics about the same event.
   <metric name="Status.MediationRequirement"
       enum="CredentialManagerMediationRequirement">
     <summary>
-      Records the the mediation requirement of a request token call to the FedCM
+      Records the mediation requirement of a request token call to the FedCM
       API. Records a sample when the call is completed, i.e. at the same time as
       Status.RequestIdToken.
     </summary>
@@ -27477,7 +27477,7 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="TabGroupID">
     <summary>
-      The lower 64 bits of the The tab group id corresponding to the
+      The lower 64 bits of the tab group id corresponding to the
       TabStripEventID.
     </summary>
   </metric>
