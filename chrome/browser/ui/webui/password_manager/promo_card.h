@@ -31,7 +31,9 @@ enum class PromoCardType {
   kRelauchChrome = 4,
   // Move passwords stored only on this device to the account.
   kMovePasswords = 5,
-  kMaxValue = kMovePasswords,
+  // Require reauth before accessing saved passwords.
+  kScreenlockReauth = 6,
+  kMaxValue = kScreenlockReauth,
 };
 
 // This is the base class for all password manager promo cards. It has a basic

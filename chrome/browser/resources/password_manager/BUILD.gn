@@ -46,6 +46,13 @@ build_webui("build") {
     ]
   }
 
+  if (is_mac || is_win) {
+    static_files += [
+      "images/screenlock_reauth_promo.svg",
+      "images/screenlock_reauth_promo_dark.svg",
+    ]
+  }
+
   web_component_files = [
     "checkup_section.ts",
     "checkup_details_section.ts",

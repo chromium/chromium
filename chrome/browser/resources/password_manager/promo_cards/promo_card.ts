@@ -30,6 +30,7 @@ export enum PromoCardId {
   ACCESS_ON_ANY_DEVICE = 'access_on_any_device_promo',
   RELAUNCH_CHROME = 'relaunch_chrome_promo',
   MOVE_PASSWORDS = 'move_passwords_promo',
+  SCREENLOCK_REAUTH = 'screenlock_reauth_promo',
 }
 
 /**
@@ -45,8 +46,9 @@ enum PromoCardMetricId {
   UNUSED_ACCESS_ON_ANY_DEVICE = 3,
   RELAUNCH_CHROME = 4,
   MOVE_PASSWORDS = 5,
+  SCREENLOCK_REAUTH = 6,
   // Must be last.
-  COUNT = 6,
+  COUNT = 7,
 }
 
 function recordPromoCardAction(card: PromoCardMetricId) {
@@ -128,6 +130,9 @@ export class PromoCardElement extends PromoCardElementBase {
             'move-passwords-clicked', {bubbles: true, composed: true}));
         recordPromoCardAction(PromoCardMetricId.MOVE_PASSWORDS);
         return;
+      case PromoCardId.SCREENLOCK_REAUTH:
+        // TODO(b/41485156): Add reauth logic.
+        break;
       default:
         assertNotReached();
     }

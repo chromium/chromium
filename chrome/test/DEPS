@@ -23,6 +23,7 @@ include_rules = [
   "+components/contextual_search/core/browser",
   "+components/custom_handlers",
   "+components/crash/core/app",
+  "+components/device_reauth",
   "+components/domain_reliability",
   "+components/download/public/common",
   "+components/embedder_support/origin_trials",

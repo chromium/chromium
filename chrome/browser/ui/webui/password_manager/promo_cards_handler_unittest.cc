@@ -16,6 +16,8 @@
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/ui/webui/password_manager/promo_card.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry.h"
@@ -69,7 +71,8 @@ class PromoCardsHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
   PromoCardsHandlerTest()
       : ChromeRenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -137,10 +140,12 @@ class PromoCardsHandlerTest : public ChromeRenderViewHostTestHarness {
   raw_ptr<PromoCardsHandler> handler_;
   raw_ptr<MockPromoCard> card1_;
   raw_ptr<MockPromoCard> card2_;
+  ScopedTestingLocalState testing_local_state_;
 };
 
 TEST_F(PromoCardsHandlerTest, GetAllPromoCards) {
   pref_service()->ClearPref(prefs::kPasswordManagerPromoCardsList);
+  task_environment()->RunUntilIdle();
 
   // Enforce delegate creation before retrieving promo cards.
   scoped_refptr<extensions::PasswordsPrivateDelegate> delegate =
@@ -148,9 +153,11 @@ TEST_F(PromoCardsHandlerTest, GetAllPromoCards) {
           profile(), true);
 
   auto promo_card_handler = PromoCardsHandler(profile());
+  task_environment()->RunUntilIdle();
 
   const base::Value::List& list =
       profile()->GetPrefs()->GetList(prefs::kPasswordManagerPromoCardsList);
+  task_environment()->RunUntilIdle();
 
   std::vector<std::string> promo_cards = {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -164,6 +171,10 @@ TEST_F(PromoCardsHandlerTest, GetAllPromoCards) {
   promo_cards.emplace_back("relaunch_chrome_promo");
 #endif
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  promo_cards.emplace_back("screenlock_reauth_promo");
+#endif
+  task_environment()->RunUntilIdle();
   EXPECT_THAT(list, HasSamePromoCards(promo_cards));
 }
 

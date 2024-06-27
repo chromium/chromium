@@ -8333,6 +8333,11 @@ test("unit_tests") {
       ]
     }
 
+    if (is_mac || is_win) {
+      sources += [ "../browser/ui/webui/password_manager/promo_cards/screenlock_reauth_promo_unittest.cc" ]
+      deps += [ "//components/device_reauth:test_support" ]
+    }
+
     if (is_mac) {
       sources +=
           [ "../browser/webauthn/local_credential_management_mac_unittest.mm" ]
