@@ -2997,17 +2997,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.SuspendActionTimeTaken" units="ms"
-    expires_after="2024-06-30">
-  <owner>matthewmwang@chromium.org</owner>
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    ChromeOS network diagnostic metric sampling the time in milliseconds it
-    takes suspend actions to complete when shill suspends.
-  </summary>
-</histogram>
-
 <histogram name="Network.Shill.Vpn.Driver" enum="VPNDriver"
     expires_after="2024-12-31">
   <owner>jiejiang@chromium.org</owner>
