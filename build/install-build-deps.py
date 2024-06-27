@@ -628,6 +628,20 @@ def arm_list(options):
       "linux-libc-dev-armhf-cross",
   ]
 
+  # Work around an Ubuntu dependency issue.
+  # TODO(https://crbug.com/40549424): Remove this when support for Focal
+  # and Jammy are dropped.
+  if distro_codename() == "focal":
+    packages.extend([
+        "g++-10-multilib-arm-linux-gnueabihf",
+        "gcc-10-multilib-arm-linux-gnueabihf",
+    ])
+  elif distro_codename() == "jammy":
+    packages.extend([
+        "g++-11-arm-linux-gnueabihf",
+        "gcc-11-arm-linux-gnueabihf",
+    ])
+
   return packages
 
 
