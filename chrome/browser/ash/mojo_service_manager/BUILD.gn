@@ -7,7 +7,7 @@ import("//chromeos/features.gni")
 
 assert(is_chromeos_ash)
 
-source_set("mojo_service_manager") {
+static_library("mojo_service_manager") {
   sources = [
     "connection_helper.cc",
     "connection_helper.h",

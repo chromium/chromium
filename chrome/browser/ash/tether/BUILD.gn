@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("tether") {
+static_library("tether") {
   sources = [
     "fake_tether_service.cc",
     "fake_tether_service.h",

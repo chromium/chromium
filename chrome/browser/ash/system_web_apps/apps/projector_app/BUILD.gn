@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("projector_app") {
+static_library("projector_app") {
   sources = [
     "untrusted_projector_ui_config.cc",
     "untrusted_projector_ui_config.h",

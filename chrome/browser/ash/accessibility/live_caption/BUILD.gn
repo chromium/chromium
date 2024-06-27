@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("live_caption") {
+static_library("live_caption") {
   sources = [
     "system_live_caption_service.cc",
     "system_live_caption_service.h",

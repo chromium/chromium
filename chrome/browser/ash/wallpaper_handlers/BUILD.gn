@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("wallpaper_handlers") {
+static_library("wallpaper_handlers") {
   sources = [
     "sea_pen_fetcher.cc",
     "sea_pen_fetcher.h",
@@ -33,7 +33,7 @@ source_set("wallpaper_handlers") {
   ]
 }
 
-source_set("test_support") {
+static_library("test_support") {
   testonly = true
 
   sources = [

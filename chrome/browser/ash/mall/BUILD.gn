@@ -13,7 +13,7 @@ proto_library("proto") {
   link_deps = [ "//chrome/browser/apps/almanac_api_client/proto" ]
 }
 
-source_set("mall") {
+static_library("mall") {
   sources = [
     "chrome_mall_ui_delegate.cc",
     "chrome_mall_ui_delegate.h",

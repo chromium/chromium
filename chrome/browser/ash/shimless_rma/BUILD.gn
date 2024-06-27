@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("shimless_rma") {
+static_library("shimless_rma") {
   sources = [
     "chrome_shimless_rma_delegate.cc",
     "chrome_shimless_rma_delegate.h",

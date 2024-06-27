@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("display") {
+static_library("display") {
   sources = [
     "quirks_manager_delegate_impl.cc",
     "quirks_manager_delegate_impl.h",

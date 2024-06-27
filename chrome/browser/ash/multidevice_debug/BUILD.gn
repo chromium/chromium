@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("multidevice_debug") {
+static_library("multidevice_debug") {
   sources = [
     "proximity_auth_ui_config.cc",
     "proximity_auth_ui_config.h",

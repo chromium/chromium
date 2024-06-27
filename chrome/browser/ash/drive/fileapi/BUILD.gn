@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("fileapi") {
+static_library("fileapi") {
   sources = [
     "drivefs_async_file_util.cc",
     "drivefs_async_file_util.h",

@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("diagnostics") {
+static_library("diagnostics") {
   sources = [
     "diagnostics_browser_delegate_impl.cc",
     "diagnostics_browser_delegate_impl.h",

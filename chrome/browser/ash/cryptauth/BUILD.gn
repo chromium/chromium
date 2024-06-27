@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("cryptauth") {
+static_library("cryptauth") {
   sources = [
     "client_app_metadata_provider_service.cc",
     "client_app_metadata_provider_service.h",

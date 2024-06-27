@@ -4,7 +4,7 @@
 
 assert(is_chromeos_ash)
 
-source_set("floating_workspace_service") {
+static_library("floating_workspace_service") {
   deps = [
     "//components/sessions",
     "//components/sync",

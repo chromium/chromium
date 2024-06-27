@@ -6,14 +6,14 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("oobe_quick_start_pref_names") {
+static_library("oobe_quick_start_pref_names") {
   sources = [
     "oobe_quick_start_pref_names.cc",
     "oobe_quick_start_pref_names.h",
   ]
 }
 
-source_set("oobe_quick_start") {
+static_library("oobe_quick_start") {
   deps = [
     ":oobe_quick_start_pref_names",
     "connectivity",

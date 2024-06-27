@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("customization") {
+static_library("customization") {
   sources = [
     "customization_document.cc",
     "customization_document.h",

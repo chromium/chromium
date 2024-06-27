@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("cert_provisioning") {
+static_library("cert_provisioning") {
   sources = [
     "cert_provisioning_client.cc",
     "cert_provisioning_client.h",
@@ -89,7 +89,7 @@ source_set("unit_tests") {
   ]
 }
 
-source_set("test_support") {
+static_library("test_support") {
   testonly = true
 
   sources = [

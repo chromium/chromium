@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("recorder_app") {
+static_library("recorder_app") {
   sources = [
     "chrome_recorder_app_ui_delegate.cc",
     "chrome_recorder_app_ui_delegate.h",

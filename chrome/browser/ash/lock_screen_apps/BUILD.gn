@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("lock_screen_apps") {
+static_library("lock_screen_apps") {
   sources = [
     "app_manager.h",
     "app_manager_impl.cc",

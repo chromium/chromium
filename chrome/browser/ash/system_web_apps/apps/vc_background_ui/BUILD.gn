@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("vc_background_ui") {
+static_library("vc_background_ui") {
   sources = [
     "vc_background_ui_sea_pen_provider_impl.cc",
     "vc_background_ui_sea_pen_provider_impl.h",

@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("growth") {
+static_library("growth") {
   sources = [
     "campaigns_manager_client_impl.cc",
     "campaigns_manager_client_impl.h",

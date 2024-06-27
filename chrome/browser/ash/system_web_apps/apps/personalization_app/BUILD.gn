@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("personalization_app") {
+static_library("personalization_app") {
   sources = [
     "ambient_video_albums.cc",
     "ambient_video_albums.h",
@@ -114,7 +114,7 @@ source_set("personalization_app") {
   ]
 }
 
-source_set("test_support") {
+static_library("test_support") {
   testonly = true
 
   sources = [

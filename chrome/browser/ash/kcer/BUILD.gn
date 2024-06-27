@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("kcer") {
+static_library("kcer") {
   sources = [
     "kcer_factory_ash.cc",
     "kcer_factory_ash.h",

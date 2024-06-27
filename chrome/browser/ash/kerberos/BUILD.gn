@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("kerberos") {
+static_library("kerberos") {
   sources = [
     "kerberos_credentials_manager.cc",
     "kerberos_credentials_manager.h",

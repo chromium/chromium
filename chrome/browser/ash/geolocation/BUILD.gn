@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("geolocation") {
+static_library("geolocation") {
   sources = [
     "system_geolocation_source.cc",
     "system_geolocation_source.h",

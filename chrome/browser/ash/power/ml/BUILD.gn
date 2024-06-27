@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("user_activity_ukm_logger_helpers") {
+static_library("user_activity_ukm_logger_helpers") {
   public = [ "user_activity_ukm_logger_helpers.h" ]
 
   sources = [ "user_activity_ukm_logger_helpers.cc" ]

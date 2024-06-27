@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("video_conference") {
+static_library("video_conference") {
   sources = [
     "video_conference_app_service_client.cc",
     "video_conference_app_service_client.h",

@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("bluetooth") {
+static_library("bluetooth") {
   sources = [
     "bluetooth_log_controller.cc",
     "bluetooth_log_controller.h",

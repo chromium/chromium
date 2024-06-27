@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("eche_app") {
+static_library("eche_app") {
   sources = [
     "app_id.h",
     "eche_app_accessibility_provider_proxy.cc",

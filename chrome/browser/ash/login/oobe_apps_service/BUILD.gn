@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("oobe_apps_service") {
+static_library("oobe_apps_service") {
   sources = [
     "oobe_apps_almanac_endpoint.cc",
     "oobe_apps_almanac_endpoint.h",

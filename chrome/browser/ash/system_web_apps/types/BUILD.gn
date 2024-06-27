@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("types") {
+static_library("types") {
   sources = [
     "system_web_app_background_task_info.cc",
     "system_web_app_background_task_info.h",

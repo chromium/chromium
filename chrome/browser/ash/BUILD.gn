@@ -19,7 +19,7 @@ assert(enable_extensions, "Ash Chrome has to be built with extensions")
 assert(is_chromeos_ash)
 assert(use_ozone)
 
-source_set("ash") {
+static_library("ash") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   defines = []

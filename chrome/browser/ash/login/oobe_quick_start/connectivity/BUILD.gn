@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("connectivity") {
+static_library("connectivity") {
   deps = [
     "proto",
     "//base",
@@ -52,7 +52,7 @@ source_set("connectivity") {
   ]
 }
 
-source_set("test_support") {
+static_library("test_support") {
   testonly = true
   public_deps = [ ":connectivity" ]
   deps = [

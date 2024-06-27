@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("sync") {
+static_library("sync") {
   sources = [
     "sync_appsync_optin_client.cc",
     "sync_appsync_optin_client.h",

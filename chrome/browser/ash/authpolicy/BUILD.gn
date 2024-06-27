@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("authpolicy") {
+static_library("authpolicy") {
   sources = [
     "data_pipe_utils.cc",
     "data_pipe_utils.h",

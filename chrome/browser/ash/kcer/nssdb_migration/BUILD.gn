@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("nssdb_migration") {
+static_library("nssdb_migration") {
   sources = [
     "kcer_rollback_helper.cc",
     "kcer_rollback_helper.h",

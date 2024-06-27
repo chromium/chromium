@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("camera_app") {
+static_library("camera_app") {
   sources = [
     "camera_app_survey_handler.cc",
     "camera_app_survey_handler.h",

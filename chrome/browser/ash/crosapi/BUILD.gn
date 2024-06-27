@@ -10,7 +10,7 @@ import("//printing/buildflags/buildflags.gni")
 assert(is_chromeos_ash)
 assert(use_ozone)
 
-source_set("browser_util") {
+static_library("browser_util") {
   sources = [
     "browser_util.cc",
     "browser_util.h",
@@ -35,7 +35,7 @@ source_set("browser_util") {
   ]
 }
 
-source_set("crosapi") {
+static_library("crosapi") {
   defines = []
   if (use_cras) {
     defines += [ "USE_CRAS" ]
@@ -503,7 +503,7 @@ source_set("crosapi") {
   ]
 }
 
-source_set("test_support") {
+static_library("test_support") {
   testonly = true
   sources = [
     "ash_requires_lacros_browsertestbase.cc",

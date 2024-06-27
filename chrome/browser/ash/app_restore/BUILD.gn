@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("app_restore") {
+static_library("app_restore") {
   sources = [
     "app_launch_handler.cc",
     "app_launch_handler.h",

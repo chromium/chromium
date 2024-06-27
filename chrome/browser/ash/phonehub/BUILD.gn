@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("phonehub") {
+static_library("phonehub") {
   sources = [
     "attestation_certificate_generator_impl.cc",
     "attestation_certificate_generator_impl.h",

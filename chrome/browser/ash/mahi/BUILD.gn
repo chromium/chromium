@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("mahi") {
+static_library("mahi") {
   sources = [
     "mahi_browser_client_wrapper.cc",
     "mahi_browser_client_wrapper.h",

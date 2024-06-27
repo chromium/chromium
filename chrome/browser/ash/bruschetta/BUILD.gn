@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("bruschetta") {
+static_library("bruschetta") {
   sources = [
     "bruschetta_download.cc",
     "bruschetta_download.h",
@@ -72,7 +72,7 @@ source_set("bruschetta") {
   ]
 }
 
-source_set("test_support") {
+static_library("test_support") {
   testonly = true
 
   sources = [

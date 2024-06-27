@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("privacy_hub") {
+static_library("privacy_hub") {
   sources = [
     "content_block_observation.cc",
     "content_block_observation.h",

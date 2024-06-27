@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("multidevice_setup") {
+static_library("multidevice_setup") {
   sources = [
     "auth_token_validator_factory.cc",
     "auth_token_validator_factory.h",

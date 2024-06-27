@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("sharesheet") {
+static_library("sharesheet") {
   sources = [
     "copy_to_clipboard_share_action.cc",
     "copy_to_clipboard_share_action.h",

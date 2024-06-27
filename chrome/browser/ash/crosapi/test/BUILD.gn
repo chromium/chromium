@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("test") {
+static_library("test") {
   testonly = true
 
   sources = [

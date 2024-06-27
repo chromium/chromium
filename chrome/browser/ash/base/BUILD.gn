@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("base") {
+static_library("base") {
   sources = [
     "locale_util.cc",
     "locale_util.h",

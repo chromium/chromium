@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("early_prefs") {
+static_library("early_prefs") {
   sources = [
     "early_prefs_export_service.cc",
     "early_prefs_export_service.h",

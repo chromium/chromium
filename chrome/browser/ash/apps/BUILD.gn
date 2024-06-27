@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("apps") {
+static_library("apps") {
   sources = [
     "apk_web_app_installer.cc",
     "apk_web_app_installer.h",

@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("service") {
+static_library("service") {
   sources = [
     "accessibility_service_client.cc",
     "accessibility_service_client.h",
@@ -50,7 +50,7 @@ source_set("service") {
   ]
 }
 
-source_set("test_support") {
+static_library("test_support") {
   sources = [
     "fake_accessibility_service.cc",
     "fake_accessibility_service.h",
