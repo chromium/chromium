@@ -86,11 +86,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDeferImplInvalidation);
 CC_BASE_EXPORT extern const base::FeatureParam<int>
     kDeferImplInvalidationFrames;
 
-// When enabled, SupportsBackgroundThreadPriority is set to kNo for
-// GpuImageDecodeTaskImpl and SoftwareImageDecodeTaskImpl.
-// Introduced to fix https://crbug.com/1116624
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNormalPriorityImageDecoding);
-
 // Use DMSAA instead of MSAA for rastering tiles.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseDMSAAForTiles);
 

@@ -75,10 +75,7 @@ class SoftwareImageDecodeTaskImpl : public TileTask {
       SoftwareImageDecodeCache::DecodeTaskType task_type,
       const ImageDecodeCache::TracingInfo& tracing_info)
       : TileTask(TileTask::SupportsConcurrentExecution::kYes,
-                 (base::FeatureList::IsEnabled(
-                      features::kNormalPriorityImageDecoding)
-                      ? TileTask::SupportsBackgroundThreadPriority::kNo
-                      : TileTask::SupportsBackgroundThreadPriority::kYes)),
+                 TileTask::SupportsBackgroundThreadPriority::kNo),
         cache_(cache),
         image_key_(image_key),
         paint_image_(paint_image),

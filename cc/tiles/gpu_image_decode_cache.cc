@@ -582,10 +582,7 @@ class GpuImageDecodeTaskImpl : public TileTask {
                          const ImageDecodeCache::TracingInfo& tracing_info,
                          GpuImageDecodeCache::DecodeTaskType task_type)
       : TileTask(TileTask::SupportsConcurrentExecution::kYes,
-                 (base::FeatureList::IsEnabled(
-                      features::kNormalPriorityImageDecoding)
-                      ? TileTask::SupportsBackgroundThreadPriority::kNo
-                      : TileTask::SupportsBackgroundThreadPriority::kYes)),
+                 TileTask::SupportsBackgroundThreadPriority::kNo),
         cache_(cache),
         image_(draw_image),
         tracing_info_(tracing_info),

@@ -85,10 +85,6 @@ BASE_FEATURE(kDeferImplInvalidation,
 const base::FeatureParam<int> kDeferImplInvalidationFrames{
     &kDeferImplInvalidation, "frames", 1};
 
-BASE_FEATURE(kNormalPriorityImageDecoding,
-             "NormalPriorityImageDecoding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Note that kUseDMSAAForTiles only controls vulkan launch on android. We will
 // be using a separate flag to control the launch on GL.
 BASE_FEATURE(kUseDMSAAForTiles,
