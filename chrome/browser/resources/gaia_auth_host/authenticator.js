@@ -923,7 +923,7 @@ export class Authenticator extends EventTarget {
 
     if (this.isConstrainedWindow_) {
       let isEmbeddedPage = false;
-      if (this.idpOrigin_ && currentUrl.lastIndexOf(this.idpOrigin_) === 0) {
+      if (this.idpOrigin_ && currentUrl.startsWith(this.idpOrigin_)) {
         const headers = details.responseHeaders;
         for (let i = 0; headers && i < headers.length; ++i) {
           if (headers[i].name.toLowerCase() === EMBEDDED_FORM_HEADER) {
@@ -998,7 +998,8 @@ export class Authenticator extends EventTarget {
       return;
     }
     const currentUrl = details.url;
-    if (currentUrl.lastIndexOf(this.idpOrigin_, 0) !== 0) {
+    if (this.idpOrigin_ === null || this.idpOrigin_ === undefined ||
+      !currentUrl.startsWith(this.idpOrigin_)) {
       return;
     }
 
@@ -1395,7 +1396,7 @@ export class Authenticator extends EventTarget {
 
     // Posts a message to IdP pages to initiate communication.
     const currentUrl = this.webview_.src;
-    if (currentUrl.lastIndexOf(this.idpOrigin_) === 0) {
+    if (this.idpOrigin_ && currentUrl.startsWith(this.idpOrigin_)) {
       const msg = {
         'method': 'handshake',
       };
