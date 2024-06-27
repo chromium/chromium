@@ -150,9 +150,10 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
 
   virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() const {
     return {
-        // Disabled because some subtests set document.domain and this
-        // feature flag prevents that:
+        // Disabled because some subtests set document.domain and these
+        // feature flags prevent that:
         blink::features::kOriginAgentClusterDefaultEnabled,
+        features::kOriginKeyedProcessesByDefault,
     };
   }
 
