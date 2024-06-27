@@ -117,7 +117,16 @@
 
   _navigationController =
       [[TableViewNavigationController alloc] initWithTable:_viewController];
-  _navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
+  BOOL isIPad =
+      UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad;
+  if (isIPad) {
+    _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    _navigationController.modalInPresentation = YES;
+  } else {
+    _navigationController.modalPresentationStyle =
+        UIModalPresentationFullScreen;
+  }
+
   _navigationController.modalTransitionStyle =
       UIModalTransitionStyleCoverVertical;
 
