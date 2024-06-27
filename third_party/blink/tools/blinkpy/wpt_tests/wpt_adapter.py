@@ -465,6 +465,11 @@ class WPTAdapter:
                 'config': {
                     'binary_args': subsuite_args,
                 },
+                # The Blink implementation of `TestLoader` needs the
+                # `virtual_suite` property to derive virtual test names.
+                'run_info': {
+                    'virtual_suite': subsuite_name,
+                },
                 'include': tests,
             }
             subsuite_json[subsuite_name] = subsuite
