@@ -89,6 +89,7 @@ public class SafetyHubModuleViewBinder {
         View.OnClickListener primaryButtonListener = null;
         View.OnClickListener secondaryButtonListener =
                 model.get(SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER);
+        boolean expanded = false;
 
         switch (safeBrowsingState) {
             case SafeBrowsingState.STANDARD_PROTECTION:
@@ -127,6 +128,7 @@ public class SafetyHubModuleViewBinder {
                 iconDrawable = getErrorIcon(preference);
                 primaryButtonText =
                         preference.getContext().getString(R.string.safety_hub_turn_on_button);
+                expanded = true;
         }
 
         preference.setIcon(iconDrawable);
@@ -136,6 +138,7 @@ public class SafetyHubModuleViewBinder {
         preference.setSecondaryButtonText(secondaryButtonText);
         preference.setPrimaryButtonClickListener(primaryButtonListener);
         preference.setSecondaryButtonClickListener(secondaryButtonListener);
+        preference.setExpanded(expanded);
     }
 
     private static void updatePasswordCheckModule(
@@ -148,6 +151,7 @@ public class SafetyHubModuleViewBinder {
         String secondaryButtonText = null;
         View.OnClickListener primaryButtonListener = null;
         View.OnClickListener secondaryButtonListener = null;
+        boolean expanded = false;
 
         if (compromisedPasswordsCount > 0) {
             title =
@@ -165,6 +169,7 @@ public class SafetyHubModuleViewBinder {
                             .getContext()
                             .getString(R.string.safety_hub_passwords_navigation_button);
             primaryButtonListener = model.get(SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
+            expanded = true;
         } else {
             title = preference.getContext().getString(R.string.safety_check_passwords_safe);
             iconDrawable = getCheckmarkIcon(preference);
@@ -181,6 +186,7 @@ public class SafetyHubModuleViewBinder {
         preference.setSecondaryButtonText(secondaryButtonText);
         preference.setPrimaryButtonClickListener(primaryButtonListener);
         preference.setSecondaryButtonClickListener(secondaryButtonListener);
+        preference.setExpanded(expanded);
     }
 
     private static void updateUpdateCheckModule(
@@ -195,6 +201,7 @@ public class SafetyHubModuleViewBinder {
         String secondaryButtonText = null;
         View.OnClickListener primaryButtonListener = null;
         View.OnClickListener secondaryButtonListener = null;
+        boolean expanded = false;
 
         if (updateStatus == null) {
             title = preference.getContext().getString(R.string.safety_check_updates_updated);
@@ -212,6 +219,7 @@ public class SafetyHubModuleViewBinder {
                                     .getString(R.string.menu_update_unsupported_summary_default);
                     summary = updateStatus.latestUnsupportedVersion;
                     iconDrawable = getErrorIcon(preference);
+                    expanded = true;
                     break;
                 case UpdateStatusProvider.UpdateState.UPDATE_AVAILABLE:
                     title =
@@ -222,6 +230,7 @@ public class SafetyHubModuleViewBinder {
                     primaryButtonText = preference.getContext().getString(R.string.menu_update);
                     primaryButtonListener =
                             model.get(SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
+                    expanded = true;
                     break;
                 default:
                     title =
@@ -246,6 +255,7 @@ public class SafetyHubModuleViewBinder {
         preference.setSecondaryButtonText(secondaryButtonText);
         preference.setPrimaryButtonClickListener(primaryButtonListener);
         preference.setSecondaryButtonClickListener(secondaryButtonListener);
+        preference.setExpanded(expanded);
     }
 
     private static void updatePermissionsModule(
@@ -258,6 +268,7 @@ public class SafetyHubModuleViewBinder {
         String secondaryButtonText;
         View.OnClickListener primaryButtonListener = null;
         View.OnClickListener secondaryButtonListener = null;
+        boolean expanded = false;
 
         if (sitesWithUnusedPermissionsCount > 0) {
             title =
@@ -275,6 +286,7 @@ public class SafetyHubModuleViewBinder {
                     preference.getContext().getString(R.string.safety_hub_view_sites_button);
             secondaryButtonListener =
                     model.get(SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER);
+            expanded = true;
         } else {
             title = preference.getContext().getString(R.string.safety_hub_permissions_ok_title);
             iconDrawable = getCheckmarkIcon(preference);
@@ -287,6 +299,7 @@ public class SafetyHubModuleViewBinder {
         preference.setSecondaryButtonText(secondaryButtonText);
         preference.setPrimaryButtonClickListener(primaryButtonListener);
         preference.setSecondaryButtonClickListener(secondaryButtonListener);
+        preference.setExpanded(expanded);
     }
 
     private static void updateNotificationsReviewModule(
@@ -299,6 +312,7 @@ public class SafetyHubModuleViewBinder {
         String secondaryButtonText;
         View.OnClickListener primaryButtonListener = null;
         View.OnClickListener secondaryButtonListener = null;
+        boolean expanded = false;
 
         if (notificationPermissionsForReviewCount > 0) {
             title =
@@ -319,6 +333,7 @@ public class SafetyHubModuleViewBinder {
                     preference.getContext().getString(R.string.safety_hub_view_sites_button);
             secondaryButtonListener =
                     model.get(SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER);
+            expanded = true;
         } else {
             title =
                     preference
@@ -336,6 +351,7 @@ public class SafetyHubModuleViewBinder {
         preference.setSecondaryButtonText(secondaryButtonText);
         preference.setPrimaryButtonClickListener(primaryButtonListener);
         preference.setSecondaryButtonClickListener(secondaryButtonListener);
+        preference.setExpanded(expanded);
     }
 
     private static Drawable getErrorIcon(Preference preference) {

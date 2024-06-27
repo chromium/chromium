@@ -229,6 +229,9 @@ public final class SafetyHubTest {
         scrollToPreference(withText(permissionsTitle));
         onView(withText(permissionsTitle)).check(matches(isDisplayed()));
 
+        // Module should be expanded initially since it's in a warning state.
+        verifyButtonsNextToTextVisibility(permissionsTitle, true);
+
         // Open the permissions subpage.
         clickOnSecondaryButtonNextToText(permissionsTitle);
 
@@ -337,6 +340,9 @@ public final class SafetyHubTest {
         scrollToPreference(withText(notificationsTitle));
         onView(withText(notificationsTitle)).check(matches(isDisplayed()));
 
+        // Module should be expanded initially since it's in a warning state.
+        verifyButtonsNextToTextVisibility(notificationsTitle, true);
+
         // Open the notifications subpage.
         clickOnSecondaryButtonNextToText(notificationsTitle);
 
@@ -392,6 +398,13 @@ public final class SafetyHubTest {
         scrollToPreference(withText(safeBrowsingTitle));
         onView(withText(safeBrowsingTitle)).check(matches(isDisplayed()));
 
+        // Module should be collapsed initially since it's in a safe state.
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, false);
+        verifySummaryNextToTextVisibility(safeBrowsingTitle, false);
+
+        // Expand the module to show the buttons.
+        clickOnExpandButtonNextToText(safeBrowsingTitle);
+
         // Open the Safe Browsing settings.
         clickOnSecondaryButtonNextToText(safeBrowsingTitle);
 
@@ -415,6 +428,9 @@ public final class SafetyHubTest {
                 safetyHubFragment.getString(R.string.safety_check_updates_outdated);
         scrollToPreference(withText(updateCheckTitle));
         onView(withText(updateCheckTitle)).check(matches(isDisplayed()));
+
+        // Module should be expanded initially since it's in a warning state.
+        verifyButtonsNextToTextVisibility(updateCheckTitle, true);
 
         if (BuildConfig.IS_CHROME_BRANDED) {
             executeWhileCapturingIntents(
