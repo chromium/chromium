@@ -265,12 +265,8 @@ std::vector<ExtensionInstallProto::DisableReason> GetDisableReasons(
       {extensions::disable_reason::
            DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY,
        ExtensionInstallProto::PUBLISHED_IN_STORE_REQUIRED_BY_POLICY},
-      // TODO(https://crbug.com/339061151): Add support for
-      // extensions::disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION.
-      // This requires an internal change and updating extension_install.proto.
-      // {extensions::disable_reason::
-      //      DISABLE_UNSUPPORTED_MANIFEST_VERSION,
-      //  ExtensionInstallProto::UNSUPPORTED_MANIFEST_VERSION},
+      {extensions::disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION,
+       ExtensionInstallProto::UNSUPPORTED_MANIFEST_VERSION},
   };
 
   int disable_reasons = prefs->GetDisableReasons(id);
