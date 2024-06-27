@@ -45,31 +45,6 @@ public class KeyUtils {
     }
 
     /**
-     * Sends (synchronously) a single key down/up pair of events to the specified activity.
-     * <p>
-     * Similiar to {@link #singleKeyEventView(Instrumentation, View, int)}, this does not rely on
-     * the event injecting framework, but instead dispatches directly to an Activity via
-     * {@link Activity#dispatchKeyEvent(KeyEvent)}.
-     *
-     * @param i The application being instrumented.
-     * @param a The activity to receive the key event.
-     * @param keyCode The keycode for the event to be issued.
-     */
-    public static void singleKeyEventActivity(Instrumentation i, Activity a, int keyCode) {
-        long downTime = SystemClock.uptimeMillis();
-        long eventTime = SystemClock.uptimeMillis();
-
-        final KeyEvent downEvent =
-                new KeyEvent(downTime, eventTime, KeyEvent.ACTION_DOWN, keyCode, 0);
-        dispatchKeyEventToActivity(i, a, downEvent);
-
-        downTime = SystemClock.uptimeMillis();
-        eventTime = SystemClock.uptimeMillis();
-        final KeyEvent upEvent = new KeyEvent(downTime, eventTime, KeyEvent.ACTION_UP, keyCode, 0);
-        dispatchKeyEventToActivity(i, a, upEvent);
-    }
-
-    /**
      * Types the given text (on character at a time) into the specified view.
      *
      * @param i The application being instrumented.

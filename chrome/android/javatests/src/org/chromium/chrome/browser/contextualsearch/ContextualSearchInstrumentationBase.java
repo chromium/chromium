@@ -62,7 +62,6 @@ import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.KeyUtils;
 import org.chromium.content_public.browser.test.util.TestSelectionPopupController;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
@@ -905,18 +904,6 @@ public class ContextualSearchInstrumentationBase {
      */
     public void triggerNode(Tab tab, String nodeId) throws TimeoutException {
         DOMUtils.longPressNode(tab.getWebContents(), nodeId);
-    }
-
-    /**
-     * Simulates a key press.
-     *
-     * @param keycode The key's code.
-     */
-    private void pressKey(int keycode) {
-        KeyUtils.singleKeyEventActivity(
-                InstrumentationRegistry.getInstrumentation(),
-                sActivityTestRule.getActivity(),
-                keycode);
     }
 
     /**
