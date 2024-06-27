@@ -103,18 +103,38 @@ class ModelTypeSyncBridge {
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_changes) = 0;
 
+  // DEPRECATED! Implement the synchronous version below instead.
+  // TODO(crbug.com/347649753): Remove once all bridges have been migrated.
   // Asynchronously retrieve the corresponding sync data for `storage_keys`.
   // `callback` should be invoked if the operation is successful, otherwise
   // the processor's ReportError method should be called. Used only to commit
   // the data.
   virtual void GetDataForCommit(StorageKeyList storage_keys,
-                                DataCallback callback) = 0;
+                                DataCallback callback);
 
+  // DO NOT CALL YET! Not all bridges implement this yet.
+  // Retrieves the corresponding sync data for `storage_keys`. In case of
+  // errors, the processor's ReportError method should be called, and this
+  // should return nullptr. Used only to commit the data.
+  // TODO(crbug.com/347649753): Make pure-virtual once all bridges have been
+  // migrated.
+  virtual std::unique_ptr<DataBatch> GetDataForCommit(
+      StorageKeyList storage_keys);
+
+  // DEPRECATED! Implement the synchronous version below instead.
+  // TODO(crbug.com/347649753): Remove once all bridges have been migrated.
   // Asynchronously retrieve all of the local sync data. `callback` should be
   // invoked if the operation is successful, otherwise the processor's
   // ReportError method should be called.
   // Used for getting all data in Sync Node Browser of chrome://sync-internals.
-  virtual void GetAllDataForDebugging(DataCallback callback) = 0;
+  virtual void GetAllDataForDebugging(DataCallback callback);
+
+  // Retrieves all of the local sync data. In case of errors, the processor's
+  // ReportError method should be called, and this should return nullptr.
+  // Used for getting all data in Sync Node Browser of chrome://sync-internals.
+  // TODO(crbug.com/347649753): Make pure-virtual once all bridges have been
+  // migrated.
+  virtual std::unique_ptr<DataBatch> GetAllDataForDebugging();
 
   // Must not be called unless SupportsGetClientTag() returns true.
   //

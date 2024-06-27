@@ -8,6 +8,7 @@
 
 #include "base/notreached.h"
 #include "components/sync/model/conflict_resolution.h"
+#include "components/sync/model/data_batch.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 
@@ -24,6 +25,24 @@ ModelTypeSyncBridge::~ModelTypeSyncBridge() = default;
 
 void ModelTypeSyncBridge::OnSyncStarting(
     const DataTypeActivationRequest& request) {}
+
+void ModelTypeSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                           DataCallback callback) {
+  std::move(callback).Run(GetDataForCommit(std::move(storage_keys)));
+}
+
+std::unique_ptr<DataBatch> ModelTypeSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
+  NOTREACHED();
+}
+
+void ModelTypeSyncBridge::GetAllDataForDebugging(DataCallback callback) {
+  std::move(callback).Run(GetAllDataForDebugging());
+}
+
+std::unique_ptr<DataBatch> ModelTypeSyncBridge::GetAllDataForDebugging() {
+  NOTREACHED();
+}
 
 bool ModelTypeSyncBridge::SupportsGetClientTag() const {
   return true;

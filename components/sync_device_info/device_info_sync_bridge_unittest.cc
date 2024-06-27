@@ -659,34 +659,14 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
   }
 
   std::map<std::string, sync_pb::EntitySpecifics> GetAllData() {
-    base::RunLoop loop;
-    std::unique_ptr<DataBatch> batch;
-    bridge_->GetAllDataForDebugging(base::BindOnce(
-        [](base::RunLoop* loop, std::unique_ptr<DataBatch>* out_batch,
-           std::unique_ptr<DataBatch> batch) {
-          *out_batch = std::move(batch);
-          loop->Quit();
-        },
-        &loop, &batch));
-    loop.Run();
+    std::unique_ptr<DataBatch> batch = bridge_->GetAllDataForDebugging();
     EXPECT_NE(nullptr, batch);
     return DataBatchToSpecificsMap(std::move(batch));
   }
 
   std::map<std::string, sync_pb::EntitySpecifics> GetDataForCommit(
       const std::vector<std::string>& storage_keys) {
-    base::RunLoop loop;
-    std::unique_ptr<DataBatch> batch;
-    bridge_->GetDataForCommit(
-        storage_keys,
-        base::BindOnce(
-            [](base::RunLoop* loop, std::unique_ptr<DataBatch>* out_batch,
-               std::unique_ptr<DataBatch> batch) {
-              *out_batch = std::move(batch);
-              loop->Quit();
-            },
-            &loop, &batch));
-    loop.Run();
+    std::unique_ptr<DataBatch> batch = bridge_->GetDataForCommit(storage_keys);
     EXPECT_NE(nullptr, batch);
     return DataBatchToSpecificsMap(std::move(batch));
   }

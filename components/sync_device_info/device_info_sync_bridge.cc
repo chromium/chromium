@@ -499,8 +499,8 @@ std::optional<ModelError> DeviceInfoSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void DeviceInfoSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                            DataCallback callback) {
+std::unique_ptr<DataBatch> DeviceInfoSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   auto batch = std::make_unique<MutableDataBatch>();
   for (const auto& key : storage_keys) {
     const auto& iter = all_data_.find(key);
@@ -509,15 +509,15 @@ void DeviceInfoSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
       batch->Put(key, CopyToEntityData(iter->second.specifics()));
     }
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
-void DeviceInfoSyncBridge::GetAllDataForDebugging(DataCallback callback) {
+std::unique_ptr<DataBatch> DeviceInfoSyncBridge::GetAllDataForDebugging() {
   auto batch = std::make_unique<MutableDataBatch>();
   for (const auto& [cache_guid, device_info] : all_data_) {
     batch->Put(cache_guid, CopyToEntityData(device_info.specifics()));
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 std::string DeviceInfoSyncBridge::GetClientTag(const EntityData& entity_data) {
