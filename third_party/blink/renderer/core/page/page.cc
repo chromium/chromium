@@ -21,6 +21,7 @@
 
 #include "third_party/blink/renderer/core/page/page.h"
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "third_party/blink/public/common/features.h"
@@ -40,6 +41,7 @@
 #include "third_party/blink/renderer/core/editing/drag_caret.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
+#include "third_party/blink/renderer/core/frame/display_cutout_client_impl.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -54,6 +56,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -94,6 +97,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
@@ -114,6 +118,20 @@ const int kMaxNumberOfFrames = 1000;
 const int kTenFrames = 10;
 
 bool g_limit_max_frames_to_ten_for_testing = false;
+
+// static
+void SetSafeAreaEnvVariables(LocalFrame* frame, const gfx::Insets& safe_area) {
+  DocumentStyleEnvironmentVariables& vars =
+      frame->GetDocument()->GetStyleEngine().EnsureEnvironmentVariables();
+  vars.SetVariable(UADefinedVariable::kSafeAreaInsetTop,
+                   StyleEnvironmentVariables::FormatPx(safe_area.top()));
+  vars.SetVariable(UADefinedVariable::kSafeAreaInsetLeft,
+                   StyleEnvironmentVariables::FormatPx(safe_area.left()));
+  vars.SetVariable(UADefinedVariable::kSafeAreaInsetBottom,
+                   StyleEnvironmentVariables::FormatPx(safe_area.bottom()));
+  vars.SetVariable(UADefinedVariable::kSafeAreaInsetRight,
+                   StyleEnvironmentVariables::FormatPx(safe_area.right()));
+}
 
 }  // namespace
 
@@ -857,6 +875,11 @@ void Page::UpdateSafeAreaInsetWithBrowserControls(
     bool force_update) {
   DCHECK(RuntimeEnabledFeatures::DynamicSafeAreaInsetsEnabled());
 
+  if (Fullscreen::HasFullscreenElements() && !force_update) {
+    LOG(WARNING) << "Attempt to set SAI with browser controls in fullscreen.";
+    return;
+  }
+
   // Adjust the top / left / right is not needed, since they are set when
   // display insets was received at |SetSafeArea()|.
   int inset_bottom = GetMaxSafeAreaInsets().bottom();
@@ -873,35 +896,20 @@ void Page::UpdateSafeAreaInsetWithBrowserControls(
   gfx::Insets new_safe_area = gfx::Insets().TLBR(
       max_safe_area_insets_.top(), max_safe_area_insets_.left(),
       safe_area_inset_bottom, max_safe_area_insets_.right());
-
-  if (force_update || safe_area_insets_ != new_safe_area) {
-    SetSafeAreaInsets(new_safe_area);
-  }
+  SetSafeAreaEnvVariables(DeprecatedLocalMainFrame(), new_safe_area);
 }
 
-void Page::SetMaxSafeAreaInsets(gfx::Insets max_safe_area) {
-  if (max_safe_area_insets_ == max_safe_area) {
-    return;
-  }
-
+void Page::SetMaxSafeAreaInsets(LocalFrame* setter, gfx::Insets max_safe_area) {
   max_safe_area_insets_ = max_safe_area;
-  SetSafeAreaInsets(max_safe_area);
-}
 
-void Page::SetSafeAreaInsets(gfx::Insets safe_area) {
-  safe_area_insets_ = safe_area;
-  DocumentStyleEnvironmentVariables& vars = DeprecatedLocalMainFrame()
-                                                ->GetDocument()
-                                                ->GetStyleEngine()
-                                                .EnsureEnvironmentVariables();
-  vars.SetVariable(UADefinedVariable::kSafeAreaInsetTop,
-                   StyleEnvironmentVariables::FormatPx(safe_area.top()));
-  vars.SetVariable(UADefinedVariable::kSafeAreaInsetLeft,
-                   StyleEnvironmentVariables::FormatPx(safe_area.left()));
-  vars.SetVariable(UADefinedVariable::kSafeAreaInsetBottom,
-                   StyleEnvironmentVariables::FormatPx(safe_area.bottom()));
-  vars.SetVariable(UADefinedVariable::kSafeAreaInsetRight,
-                   StyleEnvironmentVariables::FormatPx(safe_area.right()));
+  // When the SAI is changed when DynamicSafeAreaInsetsEnabled, the SAI for the
+  // main frame needs to be set per browser controls state.
+  if (RuntimeEnabledFeatures::DynamicSafeAreaInsetsEnabled() &&
+      setter->IsMainFrame()) {
+    UpdateSafeAreaInsetWithBrowserControls(GetBrowserControls(), true);
+  } else {
+    SetSafeAreaEnvVariables(setter, max_safe_area);
+  }
 }
 
 void Page::SettingsChanged(ChangeType change_type) {

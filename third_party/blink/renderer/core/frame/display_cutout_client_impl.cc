@@ -29,22 +29,7 @@ void DisplayCutoutClientImpl::BindMojoReceiver(
 }
 
 void DisplayCutoutClientImpl::SetSafeArea(const gfx::Insets& safe_area) {
-  if (RuntimeEnabledFeatures::DynamicSafeAreaInsetsEnabled()) {
-    // TODO(crbug.com/345796091): Make this class a member of a Page.
-    frame_->GetDocument()->GetPage()->SetMaxSafeAreaInsets(safe_area);
-    return;
-  }
-
-  DocumentStyleEnvironmentVariables& vars =
-      frame_->GetDocument()->GetStyleEngine().EnsureEnvironmentVariables();
-  vars.SetVariable(UADefinedVariable::kSafeAreaInsetTop,
-                   StyleEnvironmentVariables::FormatPx(safe_area.top()));
-  vars.SetVariable(UADefinedVariable::kSafeAreaInsetLeft,
-                   StyleEnvironmentVariables::FormatPx(safe_area.left()));
-  vars.SetVariable(UADefinedVariable::kSafeAreaInsetBottom,
-                   StyleEnvironmentVariables::FormatPx(safe_area.bottom()));
-  vars.SetVariable(UADefinedVariable::kSafeAreaInsetRight,
-                   StyleEnvironmentVariables::FormatPx(safe_area.right()));
+  frame_->GetDocument()->GetPage()->SetMaxSafeAreaInsets(frame_, safe_area);
 }
 
 void DisplayCutoutClientImpl::Trace(Visitor* visitor) const {

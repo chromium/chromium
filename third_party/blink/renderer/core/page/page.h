@@ -336,18 +336,22 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   }
   int SubframeCount() const;
 
-  // Update the CSS safe-area-inset* attribute in the document based on the
-  // stored max_safe_area_insets in the Page and the given |browser_controls|'s
-  // visible height.
+  // Update the CSS safe-area-inset* environment variables in the main frame's
+  // document based on the stored |max_safe_area_insets| in the Page and the
+  // given |browser_controls|'s visible height.
   //
-  // The new safe-area-inset* attribute will not be applied to the CSS
-  // environment if the value after calculation is the same as this previous
-  // call, unless |force_update| is true.
+  // The new safe-area-inset* will not be applied to the CSS
+  // environment if a fullscreen element exists, unless |force_update|
+  // is true.
   void UpdateSafeAreaInsetWithBrowserControls(
       const BrowserControls& browser_controls,
       bool force_update = false);
 
-  void SetMaxSafeAreaInsets(gfx::Insets insets);
+  // Set the max safe-area-inset* from the browser and update the CSS
+  // environment variables for the main frame. If the setter is not a main
+  // frame, applies the same safe-area-inset* to the given |setter|'s document
+  // as well.
+  void SetMaxSafeAreaInsets(LocalFrame* setter, gfx::Insets insets);
   const gfx::Insets& GetMaxSafeAreaInsets() const {
     return max_safe_area_insets_;
   }
@@ -532,9 +536,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // Connect the Page to the `opener_`'s related pages, if those exist.
   void LinkRelatedPagesIfNeeded();
 
-  // Set the safe-area-inset* attribute to the current CSS environment.
-  void SetSafeAreaInsets(gfx::Insets safe_area);
-
   // Typically, the main frame and Page should both be owned by the embedder,
   // which must call Page::willBeDestroyed() prior to destroying Page. This
   // call detaches the main frame and clears this pointer, thus ensuring that
@@ -629,9 +630,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   int subframe_count_;
 
-  // current safe-area-inset* that's set to the CSS environment.
-  gfx::Insets safe_area_insets_;
-  // Max safe-area-insets coming from the display cutout client.
+  // |max_safe_area_insets_| is coming from the display cutout client.
   gfx::Insets max_safe_area_insets_;
 
   // The light, dark and forced_colors mode ColorProviders corresponding to the
