@@ -6285,17 +6285,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCapture.Win.ActivityReportProcessed" enum="Boolean"
-    expires_after="2024-08-08">
-  <owner>ilnik@chromium.org</owner>
-  <owner>video-cmi-mpp@chromium.org</owner>
-  <summary>
-    True if the Sensor Activity Report was successfully processed. False, if
-    there were no reports before the deadline and default decision was made.
-    Reported only if IMFSensorActivityMonitor was triggered.
-  </summary>
-</histogram>
-
 <histogram name="Media.VideoCapture.Win.D3DDeviceRemovedReason" enum="Hresult"
     expires_after="2025-05-10">
   <owner>ilnik@chromium.org</owner>

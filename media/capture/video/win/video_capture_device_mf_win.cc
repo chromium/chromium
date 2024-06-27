@@ -2768,9 +2768,6 @@ void VideoCaptureDeviceMFWin::OnCameraInUseReport(bool in_use,
   // Default action for no reports received can be only "camera not in use".
   DCHECK(!in_use || !is_default_action);
 
-  base::UmaHistogramBoolean("Media.VideoCapture.Win.ActivityReportProcessed",
-                            is_default_action);
-
   if (in_use) {
     OnError(VideoCaptureError::kWinMediaFoundationCameraBusy, FROM_HERE,
             "Camera is in use by another process");
