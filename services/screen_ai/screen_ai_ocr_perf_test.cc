@@ -19,12 +19,18 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "base/timer/lap_timer.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 #include "services/screen_ai/public/cpp/utilities.h"
 #include "services/screen_ai/screen_ai_library_wrapper.h"
-#include "services/screen_ai/screen_ai_library_wrapper_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/jpeg_codec.h"
+
+#if BUILDFLAG(USE_FAKE_SCREEN_AI)
+#include "services/screen_ai/screen_ai_library_wrapper_fake.h"
+#else
+#include "services/screen_ai/screen_ai_library_wrapper_impl.h"
+#endif
 
 namespace screen_ai {
 
@@ -98,7 +104,11 @@ class OcrTestEnvironment : public ::testing::Environment {
 
     base::FilePath directory_path(kLibraryDirectoryPath);
     base::FilePath library_path = directory_path.Append(kLibraryName);
+#if BUILDFLAG(USE_FAKE_SCREEN_AI)
+    library_ = std::make_unique<ScreenAILibraryWrapperFake>();
+#else
     library_ = std::make_unique<ScreenAILibraryWrapperImpl>();
+#endif
     CHECK(library_->Load(library_path))
         << "Run `dlcservice_util --id=screen-ai --install` to install the lib.";
 

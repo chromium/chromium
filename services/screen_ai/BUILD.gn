@@ -53,6 +53,7 @@ if (is_chromeos) {
     deps = [
       ":screen_ai",
       "//base/test:test_support",
+      "//services/screen_ai/buildflags",
       "//services/screen_ai/public/cpp:utilities",
       "//skia",
       "//ui/gfx/codec",
