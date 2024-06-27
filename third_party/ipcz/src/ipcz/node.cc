@@ -168,16 +168,9 @@ bool Node::AddConnection(const NodeName& remote_node_name,
       // it must be because the application has explicitly initiated a new
       // connection to the same node and it expects the previous connection to
       // be replaced.
-      //
-      // Note that DropConnection() may elicit trap notifications. Although we
-      // may be here *either* within a ConnectNode() API call *or* while
-      // handling an incoming NodeConnector message, we can err on the side of
-      // caution (i.e. less re-entrancy in event handlers) by treating every
-      // case like an API call.
       const Ref<NodeLink> link = it->second.link;
       mutex_.Unlock();
-      const OperationContext context{OperationContext::kAPICall};
-      DropConnection(context, *link);
+      DropConnection(*link);
       mutex_.Lock();
     }
 
@@ -476,8 +469,7 @@ bool Node::AcceptRelayedMessage(msg::AcceptRelayedMessage& accept) {
   return true;
 }
 
-void Node::DropConnection(const OperationContext& context,
-                          const NodeLink& connection_link) {
+void Node::DropConnection(const NodeLink& connection_link) {
   Ref<NodeLink> link;
   std::vector<NodeName> pending_introductions;
   bool lost_broker = false;
@@ -516,7 +508,7 @@ void Node::DropConnection(const OperationContext& context,
     }
   }
 
-  link->Deactivate(context);
+  link->Deactivate();
 
   if (lost_broker) {
     // Break all connections if the broker is lost. In practice we should only
@@ -605,9 +597,8 @@ void Node::ShutDown() {
     assigned_name_ = {};
   }
 
-  const OperationContext context{OperationContext::kAPICall};
   for (const auto& entry : connections) {
-    entry.second.link->Deactivate(context);
+    entry.second.link->Deactivate();
   }
 
   CancelAllIntroductions();

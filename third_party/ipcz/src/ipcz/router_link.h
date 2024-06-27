@@ -14,7 +14,6 @@
 #include "ipcz/fragment_ref.h"
 #include "ipcz/link_type.h"
 #include "ipcz/node_name.h"
-#include "ipcz/operation_context.h"
 #include "ipcz/router_link_state.h"
 #include "ipcz/sequence_number.h"
 #include "ipcz/sublink_id.h"
@@ -70,20 +69,18 @@ class RouterLink : public RefCounted<RouterLink> {
 
   // Passes a parcel to the Router on the other side of this link to be queued
   // and/or router further.
-  virtual void AcceptParcel(const OperationContext& context,
-                            std::unique_ptr<Parcel> parcel) = 0;
+  virtual void AcceptParcel(std::unique_ptr<Parcel> parcel) = 0;
 
   // Notifies the Router on the other side of the link that the route has been
   // closed from this side. `sequence_length` is the total number of parcels
   // transmitted from the closed side before it was closed.
-  virtual void AcceptRouteClosure(const OperationContext& context,
-                                  SequenceNumber sequence_length) = 0;
+  virtual void AcceptRouteClosure(SequenceNumber sequence_length) = 0;
 
   // Notifies the Router on the other side of the link that the route has been
   // unexpectedly disconnected from this side. Unlike clean route closure above,
   // in this case we don't know the final sequence length and can't guarantee
   // delivery of any further parcels.
-  virtual void AcceptRouteDisconnected(const OperationContext& context) = 0;
+  virtual void AcceptRouteDisconnected() = 0;
 
   // Signals that this side of the link is in a stable state suitable for one
   // side or the other to lock the link, either for bypass or closure
@@ -118,7 +115,7 @@ class RouterLink : public RefCounted<RouterLink> {
   // itself as waiting for both sides of the link to become stable, and both
   // sides of the link are stable. Returns true if and only if a flush was
   // actually issued to the other side.
-  virtual bool FlushOtherSideIfWaiting(const OperationContext& context) = 0;
+  virtual bool FlushOtherSideIfWaiting() = 0;
 
   // Indicates whether this link can be bypassed by a request from the named
   // node to one side of the link. True if and only if the proxy on the other
@@ -130,8 +127,7 @@ class RouterLink : public RefCounted<RouterLink> {
   // on this side. `bypass_target_node` is the name node where the router's
   // outward peer lives, and `bypass_target_sublink` identifies the link between
   // that router and the router on the other side of this link.
-  virtual void BypassPeer(const OperationContext& context,
-                          const NodeName& bypass_target_node,
+  virtual void BypassPeer(const NodeName& bypass_target_node,
                           SublinkId bypass_target_sublink) = 0;
 
   // Informs the router on the other side of this link about when it can drop
@@ -141,16 +137,14 @@ class RouterLink : public RefCounted<RouterLink> {
   // `outbound_sequence_length` is the final length of the parcel sequence the
   // router must expect to receive from its inward peer and forward to its
   // outward peer.
-  virtual void StopProxying(const OperationContext& context,
-                            SequenceNumber inbound_sequence_length,
+  virtual void StopProxying(SequenceNumber inbound_sequence_length,
                             SequenceNumber outbound_sequence_length) = 0;
 
   // Informs the router on the other side of this link that the router it most
   // recently bypassed will stop sending it parcels once the router's inbound
   // sequence length reaches `inbound_sequence_length`, at which point the
   // router's link to the proxy can be dropped.
-  virtual void ProxyWillStop(const OperationContext& context,
-                             SequenceNumber inbound_sequence_length) = 0;
+  virtual void ProxyWillStop(SequenceNumber inbound_sequence_length) = 0;
 
   // Informs the router on the other side of this link that its outward peer
   // (and the router on this side of this link) can be bypassed, and provides a
@@ -158,8 +152,7 @@ class RouterLink : public RefCounted<RouterLink> {
   // `new_link_state` is a freshly allocated RouterLinkState fragment for the
   // new link, and `inbound_sequence_length` is the current inbound sequence
   // length of the router on this side of the link.
-  virtual void BypassPeerWithLink(const OperationContext& context,
-                                  SublinkId new_sublink,
+  virtual void BypassPeerWithLink(SublinkId new_sublink,
                                   FragmentRef<RouterLinkState> new_link_state,
                                   SequenceNumber inbound_sequence_length) = 0;
 
@@ -171,7 +164,6 @@ class RouterLink : public RefCounted<RouterLink> {
   // router on this side of the link at the moment it switches to the new link
   // for its outward transmissions.
   virtual void StopProxyingToLocalPeer(
-      const OperationContext& context,
       SequenceNumber outbound_sequence_length) = 0;
 
   // Deactivates this RouterLink to sever any binding it may have to a specific

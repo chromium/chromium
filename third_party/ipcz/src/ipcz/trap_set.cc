@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "ipcz/api_context.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/trap_event_dispatcher.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
@@ -53,34 +54,30 @@ IpczResult TrapSet::Add(const IpczTrapConditions& conditions,
   return IPCZ_RESULT_OK;
 }
 
-void TrapSet::NotifyNewLocalParcel(const OperationContext& context,
-                                   IpczPortalStatusFlags status_flags,
+void TrapSet::NotifyNewLocalParcel(IpczPortalStatusFlags status_flags,
                                    ParcelQueue& inbound_parcel_queue,
                                    TrapEventDispatcher& dispatcher) {
-  UpdatePortalStatus(context, status_flags, inbound_parcel_queue,
+  UpdatePortalStatus(status_flags, inbound_parcel_queue,
                      UpdateReason::kNewLocalParcel, dispatcher);
 }
 
-void TrapSet::NotifyLocalParcelConsumed(const OperationContext& context,
-                                        IpczPortalStatusFlags status_flags,
+void TrapSet::NotifyLocalParcelConsumed(IpczPortalStatusFlags status_flags,
                                         ParcelQueue& inbound_parcel_queue,
                                         TrapEventDispatcher& dispatcher) {
-  UpdatePortalStatus(context, status_flags, inbound_parcel_queue,
+  UpdatePortalStatus(status_flags, inbound_parcel_queue,
                      UpdateReason::kLocalParcelConsumed, dispatcher);
 }
 
-void TrapSet::NotifyPeerClosed(const OperationContext& context,
-                               IpczPortalStatusFlags status_flags,
+void TrapSet::NotifyPeerClosed(IpczPortalStatusFlags status_flags,
                                ParcelQueue& inbound_parcel_queue,
                                TrapEventDispatcher& dispatcher) {
-  UpdatePortalStatus(context, status_flags, inbound_parcel_queue,
+  UpdatePortalStatus(status_flags, inbound_parcel_queue,
                      UpdateReason::kPeerClosed, dispatcher);
 }
 
-void TrapSet::RemoveAll(const OperationContext& context,
-                        TrapEventDispatcher& dispatcher) {
+void TrapSet::RemoveAll(TrapEventDispatcher& dispatcher) {
   IpczTrapConditionFlags flags = IPCZ_TRAP_REMOVED;
-  if (context.is_api_call()) {
+  if (APIContext::IsCurrentThreadWithinAPICall()) {
     flags |= IPCZ_TRAP_WITHIN_API_CALL;
   }
 
@@ -129,8 +126,7 @@ IpczTrapConditionFlags TrapSet::GetSatisfiedConditionsForUpdate(
   return event_flags;
 }
 
-void TrapSet::UpdatePortalStatus(const OperationContext& context,
-                                 IpczPortalStatusFlags status_flags,
+void TrapSet::UpdatePortalStatus(IpczPortalStatusFlags status_flags,
                                  ParcelQueue& inbound_parcel_queue,
                                  UpdateReason reason,
                                  TrapEventDispatcher& dispatcher) {
@@ -143,7 +139,7 @@ void TrapSet::UpdatePortalStatus(const OperationContext& context,
       continue;
     }
 
-    if (context.is_api_call()) {
+    if (APIContext::IsCurrentThreadWithinAPICall()) {
       flags |= IPCZ_TRAP_WITHIN_API_CALL;
     }
 

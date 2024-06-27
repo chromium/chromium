@@ -8,7 +8,6 @@
 #include <cstdint>
 
 #include "ipcz/ipcz.h"
-#include "ipcz/operation_context.h"
 #include "ipcz/parcel_queue.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
@@ -45,8 +44,7 @@ class TrapSet {
   // Any trap interested in this is removed from the set, and its event handler
   // invocation is appended to `dispatcher`. `status_flags`, `num_local_parcels`
   // and `num_local_bytes` convey the new status of the portal.
-  void NotifyNewLocalParcel(const OperationContext& context,
-                            IpczPortalStatusFlags status_flags,
+  void NotifyNewLocalParcel(IpczPortalStatusFlags status_flags,
                             ParcelQueue& inbound_parcel_queue,
                             TrapEventDispatcher& dispatcher);
 
@@ -54,8 +52,7 @@ class TrapSet {
   // Any trap interested in this is removed from the set, and its event handler
   // invocation is appended to `dispatcher`. `status_flags`, `num_local_parcels`
   // and `num_local_bytes` convey the new status of the portal.
-  void NotifyLocalParcelConsumed(const OperationContext& context,
-                                 IpczPortalStatusFlags status_flags,
+  void NotifyLocalParcelConsumed(IpczPortalStatusFlags status_flags,
                                  ParcelQueue& inbound_parcel_queue,
                                  TrapEventDispatcher& dispatcher);
 
@@ -63,15 +60,13 @@ class TrapSet {
   // interested in this is removed from the set, and its event handler
   // invocation is appended to `dispatcher`. `status_flags` conveys the new
   // status of the portal.
-  void NotifyPeerClosed(const OperationContext& context,
-                        IpczPortalStatusFlags status_flags,
+  void NotifyPeerClosed(IpczPortalStatusFlags status_flags,
                         ParcelQueue& inbound_parcel_queue,
                         TrapEventDispatcher& dispatcher);
 
   // Immediately removes all traps from the set. Every trap present appends an
   // IPCZ_TRAP_REMOVED event to `dispatcher` before removal.
-  void RemoveAll(const OperationContext& context,
-                 TrapEventDispatcher& dispatcher);
+  void RemoveAll(TrapEventDispatcher& dispatcher);
 
  private:
   struct Trap {
@@ -111,8 +106,7 @@ class TrapSet {
       UpdateReason reason);
 
   // Helper used by Notify* methods to carry out common update work.
-  void UpdatePortalStatus(const OperationContext& context,
-                          IpczPortalStatusFlags status_flags,
+  void UpdatePortalStatus(IpczPortalStatusFlags status_flags,
                           ParcelQueue& inbound_parcel_queue,
                           UpdateReason reason,
                           TrapEventDispatcher& dispatcher);

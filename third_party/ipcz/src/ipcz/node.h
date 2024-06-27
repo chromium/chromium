@@ -19,7 +19,6 @@
 #include "ipcz/node_messages.h"
 #include "ipcz/node_name.h"
 #include "ipcz/node_type.h"
-#include "ipcz/operation_context.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
@@ -155,8 +154,7 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
 
   // Drops the connection running over `connection_link` between this node and
   // another.
-  void DropConnection(const OperationContext& context,
-                      const NodeLink& connection_link);
+  void DropConnection(const NodeLink& connection_link);
 
   // Asynchronously waits for this Node to acquire a broker link and then
   // invokes `callback` with it. If this node already has a broker link then the

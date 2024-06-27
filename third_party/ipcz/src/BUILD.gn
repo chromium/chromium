@@ -209,6 +209,7 @@ ipcz_source_set("util") {
 ipcz_source_set("impl") {
   visibility = [ ":*" ]
   public = [
+    "ipcz/api_context.h",
     "ipcz/api_object.h",
     "ipcz/application_object.h",
     "ipcz/block_allocator.h",
@@ -234,7 +235,6 @@ ipcz_source_set("impl") {
     "ipcz/node_messages.h",
     "ipcz/node_name.h",
     "ipcz/node_type.h",
-    "ipcz/operation_context.h",
     "ipcz/parcel.h",
     "ipcz/parcel_queue.h",
     "ipcz/parcel_wrapper.h",
@@ -250,6 +250,7 @@ ipcz_source_set("impl") {
     "ipcz/test_messages.h",
   ]
   sources = [
+    "ipcz/api_context.cc",
     "ipcz/api_object.cc",
     "ipcz/application_object.cc",
     "ipcz/block_allocator.cc",

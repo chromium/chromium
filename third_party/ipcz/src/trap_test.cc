@@ -306,5 +306,41 @@ TEST_F(TrapTest, MultipleTraps) {
   Close(b);
 }
 
+TEST_F(TrapTest, SyncTransportWithinAPICall) {
+  const auto& kDriver = reference_drivers::kSyncReferenceDriver;
+  const IpczHandle node_a = CreateNode(kDriver, IPCZ_CREATE_NODE_AS_BROKER);
+  const IpczHandle node_b = CreateNode(kDriver);
+
+  IpczDriverHandle t0, t1;
+  kDriver.CreateTransports(IPCZ_INVALID_DRIVER_HANDLE,
+                           IPCZ_INVALID_DRIVER_HANDLE, IPCZ_NO_FLAGS, nullptr,
+                           &t0, &t1);
+
+  IpczHandle a, b;
+  ipcz().ConnectNode(node_a, t0, 1, IPCZ_NO_FLAGS, nullptr, &a);
+  ipcz().ConnectNode(node_b, t1, 1, IPCZ_CONNECT_NODE_TO_BROKER, nullptr, &b);
+
+  bool received_event = false;
+  IpczTrapConditionFlags event_flags = IPCZ_NO_FLAGS;
+  const IpczTrapConditions conditions = {
+      .size = sizeof(conditions),
+      .flags = IPCZ_TRAP_ABOVE_MIN_LOCAL_PARCELS,
+  };
+  EXPECT_EQ(IPCZ_RESULT_OK, Trap(b, conditions, [&](const IpczTrapEvent& e) {
+              received_event = true;
+              event_flags = e.condition_flags;
+            }));
+
+  Put(a, "ping!");
+  EXPECT_TRUE(received_event);
+
+  // Even though the immediate source of the fired trap event was a transport
+  // notification, the event should still be flagged as within an API call since
+  // it happens while we're still in Put() above.
+  EXPECT_TRUE(event_flags & IPCZ_TRAP_WITHIN_API_CALL);
+
+  CloseAll({a, b, node_a, node_b});
+}
+
 }  // namespace
 }  // namespace ipcz

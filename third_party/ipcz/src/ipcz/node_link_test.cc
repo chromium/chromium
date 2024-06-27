@@ -11,7 +11,6 @@
 #include "ipcz/link_side.h"
 #include "ipcz/link_type.h"
 #include "ipcz/node_link_memory.h"
-#include "ipcz/operation_context.h"
 #include "ipcz/remote_router_link.h"
 #include "ipcz/router.h"
 #include "ipcz/sublink_id.h"
@@ -63,21 +62,15 @@ TEST_F(NodeLinkTest, BasicTransmission) {
   Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, kDriver);
   Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, kDriver);
 
-  // The choice of OperationContext is arbitrary and irrelevant for this test.
-  const OperationContext context{OperationContext::kTransportNotification};
   auto [link0, link1] = LinkNodes(node0, node1);
   auto router0 = MakeRefCounted<Router>();
   auto router1 = MakeRefCounted<Router>();
   FragmentRef<RouterLinkState> link_state =
       link0->memory().GetInitialRouterLinkState(0);
-  router0->SetOutwardLink(
-      context,
-      link0->AddRemoteRouterLink(context, SublinkId(0), link_state,
-                                 LinkType::kCentral, LinkSide::kA, router0));
-  router1->SetOutwardLink(
-      context,
-      link1->AddRemoteRouterLink(context, SublinkId(0), link_state,
-                                 LinkType::kCentral, LinkSide::kB, router1));
+  router0->SetOutwardLink(link0->AddRemoteRouterLink(
+      SublinkId(0), link_state, LinkType::kCentral, LinkSide::kA, router0));
+  router1->SetOutwardLink(link1->AddRemoteRouterLink(
+      SublinkId(0), link_state, LinkType::kCentral, LinkSide::kB, router1));
   link_state->status = RouterLinkState::kStable;
 
   EXPECT_FALSE(router1->IsPeerClosed());
@@ -85,8 +78,8 @@ TEST_F(NodeLinkTest, BasicTransmission) {
   EXPECT_TRUE(router1->IsPeerClosed());
   router1->CloseRoute();
 
-  link0->Deactivate(context);
-  link1->Deactivate(context);
+  link0->Deactivate();
+  link1->Deactivate();
 }
 
 TEST_F(NodeLinkTest, AvailableFeatures) {
@@ -102,7 +95,6 @@ TEST_F(NodeLinkTest, AvailableFeatures) {
                                          &options_with_features);
   Ref<Node> node2 = MakeRefCounted<Node>(Node::Type::kNormal, kDriver);
 
-  const OperationContext context{OperationContext::kTransportNotification};
   auto [link01, link10] = LinkNodes(node0, node1);
   auto [link02, link20] = LinkNodes(node0, node2);
 
@@ -118,10 +110,10 @@ TEST_F(NodeLinkTest, AvailableFeatures) {
   EXPECT_FALSE(link20->available_features().mem_v2());
   EXPECT_FALSE(link20->memory().available_features().mem_v2());
 
-  link01->Deactivate(context);
-  link10->Deactivate(context);
-  link02->Deactivate(context);
-  link20->Deactivate(context);
+  link01->Deactivate();
+  link10->Deactivate();
+  link02->Deactivate();
+  link20->Deactivate();
 }
 
 }  // namespace
