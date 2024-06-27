@@ -230,10 +230,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // are stored in preferences. The latter are not.
   enabledLangs: string[] = [];
 
-  // TODO(b/346868764): Longer term, availableVoices
-  // should not be public just for the sake of tests.
   // All possible available voices for the current speech engine.
-  availableVoices: SpeechSynthesisVoice[];
+  private availableVoices_: SpeechSynthesisVoice[];
   // The set of languages found in availableVoices.
   private availableLangs_: string[] = [];
   // If a preview is playing, this is set to the voice the preview is playing.
@@ -965,7 +963,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
           // Even though the voice may be installed on disk, it still may not be
           // available to the speechSynthesis API. Check whether to mark the
           // voice as AVAILABLE or INSTALLED_AND_UNAVAILABLE
-          const voicesForLanguageAreAvailable = this.availableVoices.some(
+          const voicesForLanguageAreAvailable = this.availableVoices_.some(
               voice =>
                   ((isNatural(voice) || !languageHasNaturalVoices) &&
                    getVoicePackConvertedLangIfExists(voice.lang) === lang));
@@ -1057,7 +1055,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // If voice was selected automatically and not by the user, check if
     // there's a higher quality voice available now.
     if (!this.currentVoiceIsUserChosen_()) {
-      const naturalVoicesForLang = this.availableVoices.filter(
+      const naturalVoicesForLang = this.availableVoices_.filter(
           voice => isNatural(voice) &&
               voice.lang.startsWith(chrome.readingMode.baseLanguageForSpeech));
 
@@ -1074,7 +1072,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // If the selected voice is now unavailable, such as after an uninstall,
     // reselect a new voice.
     if (this.selectedVoice &&
-        !this.availableVoices.some(
+        !this.availableVoices_.some(
             voice => areVoicesEqual(voice, this.selectedVoice!))) {
       this.selectedVoice = undefined;
       this.getSpeechSynthesisVoice();
@@ -1186,7 +1184,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   // TODO(b/346868764): Longer term, this shouldn't be public just for tests.
   getVoices(refresh: boolean = false): SpeechSynthesisVoice[] {
-    if (!this.availableVoices || refresh) {
+    if (!this.availableVoices_ || refresh) {
       let availableVoices = this.synth.getVoices();
       if (availableVoices.some(({localService}) => localService)) {
         availableVoices =
@@ -1202,13 +1200,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         availableVoices = availableVoices.filter(
             ({name}) => !name.toLowerCase().includes('android'));
       }
-      this.availableVoices = availableVoices;
+      this.availableVoices_ = availableVoices;
       this.availableLangs_ =
           [...new Set(availableVoices.map(({lang}) => lang))];
 
       this.populateDisplayNamesForLocaleCodes();
     }
-    return this.availableVoices;
+    return this.availableVoices_;
   }
 
   private refreshVoicePackStatuses() {
@@ -1230,7 +1228,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
 
     // Get any remaining display names for languages of available voices.
-    for (const {lang} of this.availableVoices) {
+    for (const {lang} of this.availableVoices_) {
       this.maybeAddDisplayName(lang);
     }
   }

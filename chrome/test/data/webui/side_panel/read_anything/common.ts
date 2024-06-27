@@ -7,6 +7,7 @@ import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {MetricsBrowserProxyImpl, playFromSelectionTimeout} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
+import type {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 export function mockMetrics(): TestMetricsBrowserProxy {
@@ -61,6 +62,24 @@ export function getItemsInMenu(
   const menu = lazyMenu.get();
   flush();
   return Array.from(menu.querySelectorAll<HTMLButtonElement>('.dropdown-item'));
+}
+
+// Creates SpeechSynthesisVoices and sets them on the given FakeSpeechSynthesis.
+export function createAndSetVoices(
+    app: ReadAnythingElement, speechSynthesis: FakeSpeechSynthesis,
+    overrides: Array<Partial<SpeechSynthesisVoice>>) {
+  const voices: SpeechSynthesisVoice[] = [];
+  overrides.forEach(partialVoice => {
+    voices.push(createSpeechSynthesisVoice(partialVoice));
+  });
+  setVoices(app, speechSynthesis, voices);
+}
+
+export function setVoices(
+    app: ReadAnythingElement, speechSynthesis: FakeSpeechSynthesis,
+    voices: SpeechSynthesisVoice[]) {
+  speechSynthesis.setVoices(voices);
+  app.onVoicesChanged();
 }
 
 export function createSpeechSynthesisVoice(

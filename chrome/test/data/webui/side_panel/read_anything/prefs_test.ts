@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// import {flush} from
+// '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createSpeechSynthesisVoice, suppressInnocuousErrors} from './common.js';
+import {createAndSetVoices, createSpeechSynthesisVoice, setVoices, suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -16,6 +17,7 @@ import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.j
 suite('PrefsTest', () => {
   let app: ReadAnythingElement;
   let testBrowserProxy: TestColorUpdaterBrowserProxy;
+  let speechSynthesis: FakeSpeechSynthesis;
 
   setup(() => {
     suppressInnocuousErrors();
@@ -27,6 +29,8 @@ suite('PrefsTest', () => {
     chrome.readingMode.isReadAloudEnabled = true;
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
+    speechSynthesis = new FakeSpeechSynthesis();
+    app.synth = speechSynthesis;
   });
 
   suite('on restore settings from prefs', () => {
@@ -39,13 +43,11 @@ suite('PrefsTest', () => {
       const langs = ['si', 'km', 'th'];
 
       setup(() => {
-        const speechSynthesis = new FakeSpeechSynthesis();
-        speechSynthesis.setVoices([
-          createSpeechSynthesisVoice({lang: langs[0]}),
-          createSpeechSynthesisVoice({lang: langs[1]}),
-          createSpeechSynthesisVoice({lang: langs[2]}),
+        createAndSetVoices(app, speechSynthesis, [
+          {lang: langs[0]},
+          {lang: langs[1]},
+          {lang: langs[2]},
         ]);
-        app.synth = speechSynthesis;
       });
 
       test('with langs stored in prefs', () => {
@@ -99,8 +101,7 @@ suite('PrefsTest', () => {
       ];
 
       setup(() => {
-        app.availableVoices = voices;
-        flush();
+        setVoices(app, speechSynthesis, voices);
       });
 
       test('to the stored voice for this language if there is one', () => {
