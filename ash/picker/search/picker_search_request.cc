@@ -26,9 +26,13 @@
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/parameter_pack.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -71,12 +75,16 @@ PickerSearchRequest::PickerSearchRequest(
     const std::u16string& query,
     std::optional<PickerCategory> category,
     SearchResultsCallback callback,
+    DoneCallback done_callback,
     PickerClient* client,
     base::span<const PickerCategory> available_categories)
     : is_category_specific_search_(category.has_value()),
       client_(CHECK_DEREF(client)),
       current_callback_(std::move(callback)),
+      done_callback_(std::move(done_callback)),
       gif_search_debouncer_(kGifDebouncingDelay) {
+  CHECK(!current_callback_.is_null());
+  CHECK(!done_callback_.is_null());
   std::string utf8_query = base::UTF16ToUTF8(query);
 
   std::vector<PickerSearchSource> cros_search_sources;
@@ -162,13 +170,19 @@ PickerSearchRequest::PickerSearchRequest(
                              query));
     }
   }
+
+  can_call_done_closure_ = true;
+  MaybeCallDoneClosure();
 }
 
 PickerSearchRequest::~PickerSearchRequest() {
   // Ensure that any bound callbacks to `Handle*SearchResults` - and therefore
   // `current_callback_` - will not get called by stopping searches.
   weak_ptr_factory_.InvalidateWeakPtrs();
-  current_callback_.Reset();
+  if (!done_callback_.is_null()) {
+    std::move(done_callback_).Run(/*interrupted=*/true);
+    current_callback_.Reset();
+  }
   client_->StopCrosQuery();
   client_->StopGifSearch();
 }
@@ -187,13 +201,14 @@ void PickerSearchRequest::HandleSearchSourceResults(
   MarkSearchEnded(source);
   // This method is only called from `Handle*SearchResults` methods (one for
   // each search source), and the only time `current_callback_` is null is when
-  // this request is being destructed.
-  // As our `WeakPtrFactory` should have invalidated any bound callbacks to
-  // `Handle*SearchResults` before resetting the callback to null, this method
-  // should - in theory - never be called after `current_callback_` is reset.
+  // this request is being destructed, or `done_closure_` was called.
+  // The destructor invalidates any bound callbacks to `Handle*SearchResults`
+  // before resetting the callback to null. If `done_closure_` was called, and
+  // more calls would have occurred, this is a bug and we should noisly crash.
   CHECK(!current_callback_.is_null())
       << "Current callback is null in HandleSearchSourceResults";
   current_callback_.Run(source, std::move(results), has_more_results);
+  MaybeCallDoneClosure();
 }
 
 void PickerSearchRequest::HandleCategorySearchResults(
@@ -312,6 +327,24 @@ std::optional<base::TimeTicks> PickerSearchRequest::SwapSearchStart(
     std::optional<base::TimeTicks> new_value) {
   return std::exchange(search_starts_[base::to_underlying(source)],
                        std::move(new_value));
+}
+
+void PickerSearchRequest::MaybeCallDoneClosure() {
+  if (!can_call_done_closure_) {
+    return;
+  }
+  if (gif_search_debouncer_.IsSearchPending()) {
+    return;
+  }
+  if (base::ranges::any_of(search_starts_,
+                           [](std::optional<base::TimeTicks>& start) {
+                             return start.has_value();
+                           })) {
+    return;
+  }
+
+  std::move(done_callback_).Run(/*interrupted=*/false);
+  current_callback_.Reset();
 }
 
 }  // namespace ash

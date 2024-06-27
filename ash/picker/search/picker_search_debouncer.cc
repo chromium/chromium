@@ -20,4 +20,8 @@ void PickerSearchDebouncer::RequestSearch(base::OnceClosure search) {
   timer_.Start(FROM_HERE, delay_, std::move(search));
 }
 
+bool PickerSearchDebouncer::IsSearchPending() {
+  return timer_.IsRunning();
+}
+
 }  // namespace ash

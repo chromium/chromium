@@ -38,11 +38,15 @@ class ASH_EXPORT PickerSearchRequest {
       base::RepeatingCallback<void(PickerSearchSource source,
                                    std::vector<PickerSearchResult> results,
                                    bool has_more_results)>;
+  using DoneCallback = base::OnceCallback<void(bool interrupted)>;
 
+  // `done_closure` is guaranteed to be called strictly after the last call to
+  // `callback`.
   explicit PickerSearchRequest(
       const std::u16string& query,
       std::optional<PickerCategory> category,
       SearchResultsCallback callback,
+      DoneCallback done_callback,
       PickerClient* client,
       base::span<const PickerCategory> available_categories);
   PickerSearchRequest(const PickerSearchRequest&) = delete;
@@ -81,12 +85,20 @@ class ASH_EXPORT PickerSearchRequest {
       PickerSearchSource source,
       std::optional<base::TimeTicks> new_value);
 
+  void MaybeCallDoneClosure();
+
   bool is_category_specific_search_;
   const raw_ref<PickerClient> client_;
 
   std::unique_ptr<PickerClipboardProvider> clipboard_provider_;
 
   SearchResultsCallback current_callback_;
+  // Set to true once all the searches have started at the end of the ctor.
+  bool can_call_done_closure_ = false;
+  // Guaranteed to be non-null in the ctor.
+  // Guaranteed to be null after it is called - it will never be reassigned.
+  // Once called, `current_callback_` will also be reset to null.
+  DoneCallback done_callback_;
 
   static constexpr size_t kNumSources =
       base::to_underlying(PickerSearchSource::kMaxValue) + 1;

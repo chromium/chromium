@@ -20,6 +20,8 @@ class ASH_EXPORT PickerSearchDebouncer {
   // within the delay specified in the constructor.
   void RequestSearch(base::OnceClosure search);
 
+  bool IsSearchPending();
+
  private:
   base::TimeDelta delay_;
   base::OneShotTimer timer_;

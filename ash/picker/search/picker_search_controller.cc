@@ -19,6 +19,7 @@
 #include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -62,11 +63,13 @@ void PickerSearchController::StartSearch(
   aggregator_.reset();
   aggregator_ = std::make_unique<PickerSearchAggregator>(burn_in_period_,
                                                          std::move(callback));
+
+  // TODO: b/348067874 - Hook `done_closure` up to `aggregator_`.
   search_request_ = std::make_unique<PickerSearchRequest>(
       query, std::move(category),
       base::BindRepeating(&PickerSearchAggregator::HandleSearchSourceResults,
                           aggregator_->GetWeakPtr()),
-      &client_.get(), available_categories);
+      /*done_closure=*/base::DoNothing(), &client_.get(), available_categories);
 }
 
 void PickerSearchController::StartEmojiSearch(
