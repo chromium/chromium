@@ -35,6 +35,11 @@ mojom("mojom") {
           cpp = "::web_package::EcdsaP256SHA256Signature"
           default_constructible = false
         },
+        {
+          mojom = "web_package.mojom.BundleIntegrityBlockAttributes"
+          cpp = "::web_package::IntegrityBlockAttributes"
+          default_constructible = false
+        },
       ]
       traits_headers =
           [ "//components/web_package/mojom/web_bundle_parser_mojom_traits.h" ]

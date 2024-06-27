@@ -11,13 +11,20 @@
 
 namespace web_package {
 
-enum class IntegrityBlockVersion { kV1 };
+enum class IntegrityBlockVersion { kV1, kV2 };
 
 // The V1 integrity block is a CBOR array with three entries:
 //  * Magic Bytes
 //  * Version
 //  * Signature Stack
 inline constexpr uint32_t kIntegrityBlockV1TopLevelArrayLength = 3;
+
+// The V2 integrity block is a CBOR array with four entries:
+//  * Magic Bytes
+//  * Version
+//  * Attributes
+//  * Signature Stack
+inline constexpr uint32_t kIntegrityBlockV2TopLevelArrayLength = 4;
 
 inline constexpr std::array<uint8_t, 8> kIntegrityBlockMagicBytes = {
     // "🖋📦" magic bytes (in UTF-8)

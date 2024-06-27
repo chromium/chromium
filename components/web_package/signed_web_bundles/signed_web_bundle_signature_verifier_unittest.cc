@@ -32,6 +32,8 @@
 #include "components/web_package/signed_web_bundles/ecdsa_p256_public_key.h"
 #include "components/web_package/signed_web_bundles/ecdsa_p256_sha256_signature.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
+#include "components/web_package/signed_web_bundles/integrity_block_attributes.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
@@ -137,6 +139,14 @@ mojom::BundleIntegrityBlockSignatureStackEntryPtr MakeSignatureStackEntry(
   return raw_signature_stack_entry;
 }
 
+SignedWebBundleId CreateForKeyPair(const WebBundleSigner::KeyPair& key_pair) {
+  return absl::visit(
+      [](const auto& key_pair) {
+        return SignedWebBundleId::CreateForPublicKey(key_pair.public_key);
+      },
+      key_pair);
+}
+
 }  // namespace
 
 // Tests that signatures created with the Go tool from
@@ -161,7 +171,6 @@ class SignedWebBundleSignatureVerifierGoToolTest
 
 // TODO(crbug.com/40239682): Add additional tests for Signed Web Bundles that
 // have more than one signature once the Go tool supports it.
-
 TEST_P(SignedWebBundleSignatureVerifierGoToolTest, VerifySimpleWebBundle) {
   auto file_path = GetTestFilePath(std::get<0>(GetParam()).first);
 
@@ -249,8 +258,10 @@ class SignedWebBundleSignatureVerifierTest
       const std::vector<WebBundleSigner::KeyPair>& key_pairs) {
     WebBundleBuilder builder;
     auto web_bundle = builder.CreateBundle();
-    auto integrity_block =
-        WebBundleSigner::CreateIntegrityBlockForBundle(web_bundle, key_pairs);
+    auto integrity_block = WebBundleSigner::CreateIntegrityBlockForBundle(
+        web_bundle, key_pairs,
+        /*ib_attributes=*/
+        {{.web_bundle_id = CreateForKeyPair(key_pairs[0]).id()}});
     auto integrity_block_cbor = *cbor::Writer::Write(integrity_block);
     std::vector<uint8_t> signed_web_bundle;
     base::Extend(signed_web_bundle, integrity_block_cbor);
@@ -283,7 +294,7 @@ class SignedWebBundleSignatureVerifierTest
       const std::vector<WebBundleSigner::KeyPair>& key_pairs) {
     std::vector<mojom::BundleIntegrityBlockSignatureStackEntryPtr>
         raw_signature_stack;
-    const auto& signature_stack = integrity_block.GetArray()[2].GetArray();
+    const auto& signature_stack = integrity_block.GetArray().back().GetArray();
     for (size_t idx = 0; idx < signature_stack.size(); idx++) {
       const auto& signature_stack_entry = signature_stack[idx];
       const auto& key_pair = key_pairs[idx];
@@ -323,9 +334,17 @@ class SignedWebBundleSignatureVerifierTest
           public_key, signature, complete_entry_cbor, attributes_cbor));
     }
 
+    const auto& attributes = integrity_block.GetArray()[2].GetMap();
+    const auto& web_bundle_id =
+        base::FindOrNull(attributes, cbor::Value(kWebBundleIdAttributeName))
+            ->GetString();
+    EXPECT_EQ(CreateForKeyPair(key_pairs[0]).id(), web_bundle_id);
+
     auto raw_integrity_block = mojom::BundleIntegrityBlock::New();
     raw_integrity_block->size = integrity_block_size;
     raw_integrity_block->signature_stack = std::move(raw_signature_stack);
+    raw_integrity_block->attributes = IntegrityBlockAttributes(
+        web_bundle_id, *cbor::Writer::Write(cbor::Value(attributes)));
 
     return SignedWebBundleIntegrityBlock::Create(
         std::move(raw_integrity_block));
@@ -395,16 +414,12 @@ INSTANTIATE_TEST_SUITE_P(
             std::vector<WebBundleSigner::KeyPair>{
                 WebBundleSigner::Ed25519KeyPair::CreateRandom(),
                 WebBundleSigner::Ed25519KeyPair::CreateRandom()},
-            SignedWebBundleSignatureVerifier::Error::ForInvalidSignature(
-                "Only a single signature is currently supported, got 2 "
-                "signatures.")),
+            std::nullopt),
         std::make_pair(
             std::vector<WebBundleSigner::KeyPair>{
                 WebBundleSigner::EcdsaP256KeyPair::CreateRandom(),
                 WebBundleSigner::Ed25519KeyPair::CreateRandom()},
-            SignedWebBundleSignatureVerifier::Error::ForInvalidSignature(
-                "Only a single signature is currently supported, got 2 "
-                "signatures."))),
+            std::nullopt)),
     [](const ::testing::TestParamInfo<
         SignedWebBundleSignatureVerifierTest::ParamType>& info) {
       return base::StringPrintf(

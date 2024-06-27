@@ -22,6 +22,7 @@
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
+#include "components/web_package/signed_web_bundles/integrity_block_attributes.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -207,6 +208,8 @@ struct SignedWebBundleAndKeys {
 
 SignedWebBundleAndKeys SignBundle(
     const std::vector<uint8_t>& unsigned_bundle,
+    const std::optional<WebBundleSigner::IntegrityBlockAttributes>&
+        ib_attributes,
     WebBundleSigner::ErrorsForTesting errors_for_testing = {
         /*integrity_block_errors=*/{}, /*signatures_errors=*/{}},
     size_t num_signatures = 1) {
@@ -216,10 +219,19 @@ SignedWebBundleAndKeys SignBundle(
   }
 
   return {
-      WebBundleSigner::SignBundle(unsigned_bundle, key_pairs,
-                                  /*ib_attributes=*/{}, errors_for_testing),
+      WebBundleSigner::SignBundle(unsigned_bundle, key_pairs, ib_attributes,
+                                  errors_for_testing),
       key_pairs,
   };
+}
+
+SignedWebBundleAndKeys SignBundle(
+    const std::vector<uint8_t>& unsigned_bundle,
+    WebBundleSigner::ErrorsForTesting errors_for_testing = {
+        /*integrity_block_errors=*/{}, /*signatures_errors=*/{}},
+    size_t num_signatures = 1) {
+  return SignBundle(unsigned_bundle, /*ib_attributes=*/{}, errors_for_testing,
+                    num_signatures);
 }
 
 void CheckIfSignatureStackEntryIsValid(
@@ -251,7 +263,9 @@ using testing::AllOf;
 using testing::Eq;
 using testing::Field;
 using testing::HasSubstr;
+using testing::Optional;
 using testing::Pointee;
+using testing::Property;
 
 class WebBundleParserTest : public testing::Test {
  private:
@@ -976,6 +990,39 @@ TEST_F(WebBundleParserTest, SignedBundleWithMultipleAttributes) {
   // difference between a signed and an unsigned bundle.
   EXPECT_EQ(integrity_block->size,
             bundle_and_keys.bundle.size() - unsigned_bundle.size());
+
+  // There should be exactly one signature stack entry, corresponding to the
+  // public key that was used to sign the web bundle.
+  EXPECT_EQ(integrity_block->signature_stack.size(), 1ul);
+  auto& entry = integrity_block->signature_stack[0];
+  EXPECT_NO_FATAL_FAILURE(CheckIfSignatureStackEntryIsValid(
+      entry,
+      absl::get<WebBundleSigner::Ed25519KeyPair>(bundle_and_keys.key_pairs[0])
+          .public_key));
+}
+
+TEST_F(WebBundleParserTest, SignedBundleV2) {
+  static constexpr std::string_view kWebBundleId =
+      "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+  auto unsigned_bundle = CreateSmallBundle();
+  auto bundle_and_keys = SignBundle(
+      unsigned_bundle, {{.web_bundle_id = std::string(kWebBundleId)}},
+      {/*integrity_block_errors=*/{},
+       {{WebBundleSigner::IntegritySignatureErrorForTesting::
+             kAdditionalSignatureStackEntryAttributes}}});
+  TestDataSource data_source(bundle_and_keys.bundle);
+
+  ASSERT_OK_AND_ASSIGN(auto integrity_block,
+                       ParseSignedBundleIntegrityBlock(&data_source));
+
+  // The size of the integrity block should be exactly equal to the size
+  // difference between a signed and an unsigned bundle.
+  EXPECT_EQ(integrity_block->size,
+            bundle_and_keys.bundle.size() - unsigned_bundle.size());
+
+  EXPECT_THAT(integrity_block->attributes,
+              Optional(Property(&IntegrityBlockAttributes::web_bundle_id,
+                                Eq(kWebBundleId))));
 
   // There should be exactly one signature stack entry, corresponding to the
   // public key that was used to sign the web bundle.

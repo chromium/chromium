@@ -48,6 +48,14 @@ SignedWebBundleSignatureStack::Create(
     return base::unexpected("The signature stack needs at least one entry.");
   }
 
+  if (base::ranges::all_of(entries, [](const auto& signature) {
+        return absl::holds_alternative<SignedWebBundleSignatureInfoUnknown>(
+            signature.signature_info());
+      })) {
+    return base::unexpected(
+        "There must be at least one signature of known type.");
+  }
+
   return SignedWebBundleSignatureStack(
       std::vector(std::begin(entries), std::end(entries)));
 }

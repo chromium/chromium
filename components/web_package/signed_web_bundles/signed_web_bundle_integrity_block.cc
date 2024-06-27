@@ -34,9 +34,14 @@ SignedWebBundleIntegrityBlock::Create(
                             std::move(error);
                    });
 
+  if (integrity_block->attributes) {
+    RETURN_IF_ERROR(SignedWebBundleId::Create(
+        integrity_block->attributes->web_bundle_id()));
+  }
+
   return SignedWebBundleIntegrityBlock(integrity_block->size,
                                        std::move(signature_stack),
-                                       /*attributes=*/std::nullopt);
+                                       std::move(integrity_block->attributes));
 }
 
 SignedWebBundleIntegrityBlock::SignedWebBundleIntegrityBlock(
@@ -67,7 +72,9 @@ bool SignedWebBundleIntegrityBlock::operator!=(
 }
 
 SignedWebBundleId SignedWebBundleIntegrityBlock::web_bundle_id() const {
-  // TODO(b/346753548): Check `attributes_` first.
+  if (attributes_) {
+    return *SignedWebBundleId::Create(attributes_->web_bundle_id());
+  }
   return absl::visit(
       base::Overloaded{[](const auto& signature_info) {
                          return SignedWebBundleId::CreateForPublicKey(

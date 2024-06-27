@@ -11,11 +11,8 @@
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
-#include "components/web_package/signed_web_bundles/ecdsa_p256_public_key.h"
-#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -101,6 +98,24 @@ TEST(WebBundleSignerTest, SignedWebBundleByteByByteComparisonEcdsaP256SHA256) {
   std::vector<uint8_t> expected_signed_bundle =
       GetStringAsBytes(GetTestFileContents(base::FilePath(
           FILE_PATH_LITERAL("simple_b2_signed_ecdsa_p256_sha256.swbn"))));
+  EXPECT_EQ(signed_bundle.size(), expected_signed_bundle.size());
+  EXPECT_EQ(signed_bundle, expected_signed_bundle);
+}
+
+TEST(WebBundleSignerTest, SignedWebBundleByteByByteComparisonV2Block) {
+  std::vector<uint8_t> unsigned_bundle = CreateUnsignedBundle();
+  std::vector<uint8_t> signed_bundle = WebBundleSigner::SignBundle(
+      unsigned_bundle,
+      {WebBundleSigner::EcdsaP256KeyPair(kEcdsaP256PublicKey,
+                                         kEcdsaP256PrivateKey),
+       WebBundleSigner::Ed25519KeyPair(kEd25519PublicKey, kEd25519PrivateKey)},
+      // ID corresponding to kEcdsaP256PublicKey
+      {{.web_bundle_id =
+            "ajzm2oc7gk2s4utk477tmaqyarasnb4oobitgwh2zmqfzdvdeifvgaacai"}});
+
+  std::vector<uint8_t> expected_signed_bundle =
+      GetStringAsBytes(GetTestFileContents(
+          base::FilePath(FILE_PATH_LITERAL("simple_b2_signed_v2.swbn"))));
   EXPECT_EQ(signed_bundle.size(), expected_signed_bundle.size());
   EXPECT_EQ(signed_bundle, expected_signed_bundle);
 }

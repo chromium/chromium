@@ -39,11 +39,11 @@ void IsolatedWebAppValidator::ValidateIntegrityBlock(
     return;
   }
 
-  if (integrity_block.signature_stack().size() != 1) {
-    // TODO: crbug.com/40239682 - Support more than one signature.
-    std::move(callback).Run(base::unexpected(
-        base::StringPrintf("Expected exactly 1 signature, but got %zu.",
-                           integrity_block.signature_stack().size())));
+  if (integrity_block.signature_stack().size() > 1 &&
+      !integrity_block.is_v2()) {
+    std::move(callback).Run(base::unexpected(base::StringPrintf(
+        "Expected exactly 1 signature for the v1 integrity block, but got %zu.",
+        integrity_block.signature_stack().size())));
     return;
   }
 
@@ -56,10 +56,6 @@ void IsolatedWebAppValidator::ValidateIntegrityBlock(
         expected_web_bundle_id.id().c_str())));
     return;
   }
-
-  // In the future, we'd also validate other properties of the Integrity Block
-  // in here, such as whether its version is supported (once we support multiple
-  // Integrity Block versions).
 
   IsolatedWebAppTrustChecker::Result result =
       trust_checker.IsTrusted(expected_web_bundle_id, dev_mode);

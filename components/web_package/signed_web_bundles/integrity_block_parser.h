@@ -6,6 +6,8 @@
 #define COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_INTEGRITY_BLOCK_PARSER_H_
 
 #include "base/containers/flat_map.h"
+#include "components/web_package/signed_web_bundles/attribute_map_parser.h"
+#include "components/web_package/signed_web_bundles/integrity_block_attributes.h"
 #include "components/web_package/signed_web_bundles/signature_entry_parser.h"
 #include "components/web_package/signed_web_bundles/types.h"
 #include "components/web_package/web_bundle_parser.h"
@@ -32,6 +34,11 @@ class IntegrityBlockParser : public WebBundleParser::WebBundleSectionParser {
 
  private:
   void ParseMagicBytesAndVersion(const std::optional<BinaryData>& data);
+
+  void ReadAttributes();
+  void ParseAttributes(AttributeMapParser::ParsingResult result);
+  void ReadAttributesBytes(std::string web_bundle_id,
+                           const std::optional<BinaryData>& data);
 
   void ReadSignatureStack();
   void ParseSignatureStack(const std::optional<BinaryData>& data);
@@ -61,6 +68,9 @@ class IntegrityBlockParser : public WebBundleParser::WebBundleSectionParser {
       signature_stack_;
   uint64_t signature_stack_entries_left_;
   uint64_t offset_in_stream_;
+
+  std::unique_ptr<AttributeMapParser> attributes_parser_;
+  std::optional<IntegrityBlockAttributes> attributes_;
 
   base::WeakPtrFactory<IntegrityBlockParser> weak_factory_{this};
 };

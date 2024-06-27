@@ -4,13 +4,17 @@
 
 #include "components/web_package/signed_web_bundles/integrity_block_parser.h"
 
+#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
-#include "base/strings/stringprintf.h"
+#include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "components/web_package/input_reader.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "components/web_package/signed_web_bundles/attribute_map_parser.h"
 #include "components/web_package/signed_web_bundles/constants.h"
+#include "components/web_package/signed_web_bundles/integrity_block_attributes.h"
 #include "components/web_package/signed_web_bundles/signature_entry_parser.h"
+#include "components/web_package/signed_web_bundles/types.h"
 
 namespace web_package {
 
@@ -90,11 +94,67 @@ void IntegrityBlockParser::ParseMagicBytesAndVersion(
     }
     offset_in_stream_ = input.CurrentOffset();
     ReadSignatureStack();
+  } else if (version_bytes == kIntegrityBlockV2VersionBytes) {
+    if (array_length != kIntegrityBlockV2TopLevelArrayLength) {
+      RunErrorCallback("Unexpected array structure for v2 version.");
+      return;
+    }
+    offset_in_stream_ = input.CurrentOffset();
+    ReadAttributes();
   } else {
-    RunErrorCallback("Unexpected version bytes: expected `1b\\0\\0` (for v1).",
-                     mojom::BundleParseErrorType::kVersionError);
+    RunErrorCallback(
+        "Unexpected version bytes: expected `1b\\0\\0` (for v1) or `2b\\0\\0` "
+        "(for v2).",
+        mojom::BundleParseErrorType::kVersionError);
     return;
   }
+}
+
+void IntegrityBlockParser::ReadAttributes() {
+  attributes_parser_ = std::make_unique<AttributeMapParser>(
+      *data_source_, base::BindOnce(&IntegrityBlockParser::ParseAttributes,
+                                    weak_factory_.GetWeakPtr()));
+  attributes_parser_->Parse(offset_in_stream_);
+}
+
+void IntegrityBlockParser::ParseAttributes(
+    AttributeMapParser::ParsingResult result) {
+  if (!result.has_value()) {
+    RunErrorCallback(std::move(result.error()));
+    return;
+  }
+
+  auto [attributes_map, offset_to_end_of_map] = std::move(result.value());
+
+  const cbor::Value* web_bundle_id =
+      base::FindOrNull(attributes_map, kWebBundleIdAttributeName);
+  if (!web_bundle_id || !web_bundle_id->is_string() ||
+      web_bundle_id->GetString().empty()) {
+    RunErrorCallback(
+        "`webBundleId` field in integrity block attributes is missing or "
+        "malformed.");
+    return;
+  }
+
+  uint64_t attribute_map_size = offset_to_end_of_map - offset_in_stream_;
+  data_source_->Read(
+      offset_in_stream_, attribute_map_size,
+      base::BindOnce(&IntegrityBlockParser::ReadAttributesBytes,
+                     weak_factory_.GetWeakPtr(), web_bundle_id->GetString()));
+}
+
+void IntegrityBlockParser::ReadAttributesBytes(
+    std::string web_bundle_id,
+    const std::optional<BinaryData>& data) {
+  if (!data) {
+    RunErrorCallback("Error reading integrity block attributes.");
+    return;
+  }
+
+  attributes_ = IntegrityBlockAttributes(std::move(web_bundle_id), *data);
+  offset_in_stream_ += data->size();
+
+  ReadSignatureStack();
 }
 
 void IntegrityBlockParser::ReadSignatureStack() {
@@ -175,6 +235,7 @@ void IntegrityBlockParser::RunSuccessCallback() {
       mojom::BundleIntegrityBlock::New();
   integrity_block->size = offset_in_stream_;
   integrity_block->signature_stack = std::move(signature_stack_);
+  integrity_block->attributes = std::move(attributes_);
 
   std::move(complete_callback_)
       .Run(base::BindOnce(std::move(result_callback_),

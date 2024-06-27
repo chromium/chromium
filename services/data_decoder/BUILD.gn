@@ -92,6 +92,7 @@ source_set("tests") {
     "//base",
     "//base/test:test_support",
     "//components/cbor",
+    "//components/web_package",
     "//services/data_decoder/public/cpp",
     "//services/data_decoder/public/cpp:test_support",
     "//skia",

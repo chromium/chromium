@@ -20,11 +20,8 @@ namespace web_package {
 class SignedWebBundleIntegrityBlock;
 
 // This class can be used to verify the signatures contained in a Signed Web
-// Bundle's integrity block. Currently, only one signature is supported, as
-// described in the explainer here:
+// Bundle's integrity block.
 // github.com/WICG/webpackage/blob/main/explainers/integrity-signature.md
-//
-// TODO(crbug.com/40239682): Support more than one signature.
 class SignedWebBundleSignatureVerifier {
  public:
   struct Error {
@@ -79,6 +76,14 @@ class SignedWebBundleSignatureVerifier {
       SignedWebBundleIntegrityBlock integrity_block,
       SignatureVerificationCallback callback,
       base::expected<SHA512Digest, std::string> unsigned_web_bundle_hash);
+
+  base::expected<void, Error> VerifyWithHashForIntegrityBlockV1(
+      SHA512Digest unsigned_web_bundle_hash,
+      SignedWebBundleIntegrityBlock integrity_block_v1);
+
+  base::expected<void, Error> VerifyWithHashForIntegrityBlockV2(
+      SHA512Digest unsigned_web_bundle_hash,
+      SignedWebBundleIntegrityBlock integrity_block_v2);
 
   const uint64_t web_bundle_chunk_size_;
 

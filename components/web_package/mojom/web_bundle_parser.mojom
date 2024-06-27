@@ -90,10 +90,21 @@ struct BundleResponseParseError {
   string message;
 };
 
+struct BundleIntegrityBlockAttributes {
+  string web_bundle_id;
+
+  // The CBOR representation of this block's attributes. This is only used for
+  // signature verification and never re-parsed in higher layers.
+  array<uint8> cbor;
+};
+
 struct BundleIntegrityBlock {
   // If size is 0, then no integrity block was found.
   uint64 size;
   array<BundleIntegrityBlockSignatureStackEntry> signature_stack;
+
+  // Attributes of this integrity block (only for v2).
+  BundleIntegrityBlockAttributes? attributes;
 };
 
 // Mapped to `web_package::Ed25519PublicKey`
