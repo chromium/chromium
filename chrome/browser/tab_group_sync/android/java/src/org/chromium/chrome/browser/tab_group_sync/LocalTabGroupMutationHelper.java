@@ -10,7 +10,9 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncController.TabCrea
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -53,7 +55,7 @@ public class LocalTabGroupMutationHelper {
      * create the group locally, update its visuals, add new tabs with desired URLs, update the
      * mapping in the service.
      */
-    public void createNewTabGroup(SavedTabGroup tabGroup) {
+    public void createNewTabGroup(SavedTabGroup tabGroup, @OpeningSource int openingSource) {
         LogUtils.log(TAG, "createNewTabGroup " + tabGroup);
         // We ensure in native that the observers are notified only after the group has received at
         // least one tab.
@@ -97,6 +99,9 @@ public class LocalTabGroupMutationHelper {
             mTabGroupSyncService.updateLocalTabId(
                     localTabGroupId, syncTabId, tabIdMappings.get(syncTabId));
         }
+
+        TabGroupSyncUtils.recordTabGroupOpenCloseMetrics(
+                mTabGroupSyncService, /* open= */ true, openingSource, localTabGroupId);
     }
 
     /**
@@ -220,7 +225,7 @@ public class LocalTabGroupMutationHelper {
      *
      * @param tabGroupId The local ID of the tab group.
      */
-    public void closeTabGroup(LocalTabGroupId tabGroupId) {
+    public void closeTabGroup(LocalTabGroupId tabGroupId, @ClosingSource int closingSource) {
         LogUtils.log(TAG, "closeTabGroup " + tabGroupId);
         int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, tabGroupId);
         assert rootId != Tab.INVALID_TAB_ID;
@@ -229,7 +234,9 @@ public class LocalTabGroupMutationHelper {
         List<Tab> tabs = mTabGroupModelFilter.getRelatedTabListForRootId(rootId);
         getTabModel().closeMultipleTabs(tabs, /* canUndo= */ false);
 
-        // Remove mapping from service.
+        // Remove mapping from service. Collect metrics before that.
+        TabGroupSyncUtils.recordTabGroupOpenCloseMetrics(
+                mTabGroupSyncService, /* open= */ false, closingSource, tabGroupId);
         mTabGroupSyncService.removeLocalTabGroupMapping(tabGroupId);
     }
 

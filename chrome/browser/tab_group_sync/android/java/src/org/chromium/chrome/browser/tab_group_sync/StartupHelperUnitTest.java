@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -139,7 +140,8 @@ public class StartupHelperUnitTest {
         // Init. Deleted groups should be closed.
         mStartupHelper.initializeTabGroupSync();
         verify(mTabGroupSyncService).getDeletedGroupIds();
-        verify(mLocalMutationHelper).closeTabGroup(eq(LOCAL_TAB_GROUP_ID_1));
+        verify(mLocalMutationHelper)
+                .closeTabGroup(eq(LOCAL_TAB_GROUP_ID_1), eq(ClosingSource.CLEANED_UP_ON_STARTUP));
     }
 
     @Test

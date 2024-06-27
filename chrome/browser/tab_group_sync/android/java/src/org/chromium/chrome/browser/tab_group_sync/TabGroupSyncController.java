@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.url.GURL;
@@ -144,7 +145,7 @@ public final class TabGroupSyncController implements TabGroupUiActionHandler {
         if (savedTabGroup == null || savedTabGroup.localId != null) return;
 
         mLocalObserver.enableObservers(false);
-        mLocalMutationHelper.createNewTabGroup(savedTabGroup);
+        mLocalMutationHelper.createNewTabGroup(savedTabGroup, OpeningSource.OPENED_FROM_REVISIT_UI);
         mLocalObserver.enableObservers(true);
     }
 
