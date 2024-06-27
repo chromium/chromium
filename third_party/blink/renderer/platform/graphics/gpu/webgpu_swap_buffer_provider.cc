@@ -324,17 +324,12 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
   uint32_t texture_target =
       current_swap_buffer_->shared_image->GetTextureTarget();
 
-  // On macOS, shared images are backed by IOSurfaces, meaning that they are
-  // overlay candidates.
-#if BUILDFLAG(IS_MAC)
-  const bool is_overlay_candidate = true;
-#else
-  const bool is_overlay_candidate = false;
-#endif
   *out_resource = viz::TransferableResource::MakeGpu(
       current_swap_buffer_->shared_image, texture_target,
       current_swap_buffer_->access_finished_token, current_swap_buffer_->size,
-      Format(), is_overlay_candidate,
+      Format(),
+      current_swap_buffer_->shared_image->usage() &
+          gpu::SHARED_IMAGE_USAGE_SCANOUT,
       viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer);
   out_resource->color_space = PredefinedColorSpaceToGfxColorSpace(color_space_);
   out_resource->hdr_metadata = hdr_metadata_;

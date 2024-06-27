@@ -404,17 +404,8 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
       size_(info.width(), info.height()),
       is_origin_top_left_(is_origin_top_left),
       is_accelerated_(is_accelerated),
-#if BUILDFLAG(IS_MAC)
-      // On Mac, WebGPU usage is always backed by an IOSurface, meaning that the
-      // SI created will be an overlay candidate.
-      is_overlay_candidate_(shared_image_usage_flags &
-                            (gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                             gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-                             gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE)),
-#else
       is_overlay_candidate_(shared_image_usage_flags &
                             gpu::SHARED_IMAGE_USAGE_SCANOUT),
-#endif
       supports_display_compositing_(shared_image_usage_flags &
                                     gpu::SHARED_IMAGE_USAGE_DISPLAY_READ),
       use_oop_rasterization_(is_accelerated &&
