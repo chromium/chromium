@@ -258,4 +258,9 @@ message MatchedUrlNavigationRule {
   // Also includes information about the user for whom the rule was triggered,
   // and the timestamp of the triggered rule event.
   optional WatermarkMessage watermark_message = 6;
+
+  reserved 7;
+
+  // Whether the matched rule need to block screenshots.
+  optional bool block_screenshot = 8;
 }
