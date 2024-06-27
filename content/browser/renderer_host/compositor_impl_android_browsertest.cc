@@ -30,6 +30,7 @@
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/android/window_android.h"
+#include "ui/gfx/android/android_surface_control_compat.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -237,6 +238,13 @@ class CompositorImplBrowserTestRefreshRate
 };
 
 IN_PROC_BROWSER_TEST_F(CompositorImplBrowserTestRefreshRate, VideoPreference) {
+  if (gfx::SurfaceControl::SupportsSetFrameRate()) {
+    // If SurfaceControl allows specifying the frame rate for each Surface, it's
+    // done within the GPU process instead of sending the frame preference back
+    // to the browser (and so our TestHooks are not consulted).
+    GTEST_SKIP();
+  }
+
   window()->SetTestHooks(this);
   expected_refresh_rate_ = 60.f;
   run_loop_ = std::make_unique<base::RunLoop>();
