@@ -7,10 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_snapshot_consumer.h"
+
 @protocol LensOverlaySelectionDelegate;
 
 /// Placeholder view controller for the lens selection UI.
-@interface LensOverlaySelectionPlaceholderViewController : UIViewController
+@interface LensOverlaySelectionPlaceholderViewController
+    : UIViewController <LensOverlaySnapshotConsumer>
 
 @property(weak, nonatomic) id<LensOverlaySelectionDelegate> delegate;
 

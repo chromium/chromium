@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 
 @interface LensOverlayCoordinator () <LensOverlayCommands,
                                       UISheetPresentationControllerDelegate>
@@ -45,7 +46,7 @@
 
 #pragma mark - properties
 
-- (void)createUI {
+- (void)createUIWithSnapshot:(UIImage*)snapshot {
   [self createContainerViewController];
   [self createSelectionViewController];
   [self createMediator];
@@ -53,6 +54,9 @@
   // Wire up consumers and delegates
   _containerViewController.selectionViewController = _selectionViewController;
   _selectionViewController.delegate = _mediator;
+  _mediator.snapshotConsumer = _selectionViewController;
+
+  [_mediator startWithSnapshot:snapshot];
 }
 
 - (void)createSelectionViewController {
@@ -93,7 +97,7 @@
   LensOverlayTabHelper* tabHelper =
       LensOverlayTabHelper::FromWebState(activeWebState);
 
-  DCHECK(tabHelper);
+  CHECK(tabHelper, kLensOverlayNotFatalUntil);
 
   return tabHelper;
 }
@@ -136,7 +140,8 @@
     tabHelper->SetLensOverlayShown(true);
   }
 
-  [self createUI];
+  UIImage* snapshot = [self captureSnapshot];
+  [self createUIWithSnapshot:snapshot];
   [self showLensUI:animated];
 }
 
@@ -223,6 +228,26 @@
 // Disconnect and destroy all of the owned view controllers.
 - (void)destroyViewControllers {
   _containerViewController = nil;
+}
+
+// Captures a screenshot of the active web state.
+- (UIImage*)captureSnapshot {
+  if (!self.browser) {
+    return nil;
+  }
+
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+
+  if (!activeWebState) {
+    return nil;
+  }
+
+  SnapshotTabHelper* snapshotTabHelper =
+      SnapshotTabHelper::FromWebState(activeWebState);
+  CHECK(snapshotTabHelper, kLensOverlayNotFatalUntil);
+
+  return snapshotTabHelper->GenerateSnapshotWithoutOverlays();
 }
 
 @end

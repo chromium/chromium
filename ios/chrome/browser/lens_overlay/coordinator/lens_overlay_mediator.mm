@@ -8,6 +8,10 @@
 
 @implementation LensOverlayMediator
 
+- (void)startWithSnapshot:(UIImage*)snapshot {
+  [self.snapshotConsumer loadSnapshot:snapshot];
+}
+
 #pragma mark - LensOverlaySelectionDelegate
 
 - (void)selectionUI:(id)selectionUI

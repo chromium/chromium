@@ -7,12 +7,26 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_selection_delegate.h"
 #import "url/gurl.h"
 
+@interface LensOverlaySelectionPlaceholderViewController () {
+  // Displays the received snapshot image.
+  UIImageView* _snapshotImageView;
+
+  // The received snapshot image.
+  UIImage* _snapshot;
+
+  // Constraint for the height of the snapshot image view.
+  NSLayoutConstraint* _snapshotHeightConstraint;
+}
+@end
+
 @implementation LensOverlaySelectionPlaceholderViewController
 
 - (void)viewDidLoad {
   [super viewDidLoad];
 
   self.view.backgroundColor = [UIColor colorWithWhite:1 alpha:0.7];
+
+  [self createSnapshotImageView];
 
   UIButton* selectButton = [[UIButton alloc] init];
   UIButtonConfiguration* config =
@@ -30,9 +44,43 @@
     [selectButton.widthAnchor constraintEqualToConstant:100.0f],
     [selectButton.centerXAnchor
         constraintEqualToAnchor:self.view.centerXAnchor],
-    [selectButton.centerYAnchor
-        constraintEqualToAnchor:self.view.centerYAnchor],
+    [selectButton.topAnchor
+        constraintEqualToAnchor:_snapshotImageView.bottomAnchor
+                       constant:20.0f]
   ]];
+}
+
+- (void)createSnapshotImageView {
+  _snapshotImageView = [[UIImageView alloc] init];
+  _snapshotImageView.image = _snapshot;
+  _snapshotImageView.contentMode = UIViewContentModeScaleToFill;
+  _snapshotImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_snapshotImageView];
+
+  _snapshotHeightConstraint = [_snapshotImageView.heightAnchor
+      constraintEqualToAnchor:_snapshotImageView.widthAnchor];
+  [NSLayoutConstraint activateConstraints:@[
+    _snapshotHeightConstraint,
+    [_snapshotImageView.widthAnchor constraintEqualToConstant:220.f],
+    [_snapshotImageView.topAnchor constraintEqualToAnchor:self.view.topAnchor
+                                                 constant:20.0f],
+    [_snapshotImageView.centerXAnchor
+        constraintEqualToAnchor:self.view.centerXAnchor]
+  ]];
+
+  [self updateImageViewHeight];
+}
+
+- (void)updateImageViewHeight {
+  if (!_snapshotImageView || !_snapshot) {
+    return;
+  }
+  CGFloat heightToWidthRatio = _snapshot.size.height / _snapshot.size.width;
+  [_snapshotImageView removeConstraint:_snapshotHeightConstraint];
+  _snapshotHeightConstraint = [_snapshotImageView.heightAnchor
+      constraintEqualToAnchor:_snapshotImageView.widthAnchor
+                   multiplier:heightToWidthRatio];
+  _snapshotHeightConstraint.active = YES;
 }
 
 - (void)startFullImageRequestWithImage:(UIImage*)image {
@@ -56,6 +104,15 @@
                        constructedResultsPageURL:GURL("http://chromium.org")
                                   suggestSignals:@"iil"];
                  });
+}
+
+#pragma mark - LensOverlaySnapshotConsumer
+
+- (void)loadSnapshot:(UIImage*)snapshot {
+  _snapshotImageView.image = snapshot;
+  _snapshot = snapshot;
+
+  [self updateImageViewHeight];
 }
 
 @end
