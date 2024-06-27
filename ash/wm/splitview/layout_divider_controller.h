@@ -6,11 +6,15 @@
 #define ASH_WM_SPLITVIEW_LAYOUT_DIVIDER_CONTROLLER_H_
 
 #include "ash/wm/splitview/split_view_types.h"
-#include "ui/aura/window.h"
 
 namespace gfx {
 class Point;
+class Rect;
 }  // namespace gfx
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 namespace ash {
 

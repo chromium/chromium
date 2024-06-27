@@ -4,8 +4,6 @@
 
 #include "ash/wm/snap_group/snap_group.h"
 
-#include <optional>
-
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
@@ -15,20 +13,16 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
-#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/base/hit_test.h"
-#include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/range/range_f.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -135,11 +129,6 @@ aura::Window* SnapGroup::GetPhysicallyRightOrBottomWindow() {
   return IsPhysicallyLeftOrTop(window1_) ? window2_ : window1_;
 }
 
-const aura::Window* SnapGroup::GetWindowOfSnapViewType(
-    SnapViewType snap_type) const {
-  return snap_type == SnapViewType::kPrimary ? window1_ : window2_;
-}
-
 void SnapGroup::ShowDivider() {
   // TODO(b/338130287): Determine whether `window1_` should always be
   // `primary_window`.
@@ -219,14 +208,6 @@ aura::Window* SnapGroup::GetTopMostWindowInGroup() const {
   }
 
   return window_util::IsStackedBelow(window1_, window2_) ? window2_ : window1_;
-}
-
-void SnapGroup::MinimizeWindows() {
-  auto* window1_state = WindowState::Get(window1_);
-  auto* window2_state = WindowState::Get(window2_);
-  CHECK(!window1_state->IsMinimized() && !window2_state->IsMinimized());
-  window1_state->Minimize();
-  window2_state->Minimize();
 }
 
 void SnapGroup::RefreshSnapGroup() {

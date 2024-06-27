@@ -70,9 +70,6 @@ class SnapGroup : public aura::WindowObserver,
   aura::Window* GetPhysicallyLeftOrTopWindow();
   aura::Window* GetPhysicallyRightOrBottomWindow();
 
-  // Gets the window snapped at `snap_type`.
-  const aura::Window* GetWindowOfSnapViewType(SnapViewType snap_type) const;
-
   void ShowDivider();
   void HideDivider();
 
@@ -87,9 +84,6 @@ class SnapGroup : public aura::WindowObserver,
 
   // Returns the topmost window in the snap group.
   aura::Window* GetTopMostWindowInGroup() const;
-
-  // Minimizes the windows in the snap group.
-  void MinimizeWindows();
 
   // Refreshes the window and divider bounds. Note `this` may be destroyed if
   // the windows are no longer valid for a snap group.
