@@ -276,6 +276,12 @@ void TestNavigationObserver::OnDidFinishNavigation(
   last_navigation_initiator_activation_and_ad_status_ =
       navigation_handle->GetNavigationInitiatorActivationAndAdStatus();
   last_net_error_code_ = navigation_handle->GetNetErrorCode();
+  if (auto* headers = navigation_handle->GetResponseHeaders(); !!headers) {
+    last_http_response_code_ =
+        static_cast<net::HttpStatusCode>(headers->response_code());
+  } else {
+    last_http_response_code_ = std::nullopt;
+  }
   last_nav_entry_id_ =
       NavigationRequest::From(navigation_handle)->nav_entry_id();
   last_source_site_instance_ = navigation_handle->GetSourceSiteInstance();

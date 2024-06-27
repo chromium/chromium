@@ -233,6 +233,36 @@ class IsolatedWebAppBrowserTest : public IsolatedWebAppBrowserTestHarness {
   std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_;
 };
 
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, DevProxyError) {
+  std::unique_ptr<ScopedProxyIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder())
+          .AddResource("/nonexistent", "", {{"Content-Type", "text/html"}},
+                       net::HttpStatusCode::HTTP_NOT_FOUND)
+          .BuildAndStartProxyServer();
+  ASSERT_OK_AND_ASSIGN(auto url_info, app->Install(profile()));
+
+  auto* app_frame = OpenApp(url_info.app_id());
+  ASSERT_NE(nullptr, app_frame);
+
+  content::TestNavigationObserver observer(
+      content::WebContents::FromRenderFrameHost(app_frame));
+  observer.StartWatchingNewWebContents();
+
+  ASSERT_NE(ui_test_utils::NavigateToURL(
+                GetBrowserFromFrame(app_frame),
+                url_info.origin().GetURL().Resolve("/nonexistent")),
+            nullptr);
+
+  observer.WaitForNavigationFinished();
+  EXPECT_FALSE(observer.last_navigation_succeeded());
+  EXPECT_EQ(observer.last_net_error_code(),
+            net::ERR_HTTP_RESPONSE_CODE_FAILURE);
+
+  auto response_code = observer.last_http_response_code();
+  ASSERT_TRUE(response_code);
+  EXPECT_EQ(*response_code, net::HttpStatusCode::HTTP_NOT_FOUND);
+}
+
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, AppsPartitioned) {
   web_app::IsolatedWebAppUrlInfo url_info1 = InstallDevModeProxyIsolatedWebApp(
       isolated_web_app_dev_server().GetOrigin());
