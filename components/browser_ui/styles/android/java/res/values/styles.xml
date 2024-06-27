@@ -30,7 +30,16 @@ found in the LICENSE file.
     <!-- TextInputLayout style -->
     <style name="Widget.BrowserUI.TextInputLayout" parent="Widget.Design.TextInputLayout">
         <item name="errorTextAppearance">@style/TextAppearance.ErrorCaption</item>
+        <item name="hintTextAppearance">@style/TextAppearance.TextSmall.Accent1</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.BrowserUI.TextInputLayout</item>
     </style>
+    <style name="ThemeOverlay.BrowserUI.TextInputLayout" parent="">
+        <item name="editTextStyle">@style/Widget.BrowserUI.TextInputEditText</item>
+    </style>
+    <style name="Widget.BrowserUI.TextInputEditText" parent="Widget.Design.TextInputEditText">
+        <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
+    </style>
+
 
     <style name="Widget.BrowserUI.SpinnerDropDownItemStyle" parent="Widget.AppCompat.DropDownItem.Spinner">
         <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
