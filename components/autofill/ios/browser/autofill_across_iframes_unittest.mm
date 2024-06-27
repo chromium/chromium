@@ -45,6 +45,7 @@ using ::testing::AllOf;
 using ::testing::Each;
 using testing::IsTrue;
 using ::testing::Property;
+using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 using testing::VariantWith;
 
@@ -404,7 +405,7 @@ TEST_F(AutofillAcrossIframesTest, WithChildFrames) {
   // complete state of the browser form, which contains all fields in the forms
   // tree (aka browser form).
   const FormData& form = main_frame_manager().seen_forms().back();
-  ASSERT_EQ(form.child_frames().size(), 2u);
+  ASSERT_THAT(form.child_frames(), SizeIs(2u));
 
   FrameTokenWithPredecessor remote_token1 = form.child_frames()[0];
   FrameTokenWithPredecessor remote_token2 = form.child_frames()[1];
@@ -413,6 +414,12 @@ TEST_F(AutofillAcrossIframesTest, WithChildFrames) {
   // valid (the bool cast checks this).
   EXPECT_THAT(remote_token1.token, VariantWith<RemoteFrameToken>(IsTrue()));
   EXPECT_THAT(remote_token2.token, VariantWith<RemoteFrameToken>(IsTrue()));
+
+  // Veify that the predecessor of each token is correctly set. The predecessor
+  // being the index of the last input field preceeding the frame. Set to -1 if
+  // there is no predecessor.
+  EXPECT_EQ(-1, remote_token1.predecessor);
+  EXPECT_EQ(0, remote_token2.predecessor);
 
   auto* registrar =
       autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state());

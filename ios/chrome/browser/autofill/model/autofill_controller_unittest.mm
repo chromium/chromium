@@ -15,6 +15,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/types/id_type.h"
 #import "base/uuid.h"
 #import "components/autofill/core/browser/address_data_manager.h"
 #import "components/autofill/core/browser/address_data_manager_test_api.h"
@@ -30,7 +31,9 @@
 #import "components/autofill/core/common/autofill_clock.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/field_data_manager.h"
+#import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
@@ -168,9 +171,13 @@ NSString* const kProfileFormlessHtml =
      "<input type='submit' id='submit' value='Submit'>"
      "</div>";
 
+using ::testing::AllOf;
 using ::testing::AssertionFailure;
 using ::testing::AssertionResult;
 using ::testing::AssertionSuccess;
+using ::testing::ElementsAre;
+using ::testing::IsTrue;
+using ::testing::Property;
 
 // FAIL if a field with the supplied `name` and `fieldType` is not present on
 // the `form`.
@@ -206,6 +213,17 @@ void ForceViewRendering(UIView* view) {
   EXPECT_TRUE(context);
   [layer renderInContext:context];
   UIGraphicsEndImageContext();
+}
+
+// Returns a matcher to verify a child frame in the FormData.
+auto ChildFrameMatcher(int expected_predecessor) {
+  const auto valid_token_matcher = ::testing::Field(
+      &FrameTokenWithPredecessor::token,
+      ::testing::VariantWith<RemoteFrameToken>(::testing::IsTrue()));
+  const auto predecessor_matcher =
+      ::testing::Field(&FrameTokenWithPredecessor::predecessor,
+                       testing::Eq(expected_predecessor));
+  return AllOf(valid_token_matcher, predecessor_matcher);
 }
 
 // WebDataServiceConsumer for receiving vectors of strings and making them
@@ -290,7 +308,8 @@ class AutofillControllerTest : public PlatformTest {
   // This processing must find `expected_size` forms.
   [[nodiscard]] bool LoadHtmlAndWaitForFormFetched(
       NSString* html,
-      size_t expected_number_of_forms);
+      size_t expected_number_of_forms,
+      size_t expected_number_of_calls = 1);
 
   void LoadHtmlAndInitRendererIds(NSString* html);
 
@@ -306,6 +325,16 @@ class AutofillControllerTest : public PlatformTest {
   // Simulates a text input event by focusing the field with 'field_id' and
   // dispatching a TextEvent with value 'field_value'.
   void SimulateTextInputEvent(NSString* field_id, NSString* field_value);
+
+  // Returns the AutofillManager for the main frame.
+  BrowserAutofillManager* autofill_manager_for_main_frame() {
+    web::WebFramesManager* frames_manager =
+        AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
+            web_state());
+    web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
+    return &AutofillDriverIOS::FromWebStateAndWebFrame(web_state(), main_frame)
+                ->GetAutofillManager();
+  }
 
  protected:
   web::WebState* web_state() { return web_state_.get(); }
@@ -416,11 +445,12 @@ void AutofillControllerTest::WaitForSuggestionRetrieval(BOOL wait_for_trigger) {
 
 bool AutofillControllerTest::LoadHtmlAndWaitForFormFetched(
     NSString* html,
-    size_t expected_number_of_forms) {
+    size_t expected_number_of_forms,
+    size_t expected_number_of_calls) {
   web::test::LoadHtml(html, web_state());
   TestAutofillManager* autofill_manager =
       autofill_manager_injector_->GetForMainFrame();
-  return autofill_manager->waiter().Wait(1) &&
+  return autofill_manager->waiter().Wait(expected_number_of_calls) &&
          autofill_manager->form_structures().size() == expected_number_of_forms;
 }
 
@@ -469,6 +499,44 @@ TEST_F(AutofillControllerTest, ReadForm) {
   CheckField(form, ADDRESS_HOME_STATE, "state");
   CheckField(form, ADDRESS_HOME_ZIP, "zip");
   ExpectMetric("Autofill.IsEnabled.PageLoad", 1);
+}
+
+// Checks that when autofill across iframes is enabled the child frames are
+// carried over for their parent form.
+TEST_F(AutofillControllerTest, ReadForm_WithChildFrames) {
+  ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAutofillAcrossIframesIos);
+
+  // A form with iframes and inputs where some of the iframes have predecessors.
+  NSString* const test_page =
+      @"<form id='form1'>"
+       "<iframe></iframe>"
+       "Name <input id='name' type='text' name='name' />"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "Address <input type='text' name='address'>"
+       "City <input type='text' name='city'>"
+       "<iframe></iframe>"
+       "State <input type='text' name='state'>"
+       "</form>";
+
+  ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(test_page,
+                                            /*expected_number_of_forms=*/1,
+                                            /*expected_number_of_calls=*/5));
+
+  // Verify that the child frames are present in the form data.
+  std::vector<FormData> form_data;
+  for (const auto& [_, form] :
+       autofill_manager_for_main_frame()->form_structures()) {
+    form_data.push_back(form->ToFormData());
+  }
+  EXPECT_THAT(
+      form_data,
+      ElementsAre(AllOf(
+          Property(&FormData::renderer_id, IsTrue()),
+          Property(&FormData::child_frames,
+                   ElementsAre(ChildFrameMatcher(-1), ChildFrameMatcher(0),
+                               ChildFrameMatcher(0), ChildFrameMatcher(2))))));
 }
 
 // Checks that viewing an HTML page containing a form with an 'id' results in

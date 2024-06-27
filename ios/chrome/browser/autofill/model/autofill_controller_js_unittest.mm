@@ -1970,12 +1970,15 @@ TEST_F(AutofillControllerJsTest,
       WaitForMainFrame(), /*enabled=*/true);
 
   // Verify that the form with child frames was extracted.
-  NSString* verifying_javascript = @"forms[0].id_attribute === 'testform';";
+  NSString* verifying_javascript =
+      @"forms.length === 1 && forms[0].id_attribute === 'testform' && "
+      @"forms[0].child_frames.length === 1; ";
   EXPECT_NSEQ(
-      @YES, ExecuteJavaScript([NSString
-                stringWithFormat:@"var forms = "
-                                  "__gCrWeb.autofill.extractNewForms(true); %@",
-                                 verifying_javascript]));
+      @YES,
+      ExecuteJavaScript([NSString
+          stringWithFormat:@"var forms = "
+                            "__gCrWeb.autofill.extractNewForms(false); %@",
+                           verifying_javascript]));
 }
 
 // Test that forms that don't have input fields and have child frames aren't
@@ -1993,10 +1996,11 @@ TEST_F(AutofillControllerJsTest,
   // feature is disabled.
   NSString* verifying_javascript = @"forms.length === 0;";
   EXPECT_NSEQ(
-      @YES, ExecuteJavaScript([NSString
-                stringWithFormat:@"var forms = "
-                                  "__gCrWeb.autofill.extractNewForms(true); %@",
-                                 verifying_javascript]));
+      @YES,
+      ExecuteJavaScript([NSString
+          stringWithFormat:@"var forms = "
+                            "__gCrWeb.autofill.extractNewForms(false); %@",
+                           verifying_javascript]));
 }
 
 TEST_F(AutofillControllerJsTest, FillActiveFormField) {

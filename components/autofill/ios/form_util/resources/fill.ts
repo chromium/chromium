@@ -213,6 +213,12 @@ function matchLabelsAndFields(
   }
 }
 
+// Returns true if the node `a` is a successor of node `b` if they have a common
+// root node.
+function isDOMSuccessor(a: Node, b: Node): boolean {
+  return (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_PRECEDING) > 0;
+}
+
 /**
  * Common function shared by webFormElementToFormData() and
  * unownedFormElementsAndFieldSetsToFormData(). Either pass in:
@@ -295,19 +301,34 @@ function formOrFieldsetsToFormData(
     }
   }
 
+  // Extract the frame tokens of `iframeElements`.
+  if (childFrames.length != iframeElements.length) {
+    // `extractFieldsFromControlElements` should create one entry in
+    // `childFrames` for each entry in `iframeElements`. If this hasn't
+    // happened, attempting to process the frames will cause errors, so early
+    // return.
+    return false;
+  }
+  for (let j = 0; j < iframeElements.length; ++j) {
+    const frame = iframeElements[j]!;
+
+    childFrames[j]!['token'] = registerChildFrame(frame);
+  }
+
   // Loop through the form control elements, extracting the label text from
   // the DOM.  We use the |fieldsExtracted| vector to make sure we assign the
   // extracted label to the correct field, as it's possible |form_fields| will
   // not contain all of the elements in |control_elements|.
-  for (let i = 0, fieldIdx = 0;
-       i < controlElements.length && fieldIdx < formFields.length; ++i) {
+  for (let ctlElemIdx = 0, fieldIdx = 0, nextIframe = 0;
+       ctlElemIdx < controlElements.length && fieldIdx < formFields.length;
+       ++ctlElemIdx) {
     // This field didn't meet the requirements, so don't try to find a label
     // for it.
-    if (!fieldsExtracted[i]) {
+    if (!fieldsExtracted[ctlElemIdx]) {
       continue;
     }
 
-    const controlElement = controlElements[i];
+    const controlElement = controlElements[ctlElemIdx];
     const currentField = formFields[fieldIdx]!;
     if (!currentField.label) {
       currentField.label =
@@ -321,25 +342,23 @@ function formOrFieldsetsToFormData(
     if (controlElement === formControlElement) {
       _field = formFields[fieldIdx];
     }
+
+    // Finds the last frame that precedes |control_element|.
+    while (nextIframe < iframeElements.length &&
+           isDOMSuccessor(controlElement!, iframeElements[nextIframe]!)) {
+      ++nextIframe;
+    }
+    // The |next_frame|th frame succeeds `control_element` and thus the last
+    // added FormFieldData. The |k|th frames for |k| > |next_frame| may also
+    // succeeds that FormFieldData. If they do not,
+    // `child_frames[k].predecessor` will be updated in a later iteration.
+    for (let k = nextIframe; k < iframeElements.length; ++k) {
+      childFrames[k]!['predecessor'] = fieldIdx;
+    }
+
     ++fieldIdx;
   }
 
-  // Extract the frame tokens of `iframeElements`.
-  if (childFrames.length != iframeElements.length) {
-    // `extractFieldsFromControlElements` should create one entry in
-    // `childFrames` for each entry in `iframeElements`. If this hasn't
-    // happened, attempting to process the frames will cause errors, so early
-    // return.
-    return false;
-  }
-  for (let j = 0; j < iframeElements.length; ++j) {
-    const frame = iframeElements[j]!;
-
-    childFrames[j]!['token'] = registerChildFrame(frame);
-    // TODO(crbug.com/40266126): Compute the actual predecessor and replace this
-    // placeholder value.
-    childFrames[j]!['predecessor'] = 64;
-  }
 
   form.fields = formFields;
   // Protect against custom implementation of Array.toJSON in host pages.
