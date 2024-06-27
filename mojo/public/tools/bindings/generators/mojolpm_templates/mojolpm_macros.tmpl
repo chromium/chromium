@@ -19,6 +19,9 @@
 {%- endmacro -%}
 
 {%- macro add_instance(kind, name, nested) %}
+{%-   if kind|is_nullable_kind and (not kind|nullable_is_same_kind) -%}
+  if ({{name}}.has_value()) {
+{%-   endif -%}
 {%-   if kind|is_array_kind %}
 {%-     if not kind.kind|is_bool_kind %}
   for (auto& {{name}}_iter : {{ value(kind, name) }}) {
@@ -71,4 +74,7 @@
   }
 {%-     endif %}
 {%-   endif %}
+{%-   if kind|is_nullable_kind and (not kind|nullable_is_same_kind) -%}
+  }
+{%-   endif -%}
 {%- endmacro %}
