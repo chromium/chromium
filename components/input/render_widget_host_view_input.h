@@ -82,6 +82,11 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput :
 
   virtual void DidStopFlinging() = 0;
 
+  // Returns the root-view associated with this view. For derived views that are
+  // not embeddable, this method always returns a RenderWidgetHostViewBase
+  // instance.
+  virtual RenderWidgetHostViewInput* GetRootView() = 0;
+
   // Obtains the root window FrameSinkId.
   virtual viz::FrameSinkId GetRootFrameSinkId() = 0;
 
@@ -165,6 +170,11 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput :
   // Transforms |point| to be in the coordinate space of browser compositor's
   // surface. This is in DIP.
   virtual void TransformPointToRootSurface(gfx::PointF* point) = 0;
+
+  // Retrieves the size of the viewport for the visible region in DIP. May be
+  // smaller than the view size if a portion of the view is obstructed (e.g. by
+  // a virtual keyboard).
+  virtual gfx::Size GetVisibleViewportSize() = 0;
 
   // Returns the view into which this view is directly embedded. This can
   // return nullptr when this view's associated child frame is not connected

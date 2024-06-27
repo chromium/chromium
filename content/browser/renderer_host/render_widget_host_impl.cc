@@ -2520,6 +2520,29 @@ RenderWidgetHostImpl::MakePeakGpuMemoryTracker(
   return PeakGpuMemoryTrackerFactory::Create(usage);
 }
 
+bool RenderWidgetHostImpl::IsInitializedAndNotDead() {
+  return GetProcess()->IsInitializedAndNotDead();
+}
+
+void RenderWidgetHostImpl::NotifyDelegateOfInputEventPreDispatch(
+    const blink::WebInputEvent& event) {
+  if (!delegate_) {
+    return;
+  }
+
+  if (event.GetType() == WebInputEvent::Type::kMouseDown ||
+      event.GetType() == WebInputEvent::Type::kTouchStart ||
+      event.GetType() == WebInputEvent::Type::kGestureTap) {
+    delegate_->FocusOwningWebContents(this);
+  }
+  delegate_->DidReceiveInputEvent(this, event);
+}
+
+void RenderWidgetHostImpl::OnInvalidInputEventSource() {
+  bad_message::ReceivedBadMessage(
+      GetProcess(), bad_message::INPUT_ROUTER_INVALID_EVENT_SOURCE);
+}
+
 void RenderWidgetHostImpl::ShowPopup(const gfx::Rect& initial_screen_rect,
                                      const gfx::Rect& anchor_screen_rect,
                                      ShowPopupCallback callback) {
@@ -2953,12 +2976,6 @@ void RenderWidgetHostImpl::OnEditElementFocusedForStylusWriting(
   }
 }
 
-// TODO(b/331420891): Remove this method completely once InputRouterImplClient
-// is implemented by RenderInputRouter only.
-bool RenderWidgetHostImpl::IsWheelScrollInProgress() {
-  NOTREACHED_NORETURN();
-}
-
 void RenderWidgetHostImpl::SetMouseCapture(bool capture) {
   if (!delegate_ || !delegate_->GetInputEventRouter()) {
     return;
@@ -3131,34 +3148,6 @@ bool RenderWidgetHostImpl::KeyPressListenersHandleEvent(
   return false;
 }
 
-blink::mojom::InputEventResultState RenderWidgetHostImpl::FilterInputEvent(
-    const WebInputEvent& event,
-    const ui::LatencyInfo& latency_info) {
-  // Don't ignore touch cancel events, since they may be sent while input
-  // events are being ignored in order to keep the renderer from getting
-  // confused about how many touches are active.
-  if (IsIgnoringWebInputEvents(event) &&
-      event.GetType() != WebInputEvent::Type::kTouchCancel) {
-    return blink::mojom::InputEventResultState::kNoConsumerExists;
-  }
-
-  if (!GetProcess()->IsInitializedAndNotDead()) {
-    return blink::mojom::InputEventResultState::kUnknown;
-  }
-
-  if (delegate_) {
-    if (event.GetType() == WebInputEvent::Type::kMouseDown ||
-        event.GetType() == WebInputEvent::Type::kTouchStart ||
-        event.GetType() == WebInputEvent::Type::kGestureTap) {
-      delegate_->FocusOwningWebContents(this);
-    }
-    delegate_->DidReceiveInputEvent(this, event);
-  }
-
-  return view_ ? view_->FilterInputEvent(event)
-               : blink::mojom::InputEventResultState::kNotConsumed;
-}
-
 void RenderWidgetHostImpl::IncrementInFlightEventCount() {
   ++in_flight_event_count_;
   if (in_flight_event_count_ == 1) {
@@ -3191,33 +3180,6 @@ void RenderWidgetHostImpl::DecrementInFlightEventCount(
       RestartInputEventAckTimeoutIfNecessary();
     }
   }
-}
-
-void RenderWidgetHostImpl::DidOverscroll(
-    const ui::DidOverscrollParams& params) {
-  if (view_) {
-    view_->DidOverscroll(params);
-  }
-}
-
-// TODO(b/331420891): Move this method to RenderInputRouter completely once we
-// have RenderWidgetHostViewInput in RenderInputRouter.
-void RenderWidgetHostImpl::DidStopFlinging() {
-  GetRenderInputRouter()->DidStopFlinging();
-  if (view_) {
-    view_->DidStopFlinging();
-  }
-}
-
-// TODO(b/331420891): Remove this method completely once InputRouterImplClient
-// is implemented by RenderInputRouter only.
-void RenderWidgetHostImpl::DidStartScrollingViewport() {
-  NOTREACHED_NORETURN();
-}
-
-void RenderWidgetHostImpl::OnInvalidInputEventSource() {
-  bad_message::ReceivedBadMessage(
-      GetProcess(), bad_message::INPUT_ROUTER_INVALID_EVENT_SOURCE);
 }
 
 void RenderWidgetHostImpl::AddPendingUserActivation(
@@ -3839,21 +3801,6 @@ void RenderWidgetHostImpl::IntrinsicSizingInfoChanged(
   if (view_) {
     view_->UpdateIntrinsicSizingInfo(std::move(sizing_info));
   }
-}
-
-gfx::Size RenderWidgetHostImpl::GetRootWidgetViewportSize() {
-  if (!view_) {
-    return gfx::Size();
-  }
-
-  // if |view_| is RWHVCF and |frame_connector_| is destroyed, then call to
-  // GetRootView will return null pointer.
-  auto* root_view = view_->GetRootView();
-  if (!root_view) {
-    return gfx::Size();
-  }
-
-  return root_view->GetVisibleViewportSize();
 }
 
 // This method was copied from RenderWidget::ConvertWindowToViewport() when

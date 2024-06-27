@@ -9,6 +9,7 @@
 
 #include "cc/trees/render_frame_metadata.h"
 #include "components/input/peak_gpu_memory_tracker.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/gfx/delegated_ink_point.h"
 
@@ -71,6 +72,24 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouterDelegate {
       const input::MouseWheelEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) = 0;
+
+  // Returns true iff the renderer process was initialized and it hasn't died
+  // yet.
+  virtual bool IsInitializedAndNotDead() = 0;
+
+  // Invoked before an input event is sent to the renderer. This provides the
+  // delegate an opportunity to be informed that the input event is being
+  // dispatched to the widget.
+  virtual void NotifyDelegateOfInputEventPreDispatch(
+      const blink::WebInputEvent& event) = 0;
+
+  // Called when an invalid input event source is sent from the renderer.
+  virtual void OnInvalidInputEventSource() = 0;
+
+  // TODO(b/345483526): Cleanup BrowserPrioritizeNativeWork,
+  // BrowserDeferUIThreadTasks experiments.
+  virtual void NotifyUISchedulerOfGestureEventUpdate(
+      blink::WebInputEvent::Type gesture_event) = 0;
 };
 
 }  // namespace input

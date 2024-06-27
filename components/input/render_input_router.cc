@@ -14,9 +14,10 @@
 #include "base/memory/ptr_util.h"
 #include "cc/input/browser_controls_offset_tags_info.h"
 #include "components/input/input_router_config_helper.h"
-#include "components/input/touch_emulator.h"
+#include "components/input/render_input_router_client.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/input/render_widget_host_view_input.h"
+#include "components/input/touch_emulator.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -113,14 +114,14 @@ base::LazyInstance<UnboundWidgetInputHandler>::Leaky g_unbound_input_handler =
 RenderInputRouter::~RenderInputRouter() = default;
 
 RenderInputRouter::RenderInputRouter(
-    InputRouterClient* host,
+    RenderInputRouterClient* host,
     std::unique_ptr<FlingSchedulerBase> fling_scheduler,
     RenderInputRouterDelegate* delegate,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : fling_scheduler_(std::move(fling_scheduler)),
       latency_tracker_(
           std::make_unique<RenderInputRouterLatencyTracker>(delegate)),
-      input_router_impl_client_(host),
+      render_input_router_client_(host),
       delegate_(delegate),
       task_runner_(std::move(task_runner)) {}
 
@@ -195,19 +196,19 @@ void RenderInputRouter::OnImeCompositionRangeChanged(
     const gfx::Range& range,
     const std::optional<std::vector<gfx::Rect>>& character_bounds,
     const std::optional<std::vector<gfx::Rect>>& line_bounds) {
-  input_router_impl_client_->OnImeCompositionRangeChanged(
+  render_input_router_client_->OnImeCompositionRangeChanged(
       range, character_bounds, line_bounds);
 }
 void RenderInputRouter::OnImeCancelComposition() {
-  input_router_impl_client_->OnImeCancelComposition();
+  render_input_router_client_->OnImeCancelComposition();
 }
 
 StylusInterface* RenderInputRouter::GetStylusInterface() {
-  return input_router_impl_client_->GetStylusInterface();
+  return render_input_router_client_->GetStylusInterface();
 }
 
 void RenderInputRouter::OnStartStylusWriting() {
-  input_router_impl_client_->OnStartStylusWriting();
+  render_input_router_client_->OnStartStylusWriting();
 }
 
 bool RenderInputRouter::IsWheelScrollInProgress() {
@@ -216,16 +217,16 @@ bool RenderInputRouter::IsWheelScrollInProgress() {
 }
 
 bool RenderInputRouter::IsAutoscrollInProgress() {
-  return input_router_impl_client_->IsAutoscrollInProgress();
+  return render_input_router_client_->IsAutoscrollInProgress();
 }
 
 void RenderInputRouter::SetMouseCapture(bool capture) {
-  input_router_impl_client_->SetMouseCapture(capture);
+  render_input_router_client_->SetMouseCapture(capture);
 }
 
 void RenderInputRouter::SetAutoscrollSelectionActiveInMainFrame(
     bool autoscroll_selection) {
-  input_router_impl_client_->SetAutoscrollSelectionActiveInMainFrame(
+  render_input_router_client_->SetAutoscrollSelectionActiveInMainFrame(
       autoscroll_selection);
 }
 
@@ -233,37 +234,64 @@ void RenderInputRouter::RequestMouseLock(
     bool from_user_gesture,
     bool unadjusted_movement,
     InputRouterImpl::RequestMouseLockCallback response) {
-  input_router_impl_client_->RequestMouseLock(
+  render_input_router_client_->RequestMouseLock(
       from_user_gesture, unadjusted_movement, std::move(response));
 }
 
 gfx::Size RenderInputRouter::GetRootWidgetViewportSize() {
-  return input_router_impl_client_->GetRootWidgetViewportSize();
+  if (!view_input_) {
+    return gfx::Size();
+  }
+
+  // if |view_| is RWHVCF and |frame_connector_| is destroyed, then call to
+  // GetRootView will return null pointer.
+  auto* root_view = view_input_->GetRootView();
+  if (!root_view) {
+    return gfx::Size();
+  }
+
+  return root_view->GetVisibleViewportSize();
 }
 
 blink::mojom::InputEventResultState RenderInputRouter::FilterInputEvent(
     const blink::WebInputEvent& event,
     const ui::LatencyInfo& latency_info) {
-  return input_router_impl_client_->FilterInputEvent(event, latency_info);
+  // Don't ignore touch cancel events, since they may be sent while input
+  // events are being ignored in order to keep the renderer from getting
+  // confused about how many touches are active.
+  if (delegate_->IsIgnoringWebInputEvents(event) &&
+      event.GetType() != WebInputEvent::Type::kTouchCancel) {
+    return blink::mojom::InputEventResultState::kNoConsumerExists;
+  }
+
+  if (!delegate_->IsInitializedAndNotDead()) {
+    return blink::mojom::InputEventResultState::kUnknown;
+  }
+
+  delegate_->NotifyDelegateOfInputEventPreDispatch(event);
+
+  return view_input_ ? view_input_->FilterInputEvent(event)
+                     : blink::mojom::InputEventResultState::kNotConsumed;
 }
 
 void RenderInputRouter::IncrementInFlightEventCount() {
-  input_router_impl_client_->IncrementInFlightEventCount();
+  render_input_router_client_->IncrementInFlightEventCount();
 }
 
 void RenderInputRouter::NotifyUISchedulerOfGestureEventUpdate(
     blink::WebInputEvent::Type gesture_event) {
-  input_router_impl_client_->NotifyUISchedulerOfGestureEventUpdate(
-      gesture_event);
+  delegate_->NotifyUISchedulerOfGestureEventUpdate(gesture_event);
 }
 
 void RenderInputRouter::DecrementInFlightEventCount(
     blink::mojom::InputEventResultSource ack_source) {
-  input_router_impl_client_->DecrementInFlightEventCount(ack_source);
+  render_input_router_client_->DecrementInFlightEventCount(ack_source);
 }
 
 void RenderInputRouter::DidOverscroll(const ui::DidOverscrollParams& params) {
-  input_router_impl_client_->DidOverscroll(params);
+  if (view_input_) {
+    view_input_->DidOverscroll(params);
+  }
 }
 
 void RenderInputRouter::DidStartScrollingViewport() {
@@ -271,7 +299,7 @@ void RenderInputRouter::DidStartScrollingViewport() {
 }
 
 void RenderInputRouter::OnInvalidInputEventSource() {
-  input_router_impl_client_->OnInvalidInputEventSource();
+  delegate_->OnInvalidInputEventSource();
 }
 
 void RenderInputRouter::ForwardGestureEventWithLatencyInfo(
@@ -331,8 +359,8 @@ void RenderInputRouter::ForwardGestureEventWithLatencyInfo(
 void RenderInputRouter::ForwardWheelEventWithLatencyInfo(
     const blink::WebMouseWheelEvent& wheel_event,
     const ui::LatencyInfo& latency_info) {
-  input_router_impl_client_->ForwardWheelEventWithLatencyInfo(wheel_event,
-                                                              latency_info);
+  render_input_router_client_->ForwardWheelEventWithLatencyInfo(wheel_event,
+                                                                latency_info);
 }
 
 void RenderInputRouter::OnWheelEventAck(
@@ -465,6 +493,13 @@ void RenderInputRouter::SendGestureEventWithLatencyInfo(
     }
   }
   input_router()->SendGestureEvent(gesture_with_latency);
+}
+
+void RenderInputRouter::DidStopFlinging() {
+  is_in_touchpad_gesture_fling_ = false;
+  if (view_input_) {
+    view_input_->DidStopFlinging();
+  }
 }
 
 blink::mojom::FrameWidgetInputHandler*

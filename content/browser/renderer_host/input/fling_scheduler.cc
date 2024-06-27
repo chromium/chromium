@@ -56,7 +56,7 @@ void FlingScheduler::DidStopFlingingOnBrowser(
     observed_compositor_ = nullptr;
   }
   fling_controller_ = nullptr;
-  host_->DidStopFlinging();
+  host_->GetRenderInputRouter()->DidStopFlinging();
 }
 
 bool FlingScheduler::NeedsBeginFrameForFlingProgress() {

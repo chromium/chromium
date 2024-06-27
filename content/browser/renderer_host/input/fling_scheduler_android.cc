@@ -53,7 +53,7 @@ void FlingSchedulerAndroid::DidStopFlingingOnBrowser(
   DCHECK(fling_controller);
   RemoveCompositorTick();
   fling_controller_ = nullptr;
-  host_->DidStopFlinging();
+  host_->GetRenderInputRouter()->DidStopFlinging();
 }
 
 bool FlingSchedulerAndroid::NeedsBeginFrameForFlingProgress() {

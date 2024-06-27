@@ -36,6 +36,7 @@
 #include "components/input/input_disposition_handler.h"
 #include "components/input/input_router_impl.h"
 #include "components/input/render_input_router.h"
+#include "components/input/render_input_router_client.h"
 #include "components/input/render_input_router_delegate.h"
 #include "components/input/touch_emulator_client.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -152,7 +153,6 @@ class VisibleTimeRequestTrigger;
 class CONTENT_EXPORT RenderWidgetHostImpl
     : public RenderWidgetHost,
       public FrameTokenMessageQueue::Client,
-      public input::InputRouterClient,
       public RenderProcessHostObserver,
       public RenderProcessHostPriorityClient,
       public SyntheticGestureController::Delegate,
@@ -161,7 +161,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       public blink::mojom::PopupWidgetHost,
       public blink::mojom::WidgetHost,
       public blink::mojom::PointerLockContext,
-      public input::RenderInputRouterDelegate {
+      public input::RenderInputRouterDelegate,
+      public input::RenderInputRouterClient {
  public:
   // See the constructor for documentation.
   //
@@ -387,6 +388,12 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void OnWheelEventAck(const input::MouseWheelEventWithLatencyInfo& event,
                        blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result) override;
+  bool IsInitializedAndNotDead() override;
+  void NotifyDelegateOfInputEventPreDispatch(
+      const blink::WebInputEvent& event) override;
+  void OnInvalidInputEventSource() override;
+  void NotifyUISchedulerOfGestureEventUpdate(
+      blink::WebInputEvent::Type gesture_event) override;
 
   // Update the stored set of visual properties for the renderer. If 'propagate'
   // is true, the new properties will be sent to the renderer process.
@@ -573,9 +580,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void ForwardKeyboardEventWithLatencyInfo(
       const input::NativeWebKeyboardEvent& key_event,
       const ui::LatencyInfo& latency) override;
-  void ForwardGestureEventWithLatencyInfo(
-      const blink::WebGestureEvent& gesture_event,
-      const ui::LatencyInfo& latency) override {}
   void ForwardMouseEventWithLatencyInfo(const blink::WebMouseEvent& mouse_event,
                                         const ui::LatencyInfo& latency);
   void ForwardWheelEventWithLatencyInfo(
@@ -794,8 +798,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // there are any queued messages belonging to it, they will be processed.
   void DidProcessFrame(uint32_t frame_token, base::TimeTicks activation_time);
 
-  // InputRouterClient overrides.
-  blink::mojom::WidgetInputHandler* GetWidgetInputHandler() override;
+  // virtual for testing.
+  virtual blink::mojom::WidgetInputHandler* GetWidgetInputHandler();
+
+  // RenderInputRouterClient overrides.
   void OnImeCompositionRangeChanged(
       const gfx::Range& range,
       const std::optional<std::vector<gfx::Rect>>& character_bounds,
@@ -803,7 +809,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void OnImeCancelComposition() override;
   input::StylusInterface* GetStylusInterface() override;
   void OnStartStylusWriting() override;
-  bool IsWheelScrollInProgress() override;
   bool IsAutoscrollInProgress() override;
   void SetMouseCapture(bool capture) override;
   void SetAutoscrollSelectionActiveInMainFrame(
@@ -812,7 +817,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       bool from_user_gesture,
       bool unadjusted_movement,
       input::InputRouterImpl::RequestMouseLockCallback response) override;
-  gfx::Size GetRootWidgetViewportSize() override;
+  // TODO(b/331420891): Move these methods into RenderInputRouter.
+  void IncrementInFlightEventCount() override;
+  void DecrementInFlightEventCount(
+      blink::mojom::InputEventResultSource ack_source) override;
 
   // PointerLockContext overrides
   void RequestMouseLockChange(
@@ -856,8 +864,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap();
 
   void RequestForceRedraw(int snapshot_id);
-
-  void DidStopFlinging();
 
   bool IsContentRenderingTimeoutRunning() const;
 
@@ -1144,20 +1150,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Give key press listeners a chance to handle this key press. This allow
   // widgets that don't have focus to still handle key presses.
   bool KeyPressListenersHandleEvent(const input::NativeWebKeyboardEvent& event);
-
-  // InputRouterClient
-  blink::mojom::InputEventResultState FilterInputEvent(
-      const blink::WebInputEvent& event,
-      const ui::LatencyInfo& latency_info) override;
-  void IncrementInFlightEventCount() override;
-  void NotifyUISchedulerOfGestureEventUpdate(
-      blink::WebInputEvent::Type gesture_event) override;
-  void DecrementInFlightEventCount(
-      blink::mojom::InputEventResultSource ack_source) override;
-  void DidOverscroll(const ui::DidOverscrollParams& params) override;
-  void DidStartScrollingViewport() override;
-  void OnSetCompositorAllowedTouchAction(cc::TouchAction) override {}
-  void OnInvalidInputEventSource() override;
 
   void WindowSnapshotReachedScreen(int snapshot_id);
 

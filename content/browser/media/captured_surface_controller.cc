@@ -129,7 +129,7 @@ CapturedSurfaceControlResult DoSendWheel(
 
   // Scale (x, y).
   const gfx::Size captured_viewport_size =
-      captured_rwhi->GetRootWidgetViewportSize();
+      captured_rwhi->GetRenderInputRouter()->GetRootWidgetViewportSize();
   if (captured_viewport_size.width() < 1 ||
       captured_viewport_size.height() < 1) {
     return CapturedSurfaceControlResult::kUnknownError;

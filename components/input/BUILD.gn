@@ -40,6 +40,7 @@ component("input") {
     "peak_gpu_memory_tracker.h",
     "render_input_router.cc",
     "render_input_router.h",
+    "render_input_router_client.h",
     "render_input_router_delegate.h",
     "render_input_router_iterator.h",
     "render_input_router_latency_tracker.cc",
