@@ -479,6 +479,7 @@ public class AwSettings {
                 mEventHandler.bindUiThread();
                 mNativeAwSettings = AwSettingsJni.get().init(AwSettings.this, webContents);
                 updateEverythingLocked();
+                setRequestedWithHeaderOriginAllowListLocked(mRequestedWithHeaderAllowedOriginRules);
                 WebauthnModeProvider.getInstance()
                         .setWebauthnModeForWebContents(webContents, mWebauthnMode);
                 flushBackForwardCacheOnUiThreadLocked();
@@ -492,8 +493,6 @@ public class AwSettings {
         assert mNativeAwSettings != 0;
         AwSettingsJni.get().updateEverythingLocked(mNativeAwSettings, AwSettings.this);
         onGestureZoomSupportChanged(supportsDoubleTapZoomLocked(), supportsMultiTouchZoomLocked());
-        setRequestedWithHeaderOriginAllowListLocked(
-                mRequestedWithHeaderAllowedOriginRules, /* flushBackForwardCache= */ false);
     }
 
     /** See {@link android.webkit.WebSettings#setBlockNetworkLoads}. */
@@ -1314,13 +1313,11 @@ public class AwSettings {
                 allowedOriginRules != null ? allowedOriginRules : Collections.emptySet();
         AwWebContentsMetricsRecorder.recordRequestedWithHeaderModeAPIUsage(allowedOriginRules);
         synchronized (mAwSettingsLock) {
-            setRequestedWithHeaderOriginAllowListLocked(
-                    allowedOriginRules, /* flushBackForwardCache= */ true);
+            setRequestedWithHeaderOriginAllowListLocked(allowedOriginRules);
         }
     }
 
-    private void setRequestedWithHeaderOriginAllowListLocked(
-            final Set<String> allowedOriginRules, boolean flushBackForwardCache) {
+    private void setRequestedWithHeaderOriginAllowListLocked(final Set<String> allowedOriginRules) {
         assert Thread.holdsLock(mAwSettingsLock);
         if (mNativeAwSettings == 0) {
             return;
@@ -1331,9 +1328,7 @@ public class AwSettings {
 
         mEventHandler.runOnUiThreadBlockingAndLocked(
                 () -> {
-                    if (flushBackForwardCache) {
-                        flushBackForwardCache();
-                    }
+                    flushBackForwardCache();
                     String[] rejected =
                             AwSettingsJni.get()
                                     .updateXRequestedWithAllowListOriginMatcher(
