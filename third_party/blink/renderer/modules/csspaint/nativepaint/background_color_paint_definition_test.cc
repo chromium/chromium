@@ -220,7 +220,11 @@ TEST_F(BackgroundColorPaintDefinitionTest, FallbackWithPixelMovingFilter) {
       CSSPropertyName(CSSPropertyID::kFilter).ToAtomicString(), "none", "",
       ASSERT_NO_EXCEPTION);
   animation->cancel();
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNoAnimation);
   animation->play();
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNeedsRepaint);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(BackgroundColorPaintDefinition::GetAnimationIfCompositable(element),
             animation);

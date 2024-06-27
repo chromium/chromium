@@ -2046,8 +2046,10 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
       animation->Update(kTimingUpdateOnDemand);
   }
 
-  for (const auto& animation : pending_update_.UpdatedCompositorKeyframes())
-    animation->SetCompositorPending(true);
+  for (const auto& animation : pending_update_.UpdatedCompositorKeyframes()) {
+    animation->SetCompositorPending(
+        Animation::CompositorPendingReason::kPendingEffectChange);
+  }
 
   for (const auto& entry : pending_update_.AnimationsWithUpdates()) {
     if (entry.animation->effect()) {

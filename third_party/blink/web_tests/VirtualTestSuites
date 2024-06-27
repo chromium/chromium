@@ -260,6 +260,22 @@
     "expires": "never"
   },
   {
+    "prefix": "threaded-synchronous-animation-cancel",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/web-animations/crashtests",
+              "external/wpt/web-animations/timing-model/animations",
+              "external/wpt/css/css-animations",
+              "external/wpt/css/css-transforms/animation",
+              "external/wpt/css/css-transforms/individual-transform/animation"],
+    "exclusive_tests": ["external/wpt/css/css-animations/display-none-dont-cancel-pseudo.tentative.html"],
+    "args": ["--enable-threaded-compositing",
+             "--disable-composited-antialiasing",
+             "--disable-features=CompositedAnimationsCancelledAsynchronously"],
+    "owners": ["kevers@chromium.org",
+               "blink-interactions@google.com"],
+    "expires": "Dec 1, 2024"
+  },
+  {
     "prefix": "gpu-rasterization",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["images",

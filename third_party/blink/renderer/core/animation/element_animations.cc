@@ -86,26 +86,18 @@ bool ElementAnimations::IsIdentityOrTranslation() const {
   return true;
 }
 
-void ElementAnimations::SetCompositedBackgroundColorStatus(
-    CompositedPaintStatus status) {
-  if (composited_background_color_status_ == static_cast<unsigned>(status))
-    return;
+void ElementAnimations::RecalcCompositedStatus(Element* element,
+                                               const CSSProperty& property) {
+  ElementAnimations::CompositedPaintStatus status =
+      HasAnimationForProperty(property)
+          ? ElementAnimations::CompositedPaintStatus::kNeedsRepaint
+          : ElementAnimations::CompositedPaintStatus::kNoAnimation;
 
-  if (status == CompositedPaintStatus::kNotComposited) {
-    // Ensure that animation is cancelled on the compositor. We do this ahead
-    // of updating the status since the act of cancelling a background color
-    // animation forces it back into the kNeedsRepaintOrNoAnimation state,
-    // which we then need to stomp with a kNotComposited decision.
-    PropertyHandle background_color_property =
-        PropertyHandle(GetCSSPropertyBackgroundColor());
-    for (auto& entry : Animations()) {
-      KeyframeEffect* effect = DynamicTo<KeyframeEffect>(entry.key->effect());
-      if (effect && effect->Affects(background_color_property)) {
-        entry.key->CancelAnimationOnCompositor();
-      }
-    }
+  if (property.PropertyID() == CSSPropertyID::kBackgroundColor) {
+    SetCompositedBackgroundColorStatus(status);
+  } else if (property.PropertyID() == CSSPropertyID::kClipPath) {
+    SetCompositedClipPathStatus(status);
   }
-  composited_background_color_status_ = static_cast<unsigned>(status);
 }
 
 bool ElementAnimations::HasAnimationForProperty(const CSSProperty& property) {
@@ -125,19 +117,10 @@ void ElementAnimations::InvalidatePaintForCompositedAnimationsIfNecessary(
   if (!element->GetLayoutObject()) {
     return;
   }
+
   if (CompositedBackgroundColorStatus() ==
       CompositedPaintStatus::kNeedsRepaint) {
     element->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
-    // If the animation has been canceled, we need to revert back to
-    // kNoAniamtion to avoid repainting next frame. If there's still an
-    // animation, it's the responsibility of the deferred paint worklet image
-    // painter to set the composited status.
-    // TODO(clchambers): The reason this check is required is because cancelled
-    // animations are not synchronously pruned from the list of animation.
-    // Check whether it is possible to make this the case.
-    if (!HasAnimationForProperty(GetCSSPropertyBackgroundColor())) {
-      SetCompositedBackgroundColorStatus(CompositedPaintStatus::kNoAnimation);
-    }
   }
 
   if (CompositedClipPathStatus() == CompositedPaintStatus::kNeedsRepaint) {
@@ -145,9 +128,6 @@ void ElementAnimations::InvalidatePaintForCompositedAnimationsIfNecessary(
     // For clip paths, we also need to update the paint properties to switch
     // from path based to mask based clip.
     element->GetLayoutObject()->SetNeedsPaintPropertyUpdate();
-    if (!HasAnimationForProperty(GetCSSPropertyClipPath())) {
-      SetCompositedClipPathStatus(CompositedPaintStatus::kNoAnimation);
-    }
   }
 }
 

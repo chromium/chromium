@@ -144,8 +144,10 @@ bool PendingAnimations::Update(
 
   DCHECK(pending_.empty());
   DCHECK(start_on_compositor || deferred.empty());
-  for (auto& animation : deferred)
-    animation->SetCompositorPending();
+  for (auto& animation : deferred) {
+    animation->SetCompositorPending(
+        Animation::CompositorPendingReason::kPendingUpdate);
+  }
   DCHECK_EQ(pending_.size(), deferred.size());
 
   if (started_synchronized_on_compositor)

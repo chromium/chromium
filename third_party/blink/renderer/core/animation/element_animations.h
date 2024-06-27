@@ -116,6 +116,8 @@ class CORE_EXPORT ElementAnimations final
   bool UpdateBoxSizeAndCheckTransformAxisAlignment(const gfx::SizeF& box_size);
   bool IsIdentityOrTranslation() const;
 
+  void RecalcCompositedStatus(Element* element, const CSSProperty& property);
+
   void InvalidatePaintForCompositedAnimationsIfNecessary(Element* element);
 
   // TODO(crbug.com/1301961): Consider converting to an array or flat map of
@@ -125,7 +127,9 @@ class CORE_EXPORT ElementAnimations final
         composited_background_color_status_);
   }
 
-  void SetCompositedBackgroundColorStatus(CompositedPaintStatus status);
+  void SetCompositedBackgroundColorStatus(CompositedPaintStatus status) {
+    composited_background_color_status_ = static_cast<unsigned>(status);
+  }
 
   CompositedPaintStatus CompositedClipPathStatus() {
     return static_cast<CompositedPaintStatus>(composited_clip_path_status_);

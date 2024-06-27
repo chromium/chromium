@@ -195,7 +195,7 @@ class AnimationAnimationTestNoCompositing : public PaintTestConfigurations,
                                                 timing);
   }
 
-  bool SimulateFrame(double time_ms) {
+  void SimulateFrame(double time_ms) {
     if (animation->pending()) {
       animation->NotifyReady(
           ANIMATION_TIME_DELTA_FROM_MILLISECONDS(last_frame_time));
@@ -207,11 +207,12 @@ class AnimationAnimationTestNoCompositing : public PaintTestConfigurations,
         GetDocument().GetFrame()->View()->GetPaintArtifactCompositor();
     GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
                                                  base::Milliseconds(time_ms));
-    GetDocument().GetPendingAnimations().Update(paint_artifact_compositor,
-                                                false);
+
     // The timeline does not know about our animation, so we have to explicitly
     // call update().
-    return animation->Update(kTimingUpdateForAnimationFrame);
+    animation->Update(kTimingUpdateForAnimationFrame);
+    GetDocument().GetPendingAnimations().Update(paint_artifact_compositor,
+                                                false);
   }
 
   void SimulateAwaitReady() { SimulateFrame(last_frame_time); }
@@ -1412,14 +1413,22 @@ TEST_P(AnimationAnimationTestCompositing, PreCommitWithUnresolvedStartTimes) {
   EXPECT_FALSE(animation->PreCommit(0, nullptr, true));
 }
 
-TEST_P(AnimationAnimationTestCompositing, SynchronousCancel) {
+// Cancel is synchronous on the main thread, but asynchronously deferred on the
+// compositor to reduce thread contention.
+TEST_P(AnimationAnimationTestCompositing, AsynchronousCancel) {
   // Start with a composited animation.
   ResetWithCompositedAnimation();
   ASSERT_TRUE(animation->HasActiveAnimationsOnCompositor());
 
   animation->cancel();
-  ASSERT_FALSE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_TRUE(animation->CompositorPending());
+  EXPECT_TRUE(animation->CompositorPendingCancel());
+
+  GetDocument().GetPendingAnimations().Update(nullptr, false);
   EXPECT_FALSE(animation->CompositorPending());
+  EXPECT_FALSE(animation->CompositorPendingCancel());
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
 }
 
 namespace {
@@ -1612,19 +1621,25 @@ TEST_P(AnimationAnimationTestCompositing,
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
       gfx::SizeF(100, 200));
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_FALSE(animation->CompositorPendingCancel());
 
   // Restart animation on a width change.
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
       gfx::SizeF(200, 200));
-  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+  // Cancel is deferred to PreCommit.
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_TRUE(animation->CompositorPendingCancel());
 
   GetDocument().GetPendingAnimations().Update(nullptr, true);
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_FALSE(animation->CompositorPendingCancel());
 
   // Restart animation on a height change.
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
       gfx::SizeF(200, 300));
-  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_TRUE(animation->CompositorPendingCancel());
+  GetDocument().GetPendingAnimations().Update(nullptr, true);
+  EXPECT_FALSE(animation->CompositorPendingCancel());
 }
 
 // crbug.com/1149012
@@ -1660,11 +1675,17 @@ TEST_P(AnimationAnimationTestCompositing,
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
       gfx::SizeF(100, 300));
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_FALSE(animation->CompositorPendingCancel());
 
   // Width change forces a restart.
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
       gfx::SizeF(200, 300));
-  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_TRUE(animation->CompositorPendingCancel());
+
+  GetDocument().GetPendingAnimations().Update(nullptr, true);
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_FALSE(animation->CompositorPendingCancel());
 }
 
 // crbug.com/1149012
@@ -1704,7 +1725,14 @@ TEST_P(AnimationAnimationTestCompositing,
   // Height change forces a restart.
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
       gfx::SizeF(300, 400));
-  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_TRUE(animation->CompositorPending());
+  EXPECT_TRUE(animation->CompositorPendingCancel());
+
+  GetDocument().GetPendingAnimations().Update(nullptr, true);
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_FALSE(animation->CompositorPending());
+  EXPECT_FALSE(animation->CompositorPendingCancel());
 }
 
 TEST_P(AnimationAnimationTestCompositing,

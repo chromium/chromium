@@ -193,8 +193,11 @@ Animation* AnimationTimeline::Play(AnimationEffect* child,
 }
 
 void AnimationTimeline::MarkAnimationsCompositorPending(bool source_changed) {
+  Animation::CompositorPendingReason reason =
+      source_changed ? Animation::CompositorPendingReason::kPendingEffectChange
+                     : Animation::CompositorPendingReason::kPendingUpdate;
   for (const auto& animation : animations_) {
-    animation->SetCompositorPending(source_changed);
+    animation->SetCompositorPending(reason);
   }
 }
 
