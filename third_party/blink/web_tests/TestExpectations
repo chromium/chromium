@@ -2432,6 +2432,12 @@ crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-s
 crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-round-top-left-002.html [ Failure ]
 crbug.com/330758166 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-round-top-right-001.html [ Failure ]
 
+### ::scroll-marker tests wpt_internal/css/css-pseudo
+crbug.com/332396355 wpt_internal/css/css-pseudo/scroll-marker-001.html [ Crash Failure ]
+crbug.com/332396355 wpt_internal/css/css-pseudo/scroll-marker-002.html [ Crash Failure ]
+crbug.com/332396355 wpt_internal/css/css-pseudo/scroll-marker-003.html [ Crash Failure ]
+crbug.com/332396355 wpt_internal/css/css-pseudo/scroll-marker-004.html [ Crash Failure ]
+
 ### external/wpt/css/CSS2/tables/
 crbug.com/958381 external/wpt/css/CSS2/tables/column-visibility-004.xht [ Failure ]
 crbug.com/958381 external/wpt/css/CSS2/tables/table-anonymous-objects-079.xht [ Crash Failure Pass Timeout ]
