@@ -77,11 +77,6 @@ class ASH_EXPORT ProjectorControllerImpl
   void OnTranscriptionError() override;
   void OnSpeechRecognitionStopped(bool forced) override;
   NewScreencastPrecondition GetNewScreencastPrecondition() const override;
-  void OnUndoRedoAvailabilityChanged(bool undo_available,
-                                     bool redo_available) override;
-  void OnCanvasInitialized(bool success) override;
-  bool GetAnnotatorAvailability() override;
-  void ToggleAnnotationTray() override;
 
   // Create the screencast container directory. If there is an error, the
   // callback will be triggered with an empty FilePath.
@@ -111,10 +106,6 @@ class ASH_EXPORT ProjectorControllerImpl
 
   ProjectorUiController* ui_controller() { return ui_controller_.get(); }
   ProjectorSessionImpl* projector_session() { return projector_session_.get(); }
-
-  void set_canvas_initialized_callback_for_test(base::OnceClosure callback) {
-    on_canvas_initialized_callback_for_test_ = std::move(callback);
-  }
 
   // CrasAudioHandler::AudioObserver:
   void OnAudioNodesChanged() override;
@@ -204,9 +195,6 @@ class ASH_EXPORT ProjectorControllerImpl
   // directory deleted.
   OnPathDeletedCallback on_path_deleted_callback_;
   OnFileSavedCallback on_file_saved_callback_;
-
-  // If set, will be called when the canvas is initialized.
-  base::OnceClosure on_canvas_initialized_callback_for_test_;
 
   // There is a delay on completing speech recognition session. We enforce a 90
   // second timeout from the recording stopped signal to force end the speech

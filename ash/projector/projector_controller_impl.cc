@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "ash/annotator/annotator_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/constants/ash_pref_names.h"
@@ -328,27 +327,6 @@ ProjectorControllerImpl::GetNewScreencastPrecondition() const {
 
   result.state = NewScreencastPreconditionState::kEnabled;
   return result;
-}
-
-void ProjectorControllerImpl::OnUndoRedoAvailabilityChanged(
-    bool undo_available,
-    bool redo_available) {
-  // TODO(b/198184362): Reflect undo and redo buttons availability on the
-  // Projector toolbar.
-}
-
-void ProjectorControllerImpl::OnCanvasInitialized(bool success) {
-  Shell::Get()->annotator_controller()->OnCanvasInitialized(success);
-  if (on_canvas_initialized_callback_for_test_)
-    std::move(on_canvas_initialized_callback_for_test_).Run();
-}
-
-bool ProjectorControllerImpl::GetAnnotatorAvailability() {
-  return Shell::Get()->annotator_controller()->GetAnnotatorAvailability();
-}
-
-void ProjectorControllerImpl::ToggleAnnotationTray() {
-  return Shell::Get()->annotator_controller()->ToggleAnnotationTray();
 }
 
 void ProjectorControllerImpl::CreateScreencastContainerFolder(

@@ -31,10 +31,10 @@
 #include "ash/media/media_controller_impl.h"
 #include "ash/picker/picker_controller.h"
 #include "ash/public/cpp/accelerator_actions.h"
+#include "ash/public/cpp/annotator/annotator_controller_base.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/new_window_delegate.h"
-#include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/root_window_controller.h"
 #include "ash/rotator/window_rotation.h"
@@ -720,11 +720,9 @@ bool CanTogglePrivacyScreen() {
 }
 
 bool CanToggleProjectorMarker() {
-  auto* projector_controller = ProjectorController::Get();
-  if (projector_controller) {
-    return projector_controller->GetAnnotatorAvailability();
-  }
-  return false;
+  auto* annotator_controller = AnnotatorControllerBase::Get();
+  return annotator_controller &&
+         annotator_controller->GetAnnotatorAvailability();
 }
 
 bool CanToggleResizeLockMenu() {
@@ -1780,9 +1778,8 @@ void TogglePrivacyScreen() {
 }
 
 void ToggleProjectorMarker() {
-  auto* projector_controller = ProjectorController::Get();
-  if (projector_controller) {
-    projector_controller->ToggleAnnotationTray();
+  if (auto* annotator_controller = AnnotatorControllerBase::Get()) {
+    annotator_controller->ToggleAnnotationTray();
   }
 }
 

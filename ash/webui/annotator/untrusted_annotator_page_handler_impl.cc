@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "ash/public/cpp/annotator/annotator_controller_base.h"
 #include "ash/public/cpp/annotator/annotator_tool.h"
-#include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/webui/annotator/mojom/untrusted_annotator.mojom.h"
 #include "ash/webui/annotator/public/cpp/annotator_client.h"
 #include "ash/webui/annotator/public/mojom/annotator_structs.mojom.h"
@@ -56,18 +56,18 @@ void UntrustedAnnotatorPageHandlerImpl::Clear() {
 void UntrustedAnnotatorPageHandlerImpl::OnUndoRedoAvailabilityChanged(
     bool undo_available,
     bool redo_available) {
-  // ProjectorController is created when ash::Shell::Init is called and is
-  // destroyed when ash::Shell is destroyed. Therefore, ProjectorController
+  // AnnotatorController is created when ash::Shell::Init is called and is
+  // destroyed when ash::Shell is destroyed. Therefore, AnnotatorController
   // is available when this WebUI is showing.
-  ProjectorController::Get()->OnUndoRedoAvailabilityChanged(undo_available,
-                                                            redo_available);
+  AnnotatorControllerBase::Get()->OnUndoRedoAvailabilityChanged(undo_available,
+                                                                redo_available);
 }
 
 void UntrustedAnnotatorPageHandlerImpl::OnCanvasInitialized(bool success) {
-  // ProjectorController is created when ash::Shell::Init is called and is
-  // destroyed when ash::Shell is destroyed. Therefore, ProjectorController
+  // AnnotatorController is created when ash::Shell::Init is called and is
+  // destroyed when ash::Shell is destroyed. Therefore, AnnotatorController
   // is available when this WebUI is showing.
-  ProjectorController::Get()->OnCanvasInitialized(success);
+  AnnotatorControllerBase::Get()->OnCanvasInitialized(success);
 }
 
 }  // namespace ash

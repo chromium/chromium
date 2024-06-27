@@ -132,10 +132,6 @@ void AnnotatorController::EnableAnnotatorTool() {
   }
 }
 
-bool AnnotatorController::GetAnnotatorAvailability() const {
-  return canvas_initialized_state_.value_or(false);
-}
-
 void AnnotatorController::DisableAnnotator() {
   ResetTools();
   if (current_root_) {
@@ -145,15 +141,15 @@ void AnnotatorController::DisableAnnotator() {
   canvas_initialized_state_.reset();
 }
 
+bool AnnotatorController::GetAnnotatorAvailability() const {
+  return canvas_initialized_state_.value_or(false);
+}
+
 void AnnotatorController::OnCanvasInitialized(bool success) {
   canvas_initialized_state_ = success;
   UpdateTrayEnabledState();
-}
-
-void AnnotatorController::UpdateTrayEnabledState() {
-  if (auto* projector_annotation_tray =
-          GetAnnotationTrayForRoot(current_root_)) {
-    projector_annotation_tray->SetTrayEnabled(GetAnnotatorAvailability());
+  if (on_canvas_initialized_callback_for_test_) {
+    std::move(on_canvas_initialized_callback_for_test_).Run();
   }
 }
 
@@ -161,6 +157,20 @@ void AnnotatorController::ToggleAnnotationTray() {
   if (auto* projector_annotation_tray =
           GetAnnotationTrayForRoot(current_root_)) {
     projector_annotation_tray->ToggleAnnotator();
+  }
+}
+
+// Callback indicating availability of undo and redo functionalities.
+void AnnotatorController::OnUndoRedoAvailabilityChanged(bool undo_available,
+                                                        bool redo_available) {
+  // TODO(b/198184362): Reflect undo and redo buttons availability
+  // on the annotator tray.
+}
+
+void AnnotatorController::UpdateTrayEnabledState() {
+  if (auto* projector_annotation_tray =
+          GetAnnotationTrayForRoot(current_root_)) {
+    projector_annotation_tray->SetTrayEnabled(GetAnnotatorAvailability());
   }
 }
 

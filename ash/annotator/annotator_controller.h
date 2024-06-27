@@ -9,6 +9,10 @@
 
 #include "ash/annotator/annotator_metrics.h"
 #include "ash/ash_export.h"
+#include "ash/public/cpp/annotator/annotator_controller_base.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -22,12 +26,12 @@ struct AnnotatorTool;
 class AnnotatorClient;
 
 // The controller in charge of annotator UI.
-class ASH_EXPORT AnnotatorController {
+class ASH_EXPORT AnnotatorController : public AnnotatorControllerBase {
  public:
   AnnotatorController();
   AnnotatorController(const AnnotatorController&) = delete;
   AnnotatorController& operator=(const AnnotatorController&) = delete;
-  virtual ~AnnotatorController();
+  ~AnnotatorController() override;
 
   bool is_annotator_enabled() const { return annotator_enabled_; }
 
@@ -44,17 +48,22 @@ class ASH_EXPORT AnnotatorController {
   void UnregisterView(aura::Window* current_root);
   // Invoked when marker button is pressed.
   void EnableAnnotatorTool();
-  // Returns true if the annotator can be invoked (if the canvas was
-  // successfully initialized).
-  bool GetAnnotatorAvailability() const;
   // Resets the canvas and disables the annotator functionality.
   void DisableAnnotator();
-  // Invoked when the canvas has either succeeded or failed to initialize.
-  void OnCanvasInitialized(bool success);
+
+  // AnnotatorControllerBase:
+  bool GetAnnotatorAvailability() const override;
+  void OnCanvasInitialized(bool success) override;
+  void ToggleAnnotationTray() override;
+  void OnUndoRedoAvailabilityChanged(bool undo_available,
+                                     bool redo_available) override;
+
   // Updates the tray based on annotator availability.
   void UpdateTrayEnabledState();
-  // Toggles the UI of the annotation tray and the marker's enabled state.
-  void ToggleAnnotationTray();
+
+  void set_canvas_initialized_callback_for_test(base::OnceClosure callback) {
+    on_canvas_initialized_callback_for_test_ = std::move(callback);
+  }
 
  private:
   raw_ptr<AnnotatorClient> client_ = nullptr;
@@ -65,6 +74,8 @@ class ASH_EXPORT AnnotatorController {
   bool annotator_enabled_ = false;
   // The current root window for showing annotations.
   raw_ptr<aura::Window> current_root_ = nullptr;
+  // If set, will be called when the canvas is initialized.
+  base::OnceClosure on_canvas_initialized_callback_for_test_;
 };
 
 }  // namespace ash

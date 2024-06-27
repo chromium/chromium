@@ -5,11 +5,11 @@
 #include "ash/webui/annotator/untrusted_annotator_page_handler_impl.h"
 
 #include "ash/public/cpp/annotator/annotator_tool.h"
-#include "ash/public/cpp/test/mock_projector_controller.h"
-#include "ash/webui/annotator/test/mock_annotator_client.h"
-#include "ash/webui/annotator/test/mock_untrusted_annotator_page.h"
+#include "ash/public/cpp/test/mock_annotator_controller.h"
 #include "ash/webui/annotator/mojom/untrusted_annotator.mojom.h"
 #include "ash/webui/annotator/public/mojom/annotator_structs.mojom.h"
+#include "ash/webui/annotator/test/mock_annotator_client.h"
+#include "ash/webui/annotator/test/mock_untrusted_annotator_page.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "content/public/test/test_web_ui.h"
@@ -45,7 +45,7 @@ class UntrustedAnnotatorPageHandlerImplTest : public testing::Test {
   }
 
   UntrustedAnnotatorPageHandlerImpl& handler() { return *handler_; }
-  MockProjectorController& controller() { return controller_; }
+  MockAnnotatorController& controller() { return controller_; }
   MockUntrustedAnnotatorPage& annotator() { return *annotator_; }
   base::test::SingleThreadTaskEnvironment& task_environment() {
     return task_environment_;
@@ -56,7 +56,7 @@ class UntrustedAnnotatorPageHandlerImplTest : public testing::Test {
 
   std::unique_ptr<MockUntrustedAnnotatorPage> annotator_;
   std::unique_ptr<UntrustedAnnotatorPageHandlerImpl> handler_;
-  MockProjectorController controller_;
+  MockAnnotatorController controller_;
   MockAnnotatorClient client_;
 };
 
