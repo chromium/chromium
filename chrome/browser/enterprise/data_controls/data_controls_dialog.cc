@@ -234,7 +234,8 @@ DataControlsDialog::DataControlsDialog(
 std::unique_ptr<views::View> DataControlsDialog::CreateEnterpriseIcon() const {
   auto enterprise_icon = std::make_unique<views::ImageView>();
   enterprise_icon->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kBusinessIcon, ui::kColorIcon, kBusinessIconSize));
+      vector_icons::kBusinessIcon, ui::kColorSysOnSurfaceSubtle,
+      kBusinessIconSize));
   return enterprise_icon;
 }
 
