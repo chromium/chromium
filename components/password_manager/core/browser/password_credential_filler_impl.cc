@@ -132,7 +132,19 @@ PasswordCredentialFillerImpl::~PasswordCredentialFillerImpl() = default;
 void PasswordCredentialFillerImpl::FillUsernameAndPassword(
     const std::u16string& username,
     const std::u16string& password) {
-  CHECK(driver_);
+  if (!driver_) {
+    // If `driver_` (per frame) was destroyed, it means a navigation happened
+    // and the filling data doesn't apply to the new page. The correct behavior
+    // in this case is to hide the filling UI, meaning this code path is
+    // unreachable. *However*, if the UI wasn't hidden due to a bug, simply
+    // ignore the click here. That's better than:
+    //   a) Proceeding, which will cause a nullptr deref below.
+    //   b) CHECK(driver_), which would crash.
+    // Supposedly, the user can still dismiss the UI to get out of the broken
+    // state. See crbug.com/349073346.
+    return;
+  }
+
   if (!base::FeatureList::IsEnabled(
           features::kPasswordSuggestionBottomSheetV2)) {
     driver_->KeyboardReplacingSurfaceClosed(ToShowVirtualKeyboard(false));
