@@ -752,6 +752,12 @@ void DeskPreviewView::OnFocusableViewBlurred() {
 }
 
 void DeskPreviewView::OnWindowOcclusionChanged(aura::Window* window) {
+  // If `window_occlusion_calculator_` finds multiple windows with occlusion
+  // changes in one calculation, they can be condensed into one
+  // `RecreateDeskContentsMirrorLayers()` call by canceling any pending task
+  // already scheduled.
+  recreate_mirror_layers_weak_factory_.InvalidateWeakPtrs();
+
   // `RecreateDeskContentsMirrorLayers()` cannot be called directly. If it is,
   // it creates an infinite loop`:
   // * DeskPreviewView::OnWindowOcclusionChanged()
@@ -768,7 +774,7 @@ void DeskPreviewView::OnWindowOcclusionChanged(aura::Window* window) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&DeskPreviewView::RecreateDeskContentsMirrorLayers,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     recreate_mirror_layers_weak_factory_.GetWeakPtr()));
 }
 
 BEGIN_METADATA(DeskPreviewView)

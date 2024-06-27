@@ -179,7 +179,8 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
 
   std::optional<ui::ColorId> focus_color_id_;
 
-  base::WeakPtrFactory<DeskPreviewView> weak_ptr_factory_{this};
+  base::WeakPtrFactory<DeskPreviewView> recreate_mirror_layers_weak_factory_{
+      this};
 };
 
 }  // namespace ash
