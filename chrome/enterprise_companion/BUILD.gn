@@ -23,6 +23,8 @@ source_set("base") {
     "ipc_support.h",
     "lock.cc",
     "lock.h",
+    "url_loader_factory_provider.cc",
+    "url_loader_factory_provider.h",
   ]
   deps = [
     ":client",
@@ -36,6 +38,7 @@ source_set("base") {
     "//mojo/core/embedder",
     "//mojo/public/cpp/platform",
     "//net",
+    "//services/network:network_service",
     "//services/network/public/cpp",
   ]
 }

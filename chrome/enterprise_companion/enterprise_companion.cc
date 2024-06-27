@@ -6,19 +6,27 @@
 
 #include <memory>
 
+#include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/sequence_bound.h"
 #include "chrome/enterprise_companion/enterprise_companion_service.h"
 #include "chrome/enterprise_companion/enterprise_companion_service_stub.h"
 #include "chrome/enterprise_companion/ipc_support.h"
 #include "chrome/enterprise_companion/lock.h"
+#include "chrome/enterprise_companion/mojom/enterprise_companion.mojom-forward.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
+#include "chrome/enterprise_companion/url_loader_factory_provider.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
 
@@ -58,6 +66,7 @@ int EnterpriseCompanionMain(int argc, const char* const* argv) {
   base::CommandLine::Init(argc, argv);
   InitLogging();
   InitThreadPool();
+  base::AtExitManager exit_manager;
 
   base::SingleThreadTaskExecutor main_task_executor;
   ScopedIPCSupportWrapper ipc_support;
@@ -68,11 +77,23 @@ int EnterpriseCompanionMain(int argc, const char* const* argv) {
     return 1;
   }
 
-  VLOG(1) << "Launching Chrome Enterprise Companion";
+  base::Thread net_thread("Network");
+  net_thread.StartWithOptions({base::MessagePumpType::IO, 0});
+  base::SequenceBound<URLLoaderFactoryProvider> url_loader_factory_provider =
+      base::SequenceBound<URLLoaderFactoryProvider>(net_thread.task_runner());
+
   base::RunLoop run_loop;
-  std::unique_ptr<mojom::EnterpriseCompanion> stub =
-      CreateEnterpriseCompanionServiceStub(
-          CreateEnterpriseCompanionService(run_loop.QuitClosure()));
+  url_loader_factory_provider
+      .AsyncCall(&URLLoaderFactoryProvider::GetPendingURLLoaderFactory)
+      .Then(base::BindOnce(
+          [](base::OnceClosure shutdown,
+             std::unique_ptr<network::PendingSharedURLLoaderFactory>
+                 pending_shared_url_loader_factory) {
+            VLOG(1) << "Launching Chrome Enterprise Companion";
+            auto stub = CreateEnterpriseCompanionServiceStub(
+                CreateEnterpriseCompanionService(std::move(shutdown)));
+          },
+          base::BindPostTaskToCurrentDefault(run_loop.QuitClosure())));
   run_loop.Run();
 
   return 0;
