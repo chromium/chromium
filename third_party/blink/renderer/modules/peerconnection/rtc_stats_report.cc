@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_stats_report.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/common/features.h"
@@ -29,6 +30,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_video_source_stats.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
@@ -36,6 +38,7 @@
 #include "third_party/webrtc/api/stats/rtc_stats.h"
 #include "third_party/webrtc/api/stats/rtc_stats_report.h"
 #include "third_party/webrtc/api/stats/rtcstats_objects.h"
+#include "third_party/webrtc/rtc_base/time_utils.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-object.h"
 
@@ -933,6 +936,30 @@ RTCCertificateStats* ToV8Stat(ScriptState* script_state,
   return v8_stat;
 }
 
+// Used for logging clock offsets between Chrome and WebRTC UTC clocks.
+// The results of the log should show if this solve the offset.
+// It should not be used for other uses.
+namespace {
+
+int64_t UtcOffsetUsCalledOnce() {
+  int64_t clock_time = rtc::TimeMicros();
+  int64_t utc_time = rtc::TimeUTCMicros();
+  return clock_time - utc_time;
+}
+
+base::TimeTicks ConvertUTCTimeToBaseTimeTicks(webrtc::Timestamp time) {
+  static int64_t utc_offset_us = UtcOffsetUsCalledOnce();
+  if (time == webrtc::Timestamp::PlusInfinity()) {
+    return base::TimeTicks::Max();
+  } else if (time == webrtc::Timestamp::MinusInfinity()) {
+    return base::TimeTicks::Min();
+  } else {
+    return base::TimeTicks() + base::Microseconds(time.us() + utc_offset_us);
+  }
+}
+
+}  // namespace
+
 RTCStats* RTCStatsToIDL(ScriptState* script_state,
                         const webrtc::RTCStats& stat,
                         bool expose_hardware_caps) {
@@ -999,6 +1026,20 @@ RTCStats* RTCStatsToIDL(ScriptState* script_state,
     return nullptr;
   }
 
+  // Logging potential offsets between WebRTC and Chromium UTC timestamps.
+  // Bug: 333359951
+  LocalDOMWindow* window = LocalDOMWindow::From(script_state);
+  DocumentLoadTiming& time_converter =
+      window->GetFrame()->Loader().GetDocumentLoader()->GetTiming();
+  int32_t timestamp_delta =
+      stat.timestamp().ms<double>() -
+      time_converter
+          .MonotonicTimeToPseudoWallTime(
+              (ConvertUTCTimeToBaseTimeTicks(stat.timestamp())))
+          .InMilliseconds();
+  base::UmaHistogramLongTimes("WebRTC.RtcStats.ChromeRtcUtcDifference",
+                              base::Milliseconds(timestamp_delta));
+  //
   v8_stats->setId(String::FromUTF8(stat.id()));
   v8_stats->setTimestamp(stat.timestamp().ms<double>());
   v8_stats->setType(String::FromUTF8(stat.type()));
