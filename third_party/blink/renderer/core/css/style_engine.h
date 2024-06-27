@@ -1101,7 +1101,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // A cache for CSSURIValue objects for SVG element presentation attributes for
   // fill and clip path. See SVGElement::CollectStyleForPresentationAttribute()
   // for more info.
-  HeapHashMap<AtomicString, Member<const CSSValue>>
+  HeapHashMap<AtomicString, WeakMember<const CSSValue>>
       fill_or_clip_path_uri_value_cache_;
 
   // Cached because it can be expensive to compute anew for each element.
