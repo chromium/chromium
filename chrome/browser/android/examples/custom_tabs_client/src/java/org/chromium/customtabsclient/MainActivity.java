@@ -110,6 +110,7 @@ public class MainActivity extends AppCompatActivity
     private static final String SHARED_PREF_SIDE_SHEET_ROUNDED_CORNER = "RoundedCorner";
     private static final String SHARED_PREF_CONTENT_SCROLL = "ContentScrollMayResizeTab";
     private static final String SHARED_PREF_SEARCH_IN_CCT = "SearchInCCT";
+    private static final String SHARED_PREF_SEND_TO_EXTERNAL_APP = "SendToExternalApp";
     private static final String SHARED_PREF_SHARE_IDENTITY = "ShareIdentity";
     private static final String SHARED_PREF_CONNECT_BUTTON = "ConnectButton";
     private static final String SHARED_PREF_DISCONNECT_BUTTON = "DisconnectButton";
@@ -163,6 +164,7 @@ public class MainActivity extends AppCompatActivity
     private CheckBox mSideSheetRoundedCornerCheckbox;
     private CheckBox mContentScrollCheckbox;
     private CheckBox mSearchInCCTCheckbox;
+    private CheckBox mSendToExternalAppCheckbox;
     private CheckBox mShareIdentityCheckbox;
     private TextView mPcctBreakpointLabel;
     private SeekBar mPcctBreakpointSlider;
@@ -671,6 +673,9 @@ public class MainActivity extends AppCompatActivity
         mShareIdentityCheckbox = findViewById(R.id.share_identity_checkbox);
         mShareIdentityCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_SHARE_IDENTITY, UNCHECKED) == CHECKED);
+        mSendToExternalAppCheckbox = findViewById(R.id.send_to_external_app_checkbox);
+        mSendToExternalAppCheckbox.setChecked(
+                mSharedPref.getInt(SHARED_PREF_SEND_TO_EXTERNAL_APP, UNCHECKED) == CHECKED);
     }
 
     private void initializeCctSpinner() {
@@ -958,6 +963,9 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (mShareIdentityCheckbox.isChecked()) builder.setShareIdentityEnabled(true);
+        if (mSendToExternalAppCheckbox.isChecked()) {
+            builder.setSendToExternalDefaultHandlerEnabled(true);
+        }
 
         CustomTabsIntent customTabsIntent;
 

@@ -67,6 +67,7 @@
     <string name="decoration_type_none_text">None</string>
     <string name="side_sheet_rounded_corner_text">Rounded Corner(SideSheet)</string>
     <string name="content_scroll_text">Content-scroll may resize Tab(BottomSheet)</string>
+    <string name="send_to_external_app_text">External Intent Handler</string>
     <string name="search_in_cct_text">Interactive Omnibox</string>
     <string name="share_identity_text">Share Identity</string>
 </resources>

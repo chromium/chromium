@@ -623,6 +623,13 @@
             android:text="@string/search_in_cct_text" />
 
         <CheckBox
+            android:id="@+id/send_to_external_app_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/send_to_external_app_text" />
+
+        <CheckBox
             android:id="@+id/share_identity_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
