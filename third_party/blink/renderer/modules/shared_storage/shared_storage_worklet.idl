@@ -21,7 +21,7 @@ typedef (USVString or FencedFrameConfig) SharedStorageResponse;
     RaisesException,
     MeasureAs=SharedStorageAPI_SelectURL_Method
   ] Promise<SharedStorageResponse> selectURL(DOMString name,
-                                 FrozenArray<SharedStorageUrlWithMetadata> urls,
+                                 sequence<SharedStorageUrlWithMetadata> urls,
                                  optional SharedStorageRunOperationMethodOptions options);
 
   [
