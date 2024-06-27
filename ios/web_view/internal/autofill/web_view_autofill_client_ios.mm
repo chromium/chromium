@@ -195,18 +195,6 @@ void WebViewAutofillClientIOS::ShowAutofillSettings(
   NOTREACHED_IN_MIGRATION();
 }
 
-void WebViewAutofillClientIOS::ConfirmSaveCreditCardToCloud(
-    const CreditCard& card,
-    const LegalMessageLines& legal_message_lines,
-    SaveCreditCardOptions options,
-    UploadSaveCardPromptCallback callback) {
-  DCHECK(options.show_prompt);
-  [bridge_ confirmSaveCreditCardToCloud:card
-                      legalMessageLines:legal_message_lines
-                  saveCreditCardOptions:options
-                               callback:std::move(callback)];
-}
-
 void WebViewAutofillClientIOS::ConfirmSaveAddressProfile(
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,

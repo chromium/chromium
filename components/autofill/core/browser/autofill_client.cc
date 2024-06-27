@@ -120,13 +120,6 @@ AutofillClient::CreateCreditCardInternalAuthenticator(AutofillDriver* driver) {
 }
 #endif
 
-void AutofillClient::ConfirmSaveCreditCardToCloud(
-    const CreditCard& card,
-    const LegalMessageLines& legal_message_lines,
-    SaveCreditCardOptions options,
-    UploadSaveCardPromptCallback callback) {
-}
-
 bool AutofillClient::ShowTouchToFillIban(
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const autofill::Iban> ibans_to_suggest) {

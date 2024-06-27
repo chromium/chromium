@@ -27,10 +27,16 @@ class GURL;
 
 namespace autofill {
 
+#if BUILDFLAG(IS_ANDROID)
+class AutofillCvcSaveMessageDelegate;
+#endif  // BUILDFLAG(IS_ANDROID)
 class AutofillErrorDialogControllerImpl;
 class AutofillOfferData;
 class AutofillSaveCardBottomSheetBridge;
 class AutofillSaveIbanBottomSheetBridge;
+#if BUILDFLAG(IS_ANDROID)
+class AutofillSnackbarControllerImpl;
+#endif  // BUILDFLAG(IS_ANDROID)
 class CardUnmaskAuthenticationSelectionDialogControllerImpl;
 struct CardUnmaskChallengeOption;
 class CardUnmaskOtpInputDialogControllerImpl;
@@ -38,7 +44,6 @@ class CreditCardCvcAuthenticator;
 class CreditCardOtpAuthenticator;
 class ContentAutofillClient;
 class CreditCardRiskBasedAuthenticator;
-class AutofillCvcSaveMessageDelegate;
 class IbanAccessManager;
 class IbanManager;
 class MerchantPromoCodeManager;
@@ -48,9 +53,6 @@ enum class OtpUnmaskResult;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
 struct VirtualCardManualFallbackBubbleOptions;
-#if BUILDFLAG(IS_ANDROID)
-class AutofillSnackbarControllerImpl;
-#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace payments {
 
@@ -116,6 +118,11 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       const CreditCard& card,
       AutofillClient::SaveCreditCardOptions options,
       AutofillClient::LocalSaveCardPromptCallback callback) override;
+  void ConfirmSaveCreditCardToCloud(
+      const CreditCard& card,
+      const LegalMessageLines& legal_message_lines,
+      AutofillClient::SaveCreditCardOptions options,
+      AutofillClient::UploadSaveCardPromptCallback callback) override;
   void CreditCardUploadCompleted(bool card_saved,
                                  std::optional<OnConfirmationClosedCallback>
                                      on_confirmation_closed_callback) override;
@@ -204,14 +211,14 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   std::u16string GetAccountHolderName() const;
 
 #if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<AutofillCvcSaveMessageDelegate>
+      autofill_cvc_save_message_delegate_;
+
   std::unique_ptr<AutofillSaveCardBottomSheetBridge>
       autofill_save_card_bottom_sheet_bridge_;
 
   std::unique_ptr<AutofillSaveIbanBottomSheetBridge>
       autofill_save_iban_bottom_sheet_bridge_;
-
-  std::unique_ptr<AutofillCvcSaveMessageDelegate>
-      autofill_cvc_save_message_delegate_;
 
   std::unique_ptr<AutofillSnackbarControllerImpl>
       autofill_snackbar_controller_impl_;

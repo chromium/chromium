@@ -78,6 +78,12 @@ void PaymentsAutofillClient::ConfirmSaveCreditCardLocally(
     AutofillClient::SaveCreditCardOptions options,
     AutofillClient::LocalSaveCardPromptCallback callback) {}
 
+void PaymentsAutofillClient::ConfirmSaveCreditCardToCloud(
+    const CreditCard& card,
+    const LegalMessageLines& legal_message_lines,
+    AutofillClient::SaveCreditCardOptions options,
+    AutofillClient::UploadSaveCardPromptCallback callback) {}
+
 void PaymentsAutofillClient::CreditCardUploadCompleted(
     bool card_saved,
     std::optional<OnConfirmationClosedCallback>

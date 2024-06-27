@@ -94,6 +94,18 @@ void TestPaymentsAutofillClient::ConfirmExpirationDateFixFlow(
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+void TestPaymentsAutofillClient::ConfirmSaveCreditCardToCloud(
+    const CreditCard& card,
+    const LegalMessageLines& legal_message_lines,
+    AutofillClient::SaveCreditCardOptions options,
+    AutofillClient::UploadSaveCardPromptCallback callback) {
+  confirm_save_credit_card_to_cloud_called_ = true;
+  offer_to_save_credit_card_bubble_was_shown_ = options.show_prompt;
+  save_credit_card_options_ = options;
+
+  std::move(callback).Run(get_save_card_offer_user_decision(), {});
+}
+
 void TestPaymentsAutofillClient::ConfirmSaveCreditCardLocally(
     const CreditCard& card,
     AutofillClient::SaveCreditCardOptions options,

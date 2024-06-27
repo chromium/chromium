@@ -58,8 +58,9 @@ IOSChromePaymentsAutofillClient::IOSChromePaymentsAutofillClient(
     autofill::ChromeAutofillClientIOS* client,
     ChromeBrowserState* browser_state,
     web::WebState* web_state,
-    infobars::InfoBarManager* info_bar_manager)
+    infobars::InfoBarManager* infobar_manager)
     : client_(CHECK_DEREF(client)),
+      infobar_manager_(CHECK_DEREF(infobar_manager)),
       payments_network_interface_(
           std::make_unique<payments::PaymentsNetworkInterface>(
               base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -68,8 +69,7 @@ IOSChromePaymentsAutofillClient::IOSChromePaymentsAutofillClient(
               &client->GetPersonalDataManager()->payments_data_manager(),
               browser_state->IsOffTheRecord())),
       browser_state_(browser_state),
-      web_state_(web_state),
-      info_bar_manager_(info_bar_manager) {}
+      web_state_(web_state) {}
 
 IOSChromePaymentsAutofillClient::~IOSChromePaymentsAutofillClient() = default;
 
@@ -84,9 +84,28 @@ void IOSChromePaymentsAutofillClient::ConfirmSaveCreditCardLocally(
     AutofillClient::SaveCreditCardOptions options,
     AutofillClient::LocalSaveCardPromptCallback callback) {
   DCHECK(options.show_prompt);
-  info_bar_manager_->AddInfoBar(CreateSaveCardInfoBarMobile(
+  infobar_manager_->AddInfoBar(CreateSaveCardInfoBarMobile(
       std::make_unique<AutofillSaveCardInfoBarDelegateIOS>(
           AutofillSaveCardUiInfo::CreateForLocalSave(options, card),
+          std::make_unique<AutofillSaveCardDelegate>(std::move(callback),
+                                                     options))));
+}
+
+void IOSChromePaymentsAutofillClient::ConfirmSaveCreditCardToCloud(
+    const CreditCard& card,
+    const LegalMessageLines& legal_message_lines,
+    AutofillClient::SaveCreditCardOptions options,
+    AutofillClient::UploadSaveCardPromptCallback callback) {
+  DCHECK(options.show_prompt);
+
+  AccountInfo account_info =
+      client_->GetIdentityManager()->FindExtendedAccountInfo(
+          client_->GetIdentityManager()->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSignin));
+  infobar_manager_->AddInfoBar(CreateSaveCardInfoBarMobile(
+      std::make_unique<AutofillSaveCardInfoBarDelegateIOS>(
+          AutofillSaveCardUiInfo::CreateForUploadSave(
+              options, card, legal_message_lines, account_info),
           std::make_unique<AutofillSaveCardDelegate>(std::move(callback),
                                                      options))));
 }

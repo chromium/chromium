@@ -27,6 +27,7 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::Field;
 using ::testing::NotNull;
 
@@ -237,6 +238,78 @@ TEST_F(ChromePaymentsAutofillClientTest,
   EXPECT_NO_FATAL_FAILURE(
       chrome_payments_client()->ConfirmSaveCreditCardLocally(
           CreditCard(),
+          ChromeAutofillClient::SaveCreditCardOptions().with_show_prompt(true),
+          base::DoNothing()));
+}
+
+// Verify that the prompt to upload save a user's card without CVC is shown in a
+// bottom sheet.
+TEST_F(
+    ChromePaymentsAutofillClientTest,
+    ConfirmSaveCreditCardToCloud_CardSaveTypeIsOnlyCard_RequestsBottomSheet) {
+  MockAutofillSaveCardBottomSheetBridge* bottom_sheet_bridge =
+      InjectMockAutofillSaveCardBottomSheetBridge();
+
+  std::u16string expected_description;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  expected_description =
+      u"To pay faster next time, save your card and billing address in your "
+      u"Google Account";
+#endif
+
+  // Verify that `AutofillSaveCardUiInfo` has the correct attributes that
+  // indicate upload save card prompt without CVC.
+  EXPECT_CALL(*bottom_sheet_bridge,
+              RequestShowContent(
+                  AllOf(Field(&AutofillSaveCardUiInfo::is_for_upload, true),
+                        Field(&AutofillSaveCardUiInfo::description_text,
+                              expected_description)),
+                  testing::NotNull()));
+
+  chrome_payments_client()->ConfirmSaveCreditCardToCloud(
+      CreditCard(), LegalMessageLines(),
+      ChromeAutofillClient::SaveCreditCardOptions()
+          .with_card_save_type(AutofillClient::CardSaveType::kCardSaveOnly)
+          .with_show_prompt(true),
+      base::DoNothing());
+}
+
+// Verify that the prompt to upload save a user's card with CVC is shown in a
+// bottom sheet.
+TEST_F(ChromePaymentsAutofillClientTest,
+       ConfirmSaveCreditCardToCloud_CardSaveTypeIsWithCvc_RequestsBottomSheet) {
+  MockAutofillSaveCardBottomSheetBridge* bottom_sheet_bridge =
+      InjectMockAutofillSaveCardBottomSheetBridge();
+
+  std::u16string expected_description;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  expected_description =
+      u"To pay faster next time, save your card, encrypted security code, and "
+      u"billing address in your Google Account";
+#endif
+
+  // Verify that `AutofillSaveCardUiInfo` has the correct attributes that
+  // indicate upload save card prompt with CVC.
+  EXPECT_CALL(*bottom_sheet_bridge,
+              RequestShowContent(
+                  AllOf(Field(&AutofillSaveCardUiInfo::is_for_upload, true),
+                        Field(&AutofillSaveCardUiInfo::description_text,
+                              expected_description)),
+                  testing::NotNull()));
+
+  chrome_payments_client()->ConfirmSaveCreditCardToCloud(
+      CreditCard(), LegalMessageLines(),
+      ChromeAutofillClient::SaveCreditCardOptions()
+          .with_card_save_type(AutofillClient::CardSaveType::kCardSaveWithCvc)
+          .with_show_prompt(true),
+      base::DoNothing());
+}
+
+TEST_F(ChromePaymentsAutofillClientTest,
+       ConfirmSaveCreditCardToCloud_DoesNotFailWithoutAWindow) {
+  EXPECT_NO_FATAL_FAILURE(
+      chrome_payments_client()->ConfirmSaveCreditCardToCloud(
+          CreditCard(), LegalMessageLines(),
           ChromeAutofillClient::SaveCreditCardOptions().with_show_prompt(true),
           base::DoNothing()));
 }

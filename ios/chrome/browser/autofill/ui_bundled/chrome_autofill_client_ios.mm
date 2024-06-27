@@ -19,9 +19,6 @@
 #import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/autofill/core/browser/form_data_importer.h"
 #import "components/autofill/core/browser/logging/log_manager.h"
-#import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
-#import "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
-#import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -43,7 +40,6 @@
 #import "ios/chrome/browser/autofill/model/autocomplete_history_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/autofill_log_router_factory.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
-#import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/strike_database_factory.h"
 #import "ios/chrome/browser/device_reauth/ios_device_authenticator.h"
@@ -69,17 +65,6 @@
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 namespace autofill {
-
-namespace {
-
-// Creates and returns an infobar for saving credit cards.
-std::unique_ptr<infobars::InfoBar> CreateSaveCardInfoBarMobile(
-    std::unique_ptr<AutofillSaveCardInfoBarDelegateIOS> delegate) {
-  return std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeSaveCard,
-                                      std::move(delegate));
-}
-
-}  // namespace
 
 ChromeAutofillClientIOS::ChromeAutofillClientIOS(
     ChromeBrowserState* browser_state,
@@ -262,23 +247,6 @@ ChromeAutofillClientIOS::GetOrCreatePaymentsMandatoryReauthManager() {
         std::make_unique<payments::MandatoryReauthManager>(this);
   }
   return payments_reauth_manager_.get();
-}
-
-void ChromeAutofillClientIOS::ConfirmSaveCreditCardToCloud(
-    const CreditCard& card,
-    const LegalMessageLines& legal_message_lines,
-    SaveCreditCardOptions options,
-    UploadSaveCardPromptCallback callback) {
-  DCHECK(options.show_prompt);
-
-  AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
-  infobar_manager_->AddInfoBar(CreateSaveCardInfoBarMobile(
-      std::make_unique<AutofillSaveCardInfoBarDelegateIOS>(
-          AutofillSaveCardUiInfo::CreateForUploadSave(
-              options, card, legal_message_lines, account_info),
-          std::make_unique<AutofillSaveCardDelegate>(std::move(callback),
-                                                     options))));
 }
 
 void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(

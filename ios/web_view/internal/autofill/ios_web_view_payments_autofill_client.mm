@@ -38,6 +38,18 @@ void IOSWebViewPaymentsAutofillClient::LoadRiskData(
   [bridge_ loadRiskData:std::move(callback)];
 }
 
+void IOSWebViewPaymentsAutofillClient::ConfirmSaveCreditCardToCloud(
+    const CreditCard& card,
+    const LegalMessageLines& legal_message_lines,
+    AutofillClient::SaveCreditCardOptions options,
+    AutofillClient::UploadSaveCardPromptCallback callback) {
+  DCHECK(options.show_prompt);
+  [bridge_ confirmSaveCreditCardToCloud:card
+                      legalMessageLines:legal_message_lines
+                  saveCreditCardOptions:options
+                               callback:std::move(callback)];
+}
+
 void IOSWebViewPaymentsAutofillClient::CreditCardUploadCompleted(
     bool card_saved,
     std::optional<OnConfirmationClosedCallback>

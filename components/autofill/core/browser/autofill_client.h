@@ -21,7 +21,6 @@
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/filling_product.h"
-#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -452,25 +451,6 @@ class AutofillClient {
   // used to handle payments mandatory re-auth related flows.
   virtual payments::MandatoryReauthManager*
   GetOrCreatePaymentsMandatoryReauthManager();
-
-  // Runs |callback| once the user makes a decision with respect to the
-  // offer-to-save prompt. This includes both the save server card prompt and
-  // the save CVC for a server card prompt. Displays the contents of
-  // |legal_message_lines| to the user. Displays a cardholder name textfield in
-  // the bubble if |options.should_request_name_from_user| is true. Displays a
-  // pair of expiration date dropdowns in the bubble if
-  // |should_request_expiration_date_from_user| is true. On desktop, shows the
-  // offer-to-save bubble if |options.show_prompt| is true;
-  // otherwise only shows the omnibox icon. On mobile, shows the offer-to-save
-  // infobar if |options.show_prompt| is true; otherwise does
-  // not offer to save at all.
-  // TODO (crbug.com/1462821): Make |legal_message_lines| optional, as CVC
-  // upload has no legal message.
-  virtual void ConfirmSaveCreditCardToCloud(
-      const CreditCard& card,
-      const LegalMessageLines& legal_message_lines,
-      SaveCreditCardOptions options,
-      UploadSaveCardPromptCallback callback);
 
   // Show an edit address profile dialog, giving the user an option to alter
   // autofill profile data. `on_user_decision_callback` is used to react to the

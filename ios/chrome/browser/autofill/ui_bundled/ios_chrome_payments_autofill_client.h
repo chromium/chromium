@@ -18,7 +18,7 @@
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
-#include "components/infobars/core/infobar_manager.h"
+#import "components/infobars/core/infobar_manager.h"
 
 class ChromeBrowserState;
 class GURL;
@@ -54,7 +54,7 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
       autofill::ChromeAutofillClientIOS* client,
       ChromeBrowserState* browser_state,
       web::WebState* web_state,
-      infobars::InfoBarManager* info_bar_manager);
+      infobars::InfoBarManager* infobar_manager);
   IOSChromePaymentsAutofillClient(const IOSChromePaymentsAutofillClient&) =
       delete;
   IOSChromePaymentsAutofillClient& operator=(
@@ -70,6 +70,11 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
       const CreditCard& card,
       AutofillClient::SaveCreditCardOptions options,
       AutofillClient::LocalSaveCardPromptCallback callback) override;
+  void ConfirmSaveCreditCardToCloud(
+      const CreditCard& card,
+      const LegalMessageLines& legal_message_lines,
+      AutofillClient::SaveCreditCardOptions options,
+      AutofillClient::UploadSaveCardPromptCallback callback) override;
   void CreditCardUploadCompleted(bool card_saved,
                                  std::optional<OnConfirmationClosedCallback>
                                      on_confirmation_closed_callback) override;
@@ -131,6 +136,8 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
  private:
   const raw_ref<autofill::ChromeAutofillClientIOS> client_;
 
+  const raw_ref<infobars::InfoBarManager> infobar_manager_;
+
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
 
   // TODO(crbug.com/40937065): Make these member variables as const raw_refs.
@@ -168,8 +175,6 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
 
   CardExpirationDateFixFlowControllerImpl
       card_expiration_date_fix_flow_controller_;
-
-  raw_ptr<infobars::InfoBarManager> info_bar_manager_;
 };
 
 }  // namespace payments

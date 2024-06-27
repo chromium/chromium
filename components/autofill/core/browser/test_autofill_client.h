@@ -31,7 +31,6 @@
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
-#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
@@ -282,18 +281,6 @@ class TestAutofillClientTemplate : public T {
   }
 #endif
 
-  void ConfirmSaveCreditCardToCloud(
-      const CreditCard& card,
-      const LegalMessageLines& legal_message_lines,
-      AutofillClient::SaveCreditCardOptions options,
-      AutofillClient::UploadSaveCardPromptCallback callback) override {
-    confirm_save_credit_card_to_cloud_called_ = true;
-    offer_to_save_credit_card_bubble_was_shown_ = options.show_prompt;
-    save_credit_card_options_ = options;
-
-    std::move(callback).Run(get_save_card_offer_user_decision(), {});
-  }
-
   void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
@@ -483,35 +470,13 @@ class TestAutofillClientTemplate : public T {
         .SetVariationCountryCode(variation_config_country_code);
   }
 
-  void set_save_card_offer_user_decision(
-      AutofillClient::SaveCardOfferUserDecision decision) {
-    save_card_offer_user_decision_ = decision;
-  }
-
   void set_should_save_autofill_profiles(bool value) {
     should_save_autofill_profiles_ = value;
-  }
-
-  bool ConfirmSaveCardToCloudWasCalled() const {
-    return confirm_save_credit_card_to_cloud_called_;
-  }
-
-  bool get_offer_to_save_credit_card_bubble_was_shown() {
-    return offer_to_save_credit_card_bubble_was_shown_.value();
   }
 
   void set_format_for_large_keyboard_accessory(
       bool format_for_large_keyboard_accessory) {
     format_for_large_keyboard_accessory_ = format_for_large_keyboard_accessory;
-  }
-
-  AutofillClient::SaveCreditCardOptions get_save_credit_card_options() {
-    return save_credit_card_options_.value();
-  }
-
-  AutofillClient::SaveCardOfferUserDecision
-  get_save_card_offer_user_decision() {
-    return save_card_offer_user_decision_;
   }
 
   MockAutocompleteHistoryManager* GetMockAutocompleteHistoryManager() {
@@ -597,13 +562,7 @@ class TestAutofillClientTemplate : public T {
 
   bool should_save_autofill_profiles_ = true;
 
-  bool confirm_save_credit_card_to_cloud_called_ = false;
-
-
   bool format_for_large_keyboard_accessory_ = false;
-
-  // Populated if save was offered. True if bubble was shown, false otherwise.
-  std::optional<bool> offer_to_save_credit_card_bubble_was_shown_;
 
   version_info::Channel channel_for_testing_ = version_info::Channel::UNKNOWN;
 
@@ -621,14 +580,6 @@ class TestAutofillClientTemplate : public T {
           &test_url_loader_factory_);
 
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
-
-  // Populated if credit card local save or upload was offered.
-  std::optional<AutofillClient::SaveCreditCardOptions>
-      save_credit_card_options_;
-
-  // User decision when credit card / CVC local save or upload was offered.
-  AutofillClient::SaveCardOfferUserDecision save_card_offer_user_decision_ =
-      AutofillClient::SaveCardOfferUserDecision::kAccepted;
 
   // Test addresses used to allow developers to test their forms.
   std::vector<AutofillProfile> test_addresses_;

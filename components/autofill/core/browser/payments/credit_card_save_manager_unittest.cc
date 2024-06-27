@@ -728,11 +728,11 @@ TEST_F(CreditCardSaveManagerTest,
   CreditCard credit_card = test::WithCvc(test::GetMaskedServerCard());
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(credit_card);
 
-  EXPECT_TRUE(autofill_client_.ConfirmSaveCardToCloudWasCalled());
+  EXPECT_TRUE(payments_client().ConfirmSaveCardToCloudWasCalled());
   EXPECT_EQ(AutofillClient::CardSaveType::kCvcSaveOnly,
-            autofill_client_.get_save_credit_card_options().card_save_type);
+            payments_client().get_save_credit_card_options().card_save_type);
   EXPECT_TRUE(
-      autofill_client_.get_offer_to_save_credit_card_bubble_was_shown());
+      payments_client().get_offer_to_save_credit_card_bubble_was_shown());
 }
 
 // Tests that when triggering AttemptToOfferCvcLocalSave function and user
@@ -903,7 +903,7 @@ TEST_F(CreditCardSaveManagerTest,
                    base::NumberToString(server_card.instrument_id())));
   test_autofill_clock.Advance(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value());
-  autofill_client_.set_save_card_offer_user_decision(
+  payments_client().set_save_card_offer_user_decision(
       AutofillClient::SaveCardOfferUserDecision::kAccepted);
 
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
@@ -911,7 +911,7 @@ TEST_F(CreditCardSaveManagerTest,
   // Verify that the CVC prompt is offered and reset the strike count for that
   // CVC.
   EXPECT_TRUE(
-      autofill_client_.get_offer_to_save_credit_card_bubble_was_shown());
+      payments_client().get_offer_to_save_credit_card_bubble_was_shown());
   EXPECT_EQ(0, cvc_storage_strike_database.GetStrikes(
                    base::NumberToString(server_card.instrument_id())));
 }
@@ -935,7 +935,7 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Verify that CVC prompt is not offered.
   EXPECT_FALSE(
-      autofill_client_.get_offer_to_save_credit_card_bubble_was_shown());
+      payments_client().get_offer_to_save_credit_card_bubble_was_shown());
 }
 
 // Tests that if the required delay has not passed, CVC save will not be offered
@@ -954,7 +954,7 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Verify that CVC prompt is not offered.
   EXPECT_FALSE(
-      autofill_client_.get_offer_to_save_credit_card_bubble_was_shown());
+      payments_client().get_offer_to_save_credit_card_bubble_was_shown());
 }
 
 // Tests that max strikes will be added if the user declines the save CVC
@@ -967,7 +967,7 @@ TEST_F(CreditCardSaveManagerTest,
   TestAutofillClock test_autofill_clock(AutofillClock::Now());
   CvcStorageStrikeDatabase cvc_storage_strike_database =
       CvcStorageStrikeDatabase(&strike_database());
-  autofill_client_.set_save_card_offer_user_decision(
+  payments_client().set_save_card_offer_user_decision(
       AutofillClient::SaveCardOfferUserDecision::kDeclined);
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
 
@@ -986,7 +986,7 @@ TEST_F(CreditCardSaveManagerTest,
   // AttemptToOfferCvcUpload save and user ignored.
   CvcStorageStrikeDatabase cvc_storage_strike_database =
       CvcStorageStrikeDatabase(&strike_database());
-  autofill_client_.set_save_card_offer_user_decision(
+  payments_client().set_save_card_offer_user_decision(
       AutofillClient::SaveCardOfferUserDecision::kIgnored);
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
 
@@ -1001,7 +1001,7 @@ TEST_F(CreditCardSaveManagerTest,
   test_autofill_clock.Advance(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value() /
       2);
-  autofill_client_.set_save_card_offer_user_decision(
+  payments_client().set_save_card_offer_user_decision(
       AutofillClient::SaveCardOfferUserDecision::kIgnored);
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
 
@@ -1015,7 +1015,7 @@ TEST_F(CreditCardSaveManagerTest,
   test_autofill_clock.Advance(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value() /
       2);
-  autofill_client_.set_save_card_offer_user_decision(
+  payments_client().set_save_card_offer_user_decision(
       AutofillClient::SaveCardOfferUserDecision::kIgnored);
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
 
@@ -1034,7 +1034,7 @@ TEST_F(CreditCardSaveManagerTest,
   // AttemptToOfferCvcUpload save and user ignored.
   CvcStorageStrikeDatabase cvc_storage_strike_database =
       CvcStorageStrikeDatabase(&strike_database());
-  autofill_client_.set_save_card_offer_user_decision(
+  payments_client().set_save_card_offer_user_decision(
       AutofillClient::SaveCardOfferUserDecision::kIgnored);
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
 
@@ -1048,7 +1048,7 @@ TEST_F(CreditCardSaveManagerTest,
   TestAutofillClock test_autofill_clock(AutofillClock::Now());
   test_autofill_clock.Advance(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value());
-  autofill_client_.set_save_card_offer_user_decision(
+  payments_client().set_save_card_offer_user_decision(
       AutofillClient::SaveCardOfferUserDecision::kDeclined);
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
 
@@ -1069,7 +1069,7 @@ TEST_F(
   credit_card.set_cvc(kCvc);
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(credit_card);
 
-  EXPECT_TRUE(autofill_client_.ConfirmSaveCardToCloudWasCalled());
+  EXPECT_TRUE(payments_client().ConfirmSaveCardToCloudWasCalled());
   EXPECT_CALL(payments_data_manager(),
               AddServerCvc(credit_card.instrument_id(), kCvc));
   UserHasAcceptedCvcUpload({});
@@ -1087,7 +1087,7 @@ TEST_F(
   credit_card.set_cvc(kNewCvc);
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(credit_card);
 
-  EXPECT_TRUE(autofill_client_.ConfirmSaveCardToCloudWasCalled());
+  EXPECT_TRUE(payments_client().ConfirmSaveCardToCloudWasCalled());
   EXPECT_CALL(payments_data_manager(),
               UpdateServerCvc(credit_card.instrument_id(), kNewCvc));
   UserHasAcceptedCvcUpload({});
@@ -4643,7 +4643,7 @@ TEST_F(CreditCardSaveManagerTest,
   // Verify that the offer-to-save bubble was still shown because the card did
   // not have too many strikes.
   EXPECT_TRUE(
-      autofill_client_.get_offer_to_save_credit_card_bubble_was_shown());
+      payments_client().get_offer_to_save_credit_card_bubble_was_shown());
   // Verify that no histogram entry was logged.
   histogram_tester.ExpectTotalCount(
       "Autofill.StrikeDatabase.CreditCardSaveNotOfferedDueToMaxStrikes", 0);
@@ -4836,7 +4836,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_MaxStrikesStillAllowsSave) {
   // Verify that the offer-to-save bubble was not shown because the card had too
   // many strikes.
   EXPECT_FALSE(
-      autofill_client_.get_offer_to_save_credit_card_bubble_was_shown());
+      payments_client().get_offer_to_save_credit_card_bubble_was_shown());
   // Verify that the correct histogram entry was logged.
   histogram_tester.ExpectBucketCount(
       "Autofill.StrikeDatabase.CreditCardSaveNotOfferedDueToMaxStrikes",
@@ -5290,8 +5290,9 @@ TEST_F(CreditCardSaveManagerTest, LegalMessageInOnDidGetUploadDetails) {
   FormSubmitted(credit_card_form);
 
   // Verify has_multiple_legal_lines is set correctly.
-  EXPECT_TRUE(
-      autofill_client_.get_save_credit_card_options().has_multiple_legal_lines);
+  EXPECT_TRUE(payments_client()
+                  .get_save_credit_card_options()
+                  .has_multiple_legal_lines);
 }
 
 // Tests that `has_same_last_four_as_server_card_but_different_expiration_date`
@@ -5321,13 +5322,13 @@ TEST_F(CreditCardSaveManagerTest, ExistingServerCard_DifferentExpiration) {
   test_api(credit_card_form).field(2).set_value(u"03");
   test_api(credit_card_form).field(3).set_value(u"2999");
   test_api(credit_card_form).field(4).set_value(u"123");
-
   FormSubmitted(credit_card_form);
 
   EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
   EXPECT_TRUE(
-      autofill_client_.get_save_credit_card_options()
+      payments_client()
+          .get_save_credit_card_options()
           .has_same_last_four_as_server_card_but_different_expiration_date);
 }
 
@@ -5533,14 +5534,11 @@ TEST_P(ProceedWithSavingIfApplicableTest, CardWithCorrectSaveCardOption) {
   test_api(credit_card_form).field(4).set_value(u"123");
   FormSubmitted(credit_card_form);
 
-  auto card_save_type =
-      IsCreditCardUpstreamEnabled()
-          ? autofill_client_.get_save_credit_card_options().card_save_type
-          : payments_client().get_save_credit_card_options().card_save_type;
-
-  EXPECT_EQ(card_save_type == AutofillClient::CardSaveType::kCardSaveWithCvc,
+  EXPECT_EQ(payments_client().get_save_credit_card_options().card_save_type ==
+                AutofillClient::CardSaveType::kCardSaveWithCvc,
             IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled());
-  EXPECT_EQ(card_save_type == AutofillClient::CardSaveType::kCardSaveOnly,
+  EXPECT_EQ(payments_client().get_save_credit_card_options().card_save_type ==
+                AutofillClient::CardSaveType::kCardSaveOnly,
             !IsSaveCvcFeatureEnabled() || !IsSaveCvcPrefEnabled());
 }
 

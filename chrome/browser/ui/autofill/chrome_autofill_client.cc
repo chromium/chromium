@@ -130,10 +130,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_impl.h"
 #include "chrome/browser/ui/android/autofill/autofill_accessibility_utils.h"
-#include "chrome/browser/ui/android/autofill/autofill_cvc_save_message_delegate.h"
 #include "chrome/browser/ui/android/autofill/autofill_logger_android.h"
-#include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
-#include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
@@ -146,7 +143,6 @@
 #else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
-#include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -487,49 +483,6 @@ ChromeAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
   }
 
   return payments_mandatory_reauth_manager_.get();
-}
-
-void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
-    const CreditCard& card,
-    const LegalMessageLines& legal_message_lines,
-    SaveCreditCardOptions options,
-    UploadSaveCardPromptCallback callback) {
-#if BUILDFLAG(IS_ANDROID)
-  DCHECK(options.show_prompt);
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(GetProfile());
-  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
-  AutofillSaveCardUiInfo ui_info = AutofillSaveCardUiInfo::CreateForUploadSave(
-      options, card, legal_message_lines, account_info);
-  auto save_card_delegate = std::make_unique<AutofillSaveCardDelegateAndroid>(
-      std::move(callback), options, web_contents());
-
-  // If a CVC is detected for an existing server card in the checkout form, the
-  // CVC save prompt is shown in a message.
-  if (options.card_save_type == AutofillClient::CardSaveType::kCvcSaveOnly) {
-      autofill_cvc_save_message_delegate_ =
-          std::make_unique<AutofillCvcSaveMessageDelegate>(web_contents());
-      autofill_cvc_save_message_delegate_->ShowMessage(
-          ui_info, std::move(save_card_delegate));
-      return;
-  }
-
-  // For new cards, the save card prompt is shown in a bottom sheet.
-  if (auto* bridge = GetPaymentsAutofillClient()
-                         ->GetOrCreateAutofillSaveCardBottomSheetBridge()) {
-    bridge->RequestShowContent(ui_info, std::move(save_card_delegate));
-  }
-#else
-  // Hide virtual card confirmation bubble showing for a different card.
-  GetPaymentsAutofillClient()->HideVirtualCardEnrollBubbleAndIconIfVisible();
-
-  // Do lazy initialization of SaveCardBubbleControllerImpl.
-  SaveCardBubbleControllerImpl::CreateForWebContents(web_contents());
-  SaveCardBubbleControllerImpl::FromWebContents(web_contents())
-      ->OfferUploadSave(card, legal_message_lines, options,
-                        std::move(callback));
-#endif
 }
 
 void ChromeAutofillClient::ShowEditAddressProfileDialog(

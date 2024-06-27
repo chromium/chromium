@@ -416,7 +416,7 @@ void CreditCardSaveManager::AttemptToOfferCvcUploadSave(
   show_save_prompt_ = !DetermineAndLogCvcSaveStrikeDatabaseBlockDecision();
   // TODO(crbug.com/40931101): Refactor ConfirmSaveCreditCardToCloud to change
   // legal_message_lines_ to optional.
-  client_->ConfirmSaveCreditCardToCloud(
+  client_->GetPaymentsAutofillClient()->ConfirmSaveCreditCardToCloud(
       card_save_candidate_, legal_message_lines_,
       AutofillClient::SaveCreditCardOptions()
           .with_show_prompt(show_save_prompt_.value())
@@ -766,7 +766,7 @@ void CreditCardSaveManager::OfferCardUploadSave() {
         payments_data_manager().IsPaymentCvcStorageEnabled()) {
       card_save_type = AutofillClient::CardSaveType::kCardSaveWithCvc;
     }
-    client_->ConfirmSaveCreditCardToCloud(
+    client_->GetPaymentsAutofillClient()->ConfirmSaveCreditCardToCloud(
         upload_request_.card, legal_message_lines_,
         AutofillClient::SaveCreditCardOptions()
             .with_has_multiple_legal_lines(legal_message_lines_.size() > 1)

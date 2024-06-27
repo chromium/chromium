@@ -27,7 +27,6 @@
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
-#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/visibility.h"
@@ -39,15 +38,11 @@
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
 #else
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
-#include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
 
 class AutofillOptimizationGuide;
-#if BUILDFLAG(IS_ANDROID)
-class AutofillCvcSaveMessageDelegate;
-#endif  // BUILDFLAG(IS_ANDROID)
 class FormFieldData;
 enum class SuggestionType;
 
@@ -127,11 +122,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void ShowAutofillSettings(SuggestionType suggestion_type) override;
   payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
       override;
-  void ConfirmSaveCreditCardToCloud(
-      const CreditCard& card,
-      const LegalMessageLines& legal_message_lines,
-      SaveCreditCardOptions options,
-      UploadSaveCardPromptCallback callback) override;
   void ShowEditAddressProfileDialog(
       const AutofillProfile& profile,
       AddressProfileSavePromptCallback on_user_decision_callback) override;
@@ -248,8 +238,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   TouchToFillPaymentMethodController touch_to_fill_payment_method_controller_{
       this};
   std::unique_ptr<FastCheckoutClient> fast_checkout_client_;
-  std::unique_ptr<AutofillCvcSaveMessageDelegate>
-      autofill_cvc_save_message_delegate_;
 #endif
   std::unique_ptr<AutofillFieldPromoController>
       autofill_field_promo_controller_manual_fallback_;

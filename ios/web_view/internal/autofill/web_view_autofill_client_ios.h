@@ -14,7 +14,6 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
-#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/prefs/pref_service.h"
@@ -76,11 +75,6 @@ class WebViewAutofillClientIOS : public AutofillClient {
   const translate::LanguageState* GetLanguageState() override;
   translate::TranslateDriver* GetTranslateDriver() override;
   void ShowAutofillSettings(SuggestionType suggestion_type) override;
-  void ConfirmSaveCreditCardToCloud(
-      const CreditCard& card,
-      const LegalMessageLines& legal_message_lines,
-      SaveCreditCardOptions options,
-      UploadSaveCardPromptCallback callback) override;
   void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,

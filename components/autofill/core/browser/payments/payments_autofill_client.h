@@ -221,6 +221,25 @@ class PaymentsAutofillClient : public RiskDataLoader {
       AutofillClient::SaveCreditCardOptions options,
       AutofillClient::LocalSaveCardPromptCallback callback);
 
+  // Runs `callback` once the user makes a decision with respect to the
+  // offer-to-save prompt. This includes both the save server card prompt and
+  // the save CVC for a server card prompt. Displays the contents of
+  // `legal_message_lines` to the user. Displays a cardholder name textfield in
+  // the bubble if `options.should_request_name_from_user` is true. Displays a
+  // pair of expiration date dropdowns in the bubble if
+  // `should_request_expiration_date_from_user` is true. On desktop, shows the
+  // offer-to-save bubble if `options.show_prompt` is true;
+  // otherwise only shows the omnibox icon. On mobile, shows the offer-to-save
+  // infobar if `options.show_prompt` is true; otherwise does
+  // not offer to save at all.
+  // TODO (crbug.com/1462821): Make `legal_message_lines` optional, as CVC
+  // upload has no legal message.
+  virtual void ConfirmSaveCreditCardToCloud(
+      const CreditCard& card,
+      const LegalMessageLines& legal_message_lines,
+      AutofillClient::SaveCreditCardOptions options,
+      AutofillClient::UploadSaveCardPromptCallback callback);
+
   // Shows upload result to users. Called after credit card upload is finished.
   // `card_saved` indicates if the card is successfully saved.
   // `on_confirmation_closed_callback` should run after confirmation prompt is
