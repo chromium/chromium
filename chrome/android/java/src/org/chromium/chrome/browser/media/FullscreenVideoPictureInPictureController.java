@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.notifications.NotificationIntentInterceptor;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
@@ -123,6 +124,12 @@ public class FullscreenVideoPictureInPictureController {
                     updateAutoPictureInPictureStatus();
                 }
             };
+
+    /** Do we believe that media is currently playing or not? */
+    private boolean mIsPlaying;
+
+    /** Is media paused because we suspended it when the pip window was stashed? */
+    private boolean mIsSuspendedForStash;
 
     public FullscreenVideoPictureInPictureController(
             Activity activity,
@@ -254,7 +261,38 @@ public class FullscreenVideoPictureInPictureController {
     }
 
     /**
-     * Notify us that Picture in Picture mode has started.  This can be because we requested it in
+     * Called to update whether the pip window is stashed offscreen temporarily. This is not
+     * guaranteed to be called only for changes, since Android doesn't guarantee that. In fact,
+     * Android does call multiple times in practice.
+     *
+     * <p>Also note that, when interacting with the media notification, sometimes Android will
+     * un-stash a pip window without telling us. It'll also often skip telling us about the next
+     * time it's stashed. So, we have to be fairly robust against getting out of sync.
+     *
+     * @param stashed whether the pip window is, or is not, currently stashed offscreen.
+     */
+    public void onStashReported(boolean stashed) {
+        final MediaSession mediaSession = getMediaSession();
+        if (mediaSession == null) {
+            return;
+        }
+
+        // Note that these will do nothing if called multiple times in a row with the same value for
+        // `stashed`.  Also note that `mIsSuspendedForStash` can be reset elsewhere, to help to
+        // account for missed events from Android.
+        if (mIsPlaying && stashed && !mIsSuspendedForStash) {
+            mediaSession.suspend();
+            mIsSuspendedForStash = true;
+        } else if (!mIsPlaying && !stashed && mIsSuspendedForStash) {
+            // Don't resume if we didn't pause it on the transition into stash.  For example, don't
+            // start playing media that was already paused when the user stashed the pip window.
+            mediaSession.resume();
+            mIsSuspendedForStash = false;
+        }
+    }
+
+    /**
+     * Notify us that Picture in Picture mode has started. This can be because we requested it in
      * {@link #attemptPictureInPicture()} or because we auto-entered Picture in Picture.
      */
     public void onEnteredPictureInPictureMode() {
@@ -651,6 +689,10 @@ public class FullscreenVideoPictureInPictureController {
             // We have no idea if the effectively fullscreen video started playing, but this will
             // check if we have an active one.
             updateAutoPictureInPictureStatus();
+            mIsPlaying = true;
+            // If we were suspended for stash, forget because something else caused us to start
+            // playing while stashed.  For example, the user might press play in the notification.
+            mIsSuspendedForStash = false;
         }
 
         @Override
@@ -659,6 +701,7 @@ public class FullscreenVideoPictureInPictureController {
             // if it is, note that this won't cause us to exit Picture in Picture mode if we're in
             // it.
             updateAutoPictureInPictureStatus();
+            mIsPlaying = false;
         }
 
         @Override
@@ -691,5 +734,16 @@ public class FullscreenVideoPictureInPictureController {
     /* package */ void assertLibraryLoaderIsInitialized() {
         // Non-null WebContents implies the native library has been loaded.
         assert LibraryLoader.getInstance().isInitialized();
+    }
+
+    /**
+     * Return the {@link MediaSession}, if any, for our WebContents. Used for testing to get around
+     * MediaSession's static getter.
+     */
+    @VisibleForTesting
+    /* package */ @Nullable
+    MediaSession getMediaSession() {
+        // This works if `getWebContents()` is null.
+        return MediaSession.fromWebContents(getWebContents());
     }
 }

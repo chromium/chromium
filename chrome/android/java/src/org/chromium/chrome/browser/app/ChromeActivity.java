@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.KeyguardManager;
+import android.app.PictureInPictureUiState;
 import android.app.assist.AssistContent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -1243,12 +1244,15 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
     }
 
-    private void ensureFullscreenVideoPictureInPictureController() {
+    protected FullscreenVideoPictureInPictureController
+            ensureFullscreenVideoPictureInPictureController() {
         if (mFullscreenVideoPictureInPictureController == null) {
             mFullscreenVideoPictureInPictureController =
                     new FullscreenVideoPictureInPictureController(
                             this, getActivityTabProvider(), getFullscreenManager());
         }
+
+        return mFullscreenVideoPictureInPictureController;
     }
 
     @Override
@@ -1266,6 +1270,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // let us know later.  Note that the activity might report that it is in PictureInPicture
         // mode at any point after this, which might be before we finish setup after receiving
         // notification from mOnPictureInPictureModeChanged.
+    }
+
+    @Override
+    public void onPictureInPictureUiStateChanged(PictureInPictureUiState pipState) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return;
+        if (isActivityFinishingOrDestroyed()) return;
+        ensureFullscreenVideoPictureInPictureController().onStashReported(pipState.isStashed());
     }
 
     /**
