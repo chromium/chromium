@@ -9,10 +9,15 @@
 #import "base/apple/foundation_util.h"
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/download/model/document_download_tab_helper.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
+#import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/fakes/fake_download_manager_consumer.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "net/base/net_errors.h"
 #import "testing/gtest_mac.h"
@@ -271,4 +276,33 @@ TEST_F(DownloadManagerMediatorTest, SetConsumerAfterDownloadComplete) {
   EXPECT_EQ(kDownloadManagerStateSucceeded, consumer_.state);
   EXPECT_TRUE(download_dir.IsParent(file_path));
   EXPECT_EQ(file_path, mediator_.GetDownloadPath());
+}
+
+// Tests that calling `mediator_.SetGoogleDriveAppInstalled()` does inform the
+// consumer accordingly.
+TEST_F(DownloadManagerMediatorTest, SetGoogleDriveAppInstalled) {
+  base::test::ScopedFeatureList feature_list(kIOSSaveToDrive);
+
+  // Add WebState to the task with the required tab helpers.
+  web::FakeWebState web_state;
+  DocumentDownloadTabHelper::CreateForWebState(&web_state);
+  DownloadManagerTabHelper::CreateForWebState(&web_state);
+  task()->SetWebState(&web_state);
+  mediator_.SetDownloadTask(task());
+  mediator_.SetConsumer(consumer_);
+
+  // Set Google Drive app installed.
+  mediator_.SetGoogleDriveAppInstalled(true);
+  mediator_.UpdateConsumer();
+  EXPECT_FALSE(consumer_.installDriveButtonVisible);
+
+  // Set Google Drive app not installed.
+  mediator_.SetGoogleDriveAppInstalled(false);
+  mediator_.UpdateConsumer();
+  EXPECT_TRUE(consumer_.installDriveButtonVisible);
+
+  // Set Google Drive app installed again.
+  mediator_.SetGoogleDriveAppInstalled(true);
+  mediator_.UpdateConsumer();
+  EXPECT_FALSE(consumer_.installDriveButtonVisible);
 }

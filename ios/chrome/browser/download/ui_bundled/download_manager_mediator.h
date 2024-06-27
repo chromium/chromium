@@ -79,6 +79,9 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
   // Updates consumer.
   void UpdateConsumer();
 
+  // Informs the consumer that the Google Drive app is installed.
+  void SetGoogleDriveAppInstalled(bool installed);
+
   // Start/stop listening for foregrounding notifications.
   void StartObservingNotifications();
   void StopObservingNotifications();
@@ -136,6 +139,7 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
   __weak id<DownloadManagerConsumer> consumer_ = nil;
   // Observers for NSNotificationCenter notifications.
   __strong id<NSObject> application_foregrounding_observer_;
+  bool is_google_drive_app_installed_ = false;
 
   base::WeakPtrFactory<DownloadManagerMediator> weak_ptr_factory_;
 };

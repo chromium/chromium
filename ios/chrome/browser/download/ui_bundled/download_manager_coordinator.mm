@@ -498,6 +498,9 @@
       "Download.IOSDownloadFileUIGoogleDrive",
       DownloadFileUIGoogleDrive::GoogleDriveInstalledAfterDisplay,
       DownloadFileUIGoogleDrive::Count);
+  if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
+    _mediator.SetGoogleDriveAppInstalled(true);
+  }
   _mediator.UpdateConsumer();
 }
 
