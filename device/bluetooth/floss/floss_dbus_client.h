@@ -525,6 +525,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
     kJniThreadAttachError,
     kWakelockError,
     kTimeout,
+    kDeviceNotFound,
+    kUnexpectedState,
+    kSocketError,
   };
 
   enum class BluetoothTransport {
