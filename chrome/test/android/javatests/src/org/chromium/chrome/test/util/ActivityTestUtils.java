@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityOptionsCompat;
@@ -145,6 +146,12 @@ public class ActivityTestUtils {
         if (activity == null) logRunningChromeActivities();
         Assert.assertNotNull(activityType.getName() + " did not start in: " + timeOut, activity);
 
+        // Most of the time #waitForIdleSync will include the first layout pass. But once in a while
+        // it does not. This is a problem for tests that are going to very quickly try to perform a
+        // render of a view.
+        View view = activity.getWindow().getDecorView().getRootView();
+        CriteriaHelper.pollUiThread(() -> view.getMeasuredWidth() > 0);
+
         return activityType.cast(activity);
     }
 
@@ -173,8 +180,6 @@ public class ActivityTestUtils {
     @SuppressWarnings("unchecked")
     public static <T extends Fragment> T waitForFragment(
             AppCompatActivity activity, String fragmentTag) {
-        String failureReason =
-                String.format("Could not locate the fragment with tag '%s'", fragmentTag);
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     Fragment fragment =
