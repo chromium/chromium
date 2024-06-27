@@ -7,7 +7,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "chrome/updater/test/unit_test_util_win.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,21 +24,17 @@ TEST(BuildGroupPolicyTemplateTest, AdmxFilesEqual) {
           .AppendASCII("win")
           .AppendASCII("google")
           .AppendASCII("build_group_policy_template_unittest.py"));
+  const base::FilePath test_enterprise_dir = test::GetTestFilePath("enterprise")
+                                                 .AppendASCII("win")
+                                                 .AppendASCII("google");
   command.AppendSwitchPath("--test_gold_admx_file",
-                           test::GetTestFilePath("enterprise")
-                               .AppendASCII("win")
-                               .AppendASCII("google")
-                               .AppendASCII("test_gold.admx"));
+                           test_enterprise_dir.AppendASCII("test_gold.admx"));
   command.AppendSwitchPath("--test_gold_adml_file",
-                           test::GetTestFilePath("enterprise")
-                               .AppendASCII("win")
-                               .AppendASCII("google")
-                               .AppendASCII("test_gold.adml"));
-  base::FilePath output_path;
-  ASSERT_TRUE(base::GetTempDir(&output_path));
-  command.AppendSwitchPath("--output_path", output_path);
+                           test_enterprise_dir.AppendASCII("test_gold.adml"));
+  base::ScopedTempDir output_path;
+  ASSERT_TRUE(output_path.CreateUniqueTempDir());
+  command.AppendSwitchPath("--output_path", output_path.GetPath());
   EXPECT_EQ(test::RunVPythonCommand(command), 0);
-  EXPECT_TRUE(base::DeletePathRecursively(output_path));
 }
 
 }  // namespace updater
