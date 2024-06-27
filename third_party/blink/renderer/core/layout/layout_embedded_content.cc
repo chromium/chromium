@@ -168,8 +168,7 @@ bool LayoutEmbeddedContent::PointOverResizer(
 }
 
 void LayoutEmbeddedContent::PropagateZoomFactor(double zoom_factor) {
-  if (RuntimeEnabledFeatures::StandardizedBrowserZoomEnabled(
-          GetDocument().GetExecutionContext())) {
+  if (GetDocument().StandardizedBrowserZoomEnabled()) {
     const auto* fenced_frame = DynamicTo<HTMLFencedFrameElement>(GetNode());
     if (!fenced_frame) {
       if (auto* embedded_content_view = GetEmbeddedContentView()) {

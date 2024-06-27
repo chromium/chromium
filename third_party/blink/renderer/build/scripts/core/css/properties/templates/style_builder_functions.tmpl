@@ -18,7 +18,7 @@ void {{class_name}}::ApplyInitial(StyleResolverState& state) const {
     {% if property.style_builder_generate_inherit %}
 void {{class_name}}::ApplyInherit(StyleResolverState& state) const {
       {% if property.affected_by_zoom %}
-  if (RuntimeEnabledFeatures::StandardizedBrowserZoomEnabled(state.GetDocument().GetExecutionContext())) {
+  if (state.GetDocument().StandardizedBrowserZoomEnabled()) {
     if (ApplyParentValueIfZoomChanged(state)) {
       return;
     }

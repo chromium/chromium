@@ -511,6 +511,7 @@ class CORE_EXPORT Document : public ContainerNode,
   Element* ScrollingElementNoLayout();
 
   bool KeyboardFocusableScrollersEnabled();
+  bool StandardizedBrowserZoomEnabled() const;
 
   String readyState() const;
 

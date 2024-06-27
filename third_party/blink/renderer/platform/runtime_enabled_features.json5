@@ -3840,7 +3840,10 @@
       // See https://github.com/w3c/csswg-drafts/issues/9398
       name: "StandardizedBrowserZoom",
       status: "test",
-      origin_trial_feature_name: "StandardizedBrowserZoom",
+    },
+    {
+      name: "StandardizedBrowserZoomOptOut",
+      origin_trial_feature_name: "DisableStandardizedBrowserZoom",
       origin_trial_type: "deprecation",
       origin_trial_allows_insecure: true,
       origin_trial_allows_third_party: true,

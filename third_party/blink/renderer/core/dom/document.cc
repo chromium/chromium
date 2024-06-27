@@ -1816,6 +1816,12 @@ bool Document::KeyboardFocusableScrollersEnabled() {
              GetExecutionContext());
 }
 
+bool Document::StandardizedBrowserZoomEnabled() const {
+  return RuntimeEnabledFeatures::StandardizedBrowserZoomEnabled() &&
+         !RuntimeEnabledFeatures::StandardizedBrowserZoomOptOutEnabled(
+             GetExecutionContext());
+}
+
 /*
  * Performs three operations:
  *  1. Convert control characters to spaces

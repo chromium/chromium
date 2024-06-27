@@ -11117,7 +11117,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5016" label="V8PointerEvent_PersistentDeviceId_AttributeGetter"/>
   <int value="5017" label="DelegatedInkExpectedImprovement"/>
   <int value="5018" label="CSSSelectorNthChildOfSelector"/>
-  <int value="5019" label="StandardizedBrowserZoom"/>
+  <int value="5019" label="DisableStandardizedBrowserZoom"/>
   <int value="5020" label="V8FileSystemObserver_Constructor"/>
   <int value="5021" label="V8FileSystemObserver_Observe_Method"/>
   <int value="5022" label="V8FileSystemObserver_Disconnect_Method"/>
