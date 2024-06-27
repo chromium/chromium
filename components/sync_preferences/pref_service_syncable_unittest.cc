@@ -169,13 +169,13 @@ class TestSyncedPrefObserver : public SyncedPrefObserver {
   TestSyncedPrefObserver() = default;
   ~TestSyncedPrefObserver() = default;
 
-  void OnSyncedPrefChanged(const std::string& path, bool from_sync) override {
-    last_pref_ = path;
+  void OnSyncedPrefChanged(std::string_view path, bool from_sync) override {
+    last_pref_ = std::string(path);
     changed_count_++;
   }
 
-  void OnStartedSyncing(const std::string& path) override {
-    synced_pref_ = path;
+  void OnStartedSyncing(std::string_view path) override {
+    synced_pref_ = std::string(path);
     sync_started_count_++;
   }
 
