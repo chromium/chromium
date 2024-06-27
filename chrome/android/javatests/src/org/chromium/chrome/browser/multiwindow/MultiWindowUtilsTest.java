@@ -14,8 +14,8 @@ import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.crea
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
-
 import android.os.Build.VERSION_CODES;
+
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -283,7 +283,7 @@ public class MultiWindowUtilsTest {
         // necessary to make sure activity1 gets resumed.
         activity1CallCount = activity1ResumedCallback.getCallCount();
         activity2.finishAndRemoveTask();
-        activity2DestroyedCallback.waitForFirst();
+        activity2DestroyedCallback.waitForOnly();
         activity1ResumedCallback.waitForCallback(activity1CallCount);
         Assert.assertFalse(
                 "Only a single instance should be running after the second is killed.",
@@ -349,7 +349,7 @@ public class MultiWindowUtilsTest {
         // activity1 may be killed in the background, but since it is never foregrounded again
         // there should be only one call for both stopped and destroyed in this test.
         ChromeTabbedActivity activity2 = createSecondChromeTabbedActivity(activity1);
-        activity1StoppedCallback.waitForFirst();
+        activity1StoppedCallback.waitForOnly();
         Assert.assertTrue(
                 "Both instances should be running now that the second has started.",
                 MultiWindowUtils.getInstance().areMultipleChromeInstancesRunning(activity1));
@@ -373,14 +373,14 @@ public class MultiWindowUtilsTest {
                 });
 
         activity1.finishAndRemoveTask();
-        activity1DestroyedCallback.waitForFirst();
+        activity1DestroyedCallback.waitForOnly();
         Assert.assertFalse(
                 "Only a single instance should be running after the first is killed.",
                 MultiWindowUtils.getInstance().areMultipleChromeInstancesRunning(activity2));
 
         // activity2 is always in the foreground so this should be the first time it is destroyed.
         activity2.finishAndRemoveTask();
-        activity2DestroyedCallback.waitForFirst();
+        activity2DestroyedCallback.waitForOnly();
         Assert.assertFalse(
                 "No instances should be running as all instances are killed.",
                 MultiWindowUtils.getInstance().areMultipleChromeInstancesRunning(activity2));

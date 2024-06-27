@@ -213,7 +213,7 @@ public class LoadUrlTest extends AwParameterizedTest {
         }
 
         public void waitForFullLoad() throws TimeoutException {
-            mCallbackHelper.waitForFirst();
+            mCallbackHelper.waitForOnly();
         }
 
         private CallbackHelper mCallbackHelper = new CallbackHelper();

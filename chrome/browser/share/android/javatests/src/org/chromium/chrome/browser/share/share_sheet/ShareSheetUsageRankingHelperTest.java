@@ -124,7 +124,7 @@ public class ShareSheetUsageRankingHelperTest {
                     resultPropertyModels.set(models);
                     helper.notifyCalled();
                 });
-        helper.waitForFirst();
+        helper.waitForOnly();
         List<PropertyModel> propertyModels = resultPropertyModels.get();
 
         assertEquals("Incorrect number of property models.", 2, propertyModels.size());
@@ -156,7 +156,7 @@ public class ShareSheetUsageRankingHelperTest {
                     resultPropertyModels.set(models);
                     helper.notifyCalled();
                 });
-        helper.waitForFirst();
+        helper.waitForOnly();
         List<PropertyModel> propertyModels = resultPropertyModels.get();
 
         View.OnClickListener onClickListener =

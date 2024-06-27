@@ -420,7 +420,7 @@ public class ExpandablePaymentHandlerTest {
                 contentLayout.onInterceptTouchEvent(MotionEvent.obtain(0, 0, 0, 0, 0, 0)));
         Assert.assertTrue(
                 DOMUtils.clickNode(paymentHandler.getWebContentsForTest(), "confirmButton"));
-        callbackHelper.waitForFirst();
+        callbackHelper.waitForOnly();
 
         mRule.runOnUiThread(
                 () -> {

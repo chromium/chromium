@@ -36,7 +36,7 @@ public class TrustedWebActivityTestUtil {
             if (checkShouldNotify()) return;
 
             mVerifier.addVerificationObserver(this::onVerificationUpdate);
-            waitForFirst();
+            waitForOnly();
         }
 
         public void onVerificationUpdate() {

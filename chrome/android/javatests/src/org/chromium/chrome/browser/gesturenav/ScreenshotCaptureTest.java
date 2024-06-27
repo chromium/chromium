@@ -145,7 +145,7 @@ public class ScreenshotCaptureTest {
 
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
 
-        callbackHelper.waitForFirst();
+        callbackHelper.waitForOnly();
         mRenderTestRule.compareForResult(mCapturedBitmap, "navigate_away_from_ntp_to_normal_page");
     }
 
@@ -185,7 +185,7 @@ public class ScreenshotCaptureTest {
 
         mActivityTestRule.loadUrl(UrlConstants.GPU_URL);
 
-        callbackHelper.waitForFirst();
+        callbackHelper.waitForOnly();
         mRenderTestRule.compareForResult(mCapturedBitmap, "navigate_away_from_ntp_to_webui_page");
     }
 
@@ -223,6 +223,6 @@ public class ScreenshotCaptureTest {
                 });
 
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE_2));
-        callbackHelper.waitForFirst();
+        callbackHelper.waitForOnly();
     }
 }

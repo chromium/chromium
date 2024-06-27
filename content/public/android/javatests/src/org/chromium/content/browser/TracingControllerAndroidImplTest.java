@@ -101,7 +101,7 @@ public class TracingControllerAndroidImplTest {
                     Assert.assertTrue(tracingController.getKnownCategories(callback));
                 });
 
-        callback.waitForFirst(TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+        callback.waitForOnly(TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
         Assert.assertThat(Arrays.asList(callback.mResult), CoreMatchers.hasItem("toplevel"));
         TestThreadUtils.runOnUiThreadBlocking(() -> tracingController.destroy());
     }
@@ -124,7 +124,7 @@ public class TracingControllerAndroidImplTest {
                     Assert.assertTrue(tracingController.getTraceBufferUsage(callback));
                 });
 
-        callback.waitForFirst(TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+        callback.waitForOnly(TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
         Assert.assertEquals(0f, (double) callback.mResult.first, 0.5f);
         Assert.assertEquals(0, (long) callback.mResult.second);
         TestThreadUtils.runOnUiThreadBlocking(() -> tracingController.destroy());
@@ -161,7 +161,7 @@ public class TracingControllerAndroidImplTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> tracingController.stopTracing(callback));
 
         // Callback should be run once stopped.
-        callback.waitForFirst(TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+        callback.waitForOnly(TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
 
         // Should have written the output file, which should start with the gzip header.
         Assert.assertTrue(file.exists());
@@ -205,7 +205,7 @@ public class TracingControllerAndroidImplTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> tracingController.stopTracing(callback));
 
         // Callback should be run once stopped.
-        callback.waitForFirst(TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+        callback.waitForOnly(TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
 
         // Should have written the output file, which should start with the
         // trace packet field descriptor (0x0a).

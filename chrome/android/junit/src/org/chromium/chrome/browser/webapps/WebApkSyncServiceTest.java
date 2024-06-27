@@ -107,7 +107,7 @@ public class WebApkSyncServiceTest {
                             });
             BackgroundShadowAsyncTask.runBackgroundTasks();
             ShadowLooper.runUiThreadTasks();
-            helper.waitForFirst();
+            helper.waitForOnly();
         } catch (TimeoutException e) {
             fail();
         }

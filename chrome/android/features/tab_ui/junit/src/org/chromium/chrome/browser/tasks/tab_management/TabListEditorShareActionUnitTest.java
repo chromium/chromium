@@ -214,7 +214,7 @@ public class TabListEditorShareActionUnitTest {
 
         Assert.assertTrue(mAction.perform());
 
-        helper.waitForFirst();
+        helper.waitForOnly();
         mAction.removeActionObserver(observer);
 
         Assert.assertTrue(mAction.perform());
@@ -278,7 +278,7 @@ public class TabListEditorShareActionUnitTest {
 
         Assert.assertTrue(mAction.perform());
 
-        helper.waitForFirst();
+        helper.waitForOnly();
         mAction.removeActionObserver(observer);
 
         Assert.assertTrue(mAction.perform());

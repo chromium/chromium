@@ -110,7 +110,7 @@ public class BackButtonToolbarTest extends BlankUiTestActivityTestCase {
                 });
 
         // Verify that #onBackPressed was called.
-        mBackPressCallbackHelper.waitForFirst();
+        mBackPressCallbackHelper.waitForOnly();
     }
 
     @Test
@@ -137,7 +137,7 @@ public class BackButtonToolbarTest extends BlankUiTestActivityTestCase {
                 });
 
         // Verify that #onBackPressed was called.
-        mBackPressCallbackHelper.waitForFirst();
+        mBackPressCallbackHelper.waitForOnly();
     }
 
     @Test
@@ -163,7 +163,7 @@ public class BackButtonToolbarTest extends BlankUiTestActivityTestCase {
                 });
 
         // Verify that #onBackPressed was called.
-        mBackPressCallbackHelper.waitForFirst();
+        mBackPressCallbackHelper.waitForOnly();
     }
 
     @Test
@@ -189,7 +189,7 @@ public class BackButtonToolbarTest extends BlankUiTestActivityTestCase {
                 });
 
         // Verify that #onBackPressed was called.
-        mBackPressCallbackHelper.waitForFirst();
+        mBackPressCallbackHelper.waitForOnly();
     }
 
     @Test
@@ -215,7 +215,7 @@ public class BackButtonToolbarTest extends BlankUiTestActivityTestCase {
                 });
 
         // Verify that #onBackPressed was called.
-        mBackPressCallbackHelper.waitForFirst();
+        mBackPressCallbackHelper.waitForOnly();
     }
 
     @Test
@@ -241,7 +241,7 @@ public class BackButtonToolbarTest extends BlankUiTestActivityTestCase {
                 });
 
         // Verify that #onBackPressed was called.
-        mBackPressCallbackHelper.waitForFirst();
+        mBackPressCallbackHelper.waitForOnly();
     }
 
     private void addOnBackPressedCallback(

@@ -66,7 +66,7 @@ public class PaymentRequestInputProtectionTest {
 
         // Advance the clock and then close the UI.
         mPaymentRequestTestRule.advanceInputProtectorClock();
-        mPaymentRequestTestRule.getReadyForInput().waitForFirst();
+        mPaymentRequestTestRule.getReadyForInput().waitForOnly();
         Assert.assertTrue(mPaymentRequestTestRule.getPaymentRequestUI().isAcceptingUserInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());

@@ -109,7 +109,7 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
                     mPlayerManager.destroy();
                     destroyed.notifyCalled();
                 });
-        destroyed.waitForFirst();
+        destroyed.waitForOnly();
     }
 
     private void displayTest(boolean multipleFrames) {
@@ -223,7 +223,7 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
         int fromY = statusBarHeight + padding;
         uiDevice.swipe(50, fromY, 50, toY, 5);
 
-        mRefreshedCallback.waitForFirst();
+        mRefreshedCallback.waitForOnly();
     }
 
     /** Tests that an initialization failure is reported properly. */
@@ -288,7 +288,7 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
                                     false);
                     mPlayerManager.setCompressOnClose(false);
                 });
-        compositorErrorCallback.waitForFirst();
+        compositorErrorCallback.waitForOnly();
     }
 
     private void scaleSmokeTest(boolean multiFrame) throws Exception {
@@ -542,7 +542,7 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
         try {
-            viewReady.waitForFirst();
+            viewReady.waitForOnly();
         } catch (Exception e) {
             if (mInitializationFailed) {
                 Assert.fail("Compositor intialization failed.");
@@ -581,7 +581,7 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
         }
 
         try {
-            firstPaint.waitForFirst();
+            firstPaint.waitForOnly();
         } catch (Exception e) {
             Assert.fail("First paint not issued.");
         }
@@ -642,6 +642,6 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
                     mLayout.invalidate();
                     widened.notifyCalled();
                 });
-        widened.waitForFirst();
+        widened.waitForOnly();
     }
 }

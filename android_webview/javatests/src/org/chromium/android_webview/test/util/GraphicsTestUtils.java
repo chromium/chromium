@@ -127,7 +127,7 @@ public class GraphicsTestUtils {
                                 });
                     });
             try {
-                callbackHelper.waitForFirst();
+                callbackHelper.waitForOnly();
             } catch (TimeoutException e) {
                 continue;
             }

@@ -81,7 +81,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Observer;
 import java.util.concurrent.TimeoutException;
 
 /** Unit tests for WebApkUpdateManager. */
@@ -430,7 +429,7 @@ public class WebApkUpdateManagerUnitTest {
             BackgroundShadowAsyncTask.runBackgroundTasks();
             ShadowLooper.runUiThreadTasks();
 
-            helper.waitForFirst();
+            helper.waitForOnly();
         } catch (TimeoutException e) {
             fail();
         }

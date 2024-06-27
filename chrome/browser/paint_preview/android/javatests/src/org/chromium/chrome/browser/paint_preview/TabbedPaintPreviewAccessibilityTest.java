@@ -67,7 +67,7 @@ public class TabbedPaintPreviewAccessibilityTest {
                                         Assert.fail("Failed to capture paint preview.");
                                     }
                                 }));
-        captureSuccessCallback.waitForFirst("Timeout waiting for paint preview capture.");
+        captureSuccessCallback.waitForOnly("Timeout waiting for paint preview capture.");
 
         // Show the captured paint preview.
         CallbackHelper viewReadyCallback = new CallbackHelper();
@@ -88,7 +88,7 @@ public class TabbedPaintPreviewAccessibilityTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> tabbedPaintPreview.maybeShow(listener));
 
         // Wait until it's displayed.
-        viewReadyCallback.waitForFirst("Paint preview view ready never happened.");
+        viewReadyCallback.waitForOnly("Paint preview view ready never happened.");
 
         // Assert accessibility support is initialized.
         CriteriaHelper.pollInstrumentationThread(

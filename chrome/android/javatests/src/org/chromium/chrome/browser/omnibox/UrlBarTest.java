@@ -149,7 +149,7 @@ public class UrlBarTest {
                             });
                 });
         mOmnibox.setText(text);
-        directionCallback.waitForFirst(
+        directionCallback.waitForOnly(
                 "Direction never reached expected direction: " + expectedDirection);
         assertUrlDirection(expectedDirection);
         TestThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.setUrlDirectionListener(null));

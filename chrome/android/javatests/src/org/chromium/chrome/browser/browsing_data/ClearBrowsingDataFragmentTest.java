@@ -314,7 +314,7 @@ public class ClearBrowsingDataFragmentTest {
                 });
 
         waitForProgressToComplete(preferences);
-        mCallbackHelper.waitForFirst();
+        mCallbackHelper.waitForOnly();
 
         // Verify DeleteBrowsingDataAction metric is recorded.
         histogramWatcher.assertExpected();
@@ -362,7 +362,7 @@ public class ClearBrowsingDataFragmentTest {
                 });
 
         waitForProgressToComplete(preferences);
-        mCallbackHelper.waitForFirst();
+        mCallbackHelper.waitForOnly();
 
         // Verify that we got the appropriate call to clear all data.
         verify(mBrowsingDataBridgeMock)
@@ -663,7 +663,7 @@ public class ClearBrowsingDataFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 getPressButtonInImportantDialogRunnable(preferences, AlertDialog.BUTTON_POSITIVE));
         waitForProgressToComplete(preferences);
-        mCallbackHelper.waitForFirst();
+        mCallbackHelper.waitForOnly();
 
         // Verify history cleared.
         assertDataTypesCleared(BrowsingDataType.HISTORY, BrowsingDataType.CACHE);
@@ -762,7 +762,7 @@ public class ClearBrowsingDataFragmentTest {
                 getPressButtonInImportantDialogRunnable(fragment, AlertDialog.BUTTON_POSITIVE));
 
         waitForProgressToComplete(fragment);
-        mCallbackHelper.waitForFirst();
+        mCallbackHelper.waitForOnly();
 
         int[] expectedTypes = new int[] {BrowsingDataType.HISTORY, BrowsingDataType.CACHE};
         String[] keepDomains = new String[] {kKeepDomain};
@@ -862,7 +862,7 @@ public class ClearBrowsingDataFragmentTest {
                 });
 
         waitForProgressToComplete(preferences);
-        mCallbackHelper.waitForFirst();
+        mCallbackHelper.waitForOnly();
 
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         final String expectedSnackbarMessage =
@@ -889,7 +889,7 @@ public class ClearBrowsingDataFragmentTest {
                 });
 
         waitForProgressToComplete(preferences);
-        mCallbackHelper.waitForFirst();
+        mCallbackHelper.waitForOnly();
 
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         final String expectedSnackbarMessage =

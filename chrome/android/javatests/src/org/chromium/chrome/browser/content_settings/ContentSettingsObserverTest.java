@@ -85,7 +85,7 @@ public class ContentSettingsObserverTest {
         WebsitePreferenceBridge.setContentSettingDefaultScope(
                 profile, ContentSettingsType.JAVASCRIPT, url, url, ContentSettingValues.BLOCK);
 
-        mCallbackHelper.waitForFirst();
+        mCallbackHelper.waitForOnly();
         Assert.assertNotNull("ContentSettingsTypeSet should not be null.", mLastTypeSet);
         Assert.assertTrue(
                 "ContentSettingsType.JAVASCRIPT should be the latest changed content type.",

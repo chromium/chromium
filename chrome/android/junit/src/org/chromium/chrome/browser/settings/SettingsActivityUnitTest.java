@@ -103,7 +103,7 @@ public class SettingsActivityUnitTest {
         // Simulate back press.
         TestThreadUtils.runOnUiThreadBlocking(
                 mSettingsActivity.getOnBackPressedDispatcher()::onBackPressed);
-        mainFragment.getBackPressCallback().waitForFirst();
+        mainFragment.getBackPressCallback().waitForOnly();
 
         mainFragment.getHandleBackPressChangedSupplier().set(false);
         Assert.assertFalse(

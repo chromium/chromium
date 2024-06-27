@@ -193,7 +193,7 @@ public class TrustedWebActivityClientTest {
                             NotificationUmaTracker.getInstance());
                 });
 
-        mResponseHandler.mNotifyNotification.waitForFirst();
+        mResponseHandler.mNotifyNotification.waitForOnly();
     }
 
     /**
@@ -207,7 +207,7 @@ public class TrustedWebActivityClientTest {
                 TaskTraits.UI_DEFAULT,
                 () -> mClient.cancelNotification(SCOPE, NOTIFICATION_TAG, NOTIFICATION_ID));
 
-        mResponseHandler.mCancelNotification.waitForFirst();
+        mResponseHandler.mCancelNotification.waitForOnly();
 
         Assert.assertEquals(mResponseHandler.mNotificationTag, NOTIFICATION_TAG);
         Assert.assertEquals(mResponseHandler.mNotificationId, NOTIFICATION_ID);
@@ -239,7 +239,7 @@ public class TrustedWebActivityClientTest {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT, () -> mClient.checkNotificationPermission(scope, callback));
 
-        noTwaFound.waitForFirst();
+        noTwaFound.waitForOnly();
     }
 
     /** Tests {@link TrustedWebActivityClient#createLaunchIntentForTwa}. */

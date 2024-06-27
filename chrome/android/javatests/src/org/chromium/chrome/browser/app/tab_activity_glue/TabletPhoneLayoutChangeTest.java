@@ -82,7 +82,7 @@ public class TabletPhoneLayoutChangeTest {
                             outState.getBoolean(FoldTransitionController.DID_CHANGE_TABLET_MODE));
                 });
 
-        helper.waitForFirst("Activity should be restart");
+        helper.waitForOnly("Activity should be restart");
         Configuration newConfig = cta.getResources().getConfiguration();
         config = cta.getSavedConfigurationForTesting();
         Assert.assertEquals(

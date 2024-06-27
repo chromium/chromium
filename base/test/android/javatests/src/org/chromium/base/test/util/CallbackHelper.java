@@ -4,6 +4,8 @@
 
 package org.chromium.base.test.util;
 
+import androidx.annotation.Nullable;
+
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -132,21 +134,20 @@ public class CallbackHelper {
     private int mCallCount;
     private int mLastWaitedForCount;
     private String mFailureString;
-    private boolean mSingleShotMode;
+    private @Nullable Throwable mWaitForOnlyStack;
 
     /**
      * Gets the number of times the callback has been called.
      *
-     * The call count can be used with the waitForCallback() method, indicating a point
-     * in time after which the caller wishes to record calls to the callback.
+     * <p>The call count can be used with the waitForCallback() method, indicating a point in time
+     * after which the caller wishes to record calls to the callback.
      *
-     * In order to wait for a callback caused by X, the call count should be obtained
-     * before X occurs.
+     * <p>In order to wait for a callback caused by X, the call count should be obtained before X
+     * occurs.
      *
-     * NOTE: any call to the callback that occurs after the call count is obtained
-     * will result in the corresponding wait call to resume execution. The call count
-     * is intended to 'catch' callbacks that occur after X but before waitForCallback()
-     * is called.
+     * <p>NOTE: any call to the callback that occurs after the call count is obtained will result in
+     * the corresponding wait call to resume execution. The call count is intended to 'catch'
+     * callbacks that occur after X but before waitForCallback() is called.
      */
     public int getCallCount() {
         synchronized (mLock) {
@@ -263,29 +264,29 @@ public class CallbackHelper {
     }
 
     /** Wait until the callback has been called once. */
-    public void waitForFirst(String msg, long timeout, TimeUnit unit) throws TimeoutException {
+    public void waitForOnly(String msg, long timeout, TimeUnit unit) throws TimeoutException {
         MatcherAssert.assertThat(
                 "Use waitForCallback(currentCallCount) or waitForNext() for callbacks that are "
                         + "called multiple times.",
                 mCallCount,
                 Matchers.lessThanOrEqualTo(1));
-        mSingleShotMode = true;
+        mWaitForOnlyStack = new Exception("This is where the first wait was.");
         waitForCallback(msg, 0, 1, timeout, unit);
     }
 
-    /** Wait until the callback has been called once. */
-    public void waitForFirst(long timeout, TimeUnit unit) throws TimeoutException {
-        waitForFirst(null, timeout, unit);
+    /** Wait until the callback has been called once. Causes failures if called again. */
+    public void waitForOnly(long timeout, TimeUnit unit) throws TimeoutException {
+        waitForOnly(null, timeout, unit);
     }
 
-    /** Wait until the callback has been called once. */
-    public void waitForFirst(String msg) throws TimeoutException {
-        waitForFirst(msg, WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+    /** Wait until the callback has been called once. Causes failures if called again. */
+    public void waitForOnly(String msg) throws TimeoutException {
+        waitForOnly(msg, WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
     }
 
-    /** Wait until the callback has been called at least once. */
-    public void waitForFirst() throws TimeoutException {
-        waitForFirst(null);
+    /** Wait until the callback has been called at least once. Causes failures if called again. */
+    public void waitForOnly() throws TimeoutException {
+        waitForOnly(null);
     }
 
     /** Should be called when the callback associated with this helper object is called. */
@@ -307,8 +308,9 @@ public class CallbackHelper {
         synchronized (mLock) {
             mCallCount++;
             mFailureString = failureString;
-            if (mSingleShotMode && mCallCount > 1) {
-                Assert.fail("Single-use callback called multiple times.");
+            if (mWaitForOnlyStack != null && mCallCount > 1) {
+                throw new AssertionError(
+                        "Single-use callback called a second time.", mWaitForOnlyStack);
             }
             mLock.notifyAll();
         }

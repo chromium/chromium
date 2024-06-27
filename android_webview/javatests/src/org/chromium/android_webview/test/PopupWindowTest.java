@@ -630,7 +630,7 @@ public class PopupWindowTest extends AwParameterizedTest {
         // attempting to click the iframe_link We need this because we're using the DOMUtils Long
         // term we plan to switch to JSUtils to avoid this
         // https://crbug.com/1334843
-        mParentContentsClient.getOnPageCommitVisibleHelper().waitForFirst();
+        mParentContentsClient.getOnPageCommitVisibleHelper().waitForOnly();
 
         // Step 4. Click iframe_link to give user gesture.
         DOMUtils.clickRect(mParentContents.getWebContents(), rect);

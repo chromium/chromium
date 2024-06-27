@@ -44,7 +44,7 @@ public class OmahaServiceStartDelayerIntegrationTest {
         receiver.setOmahaRunnableForTesting(() -> callback.notifyCalled());
         mActivityTestRule.startMainActivityOnBlankPage();
         try {
-            callback.waitForFirst();
+            callback.waitForOnly();
         } catch (TimeoutException e) {
             Assert.fail("OmahaServiceStartDelayer never initialized");
         }

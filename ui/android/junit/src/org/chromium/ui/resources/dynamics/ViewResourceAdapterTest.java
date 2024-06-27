@@ -326,7 +326,7 @@ public class ViewResourceAdapterTest {
 
         mAdapter.triggerBitmapCapture();
 
-        helper.waitForFirst("Capture never completed.");
+        helper.waitForOnly("Capture never completed.");
         // Bitmap is re-used.
         assertEquals(bitmap, bitmapHolder[0]);
 

@@ -81,7 +81,7 @@ public class ImageFetcherIntegrationTest {
                         return null;
                     }
                 });
-        callbackWaiter.waitForFirst();
+        callbackWaiter.waitForOnly();
         return callbackWaiter.mBitmap;
     }
 

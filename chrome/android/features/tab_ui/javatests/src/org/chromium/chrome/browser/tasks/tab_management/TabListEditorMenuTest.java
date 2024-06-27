@@ -636,7 +636,7 @@ public class TabListEditorMenuTest extends BlankUiTestActivityTestCase {
         }
 
         public void waitForShown() throws TimeoutException {
-            mShown.waitForFirst();
+            mShown.waitForOnly();
         }
 
         public void waitForHidden() {

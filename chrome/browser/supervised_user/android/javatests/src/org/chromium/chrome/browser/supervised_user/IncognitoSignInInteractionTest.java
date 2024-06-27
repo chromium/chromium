@@ -50,7 +50,7 @@ public class IncognitoSignInInteractionTest {
         }
 
         public void waitForClose() throws Exception {
-            mCallbackHelper.waitForFirst();
+            mCallbackHelper.waitForOnly();
         }
     }
 

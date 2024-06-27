@@ -1312,7 +1312,7 @@ public class SigninFirstRunFragmentTest {
         when(mFirstRunUtils.getCctTosDialogEnabled()).thenReturn(false);
         launchActivityWithFragment();
 
-        callbackHelper.waitForFirst();
+        callbackHelper.waitForOnly();
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(false);
         verify(mFirstRunPageDelegateMock).exitFirstRun();
     }

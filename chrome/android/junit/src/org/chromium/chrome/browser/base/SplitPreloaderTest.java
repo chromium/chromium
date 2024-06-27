@@ -219,7 +219,7 @@ public class SplitPreloaderTest {
                         uiContextHolder[0] = context;
                     }
                 });
-        helper.waitForFirst();
+        helper.waitForOnly();
         assertEquals(backgroundContextHolder[0], mContext);
 
         mPreloader.wait(SPLIT_A);

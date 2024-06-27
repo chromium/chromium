@@ -118,7 +118,7 @@ public class TabContentManagerTest {
                             currentTab.getId(), new Size(width, height), bitmapCallback);
                 });
 
-        helper.waitForFirst();
+        helper.waitForOnly();
         Assert.assertNotNull(bitmapHolder[0]);
     }
 
@@ -159,7 +159,7 @@ public class TabContentManagerTest {
                                     Bitmap.Config.ARGB_8888);
                     captureBitmapInner(compositorView, bitmapHolder, helper, new Handler());
                 });
-        helper.waitForFirst();
+        helper.waitForOnly();
         Assert.assertNotNull(bitmapHolder[0]);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

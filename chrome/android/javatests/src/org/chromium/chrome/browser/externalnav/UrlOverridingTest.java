@@ -942,7 +942,7 @@ public class UrlOverridingTest {
 
         Assert.assertEquals(
                 OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB, result.getResultType());
-        subframeRedirect.waitForFirst();
+        subframeRedirect.waitForOnly();
     }
 
     @Test
@@ -1222,8 +1222,8 @@ public class UrlOverridingTest {
 
         Assert.assertEquals(
                 OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB, result.getResultType());
-        subframeExternalProtocol.waitForFirst();
-        subframeRedirect.waitForFirst();
+        subframeExternalProtocol.waitForOnly();
+        subframeRedirect.waitForOnly();
     }
 
     private void runRedirectToOtherBrowserTest(Instrumentation.ActivityResult chooserResult) {
@@ -1839,7 +1839,7 @@ public class UrlOverridingTest {
 
         Assert.assertEquals(
                 OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB, result.getResultType());
-        subframeRedirect.waitForFirst();
+        subframeRedirect.waitForOnly();
     }
 
     void doTestIncognitoSubframeExternalNavigation(boolean acceptPrompt) throws Exception {
@@ -1904,7 +1904,7 @@ public class UrlOverridingTest {
                     });
         } else {
             Espresso.onView(withId(R.id.negative_button)).perform(click());
-            subframeRedirect.waitForFirst();
+            subframeRedirect.waitForOnly();
             Assert.assertEquals(0, mActivityMonitor.getHits());
         }
     }

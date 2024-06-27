@@ -87,7 +87,7 @@ public class SimpleHttpClientTest {
                                 NetworkTrafficAnnotationTag.TRAFFIC_ANNOTATION_FOR_TESTS,
                                 mCallback));
 
-        mCallbackHelper.waitForFirst();
+        mCallbackHelper.waitForOnly();
         Assert.assertNotNull(mLastAcceptedResponse);
     }
 
@@ -107,7 +107,7 @@ public class SimpleHttpClientTest {
                 NetworkTrafficAnnotationTag.TRAFFIC_ANNOTATION_FOR_TESTS,
                 mCallback);
 
-        mCallbackHelper.waitForFirst();
+        mCallbackHelper.waitForOnly();
         Assert.assertNotNull(mLastAcceptedResponse);
     }
 
@@ -146,13 +146,12 @@ public class SimpleHttpClientTest {
                     NetworkTrafficAnnotationTag.TRAFFIC_ANNOTATION_FOR_TESTS,
                     mCallback);
 
-            receivedRequestCallback.waitForFirst();
+            receivedRequestCallback.waitForOnly();
             TestThreadUtils.runOnUiThreadBlocking(() -> mHttpClient.destroy());
 
-            serverRespondedCallbackHelper.waitForFirst();
+            serverRespondedCallbackHelper.waitForOnly();
             Assert.assertThrows(
-                    TimeoutException.class,
-                    () -> mCallbackHelper.waitForFirst(1, TimeUnit.SECONDS));
+                    TimeoutException.class, () -> mCallbackHelper.waitForOnly(1, TimeUnit.SECONDS));
             Assert.assertNull(mLastAcceptedResponse);
         } finally {
             webServer.shutdown();

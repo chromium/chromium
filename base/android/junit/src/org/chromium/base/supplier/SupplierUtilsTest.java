@@ -24,7 +24,7 @@ public class SupplierUtilsTest {
     public void testWaitForAll_NoSuppliers() throws TimeoutException {
         CallbackHelper callbackHelper = new CallbackHelper();
         SupplierUtils.waitForAll(callbackHelper::notifyCalled);
-        callbackHelper.waitForFirst();
+        callbackHelper.waitForOnly();
     }
 
     @Test
@@ -44,7 +44,7 @@ public class SupplierUtilsTest {
                 oneshotSupplier,
                 observableSupplier,
                 syncOneshotSupplier);
-        callbackHelper.waitForFirst();
+        callbackHelper.waitForOnly();
     }
 
     @Test
@@ -70,7 +70,7 @@ public class SupplierUtilsTest {
         Assert.assertEquals(0, callbackHelper.getCallCount());
         syncOneshotSupplier.set(new ArrayList<>());
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        callbackHelper.waitForFirst();
+        callbackHelper.waitForOnly();
     }
 
     @Test
@@ -93,7 +93,7 @@ public class SupplierUtilsTest {
         Assert.assertEquals(0, callbackHelper.getCallCount());
         syncOneshotSupplier.set(new ArrayList<>());
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        callbackHelper.waitForFirst();
+        callbackHelper.waitForOnly();
     }
 
     @Test
@@ -106,7 +106,7 @@ public class SupplierUtilsTest {
         Assert.assertEquals(0, callbackHelper.getCallCount());
         supplier.set(new Object());
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        callbackHelper.waitForFirst();
+        callbackHelper.waitForOnly();
     }
 
     @Test
@@ -118,7 +118,7 @@ public class SupplierUtilsTest {
 
         Assert.assertEquals(0, callbackHelper.getCallCount());
         supplier.set(new Object());
-        callbackHelper.waitForFirst();
+        callbackHelper.waitForOnly();
     }
 
     @Test
@@ -130,6 +130,6 @@ public class SupplierUtilsTest {
 
         Assert.assertEquals(0, callbackHelper.getCallCount());
         supplier.set(new Object());
-        callbackHelper.waitForFirst();
+        callbackHelper.waitForOnly();
     }
 }

@@ -47,7 +47,7 @@ public class LayoutTestUtils {
                 });
 
         try {
-            finishedShowingCallbackHelper.waitForFirst();
+            finishedShowingCallbackHelper.waitForOnly();
         } catch (TimeoutException e) {
             assert false : "Timed out waiting for layout (@LayoutType " + type + ") to show!";
         }

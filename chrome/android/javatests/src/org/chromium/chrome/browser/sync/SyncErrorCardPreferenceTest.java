@@ -364,7 +364,7 @@ public class SyncErrorCardPreferenceTest {
                                     });
                 });
         try {
-            callbackHelper.waitForFirst();
+            callbackHelper.waitForOnly();
         } catch (TimeoutException e) {
             throw new RuntimeException("Timed out waiting for callback", e);
         }

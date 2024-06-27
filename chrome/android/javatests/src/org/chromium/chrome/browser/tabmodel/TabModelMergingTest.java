@@ -346,7 +346,7 @@ public class TabModelMergingTest {
                     }
                     ApplicationStatus.registerStateListenerForActivity(listener, activity);
                 });
-        helper.waitForFirst();
+        helper.waitForOnly();
         // listener was registered on UiThread. So it should be unregistered on UiThread.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

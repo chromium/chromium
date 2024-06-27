@@ -88,9 +88,9 @@ public final class SigninTestUtil {
                             });
                 });
         try {
-            completionCallbackHelper.waitForFirst();
+            completionCallbackHelper.waitForOnly();
             if (waitForPrefsCommit) {
-                prefsCommitCallbackHelper.waitForFirst();
+                prefsCommitCallbackHelper.waitForOnly();
             }
         } catch (TimeoutException e) {
             throw new RuntimeException("Timed out waiting for callback", e);
@@ -135,7 +135,7 @@ public final class SigninTestUtil {
                             });
                 });
         try {
-            callbackHelper.waitForFirst();
+            callbackHelper.waitForOnly();
         } catch (TimeoutException e) {
             throw new RuntimeException("Timed out waiting for callback", e);
         }
@@ -160,7 +160,7 @@ public final class SigninTestUtil {
                             .legacySeedAccountsIfNeeded(ch::notifyCalled);
                 });
         try {
-            ch.waitForFirst(
+            ch.waitForOnly(
                     "Timed out while waiting for system accounts to seed.", 20, TimeUnit.SECONDS);
         } catch (TimeoutException ex) {
             throw new RuntimeException("Timed out while waiting for system accounts to seed.");
@@ -189,7 +189,7 @@ public final class SigninTestUtil {
                                             signoutReason, callbackHelper::notifyCalled, false));
                 });
         try {
-            callbackHelper.waitForFirst();
+            callbackHelper.waitForOnly();
         } catch (TimeoutException e) {
             throw new RuntimeException("Timed out waiting for callback", e);
         }

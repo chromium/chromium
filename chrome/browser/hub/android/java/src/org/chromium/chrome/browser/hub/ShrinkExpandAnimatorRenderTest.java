@@ -80,7 +80,7 @@ public class ShrinkExpandAnimatorRenderTest extends BlankUiTestActivityTestCase 
                 });
 
         // Ensure layout has completed so getWidth() and getHeight() are non-zero.
-        onFirstLayout.waitForFirst();
+        onFirstLayout.waitForOnly();
     }
 
     @Test

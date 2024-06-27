@@ -245,7 +245,7 @@ public class TabListEditorGroupActionUnitTest {
         verify(mGroupFilter).mergeListOfTabsToGroup(tabs, tabs.get(2), true);
         verify(mDelegate).hideByAction();
 
-        helper.waitForFirst();
+        helper.waitForOnly();
         mAction.removeActionObserver(observer);
 
         Assert.assertTrue(mAction.perform());

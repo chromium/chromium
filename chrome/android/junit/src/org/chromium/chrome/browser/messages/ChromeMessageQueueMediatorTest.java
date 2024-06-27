@@ -256,7 +256,7 @@ public class ChromeMessageQueueMediatorTest {
         Assert.assertFalse(mediator.isReadyForShowing());
         CallbackHelper callbackHelper = new CallbackHelper();
         mediator.onRequestShowing(callbackHelper::notifyCalled);
-        callbackHelper.waitForFirst();
+        callbackHelper.waitForOnly();
         ChromeMessageQueueMediator.BrowserControlsObserver observer =
                 observerArgumentCaptor.getValue();
         Assert.assertFalse(observer.isRequesting());

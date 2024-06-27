@@ -50,7 +50,7 @@ public class NativePageBitmapCapturerTest {
                                     }));
                 });
 
-        callbackHelper.waitForFirst();
+        callbackHelper.waitForOnly();
     }
 
     @Test

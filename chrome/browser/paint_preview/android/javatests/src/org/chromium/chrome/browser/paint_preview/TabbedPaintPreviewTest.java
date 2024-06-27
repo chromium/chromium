@@ -145,8 +145,8 @@ public class TabbedPaintPreviewTest {
         Assert.assertTrue("Paint Preview was not displayed.", tabbedPaintPreview.isShowing());
         Assert.assertTrue(
                 "Paint Preview was not attached to tab.", tabbedPaintPreview.isAttached());
-        viewReadyCallback.waitForFirst("Paint preview view ready never happened.");
-        firstPaintCallback.waitForFirst("Paint preview first paint never happened.");
+        viewReadyCallback.waitForOnly("Paint preview view ready never happened.");
+        firstPaintCallback.waitForOnly("Paint preview first paint never happened.");
         TestThreadUtils.runOnUiThreadBlocking(() -> tabbedPaintPreview.remove(false, false));
     }
 

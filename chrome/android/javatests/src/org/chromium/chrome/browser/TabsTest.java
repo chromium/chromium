@@ -844,7 +844,7 @@ public class TabsTest {
                     Assert.assertFalse("Tab was not destroyed", tab.isInitialized());
                 });
 
-        webContentsDestroyed.waitForFirst();
+        webContentsDestroyed.waitForOnly();
     }
 
     @Test

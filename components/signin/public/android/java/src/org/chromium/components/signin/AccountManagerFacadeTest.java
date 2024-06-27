@@ -42,7 +42,7 @@ public class AccountManagerFacadeTest {
         public Account[] getAccountsSynchronous() throws AccountManagerDelegateException {
             // Blocks thread that's trying to get accounts from the delegate.
             try {
-                mBlockGetAccounts.waitForFirst();
+                mBlockGetAccounts.waitForOnly();
             } catch (TimeoutException e) {
                 throw new RuntimeException(e);
             }

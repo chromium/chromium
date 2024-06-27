@@ -79,7 +79,7 @@ public class BookmarkTestRule implements TestRule {
             runOnUiThreadBlocking(() -> tab.addObserver(obs));
             showBookmarkManagerInternal(chromeActivity);
             try {
-                callbackHelper.waitForFirst();
+                callbackHelper.waitForOnly();
             } catch (TimeoutException e) {
                 throw new RuntimeException(e);
             }

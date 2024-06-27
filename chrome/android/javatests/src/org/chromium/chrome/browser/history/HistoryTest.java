@@ -42,7 +42,7 @@ public class HistoryTest {
         }
 
         public Bitmap waitForFavicon() throws TimeoutException {
-            waitForFirst();
+            waitForOnly();
             return mFavicon;
         }
     }

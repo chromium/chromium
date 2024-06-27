@@ -171,7 +171,7 @@ public class TabUiTestHelper {
                 });
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
         try {
-            finishedHidingCallbackHelper.waitForFirst();
+            finishedHidingCallbackHelper.waitForOnly();
         } catch (TimeoutException e) {
             fail("LayoutType.TAB_SWITCHER never finished hiding.");
         }

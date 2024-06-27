@@ -98,7 +98,7 @@ public class DefaultSearchEngineDialogTest {
                                         }
                                     });
                 });
-        templateUrlServiceInit.waitForFirst();
+        templateUrlServiceInit.waitForOnly();
         mActivityTestRule.launchActivity(null);
         mUserActionTester = new UserActionTester();
     }

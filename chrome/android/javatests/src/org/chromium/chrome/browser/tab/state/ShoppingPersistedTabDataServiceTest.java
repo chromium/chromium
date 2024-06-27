@@ -306,6 +306,6 @@ public class ShoppingPersistedTabDataServiceTest {
                                 widened.notifyCalled();
                             });
                 });
-        widened.waitForFirst();
+        widened.waitForOnly();
     }
 }

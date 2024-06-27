@@ -149,7 +149,7 @@ public class TabListEditorUngroupActionUnitTest {
         }
         verify(mDelegate).hideByAction();
 
-        helper.waitForFirst();
+        helper.waitForOnly();
         mAction.removeActionObserver(observer);
 
         assertTrue(mAction.perform());

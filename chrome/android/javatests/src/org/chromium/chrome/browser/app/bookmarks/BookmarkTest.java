@@ -1547,7 +1547,7 @@ public class BookmarkTest {
         removeBookmark(googleId);
 
         RecyclerViewTestUtils.waitForStableMvcRecyclerView(mItemsContainer);
-        helper.waitForFirst();
+        helper.waitForOnly();
         runOnUiThreadBlocking(
                 () -> {
                     assertFalse(

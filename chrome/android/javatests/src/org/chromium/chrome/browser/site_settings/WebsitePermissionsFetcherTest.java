@@ -1558,7 +1558,7 @@ public class WebsitePermissionsFetcherTest {
                         null,
                         false));
         fetcher.fetchAllPreferences(waiter);
-        waiter.waitForFirst();
+        waiter.waitForOnly();
 
         // Check that only the ALLOW exception is fetched.
         assertEquals(1, waiter.getSites().size());

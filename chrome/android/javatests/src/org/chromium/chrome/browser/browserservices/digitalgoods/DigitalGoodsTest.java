@@ -141,7 +141,7 @@ public class DigitalGoodsTest {
                     assertEquals("10", details[0].price.value);
                     helper.notifyCalled();
                 });
-        helper.waitForFirst();
+        helper.waitForOnly();
     }
 
     private DigitalGoodsImpl createFixedDigitalGoods() {
@@ -189,7 +189,7 @@ public class DigitalGoodsTest {
                     @Override
                     public void onNoTwaFound() {}
                 });
-        helper.waitForFirst();
+        helper.waitForOnly();
     }
 
     private void waitForNonNull(String variable) {

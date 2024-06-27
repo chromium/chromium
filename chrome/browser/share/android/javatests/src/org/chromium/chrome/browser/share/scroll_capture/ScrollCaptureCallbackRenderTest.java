@@ -196,7 +196,7 @@ public class ScrollCaptureCallbackRenderTest {
                     group.addView(
                             mTextureView, new LayoutParams(size.getWidth(), size.getHeight()));
                 });
-        surfaceReady.waitForFirst();
+        surfaceReady.waitForOnly();
     }
 
     /** Drives a scroll capture several viewports above and below the current viewport location. */
@@ -212,7 +212,7 @@ public class ScrollCaptureCallbackRenderTest {
                     mCallback.onScrollCaptureStart(signal, ready::notifyCalled);
                     Assert.assertFalse(r.isEmpty());
                 });
-        ready.waitForFirst();
+        ready.waitForOnly();
 
         Surface surface = new Surface(mTextureView.getSurfaceTexture());
         // Current viewport should always succeed.
@@ -235,7 +235,7 @@ public class ScrollCaptureCallbackRenderTest {
                 () -> {
                     mCallback.onScrollCaptureEnd(finished::notifyCalled);
                 });
-        finished.waitForFirst();
+        finished.waitForOnly();
     }
 
     /** Captures the viewport at i * initialSize.getHeight() offset to the current viewport. */
@@ -274,7 +274,7 @@ public class ScrollCaptureCallbackRenderTest {
                                     offset + initialSize.getHeight());
                     mCallback.onScrollCaptureImageRequest(surface, signal, captureArea, consume);
                 });
-        bitmapReady.waitForFirst();
+        bitmapReady.waitForOnly();
         if (mCapturedRect.isEmpty()) return false;
 
         // Only record when the rect is not empty otherwise the bitmap won't have changed.

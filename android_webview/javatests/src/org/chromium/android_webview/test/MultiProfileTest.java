@@ -517,7 +517,6 @@ public class MultiProfileTest extends AwParameterizedTest {
         }
 
         // Wait for the test to run (see injectedListener above).
-        testDoneHelper.waitForFirst(
-                "Did not receive post message triggered by injected javascript");
+        testDoneHelper.waitForOnly("Did not receive post message triggered by injected javascript");
     }
 }

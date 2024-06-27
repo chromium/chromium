@@ -82,7 +82,7 @@ public class SelectableItemViewBaseTest {
         // `handleNonSelectionClick` method instead of selecting the item.
         mSelectableItemViewBase.onClick(mSelectableItemViewBase);
         assertFalse(mSelectableItemViewBase.isChecked());
-        mHandleNonSelectionClickHelper.waitForFirst();
+        mHandleNonSelectionClickHelper.waitForOnly();
     }
 
     @Test

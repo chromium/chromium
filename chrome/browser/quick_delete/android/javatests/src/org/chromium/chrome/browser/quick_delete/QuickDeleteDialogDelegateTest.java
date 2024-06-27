@@ -118,7 +118,7 @@ public class QuickDeleteDialogDelegateTest {
                                     TimePeriod.ALL_TIME);
                 });
 
-        callbackHelper.waitForFirst();
+        callbackHelper.waitForOnly();
     }
 
     private void openQuickDeleteDialog() {

@@ -623,7 +623,7 @@ public class BottomSheetControllerTest {
                     mTestSupport.setSheetState(SheetState.HIDDEN, false);
                 });
 
-        closedHelper.waitForFirst();
+        closedHelper.waitForOnly();
 
         BottomSheetTestSupport.waitForContentChange(mSheetController, null);
     }
@@ -1163,7 +1163,7 @@ public class BottomSheetControllerTest {
                                     null);
                 });
 
-        tabSelectedHelper.waitForFirst();
+        tabSelectedHelper.waitForOnly();
         TestThreadUtils.runOnUiThreadBlocking(mTestSupport::endAllAnimations);
     }
 

@@ -222,7 +222,7 @@ public class MessageAnimationCoordinatorUnitTest {
         runnableCaptor.getValue().run();
         verify(mQueueDelegate).onAnimationStart();
         shadowOf(getMainLooper()).idle();
-        callbackHelper.waitForFirst();
+        callbackHelper.waitForOnly();
         verify(mQueueDelegate).onAnimationEnd();
 
         // Again with same candidates.

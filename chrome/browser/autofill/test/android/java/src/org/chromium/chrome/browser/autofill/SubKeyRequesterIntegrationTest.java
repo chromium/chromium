@@ -62,6 +62,6 @@ public class SubKeyRequesterIntegrationTest {
                 () -> {
                     mSubKeyRequester.getRegionSubKeys("MX", delegate);
                 });
-        callbackHelper.waitForFirst();
+        callbackHelper.waitForOnly();
     }
 }

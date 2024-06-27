@@ -128,7 +128,7 @@ public class ApplicationTestUtils {
                 ThreadUtils.runOnUiThreadBlocking(() -> uiThreadTrigger.run());
             }
             if (backgroundThreadTrigger != null) backgroundThreadTrigger.run();
-            activityCallback.waitForFirst(
+            activityCallback.waitForOnly(
                     "No Activity reached target state.", ACTIVITY_TIMEOUT, TimeUnit.MILLISECONDS);
             T createdActivity = activityRef.get();
             Assert.assertNotNull("Activity reference is null.", createdActivity);

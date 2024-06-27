@@ -225,7 +225,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
         }
 
         public void waitForFullLoad() throws TimeoutException {
-            mCallbackHelper.waitForFirst();
+            mCallbackHelper.waitForOnly();
         }
     }
 

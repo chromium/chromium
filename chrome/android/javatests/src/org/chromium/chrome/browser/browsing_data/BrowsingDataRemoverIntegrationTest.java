@@ -101,7 +101,7 @@ public class BrowsingDataRemoverIntegrationTest {
                                     new String[0],
                                     new int[0]);
                 });
-        dataClearedExcludingDomainHelper.waitForFirst();
+        dataClearedExcludingDomainHelper.waitForOnly();
 
         // The last two webapps should have been unregistered.
         Assert.assertEquals(
@@ -123,7 +123,7 @@ public class BrowsingDataRemoverIntegrationTest {
                                     new int[] {BrowsingDataType.SITE_DATA},
                                     TimePeriod.ALL_TIME);
                 });
-        dataClearedNoUrlFilterHelper.waitForFirst();
+        dataClearedNoUrlFilterHelper.waitForOnly();
 
         // All webapps should have been unregistered.
         Assert.assertTrue(WebappRegistry.getRegisteredWebappIdsForTesting().isEmpty());

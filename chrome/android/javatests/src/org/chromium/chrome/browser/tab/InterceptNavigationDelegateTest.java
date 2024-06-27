@@ -235,7 +235,7 @@ public class InterceptNavigationDelegateTest {
         TouchCommon.singleClickView(mActivity.getActivityTab().getView());
         waitTillExpectedCallsComplete(2, DEFAULT_MAX_TIME_TO_WAIT_IN_MS);
 
-        mSubframeExternalProtocolCalled.waitForFirst();
+        mSubframeExternalProtocolCalled.waitForOnly();
     }
 
     @Test

@@ -169,7 +169,7 @@ public class TabListEditorCloseActionUnitTest {
                 .closeMultipleTabs(tabs, /* canUndo= */ true, /* hideTabGroups= */ false);
         verify(mDelegate).hideByAction();
 
-        helper.waitForFirst();
+        helper.waitForOnly();
         mAction.removeActionObserver(observer);
 
         Assert.assertTrue(mAction.perform());

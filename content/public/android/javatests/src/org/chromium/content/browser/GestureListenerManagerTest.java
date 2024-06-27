@@ -128,7 +128,7 @@ public class GestureListenerManagerTest {
                                         callbackHelper.notifyCalled();
                                     });
                 });
-        callbackHelper.waitForFirst();
+        callbackHelper.waitForOnly();
 
         final GestureStateListenerImpl listener = new GestureStateListenerImpl();
         TestThreadUtils.runOnUiThreadBlocking(

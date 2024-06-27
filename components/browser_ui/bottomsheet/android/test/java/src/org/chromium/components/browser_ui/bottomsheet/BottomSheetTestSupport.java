@@ -146,7 +146,7 @@ public class BottomSheetTestSupport {
                 });
 
         try {
-            stateChangeHelper.waitForFirst();
+            stateChangeHelper.waitForOnly();
         } catch (TimeoutException ex) {
             assert false : "Bottom sheet state never changed to " + sheetStateToString(state);
         }
@@ -185,7 +185,7 @@ public class BottomSheetTestSupport {
                 });
 
         try {
-            stateChangeHelper.waitForFirst();
+            stateChangeHelper.waitForOnly();
         } catch (TimeoutException ex) {
             assert false
                     : "Bottom sheet state never half or full. Current State: "
@@ -224,7 +224,7 @@ public class BottomSheetTestSupport {
                 };
         controller.addObserver(observer);
         try {
-            contentChangeHelper.waitForFirst();
+            contentChangeHelper.waitForOnly();
         } catch (TimeoutException ex) {
             assert false : "Bottom sheet content never changed!";
         }

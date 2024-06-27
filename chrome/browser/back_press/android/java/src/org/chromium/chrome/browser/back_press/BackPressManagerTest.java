@@ -188,7 +188,7 @@ public class BackPressManagerTest {
                                         BackPressHandler.Type.TEXT_BUBBLE))
                         .build();
         triggerBackPressWithoutAssertionError(manager);
-        callbackHelper.waitForFirst("Fallback should be triggered if all handlers failed.");
+        callbackHelper.waitForOnly("Fallback should be triggered if all handlers failed.");
         watcher.assertExpected();
     }
 

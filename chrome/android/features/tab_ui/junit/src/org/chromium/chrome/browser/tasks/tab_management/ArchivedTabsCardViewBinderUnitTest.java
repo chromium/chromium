@@ -90,6 +90,6 @@ public class ArchivedTabsCardViewBinderUnitTest {
         assertEquals(subtitleView.getText(), "Not used for 14 days or more");
 
         mArchivedTabsCardView.callOnClick();
-        mCallbackHelper.waitForFirst();
+        mCallbackHelper.waitForOnly();
     }
 }

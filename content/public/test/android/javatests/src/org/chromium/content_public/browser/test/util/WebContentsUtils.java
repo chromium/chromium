@@ -162,7 +162,7 @@ public class WebContentsUtils {
                     webContents.addObserver(observer);
                     WebContentsUtilsJni.get().crashTab(webContents);
                 });
-        callbackHelper.waitForFirst();
+        callbackHelper.waitForOnly();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     webContents.removeObserver(observer);
@@ -194,7 +194,7 @@ public class WebContentsUtils {
                                         callbackHelper.notifyCalled();
                                     });
                 });
-        callbackHelper.waitForFirst();
+        callbackHelper.waitForOnly();
     }
 
     @NativeMethods

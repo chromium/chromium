@@ -59,6 +59,6 @@ public class UncaughtExceptionTest {
                 });
         // If tasks are batched, this task will cause a JNI abort, which we don't want.
         PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {});
-        mExceptionHelper.waitForFirst();
+        mExceptionHelper.waitForOnly();
     }
 }

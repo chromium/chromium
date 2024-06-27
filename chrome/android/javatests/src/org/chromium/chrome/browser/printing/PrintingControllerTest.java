@@ -92,7 +92,7 @@ public class PrintingControllerTest {
 
     private static class WaitForOnWriteHelper extends CallbackHelper {
         public void waitForCallback(String msg) throws TimeoutException {
-            waitForFirst(msg, TEST_TIMEOUT, TimeUnit.MILLISECONDS);
+            waitForOnly(msg, TEST_TIMEOUT, TimeUnit.MILLISECONDS);
         }
     }
 
