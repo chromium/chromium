@@ -23,6 +23,8 @@ MAX_WAIT_TIME_TO_DELETE_RUNTIME = 45  # 45 seconds
 SIMULATOR_DEFAULT_PATH = os.path.expanduser(
     '~/Library/Developer/CoreSimulator/Devices')
 
+IOS18_SIM_RUNTIME_ID = 'com.apple.CoreSimulator.SimRuntime.iOS-18-0'
+
 # TODO(crbug.com/40910268): remove Legacy Download once iOS 15.5 is deprecated
 IOS_SIM_RUNTIME_BUILTIN_STATE = ['Legacy Download', 'Bundled with Xcode']
 
@@ -455,12 +457,12 @@ def add_simulator_runtime(runtime_dmg_path):
   return subprocess.check_output(cmd).decode('utf-8')
 
 
-def delete_simulator_runtime(runtime_id, shoud_wait=False):
+def delete_simulator_runtime(runtime_id, should_wait=False):
   cmd = ['xcrun', 'simctl', 'runtime', 'delete', runtime_id]
   LOGGER.debug('Deleting runtime with command %s' % cmd)
   subprocess.check_output(cmd)
 
-  if shoud_wait:
+  if should_wait:
     # runtime takes a few seconds to delete
     time_waited = 0
     runtime_to_delete = get_simulator_runtime_info_by_id(runtime_id)
@@ -522,6 +524,17 @@ def delete_simulator_runtime_and_wait(ios_version):
     return
 
   delete_simulator_runtime(runtime_to_delete['identifier'], True)
+
+
+def delete_other_ios18_runtimes(current_runtime_build_id: str):
+  LOGGER.info(f'Deleting other iOS18 runtimes, i.e. with runtime identifier '
+              f'{IOS18_SIM_RUNTIME_ID} and build NOT equal to '
+              f'{current_runtime_build_id}')
+  runtimes = get_simulator_runtime_list()
+  for runtime in runtimes.values():
+    if (runtime['runtimeIdentifier'] == IOS18_SIM_RUNTIME_ID and
+        runtime['build'] != current_runtime_build_id):
+      delete_simulator_runtime(runtime['identifier'], True)
 
 
 def disable_hardware_keyboard(udid: str) -> None:

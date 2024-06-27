@@ -174,6 +174,44 @@ RUNTIMES_LIST = {
     }
 }
 
+IOS18_RUNTIMES_LIST = {
+    "111111": {
+        "build": "22A5297f",
+        "deletable": True,
+        "identifier": "111111",
+        "kind": "Disk Image",
+        "lastUsedAt": "2024-06-26T16:57:51Z",
+        "mountPath": "path/to/mount/iOS_22A5297f",
+        "path": "path/to/runtime/111111.dmg",
+        "platformIdentifier": "com.apple.platform.iphonesimulator",
+        "runtimeBundlePath": "path/to/bundle/runtime/iOS 18.0.simruntime",
+        "runtimeIdentifier": "com.apple.CoreSimulator.SimRuntime.iOS-18-0",
+        "signatureState": "Verified",
+        "sizeBytes": 8291822059,
+        "state": "Ready",
+        "version": "18.0"
+    },
+    "222222": {
+        "build": "22A5282m",
+        "deletable": True,
+        "identifier": "222222",
+        "kind": "Disk Image",
+        "lastUsedAt": "2024-06-26T14:56:35Z",
+        "mountPath": "path/to/mount/iOS_22A5282m",
+        "parentIdentifier": "333333",
+        "parentImagePath": "path/to/parent/image/090-28824-040.dmg",
+        "parentMountPath": "path/to/parent/mount//SimRuntimeBundle-333333",
+        "path": "path/to/runtime/090-28222-040.dmg",
+        "platformIdentifier": "com.apple.platform.iphonesimulator",
+        "runtimeBundlePath": "path/to/bundle/runtime/iOS 18.0.simruntime",
+        "runtimeIdentifier": "com.apple.CoreSimulator.SimRuntime.iOS-18-0",
+        "signatureState": "Verified",
+        "sizeBytes": 8461564223,
+        "state": "Ready",
+        "version": "18.0"
+    }
+}
+
 RUNTIMES_MATCH_LIST = {
     "appletvos17.0": {
         "chosenRuntimeBuild": "21J11111",
@@ -444,6 +482,17 @@ class GetiOSSimUtil(test_runner_test.TestCase):
       iossim_util.delete_least_recently_used_simulator_runtimes()
 
       self.assertEqual(mock_delete_simulator_runtime.call_count, 0)
+
+  def test_delete_other_ios18_runtimes(self, mock_get_simulator_runtime_list,
+                                       _):
+    mock_get_simulator_runtime_list.return_value = IOS18_RUNTIMES_LIST
+    with mock.patch('iossim_util.delete_simulator_runtime') \
+       as mock_delete_simulator_runtime:
+      iossim_util.delete_other_ios18_runtimes('22A5297f')
+
+      self.assertEqual(mock_delete_simulator_runtime.call_count, 1)
+      mock_delete_simulator_runtime.assert_has_calls(
+          [mock.call('222222', True)], any_order=True)
 
   def test_disable_hardware_keyboard(self, _, _2):
     """Ensures right commands are issued to disable hardware keyboard"""

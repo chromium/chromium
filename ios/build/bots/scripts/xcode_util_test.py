@@ -308,7 +308,8 @@ class InstallTest(XcodeUtilTest):
     self.assertFalse(mock_add_simulator_runtime.called)
     self.assertFalse(mock_override_default_iphonesim_runtime.called)
 
-  def test_install_runtime_dmg_with_non_builtin_runtime(self):
+  @mock.patch('xcode_util.using_xcode_16_or_higher', return_value=False)
+  def test_install_runtime_dmg_with_non_builtin_runtime(self, _):
     with mock.patch('xcode_util.is_runtime_builtin', return_value=False):
       with mock.patch(
           'iossim_util.delete_least_recently_used_simulator_runtimes'
@@ -347,7 +348,8 @@ class InstallTest(XcodeUtilTest):
     mock_override_default_iphonesim_runtime.assert_called_once_with(
         ADD_SIMULATOR_RUNTIME_OUTPUT, '15.0')
 
-  def test_install_runtime_dmg_already_exists(self):
+  @mock.patch('xcode_util.using_xcode_16_or_higher', return_value=False)
+  def test_install_runtime_dmg_already_exists(self, _):
     with mock.patch('xcode_util.is_runtime_builtin', return_value=False):
       with mock.patch(
           'iossim_util.delete_least_recently_used_simulator_runtimes'

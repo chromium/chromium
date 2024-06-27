@@ -440,6 +440,10 @@ def install_runtime_dmg(mac_toolchain, runtime_cache_folder, ios_version,
     LOGGER.debug(
         'Runtime %s already exists, no need to install from mac_toolchain',
         runtime_build_to_install)
+  # TODO(crbug.com/349660173): See if this can be removed after the release of
+  # subsequent Xcode16 betas
+  if using_xcode_16_or_higher():
+    iossim_util.delete_other_ios18_runtimes(runtime_build_to_install)
 
 
 def version():
