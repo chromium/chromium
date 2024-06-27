@@ -4,4 +4,3 @@
 -All/NavigationEntryScreenshotBrowserTest.SameOriginIFrame_NotCaptured/SameOrigin_BFCacheEnabled
 -CompositorImplBrowserTestRefreshRate.VideoPreference
 -CrossPlatformAccessibilityBrowserTest.ImplicitRootScroller
--FontUniqueNameBrowserTest.ContentLocalFontsMatching

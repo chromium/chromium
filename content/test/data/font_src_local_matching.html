@@ -5,46 +5,21 @@
 <script>
 function getFontsWithTestCharsForOS() {
   if (navigator.userAgent.indexOf("Android") !== -1) {
-    // Intersection of available fonts of Android Kitkat to Oreo that kept the
-    // same family names to compare against for these postscript or full font
-    // names. (RobotoThin* and RobotoLight* had differing family names on
-    // different Android versions.
+    // Intersection of available fonts from Android Kitkat (API 19) to Android
+    // 15 (API 35) that kept the same family names to compare against for these
+    // postscript or full font names. (RobotoThin* and RobotoLight* had
+    // differing family names on different Android versions.
     return [
       ["AndroidClock-Regular", "0"],
-      ["Roboto-Bold", "0"],
       ["DroidSansMono", "0"],
       ["Roboto-Regular", "0"],
       ["Noto Color Emoji", "☺"],
-      ["NotoSansBengali-Bold", "0"],
-      ["NotoSansBengaliUI-Bold", "0"],
-      ["NotoSansDevanagari-Bold", "0"],
-      ["NotoSansDevanagariUI-Bold", "0"],
-      ["NotoSansKannada-Bold", "0"],
-      ["NotoSansKannada", "0"],
-      ["NotoSansKannadaUI-Bold", "0"],
-      ["NotoSansKannadaUI", "0"],
-      ["NotoSansLao-Bold", "0"],
-      ["NotoSansLao", "0"],
       ["NotoSansLaoUI-Bold", "0"],
       ["NotoSansLaoUI", "0"],
-      ["NotoSansMalayalam-Bold", "0"],
-      ["NotoSansMalayalamUI-Bold", "0"],
-      ["NotoSansTamil-Bold", "0"],
-      ["NotoSansTamilUI-Bold", "0"],
-      ["NotoSansTelugu-Bold", "0"],
-      ["NotoSansTelugu", "0"],
-      ["NotoSansTeluguUI-Bold", "0"],
-      ["NotoSansTeluguUI", "0"],
       ["NotoSansThai-Bold", "๐"],
       ["NotoSansThai", "๐"],
       ["NotoSansThaiUI-Bold", "๐"],
       ["NotoSansThaiUI", "๐"],
-      ["Roboto-BoldItalic", "0"],
-      ["RobotoCondensed-BoldItalic", "0"],
-      ["RobotoCondensed-Bold", "0"],
-      ["RobotoCondensed-Italic", "0"],
-      ["RobotoCondensed-Regular", "0"],
-      ["Roboto-Italic", "0"],
     ];
   } else if (navigator.userAgent.indexOf("Linux") !== -1
              || navigator.userAgent.indexOf("CrOS") !== -1) {
