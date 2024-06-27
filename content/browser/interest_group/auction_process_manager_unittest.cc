@@ -24,6 +24,7 @@
 #include "content/public/browser/site_isolation_mode.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -769,9 +770,23 @@ class PartialSiteIsolationContentBrowserClient
   }
 };
 
-class InRendererAuctionProcessManagerTest : public ::testing::Test {
- protected:
-  InRendererAuctionProcessManagerTest() {
+// A base class for AuctionProcessManager tests that sets up the basic test
+// environment. Since this class creates SiteInstances and (implicitly)
+// BrowsingInstances, it's important that it knows whether to use
+// kOriginKeyedProcessesByDefault at the time it's constructed.
+class InRendererAuctionProcessManagerTestBase : public ::testing::Test {
+ public:
+  explicit InRendererAuctionProcessManagerTestBase(
+      bool disable_origin_keyed_processes_by_default) {
+    // Note: if we're going to disable kOriginKeyedProcessesByDefault, it's
+    // important to do it here before we create any SiteInstances, since that
+    // will create BrowsingInstances, and each BrowsingInstance will create
+    // a default isolation state based on kOriginKeyedProcessesByDefault.
+    if (disable_origin_keyed_processes_by_default) {
+      feature_list_.InitAndDisableFeature(
+          features::kOriginKeyedProcessesByDefault);
+    }
+
     SiteInstance::StartIsolatingSite(
         &test_browser_context_, kIsolatedOrigin.GetURL(),
         ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
@@ -821,22 +836,69 @@ class InRendererAuctionProcessManagerTest : public ::testing::Test {
   const url::Origin kOriginB = url::Origin::Create(GURL("https://b.test"));
   const url::Origin kIsolatedOrigin =
       url::Origin::Create(GURL("https://bank.test"));
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(InRendererAuctionProcessManagerTest, AndroidLike) {
-  PartialSiteIsolationContentBrowserClient browser_client;
-  ContentBrowserClient* orig_browser_client =
-      content::SetBrowserClientForTesting(&browser_client);
+// A test class for AuctionProcessManager tests that require desktop-like
+// behavior, i.e. site-per-process is enabled, and
+// kOriginKeyedProcessesByDefault and process sharing for non-default
+// SiteInstances is allowed.
+class InRendererAuctionProcessManagerTest
+    : public InRendererAuctionProcessManagerTestBase {
+ public:
+  InRendererAuctionProcessManagerTest()
+      : InRendererAuctionProcessManagerTestBase(
+            /*disable_origin_keyed_processes_by_default=*/false) {}
+  void SetUp() override {
+    InRendererAuctionProcessManagerTestBase::SetUp();
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        switches::kSitePerProcess);
+  }
 
+ private:
+  base::test::ScopedCommandLine scoped_command_line_;
+};
+
+// A test class for AuctionProcessManager tests that require Android-like
+// behavior, i.e. site-per-process is disabled, kOriginKeyedProcessesByDefault
+// is disabled, and process sharing is set for default SiteInstances only.
+class InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault
+    : public InRendererAuctionProcessManagerTestBase {
+ public:
+  InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault()
+      : InRendererAuctionProcessManagerTestBase(
+            /*disable_origin_keyed_processes_by_default=*/true) {
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{features::
+                                  kProcessSharingWithDefaultSiteInstances},
+        /*disabled_features=*/{
+            features::kProcessSharingWithStrictSiteInstances});
+  }
+
+  void SetUp() override {
+    InRendererAuctionProcessManagerTestBase::SetUp();
+    original_browser_client_ =
+        content::SetBrowserClientForTesting(&browser_client_);
+    scoped_command_line_.GetProcessCommandLine()->RemoveSwitch(
+        switches::kSitePerProcess);
+  }
+
+  void TearDown() override {
+    content::SetBrowserClientForTesting(original_browser_client_);
+    InRendererAuctionProcessManagerTestBase::TearDown();
+  }
+
+ private:
+  base::test::ScopedCommandLine scoped_command_line_;
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kProcessSharingWithDefaultSiteInstances},
-      /*disabled_features=*/{features::kProcessSharingWithStrictSiteInstances});
+  PartialSiteIsolationContentBrowserClient browser_client_;
+  raw_ptr<ContentBrowserClient> original_browser_client_;
+};
 
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->RemoveSwitch(
-      switches::kSitePerProcess);
-
+TEST_F(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
+       AndroidLike) {
   // Launch some services in different origins and browsing instances.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
       GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType::kSeller,
@@ -884,16 +946,9 @@ TEST_F(InRendererAuctionProcessManagerTest, AndroidLike) {
   EXPECT_NE(id_i1, id_a2);
   EXPECT_NE(id_i1, id_b1);
   EXPECT_NE(id_i1, id_b2);
-
-  content::SetBrowserClientForTesting(orig_browser_client);
 }
 
 TEST_F(InRendererAuctionProcessManagerTest, DesktopLike) {
-  // Use a site-per-process mode.
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      switches::kSitePerProcess);
-
   // Launch some services in different origins and browsing instances.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
       GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType::kSeller,
@@ -941,20 +996,8 @@ TEST_F(InRendererAuctionProcessManagerTest, DesktopLike) {
   EXPECT_NE(id_i1, id_b2);
 }
 
-TEST_F(InRendererAuctionProcessManagerTest, PolicyChange) {
-  PartialSiteIsolationContentBrowserClient browser_client;
-  ContentBrowserClient* orig_browser_client =
-      content::SetBrowserClientForTesting(&browser_client);
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kProcessSharingWithDefaultSiteInstances},
-      /*disabled_features=*/{features::kProcessSharingWithStrictSiteInstances});
-
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->RemoveSwitch(
-      switches::kSitePerProcess);
-
+TEST_F(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
+       PolicyChange) {
   // Launch site in default instance.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
       GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType::kSeller,
@@ -992,8 +1035,6 @@ TEST_F(InRendererAuctionProcessManagerTest, PolicyChange) {
   // can share it, too.
   EXPECT_EQ(handle_a2->worklet_process_for_testing(),
             handle_a3->worklet_process_for_testing());
-
-  content::SetBrowserClientForTesting(orig_browser_client);
 }
 
 }  // namespace
