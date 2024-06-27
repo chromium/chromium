@@ -187,6 +187,9 @@ CGFloat GPayIconTopAnchorOffset() {
 // A button showing the expiration year.
 @property(nonatomic, strong) UIButton* expirationYearButton;
 
+// A labeled chip showing the card's CVC.
+@property(nonatomic, strong) ManualFillLabeledChip* CVCLabeledChip;
+
 // The content delegate for this item.
 @property(nonatomic, weak) id<ManualFillContentInjector> contentInjector;
 
@@ -234,6 +237,7 @@ CGFloat GPayIconTopAnchorOffset() {
     [self.cardNumberLabeledChip prepareForReuse];
     [self.expirationDateLabeledChip prepareForReuse];
     [self.cardholderLabeledChip prepareForReuse];
+    [self.CVCLabeledChip prepareForReuse];
   } else {
     // TODO(crbug.com/330329960): Deprecate button use once
     // kAutofillEnableVirtualCards is enabled.
@@ -327,10 +331,16 @@ CGFloat GPayIconTopAnchorOffset() {
                            monthSelector:@selector(userDidTapExpirationMonth:)
                             yearSelector:@selector(userDidTapExpirationYear:)];
     [self.contentView addSubview:self.expirationDateLabeledChip];
+
     self.cardholderLabeledChip = [[ManualFillLabeledChip alloc]
         initSingleChipWithTarget:self
                         selector:@selector(userDidTapCardholderName:)];
     [self.contentView addSubview:self.cardholderLabeledChip];
+
+    self.CVCLabeledChip = [[ManualFillLabeledChip alloc]
+        initSingleChipWithTarget:self
+                        selector:@selector(userDidTapCVC:)];
+    [self.contentView addSubview:self.CVCLabeledChip];
   } else {
     // TODO(crbug.com/330329960): Deprecate button use once
     // kAutofillEnableVirtualCards is enabled.
@@ -387,6 +397,10 @@ CGFloat GPayIconTopAnchorOffset() {
         AppendConstraintsHorizontalEqualOrSmallerThanGuide);
     AppendHorizontalConstraintsForViews(
         staticConstraints, @[ self.cardholderLabeledChip ], self.layoutGuide,
+        kChipsHorizontalMargin,
+        AppendConstraintsHorizontalEqualOrSmallerThanGuide);
+    AppendHorizontalConstraintsForViews(
+        staticConstraints, @[ self.CVCLabeledChip ], self.layoutGuide,
         kChipsHorizontalMargin,
         AppendConstraintsHorizontalEqualOrSmallerThanGuide);
     [staticConstraints
@@ -481,6 +495,13 @@ CGFloat GPayIconTopAnchorOffset() {
             l10n_util::GetNSString(
                 IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_NAME_ON_CARD_LABEL_IOS)
         buttonTitles:@[ card.cardHolder ]];
+    if (card.recordType == kVirtualCard) {
+      [self.CVCLabeledChip
+          setLabelText:
+              l10n_util::GetNSString(
+                  IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CVC_LABEL_IOS)
+          buttonTitles:@[ card.CVC ]];
+    }
 
     if (IsKeyboardAccessoryUpgradeEnabled()) {
       self.cardNumberLabeledChip.singleButton.accessibilityLabel =
@@ -500,6 +521,9 @@ CGFloat GPayIconTopAnchorOffset() {
           l10n_util::GetNSStringF(
               IDS_IOS_MANUAL_FALLBACK_CARDHOLDER_CHIP_ACCESSIBILITY_LABEL,
               base::SysNSStringToUTF16(card.cardHolder));
+      self.CVCLabeledChip.singleButton.accessibilityLabel =
+          l10n_util::GetNSString(
+              IDS_IOS_MANUAL_FALLBACK_CVC_CHIP_ACCESSIBILITY_LABEL);
     }
   } else {
     // TODO(crbug.com/330329960): Deprecate button use once
@@ -595,6 +619,11 @@ CGFloat GPayIconTopAnchorOffset() {
     [self addChipButton:self.cardholderLabeledChip
             toChipGroup:cardInfoGroupVerticalLeadChips
                  ifTrue:(card.cardHolder.length > 0)];
+
+    // CVC labeled chip button.
+    [self addChipButton:self.CVCLabeledChip
+            toChipGroup:cardInfoGroupVerticalLeadChips
+                 ifTrue:(card.CVC.length > 0)];
   } else {
     // TODO(crbug.com/330329960): Deprecate button use once
     // kAutofillEnableVirtualCards is enabled.
@@ -708,6 +737,15 @@ CGFloat GPayIconTopAnchorOffset() {
                                passwordField:NO
                                requiresHTTPS:NO];
   }
+}
+
+- (void)userDidTapCVC:(UIButton*)sender {
+  CHECK_EQ(self.card.recordType, kVirtualCard);
+  base::RecordAction(
+      base::UserMetricsAction([self createMetricsAction:@"SelectCvc"]));
+  [self.navigationDelegate
+      requestFullCreditCard:self.card
+                  fieldType:manual_fill::PaymentFieldType::kCVC];
 }
 
 // Called when the "Autofill Form" button is tapped. Fills the current form with

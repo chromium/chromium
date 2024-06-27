@@ -40,6 +40,7 @@ enum class PaymentFieldType {
   kCardNumber = 0,
   kExpirationMonth,
   kExpirationYear,
+  kCVC,
 };
 
 }  // namespace manual_fill

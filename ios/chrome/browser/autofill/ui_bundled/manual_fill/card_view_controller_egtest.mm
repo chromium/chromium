@@ -71,6 +71,8 @@ NSString* kLocalNumberObfuscated =
 
 NSString* kServerNumberObfuscated =
     [NSString stringWithFormat:@"%@2109", kObfuscatedNumberPrefix];
+NSString* kCvcObfuscated =
+    base::SysUTF16ToNSString(autofill::CreditCard::GetMidlineEllipsisDots(3));
 
 const char kFormHTMLFile[] = "/credit_card.html";
 
@@ -225,6 +227,18 @@ id<GREYMatcher> CardholderChipButton(std::u16string title) {
                 IDS_IOS_MANUAL_FALLBACK_CARDHOLDER_CHIP_ACCESSIBILITY_LABEL,
                 title)
           : base::SysUTF16ToNSString(title);
+  return grey_allOf(
+      chrome_test_util::ButtonWithAccessibilityLabel(accessibility_label),
+      grey_interactable(), nullptr);
+}
+
+// Matcher for the cvc chip button.
+id<GREYMatcher> CvcChipButton() {
+  NSString* accessibility_label =
+      [AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]
+          ? l10n_util::GetNSString(
+                IDS_IOS_MANUAL_FALLBACK_CVC_CHIP_ACCESSIBILITY_LABEL)
+          : kCvcObfuscated;
   return grey_allOf(
       chrome_test_util::ButtonWithAccessibilityLabel(accessibility_label),
       grey_interactable(), nullptr);
@@ -463,6 +477,13 @@ void DismissPaymentBottomSheet() {
   // Assert presence of virtual card.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           @"Mastercard \nVirtual card")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Scroll down to show the CVC chip button for virtual cards.
+  [[EarlGrey
+      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+      performAction:grey_scrollInDirection(kGREYDirectionDown, 100)];
+  [[EarlGrey selectElementWithMatcher:CvcChipButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Scroll down to show original card.

@@ -265,6 +265,9 @@ NSString* const kAddPaymentMethodAccessibilityIdentifier =
       case PaymentFieldType::kExpirationYear:
         fillValue = manualFillCreditCard.expirationYear;
         break;
+      case PaymentFieldType::kCVC:
+        fillValue = manualFillCreditCard.CVC;
+        break;
     }
   } else {
     fillValue = manualFillCreditCard.number;

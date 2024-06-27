@@ -16,6 +16,7 @@
     networkAndLastFourDigits:(NSString*)networkAndLastFourDigits
               expirationYear:(NSString*)expirationYear
              expirationMonth:(NSString*)expirationMonth
+                         CVC:(NSString*)CVC
                   recordType:(autofill::CreditCard::RecordType)recordType
              canFillDirectly:(BOOL)canFillDirectly {
   self = [super init];
@@ -30,6 +31,7 @@
     _networkAndLastFourDigits = [networkAndLastFourDigits copy];
     _expirationYear = [expirationYear copy];
     _expirationMonth = [expirationMonth copy];
+    _CVC = [CVC copy];
     _recordType = recordType;
     _canFillDirectly = canFillDirectly;
   }

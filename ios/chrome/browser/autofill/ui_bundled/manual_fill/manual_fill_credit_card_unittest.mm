@@ -24,6 +24,7 @@ TEST_F(ManualFillCreditCardiOSTest, Creation) {
   NSString* obfuscatedNumber = @"**** **** **** 1234";
   NSString* expirationYear = @"19";
   NSString* expirationMonth = @"10";
+  NSString* CVC = @"123";
   ManualFillCreditCard* card =
       [[ManualFillCreditCard alloc] initWithGUID:GUID
                                          network:network
@@ -35,6 +36,7 @@ TEST_F(ManualFillCreditCardiOSTest, Creation) {
                         networkAndLastFourDigits:nil
                                   expirationYear:expirationYear
                                  expirationMonth:expirationMonth
+                                             CVC:CVC
                                       recordType:LOCAL_CARD_RECORD_TYPE
                                  canFillDirectly:true];
   EXPECT_TRUE(card);
@@ -46,6 +48,7 @@ TEST_F(ManualFillCreditCardiOSTest, Creation) {
   EXPECT_TRUE([obfuscatedNumber isEqualToString:card.obfuscatedNumber]);
   EXPECT_TRUE([expirationYear isEqualToString:card.expirationYear]);
   EXPECT_TRUE([expirationMonth isEqualToString:card.expirationMonth]);
+  EXPECT_TRUE([CVC isEqualToString:card.CVC]);
   EXPECT_EQ(card.recordType, LOCAL_CARD_RECORD_TYPE);
 }
 
@@ -60,6 +63,7 @@ TEST_F(ManualFillCreditCardiOSTest, Equality) {
   NSString* obfuscatedNumber = @"**** **** **** 1234";
   NSString* expirationYear = @"19";
   NSString* expirationMonth = @"10";
+  NSString* CVC = @"123";
 
   ManualFillCreditCard* card =
       [[ManualFillCreditCard alloc] initWithGUID:GUID
@@ -72,6 +76,7 @@ TEST_F(ManualFillCreditCardiOSTest, Equality) {
                         networkAndLastFourDigits:nil
                                   expirationYear:expirationYear
                                  expirationMonth:expirationMonth
+                                             CVC:CVC
                                       recordType:LOCAL_CARD_RECORD_TYPE
                                  canFillDirectly:true];
 
@@ -86,6 +91,7 @@ TEST_F(ManualFillCreditCardiOSTest, Equality) {
                         networkAndLastFourDigits:nil
                                   expirationYear:expirationYear
                                  expirationMonth:expirationMonth
+                                             CVC:nil
                                       recordType:LOCAL_CARD_RECORD_TYPE
                                  canFillDirectly:true];
 
@@ -102,6 +108,7 @@ TEST_F(ManualFillCreditCardiOSTest, Equality) {
                         networkAndLastFourDigits:nil
                                   expirationYear:expirationYear
                                  expirationMonth:expirationMonth
+                                             CVC:CVC
                                       recordType:LOCAL_CARD_RECORD_TYPE
                                  canFillDirectly:true];
   EXPECT_FALSE([card isEqual:differentGuidCredential]);

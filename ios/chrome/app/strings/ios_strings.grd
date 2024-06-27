@@ -6083,6 +6083,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_MANUAL_FALLBACK_CARDHOLDER_CHIP_ACCESSIBILITY_LABEL" desc="Accessibility label for the cardholder chip button displayed in the payment method manual fallback screen and that's allowing the user to autofill a specific form field with their payment method's cardholder'.">
         Autofill the cardholder <ph name="NAME">$1<ex>Jane Doe</ex></ph>
       </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_CVC_CHIP_ACCESSIBILITY_LABEL" desc="Accessibility label for the CVC chip button displayed in the payment method manual fallback screen and that's allowing the user to autofill a specific form field with their payment method's CVC.">
+        Autofill the CVC
+      </message>
     </messages>
   </release>
 </grit>

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credit_card+CreditCard.h"
-
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/autofill_data_util.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/validation.h"
 #import "components/autofill/core/common/credit_card_number_validation.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credit_card+CreditCard.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "url/gurl.h"
 
@@ -59,6 +59,24 @@
   NSString* expirationMonth =
       [NSString stringWithFormat:@"%02d", creditCard.expiration_month()];
 
+  NSString* CVC = nil;
+  if (creditCard.record_type() ==
+      autofill::CreditCard::RecordType::kVirtualCard) {
+    if (creditCard.cvc().empty()) {
+      // For virtual cards, if the CVC() value is empty, it means no
+      // verification has been done and the `creditCard` object contains only
+      // the obfuscated card information.
+      CVC =
+          base::SysUTF16ToNSString(autofill::CreditCard::GetMidlineEllipsisDots(
+              autofill::GetCvcLengthForCardNetwork(creditCard.network())));
+    } else {
+      // If the CVC() value is non-empty, it means the a verification step has
+      // been done and the `creditCard` object contains the full card
+      // information.
+      CVC = base::SysUTF16ToNSString(creditCard.cvc());
+    }
+  }
+
   return [self initWithGUID:GUID
                        network:network
                           icon:icon
@@ -69,6 +87,7 @@
       networkAndLastFourDigits:networkAndLastFourDigits
                 expirationYear:expirationYear
                expirationMonth:expirationMonth
+                           CVC:CVC
                     recordType:creditCard.record_type()
                canFillDirectly:canFillDirectly];
 }

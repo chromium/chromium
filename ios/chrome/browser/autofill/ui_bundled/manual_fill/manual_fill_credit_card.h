@@ -40,6 +40,9 @@
 // The credit card expiration month.
 @property(nonatomic, readonly) NSString* expirationMonth;
 
+// The credit card CVC. Can be nil for non-virtual cards.
+@property(nonatomic, readonly) NSString* CVC;
+
 // The credit card icon.
 @property(nonatomic, readonly) UIImage* icon;
 
@@ -62,6 +65,7 @@
     networkAndLastFourDigits:(NSString*)networkAndLastFourDigits
               expirationYear:(NSString*)expirationYear
              expirationMonth:(NSString*)expirationMonth
+                         CVC:(NSString*)CVC
                   recordType:(autofill::CreditCard::RecordType)recordType
              canFillDirectly:(BOOL)canFillDirecly NS_DESIGNATED_INITIALIZER;
 
