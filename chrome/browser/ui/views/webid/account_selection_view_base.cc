@@ -46,15 +46,6 @@ int SelectDisclosureTextResourceId(const GURL& privacy_policy_url,
              : IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT;
 }
 
-gfx::ImageSkia CreateCircleCroppedImage(const gfx::ImageSkia& original_image,
-                                        int image_size) {
-  return gfx::CanvasImageSource::MakeImageSkia<CircleCroppedImageSkiaSource>(
-      original_image, original_image.width() * kMaskableWebIconSafeZoneRatio,
-      image_size);
-}
-
-}  // namespace
-
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("fedcm_account_profile_image_fetcher",
                                         R"(
@@ -92,25 +83,131 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "Federated Sign-In, for which we do not have an Enterprise policy."
         })");
 
-void LetterCircleCroppedImageSkiaSource::Draw(gfx::Canvas* canvas) {
-  monogram::DrawMonogramInCanvas(canvas, size().width(), size().width(),
-                                 letter_, SK_ColorWHITE, SK_ColorGRAY);
+class LetterCircleCroppedImageSkiaSource : public gfx::CanvasImageSource {
+ public:
+  LetterCircleCroppedImageSkiaSource(const std::u16string& letter, int size)
+      : gfx::CanvasImageSource(gfx::Size(size, size)), letter_(letter) {}
+
+  LetterCircleCroppedImageSkiaSource(
+      const LetterCircleCroppedImageSkiaSource&) = delete;
+  LetterCircleCroppedImageSkiaSource& operator=(
+      const LetterCircleCroppedImageSkiaSource&) = delete;
+  ~LetterCircleCroppedImageSkiaSource() override = default;
+
+  void Draw(gfx::Canvas* canvas) override {
+    monogram::DrawMonogramInCanvas(canvas, size().width(), size().width(),
+                                   letter_, SK_ColorWHITE, SK_ColorGRAY);
+  }
+
+ private:
+  const std::u16string letter_;
+};
+
+// A CanvasImageSource that:
+// 1) Applies an optional square center-crop.
+// 2) Resizes the cropped image (while maintaining the image's aspect ratio) to
+//    fit into the target canvas. If no center-crop was applied and the source
+//    image is rectangular, the image is resized so that
+//    `avatar` small edge size == `canvas_edge_size`.
+// 3) Circle center-crops the resized image.
+class CircleCroppedImageSkiaSource : public gfx::CanvasImageSource {
+ public:
+  CircleCroppedImageSkiaSource(gfx::ImageSkia avatar,
+                               std::optional<int> pre_resize_avatar_crop_size,
+                               int canvas_edge_size)
+      : gfx::CanvasImageSource(gfx::Size(canvas_edge_size, canvas_edge_size)) {
+    int scaled_width = canvas_edge_size;
+    int scaled_height = canvas_edge_size;
+    if (pre_resize_avatar_crop_size) {
+      const float avatar_scale =
+          (canvas_edge_size / (float)*pre_resize_avatar_crop_size);
+      scaled_width = floor(avatar.width() * avatar_scale);
+      scaled_height = floor(avatar.height() * avatar_scale);
+    } else {
+      // Resize `avatar` so that it completely fills the canvas.
+      const float height_ratio =
+          ((float)avatar.height() / (float)avatar.width());
+      if (height_ratio >= 1.0f) {
+        scaled_height = floor(canvas_edge_size * height_ratio);
+      } else {
+        scaled_width = floor(canvas_edge_size / height_ratio);
+      }
+    }
+    avatar_ = gfx::ImageSkiaOperations::CreateResizedImage(
+        avatar, skia::ImageOperations::RESIZE_BEST,
+        gfx::Size(scaled_width, scaled_height));
+  }
+
+  CircleCroppedImageSkiaSource(const CircleCroppedImageSkiaSource&) = delete;
+  CircleCroppedImageSkiaSource& operator=(const CircleCroppedImageSkiaSource&) =
+      delete;
+  ~CircleCroppedImageSkiaSource() override = default;
+
+  // CanvasImageSource:
+  void Draw(gfx::Canvas* canvas) override {
+    const int canvas_edge_size = size().width();
+
+    // Center the avatar in the canvas.
+    const int x = (canvas_edge_size - avatar_.width()) / 2;
+    const int y = (canvas_edge_size - avatar_.height()) / 2;
+
+    SkPath circular_mask;
+    circular_mask.addCircle(SkIntToScalar(canvas_edge_size / 2),
+                            SkIntToScalar(canvas_edge_size / 2),
+                            SkIntToScalar(canvas_edge_size / 2));
+    canvas->ClipPath(circular_mask, true);
+    canvas->DrawImageInt(avatar_, x, y);
+  }
+
+ private:
+  gfx::ImageSkia avatar_;
+};
+
+gfx::ImageSkia CreateCircleCroppedImage(const gfx::ImageSkia& original_image,
+                                        int image_size) {
+  return gfx::CanvasImageSource::MakeImageSkia<CircleCroppedImageSkiaSource>(
+      original_image, original_image.width() * kMaskableWebIconSafeZoneRatio,
+      image_size);
 }
 
-void CircleCroppedImageSkiaSource::Draw(gfx::Canvas* canvas) {
-  const int canvas_edge_size = size().width();
+class AccountImageView : public views::ImageView {
+  METADATA_HEADER(AccountImageView, views::ImageView)
 
-  // Center the avatar in the canvas.
-  const int x = (canvas_edge_size - avatar_.width()) / 2;
-  const int y = (canvas_edge_size - avatar_.height()) / 2;
+ public:
+  AccountImageView() = default;
 
-  SkPath circular_mask;
-  circular_mask.addCircle(SkIntToScalar(canvas_edge_size / 2),
-                          SkIntToScalar(canvas_edge_size / 2),
-                          SkIntToScalar(canvas_edge_size / 2));
-  canvas->ClipPath(circular_mask, true);
-  canvas->DrawImageInt(avatar_, x, y);
-}
+  AccountImageView(const AccountImageView&) = delete;
+  AccountImageView& operator=(const AccountImageView&) = delete;
+  ~AccountImageView() override = default;
+
+  // Check image and set it on AccountImageView.
+  void SetAccountImage(const content::IdentityRequestAccount& account,
+                       image_fetcher::ImageFetcher& image_fetcher,
+                       int image_size) {
+    gfx::ImageSkia avatar;
+    if (account.decoded_picture.IsEmpty()) {
+      std::u16string letter = base::UTF8ToUTF16(account.name);
+      if (letter.length() > 0) {
+        letter = base::i18n::ToUpper(letter.substr(0, 1));
+      }
+      avatar = gfx::CanvasImageSource::MakeImageSkia<
+          LetterCircleCroppedImageSkiaSource>(letter, image_size);
+    } else {
+      avatar =
+          gfx::CanvasImageSource::MakeImageSkia<CircleCroppedImageSkiaSource>(
+              account.decoded_picture.AsImageSkia(), std::nullopt, image_size);
+    }
+    SetImage(ui::ImageModel::FromImageSkia(avatar));
+  }
+
+ private:
+  base::WeakPtrFactory<AccountImageView> weak_ptr_factory_{this};
+};
+
+BEGIN_METADATA(AccountImageView)
+END_METADATA
+
+}  // namespace
 
 BrandIconImageView::BrandIconImageView(
     base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)> add_image,
@@ -171,43 +268,6 @@ void BrandIconImageView::OnImageFetched(
 }
 
 BEGIN_METADATA(BrandIconImageView)
-END_METADATA
-
-class AccountImageView : public views::ImageView {
-  METADATA_HEADER(AccountImageView, views::ImageView)
-
- public:
-  AccountImageView() = default;
-
-  AccountImageView(const AccountImageView&) = delete;
-  AccountImageView& operator=(const AccountImageView&) = delete;
-  ~AccountImageView() override = default;
-
-  // Check image and set it on AccountImageView.
-  void SetAccountImage(const content::IdentityRequestAccount& account,
-                       image_fetcher::ImageFetcher& image_fetcher,
-                       int image_size) {
-    gfx::ImageSkia avatar;
-    if (account.decoded_picture.IsEmpty()) {
-      std::u16string letter = base::UTF8ToUTF16(account.name);
-      if (letter.length() > 0) {
-        letter = base::i18n::ToUpper(letter.substr(0, 1));
-      }
-      avatar = gfx::CanvasImageSource::MakeImageSkia<
-          LetterCircleCroppedImageSkiaSource>(letter, image_size);
-    } else {
-      avatar =
-          gfx::CanvasImageSource::MakeImageSkia<CircleCroppedImageSkiaSource>(
-              account.decoded_picture.AsImageSkia(), std::nullopt, image_size);
-    }
-    SetImage(ui::ImageModel::FromImageSkia(avatar));
-  }
-
- private:
-  base::WeakPtrFactory<AccountImageView> weak_ptr_factory_{this};
-};
-
-BEGIN_METADATA(AccountImageView)
 END_METADATA
 
 AccountSelectionViewBase::AccountSelectionViewBase(
