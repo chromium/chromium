@@ -768,7 +768,7 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
               translation:
                   loadTimeData.getString('seaPenOptionArtFeatureOcean'),
               previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/vast_ocean.jpg',
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/ocean.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtFeatureRiver,
