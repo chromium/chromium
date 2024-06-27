@@ -2,4 +2,7 @@
 <!-- Recorder App specific strings (included from ../chromeos_strings.grd). -->
 
 <grit-part>
+  <message desc="Name of the Recorder App." name="IDS_RECORDER_APP_NAME">
+    Recorder
+  </message>
 </grit-part>
