@@ -180,19 +180,20 @@ void BookmarkModel::Load(const base::FilePath& profile_path) {
           ? profile_path.Append(kAccountBookmarksFileName)
           : base::FilePath();
 
-  LoadImpl(local_or_syncable_file_path, account_file_path);
-}
+  local_or_syncable_store_ = std::make_unique<BookmarkStorage>(
+      this, BookmarkStorage::kSelectLocalOrSyncableNodes,
+      local_or_syncable_file_path);
 
-void BookmarkModel::LoadAccountBookmarksFileAsLocalOrSyncableBookmarks(
-    const base::FilePath& profile_path) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!AreFoldersForAccountStorageAllowed());
+  if (!account_file_path.empty()) {
+    account_store_ = std::make_unique<BookmarkStorage>(
+        this, BookmarkStorage::kSelectAccountNodes, account_file_path);
+  }
 
-  loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_ = true;
-
-  LoadImpl(/*local_or_syncable_file_path=*/profile_path.Append(
-               kAccountBookmarksFileName),
-           /*account_file_path=*/base::FilePath());
+  // Creating ModelLoader schedules the load on a backend task runner.
+  model_loader_ = ModelLoader::Create(
+      local_or_syncable_file_path, account_file_path,
+      client_->GetLoadManagedNodeCallback(),
+      base::BindOnce(&BookmarkModel::DoneLoading, AsWeakPtr()));
 }
 
 scoped_refptr<ModelLoader> BookmarkModel::model_loader() {
@@ -227,12 +228,6 @@ bool BookmarkModel::IsLocalOnlyNode(const BookmarkNode& node) const {
     // sensible as the root is a synthetic node that doesn't get uploaded to
     // servers.
     return true;
-  }
-
-  if (loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_) {
-    // `this` only contains account bookmarks (iOS-specific codepath), for the
-    // case where `syncer::kSyncEnableBookmarksInTransportMode` is disabled.
-    return false;
   }
 
   const BookmarkNode* ancestor_permanent_node =
@@ -1063,11 +1058,6 @@ bool BookmarkModel::AccountStorageHasPendingWriteForTest() const {
   return account_store_->HasScheduledSaveForTesting();  // IN-TEST
 }
 
-void BookmarkModel::
-    SetLoadedAccountBookmarksFileAsLocalOrSyncableBookmarksForTest() {
-  loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_ = true;
-}
-
 void BookmarkModel::RestoreRemovedNode(const BookmarkNode* parent,
                                        size_t index,
                                        std::unique_ptr<BookmarkNode> node) {
@@ -1080,25 +1070,6 @@ void BookmarkModel::RestoreRemovedNode(const BookmarkNode* parent,
   // We might be restoring a folder node that have already contained a set of
   // child nodes. We need to notify all of them.
   NotifyNodeAddedForAllDescendants(node_ptr, /*added_by_user=*/false);
-}
-
-void BookmarkModel::LoadImpl(const base::FilePath& local_or_syncable_file_path,
-                             const base::FilePath& account_file_path) {
-  local_or_syncable_store_ = std::make_unique<BookmarkStorage>(
-      this, BookmarkStorage::kSelectLocalOrSyncableNodes,
-      local_or_syncable_file_path);
-
-  if (!account_file_path.empty()) {
-    account_store_ = std::make_unique<BookmarkStorage>(
-        this, BookmarkStorage::kSelectAccountNodes, account_file_path);
-  }
-
-  // Creating ModelLoader schedules the load on a backend task runner.
-  model_loader_ = ModelLoader::Create(
-      local_or_syncable_file_path, account_file_path,
-      loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_,
-      client_->GetLoadManagedNodeCallback(),
-      base::BindOnce(&BookmarkModel::DoneLoading, AsWeakPtr()));
 }
 
 BookmarkModel::NodeTypeForUuidLookup
@@ -1485,12 +1456,6 @@ metrics::StorageStateForUma BookmarkModel::GetStorageStateForUma(
       permanent_node == account_other_node_ ||
       permanent_node == account_mobile_node_) {
     CHECK(AreFoldersForAccountStorageAllowed());
-    return metrics::StorageStateForUma::kAccount;
-  }
-
-  // iOS-specific codepath for the case where a dedicated BookmarkModel instance
-  // is used to represent account bookmarks.
-  if (loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_) {
     return metrics::StorageStateForUma::kAccount;
   }
 

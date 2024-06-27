@@ -616,22 +616,6 @@ TEST_F(BookmarkModelTest, AddNewURL) {
 }
 
 // Tests recording user action when adding a bookmark in account storage when
-// a dedicated BookmarkModel instance is used for account bookmarks.
-TEST_F(BookmarkModelTest,
-       AddNewURLAccountStorageOnDedicatedBookmarkModelInstance) {
-  // TestBookmarkClient exercises the regular `Load()` codepath, so pretend here
-  // that `LoadAccountBookmarksFileAsLocalOrSyncableBookmarks()` was used
-  // instead.
-  model_->SetLoadedAccountBookmarksFileAsLocalOrSyncableBookmarksForTest();
-
-  model_->AddNewURL(model_->bookmark_bar_node(), 0, u"title",
-                    GURL("http://foo.com"));
-  EXPECT_EQ(1, user_action_tester()->GetActionCount("Bookmarks.Added"));
-  EXPECT_EQ(1, user_action_tester()->GetActionCount(
-                   "Bookmarks.Added.AccountStorage"));
-}
-
-// Tests recording user action when adding a bookmark in account storage when
 // a shared BookmarkModel instance is used for account bookmarks and
 // local-or-syncable ones.
 TEST_F(BookmarkModelTest,
@@ -2304,47 +2288,6 @@ TEST(BookmarkModelLoadTest, AccountSyncMetadataPopulatedWithoutNodesOnLoad) {
   EXPECT_EQ(sync_metadata_str, client_ptr->account_bookmark_sync_metadata());
 }
 
-TEST(BookmarkModelLoadTest, AccountNodesPopulatedOnLoadAsLocalOrSyncable) {
-  const GURL node_url("http://google.com/");
-  base::test::TaskEnvironment task_environment{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  base::ScopedTempDir tmp_dir;
-  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
-
-  // Enable feature to be able to write into the account bookmarks file,
-  // including one bookmarked URL.
-  {
-    base::test::ScopedFeatureList features{
-        syncer::kSyncEnableBookmarksInTransportMode};
-
-    auto model =
-        std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
-    model->Load(tmp_dir.GetPath());
-    test::WaitForBookmarkModelToLoad(model.get());
-    model->CreateAccountPermanentFolders();
-
-    ASSERT_NE(nullptr, model->account_bookmark_bar_node());
-
-    model->AddURL(model->account_bookmark_bar_node(), 0, u"User", node_url);
-
-    // This is necessary to ensure the save completes.
-    task_environment.FastForwardUntilNoTasksRemain();
-  }
-
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(syncer::kSyncEnableBookmarksInTransportMode);
-
-  auto model =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
-  model->LoadAccountBookmarksFileAsLocalOrSyncableBookmarks(tmp_dir.GetPath());
-  test::WaitForBookmarkModelToLoad(model.get());
-
-  EXPECT_EQ(nullptr, model->account_bookmark_bar_node());
-  ASSERT_EQ(1u, model->bookmark_bar_node()->children().size());
-  EXPECT_EQ(node_url, model->bookmark_bar_node()->children()[0]->url());
-}
-
 // Verifies the TitledUrlIndex is properly loaded.
 TEST(BookmarkModelLoadTest, TitledUrlIndexPopulatedOnLoad) {
   // Create a model with a single url.
@@ -2683,38 +2626,6 @@ TEST_F(BookmarkModelTest, IsLocalOnlyNodeWithSyncFeatureOn) {
   EXPECT_FALSE(model_->IsLocalOnlyNode(*model_->other_node()));
   EXPECT_FALSE(model_->IsLocalOnlyNode(*model_->mobile_node()));
   EXPECT_FALSE(model_->IsLocalOnlyNode(*folder));
-}
-
-TEST_F(BookmarkModelTest,
-       IsLocalOnlyNodeIfAccountNodesPopulatedAsLocalOrSyncable) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      syncer::kSyncEnableBookmarksInTransportMode);
-
-  const GURL node_url("http://google.com/");
-  base::test::TaskEnvironment task_environment{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  base::ScopedTempDir tmp_dir;
-  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
-
-  auto model =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
-  model->LoadAccountBookmarksFileAsLocalOrSyncableBookmarks(tmp_dir.GetPath());
-  test::WaitForBookmarkModelToLoad(model.get());
-
-  ASSERT_EQ(nullptr, model->account_bookmark_bar_node());
-  ASSERT_EQ(nullptr, model->account_other_node());
-  ASSERT_EQ(nullptr, model->account_mobile_node());
-
-  const BookmarkNode* folder =
-      model->AddFolder(model->bookmark_bar_node(), 0, u"folder");
-
-  EXPECT_TRUE(model->IsLocalOnlyNode(*model->root_node()));
-  EXPECT_FALSE(model->IsLocalOnlyNode(*model->bookmark_bar_node()));
-  EXPECT_FALSE(model->IsLocalOnlyNode(*model->other_node()));
-  EXPECT_FALSE(model->IsLocalOnlyNode(*model->mobile_node()));
-  EXPECT_FALSE(model->IsLocalOnlyNode(*folder));
 }
 
 }  // namespace

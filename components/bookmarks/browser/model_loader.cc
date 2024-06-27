@@ -46,8 +46,7 @@ std::optional<base::Value::Dict> LoadFileToDict(
 
 std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
     const base::FilePath& local_or_syncable_file_path,
-    const base::FilePath& account_file_path,
-    bool loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_for_uma) {
+    const base::FilePath& account_file_path) {
   auto details = std::make_unique<BookmarkLoadDetails>();
 
   std::set<int64_t> ids_assigned_to_account_nodes;
@@ -99,14 +98,7 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
                                      codec.required_recovery());
 
       // Record metrics that indicate whether or not IDs were reassigned for
-      // account bookmarks. This is only exercised for the case where a single
-      // BookmarkModel (and hence single ModelLoader) is used to load all
-      // bookmarks, including account bookmarks. For the opposite case where
-      // two instances are used (iOS), this function is invoked twice (once per
-      // instance) and the local-or-syncable codepath below instruments the
-      // equivalent metric.
-      CHECK(
-          !loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_for_uma);
+      // account bookmarks.
       metrics::RecordIdsReassignedOnProfileLoad(
           metrics::StorageFileForUma::kAccount, codec.ids_reassigned());
     } else {
@@ -139,16 +131,10 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
       details->set_local_or_syncable_reassigned_ids_per_old_id(
           codec.release_reassigned_ids_per_old_id());
 
-      // Record metrics that indicate whether or not IDs were reassigned. For
-      // the special case where BookmarkModel was loaded via
-      // `LoadAccountBookmarksFileAsLocalOrSyncableBookmarks()`, the actual file
-      // being loaded is the account bookmarks JSON file (in practice, used only
-      // on iOS).
+      // Record metrics that indicate whether or not IDs were reassigned for
+      // local-or-syncable bookmarks.
       metrics::RecordIdsReassignedOnProfileLoad(
-          loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_for_uma
-              ? metrics::StorageFileForUma::kAccount
-              : metrics::StorageFileForUma::kLocalOrSyncable,
-          codec.ids_reassigned());
+          metrics::StorageFileForUma::kLocalOrSyncable, codec.ids_reassigned());
     }
   }
 
@@ -213,16 +199,12 @@ void RecordLoadMetrics(const BookmarkLoadDetails& details,
 scoped_refptr<ModelLoader> ModelLoader::Create(
     const base::FilePath& local_or_syncable_file_path,
     const base::FilePath& account_file_path,
-    bool loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_for_uma,
     LoadManagedNodeCallback load_managed_node_callback,
     LoadCallback callback) {
   CHECK(!local_or_syncable_file_path.empty());
   // Note: base::MakeRefCounted is not available here, as ModelLoader's
   // constructor is private.
   auto model_loader = base::WrapRefCounted(new ModelLoader());
-  model_loader
-      ->loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_for_uma_ =
-      loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_for_uma;
   model_loader->backend_task_runner_ =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -251,9 +233,8 @@ std::unique_ptr<BookmarkLoadDetails> ModelLoader::DoLoadOnBackgroundThread(
     const base::FilePath& local_or_syncable_file_path,
     const base::FilePath& account_file_path,
     LoadManagedNodeCallback load_managed_node_callback) {
-  std::unique_ptr<BookmarkLoadDetails> details = LoadBookmarks(
-      local_or_syncable_file_path, account_file_path,
-      loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_for_uma_);
+  std::unique_ptr<BookmarkLoadDetails> details =
+      LoadBookmarks(local_or_syncable_file_path, account_file_path);
   CHECK(details);
 
   details->PopulateNodeIdsForLocalOrSyncablePermanentNodes();

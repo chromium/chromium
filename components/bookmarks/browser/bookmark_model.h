@@ -88,14 +88,6 @@ class BookmarkModel : public BookmarkUndoProvider,
   // BookmarkModelLoaded().
   void Load(const base::FilePath& profile_path);
 
-  // Special API for iOS only, where a dedicated BookmarkModel is used for
-  // account bookmarks, and counter-intuitively this BookmarkModel instance
-  // exposes those bookmarks as local-or-syncable bookmarks.
-  // TODO(crbug.com/346918509): Remove once a single BookmarkModel instance is
-  // used on iOS.
-  void LoadAccountBookmarksFileAsLocalOrSyncableBookmarks(
-      const base::FilePath& profile_path);
-
   // Returns true if the model finished loading.
   bool loaded() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -283,15 +275,10 @@ class BookmarkModel : public BookmarkUndoProvider,
   enum class NodeTypeForUuidLookup {
     // Local or syncable nodes include all bookmark nodes that are not
     // descendants of account permanent folders (e.g. as returned by
-    // account_bookmark_bar_node()). On platforms where
-    // BookmarkClient::AreFoldersForAccountStorageAllowed() returns false, which
-    // most notably includes iOS, this includes all bookmark nodes.
+    // account_bookmark_bar_node()).
     kLocalOrSyncableNodes,
     // Account nodes include all bookmarks that are descendants of account
-    // permanent folders (e.g. as returned by account_bookmark_bar_node()). On
-    // platforms where BookmarkClient::AreFoldersForAccountStorageAllowed()
-    // returns false, which most notably includes iOS, these bookmarks don't
-    // exist.
+    // permanent folders (e.g. as returned by account_bookmark_bar_node()).
     kAccountNodes,
   };
 
@@ -458,10 +445,6 @@ class BookmarkModel : public BookmarkUndoProvider,
   bool LocalOrSyncableStorageHasPendingWriteForTest() const;
   bool AccountStorageHasPendingWriteForTest() const;
 
-  // Mimics `LoadAccountBookmarksFileAsLocalOrSyncableBookmarks()` having been
-  // used instead of `Load()`. For unit-tests only.
-  void SetLoadedAccountBookmarksFileAsLocalOrSyncableBookmarksForTest();
-
  private:
   friend class BookmarkCodecTest;
   friend class BookmarkModelFaviconTest;
@@ -472,12 +455,6 @@ class BookmarkModel : public BookmarkUndoProvider,
   void RestoreRemovedNode(const BookmarkNode* parent,
                           size_t index,
                           std::unique_ptr<BookmarkNode> node) override;
-
-  // Internal version of Load() that takes two file paths, the second of which
-  // represents account bookmarks and is optional. If `account_file_path` is
-  // empty, account bookmarks are neither read from nor written to disk.
-  void LoadImpl(const base::FilePath& local_or_syncable_file_path,
-                const base::FilePath& account_file_path);
 
   // Given a node that is already part of the model, it determines the
   // corresponding type for the purpose of understanding uniqueness properties
@@ -579,11 +556,6 @@ class BookmarkModel : public BookmarkUndoProvider,
 
   // Whether the initial set of data has been loaded.
   bool loaded_ = false;
-
-  // Whether or not loading was invoked via
-  // `LoadAccountBookmarksFileAsLocalOrSyncableBookmarks()`, remembered for the
-  // purpose of metrics and certain predicates.
-  bool loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_ = false;
 
   // See `root_` for details.
   std::unique_ptr<BookmarkNode> owned_root_;
