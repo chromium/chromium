@@ -128,7 +128,8 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
     return clip_list_.IntersectPathWithClip(path);
   }
 
-  void SetFont(const FontDescription&, FontSelector*);
+  void SetFont(const FontDescription& passed_font_description,
+               FontSelector* selector);
   bool IsFontDirtyForFilter() const;
   const Font& GetFont() const;
   const FontDescription& GetFontDescription() const;
@@ -345,6 +346,7 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   void UpdateFilterQuality() const;
   void UpdateFilterQuality(cc::PaintFlags::FilterQuality) const;
   void ShadowParameterChanged();
+  void SetFontInternal(const FontDescription&, FontSelector*);
   sk_sp<cc::DrawLooper>& EmptyDrawLooper() const;
   sk_sp<cc::DrawLooper>& ShadowOnlyDrawLooper() const;
   sk_sp<cc::DrawLooper>& ShadowAndForegroundDrawLooper() const;

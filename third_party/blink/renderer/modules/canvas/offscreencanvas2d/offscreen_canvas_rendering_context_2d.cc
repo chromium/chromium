@@ -397,7 +397,6 @@ bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {
     if (!style) {
       return false;
     }
-
     FontDescription desc =
         FontStyleResolver::ComputeFont(*style, host->GetFontSelector());
 

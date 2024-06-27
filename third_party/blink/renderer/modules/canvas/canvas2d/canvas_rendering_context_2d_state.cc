@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -93,6 +95,65 @@ bool StringToNumWithUnit(String spacing,
   *number_spacing = result->NumericValue();
   *unit = result->GetUnitType();
   return true;
+}
+
+FontSelectionValue CanvasFontStretchToSelectionValue(
+    V8CanvasFontStretch font_stretch) {
+  FontSelectionValue stretch_value;
+  switch (font_stretch.AsEnum()) {
+    case (V8CanvasFontStretch::Enum::kUltraCondensed):
+      stretch_value = kUltraCondensedWidthValue;
+      break;
+    case (V8CanvasFontStretch::Enum::kExtraCondensed):
+      stretch_value = kExtraCondensedWidthValue;
+      break;
+    case (V8CanvasFontStretch::Enum::kCondensed):
+      stretch_value = kCondensedWidthValue;
+      break;
+    case (V8CanvasFontStretch::Enum::kSemiCondensed):
+      stretch_value = kSemiCondensedWidthValue;
+      break;
+    case (V8CanvasFontStretch::Enum::kNormal):
+      stretch_value = kNormalWidthValue;
+      break;
+    case (V8CanvasFontStretch::Enum::kUltraExpanded):
+      stretch_value = kUltraExpandedWidthValue;
+      break;
+    case (V8CanvasFontStretch::Enum::kExtraExpanded):
+      stretch_value = kExtraExpandedWidthValue;
+      break;
+    case (V8CanvasFontStretch::Enum::kExpanded):
+      stretch_value = kExpandedWidthValue;
+      break;
+    case (V8CanvasFontStretch::Enum::kSemiExpanded):
+      stretch_value = kSemiExpandedWidthValue;
+      break;
+    default:
+      NOTREACHED_IN_MIGRATION();
+  }
+  return stretch_value;
+}
+
+TextRenderingMode CanvasTextRenderingToTextRendering(
+    V8CanvasTextRendering text_rendering) {
+  TextRenderingMode text_rendering_mode;
+  switch (text_rendering.AsEnum()) {
+    case (V8CanvasTextRendering::Enum::kAuto):
+      text_rendering_mode = TextRenderingMode::kAutoTextRendering;
+      break;
+    case (V8CanvasTextRendering::Enum::kOptimizeSpeed):
+      text_rendering_mode = TextRenderingMode::kAutoTextRendering;
+      break;
+    case (V8CanvasTextRendering::Enum::kOptimizeLegibility):
+      text_rendering_mode = TextRenderingMode::kAutoTextRendering;
+      break;
+    case (V8CanvasTextRendering::Enum::kGeometricPrecision):
+      text_rendering_mode = TextRenderingMode::kAutoTextRendering;
+      break;
+    default:
+      NOTREACHED_IN_MIGRATION();
+  }
+  return text_rendering_mode;
 }
 
 CanvasRenderingContext2DState::CanvasRenderingContext2DState()
@@ -300,6 +361,14 @@ void CanvasRenderingContext2DState::SetFont(
       1.0f /*Deliberately ignore zoom on the canvas element*/);
   conversion_data.SetFontSizes(font_size);
 
+  // After the font changed value, the new font needs to follow the text
+  // properties set for the context, ref:
+  // https://html.spec.whatwg.org/multipage/canvas.html#text-preparation-algorithm
+  // However, FontVariantCaps and FontStretch can be set with the font. It's
+  // ambiguous if the values are left intentionally out to use default.
+  // It's suggest to always use the values from font setter,
+  // ref: https://github.com/whatwg/html/issues/8103.
+
   // If wordSpacing is set in CanvasRenderingContext2D, then update the
   // information in fontDescription.
   if (word_spacing_is_set_) {
@@ -317,6 +386,26 @@ void CanvasRenderingContext2DState::SetFont(
         letter_spacing_, letter_spacing_unit_);
     font_description.SetLetterSpacing(letter_spacing_in_pixel);
   }
+  font_description.SetKerning(font_kerning_);
+  font_description.SetTextRendering(
+      CanvasTextRenderingToTextRendering(text_rendering_mode_));
+  font_variant_caps_ = font_description.VariantCaps();
+  std::optional<blink::V8CanvasFontStretch> font_value =
+      V8CanvasFontStretch::Create(
+          FontDescription::ToString(font_description.Stretch()).LowerASCII());
+  if (font_value.has_value()) {
+    font_stretch_ = *font_value;
+  } else {
+    NOTREACHED();
+  }
+  SetFontInternal(font_description, selector);
+}
+
+void CanvasRenderingContext2DState::SetFontInternal(
+    const FontDescription& passed_font_description,
+    FontSelector* selector) {
+  FontDescription font_description = passed_font_description;
+  font_description.SetSubpixelAscentDescent(true);
 
   font_ = Font(font_description, selector);
   realized_font_ = true;
@@ -348,50 +437,19 @@ void CanvasRenderingContext2DState::SetFontKerning(
   FontDescription font_description(GetFontDescription());
   font_description.SetKerning(font_kerning);
   font_kerning_ = font_kerning;
-  SetFont(font_description, selector);
+  SetFontInternal(font_description, selector);
 }
 
 void CanvasRenderingContext2DState::SetFontStretch(
     V8CanvasFontStretch font_stretch,
     FontSelector* selector) {
   DCHECK(realized_font_);
-  FontSelectionValue stretch_value;
-  switch (font_stretch.AsEnum()) {
-    case (V8CanvasFontStretch::Enum::kUltraCondensed):
-      stretch_value = kUltraCondensedWidthValue;
-      break;
-    case (V8CanvasFontStretch::Enum::kExtraCondensed):
-      stretch_value = kExtraCondensedWidthValue;
-      break;
-    case (V8CanvasFontStretch::Enum::kCondensed):
-      stretch_value = kCondensedWidthValue;
-      break;
-    case (V8CanvasFontStretch::Enum::kSemiCondensed):
-      stretch_value = kSemiCondensedWidthValue;
-      break;
-    case (V8CanvasFontStretch::Enum::kNormal):
-      stretch_value = kNormalWidthValue;
-      break;
-    case (V8CanvasFontStretch::Enum::kUltraExpanded):
-      stretch_value = kUltraExpandedWidthValue;
-      break;
-    case (V8CanvasFontStretch::Enum::kExtraExpanded):
-      stretch_value = kExtraExpandedWidthValue;
-      break;
-    case (V8CanvasFontStretch::Enum::kExpanded):
-      stretch_value = kExpandedWidthValue;
-      break;
-    case (V8CanvasFontStretch::Enum::kSemiExpanded):
-      stretch_value = kSemiExpandedWidthValue;
-      break;
-    default:
-      NOTREACHED_IN_MIGRATION();
-  }
-
+  FontSelectionValue stretch_value =
+      CanvasFontStretchToSelectionValue(font_stretch);
   FontDescription font_description(GetFontDescription());
   font_description.SetStretch(stretch_value);
   font_stretch_ = font_stretch;
-  SetFont(font_description, selector);
+  SetFontInternal(font_description, selector);
 }
 
 void CanvasRenderingContext2DState::SetFontVariantCaps(
@@ -401,7 +459,7 @@ void CanvasRenderingContext2DState::SetFontVariantCaps(
   FontDescription font_description(GetFontDescription());
   font_description.SetVariantCaps(font_variant_caps);
   font_variant_caps_ = font_variant_caps;
-  SetFont(font_description, selector);
+  SetFontInternal(font_description, selector);
 }
 
 void CanvasRenderingContext2DState::SetTransform(
@@ -808,8 +866,19 @@ void CanvasRenderingContext2DState::SetLetterSpacing(
   builder.AppendNumber(num_spacing);
   builder.Append(CSSPrimitiveValue::UnitTypeToString(unit));
   parsed_letter_spacing_ = builder.ToString();
+  // Convert letter spacing to pixel length and set it in font_description.
+  FontDescription font_description(GetFontDescription());
+  CSSToLengthConversionData conversion_data = CSSToLengthConversionData();
+  auto const font_size = CSSToLengthConversionData::FontSizes(
+      font_description.ComputedSize(), font_description.ComputedSize(), &font_,
+      1.0f /*Deliberately ignore zoom on the canvas element*/);
+  conversion_data.SetFontSizes(font_size);
+  float letter_spacing_in_pixel =
+      conversion_data.ZoomedComputedPixels(num_spacing, unit);
+
+  font_description.SetLetterSpacing(letter_spacing_in_pixel);
   if (font_.GetFontSelector())
-    SetFont(GetFontDescription(), font_.GetFontSelector());
+    SetFontInternal(font_description, font_.GetFontSelector());
 }
 
 void CanvasRenderingContext2DState::SetWordSpacing(const String& word_spacing) {
@@ -832,35 +901,31 @@ void CanvasRenderingContext2DState::SetWordSpacing(const String& word_spacing) {
   builder.AppendNumber(num_spacing);
   builder.Append(CSSPrimitiveValue::UnitTypeToString(unit));
   parsed_word_spacing_ = builder.ToString();
+  // Convert letter spacing to pixel length and set it in font_description.
+  FontDescription font_description(GetFontDescription());
+  CSSToLengthConversionData conversion_data = CSSToLengthConversionData();
+  auto const font_size = CSSToLengthConversionData::FontSizes(
+      font_description.ComputedSize(), font_description.ComputedSize(), &font_,
+      1.0f /*Deliberately ignore zoom on the canvas element*/);
+  conversion_data.SetFontSizes(font_size);
+  float word_spacing_in_pixel =
+      conversion_data.ZoomedComputedPixels(num_spacing, unit);
+
+  font_description.SetWordSpacing(word_spacing_in_pixel);
   if (font_.GetFontSelector())
-    SetFont(GetFontDescription(), font_.GetFontSelector());
+    SetFontInternal(font_description, font_.GetFontSelector());
 }
 
 void CanvasRenderingContext2DState::SetTextRendering(
     V8CanvasTextRendering text_rendering,
     FontSelector* selector) {
-  TextRenderingMode text_rendering_mode;
-  switch (text_rendering.AsEnum()) {
-    case (V8CanvasTextRendering::Enum::kAuto):
-      text_rendering_mode = TextRenderingMode::kAutoTextRendering;
-      break;
-    case (V8CanvasTextRendering::Enum::kOptimizeSpeed):
-      text_rendering_mode = TextRenderingMode::kAutoTextRendering;
-      break;
-    case (V8CanvasTextRendering::Enum::kOptimizeLegibility):
-      text_rendering_mode = TextRenderingMode::kAutoTextRendering;
-      break;
-    case (V8CanvasTextRendering::Enum::kGeometricPrecision):
-      text_rendering_mode = TextRenderingMode::kAutoTextRendering;
-      break;
-    default:
-      NOTREACHED_IN_MIGRATION();
-  }
   DCHECK(realized_font_);
+  TextRenderingMode text_rendering_mode =
+      CanvasTextRenderingToTextRendering(text_rendering);
   FontDescription font_description(GetFontDescription());
   font_description.SetTextRendering(text_rendering_mode);
   text_rendering_mode_ = text_rendering;
-  SetFont(font_description, selector);
+  SetFontInternal(font_description, selector);
 }
 
 }  // namespace blink
