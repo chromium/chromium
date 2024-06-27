@@ -5,13 +5,25 @@
 #ifndef CHROME_ENTERPRISE_COMPANION_ENTERPRISE_COMPANION_STATUS_H_
 #define CHROME_ENTERPRISE_COMPANION_ENTERPRISE_COMPANION_STATUS_H_
 
+#include <ostream>
 #include <utility>
 #include <variant>
 
+#include "base/functional/overloaded.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 
 namespace enterprise_companion {
+
+// Errors defined by the enterprise companion app.
+enum class ApplicationError {
+  // An action failed due to the client not being registered.
+  kRegistrationPreconditionFailed,
+  // DMStorage reports that it is not capiable of persisting policies.
+  kPolicyPersistenceImpossible,
+  // DMStorage failed to persist the policies.
+  kPolicyPersistenceFailed,
+};
 
 // Canonical view of statuses used across the application.
 class EnterpriseCompanionStatus {
@@ -19,7 +31,8 @@ class EnterpriseCompanionStatus {
   using Ok = std::monostate;
   using StatusVariant = std::variant<Ok,
                                      policy::DeviceManagementStatus,
-                                     policy::CloudPolicyValidatorBase::Status>;
+                                     policy::CloudPolicyValidatorBase::Status,
+                                     ApplicationError>;
   EnterpriseCompanionStatus() = delete;
 
   // Constructs an `Ok` status.
@@ -53,7 +66,27 @@ class EnterpriseCompanionStatus {
     return operator==(From<2>(other));
   }
 
+  // ApplicationError:
+  explicit EnterpriseCompanionStatus(ApplicationError error)
+      : EnterpriseCompanionStatus(StatusVariant(error)) {}
+  bool EqualsApplicationError(ApplicationError other) const {
+    return operator==(From<3>(other));
+  }
+
  private:
+  StatusVariant status_variant_;
+
+  // Outputs a human-friendly string representation of the status.
+  friend std::ostream& operator<<(std::ostream& out,
+                                  const EnterpriseCompanionStatus& status) {
+    out << status.status_variant_.index();
+    std::visit(base::Overloaded{
+                   [](std::monostate) {},
+                   [&out](auto&& x) { out << " : " << static_cast<int>(x); }},
+               status.status_variant_);
+    return out;
+  }
+
   explicit EnterpriseCompanionStatus(StatusVariant&& status_variant)
       : status_variant_(std::move(status_variant)) {}
 
@@ -62,9 +95,12 @@ class EnterpriseCompanionStatus {
     return EnterpriseCompanionStatus(
         StatusVariant(std::in_place_index_t<I>(), std::forward<T>(status)));
   }
-
-  StatusVariant status_variant_;
 };
+
+// A general-purpose callback type for operations that produce an
+// EnterpriseCompanionStatus.
+using StatusCallback =
+    base::OnceCallback<void(const EnterpriseCompanionStatus&)>;
 
 }  // namespace enterprise_companion
 
