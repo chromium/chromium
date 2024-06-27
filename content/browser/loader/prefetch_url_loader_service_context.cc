@@ -135,12 +135,9 @@ void PrefetchURLLoaderServiceContext::CreatePrefetchLoaderAndStart(
     prefetch_load_callback_for_testing_.Run();
   }
 
-  scoped_refptr<PrefetchedSignedExchangeCache> prefetched_signed_exchange_cache;
-  if (loader_factory_receivers_->current_context()) {
-    prefetched_signed_exchange_cache =
-        loader_factory_receivers_->current_context()
-            ->prefetched_signed_exchange_cache;
-  }
+  scoped_refptr<PrefetchedSignedExchangeCache>
+      prefetched_signed_exchange_cache =
+          current_context.prefetched_signed_exchange_cache;
 
   // base::Unretained is safe here since |this| owns the loader.
   auto loader = std::make_unique<PrefetchURLLoader>(
