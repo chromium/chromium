@@ -93,11 +93,9 @@ WebDialogView::WebDialogView(content::BrowserContext* context,
   if (web_contents) {
     web_view_->SetWebContents(web_contents);
   }
-  const ui::ElementIdentifier element_id =
-      delegate_ ? delegate_->web_view_element_id() : ui::ElementIdentifier();
-  if (element_id) {
-    web_view_->SetProperty(views::kElementIdentifierKey, element_id);
-  }
+  web_view_->SetProperty(
+      views::kElementIdentifierKey,
+      delegate_ ? delegate_->web_view_element_id() : ui::ElementIdentifier());
 }
 
 WebDialogView::~WebDialogView() = default;
