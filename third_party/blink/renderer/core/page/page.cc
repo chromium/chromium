@@ -171,12 +171,14 @@ HeapVector<Member<Page>> Page::RelatedPages() {
   return result;
 }
 
-Page* Page::CreateNonOrdinary(ChromeClient& chrome_client,
-                              AgentGroupScheduler& agent_group_scheduler) {
+Page* Page::CreateNonOrdinary(
+    ChromeClient& chrome_client,
+    AgentGroupScheduler& agent_group_scheduler,
+    const ColorProviderColorMaps* color_provider_colors) {
   return MakeGarbageCollected<Page>(
       base::PassKey<Page>(), chrome_client, agent_group_scheduler,
-      BrowsingContextGroupInfo::CreateUnique(),
-      /*color_provider_colors=*/nullptr, /*is_ordinary=*/false);
+      BrowsingContextGroupInfo::CreateUnique(), color_provider_colors,
+      /*is_ordinary=*/false);
 }
 
 Page* Page::CreateOrdinary(
@@ -579,6 +581,10 @@ bool Page::UpdateColorProviders(
             : ui::CreateColorProviderFromRendererColorMap(
                   color_provider_colors.forced_colors_map);
     did_color_provider_update = true;
+  }
+
+  if (did_color_provider_update) {
+    SetColorProviderColorMaps(color_provider_colors);
   }
 
   return did_color_provider_update;

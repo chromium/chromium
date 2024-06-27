@@ -1338,7 +1338,8 @@ void InspectorOverlayAgent::LoadOverlayPageResource() {
       GetFrame()->GetPage()->GetChromeClient(), *this);
   overlay_page_ = Page::CreateNonOrdinary(
       *overlay_chrome_client_,
-      *GetFrame()->GetFrameScheduler()->GetAgentGroupScheduler());
+      *GetFrame()->GetFrameScheduler()->GetAgentGroupScheduler(),
+      &GetFrame()->GetPage()->GetColorProviderColorMaps());
   overlay_host_ = MakeGarbageCollected<InspectorOverlayHost>(this);
 
   Settings& settings = GetFrame()->GetPage()->GetSettings();

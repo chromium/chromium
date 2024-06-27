@@ -36,7 +36,8 @@ TEST(PageTest, CreateNonOrdinaryBrowsingContextGroup) {
   EmptyChromeClient client;
   auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
 
-  Page* page = Page::CreateNonOrdinary(client, *scheduler);
+  Page* page = Page::CreateNonOrdinary(client, *scheduler,
+                                       /*color_provider_colors=*/nullptr);
 
   EXPECT_FALSE(page->BrowsingContextGroupToken().is_empty());
   EXPECT_FALSE(page->CoopRelatedGroupToken().is_empty());
@@ -137,7 +138,8 @@ TEST(PageTest, CreateNonOrdinaryColorProviders) {
   EmptyChromeClient client;
   auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
 
-  Page* page = Page::CreateNonOrdinary(client, *scheduler);
+  Page* page = Page::CreateNonOrdinary(client, *scheduler,
+                                       /*color_provider_colors=*/nullptr);
 
   const ui::ColorProvider* light_color_provider =
       page->GetColorProviderForPainting(

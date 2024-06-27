@@ -120,8 +120,10 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
  public:
   // Any pages not owned by a web view should be created using this method.
-  static Page* CreateNonOrdinary(ChromeClient& chrome_client,
-                                 AgentGroupScheduler& agent_group_scheduler);
+  static Page* CreateNonOrdinary(
+      ChromeClient& chrome_client,
+      AgentGroupScheduler& agent_group_scheduler,
+      const ColorProviderColorMaps* color_provider_colors);
 
   // An "ordinary" page is a fully-featured page owned by a web view.
   static Page* CreateOrdinary(
@@ -173,6 +175,17 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   const ui::ColorProvider* GetColorProviderForPainting(
       mojom::blink::ColorScheme color_scheme,
       bool in_forced_colors) const;
+
+  // Returns the color provider colors for this page. Used to support the
+  // creation of Non-ordiany pages from a main page.
+  const ColorProviderColorMaps& GetColorProviderColorMaps() {
+    return color_provider_colors_;
+  }
+
+  void SetColorProviderColorMaps(
+      const ColorProviderColorMaps& color_provider_colors) {
+    color_provider_colors_ = color_provider_colors;
+  }
 
   void InitialStyleChanged();
   void UpdateAcceleratedCompositingSettings();
@@ -638,6 +651,10 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   std::unique_ptr<ui::ColorProvider> light_color_provider_;
   std::unique_ptr<ui::ColorProvider> dark_color_provider_;
   std::unique_ptr<ui::ColorProvider> forced_colors_color_provider_;
+
+  // Caching the color provider colors for easy creation of non ordinary pages
+  // who may depend on the main Page for colors.
+  ColorProviderColorMaps color_provider_colors_;
 
   // This provider is used when forced color emulation is enabled via DevTools,
   // overriding the light, dark or forced colors color providers.

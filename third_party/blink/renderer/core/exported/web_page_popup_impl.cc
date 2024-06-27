@@ -124,7 +124,8 @@ Page* CreatePage(ChromeClient& chrome_client, WebViewImpl& opener_web_view) {
   Settings& main_settings = opener_web_view.GetPage()->GetSettings();
   Page* page = Page::CreateNonOrdinary(
       chrome_client,
-      opener_web_view.GetPage()->GetPageScheduler()->GetAgentGroupScheduler());
+      opener_web_view.GetPage()->GetPageScheduler()->GetAgentGroupScheduler(),
+      &opener_web_view.GetPage()->GetColorProviderColorMaps());
   page->GetSettings().SetAcceleratedCompositingEnabled(true);
   page->GetSettings().SetScriptEnabled(true);
   page->GetSettings().SetAllowScriptsToCloseWindows(true);

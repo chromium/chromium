@@ -146,8 +146,8 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
       main_page_->GetChromeClient(), anchor_->GetDocument().View());
   Settings& main_settings = main_page_->GetSettings();
   page_ = Page::CreateNonOrdinary(
-      *chrome_client_,
-      main_page_->GetPageScheduler()->GetAgentGroupScheduler());
+      *chrome_client_, main_page_->GetPageScheduler()->GetAgentGroupScheduler(),
+      &main_page_->GetColorProviderColorMaps());
   page_->GetSettings().SetMinimumFontSize(main_settings.GetMinimumFontSize());
   page_->GetSettings().SetMinimumLogicalFontSize(
       main_settings.GetMinimumLogicalFontSize());

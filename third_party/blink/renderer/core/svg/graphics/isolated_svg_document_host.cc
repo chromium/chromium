@@ -102,7 +102,8 @@ IsolatedSVGDocumentHost::IsolatedSVGDocumentHost(
   {
     TRACE_EVENT("blink",
                 "IsolatedSVGDocumentHost::IsolatedSVGDocumentHost::createPage");
-    page = Page::CreateNonOrdinary(chrome_client, agent_group_scheduler);
+    page = Page::CreateNonOrdinary(chrome_client, agent_group_scheduler,
+                                   /*color_provider_colors=*/nullptr);
 
     Settings& settings = page->GetSettings();
     settings.SetScriptEnabled(false);
