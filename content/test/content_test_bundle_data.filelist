@@ -4357,6 +4357,8 @@ data/accessibility/html/meter-expected-win.txt
 data/accessibility/html/meter.html
 data/accessibility/html/micro-clearfix-hack-expected-blink.txt
 data/accessibility/html/micro-clearfix-hack.html
+data/accessibility/html/min-role-expected-blink.txt
+data/accessibility/html/min-role.html
 data/accessibility/html/modal-dialog-and-iframes-expected-blink.txt
 data/accessibility/html/modal-dialog-and-iframes.html
 data/accessibility/html/modal-dialog-closed-expected-android.txt
@@ -6936,8 +6938,8 @@ data/link_rel_prefetch_disable_network.html
 data/link_rel_prefetch_disable_network.html.mock-http-headers
 data/link_rel_prefetch_referrer_policy.html
 data/lite_js_test.mojom
-data/loader/blank.html
 data/loader/async_resource_handler.html
+data/loader/blank.html
 data/loader/change_title.js
 data/loader/cors_file_origin_test.html
 data/loader/cors_origin_access_list_test.html

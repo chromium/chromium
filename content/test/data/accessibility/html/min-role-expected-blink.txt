@@ -1,0 +1,15 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++group
+++++++++staticText name='Autofocus'
+++++++++++inlineTextBox name='Autofocus'
+++++++group
+++++++++staticText name='Draggable'
+++++++++++inlineTextBox name='Draggable'
+++++++genericContainer name='Tabindex=0'
+++++++++staticText name='Tabindex=0'
+++++++++++inlineTextBox name='Tabindex=0'
+++++++genericContainer
+++++++++staticText name='Tabindex=-1'
+++++++++++inlineTextBox name='Tabindex=-1'

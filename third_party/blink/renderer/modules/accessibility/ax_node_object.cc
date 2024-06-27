@@ -1919,9 +1919,11 @@ ax::mojom::blink::Role AXNodeObject::RoleFromLayoutObjectOrNode() const {
   }
 
   // Minimum role:
-  // TODO(aleventhal) Implement all of https://github.com/w3c/html-aam/pull/454.
   if (GetElement() && !GetElement()->FastHasAttribute(html_names::kRoleAttr)) {
-    if (IsPopup() != ax::mojom::blink::IsPopup::kNone) {
+    if (IsPopup() != ax::mojom::blink::IsPopup::kNone ||
+        GetElement()->FastHasAttribute(html_names::kAutofocusAttr) ||
+        GetElement()->FastHasAttribute(html_names::kDraggableAttr)) {
+      // TODO(accessibility) Consider for tabindex="0".
       return ax::mojom::blink::Role::kGroup;
     }
   }

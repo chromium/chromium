@@ -2900,6 +2900,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("micro-clearfix-hack.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityMinRole) {
+  RunHtmlTest(FILE_PATH_LITERAL("min-role.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityMissingRelationTargetsAddedLater) {
   RunAriaTest(FILE_PATH_LITERAL("missing-relation-targets-added-later.html"));

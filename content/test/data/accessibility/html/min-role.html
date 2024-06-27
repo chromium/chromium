@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<!-- Minimum role from https://github.com/w3c/html-aam/pull/454 -->
+<!-- autofocus gets a minimum role of group -->
+<div autofocus>Autofocus</div>
+<!-- draggable gets a minimum role of group -->
+<div draggable>Draggable</div>
+<!-- For now, tabindex does not have a minimum role. Consider having tabindex=0 using a minimum role of group -->
+<div tabindex="0">Tabindex=0</div>
+<div tabindex="-1">Tabindex=-1</div>
+<!-- popover targets also have a minimum role, tested in popover-api.html -->
+
