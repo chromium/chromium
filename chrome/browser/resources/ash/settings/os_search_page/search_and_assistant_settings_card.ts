@@ -80,8 +80,11 @@ export class SearchAndAssistantSettingsCardElement extends
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set<Setting>(
-            [Setting.kPreferredSearchEngine, Setting.kMahiOnOff]),
+        value: () => new Set<Setting>([
+          Setting.kPreferredSearchEngine,
+          Setting.kMahiOnOff,
+          Setting.kShowOrca,
+        ]),
       },
 
       isRevampWayfindingEnabled_: {

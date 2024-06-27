@@ -201,6 +201,41 @@ suite('<search-and-assistant-settings-card>', () => {
           'prefs.settings.magic_boost_enabled.value'));
       assertFalse(magicBoostCollapse.opened);
     });
+
+    test('sub items are deep-linkable', async () => {
+      // Set `isMahiEnabled` false to hide the to-be-obsolete Mahi toggle that
+      // uses the same deeplink as the HelpMeRead toggle under Magic boost.
+      loadTimeData.overrideValues({
+        isMahiEnabled: false,
+        isMagicBoostFeatureEnabled: true,
+      });
+      createSearchAndAssistantCard();
+      const fakePrefs = {
+        settings: {
+          magic_boost_enabled: {
+            value: true,
+          },
+        },
+      };
+      searchAndAssistantSettingsCard.prefs = fakePrefs;
+      flush();
+
+      const setting = settingMojom.Setting.kMahiOnOff;
+      const params = new URLSearchParams();
+      params.append('settingId', setting.toString());
+      Router.getInstance().navigateTo(defaultRoute, params);
+
+      const deepLinkElement =
+          searchAndAssistantSettingsCard.shadowRoot!.querySelector<HTMLElement>(
+              '#helpMeReadToggle');
+      assertTrue(!!deepLinkElement);
+
+      await waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement,
+          searchAndAssistantSettingsCard.shadowRoot!.activeElement,
+          `Element should be focused for settingId=${setting}.'`);
+    });
   });
 
   suite('when Quick Answers is not supported', () => {
