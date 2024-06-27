@@ -3321,8 +3321,7 @@ TEST_F(LegacySWPictureLayerImplTest,
   pending_layer()->picture_layer_tiling_set()->RemoveAllTiles();
   pending_layer()->SetBounds(layer_bounds);
   pending_layer()->UpdateRasterSource(
-      FakeRasterSource::CreateFilled(layer_bounds), &invalidation, nullptr,
-      nullptr);
+      FakeRasterSource::CreateFilled(layer_bounds), &invalidation);
   pending_layer()->PushPropertiesTo(active_layer());
   SetContentsAndAnimationScalesOnBothLayers(contents_scale, device_scale,
                                             page_scale, maximum_animation_scale,
@@ -3897,8 +3896,7 @@ TEST_F(LegacySWPictureLayerImplTest,
   pending_layer()->picture_layer_tiling_set()->RemoveAllTiles();
   pending_layer()->SetBounds(layer_bounds);
   pending_layer()->UpdateRasterSource(
-      FakeRasterSource::CreateFilled(layer_bounds), &invalidation, nullptr,
-      nullptr);
+      FakeRasterSource::CreateFilled(layer_bounds), &invalidation);
   pending_layer()->PushPropertiesTo(active_layer());
   SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale);
   EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 2.f);
@@ -6551,8 +6549,7 @@ class LCDTextTest : public PictureLayerImplTest,
     descendant_->SetDrawsContent(true);
     descendant_->SetBounds(gfx::Size(200, 200));
     Region invalidation;
-    descendant_->UpdateRasterSource(raster_source, &invalidation, nullptr,
-                                    nullptr);
+    descendant_->UpdateRasterSource(raster_source, &invalidation);
     ASSERT_TRUE(layer_->CanHaveTilings());
 
     CreateTransformNode(layer_);

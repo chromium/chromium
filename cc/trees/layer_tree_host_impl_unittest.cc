@@ -15787,8 +15787,7 @@ TEST_F(LayerTreeHostImplTest, InvalidLayerNotAddedToRasterQueue) {
       host_impl_->active_tree()->GetDeviceViewport().size());
   layer->SetDrawsContent(true);
   layer->tilings()->AddTiling(gfx::AxisTransform2d(), raster_source_with_tiles);
-  layer->UpdateRasterSource(raster_source_with_tiles, &empty_invalidation,
-                            nullptr, nullptr);
+  layer->UpdateRasterSource(raster_source_with_tiles, &empty_invalidation);
   layer->tilings()->tiling_at(0)->set_resolution(
       TileResolution::HIGH_RESOLUTION);
   layer->tilings()->tiling_at(0)->CreateAllTilesForTesting();
@@ -16563,11 +16562,6 @@ TEST_F(LayerTreeHostImplTest, CheckerImagingTileInvalidation) {
   root->SetDrawsContent(true);
   UpdateDrawProperties(pending_tree);
 
-  // Update the decoding state map for the tracker so it knows the correct
-  // decoding preferences for the image.
-  host_impl_->tile_manager()->checker_image_tracker().UpdateImageDecodingHints(
-      raster_source->TakeDecodingModeMap());
-
   // CompleteCommit which should perform a PrepareTiles, adding tilings for the
   // root layer, each one having a raster task.
   host_impl_->CommitComplete();
@@ -16599,10 +16593,9 @@ TEST_F(LayerTreeHostImplTest, CheckerImagingTileInvalidation) {
     else
       EXPECT_FALSE(tile->HasRasterTask());
   }
-  const auto expected_invalidation =
-      ImageRectsToRegion(raster_source->GetDisplayItemList()
-                             ->discardable_image_map()
-                             .GetRectsForImage(checkerable_image.stable_id()));
+  const auto expected_invalidation = ImageRectsToRegion(
+      root->GetDiscardableImageMapForTesting()->GetRectsForImage(
+          checkerable_image.stable_id()));
   EXPECT_EQ(expected_invalidation, *(root->GetPendingInvalidation()));
 }
 
@@ -17651,8 +17644,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest, CommitWithDirtyPaintWorklets) {
   scoped_refptr<RasterSource> raster_source_with_pws(
       FakeRasterSource::CreateFilledWithPaintWorklet(root->bounds()));
   Region empty_invalidation;
-  root->UpdateRasterSource(raster_source_with_pws, &empty_invalidation, nullptr,
-                           nullptr);
+  root->UpdateRasterSource(raster_source_with_pws, &empty_invalidation);
 
   UpdateDrawProperties(host_impl_->pending_tree());
 
@@ -17701,8 +17693,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
   scoped_refptr<RasterSource> raster_source_with_pws(
       FakeRasterSource::CreateFilledWithPaintWorklet(root->bounds()));
   Region empty_invalidation;
-  root->UpdateRasterSource(raster_source_with_pws, &empty_invalidation, nullptr,
-                           nullptr);
+  root->UpdateRasterSource(raster_source_with_pws, &empty_invalidation);
 
   UpdateDrawProperties(host_impl_->pending_tree());
 
@@ -17748,8 +17739,7 @@ TEST_F(ForceActivateAfterPaintWorkletPaintLayerTreeHostImplTest,
   scoped_refptr<RasterSource> raster_source_with_pws(
       FakeRasterSource::CreateFilledWithPaintWorklet(root->bounds()));
   Region empty_invalidation;
-  root->UpdateRasterSource(raster_source_with_pws, &empty_invalidation, nullptr,
-                           nullptr);
+  root->UpdateRasterSource(raster_source_with_pws, &empty_invalidation);
 
   UpdateDrawProperties(host_impl_->pending_tree());
 

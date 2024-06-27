@@ -17,6 +17,7 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/paint/display_item_list.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_buffer.h"
@@ -36,8 +37,11 @@ class DiscardableImageMap::Generator {
  public:
   Generator(DiscardableImageMap& map,
             SkNoDrawCanvas& canvas,
-            const PaintOpBuffer& buffer)
-      : map_(map), canvas_(canvas) {
+            const PaintOpBuffer& buffer,
+            const ScrollOffsetMap& raster_inducing_scroll_offsets)
+      : map_(map),
+        canvas_(canvas),
+        raster_inducing_scroll_offsets_(raster_inducing_scroll_offsets) {
     GatherDiscardableImages(buffer, nullptr);
   }
 
@@ -111,7 +115,7 @@ class DiscardableImageMap::Generator {
                           static_cast<const PaintOpWithFlags&>(op).flags, ctm);
       }
 
-      PaintOpType op_type = static_cast<PaintOpType>(op.type);
+      PaintOpType op_type = op.GetType();
       if (op_type == PaintOpType::kDrawImage) {
         const auto& image_op = static_cast<const DrawImageOp&>(op);
         AddImage(
@@ -167,6 +171,17 @@ class DiscardableImageMap::Generator {
         GatherDiscardableImages(
             static_cast<const DrawRecordOp&>(op).record.buffer(),
             top_level_op_rect);
+      } else if (op_type == PaintOpType::kDrawScrollingContents) {
+        const auto& draw_scrolling_contents_op =
+            static_cast<const DrawScrollingContentsOp&>(op);
+        canvas_.save();
+        gfx::PointF scroll_offset = raster_inducing_scroll_offsets_.at(
+            draw_scrolling_contents_op.scroll_element_id);
+        canvas_.translate(-scroll_offset.x(), -scroll_offset.y());
+        GatherDiscardableImages(
+            draw_scrolling_contents_op.display_item_list->paint_op_buffer_,
+            top_level_op_rect);
+        canvas_.restore();
       }
     }
   }
@@ -317,6 +332,7 @@ class DiscardableImageMap::Generator {
 
   DiscardableImageMap& map_;
   SkNoDrawCanvas& canvas_;
+  const ScrollOffsetMap& raster_inducing_scroll_offsets_;
   bool only_gather_animated_images_ = false;
 };  // DiscardableImageMap::Generator
 
@@ -326,18 +342,21 @@ DiscardableImageMap::DiscardableImageMap() = default;
 // DisplayItemList which may be destructed from any thread.
 DiscardableImageMap::~DiscardableImageMap() = default;
 
-void DiscardableImageMap::Generate(const PaintOpBuffer& paint_op_buffer,
-                                   const gfx::Rect& bounds) {
+scoped_refptr<DiscardableImageMap> DiscardableImageMap::Generate(
+    const PaintOpBuffer& paint_op_buffer,
+    const gfx::Rect& bounds,
+    const ScrollOffsetMap& raster_inducing_scroll_offsets) {
   TRACE_EVENT0("cc", "DiscardableImageMap::Generate");
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
+  scoped_refptr<DiscardableImageMap> image_map(new DiscardableImageMap());
   if (!paint_op_buffer.has_discardable_images()) {
-    return;
+    return image_map;
   }
 
   SkNoDrawCanvas canvas(bounds.right(), bounds.bottom());
-  Generator generator(*this, canvas, paint_op_buffer);
-  CHECK(!images_rtree_);
+  Generator generator(*image_map, canvas, paint_op_buffer,
+                      raster_inducing_scroll_offsets);
+  CHECK(!image_map->images_rtree_);
+  return image_map;
 }
 
 base::flat_map<PaintImage::Id, PaintImage::DecodingMode>
@@ -346,10 +365,10 @@ DiscardableImageMap::TakeDecodingModeMap() {
   return std::move(decoding_mode_map_);
 }
 
-void DiscardableImageMap::GetDiscardableImagesInRect(
-    const gfx::Rect& rect,
-    std::vector<const DrawImage*>* images) const {
+std::vector<const DrawImage*> DiscardableImageMap::GetDiscardableImagesInRect(
+    const gfx::Rect& rect) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<const DrawImage*> result;
   if (!images_rtree_) {
     images_rtree_ = std::make_unique<RTree<const DrawImage*>>();
 
@@ -357,7 +376,8 @@ void DiscardableImageMap::GetDiscardableImagesInRect(
         images_.size(), [this](size_t index) { return images_[index].second; },
         [this](size_t index) { return &images_[index].first; });
   }
-  images_rtree_->Search(rect, images);
+  images_rtree_->Search(rect, &result);
+  return result;
 }
 
 const DiscardableImageMap::Rects& DiscardableImageMap::GetRectsForImage(

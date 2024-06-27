@@ -1703,7 +1703,6 @@ TEST_F(TileManagerTilePriorityQueueTest, NoRasterTasksforSolidColorTiles) {
 
   scoped_refptr<RasterSource> raster_source =
       recording_source.CreateRasterSource();
-  raster_source->GenerateDiscardableImageMap();
 
   FakePictureLayerTilingClient tiling_client;
   tiling_client.SetTileSize(size);
@@ -1711,6 +1710,9 @@ TEST_F(TileManagerTilePriorityQueueTest, NoRasterTasksforSolidColorTiles) {
   std::unique_ptr<PictureLayerImpl> layer_impl =
       PictureLayerImpl::Create(host_impl()->active_tree(), 1);
   layer_impl->set_contributes_to_drawn_render_surface(true);
+  layer_impl->SetBounds(layer_bounds);
+  Region invalidation;
+  layer_impl->UpdateRasterSource(raster_source, &invalidation);
   PictureLayerTilingSet* tiling_set = layer_impl->picture_layer_tiling_set();
 
   PictureLayerTiling* tiling =
@@ -2088,13 +2090,14 @@ TEST_F(PixelInspectTileManagerTest, LowResHasNoImage) {
     recording_source.add_draw_image(std::move(blue_image), gfx::Point());
     recording_source.Rerecord();
     scoped_refptr<RasterSource> raster = recording_source.CreateRasterSource();
-    raster->GenerateDiscardableImageMap();
-
-    FakePictureLayerTilingClient tiling_client;
-    tiling_client.SetTileSize(size);
+    raster->GetDisplayItemList()->GenerateDiscardableImageMap(
+        ScrollOffsetMap());
 
     std::unique_ptr<PictureLayerImpl> layer =
         PictureLayerImpl::Create(host_impl()->active_tree(), 1);
+    layer->SetBounds(size);
+    Region invalidation;
+    layer->UpdateRasterSource(raster, &invalidation);
     PictureLayerTilingSet* tiling_set = layer->picture_layer_tiling_set();
     layer->set_contributes_to_drawn_render_surface(true);
 
@@ -2539,9 +2542,11 @@ TEST_F(InvalidResourceTileManagerTest, InvalidResource) {
   std::unique_ptr<PictureLayerImpl> layer =
       PictureLayerImpl::Create(host_impl()->active_tree(), 1);
   layer->set_contributes_to_drawn_render_surface(true);
+  layer->SetBounds(size);
 
   auto raster = FakeRasterSource::CreateFilled(size);
-  raster->GenerateDiscardableImageMap();
+  Region invalidation;
+  layer->UpdateRasterSource(raster, &invalidation);
   auto* tiling = layer->picture_layer_tiling_set()->AddTiling(
       gfx::AxisTransform2d(), std::move(raster));
   tiling->set_resolution(HIGH_RESOLUTION);

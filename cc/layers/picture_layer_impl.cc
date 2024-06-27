@@ -161,8 +161,9 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
             layer_tree_impl()->create_low_res_tiling() ? 2u : 1u);
 
   layer_impl->set_gpu_raster_max_texture_size(gpu_raster_max_texture_size_);
-  layer_impl->UpdateRasterSource(raster_source_, &invalidation_, tilings_.get(),
-                                 &paint_worklet_records_);
+  layer_impl->UpdateRasterSourceInternal(
+      raster_source_, &invalidation_, tilings_.get(), &paint_worklet_records_,
+      discardable_image_map_.get());
   DCHECK(invalidation_.IsEmpty());
 
   // After syncing a solid color layer, the active layer has no tilings.
@@ -295,9 +296,8 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
     WhichTree tree = layer_tree_impl()->IsPendingTree()
                          ? WhichTree::PENDING_TREE
                          : WhichTree::ACTIVE_TREE;
-    for (const auto& image_data : raster_source_->GetDisplayItemList()
-                                      ->discardable_image_map()
-                                      .animated_images_metadata()) {
+    for (const auto& image_data :
+         discardable_image_map_->animated_images_metadata()) {
       image_animation_map[image_data.paint_image_id] =
           controller->GetFrameIndexForImage(image_data.paint_image_id, tree);
     }
@@ -719,9 +719,19 @@ PictureLayerImpl* PictureLayerImpl::GetPendingOrActiveTwinLayer() const {
 
 void PictureLayerImpl::UpdateRasterSource(
     scoped_refptr<RasterSource> raster_source,
+    Region* new_invalidation) {
+  UpdateRasterSourceInternal(
+      std::move(raster_source), new_invalidation,
+      // These pointers being null indicates we are committing.
+      nullptr, nullptr, nullptr);
+}
+
+void PictureLayerImpl::UpdateRasterSourceInternal(
+    scoped_refptr<RasterSource> raster_source,
     Region* new_invalidation,
     const PictureLayerTilingSet* pending_set,
-    const PaintWorkletRecordMap* pending_paint_worklet_records) {
+    const PaintWorkletRecordMap* pending_paint_worklet_records,
+    const DiscardableImageMap* pending_discardable_image_map) {
   CHECK(raster_source);
   // The layer bounds and the raster source size may differ if the raster source
   // wasn't updated (ie. PictureLayer::Update didn't happen). In that case the
@@ -740,47 +750,24 @@ void PictureLayerImpl::UpdateRasterSource(
       !raster_source_ || raster_source_->GetDisplayItemList() !=
                              raster_source->GetDisplayItemList();
 
-  if (recording_updated) {
-    if (!pending_set) {
-      // We're in a commit, make sure the discardable image map is ready.
-      raster_source->GenerateDiscardableImageMap();
-    }
-
-    // Unregister for animated images on the current raster source.
-    UnregisterAnimatedImages();
-
-    // When the display list changes, the set of PaintWorklets may also change.
-    if (pending_paint_worklet_records) {
-      paint_worklet_records_ = *pending_paint_worklet_records;
-    } else {
-      if (raster_source->GetDisplayItemList()) {
-        SetPaintWorkletInputs(raster_source->GetDisplayItemList()
-                                  ->discardable_image_map()
-                                  .paint_worklet_inputs());
-      } else {
-        SetPaintWorkletInputs({});
-      }
-    }
-
     // If the MSAA sample count has changed, we need to re-raster the complete
     // layer.
-    if (raster_source_) {
-      const auto& current_display_item_list =
-          raster_source_->GetDisplayItemList();
-      const auto& new_display_item_list = raster_source->GetDisplayItemList();
-      if (current_display_item_list && new_display_item_list) {
-        bool needs_full_invalidation =
-            layer_tree_impl()->GetMSAASampleCountForRaster(
-                current_display_item_list) !=
-            layer_tree_impl()->GetMSAASampleCountForRaster(
-                new_display_item_list);
-        needs_full_invalidation |=
-            layer_tree_impl()->GetTargetColorParams(
-                current_display_item_list->content_color_usage()) !=
-            layer_tree_impl()->GetTargetColorParams(
-                new_display_item_list->content_color_usage());
-        if (needs_full_invalidation)
-          new_invalidation->Union(gfx::Rect(raster_source->size()));
+  if (recording_updated && raster_source_) {
+    const auto& current_display_item_list =
+        raster_source_->GetDisplayItemList();
+    const auto& new_display_item_list = raster_source->GetDisplayItemList();
+    if (current_display_item_list && new_display_item_list) {
+      bool needs_full_invalidation =
+          layer_tree_impl()->GetMSAASampleCountForRaster(
+              current_display_item_list) !=
+          layer_tree_impl()->GetMSAASampleCountForRaster(new_display_item_list);
+      needs_full_invalidation |=
+          layer_tree_impl()->GetTargetColorParams(
+              current_display_item_list->content_color_usage()) !=
+          layer_tree_impl()->GetTargetColorParams(
+              new_display_item_list->content_color_usage());
+      if (needs_full_invalidation) {
+        new_invalidation->Union(gfx::Rect(raster_source->size()));
       }
     }
   }
@@ -794,10 +781,21 @@ void PictureLayerImpl::UpdateRasterSource(
 
   UpdateDirectlyCompositedImageFromRasterSource();
 
-  // Register images from the new raster source, if the recording was updated.
-  // TODO(khushalsagar): UMA the number of animated images in layer?
-  if (recording_updated)
-    RegisterAnimatedImages();
+  if (pending_set) {
+    // During activation, check if we need to pull the discardable image map
+    // from the pending tree.
+    if (pending_discardable_image_map != discardable_image_map_) {
+      CHECK(pending_paint_worklet_records);
+      paint_worklet_records_ = *pending_paint_worklet_records;
+      UnregisterAnimatedImages();
+      discardable_image_map_ = pending_discardable_image_map;
+      RegisterAnimatedImages();
+    }
+  } else if (recording_updated) {
+    // During commit, re-generate discardable image map and update data
+    // depending on it.
+    RegenerateDiscardableImageMap();
+  }
 
   // The |new_invalidation| must be cleared before updating tilings since they
   // access the invalidation through the PictureLayerTilingClient interface.
@@ -833,11 +831,24 @@ void PictureLayerImpl::UpdateRasterSource(
     tilings_->UpdateTilingsToCurrentRasterSourceForCommit(
         raster_source_, invalidation_, MinimumContentsScale(),
         MaximumContentsScale());
-    // We're in a commit, make sure to update the state of the checker image
-    // tracker with the new async attribute data.
-    layer_tree_impl()->UpdateImageDecodingHints(
-        raster_source_->TakeDecodingModeMap());
   }
+}
+
+void PictureLayerImpl::RegenerateDiscardableImageMap() {
+  UnregisterAnimatedImages();
+  if (const auto* display_list = raster_source_->GetDisplayItemList().get()) {
+    scoped_refptr<DiscardableImageMap> image_map =
+        display_list->GenerateDiscardableImageMap(
+            GetRasterInducingScrollOffsets());
+    SetPaintWorkletInputs(image_map->paint_worklet_inputs());
+    layer_tree_impl()->UpdateImageDecodingHints(
+        image_map->TakeDecodingModeMap());
+    discardable_image_map_ = std::move(image_map);
+  } else {
+    SetPaintWorkletInputs({});
+    discardable_image_map_ = nullptr;
+  }
+  RegisterAnimatedImages();
 }
 
 void PictureLayerImpl::UpdateCanUseLCDText(
@@ -1026,6 +1037,11 @@ void PictureLayerImpl::OnTilesAdded() {
   SetNeedsPushProperties();
 }
 
+std::vector<const DrawImage*> PictureLayerImpl::GetDiscardableImagesInRect(
+    const gfx::Rect& rect) const {
+  return discardable_image_map_->GetDiscardableImagesInRect(rect);
+}
+
 ScrollOffsetMap PictureLayerImpl::GetRasterInducingScrollOffsets() const {
   ScrollOffsetMap map;
   if (raster_source_) {
@@ -1047,10 +1063,8 @@ gfx::Rect PictureLayerImpl::GetEnclosingVisibleRectInTargetSpace() const {
 bool PictureLayerImpl::ShouldAnimate(PaintImage::Id paint_image_id) const {
   // If we are registered with the animation controller, which queries whether
   // the image should be animated, then we must have recordings with this image.
-  DCHECK(raster_source_);
-  DCHECK(raster_source_->GetDisplayItemList());
-  DCHECK(
-      !raster_source_->GetDisplayItemList()->discardable_image_map().empty());
+  CHECK(discardable_image_map_);
+  CHECK(!discardable_image_map_->empty());
 
   // Only animate images for layers which HasValidTilePriorities. This check is
   // important for 2 reasons:
@@ -1067,9 +1081,7 @@ bool PictureLayerImpl::ShouldAnimate(PaintImage::Id paint_image_id) const {
   if (!HasValidTilePriorities())
     return false;
 
-  const auto& rects = raster_source_->GetDisplayItemList()
-                          ->discardable_image_map()
-                          .GetRectsForImage(paint_image_id);
+  const auto& rects = discardable_image_map_->GetRectsForImage(paint_image_id);
   for (const auto& r : rects) {
     if (r.Intersects(visible_layer_rect()))
       return true;
@@ -2050,16 +2062,13 @@ bool PictureLayerImpl::HasValidTilePriorities() const {
 PictureLayerImpl::ImageInvalidationResult
 PictureLayerImpl::InvalidateRegionForImages(
     const PaintImageIdFlatSet& images_to_invalidate) {
-  if (!raster_source_ || !raster_source_->GetDisplayItemList() ||
-      raster_source_->GetDisplayItemList()->discardable_image_map().empty()) {
+  if (!discardable_image_map_ || discardable_image_map_->empty()) {
     return ImageInvalidationResult::kNoImages;
   }
 
   InvalidationRegion image_invalidation;
   for (auto image_id : images_to_invalidate) {
-    const auto& rects = raster_source_->GetDisplayItemList()
-                            ->discardable_image_map()
-                            .GetRectsForImage(image_id);
+    const auto& rects = discardable_image_map_->GetRectsForImage(image_id);
     for (const auto& r : rects) {
       image_invalidation.Union(r);
     }
@@ -2096,10 +2105,14 @@ void PictureLayerImpl::InvalidateRasterInducingScrolls(
       invalidation.Union(it->second);
     }
   }
-  if (!invalidation.IsEmpty()) {
-    invalidation_.Union(invalidation);
-    tilings_->Invalidate(invalidation);
+  if (invalidation.IsEmpty()) {
+    return;
   }
+  // Raster-inducing scroll may affect the discardable image map due to changed
+  // scroll offsets.
+  RegenerateDiscardableImageMap();
+  invalidation_.Union(invalidation);
+  tilings_->Invalidate(invalidation);
 }
 
 void PictureLayerImpl::SetPaintWorkletRecord(
@@ -2110,14 +2123,12 @@ void PictureLayerImpl::SetPaintWorkletRecord(
 }
 
 void PictureLayerImpl::RegisterAnimatedImages() {
-  if (!raster_source_ || !raster_source_->GetDisplayItemList())
+  if (!discardable_image_map_) {
     return;
+  }
 
   auto* controller = layer_tree_impl()->image_animation_controller();
-  const auto& metadata = raster_source_->GetDisplayItemList()
-                             ->discardable_image_map()
-                             .animated_images_metadata();
-  for (const auto& data : metadata) {
+  for (const auto& data : discardable_image_map_->animated_images_metadata()) {
     // Only update the metadata from updated recordings received from a commit.
     if (layer_tree_impl()->IsSyncTree())
       controller->UpdateAnimatedImage(data);
@@ -2126,15 +2137,14 @@ void PictureLayerImpl::RegisterAnimatedImages() {
 }
 
 void PictureLayerImpl::UnregisterAnimatedImages() {
-  if (!raster_source_ || !raster_source_->GetDisplayItemList())
+  if (!discardable_image_map_) {
     return;
+  }
 
   auto* controller = layer_tree_impl()->image_animation_controller();
-  const auto& metadata = raster_source_->GetDisplayItemList()
-                             ->discardable_image_map()
-                             .animated_images_metadata();
-  for (const auto& data : metadata)
+  for (const auto& data : discardable_image_map_->animated_images_metadata()) {
     controller->UnregisterAnimationDriver(data.paint_image_id, this);
+  }
 }
 
 void PictureLayerImpl::SetPaintWorkletInputs(

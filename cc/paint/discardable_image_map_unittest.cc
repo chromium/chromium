@@ -52,22 +52,26 @@
 
 namespace cc {
 namespace {
+using ::testing::_;
 using ::testing::Contains;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::FieldsAre;
 using ::testing::FloatNear;
 using ::testing::IsEmpty;
 using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
 using Rects = absl::InlinedVector<gfx::Rect, 1>;
 
 struct PositionScaleDrawImage {
-  PositionScaleDrawImage(const PaintImage& image,
-                         const gfx::Rect& image_rect,
-                         const SkSize& scale)
-      : image(image), image_rect(image_rect), scale(scale) {}
   PaintImage image;
   gfx::Rect image_rect;
   SkSize scale;
+
+  friend void PrintTo(const PositionScaleDrawImage& img, std::ostream* os) {
+    *os << "image: <paint image> image_rect: " << img.image_rect.ToString()
+        << " scale: " << gfx::SkSizeToSizeF(img.scale).ToString();
+  }
 };
 
 PaintRecord CreateRecording(const PaintImage& discardable_image,
@@ -84,12 +88,12 @@ class DiscardableImageMapTest : public testing::Test {
   std::vector<PositionScaleDrawImage> GetDiscardableImagesInRect(
       const DiscardableImageMap& image_map,
       const gfx::Rect& rect) {
-    std::vector<const DrawImage*> draw_image_ptrs;
     // Choose a not-SRGB-and-not-invalid target color space to verify that it
     // is passed correctly to the resulting DrawImages.
     const TargetColorParams target_color_params(
         gfx::ColorSpace::CreateXYZD50());
-    image_map.GetDiscardableImagesInRect(rect, &draw_image_ptrs);
+    std::vector<const DrawImage*> draw_image_ptrs =
+        image_map.GetDiscardableImagesInRect(rect);
     std::vector<DrawImage> draw_images;
     for (const auto* image : draw_image_ptrs)
       draw_images.push_back(DrawImage(
@@ -99,10 +103,10 @@ class DiscardableImageMapTest : public testing::Test {
     image_map.images_rtree_->Search(rect, &results);
     for (const DrawImage* image : results) {
       auto image_id = image->paint_image().stable_id();
-      position_draw_images.push_back(PositionScaleDrawImage(
+      position_draw_images.push_back(PositionScaleDrawImage{
           image->paint_image(),
           ImageRectsToRegion(image_map.GetRectsForImage(image_id)).bounds(),
-          image->scale()));
+          image->scale()});
     }
 
     EXPECT_EQ(draw_images.size(), position_draw_images.size());
@@ -157,13 +161,13 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectTest) {
 
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
-  display_list->GenerateDiscardableImageMap();
-  const DiscardableImageMap& image_map = display_list->discardable_image_map();
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
 
   for (int y = 0; y < 4; ++y) {
     for (int x = 0; x < 4; ++x) {
       std::vector<PositionScaleDrawImage> images = GetDiscardableImagesInRect(
-          image_map, gfx::Rect(x * 512, y * 512, 500, 500));
+          *image_map, gfx::Rect(x * 512, y * 512, 500, 500));
       std::vector<gfx::Rect> inset_rects = InsetImageRects(images);
       if ((x + y) & 1) {
         EXPECT_EQ(1u, images.size()) << x << " " << y;
@@ -179,7 +183,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectTest) {
 
   // Capture 4 pixel refs.
   std::vector<PositionScaleDrawImage> images =
-      GetDiscardableImagesInRect(image_map, gfx::Rect(512, 512, 2048, 2048));
+      GetDiscardableImagesInRect(*image_map, gfx::Rect(512, 512, 2048, 2048));
   std::vector<gfx::Rect> inset_rects = InsetImageRects(images);
   EXPECT_EQ(4u, images.size());
 
@@ -228,13 +232,13 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectNonZeroLayer) {
 
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
-  display_list->GenerateDiscardableImageMap();
-  const DiscardableImageMap& image_map = display_list->discardable_image_map();
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
 
   for (int y = 0; y < 4; ++y) {
     for (int x = 0; x < 4; ++x) {
       std::vector<PositionScaleDrawImage> images = GetDiscardableImagesInRect(
-          image_map, gfx::Rect(1024 + x * 512, y * 512, 500, 500));
+          *image_map, gfx::Rect(1024 + x * 512, y * 512, 500, 500));
       std::vector<gfx::Rect> inset_rects = InsetImageRects(images);
       if ((x + y) & 1) {
         EXPECT_EQ(1u, images.size()) << x << " " << y;
@@ -250,7 +254,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectNonZeroLayer) {
   // Capture 4 pixel refs.
   {
     std::vector<PositionScaleDrawImage> images = GetDiscardableImagesInRect(
-        image_map, gfx::Rect(1024 + 512, 512, 2048, 2048));
+        *image_map, gfx::Rect(1024 + 512, 512, 2048, 2048));
     std::vector<gfx::Rect> inset_rects = InsetImageRects(images);
     EXPECT_EQ(4u, images.size());
 
@@ -272,29 +276,29 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectNonZeroLayer) {
   // Non intersecting rects
   {
     std::vector<PositionScaleDrawImage> images =
-        GetDiscardableImagesInRect(image_map, gfx::Rect(0, 0, 1000, 1000));
+        GetDiscardableImagesInRect(*image_map, gfx::Rect(0, 0, 1000, 1000));
     EXPECT_EQ(0u, images.size());
   }
   {
     std::vector<PositionScaleDrawImage> images =
-        GetDiscardableImagesInRect(image_map, gfx::Rect(3500, 0, 1000, 1000));
+        GetDiscardableImagesInRect(*image_map, gfx::Rect(3500, 0, 1000, 1000));
     EXPECT_EQ(0u, images.size());
   }
   {
     std::vector<PositionScaleDrawImage> images =
-        GetDiscardableImagesInRect(image_map, gfx::Rect(0, 1100, 1000, 1000));
+        GetDiscardableImagesInRect(*image_map, gfx::Rect(0, 1100, 1000, 1000));
     EXPECT_EQ(0u, images.size());
   }
   {
     std::vector<PositionScaleDrawImage> images = GetDiscardableImagesInRect(
-        image_map, gfx::Rect(3500, 1100, 1000, 1000));
+        *image_map, gfx::Rect(3500, 1100, 1000, 1000));
     EXPECT_EQ(0u, images.size());
   }
 
   // Image not present in the list.
   {
     PaintImage image = CreateDiscardablePaintImage(gfx::Size(500, 500));
-    EXPECT_EQ(image_map.GetRectsForImage(image.stable_id()).size(), 0u);
+    EXPECT_EQ(image_map->GetRectsForImage(image.stable_id()).size(), 0u);
   }
 }
 
@@ -327,13 +331,13 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectOnePixelQuery) {
 
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
-  display_list->GenerateDiscardableImageMap();
-  const DiscardableImageMap& image_map = display_list->discardable_image_map();
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
 
   for (int y = 0; y < 4; ++y) {
     for (int x = 0; x < 4; ++x) {
       std::vector<PositionScaleDrawImage> images = GetDiscardableImagesInRect(
-          image_map, gfx::Rect(x * 512 + 256, y * 512 + 256, 1, 1));
+          *image_map, gfx::Rect(x * 512 + 256, y * 512 + 256, 1, 1));
       std::vector<gfx::Rect> inset_rects = InsetImageRects(images);
       if ((x + y) & 1) {
         EXPECT_EQ(1u, images.size()) << x << " " << y;
@@ -360,11 +364,11 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectMassiveImage) {
 
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
-  display_list->GenerateDiscardableImageMap();
-  const DiscardableImageMap& image_map = display_list->discardable_image_map();
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
 
   std::vector<PositionScaleDrawImage> images =
-      GetDiscardableImagesInRect(image_map, gfx::Rect(0, 0, 1, 1));
+      GetDiscardableImagesInRect(*image_map, gfx::Rect(0, 0, 1, 1));
   std::vector<gfx::Rect> inset_rects = InsetImageRects(images);
   EXPECT_EQ(1u, images.size());
   EXPECT_TRUE(images[0].image.IsSameForTesting(discardable_image));
@@ -388,10 +392,10 @@ TEST_F(DiscardableImageMapTest, PaintDestroyedWhileImageIsDrawn) {
   display_list->EndPaintOfUnpaired(visible_rect);
   display_list->Finalize();
 
-  display_list->GenerateDiscardableImageMap();
-  const DiscardableImageMap& image_map = display_list->discardable_image_map();
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
   std::vector<PositionScaleDrawImage> images =
-      GetDiscardableImagesInRect(image_map, gfx::Rect(0, 0, 1, 1));
+      GetDiscardableImagesInRect(*image_map, gfx::Rect(0, 0, 1, 1));
   EXPECT_EQ(1u, images.size());
   EXPECT_TRUE(images[0].image.IsSameForTesting(discardable_image));
 }
@@ -406,7 +410,7 @@ TEST_F(DiscardableImageMapTest, RestoreSavedBigLayers) {
   display_list->push<DrawRectOp>(rect, flags);
   display_list->EndPaintOfUnpaired(gfx::Rect(INT_MAX, INT_MAX));
   display_list->Finalize();
-  display_list->GenerateDiscardableImageMap();
+  display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
 }
 
 // Test if SaveLayer and Restore work together.
@@ -446,10 +450,10 @@ TEST_F(DiscardableImageMapTest, RestoreSavedTransformedLayers) {
   display_list->EndPaintOfUnpaired(visible_rect);
   display_list->Finalize();
 
-  display_list->GenerateDiscardableImageMap();
-  const DiscardableImageMap& image_map = display_list->discardable_image_map();
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
   std::vector<PositionScaleDrawImage> images =
-      GetDiscardableImagesInRect(image_map, gfx::Rect(0, 0, 200, 200));
+      GetDiscardableImagesInRect(*image_map, gfx::Rect(0, 0, 200, 200));
   EXPECT_EQ(3u, images.size());
   EXPECT_EQ(gfx::Rect(25, 25, 25, 25), InsetImageRects(images)[0]);
   EXPECT_EQ(gfx::Rect(125, 125, 25, 25), InsetImageRects(images)[1]);
@@ -473,10 +477,10 @@ TEST_F(DiscardableImageMapTest, NullPaintOnSaveLayer) {
   display_list->EndPaintOfUnpaired(visible_rect);
   display_list->Finalize();
 
-  display_list->GenerateDiscardableImageMap();
-  const DiscardableImageMap& image_map = display_list->discardable_image_map();
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
   std::vector<PositionScaleDrawImage> images =
-      GetDiscardableImagesInRect(image_map, gfx::Rect(0, 0, 1, 1));
+      GetDiscardableImagesInRect(*image_map, gfx::Rect(0, 0, 1, 1));
   EXPECT_EQ(1u, images.size());
   EXPECT_TRUE(images[0].image.IsSameForTesting(discardable_image));
 }
@@ -495,11 +499,11 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectMaxImage) {
 
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
-  display_list->GenerateDiscardableImageMap();
-  const DiscardableImageMap& image_map = display_list->discardable_image_map();
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
 
   std::vector<PositionScaleDrawImage> images =
-      GetDiscardableImagesInRect(image_map, gfx::Rect(42, 42, 1, 1));
+      GetDiscardableImagesInRect(*image_map, gfx::Rect(42, 42, 1, 1));
   std::vector<gfx::Rect> inset_rects = InsetImageRects(images);
   EXPECT_EQ(1u, images.size());
   EXPECT_TRUE(images[0].image.IsSameForTesting(discardable_image));
@@ -536,16 +540,16 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectMaxImageMaxLayer) {
 
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
-  display_list->GenerateDiscardableImageMap();
-  const DiscardableImageMap& image_map = display_list->discardable_image_map();
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
 
   std::vector<PositionScaleDrawImage> images =
-      GetDiscardableImagesInRect(image_map, gfx::Rect(0, 0, 1, 1));
+      GetDiscardableImagesInRect(*image_map, gfx::Rect(0, 0, 1, 1));
   std::vector<gfx::Rect> inset_rects = InsetImageRects(images);
   EXPECT_EQ(1u, images.size());
   EXPECT_EQ(gfx::Rect(0, 0, dimension, dimension), inset_rects[0]);
 
-  images = GetDiscardableImagesInRect(image_map, gfx::Rect(10000, 0, 1, 1));
+  images = GetDiscardableImagesInRect(*image_map, gfx::Rect(10000, 0, 1, 1));
   inset_rects = InsetImageRects(images);
   EXPECT_EQ(2u, images.size());
   EXPECT_EQ(gfx::Rect(10000, 0, dimension - 10000, dimension), inset_rects[1]);
@@ -556,7 +560,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectMaxImageMaxLayer) {
   // The expected value is whatever the value is converted to float and then
   // back to int.
   int expected10k = static_cast<int>(static_cast<float>(dimension - 10000));
-  images = GetDiscardableImagesInRect(image_map, gfx::Rect(0, 500, 1, 1));
+  images = GetDiscardableImagesInRect(*image_map, gfx::Rect(0, 500, 1, 1));
   inset_rects = InsetImageRects(images);
   EXPECT_EQ(2u, images.size());
   EXPECT_EQ(gfx::Rect(0, 500, expected10k, dimension - 500), inset_rects[1]);
@@ -582,22 +586,22 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesRectInBounds) {
 
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
-  display_list->GenerateDiscardableImageMap();
-  const DiscardableImageMap& image_map = display_list->discardable_image_map();
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
 
   std::vector<PositionScaleDrawImage> images =
-      GetDiscardableImagesInRect(image_map, gfx::Rect(0, 0, 1, 1));
+      GetDiscardableImagesInRect(*image_map, gfx::Rect(0, 0, 1, 1));
   std::vector<gfx::Rect> inset_rects = InsetImageRects(images);
 
   ASSERT_EQ(1u, images.size());
   EXPECT_EQ(gfx::Rect(0, 0, 90, 89), inset_rects[0]);
 
-  images = GetDiscardableImagesInRect(image_map, gfx::Rect(999, 999, 1, 1));
+  images = GetDiscardableImagesInRect(*image_map, gfx::Rect(999, 999, 1, 1));
   inset_rects = InsetImageRects(images);
   ASSERT_EQ(1u, images.size());
   EXPECT_EQ(gfx::Rect(950, 951, 50, 49), inset_rects[0]);
 
-  images = GetDiscardableImagesInRect(image_map, gfx::Rect(0, 500, 1, 1));
+  images = GetDiscardableImagesInRect(*image_map, gfx::Rect(0, 500, 1, 1));
   inset_rects = InsetImageRects(images);
   ASSERT_EQ(1u, images.size());
   EXPECT_EQ(gfx::Rect(0, 500, 1000, 100), inset_rects[0]);
@@ -647,14 +651,14 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInShader) {
 
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
-  display_list->GenerateDiscardableImageMap();
-  const DiscardableImageMap& image_map = display_list->discardable_image_map();
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
 
   for (int y = 0; y < 4; ++y) {
     for (int x = 0; x < 4; ++x) {
-      std::vector<const DrawImage*> draw_images;
-      image_map.GetDiscardableImagesInRect(
-          gfx::Rect(x * 512, y * 512, 500, 500), &draw_images);
+      std::vector<const DrawImage*> draw_images =
+          image_map->GetDiscardableImagesInRect(
+              gfx::Rect(x * 512, y * 512, 500, 500));
       if ((x + y) & 1) {
         EXPECT_EQ(1u, draw_images.size()) << x << " " << y;
         EXPECT_TRUE(draw_images[0]->paint_image().IsSameForTesting(
@@ -671,9 +675,8 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInShader) {
   }
 
   // Capture 4 pixel refs.
-  std::vector<const DrawImage*> draw_images;
-  image_map.GetDiscardableImagesInRect(gfx::Rect(512, 512, 2048, 2048),
-                                       &draw_images);
+  std::vector<const DrawImage*> draw_images =
+      image_map->GetDiscardableImagesInRect(gfx::Rect(512, 512, 2048, 2048));
   EXPECT_EQ(4u, draw_images.size());
   EXPECT_TRUE(
       draw_images[0]->paint_image().IsSameForTesting(discardable_image[1][2]));
@@ -702,10 +705,10 @@ TEST_F(DiscardableImageMapTest, ClipsImageRects) {
 
   display_list->Finalize();
 
-  display_list->GenerateDiscardableImageMap();
-  const DiscardableImageMap& image_map = display_list->discardable_image_map();
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
   std::vector<PositionScaleDrawImage> images =
-      GetDiscardableImagesInRect(image_map, visible_rect);
+      GetDiscardableImagesInRect(*image_map, visible_rect);
   std::vector<gfx::Rect> inset_rects = InsetImageRects(images);
   EXPECT_EQ(1u, images.size());
   EXPECT_TRUE(images[0].image.IsSameForTesting(discardable_image));
@@ -731,16 +734,15 @@ TEST_F(DiscardableImageMapTest, GathersDiscardableImagesFromNestedOps) {
   PaintOpBuffer root_buffer;
   root_buffer.push<DrawRecordOp>(internal_buffer.ReleaseAsRecord());
   root_buffer.push<DrawRecordOp>(buffer2.ReleaseAsRecord());
-  DiscardableImageMap image_map;
-  image_map.Generate(root_buffer, gfx::Rect(200, 200));
+  scoped_refptr<DiscardableImageMap> image_map = DiscardableImageMap::Generate(
+      root_buffer, gfx::Rect(200, 200), ScrollOffsetMap());
 
-  std::vector<const DrawImage*> images;
-  image_map.GetDiscardableImagesInRect(gfx::Rect(0, 0, 5, 95), &images);
+  std::vector<const DrawImage*> images =
+      image_map->GetDiscardableImagesInRect(gfx::Rect(0, 0, 5, 95));
   EXPECT_EQ(1u, images.size());
   EXPECT_TRUE(discardable_image.IsSameForTesting(images[0]->paint_image()));
 
-  images.clear();
-  image_map.GetDiscardableImagesInRect(gfx::Rect(105, 105, 5, 95), &images);
+  images = image_map->GetDiscardableImagesInRect(gfx::Rect(105, 105, 5, 95));
   EXPECT_EQ(1u, images.size());
   EXPECT_TRUE(discardable_image2.IsSameForTesting(images[0]->paint_image()));
 }
@@ -768,9 +770,9 @@ TEST_F(DiscardableImageMapTest, GathersAnimatedImages) {
 
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
-  display_list->GenerateDiscardableImageMap();
-  const auto& animated_images_metadata =
-      display_list->discardable_image_map().animated_images_metadata();
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+  const auto& animated_images_metadata = image_map->animated_images_metadata();
 
   ASSERT_EQ(animated_images_metadata.size(), 1u);
   EXPECT_EQ(animated_images_metadata[0].paint_image_id,
@@ -782,9 +784,8 @@ TEST_F(DiscardableImageMapTest, GathersAnimatedImages) {
   EXPECT_EQ(animated_images_metadata[0].repetition_count,
             animation_loop_infinite.repetition_count());
 
-  std::vector<const DrawImage*> images;
-  display_list->discardable_image_map().GetDiscardableImagesInRect(visible_rect,
-                                                                   &images);
+  std::vector<const DrawImage*> images =
+      image_map->GetDiscardableImagesInRect(visible_rect);
   ASSERT_EQ(images.size(), 3u);
   EXPECT_TRUE(images[0]->paint_image().IsSameForTesting(static_image));
   EXPECT_DCHECK_DEATH(images[0]->frame_index());
@@ -812,16 +813,16 @@ TEST_F(DiscardableImageMapTest, GathersPaintWorklets) {
 
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
-  display_list->GenerateDiscardableImageMap();
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
 
-  const auto& paint_worklet_inputs =
-      display_list->discardable_image_map().paint_worklet_inputs();
+  const auto& paint_worklet_inputs = image_map->paint_worklet_inputs();
   ASSERT_EQ(paint_worklet_inputs.size(), 1u);
   EXPECT_EQ(paint_worklet_inputs[0].first, input);
 
   // PaintWorklets are not considered discardable images.
-  std::vector<PositionScaleDrawImage> images = GetDiscardableImagesInRect(
-      display_list->discardable_image_map(), visible_rect);
+  std::vector<PositionScaleDrawImage> images =
+      GetDiscardableImagesInRect(*image_map, visible_rect);
   ASSERT_EQ(images.size(), 1u);
   EXPECT_TRUE(images[0].image.IsSameForTesting(static_image));
 }
@@ -855,15 +856,15 @@ TEST_F(DiscardableImageMapTest, CapturesImagesInPaintRecordShaders) {
 
   EXPECT_EQ(flags.getShader()->image_analysis_state(),
             ImageAnalysisState::kNoAnalysis);
-  display_list->GenerateDiscardableImageMap();
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
   EXPECT_EQ(flags.getShader()->image_analysis_state(),
             ImageAnalysisState::kAnimatedImages);
-  const auto& image_map = display_list->discardable_image_map();
 
   // The image rect is set to the rect for the DrawRectOp, and only animated
   // images in a shader are tracked.
   std::vector<PositionScaleDrawImage> draw_images =
-      GetDiscardableImagesInRect(image_map, visible_rect);
+      GetDiscardableImagesInRect(*image_map, visible_rect);
   std::vector<gfx::Rect> inset_rects = InsetImageRects(draw_images);
   ASSERT_EQ(draw_images.size(), 1u);
   EXPECT_TRUE(draw_images[0].image.IsSameForTesting(animated_image));
@@ -900,15 +901,15 @@ TEST_F(DiscardableImageMapTest, CapturesImagesInPaintFilters) {
 
   EXPECT_EQ(flags.getImageFilter()->image_analysis_state(),
             ImageAnalysisState::kNoAnalysis);
-  display_list->GenerateDiscardableImageMap();
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
   EXPECT_EQ(flags.getImageFilter()->image_analysis_state(),
             ImageAnalysisState::kAnimatedImages);
-  const auto& image_map = display_list->discardable_image_map();
 
   // The image rect is set to the rect for the DrawRectOp, and only animated
   // images in a filter are tracked.
   std::vector<PositionScaleDrawImage> draw_images =
-      GetDiscardableImagesInRect(image_map, visible_rect);
+      GetDiscardableImagesInRect(*image_map, visible_rect);
   std::vector<gfx::Rect> inset_rects = InsetImageRects(draw_images);
   ASSERT_EQ(draw_images.size(), 1u);
   EXPECT_TRUE(draw_images[0].image.IsSameForTesting(animated_image));
@@ -934,10 +935,10 @@ TEST_F(DiscardableImageMapTest, CapturesImagesInSaveLayers) {
   display_list->EndPaintOfUnpaired(visible_rect);
   display_list->Finalize();
 
-  display_list->GenerateDiscardableImageMap();
-  const auto& image_map = display_list->discardable_image_map();
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
   std::vector<PositionScaleDrawImage> draw_images =
-      GetDiscardableImagesInRect(image_map, visible_rect);
+      GetDiscardableImagesInRect(*image_map, visible_rect);
   std::vector<gfx::Rect> inset_rects = InsetImageRects(draw_images);
   ASSERT_EQ(draw_images.size(), 1u);
   EXPECT_TRUE(draw_images[0].image.IsSameForTesting(image));
@@ -974,7 +975,7 @@ TEST_F(DiscardableImageMapTest, EmbeddedShaderWithAnimatedImages) {
   display_list->push<DrawRectOp>(SkRect::MakeWH(200, 200), flags);
   display_list->EndPaintOfUnpaired(visible_rect);
   display_list->Finalize();
-  display_list->GenerateDiscardableImageMap();
+  display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
   EXPECT_EQ(shader_with_image->image_analysis_state(),
             ImageAnalysisState::kAnimatedImages);
   EXPECT_EQ(shader_with_shader_with_image->image_analysis_state(),
@@ -1009,8 +1010,9 @@ TEST_F(DiscardableImageMapTest, DecodingModeHintsBasic) {
   content_layer_client.add_draw_image(sync_image, gfx::Point(20, 20));
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
-  display_list->GenerateDiscardableImageMap();
-  auto decode_hints = display_list->TakeDecodingModeMap();
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+  auto decode_hints = image_map->TakeDecodingModeMap();
   EXPECT_EQ(decode_hints.size(), 3u);
   EXPECT_TRUE(base::Contains(decode_hints, 1));
   EXPECT_TRUE(base::Contains(decode_hints, 2));
@@ -1019,7 +1021,7 @@ TEST_F(DiscardableImageMapTest, DecodingModeHintsBasic) {
   EXPECT_EQ(decode_hints[2], PaintImage::DecodingMode::kAsync);
   EXPECT_EQ(decode_hints[3], PaintImage::DecodingMode::kSync);
 
-  decode_hints = display_list->TakeDecodingModeMap();
+  decode_hints = image_map->TakeDecodingModeMap();
   EXPECT_EQ(decode_hints.size(), 0u);
 }
 
@@ -1074,9 +1076,10 @@ TEST_F(DiscardableImageMapTest, DecodingModeHintsDuplicates) {
   content_layer_client.add_draw_image(sync_image3, gfx::Point(50, 50));
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
-  display_list->GenerateDiscardableImageMap();
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
 
-  auto decode_hints = display_list->TakeDecodingModeMap();
+  auto decode_hints = image_map->TakeDecodingModeMap();
   EXPECT_EQ(decode_hints.size(), 3u);
   EXPECT_TRUE(base::Contains(decode_hints, 1));
   EXPECT_TRUE(base::Contains(decode_hints, 2));
@@ -1088,7 +1091,7 @@ TEST_F(DiscardableImageMapTest, DecodingModeHintsDuplicates) {
   // 3 was async and sync, so the result should be sync
   EXPECT_EQ(decode_hints[3], PaintImage::DecodingMode::kSync);
 
-  decode_hints = display_list->TakeDecodingModeMap();
+  decode_hints = image_map->TakeDecodingModeMap();
   EXPECT_EQ(decode_hints.size(), 0u);
 }
 
@@ -1107,8 +1110,8 @@ TEST_F(DiscardableImageMapTest, TracksImageRegions) {
 
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
-  display_list->GenerateDiscardableImageMap();
-  const auto& image_map = display_list->discardable_image_map();
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
 
   std::vector<gfx::Rect> rects = {gfx::Rect(100, 100),
                                   gfx::Rect(400, 400, 100, 100)};
@@ -1118,8 +1121,75 @@ TEST_F(DiscardableImageMapTest, TracksImageRegions) {
     expected_region.Union(rect);
   }
 
-  EXPECT_EQ(ImageRectsToRegion(image_map.GetRectsForImage(image.stable_id())),
+  EXPECT_EQ(ImageRectsToRegion(image_map->GetRectsForImage(image.stable_id())),
             expected_region);
+}
+
+TEST_F(DiscardableImageMapTest, ImagesUnderDrawScrollingContentsOp) {
+  PaintImage image1 = CreateDiscardablePaintImage(gfx::Size(100, 300));
+  PaintImage image2 = CreateDiscardablePaintImage(gfx::Size(300, 200));
+
+  auto scrolling_contents_list = base::MakeRefCounted<DisplayItemList>();
+  scrolling_contents_list->StartPaint();
+  scrolling_contents_list->push<DrawImageOp>(image1, 0.f, 0.f);
+  scrolling_contents_list->push<DrawImageOp>(image2, 100.f, 350.f);
+  scrolling_contents_list->EndPaintOfUnpaired(gfx::Rect(500, 700));
+  scrolling_contents_list->Finalize();
+
+  ElementId scroll_element_id1(123);
+  ElementId scroll_element_id2(456);
+  auto display_list = base::MakeRefCounted<DisplayItemList>();
+  // Draw scrolling contents op under a clip.
+  display_list->StartPaint();
+  display_list->push<SaveOp>();
+  display_list->push<ClipRectOp>(SkRect::MakeWH(200, 200), SkClipOp::kIntersect,
+                                 false);
+  display_list->EndPaintOfPairedBegin();
+  display_list->PushDrawScrollingContentsOp(
+      scroll_element_id1, scrolling_contents_list, gfx::Rect(200, 200));
+  display_list->StartPaint();
+  display_list->push<RestoreOp>();
+  display_list->EndPaintOfPairedEnd();
+  // Draw another scrolling contents op under a translate and a clip.
+  display_list->StartPaint();
+  display_list->push<SaveOp>();
+  display_list->push<TranslateOp>(100.f, 300.f);
+  display_list->push<ClipRectOp>(SkRect::MakeWH(200, 200), SkClipOp::kIntersect,
+                                 false);
+  display_list->EndPaintOfPairedBegin();
+  display_list->PushDrawScrollingContentsOp(scroll_element_id2,
+                                            scrolling_contents_list,
+                                            gfx::Rect(100, 300, 200, 200));
+  display_list->StartPaint();
+  display_list->push<RestoreOp>();
+  display_list->EndPaintOfPairedEnd();
+  display_list->Finalize();
+
+  ScrollOffsetMap scroll_offsets;
+  scroll_offsets[scroll_element_id1] = gfx::PointF();
+  scroll_offsets[scroll_element_id2] = gfx::PointF();
+
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(scroll_offsets);
+  // The image rect is the union of the two appearances of image1.
+  EXPECT_THAT(GetDiscardableImagesInRect(*image_map, gfx::Rect(1000, 1000)),
+              UnorderedElementsAre(
+                  FieldsAre(ImageIsSame(image1), gfx::Rect(-1, -1, 202, 502),
+                            SkSize::Make(1, 1)),
+                  FieldsAre(ImageIsSame(image1), gfx::Rect(-1, -1, 202, 502),
+                            SkSize::Make(1, 1))));
+
+  // The first scroller scrolls to make both images invisible.
+  scroll_offsets[scroll_element_id1] = gfx::PointF(200, 100);
+  // The second scroller scrolls to make both images visible.
+  scroll_offsets[scroll_element_id2] = gfx::PointF(0, 250);
+  image_map = display_list->GenerateDiscardableImageMap(scroll_offsets);
+  EXPECT_THAT(GetDiscardableImagesInRect(*image_map, gfx::Rect(1000, 1000)),
+              UnorderedElementsAre(
+                  FieldsAre(ImageIsSame(image1), gfx::Rect(99, 299, 102, 52),
+                            SkSize::Make(1, 1)),
+                  FieldsAre(ImageIsSame(image2), gfx::Rect(199, 399, 102, 102),
+                            SkSize::Make(1, 1))));
 }
 
 #if BUILDFLAG(SKIA_SUPPORT_SKOTTIE)
@@ -1135,9 +1205,9 @@ TEST_F(DiscardableImageMapTest,
 
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
-  display_list->GenerateDiscardableImageMap();
-  const DiscardableImageMap& image_map = display_list->discardable_image_map();
-  EXPECT_THAT(GetDiscardableImagesInRect(image_map, gfx::Rect(2048, 2048)),
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+  EXPECT_THAT(GetDiscardableImagesInRect(*image_map, gfx::Rect(2048, 2048)),
               IsEmpty());
 }
 
@@ -1165,14 +1235,14 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectSkottieWithImages) {
 
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
-  display_list->GenerateDiscardableImageMap();
-  const DiscardableImageMap& image_map = display_list->discardable_image_map();
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
   // Left Half of screen should return no images.
-  EXPECT_THAT(GetDiscardableImagesInRect(image_map, gfx::Rect(1023, 2048)),
+  EXPECT_THAT(GetDiscardableImagesInRect(*image_map, gfx::Rect(1023, 2048)),
               IsEmpty());
   // Right Half of screen should return 2 images.
   std::vector<PositionScaleDrawImage> images_out =
-      GetDiscardableImagesInRect(image_map, gfx::Rect(1024, 0, 1024, 2048));
+      GetDiscardableImagesInRect(*image_map, gfx::Rect(1024, 0, 1024, 2048));
   ASSERT_THAT(images_out, SizeIs(2));
   EXPECT_THAT(images_out, Contains(Field(&PositionScaleDrawImage::image,
                                          ImageIsSame(image_0))));
@@ -1205,10 +1275,10 @@ TEST_F(DiscardableImageMapTest,
 
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
-  display_list->GenerateDiscardableImageMap();
-  const DiscardableImageMap& image_map = display_list->discardable_image_map();
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
   std::vector<PositionScaleDrawImage> images_out =
-      GetDiscardableImagesInRect(image_map, visible_rect);
+      GetDiscardableImagesInRect(*image_map, visible_rect);
   ASSERT_THAT(images_out, SizeIs(2));
   for (const PositionScaleDrawImage& image_out : images_out) {
     static constexpr float kScaleTolerance = .01f;

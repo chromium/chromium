@@ -37,6 +37,7 @@ class TracedValue;
 
 namespace cc {
 
+class DrawImage;
 class PictureLayerTiling;
 class PrioritizedTile;
 
@@ -55,6 +56,8 @@ class CC_EXPORT PictureLayerTilingClient {
   virtual bool RequiresHighResToDraw() const = 0;
   virtual const PaintWorkletRecordMap& GetPaintWorkletRecords() const = 0;
   virtual void OnTilesAdded() = 0;
+  virtual std::vector<const DrawImage*> GetDiscardableImagesInRect(
+      const gfx::Rect& rect) const = 0;
   virtual ScrollOffsetMap GetRasterInducingScrollOffsets() const = 0;
 
  protected:

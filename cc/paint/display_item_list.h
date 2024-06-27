@@ -159,23 +159,8 @@ class CC_PAINT_EXPORT DisplayItemList
   }
   size_t OpBytesUsed() const { return paint_op_buffer_.paint_ops_size(); }
 
-  // Should be called before any usage of discardable_image_map() or
-  // TakeDecodingModeMap(). There should be called during commit from the
-  // compositor thread, then all usages of the map from the compositor thread
-  // will be safe.
-  void GenerateDiscardableImageMap();
-
-  // This can only be called after GenerateDiscardableImageMap().
-  const DiscardableImageMap& discardable_image_map() const {
-    CHECK(image_map_);
-    return *image_map_;
-  }
-  // This can only be called after GenerateDiscardableImageMap().
-  base::flat_map<PaintImage::Id, PaintImage::DecodingMode>
-  TakeDecodingModeMap() {
-    CHECK(image_map_);
-    return image_map_->TakeDecodingModeMap();
-  }
+  scoped_refptr<DiscardableImageMap> GenerateDiscardableImageMap(
+      const ScrollOffsetMap& raster_inducing_scroll_offsets) const;
 
   void EmitTraceSnapshot() const;
 
@@ -229,6 +214,7 @@ class CC_PAINT_EXPORT DisplayItemList
   }
 
  private:
+  friend class DiscardableImageMap;
   friend class DisplayItemListTest;
   friend class PaintOpBufferSerializer;
   friend gpu::raster::RasterImplementation;
@@ -246,8 +232,6 @@ class CC_PAINT_EXPORT DisplayItemList
     if (!paired_begin_stack_.empty())
       visual_rects_[paired_begin_stack_.back().first_index].Union(visual_rect);
   }
-
-  std::optional<DiscardableImageMap> image_map_;
 
   // Maps scroll element ids of `DrawScrollingContentsOp`s to visual rects.
   // For a nested `DrawScrollingContentsOp`, the scroll element id is of the

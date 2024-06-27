@@ -1595,7 +1595,9 @@ void DrawScrollingContentsOp::Raster(const DrawScrollingContentsOp* op,
                                      SkCanvas* canvas,
                                      const PlaybackParams& params) {
   canvas->save();
-  gfx::PointF scroll_offset = op->GetScrollOffset(params);
+  CHECK(params.raster_inducing_scroll_offsets);
+  gfx::PointF scroll_offset =
+      params.raster_inducing_scroll_offsets->at(op->scroll_element_id);
   canvas->translate(-scroll_offset.x(), -scroll_offset.y());
   op->display_item_list->Raster(canvas, params);
   canvas->restore();
@@ -2440,12 +2442,6 @@ bool DrawScrollingContentsOp::HasDiscardableImages(
                                     display_item_list->content_color_usage());
   }
   return has_discardable_images;
-}
-
-gfx::PointF DrawScrollingContentsOp::GetScrollOffset(
-    const PlaybackParams& params) const {
-  CHECK(params.raster_inducing_scroll_offsets);
-  return params.raster_inducing_scroll_offsets->at(scroll_element_id);
 }
 
 AnnotateOp::AnnotateOp() : PaintOp(kType) {}

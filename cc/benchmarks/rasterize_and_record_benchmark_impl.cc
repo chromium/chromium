@@ -10,6 +10,7 @@
 #include <limits>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -127,8 +128,13 @@ class FixedInvalidationPictureLayerTilingClient
 
   void OnTilesAdded() override { return base_client_->OnTilesAdded(); }
 
+  std::vector<const DrawImage*> GetDiscardableImagesInRect(
+      const gfx::Rect& rect) const override {
+    return base_client_->GetDiscardableImagesInRect(rect);
+  }
+
   ScrollOffsetMap GetRasterInducingScrollOffsets() const override {
-    return ScrollOffsetMap();
+    return base_client_->GetRasterInducingScrollOffsets();
   }
 
  private:

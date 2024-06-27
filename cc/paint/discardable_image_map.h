@@ -19,6 +19,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_worklet_input.h"
+#include "cc/paint/scroll_offset_map.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -32,7 +33,8 @@ class PaintOpBuffer;
 // This class is used for generating discardable images data (see DrawImage
 // for the type of data it stores). It allows the client to query a particular
 // rect and get back a list of DrawImages in that rect.
-class CC_PAINT_EXPORT DiscardableImageMap {
+class CC_PAINT_EXPORT DiscardableImageMap
+    : public base::RefCounted<DiscardableImageMap> {
  public:
   using Rects = absl::InlinedVector<gfx::Rect, 1>;
 
@@ -53,27 +55,22 @@ class CC_PAINT_EXPORT DiscardableImageMap {
     PaintImage::AnimationSequenceId reset_animation_sequence_id;
   };
 
-  DiscardableImageMap();
-  ~DiscardableImageMap();
-
-  // Called if the caller creates DiscardableImageMap lazily.
-  void CheckCalledOnValidSequence() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  }
+  static scoped_refptr<DiscardableImageMap> Generate(
+      const PaintOpBuffer& paint_op_buffer,
+      const gfx::Rect& bounds,
+      const ScrollOffsetMap& raster_inducing_scroll_offsets);
 
   bool empty() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return image_id_to_rects_.empty();
   }
-  void GetDiscardableImagesInRect(const gfx::Rect& rect,
-                                  std::vector<const DrawImage*>* images) const;
+  std::vector<const DrawImage*> GetDiscardableImagesInRect(
+      const gfx::Rect& rect) const;
   const Rects& GetRectsForImage(PaintImage::Id image_id) const;
   const std::vector<AnimatedImageMetadata>& animated_images_metadata() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return animated_images_metadata_;
   }
-
-  void Generate(const PaintOpBuffer& paint_op_buffer, const gfx::Rect& bounds);
 
   // This should only be called once from the compositor thread at commit time.
   base::flat_map<PaintImage::Id, PaintImage::DecodingMode>
@@ -88,7 +85,11 @@ class CC_PAINT_EXPORT DiscardableImageMap {
 
  private:
   friend class DiscardableImageMapTest;
+  friend class base::RefCounted<DiscardableImageMap>;
   class Generator;
+
+  DiscardableImageMap();
+  ~DiscardableImageMap();
 
   base::flat_map<PaintImage::Id, Rects> image_id_to_rects_;
   std::vector<AnimatedImageMetadata> animated_images_metadata_;

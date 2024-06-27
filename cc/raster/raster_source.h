@@ -35,7 +35,6 @@ class AxisTransform2d;
 
 namespace cc {
 class DisplayItemList;
-class DrawImage;
 class ImageProvider;
 
 class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
@@ -107,18 +106,6 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
 
   // Returns the content size of this raster source at a particular scale.
   gfx::Size GetContentSize(const gfx::Vector2dF& content_scale) const;
-
-  // Should be called during commit.
-  void GenerateDiscardableImageMap();
-
-  // This can only be called once after GenerateDiscardableImageMap().
-  base::flat_map<PaintImage::Id, PaintImage::DecodingMode>
-  TakeDecodingModeMap();
-
-  // Populate the given list with all images that may overlap the given rect in
-  // layer space. Can only be called after GenerateDiscardableImageMap().
-  void GetDiscardableImagesInRect(const gfx::Rect& layer_rect,
-                                  std::vector<const DrawImage*>* images) const;
 
   // Return true iff this raster source can raster the given rect in layer
   // space.

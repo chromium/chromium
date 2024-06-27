@@ -86,12 +86,9 @@ void FakePictureLayerImpl::SetRasterSource(
     scoped_refptr<RasterSource> raster_source,
     const Region& invalidation) {
   Region invalidation_temp = invalidation;
-  const PictureLayerTilingSet* pending_set = nullptr;
-  const PaintWorkletRecordMap* pending_paint_worklet_records = nullptr;
   set_gpu_raster_max_texture_size(
       layer_tree_impl()->GetDeviceViewport().size());
-  UpdateRasterSource(raster_source, &invalidation_temp, pending_set,
-                     pending_paint_worklet_records);
+  UpdateRasterSource(raster_source, &invalidation_temp);
 }
 
 size_t FakePictureLayerImpl::GetNumberOfTilesWithResources() const {

@@ -145,25 +145,6 @@ bool RasterSource::PerformSolidColorAnalysis(gfx::Rect layer_rect,
                                               max_ops_to_analyze);
 }
 
-void RasterSource::GenerateDiscardableImageMap() {
-  if (display_list_) {
-    display_list_->GenerateDiscardableImageMap();
-  }
-}
-
-void RasterSource::GetDiscardableImagesInRect(
-    const gfx::Rect& layer_rect,
-    std::vector<const DrawImage*>* images) const {
-  DCHECK_EQ(0u, images->size());
-  display_list_->discardable_image_map().GetDiscardableImagesInRect(layer_rect,
-                                                                    images);
-}
-
-base::flat_map<PaintImage::Id, PaintImage::DecodingMode>
-RasterSource::TakeDecodingModeMap() {
-  return display_list_->TakeDecodingModeMap();
-}
-
 bool RasterSource::IntersectsRect(const gfx::Rect& layer_rect) const {
   return recorded_bounds().Intersects(layer_rect);
 }

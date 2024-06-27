@@ -42,13 +42,14 @@ TEST(RecordingSourceTest, DiscardableImagesWithTransform) {
 
   scoped_refptr<RasterSource> raster_source =
       recording_source.CreateRasterSource();
-  raster_source->GenerateDiscardableImageMap();
+  scoped_refptr<DiscardableImageMap> image_map =
+      raster_source->GetDisplayItemList()->GenerateDiscardableImageMap(
+          ScrollOffsetMap());
 
   // Tile sized iterators. These should find only one pixel ref.
   {
-    std::vector<const DrawImage*> images;
-    raster_source->GetDiscardableImagesInRect(gfx::Rect(0, 0, 128, 128),
-                                              &images);
+    std::vector<const DrawImage*> images =
+        image_map->GetDiscardableImagesInRect(gfx::Rect(0, 0, 128, 128));
     EXPECT_EQ(2u, images.size());
     EXPECT_TRUE(
         images[0]->paint_image().IsSameForTesting(discardable_image[0][0]));
@@ -58,9 +59,8 @@ TEST(RecordingSourceTest, DiscardableImagesWithTransform) {
 
   // Shifted tile sized iterators. These should find only one pixel ref.
   {
-    std::vector<const DrawImage*> images;
-    raster_source->GetDiscardableImagesInRect(gfx::Rect(130, 140, 128, 128),
-                                              &images);
+    std::vector<const DrawImage*> images =
+        image_map->GetDiscardableImagesInRect(gfx::Rect(130, 140, 128, 128));
     EXPECT_EQ(1u, images.size());
     EXPECT_TRUE(
         images[0]->paint_image().IsSameForTesting(discardable_image[1][1]));
@@ -68,9 +68,8 @@ TEST(RecordingSourceTest, DiscardableImagesWithTransform) {
 
   // The rotated bitmap would still be in the top right tile.
   {
-    std::vector<const DrawImage*> images;
-    raster_source->GetDiscardableImagesInRect(gfx::Rect(130, 0, 128, 128),
-                                              &images);
+    std::vector<const DrawImage*> images =
+        image_map->GetDiscardableImagesInRect(gfx::Rect(130, 0, 128, 128));
     EXPECT_EQ(1u, images.size());
     EXPECT_TRUE(
         images[0]->paint_image().IsSameForTesting(discardable_image[1][1]));
@@ -78,9 +77,8 @@ TEST(RecordingSourceTest, DiscardableImagesWithTransform) {
 
   // Layer sized iterators. These should find all pixel refs.
   {
-    std::vector<const DrawImage*> images;
-    raster_source->GetDiscardableImagesInRect(gfx::Rect(0, 0, 256, 256),
-                                              &images);
+    std::vector<const DrawImage*> images =
+        image_map->GetDiscardableImagesInRect(gfx::Rect(0, 0, 256, 256));
     EXPECT_EQ(3u, images.size());
     // Top left tile with bitmap[0][0] and bitmap[1][1].
     EXPECT_TRUE(
@@ -93,9 +91,8 @@ TEST(RecordingSourceTest, DiscardableImagesWithTransform) {
 
   // Verify different raster scales
   for (float scale = 1.f; scale <= 5.f; scale += 0.5f) {
-    std::vector<const DrawImage*> images;
-    raster_source->GetDiscardableImagesInRect(gfx::Rect(130, 0, 128, 128),
-                                              &images);
+    std::vector<const DrawImage*> images =
+        image_map->GetDiscardableImagesInRect(gfx::Rect(130, 0, 128, 128));
     DrawImage image(*images[0], scale, PaintImage::kDefaultFrameIndex,
                     TargetColorParams());
     EXPECT_EQ(1u, images.size());
@@ -110,27 +107,26 @@ TEST(RecordingSourceTest, EmptyImages) {
 
   scoped_refptr<RasterSource> raster_source =
       recording_source.CreateRasterSource();
-  raster_source->GenerateDiscardableImageMap();
+  scoped_refptr<DiscardableImageMap> image_map =
+      raster_source->GetDisplayItemList()->GenerateDiscardableImageMap(
+          ScrollOffsetMap());
 
   // Tile sized iterators.
   {
-    std::vector<const DrawImage*> images;
-    raster_source->GetDiscardableImagesInRect(gfx::Rect(0, 0, 128, 128),
-                                              &images);
+    std::vector<const DrawImage*> images =
+        image_map->GetDiscardableImagesInRect(gfx::Rect(0, 0, 128, 128));
     EXPECT_TRUE(images.empty());
   }
   // Shifted tile sized iterators.
   {
-    std::vector<const DrawImage*> images;
-    raster_source->GetDiscardableImagesInRect(gfx::Rect(140, 140, 128, 128),
-                                              &images);
+    std::vector<const DrawImage*> images =
+        image_map->GetDiscardableImagesInRect(gfx::Rect(140, 140, 128, 128));
     EXPECT_TRUE(images.empty());
   }
   // Layer sized iterators.
   {
-    std::vector<const DrawImage*> images;
-    raster_source->GetDiscardableImagesInRect(gfx::Rect(0, 0, 256, 256),
-                                              &images);
+    std::vector<const DrawImage*> images =
+        image_map->GetDiscardableImagesInRect(gfx::Rect(0, 0, 256, 256));
     EXPECT_TRUE(images.empty());
   }
 }
@@ -158,27 +154,26 @@ TEST(RecordingSourceTest, NoDiscardableImages) {
 
   scoped_refptr<RasterSource> raster_source =
       recording_source.CreateRasterSource();
-  raster_source->GenerateDiscardableImageMap();
+  scoped_refptr<DiscardableImageMap> image_map =
+      raster_source->GetDisplayItemList()->GenerateDiscardableImageMap(
+          ScrollOffsetMap());
 
   // Tile sized iterators.
   {
-    std::vector<const DrawImage*> images;
-    raster_source->GetDiscardableImagesInRect(gfx::Rect(0, 0, 128, 128),
-                                              &images);
+    std::vector<const DrawImage*> images =
+        image_map->GetDiscardableImagesInRect(gfx::Rect(0, 0, 128, 128));
     EXPECT_TRUE(images.empty());
   }
   // Shifted tile sized iterators.
   {
-    std::vector<const DrawImage*> images;
-    raster_source->GetDiscardableImagesInRect(gfx::Rect(140, 140, 128, 128),
-                                              &images);
+    std::vector<const DrawImage*> images =
+        image_map->GetDiscardableImagesInRect(gfx::Rect(140, 140, 128, 128));
     EXPECT_TRUE(images.empty());
   }
   // Layer sized iterators.
   {
-    std::vector<const DrawImage*> images;
-    raster_source->GetDiscardableImagesInRect(gfx::Rect(0, 0, 256, 256),
-                                              &images);
+    std::vector<const DrawImage*> images =
+        image_map->GetDiscardableImagesInRect(gfx::Rect(0, 0, 256, 256));
     EXPECT_TRUE(images.empty());
   }
 }
@@ -205,13 +200,14 @@ TEST(RecordingSourceTest, DiscardableImages) {
 
   scoped_refptr<RasterSource> raster_source =
       recording_source.CreateRasterSource();
-  raster_source->GenerateDiscardableImageMap();
+  scoped_refptr<DiscardableImageMap> image_map =
+      raster_source->GetDisplayItemList()->GenerateDiscardableImageMap(
+          ScrollOffsetMap());
 
   // Tile sized iterators. These should find only one image.
   {
-    std::vector<const DrawImage*> images;
-    raster_source->GetDiscardableImagesInRect(gfx::Rect(0, 0, 128, 128),
-                                              &images);
+    std::vector<const DrawImage*> images =
+        image_map->GetDiscardableImagesInRect(gfx::Rect(0, 0, 128, 128));
     EXPECT_EQ(1u, images.size());
     EXPECT_TRUE(
         images[0]->paint_image().IsSameForTesting(discardable_image[0][0]));
@@ -219,9 +215,8 @@ TEST(RecordingSourceTest, DiscardableImages) {
 
   // Shifted tile sized iterators. These should find only one image.
   {
-    std::vector<const DrawImage*> images;
-    raster_source->GetDiscardableImagesInRect(gfx::Rect(140, 140, 128, 128),
-                                              &images);
+    std::vector<const DrawImage*> images =
+        image_map->GetDiscardableImagesInRect(gfx::Rect(140, 140, 128, 128));
     EXPECT_EQ(1u, images.size());
     EXPECT_TRUE(
         images[0]->paint_image().IsSameForTesting(discardable_image[1][1]));
@@ -229,17 +224,15 @@ TEST(RecordingSourceTest, DiscardableImages) {
 
   // Ensure there's no discardable images in the empty cell
   {
-    std::vector<const DrawImage*> images;
-    raster_source->GetDiscardableImagesInRect(gfx::Rect(140, 0, 128, 128),
-                                              &images);
+    std::vector<const DrawImage*> images =
+        image_map->GetDiscardableImagesInRect(gfx::Rect(140, 0, 128, 128));
     EXPECT_TRUE(images.empty());
   }
 
   // Layer sized iterators. These should find all 3 images.
   {
-    std::vector<const DrawImage*> images;
-    raster_source->GetDiscardableImagesInRect(gfx::Rect(0, 0, 256, 256),
-                                              &images);
+    std::vector<const DrawImage*> images =
+        image_map->GetDiscardableImagesInRect(gfx::Rect(0, 0, 256, 256));
     EXPECT_EQ(3u, images.size());
     EXPECT_TRUE(
         images[0]->paint_image().IsSameForTesting(discardable_image[0][0]));
@@ -276,38 +269,36 @@ TEST(RecordingSourceTest, DiscardableImagesBaseNonDiscardable) {
 
   scoped_refptr<RasterSource> raster_source =
       recording_source.CreateRasterSource();
-  raster_source->GenerateDiscardableImageMap();
+  scoped_refptr<DiscardableImageMap> image_map =
+      raster_source->GetDisplayItemList()->GenerateDiscardableImageMap(
+          ScrollOffsetMap());
 
   // Tile sized iterators. These should find only one image.
   {
-    std::vector<const DrawImage*> images;
-    raster_source->GetDiscardableImagesInRect(gfx::Rect(0, 0, 256, 256),
-                                              &images);
+    std::vector<const DrawImage*> images =
+        image_map->GetDiscardableImagesInRect(gfx::Rect(0, 0, 256, 256));
     EXPECT_EQ(1u, images.size());
     EXPECT_TRUE(
         images[0]->paint_image().IsSameForTesting(discardable_image[0][0]));
   }
   // Shifted tile sized iterators. These should find only one image.
   {
-    std::vector<const DrawImage*> images;
-    raster_source->GetDiscardableImagesInRect(gfx::Rect(260, 260, 256, 256),
-                                              &images);
+    std::vector<const DrawImage*> images =
+        image_map->GetDiscardableImagesInRect(gfx::Rect(260, 260, 256, 256));
     EXPECT_EQ(1u, images.size());
     EXPECT_TRUE(
         images[0]->paint_image().IsSameForTesting(discardable_image[1][1]));
   }
   // Ensure there's no discardable images in the empty cell
   {
-    std::vector<const DrawImage*> images;
-    raster_source->GetDiscardableImagesInRect(gfx::Rect(0, 256, 256, 256),
-                                              &images);
+    std::vector<const DrawImage*> images =
+        image_map->GetDiscardableImagesInRect(gfx::Rect(0, 256, 256, 256));
     EXPECT_TRUE(images.empty());
   }
   // Layer sized iterators. These should find three images.
   {
-    std::vector<const DrawImage*> images;
-    raster_source->GetDiscardableImagesInRect(gfx::Rect(0, 0, 512, 512),
-                                              &images);
+    std::vector<const DrawImage*> images =
+        image_map->GetDiscardableImagesInRect(gfx::Rect(0, 0, 512, 512));
     EXPECT_EQ(3u, images.size());
     EXPECT_TRUE(
         images[0]->paint_image().IsSameForTesting(discardable_image[0][0]));

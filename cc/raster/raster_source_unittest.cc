@@ -222,13 +222,15 @@ TEST(RasterSourceTest, PixelRefIteratorDiscardableRefsOneTile) {
   recording_source.Rerecord();
 
   scoped_refptr<RasterSource> raster = recording_source.CreateRasterSource();
-  raster->GenerateDiscardableImageMap();
+  scoped_refptr<DiscardableImageMap> image_map =
+      raster->GetDisplayItemList()->GenerateDiscardableImageMap(
+          ScrollOffsetMap());
 
   // Tile sized iterators. These should find only one pixel ref.
   {
     TargetColorParams target_color_params;
-    std::vector<const DrawImage*> images;
-    raster->GetDiscardableImagesInRect(gfx::Rect(0, 0, 256, 256), &images);
+    std::vector<const DrawImage*> images =
+        image_map->GetDiscardableImagesInRect(gfx::Rect(0, 0, 256, 256));
     ASSERT_EQ(1u, images.size());
     DrawImage image(*images[0], 1.f, PaintImage::kDefaultFrameIndex,
                     target_color_params);
@@ -240,8 +242,8 @@ TEST(RasterSourceTest, PixelRefIteratorDiscardableRefsOneTile) {
   {
     TargetColorParams target_color_params;
     target_color_params.color_space = gfx::ColorSpace::CreateXYZD50();
-    std::vector<const DrawImage*> images;
-    raster->GetDiscardableImagesInRect(gfx::Rect(260, 260, 256, 256), &images);
+    std::vector<const DrawImage*> images =
+        image_map->GetDiscardableImagesInRect(gfx::Rect(260, 260, 256, 256));
     ASSERT_EQ(1u, images.size());
     DrawImage image(*images[0], 1.f, PaintImage::kDefaultFrameIndex,
                     target_color_params);
@@ -251,14 +253,14 @@ TEST(RasterSourceTest, PixelRefIteratorDiscardableRefsOneTile) {
   }
   // Ensure there's no discardable pixel refs in the empty cell
   {
-    std::vector<const DrawImage*> images;
-    raster->GetDiscardableImagesInRect(gfx::Rect(0, 256, 256, 256), &images);
+    std::vector<const DrawImage*> images =
+        image_map->GetDiscardableImagesInRect(gfx::Rect(0, 256, 256, 256));
     EXPECT_EQ(0u, images.size());
   }
   // Layer sized iterators. These should find three pixel ref.
   {
-    std::vector<const DrawImage*> images;
-    raster->GetDiscardableImagesInRect(gfx::Rect(0, 0, 512, 512), &images);
+    std::vector<const DrawImage*> images =
+        image_map->GetDiscardableImagesInRect(gfx::Rect(0, 0, 512, 512));
     ASSERT_EQ(3u, images.size());
     EXPECT_TRUE(
         discardable_image[0][0].IsSameForTesting(images[0]->paint_image()));

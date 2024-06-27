@@ -891,8 +891,6 @@ class CC_PAINT_EXPORT DrawScrollingContentsOp final : public PaintOp {
   bool HasEffectsPreventingLCDTextForSaveLayerAlpha() const;
   HAS_SERIALIZATION_FUNCTIONS();
 
-  gfx::PointF GetScrollOffset(const PlaybackParams& params) const;
-
   ElementId scroll_element_id;
   scoped_refptr<DisplayItemList> display_item_list;
 };

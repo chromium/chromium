@@ -82,6 +82,8 @@ class CC_EXPORT PictureLayerImpl
   bool RequiresHighResToDraw() const override;
   const PaintWorkletRecordMap& GetPaintWorkletRecords() const override;
   void OnTilesAdded() override;
+  std::vector<const DrawImage*> GetDiscardableImagesInRect(
+      const gfx::Rect& rect) const override;
   ScrollOffsetMap GetRasterInducingScrollOffsets() const override;
 
   // ImageAnimationController::AnimationDriver overrides.
@@ -95,11 +97,8 @@ class CC_EXPORT PictureLayerImpl
     return gpu_raster_max_texture_size_;
   }
 
-  void UpdateRasterSource(
-      scoped_refptr<RasterSource> raster_source,
-      Region* new_invalidation,
-      const PictureLayerTilingSet* pending_set,
-      const PaintWorkletRecordMap* pending_paint_worklet_records);
+  void UpdateRasterSource(scoped_refptr<RasterSource> raster_source,
+                          Region* new_invalidation);
   bool UpdateTiles();
 
   // Mask-related functions.
@@ -121,6 +120,10 @@ class CC_EXPORT PictureLayerImpl
 
   // Used for benchmarking
   RasterSource* GetRasterSource() const { return raster_source_.get(); }
+
+  const DiscardableImageMap* GetDiscardableImageMapForTesting() const {
+    return discardable_image_map_.get();
+  }
 
   // This enum is the return value of the InvalidateRegionForImages() call. The
   // possible values represent the fact that there are no images on this layer
@@ -209,6 +212,14 @@ class CC_EXPORT PictureLayerImpl
   // their contents scale.
   float CalculateDirectlyCompositedImageRasterScale() const;
 
+  void UpdateRasterSourceInternal(
+      scoped_refptr<RasterSource> raster_source,
+      Region* new_invalidation,
+      const PictureLayerTilingSet* pending_set,
+      const PaintWorkletRecordMap* pending_paint_worklet_records,
+      const DiscardableImageMap* pending_discardable_image_map);
+  void RegenerateDiscardableImageMap();
+
   bool IsDirectlyCompositedImage() const;
   void UpdateDirectlyCompositedImageFromRasterSource();
 
@@ -247,6 +258,7 @@ class CC_EXPORT PictureLayerImpl
       CreatePictureLayerTilingSet();
   scoped_refptr<RasterSource> raster_source_;
   Region invalidation_;
+  scoped_refptr<const DiscardableImageMap> discardable_image_map_;
 
   // Ideal scales are calcuated from the transforms applied to the layer. They
   // represent the best known scale from the layer to the final output.

@@ -58,8 +58,7 @@ void PictureLayer::PushPropertiesTo(
   layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask());
 
   layer_impl->UpdateRasterSource(CreateRasterSource(),
-                                 &last_updated_invalidation_.Write(*this),
-                                 nullptr, nullptr);
+                                 &last_updated_invalidation_.Write(*this));
   DCHECK(last_updated_invalidation_.Read(*this).IsEmpty());
 }
 
