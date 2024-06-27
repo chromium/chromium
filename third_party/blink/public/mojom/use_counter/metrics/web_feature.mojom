@@ -4386,6 +4386,9 @@ enum WebFeature {
   kDelegatedInkExpectedImprovement = 5017,
   kCSSSelectorNthChildOfSelector = 5018,
   kStandardizedBrowserZoom = 5019,
+  kV8FileSystemObserver_Constructor = 5020,
+  kV8FileSystemObserver_Observe_Method = 5021,
+  kV8FileSystemObserver_Disconnect_Method = 5022,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

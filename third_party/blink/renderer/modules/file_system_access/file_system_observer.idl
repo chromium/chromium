@@ -12,16 +12,18 @@
 ] interface FileSystemObserver {
   [
     CallWith=ScriptState,
-    RaisesException
+    RaisesException,
+    Measure
   ] constructor(FileSystemObserverCallback callback);
 
   [
-      CallWith=ScriptState,
-      RaisesException
+    CallWith=ScriptState,
+    RaisesException,
+    Measure
   ] Promise<undefined> observe(FileSystemHandle handle,
                           optional FileSystemObserverObserveOptions options = {});
   [
     RuntimeEnabled=FileSystemObserverUnobserve
   ] void unobserve(FileSystemHandle handle);
-  void disconnect();
+  [Measure] void disconnect();
 };
