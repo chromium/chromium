@@ -28,6 +28,7 @@
 #import "ios/web/public/web_state_delegate.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/text_fragments/text_fragments_manager_impl.h"
+#import "ios/web/web_view/content_type_util.h"
 #import "net/cert/x509_util.h"
 #import "net/cert/x509_util_apple.h"
 #import "services/network/public/mojom/referrer_policy.mojom-shared.h"
@@ -342,12 +343,11 @@ WebStateID ContentWebState::GetUniqueIdentifier() const {
 }
 
 const std::string& ContentWebState::GetContentsMimeType() const {
-  static std::string type = "text/html";
-  return type;
+  return web_contents_->GetContentsMimeType();
 }
 
 bool ContentWebState::ContentIsHTML() const {
-  return true;
+  return web::IsContentTypeHtml(GetContentsMimeType());
 }
 
 const std::u16string& ContentWebState::GetTitle() const {
