@@ -1,0 +1,63 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module auction_worklet.mojom;
+
+import "mojo/public/mojom/base/big_buffer.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+
+// Compression schemes that can be used by Trusted Signals response bodies.
+enum TrustedSignalsCompressionScheme {
+  kNone,
+  kGzip,
+  kBrotli,
+};
+
+// Client that receives a trusted signals response for a single request.
+// There will be only one method call for a single
+// TrustedSignalsCache::GetTrustedSignals() invocation. The
+// remote side of the pipe will close it immediately after calling one of the
+// two available methods.
+//
+// An interface is used for this rather than a callback to allow for
+// cancellation.
+//
+// Note that multiple requests may be combined into a single network
+// request. On success, the response will be the response for an entire
+// compression group, still compressed.
+interface TrustedSignalsCacheClient {
+  // Called on success, with the response data associated with the
+  // provided `compression_group_compression_group_key`.
+  // `compression_group_data` is data from the server, which the server claims
+  // was compressed with `compression_scheme`.
+  OnSuccess(TrustedSignalsCompressionScheme compression_scheme,
+            mojo_base.mojom.BigBuffer compression_group_data);
+
+  // Called on error. Errors can happen in the case of a network error,
+  // an error parsing the response, or if the corresponding auction is
+  // cancelled.
+  OnError(string error_message);
+};
+
+// An interface to allow a Protected Audience script process to request a
+// trusted bidding or scoring signals response fetched by the browser process.
+// Each applicable GenerateBid() or ScoreAd() call configured to request
+// signals from a TEE ("Trusted signals API version 2") receives a
+// `compression_group_token`, which can then be passed to the global
+// TrustedSignalsCache to retrieve the corresponding response.
+//
+// The reason for this architecture is that multiple scripts may be able to use
+// the same response, so passing in IDs instead of the response itself reduces
+// copies sent between processes. The fetching is done in the browser process to
+// allow responses to be cached in the browser process for longer than script
+// processes last.
+interface TrustedSignalsCache {
+  // Requests the compression group associated `compression_group_token`. A
+  // single call will be made to `client` with an error or the corresponding
+  // trusted signals response. If the response is not immediately available,
+  // the `client` will only receive a message notified once it has been
+  // received.
+  GetTrustedSignals(mojo_base.mojom.UnguessableToken compression_group_token,
+                    pending_remote<TrustedSignalsCacheClient> client);
+};

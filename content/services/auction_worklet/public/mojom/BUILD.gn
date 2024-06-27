@@ -23,6 +23,7 @@ mojom("mojom") {
     "real_time_reporting.mojom",
     "reject_reason.mojom",
     "seller_worklet.mojom",
+    "trusted_signals_cache.mojom",
   ]
   deps = [
     "//content/common:mojo_bindings",
