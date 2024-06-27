@@ -7976,6 +7976,9 @@ const char kSimplifiedTabDragUIDescription[] =
     "Enable simplified tab dragging UI mode as a fallback if the graphical "
     "environment does not support the classic UI.";
 
+const char kWaylandPerWindowScalingName[] = "Wayland per-window scaling";
+const char kWaylandPerWindowScalingDescription[] =
+    "Enable Wayland's per-window scaling experimental support.";
 #endif  // BUILDFLAG(IS_LINUX)
 
 // All views-based platforms --------------------------------------------------

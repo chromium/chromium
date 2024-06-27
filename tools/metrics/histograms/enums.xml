@@ -22639,6 +22639,7 @@ from previous Chrome versions.
       label="UpdatedSupervisedUserExtensionApprovalStrings:enabled"/>
   <int value="891611228" label="ApnPolicies:enabled"/>
   <int value="892899792" label="MaterialDesignIncognitoNTP:disabled"/>
+  <int value="893884621" label="WaylandPerSurfaceScale:disabled"/>
   <int value="894183200" label="BookmarkIndexPaths:disabled"/>
   <int value="894434593" label="TabRestoreSubMenus:enabled"/>
   <int value="895337957"
@@ -24035,6 +24036,7 @@ from previous Chrome versions.
   <int value="1494628887" label="MediaPickerAdoption:disabled"/>
   <int value="1495059835" label="VirtualKeyboardMultipasteSuggestion:enabled"/>
   <int value="1495341532" label="disable-mtp-write-support"/>
+  <int value="1495468774" label="WaylandPerSurfaceScale:enabled"/>
   <int value="1495748045" label="SignedHTTPExchange:enabled"/>
   <int value="1496070561"
       label="AutofillReplaceCachedWebElementsByRendererIds:disabled"/>

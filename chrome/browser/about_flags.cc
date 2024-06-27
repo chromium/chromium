@@ -353,6 +353,7 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/ui_features.h"
+#include "ui/base/ui_base_features.h"
 #endif
 
 #if defined(TOOLKIT_VIEWS)
@@ -5283,6 +5284,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"simplified-tab-drag-ui", flag_descriptions::kSimplifiedTabDragUIName,
      flag_descriptions::kSimplifiedTabDragUIDescription, kOsLinux,
      FEATURE_VALUE_TYPE(features::kAllowWindowDragUsingSystemDragDrop)},
+
+    {"wayland-per-window-scaling",
+     flag_descriptions::kWaylandPerWindowScalingName,
+     flag_descriptions::kWaylandPerWindowScalingDescription, kOsLinux,
+     FEATURE_VALUE_TYPE(features::kWaylandPerSurfaceScale)},
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)

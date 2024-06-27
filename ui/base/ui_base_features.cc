@@ -150,6 +150,11 @@ BASE_FEATURE(kOzoneBubblesUsePlatformWidgets,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+
+// Controls whether support for Wayland's per-surface scaling is enabled.
+BASE_FEATURE(kWaylandPerSurfaceScale,
+             "WaylandPerSurfaceScale",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_OZONE)
 
 // Update of the virtual keyboard settings UI as described in

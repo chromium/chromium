@@ -37,11 +37,6 @@ BASE_FEATURE(kWaylandFractionalScaleV1,
 #endif
 );
 
-// Controls whether support for per-surface scaling is enabled.
-BASE_FEATURE(kWaylandPerSurfaceScale,
-             "WaylandPerSurfaceScale",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // This debug/dev flag pretty-prints DRM modeset configuration logs for ease
 // of reading. For more information, see: http://b/233006802
 BASE_FEATURE(kPrettyPrintDrmModesetConfigLogs,
@@ -65,10 +60,6 @@ bool IsWaylandOverlayDelegationEnabled() {
 
 bool IsWaylandFractionalScaleV1Enabled() {
   return base::FeatureList::IsEnabled(kWaylandFractionalScaleV1);
-}
-
-bool IsWaylandPerSurfaceScaleEnabled() {
-  return base::FeatureList::IsEnabled(kWaylandPerSurfaceScale);
 }
 
 bool IsPrettyPrintDrmModesetConfigLogsEnabled() {

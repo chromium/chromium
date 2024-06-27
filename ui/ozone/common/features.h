@@ -12,14 +12,12 @@ namespace ui {
 BASE_DECLARE_FEATURE(kWaylandSurfaceSubmissionInPixelCoordinates);
 BASE_DECLARE_FEATURE(kWaylandOverlayDelegation);
 BASE_DECLARE_FEATURE(kWaylandFractionalScaleV1);
-BASE_DECLARE_FEATURE(kWaylandPerSurfaceScale);
 BASE_DECLARE_FEATURE(kPrettyPrintDrmModesetConfigLogs);
 BASE_DECLARE_FEATURE(kUseDynamicCursorSize);
 
 bool IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled();
 bool IsWaylandOverlayDelegationEnabled();
 bool IsWaylandFractionalScaleV1Enabled();
-bool IsWaylandPerSurfaceScaleEnabled();
 bool IsPrettyPrintDrmModesetConfigLogsEnabled();
 bool IsUseDynamicCursorSizeEnabled();
 
