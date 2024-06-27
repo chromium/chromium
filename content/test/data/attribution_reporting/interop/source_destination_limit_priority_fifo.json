@@ -300,7 +300,7 @@
           "type": "source-success"
         } ],
         "report_time": "3000",
-        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose" 
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       },
       {
         "payload": [ {
@@ -313,7 +313,7 @@
           "type": "source-success"
         } ],
         "report_time": "4000",
-        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose" 
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       },
       {
         "payload": [ {
