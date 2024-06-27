@@ -1540,8 +1540,8 @@ class InterestGroupAuction::BuyerHelper
       // sufficient.
       CloseBidStatePipes(*bid_states_[i]);
       if (bid_states_[i]->trace_id) {
-        TRACE_EVENT_INSTANT("fledge", "bid_exceeds_size_limit",
-                            *bid_states_[i]->trace_id);
+        TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("fledge", "bid_exceeds_size_limit",
+                                            *bid_states_[i]->trace_id);
       }
     }
     auction_->auction_metrics_recorder_->RecordBidsFilteredByPerBuyerLimits(
@@ -1768,7 +1768,8 @@ class InterestGroupAuction::BuyerHelper
                           bid_filtered);
     if (bid_filtered) {
       if (state->trace_id) {
-        TRACE_EVENT_INSTANT("fledge", "bid_filtered", *state->trace_id);
+        TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("fledge", "bid_filtered",
+                                            *state->trace_id);
       }
       // Record if there are other bidders, as if there are not, the next call
       // may delete `this`.
