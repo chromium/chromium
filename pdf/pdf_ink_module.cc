@@ -38,6 +38,18 @@ namespace chrome_pdf {
 
 namespace {
 
+PdfInkModule::StrokeInputPoints GetStrokePointsForTesting(  // IN-TEST
+    const InkStrokeInputBatchView& input_batch) {
+  PdfInkModule::StrokeInputPoints stroke_points;
+  stroke_points.reserve(input_batch.Size());
+  for (size_t i = 0; i < input_batch.Size(); ++i) {
+    InkStrokeInput stroke_input = input_batch.Get(i);
+    stroke_points.emplace_back(stroke_input.position.x,
+                               stroke_input.position.y);
+  }
+  return stroke_points;
+}
+
 // Default to a black pen brush.
 std::unique_ptr<PdfInkBrush> CreateDefaultBrush() {
   const PdfInkBrush::Params kDefaultBrushParams = {SK_ColorBLACK, 1.0f};
@@ -142,15 +154,26 @@ PdfInkModule::GetStrokesInputPositionsForTesting() const {
 
   for (const auto& [page_index, strokes] : strokes_) {
     for (const auto& stroke : strokes) {
-      const InkStrokeInputBatchView& input_batch = stroke.stroke->GetInputs();
-      PdfInkModule::StrokeInputPoints stroke_points;
-      stroke_points.reserve(input_batch.Size());
-      for (size_t i = 0; i < input_batch.Size(); ++i) {
-        InkStrokeInput stroke_input = input_batch.Get(i);
-        stroke_points.emplace_back(stroke_input.position.x,
-                                   stroke_input.position.y);
+      all_strokes_points[page_index].push_back(
+          GetStrokePointsForTesting(stroke.stroke->GetInputs()));  // IN-TEST
+    }
+  }
+
+  return all_strokes_points;
+}
+
+PdfInkModule::DocumentStrokeInputPointsMap
+PdfInkModule::GetVisibleStrokesInputPositionsForTesting() const {
+  DocumentStrokeInputPointsMap all_strokes_points;
+
+  for (const auto& [page_index, strokes] : strokes_) {
+    for (const auto& stroke : strokes) {
+      if (!stroke.should_draw) {
+        continue;
       }
-      all_strokes_points[page_index].push_back(std::move(stroke_points));
+
+      all_strokes_points[page_index].push_back(
+          GetStrokePointsForTesting(stroke.stroke->GetInputs()));  // IN-TEST
     }
   }
 

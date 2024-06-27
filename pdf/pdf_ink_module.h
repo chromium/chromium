@@ -111,8 +111,11 @@ class PdfInkModule {
   // For testing only. Returns the current `PdfInkBrush` used to draw strokes.
   const PdfInkBrush* GetPdfInkBrushForTesting() const;
 
-  // For testing only. Returns the input positions used for the stroke.
+  // For testing only. Returns the (visible) input positions used for all
+  // strokes in the document.
   DocumentStrokeInputPointsMap GetStrokesInputPositionsForTesting() const;
+  DocumentStrokeInputPointsMap GetVisibleStrokesInputPositionsForTesting()
+      const;
 
   // For testing only. Provide a callback to use whenever the rendering
   // transform is determined for `Draw()`.
