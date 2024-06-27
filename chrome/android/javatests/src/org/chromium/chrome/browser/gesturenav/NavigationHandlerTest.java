@@ -61,7 +61,9 @@ import java.util.concurrent.TimeoutException;
 /** Tests {@link NavigationHandler} navigating back/forward using overscroll history navigation. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.S_V2, message = "crbug.com/1276402")
+@DisableIf.Build(
+        sdk_is_greater_than = Build.VERSION_CODES.Q,
+        message = "crbug.com/1276402 crbug.com/345352689")
 public class NavigationHandlerTest {
     private static final String RENDERED_PAGE = "/chrome/test/data/android/navigate/simple.html";
     private static final boolean LEFT_EDGE = true;
