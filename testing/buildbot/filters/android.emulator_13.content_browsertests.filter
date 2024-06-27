@@ -30,8 +30,5 @@
 # crbug.com/339033006
 -NavigationCookiesBrowserTest.CookiesInheritedSrcDoc
 
-# crbug.com/340585286
--FoldableAPIsOriginTrialBrowserTest.ValidOriginTrialToken
-
 # crbug.com/340587779
 -PerformanceTimelineBrowserTest.NoResourceTimingEntryForFileProtocol
