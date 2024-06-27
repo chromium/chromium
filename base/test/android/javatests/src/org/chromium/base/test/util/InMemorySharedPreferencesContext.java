@@ -58,7 +58,7 @@ public class InMemorySharedPreferencesContext extends ApplicationContextWrapper 
                 }
             }
             int afterSize = size();
-            Log.i(TAG, "Cleared %s shared prefs via test runner.", afterSize - beforeSize);
+            Log.i(TAG, "Cleared %s shared prefs via test runner.", beforeSize - afterSize);
         }
     }
 
