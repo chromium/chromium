@@ -120,7 +120,9 @@ WindowOcclusionCalculator::WindowOcclusionCalculator() {
       weak_ptr_factory_.GetWeakPtr()));
 }
 
-WindowOcclusionCalculator::~WindowOcclusionCalculator() = default;
+WindowOcclusionCalculator::~WindowOcclusionCalculator() {
+  shutdown_pause_.emplace(&occlusion_tracker_);
+}
 
 aura::Window::OcclusionState WindowOcclusionCalculator::GetOcclusionState(
     aura::Window* window) const {
@@ -187,6 +189,11 @@ void WindowOcclusionCalculator::RemoveObserver(Observer* observer) {
       ++iter;
     }
   }
+}
+
+base::WeakPtr<WindowOcclusionCalculator>
+WindowOcclusionCalculator::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 // Although `OnWindowAdded()` may seem appropriate and equivalent here,

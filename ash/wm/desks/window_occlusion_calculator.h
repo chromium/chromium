@@ -6,6 +6,7 @@
 #define ASH_WM_DESKS_WINDOW_OCCLUSION_CALCULATOR_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -90,6 +91,8 @@ class ASH_EXPORT WindowOcclusionCalculator : public aura::WindowObserver {
   // Removes `observer`; this is a no-op if `observer` has not been added.
   void RemoveObserver(Observer* observer);
 
+  base::WeakPtr<WindowOcclusionCalculator> AsWeakPtr();
+
  private:
   class ObservationState;
   class WindowOcclusionChangeBuilderImpl;
@@ -118,6 +121,12 @@ class ASH_EXPORT WindowOcclusionCalculator : public aura::WindowObserver {
   WindowOcclusionMap occlusion_map_;
 
   aura::WindowOcclusionTracker occlusion_tracker_;
+
+  // An optimization for destruction. When the `occlusion_change_observers_`
+  // and `excluded_windows_` are destroyed, the destruction of their
+  // `ScopedForceVisible` and `ScopedExclude` values trigger more calculations
+  // within the `occlusion_tracker_`. These are unnecessary during destruction.
+  std::optional<aura::WindowOcclusionTracker::ScopedPause> shutdown_pause_;
 
   // Map from parent window to the observers that should be notified when the
   // parent window's occlusion changes or any of its descendants' occlusion

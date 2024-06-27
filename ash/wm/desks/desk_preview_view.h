@@ -67,9 +67,10 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
   METADATA_HEADER(DeskPreviewView, views::Button)
 
  public:
-  DeskPreviewView(PressedCallback callback,
-                  DeskMiniView* mini_view,
-                  WindowOcclusionCalculator* window_occlusion_calculator);
+  DeskPreviewView(
+      PressedCallback callback,
+      DeskMiniView* mini_view,
+      base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator);
 
   DeskPreviewView(const DeskPreviewView&) = delete;
   DeskPreviewView& operator=(const DeskPreviewView&) = delete;
@@ -142,7 +143,7 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
   friend class DesksTestApi;
 
   const raw_ptr<DeskMiniView, LeakedDanglingUntriaged> mini_view_;
-  const raw_ptr<WindowOcclusionCalculator> window_occlusion_calculator_;
+  const base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator_;
 
   // A view that paints the wallpaper in the mini_view. It avoids the dimming
   // and blur overview mode adds to the original wallpaper. Owned by the views

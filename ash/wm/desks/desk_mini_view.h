@@ -12,6 +12,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/animation/animation_abort_handle.h"
 #include "ui/views/controls/label.h"
@@ -49,10 +50,11 @@ class ASH_EXPORT DeskMiniView : public views::View,
   // which it resides.
   static gfx::Rect GetDeskPreviewBounds(aura::Window* root_window);
 
-  DeskMiniView(DeskBarViewBase* owner_bar,
-               aura::Window* root_window,
-               Desk* desk,
-               WindowOcclusionCalculator* window_occlusion_calculator);
+  DeskMiniView(
+      DeskBarViewBase* owner_bar,
+      aura::Window* root_window,
+      Desk* desk,
+      base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator);
 
   DeskMiniView(const DeskMiniView&) = delete;
   DeskMiniView& operator=(const DeskMiniView&) = delete;

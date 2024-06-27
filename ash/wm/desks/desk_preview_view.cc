@@ -381,7 +381,7 @@ void GetLayersData(aura::Window* window,
 DeskPreviewView::DeskPreviewView(
     PressedCallback callback,
     DeskMiniView* mini_view,
-    WindowOcclusionCalculator* window_occlusion_calculator)
+    base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator)
     : views::Button(std::move(callback)),
       mini_view_(mini_view),
       window_occlusion_calculator_(window_occlusion_calculator),

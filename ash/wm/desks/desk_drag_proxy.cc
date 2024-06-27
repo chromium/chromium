@@ -35,7 +35,7 @@ DeskDragProxy::DeskDragProxy(
     DeskBarViewBase* desk_bar_view,
     DeskMiniView* drag_view,
     float init_offset_x,
-    WindowOcclusionCalculator* window_occlusion_calculator)
+    base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator)
     : desk_bar_view_(desk_bar_view),
       drag_view_(drag_view),
       drag_preview_size_(drag_view->GetPreviewBoundsInScreen().size()),
