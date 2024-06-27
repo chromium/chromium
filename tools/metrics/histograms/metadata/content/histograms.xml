@@ -1312,8 +1312,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful"
-    enum="Boolean" expires_after="2024-07-07">
-  <owner>birnie@google.com</owner>
+    enum="Boolean" expires_after="2024-11-03">
+  <owner>adamta@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Android: If the user triggers a sign in action from somewhere in the Feed we
