@@ -248,7 +248,7 @@
 -ProfileInteractionManagerTestSuiteInstantiation/ProfileInteractionManagerTest.OnPageActivationComputesLevelAndDecision/FPFEnabled_UserOptIn_NoException_EnableOn3pcBlocked_3pcBlocked
 -ProfileInteractionManagerTestSuiteInstantiation/ProfileInteractionManagerTest.OnPageActivationComputesLevelAndDecision/FPFEnabled_UserOptOut_Exception
 
-#TODO(crbug.com/347197919): ThrottleManagerEnabledTest has been failing since
+# TODO(crbug.com/347197919): ThrottleManagerEnabledTest has been failing since
 # https://crrev.com/c/5527553. Need to consider if we can support the
 # fingerprinting protection feature.
 -All/ThrottleManagerEnabledTest.ActivateMainFrameAndFilterDryRun/0
@@ -298,3 +298,13 @@
 # TODO(crbug.com/349640009): Currently fail with use_blink due to spinning up on
 # an unexpected thread after https://crrev.com/c/5622258 added the tests.
 -UkmUrlRecorderTest.ReusedNavigationContext
+
+# TODO(crbug.com/349653214): Currently fail with use_blink due to spinning up on
+# an unexpected thread after https://crrev.com/c/5614910 added the tests.
+-AutofillAcrossIframesTest.AskForFillDataOnMultiFrameForm
+-AutofillAcrossIframesTest.FillMultiFrameForm
+-AutofillAcrossIframesTest.FillMultiFrameForm_SingleField
+-AutofillAcrossIframesTest.FillSingleFrameForm
+-AutofillAcrossIframesTest.SubmitMultiFrameForm
+-AutofillAcrossIframesTest.TextChangeOnMultiFrameForm
+-AutofillAcrossIframesTest.UpdateOnFrameDeletion
