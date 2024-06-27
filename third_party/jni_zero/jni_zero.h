@@ -89,10 +89,6 @@ inline jint as_jint(const JniIntWrapper& wrapper) {
 
 namespace jni_zero {
 
-// Commonly needed jclasses:
-extern JNI_ZERO_COMPONENT_BUILD_EXPORT jclass g_object_class;
-extern JNI_ZERO_COMPONENT_BUILD_EXPORT jclass g_string_class;
-
 // Creates a new local reference frame, in which at least a given number of
 // local references can be created. Note that local references already created
 // in previous local frames are still valid in the current local frame.
@@ -531,6 +527,33 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaGlobalWeakRef {
   jweak obj_ = nullptr;
 };
 
+// A global JavaRef that will never be released.
+template <typename T>
+class JNI_ZERO_COMPONENT_BUILD_EXPORT LeakedJavaGlobalRef : public JavaRef<T> {
+ public:
+  constexpr LeakedJavaGlobalRef() = default;
+  constexpr LeakedJavaGlobalRef(std::nullptr_t) {}
+
+  LeakedJavaGlobalRef(const LeakedJavaGlobalRef& other) = delete;
+  LeakedJavaGlobalRef(const LeakedJavaGlobalRef&& other) = delete;
+  ~LeakedJavaGlobalRef() = default;
+
+  void Reset(JNIEnv* env, const JavaRef<T>& j_object) {
+    JNI_ZERO_DCHECK(JavaRef<T>::obj() == nullptr);
+    JavaRef<T>::SetNewGlobalRef(env, j_object.obj());
+  }
+
+  // Create a local reference.
+  ScopedJavaLocalRef<T> AsLocalRef(JNIEnv* env) const {
+    T j_obj = JavaRef<T>::obj();
+    if (!j_obj) {
+      return nullptr;
+    }
+    return ScopedJavaLocalRef<T>::Adopt(
+        env, static_cast<T>(env->NewLocalRef(j_obj)));
+  }
+};
+
 // Wrapper for a jobjectArray which supports input iteration, allowing Java
 // arrays to be iterated over with a range-based for loop, or used with
 // <algorithm> functions that accept input iterators.
@@ -875,6 +898,15 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT MethodID {
                            std::atomic<jmethodID>* atomic_method_id);
 };
 
+// Commonly needed jclasses:
+extern JNI_ZERO_COMPONENT_BUILD_EXPORT jclass g_object_class;
+extern JNI_ZERO_COMPONENT_BUILD_EXPORT jclass g_string_class;
+// Singletons for empty things.
+extern JNI_ZERO_COMPONENT_BUILD_EXPORT LeakedJavaGlobalRef<jstring>
+    g_empty_string;
+extern JNI_ZERO_COMPONENT_BUILD_EXPORT LeakedJavaGlobalRef<jobject>
+    g_empty_list;
+extern JNI_ZERO_COMPONENT_BUILD_EXPORT LeakedJavaGlobalRef<jobject> g_empty_map;
 }  // namespace jni_zero
 
 #endif  // JNI_ZERO_JNI_ZERO_H_

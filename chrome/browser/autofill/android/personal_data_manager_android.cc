@@ -878,7 +878,7 @@ JNI_PersonalDataManager_GetBasicCardIssuerNetwork(
 
   if (static_cast<bool>(jempty_if_invalid) &&
       !IsValidCreditCardNumber(card_number)) {
-    return ConvertUTF8ToJavaString(env, "");
+    return jni_zero::g_empty_string.AsLocalRef(env);
   }
   return ConvertUTF8ToJavaString(
       env, data_util::GetPaymentRequestData(GetCardNetwork(card_number))

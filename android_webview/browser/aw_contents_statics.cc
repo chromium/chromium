@@ -166,7 +166,7 @@ ScopedJavaLocalRef<jstring> JNI_AwContentsStatics_GetVariationsHeader(
       variations::VariationsIdsProvider::GetInstance()->GetClientDataHeaders(
           is_signed_in);
   if (!headers)
-    return base::android::ConvertUTF8ToJavaString(env, "");
+    return jni_zero::g_empty_string.AsLocalRef(env);
   return base::android::ConvertUTF8ToJavaString(
       env,
       headers->headers_map.at(variations::mojom::GoogleWebVisibility::ANY));

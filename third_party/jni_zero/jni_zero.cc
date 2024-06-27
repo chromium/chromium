@@ -6,6 +6,7 @@
 
 #include <sys/prctl.h>
 
+#include "third_party/jni_zero/generate_jni/JniInit_jni.h"
 #include "third_party/jni_zero/jni_zero_internal.h"
 #include "third_party/jni_zero/logging.h"
 
@@ -59,6 +60,9 @@ jclass GetSystemClassGlobalRef(JNIEnv* env, const char* class_name) {
 
 jclass g_object_class = nullptr;
 jclass g_string_class = nullptr;
+LeakedJavaGlobalRef<jstring> g_empty_string = nullptr;
+LeakedJavaGlobalRef<jobject> g_empty_list = nullptr;
+LeakedJavaGlobalRef<jobject> g_empty_map = nullptr;
 
 ScopedJavaLocalFrame::ScopedJavaLocalFrame(JNIEnv* env) : env_(env) {
   int failed = env_->PushLocalFrame(kDefaultLocalFrameCapacity);
@@ -223,7 +227,15 @@ void InitVM(JavaVM* vm) {
   JNIEnv* env = AttachCurrentThread();
   g_object_class = GetSystemClassGlobalRef(env, "java/lang/Object");
   g_string_class = GetSystemClassGlobalRef(env, "java/lang/String");
-  CheckException(env);
+  g_empty_string.Reset(
+      env, ScopedJavaLocalRef<jstring>(env, env->NewString(nullptr, 0)));
+  ScopedJavaLocalRef<jobjectArray> globals = Java_JniInit_init(env);
+  g_empty_list.Reset(env,
+                     ScopedJavaLocalRef<jobject>(
+                         env, env->GetObjectArrayElement(globals.obj(), 0)));
+  g_empty_map.Reset(env,
+                    ScopedJavaLocalRef<jobject>(
+                        env, env->GetObjectArrayElement(globals.obj(), 1)));
 }
 
 void DisableJvmForTesting() {
@@ -263,6 +275,7 @@ void CheckException(JNIEnv* env) {
   if (g_exception_handler_callback) {
     return g_exception_handler_callback(env);
   }
+  env->ExceptionDescribe();
   JNI_ZERO_FLOG("jni_zero crashing due to uncaught Java exception");
 }
 

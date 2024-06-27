@@ -1261,14 +1261,14 @@ cronet_javatests_deps_to_package = [
   ":cronet_test_apk_java",
   ":flags_java_proto",
   "//base:base_java",
-  "//third_party/jni_zero:jni_zero_java",
   "//base:base_java_test_support",
-
   "//net/android:embedded_test_server_aidl_java",
   "//net/android:net_java",
   "//net/android:net_java_test_support",
   "//url:url_java",
   "//third_party/androidx:androidx_annotation_annotation_experimental_java",
+  "//third_party/jni_zero:generate_jni_java",
+  "//third_party/jni_zero:jni_zero_java",
 ]
 
 if (!is_cronet_for_aosp_build) {

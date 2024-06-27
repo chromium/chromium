@@ -4,7 +4,7 @@
 
 #include "third_party/jni_zero/common_apis.h"
 
-#include "third_party/jni_zero/jni_zero_jni/JniUtil_jni.h"
+#include "third_party/jni_zero/generate_jni/JniUtil_jni.h"
 #include "third_party/jni_zero/system_jni/Arrays_jni.h"
 #include "third_party/jni_zero/system_jni/Collection_jni.h"
 
