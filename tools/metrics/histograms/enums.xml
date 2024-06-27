@@ -13300,6 +13300,11 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="pointerup"/>
 </enum>
 
+<enum name="InputHintInitializationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failure"/>
+</enum>
+
 <enum name="InputKeyEventToFunctionKey">
   <int value="0" label="DirectlyFromKeyboard"/>
   <int value="1" label="TopRowAutoTranslated"/>

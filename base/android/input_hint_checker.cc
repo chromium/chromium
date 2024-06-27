@@ -11,6 +11,7 @@
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 
@@ -193,7 +194,23 @@ InputHintChecker::InitState InputHintChecker::FetchState() const {
   return init_state_.load(std::memory_order_acquire);
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class InitializationResult {
+  kSuccess = 0,
+  kFailure = 1,
+  kMaxValue = kFailure,
+};
+
 void InputHintChecker::TransitionToState(InitState new_state) {
+  DCHECK_NE(new_state, FetchState());
+  if (new_state == InitState::kInitialized ||
+      new_state == InitState::kFailedToInitialize) {
+    InitializationResult r = (new_state == InitState::kInitialized)
+                                 ? InitializationResult::kSuccess
+                                 : InitializationResult::kFailure;
+    UmaHistogramEnumeration("Android.InputHintChecker.InitializationResult", r);
+  }
   init_state_.store(new_state, std::memory_order_release);
 }
 

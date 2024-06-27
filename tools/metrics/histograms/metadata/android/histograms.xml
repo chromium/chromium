@@ -2049,6 +2049,23 @@ chromium-metrics-reviews@google.com.
   <summary>Emitted when a mouse is connected or disconnected.</summary>
 </histogram>
 
+<histogram name="Android.InputHintChecker.InitializationResult"
+    enum="InputHintInitializationResult" expires_after="2024-11-26">
+  <owner>pasko@chromium.org</owner>
+  <owner>mthiesse@chromium.org</owner>
+  <summary>
+    Records the status of the InputHintChecker initialization. This
+    initialization procedure is required to be able to later poll for
+    availability of unhandled input events queued. Recorded immediately after
+    finishing the initialization, which should happen once during early browser
+    process initialization.
+
+    A failure may be recorded after initialization succeeds (which itself
+    records a sample) if reading the input hint fails. In this case only the
+    first failure is recorded.
+  </summary>
+</histogram>
+
 <histogram name="Android.Intent.BlockedExternalNavLastGestureTime" units="ms"
     expires_after="2024-12-08">
   <owner>mthiesse@chromium.org</owner>

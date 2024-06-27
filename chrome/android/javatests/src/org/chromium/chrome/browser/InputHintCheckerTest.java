@@ -22,6 +22,7 @@ import org.chromium.base.InputHintChecker;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -115,6 +116,26 @@ public final class InputHintCheckerTest {
                 () -> {
                     Assert.assertFalse(InputHintChecker.hasInputForTesting());
                 });
+    }
+
+    @Test
+    @MediumTest
+    public void testInitFailureRecordsHistogram() {
+        // Start InputHintChecker asynchronous initialization by calling setView().
+        TextView view =
+                new TextView(InstrumentationRegistry.getInstrumentation().getTargetContext());
+
+        try (var ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.InputHintChecker.InitializationResult", 1)) {
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        InputHintChecker.setAllowSetViewForTesting(true);
+                        InputHintChecker.setView(view);
+                    });
+            // Wait for initialization to fail.
+            CriteriaHelper.pollUiThread(InputHintChecker::failedToInitializeForTesting);
+        }
     }
 
     @Test
