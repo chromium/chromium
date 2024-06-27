@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/permissions/exclusive_access_permission_prompt.h"
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h"
 #include "chrome/browser/ui/views/permissions/exclusive_access_permission_prompt_view.h"
 #include "content/public/browser/web_contents.h"
@@ -16,6 +17,13 @@ ExclusiveAccessPermissionPrompt::ExclusiveAccessPermissionPrompt(
     : PermissionPromptDesktop(browser, web_contents, delegate),
       delegate_(delegate) {
   ShowPrompt();
+
+  LocationBarView* lbv = GetLocationBarView();
+
+  // Before showing a chip make sure the LocationBar is in a valid state. That
+  // fixes a bug when a chip overlays the padlock icon.
+  lbv->InvalidateLayout();
+  lbv->GetChipController()->ShowPermissionChip(delegate->GetWeakPtr());
 }
 
 ExclusiveAccessPermissionPrompt::~ExclusiveAccessPermissionPrompt() {

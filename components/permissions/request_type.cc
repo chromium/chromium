@@ -165,6 +165,10 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
     case RequestType::kIdentityProvider:
       // TODO(crbug.com/40252825): use a dedicated icon
       return gfx::kNoneIcon;
+    case RequestType::kKeyboardLock:
+      return vector_icons::kKeyboardLockOffIcon;
+    case RequestType::kPointerLock:
+      return vector_icons::kPointerLockOffIcon;
     default:
       NOTREACHED_IN_MIGRATION();
   }

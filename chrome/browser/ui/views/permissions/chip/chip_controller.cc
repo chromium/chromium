@@ -276,7 +276,7 @@ void ChipController::InitializePermissionPrompt(
   std::move(callback).Run();
 }
 
-void ChipController::ShowPermissionPrompt(
+void ChipController::ShowPermissionUi(
     base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate) {
   if (permission_dashboard_controller_ &&
       permission_dashboard_controller_->SuppressVerboseIndicator()) {
@@ -338,6 +338,18 @@ void ChipController::ShowPermissionPrompt(
   } else {
     StartDismissTimer();
   }
+}
+
+void ChipController::ShowPermissionChip(
+    base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate) {
+  is_bubble_suppressed_ = true;
+  ShowPermissionUi(delegate);
+}
+
+void ChipController::ShowPermissionPrompt(
+    base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate) {
+  is_bubble_suppressed_ = false;
+  ShowPermissionUi(delegate);
 }
 
 void ChipController::RemoveBubbleObserverAndResetTimersAndChipCallbacks() {
@@ -506,7 +518,8 @@ void ChipController::OnExpandAnimationEnded() {
     return;
   }
 
-  if (permission_prompt_model_->ShouldBubbleStartOpen()) {
+  if (permission_prompt_model_->ShouldBubbleStartOpen() &&
+      !is_bubble_suppressed_) {
     OpenPermissionPromptBubble();
   } else {
     StartCollapseTimer();

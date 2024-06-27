@@ -125,17 +125,17 @@ PermissionRequest::GetDialogAnnotatedMessageText(
       break;
     case RequestType::kStorageAccess:
       // The SA prompt does not currently bold any part of its message.
-        return AnnotatedMessageText(
-            l10n_util::GetStringFUTF16(
-                IDS_CONCAT_TWO_STRINGS_WITH_PERIODS,
-                l10n_util::GetStringFUTF16(
-                    IDS_STORAGE_ACCESS_PERMISSION_TWO_ORIGIN_PROMPT_TITLE,
-                    requesting_origin_string_formatted),
-                l10n_util::GetStringFUTF16(
-                    IDS_STORAGE_ACCESS_PERMISSION_TWO_ORIGIN_EXPLANATION,
-                    requesting_origin_string_formatted,
-                    embedding_origin_string_formatted)),
-            /*bolded_ranges=*/{});
+      return AnnotatedMessageText(
+          l10n_util::GetStringFUTF16(
+              IDS_CONCAT_TWO_STRINGS_WITH_PERIODS,
+              l10n_util::GetStringFUTF16(
+                  IDS_STORAGE_ACCESS_PERMISSION_TWO_ORIGIN_PROMPT_TITLE,
+                  requesting_origin_string_formatted),
+              l10n_util::GetStringFUTF16(
+                  IDS_STORAGE_ACCESS_PERMISSION_TWO_ORIGIN_EXPLANATION,
+                  requesting_origin_string_formatted,
+                  embedding_origin_string_formatted)),
+          /*bolded_ranges=*/{});
     case RequestType::kTopLevelStorageAccess:
       NOTREACHED_IN_MIGRATION();
       break;
@@ -235,6 +235,14 @@ std::optional<std::u16string> PermissionRequest::GetRequestChipText(
          IDS_PERMISSIONS_GEOLOCATION_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT}},
        {RequestType::kIdleDetection,
         {IDS_IDLE_DETECTION_PERMISSION_CHIP, -1, -1, -1, -1, -1, -1, -1}},
+       {RequestType::kKeyboardLock,
+        {IDS_KEYBOARD_LOCK_PERMISSION_CHIP, -1,
+         IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION,
+         IDS_PERMISSIONS_PERMISSION_ALLOWED_ONCE_CONFIRMATION,
+         IDS_PERMISSIONS_PERMISSION_NOT_ALLOWED_CONFIRMATION,
+         IDS_PERMISSIONS_KEYBOARD_LOCK_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT,
+         IDS_PERMISSIONS_PERMISSION_ALLOWED_ONCE_CONFIRMATION,
+         IDS_PERMISSIONS_KEYBOARD_LOCK_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT}},
        {RequestType::kMicStream,
         {IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_CHIP, -1,
          IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION,
@@ -253,6 +261,14 @@ std::optional<std::u16string> PermissionRequest::GetRequestChipText(
          IDS_PERMISSIONS_NOTIFICATION_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT,
          -1,
          IDS_PERMISSIONS_NOTIFICATION_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT}},
+       {RequestType::kPointerLock,
+        {IDS_POINTER_LOCK_PERMISSION_CHIP, -1,
+         IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION,
+         IDS_PERMISSIONS_PERMISSION_ALLOWED_ONCE_CONFIRMATION,
+         IDS_PERMISSIONS_PERMISSION_NOT_ALLOWED_CONFIRMATION,
+         IDS_PERMISSIONS_POINTER_LOCK_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT,
+         IDS_PERMISSIONS_PERMISSION_ALLOWED_ONCE_CONFIRMATION,
+         IDS_PERMISSIONS_POINTER_LOCK_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT}},
        {RequestType::kStorageAccess,
         {IDS_SAA_PERMISSION_CHIP, -1,
          IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION, -1,
