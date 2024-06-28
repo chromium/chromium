@@ -71,6 +71,28 @@ inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
   }
 }
 
+inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
+    proto::ModelExecutionFeature feature) {
+  switch (feature) {
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE:
+      return ModelBasedCapabilityKey::kCompose;
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION:
+      return ModelBasedCapabilityKey::kTabOrganization;
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH:
+      return ModelBasedCapabilityKey::kWallpaperSearch;
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST:
+      return ModelBasedCapabilityKey::kTest;
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEXT_SAFETY:
+      return ModelBasedCapabilityKey::kTextSafety;
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PROMPT_API:
+      return ModelBasedCapabilityKey::kPromptApi;
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_HISTORY_SEARCH:
+      return ModelBasedCapabilityKey::kHistorySearch;
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
+      NOTREACHED_NORETURN() << "Invalid feature";
+  }
+}
+
 inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
     ModelBasedCapabilityKey key) {
   switch (key) {
