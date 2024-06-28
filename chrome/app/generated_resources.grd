@@ -14519,6 +14519,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_A11Y_OMNIBOX_CHIP_HINT" desc="A navigational hint given to screenreader users, informing them that a setting which was just announced is accessible via the address bar.">
         Change this setting in the address bar.
       </message>
+      <message name="IDS_A11Y_INDICATORS_ANNOUNCEMENT" desc="A permission usage status text that is used when a permission activity indicator is displayed. Additionally it contains a hint how to change this setting. All these strings are already defined.">
+        <ph name="PERMISSION_USAGE">$1<ex>This page is accessing your camera</ex></ph> <ph name="PERMISSION_INDICATOR_DESCRIPTION">$2<ex>Change this setting in the address bar</ex></ph>
+      </message>
 
       <!-- Media Left-Hand Side indicators -->
       <message name="IDS_MICROPHONE_CAMERA_IN_USE" desc="Title for the media activity indicator when a page is using the camera and microphone.">

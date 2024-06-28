@@ -147,17 +147,17 @@ void ContentSettingImageView::Update() {
   UpdateImage();
   SetVisible(true);
   GetViewAccessibility().SetIsIgnored(false);
-  // An alert role is required in order to fire the alert event.
-  GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 
   if (content_setting_image_model_->ShouldNotifyAccessibility(web_contents)) {
     auto name = l10n_util::GetStringUTF16(
         content_setting_image_model_->AccessibilityAnnouncementStringId());
     GetViewAccessibility().SetName(name);
-    const std::u16string& accessible_description =
-        l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT);
-    GetViewAccessibility().SetDescription(accessible_description);
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+
+    GetViewAccessibility().AnnounceAlert(l10n_util::GetStringFUTF16(
+        IDS_A11Y_INDICATORS_ANNOUNCEMENT, name,
+        l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT)));
+
     content_setting_image_model_->AccessibilityWasNotified(web_contents);
   }
 

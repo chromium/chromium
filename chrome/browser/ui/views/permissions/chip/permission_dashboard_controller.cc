@@ -275,18 +275,15 @@ bool PermissionDashboardController::Update(
   if (indicator_model->ShouldNotifyAccessibility(
           location_bar_view_->GetWebContents())) {
     indicator_chip->SetTooltipText(indicator_model->get_tooltip());
-    indicator_chip->GetViewAccessibility().SetIsIgnored(false);
-    // An alert role is required in order to fire the alert event.
-    indicator_chip->GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
 
-    auto name = l10n_util::GetStringUTF16(
+    std::u16string name = l10n_util::GetStringUTF16(
         indicator_model->AccessibilityAnnouncementStringId());
-    indicator_chip->GetViewAccessibility().SetName(name);
-    const std::u16string& accessible_description =
-        l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT);
-    indicator_chip->GetViewAccessibility().SetDescription(
-        accessible_description);
-    indicator_chip->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    permission_dashboard_view_->GetViewAccessibility().SetName(name);
+
+    permission_dashboard_view_->GetViewAccessibility().AnnounceAlert(
+        l10n_util::GetStringFUTF16(
+            IDS_A11Y_INDICATORS_ANNOUNCEMENT, name,
+            l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT)));
 
     RecordIndicators(indicator_model, content_settings, /*clicked=*/false);
 
