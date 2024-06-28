@@ -266,15 +266,15 @@ SessionSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void SessionSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                         DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> SessionSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   DCHECK(syncing_);
-  std::move(callback).Run(store_->GetSessionDataForKeys(storage_keys));
+  return store_->GetSessionDataForKeys(storage_keys);
 }
 
-void SessionSyncBridge::GetAllDataForDebugging(DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> SessionSyncBridge::GetAllDataForDebugging() {
   DCHECK(syncing_);
-  std::move(callback).Run(store_->GetAllSessionData());
+  return store_->GetAllSessionData();
 }
 
 std::string SessionSyncBridge::GetClientTag(

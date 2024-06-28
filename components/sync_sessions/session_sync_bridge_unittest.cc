@@ -239,30 +239,14 @@ class SessionSyncBridgeTest : public ::testing::Test {
   }
 
   std::map<std::string, std::unique_ptr<EntityData>> GetAllData() {
-    base::RunLoop loop;
-    std::unique_ptr<DataBatch> batch;
-    bridge_->GetAllDataForDebugging(base::BindLambdaForTesting(
-        [&loop, &batch](std::unique_ptr<DataBatch> input_batch) {
-          batch = std::move(input_batch);
-          loop.Quit();
-        }));
-    loop.Run();
+    std::unique_ptr<DataBatch> batch = bridge_->GetAllDataForDebugging();
     EXPECT_NE(nullptr, batch);
     return BatchToEntityDataMap(std::move(batch));
   }
 
   std::map<std::string, std::unique_ptr<EntityData>> GetDataForCommit(
       const std::vector<std::string>& storage_keys) {
-    base::RunLoop loop;
-    std::unique_ptr<DataBatch> batch;
-    bridge_->GetDataForCommit(
-        storage_keys,
-        base::BindLambdaForTesting(
-            [&loop, &batch](std::unique_ptr<DataBatch> input_batch) {
-              batch = std::move(input_batch);
-              loop.Quit();
-            }));
-    loop.Run();
+    std::unique_ptr<DataBatch> batch = bridge_->GetDataForCommit(storage_keys);
     EXPECT_NE(nullptr, batch);
     return BatchToEntityDataMap(std::move(batch));
   }

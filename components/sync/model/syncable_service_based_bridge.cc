@@ -288,8 +288,8 @@ SyncableServiceBasedBridge::ApplyIncrementalSyncChanges(
   return syncable_service_->ProcessSyncChanges(FROM_HERE, sync_change_list);
 }
 
-void SyncableServiceBasedBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                                  DataCallback callback) {
+std::unique_ptr<DataBatch> SyncableServiceBasedBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto batch = std::make_unique<MutableDataBatch>();
@@ -302,10 +302,11 @@ void SyncableServiceBasedBridge::GetDataForCommit(StorageKeyList storage_keys,
                      ClientTagHash::FromHashed(it->first), it->second));
     }
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
-void SyncableServiceBasedBridge::GetAllDataForDebugging(DataCallback callback) {
+std::unique_ptr<DataBatch>
+SyncableServiceBasedBridge::GetAllDataForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto batch = std::make_unique<MutableDataBatch>();
@@ -315,7 +316,7 @@ void SyncableServiceBasedBridge::GetAllDataForDebugging(DataCallback callback) {
                                 ClientTagHash::FromHashed(storage_key),
                                 persisted_entity_data));
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 std::string SyncableServiceBasedBridge::GetClientTag(

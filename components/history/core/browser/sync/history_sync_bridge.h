@@ -54,9 +54,9 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
       syncer::EntityChangeList entity_changes) override;
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                    delete_metadata_change_list) override;
-  void GetDataForCommit(StorageKeyList storage_keys,
-                        DataCallback callback) override;
-  void GetAllDataForDebugging(DataCallback callback) override;
+  std::unique_ptr<syncer::DataBatch> GetDataForCommit(
+      StorageKeyList storage_keys) override;
+  std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
   syncer::ConflictResolution ResolveConflict(
@@ -137,7 +137,7 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
   // (because before that, the cache GUID isn't known).
   std::string GetLocalCacheGuid() const;
 
-  void GetDataImpl(StorageKeyList storage_keys, DataCallback callback);
+  std::unique_ptr<syncer::DataBatch> GetDataImpl(StorageKeyList storage_keys);
 
   // A non-owning pointer to the backend, which we're syncing local changes from
   // and sync changes to. Never null.

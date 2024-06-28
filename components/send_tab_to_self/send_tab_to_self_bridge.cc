@@ -206,8 +206,8 @@ SendTabToSelfBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void SendTabToSelfBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                           DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> SendTabToSelfBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
 
   for (const std::string& guid : storage_keys) {
@@ -218,16 +218,17 @@ void SendTabToSelfBridge::GetDataForCommit(StorageKeyList storage_keys,
 
     batch->Put(guid, CopyToEntityData(entry->AsLocalProto().specifics()));
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
-void SendTabToSelfBridge::GetAllDataForDebugging(DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+SendTabToSelfBridge::GetAllDataForDebugging() {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const auto& it : entries_) {
     batch->Put(it.first,
                CopyToEntityData(it.second->AsLocalProto().specifics()));
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 std::string SendTabToSelfBridge::GetClientTag(

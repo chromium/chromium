@@ -34,10 +34,14 @@ std::optional<ModelError> StubModelTypeSyncBridge::ApplyIncrementalSyncChanges(
   return {};
 }
 
-void StubModelTypeSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                               DataCallback callback) {}
+std::unique_ptr<DataBatch> StubModelTypeSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
+  return nullptr;
+}
 
-void StubModelTypeSyncBridge::GetAllDataForDebugging(DataCallback callback) {}
+std::unique_ptr<DataBatch> StubModelTypeSyncBridge::GetAllDataForDebugging() {
+  return nullptr;
+}
 
 std::string StubModelTypeSyncBridge::GetClientTag(
     const EntityData& entity_data) {
