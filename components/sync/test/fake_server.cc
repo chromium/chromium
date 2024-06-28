@@ -672,12 +672,12 @@ void FakeServer::TriggerMigrationDoneError(syncer::ModelTypeSet types) {
 }
 
 void FakeServer::AddCollaboration(const std::string& collaboration_id) {
-  collaborations_.push_back(collaboration_id);
+  collaborations_.insert(collaboration_id);
   // TODO(b/325917757): update collaboration data type.
 }
 
 void FakeServer::RemoveCollaboration(const std::string& collaboration_id) {
-  std::erase(collaborations_, collaboration_id);
+  collaborations_.erase(collaboration_id);
   // TODO(b/325917757): update collaboration data type.
 }
 

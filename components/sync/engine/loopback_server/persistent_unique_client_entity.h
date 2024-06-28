@@ -30,7 +30,8 @@ class PersistentUniqueClientEntity : public LoopbackServerEntity {
                                const std::string& client_tag_hash,
                                const sync_pb::EntitySpecifics& specifics,
                                int64_t creation_time,
-                               int64_t last_modified_time);
+                               int64_t last_modified_time,
+                               const std::string& collaboration_id);
 
   ~PersistentUniqueClientEntity() override;
 
@@ -47,6 +48,15 @@ class PersistentUniqueClientEntity : public LoopbackServerEntity {
       int64_t creation_time,
       int64_t last_modified_time);
 
+  static std::unique_ptr<LoopbackServerEntity>
+  CreateFromSharedSpecificsForTesting(
+      const std::string& non_unique_name,
+      const std::string& client_tag,
+      const sync_pb::EntitySpecifics& entity_specifics,
+      int64_t creation_time,
+      int64_t last_modified_time,
+      const std::string& collaboration_id);
+
   // LoopbackServerEntity implementation.
   bool RequiresParentId() const override;
   std::string GetParentId() const override;
@@ -58,7 +68,8 @@ class PersistentUniqueClientEntity : public LoopbackServerEntity {
   // These member values have equivalent fields in SyncEntity.
   const std::string client_tag_hash_;
   const int64_t creation_time_;
-  int64_t last_modified_time_;
+  const int64_t last_modified_time_;
+  const std::string collaboration_id_;
 };
 
 }  // namespace syncer

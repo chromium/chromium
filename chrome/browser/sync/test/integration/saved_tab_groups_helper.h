@@ -7,22 +7,22 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
+#include "components/saved_tab_groups/saved_tab_group_tab.h"
 
 namespace tab_groups {
-
-class SavedTabGroupKeyedService;
+class SavedTabGroupModel;
 
 // Checks that a tab or group with a particular uuid exists in the model.
 class SavedTabOrGroupExistsChecker : public StatusChangeChecker,
                                      public SavedTabGroupModelObserver {
  public:
-  // The caller must ensure that `service` is not null and will outlive this
-  // object.
-  SavedTabOrGroupExistsChecker(SavedTabGroupKeyedService* service,
+  // `model` must not be null and must outlive this object.
+  SavedTabOrGroupExistsChecker(SavedTabGroupModel* model,
                                const base::Uuid& uuid);
   SavedTabOrGroupExistsChecker(const SavedTabOrGroupExistsChecker&) = delete;
   SavedTabOrGroupExistsChecker& operator=(const SavedTabOrGroupExistsChecker&) =
@@ -40,7 +40,7 @@ class SavedTabOrGroupExistsChecker : public StatusChangeChecker,
 
  private:
   const base::Uuid uuid_;
-  raw_ptr<SavedTabGroupKeyedService> const service_;
+  raw_ptr<SavedTabGroupModel> const model_;
 };
 
 // Checks that a tab or group with a particular uuid does not exist in the
@@ -48,9 +48,8 @@ class SavedTabOrGroupExistsChecker : public StatusChangeChecker,
 class SavedTabOrGroupDoesNotExistChecker : public StatusChangeChecker,
                                            public SavedTabGroupModelObserver {
  public:
-  // The caller must ensure that `service` is not null and will outlive this
-  // object.
-  SavedTabOrGroupDoesNotExistChecker(SavedTabGroupKeyedService* service,
+  // `model` must not be null and must outlive this object.
+  SavedTabOrGroupDoesNotExistChecker(SavedTabGroupModel* model,
                                      const base::Uuid& uuid);
   SavedTabOrGroupDoesNotExistChecker(
       const SavedTabOrGroupDoesNotExistChecker&) = delete;
@@ -72,17 +71,16 @@ class SavedTabOrGroupDoesNotExistChecker : public StatusChangeChecker,
 
  private:
   const base::Uuid uuid_;
-  raw_ptr<SavedTabGroupKeyedService> const service_;
+  raw_ptr<SavedTabGroupModel> const model_;
 };
 
 // Checks that a matching group exists in the model.
 class SavedTabGroupMatchesChecker : public StatusChangeChecker,
                                     public SavedTabGroupModelObserver {
  public:
-  // The caller must ensure that `service` is not null and will outlive this
+  // The caller must ensure that `model` is not null and will outlive this
   // object.
-  SavedTabGroupMatchesChecker(SavedTabGroupKeyedService* service,
-                              SavedTabGroup group);
+  SavedTabGroupMatchesChecker(SavedTabGroupModel* model, SavedTabGroup group);
   SavedTabGroupMatchesChecker(const SavedTabGroupMatchesChecker&) = delete;
   SavedTabGroupMatchesChecker& operator=(const SavedTabGroupMatchesChecker&) =
       delete;
@@ -99,17 +97,16 @@ class SavedTabGroupMatchesChecker : public StatusChangeChecker,
 
  private:
   const SavedTabGroup group_;
-  raw_ptr<SavedTabGroupKeyedService> const service_;
+  raw_ptr<SavedTabGroupModel> const model_;
 };
 
 // Checks that a matching tab exists in the model.
 class SavedTabMatchesChecker : public StatusChangeChecker,
                                public SavedTabGroupModelObserver {
  public:
-  // The caller must ensure that `service` is not null and will outlive this
+  // The caller must ensure that `model` is not null and will outlive this
   // object.
-  SavedTabMatchesChecker(SavedTabGroupKeyedService* service,
-                         SavedTabGroupTab tab);
+  SavedTabMatchesChecker(SavedTabGroupModel* model, SavedTabGroupTab tab);
   SavedTabMatchesChecker(const SavedTabMatchesChecker&) = delete;
   SavedTabMatchesChecker& operator=(const SavedTabMatchesChecker&) = delete;
   ~SavedTabMatchesChecker() override;
@@ -125,16 +122,16 @@ class SavedTabMatchesChecker : public StatusChangeChecker,
 
  private:
   const SavedTabGroupTab tab_;
-  raw_ptr<SavedTabGroupKeyedService> const service_;
+  raw_ptr<SavedTabGroupModel> const model_;
 };
 
 // Checks that the model contains saved groups in a certain order.
 class GroupOrderChecker : public StatusChangeChecker,
                           public SavedTabGroupModelObserver {
  public:
-  // The caller must ensure that `service` is not null and will outlive this
+  // The caller must ensure that `model` is not null and will outlive this
   // object.
-  GroupOrderChecker(SavedTabGroupKeyedService* service,
+  GroupOrderChecker(SavedTabGroupModel* model,
                     std::vector<base::Uuid> group_ids);
   GroupOrderChecker(const GroupOrderChecker&) = delete;
   GroupOrderChecker& operator=(const GroupOrderChecker&) = delete;
@@ -153,7 +150,7 @@ class GroupOrderChecker : public StatusChangeChecker,
 
  private:
   const std::vector<base::Uuid> group_ids_;
-  raw_ptr<SavedTabGroupKeyedService> const service_;
+  raw_ptr<SavedTabGroupModel> const model_;
 };
 
 // Checks that a saved group in the model contains tabs in a certain order.
@@ -162,7 +159,7 @@ class TabOrderChecker : public StatusChangeChecker,
  public:
   // The caller must ensure that `service` is not null and will outlive this
   // object.
-  TabOrderChecker(SavedTabGroupKeyedService* service,
+  TabOrderChecker(SavedTabGroupModel* model,
                   base::Uuid group_id,
                   std::vector<base::Uuid> tab_ids);
   TabOrderChecker(const TabOrderChecker&) = delete;
@@ -182,7 +179,7 @@ class TabOrderChecker : public StatusChangeChecker,
   const base::Uuid group_id_;
   const std::vector<base::Uuid> tab_ids_;
 
-  raw_ptr<SavedTabGroupKeyedService> const service_;
+  raw_ptr<SavedTabGroupModel> const model_;
 };
 }  // namespace tab_groups
 
