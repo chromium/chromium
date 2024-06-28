@@ -53051,7 +53051,9 @@
         "args": [
           "--test-type",
           "testharness",
+          "reftest",
           "crashtest",
+          "print-reftest",
           "--exit-after-n-crashes-or-timeouts=10000",
           "--exit-after-n-failures=10000",
           "--no-retry-failures",
