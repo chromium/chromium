@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "base/types/token_type.h"
+#include "components/performance_manager/decorators/page_load_tracker_decorator_data.h"
 #include "components/performance_manager/graph/node_attached_data.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -26,7 +27,6 @@ namespace performance_manager {
 class FrameNodeImpl;
 class FrozenFrameAggregatorAccess;
 class PageAggregatorAccess;
-class PageLoadTrackerAccess;
 class SiteDataAccess;
 
 // The starting state of various boolean properties of the PageNode.
@@ -43,7 +43,8 @@ using PagePropertyFlags = base::
 
 class PageNodeImpl
     : public PublicNodeImpl<PageNodeImpl, PageNode>,
-      public TypedNodeBase<PageNodeImpl, PageNode, PageNodeObserver> {
+      public TypedNodeBase<PageNodeImpl, PageNode, PageNodeObserver>,
+      public SupportsNodeInlineData<PageLoadTrackerDecoratorData> {
  public:
   using PassKey = base::PassKey<PageNodeImpl>;
   using FrozenFrameDataStorage =
@@ -172,10 +173,6 @@ class PageNodeImpl
   std::unique_ptr<NodeAttachedData>& GetSiteData(
       base::PassKey<SiteDataAccess>) {
     return site_data_;
-  }
-  std::unique_ptr<NodeAttachedData>& GetPageLoadTrackerData(
-      base::PassKey<PageLoadTrackerAccess>) {
-    return page_load_tracker_data_;
   }
   FrozenFrameDataStorage& GetFrozenFrameData(
       base::PassKey<FrozenFrameAggregatorAccess>) {
@@ -376,10 +373,6 @@ class PageNodeImpl
   ObservedProperty::
       NotifiesOnlyOnChanges<bool, &PageNodeObserver::OnHadUserEditsChanged>
           had_user_edits_ GUARDED_BY_CONTEXT(sequence_checker_){false};
-
-  // Storage for PageLoadTracker user data.
-  std::unique_ptr<NodeAttachedData> page_load_tracker_data_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Storage for SiteDataNodeData user data.
   std::unique_ptr<NodeAttachedData> site_data_
