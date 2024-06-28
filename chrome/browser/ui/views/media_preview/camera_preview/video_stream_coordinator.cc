@@ -103,15 +103,7 @@ void VideoStreamCoordinator::OnCameraVideoFrame(
   }
 
   if (!video_stream_start_time_) {
-    video_stream_start_time_ = base::TimeTicks::Now();
-    video_stream_total_frames_ = 0;
-
-    CHECK(video_stream_request_time_);
-    const auto preview_delay_time =
-        *video_stream_start_time_ - *video_stream_request_time_;
-    media_preview_metrics::RecordPreviewDelayTime(metrics_context_,
-                                                  preview_delay_time);
-    video_stream_request_time_.reset();
+    OnReceivedFirstFrame();
   }
   video_stream_total_frames_++;
 }
@@ -150,36 +142,7 @@ void VideoStreamCoordinator::StopInternal(
   }
 
   if (video_frame_handler_) {
-    // Retrieve the settings actually being sent by the handler. If something
-    // else has the stream open when the media preview requests it, then the
-    // requested settings are ignored and the existing settings are used
-    // instead.
-    std::optional<media::VideoCaptureParams> actual_params =
-        video_frame_handler_->GetActualParams();
-    if (actual_params) {
-      media_preview_metrics::RecordPreviewCameraPixelHeight(
-          metrics_context_,
-          actual_params->requested_format.frame_size.height());
-
-      media_preview_metrics::RecordPreviewVideoExpectedFPS(
-          metrics_context_, actual_params->requested_format.frame_rate);
-    }
-    if (video_stream_start_time_) {
-      const auto duration = base::TimeTicks::Now() - *video_stream_start_time_;
-      total_visible_preview_duration_ += duration;
-      int actual_fps = video_stream_total_frames_ / duration.InSecondsF();
-      media_preview_metrics::RecordPreviewVideoActualFPS(metrics_context_,
-                                                         actual_fps);
-      video_stream_start_time_.reset();
-
-      if (video_stream_view_) {
-        float rendered_percent = static_cast<double>(rendered_frame_count) /
-                                 video_stream_total_frames_;
-        media_preview_metrics::RecordPreviewVideoFramesRenderedPercent(
-            metrics_context_, rendered_percent);
-      }
-    }
-
+    RecordVideoStreamMetrics(rendered_frame_count);
     // Close frame handling and move the object to another thread to allow it
     // to finish processing frames that are in progress. If this isn't done,
     // then allocated buffers can be left dangling until the video stream is
@@ -217,4 +180,50 @@ void VideoStreamCoordinator::OnClosing() {
   Stop();
   time_to_action_without_preview_ =
       base::TimeTicks::Now() - video_stream_construction_time_;
+}
+
+void VideoStreamCoordinator::OnReceivedFirstFrame() {
+  CHECK(!video_stream_start_time_);
+  video_stream_start_time_ = base::TimeTicks::Now();
+  video_stream_total_frames_ = 0;
+
+  CHECK(video_stream_request_time_);
+  const auto preview_delay_time =
+      *video_stream_start_time_ - *video_stream_request_time_;
+  media_preview_metrics::RecordPreviewDelayTime(metrics_context_,
+                                                preview_delay_time);
+  video_stream_request_time_.reset();
+}
+
+void VideoStreamCoordinator::RecordVideoStreamMetrics(
+    size_t rendered_frame_count) {
+  CHECK(video_frame_handler_);
+  // Retrieve the settings actually being sent by the handler. If something
+  // else has the stream open when the media preview requests it, then the
+  // requested settings are ignored and the existing settings are used
+  // instead.
+  std::optional<media::VideoCaptureParams> actual_params =
+      video_frame_handler_->GetActualParams();
+  if (actual_params) {
+    media_preview_metrics::RecordPreviewCameraPixelHeight(
+        metrics_context_, actual_params->requested_format.frame_size.height());
+
+    media_preview_metrics::RecordPreviewVideoExpectedFPS(
+        metrics_context_, actual_params->requested_format.frame_rate);
+  }
+  if (video_stream_start_time_) {
+    const auto duration = base::TimeTicks::Now() - *video_stream_start_time_;
+    total_visible_preview_duration_ += duration;
+    int actual_fps = video_stream_total_frames_ / duration.InSecondsF();
+    media_preview_metrics::RecordPreviewVideoActualFPS(metrics_context_,
+                                                       actual_fps);
+    video_stream_start_time_.reset();
+
+    if (video_stream_view_) {
+      float rendered_percent = static_cast<double>(rendered_frame_count) /
+                               video_stream_total_frames_;
+      media_preview_metrics::RecordPreviewVideoFramesRenderedPercent(
+          metrics_context_, rendered_percent);
+    }
+  }
 }

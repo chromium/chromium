@@ -80,6 +80,10 @@ class VideoStreamCoordinator
   void StopInternal(mojo::Remote<video_capture::mojom::VideoSourceProvider>
                         video_source_provider = {});
 
+  void OnReceivedFirstFrame();
+
+  void RecordVideoStreamMetrics(size_t rendered_frame_count);
+
   raw_ptr<VideoStreamView> video_stream_view_;
   raw_ptr<views::View> preview_badge_view_;
   std::unique_ptr<capture_mode::CameraVideoFrameHandler> video_frame_handler_;
