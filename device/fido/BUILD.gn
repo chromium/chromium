@@ -473,7 +473,7 @@ if (use_blink) {
 
   source_set("test_support") {
     testonly = true
-    sources = [ "test_callback_receiver.h" ]
+    sources = []
     deps = [
       "//base",
       "//components/apdu",

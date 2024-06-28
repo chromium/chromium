@@ -6,19 +6,21 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <optional>
 #include <utility>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "device/bluetooth/test/bluetooth_test.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/fido/cable/fido_ble_connection.h"
 #include "device/fido/cable/fido_ble_frames.h"
 #include "device/fido/cable/mock_fido_ble_connection.h"
 #include "device/fido/fido_constants.h"
-#include "device/fido/test_callback_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,8 +30,7 @@ namespace {
 
 constexpr uint16_t kDefaultControlPointLength = 20;
 
-using FrameCallbackReceiver =
-    test::ValueCallbackReceiver<std::optional<FidoBleFrame>>;
+using FrameFuture = base::test::TestFuture<std::optional<FidoBleFrame>>;
 
 std::vector<std::vector<uint8_t>> ToByteFragments(const FidoBleFrame& frame) {
   std::vector<std::vector<uint8_t>> byte_fragments;
@@ -81,10 +82,10 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_FailWrite) {
       .WillOnce(::testing::Invoke(
           [](auto&&, auto* cb) { std::move(*cb).Run(false /* success */); }));
 
-  FrameCallbackReceiver receiver;
-  transaction().WriteRequestFrame(FidoBleFrame(), receiver.callback());
-  receiver.WaitForCallback();
-  EXPECT_EQ(std::nullopt, receiver.value());
+  FrameFuture future;
+  transaction().WriteRequestFrame(FidoBleFrame(), future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(std::nullopt, future.Get());
 }
 
 // Tests a case where the control point write succeeds.
@@ -94,14 +95,14 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_Success) {
           [](auto&&, auto* cb) { std::move(*cb).Run(true /* success */); }));
 
   FidoBleFrame frame(FidoBleDeviceCommand::kPing, std::vector<uint8_t>(10));
-  FrameCallbackReceiver receiver;
-  transaction().WriteRequestFrame(frame, receiver.callback());
+  FrameFuture future;
+  transaction().WriteRequestFrame(frame, future.GetCallback());
 
   for (auto&& byte_fragment : ToByteFragments(frame))
     transaction().OnResponseFragment(std::move(byte_fragment));
 
-  receiver.WaitForCallback();
-  EXPECT_EQ(frame, receiver.value());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(frame, future.Get());
 }
 
 // Tests a scenario where the full response frame is obtained before the control
@@ -115,18 +116,18 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_DelayedWriteAck) {
           [&](auto&&, auto* cb) { delayed_write_callback = std::move(*cb); }));
 
   FidoBleFrame frame(FidoBleDeviceCommand::kPing, std::vector<uint8_t>(10));
-  FrameCallbackReceiver receiver;
-  transaction().WriteRequestFrame(frame, receiver.callback());
+  FrameFuture future;
+  transaction().WriteRequestFrame(frame, future.GetCallback());
 
   for (auto&& byte_fragment : ToByteFragments(frame))
     transaction().OnResponseFragment(std::move(byte_fragment));
 
   task_environment().RunUntilIdle();
-  EXPECT_FALSE(receiver.was_called());
+  EXPECT_FALSE(future.IsReady());
 
   std::move(delayed_write_callback).Run(true);
-  receiver.WaitForCallback();
-  EXPECT_EQ(frame, receiver.value());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(frame, future.Get());
 }
 
 // Tests a scenario where keep alive frames are obtained before the control
@@ -142,10 +143,10 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_DelayedWriteAck_KeepAlive) {
   FidoBleFrame tup_needed_frame(
       FidoBleDeviceCommand::kKeepAlive,
       {base::strict_cast<uint8_t>(FidoBleFrame::KeepaliveCode::TUP_NEEDED)});
-  FrameCallbackReceiver receiver;
+  FrameFuture future;
 
   // Send two keep alives then the actual response.
-  transaction().WriteRequestFrame(frame, receiver.callback());
+  transaction().WriteRequestFrame(frame, future.GetCallback());
   for (auto&& byte_fragment : ToByteFragments(tup_needed_frame))
     transaction().OnResponseFragment(std::move(byte_fragment));
   for (auto&& byte_fragment : ToByteFragments(tup_needed_frame))
@@ -154,11 +155,11 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_DelayedWriteAck_KeepAlive) {
     transaction().OnResponseFragment(std::move(byte_fragment));
 
   task_environment().RunUntilIdle();
-  EXPECT_FALSE(receiver.was_called());
+  EXPECT_FALSE(future.IsReady());
 
   std::move(delayed_write_callback).Run(true);
-  receiver.WaitForCallback();
-  EXPECT_EQ(frame, receiver.value());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(frame, future.Get());
 }
 
 // Tests a case where the control point length is too small.
@@ -168,11 +169,11 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_ControlPointLength_TooSmall) {
 
   EXPECT_CALL(connection(), WriteControlPointPtr).Times(0);
   FidoBleFrame frame(FidoBleDeviceCommand::kPing, std::vector<uint8_t>(10));
-  FrameCallbackReceiver receiver;
-  transaction().WriteRequestFrame(frame, receiver.callback());
+  FrameFuture future;
+  transaction().WriteRequestFrame(frame, future.GetCallback());
 
-  receiver.WaitForCallback();
-  EXPECT_EQ(std::nullopt, receiver.value());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(std::nullopt, future.Get());
 }
 
 // Tests that valid KeepaliveCodes are ignored, and only a valid
@@ -183,8 +184,8 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_IgnoreValidKeepAlives) {
           [](auto&&, auto* cb) { std::move(*cb).Run(true /* success */); }));
 
   FidoBleFrame frame(FidoBleDeviceCommand::kPing, std::vector<uint8_t>(10));
-  FrameCallbackReceiver receiver;
-  transaction().WriteRequestFrame(frame, receiver.callback());
+  FrameFuture future;
+  transaction().WriteRequestFrame(frame, future.GetCallback());
 
   FidoBleFrame tup_needed_frame(
       FidoBleDeviceCommand::kKeepAlive,
@@ -193,7 +194,7 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_IgnoreValidKeepAlives) {
     transaction().OnResponseFragment(std::move(byte_fragment));
 
   task_environment().RunUntilIdle();
-  EXPECT_FALSE(receiver.was_called());
+  EXPECT_FALSE(future.IsReady());
 
   FidoBleFrame processing_frame(
       FidoBleDeviceCommand::kKeepAlive,
@@ -202,13 +203,13 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_IgnoreValidKeepAlives) {
     transaction().OnResponseFragment(std::move(byte_fragment));
 
   task_environment().RunUntilIdle();
-  EXPECT_FALSE(receiver.was_called());
+  EXPECT_FALSE(future.IsReady());
 
   for (auto&& byte_fragment : ToByteFragments(frame))
     transaction().OnResponseFragment(std::move(byte_fragment));
 
-  receiver.WaitForCallback();
-  EXPECT_EQ(frame, receiver.value());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(frame, future.Get());
 }
 
 // Tests that an invalid KeepaliveCode is treated as an error.
@@ -218,16 +219,16 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_InvalidKeepAlive_Fail) {
           [](auto&&, auto* cb) { std::move(*cb).Run(true /* success */); }));
 
   FidoBleFrame frame(FidoBleDeviceCommand::kPing, std::vector<uint8_t>(10));
-  FrameCallbackReceiver receiver;
-  transaction().WriteRequestFrame(frame, receiver.callback());
+  FrameFuture future;
+  transaction().WriteRequestFrame(frame, future.GetCallback());
 
   // This frame is invalid, as it does not contain data.
   FidoBleFrame keep_alive_frame(FidoBleDeviceCommand::kKeepAlive, {});
   for (auto&& byte_fragment : ToByteFragments(keep_alive_frame))
     transaction().OnResponseFragment(std::move(byte_fragment));
 
-  receiver.WaitForCallback();
-  EXPECT_EQ(std::nullopt, receiver.value());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(std::nullopt, future.Get());
 }
 
 // Tests a scenario where the response frame contains a valid error command.
@@ -238,8 +239,8 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_ValidErrorCommand) {
 
   FidoBleFrame ping_frame(FidoBleDeviceCommand::kPing,
                           std::vector<uint8_t>(10));
-  FrameCallbackReceiver receiver;
-  transaction().WriteRequestFrame(ping_frame, receiver.callback());
+  FrameFuture future;
+  transaction().WriteRequestFrame(ping_frame, future.GetCallback());
 
   FidoBleFrame error_frame(
       FidoBleDeviceCommand::kError,
@@ -248,8 +249,8 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_ValidErrorCommand) {
   for (auto&& byte_fragment : ToByteFragments(error_frame))
     transaction().OnResponseFragment(std::move(byte_fragment));
 
-  receiver.WaitForCallback();
-  EXPECT_EQ(error_frame, receiver.value());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(error_frame, future.Get());
 }
 
 // Tests a scenario where the response frame contains an invalid error command.
@@ -260,8 +261,8 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_InvalidErrorCommand) {
 
   FidoBleFrame ping_frame(FidoBleDeviceCommand::kPing,
                           std::vector<uint8_t>(10));
-  FrameCallbackReceiver receiver;
-  transaction().WriteRequestFrame(ping_frame, receiver.callback());
+  FrameFuture future;
+  transaction().WriteRequestFrame(ping_frame, future.GetCallback());
 
   // This frame is invalid, as it does not contain data.
   FidoBleFrame error_frame(FidoBleDeviceCommand::kError, {});
@@ -269,8 +270,8 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_InvalidErrorCommand) {
   for (auto&& byte_fragment : ToByteFragments(error_frame))
     transaction().OnResponseFragment(std::move(byte_fragment));
 
-  receiver.WaitForCallback();
-  EXPECT_EQ(std::nullopt, receiver.value());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(std::nullopt, future.Get());
 }
 
 // Tests a scenario where the command of the response frame does not match the
@@ -282,8 +283,8 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_InvalidResponseFrameCommand) {
 
   FidoBleFrame ping_frame(FidoBleDeviceCommand::kPing,
                           std::vector<uint8_t>(10));
-  FrameCallbackReceiver receiver;
-  transaction().WriteRequestFrame(ping_frame, receiver.callback());
+  FrameFuture future;
+  transaction().WriteRequestFrame(ping_frame, future.GetCallback());
 
   FidoBleFrame message_frame(FidoBleDeviceCommand::kMsg,
                              std::vector<uint8_t>(kDefaultControlPointLength));
@@ -291,8 +292,8 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_InvalidResponseFrameCommand) {
   for (auto&& byte_fragment : ToByteFragments(message_frame))
     transaction().OnResponseFragment(std::move(byte_fragment));
 
-  receiver.WaitForCallback();
-  EXPECT_EQ(std::nullopt, receiver.value());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(std::nullopt, future.Get());
 }
 
 // Tests a scenario where the response initialization fragment is invalid.
@@ -304,16 +305,16 @@ TEST_F(FidoBleTransactionTest,
 
   FidoBleFrame frame(FidoBleDeviceCommand::kPing,
                      std::vector<uint8_t>(kDefaultControlPointLength));
-  FrameCallbackReceiver receiver;
-  transaction().WriteRequestFrame(frame, receiver.callback());
+  FrameFuture future;
+  transaction().WriteRequestFrame(frame, future.GetCallback());
 
   auto byte_fragments = ToByteFragments(frame);
   ASSERT_EQ(2u, byte_fragments.size());
   transaction().OnResponseFragment(std::move(byte_fragments.back()));
   transaction().OnResponseFragment(std::move(byte_fragments.front()));
 
-  receiver.WaitForCallback();
-  EXPECT_EQ(std::nullopt, receiver.value());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(std::nullopt, future.Get());
 }
 
 // Tests a scenario where a response continuation fragment is invalid.
@@ -325,8 +326,8 @@ TEST_F(FidoBleTransactionTest,
 
   FidoBleFrame frame(FidoBleDeviceCommand::kPing,
                      std::vector<uint8_t>(kDefaultControlPointLength));
-  FrameCallbackReceiver receiver;
-  transaction().WriteRequestFrame(frame, receiver.callback());
+  FrameFuture future;
+  transaction().WriteRequestFrame(frame, future.GetCallback());
 
   // Provide the initialization fragment twice. The second time should be an
   // error, as it's not a valid continuation fragment.
@@ -335,8 +336,8 @@ TEST_F(FidoBleTransactionTest,
   transaction().OnResponseFragment(byte_fragments.front());
   transaction().OnResponseFragment(byte_fragments.front());
 
-  receiver.WaitForCallback();
-  EXPECT_EQ(std::nullopt, receiver.value());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(std::nullopt, future.Get());
 }
 
 // Tests a scenario where the order of response continuation fragments is
@@ -349,8 +350,8 @@ TEST_F(FidoBleTransactionTest,
 
   FidoBleFrame frame(FidoBleDeviceCommand::kPing,
                      std::vector<uint8_t>(kDefaultControlPointLength * 2));
-  FrameCallbackReceiver receiver;
-  transaction().WriteRequestFrame(frame, receiver.callback());
+  FrameFuture future;
+  transaction().WriteRequestFrame(frame, future.GetCallback());
 
   // Provide the continuation fragments in the wrong order.
   auto byte_fragments = ToByteFragments(frame);
@@ -359,8 +360,8 @@ TEST_F(FidoBleTransactionTest,
   transaction().OnResponseFragment(byte_fragments[2]);
   transaction().OnResponseFragment(byte_fragments[1]);
 
-  receiver.WaitForCallback();
-  EXPECT_EQ(std::nullopt, receiver.value());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(std::nullopt, future.Get());
 }
 
 }  // namespace device

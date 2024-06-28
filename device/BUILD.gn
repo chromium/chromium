@@ -203,7 +203,6 @@ test("device_unittests") {
       "fido/make_credential_handler_unittest.cc",
       "fido/make_credential_task_unittest.cc",
       "fido/pin_unittest.cc",
-      "fido/test_callback_receiver_unittest.cc",
       "fido/u2f_command_constructor_unittest.cc",
       "fido/u2f_register_operation_unittest.cc",
       "fido/u2f_sign_operation_unittest.cc",
