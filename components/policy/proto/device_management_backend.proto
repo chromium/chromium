@@ -4311,13 +4311,29 @@ message CertProvAuthorizeInstruction {
 // the private key.
 message CertProvProofOfPossessionInstruction {
   // Data to sign for CSR creation.
-  // The signing algorithm is currently RSA_PKCS1_V1_5. The client will perform
-  // PKCS#1 v1.5 padding on `data_to_sign`. `data_to_sign` is expected to
-  // already contain a PKCS#1 DigestInfo prefix - the client will not attempt to
-  // add such a prefix. Also `data_to_sign` must be shorter than (key_size-11)
-  // bytes. If no other key size was specified in the
-  // RequiredClientCertificateFor{User,Device} policy, 2048 bits is assumed.
+  // Depending on the `signature_algorithm` this may either contain the PKCS#1
+  // DigestInfo in DER format (note that it must be shorter than (key_size-11)
+  // bytes) or unhashed data. The client must process `data_to_sign` according
+  // to the specified `signature_algorithm`, see comments in the
+  // `CertProvSignatureAlgorithm` enum for more details.
   optional bytes data_to_sign = 1;
+
+  // The signature algorithm that the client uses to process `data_to_sign`.
+  // This defines both the hashing and signing algorithm the client should use.
+  optional CertProvSignatureAlgorithm signature_algorithm = 2;
+}
+
+// The algorithm that the client should use / has used to sign data using its
+// private key for proof-of-posession.
+enum CertProvSignatureAlgorithm {
+  // Default value. This value is unused.
+  SIGNATURE_ALGORITHM_UNSPECIFIED = 0;
+
+  // The server-side builds the PKCS#1 DigestInfo, i.e., the SHA256 hash
+  // is constructed on the server-side. The client should sign using RSA
+  // with PKCS#1 v1.5 padding. If no other key size was specified in the
+  // RequiredClientCertificateFor{User,Device} policy, 2048 bits is assumed.
+  SIGNATURE_ALGORITHM_RSA_PKCS1_V1_5_NO_HASH = 1;
 }
 
 // The client should import an issued certificate.
