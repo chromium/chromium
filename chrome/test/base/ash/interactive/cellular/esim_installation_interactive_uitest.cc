@@ -80,8 +80,8 @@ class EsimInstallationInteractiveUiTest : public InteractiveAshTest {
         HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
             kAddProfileWithoutService);
 
-    // Make Hermes operations take 5 seconds to complete.
-    hermes_euicc_client->SetInteractiveDelay(base::Seconds(5));
+    // Make Hermes operations take 1 second to complete.
+    hermes_euicc_client->SetInteractiveDelay(base::Seconds(1));
   }
 
   ui::test::internal::InteractiveTestPrivate::MultiStep
