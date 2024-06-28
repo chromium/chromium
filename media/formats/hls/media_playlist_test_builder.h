@@ -182,7 +182,8 @@ inline void HasMediaSequenceNumber(types::DecimalInteger number,
 // Checks that the latest media segment has the given media sequence number.
 inline void HasEncryptionData(
     std::optional<std::tuple<GURL,
-                             MediaSegment::EncryptionData::Mode,
+                             XKeyTagMethod,
+                             XKeyTagKeyFormat,
                              MediaSegment::EncryptionData::IVContainer>> pack,
     const base::Location& from,
     const MediaSegment& segment) {
@@ -192,11 +193,13 @@ inline void HasEncryptionData(
   } else {
     ASSERT_NE(enc_data.get(), nullptr) << from.ToString();
     GURL uri;
-    MediaSegment::EncryptionData::Mode mode;
+    XKeyTagMethod method;
+    XKeyTagKeyFormat format;
     MediaSegment::EncryptionData::IVContainer iv;
-    std::tie(uri, mode, iv) = pack.value();
+    std::tie(uri, method, format, iv) = pack.value();
     EXPECT_EQ(enc_data->GetUri(), uri) << from.ToString();
-    EXPECT_EQ(enc_data->GetMode(), mode) << from.ToString();
+    EXPECT_EQ(enc_data->GetMethod(), method) << from.ToString();
+    EXPECT_EQ(enc_data->GetKeyFormat(), format) << from.ToString();
     EXPECT_EQ(enc_data->GetIV(segment.GetMediaSequenceNumber()), iv)
         << from.ToString();
   }

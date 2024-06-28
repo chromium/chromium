@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "crypto/symmetric_key.h"
 #include "media/base/media_export.h"
+#include "media/formats/hls/tags.h"
 #include "media/formats/hls/types.h"
 #include "url/gurl.h"
 
@@ -48,24 +49,21 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
     using IVType = types::parsing::HexRepr<128>;
     using IVContainer = std::optional<IVType::Container>;
 
-    // Corresponds to `XKeyTagMethod`, though a mode of NONE is represented by
-    // a null EncryptionData pointer.
-    enum class Mode {
-      kAES128,
-      kSampleAES,
-      kSampleAESCTR,
-    };
-
-    EncryptionData(GURL uri, Mode mode, IVContainer iv, bool identity);
+    EncryptionData(GURL uri,
+                   XKeyTagMethod method,
+                   XKeyTagKeyFormat format,
+                   IVContainer iv);
     EncryptionData(const EncryptionData& copy) = delete;
     EncryptionData(EncryptionData&& copy) = delete;
     EncryptionData& operator=(const EncryptionData& copy) = delete;
     EncryptionData& operator=(EncryptionData&& copy) = delete;
 
     const GURL& GetUri() const { return uri_; }
-    Mode GetMode() const { return mode_; }
-    bool NeedsKeyFetch() const { return !!key_; }
+    XKeyTagMethod GetMethod() const { return method_; }
     crypto::SymmetricKey* GetKey() const { return key_.get(); }
+    XKeyTagKeyFormat GetKeyFormat() const { return format_; }
+
+    bool NeedsKeyFetch() const { return !!key_; }
 
     // Gets the InitializationVector, if it exists. If there is no IV, but the
     // `identity_` flag is set, then use the media sequence number as the IV.
@@ -83,9 +81,9 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
     ~EncryptionData();
 
     const GURL uri_;
-    const Mode mode_;
+    const XKeyTagMethod method_;
     const IVContainer iv_;
-    const bool identity_;
+    const XKeyTagKeyFormat format_;
 
     // Used for clear key AES128 and AES256 full segment encryption.
     std::unique_ptr<crypto::SymmetricKey> key_;

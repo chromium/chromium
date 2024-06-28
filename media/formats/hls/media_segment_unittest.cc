@@ -16,8 +16,8 @@ TEST(HlsMediaSegmentTest, EncryptionDataIVExportTest) {
           "0x73757065727365637265746D65737367"));
   ASSERT_TRUE(iv.has_value());
   auto data = base::MakeRefCounted<MediaSegment::EncryptionData>(
-      GURL("https://example.com"), MediaSegment::EncryptionData::Mode::kAES128,
-      std::move(iv).value(), false);
+      GURL("https://example.com"), XKeyTagMethod::kAES128,
+      XKeyTagKeyFormat::kIdentity, std::move(iv).value());
   ASSERT_EQ("supersecretmessg", data->GetIVStr(0).value_or(""));
 }
 

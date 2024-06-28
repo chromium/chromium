@@ -21,19 +21,19 @@ MediaSegment::InitializationSegment::~InitializationSegment() = default;
 
 MediaSegment::EncryptionData::EncryptionData(
     GURL uri,
-    MediaSegment::EncryptionData::Mode mode,
-    MediaSegment::EncryptionData::IVContainer iv,
-    bool identity)
+    XKeyTagMethod method,
+    XKeyTagKeyFormat format,
+    MediaSegment::EncryptionData::IVContainer iv)
     : uri_(std::move(uri)),
-      mode_(mode),
+      method_(method),
       iv_(std::move(iv)),
-      identity_(identity) {}
+      format_(format) {}
 
 MediaSegment::EncryptionData::~EncryptionData() = default;
 
 MediaSegment::EncryptionData::IVContainer MediaSegment::EncryptionData::GetIV(
     types::DecimalInteger media_sequence_number) const {
-  if (identity_ && !iv_.has_value()) {
+  if (format_ == XKeyTagKeyFormat::kIdentity && !iv_.has_value()) {
     return std::make_tuple(0, media_sequence_number);
   }
   return iv_;

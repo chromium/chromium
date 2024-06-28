@@ -1433,9 +1433,8 @@ TEST(HlsMediaPlaylistTest, XKeyTagAppliesToSegments) {
   builder.ExpectSegment(HasMediaSequenceNumber, 1);
   builder.ExpectSegment(
       HasEncryptionData,
-      std::make_tuple(GURL("http://localhost/enc.key"),
-                      MediaSegment::EncryptionData::Mode::kAES128,
-                      std::make_tuple(0, 0x42)));
+      std::make_tuple(GURL("http://localhost/enc.key"), XKeyTagMethod::kAES128,
+                      XKeyTagKeyFormat::kIdentity, std::make_tuple(0, 0x42)));
   builder.ExpectOk();
 
   builder.AppendLine("#EXT-X-KEY:METHOD=NONE");
@@ -1456,9 +1455,8 @@ TEST(HlsMediaPlaylistTest, XKeyTagAppliesToSegments) {
   builder.ExpectSegment(HasMediaSequenceNumber, 3);
   builder.ExpectSegment(
       HasEncryptionData,
-      std::make_tuple(GURL("http://localhost/enc.key"),
-                      MediaSegment::EncryptionData::Mode::kAES128,
-                      std::make_tuple(0, 3)));
+      std::make_tuple(GURL("http://localhost/enc.key"), XKeyTagMethod::kAES128,
+                      XKeyTagKeyFormat::kIdentity, std::make_tuple(0, 3)));
   builder.ExpectOk();
 
   builder.AppendLine("#EXTINF:1.600000,");
@@ -1468,9 +1466,8 @@ TEST(HlsMediaPlaylistTest, XKeyTagAppliesToSegments) {
   builder.ExpectSegment(HasMediaSequenceNumber, 4);
   builder.ExpectSegment(
       HasEncryptionData,
-      std::make_tuple(GURL("http://localhost/enc.key"),
-                      MediaSegment::EncryptionData::Mode::kAES128,
-                      std::make_tuple(0, 4)));
+      std::make_tuple(GURL("http://localhost/enc.key"), XKeyTagMethod::kAES128,
+                      XKeyTagKeyFormat::kIdentity, std::make_tuple(0, 4)));
   builder.ExpectOk();
 
   builder.AppendLine(
@@ -1483,7 +1480,7 @@ TEST(HlsMediaPlaylistTest, XKeyTagAppliesToSegments) {
   builder.ExpectSegment(
       HasEncryptionData,
       std::make_tuple(GURL("http://localhost/enc.key"),
-                      MediaSegment::EncryptionData::Mode::kSampleAES,
+                      XKeyTagMethod::kSampleAES, XKeyTagKeyFormat::kIdentity,
                       std::make_tuple(0, 5)));
   builder.ExpectOk();
 
@@ -1498,7 +1495,7 @@ TEST(HlsMediaPlaylistTest, XKeyTagAppliesToSegments) {
   builder.ExpectSegment(
       HasEncryptionData,
       std::make_tuple(GURL("http://localhost/enc.key"),
-                      MediaSegment::EncryptionData::Mode::kSampleAESCTR,
+                      XKeyTagMethod::kSampleAESCTR, XKeyTagKeyFormat::kIdentity,
                       std::make_tuple(0, 6)));
   builder.ExpectOk();
 }

@@ -27,24 +27,6 @@
 
 namespace media::hls {
 
-namespace {
-
-MediaSegment::EncryptionData::Mode KeyTagMethodToEncryptionMode(
-    XKeyTagMethod method) {
-  switch (method) {
-    case XKeyTagMethod::kAES128:
-      return MediaSegment::EncryptionData::Mode::kAES128;
-    case XKeyTagMethod::kSampleAES:
-      return MediaSegment::EncryptionData::Mode::kSampleAES;
-    case XKeyTagMethod::kSampleAESCTR:
-      return MediaSegment::EncryptionData::Mode::kSampleAESCTR;
-    default:
-      NOTREACHED_NORETURN();
-  }
-}
-
-}  // namespace
-
 struct MediaPlaylist::CtorArgs {
   GURL uri;
   types::DecimalInteger version;
@@ -269,9 +251,8 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
             new_encryption_data = true;
             encryption_data =
                 base::MakeRefCounted<MediaSegment::EncryptionData>(
-                    std::move(resource_uri),
-                    KeyTagMethodToEncryptionMode(value.method), value.iv,
-                    value.keyformat == XKeyTagKeyFormat::kIdentity);
+                    std::move(resource_uri), value.method, value.keyformat,
+                    value.iv);
           }
 
           break;
