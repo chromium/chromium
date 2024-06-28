@@ -161,20 +161,10 @@ using bookmarks::BookmarkNode;
 
 - (void)bookmarkModelWillRemoveAllNodes:
     (const LegacyBookmarkModel*)bookmarkModel {
-  auto nodeInModel = [bookmarkModel](const BookmarkNode* node) {
-    return bookmarkModel->IsNodePartOfModel(node);
-  };
-  // Remove will-be removed nodes (in `model`) from `_editedNodes`.
-  std::erase_if(_editedNodes, nodeInModel);
-
-  if (_editedNodes.empty()) {
-    // if `_editedNodes` becomes empty, nothing to move.  Exit the folder
-    // chooser.
-    [_delegate bookmarksFolderChooserMediatorWantsDismissal:self];
-  } else if (bookmarkModel->IsNodePartOfModel(_selectedFolderNode)) {
-    // The selected folder will be deleted. Unset `_selectedFolderNode`.
-    _selectedFolderNode = nil;
-  }
+  _editedNodes.clear();
+  _selectedFolderNode = nil;
+  // Nothing to move so exit the folder chooser.
+  [_delegate bookmarksFolderChooserMediatorWantsDismissal:self];
 }
 
 #pragma mark - AuthenticationServiceObserving

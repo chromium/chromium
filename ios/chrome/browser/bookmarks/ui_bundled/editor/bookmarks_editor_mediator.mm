@@ -213,7 +213,20 @@
     // This might happen when the user has changed `self.folder` but has not
     // commited the changes by pressing done. And in the background the chosen
     // folder was deleted.
-    [self moveToDefaultFolderInModel:model];
+    //
+    // In this case, fall back to the default folder, which is the mobile node
+    // for the same storage type as before (local or account).
+    if (_localOrSyncableBookmarkModel->IsNodePartOfModel(self.folder)) {
+      [self changeFolder:_localOrSyncableBookmarkModel->mobile_node()];
+    } else if (!_accountBookmarkModel->mobile_node() ||
+               _accountBookmarkModel->mobile_node()->HasAncestor(node)) {
+      // When dealing with account bookmarks, it is possible that permanent
+      // folders no longer exist (e.g. the user signed out). In this case, fall
+      // back to the local model.
+      [self changeFolder:_localOrSyncableBookmarkModel->mobile_node()];
+    } else {
+      [self changeFolder:_accountBookmarkModel->mobile_node()];
+    }
   }
 }
 
@@ -229,23 +242,9 @@
 }
 
 - (void)bookmarkModelWillRemoveAllNodes:(const LegacyBookmarkModel*)model {
-  if (bookmark_utils_ios::GetBookmarkModelForNode(
-          self.bookmark, _localOrSyncableBookmarkModel.get(),
-          _accountBookmarkModel.get()) == model) {
-    // The current node is going to be deleted.
-    // Just close the view.
-    [self.delegate bookmarkEditorMediatorWantsDismissal:self];
-    return;
-  }
-  if (bookmark_utils_ios::GetBookmarkModelForNode(
-          _folder, _localOrSyncableBookmarkModel.get(),
-          _accountBookmarkModel.get()) == model) {
-    // The user selected a new parent that was deleted. That is, they wanted
-    // to move the folder to account model, and was signed-out. Let’s move it
-    // back to mobile_node of local or syncable model.
-    [self moveToDefaultFolderInModel:model];
-    [self updateFolderLabel];
-  }
+  // The current node is going to be deleted.
+  // Just close the view.
+  [self.delegate bookmarkEditorMediatorWantsDismissal:self];
 }
 
 #pragma mark - BookmarksEditorMutator
@@ -316,19 +315,6 @@
 }
 
 #pragma mark - Private
-
-// Change parent folder to a default folder. Either the one of model if it
-// exists, or the one of local or syncable.
-- (void)moveToDefaultFolderInModel:(const LegacyBookmarkModel*)model {
-  if (model->mobile_node()) {
-    [self changeFolder:model->mobile_node()];
-  } else {
-    // When dealing with account bookmarks, it is possible that permanent
-    // folders no longer exist (e.g. the user signed out). In this case, fall
-    // back to the local model.
-    [self changeFolder:_localOrSyncableBookmarkModel->mobile_node()];
-  }
-}
 
 // Tells the consumer to update the name of the bookmark’s folder.
 - (void)updateFolderLabel {

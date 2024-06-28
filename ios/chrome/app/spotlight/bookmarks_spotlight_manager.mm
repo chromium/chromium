@@ -305,12 +305,10 @@ class SpotlightBookmarkModelBridge;
 }
 
 // Refreshes all nodes in the subtree of node.
-- (void)refreshNodeInIndex:(const bookmarks::BookmarkNode*)node
-                   inModel:(LegacyBookmarkModel*)model {
+- (void)refreshNodeInIndex:(const bookmarks::BookmarkNode*)node {
   DCHECK(node);
-  DCHECK(model);
 
-  bool isLocalModel = (model == _localOrSyncableBookmarkModel);
+  bool isLocalModel = _localOrSyncableBookmarkModel->IsNodePartOfModel(node);
   _indexingStack.push(std::make_pair(isLocalModel
                                          ? BookmarkModelType::kLocalOrSyncable
                                          : BookmarkModelType::kAccount,
@@ -576,13 +574,8 @@ class SpotlightBookmarkModelBridge;
 }
 
 - (void)bookmarkModelBeingDeleted:(LegacyBookmarkModel*)model {
-  if (_accountBookmarkModel == model) {
-    _accountBookmarkModel = nullptr;
-  }
-
-  if (_localOrSyncableBookmarkModel == model) {
-    _localOrSyncableBookmarkModel = nullptr;
-  }
+  _accountBookmarkModel = nullptr;
+  _localOrSyncableBookmarkModel = nullptr;
 
   [self stopIndexing];
 }
@@ -606,7 +599,7 @@ class SpotlightBookmarkModelBridge;
     return;
   }
 
-  [self refreshNodeInIndex:bookmarkNode inModel:model];
+  [self refreshNodeInIndex:bookmarkNode];
 }
 
 - (void)bookmarkModel:(LegacyBookmarkModel*)model
@@ -633,7 +626,7 @@ class SpotlightBookmarkModelBridge;
     return;
   }
 
-  [self refreshNodeInIndex:node inModel:model];
+  [self refreshNodeInIndex:node];
 }
 
 - (void)bookmarkModel:(LegacyBookmarkModel*)model
@@ -657,7 +650,7 @@ class SpotlightBookmarkModelBridge;
     return;
   }
 
-  [self refreshNodeInIndex:bookmarkNode inModel:model];
+  [self refreshNodeInIndex:bookmarkNode];
 }
 
 - (void)bookmarkModel:(LegacyBookmarkModel*)model
@@ -729,7 +722,7 @@ class SpotlightBookmarkModelBridge;
     return;
   }
 
-  [self refreshNodeInIndex:bookmarkNode inModel:model];
+  [self refreshNodeInIndex:bookmarkNode];
 }
 
 - (void)bookmarkModel:(LegacyBookmarkModel*)model
