@@ -10,6 +10,7 @@ load("@builtin//runtime.star", "runtime")
 load("@builtin//struct.star", "module")
 load("./b289968566.star", "b289968566")
 load("./blink_all.star", "blink_all")
+load("./gn_logs.star", "gn_logs")
 load("./linux.star", chromium_linux = "chromium")
 load("./mac.star", chromium_mac = "chromium")
 load("./mojo.star", "mojo")
@@ -36,7 +37,13 @@ def init(ctx):
         "darwin": chromium_mac,
         "windows": chromium_windows,
     }[runtime.os]
+    properties = {}
+    for k, v in gn.args(ctx).items():
+        properties["gn_args:" + k] = v
+    for k, v in gn_logs.read(ctx).items():
+        properties["gn_logs:" + k] = v
     step_config = {
+        "properties": properties,
         "platforms": {
             "default": {
                 "OSFamily": "Linux",
