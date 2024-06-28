@@ -143,6 +143,25 @@ android_library("java") {
   resources_package = "org.chromium.components.page_info"
 }
 
+android_library("javatests") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/components/page_info/TrackingProtectionStatusPreferenceTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//components/browser_ui/settings/android:test_support_java",
+    "//components/content_settings/android:content_settings_enums_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_test_espresso_espresso_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit",
+    "//ui/android:ui_java_test_support",
+  ]
+}
+
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/page_info/CertificateChainHelper.java",

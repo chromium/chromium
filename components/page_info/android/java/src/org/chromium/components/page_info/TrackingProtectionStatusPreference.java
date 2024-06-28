@@ -47,7 +47,12 @@ public class TrackingProtectionStatusPreference extends Preference {
     private boolean mStatus;
     private List<ShowAction> mElementsToShow;
 
-    /** Creates a new object and sets the widget layout. */
+    /** Constructor for Java code. */
+    public TrackingProtectionStatusPreference(Context context) {
+        this(context, null);
+    }
+
+    /** Constructor from xml. */
     public TrackingProtectionStatusPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         mElementsToShow = new ArrayList<ShowAction>();
