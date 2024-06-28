@@ -619,6 +619,12 @@ void AppBrowserController::AddColorMixers(
 void AppBrowserController::OnReceivedInitialURL() {
   UpdateCustomTabBarVisibility(/*animate=*/false);
 
+  // Browsers of picture in picture type already take care of setting the proper
+  // window bounds.
+  if (browser()->is_type_picture_in_picture()) {
+    return;
+  }
+
   // If the window bounds have not been overridden, there is no need to resize
   // the window.
   if (!browser()->bounds_overridden())
@@ -631,6 +637,10 @@ void AppBrowserController::OnReceivedInitialURL() {
   // TODO(crbug.com/41459774): Correctly set the window size at creation time.
   // This is currently not possible because the current url is not easily known
   // at popup construction time.
+  //
+  // Note that any potential fix should take into account that
+  // `override_bounds()` represent the outer window bounds, not the content
+  // size.
   browser()->window()->SetContentsSize(browser()->override_bounds().size());
 }
 
