@@ -1083,9 +1083,6 @@ Permissions you've already given to websites and apps may apply to this account.
           <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE" desc="Title of the Chrome Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
             Make Chrome Your Own
           </message>
-          <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE_SUPERVISED" desc="Title of the Chrome Signin Bubble intercept that is shown when a signed out user signs in on the web with a supervised account." translateable="false">
-            Be Safe Online
-          </message>
           <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_DECLINE_TEXT" desc="Label of the Decline button of the Chrome Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
             Use Chrome Without an Account
           </message>

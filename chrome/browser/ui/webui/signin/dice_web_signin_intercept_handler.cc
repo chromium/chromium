@@ -28,6 +28,7 @@
 #include "components/policy/core/common/management/management_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -231,6 +232,8 @@ void DiceWebSigninInterceptHandler::UpdateExtendedAccountsInfo() {
 base::Value::Dict
 DiceWebSigninInterceptHandler::GetInterceptionChromeSigninParametersValue() {
   base::Value::Dict parameters;
+  parameters.Set("title", GetChromeSigninTitle());
+  parameters.Set("subtitle", GetChromeSigninSubtitle());
   parameters.Set("email", intercepted_account().email);
   parameters.Set("fullName", intercepted_account().full_name);
   parameters.Set("givenName", intercepted_account().given_name);
@@ -288,6 +291,36 @@ std::string DiceWebSigninInterceptHandler::GetHeaderText() {
           WebSigninInterceptor::SigninInterceptionType::kProfileSwitch)
              ? intercepted_account().given_name
              : std::string();
+}
+
+std::string DiceWebSigninInterceptHandler::GetChromeSigninTitle() {
+  // Set the title depending on whether the user is supervised. Note that
+  // calling code waits for Account Capabilities to be fetched (with a timeout),
+  // so Account Capabilities will be available for the vast majority of users.
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kCustomWebSignInInterceptForSupervisedUsersUi) &&
+      bubble_parameters_.intercepted_account.capabilities
+              .is_subject_to_parental_controls() == signin::Tribool::kTrue) {
+    return l10n_util::GetStringUTF8(
+        IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE_SUPERVISED);
+  }
+  return l10n_util::GetStringUTF8(
+      IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE);
+}
+
+std::string DiceWebSigninInterceptHandler::GetChromeSigninSubtitle() {
+  // Set the subtitle depending on whether the user is supervised. Note that
+  // calling code waits for Account Capabilities to be fetched (with a timeout),
+  // so Account Capabilities will be available for the vast majority of users.
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kCustomWebSignInInterceptForSupervisedUsersUi) &&
+      bubble_parameters_.intercepted_account.capabilities
+              .is_subject_to_parental_controls() == signin::Tribool::kTrue) {
+    return l10n_util::GetStringUTF8(
+        IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_SUPERVISED);
+  }
+  return l10n_util::GetStringUTF8(
+      IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE);
 }
 
 std::string DiceWebSigninInterceptHandler::GetBodyTitle() {

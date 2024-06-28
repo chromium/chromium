@@ -63,6 +63,8 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
   bool ShouldShowManagedDeviceVersion();
 
   std::string GetHeaderText();
+  std::string GetChromeSigninTitle();
+  std::string GetChromeSigninSubtitle();
   std::string GetBodyTitle();
   std::string GetBodyText();
   std::string GetConfirmButtonLabel();

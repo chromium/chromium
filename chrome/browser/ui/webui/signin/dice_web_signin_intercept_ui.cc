@@ -93,12 +93,6 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
 
   // Adding localized strings for the Chrome Signin sub page: /chrome_signin.
   source->AddLocalizedString(
-      "chromeSigninTitle",
-      IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE);
-  source->AddLocalizedString(
-      "chromeSigninSubtitle",
-      IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE);
-  source->AddLocalizedString(
       "chromeSigninAcceptText",
       IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_ACCEPT_TEXT);
   source->AddLocalizedString(

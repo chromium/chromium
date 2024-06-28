@@ -13122,21 +13122,27 @@ This can include information about installed software, files, your browser, and 
             <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_STAY_HERE_BUTTON_LABEL" desc="Label of the cancel button in the web signin interception bubble">
               Stay Here
             </message>
-         </then>
-         <else>
-          <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_AVATAR_BUTTON_SEPARATE_BROWSING_TEXT" desc="Text to be displayed on the extended avatar pill while the bubble for separating accounts into different browsers is displayed.">
-            Separate browsing?
-          </message>
-          <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_AVATAR_BUTTON_SWITCH_PROFILE_TEXT" desc="Text to be displayed on the extended avatar pill while the bubble for switching to a profile that has the account intercepted already signed into is displayed.">
-            Switch profile?
-          </message>
-          <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CREATE_PROFILE_BUTTON_LABEL" desc="Label of the confirmation button in the web signin interception bubble. This action will create a new Chrome profile for the intercepted account.">
-            Create profile
-          </message>
-          <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_STAY_HERE_BUTTON_LABEL" desc="Label of the cancel button in the web signin interception bubble">
-            Stay here
-          </message>
-         </else>
+            <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE_SUPERVISED" desc="Title of the Signin Bubble intercept that is shown when a signed out user signs in on the web with a supervised account." translateable="false">
+              Be Safe Online
+            </message>
+          </then>
+          <else>
+            <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_AVATAR_BUTTON_SEPARATE_BROWSING_TEXT" desc="Text to be displayed on the extended avatar pill while the bubble for separating accounts into different browsers is displayed.">
+              Separate browsing?
+            </message>
+            <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_AVATAR_BUTTON_SWITCH_PROFILE_TEXT" desc="Text to be displayed on the extended avatar pill while the bubble for switching to a profile that has the account intercepted already signed into is displayed.">
+              Switch profile?
+            </message>
+            <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CREATE_PROFILE_BUTTON_LABEL" desc="Label of the confirmation button in the web signin interception bubble. This action will create a new Chrome profile for the intercepted account.">
+              Create profile
+            </message>
+            <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_STAY_HERE_BUTTON_LABEL" desc="Label of the cancel button in the web signin interception bubble">
+              Stay here
+            </message>
+            <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE_SUPERVISED" desc="Title of the Signin Bubble intercept that is shown when a signed out user signs in on the web with a supervised account." translateable="false">
+              Be safe online
+            </message>
+          </else>
         </if>
 
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_BUTTON_LABEL" desc="Label of the cancel button in the web signin interception bubble">

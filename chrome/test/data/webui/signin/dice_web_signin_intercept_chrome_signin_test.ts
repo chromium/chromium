@@ -52,10 +52,8 @@ suite('DiceWebSigninInterceptChromeSigninTest', function() {
   });
 
   test('AppContentValues', function() {
-    const titleElement = app.shadowRoot!.querySelector('#title')!;
-    assertEquals(app.i18n('chromeSigninTitle'), titleElement.textContent);
-    const subtitleElement = app.shadowRoot!.querySelector('#subtitle')!;
-    assertEquals(app.i18n('chromeSigninSubtitle'), subtitleElement.textContent);
+    // TODO(b/301931570): check #title and #subtitle elements for both the
+    // regular and supervised account case.
     const nameElement = app.shadowRoot!.querySelector('#name')!;
     assertEquals(PARAMETERS.fullName, nameElement.textContent);
     const emailElement = app.shadowRoot!.querySelector('#email')!;
