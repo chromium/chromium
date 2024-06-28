@@ -603,15 +603,26 @@ class JobControllerReconsiderProxyAfterErrorTest
       : HttpStreamFactoryJobControllerTestBase(false) {}
   void Initialize(
       std::unique_ptr<ProxyResolutionService> proxy_resolution_service,
-      std::unique_ptr<ProxyDelegate> proxy_delegate = nullptr) {
+      std::unique_ptr<ProxyDelegate> proxy_delegate = nullptr,
+      bool using_quic = false) {
     session_deps_.proxy_delegate = std::move(proxy_delegate);
     session_deps_.proxy_resolution_service =
         std::move(proxy_resolution_service);
     session_deps_.proxy_resolution_service->SetProxyDelegate(
         session_deps_.proxy_delegate.get());
-    session_ = std::make_unique<HttpNetworkSession>(
-        SpdySessionDependencies::CreateSessionParams(&session_deps_),
-        SpdySessionDependencies::CreateSessionContext(&session_deps_));
+    HttpNetworkSessionParams params =
+        SpdySessionDependencies::CreateSessionParams(&session_deps_);
+    HttpNetworkSessionContext session_context =
+        SpdySessionDependencies::CreateSessionContext(&session_deps_);
+    if (using_quic) {
+      params.enable_quic = true;
+      session_context.quic_crypto_client_stream_factory =
+          &crypto_client_stream_factory_;
+      session_context.quic_context = &quic_context_;
+      session_context.quic_context->params()->origins_to_force_quic_on.insert(
+          HostPortPair::FromURL(GURL("https://www.example.com")));
+    }
+    session_ = std::make_unique<HttpNetworkSession>(params, session_context);
     factory_ = session_->http_stream_factory();
   }
 
@@ -1827,6 +1838,161 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest, ReconsiderErrMsgTooBig) {
 
   request.reset();
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+// Test proxy fallback logic in the case connecting through a Quic proxy.
+TEST_F(JobControllerReconsiderProxyAfterErrorTest,
+       ReconsiderProxyAfterErrorQuicProxy) {
+  // TODO(crbug.com/336318587): Add the phase to cover proxy stream.
+  enum class ErrorPhase {
+    kHostResolution,
+    kUdpConnect,
+  };
+
+  const struct {
+    ErrorPhase phase;
+    Error error;
+    // Each test case simulates a connection attempt through a proxy that fails
+    // twice, followed by two connection attempts that succeed. For most cases,
+    // this is done by having a connection attempt to the first proxy fail,
+    // triggering fallback to a second proxy, which also fails, and then
+    // fallback to the final (DIRECT) proxy option. However, SslConnectJobs have
+    // their own try logic in certain cases. This value is true for those cases,
+    // in which case there are two connection attempts to the first proxy, and
+    // then the requests fall back to the second (DIRECT) proxy.
+    // bool triggers_ssl_connect_job_retry_logic = false;
+  } kRetriableErrors[] = {
+      {ErrorPhase::kHostResolution, ERR_NAME_NOT_RESOLVED},
+      {ErrorPhase::kUdpConnect, ERR_ADDRESS_UNREACHABLE},
+      {ErrorPhase::kUdpConnect, ERR_CONNECTION_TIMED_OUT},
+      {ErrorPhase::kUdpConnect, ERR_CONNECTION_RESET},
+      {ErrorPhase::kUdpConnect, ERR_CONNECTION_ABORTED},
+      {ErrorPhase::kUdpConnect, ERR_CONNECTION_REFUSED},
+      {ErrorPhase::kUdpConnect, ERR_QUIC_PROTOCOL_ERROR},
+      {ErrorPhase::kUdpConnect, ERR_QUIC_HANDSHAKE_FAILED},
+      {ErrorPhase::kUdpConnect, ERR_MSG_TOO_BIG},
+  };
+  // To use Quic proxy the destination must be HTTPS.
+  GURL dest_url("https://www.example.com");
+
+  for (const auto& mock_error : kRetriableErrors) {
+    SCOPED_TRACE(ErrorToString(mock_error.error));
+
+    CreateSessionDeps();
+
+    auto quic_proxy_chain =
+        ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+            ProxyServer::SCHEME_QUIC, "badproxy", 99)});
+    auto quic_proxy_chain2 =
+        ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+            ProxyServer::SCHEME_QUIC, "badfallbackproxy", 98)});
+    std::unique_ptr<ConfiguredProxyResolutionService> proxy_resolution_service =
+        ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
+            {quic_proxy_chain, quic_proxy_chain2, ProxyChain::Direct()},
+            TRAFFIC_ANNOTATION_FOR_TESTS);
+    auto test_proxy_delegate = std::make_unique<TestProxyDelegate>();
+
+    // Before starting the test, verify that there are no proxies marked as
+    // bad.
+    ASSERT_TRUE(proxy_resolution_service->proxy_retry_info().empty());
+
+    // Generate identical errors for both the main proxy and the fallback
+    // proxy. No alternative job is created for either, so only need one data
+    // provider for each, when the request makes it to the socket layer.
+    std::unique_ptr<StaticSocketDataProvider> quic_proxy_socket_main_job;
+    std::unique_ptr<StaticSocketDataProvider> quic_proxy_socket_main_job2;
+    switch (mock_error.phase) {
+      case ErrorPhase::kHostResolution:
+        // Only ERR_NAME_NOT_RESOLVED can be returned by the mock host
+        // resolver.
+        DCHECK_EQ(ERR_NAME_NOT_RESOLVED, mock_error.error);
+        session_deps_.host_resolver->rules()->AddSimulatedFailure("badproxy");
+        session_deps_.host_resolver->rules()->AddSimulatedFailure(
+            "badfallbackproxy");
+        break;
+      case ErrorPhase::kUdpConnect:
+        quic_proxy_socket_main_job =
+            std::make_unique<StaticSocketDataProvider>();
+        quic_proxy_socket_main_job->set_connect_data(
+            MockConnect(ASYNC, mock_error.error));
+        quic_proxy_socket_main_job2 =
+            std::make_unique<StaticSocketDataProvider>();
+        quic_proxy_socket_main_job2->set_connect_data(
+            MockConnect(ASYNC, mock_error.error));
+        break;
+    }
+
+    // Mock data for the QUIC proxy socket.
+    if (quic_proxy_socket_main_job) {
+      session_deps_.socket_factory->AddSocketDataProvider(
+          quic_proxy_socket_main_job.get());
+      session_deps_.socket_factory->AddSocketDataProvider(
+          quic_proxy_socket_main_job2.get());
+    }
+
+    SSLSocketDataProvider ssl_data_first_request(ASYNC, OK);
+    StaticSocketDataProvider socket_data_direct_first_request;
+    socket_data_direct_first_request.set_connect_data(MockConnect(ASYNC, OK));
+    session_deps_.socket_factory->AddSocketDataProvider(
+        &socket_data_direct_first_request);
+    session_deps_.socket_factory->AddSSLSocketDataProvider(
+        &ssl_data_first_request);
+
+    // Second request should use DIRECT, skipping the bad proxies, and
+    // succeed.
+    SSLSocketDataProvider ssl_data_second_request(ASYNC, OK);
+    StaticSocketDataProvider socket_data_direct_second_request;
+    socket_data_direct_second_request.set_connect_data(MockConnect(ASYNC, OK));
+    session_deps_.socket_factory->AddSocketDataProvider(
+        &socket_data_direct_second_request);
+    session_deps_.socket_factory->AddSSLSocketDataProvider(
+        &ssl_data_second_request);
+
+    // Now request a stream. It should succeed using the DIRECT fallback proxy
+    // option.
+    HttpRequestInfo request_info;
+    request_info.method = "GET";
+    request_info.url = dest_url;
+
+    Initialize(std::move(proxy_resolution_service),
+               std::move(test_proxy_delegate),
+               /*using_quic=*/true);
+
+    // Start two requests. The first request should consume data from
+    // |socket_data_proxy_main_job| and |socket_data_direct_first_request|.
+    // The second request should consume data from
+    // |socket_data_direct_second_request|.
+    for (size_t i = 0; i < 2; ++i) {
+      ProxyInfo used_proxy_info;
+      EXPECT_CALL(request_delegate_, OnStreamReadyImpl(_, _))
+          .Times(1)
+          .WillOnce(::testing::SaveArg<0>(&used_proxy_info));
+
+      std::unique_ptr<HttpStreamRequest> request =
+          CreateJobController(request_info);
+      RunUntilIdle();
+      // TODO(crbug.com/336318587): Verify the session key.
+      crypto_client_stream_factory_.last_stream()
+          ->NotifySessionOneRttKeyAvailable();
+      RunUntilIdle();
+      EXPECT_TRUE(used_proxy_info.is_direct());
+
+      // The proxies that failed should now be known to the proxy service as
+      // bad.
+      const ProxyRetryInfoMap& retry_info =
+          session_->proxy_resolution_service()->proxy_retry_info();
+      ASSERT_THAT(retry_info, SizeIs(2));
+      EXPECT_THAT(retry_info, Contains(Key(quic_proxy_chain)));
+      EXPECT_THAT(retry_info, Contains(Key(quic_proxy_chain2)));
+
+      // Quic connection does not create socket. So only check the sessions,
+      // and close them. So that the next loop iteration won't reuse them.
+      QuicSessionPool* quic_session_pool = session_->quic_session_pool();
+      EXPECT_EQ(1, quic_session_pool->CountActiveSessions());
+      quic_session_pool->CloseAllSessions(OK, quic::QUIC_PEER_GOING_AWAY);
+    }
+    EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+  }
 }
 
 // Same as test above except that this is testing the retry behavior for

@@ -496,6 +496,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   const std::set<std::string>& GetDnsAliasesForSessionKey(
       const QuicSessionKey& key) const;
 
+  int CountActiveSessions() { return active_sessions_.size(); }
+
   // Returns the QUIC version that would be used with an endpoint associated
   // with `metadata`, or `quic::ParsedQuicVersion::Unsupported()` if the
   // endpoint cannot be used with QUIC.

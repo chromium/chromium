@@ -1044,7 +1044,7 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
       stream_ = std::make_unique<QuicHttpStream>(std::move(session),
                                                  std::move(dns_aliases));
     }
-    next_state_ = STATE_NONE;
+    next_state_ = STATE_CREATE_STREAM_COMPLETE;
     return OK;
   }
 
