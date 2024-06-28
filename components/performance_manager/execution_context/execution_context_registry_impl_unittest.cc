@@ -92,9 +92,9 @@ TEST_F(ExecutionContextRegistryImplTest, RegistryWorks) {
   auto* worker = worker_node.get();
 
   // Get the execution contexts for each node directly.
-  auto* frame1_ec = GetOrCreateExecutionContextForFrameNode(frame1);
-  auto* frame2_ec = GetOrCreateExecutionContextForFrameNode(frame2);
-  auto* worker_ec = GetOrCreateExecutionContextForWorkerNode(worker);
+  auto* frame1_ec = &FrameExecutionContext::Get(frame1);
+  auto* frame2_ec = &FrameExecutionContext::Get(frame2);
+  auto* worker_ec = &WorkerExecutionContext::Get(worker);
 
   // Expect the FrameExecutionContext implementation to work.
   EXPECT_EQ(ExecutionContextType::kFrameNode, frame1_ec->GetType());
@@ -159,8 +159,8 @@ TEST_F(ExecutionContextRegistryImplTest, Observers) {
   auto* worker = mock_graph.worker.get();
 
   // Get the execution contexts for each node directly.
-  auto* frame_ec = GetOrCreateExecutionContextForFrameNode(frame);
-  auto* worker_ec = GetOrCreateExecutionContextForWorkerNode(worker);
+  auto* frame_ec = &FrameExecutionContext::Get(frame);
+  auto* worker_ec = &WorkerExecutionContext::Get(worker);
 
   // Set the priority and reason of the frame and expect a notification.
   EXPECT_CALL(obs, OnPriorityAndReasonChanged(frame_ec, testing::_));

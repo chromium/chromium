@@ -4,160 +4,16 @@
 
 #include "components/performance_manager/execution_context/execution_context_impl.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/types/pass_key.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
-#include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
-#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
+#include "components/performance_manager/public/graph/graph.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace performance_manager {
 namespace execution_context {
-
-// Allows accessing internal NodeAttachedData storage for ExecutionContext
-// implementations.
-class ExecutionContextAccess {
- public:
-  using PassKey = base::PassKey<ExecutionContextAccess>;
-
-  template <typename NodeImplType>
-  static std::unique_ptr<NodeAttachedData>* GetExecutionAccessStorage(
-      NodeImplType* node) {
-    return node->GetExecutionContextStorage(PassKey());
-  }
-};
-
-namespace {
-
-// Templated partial implementation of ExecutionContext. Implements the common
-// bits of ExecutionContext, except for GetToken().
-template <typename DerivedType,
-          typename NodeImplType,
-          ExecutionContextType kExecutionContextType>
-class ExecutionContextImpl : public ExecutionContext,
-                             public NodeAttachedDataImpl<DerivedType> {
- public:
-  using ImplType = ExecutionContextImpl;
-
-  struct Traits : public NodeAttachedDataImpl<DerivedType>::
-                      template NodeAttachedDataOwnedByNodeType<NodeImplType> {};
-
-  ExecutionContextImpl(const ExecutionContextImpl&) = delete;
-  ExecutionContextImpl& operator=(const ExecutionContextImpl&) = delete;
-  ~ExecutionContextImpl() override {}
-
-  // ExecutionContext implementation:
-  ExecutionContextType GetType() const override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return kExecutionContextType;
-  }
-
-  Graph* GetGraph() const override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return node_->graph();
-  }
-
-  const GURL& GetUrl() const override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return node_->GetURL();
-  }
-
-  const ProcessNode* GetProcessNode() const override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return node_->process_node();
-  }
-
-  // Returns the current priority of the execution context, and the reason for
-  // the execution context having that particular priority.
-  const PriorityAndReason& GetPriorityAndReason() const override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return node_->GetPriorityAndReason();
-  }
-
-  const FrameNode* GetFrameNode() const override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return nullptr;
-  }
-
-  const WorkerNode* GetWorkerNode() const override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return nullptr;
-  }
-
- protected:
-  explicit ExecutionContextImpl(const NodeImplType* node) : node_(node) {
-    DCHECK(node);
-  }
-
-  static std::unique_ptr<NodeAttachedData>* GetUniquePtrStorage(
-      NodeImplType* node) {
-    return ExecutionContextAccess::GetExecutionAccessStorage(node);
-  }
-
-  SEQUENCE_CHECKER(sequence_checker_);
-  raw_ptr<const NodeImplType> node_ = nullptr;
-};
-
-// An ExecutionContext implementation that wraps a FrameNodeImpl.
-class FrameExecutionContext
-    : public ExecutionContextImpl<FrameExecutionContext,
-                                  FrameNodeImpl,
-                                  ExecutionContextType::kFrameNode> {
- public:
-  FrameExecutionContext(const FrameExecutionContext&) = delete;
-  FrameExecutionContext& operator=(const FrameExecutionContext&) = delete;
-  ~FrameExecutionContext() override = default;
-
-  // Remaining ExecutionContext implementation not provided by
-  // ExecutionContextImpl:
-  blink::ExecutionContextToken GetToken() const override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return blink::ExecutionContextToken(node_->GetFrameToken());
-  }
-
-  const FrameNode* GetFrameNode() const override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return node_;
-  }
-
- protected:
-  friend class NodeAttachedDataImpl<FrameExecutionContext>;
-  explicit FrameExecutionContext(const FrameNodeImpl* frame_node)
-      : ImplType(frame_node) {}
-};
-
-// An ExecutionContext implementation that wraps a WorkerNodeImpl.
-class WorkerExecutionContext
-    : public ExecutionContextImpl<WorkerExecutionContext,
-                                  WorkerNodeImpl,
-                                  ExecutionContextType::kWorkerNode> {
- public:
-  WorkerExecutionContext(const WorkerExecutionContext&) = delete;
-  WorkerExecutionContext& operator=(const WorkerExecutionContext&) = delete;
-  ~WorkerExecutionContext() override = default;
-
-  // Remaining ExecutionContext implementation not provided by
-  // ExecutionContextImpl:
-  blink::ExecutionContextToken GetToken() const override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return ToExecutionContextToken(node_->GetWorkerToken());
-  }
-
-  const WorkerNode* GetWorkerNode() const override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return node_;
-  }
-
- protected:
-  friend class NodeAttachedDataImpl<WorkerExecutionContext>;
-  explicit WorkerExecutionContext(const WorkerNodeImpl* worker_node)
-      : ImplType(worker_node) {}
-};
-
-}  // namespace
 
 // Declared in execution_context.h.
 blink::ExecutionContextToken ToExecutionContextToken(
@@ -181,6 +37,108 @@ blink::ExecutionContextToken ToExecutionContextToken(
   return blink::ExecutionContextToken();
 }
 
+FrameExecutionContext::FrameExecutionContext(const FrameNodeImpl* frame_node)
+    : frame_node_(frame_node) {}
+
+FrameExecutionContext::FrameExecutionContext(FrameExecutionContext&&) = default;
+
+FrameExecutionContext& FrameExecutionContext::operator=(
+    FrameExecutionContext&&) = default;
+
+FrameExecutionContext::~FrameExecutionContext() = default;
+
+ExecutionContextType FrameExecutionContext::GetType() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return ExecutionContextType::kFrameNode;
+}
+
+blink::ExecutionContextToken FrameExecutionContext::GetToken() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return blink::ExecutionContextToken(frame_node_->GetFrameToken());
+}
+
+Graph* FrameExecutionContext::GetGraph() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return frame_node_->graph();
+}
+
+const GURL& FrameExecutionContext::GetUrl() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return frame_node_->GetURL();
+}
+
+const ProcessNode* FrameExecutionContext::GetProcessNode() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return frame_node_->process_node();
+}
+
+const PriorityAndReason& FrameExecutionContext::GetPriorityAndReason() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return frame_node_->GetPriorityAndReason();
+}
+
+const FrameNode* FrameExecutionContext::GetFrameNode() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return frame_node_;
+}
+
+const WorkerNode* FrameExecutionContext::GetWorkerNode() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return nullptr;
+}
+
+WorkerExecutionContext::WorkerExecutionContext(
+    const WorkerNodeImpl* worker_node)
+    : worker_node_(worker_node) {}
+
+WorkerExecutionContext::WorkerExecutionContext(WorkerExecutionContext&&) =
+    default;
+
+WorkerExecutionContext& WorkerExecutionContext::operator=(
+    WorkerExecutionContext&&) = default;
+
+WorkerExecutionContext::~WorkerExecutionContext() = default;
+
+ExecutionContextType WorkerExecutionContext::GetType() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return ExecutionContextType::kWorkerNode;
+}
+
+blink::ExecutionContextToken WorkerExecutionContext::GetToken() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return ToExecutionContextToken(worker_node_->GetWorkerToken());
+}
+
+Graph* WorkerExecutionContext::GetGraph() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return worker_node_->graph();
+}
+
+const GURL& WorkerExecutionContext::GetUrl() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return worker_node_->GetURL();
+}
+
+const ProcessNode* WorkerExecutionContext::GetProcessNode() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return worker_node_->process_node();
+}
+
+const PriorityAndReason& WorkerExecutionContext::GetPriorityAndReason() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return worker_node_->GetPriorityAndReason();
+}
+
+const FrameNode* WorkerExecutionContext::GetFrameNode() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return nullptr;
+}
+
+const WorkerNode* WorkerExecutionContext::GetWorkerNode() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return worker_node_;
+}
+
 // Declared in execution_context.h.
 // static
 const ExecutionContext* ExecutionContext::From(const FrameNode* frame_node) {
@@ -192,22 +150,6 @@ const ExecutionContext* ExecutionContext::From(const FrameNode* frame_node) {
 const ExecutionContext* ExecutionContext::From(const WorkerNode* worker_node) {
   return ExecutionContextRegistry::GetExecutionContextForWorkerNode(
       worker_node);
-}
-
-const ExecutionContext* GetOrCreateExecutionContextForFrameNode(
-    const FrameNode* frame_node) {
-  DCHECK(frame_node);
-  DCHECK_ON_GRAPH_SEQUENCE(frame_node->GetGraph());
-  return FrameExecutionContext::GetOrCreate(
-      FrameNodeImpl::FromNode(frame_node));
-}
-
-const ExecutionContext* GetOrCreateExecutionContextForWorkerNode(
-    const WorkerNode* worker_node) {
-  DCHECK(worker_node);
-  DCHECK_ON_GRAPH_SEQUENCE(worker_node->GetGraph());
-  return WorkerExecutionContext::GetOrCreate(
-      WorkerNodeImpl::FromNode(worker_node));
 }
 
 }  // namespace execution_context

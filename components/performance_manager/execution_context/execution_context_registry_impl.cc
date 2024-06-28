@@ -9,6 +9,8 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "components/performance_manager/execution_context/execution_context_impl.h"
+#include "components/performance_manager/graph/frame_node_impl.h"
+#include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
 #include "url/gurl.h"
 
@@ -148,13 +150,13 @@ const WorkerNode* ExecutionContextRegistryImpl::GetWorkerNodeByWorkerToken(
 const ExecutionContext*
 ExecutionContextRegistryImpl::GetExecutionContextForFrameNodeImpl(
     const FrameNode* frame_node) {
-  return GetOrCreateExecutionContextForFrameNode(frame_node);
+  return &FrameExecutionContext::Get(FrameNodeImpl::FromNode(frame_node));
 }
 
 const ExecutionContext*
 ExecutionContextRegistryImpl::GetExecutionContextForWorkerNodeImpl(
     const WorkerNode* worker_node) {
-  return GetOrCreateExecutionContextForWorkerNode(worker_node);
+  return &WorkerExecutionContext::Get(WorkerNodeImpl::FromNode(worker_node));
 }
 
 void ExecutionContextRegistryImpl::SetUp(Graph* graph) {
@@ -175,7 +177,7 @@ void ExecutionContextRegistryImpl::TearDown(Graph* graph) {
 void ExecutionContextRegistryImpl::OnFrameNodeAdded(
     const FrameNode* frame_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto* ec = GetOrCreateExecutionContextForFrameNode(frame_node);
+  auto* ec = GetExecutionContextForFrameNodeImpl(frame_node);
   DCHECK(ec);
   auto result = execution_contexts_.insert(ec);
   DCHECK(result.second);  // Inserted.
@@ -186,7 +188,7 @@ void ExecutionContextRegistryImpl::OnFrameNodeAdded(
 void ExecutionContextRegistryImpl::OnBeforeFrameNodeRemoved(
     const FrameNode* frame_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto* ec = GetOrCreateExecutionContextForFrameNode(frame_node);
+  auto* ec = GetExecutionContextForFrameNodeImpl(frame_node);
   DCHECK(ec);
   for (auto& observer : observers_)
     observer.OnBeforeExecutionContextRemoved(ec);
@@ -198,7 +200,7 @@ void ExecutionContextRegistryImpl::OnPriorityAndReasonChanged(
     const FrameNode* frame_node,
     const PriorityAndReason& previous_value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto* ec = GetOrCreateExecutionContextForFrameNode(frame_node);
+  auto* ec = GetExecutionContextForFrameNodeImpl(frame_node);
   DCHECK(ec);
   for (auto& observer : observers_)
     observer.OnPriorityAndReasonChanged(ec, previous_value);
@@ -207,7 +209,7 @@ void ExecutionContextRegistryImpl::OnPriorityAndReasonChanged(
 void ExecutionContextRegistryImpl::OnWorkerNodeAdded(
     const WorkerNode* worker_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto* ec = GetOrCreateExecutionContextForWorkerNode(worker_node);
+  auto* ec = GetExecutionContextForWorkerNodeImpl(worker_node);
   DCHECK(ec);
 
   auto result = execution_contexts_.insert(ec);
@@ -220,7 +222,7 @@ void ExecutionContextRegistryImpl::OnWorkerNodeAdded(
 void ExecutionContextRegistryImpl::OnBeforeWorkerNodeRemoved(
     const WorkerNode* worker_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto* ec = GetOrCreateExecutionContextForWorkerNode(worker_node);
+  auto* ec = GetExecutionContextForWorkerNodeImpl(worker_node);
   DCHECK(ec);
   for (auto& observer : observers_)
     observer.OnBeforeExecutionContextRemoved(ec);
@@ -233,7 +235,7 @@ void ExecutionContextRegistryImpl::OnPriorityAndReasonChanged(
     const WorkerNode* worker_node,
     const PriorityAndReason& previous_value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto* ec = GetOrCreateExecutionContextForWorkerNode(worker_node);
+  auto* ec = GetExecutionContextForWorkerNodeImpl(worker_node);
   DCHECK(ec);
   for (auto& observer : observers_)
     observer.OnPriorityAndReasonChanged(ec, previous_value);

@@ -11,7 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
+#include "components/performance_manager/execution_context/execution_context_impl.h"
 #include "components/performance_manager/graph/node_base.h"
+#include "components/performance_manager/graph/node_inline_data.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
@@ -29,16 +31,13 @@ namespace performance_manager {
 
 class FrameNodeImplDescriber;
 
-namespace execution_context {
-class ExecutionContextAccess;
-}  // namespace execution_context
-
 // Frame nodes for a tree structure that is described in
 // components/performance_manager/public/graph/frame_node.h.
 class FrameNodeImpl
     : public PublicNodeImpl<FrameNodeImpl, FrameNode>,
       public TypedNodeBase<FrameNodeImpl, FrameNode, FrameNodeObserver>,
-      public mojom::DocumentCoordinationUnit {
+      public mojom::DocumentCoordinationUnit,
+      public SupportsNodeInlineData<execution_context::FrameExecutionContext> {
  public:
   static const char kDefaultPriorityReason[];
 
@@ -165,14 +164,7 @@ class FrameNodeImpl
   void RemoveEmbeddedPage(base::PassKey<PageNodeImpl> key,
                           PageNodeImpl* page_node);
 
-  // Used by the ExecutionContextRegistry mechanism.
-  std::unique_ptr<NodeAttachedData>* GetExecutionContextStorage(
-      base::PassKey<execution_context::ExecutionContextAccess> key) {
-    return &execution_context_;
-  }
-
  private:
-  friend class ExecutionContextPriorityAccess;
   friend class FrameNodeImplDescriber;
   friend class ProcessNodeImpl;
 
@@ -369,9 +361,6 @@ class FrameNodeImpl
       Visibility,
       &FrameNodeObserver::OnFrameVisibilityChanged>
       visibility_{Visibility::kUnknown};
-
-  // Inline storage for ExecutionContext.
-  std::unique_ptr<NodeAttachedData> execution_context_;
 
   base::WeakPtr<FrameNodeImpl> weak_this_;
   base::WeakPtrFactory<FrameNodeImpl> weak_factory_

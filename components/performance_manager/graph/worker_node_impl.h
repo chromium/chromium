@@ -11,7 +11,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
+#include "components/performance_manager/execution_context/execution_context_impl.h"
 #include "components/performance_manager/graph/node_base.h"
+#include "components/performance_manager/graph/node_inline_data.h"
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
@@ -22,13 +24,10 @@ namespace performance_manager {
 class FrameNodeImpl;
 class ProcessNodeImpl;
 
-namespace execution_context {
-class ExecutionContextAccess;
-}  // namespace execution_context
-
 class WorkerNodeImpl
     : public PublicNodeImpl<WorkerNodeImpl, WorkerNode>,
-      public TypedNodeBase<WorkerNodeImpl, WorkerNode, WorkerNodeObserver> {
+      public TypedNodeBase<WorkerNodeImpl, WorkerNode, WorkerNodeObserver>,
+      public SupportsNodeInlineData<execution_context::WorkerExecutionContext> {
  public:
   static const char kDefaultPriorityReason[];
 
@@ -84,16 +83,7 @@ class WorkerNodeImpl
   base::WeakPtr<WorkerNodeImpl> GetWeakPtrOnUIThread();
   base::WeakPtr<WorkerNodeImpl> GetWeakPtr();
 
-  // Implementation details below this point.
-
-  // Used by the ExecutionContextRegistry mechanism.
-  std::unique_ptr<NodeAttachedData>* GetExecutionContextStorage(
-      base::PassKey<execution_context::ExecutionContextAccess> key) {
-    return &execution_context_;
-  }
-
  private:
-  friend class ExecutionContextPriorityAccess;
   friend class WorkerNodeImplDescriber;
 
   void OnJoiningGraph() override;
@@ -158,10 +148,6 @@ class WorkerNodeImpl
       priority_and_reason_ GUARDED_BY_CONTEXT(sequence_checker_){
           PriorityAndReason(base::TaskPriority::LOWEST,
                             kDefaultPriorityReason)};
-
-  // Used by ExecutionContextRegistry mechanism.
-  std::unique_ptr<NodeAttachedData> execution_context_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtr<WorkerNodeImpl> weak_this_;
   base::WeakPtrFactory<WorkerNodeImpl> weak_factory_

@@ -66,7 +66,6 @@ FrameNodeImpl::~FrameNodeImpl() {
   DCHECK(child_worker_nodes_.empty());
   DCHECK(opened_page_nodes_.empty());
   DCHECK(embedded_page_nodes_.empty());
-  DCHECK(!execution_context_);
 }
 
 void FrameNodeImpl::Bind(
@@ -588,6 +587,8 @@ void FrameNodeImpl::OnJoiningGraph() {
   weak_factory_.BindToCurrentSequence(
       base::subtle::BindWeakPtrFactoryPassKey());
 
+  execution_context::FrameExecutionContext::Create(this, this);
+
   // Enable querying this node using process and frame routing ids.
   graph()->RegisterFrameNodeForId(process_node_->GetRenderProcessHostId(),
                                   render_frame_id_, this);
@@ -633,7 +634,7 @@ void FrameNodeImpl::OnBeforeLeavingGraph() {
 
 void FrameNodeImpl::RemoveNodeAttachedData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  execution_context_.reset();
+  DestroyNodeInlineDataStorage();
 }
 
 void FrameNodeImpl::SeverPageRelationshipsAndMaybeReparent() {

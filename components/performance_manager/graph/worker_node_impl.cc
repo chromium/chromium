@@ -42,7 +42,6 @@ WorkerNodeImpl::~WorkerNodeImpl() {
   DCHECK(client_frames_.empty());
   DCHECK(client_workers_.empty());
   DCHECK(child_workers_.empty());
-  DCHECK(!execution_context_);
 }
 
 WorkerNode::WorkerType WorkerNodeImpl::GetWorkerType() const {
@@ -231,6 +230,8 @@ void WorkerNodeImpl::OnJoiningGraph() {
   weak_factory_.BindToCurrentSequence(
       base::subtle::BindWeakPtrFactoryPassKey());
 
+  execution_context::WorkerExecutionContext::Create(this, this);
+
   process_node_->AddWorker(this);
 }
 
@@ -242,7 +243,7 @@ void WorkerNodeImpl::OnBeforeLeavingGraph() {
 
 void WorkerNodeImpl::RemoveNodeAttachedData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  execution_context_.reset();
+  DestroyNodeInlineDataStorage();
 }
 
 const ProcessNode* WorkerNodeImpl::GetProcessNode() const {
