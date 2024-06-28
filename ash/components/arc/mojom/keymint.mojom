@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 2
+// Next MinVersion: 3
 
 // This file defines the mojo interface between Android and Chrome OS for the
 // keymint implementation used in ARC.
@@ -34,7 +34,7 @@ interface KeyMintInstance {
 // refer to Android's KeyMint AIDL files for a more detailed description on how
 // the methods and structs below should function.
 // https://cs.android.com/android/_/android/platform/hardware/interfaces/+/466f3c55a90631f5dd9a6fa949278a2a0a435b71:security/keymint/aidl/android/hardware/security/keymint/;bpv=1
-// Next Method ID: 25
+// Next Method ID: 26
 interface KeyMintServer {
 
   // Sets the Android version information used.
@@ -172,6 +172,12 @@ interface KeyMintServer {
   // with |test_mode| set to false.
   [MinVersion=1] GenerateEcdsaP256KeyPair@24(bool test_mode) =>
       (GenerateEcdsaP256KeyPairResultOrError response);
+
+  // Creates a certificate request to be sent to Android Provisioning Server.
+  // This is the V1 method for GenerateCertificateRequest. V2 method applies
+  // from Android 14.
+  [MinVersion=2] GenerateCertificateRequest@25(CertificateRequest request) =>
+      (GenerateCertificateRequestResultOrError response);
 };
 
 struct AttestationKey {
@@ -414,6 +420,33 @@ struct GenerateEcdsaP256KeyPairResult {
 
 union GenerateEcdsaP256KeyPairResultOrError {
   GenerateEcdsaP256KeyPairResult key_pair_result;
+  int32 error;
+};
+
+struct CertificateRequest {
+  // |test_mode| indicates whether the generated certificate request is
+  // for testing only.
+  // If |test_mode| is accidentally set with production keys, an error is
+  // returned. Similarly, an error is returned if test keys are being used
+  // with |test_mode| set to false.
+  bool test_mode;
+  // Set of keys to certify. The IRemotelyProvisionedComponent will
+  // validate the MACs on each key.
+  array<KeyMintBlob> keys_to_sign;
+  // Contains public key used to encypt the BCC.
+  KeyMintBlob encryption_cert_chain;
+  // Contains a byte string from the provisioning server.
+  KeyMintBlob challenge;
+};
+
+struct GenerateCertificateRequestResult {
+  KeyMintBlob device_info;
+  KeyMintBlob protected_data;
+  KeyMintBlob mac_of_keys_to_sign;
+};
+
+union GenerateCertificateRequestResultOrError {
+  GenerateCertificateRequestResult certificate_request_result;
   int32 error;
 };
 // Remote Provisioning Component Structs - till here.
