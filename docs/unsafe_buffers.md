@@ -10,6 +10,8 @@ error: unsafe buffer access [-Werror,-Wunsafe-buffer-usage]
 ```
 and directs developers to this file for more information.
 
+[TOC]
+
 ## Suppressions
 
 Our [compiler](../tools/clang/plugins/UnsafeBuffersPlugin.cpp) enables
