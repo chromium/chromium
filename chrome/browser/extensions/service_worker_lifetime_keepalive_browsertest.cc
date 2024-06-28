@@ -43,7 +43,6 @@ namespace extensions {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kTestOpenerExtensionId[] = "adpghjkjicpfhcjicmiifjpbalaildpo";
 constexpr char kTestOpenerExtensionUrl[] =
     "chrome-extension://adpghjkjicpfhcjicmiifjpbalaildpo/";
@@ -59,7 +58,6 @@ constexpr char kTestReceiverExtensionRelativePath[] =
 constexpr char kPersistentPortConnectedMessage[] = "Persistent port connected";
 constexpr char kPersistentPortDisconnectedMessage[] =
     "Persistent port disconnected";
-#endif
 
 // Gets a keepalive matcher that enforces the extra data field.
 testing::Matcher<ProcessManager::ServiceWorkerKeepaliveData>
@@ -153,9 +151,6 @@ class ServiceWorkerLifetimeKeepaliveBrowsertest : public ExtensionApiTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// The following tests are only relevant on ash.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
 // Loads two extensions that open a persistent port connection between each
 // other and tests that their service worker will stop after kRequestTimeout (5
 // minutes).
@@ -196,16 +191,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
 
 // Tests that the service workers will not stop if both extensions are
 // allowlisted via policy and the port is not closed.
-// TODO(crbug.com/40272276): Flakes on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ServiceWorkersDoNotTimeOutWithPolicy \
-  DISABLED_ServiceWorkersDoNotTimeOutWithPolicy
-#else
-#define MAYBE_ServiceWorkersDoNotTimeOutWithPolicy \
-  ServiceWorkersDoNotTimeOutWithPolicy
-#endif
 IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
-                       MAYBE_ServiceWorkersDoNotTimeOutWithPolicy) {
+                       ServiceWorkersDoNotTimeOutWithPolicy) {
   base::Value::List urls;
   // Both extensions receive extended lifetime.
   urls.Append(kTestOpenerExtensionUrl);
@@ -216,12 +203,17 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
 
   content::ServiceWorkerContext* context = GetServiceWorkerContext();
 
+  // Load the extensions and wait for the service workers to be activated. This
+  // test advances the worker's clock. If the activation request is in-flight
+  // when the clock is advanced, the request will expire and the worker will be
+  // terminated (because activation requests have KILL_ON_TIMEOUT behavior).
+  // Thus, we ensure that there are no in-flight activation requests before
+  // advancing the clock.
   TestServiceWorkerContextObserver sw_observer_receiver_extension(
       context, kTestReceiverExtensionId);
-  const Extension* receiver_extension = LoadExtension(
-      test_data_dir_.AppendASCII(kTestReceiverExtensionRelativePath));
+  LoadExtension(test_data_dir_.AppendASCII(kTestReceiverExtensionRelativePath));
   const int64_t service_worker_receiver_id =
-      sw_observer_receiver_extension.WaitForWorkerStarted();
+      sw_observer_receiver_extension.WaitForWorkerActivated();
 
   ExtensionTestMessageListener connect_listener(
       kPersistentPortConnectedMessage);
@@ -229,10 +221,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
 
   TestServiceWorkerContextObserver sw_observer_opener_extension(
       context, kTestOpenerExtensionId);
-  const Extension* opener_extension = LoadExtension(
-      test_data_dir_.AppendASCII(kTestOpenerExtensionRelativePath));
+  LoadExtension(test_data_dir_.AppendASCII(kTestOpenerExtensionRelativePath));
   const int64_t service_worker_opener_id =
-      sw_observer_opener_extension.WaitForWorkerStarted();
+      sw_observer_opener_extension.WaitForWorkerActivated();
 
   ASSERT_TRUE(connect_listener.WaitUntilSatisfied());
 
@@ -245,17 +236,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
   content::AdvanceClockAfterRequestTimeout(context, service_worker_opener_id,
                                            &tick_clock_opener_);
   TriggerTimeoutAndCheckActive(context, service_worker_opener_id);
-
-  // Clean up: stop running service workers before test end.
-  base::test::TestFuture<void> future_1;
-  content::StopServiceWorkerForScope(context, receiver_extension->url(),
-                                     future_1.GetCallback());
-  EXPECT_TRUE(future_1.Wait());
-
-  base::test::TestFuture<void> future_2;
-  content::StopServiceWorkerForScope(context, opener_extension->url(),
-                                     future_2.GetCallback());
-  EXPECT_TRUE(future_2.Wait());
 }
 
 // Tests that the extended lifetime only lasts as long as there is a persistent
@@ -376,8 +356,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
   TriggerTimeoutAndCheckStopped(context, service_worker_opener_id);
   sw_observer_opener_extension.WaitForWorkerStopped();
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Tests that certain API functions can keep the service worker alive
 // indefinitely.
