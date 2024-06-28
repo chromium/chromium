@@ -223,6 +223,16 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET1},
       {"privacyGuideAdTopicsThingsToConsiderBullet2",
        IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET2},
+      {"trackingProtectionPageDefaultHeader",
+       IDS_SETTINGS_TRACKING_PROTECTION_PAGE_DEFAULT_HEADER},
+      {"trackingProtectionTpcdBulletTwoDescription",
+       IDS_SETTINGS_TRACKING_PROTECTION_TPCD_BULLET_TWO_DESCRIPTION},
+      {"trackingProtectionAdditionalProtectionsHeader",
+       IDS_SETTINGS_TRACKING_PROTECTION_ADDITIONAL_PROTECTIONS_HEADER},
+      {"trackingProtectionExceptionsListTitle",
+       IDS_SETTINGS_TRACKING_PROTECTION_EXCEPTIONS_LIST_TITLE},
+      {"trackingProtectionExceptionsListDescription",
+       IDS_SETTINGS_TRACKING_PROTECTION_EXCEPTIONS_LIST_DESCRIPTION},
 
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);

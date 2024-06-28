@@ -9,6 +9,15 @@
         padding: 0 var(--cr-section-padding);
       }
 
+      #default {
+        padding: 16px var(--cr-section-padding) 8px var(--cr-section-padding);
+      }
+
+      #defaultHeader {
+        padding-top: 0;
+        padding-bottom: 8px;
+      }
+
       #exceptionHeader3pcd,
       #exceptionHeaderTrackingProtection {
         padding: 0 var(--cr-section-padding);
@@ -24,7 +33,7 @@
         padding: 0 var(--cr-section-padding);
       }
 
-      #advancedHeader {
+      #additionalProtectionsHeader {
         padding-top: 16px;
         padding-bottom: 8px;
         padding-left: var(--cr-section-padding);
@@ -191,8 +200,13 @@
       </div>
     </template>
     <template is="dom-if" if="[[is3pcdRedesignEnabled_]]">
-      <div id="explanationText" class="secondary">
-        $i18n{trackingProtectionPageDescription}
+      <div id="default">
+        <h2 id="defaultHeader" hidden="[[!enableTrackingProtectionRolloutUx_]]">
+          $i18n{trackingProtectionPageDefaultHeader}
+        </h2>
+        <div class="secondary">
+          $i18n{trackingProtectionPageDescription}
+        </div>
       </div>
       <div>
         <div class="bullet-row">
@@ -210,14 +224,15 @@
           </iron-icon>
           <div>
             $i18n{trackingProtectionBulletTwo}
-            <div class="secondary">
-              $i18nRaw{trackingProtectionBulletTwoDescription}
+            <div class="secondary"
+                inner-h-t-m-l="[[getTrackingProtectionBulletTwo_()]]">
             </div>
+          </div>
         </div>
       </div>
     </template>
-    <h2 id="advancedHeader">
-      $i18n{trackingProtectionAdvancedLabel}
+    <h2 id="additionalProtectionsHeader">
+      [[getTrackingProtectionAdditionalProtectionsHeader_()]]
     </h2>
     <settings-toggle-button
         id="blockThirdPartyToggle"
@@ -274,12 +289,12 @@
     </template>
     <template is="dom-if" if="[[enableTrackingProtectionRolloutUx_]]">
       <div id="exceptionHeaderTrackingProtection">
-        <h2>$i18n{trackingProtectionSitesAllowedCookiesTitle}</h2>
+        <h2>$i18n{trackingProtectionExceptionsListTitle}</h2>
       </div>
       <site-list id="trackingProtectionExceptionsList"
           category="[[trackingProtectionContentSettingType_]]"
           category-subtype="[[contentSetting_.ALLOW]]"
-          category-header="$i18n{trackingProtectionSitesAllowedCookiesDescription}"
+          category-header="$i18n{trackingProtectionExceptionsListDescription}"
           search-filter="[[searchTerm]]">
       </site-list>
     </template>

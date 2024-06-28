@@ -82,7 +82,7 @@ suite('CookiesPageTest', function() {
     // Headers
     assertTrue(isChildVisible(page, '#explanationText'));
     assertTrue(isChildVisible(page, '#generalControls'));
-    assertTrue(isChildVisible(page, '#advancedHeader'));
+    assertTrue(isChildVisible(page, '#additionalProtectionsHeader'));
     assertTrue(isChildVisible(page, '#exceptionHeader3pcd'));
     assertTrue(isChildVisible(page, '#allow3pcExceptionsList'));
     // To be removed with old UI.
@@ -91,6 +91,7 @@ suite('CookiesPageTest', function() {
     // Will only be shown in the TP rollout.
     assertFalse(isChildVisible(page, '#exceptionHeaderTrackingProtection'));
     assertFalse(isChildVisible(page, '#trackingProtectionExceptionsList'));
+    assertFalse(isChildVisible(page, '#defaultHeader'));
 
     // Settings
     assertTrue(isChildVisible(page, '#doNotTrack'));
@@ -393,13 +394,13 @@ suite('TrackingProtectionSettings', function() {
 
   test('CheckVisibility', function() {
     // Page description
-    assertTrue(isChildVisible(page, '#explanationText'));
+    assertTrue(isChildVisible(page, '#default'));
     assertEquals(
         page.shadowRoot!.querySelector<HTMLAnchorElement>(
                             'a[href]')!.getAttribute('aria-description'),
         page.i18n('opensInNewTab'));
 
-    // Advanced toggles
+    // Additional toggles
     assertTrue(isChildVisible(page, '#blockThirdPartyToggle'));
     assertTrue(isChildVisible(page, '#doNotTrack'));
 
@@ -553,9 +554,11 @@ suite('TrackingProtectionRolloutUx', function() {
 
   test('TrackingProtectionExceptionsListDisplayed', function() {
     // Tracking Protection elements are shown
+    assertTrue(isChildVisible(page, '#defaultHeader'));
     assertTrue(isChildVisible(page, '#exceptionHeaderTrackingProtection'));
     assertTrue(isChildVisible(page, '#trackingProtectionExceptionsList'));
     // 3PC elements are hidden
+    assertFalse(isChildVisible(page, '#explanationText'));
     assertFalse(isChildVisible(page, '#exceptionHeader3pcd'));
     assertFalse(isChildVisible(page, '#allow3pcExceptionsList'));
   });

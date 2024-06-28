@@ -185,6 +185,22 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     }
   }
 
+  private getTrackingProtectionBulletTwo_(): TrustedHTML {
+    if (this.enableTrackingProtectionRolloutUx_) {
+      return this.i18nAdvanced('trackingProtectionTpcdBulletTwoDescription');
+    }
+    return this.i18nAdvanced(
+        'trackingProtectionBulletTwoDescription',
+        {attrs: ['href', 'aria-label', 'aria-description']});
+  }
+
+  private getTrackingProtectionAdditionalProtectionsHeader_(): string {
+    return this.i18n(
+        this.enableTrackingProtectionRolloutUx_ ?
+            'trackingProtectionAdditionalProtectionsHeader' :
+            'trackingProtectionAdvancedLabel');
+  }
+
   private getThirdPartyCookiesPageBlockThirdPartyIncognitoBulTwoLabel_():
       string {
     return this.i18n(
