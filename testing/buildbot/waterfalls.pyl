@@ -40,6 +40,10 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
+        'os_type': 'chromeos',
+        'cros_board': 'betty',
+      },
+      'chromeos-betty-chrome-tests': {
         'test_suites': {
           'skylab_tests': 'chromeos_betty_vmlab_tests',
         },

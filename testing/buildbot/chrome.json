@@ -19,7 +19,9 @@
   "chromeos-betty-chrome": {
     "additional_compile_targets": [
       "chromiumos_preflight"
-    ],
+    ]
+  },
+  "chromeos-betty-chrome-tests": {
     "skylab_tests": [
       {
         "args": [
