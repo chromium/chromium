@@ -21,9 +21,6 @@
 /android_toolchain_canary/ndk/
 /android_tools_internal/
 /android_webview_glue/src
-/androidx/BUILD.gn
-/androidx/additional_readme_paths.json
-/androidx/libs/
 /androidx_javascriptengine/src/
 /angle_dx11
 /anonymous_tokens/src/

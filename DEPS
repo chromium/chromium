@@ -1421,11 +1421,11 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/androidx': {
+  'src/third_party/androidx/cipd': {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'iL83PPScUYo94zdtx69YJffVuWs7dAM_K34dnOe_tSMC',
+          'version': 'lknlH-AxH-bvZoQqNqg5rGUNyn3sxuSdg7xDty3mKfoC',
       },
     ],
     'condition': 'checkout_android',
