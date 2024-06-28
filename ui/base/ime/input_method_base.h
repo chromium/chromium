@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "ui/base/ime/composition_text.h"
@@ -29,9 +28,7 @@ class TextInputClient;
 
 // A helper class providing functionalities shared among ui::InputMethod
 // implementations.
-class COMPONENT_EXPORT(UI_BASE_IME) InputMethodBase
-    : public InputMethod,
-      public base::SupportsWeakPtr<InputMethodBase> {
+class COMPONENT_EXPORT(UI_BASE_IME) InputMethodBase : public InputMethod {
  public:
   InputMethodBase(const InputMethodBase&) = delete;
   InputMethodBase& operator=(const InputMethodBase&) = delete;
