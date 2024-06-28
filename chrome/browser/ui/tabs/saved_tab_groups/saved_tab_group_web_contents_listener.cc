@@ -33,7 +33,11 @@ bool IsSaveableNavigation(content::NavigationHandle* navigation_handle) {
     return false;
   }
 
-  if (navigation_handle->IsSameDocument()) {
+  if (!navigation_handle->HasCommitted()) {
+    return false;
+  }
+
+  if (!navigation_handle->ShouldUpdateHistory()) {
     return false;
   }
 
