@@ -1569,6 +1569,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.RtcStats.ChromeRtcUtcDifference" units="ms"
+    expires_after="2024-12-27">
+  <owner>brandstrom@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Time difference between UTC times calculated in WebRTC and Chrome. Should be
+    zero or close to zero, but evidence indicate that this can sometimes differ
+    quite a lot. It's recorded when packet receive timestamps are saved in
+    RTCStats objects.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.ScreenCaptureTime" units="ms"
     expires_after="2020-10-18">
   <owner>jiayl@chromium.org</owner>
