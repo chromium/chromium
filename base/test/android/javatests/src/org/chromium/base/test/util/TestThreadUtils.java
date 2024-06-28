@@ -29,4 +29,12 @@ public class TestThreadUtils {
         } catch (InterruptedException | ExecutionException e) {
         }
     }
+
+    /** Wraps Thread.sleep(). */
+    public static void sleep(int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+        }
+    }
 }
