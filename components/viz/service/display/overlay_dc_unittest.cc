@@ -102,10 +102,15 @@ std::unique_ptr<AggregatedRenderPass> CreateRenderPass(
 static ResourceId CreateResourceInLayerTree(
     ClientResourceProvider* child_resource_provider,
     const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    const gfx::HDRMetadata& hdr_metadata,
+    SharedImageFormat format,
     bool is_overlay_candidate) {
   auto resource = TransferableResource::MakeGpu(
-      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), size,
-      SinglePlaneFormat::kRGBA_8888, is_overlay_candidate);
+      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), size, format,
+      is_overlay_candidate);
+  resource.color_space = color_space;
+  resource.hdr_metadata = hdr_metadata;
 
   ResourceId resource_id =
       child_resource_provider->ImportResource(resource, base::DoNothing());
@@ -117,9 +122,13 @@ ResourceId CreateResource(DisplayResourceProvider* parent_resource_provider,
                           ClientResourceProvider* child_resource_provider,
                           RasterContextProvider* child_context_provider,
                           const gfx::Size& size,
+                          const gfx::ColorSpace& color_space,
+                          const gfx::HDRMetadata& hdr_metadata,
+                          SharedImageFormat format,
                           bool is_overlay_candidate) {
-  ResourceId resource_id = CreateResourceInLayerTree(
-      child_resource_provider, size, is_overlay_candidate);
+  ResourceId resource_id =
+      CreateResourceInLayerTree(child_resource_provider, size, color_space,
+                                hdr_metadata, format, is_overlay_candidate);
 
   int child_id =
       parent_resource_provider->CreateChild(base::DoNothing(), SurfaceId());
@@ -161,9 +170,10 @@ TextureDrawQuad* CreateTextureQuadAt(
     AggregatedRenderPass* render_pass,
     const gfx::Rect& rect,
     bool is_overlay_candidate = true) {
-  ResourceId resource_id =
-      CreateResource(parent_resource_provider, child_resource_provider,
-                     child_context_provider, rect.size(), is_overlay_candidate);
+  ResourceId resource_id = CreateResource(
+      parent_resource_provider, child_resource_provider, child_context_provider,
+      rect.size(), gfx::ColorSpace(), gfx::HDRMetadata(),
+      SinglePlaneFormat::kRGBA_8888, is_overlay_candidate);
   auto* quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetNew(shared_quad_state, rect, /*visible_rect=*/rect,
                /*needs_blending=*/false, resource_id, /*premultiplied=*/true,
@@ -185,26 +195,34 @@ void CreateOpaqueQuadAt(DisplayResourceProvider* resource_provider,
   color_quad->SetNew(shared_quad_state, rect, rect, color, false);
 }
 
-YUVVideoDrawQuad* CreateFullscreenCandidateYUVVideoQuad(
+TextureDrawQuad* CreateFullscreenCandidateYUVTextureQuad(
     DisplayResourceProvider* parent_resource_provider,
     ClientResourceProvider* child_resource_provider,
     RasterContextProvider* child_context_provider,
     const SharedQuadState* shared_quad_state,
-    AggregatedRenderPass* render_pass) {
-  bool needs_blending = false;
+    AggregatedRenderPass* render_pass,
+    const gfx::ColorSpace& color_space = gfx::ColorSpace(),
+    const gfx::HDRMetadata& hdr_metadata = gfx::HDRMetadata(),
+    SharedImageFormat format = SinglePlaneFormat::kRGBA_8888) {
   gfx::Rect rect = render_pass->output_rect;
   gfx::Size resource_size_in_pixels = rect.size();
   bool is_overlay_candidate = true;
-  ResourceId resource_id = CreateResource(
-      parent_resource_provider, child_resource_provider, child_context_provider,
-      resource_size_in_pixels, is_overlay_candidate);
+  ResourceId resource_id =
+      CreateResource(parent_resource_provider, child_resource_provider,
+                     child_context_provider, resource_size_in_pixels,
+                     color_space, hdr_metadata, format, is_overlay_candidate);
 
-  auto* overlay_quad = render_pass->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
-  overlay_quad->SetNew(
-      shared_quad_state, rect, rect, needs_blending, resource_size_in_pixels,
-      gfx::Rect(resource_size_in_pixels), gfx::Size(1, 1), resource_id,
-      resource_id, resource_id, resource_id, gfx::ColorSpace::CreateREC601(), 8,
-      gfx::ProtectedVideoType::kClear, std::nullopt);
+  auto* overlay_quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
+  overlay_quad->SetNew(shared_quad_state, rect, /*visible_rect=*/rect,
+                       /*needs_blending=*/false, resource_id,
+                       /*premultiplied=*/true,
+                       /*top_left=*/gfx::PointF(0, 0),
+                       /*bottom_right=*/gfx::PointF(1, 1),
+                       /*background=*/SkColors::kBlack, /*flipped=*/false,
+                       /*nearest=*/false, /*secure_output=*/false,
+                       gfx::ProtectedVideoType::kClear);
+  // Content is video frame type.
+  overlay_quad->is_video_frame = true;
 
   return overlay_quad;
 }
@@ -306,14 +324,22 @@ TEST_F(DCLayerOverlayTest, DisableVideoOverlayIfMovingFeature) {
       [&](gfx::Vector2d video_rect_offset, bool is_hdr = false,
           bool is_sdr_to_hdr = false) {
         auto pass = CreateRenderPass();
-        auto* video_quad = CreateFullscreenCandidateYUVVideoQuad(
-            resource_provider_.get(), child_resource_provider_.get(),
-            child_provider_.get(), pass->shared_quad_state_list.back(),
-            pass.get());
-        video_quad->rect = gfx::Rect(0, 0, 10, 10) + video_rect_offset;
-        video_quad->visible_rect = gfx::Rect(0, 0, 10, 10) + video_rect_offset;
+
+        SharedImageFormat format = SinglePlaneFormat::kRGBA_8888;
+        gfx::ColorSpace color_space;
+        gfx::HDRMetadata hdr_metadata;
 
         if (is_hdr) {
+          // Content is 10bit P010 content.
+          format = MultiPlaneFormat::kP010;
+          // Content has HDR10 colorspace.
+          color_space = gfx::ColorSpace::CreateHDR10();
+
+          // Content has valid HDR metadata.
+          hdr_metadata.cta_861_3 = gfx::HdrMetadataCta861_3(1000, 400);
+          hdr_metadata.smpte_st_2086 = gfx::HdrMetadataSmpteSt2086(
+              SkNamedPrimariesExt::kRec2020, 1000, 0.0001);
+
           // Render Pass has HDR content usage.
           pass->content_color_usage = gfx::ContentColorUsage::kHDR;
 
@@ -327,25 +353,14 @@ TEST_F(DCLayerOverlayTest, DisableVideoOverlayIfMovingFeature) {
           // Device has video processor support.
           overlay_processor_->set_has_p010_video_processor_support_for_testing(
               true);
-
-          // Content is 10bit P010 content.
-          video_quad->bits_per_channel = 10;
-
-          // Content has valid HDR metadata.
-          video_quad->hdr_metadata = gfx::HDRMetadata();
-          video_quad->hdr_metadata->cta_861_3 =
-              gfx::HdrMetadataCta861_3(1000, 400);
-          video_quad->hdr_metadata->smpte_st_2086 = gfx::HdrMetadataSmpteSt2086(
-              SkNamedPrimariesExt::kRec2020, 1000, 0.0001);
-
-          // Content has HDR10 colorspace.
-          video_quad->video_color_space = gfx::ColorSpace::CreateHDR10();
         } else if (is_sdr_to_hdr) {
+          // Content is 8bit NV12 content.
+          format = MultiPlaneFormat::kNV12;
+          // Content has 709 colorspace.
+          color_space = gfx::ColorSpace::CreateREC709();
+
           // Render Pass has SDR content usage.
           pass->content_color_usage = gfx::ContentColorUsage::kSRGB;
-
-          // Content is 8bit NV12 content.
-          video_quad->bits_per_channel = 8;
 
           // Device is not using battery power.
           overlay_processor_->set_is_on_battery_power_for_testing(false);
@@ -357,10 +372,14 @@ TEST_F(DCLayerOverlayTest, DisableVideoOverlayIfMovingFeature) {
           // Device has video processor auto hdr support.
           overlay_processor_
               ->set_has_auto_hdr_video_processor_support_for_testing(true);
-
-          // Content has 709 colorspace.
-          video_quad->video_color_space = gfx::ColorSpace::CreateREC709();
         }
+
+        auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+            resource_provider_.get(), child_resource_provider_.get(),
+            child_provider_.get(), pass->shared_quad_state_list.back(),
+            pass.get(), color_space, hdr_metadata, format);
+        video_quad->rect = gfx::Rect(0, 0, 10, 10) + video_rect_offset;
+        video_quad->visible_rect = gfx::Rect(0, 0, 10, 10) + video_rect_offset;
 
         OverlayCandidateList dc_layer_list;
         OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -512,7 +531,7 @@ TEST_F(DCLayerOverlayTest, Occluded) {
     SharedQuadState* second_shared_state =
         pass->CreateAndAppendSharedQuadState();
     second_shared_state->overlay_damage_index = 1;
-    auto* first_video_quad = CreateFullscreenCandidateYUVVideoQuad(
+    auto* first_video_quad = CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
     // Set the protected video flag will force the quad to use hw overlay
@@ -522,7 +541,7 @@ TEST_F(DCLayerOverlayTest, Occluded) {
     SharedQuadState* third_shared_state =
         pass->CreateAndAppendSharedQuadState();
     third_shared_state->overlay_damage_index = 2;
-    auto* second_video_quad = CreateFullscreenCandidateYUVVideoQuad(
+    auto* second_video_quad = CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
     // Set the protected video flag will force the quad to use hw overlay
@@ -563,7 +582,7 @@ TEST_F(DCLayerOverlayTest, Occluded) {
     SharedQuadState* second_shared_state =
         pass->CreateAndAppendSharedQuadState();
     second_shared_state->overlay_damage_index = 1;
-    auto* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
     // Set the protected video flag will force the quad to use hw overlay
@@ -573,7 +592,7 @@ TEST_F(DCLayerOverlayTest, Occluded) {
     SharedQuadState* third_shared_state =
         pass->CreateAndAppendSharedQuadState();
     third_shared_state->overlay_damage_index = 2;
-    auto* second_video_quad = CreateFullscreenCandidateYUVVideoQuad(
+    auto* second_video_quad = CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
     second_video_quad->protected_video_type =
@@ -626,7 +645,7 @@ TEST_F(DCLayerOverlayTest, DamageRectWithoutVideoDamage) {
     SharedQuadState* second_shared_state =
         pass->CreateAndAppendSharedQuadState();
     second_shared_state->overlay_damage_index = 1;
-    auto* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
     video_quad->rect = gfx::Rect(0, 0, 200, 200);
@@ -669,7 +688,7 @@ TEST_F(DCLayerOverlayTest, DamageRectWithoutVideoDamage) {
     SharedQuadState* second_shared_state =
         pass->CreateAndAppendSharedQuadState();
     second_shared_state->overlay_damage_index = 1;
-    auto* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
     video_quad->rect = gfx::Rect(0, 0, 200, 200);
@@ -704,7 +723,7 @@ TEST_F(DCLayerOverlayTest, DamageRect) {
     auto pass = CreateRenderPass();
     SharedQuadState* shared_quad_state = pass->shared_quad_state_list.back();
     shared_quad_state->overlay_damage_index = 0;
-    CreateFullscreenCandidateYUVVideoQuad(
+    CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
 
@@ -749,7 +768,7 @@ TEST_F(DCLayerOverlayTest, ClipRect) {
     SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
     shared_state->opacity = 1.f;
     shared_state->overlay_damage_index = 1;
-    CreateFullscreenCandidateYUVVideoQuad(
+    CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), shared_state, pass.get());
     // Clipped rect shouldn't be overlapped by clipped opaque quad rect.
@@ -790,7 +809,7 @@ TEST_F(DCLayerOverlayTest, TransparentOnTop) {
   for (size_t i = 0; i < 2; ++i) {
     auto pass = CreateRenderPass();
     pass->shared_quad_state_list.back()->overlay_damage_index = 0;
-    CreateFullscreenCandidateYUVVideoQuad(
+    CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
     pass->shared_quad_state_list.back()->opacity = 0.5f;
@@ -826,7 +845,7 @@ TEST_F(DCLayerOverlayTest, UnderlayDamageRectWithQuadOnTopUnchanged) {
 
     SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
     shared_state->opacity = 1.f;
-    CreateFullscreenCandidateYUVVideoQuad(
+    CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), shared_state, pass.get());
 
@@ -871,7 +890,7 @@ TEST_F(DCLayerOverlayTest, RoundedCorners) {
     auto pass = CreateRenderPass();
 
     // Create a video YUV quad with rounded corner, nothing on top.
-    auto* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
     gfx::Rect rect(0, 0, 256, 256);
@@ -929,7 +948,7 @@ TEST_F(DCLayerOverlayTest, RoundedCorners) {
                        gfx::Rect(0, 0, 32, 32), SkColors::kRed);
 
     // Create a video YUV quad with rounded corners below the red solid quad.
-    auto* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
     gfx::Rect rect(0, 0, 256, 256);
@@ -987,7 +1006,7 @@ TEST_F(DCLayerOverlayTest, RoundedCorners) {
                        gfx::Rect(0, 0, 32, 32), SkColors::kRed);
 
     // Create a video YUV quad with rounded corners below the red solid quad.
-    auto* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
     gfx::Rect rect(0, 0, 256, 256);
@@ -1050,7 +1069,7 @@ TEST_F(DCLayerOverlayTest, MultipleYUVOverlays) {
                        pass->shared_quad_state_list.back(), pass.get(),
                        gfx::Rect(0, 0, 256, 256), SkColors::kWhite);
 
-    auto* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
     gfx::Rect rect(10, 10, 80, 80);
@@ -1058,7 +1077,7 @@ TEST_F(DCLayerOverlayTest, MultipleYUVOverlays) {
     video_quad->visible_rect = rect;
     pass->shared_quad_state_list.back()->overlay_damage_index = 1;
 
-    auto* second_video_quad = CreateFullscreenCandidateYUVVideoQuad(
+    auto* second_video_quad = CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
     gfx::Rect second_rect(100, 100, 120, 120);
@@ -1106,7 +1125,7 @@ TEST_F(DCLayerOverlayTest, SetEnableDCLayers) {
     // transparent in the case of overlays.
     pass->has_transparent_background = false;
 
-    CreateFullscreenCandidateYUVVideoQuad(
+    CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
 
@@ -1235,7 +1254,7 @@ TEST_F(DCLayerOverlayTest, PixelMovingForegroundFilter) {
   // Add a video quad to the root render pass.
   SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
   shared_state->opacity = 1.f;
-  CreateFullscreenCandidateYUVVideoQuad(
+  CreateFullscreenCandidateYUVTextureQuad(
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), shared_state, pass.get());
   // Make the root render pass output rect bigger enough to cover the video
@@ -1306,7 +1325,7 @@ TEST_F(DCLayerOverlayTest, BackdropFilter) {
   // Add a video quad to the root render pass.
   SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
   shared_state->opacity = 1.f;
-  CreateFullscreenCandidateYUVVideoQuad(
+  CreateFullscreenCandidateYUVTextureQuad(
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), shared_state, pass.get());
   // Make the root render pass output rect bigger enough to cover the video
@@ -1353,7 +1372,7 @@ TEST_F(DCLayerOverlayTest, VideoCapture) {
                        gfx::Rect(0, 0, 32, 32), SkColors::kRed);
 
     // Create a video YUV quad below the red solid quad.
-    auto* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
     gfx::Rect rect(0, 0, 256, 256);
@@ -1390,7 +1409,7 @@ TEST_F(DCLayerOverlayTest, VideoCapture) {
                        gfx::Rect(0, 0, 32, 32), SkColors::kRed);
 
     // Create a video YUV quad below the red solid quad.
-    auto* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
     gfx::Rect rect(0, 0, 256, 256);
@@ -1454,7 +1473,7 @@ TEST_F(DCLayerOverlayTest, VideoCaptureOnIsolatedRenderPass) {
         root_pass.get(), gfx::Rect(0, 0, 32, 32), SkColors::kRed);
 
     // Create a video YUV quad below the red solid quad.
-    auto* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), root_pass->shared_quad_state_list.back(),
         root_pass.get());
@@ -1524,7 +1543,7 @@ void DCLayerOverlayTest::TestRenderPassRootTransform(bool is_overlay) {
                          kOpaqueRect, SkColors::kWhite);
     }
 
-    auto* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
     video_quad->rect = gfx::Rect(kVideoRect);
@@ -1599,7 +1618,7 @@ TEST_F(DCLayerOverlayTest, MultipleRenderPassesOneOverlay) {
 
       if (id == 1) {
         // Create an overlay quad in the first render pass.
-        auto* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+        auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
             resource_provider_.get(), child_resource_provider_.get(),
             child_provider_.get(), pass->shared_quad_state_list.back(),
             pass.get());
@@ -1710,7 +1729,7 @@ TEST_F(DCLayerOverlayTest, MultipleRenderPassesExceedsOverlayAllowance) {
           pass->transform_to_root_target
               .InverseMapRect(video_rect_in_root_space)
               .value();
-      auto* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+      auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
           resource_provider_.get(), child_resource_provider_.get(),
           child_provider_.get(), pass->shared_quad_state_list.back(),
           pass.get());
@@ -1768,7 +1787,7 @@ TEST_F(DCLayerOverlayTest, MultipleYUVOverlaysIntersected) {
     auto pass = CreateRenderPass();
 
     // Video 1: Topmost video.
-    auto* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
     gfx::Rect rect(150, 150, 50, 50);
@@ -1777,7 +1796,7 @@ TEST_F(DCLayerOverlayTest, MultipleYUVOverlaysIntersected) {
     pass->shared_quad_state_list.back()->overlay_damage_index = 1;
 
     // Video 2: Intersected with and under the 1st video.
-    auto* second_video_quad = CreateFullscreenCandidateYUVVideoQuad(
+    auto* second_video_quad = CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
     gfx::Rect second_rect(100, 100, 120, 120);
@@ -1843,18 +1862,13 @@ TEST_F(DCLayerOverlayTest, HDR10VideoOverlay) {
   {
     auto pass = CreateRenderPass();
     pass->content_color_usage = gfx::ContentColorUsage::kHDR;
-    YUVVideoDrawQuad* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+
+    // Content is 10bit P010 content with HDR10 colorspace.
+    CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-
-    // Content is 10bit P010 content.
-    video_quad->bits_per_channel = 10;
-
-    // Content has valid HDR metadata.
-    video_quad->hdr_metadata = valid_hdr_metadata;
-
-    // Content has HDR10 colorspace.
-    video_quad->video_color_space = gfx::ColorSpace::CreateHDR10();
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
+        MultiPlaneFormat::kP010);
 
     OverlayCandidateList dc_layer_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -1878,18 +1892,13 @@ TEST_F(DCLayerOverlayTest, HDR10VideoOverlay) {
   {
     auto pass = CreateRenderPass();
     pass->content_color_usage = gfx::ContentColorUsage::kHDR;
-    YUVVideoDrawQuad* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+
+    // Content is 8bit NV12 (not satisfied) content with HDR10 colorspace.
+    CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-
-    // Content is 8bit NV12 content (not satisfied).
-    video_quad->bits_per_channel = 8;
-
-    // Content has valid HDR metadata.
-    video_quad->hdr_metadata = valid_hdr_metadata;
-
-    // Content has HDR10 colorspace.
-    video_quad->video_color_space = gfx::ColorSpace::CreateHDR10();
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
+        MultiPlaneFormat::kNV12);
 
     OverlayCandidateList dc_layer_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -1913,19 +1922,13 @@ TEST_F(DCLayerOverlayTest, HDR10VideoOverlay) {
   {
     auto pass = CreateRenderPass();
     pass->content_color_usage = gfx::ContentColorUsage::kHDR;
-    YUVVideoDrawQuad* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+    // Content is 10bit P010 content with HDR10 colorspace, but invalid HDR
+    // metadata (not satisfied).
+    CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-
-    // Content is 10bit P010 content.
-    video_quad->bits_per_channel = 10;
-
-    // Content has invalid HDR metadata (not satisfied).
-    gfx::HDRMetadata invalid_hdr_metadata;
-    video_quad->hdr_metadata = invalid_hdr_metadata;
-
-    // Content has HDR10 colorspace.
-    video_quad->video_color_space = gfx::ColorSpace::CreateHDR10();
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::ColorSpace::CreateHDR10(), gfx::HDRMetadata(),
+        MultiPlaneFormat::kP010);
 
     OverlayCandidateList dc_layer_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -1949,20 +1952,16 @@ TEST_F(DCLayerOverlayTest, HDR10VideoOverlay) {
   {
     auto pass = CreateRenderPass();
     pass->content_color_usage = gfx::ContentColorUsage::kHDR;
-    YUVVideoDrawQuad* video_quad = CreateFullscreenCandidateYUVVideoQuad(
-        resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-
-    // Content is 10bit P010 content.
-    video_quad->bits_per_channel = 10;
 
     // Content has HDR metadata which contains cta_861_3.
     gfx::HDRMetadata cta_861_3_hdr_metadata;
     cta_861_3_hdr_metadata.cta_861_3 = gfx::HdrMetadataCta861_3(0, 400);
-    video_quad->hdr_metadata = cta_861_3_hdr_metadata;
-
-    // Content has HDR10 colorspace.
-    video_quad->video_color_space = gfx::ColorSpace::CreateHDR10();
+    // Content is 10bit P010 content with HDR10 colorspace.
+    CreateFullscreenCandidateYUVTextureQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::ColorSpace::CreateHDR10(), cta_861_3_hdr_metadata,
+        MultiPlaneFormat::kP010);
 
     OverlayCandidateList dc_layer_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -1986,21 +1985,17 @@ TEST_F(DCLayerOverlayTest, HDR10VideoOverlay) {
   {
     auto pass = CreateRenderPass();
     pass->content_color_usage = gfx::ContentColorUsage::kHDR;
-    YUVVideoDrawQuad* video_quad = CreateFullscreenCandidateYUVVideoQuad(
-        resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-
-    // Content is 10bit P010 content.
-    video_quad->bits_per_channel = 10;
 
     // Content has HDR metadata which contains smpte_st_2086.
     gfx::HDRMetadata smpte_st_2086_hdr_metadata;
     smpte_st_2086_hdr_metadata.smpte_st_2086 = gfx::HdrMetadataSmpteSt2086(
         SkNamedPrimariesExt::kRec2020, 1000, 0.0001);
-    video_quad->hdr_metadata = smpte_st_2086_hdr_metadata;
-
-    // Content has HDR10 colorspace.
-    video_quad->video_color_space = gfx::ColorSpace::CreateHDR10();
+    // Content is 10bit P010 content with HDR10 colorspace.
+    CreateFullscreenCandidateYUVTextureQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::ColorSpace::CreateHDR10(), smpte_st_2086_hdr_metadata,
+        MultiPlaneFormat::kP010);
 
     OverlayCandidateList dc_layer_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -2024,18 +2019,14 @@ TEST_F(DCLayerOverlayTest, HDR10VideoOverlay) {
   {
     auto pass = CreateRenderPass();
     pass->content_color_usage = gfx::ContentColorUsage::kHDR;
-    YUVVideoDrawQuad* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+
+    // Content is 10bit P010 content with HDR colorspace but not in PQ transfer
+    // (not satisfied).
+    CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-
-    // Content is 10bit P010 content.
-    video_quad->bits_per_channel = 10;
-
-    // Content has invalid HDR metadata.
-    video_quad->hdr_metadata = valid_hdr_metadata;
-
-    // Content has HDR colorspace but not in PQ transfer (not satisfied).
-    video_quad->video_color_space = gfx::ColorSpace::CreateHLG();
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::ColorSpace::CreateHLG(), valid_hdr_metadata,
+        MultiPlaneFormat::kP010);
 
     OverlayCandidateList dc_layer_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -2061,18 +2052,13 @@ TEST_F(DCLayerOverlayTest, HDR10VideoOverlay) {
 
     auto pass = CreateRenderPass();
     pass->content_color_usage = gfx::ContentColorUsage::kHDR;
-    YUVVideoDrawQuad* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+
+    // Content is 10bit P010 content with HDR10 colorspace.
+    CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-
-    // Content is 10bit P010 content.
-    video_quad->bits_per_channel = 10;
-
-    // Content has valid HDR metadata.
-    video_quad->hdr_metadata = valid_hdr_metadata;
-
-    // Content has HDR10 colorspace.
-    video_quad->video_color_space = gfx::ColorSpace::CreateHDR10();
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
+        MultiPlaneFormat::kP010);
 
     OverlayCandidateList dc_layer_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -2102,18 +2088,13 @@ TEST_F(DCLayerOverlayTest, HDR10VideoOverlay) {
 
     auto pass = CreateRenderPass();
     pass->content_color_usage = gfx::ContentColorUsage::kHDR;
-    YUVVideoDrawQuad* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+
+    // Content is 10bit P010 content with HDR10 colorspace.
+    CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-
-    // Content is 10bit P010 content.
-    video_quad->bits_per_channel = 10;
-
-    // Content has valid HDR metadata.
-    video_quad->hdr_metadata = valid_hdr_metadata;
-
-    // Content has HDR10 colorspace.
-    video_quad->video_color_space = gfx::ColorSpace::CreateHDR10();
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
+        MultiPlaneFormat::kP010);
 
     OverlayCandidateList dc_layer_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -2143,18 +2124,13 @@ TEST_F(DCLayerOverlayTest, HDR10VideoOverlay) {
 
     auto pass = CreateRenderPass();
     pass->content_color_usage = gfx::ContentColorUsage::kHDR;
-    YUVVideoDrawQuad* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+
+    // Content is 10bit P010 content with HDR10 colorspace.
+    CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-
-    // Content is 10bit P010 content.
-    video_quad->bits_per_channel = 10;
-
-    // Content has valid HDR metadata.
-    video_quad->hdr_metadata = valid_hdr_metadata;
-
-    // Content has HDR10 colorspace.
-    video_quad->video_color_space = gfx::ColorSpace::CreateHDR10();
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
+        MultiPlaneFormat::kP010);
 
     OverlayCandidateList dc_layer_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -2723,10 +2699,10 @@ TEST_F(DCLayerOverlayDelegatedCompositingTest,
                       child_provider_.get(),
                       pass->shared_quad_state_list.back(), pass.get(),
                       gfx::Rect(0, 0, 50, 50), /*is_overlay_candidate=*/false);
-  auto* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+  auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-  ResourceId video_resource_id = video_quad->y_plane_resource_id();
+  ResourceId video_resource_id = video_quad->resource_id();
   pass_list.push_back(std::move(pass));
 
   auto result = TryProcessForDelegatedOverlays(pass_list);
