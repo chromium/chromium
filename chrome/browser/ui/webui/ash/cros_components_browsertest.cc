@@ -267,6 +267,11 @@ static constexpr const ComponentTestData kComponentsTestData[] = {
         .component_name = "cros-snackbar-item",
         .gtest_name = "CrosSnackbarItem",
     },
+    {
+        .script_src = "chrome://resources/cros_components/tooltip/tooltip.js",
+        .component_name = "cros-tooltip",
+        .gtest_name = "CrosTooltip",
+    },
     // TODO(b:332970280): Bring orca-feedback back once we can support safeHTML
     // properly.
     // {

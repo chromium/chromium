@@ -46,6 +46,7 @@ _cros_components_ts_files = [
   "tabs/tabs.ts",
   "tag/tag.ts",
   "textfield/textfield.ts",
+  "tooltip/tooltip.ts",
 ]
 
 ts_library("cros_components__ts_library") {
