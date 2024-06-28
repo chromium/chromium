@@ -43,7 +43,7 @@ constexpr int kPinKeyboardWidthDp =
     3 * kButtonSize + 2 * kButtonsHorizontalPadding;
 
 constexpr ui::ColorId kButtonBackgroundColorId =
-    cros_tokens::kCrosSysBaseElevated;
+    cros_tokens::kCrosSysSystemBaseElevated;
 constexpr ui::ColorId kButtonContentColorId = cros_tokens::kCrosSysOnSurface;
 
 void StyleButton(IconButton* button_ptr) {
@@ -192,7 +192,7 @@ void PinKeyboardView::AddDigitButton(int digit) {
 
   IconButton::Builder builder;
   builder.SetType(IconButton::Type::kXLarge)
-      .SetAccessibleNameId(IDS_ASH_PIN_KEYBOARD_DELETE_ACCESSIBLE_NAME)
+      .SetAccessibleName(base::NumberToString16(digit))
       .SetCallback(base::BindRepeating(&PinKeyboardView::OnDigitButtonPressed,
                                        weak_ptr_factory_.GetWeakPtr(), digit))
       .SetTogglable(false)
