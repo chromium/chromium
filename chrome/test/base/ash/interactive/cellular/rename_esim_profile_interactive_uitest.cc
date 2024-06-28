@@ -68,7 +68,9 @@ class RenameEsimProfileInteractiveUiTest : public InteractiveAshTest {
   const EsimInfo esim_info_ = EsimInfo(/*id=*/0);
 };
 
-IN_PROC_BROWSER_TEST_F(RenameEsimProfileInteractiveUiTest, RenamEsimProfile) {
+// Reanable when flaky test is fixed. See b/350066292.
+IN_PROC_BROWSER_TEST_F(RenameEsimProfileInteractiveUiTest,
+                       DISABLED_RenamEsimProfile) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOSSettingsId);
 
   ui::ElementContext context =
