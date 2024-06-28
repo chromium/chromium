@@ -130,6 +130,18 @@ double CSSMathFunctionValue::ComputePercentage(
   return std::isnan(value) ? 0.0 : value;
 }
 
+double CSSMathFunctionValue::ComputeValueInCanonicalUnit(
+    const CSSLengthResolver& length_resolver) const {
+  // Don't use it for mix of length and percentage, as it would compute 10px +
+  // 10% to 20.
+  DCHECK(!IsCalculatedPercentageWithLength());
+  std::optional<double> optional_value =
+      expression_->ComputeValueInCanonicalUnit(length_resolver);
+  DCHECK(optional_value.has_value());
+  double value = ClampToPermittedRange(optional_value.value());
+  return std::isnan(value) ? 0.0 : value;
+}
+
 double CSSMathFunctionValue::ComputeDotsPerPixel() const {
   DCHECK_EQ(kCalcResolution, expression_->Category());
   return ClampToPermittedRange(*expression_->ComputeValueInCanonicalUnit());

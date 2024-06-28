@@ -162,6 +162,9 @@ class CORE_EXPORT CSSMathExpressionNode
   //   (e.g., between 'px' and 'em').
   // - There's an unsupported calculation, e.g., dividing two lengths.
   virtual std::optional<double> ComputeValueInCanonicalUnit() const = 0;
+  // Same as ComputeValueInCanonicalUnit(), but resolves length as well.
+  virtual std::optional<double> ComputeValueInCanonicalUnit(
+      const CSSLengthResolver& length_resolver) const = 0;
 
   virtual String CustomCSSText() const = 0;
   virtual bool operator==(const CSSMathExpressionNode& other) const {
@@ -300,6 +303,8 @@ class CORE_EXPORT CSSMathExpressionNumericLiteral final
       const CSSLengthResolver&) const final;
   double DoubleValue() const final;
   std::optional<double> ComputeValueInCanonicalUnit() const final;
+  std::optional<double> ComputeValueInCanonicalUnit(
+      const CSSLengthResolver& length_resolver) const final;
   double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final;
   bool AccumulateLengthArray(CSSLengthArray& length_array,
                              double multiplier) const final;
@@ -376,6 +381,10 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
   }
   std::optional<double> ComputeValueInCanonicalUnit() const final {
     return std::nullopt;
+  }
+  std::optional<double> ComputeValueInCanonicalUnit(
+      const CSSLengthResolver& length_resolver) const final {
+    NOTREACHED_NORETURN();
   }
   double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final {
     NOTREACHED_IN_MIGRATION();
@@ -471,6 +480,10 @@ class CORE_EXPORT CSSMathExpressionKeywordLiteral final
   }
   std::optional<double> ComputeValueInCanonicalUnit() const final {
     return std::nullopt;
+  }
+  std::optional<double> ComputeValueInCanonicalUnit(
+      const CSSLengthResolver& length_resolver) const final {
+    NOTREACHED_NORETURN();
   }
   double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final {
     NOTREACHED_IN_MIGRATION();
@@ -644,6 +657,8 @@ class CORE_EXPORT CSSMathExpressionOperation final
       const CSSLengthResolver&) const final;
   double DoubleValue() const final;
   std::optional<double> ComputeValueInCanonicalUnit() const final;
+  std::optional<double> ComputeValueInCanonicalUnit(
+      const CSSLengthResolver& length_resolver) const final;
   double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final;
   bool AccumulateLengthArray(CSSLengthArray& length_array,
                              double multiplier) const final;
@@ -745,6 +760,10 @@ class CORE_EXPORT CSSMathExpressionContainerFeature final
   std::optional<double> ComputeValueInCanonicalUnit() const final {
     return std::nullopt;
   }
+  std::optional<double> ComputeValueInCanonicalUnit(
+      const CSSLengthResolver& length_resolver) const final {
+    NOTREACHED_NORETURN();
+  }
   double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final {
     NOTREACHED_IN_MIGRATION();
     return 0;
@@ -822,6 +841,10 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
   }
   std::optional<double> ComputeValueInCanonicalUnit() const final {
     return std::nullopt;
+  }
+  std::optional<double> ComputeValueInCanonicalUnit(
+      const CSSLengthResolver& length_resolver) const final {
+    NOTREACHED_NORETURN();
   }
   std::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSLengthResolver&) const final {

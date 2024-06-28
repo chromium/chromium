@@ -120,6 +120,15 @@ double CSSNumericLiteralValue::ComputeInCanonicalUnit() const {
          CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(GetType());
 }
 
+double CSSNumericLiteralValue::ComputeInCanonicalUnit(
+    const CSSLengthResolver& length_resolver) const {
+  if (IsLength()) {
+    return ComputeLengthPx(length_resolver);
+  }
+  return DoubleValue() *
+         CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(GetType());
+}
+
 double CSSNumericLiteralValue::ComputeLengthPx(
     const CSSLengthResolver& length_resolver) const {
   DCHECK(IsLength());

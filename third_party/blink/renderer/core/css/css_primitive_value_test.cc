@@ -412,5 +412,27 @@ TEST_F(CSSPrimitiveValueTest, CSSPrimitiveValueOperations) {
             "0");
 }
 
+TEST_F(CSSPrimitiveValueTest, ComputeValueToCanonicalUnit) {
+  CSSNumericLiteralValue* numeric_percentage = CSSNumericLiteralValue::Create(
+      10, CSSPrimitiveValue::UnitType::kPercentage);
+  CSSMathExpressionNode* node_20_px = CSSMathExpressionNumericLiteral::Create(
+      20, CSSPrimitiveValue::UnitType::kPixels);
+  CSSMathExpressionNode* node_2_em = CSSMathExpressionNumericLiteral::Create(
+      2, CSSPrimitiveValue::UnitType::kEms);
+  CSSMathExpressionNode* node_sub =
+      CSSMathExpressionOperation::CreateArithmeticOperation(
+          node_20_px, node_2_em, CSSMathOperator::kSubtract);
+  auto* function = CSSMathFunctionValue::Create(node_sub);
+
+  Font font;
+  CSSToLengthConversionData length_resolver = CSSToLengthConversionData();
+  length_resolver.SetFontSizes(
+      CSSToLengthConversionData::FontSizes(10.0f, 10.0f, &font, 1.0f));
+
+  EXPECT_EQ(function->ComputeValueInCanonicalUnit(length_resolver), 0);
+  EXPECT_EQ(numeric_percentage->ComputeValueInCanonicalUnit(length_resolver),
+            10);
+}
+
 }  // namespace
 }  // namespace blink

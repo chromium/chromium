@@ -72,6 +72,7 @@ class CORE_EXPORT CSSNumericLiteralValue : public CSSPrimitiveValue {
   double ComputeDegrees() const;
   double ComputeDotsPerPixel() const;
   double ComputeInCanonicalUnit() const;
+  double ComputeInCanonicalUnit(const CSSLengthResolver&) const;
 
   int ComputeInteger() const;
   double ComputeNumber() const;

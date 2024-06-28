@@ -864,6 +864,12 @@ CSSMathExpressionNumericLiteral::ComputeValueInCanonicalUnit() const {
   }
 }
 
+std::optional<double>
+CSSMathExpressionNumericLiteral::ComputeValueInCanonicalUnit(
+    const CSSLengthResolver& length_resolver) const {
+  return value_->ComputeInCanonicalUnit(length_resolver);
+}
+
 double CSSMathExpressionNumericLiteral::ComputeDouble(
     const CSSLengthResolver& length_resolver) const {
   switch (category_) {
@@ -2327,6 +2333,25 @@ std::optional<double> CSSMathExpressionOperation::ComputeValueInCanonicalUnit()
       return std::nullopt;
     }
     double_values.push_back(*maybe_value);
+  }
+  return Evaluate(double_values);
+}
+
+std::optional<double> CSSMathExpressionOperation::ComputeValueInCanonicalUnit(
+    const CSSLengthResolver& length_resolver) const {
+  if (!HasCanonicalUnit(category_)) {
+    return std::nullopt;
+  }
+
+  Vector<double> double_values;
+  double_values.reserve(operands_.size());
+  for (const CSSMathExpressionNode* operand : operands_) {
+    std::optional<double> maybe_value =
+        operand->ComputeValueInCanonicalUnit(length_resolver);
+    if (!maybe_value.has_value()) {
+      return std::nullopt;
+    }
+    double_values.push_back(maybe_value.value());
   }
   return Evaluate(double_values);
 }

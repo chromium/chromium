@@ -395,6 +395,18 @@ double CSSPrimitiveValue::ComputePercentage(
                         : To<CSSNumericLiteralValue>(this)->ComputePercentage();
 }
 
+double CSSPrimitiveValue::ComputeValueInCanonicalUnit(
+    const CSSLengthResolver& length_resolver) const {
+  // Don't use it for mix of length and percentage, as it would compute 10px +
+  // 10% to 20.
+  DCHECK(!IsCalculatedPercentageWithLength());
+  return IsCalculated()
+             ? To<CSSMathFunctionValue>(this)->ComputeValueInCanonicalUnit(
+                   length_resolver)
+             : To<CSSNumericLiteralValue>(this)->ComputeInCanonicalUnit(
+                   length_resolver);
+}
+
 double CSSPrimitiveValue::ComputeLengthDouble(
     const CSSLengthResolver& length_resolver) const {
   if (IsCalculated()) {
