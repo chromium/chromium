@@ -45,7 +45,7 @@ class TabModel final : public SupportsHandles<const TabModel>,
 
   content::WebContents* contents() const { return contents_.get(); }
   TabStripModel* owning_model() const { return owning_model_.get(); }
-  content::WebContents* opener() const { return opener_; }
+  tabs::TabModel* opener() const { return opener_; }
   bool reset_opener_on_active_tab_change() const {
     return reset_opener_on_active_tab_change_;
   }
@@ -53,7 +53,7 @@ class TabModel final : public SupportsHandles<const TabModel>,
   bool blocked() const { return blocked_; }
   std::optional<tab_groups::TabGroupId> group() const { return group_; }
 
-  void set_opener(content::WebContents* opener) { opener_ = opener; }
+  void set_opener(tabs::TabModel* opener) { opener_ = opener; }
   void set_reset_opener_on_active_tab_change(
       bool reset_opener_on_active_tab_change) {
     reset_opener_on_active_tab_change_ = reset_opener_on_active_tab_change;
@@ -152,7 +152,7 @@ class TabModel final : public SupportsHandles<const TabModel>,
   // owning tabstrip model, and has yet to be transferred to a new tabstrip
   // model or is in the process of being closed.
   raw_ptr<TabStripModel> owning_model_ = nullptr;
-  raw_ptr<content::WebContents> opener_ = nullptr;
+  raw_ptr<tabs::TabModel> opener_ = nullptr;
   bool reset_opener_on_active_tab_change_ = false;
   bool pinned_ = false;
   bool blocked_ = false;

@@ -706,7 +706,9 @@ bool TabStripModel::TabsAreLoading() const {
 
 WebContents* TabStripModel::GetOpenerOfWebContentsAt(const int index) const {
   CHECK(ContainsIndex(index));
-  return GetTabAtIndex(index)->opener();
+  tabs::TabModel* tab = GetTabAtIndex(index);
+
+  return tab->opener() ? tab->opener()->contents() : nullptr;
 }
 
 void TabStripModel::SetOpenerOfWebContentsAt(int index, WebContents* opener) {
@@ -716,7 +718,7 @@ void TabStripModel::SetOpenerOfWebContentsAt(int index, WebContents* opener) {
   // the opener being used after its freed. See crbug.com/698681.
   DCHECK(!opener || GetIndexOfWebContents(opener) != kNoTab)
       << "Cannot set opener to a web contents not owned by this tab strip.";
-  GetTabAtIndex(index)->set_opener(opener);
+  GetTabAtIndex(index)->set_opener(GetTabForWebContents(opener));
 }
 
 int TabStripModel::GetIndexOfLastWebContentsOpenedBy(const WebContents* opener,
@@ -732,7 +734,8 @@ int TabStripModel::GetIndexOfLastWebContentsOpenedBy(const WebContents* opener,
     tabs::TabModel* tab = GetTabAtIndex(i);
     // Test opened by transitively, i.e. include tabs opened by tabs opened by
     // opener, etc. Stop when we find the first non-descendant.
-    if (!opener_and_descendants.count(tab->opener())) {
+    if (!opener_and_descendants.count(tab->opener() ? tab->opener()->contents()
+                                                    : nullptr)) {
       // Skip over pinned tabs as new tabs are added after pinned tabs.
       if (tab->pinned()) {
         continue;
@@ -1833,16 +1836,17 @@ int TabStripModel::GetIndexOfNextWebContentsOpenedBy(const WebContents* opener,
                                                      int start_index) const {
   DCHECK(opener);
   CHECK(ContainsIndex(start_index));
+  const tabs::TabModel* opener_tab = GetTabForWebContents(opener);
 
   // Check tabs after start_index first.
   for (int i = start_index + 1; i < count(); ++i) {
-    if (GetTabAtIndex(i)->opener() == opener) {
+    if (GetTabAtIndex(i)->opener() == opener_tab) {
       return i;
     }
   }
   // Then check tabs before start_index, iterating backwards.
   for (int i = start_index - 1; i >= 0; --i) {
-    if (GetTabAtIndex(i)->opener() == opener) {
+    if (GetTabAtIndex(i)->opener() == opener_tab) {
       return i;
     }
   }
@@ -1988,23 +1992,23 @@ int TabStripModel::InsertTabAtImpl(
   // Have to get the active contents before we monkey with the contents
   // otherwise we run into problems when we try to change the active contents
   // since the old contents and the new contents will be the same...
-  WebContents* active_contents = GetActiveWebContents();
-  WebContents* raw_contents = tab->contents();
+  tabs::TabModel* active_tab = GetActiveTab();
   CHECK_EQ(this, tab->owning_model());
-  if ((add_types & ADD_INHERIT_OPENER) && active_contents) {
+  if ((add_types & ADD_INHERIT_OPENER) && active_tab) {
     if (active) {
       // Forget any existing relationships, we don't want to make things too
       // confusing by having multiple openers active at the same time.
       ForgetAllOpeners();
     }
-    tab->set_opener(active_contents);
+    tab->set_opener(active_tab);
   }
 
   // TODO(gbillock): Ask the modal dialog manager whether the WebContents should
   // be blocked, or just let the modal dialog manager make the blocking call
   // directly and not use this at all.
   const web_modal::WebContentsModalDialogManager* manager =
-      web_modal::WebContentsModalDialogManager::FromWebContents(raw_contents);
+      web_modal::WebContentsModalDialogManager::FromWebContents(
+          tab->contents());
   if (manager) {
     tab->set_blocked(manager->IsDialogActive());
   }
@@ -2016,6 +2020,11 @@ int TabStripModel::InsertTabAtImpl(
 
 tabs::TabModel* TabStripModel::GetTabAtIndex(int index) const {
   return contents_data_->GetTabAtIndexRecursive(index);
+}
+
+tabs::TabModel* TabStripModel::GetTabForWebContents(
+    const content::WebContents* contents) const {
+  return GetTabAtIndex(GetIndexOfWebContents(contents));
 }
 
 void TabStripModel::CloseTabs(base::span<content::WebContents* const> items,
@@ -2938,16 +2947,16 @@ void TabStripModel::SetSitesMuted(const std::vector<int>& indices,
 
 void TabStripModel::FixOpeners(int index) {
   tabs::TabModel* old_tab = GetTabAtIndex(index);
-  WebContents* new_opener = GetOpenerOfWebContentsAt(index);
+  tabs::TabModel* new_opener = old_tab ? old_tab->opener() : nullptr;
 
   for (int i = 0; i < GetTabCount(); i++) {
     tabs::TabModel* tab = GetTabAtIndex(i);
-    if (tab->opener() != old_tab->contents()) {
+    if (tab->opener() != old_tab) {
       continue;
     }
 
     // Ensure a tab isn't its own opener.
-    tab->set_opener(new_opener == tab->contents() ? nullptr : new_opener);
+    tab->set_opener(new_opener == tab ? nullptr : new_opener);
   }
 
   // Sanity check that none of the tabs' openers refer |old_tab| or
@@ -2955,8 +2964,7 @@ void TabStripModel::FixOpeners(int index) {
   DCHECK([&]() {
     for (int i = 0; i < GetTabCount(); ++i) {
       tabs::TabModel* tab = GetTabAtIndex(i);
-      if (tab->opener() == old_tab->contents() ||
-          tab->opener() == tab->contents()) {
+      if (tab->opener() == old_tab || tab->opener() == tab) {
         return false;
       }
     }

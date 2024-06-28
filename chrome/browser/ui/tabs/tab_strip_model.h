@@ -657,6 +657,11 @@ class TabStripModel : public TabGroupController {
   // Returns the tab at `index` in the tabstrip.
   tabs::TabModel* GetTabAtIndex(int index) const;
 
+  // TODO(349161508) remove this method once tabs dont need to be converted
+  // into webcontents.
+  tabs::TabModel* GetTabForWebContents(
+      const content::WebContents* contents) const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(TabStripModelTest, GetIndicesClosedByCommand);
 

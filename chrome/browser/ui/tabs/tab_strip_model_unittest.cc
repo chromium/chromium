@@ -786,7 +786,8 @@ TEST_P(TabStripModelTest, TestTabHandlesAcrossModels) {
   ASSERT_EQ(&tabstrip, handle.Get()->owning_model());
 
   tabstrip.SetOpenerOfWebContentsAt(0, opener);
-  ASSERT_EQ(opener, handle.Get()->opener());
+  ASSERT_NE(nullptr, handle.Get()->opener());
+  ASSERT_EQ(opener, handle.Get()->opener()->contents());
   tabstrip.SetTabPinned(0, true);
   ASSERT_EQ(true, handle.Get()->pinned());
   tabstrip.SetTabBlocked(0, true);
@@ -4677,7 +4678,7 @@ TEST_P(TabStripModelTest, AppendTab) {
 
   // Force the opener of tab in index 1 to be tab at index 0.
   tabstrip->SetOpenerOfWebContentsAt(1, tabstrip->GetWebContentsAt(0));
-  ASSERT_EQ(tabstrip->GetWebContentsAt(0),
+  ASSERT_EQ(tabstrip->GetTabAtIndex(0),
             tabstrip->GetTabHandleAt(1).Get()->opener());
 
   // Detach 2 tabs for the test, one for each option.
@@ -4702,7 +4703,7 @@ TEST_P(TabStripModelTest, AppendTab) {
                       /*foreground=*/true);
   EXPECT_TRUE(tabstrip->ContainsIndex(2));
   EXPECT_EQ(2, tabstrip->active_index());
-  EXPECT_EQ(tabstrip->GetWebContentsAt(1),
+  EXPECT_EQ(tabstrip->GetTabAtIndex(1),
             tabstrip->GetTabHandleAt(2).Get()->opener());
   EXPECT_EQ(tab_model_with_foreground_true_ptr->owning_model(), tabstrip.get());
 
