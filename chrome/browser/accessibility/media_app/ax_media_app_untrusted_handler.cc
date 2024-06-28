@@ -1035,14 +1035,18 @@ bool AXMediaAppUntrustedHandler::HasRendererTerminatedDueToBadPageId(
 std::unique_ptr<gfx::Transform>
 AXMediaAppUntrustedHandler::MakeTransformFromOffsetAndScale() const {
   auto transform = std::make_unique<gfx::Transform>();
+  float device_pixel_ratio = 1.0f;
+  if (native_window_) {
+    const auto maybe_device_pixel_ratio =
+        display::Screen::GetScreen()->GetPreferredScaleFactorForWindow(
+            native_window_);
+    device_pixel_ratio = maybe_device_pixel_ratio.value_or(device_pixel_ratio);
+  }
+  transform->Scale(device_pixel_ratio);
+  transform->Scale(scale_factor_);
   // `viewport_box_.origin()` represents the offset from which the viewport
   // starts, based on the origin of PDF content; e.g. if it's (-100, -10), it
   // indicates that PDF content starts at (100, 10) from the viewport's origin.
-  const float device_pixel_ratio = display::Screen::GetScreen()
-                                       ->GetDisplayNearestView(native_window_)
-                                       .device_scale_factor();
-  transform->Scale(device_pixel_ratio);
-  transform->Scale(scale_factor_);
   transform->Translate(-viewport_box_.origin().x(),
                        -viewport_box_.origin().y());
   return transform;
