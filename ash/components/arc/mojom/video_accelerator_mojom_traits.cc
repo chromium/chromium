@@ -290,7 +290,6 @@ EnumTraits<arc::mojom::DecoderStatus, media::DecoderStatus>::ToMojom(
     case media::DecoderStatus::Codes::kFailedToCreateDecoder:
       return arc::mojom::DecoderStatus::CREATION_FAILED;
     case media::DecoderStatus::Codes::kInvalidArgument:
-    // TODO(b/321171964): Add kUnsupportedConfig properly.
     case media::DecoderStatus::Codes::kUnsupportedConfig:
       return arc::mojom::DecoderStatus::INVALID_ARGUMENT;
     default:
