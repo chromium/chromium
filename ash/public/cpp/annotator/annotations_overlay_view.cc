@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/capture_mode/recording_overlay_view.h"
+#include "ash/public/cpp/annotator/annotations_overlay_view.h"
 
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
-RecordingOverlayView::RecordingOverlayView() = default;
+AnnotationsOverlayView::AnnotationsOverlayView() = default;
 
-RecordingOverlayView::~RecordingOverlayView() = default;
+AnnotationsOverlayView::~AnnotationsOverlayView() = default;
 
-BEGIN_METADATA(RecordingOverlayView)
+BEGIN_METADATA(AnnotationsOverlayView)
 END_METADATA
 
 }  // namespace ash

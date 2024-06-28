@@ -5,10 +5,13 @@
 #ifndef ASH_WEBUI_ANNOTATOR_PUBLIC_CPP_ANNOTATOR_CLIENT_H_
 #define ASH_WEBUI_ANNOTATOR_PUBLIC_CPP_ANNOTATOR_CLIENT_H_
 
+#include <memory>
+
 namespace ash {
 
 class UntrustedAnnotatorPageHandlerImpl;
 struct AnnotatorTool;
+class AnnotationsOverlayView;
 
 // Defines interface to access Browser side functionalities for the
 // Annotator tool.
@@ -34,6 +37,12 @@ class AnnotatorClient {
 
   // Clears the contents of the annotator canvas.
   virtual void Clear() = 0;
+
+  // Creates and returns the view that will be used as the contents view of the
+  // overlay widget, which is added as a child of the surface on which the
+  // annotations are triggered to host annotations.
+  virtual std::unique_ptr<AnnotationsOverlayView> CreateAnnotationsOverlayView()
+      const = 0;
 
  protected:
   AnnotatorClient();

@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_ANNOTATOR_TEST_MOCK_ANNOTATOR_CLIENT_H_
 #define ASH_WEBUI_ANNOTATOR_TEST_MOCK_ANNOTATOR_CLIENT_H_
 
+#include "ash/public/cpp/annotator/annotations_overlay_view.h"
 #include "ash/webui/annotator/public/cpp/annotator_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -24,6 +25,8 @@ class MockAnnotatorClient : public AnnotatorClient {
                void(UntrustedAnnotatorPageHandlerImpl*));
   MOCK_METHOD1(SetTool, void(const AnnotatorTool&));
   MOCK_METHOD0(Clear, void());
+  std::unique_ptr<AnnotationsOverlayView> CreateAnnotationsOverlayView()
+      const override;
 };
 
 }  // namespace ash

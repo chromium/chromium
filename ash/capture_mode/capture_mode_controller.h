@@ -277,10 +277,6 @@ class ASH_EXPORT CaptureModeController
   // session.
   void ToggleRecordingOverlayEnabled();
 
-  // Returns a new instance of the concrete view that will be used as the
-  // content view of the recording overlay widget.
-  std::unique_ptr<RecordingOverlayView> CreateRecordingOverlayView();
-
   // Returns true if the given `path` is the root folder of DriveFS, false
   // otherwise.
   bool IsRootDriveFsPath(const base::FilePath& path) const;

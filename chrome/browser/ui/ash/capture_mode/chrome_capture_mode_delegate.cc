@@ -29,7 +29,6 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/capture_mode/recording_overlay_view_impl.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
@@ -270,12 +269,6 @@ ChromeCaptureModeDelegate::GetPolicyCapturePath() const {
     }
   }
   return {base::FilePath(), CapturePathEnforcement::kNone};
-}
-
-std::unique_ptr<ash::RecordingOverlayView>
-ChromeCaptureModeDelegate::CreateRecordingOverlayView() const {
-  return std::make_unique<RecordingOverlayViewImpl>(
-      ProfileManager::GetActiveUserProfile());
 }
 
 void ChromeCaptureModeDelegate::ConnectToVideoSourceProvider(

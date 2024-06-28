@@ -35,6 +35,8 @@ class AnnotatorClientImpl : public ash::AnnotatorClient {
       ash::UntrustedAnnotatorPageHandlerImpl* handler) override;
   void SetTool(const ash::AnnotatorTool& tool) override;
   void Clear() override;
+  std::unique_ptr<ash::AnnotationsOverlayView> CreateAnnotationsOverlayView()
+      const override;
 
   ash::UntrustedAnnotatorPageHandlerImpl* get_annotator_handler_for_test() {
     return annotator_handler_;

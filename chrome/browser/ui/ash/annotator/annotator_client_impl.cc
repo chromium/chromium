@@ -10,6 +10,8 @@
 #include "ash/shell.h"
 #include "ash/webui/annotator/untrusted_annotator_page_handler_impl.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/annotator/annotations_overlay_view_impl.h"
 #include "ui/views/controls/webview/webview.h"
 #include "url/gurl.h"
 
@@ -50,4 +52,10 @@ void AnnotatorClientImpl::SetTool(const ash::AnnotatorTool& tool) {
 void AnnotatorClientImpl::Clear() {
   DCHECK(annotator_handler_);
   annotator_handler_->Clear();
+}
+
+std::unique_ptr<ash::AnnotationsOverlayView>
+AnnotatorClientImpl::CreateAnnotationsOverlayView() const {
+  return std::make_unique<AnnotationsOverlayViewImpl>(
+      ProfileManager::GetActiveUserProfile());
 }

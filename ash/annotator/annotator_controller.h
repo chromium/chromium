@@ -5,6 +5,7 @@
 #ifndef ASH_ANNOTATOR_ANNOTATOR_CONTROLLER_H_
 #define ASH_ANNOTATOR_ANNOTATOR_CONTROLLER_H_
 
+#include <memory>
 #include <optional>
 
 #include "ash/annotator/annotator_metrics.h"
@@ -24,6 +25,7 @@ namespace ash {
 
 struct AnnotatorTool;
 class AnnotatorClient;
+class AnnotationsOverlayView;
 
 // The controller in charge of annotator UI.
 class ASH_EXPORT AnnotatorController : public AnnotatorControllerBase {
@@ -60,6 +62,10 @@ class ASH_EXPORT AnnotatorController : public AnnotatorControllerBase {
 
   // Updates the tray based on annotator availability.
   void UpdateTrayEnabledState();
+
+  // Returns a new instance of the concrete view that will be used as the
+  // content view of the annotations overlay widget.
+  std::unique_ptr<AnnotationsOverlayView> CreateAnnotationsOverlayView() const;
 
   void set_canvas_initialized_callback_for_test(base::OnceClosure callback) {
     on_canvas_initialized_callback_for_test_ = std::move(callback);

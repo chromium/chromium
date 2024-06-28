@@ -286,4 +286,9 @@ TEST_F(AnnotatorControllerTest, ToggleAnnotationTray) {
   EXPECT_TRUE(annotator_controller()->is_annotator_enabled());
 }
 
+TEST_F(AnnotatorControllerTest, CreateAnnotationsOverlayView) {
+  auto overlay = annotator_controller()->CreateAnnotationsOverlayView();
+  EXPECT_TRUE(overlay.get());
+}
+
 }  // namespace ash

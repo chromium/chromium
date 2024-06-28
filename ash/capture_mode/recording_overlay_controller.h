@@ -18,7 +18,7 @@ class Window;
 
 namespace ash {
 
-class RecordingOverlayView;
+class AnnotationsOverlayView;
 
 // Constructs and owns the widget that will be used as an overlay on top of the
 // recorded surface, to host contents, such as the Projector mode's annotations,
@@ -58,7 +58,7 @@ class ASH_EXPORT RecordingOverlayController {
 
   // The overlay widget and its contents view.
   views::UniqueWidgetPtr overlay_widget_ = std::make_unique<views::Widget>();
-  raw_ptr<RecordingOverlayView> recording_overlay_view_ = nullptr;
+  raw_ptr<AnnotationsOverlayView> annotations_overlay_view_ = nullptr;
 
   // Whether the overlay is currently enabled and showing on top of the recorded
   // surface.

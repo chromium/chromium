@@ -8,6 +8,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/projector/projector_annotation_tray.h"
 #include "ash/projector/projector_metrics.h"
+#include "ash/public/cpp/annotator/annotations_overlay_view.h"
 #include "ash/public/cpp/annotator/annotator_tool.h"
 #include "ash/root_window_controller.h"
 #include "ash/system/status_area_widget.h"
@@ -172,6 +173,11 @@ void AnnotatorController::UpdateTrayEnabledState() {
           GetAnnotationTrayForRoot(current_root_)) {
     projector_annotation_tray->SetTrayEnabled(GetAnnotatorAvailability());
   }
+}
+
+std::unique_ptr<AnnotationsOverlayView>
+AnnotatorController::CreateAnnotationsOverlayView() const {
+  return client_->CreateAnnotationsOverlayView();
 }
 
 }  // namespace ash

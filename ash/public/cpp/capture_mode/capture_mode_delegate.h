@@ -5,8 +5,6 @@
 #ifndef ASH_PUBLIC_CPP_CAPTURE_MODE_CAPTURE_MODE_DELEGATE_H_
 #define ASH_PUBLIC_CPP_CAPTURE_MODE_CAPTURE_MODE_DELEGATE_H_
 
-#include <memory>
-
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -37,8 +35,6 @@ class VideoSourceProvider;
 }  // namespace video_capture::mojom
 
 namespace ash {
-
-class RecordingOverlayView;
 
 // Defines the type of the callback that will be invoked when the DLP (Data Leak
 // Prevention) manager is checked for any restricted content related to screen
@@ -169,13 +165,6 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
 
   // Returns the path to save files if policy set by admin.
   virtual PolicyCapturePath GetPolicyCapturePath() const = 0;
-
-  // Creates and returns the view that will be used as the contents view of the
-  // overlay widget, which is added as a child of the recorded surface to host
-  // contents rendered in a web view that are meant to be part of the recording
-  // such as annotations.
-  virtual std::unique_ptr<RecordingOverlayView> CreateRecordingOverlayView()
-      const = 0;
 
   // Connects the given `receiver` to the VideoSourceProvider implementation in
   // the video capture service.

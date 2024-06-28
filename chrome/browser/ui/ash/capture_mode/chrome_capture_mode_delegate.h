@@ -67,8 +67,6 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   base::FilePath GetLinuxFilesPath() const override;
   base::FilePath GetOneDriveMountPointPath() const override;
   PolicyCapturePath GetPolicyCapturePath() const override;
-  std::unique_ptr<ash::RecordingOverlayView> CreateRecordingOverlayView()
-      const override;
   void ConnectToVideoSourceProvider(
       mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider> receiver)
       override;

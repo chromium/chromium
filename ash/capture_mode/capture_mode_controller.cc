@@ -21,7 +21,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
-#include "ash/public/cpp/capture_mode/recording_overlay_view.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -888,11 +887,6 @@ void CaptureModeController::ToggleRecordingOverlayEnabled() {
             ->ShouldCreateRecordingOverlayController());
 
   video_recording_watcher_->ToggleRecordingOverlayEnabled();
-}
-
-std::unique_ptr<RecordingOverlayView>
-CaptureModeController::CreateRecordingOverlayView() {
-  return delegate_->CreateRecordingOverlayView();
 }
 
 bool CaptureModeController::IsRootDriveFsPath(

@@ -4,13 +4,15 @@
 
 #include "ash/capture_mode/recording_overlay_controller.h"
 
+#include "ash/annotator/annotator_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/stop_recording_button_tray.h"
 #include "ash/projector/projector_annotation_tray.h"
-#include "ash/public/cpp/capture_mode/recording_overlay_view.h"
+#include "ash/public/cpp/annotator/annotations_overlay_view.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
@@ -184,8 +186,8 @@ RecordingOverlayController::RecordingOverlayController(
   params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.accept_events = false;
   overlay_widget_->Init(std::move(params));
-  recording_overlay_view_ = overlay_widget_->SetContentsView(
-      CaptureModeController::Get()->CreateRecordingOverlayView());
+  annotations_overlay_view_ = overlay_widget_->SetContentsView(
+      Shell::Get()->annotator_controller()->CreateAnnotationsOverlayView());
   auto* overlay_window = overlay_widget_->GetNativeWindow();
   overlay_window->SetEventTargeter(
       std::make_unique<OverlayTargeter>(overlay_window));

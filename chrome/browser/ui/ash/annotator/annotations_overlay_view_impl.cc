@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/capture_mode/recording_overlay_view_impl.h"
+#include "chrome/browser/ui/ash/annotator/annotations_overlay_view_impl.h"
 
 #include <memory>
 
@@ -16,7 +16,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 
-RecordingOverlayViewImpl::RecordingOverlayViewImpl(Profile* profile)
+AnnotationsOverlayViewImpl::AnnotationsOverlayViewImpl(Profile* profile)
     : web_view_(AddChildView(std::make_unique<views::WebView>(profile))) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -30,15 +30,15 @@ RecordingOverlayViewImpl::RecordingOverlayViewImpl(Profile* profile)
   // to avoid stalling the initialization of recording, we will do this
   // asynchronously.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&RecordingOverlayViewImpl::InitializeAnnotator,
+    FROM_HERE, base::BindOnce(&AnnotationsOverlayViewImpl::InitializeAnnotator,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
-RecordingOverlayViewImpl::~RecordingOverlayViewImpl() = default;
+AnnotationsOverlayViewImpl::~AnnotationsOverlayViewImpl() = default;
 
-void RecordingOverlayViewImpl::InitializeAnnotator() {
+void AnnotationsOverlayViewImpl::InitializeAnnotator() {
   AnnotatorClientImpl::InitForProjectorAnnotator(web_view_);
 }
 
-BEGIN_METADATA(RecordingOverlayViewImpl)
+BEGIN_METADATA(AnnotationsOverlayViewImpl)
 END_METADATA
