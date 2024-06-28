@@ -151,20 +151,6 @@ void RunOnOsLoginCommand::SetRunOnOsLoginMode() {
 void RunOnOsLoginCommand::SyncRunOnOsLoginMode() {
   login_mode_ = lock_->registrar().GetAppRunOnOsLoginMode(app_id_).value;
 
-  // This is temporary solution for preinstalled apps getting fully installed.
-  // Do not run the below 'synchronize' code at all if the expected state ==
-  // the desired state.
-  // TODO(dmurph): Remove this after 'locally installed without os
-  // integration' is implemented for preinstalled apps.
-  // https://crbug.com/1480068
-  std::optional<RunOnOsLoginMode> os_integration_state =
-      lock_->registrar().GetExpectedRunOnOsLoginOsIntegrationState(app_id_);
-  if (os_integration_state && login_mode_.value() == *os_integration_state) {
-    RecordCompletionState(
-        RunOnOsLoginCommandCompletionState::kRunOnOsLoginModeAlreadyMatched);
-    OnOsIntegrationSynchronized();
-    return;
-  }
 
   lock_->os_integration_manager().Synchronize(
       app_id_, base::BindOnce(&RunOnOsLoginCommand::OnOsIntegrationSynchronized,
@@ -175,25 +161,6 @@ void RunOnOsLoginCommand::OnOsIntegrationSynchronized() {
   if (!completion_state_set_) {
     RecordCompletionState(
         RunOnOsLoginCommandCompletionState::kSuccessfulCompletion);
-
-    // This is needed for the temporary fix so that the sub-manager version will
-    // also save to the old expected state storage.
-    // TODO(dmurph): Remove this after 'locally installed without os
-    // integration' is implemented for preinstalled apps.
-    // https://crbug.com/1480068.
-    // Note: minimized isn't supported yet, and gets turned into kWindowed.
-    ScopedRegistryUpdate save_state_to_old_expected_value =
-        lock_->sync_bridge().BeginUpdate();
-    WebApp* app_to_update =
-        save_state_to_old_expected_value->UpdateApp(app_id_);
-    // TODO(crbug.com/343247630): Investigate why this app no longer exists and
-    // causes a crash. See crbug.com/342097315 for more information.
-    if (app_to_update) {
-      app_to_update->SetRunOnOsLoginOsIntegrationState(
-          login_mode_.value() != RunOnOsLoginMode::kNotRun
-              ? RunOnOsLoginMode::kWindowed
-              : RunOnOsLoginMode::kNotRun);
-    }
   }
 
   CompleteAndSelfDestruct(CommandResult::kSuccess);

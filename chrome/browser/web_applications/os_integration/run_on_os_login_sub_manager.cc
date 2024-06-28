@@ -25,8 +25,6 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -171,15 +169,6 @@ void RunOnOsLoginSubManager::StartUnregistration(
     return;
   }
 
-  // TODO(crbug.com/40250591): Remove once sub managers have been implemented
-  // and
-  //  OsIntegrationManager::Synchronize() is running fine.
-  if (!desired_state.has_run_on_os_login()) {
-    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
-    update->UpdateApp(app_id)->SetRunOnOsLoginOsIntegrationState(
-        RunOnOsLoginMode::kNotRun);
-  }
-
   ResultCallback continue_to_registration =
       base::BindOnce([](Result result) {
         base::UmaHistogramBoolean("WebApp.RunOnOsLogin.Unregistration.Result",
@@ -224,14 +213,6 @@ void RunOnOsLoginSubManager::OnShortcutInfoCreatedStartRegistration(
     base::OnceClosure execute_done,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
   DCHECK(ShouldTriggerRunOnOsLoginRegistration(desired_state));
-  // TODO(crbug.com/40250591): Remove once sub managers have been implemented
-  // and
-  //  OsIntegrationManager::Synchronize() is running fine.
-  {
-    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
-    update->UpdateApp(app_id)->SetRunOnOsLoginOsIntegrationState(
-        RunOnOsLoginMode::kWindowed);
-  }
 
   ResultCallback record_metric_and_complete =
       base::BindOnce([](Result result) {

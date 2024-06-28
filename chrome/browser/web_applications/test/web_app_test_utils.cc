@@ -741,7 +741,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
     app->SetLaunchQueryParams(base::NumberToString(random.next_uint()));
 
   app->SetRunOnOsLoginMode(random.next_enum<RunOnOsLoginMode>());
-  app->SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode::kNotRun);
 
   const SquareSizePx size = 256;
   const int num_icons = random.next_uint(10);

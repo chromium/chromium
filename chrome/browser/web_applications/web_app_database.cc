@@ -575,11 +575,6 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
 
   local_data->set_user_run_on_os_login_mode(
       ToWebAppProtoRunOnOsLoginMode(web_app.run_on_os_login_mode()));
-  if (web_app.run_on_os_login_os_integration_state()) {
-    local_data->set_run_on_os_login_os_integration_state(
-        ToWebAppProtoRunOnOsLoginMode(
-            *web_app.run_on_os_login_os_integration_state()));
-  }
   local_data->set_is_from_sync_and_pending_installation(
       web_app.is_from_sync_and_pending_installation());
   local_data->set_is_uninstalling(web_app.is_uninstalling());
@@ -1495,11 +1490,6 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   if (local_data.has_user_run_on_os_login_mode()) {
     web_app->SetRunOnOsLoginMode(
         ToRunOnOsLoginMode(local_data.user_run_on_os_login_mode()));
-  }
-
-  if (local_data.has_run_on_os_login_os_integration_state()) {
-    web_app->SetRunOnOsLoginOsIntegrationState(
-        ToRunOnOsLoginMode(local_data.run_on_os_login_os_integration_state()));
   }
 
   if (local_data.has_capture_links())

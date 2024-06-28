@@ -99,13 +99,10 @@ bool IsSyncDataEqualIfApplied(const WebApp& expected_app,
   WebApp expected_app_copy = WebApp(expected_app);
   expected_app_copy.SetCurrentOsIntegrationStates(
       proto::WebAppOsIntegrationState());
-  expected_app_copy.SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode());
 
   WebApp app_applied_sync_data_copy = WebApp(*app_to_apply_sync_data);
   app_applied_sync_data_copy.SetCurrentOsIntegrationStates(
       proto::WebAppOsIntegrationState());
-  app_applied_sync_data_copy.SetRunOnOsLoginOsIntegrationState(
-      RunOnOsLoginMode());
 
   return expected_app_copy == app_applied_sync_data_copy;
 }

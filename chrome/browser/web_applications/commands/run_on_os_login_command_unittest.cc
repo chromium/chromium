@@ -14,6 +14,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
@@ -26,8 +27,6 @@
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/common/web_app_id.h"
 
@@ -74,17 +73,9 @@ class RunOnOsLoginCommandTest : public WebAppTest {
  protected:
   WebAppRegistrar& registrar() { return provider()->registrar_unsafe(); }
 
-  WebAppSyncBridge& sync_bridge() { return provider()->sync_bridge_unsafe(); }
-
   FakeOsIntegrationManager& os_integration_manager() {
     return static_cast<FakeOsIntegrationManager&>(
         provider()->os_integration_manager());
-  }
-
-  void RegisterApp(std::unique_ptr<WebApp> web_app) {
-    web_app->SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode::kNotRun);
-    ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
-    update->CreateApp(std::move(web_app));
   }
 
   WebAppProvider* provider() { return provider_; }
@@ -162,9 +153,8 @@ TEST_F(RunOnOsLoginCommandTest, SetRunOnOsLoginModes) {
 
   EXPECT_EQ(RunOnOsLoginMode::kNotRun,
             registrar().GetAppRunOnOsLoginMode(app_id).value);
-  EXPECT_EQ(
-      RunOnOsLoginMode::kNotRun,
-      registrar().GetExpectedRunOnOsLoginOsIntegrationState(app_id).value());
+
+  EXPECT_EQ(proto::RunOnOsLoginMode::NOT_RUN, GetRunOnOsLoginMode(app_id));
   tester.ExpectBucketCount(
       "WebApp.RunOnOsLogin.CommandCompletionState",
       RunOnOsLoginCommandCompletionState::kSuccessfulCompletion, 0);
@@ -178,9 +168,7 @@ TEST_F(RunOnOsLoginCommandTest, SetRunOnOsLoginModes) {
 
   EXPECT_EQ(RunOnOsLoginMode::kWindowed,
             registrar().GetAppRunOnOsLoginMode(app_id).value);
-  EXPECT_EQ(
-      RunOnOsLoginMode::kWindowed,
-      registrar().GetExpectedRunOnOsLoginOsIntegrationState(app_id).value());
+  EXPECT_EQ(proto::RunOnOsLoginMode::WINDOWED, GetRunOnOsLoginMode(app_id));
 
   InitSetRunOnOsLoginCommandAndAwaitCompletion(app_id,
                                                RunOnOsLoginMode::kMinimized);
@@ -191,9 +179,7 @@ TEST_F(RunOnOsLoginCommandTest, SetRunOnOsLoginModes) {
 
   EXPECT_EQ(RunOnOsLoginMode::kMinimized,
             registrar().GetAppRunOnOsLoginMode(app_id).value);
-  EXPECT_EQ(
-      RunOnOsLoginMode::kWindowed,
-      registrar().GetExpectedRunOnOsLoginOsIntegrationState(app_id).value());
+  EXPECT_EQ(proto::RunOnOsLoginMode::MINIMIZED, GetRunOnOsLoginMode(app_id));
 }
 
 TEST_F(RunOnOsLoginCommandTest, SyncRunOnOsLoginModes) {
@@ -224,22 +210,14 @@ TEST_F(RunOnOsLoginCommandTest, SyncRunOnOsLoginModes) {
   EXPECT_EQ(RunOnOsLoginMode::kWindowed,
             registrar().GetAppRunOnOsLoginMode(app_id_allowed).value);
 
-  EXPECT_EQ(RunOnOsLoginMode::kNotRun,
-            registrar()
-                .GetExpectedRunOnOsLoginOsIntegrationState(app_id_default)
-                .value());
-  EXPECT_EQ(RunOnOsLoginMode::kWindowed,
-            registrar()
-                .GetExpectedRunOnOsLoginOsIntegrationState(app_id_default2)
-                .value());
-  EXPECT_EQ(RunOnOsLoginMode::kNotRun,
-            registrar()
-                .GetExpectedRunOnOsLoginOsIntegrationState(app_id_windowed)
-                .value());
-  EXPECT_EQ(RunOnOsLoginMode::kWindowed,
-            registrar()
-                .GetExpectedRunOnOsLoginOsIntegrationState(app_id_allowed)
-                .value());
+  EXPECT_EQ(proto::RunOnOsLoginMode::NOT_RUN,
+            GetRunOnOsLoginMode(app_id_default));
+  EXPECT_EQ(proto::RunOnOsLoginMode::WINDOWED,
+            GetRunOnOsLoginMode(app_id_default2));
+  EXPECT_EQ(proto::RunOnOsLoginMode::NOT_RUN,
+            GetRunOnOsLoginMode(app_id_windowed));
+  EXPECT_EQ(proto::RunOnOsLoginMode::WINDOWED,
+            GetRunOnOsLoginMode(app_id_allowed));
 
   const char kWebAppSettingWithDefaultConfiguration[] = R"([
     {
@@ -278,22 +256,14 @@ TEST_F(RunOnOsLoginCommandTest, SyncRunOnOsLoginModes) {
   EXPECT_EQ(RunOnOsLoginMode::kWindowed,
             registrar().GetAppRunOnOsLoginMode(app_id_allowed).value);
 
-  EXPECT_EQ(RunOnOsLoginMode::kNotRun,
-            registrar()
-                .GetExpectedRunOnOsLoginOsIntegrationState(app_id_default)
-                .value());
-  EXPECT_EQ(RunOnOsLoginMode::kNotRun,
-            registrar()
-                .GetExpectedRunOnOsLoginOsIntegrationState(app_id_default2)
-                .value());
-  EXPECT_EQ(RunOnOsLoginMode::kWindowed,
-            registrar()
-                .GetExpectedRunOnOsLoginOsIntegrationState(app_id_windowed)
-                .value());
-  EXPECT_EQ(RunOnOsLoginMode::kWindowed,
-            registrar()
-                .GetExpectedRunOnOsLoginOsIntegrationState(app_id_allowed)
-                .value());
+  EXPECT_EQ(proto::RunOnOsLoginMode::NOT_RUN,
+            GetRunOnOsLoginMode(app_id_default));
+  EXPECT_EQ(proto::RunOnOsLoginMode::NOT_RUN,
+            GetRunOnOsLoginMode(app_id_default2));
+  EXPECT_EQ(proto::RunOnOsLoginMode::WINDOWED,
+            GetRunOnOsLoginMode(app_id_windowed));
+  EXPECT_EQ(proto::RunOnOsLoginMode::WINDOWED,
+            GetRunOnOsLoginMode(app_id_allowed));
 }
 
 // Syncing on a web_app with a Run on OS Login mode of kNotRun will
@@ -301,15 +271,9 @@ TEST_F(RunOnOsLoginCommandTest, SyncRunOnOsLoginModes) {
 TEST_F(RunOnOsLoginCommandTest, SyncCommandAndUninstallOSHooks) {
   const webapps::AppId app_id =
       InstallNonLocallyInstalledApp(GURL("https://example.com/"));
-  {
-    ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
-    update->UpdateApp(app_id)->SetRunOnOsLoginOsIntegrationState(
-        RunOnOsLoginMode::kWindowed);
-  }
 
   InitSyncRunOnOsLoginCommandAndAwaitCompletion(app_id);
-  EXPECT_THAT(GetRunOnOsLoginMode(app_id),
-              testing::Eq(proto::RunOnOsLoginMode::NOT_RUN));
+  EXPECT_EQ(proto::RunOnOsLoginMode::NOT_RUN, GetRunOnOsLoginMode(app_id));
 }
 
 TEST_F(RunOnOsLoginCommandTest, AbortOnAppNotLocallyInstalled) {
@@ -392,13 +356,11 @@ TEST_F(RunOnOsLoginCommandTest, VerifySetWorksOnAppWithNoStateDefined) {
 
   InitSetRunOnOsLoginCommandAndAwaitCompletion(app_id,
                                                RunOnOsLoginMode::kNotRun);
-  EXPECT_THAT(GetRunOnOsLoginMode(app_id),
-              testing::Eq(proto::RunOnOsLoginMode::NOT_RUN));
+  EXPECT_EQ(proto::RunOnOsLoginMode::NOT_RUN, GetRunOnOsLoginMode(app_id));
 
   InitSetRunOnOsLoginCommandAndAwaitCompletion(app_id,
                                                RunOnOsLoginMode::kWindowed);
-  EXPECT_THAT(GetRunOnOsLoginMode(app_id),
-              testing::Eq(proto::RunOnOsLoginMode::WINDOWED));
+  EXPECT_EQ(proto::RunOnOsLoginMode::WINDOWED, GetRunOnOsLoginMode(app_id));
 }
 
 TEST_F(RunOnOsLoginCommandTest, VerifySyncWorksOnAppWithNoStateDefined) {
@@ -418,8 +380,7 @@ TEST_F(RunOnOsLoginCommandTest, VerifySyncWorksOnAppWithNoStateDefined) {
   policy_manager.RefreshPolicySettingsForTesting();
 
   InitSyncRunOnOsLoginCommandAndAwaitCompletion(app_id);
-  EXPECT_THAT(GetRunOnOsLoginMode(app_id),
-              testing::Eq(proto::RunOnOsLoginMode::NOT_RUN));
+  EXPECT_EQ(proto::RunOnOsLoginMode::NOT_RUN, GetRunOnOsLoginMode(app_id));
 }
 
 }  // namespace

@@ -366,11 +366,6 @@ class WebAppRegistrar {
   ValueWithPolicy<RunOnOsLoginMode> GetAppRunOnOsLoginMode(
       const webapps::AppId& app_id) const;
 
-  // Returns true iff it's expected that the app has been, **or is in
-  // the process of being**, registered with the OS.
-  std::optional<RunOnOsLoginMode> GetExpectedRunOnOsLoginOsIntegrationState(
-      const webapps::AppId& app_id) const;
-
   bool GetWindowControlsOverlayEnabled(const webapps::AppId& app_id) const;
 
   // Gets the IDs for all apps in `GetApps()`.

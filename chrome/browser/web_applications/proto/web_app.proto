@@ -183,8 +183,9 @@ message GeneratedIconFix {
 // app_id is the storage key in ModelTypeStore.
 message WebAppProto {
   reserved "handle_links", "is_in_sync_install", "is_placeholder",
-      "file_handler_os_integration_state";
-  // Synced data. It is replicated across all devices with WEB_APPS.
+      "file_handler_os_integration_state",
+      "run_on_os_login_os_integration_state";
+  // Synced data. It is replicated across , all devices with WEB_APPS.
   //
   // |sync_data.name| and |sync_data.theme_color| are read by a device to
   // generate a placeholder icon. Any device may write new values to synced
@@ -360,9 +361,6 @@ message WebAppProto {
   // uninstallation, and the uninstallation will be tried again.
   optional bool is_uninstalling = 45;
 
-  // Whether the file handling abilities of the app should be registered with
-  // the OS.
-  // OsIntegrationState file_handler_os_integration_state = 46;
   reserved 46;
 
   // Whether the app should show up in file-open intent and picking surfaces.
@@ -377,8 +375,7 @@ message WebAppProto {
   // `webapps::WebappInstallSource` encoded as an integer.
   optional uint32 latest_install_source = 50;
 
-  // Whether the app should be registered to run during OS Login time.
-  optional RunOnOsLoginMode run_on_os_login_os_integration_state = 51;
+  reserved 51;
 
   // Map of WebAppManagement enum to placeholder info and install_urls.
   // There should be only one entry per WebAppManagement source.

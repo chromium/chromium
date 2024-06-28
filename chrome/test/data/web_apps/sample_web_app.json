@@ -279,7 +279,6 @@
       "url": "https://example.com/17396056594"
    } ],
    "run_on_os_login_mode": "windowed",
-   "run_on_os_login_os_integration_state": "not run",
    "scope": "https://example.com/scope1234/",
    "scope_extensions": [ {
       "has_origin_wildcard": true,

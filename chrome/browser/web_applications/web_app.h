@@ -234,10 +234,6 @@ class WebApp {
     return run_on_os_login_mode_;
   }
 
-  std::optional<RunOnOsLoginMode> run_on_os_login_os_integration_state() const {
-    return run_on_os_login_os_integration_state_;
-  }
-
   bool window_controls_overlay_enabled() const {
     return window_controls_overlay_enabled_;
   }
@@ -505,7 +501,6 @@ class WebApp {
   void SetFirstInstallTime(const base::Time& time);
   void SetManifestUpdateTime(const base::Time& time);
   void SetRunOnOsLoginMode(RunOnOsLoginMode mode);
-  void SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode os_integration_state);
   void SetSyncProto(sync_pb::WebAppSpecifics sync_proto);
   void SetCaptureLinks(blink::mojom::CaptureLinks capture_links);
   void SetManifestUrl(const GURL& manifest_url);
@@ -622,12 +617,6 @@ class WebApp {
   base::Time first_install_time_;
   base::Time manifest_update_time_;
   RunOnOsLoginMode run_on_os_login_mode_ = RunOnOsLoginMode::kNotRun;
-  // Tracks if the app run on os login mode has been registered with the OS.
-  // This might go out of sync with actual OS integration status, as Chrome does
-  // not actively monitor OS registries.
-  // TODO(crbug.com/40250591): Remove after all OS Integration sub managers have
-  // been implemented and Synchronize() is running fine.
-  std::optional<RunOnOsLoginMode> run_on_os_login_os_integration_state_;
   sync_pb::WebAppSpecifics sync_proto_;
   blink::mojom::CaptureLinks capture_links_ =
       blink::mojom::CaptureLinks::kUndefined;

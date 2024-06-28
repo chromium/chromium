@@ -509,7 +509,6 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app->first_install_time().is_null());
   EXPECT_TRUE(app->shortcuts_menu_item_infos().empty());
   EXPECT_EQ(app->run_on_os_login_mode(), RunOnOsLoginMode::kNotRun);
-  EXPECT_FALSE(app->run_on_os_login_os_integration_state().has_value());
   EXPECT_TRUE(app->manifest_url().is_empty());
   EXPECT_TRUE(app->permissions_policy().empty());
   EXPECT_FALSE(app->isolation_data().has_value());
@@ -580,7 +579,6 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app_copy->validated_scope_extensions().empty());
   EXPECT_TRUE(app_copy->shortcuts_menu_item_infos().empty());
   EXPECT_EQ(app_copy->run_on_os_login_mode(), RunOnOsLoginMode::kNotRun);
-  EXPECT_FALSE(app_copy->run_on_os_login_os_integration_state().has_value());
   EXPECT_TRUE(app_copy->manifest_url().is_empty());
   EXPECT_TRUE(app_copy->permissions_policy().empty());
   EXPECT_FALSE(app_copy->tab_strip());

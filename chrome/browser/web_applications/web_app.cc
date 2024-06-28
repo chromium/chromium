@@ -618,10 +618,6 @@ void WebApp::SetRunOnOsLoginMode(RunOnOsLoginMode mode) {
   run_on_os_login_mode_ = mode;
 }
 
-void WebApp::SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode state) {
-  run_on_os_login_os_integration_state_ = state;
-}
-
 void WebApp::SetSyncProto(sync_pb::WebAppSpecifics sync_proto) {
   // Populate sync_proto's start_url from this WebApp if missing.
   if (!start_url().is_empty()) {
@@ -1000,7 +996,6 @@ bool WebApp::operator==(const WebApp& other) const {
         app.first_install_time_,
         app.manifest_update_time_,
         app.run_on_os_login_mode_,
-        app.run_on_os_login_os_integration_state_,
         app.sync_proto_,
         app.capture_links_,
         app.manifest_url_,
@@ -1183,8 +1178,6 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("protocol_handlers", ConvertDebugValueList(protocol_handlers_));
 
   root.Set("run_on_os_login_mode", base::ToString(run_on_os_login_mode_));
-  root.Set("run_on_os_login_os_integration_state",
-           OptionalToStringValue(run_on_os_login_os_integration_state_));
 
   root.Set("scope", base::ToString(scope_));
 

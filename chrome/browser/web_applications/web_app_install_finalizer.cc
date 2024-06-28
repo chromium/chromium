@@ -323,10 +323,6 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
         proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
   }
 
-  if (!web_app->run_on_os_login_os_integration_state()) {
-    web_app->SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode::kNotRun);
-  }
-
   // Set |user_display_mode| and any user-controllable fields here if this
   // install is user initiated or it's a new app.
   if (ShouldInstallOverwriteUserDisplayMode(options.install_surface) ||

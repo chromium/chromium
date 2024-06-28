@@ -49,7 +49,6 @@
    "parent_app_id": null,
    "protocol_handlers": [  ],
    "run_on_os_login_mode": "not run",
-   "run_on_os_login_os_integration_state": null,
    "scope": "",
    "scope_extensions": [  ],
    "scope_extensions_validated": [  ],

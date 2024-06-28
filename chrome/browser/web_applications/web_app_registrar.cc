@@ -20,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -1595,14 +1596,6 @@ ValueWithPolicy<RunOnOsLoginMode> WebAppRegistrar::GetAppRunOnOsLoginMode(
   }
 }
 
-std::optional<RunOnOsLoginMode>
-WebAppRegistrar::GetExpectedRunOnOsLoginOsIntegrationState(
-    const webapps::AppId& app_id) const {
-  auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->run_on_os_login_os_integration_state()
-                 : std::nullopt;
-}
-
 bool WebAppRegistrar::GetWindowControlsOverlayEnabled(
     const webapps::AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
@@ -1782,9 +1775,7 @@ bool IsRegistryEqual(const Registry& registry,
     WebApp web_app2 = WebApp(*registry2.at(web_app.app_id()));
     if (exclude_current_os_integration) {
       web_app.SetCurrentOsIntegrationStates(proto::WebAppOsIntegrationState());
-      web_app.SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode());
       web_app2.SetCurrentOsIntegrationStates(proto::WebAppOsIntegrationState());
-      web_app2.SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode());
     }
     if (web_app != web_app2) {
       LOG(ERROR) << "Web apps are not equal:\n" << web_app << "\n" << web_app2;

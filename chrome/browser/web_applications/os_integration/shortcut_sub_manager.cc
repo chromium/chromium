@@ -267,6 +267,7 @@ void ShortcutSubManager::CreateShortcut(
 
   base::FilePath shortcut_data_dir =
       internals::GetShortcutDataDir(*shortcut_info);
+
   internals::ScheduleCreatePlatformShortcuts(
       shortcut_data_dir, locations, options.reason, std::move(shortcut_info),
       base::BindOnce([](bool success) {
