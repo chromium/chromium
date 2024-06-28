@@ -565,7 +565,8 @@ def CreateBuildCommand(output_directory):
     ninja_cmd = [f'autoninja{suffix}']
     siso_cmd = list(ninja_cmd)
 
-  if output_directory and os.path.relpath(output_directory) != '.':
+  if output_directory and os.path.abspath(output_directory) != os.path.abspath(
+      os.curdir):
     ninja_cmd += ['-C', output_directory]
     siso_cmd += ['-C', output_directory]
   siso_deps = os.path.exists(os.path.join(output_directory, '.siso_deps'))
