@@ -74,7 +74,7 @@ class HtmlBasedUsernameDetectorTest : public content::RenderViewTest {
   FieldRendererId GetRendererIdFromWebElementId(const WebString& id) {
     const WebLocalFrame* frame = GetMainFrame();
     const WebElement& element = frame->GetDocument().GetElementById(id);
-    EXPECT_FALSE(element.IsNull());
+    EXPECT_TRUE(element);
     return form_util::GetFieldRendererId(element.To<blink::WebInputElement>());
   }
 

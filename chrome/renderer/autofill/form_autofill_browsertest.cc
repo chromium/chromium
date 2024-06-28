@@ -273,7 +273,7 @@ bool ClickElement(const WebDocument& document,
       return true;
   }
 
-  if (element.IsNull()) {
+  if (!element) {
     DVLOG(1) << "Could not find "
              << element_descriptor.descriptor
              << " by "
@@ -2732,7 +2732,7 @@ TEST_F(FormAutofillTest, WebFormElementConsiderNonControlLabelableElements) {
 
   WebFormElement web_form =
       frame->GetDocument().GetElementById("form").To<WebFormElement>();
-  ASSERT_FALSE(web_form.IsNull());
+  ASSERT_TRUE(web_form);
 
   FormData form = *ExtractFormData(web_form.GetDocument(), web_form,
                                    *base::MakeRefCounted<FieldDataManager>(),
@@ -2792,7 +2792,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_AutocompleteOff_OnForm) {
 
   WebFormElement web_form =
       frame->GetDocument().GetElementById("form").To<WebFormElement>();
-  ASSERT_FALSE(web_form.IsNull());
+  ASSERT_TRUE(web_form);
 
   FormData form = *ExtractFormData(web_form.GetDocument(), web_form,
                                    *base::MakeRefCounted<FieldDataManager>(),
@@ -2820,7 +2820,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_AutocompleteOff_OnField) {
 
   WebFormElement web_form =
       frame->GetDocument().GetElementById("form").To<WebFormElement>();
-  ASSERT_FALSE(web_form.IsNull());
+  ASSERT_TRUE(web_form);
 
   FormData form = *ExtractFormData(web_form.GetDocument(), web_form,
                                    *base::MakeRefCounted<FieldDataManager>(),
@@ -2845,7 +2845,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_AutocompleteOff_OneTimeCode) {
 
   WebFormElement web_form =
       frame->GetDocument().GetElementById("form").To<WebFormElement>();
-  ASSERT_FALSE(web_form.IsNull());
+  ASSERT_TRUE(web_form);
 
   FormData form = *ExtractFormData(web_form.GetDocument(), web_form,
                                    *base::MakeRefCounted<FieldDataManager>(),
@@ -2869,7 +2869,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_CssClasses) {
 
   WebFormElement web_form =
       frame->GetDocument().GetElementById("form").To<WebFormElement>();
-  ASSERT_FALSE(web_form.IsNull());
+  ASSERT_TRUE(web_form);
 
   FormData form = *ExtractFormData(web_form.GetDocument(), web_form,
                                    *base::MakeRefCounted<FieldDataManager>(),
@@ -2896,7 +2896,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_IdAttributes) {
 
   WebFormElement web_form =
       frame->GetDocument().GetElementById("form").To<WebFormElement>();
-  ASSERT_FALSE(web_form.IsNull());
+  ASSERT_TRUE(web_form);
 
   FormData form = *ExtractFormData(web_form.GetDocument(), web_form,
                                    *base::MakeRefCounted<FieldDataManager>(),
@@ -5188,11 +5188,11 @@ TEST_F(FormAutofillTest, AriaLabelAndDescription) {
 
   WebFormElement web_form =
       frame->GetDocument().GetElementById("form").To<WebFormElement>();
-  ASSERT_FALSE(web_form.IsNull());
+  ASSERT_TRUE(web_form);
 
   WebFormControlElement control_element =
       frame->GetDocument().GetElementById("field0").To<WebFormControlElement>();
-  ASSERT_FALSE(control_element.IsNull());
+  ASSERT_TRUE(control_element);
   FormData form =
       FindForm(control_element, *base::MakeRefCounted<FieldDataManager>(),
                {ExtractOption::kValue});
@@ -5228,11 +5228,11 @@ TEST_F(FormAutofillTest, AriaLabelAndDescription2) {
 
   WebFormElement web_form =
       frame->GetDocument().GetElementById("form").To<WebFormElement>();
-  ASSERT_FALSE(web_form.IsNull());
+  ASSERT_TRUE(web_form);
 
   WebFormControlElement control_element =
       frame->GetDocument().GetElementById("field0").To<WebFormControlElement>();
-  ASSERT_FALSE(control_element.IsNull());
+  ASSERT_TRUE(control_element);
   FormData form =
       FindForm(control_element, *base::MakeRefCounted<FieldDataManager>(),
                {ExtractOption::kValue});

@@ -11,7 +11,7 @@ namespace autofill {
 void SetAutofillSuggestionAvailability(
     const blink::WebInputElement& element,
     mojom::AutofillSuggestionAvailability suggestion_availability) {
-  if (!element.IsNull()) {
+  if (element) {
     auto to_blink_enum = [](mojom::AutofillSuggestionAvailability
                                 suggestion_availability) {
       switch (suggestion_availability) {

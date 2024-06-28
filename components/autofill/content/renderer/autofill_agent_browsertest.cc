@@ -680,7 +680,7 @@ TEST_F(AutofillAgentTest, PreviewThenClear) {
   ASSERT_EQ(form.fields().size(), 1u);
   blink::WebFormControlElement field =
       GetWebElementById("text_id").DynamicTo<blink::WebFormControlElement>();
-  ASSERT_FALSE(field.IsNull());
+  ASSERT_TRUE(field);
 
   std::u16string prior_value = form.fields()[0].value();
   test_api(form).field(0).set_value(form.fields()[0].value() + u"AUTOFILLED");
@@ -829,7 +829,7 @@ TEST_P(AutofillAgentSubmissionTest,
 
   blink::WebFormControlElement field =
       GetWebElementById("text_id").DynamicTo<blink::WebFormControlElement>();
-  ASSERT_FALSE(field.IsNull());
+  ASSERT_TRUE(field);
 
   FormFieldData form_field;
   form_util::WebFormControlElementToFormFieldForTesting(
@@ -869,7 +869,7 @@ TEST_P(AutofillAgentSubmissionTest,
       GetWebElementById("form_id").DynamicTo<blink::WebFormElement>();
   ASSERT_EQ(1u, form_element.GetFormControlElements().size());
   blink::WebFormControlElement field = form_element.GetFormControlElements()[0];
-  ASSERT_FALSE(field.IsNull());
+  ASSERT_TRUE(field);
   ASSERT_EQ("text_id", field.GetIdAttribute().Ascii());
 
   FormData form =
@@ -1093,7 +1093,7 @@ TEST_P(AutofillAgentSubmissionTest,
 
   blink::WebFormElement form_element =
       GetWebElementById("form").DynamicTo<blink::WebFormElement>();
-  ASSERT_FALSE(form_element.IsNull());
+  ASSERT_TRUE(form_element);
   std::optional<FormData> form =
       form_util::ExtractFormData(GetMainFrame()->GetDocument(), form_element,
                                  autofill_agent().field_data_manager(),
@@ -1208,7 +1208,7 @@ class AutofillAgentTestFocus : public AutofillAgentTest {
 
   void FocusedElementChanged(std::string_view id) {
     blink::WebElement e = GetWebElementById(id);
-    ASSERT_FALSE(e.IsNull()) << "Field " << id << " doesn't exist";
+    ASSERT_TRUE(e) << "Field " << id << " doesn't exist";
     FocusedElementChanged(e);
   }
 

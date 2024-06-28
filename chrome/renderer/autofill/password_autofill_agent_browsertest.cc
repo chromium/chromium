@@ -572,18 +572,18 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
 
   void UpdateRendererIDsInFillData() {
     fill_data_.username_element_renderer_id =
-        username_element_.IsNull()
-            ? autofill::FieldRendererId()
-            : autofill::form_util::GetFieldRendererId(username_element_);
+        username_element_
+            ? autofill::form_util::GetFieldRendererId(username_element_)
+            : autofill::FieldRendererId();
 
     fill_data_.password_element_renderer_id =
-        password_element_.IsNull()
-            ? autofill::FieldRendererId()
-            : autofill::form_util::GetFieldRendererId(password_element_);
+        password_element_
+            ? autofill::form_util::GetFieldRendererId(password_element_)
+            : autofill::FieldRendererId();
 
-    ASSERT_TRUE(!username_element_.IsNull() || !password_element_.IsNull());
-    WebFormElement form = password_element_.IsNull() ? username_element_.Form()
-                                                     : password_element_.Form();
+    ASSERT_TRUE(username_element_ || password_element_);
+    WebFormElement form =
+        password_element_ ? password_element_.Form() : username_element_.Form();
     fill_data_.form_renderer_id = form_util::GetFormRendererId(form);
   }
 
@@ -609,23 +609,23 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     WebDocument document = GetMainFrame()->GetDocument();
     WebElement element =
         document.GetElementById(WebString::FromUTF8(id.c_str()));
-    EXPECT_FALSE(element.IsNull());
+    EXPECT_TRUE(element);
     return element;
   }
 
   WebInputElement GetInputElementByID(const std::string& id) {
     WebInputElement input_element = GetElementByID(id).To<WebInputElement>();
-    EXPECT_FALSE(input_element.IsNull());
+    EXPECT_TRUE(input_element);
     return input_element;
   }
 
   void ClearUsernameAndPasswordFieldValues() {
-    if (!username_element_.IsNull()) {
+    if (username_element_) {
       username_element_.SetValue(WebString());
       username_element_.SetSuggestedValue(WebString());
       username_element_.SetAutofillState(WebAutofillState::kNotFilled);
     }
-    if (!password_element_.IsNull()) {
+    if (password_element_) {
       password_element_.SetValue(WebString());
       password_element_.SetSuggestedValue(WebString());
       password_element_.SetAutofillState(WebAutofillState::kNotFilled);
@@ -740,7 +740,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
                                        bool password_autofilled,
                                        bool check_suggested_username,
                                        bool check_suggested_password) {
-    if (!username_element.IsNull()) {
+    if (username_element) {
       EXPECT_EQ(username, check_suggested_username
                               ? username_element.SuggestedValue().Utf8()
                               : username_element.Value().Utf8())
@@ -749,7 +749,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
                                          username_element.IsAutofilled());
     }
 
-    if (!password_element.IsNull()) {
+    if (password_element) {
       EXPECT_EQ(password, check_suggested_password
                               ? password_element.SuggestedValue().Utf8()
                               : password_element.Value().Utf8())
@@ -974,14 +974,14 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
                             .ShadowRoot()
                             .FirstChild()
                             .To<WebInputElement>();
-    if (username_element_.IsNull()) {
+    if (!username_element_) {
       return ::testing::AssertionFailure() << "Username element is null.";
     }
     password_element_ = GetElementByID("pw_host")
                             .ShadowRoot()
                             .FirstChild()
                             .To<WebInputElement>();
-    if (password_element_.IsNull()) {
+    if (!password_element_) {
       return ::testing::AssertionFailure() << "Password element is null.";
     }
     return ::testing::AssertionSuccess();
@@ -1151,7 +1151,7 @@ TEST_F(PasswordAutofillAgentTest, NoFillingOnSignupForm_NoMetrics) {
   WebDocument document = GetMainFrame()->GetDocument();
   WebElement element =
       document.GetElementById(WebString::FromUTF8("random_info"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   username_element_ = element.To<WebInputElement>();
 
   fill_data_.username_element_renderer_id = autofill::FieldRendererId();
@@ -2295,7 +2295,7 @@ TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_FieldsInBetween) {
   WebDocument document = GetMainFrame()->GetDocument();
   WebElement element =
       document.GetElementById(WebString::FromUTF16(u"random_field"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   username_element_ = element.To<WebInputElement>();
   UpdateRendererIDsInFillData();
 
@@ -2344,7 +2344,7 @@ TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_EmptyFields) {
 TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_MoreThanTwoFields) {
   SimulateOnFillPasswordForm(fill_data_);
   WebInputElement surname_element = GetInputElementByID("random_field");
-  ASSERT_FALSE(surname_element.IsNull());
+  ASSERT_TRUE(surname_element);
   SimulateUserInputChangeForElement(&surname_element, "Smith");
 
   EXPECT_TRUE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
@@ -2444,7 +2444,7 @@ TEST_F(PasswordAutofillAgentTest,
   WebDocument document = GetMainFrame()->GetDocument();
   WebElement element =
       document.GetElementById(WebString::FromUTF8("random_info"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   username_element_ = element.To<WebInputElement>();
 
   fill_data_.username_element_renderer_id = autofill::FieldRendererId();
@@ -2860,16 +2860,16 @@ TEST_F(PasswordAutofillAgentTest,
        RememberLastNonEmptyUsernameAndPasswordOnSubmit_ScriptCleared) {
   LoadHTML(kSignupFormHTML);
   WebInputElement username_element = GetInputElementByID("random_info");
-  ASSERT_FALSE(username_element.IsNull());
+  ASSERT_TRUE(username_element);
   SimulateUserInputChangeForElement(&username_element, "username");
 
   WebInputElement new_password_element = GetInputElementByID("new_password");
-  ASSERT_FALSE(new_password_element.IsNull());
+  ASSERT_TRUE(new_password_element);
   SimulateUserInputChangeForElement(&new_password_element, "random");
 
   WebInputElement confirmation_password_element =
       GetInputElementByID("confirm_password");
-  ASSERT_FALSE(confirmation_password_element.IsNull());
+  ASSERT_TRUE(confirmation_password_element);
   SimulateUserInputChangeForElement(&confirmation_password_element, "random");
 
   // Simulate that the username and the password values were cleared by the
@@ -3429,7 +3429,7 @@ TEST_F(PasswordAutofillAgentTest,
   // The password field shouldn't reveal the value on focusing.
   WebDocument document = GetMainFrame()->GetDocument();
   WebElement element = document.GetElementById(WebString::FromUTF8("password"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   WebInputElement password_element = element.To<WebInputElement>();
   EXPECT_FALSE(password_element.ShouldRevealPassword());
   EXPECT_FALSE(password_element.IsAutofilled());
@@ -3465,7 +3465,7 @@ TEST_F(PasswordAutofillAgentTest, PasswordGenerationSupersedesAutofill) {
   WebDocument document = GetMainFrame()->GetDocument();
   WebElement element =
       document.GetElementById(WebString::FromUTF8("new_password"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   password_element_ = element.To<WebInputElement>();
 
   // Update fill_data_ for the new form and simulate filling. Pretend as if
@@ -3746,7 +3746,7 @@ TEST_F(PasswordAutofillAgentTest,
   UpdateUsernameAndPasswordElements();
   WebElement captcha_element = GetMainFrame()->GetDocument().GetElementById(
       WebString::FromUTF8("captcha"));
-  ASSERT_FALSE(captcha_element.IsNull());
+  ASSERT_TRUE(captcha_element);
 
   SimulateUsernameTyping("Bob");
   SimulatePasswordTyping("mypassword");
@@ -3775,7 +3775,7 @@ TEST_F(PasswordAutofillAgentTest,
   UpdateUsernameAndPasswordElements();
   WebElement captcha_element = GetMainFrame()->GetDocument().GetElementById(
       WebString::FromUTF8("captcha"));
-  ASSERT_FALSE(captcha_element.IsNull());
+  ASSERT_TRUE(captcha_element);
 
   SimulateUsernameTyping("Bob");
   SimulatePasswordTyping("mypassword");
@@ -3811,7 +3811,7 @@ TEST_F(PasswordAutofillAgentTest,
   UpdateUsernameAndPasswordElements();
   WebElement captcha_element = GetMainFrame()->GetDocument().GetElementById(
       WebString::FromUTF8("captcha"));
-  ASSERT_FALSE(captcha_element.IsNull());
+  ASSERT_TRUE(captcha_element);
 
   SimulateUsernameTyping("Bob");
   SimulatePasswordTyping("mypassword");
@@ -3842,7 +3842,7 @@ TEST_F(PasswordAutofillAgentTest,
   UpdateUsernameAndPasswordElements();
   WebElement captcha_element = GetMainFrame()->GetDocument().GetElementById(
       WebString::FromUTF8("captcha"));
-  ASSERT_FALSE(captcha_element.IsNull());
+  ASSERT_TRUE(captcha_element);
 
   SimulateUsernameTyping("Bob");
   SimulatePasswordTyping("mypassword");
@@ -4295,7 +4295,7 @@ TEST_F(PasswordAutofillAgentTest, ShowAutofillSignaturesFlag) {
     WebFormElement form_element =
         document.GetElementById(WebString::FromASCII("LoginTestForm"))
             .To<WebFormElement>();
-    ASSERT_FALSE(form_element.IsNull());
+    ASSERT_TRUE(form_element);
 
     // Check only form signature attribute. The full test is in
     // "PasswordGenerationAgentTestForHtmlAnnotation.*".
@@ -4452,7 +4452,7 @@ TEST_F(PasswordAutofillAgentTest, ManualFallbackForSaving_PasswordChangeForm) {
 
   // The user types into the new password field. Inform the driver.
   WebInputElement new_password = GetInputElementByID("newpassword");
-  ASSERT_FALSE(new_password.IsNull());
+  ASSERT_TRUE(new_password);
   SetFocused(new_password);
   SimulateUserTypingASCIICharacter('a', true);
   EXPECT_EQ(3, fake_driver_.called_inform_about_user_input_count());
@@ -4460,7 +4460,7 @@ TEST_F(PasswordAutofillAgentTest, ManualFallbackForSaving_PasswordChangeForm) {
   // Edits of the confirmation password field trigger informing the driver.
   WebInputElement confirmation_password =
       GetInputElementByID("confirmpassword");
-  ASSERT_FALSE(confirmation_password.IsNull());
+  ASSERT_TRUE(confirmation_password);
   SetFocused(confirmation_password);
   SimulateUserTypingASCIICharacter('a', true);
   EXPECT_EQ(4, fake_driver_.called_inform_about_user_input_count());
@@ -4973,10 +4973,10 @@ TEST_F(PasswordAutofillAgentTest,
   // Identify username and password elements.
   username_element_ =
       GetElementByID("un_host").ShadowRoot().FirstChild().To<WebInputElement>();
-  ASSERT_FALSE(username_element_.IsNull());
+  ASSERT_TRUE(username_element_);
   password_element_ =
       GetElementByID("pw_host").ShadowRoot().FirstChild().To<WebInputElement>();
-  ASSERT_FALSE(password_element_.IsNull());
+  ASSERT_TRUE(password_element_);
 
   // Simulate user modifying field values and ensure they are propagated to the
   // browser.

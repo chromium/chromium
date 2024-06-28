@@ -1019,7 +1019,7 @@ TEST_F(FormAutofillUtilsTest, IsVisibleIframeTest) {
     WebDocument doc = GetMainFrame()->GetDocument();
     std::vector<WebElement> result;
     WebElementCollection iframes = doc.GetElementsByHTMLTagName("iframe");
-    for (WebElement iframe = iframes.FirstItem(); !iframe.IsNull();
+    for (WebElement iframe = iframes.FirstItem(); iframe;
          iframe = iframes.NextItem()) {
       result.push_back(iframe);
     }
@@ -1138,7 +1138,7 @@ TEST_F(FormAutofillUtilsTest, IsWebElementVisibleTest) {
     WebDocument doc = GetMainFrame()->GetDocument();
     std::vector<WebElement> result;
     WebElementCollection inputs = doc.GetElementsByHTMLTagName("input");
-    for (WebElement input = inputs.FirstItem(); !input.IsNull();
+    for (WebElement input = inputs.FirstItem(); input;
          input = inputs.NextItem()) {
       result.push_back(input);
     }
@@ -1408,7 +1408,7 @@ TEST_P(FieldFramesTest, ExtractFieldsAndFrames) {
     SCOPED_TRACE(testing::Message() << "Checking the " << i
                                     << "th field (id = " << field.id << ")");
     WebElement element = GetElementById(doc, field.id);
-    ASSERT_FALSE(element.IsNull());
+    ASSERT_TRUE(element);
     ASSERT_TRUE(element.IsFormControlElement());
     EXPECT_EQ(form_data->fields()[i].host_form_id(), host_form);
     EXPECT_TRUE(HaveSameFormControlId(element.To<WebFormControlElement>(),
@@ -1545,14 +1545,14 @@ TEST_F(FormAutofillUtilsTest, WebFormElementToFormData) {
 
   {
     WebElement element = GetElementById(doc, "input");
-    ASSERT_FALSE(element.IsNull());
+    ASSERT_TRUE(element);
     ASSERT_TRUE(element.IsFormControlElement());
     EXPECT_TRUE(HaveSameFormControlId(element.To<WebFormControlElement>(),
                                       form_data.fields()[0]));
   }
 
   WebElement element = GetElementById(doc, "selectlist");
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   ASSERT_TRUE(element.IsFormControlElement());
   EXPECT_TRUE(HaveSameFormControlId(element.To<WebFormControlElement>(),
                                     form_data.fields()[1]));
@@ -1792,8 +1792,7 @@ MATCHER(SameNode, "") {
 
 void PrefixTraverseAndAppend(WebNode node, std::vector<WebNode>& out) {
   out.push_back(node);
-  for (WebNode child = node.FirstChild(); !child.IsNull();
-       child = child.NextSibling()) {
+  for (WebNode child = node.FirstChild(); child; child = child.NextSibling()) {
     PrefixTraverseAndAppend(child, out);
   }
 }
@@ -1826,7 +1825,7 @@ TEST_F(FormAutofillUtilsTest, NextWebNode_Forward) {
   PrefixTraverseAndAppend(GetMainFrame()->GetDocument(), expected_elements);
 
   std::vector<WebNode> found_elements;
-  for (WebNode node = GetMainFrame()->GetDocument(); !node.IsNull();
+  for (WebNode node = GetMainFrame()->GetDocument(); node;
        node = NextWebNodeForTesting(node, /*forward=*/true)) {
     found_elements.push_back(node);
   }
@@ -1863,7 +1862,7 @@ TEST_F(FormAutofillUtilsTest, NextWebNode_Backward) {
   std::reverse(expected_elements.begin(), expected_elements.end());
 
   std::vector<WebNode> found_elements;
-  for (WebNode node = expected_elements[0]; !node.IsNull();
+  for (WebNode node = expected_elements[0]; node;
        node = NextWebNodeForTesting(node, /*forward=*/false)) {
     found_elements.push_back(node);
   }
@@ -1899,7 +1898,7 @@ TEST_F(FormAutofillUtilsTest, GetMaxLength) {
     WebFormControlElement field =
         GetElementById(web_frame->GetDocument(), "field")
             .DynamicTo<WebFormControlElement>();
-    EXPECT_FALSE(field.IsNull());
+    EXPECT_TRUE(field);
     EXPECT_EQ(test_case.expected_max_length, GetMaxLengthForTesting(field));
   }
 }
@@ -1911,7 +1910,7 @@ TEST_F(FormAutofillUtilsTest, ContentEditableWritingSuggestionsFalseInherited) {
          </body>)");
   WebElement content_editable =
       GetMainFrame()->GetDocument().GetElementById("my-id");
-  ASSERT_FALSE(content_editable.IsNull());
+  ASSERT_TRUE(content_editable);
   std::optional<FormData> form = FindFormForContentEditable(content_editable);
   ASSERT_EQ(form->fields().size(), 1u);
   const FormFieldData& field = form->fields()[0];
@@ -1925,7 +1924,7 @@ TEST_F(FormAutofillUtilsTest, ContentEditableWritingSuggestionsFalse) {
          </body>)");
   WebElement content_editable =
       GetMainFrame()->GetDocument().GetElementById("my-id");
-  ASSERT_FALSE(content_editable.IsNull());
+  ASSERT_TRUE(content_editable);
   std::optional<FormData> form = FindFormForContentEditable(content_editable);
   ASSERT_EQ(form->fields().size(), 1u);
   const FormFieldData& field = form->fields()[0];
@@ -1945,7 +1944,7 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableSuccess) {
          </body>)");
   WebElement content_editable =
       GetMainFrame()->GetDocument().GetElementById("my-id");
-  ASSERT_FALSE(content_editable.IsNull());
+  ASSERT_TRUE(content_editable);
   std::optional<FormData> form = FindFormForContentEditable(content_editable);
   ASSERT_EQ(form->fields().size(), 1u);
   const FormFieldData& field = form->fields()[0];
@@ -1974,7 +1973,7 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableAbridgedSuccess) {
          </body>)");
   WebElement content_editable =
       GetMainFrame()->GetDocument().GetElementById("my-id");
-  ASSERT_FALSE(content_editable.IsNull());
+  ASSERT_TRUE(content_editable);
   std::optional<FormData> form = FindFormForContentEditable(content_editable);
   ASSERT_EQ(form->fields().size(), 1u);
   const FormFieldData& field = form->fields()[0];

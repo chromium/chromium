@@ -106,7 +106,7 @@ void MaybeAppendInputWithEmptyIdAndNameDevtoolsIssue(
 
 int GetShadowHostDOMNodeId(const WebFormControlElement& element) {
   WebElement host = element.OwnerShadowHost();
-  if (host.IsNull()) {
+  if (!host) {
     return /*blink::kInvalidDOMNodeId*/ 0;
   }
   return host.GetDomNodeId();
@@ -230,10 +230,9 @@ void AppendFormIssuesInternal(const WebVector<WebFormControlElement>& elements,
   const WebString& label_attr = GetWebString<kLabel>();
   WebElementCollection labels =
       elements[0].GetDocument().GetElementsByHTMLTagName(label_attr);
-  CHECK(!labels.IsNull());
+  CHECK(labels);
 
-  for (WebElement item = labels.FirstItem(); !item.IsNull();
-       item = labels.NextItem()) {
+  for (WebElement item = labels.FirstItem(); item; item = labels.NextItem()) {
     WebLabelElement label = item.To<WebLabelElement>();
     MaybeAppendLabelWithoutControlDevtoolsIssue(label, form_issues);
   }
@@ -280,8 +279,7 @@ std::vector<FormIssue> CheckForLabelsWithIncorrectForAttribute(
   }
 
   WebElementCollection labels = document.GetElementsByHTMLTagName(label_attr);
-  for (WebElement item = labels.FirstItem(); !item.IsNull();
-       item = labels.NextItem()) {
+  for (WebElement item = labels.FirstItem(); item; item = labels.NextItem()) {
     WebLabelElement label = item.To<WebLabelElement>();
     if (!label.CorrespondingControl().IsNull() ||
         !label.HasAttribute(for_attr)) {

@@ -88,8 +88,8 @@ bool IsGaiaReauthenticationForm(const blink::WebFormElement& form) {
     // We're only interested in the presence
     // of <input type="hidden" /> elements.
     const WebInputElement input = element.DynamicTo<WebInputElement>();
-    if (input.IsNull() || input.FormControlTypeForAutofill() !=
-                              blink::mojom::FormControlType::kInputHidden) {
+    if (!input || input.FormControlTypeForAutofill() !=
+                      blink::mojom::FormControlType::kInputHidden) {
       continue;
     }
 
@@ -124,7 +124,7 @@ std::unique_ptr<FormData> CreateFormDataFromWebForm(
     const FieldDataManager& field_data_manager,
     UsernameDetectorCache* username_detector_cache,
     form_util::ButtonTitlesCache* button_titles_cache) {
-  if (web_form.IsNull()) {
+  if (!web_form) {
     return nullptr;
   }
   std::optional<FormData> form =

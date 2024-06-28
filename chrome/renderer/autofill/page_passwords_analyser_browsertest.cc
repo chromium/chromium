@@ -137,7 +137,7 @@ class PagePasswordsAnalyserTest : public ChromeRenderViewTest {
     LoadHTML(html);
     blink::WebLocalFrame* frame = GetMainFrame();
     blink::WebElementCollection collection = frame->GetDocument().All();
-    for (blink::WebElement element = collection.FirstItem(); !element.IsNull();
+    for (blink::WebElement element = collection.FirstItem(); element;
          element = collection.NextItem()) {
       elements_.push_back(element);
     }

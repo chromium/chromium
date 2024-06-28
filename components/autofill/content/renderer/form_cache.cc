@@ -172,9 +172,9 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
                                                        ExtractOption::kOptions};
 
   WebDocument document = frame_->GetDocument();
-  if (document.IsNull())
+  if (!document) {
     return r;
-
+  }
   for (const WebFormElement& form_element :
        base::FeatureList::IsEnabled(
            blink::features::kAutofillIncludeFormElementsInShadowDom)

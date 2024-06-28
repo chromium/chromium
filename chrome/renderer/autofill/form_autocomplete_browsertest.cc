@@ -220,7 +220,7 @@ FormData CreateAutofillFormData(blink::WebLocalFrame* main_frame) {
   field_data.set_renderer_id(form_util::GetFieldRendererId(fname_element));
   test_api(data).Append(field_data);
 
-  if (!lname_element.IsNull()) {
+  if (lname_element) {
     field_data.set_name(u"lname");
     field_data.set_value(u"Smith");
     field_data.set_is_autofilled(true);
@@ -280,7 +280,7 @@ class FormAutocompleteTest : public ChromeRenderViewTest {
   void SimulateUserInput(const blink::WebString& id, const std::string& value) {
     WebDocument document = GetMainFrame()->GetDocument();
     WebElement element = document.GetElementById(id);
-    ASSERT_FALSE(element.IsNull());
+    ASSERT_TRUE(element);
     WebInputElement fname_element = element.To<WebInputElement>();
     SimulateUserInputChangeForElement(&fname_element, value);
   }
@@ -297,7 +297,7 @@ class FormAutocompleteTest : public ChromeRenderViewTest {
         document.GetElementById(WebString::FromUTF8("fname"))
             .To<WebFormControlElement>();
 
-    ASSERT_FALSE(fname_element.IsNull());
+    ASSERT_TRUE(fname_element);
     // This call is necessary to setup the autofill agent appropriate for the
     // user selection; simulates the menu actually popping up.
     SimulateElementClick(fname_element);
@@ -314,15 +314,15 @@ class FormAutocompleteTest : public ChromeRenderViewTest {
     WebFormControlElement fname_element =
         document.GetElementById(WebString::FromUTF8("fname"))
             .To<WebFormControlElement>();
-    ASSERT_FALSE(fname_element.IsNull());
+    ASSERT_TRUE(fname_element);
     WebFormControlElement mname_element =
         document.GetElementById(WebString::FromUTF8("mname"))
             .To<WebFormControlElement>();
-    ASSERT_FALSE(mname_element.IsNull());
+    ASSERT_TRUE(mname_element);
     WebFormControlElement lname_element =
         document.GetElementById(WebString::FromUTF8("lname"))
             .To<WebFormControlElement>();
-    ASSERT_FALSE(lname_element.IsNull());
+    ASSERT_TRUE(lname_element);
 
     // TODO(crbug.com/41495779): Update.
     FormData form;
@@ -554,7 +554,7 @@ TEST_F(FormAutocompleteTest, AcceptDataListSuggestion) {
 
   for (const auto& c : cases) {
     WebElement element = document.GetElementById(WebString::FromUTF8(c.id));
-    ASSERT_FALSE(element.IsNull());
+    ASSERT_TRUE(element);
     WebInputElement input_element = element.To<WebInputElement>();
     SimulateElementClick(input_element);
 
@@ -620,7 +620,7 @@ TEST_F(FormAutocompleteTestFocus,
   // Simulate user input so that the form is "remembered".
   WebDocument document = GetMainFrame()->GetDocument();
   WebElement element = document.GetElementById(WebString::FromUTF8("fname"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   WebInputElement fname_element = element.To<WebInputElement>();
   SimulateUserInputChangeForElement(&fname_element, std::string("Rick"));
 
@@ -650,7 +650,7 @@ TEST_F(FormAutocompleteTestFocus,
   // Simulate user input so that the form is "remembered".
   WebDocument document = GetMainFrame()->GetDocument();
   WebElement element = document.GetElementById(WebString::FromUTF8("fname"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   WebInputElement fname_element = element.To<WebInputElement>();
   SimulateUserInputChangeForElement(&fname_element, std::string("Rick"));
 
@@ -684,7 +684,7 @@ TEST_F(FormAutocompleteTestFocus,
   // Simulate user input in the first form so that the form is "remembered".
   WebDocument document = GetMainFrame()->GetDocument();
   WebElement element = document.GetElementById(WebString::FromUTF8("fname"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   WebInputElement fname_element = element.To<WebInputElement>();
   SimulateUserInputChangeForElement(&fname_element, std::string("Rick"));
 
@@ -694,7 +694,7 @@ TEST_F(FormAutocompleteTestFocus,
   // message is sent for the first form.
   document = GetMainFrame()->GetDocument();
   element = document.GetElementById(WebString::FromUTF8("fname2"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   fname_element = element.To<WebInputElement>();
   SimulateUserInputChangeForElement(&fname_element, std::string("John"));
 
@@ -1087,7 +1087,7 @@ TEST_P(FormAutocompleteSubmissionTest, DynamicAutoCompleteOffFormSubmit) {
 
   WebElement element =
       GetMainFrame()->GetDocument().GetElementById(blink::WebString("myForm"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   blink::WebFormElement form = element.To<blink::WebFormElement>();
   EXPECT_TRUE(form.AutoComplete());
 

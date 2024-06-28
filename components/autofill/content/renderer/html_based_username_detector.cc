@@ -130,8 +130,9 @@ void InferUsernameFieldData(
        all_control_elements) {
     const WebInputElement input_element =
         control_element.DynamicTo<WebInputElement>();
-    if (input_element.IsNull() || input_element.IsPasswordFieldForAutofill())
+    if (!input_element || input_element.IsPasswordFieldForAutofill()) {
       continue;
+    }
     const std::u16string element_name = input_element.NameForAutofill().Utf16();
     for (size_t i = next_element_range_begin; i < form_data.fields().size();
          ++i) {

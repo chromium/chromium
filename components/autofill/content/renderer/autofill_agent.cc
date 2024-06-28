@@ -596,8 +596,8 @@ void AutofillAgent::HandleCaretMovedInFormField(WebElement element,
       return;
     }
     gfx::Rect caret_bounds = GetCaretBounds(*self.unsafe_render_frame());
-    if (auto control = element.DynamicTo<WebFormControlElement>();
-        !control.IsNull()) {
+    if (WebFormControlElement control =
+            element.DynamicTo<WebFormControlElement>()) {
       if (std::optional<FormAndField> form_and_field =
               FindFormAndFieldForFormControlElement(
                   control, self.field_data_manager(),
@@ -670,8 +670,8 @@ void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
 
 void AutofillAgent::TextFieldCleared(const WebFormControlElement& element) {
   const WebInputElement input_element = element.DynamicTo<WebInputElement>();
-  CHECK(!input_element.IsNull() || form_util::IsTextAreaElement(element));
-  if (password_generation_agent_ && !input_element.IsNull()) {
+  CHECK(input_element || form_util::IsTextAreaElement(element));
+  if (password_generation_agent_ && input_element) {
     password_generation_agent_->TextFieldCleared(input_element);
   }
 }

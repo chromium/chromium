@@ -54,8 +54,7 @@ void PageFormAnalyserLogger::Flush() {
           // Filter out password inputs with values from being logged, as their
           // values are also logged.
           const bool should_obfuscate =
-              !input_element.IsNull() &&
-              input_element.IsPasswordFieldForAutofill() &&
+              input_element && input_element.IsPasswordFieldForAutofill() &&
               !input_element.Value().IsEmpty();
 
           if (!should_obfuscate) {

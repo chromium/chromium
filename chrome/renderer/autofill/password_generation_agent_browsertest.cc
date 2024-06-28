@@ -355,7 +355,7 @@ WebElement PasswordGenerationAgentTest::GetElementById(
   WebDocument document = GetMainFrame()->GetDocument();
   WebElement element =
       document.GetElementById(blink::WebString::FromUTF8(element_id));
-  CHECK(!element.IsNull());
+  CHECK(element);
   return element;
 }
 
@@ -565,10 +565,10 @@ TEST_F(PasswordGenerationAgentTest, FillTest) {
 
   WebElement element =
       document.GetElementById(WebString::FromUTF8("first_password"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   WebInputElement first_password_element = element.To<WebInputElement>();
   element = document.GetElementById(WebString::FromUTF8("second_password"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   WebInputElement second_password_element = element.To<WebInputElement>();
 
   // Both password fields should be empty.
@@ -596,7 +596,7 @@ TEST_F(PasswordGenerationAgentTest, FillTest) {
 
   // Check that focus returns to previously focused element.
   element = document.GetElementById(WebString::FromUTF8("address"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   EXPECT_EQ(element, document.FocusedElement());
 }
 
@@ -611,10 +611,10 @@ TEST_F(PasswordGenerationAgentTest, EditingTest) {
   WebDocument document = GetMainFrame()->GetDocument();
   WebElement element =
       document.GetElementById(WebString::FromUTF8("first_password"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   WebInputElement first_password_element = element.To<WebInputElement>();
   element = document.GetElementById(WebString::FromUTF8("second_password"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   WebInputElement second_password_element = element.To<WebInputElement>();
 
   std::u16string password = u"random_password";
@@ -759,7 +759,7 @@ TEST_F(PasswordGenerationAgentTest, MaximumCharsForGenerationOffer) {
   WebDocument document = GetMainFrame()->GetDocument();
   WebElement element =
       document.GetElementById(WebString::FromUTF8("first_password"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   WebInputElement first_password_element = element.To<WebInputElement>();
 
   // Make a password just under maximum offer size.
@@ -851,10 +851,10 @@ TEST_F(PasswordGenerationAgentTest, MinimumLengthForEditedPassword) {
   WebDocument document = GetMainFrame()->GetDocument();
   WebElement element =
       document.GetElementById(WebString::FromUTF8("first_password"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   WebInputElement first_password_element = element.To<WebInputElement>();
   element = document.GetElementById(WebString::FromUTF8("second_password"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   WebInputElement second_password_element = element.To<WebInputElement>();
   EXPECT_NE(std::u16string(), first_password_element.Value().Utf16());
   EXPECT_EQ(std::u16string(), second_password_element.Value().Utf16());
@@ -978,7 +978,7 @@ TEST_F(PasswordGenerationAgentTest, DesktopContextMenuGenerationNoIds) {
       "document.getElementsByClassName('first_password')[0].focus();");
   WebInputElement first_password_element =
       document.FocusedElement().To<WebInputElement>();
-  ASSERT_FALSE(first_password_element.IsNull());
+  ASSERT_TRUE(first_password_element);
   SelectGenerationFallbackAndExpect(true);
 
   // Simulate that the user accepts a generated password.
@@ -997,7 +997,7 @@ TEST_F(PasswordGenerationAgentTest, DesktopContextMenuGenerationNoIds) {
       "document.getElementsByClassName('second_password')[0].focus();");
   WebInputElement second_password_element =
       document.FocusedElement().To<WebInputElement>();
-  ASSERT_FALSE(second_password_element.IsNull());
+  ASSERT_TRUE(second_password_element);
   EXPECT_EQ(password, second_password_element.Value().Utf16());
   EXPECT_TRUE(second_password_element.IsAutofilled());
 }
@@ -1144,7 +1144,7 @@ TEST_F(PasswordGenerationAgentTest, RevealPassword) {
 
     WebDocument document = GetMainFrame()->GetDocument();
     WebElement element = GetElementById(kGenerationElementId);
-    ASSERT_FALSE(element.IsNull());
+    ASSERT_TRUE(element);
     blink::WebInputElement input = element.To<WebInputElement>();
     EXPECT_TRUE(input.ShouldRevealPassword());
 
@@ -1300,7 +1300,7 @@ TEST_F(PasswordGenerationAgentTest, PasswordUnmaskedUntilCompleteDeletion) {
   // Check that the characters remain unmasked.
   WebDocument document = GetMainFrame()->GetDocument();
   WebElement element = GetElementById(kGenerationElementId);
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   blink::WebInputElement input = element.To<WebInputElement>();
   EXPECT_TRUE(input.ShouldRevealPassword());
 
@@ -1352,7 +1352,7 @@ TEST_F(PasswordGenerationAgentTest, ShortPasswordMaskedAfterChangingFocus) {
   // Check that the characters remain unmasked.
   WebDocument document = GetMainFrame()->GetDocument();
   WebElement element = GetElementById(kGenerationElementId);
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   blink::WebInputElement input = element.To<WebInputElement>();
   EXPECT_TRUE(input.ShouldRevealPassword());
 
@@ -1413,10 +1413,10 @@ TEST_F(PasswordGenerationAgentTest, SuggestionPreviewedAndClearedTest) {
 
   WebElement element =
       document.GetElementById(WebString::FromUTF8("first_password"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   WebInputElement first_password_element = element.To<WebInputElement>();
   element = document.GetElementById(WebString::FromUTF8("second_password"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   WebInputElement second_password_element = element.To<WebInputElement>();
 
   std::u16string password = u"random_password";
@@ -1447,10 +1447,10 @@ TEST_F(PasswordGenerationAgentTest, SuggestionPreviewedAndFilledTest) {
 
   WebElement element =
       document.GetElementById(WebString::FromUTF8("first_password"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   WebInputElement first_password_element = element.To<WebInputElement>();
   element = document.GetElementById(WebString::FromUTF8("second_password"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   WebInputElement second_password_element = element.To<WebInputElement>();
 
   std::u16string password = u"random_password";
@@ -1499,10 +1499,10 @@ TEST_F(PasswordGenerationAgentTest,
   WebDocument document = GetMainFrame()->GetDocument();
   WebElement element =
       document.GetElementById(WebString::FromUTF8("first_password"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   WebInputElement first_password_element = element.To<WebInputElement>();
   element = document.GetElementById(WebString::FromUTF8("second_password"));
-  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element);
   WebInputElement second_password_element = element.To<WebInputElement>();
 
   // Generate password.

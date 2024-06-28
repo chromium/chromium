@@ -25,7 +25,7 @@ WebElement GetElementById(const WebDocument& doc,
                           std::string_view id,
                           AllowNull allow_null) {
   WebElement e = doc.GetElementById(WebString::FromASCII(std::string(id)));
-  CHECK(allow_null || !e.IsNull());
+  CHECK(allow_null || e);
   return e;
 }
 
@@ -34,7 +34,7 @@ blink::WebElement GetElementById(const blink::WebNode& node,
                                  AllowNull allow_null) {
   WebElement e =
       node.QuerySelector(WebString::FromASCII(base::StrCat({"#", id})));
-  CHECK(allow_null || !e.IsNull());
+  CHECK(allow_null || e);
   return e;
 }
 
@@ -43,10 +43,10 @@ content::RenderFrame* GetIframeById(const WebDocument& doc,
                                     AllowNull allow_null) {
   WebElement iframe = GetElementById(doc, id, allow_null);
   CHECK(allow_null || iframe.HasHTMLTagName("iframe"));
-  return !iframe.IsNull() ? content::RenderFrame::FromWebFrame(
-                                blink::WebFrame::FromFrameOwnerElement(iframe)
-                                    ->ToWebLocalFrame())
-                          : nullptr;
+  return iframe ? content::RenderFrame::FromWebFrame(
+                      blink::WebFrame::FromFrameOwnerElement(iframe)
+                          ->ToWebLocalFrame())
+                : nullptr;
 }
 
 FrameToken GetFrameToken(const blink::WebDocument& doc,

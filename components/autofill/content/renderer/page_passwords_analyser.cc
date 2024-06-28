@@ -231,8 +231,9 @@ std::vector<FormInputCollection> ExtractFormsForAnalysis(
   for (const WebElement& password_input : password_inputs) {
     const WebInputElement input_element =
         password_input.DynamicTo<WebInputElement>();
-    if (input_element.IsNull())
+    if (!input_element) {
       continue;
+    }
     if (TrackElementByRendererIdIfUntracked(
             password_input, form_util::GetFieldRendererId(input_element),
             skip_control_ids, &nodes_for_id)) {
@@ -254,8 +255,9 @@ std::vector<FormInputCollection> ExtractFormsForAnalysis(
   for (const WebElement& text_input : text_inputs) {
     const WebInputElement input_element =
         text_input.DynamicTo<WebInputElement>();
-    if (input_element.IsNull())
+    if (!input_element) {
       continue;
+    }
     TrackElementByRendererIdIfUntracked(
         text_input, form_util::GetFieldRendererId(input_element),
         skip_control_ids, &nodes_for_id);
@@ -291,7 +293,7 @@ void InferUsernameField(
     size_t username_field_guess,
     std::map<size_t, std::string>* autocomplete_suggestions) {
   WebElementCollection labels(form.GetElementsByHTMLTagName("label"));
-  DCHECK(!labels.IsNull());
+  DCHECK(labels);
 
   std::vector<InputHint> input_hints;
 
@@ -299,11 +301,10 @@ void InferUsernameField(
   input_hints.emplace_back(email_matcher.Pointer());
   input_hints.emplace_back(telephone_matcher.Pointer());
 
-  for (WebElement item = labels.FirstItem(); !item.IsNull();
-       item = labels.NextItem()) {
+  for (WebElement item = labels.FirstItem(); item; item = labels.NextItem()) {
     WebLabelElement label(item.To<WebLabelElement>());
     WebElement control(label.CorrespondingControl());
-    if (!control.IsNull() && control.IsFormControlElement()) {
+    if (control && control.IsFormControlElement()) {
       WebFormControlElement form_control(control.To<WebFormControlElement>());
       auto found = base::ranges::find(inputs, form_control);
       if (found != inputs.end()) {

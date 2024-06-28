@@ -54,7 +54,7 @@ blink::WebFormControlElement GetFormControlElementById(
   blink::WebFormControlElement e =
       GetElementById(t, id, allow_null)
           .template DynamicTo<blink::WebFormControlElement>();
-  CHECK(allow_null || !e.IsNull());
+  CHECK(allow_null || e);
   return e;
 }
 
@@ -68,7 +68,7 @@ blink::WebFormElement GetFormElementById(
     AllowNull allow_null = AllowNull(false)) {
   blink::WebFormElement e = GetElementById(t, id, allow_null)
                                 .template DynamicTo<blink::WebFormElement>();
-  CHECK(allow_null || !e.IsNull());
+  CHECK(allow_null || e);
   return e;
 }
 
