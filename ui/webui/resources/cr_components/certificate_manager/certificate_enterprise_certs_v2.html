@@ -1,0 +1,42 @@
+<style include="cr-icons">
+  #header {
+    align-items: center;
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    margin-bottom: 28px;
+  }
+
+  #backButton {
+    --cr-icon-button-margin-end: 6px;
+    --cr-icon-button-margin-start: 0px;
+  }
+
+  certificate-list-v2 {
+    padding: 20px 0;
+  }
+</style>
+
+<div id="header">
+  <cr-icon-button id="backButton" class="icon-arrow-back"
+      on-click="onBackButtonClick_">
+  </cr-icon-button>
+  <h2>[[i18n("certificateManagerV2AdminCertsTitle")]]</h2>
+</div>
+
+<certificate-list-v2
+    id="trustedCertList"
+    cert-source="[[certificateSourceEnum_.kEnterpriseTrustedCerts]]"
+    header-text="[[i18n('certificateManagerV2TrustedCertsList')]]">
+</certificate-list-v2>
+
+<certificate-list-v2
+    id="intermediateCertList"
+    cert-source="[[certificateSourceEnum_.kEnterpriseIntermediateCerts]]"
+    header-text="[[i18n('certificateManagerV2IntermediateCertsList')]]">
+</certificate-list-v2>
+
+<certificate-list-v2
+    id="distrustedCertList"
+    cert-source="[[certificateSourceEnum_.kEnterpriseDistrustedCerts]]"
+    header-text="[[i18n('certificateManagerV2DistrustedCertsList')]]">
+</certificate-list-v2>

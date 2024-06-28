@@ -8,6 +8,7 @@
  * and Chrome Cert Management Enterprise policies launch.
  */
 
+import './certificate_enterprise_certs_v2.js';
 import './certificate_list_v2.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
@@ -30,11 +31,20 @@ import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {CertificateEnterpriseCertsV2Element} from './certificate_enterprise_certs_v2.js';
 import type {CertificateListV2Element} from './certificate_list_v2.js';
 import {getTemplate} from './certificate_manager_v2.html.js';
 import type {CertPolicyInfo} from './certificate_manager_v2.mojom-webui.js';
 import {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
 import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
+
+export enum Page {
+  LOCAL_CERTS = 'localcerts',
+  CLIENT_CERTS = 'clientcerts',
+  CRS_CERTS = 'crscerts',
+  // Sub-pages
+  ADMIN_CERTS = 'admincerts',
+}
 
 const CertificateManagerV2ElementBase = I18nMixin(PolymerElement);
 
@@ -64,6 +74,8 @@ export interface CertificateManagerV2Element {
     localCertSection: HTMLElement,
     clientCertSection: HTMLElement,
     crsCertSection: HTMLElement,
+    adminCertsInstalledLinkRow: HTMLElement,
+    adminCertsSection: CertificateEnterpriseCertsV2Element,
   };
 }
 
@@ -108,7 +120,7 @@ export class CertificateManagerV2Element extends
 
   // TODO(crbug.com/40928765): create constants for paths for TS even if the
   // html has to have its own set of constants.
-  private selectedPage_: string = 'localcerts';
+  private selectedPage_: Page = Page.LOCAL_CERTS;
   private toastMessage_: string;
   private certPolicy_: CertPolicyInfo;
   private importOsCertsEnabled_: boolean;
@@ -138,7 +150,29 @@ export class CertificateManagerV2Element extends
   private onMenuItemSelect_(e: CustomEvent<{item: HTMLElement}>) {
     const page = e.detail.item.getAttribute('path');
     assert(page, 'Page is not available');
-    this.selectedPage_ = page;
+    this.selectedPage_ = page as Page;
+  }
+
+  private getSelectedTopLevelPage_(): string {
+    switch (this.selectedPage_) {
+      case Page.ADMIN_CERTS:
+        return Page.LOCAL_CERTS;
+      default:
+        return this.selectedPage_;
+    }
+  }
+
+  private onAdminCertsInstalledLinkRowClick_(e: Event) {
+    e.preventDefault();
+    this.selectedPage_ = Page.ADMIN_CERTS;
+  }
+
+  // TODO(crbug.com/40928765): Make this work with multiple subpages, either by
+  // adding a page name to the event payload, or making multiple different
+  // navigateBack handlers (using the naming template
+  // on<OptionalContext><EventName>_).
+  private onNavigateBack_() {
+    this.selectedPage_ = Page.LOCAL_CERTS;
   }
 
   private computeImportOsCertsEnabled_(): boolean {

@@ -35,6 +35,15 @@ enum CertificateSource {
   // Client certificates from the platform store.
   kPlatformClientCert,
 
+  // Trusted certs from enterprise policies.
+  kEnterpriseTrustedCerts,
+
+  // Intermediate certs from enterprise policies.
+  kEnterpriseIntermediateCerts,
+
+  // Distrusted certs from enterprise policies.
+  kEnterpriseDistrustedCerts,
+
   // Enterprise provisioned client certificates. Only enabled on platforms
   // where that feature is available.
   [EnableIf=enable_provisioned_client_certs]

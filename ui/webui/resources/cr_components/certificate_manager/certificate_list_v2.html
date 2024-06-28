@@ -20,9 +20,9 @@
   <div class="header-row">
     [[headerText]]
     <cr-button class="action-button certs-export-button"
-        hidden$="[[hideExport]]" id="exportCerts" on-click="onExportCerts">
-      <!-- TODO(crbug.com/40928765): localize -->
-      Export
+        hidden$="[[hideExportButton_(hideExport, hasCerts_)]]"
+        id="exportCerts" on-click="onExportCertsClick_">
+      [[i18n("certificateManagerV2ExportButtonLabel")]]
     </cr-button>
   </div>
 </cr-expand-button>
@@ -34,4 +34,7 @@
         sha256hash-hex="[[item.sha256hashHex]]">
     </certificate-entry-v2>
   </template>
+  <div id="noCertsRow" hidden="[[hasCerts_]]">
+    [[i18n("certificateManagerV2NoCertificatesRow")]]
+  </div>
 </cr-collapse>

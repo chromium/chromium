@@ -14,7 +14,7 @@ import type {CertPolicyInfo} from 'chrome://resources/cr_components/certificate_
 import {CertificateSource} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
 import {CertificatesV2BrowserProxy} from 'chrome://resources/cr_components/certificate_manager/certificates_v2_browser_proxy.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestCertificateManagerProxy} from './certificate_manager_v2_test_support.js';
 
@@ -30,9 +30,9 @@ suite('CertificateEntryV2Test', () => {
 
   function initializeElement() {
     certEntry = document.createElement('certificate-entry-v2');
-    certEntry.set('displayName', 'certname');
-    certEntry.set('sha256hashHex', 'deadbeef');
-    certEntry.set('certSource', CertificateSource.kChromeRootStore);
+    certEntry.displayName = 'certname';
+    certEntry.sha256hashHex = 'deadbeef';
+    certEntry.certSource = CertificateSource.kChromeRootStore;
     document.body.appendChild(certEntry);
   }
 
@@ -51,6 +51,7 @@ suite('CertificateEntryV2Test', () => {
   });
 });
 
+// TODO(crbug.com/40928765): move list tests into its own file.
 suite('CertificateListV2Test', () => {
   let certList: CertificateListV2Element;
   let testProxy: TestCertificateManagerProxy;
@@ -63,7 +64,7 @@ suite('CertificateListV2Test', () => {
 
   function initializeElement() {
     certList = document.createElement('certificate-list-v2');
-    certList.set('certSource', CertificateSource.kChromeRootStore);
+    certList.certSource = CertificateSource.kChromeRootStore;
     document.body.appendChild(certList);
   }
 
@@ -97,15 +98,31 @@ suite('CertificateListV2Test', () => {
     assertEquals('deadbeef1', matchEls[0]!.sha256hashHex);
     assertEquals('cert2', matchEls[1]!.displayName);
     assertEquals('deadbeef2', matchEls[1]!.sha256hashHex);
+
+    assertFalse(isVisible(certList.$.noCertsRow));
   });
 
   test('export', async () => {
+    testProxy.handler.setCertificatesCallback((_: CertificateSource) => {
+      return {
+        certs: [
+          {
+            sha256hashHex: 'deadbeef1',
+            displayName: 'cert1',
+          },
+          {
+            sha256hashHex: 'deadbeef2',
+            displayName: 'cert2',
+          },
+        ],
+      };
+    });
     initializeElement();
 
     await testProxy.handler.whenCalled('getCertificates');
     await microtasksFinished();
 
-    assertFalse(certList.$.exportCerts.hidden);
+    assertTrue(isVisible(certList.$.exportCerts));
 
     certList.$.exportCerts.click();
 
@@ -117,14 +134,26 @@ suite('CertificateListV2Test', () => {
 
   test('export hidden', async () => {
     certList = document.createElement('certificate-list-v2');
-    certList.set('certSource', CertificateSource.kChromeRootStore);
-    certList.set('hideExport', true);
+    certList.certSource = CertificateSource.kChromeRootStore;
+    certList.hideExport = true;
     document.body.appendChild(certList);
 
     await testProxy.handler.whenCalled('getCertificates');
     await microtasksFinished();
 
-    assertTrue(certList.$.exportCerts.hidden);
+    assertFalse(isVisible(certList.$.exportCerts));
+  });
+
+  test('no certs', async () => {
+    certList = document.createElement('certificate-list-v2');
+    certList.certSource = CertificateSource.kChromeRootStore;
+    document.body.appendChild(certList);
+
+    await testProxy.handler.whenCalled('getCertificates');
+    await microtasksFinished();
+
+    assertFalse(isVisible(certList.$.exportCerts));
+    assertTrue(isVisible(certList.$.noCertsRow));
   });
 });
 
@@ -170,15 +199,15 @@ suite('CertificateManagerV2Test', () => {
     await microtasksFinished();
 
     assertTrue(certManager.$.importOsCerts.checked, 'os toggle state wrong');
-    assertFalse(
-        certManager.$.importOsCertsManagedIcon.hidden,
+    assertTrue(
+        isVisible(certManager.$.importOsCertsManagedIcon),
         'enterprise managed icon visibility wrong');
-    assertFalse(
-        certManager.$.viewOsImportedCerts.hidden,
+    assertTrue(
+        isVisible(certManager.$.viewOsImportedCerts),
         'view imported os certs link visibility wrong');
     // <if expr="is_win or is_macosx">
-    assertFalse(
-        certManager.$.manageOsImportedCerts.hidden,
+    assertTrue(
+        isVisible(certManager.$.manageOsImportedCerts),
         'imported os certs external link visibility wrong');
     // </if>
   });
@@ -197,15 +226,15 @@ suite('CertificateManagerV2Test', () => {
 
     assertTrue(
         certManager.$.importOsCerts.checked, 'os import toggle state wrong');
-    assertTrue(
-        certManager.$.importOsCertsManagedIcon.hidden,
-        'enterprise managed icon visibility wrong');
     assertFalse(
-        certManager.$.viewOsImportedCerts.hidden,
+        isVisible(certManager.$.importOsCertsManagedIcon),
+        'enterprise managed icon visibility wrong');
+    assertTrue(
+        isVisible(certManager.$.viewOsImportedCerts),
         'view imported os certs link visibility wrong');
     // <if expr="is_win or is_macosx">
-    assertFalse(
-        certManager.$.manageOsImportedCerts.hidden,
+    assertTrue(
+        isVisible(certManager.$.manageOsImportedCerts),
         'imported os certs external link visibility wrong');
     // </if>
   });
@@ -224,15 +253,15 @@ suite('CertificateManagerV2Test', () => {
 
     assertFalse(
         certManager.$.importOsCerts.checked, 'os import toggle state wrong');
-    assertFalse(
-        certManager.$.importOsCertsManagedIcon.hidden,
-        'enterprise managed icon visibility wrong');
     assertTrue(
-        certManager.$.viewOsImportedCerts.hidden,
+        isVisible(certManager.$.importOsCertsManagedIcon),
+        'enterprise managed icon visibility wrong');
+    assertFalse(
+        isVisible(certManager.$.viewOsImportedCerts),
         'view imported os certs link visibility wrong');
     // <if expr="is_win or is_macosx">
-    assertTrue(
-        certManager.$.manageOsImportedCerts.hidden,
+    assertFalse(
+        isVisible(certManager.$.manageOsImportedCerts),
         'imported os certs external link visibility wrong');
     // </if>
   });
@@ -251,15 +280,15 @@ suite('CertificateManagerV2Test', () => {
 
     assertFalse(
         certManager.$.importOsCerts.checked, 'os import toggle state wrong');
-    assertTrue(
-        certManager.$.importOsCertsManagedIcon.hidden,
+    assertFalse(
+        isVisible(certManager.$.importOsCertsManagedIcon),
         'enterprise managed icon visibility wrong');
-    assertTrue(
-        certManager.$.viewOsImportedCerts.hidden,
+    assertFalse(
+        isVisible(certManager.$.viewOsImportedCerts),
         'view imported os certs link visibility wrong');
     // <if expr="is_win or is_macosx">
-    assertTrue(
-        certManager.$.manageOsImportedCerts.hidden,
+    assertFalse(
+        isVisible(certManager.$.manageOsImportedCerts),
         'imported os certs external link visibility wrong');
     // </if>
   });
@@ -275,9 +304,10 @@ suite('CertificateManagerV2Test', () => {
     initializeElement();
 
     await testProxy.handler.whenCalled('getPolicyInformation');
+    certManager.$.localMenuItem.click();
     await microtasksFinished();
-    assertFalse(
-        certManager.$.manageOsImportedCerts.hidden,
+    assertTrue(
+        isVisible(certManager.$.manageOsImportedCerts),
         'imported os certs external link visibility wrong');
     certManager.$.manageOsImportedCerts.click();
     await testProxy.handler.whenCalled('showNativeManageCertificates');
@@ -285,10 +315,11 @@ suite('CertificateManagerV2Test', () => {
 
   test('Open native client certificate management', async () => {
     initializeElement();
+    certManager.$.clientMenuItem.click();
 
     await microtasksFinished();
-    assertFalse(
-        certManager.$.manageOsImportedClientCerts.hidden,
+    assertTrue(
+        isVisible(certManager.$.manageOsImportedClientCerts),
         'imported os certs external link visibility wrong');
     certManager.$.manageOsImportedClientCerts.click();
     await testProxy.handler.whenCalled('showNativeManageCertificates');
@@ -326,6 +357,52 @@ suite('CertificateManagerV2Test', () => {
         certManager.shadowRoot!.querySelector('#customCertsSection');
     const linkRow = customSection!.querySelector('cr-link-row');
     assertEquals('5 certificates', linkRow!.subLabel);
+  });
+
+  test('show admin certs', async () => {
+    const policyInfo: CertPolicyInfo = {
+      includeSystemTrustStore: true,
+      isIncludeSystemTrustStoreManaged: true,
+      numPolicyCerts: 5,
+    };
+    testProxy.handler.setPolicyInformation(policyInfo);
+    initializeElement();
+
+    await testProxy.handler.whenCalled('getPolicyInformation');
+    await microtasksFinished();
+    const customSection =
+        certManager.shadowRoot!.querySelector('#customCertsSection');
+    const linkRow = customSection!.querySelector('cr-link-row');
+    linkRow!.click();
+    await microtasksFinished();
+    assertTrue(
+        certManager.$.adminCertsSection.classList.contains('iron-selected'));
+  });
+
+  test('navigate back from admin certs', async () => {
+    const policyInfo: CertPolicyInfo = {
+      includeSystemTrustStore: true,
+      isIncludeSystemTrustStoreManaged: true,
+      numPolicyCerts: 5,
+    };
+    testProxy.handler.setPolicyInformation(policyInfo);
+    initializeElement();
+
+    await testProxy.handler.whenCalled('getPolicyInformation');
+    await microtasksFinished();
+    const customSection =
+        certManager.shadowRoot!.querySelector('#customCertsSection');
+    const linkRow = customSection!.querySelector('cr-link-row');
+    linkRow!.click();
+    await microtasksFinished();
+    assertTrue(
+        certManager.$.adminCertsSection.classList.contains('iron-selected'));
+    certManager.$.adminCertsSection.$.backButton.click();
+    await microtasksFinished();
+    assertFalse(
+        certManager.$.adminCertsSection.classList.contains('iron-selected'));
+    assertTrue(
+        certManager.$.localCertSection.classList.contains('iron-selected'));
   });
 
   test('click local certs section', async () => {

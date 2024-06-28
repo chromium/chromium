@@ -61,6 +61,18 @@ void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_ADMIN_CERTS_SINGULAR},
       {"certificateManagerV2PolicyCertsPlural",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_ADMIN_CERTS_PLURAL},
+      {"certificateManagerV2AdminCertsTitle",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_ADMIN_CERTS_TITLE},
+      {"certificateManagerV2TrustedCertsList",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_TRUSTED_CERTS_LIST},
+      {"certificateManagerV2IntermediateCertsList",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_INTERMEDIATE_CERTS_LIST},
+      {"certificateManagerV2DistrustedCertsList",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DISTRUSTED_CERTS_LIST},
+      {"certificateManagerV2NoCertificatesRow",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_NO_CERTIFICATES_ROW},
+      {"certificateManagerV2ExportButtonLabel",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_EXPORT_BUTTON_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

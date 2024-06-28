@@ -42,7 +42,8 @@
 
 <div id="sidebar" role="navigation">
   <cr-menu-selector id="menu" selectable="a" attr-for-selected="path"
-      selected-attribute="selected" selected="[[selectedPage_]]"
+      selected-attribute="selected"
+      selected="[[getSelectedTopLevelPage_(selectedPage_)]]"
       on-iron-select="onMenuItemSelect_">
     <a id="localMenuItem" role="menuitem" class="cr-nav-menu-item"
         path="localcerts" href="/localcerts" on-click="onMenuItemClick_">
@@ -154,8 +155,10 @@
     <template is="dom-if" if="[[showCustomSection_(certPolicy_)]]">
       <div id="customCertsSection">
         <h3>Custom</h3>
-        <cr-link-row label="Installed by your administrator"
-            sub-label="[[getPolicyCertsString_(certPolicy_)]]">
+        <cr-link-row id="adminCertsInstalledLinkRow"
+            label="[[i18n('certificateManagerV2AdminCertsTitle')]]"
+            sub-label="[[getPolicyCertsString_(certPolicy_)]]"
+            on-click="onAdminCertsInstalledLinkRowClick_">
        </cr-link-row>
       </div>
     </template>
@@ -170,6 +173,12 @@
         on-hash-copied="onHashCopied_">
     </certificate-list-v2>
   </div>
+
+  <certificate-enterprise-certs-v2 id="adminCertsSection" path="admincerts"
+      on-hash-copied="onHashCopied_"
+      on-navigate-back="onNavigateBack_">
+  </certificate-enterprise-certs-v2>
+
 
 </iron-pages>
 

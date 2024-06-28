@@ -835,7 +835,24 @@
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_HASH_COPIED_TOAST" desc="Label for the hash copied toast message in certificate manager." translateable="false">
       Hash copied to clipboard
     </message>
-
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_ADMIN_CERTS_TITLE" desc="Label for the title of the admin certs subpage." translateable="false">
+      Installed by your Administrator
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_TRUSTED_CERTS_LIST" desc="Label for a list of trusted certificates." translateable="false">
+      Trusted Certificates
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_INTERMEDIATE_CERTS_LIST" desc="Label for a list of certificates that are used for path building." translateable="false">
+      Intermediate Certificates
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DISTRUSTED_CERTS_LIST" desc="Label for a list of distrusted certificates." translateable="false">
+      Distrusted Certificates
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_NO_CERTIFICATES_ROW" desc="Text for an entry indicating that a list of certificates is empty." translateable="false">
+      No certificates
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_EXPORT_BUTTON_LABEL" desc="Label for button that exports a list of certificates." translateable="false">
+      Export
+    </message>
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_ADMIN_CERTS_SINGULAR" desc="One certificate installed via enterprise policy." translateable="false">
       1 certificate
     </message>

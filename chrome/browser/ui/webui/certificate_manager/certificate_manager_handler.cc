@@ -21,6 +21,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "crypto/crypto_buildflags.h"
+#include "crypto/sha2.h"
 #include "net/base/hash_value.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -61,6 +62,20 @@
 
 namespace {
 
+void ShowCertificateDialog(base::WeakPtr<content::WebContents> web_contents,
+                           bssl::UniquePtr<CRYPTO_BUFFER> cert) {
+  if (!web_contents) {
+    return;
+  }
+
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> view_certs;
+  view_certs.push_back(std::move(cert));
+  CertificateViewerDialog::ShowConstrained(
+      std::move(view_certs),
+      /*cert_nicknames=*/{}, web_contents.get(),
+      web_contents->GetTopLevelNativeWindow());
+}
+
 void PopulateChromeRootStoreLogsAsync(
     CertificateManagerPageHandler::GetCertificatesCallback callback,
     cert_verifier::mojom::ChromeRootStoreInfoPtr info) {
@@ -88,18 +103,13 @@ void ViewCrsCertificateAsync(
   }
 
   for (auto const& cert_info : info->root_cert_info) {
-    if (cert_info->sha256hash_hex != hash) {
-      continue;
+    if (cert_info->sha256hash_hex == hash) {
+      // Found the cert, open cert viewer dialog if able and then exit function.
+      ShowCertificateDialog(
+          std::move(web_contents),
+          net::x509_util::CreateCryptoBuffer(cert_info->cert));
+      return;
     }
-
-    // Found the cert, open cert viewer dialog if able and then exit function.
-    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> view_certs;
-    view_certs.push_back(net::x509_util::CreateCryptoBuffer(cert_info->cert));
-    CertificateViewerDialog::ShowConstrained(
-        std::move(view_certs),
-        /*cert_nicknames=*/{}, web_contents.get(),
-        web_contents->GetTopLevelNativeWindow());
-    return;
   }
 }
 
@@ -150,6 +160,204 @@ class ChromeRootStoreCertSource
     content::GetCertVerifierServiceFactory()->GetChromeRootStoreInfo(
         base::BindOnce(&ExportCrsCertificatesAsync, web_contents));
   }
+};
+
+class EnterpriseCertSource : public CertificateManagerPageHandler::CertSource {
+ public:
+  explicit EnterpriseCertSource(std::string export_file_name)
+      : export_file_name_(std::move(export_file_name)) {}
+
+  void GetCertificateInfos(
+      CertificateManagerPageHandler::GetCertificatesCallback callback)
+      override {
+    std::vector<certificate_manager_v2::mojom::SummaryCertInfoPtr> cert_infos;
+    for (const auto& cert : GetCerts()) {
+      x509_certificate_model::X509CertificateModel model(
+          net::x509_util::CreateCryptoBuffer(cert), "");
+      cert_infos.push_back(certificate_manager_v2::mojom::SummaryCertInfo::New(
+          model.HashCertSHA256(), model.GetTitle()));
+    }
+    std::move(callback).Run(std::move(cert_infos));
+  }
+
+  void ViewCertificate(
+      const std::string& sha256_hex_hash,
+      base::WeakPtr<content::WebContents> web_contents) override {
+    if (!web_contents) {
+      return;
+    }
+
+    std::array<uint8_t, crypto::kSHA256Length> hash;
+    if (!base::HexStringToSpan(sha256_hex_hash, hash)) {
+      return;
+    }
+
+    for (const auto& cert : GetCerts()) {
+      if (hash == crypto::SHA256Hash(cert)) {
+        // Found the cert, open cert viewer dialog if able and then exit
+        // function.
+        ShowCertificateDialog(std::move(web_contents),
+                              net::x509_util::CreateCryptoBuffer(cert));
+        return;
+      }
+    }
+  }
+
+  void ExportCertificates(
+      base::WeakPtr<content::WebContents> web_contents) override {
+    if (!web_contents) {
+      return;
+    }
+
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> export_certs;
+    for (auto const& cert : GetCerts()) {
+      export_certs.push_back(net::x509_util::CreateCryptoBuffer(cert));
+    }
+
+    ShowCertExportDialogSaveAll(web_contents.get(),
+                                web_contents->GetTopLevelNativeWindow(),
+                                std::move(export_certs), export_file_name_);
+    return;
+  }
+
+ protected:
+  virtual std::vector<std::vector<uint8_t>> GetCerts() = 0;
+
+ private:
+  std::string export_file_name_;
+};
+
+class EnterpriseTrustedCertSource : public EnterpriseCertSource {
+ public:
+  explicit EnterpriseTrustedCertSource(Profile* profile)
+      : EnterpriseCertSource("trusted_certs.pem"), profile_(profile) {}
+
+  // Can't use the parent class's implementation because certs with additional
+  // constraints need to be handled differently.
+  void ViewCertificate(
+      const std::string& sha256_hex_hash,
+      base::WeakPtr<content::WebContents> web_contents) override {
+    if (!web_contents) {
+      return;
+    }
+    std::array<uint8_t, crypto::kSHA256Length> hash;
+    if (!base::HexStringToSpan(sha256_hex_hash, hash)) {
+      return;
+    }
+    ProfileNetworkContextService* service =
+        ProfileNetworkContextServiceFactory::GetForContext(profile_.get());
+    ProfileNetworkContextService::CertificatePoliciesForView policies =
+        service->GetCertificatePolicyForView();
+    std::vector<std::vector<uint8_t>> certs;
+    for (const auto& cert : policies.certificate_policies->trust_anchors) {
+      certs.push_back(cert);
+    }
+    for (const auto& cert : policies.certificate_policies
+                                ->trust_anchors_with_enforced_constraints) {
+      certs.push_back(cert);
+    }
+
+    for (auto const& cert : certs) {
+      if (hash == crypto::SHA256Hash(cert)) {
+        // Found the cert, open cert viewer dialog if able and then exit
+        // function.
+        ShowCertificateDialog(std::move(web_contents),
+                              net::x509_util::CreateCryptoBuffer(cert));
+        return;
+      }
+    }
+
+    // Certs with additional constraints outside of the cert are handled
+    // differently so that the outside constraints can be shown.
+    // TODO(crbug.com/40928765): pass in additional outside constraints once
+    // view cert dialog can show them.
+    for (const auto& cert_with_constraints :
+         policies.certificate_policies
+             ->trust_anchors_with_additional_constraints) {
+      if (hash == crypto::SHA256Hash(cert_with_constraints->certificate)) {
+        // Found the cert, open cert viewer dialog if able and then exit
+        // function.
+        ShowCertificateDialog(std::move(web_contents),
+                              net::x509_util::CreateCryptoBuffer(
+                                  cert_with_constraints->certificate));
+        return;
+      }
+    }
+  }
+
+ protected:
+  std::vector<std::vector<uint8_t>> GetCerts() override {
+    ProfileNetworkContextService* service =
+        ProfileNetworkContextServiceFactory::GetForContext(profile_.get());
+    ProfileNetworkContextService::CertificatePoliciesForView policies =
+        service->GetCertificatePolicyForView();
+    std::vector<std::vector<uint8_t>> certs;
+    for (const auto& cert : policies.certificate_policies->trust_anchors) {
+      certs.push_back(cert);
+    }
+    for (const auto& cert : policies.certificate_policies
+                                ->trust_anchors_with_enforced_constraints) {
+      certs.push_back(cert);
+    }
+    for (const auto& cert_with_constraints :
+         policies.certificate_policies
+             ->trust_anchors_with_additional_constraints) {
+      certs.push_back(cert_with_constraints->certificate);
+    }
+
+    return certs;
+  }
+
+ private:
+  raw_ptr<Profile> profile_;
+};
+
+class EnterpriseIntermediateCertSource : public EnterpriseCertSource {
+ public:
+  explicit EnterpriseIntermediateCertSource(Profile* profile)
+      : EnterpriseCertSource("intermediate_certs.pem"),
+        profile_(std::move(profile)) {}
+
+ protected:
+  std::vector<std::vector<uint8_t>> GetCerts() override {
+    ProfileNetworkContextService* service =
+        ProfileNetworkContextServiceFactory::GetForContext(profile_.get());
+    ProfileNetworkContextService::CertificatePoliciesForView policies =
+        service->GetCertificatePolicyForView();
+    std::vector<std::vector<uint8_t>> certs;
+    for (const auto& cert : policies.certificate_policies->all_certificates) {
+      certs.push_back(cert);
+    }
+
+    return certs;
+  }
+
+ private:
+  raw_ptr<Profile> profile_;
+};
+
+class EnterpriseDistrustedCertSource : public EnterpriseCertSource {
+ public:
+  explicit EnterpriseDistrustedCertSource(Profile* profile)
+      : EnterpriseCertSource("distrusted_certs.pem"),
+        profile_(std::move(profile)) {}
+
+ protected:
+  std::vector<std::vector<uint8_t>> GetCerts() override {
+    ProfileNetworkContextService* service =
+        ProfileNetworkContextServiceFactory::GetForContext(profile_.get());
+    ProfileNetworkContextService::CertificatePoliciesForView policies =
+        service->GetCertificatePolicyForView();
+    std::vector<std::vector<uint8_t>> certs;
+    for (const auto& cert : policies.full_distrusted_certs) {
+      certs.push_back(cert);
+    }
+
+    return certs;
+  }
+
+ private:
+  raw_ptr<Profile> profile_;
 };
 
 // A certificate loader that wraps a ClientCertStore. Read-only.
@@ -264,12 +472,8 @@ void ViewCertificateFromCertificateList(
   for (const auto& cert : certs) {
     if (net::X509Certificate::CalculateFingerprint256(cert->cert_buffer()) ==
         hash) {
-      std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> view_certs;
-      view_certs.push_back(bssl::UpRef(cert->cert_buffer()));
-      CertificateViewerDialog::ShowConstrained(
-          std::move(view_certs),
-          /*cert_nicknames=*/{}, web_contents.get(),
-          web_contents->GetTopLevelNativeWindow());
+      ShowCertificateDialog(std::move(web_contents),
+                            bssl::UpRef(cert->cert_buffer()));
       return;
     }
   }
@@ -425,6 +629,21 @@ CertificateManagerPageHandler::GetCertSource(
           kPlatformClientCert:
         source_ptr = std::make_unique<ClientCertSource>(
             CreatePlatformClientCertLoader());
+        break;
+      case certificate_manager_v2::mojom::CertificateSource::
+          kEnterpriseTrustedCerts:
+        source_ptr =
+            std::make_unique<EnterpriseTrustedCertSource>(profile_.get());
+        break;
+      case certificate_manager_v2::mojom::CertificateSource::
+          kEnterpriseIntermediateCerts:
+        source_ptr =
+            std::make_unique<EnterpriseIntermediateCertSource>(profile_.get());
+        break;
+      case certificate_manager_v2::mojom::CertificateSource::
+          kEnterpriseDistrustedCerts:
+        source_ptr =
+            std::make_unique<EnterpriseDistrustedCertSource>(profile_.get());
         break;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       case certificate_manager_v2::mojom::CertificateSource::
