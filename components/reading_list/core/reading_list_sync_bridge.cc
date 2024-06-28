@@ -271,8 +271,8 @@ ReadingListSyncBridge::ApplyIncrementalSyncChanges(
   return {};
 }
 
-void ReadingListSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                             DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> ReadingListSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const std::string& url_string : storage_keys) {
@@ -283,10 +283,11 @@ void ReadingListSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
     }
   }
 
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
-void ReadingListSyncBridge::GetAllDataForDebugging(DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+ReadingListSyncBridge::GetAllDataForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto batch = std::make_unique<syncer::MutableDataBatch>();
 
@@ -296,7 +297,7 @@ void ReadingListSyncBridge::GetAllDataForDebugging(DataCallback callback) {
     AddEntryToBatch(batch.get(), *entry);
   }
 
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 void ReadingListSyncBridge::AddEntryToBatch(syncer::MutableDataBatch* batch,

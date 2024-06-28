@@ -324,8 +324,8 @@ std::string SavedTabGroupSyncBridge::GetClientTag(
   return GetStorageKey(entity_data);
 }
 
-void SavedTabGroupSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                               DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> SavedTabGroupSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
 
   for (const std::string& guid : storage_keys) {
@@ -345,10 +345,11 @@ void SavedTabGroupSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
     }
   }
 
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
-void SavedTabGroupSyncBridge::GetAllDataForDebugging(DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+SavedTabGroupSyncBridge::GetAllDataForDebugging() {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const SavedTabGroup& group : model_->saved_tab_groups()) {
     AddEntryToBatch(batch.get(), SavedTabGroupToData(group));
@@ -357,7 +358,7 @@ void SavedTabGroupSyncBridge::GetAllDataForDebugging(DataCallback callback) {
     }
   }
 
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 bool SavedTabGroupSyncBridge::IsEntityDataValid(

@@ -541,16 +541,8 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnGroupDataForCommit) {
   ASSERT_TRUE(model()->Contains(group.saved_guid()));
   ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
 
-  std::vector<syncer::EntityData> entity_data_list;
-  base::RunLoop run_loop;
-  bridge()->GetDataForCommit(
-      {group.saved_guid().AsLowercaseString()},
-      base::BindLambdaForTesting([&run_loop, &entity_data_list](
-                                     std::unique_ptr<syncer::DataBatch> batch) {
-        entity_data_list = ExtractEntityDataFromBatch(std::move(batch));
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  std::vector<syncer::EntityData> entity_data_list = ExtractEntityDataFromBatch(
+      bridge()->GetDataForCommit({group.saved_guid().AsLowercaseString()}));
 
   EXPECT_THAT(entity_data_list, UnorderedElementsAre(HasGroupEntityData(
                                     "title", sync_pb::SharedTabGroup_Color_GREY,
@@ -574,17 +566,9 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnTabDataForCommit) {
   ASSERT_TRUE(model()->Contains(group.saved_guid()));
   ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
 
-  std::vector<syncer::EntityData> entity_data_list;
-  base::RunLoop run_loop;
-  bridge()->GetDataForCommit(
-      {tab2.saved_tab_guid().AsLowercaseString(),
-       tab1.saved_tab_guid().AsLowercaseString()},
-      base::BindLambdaForTesting([&run_loop, &entity_data_list](
-                                     std::unique_ptr<syncer::DataBatch> batch) {
-        entity_data_list = ExtractEntityDataFromBatch(std::move(batch));
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  std::vector<syncer::EntityData> entity_data_list = ExtractEntityDataFromBatch(
+      bridge()->GetDataForCommit({tab2.saved_tab_guid().AsLowercaseString(),
+                                  tab1.saved_tab_guid().AsLowercaseString()}));
 
   EXPECT_THAT(
       entity_data_list,
@@ -610,14 +594,8 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnAllDataForDebugging) {
   ASSERT_TRUE(model()->Contains(group.saved_guid()));
   ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
 
-  std::vector<syncer::EntityData> entity_data_list;
-  base::RunLoop run_loop;
-  bridge()->GetAllDataForDebugging(base::BindLambdaForTesting(
-      [&run_loop, &entity_data_list](std::unique_ptr<syncer::DataBatch> batch) {
-        entity_data_list = ExtractEntityDataFromBatch(std::move(batch));
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  std::vector<syncer::EntityData> entity_data_list =
+      ExtractEntityDataFromBatch(bridge()->GetAllDataForDebugging());
 
   EXPECT_THAT(
       entity_data_list,

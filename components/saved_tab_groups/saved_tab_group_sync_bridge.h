@@ -77,9 +77,9 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
       const syncer::EntityData& remote_data) const override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
-  void GetDataForCommit(StorageKeyList storage_keys,
-                        DataCallback callback) override;
-  void GetAllDataForDebugging(DataCallback callback) override;
+  std::unique_ptr<syncer::DataBatch> GetDataForCommit(
+      StorageKeyList storage_keys) override;
+  std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
   bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
 
   // SavedTabGroupModelObserver

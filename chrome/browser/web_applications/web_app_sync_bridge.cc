@@ -880,8 +880,8 @@ std::optional<syncer::ModelError> WebAppSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void WebAppSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                        DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> WebAppSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   auto data_batch = std::make_unique<syncer::MutableDataBatch>();
 
   for (const webapps::AppId& app_id : storage_keys) {
@@ -890,10 +890,10 @@ void WebAppSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
       data_batch->Put(app->app_id(), CreateSyncEntityData(*app));
   }
 
-  std::move(callback).Run(std::move(data_batch));
+  return data_batch;
 }
 
-void WebAppSyncBridge::GetAllDataForDebugging(DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> WebAppSyncBridge::GetAllDataForDebugging() {
   auto data_batch = std::make_unique<syncer::MutableDataBatch>();
 
   for (const WebApp& app : registrar_->GetAppsIncludingStubs()) {
@@ -901,7 +901,7 @@ void WebAppSyncBridge::GetAllDataForDebugging(DataCallback callback) {
       data_batch->Put(app.app_id(), CreateSyncEntityData(app));
   }
 
-  std::move(callback).Run(std::move(data_batch));
+  return data_batch;
 }
 
 std::string WebAppSyncBridge::GetClientTag(

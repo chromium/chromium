@@ -144,25 +144,24 @@ std::string ProductSpecificationsSyncBridge::GetClientTag(
   return GetStorageKey(entity_data);
 }
 
-void ProductSpecificationsSyncBridge::GetDataForCommit(
-    StorageKeyList storage_keys,
-    DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+ProductSpecificationsSyncBridge::GetDataForCommit(StorageKeyList storage_keys) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const std::string& storage_key : storage_keys) {
     if (auto it = entries_.find(storage_key); it != entries_.end()) {
       batch->Put(storage_key, CreateEntityData(it->second));
     }
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
-void ProductSpecificationsSyncBridge::GetAllDataForDebugging(
-    DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+ProductSpecificationsSyncBridge::GetAllDataForDebugging() {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (auto& entry : entries_) {
     batch->Put(entry.first, CreateEntityData(entry.second));
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 sync_pb::EntitySpecifics

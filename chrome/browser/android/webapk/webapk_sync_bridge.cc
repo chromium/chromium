@@ -475,8 +475,8 @@ const WebApkProto* WebApkSyncBridge::GetWebApkByAppId(
   return GetAppById(registry_, app_id);
 }
 
-void WebApkSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                        DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> WebApkSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   auto data_batch = std::make_unique<syncer::MutableDataBatch>();
 
   for (const webapps::AppId& app_id : storage_keys) {
@@ -486,10 +486,10 @@ void WebApkSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
     }
   }
 
-  std::move(callback).Run(std::move(data_batch));
+  return data_batch;
 }
 
-void WebApkSyncBridge::GetAllDataForDebugging(DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> WebApkSyncBridge::GetAllDataForDebugging() {
   auto data_batch = std::make_unique<syncer::MutableDataBatch>();
 
   for (const auto& appListing : registry_) {
@@ -498,7 +498,7 @@ void WebApkSyncBridge::GetAllDataForDebugging(DataCallback callback) {
     data_batch->Put(app_id, CreateSyncEntityData(app));
   }
 
-  std::move(callback).Run(std::move(data_batch));
+  return data_batch;
 }
 
 // GetClientTag and GetStorageKey must return the same thing for a given AppId

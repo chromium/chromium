@@ -117,20 +117,20 @@ void PlusAddressSettingSyncBridge::ApplyDisableSyncChanges(
   settings_.clear();
 }
 
-void PlusAddressSettingSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                                    DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+PlusAddressSettingSyncBridge::GetDataForCommit(StorageKeyList storage_keys) {
   // PLUS_ADDRESS_SETTING is read-only, so `GetDataForCommit()` is not needed.
   NOTREACHED();
 }
 
-void PlusAddressSettingSyncBridge::GetAllDataForDebugging(
-    DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+PlusAddressSettingSyncBridge::GetAllDataForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const auto& [name, specifics] : settings_) {
     batch->Put(name, CreateEntityData(specifics));
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 bool PlusAddressSettingSyncBridge::IsEntityDataValid(

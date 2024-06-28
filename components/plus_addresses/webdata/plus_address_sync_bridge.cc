@@ -162,13 +162,15 @@ void PlusAddressSyncBridge::ApplyDisableSyncChanges(
   notify_data_changed_by_sync_.Run(std::move(profile_changes));
 }
 
-void PlusAddressSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                             DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> PlusAddressSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   // PLUS_ADDRESS is read-only, so `GetDataForCommit()` is not needed.
   NOTREACHED_IN_MIGRATION();
+  return nullptr;
 }
 
-void PlusAddressSyncBridge::GetAllDataForDebugging(DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+PlusAddressSyncBridge::GetAllDataForDebugging() {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const PlusProfile& profile : GetPlusAddressTable()->GetPlusProfiles()) {
     auto entity = std::make_unique<syncer::EntityData>(
@@ -176,7 +178,7 @@ void PlusAddressSyncBridge::GetAllDataForDebugging(DataCallback callback) {
     std::string storage_key = GetStorageKey(*entity);
     batch->Put(storage_key, std::move(entity));
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 bool PlusAddressSyncBridge::IsEntityDataValid(

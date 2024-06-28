@@ -216,9 +216,7 @@ TEST_F(PlusAddressSettingSyncBridgeTest, GetAllDataForDebugging) {
       StartSyncingWithServerData({CreateSettingSpecifics("name1", "string"),
                                   CreateSettingSpecifics("name2", true),
                                   CreateSettingSpecifics("name3", 123)}));
-  base::test::TestFuture<std::unique_ptr<syncer::DataBatch>> debug_data;
-  bridge().GetAllDataForDebugging(debug_data.GetCallback());
-  const std::unique_ptr<syncer::DataBatch>& batch = debug_data.Get();
+  std::unique_ptr<syncer::DataBatch> batch = bridge().GetAllDataForDebugging();
   std::vector<SettingSpecifics> specifics;
   while (batch->HasNext()) {
     std::unique_ptr<syncer::EntityData> entity = batch->Next().second;

@@ -302,8 +302,8 @@ SharedTabGroupDataSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void SharedTabGroupDataSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                                    DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+SharedTabGroupDataSyncBridge::GetDataForCommit(StorageKeyList storage_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto batch = std::make_unique<syncer::MutableDataBatch>();
 
@@ -333,11 +333,11 @@ void SharedTabGroupDataSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
       }
     }
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
-void SharedTabGroupDataSyncBridge::GetAllDataForDebugging(
-    DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+SharedTabGroupDataSyncBridge::GetAllDataForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const SavedTabGroup& group : model_->saved_tab_groups()) {
@@ -353,7 +353,7 @@ void SharedTabGroupDataSyncBridge::GetAllDataForDebugging(
                       group.collaboration_id().value());
     }
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 std::string SharedTabGroupDataSyncBridge::GetClientTag(

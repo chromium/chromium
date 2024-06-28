@@ -228,9 +228,7 @@ TEST_F(PlusAddressSyncBridgeTest, GetAllDataForDebugging) {
   ASSERT_TRUE(table().AddOrUpdatePlusProfile(profile1));
   ASSERT_TRUE(table().AddOrUpdatePlusProfile(profile2));
 
-  base::test::TestFuture<std::unique_ptr<syncer::DataBatch>> future;
-  bridge().GetAllDataForDebugging(future.GetCallback());
-  const std::unique_ptr<syncer::DataBatch>& batch = future.Get();
+  std::unique_ptr<syncer::DataBatch> batch = bridge().GetAllDataForDebugging();
   std::vector<PlusProfile> profiles_from_batch;
   while (batch->HasNext()) {
     profiles_from_batch.push_back(

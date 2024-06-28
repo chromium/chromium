@@ -362,48 +362,37 @@ TEST_F(ProductSpecificationsSyncBridgeTest, TestGetDataForCommit) {
   // returned, rather than all entries.
   storage_keys.push_back(kInitUuid[1]);
   storage_keys.push_back(kInitUuid[2]);
-  base::RunLoop run_loop;
-  bridge().GetDataForCommit(
-      std::move(storage_keys),
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<syncer::DataBatch> data_batch) {
-            EXPECT_TRUE(data_batch);
-            std::vector<syncer::KeyAndData> key_and_data =
-                GetKeyAndData(data_batch.get());
-            EXPECT_EQ(2u, key_and_data.size());
-            EXPECT_EQ(kInitUuid[1], key_and_data[0].first);
-            EXPECT_EQ(GetName(1), key_and_data[0].second->name);
-            VerifySpecificsAgainstIndex(
-                key_and_data[0].second->specifics.mutable_product_comparison(),
-                1);
-            EXPECT_EQ(kInitUuid[2], key_and_data[1].first);
-            EXPECT_EQ(GetName(2), key_and_data[1].second->name);
-            VerifySpecificsAgainstIndex(
-                key_and_data[1].second->specifics.mutable_product_comparison(),
-                2);
-            run_loop.Quit();
-          }));
-  run_loop.Run();
+
+  std::unique_ptr<syncer::DataBatch> data_batch =
+      bridge().GetDataForCommit(std::move(storage_keys));
+
+  EXPECT_TRUE(data_batch);
+  std::vector<syncer::KeyAndData> key_and_data =
+      GetKeyAndData(data_batch.get());
+  EXPECT_EQ(2u, key_and_data.size());
+  EXPECT_EQ(kInitUuid[1], key_and_data[0].first);
+  EXPECT_EQ(GetName(1), key_and_data[0].second->name);
+  VerifySpecificsAgainstIndex(
+      key_and_data[0].second->specifics.mutable_product_comparison(), 1);
+  EXPECT_EQ(kInitUuid[2], key_and_data[1].first);
+  EXPECT_EQ(GetName(2), key_and_data[1].second->name);
+  VerifySpecificsAgainstIndex(
+      key_and_data[1].second->specifics.mutable_product_comparison(), 2);
 }
 
 TEST_F(ProductSpecificationsSyncBridgeTest, TestGetDataForDebugging) {
-  base::RunLoop run_loop;
-  bridge().GetAllDataForDebugging(base::BindLambdaForTesting(
-      [&](std::unique_ptr<syncer::DataBatch> data_batch) {
-        EXPECT_TRUE(data_batch);
-        std::vector<syncer::KeyAndData> key_and_data =
-            GetKeyAndData(data_batch.get());
-        EXPECT_EQ(3u, key_and_data.size());
-        for (uint64_t i = 0; i < kInitUuid.size(); i++) {
-          EXPECT_EQ(kInitUuid[i], key_and_data[i].first);
-          EXPECT_EQ(GetName(i), key_and_data[i].second->name);
-          VerifySpecificsAgainstIndex(
-              key_and_data[i].second->specifics.mutable_product_comparison(),
-              i);
-        }
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  std::unique_ptr<syncer::DataBatch> data_batch =
+      bridge().GetAllDataForDebugging();
+  EXPECT_TRUE(data_batch);
+  std::vector<syncer::KeyAndData> key_and_data =
+      GetKeyAndData(data_batch.get());
+  EXPECT_EQ(3u, key_and_data.size());
+  for (uint64_t i = 0; i < kInitUuid.size(); i++) {
+    EXPECT_EQ(kInitUuid[i], key_and_data[i].first);
+    EXPECT_EQ(GetName(i), key_and_data[i].second->name);
+    VerifySpecificsAgainstIndex(
+        key_and_data[i].second->specifics.mutable_product_comparison(), i);
+  }
 }
 
 TEST_F(ProductSpecificationsSyncBridgeTest, TestAdd) {

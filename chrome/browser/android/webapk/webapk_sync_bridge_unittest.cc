@@ -1022,28 +1022,12 @@ TEST_F(WebApkSyncBridgeTest, GetData) {
       storage_keys.push_back(id_and_web_app.first);
     }
 
-    base::RunLoop run_loop;
-    sync_bridge().GetDataForCommit(
-        std::move(storage_keys),
-        base::BindLambdaForTesting(
-            [&](std::unique_ptr<syncer::DataBatch> data_batch) {
-              EXPECT_TRUE(RegistryContainsSyncDataBatchChanges(
-                  registry, std::move(data_batch)));
-              run_loop.Quit();
-            }));
-    run_loop.Run();
+    EXPECT_TRUE(RegistryContainsSyncDataBatchChanges(
+        registry, sync_bridge().GetDataForCommit(std::move(storage_keys))));
   }
 
-  {
-    base::RunLoop run_loop;
-    sync_bridge().GetAllDataForDebugging(base::BindLambdaForTesting(
-        [&](std::unique_ptr<syncer::DataBatch> data_batch) {
-          EXPECT_TRUE(RegistryContainsSyncDataBatchChanges(
-              registry, std::move(data_batch)));
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-  }
+  EXPECT_TRUE(RegistryContainsSyncDataBatchChanges(
+      registry, sync_bridge().GetAllDataForDebugging()));
 }
 
 // Tests that the client & storage tags are correct for entity data.
