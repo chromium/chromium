@@ -160,6 +160,12 @@ struct CrossThreadCopier<webrtc::TransportPacketsFeedback>
   STATIC_ONLY(CrossThreadCopier);
 };
 
+template <>
+struct CrossThreadCopier<webrtc::SentPacket>
+    : public CrossThreadCopierPassThrough<webrtc::SentPacket> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
 }  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_WEB_RTC_CROSS_THREAD_COPIER_H_

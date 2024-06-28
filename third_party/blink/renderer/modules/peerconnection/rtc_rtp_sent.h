@@ -13,9 +13,18 @@ class RTCRtpSent : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  RTCRtpSent(double time, uint64_t ackId, uint64_t size)
+      : time_(time), ackId_(ackId), size_(size) {}
+
+  // Implements rtc_rtp_sent.idl
   double time();
   uint64_t ackId();
   uint64_t size();
+
+ private:
+  double time_;
+  uint64_t ackId_;
+  uint64_t size_;
 };
 
 }  // namespace blink

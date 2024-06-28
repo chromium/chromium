@@ -4,7 +4,13 @@
 
 [Exposed=Window, RuntimeEnabled=RTCRtpTransport]
 interface RTCRtpTransport {
-    // TODO: crbug.com/345101934 - This needs to actually be on some Worker-exposed
-    // object. Being discussed in https://github.com/w3c/webrtc-rtptransport/issues/33.
+    // TODO(crbug.com/345101934): This needs to actually be on some
+    // Worker-exposed object. Being discussed in
+    // https://github.com/w3c/webrtc-rtptransport/issues/33.
     sequence<RTCRtpAcks> readReceivedAcks(long maxCount);
+
+    // TODO(crbug.com/345101934): This needs to actually be on some
+    // Worker-exposed object. Being discussed in
+    // https://github.com/w3c/webrtc-rtptransport/issues/33.
+    sequence<RTCRtpSent> readSentRtp(long maxCount);
 };

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_acks.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_sent.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/webrtc/api/transport/network_control.h"
 
@@ -22,15 +23,20 @@ class MODULES_EXPORT RTCRtpTransport : public ScriptWrappable,
   explicit RTCRtpTransport(ExecutionContext* context)
       : ExecutionContextClient(context) {}
 
+  // Implements rtc_rtp_transport.idl
+  HeapVector<Member<RTCRtpAcks>> readReceivedAcks(uint32_t maxCount);
+  HeapVector<Member<RTCRtpSent>> readSentRtp(uint32_t maxCount);
+
   void Register(webrtc::NetworkControllerInterface* controller);
   webrtc::NetworkControlUpdate OnFeedback(
       webrtc::TransportPacketsFeedback feedback);
-
-  HeapVector<Member<RTCRtpAcks>> readReceivedAcks(uint32_t maxCount);
+  void OnSentPacket(webrtc::SentPacket sp);
 
   void Trace(Visitor* visitor) const override;
 
+ private:
   HeapVector<Member<RTCRtpAcks>> acks_messages_;
+  HeapVector<Member<RTCRtpSent>> sents_;
 };
 
 }  // namespace blink

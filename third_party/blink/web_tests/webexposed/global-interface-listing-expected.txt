@@ -8055,6 +8055,7 @@ interface RTCRtpTransport
     attribute @@toStringTag
     method constructor
     method readReceivedAcks
+    method readSentRtp
 interface RTCSctpTransport : EventTarget
     attribute @@toStringTag
     getter maxChannels

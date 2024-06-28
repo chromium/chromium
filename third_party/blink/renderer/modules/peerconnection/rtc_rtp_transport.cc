@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/adapters/web_rtc_cross_thread_copier.h"
 #include "third_party/blink/renderer/modules/peerconnection/intercepting_network_controller.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
+#include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
@@ -25,6 +26,8 @@ class FeedbackReceiverImpl : public FeedbackReceiver {
         task_runner_(std::move(task_runner)) {}
 
   void OnFeedback(webrtc::TransportPacketsFeedback feedback) override {
+    // Called on a WebRTC thread.
+    CHECK(!task_runner_->RunsTasksInCurrentSequence());
     PostCrossThreadTask(
         *task_runner_, FROM_HERE,
         CrossThreadBindOnce(
@@ -37,6 +40,23 @@ class FeedbackReceiverImpl : public FeedbackReceiver {
     CHECK(task_runner_->RunsTasksInCurrentSequence());
     if (rtc_rtp_transport_) {
       rtc_rtp_transport_->OnFeedback(feedback);
+    }
+  }
+
+  void OnSentPacket(webrtc::SentPacket sp) override {
+    // Called on a WebRTC thread.
+    CHECK(!task_runner_->RunsTasksInCurrentSequence());
+    PostCrossThreadTask(
+        *task_runner_, FROM_HERE,
+        CrossThreadBindOnce(
+            &FeedbackReceiverImpl::OnSentPacketOnDestinationTaskRunner,
+            WrapRefCounted(this), sp));
+  }
+
+  void OnSentPacketOnDestinationTaskRunner(webrtc::SentPacket sp) {
+    CHECK(task_runner_->RunsTasksInCurrentSequence());
+    if (rtc_rtp_transport_) {
+      rtc_rtp_transport_->OnSentPacket(sp);
     }
   }
 
@@ -64,7 +84,7 @@ webrtc::NetworkControlUpdate RTCRtpTransport::OnFeedback(
     // TODO: crbug.com/345101934 - Handle unset (infinite) result.receive_time.
     ack->setRemoteReceiveTimestamp(
         result.receive_time.IsFinite() ? result.receive_time.ms() : 0);
-    // TODO: crbug.com/345101934 - Add Ack id.
+    ack->setAckId(result.sent_packet.sequence_number);
     acks.push_back(ack);
   }
   // TODO: crbug.com/345101934 - Actually fill in a received time & ECN.
@@ -93,10 +113,28 @@ HeapVector<Member<RTCRtpAcks>> RTCRtpTransport::readReceivedAcks(
   return acks_messages;
 }
 
+void RTCRtpTransport::OnSentPacket(webrtc::SentPacket sp) {
+  sents_.push_back(MakeGarbageCollected<RTCRtpSent>(
+      sp.send_time.ms<double>(), sp.sequence_number, sp.size.bytes()));
+}
+
+HeapVector<Member<RTCRtpSent>> RTCRtpTransport::readSentRtp(uint32_t maxCount) {
+  HeapVector<Member<RTCRtpSent>> sents;
+  if (sents_.size() <= maxCount) {
+    std::swap(sents, sents_);
+  } else {
+    auto begin = sents_.begin();
+    sents.AppendRange(begin, begin + maxCount);
+    sents_.erase(begin, begin + maxCount);
+  }
+  return sents;
+}
+
 void RTCRtpTransport::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(acks_messages_);
+  visitor->Trace(sents_);
 }
 
 }  // namespace blink

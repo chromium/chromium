@@ -13,6 +13,7 @@ class FeedbackReceiver : public WTF::ThreadSafeRefCounted<FeedbackReceiver> {
  public:
   virtual ~FeedbackReceiver() = default;
   virtual void OnFeedback(webrtc::TransportPacketsFeedback feedback) = 0;
+  virtual void OnSentPacket(webrtc::SentPacket sp) = 0;
 };
 
 // Implementation of NetworkControllerInterface intercepting calls to methods
@@ -53,6 +54,9 @@ class InterceptingNetworkController
   }
   // Called when a packet is sent on the network.
   webrtc::NetworkControlUpdate OnSentPacket(webrtc::SentPacket sp) override {
+    if (feedback_receiver_) {
+      feedback_receiver_->OnSentPacket(sp);
+    }
     return fallback_controller_->OnSentPacket(sp);
   }
   // Called when a packet is received from the remote client.

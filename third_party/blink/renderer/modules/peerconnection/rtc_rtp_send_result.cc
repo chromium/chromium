@@ -8,7 +8,7 @@ namespace blink {
 
 RTCRtpSent* RTCRtpSendResult::sent() {
   // TODO(crbug.com/345101934): Implement me.
-  return MakeGarbageCollected<RTCRtpSent>();
+  return nullptr;
 }
 
 String RTCRtpSendResult::unsent() {

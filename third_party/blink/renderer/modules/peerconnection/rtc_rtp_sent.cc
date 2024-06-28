@@ -7,13 +7,13 @@
 namespace blink {
 
 double RTCRtpSent::time() {
-  return 0;
+  return time_;
 }
 uint64_t RTCRtpSent::ackId() {
-  return 0;
+  return ackId_;
 }
 uint64_t RTCRtpSent::size() {
-  return 0;
+  return size_;
 }
 
 }  // namespace blink
