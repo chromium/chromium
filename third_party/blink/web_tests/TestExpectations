@@ -2568,6 +2568,7 @@ crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-video-jitterBufferTarget-
 crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-audio-jitterBufferTarget-stats.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac11-arm64 ] external/wpt/wai-aria/role/listbox-roles.tentative.html [ Failure Timeout ]
 crbug.com/349505546 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/permission-geolocation.https.html [ Timeout ]
 crbug.com/349414749 [ Mac13 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/wide--contain--nonpercent-width-nonpercent-height.html [ Failure ]
 crbug.com/349414735 [ Win11-arm64 ] external/wpt/content-security-policy/inheritance/history-iframe.sub.html [ Timeout ]

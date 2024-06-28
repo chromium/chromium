@@ -4,3 +4,4 @@ This is a testharness.js-based test.
 [FAIL] orphaned button with treeitem role outside tree context
   assert_equals: <button role="treeitem" data-testname="orphaned button with treeitem role outside tree context" data-expectedrole="button" class="ex">x</button> expected "button" but got "treeitem"
 Harness: the test ran to completion.
+

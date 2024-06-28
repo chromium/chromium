@@ -8,3 +8,4 @@ This is a testharness.js-based test.
 [FAIL] orphaned columnheader outside the context of row
   assert_false: Computed Role: "columnheader" does not match any of the acceptable role strings in ["generic", "", "none"]: <div role="columnheader" data-testname="orphaned columnheader outside the context of row" class="ex-generic">x</div> expected false got true
 Harness: the test ran to completion.
+

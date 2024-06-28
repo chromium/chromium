@@ -240025,6 +240025,19 @@
         {}
        ]
       ],
+      "svg-path.html": [
+       "9a7bc3ffee97a062409fc6c3e628dcd7a57ed7f4",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/svg-path-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "svg.html": [
        "826ce5a80a3b9c06b3c14678704daffd3e2faf7b",
        [
@@ -267378,6 +267391,32 @@
        ]
       },
       "text": {
+       "2d.text.drawing.style.reset.fontKerning.none2.html": [
+        "78d06b955d8208af01737137726e0256ab4ce7f3",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/text/2d.text.drawing.style.reset.fontKerning.none2-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.text.fontVariantCaps.after.reset.font.html": [
+        "d1a18627e7a3f826c292aee76171db2e47bfaf27",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/text/2d.text.fontVariantCaps.after.reset.font-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "2d.text.fontVariantCaps1.html": [
         "56acfc61f47c32092db1793eb2f4a9966fde04ef",
         [
@@ -269454,6 +269493,58 @@
        ]
       },
       "text": {
+       "2d.text.drawing.style.reset.fontKerning.none2.html": [
+        "21b699ecc89e73940251eb5c94c60abe5753ceae",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/text/2d.text.drawing.style.reset.fontKerning.none2-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.reset.fontKerning.none2.w.html": [
+        "6f81dfe0b1f74db19f66ec46f8370bc8e2a86071",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/text/2d.text.drawing.style.reset.fontKerning.none2-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.text.fontVariantCaps.after.reset.font.html": [
+        "bd09cc2ca0646434e6603a605e0be7d873a4a226",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/text/2d.text.fontVariantCaps.after.reset.font-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.text.fontVariantCaps.after.reset.font.w.html": [
+        "8f9ba4a1564ab19bdb41156f047e1b9ea5d8ac6d",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/text/2d.text.fontVariantCaps.after.reset.font-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "2d.text.fontVariantCaps1.html": [
         "3c216f07daac09924ae79221b05665ea0510000b",
         [
@@ -345231,6 +345322,10 @@
         []
        ]
       },
+      "svg-path-ref.html": [
+       "29f4d3bbff481991354be360948e92334f6043dd",
+       []
+      ],
       "svg-ref.html": [
        "10bf2decaa74ae0108c86d5b97ad0480f85bf307",
        []
@@ -365038,6 +365133,14 @@
         "fb3b5b830d345d2aa858e41673e08f99977baf08",
         []
        ],
+       "2d.text.drawing.style.reset.fontKerning.none2-expected.html": [
+        "5b64983325343a08b5fce7b1273952cbd2695911",
+        []
+       ],
+       "2d.text.fontVariantCaps.after.reset.font-expected.html": [
+        "049f9a82f440293b1a4c3db160e7b5f5d17050a3",
+        []
+       ],
        "2d.text.fontVariantCaps1-expected.html": [
         "e2cef0d77a64b17657bdfe99194930c5328cc3e8",
         []
@@ -365480,6 +365583,14 @@
         "fb3b5b830d345d2aa858e41673e08f99977baf08",
         []
        ],
+       "2d.text.drawing.style.reset.fontKerning.none2-expected.html": [
+        "5b64983325343a08b5fce7b1273952cbd2695911",
+        []
+       ],
+       "2d.text.fontVariantCaps.after.reset.font-expected.html": [
+        "049f9a82f440293b1a4c3db160e7b5f5d17050a3",
+        []
+       ],
        "2d.text.fontVariantCaps1-expected.html": [
         "e2cef0d77a64b17657bdfe99194930c5328cc3e8",
         []
@@ -365727,7 +365838,7 @@
         []
        ],
        "text.yaml": [
-        "22ec2f66b5b57d05052696121a9fc05bb98d38cb",
+        "49edd754c85b92229a45fd3b5b610190cd287804",
         []
        ],
        "the-canvas-state.yaml": [
@@ -397948,8 +398059,28 @@
       "eb89da7846bec8a2611446dac153e16484937111",
       []
      ],
+     "grid-roles.tentative-expected.txt": [
+      "6cb12fe85c69fce080da7fceadb53a93e2b263d6",
+      []
+     ],
+     "listbox-roles.tentative-expected.txt": [
+      "ed1d5f6c9bcaa67c7147222406618abc72f4cb5b",
+      []
+     ],
+     "menu-roles.tentative-expected.txt": [
+      "d83e1bf9e291118a8886fb182a01defcdafc784f",
+      []
+     ],
      "roles.tentative-expected.txt": [
       "8db9514ee939fd9515f6619edaca3aaf114339bf",
+      []
+     ],
+     "tab-roles.tentative-expected.txt": [
+      "442c546fa8289e2a0630cd3d7e2e051004408bf8",
+      []
+     ],
+     "tree-roles.tentative-expected.txt": [
+      "5955ffde5f7d3f82aacca4707ae134422544c800",
       []
      ]
     },
@@ -402225,6 +402356,10 @@
     ],
     "RTCDtlsTransport-state-expected.txt": [
      "73d831bd71043b5f5a7f7fbf37f4d06369d8351b",
+     []
+    ],
+    "RTCError-expected.txt": [
+     "a4e6320ec659375bcca0890e778831db23da1bda",
      []
     ],
     "RTCIceTransport-expected.txt": [
@@ -409816,60 +409951,83 @@
       {}
      ]
     ],
-    "idbcursor_continue_index.htm": [
-     "cfc0ae3fe9f9f909b3416f3226f36679402fe77d",
+    "idbcursor_continue_index.any.js": [
+     "2ac55bce9cb109ea9ae78fa83e1fe5cd8a9b0c36",
      [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_continue_index2.htm": [
-     "56b9218fd199f9c5704891689e9e19c2e0b9a42e",
+      "IndexedDB/idbcursor_continue_index.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.continue()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_continue_index3.htm": [
-     "b9f594540288054df9c9c7c76f4d1ce7a7f3a49b",
+      "IndexedDB/idbcursor_continue_index.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.continue()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_continue_index4.htm": [
-     "f851b87ddf0bc880079fea4b24fa8ad48c38b5b7",
+      "IndexedDB/idbcursor_continue_index.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.continue()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_continue_index5.htm": [
-     "3e70873bbbdbacce7264d6eecebccf84d9c7360b",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_continue_index6.htm": [
-     "1933bfcf990ba2e40605c51dd22d5ab5f8faaaab",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_continue_index7.htm": [
-     "61bfe85b2749e8d21629a973e4015b18aace6201",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_continue_index8.htm": [
-     "e4cbe7261f3957b3d3dd733a3fcd41e5a54d2d92",
-     [
-      null,
-      {}
+      "IndexedDB/idbcursor_continue_index.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.continue()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbcursor_continue_invalid.htm": [
@@ -555167,7 +555325,7 @@
         ]
        ],
        "2d.text.drawing.style.fontStretch.settings.html": [
-        "b19eced89171199dcfb57f1d5aea4b8f7e83c427",
+        "bbb5757083dd70e7d158d8da6e8a40aa90713b23",
         [
          null,
          {}
@@ -555224,6 +555382,20 @@
        ],
        "2d.text.drawing.style.nonfinite.spacing.html": [
         "5ba20208e5eb36cde14c5b5a34f877a324a37edf",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.reset.TextRendering.html": [
+        "b66a30ed3ffcea3d636b00e4ca5f3beb898878a5",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.reset.fontKerning.none.html": [
+        "eab7c2ce34730f3cef81d8a48a7a9a3ec509c985",
         [
          null,
          {}
@@ -568443,14 +568615,14 @@
         ]
        ],
        "2d.text.drawing.style.fontStretch.settings.html": [
-        "95405a18a5682c2eb954b37d150a0f0c54f31af4",
+        "8ea464fca97d227e7dc9dc85d588abc9262b7155",
         [
          null,
          {}
         ]
        ],
        "2d.text.drawing.style.fontStretch.settings.worker.js": [
-        "ff10a742b5843ced57142d1678010082625a940f",
+        "43eca790fe0dc0cd22087ed75e316bc1234d1fba",
         [
          "html/canvas/offscreen/text/2d.text.drawing.style.fontStretch.settings.worker.html",
          {}
@@ -568565,6 +568737,34 @@
         "4cf20b28c078d83864c40b0c23bc90120ee713d9",
         [
          "html/canvas/offscreen/text/2d.text.drawing.style.nonfinite.spacing.worker.html",
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.reset.TextRendering.html": [
+        "60acc11d7b11fadfa11ac4750ac42d1072ca7a06",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.reset.TextRendering.worker.js": [
+        "01c8f9fdc46e7441bf645e7d0d4de8a6fa1ba589",
+        [
+         "html/canvas/offscreen/text/2d.text.drawing.style.reset.TextRendering.worker.html",
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.reset.fontKerning.none.html": [
+        "35b98f448111a1682df7e595ca006790903911ee",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.reset.fontKerning.none.worker.js": [
+        "8abac3c3a1120a1996177544febf6b82091af956",
+        [
+         "html/canvas/offscreen/text/2d.text.drawing.style.reset.fontKerning.none.worker.html",
          {}
         ]
        ],
@@ -599145,7 +599345,16 @@
      ]
     ],
     "roles-generic.html": [
-     "e6ff46b0662529fbb778e9bd47e0ba8d11733103",
+     "e64d88e3d010f1e1335d16e9f7dcaac0120dae22",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "roles-generic.tentative.html": [
+     "09a39d2e635c5cfbb35a0a9786fbc139477dbd88",
      [
       null,
       {
@@ -664347,7 +664556,16 @@
       ]
      ],
      "grid-roles.html": [
-      "2ca3705cf01a6dd462ff4371ca3d01c4234ae50c",
+      "c67119725869c0a6411686fe1840f08c920fec9c",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "grid-roles.tentative.html": [
+      "49d54195c908557adf38e35ef6b7e4c9fe9c80c1",
       [
        null,
        {
@@ -664365,7 +664583,16 @@
       ]
      ],
      "list-roles.html": [
-      "3fd3bfa0e6982db736ddc55756feec05c295eb57",
+      "da097ce67e8932b6d4ec4d9a533b8b8fdf43b20c",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "list-roles.tentative.html": [
+      "3106424ac3668ecdb3dbf48f499af134dd479fa4",
       [
        null,
        {
@@ -664374,7 +664601,16 @@
       ]
      ],
      "listbox-roles.html": [
-      "3d26f04d51a343131b67145a429adf6d93628a66",
+      "100ef6bca72e6d8ad74c183e1245bed8f151cad8",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "listbox-roles.tentative.html": [
+      "e32c565aa9aa175204224ce7c13ca27679458913",
       [
        null,
        {
@@ -664383,7 +664619,16 @@
       ]
      ],
      "menu-roles.html": [
-      "fed15769ab8b11aea6dadf3cbed64aac1eac5a80",
+      "edb5cce5021c6a815d0f1aac7b82967daa7cb84c",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "menu-roles.tentative.html": [
+      "98e032e16e0d848c722cec7ba25b208ba5e30d66",
       [
        null,
        {
@@ -664437,7 +664682,16 @@
       ]
      ],
      "tab-roles.html": [
-      "6561614dd815a231d1cdcb9bbe4a10932f3140d6",
+      "f84504e0b45c8c831a8eb60acbf2bd7d664070b0",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "tab-roles.tentative.html": [
+      "17dd85f6c598f711db85e341c84e4f46220b64ac",
       [
        null,
        {
@@ -664446,7 +664700,7 @@
       ]
      ],
      "table-roles.html": [
-      "6ffb94218d6174eaa061adb512d378855a808c37",
+      "c43533fc77aa1e6d7ee5ab1b94696edcffce7fe3",
       [
        null,
        {
@@ -664455,7 +664709,16 @@
       ]
      ],
      "tree-roles.html": [
-      "5d179fbcbf281160d90813e38bd7e660f98cbce0",
+      "cc56b3a56bd64eab7c929627f7e7a1d88423100e",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "tree-roles.tentative.html": [
+      "4c6d56ba298e7de4fdfa4f18160130459132fd2a",
       [
        null,
        {
@@ -694374,7 +694637,7 @@
      ]
     ],
     "RTCError.html": [
-     "bcc5749bf7d5e69fd3d674ac33564403e41e9985",
+     "2650c54f9a77400169922001b19406e6bd611514",
      [
       null,
       {}

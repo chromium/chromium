@@ -4,3 +4,4 @@ This is a testharness.js-based test.
 [FAIL] orphan span with tab role
   assert_false: Computed Role: "tab" does not match any of the acceptable role strings in ["generic", "", "none"]: <span role="tab" data-testname="orphan span with tab role" class="ex-generic">x</span> expected false got true
 Harness: the test ran to completion.
+
