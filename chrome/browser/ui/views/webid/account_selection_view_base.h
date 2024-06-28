@@ -100,6 +100,13 @@ class BrandIconImageView : public views::ImageView {
 
   void CropAndSetImage(const gfx::ImageSkia& original_image);
 
+  // If this image uses a background circle, updates its color.
+  void OnBackgroundColorUpdated(const SkColor& background_color);
+
+  std::optional<SkColor> background_color_for_testing() const {
+    return background_color_;
+  }
+
  private:
   void OnImageFetched(const GURL& image_url,
                       const gfx::Image& image,
@@ -112,6 +119,7 @@ class BrandIconImageView : public views::ImageView {
   // when this object is used as a badge for an account icon. When set, this
   // should be the background color of the dialog.
   std::optional<SkColor> background_color_;
+  gfx::ImageSkia cropped_idp_image_;
 
   base::WeakPtrFactory<BrandIconImageView> weak_ptr_factory_{this};
 };

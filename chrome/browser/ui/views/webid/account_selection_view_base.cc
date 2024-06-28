@@ -31,6 +31,10 @@ namespace {
 // https://www.w3.org/TR/appmanifest/#icon-masks
 constexpr float kMaskableWebIconSafeZoneRatio = 0.8f;
 
+// The border radius of the background circle containing the IDP icon in an
+// account button.
+constexpr int kIdpBorderRadius = 10;
+
 // Selects string for disclosure text based on passed-in `privacy_policy_url`
 // and `terms_of_service_url`.
 int SelectDisclosureTextResourceId(const GURL& privacy_policy_url,
@@ -207,6 +211,78 @@ class AccountImageView : public views::ImageView {
 BEGIN_METADATA(AccountImageView)
 END_METADATA
 
+class AccountHoverButton : public HoverButton {
+ public:
+  AccountHoverButton(PressedCallback callback,
+                     std::unique_ptr<views::View> icon_view,
+                     const std::u16string& title,
+                     const std::u16string& subtitle,
+                     std::unique_ptr<views::View> secondary_view,
+                     bool add_vertical_label_spacing,
+                     const std::u16string& footer,
+                     BrandIconImageView* brand_icon_image_view)
+      : HoverButton(std::move(callback),
+                    std::move(icon_view),
+                    title,
+                    subtitle,
+                    std::move(secondary_view),
+                    add_vertical_label_spacing,
+                    footer),
+        brand_icon_image_view_(brand_icon_image_view) {}
+
+  AccountHoverButton(const AccountHoverButton&) = delete;
+  AccountHoverButton& operator=(const AccountHoverButton&) = delete;
+  ~AccountHoverButton() override = default;
+
+  void StateChanged(ButtonState old_state) override {
+    // If there is an IDP icon within the account button, the IDP icon was
+    // created using a background circle with the color of the background. When
+    // the button state changes, the color of the background may change, so we
+    // recreate the background circle.
+    HoverButton::StateChanged(old_state);
+    if (brand_icon_image_view_) {
+      ui::ColorProvider* provider =
+          brand_icon_image_view_->parent()->GetColorProvider();
+      if (provider) {
+        ui::ColorId color_id;
+        switch (GetState()) {
+          case ButtonState::STATE_NORMAL: {
+            color_id = ui::kColorDialogBackground;
+            break;
+          }
+          case ButtonState::STATE_HOVERED:
+          case ButtonState::STATE_PRESSED: {
+            color_id = ui::kColorMenuButtonBackgroundSelected;
+            break;
+          }
+          case ButtonState::STATE_DISABLED:
+          default: {
+            return;
+          }
+        }
+        brand_icon_image_view_->OnBackgroundColorUpdated(
+            provider->GetColor(color_id));
+      }
+    }
+  }
+
+  void OnThemeChanged() override {
+    HoverButton::OnThemeChanged();
+    if (brand_icon_image_view_) {
+      ui::ColorProvider* provider =
+          brand_icon_image_view_->parent()->GetColorProvider();
+      if (provider) {
+        brand_icon_image_view_->OnBackgroundColorUpdated(
+            provider->GetColor(ui::kColorDialogBackground));
+      }
+    }
+  }
+
+ private:
+  // Owned by its views::BoxLayoutView container.
+  raw_ptr<BrandIconImageView> brand_icon_image_view_;
+};
+
 }  // namespace
 
 BrandIconImageView::BrandIconImageView(
@@ -234,18 +310,17 @@ void BrandIconImageView::FetchImage(
 }
 
 void BrandIconImageView::CropAndSetImage(const gfx::ImageSkia& original_image) {
-  constexpr int kBorderRadius = 10;
-  gfx::ImageSkia cropped_image =
+  cropped_idp_image_ =
       should_circle_crop_
           ? CreateCircleCroppedImage(original_image, image_size_)
           : gfx::ImageSkiaOperations::CreateResizedImage(
                 original_image, skia::ImageOperations::RESIZE_BEST,
                 gfx::Size(image_size_, image_size_));
-  if (background_color_) {
-    cropped_image = gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-        kBorderRadius, *background_color_, cropped_image);
-  }
-  SetImage(ui::ImageModel::FromImageSkia(cropped_image));
+  SetImage(ui::ImageModel::FromImageSkia(
+      background_color_
+          ? gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+                kIdpBorderRadius, *background_color_, cropped_idp_image_)
+          : cropped_idp_image_));
 }
 
 void BrandIconImageView::OnImageFetched(
@@ -265,6 +340,17 @@ void BrandIconImageView::OnImageFetched(
     return;
   }
   std::move(add_image_).Run(image_url, skia_image);
+}
+
+void BrandIconImageView::OnBackgroundColorUpdated(
+    const SkColor& background_color) {
+  if (!background_color_) {
+    return;
+  }
+  background_color_ = background_color;
+  SetImage(ui::ImageModel::FromImageSkia(
+      gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+          kIdpBorderRadius, *background_color_, cropped_idp_image_)));
 }
 
 BEGIN_METADATA(BrandIconImageView)
@@ -317,6 +403,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
   account_image_view->SetImageSize({avatar_size, avatar_size});
   CHECK(should_hover || !should_include_idp);
   if (should_hover) {
+    BrandIconImageView* brand_icon_image_view_ptr = nullptr;
     if (should_include_idp) {
       account_image_view->SetAccountImage(account, *image_fetcher_,
                                           avatar_size);
@@ -348,7 +435,8 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
                              weak_ptr_factory_.GetWeakPtr()),
               kLargeAvatarBadgeSize, /*should_circle_crop=*/true,
               background_color);
-      ConfigureBrandImageView(brand_icon_image_view.get(),
+      brand_icon_image_view_ptr = brand_icon_image_view.get();
+      ConfigureBrandImageView(brand_icon_image_view_ptr,
                               idp_display_data.idp_metadata.brand_icon_url);
 
       icon_container->AddChildView(std::move(brand_icon_image_view));
@@ -386,7 +474,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
     }
     // We can pass crefs to OnAccountSelected because the `observer_` owns the
     // data.
-    auto row = std::make_unique<HoverButton>(
+    auto row = std::make_unique<AccountHoverButton>(
         base::BindRepeating(
             &AccountSelectionViewBase::Observer::OnAccountSelected,
             base::Unretained(observer_), std::cref(account),
@@ -395,7 +483,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
         /*title=*/base::UTF8ToUTF16(account.name),
         /*subtitle=*/base::UTF8ToUTF16(account.email),
         /*secondary_view=*/std::move(arrow_icon_view),
-        /*add_vertical_label_spacing=*/true, footer);
+        /*add_vertical_label_spacing=*/true, footer, brand_icon_image_view_ptr);
     row->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
         /*vertical=*/additional_vertical_padding,
         /*horizontal=*/is_modal_dialog ? kModalHorizontalSpacing
