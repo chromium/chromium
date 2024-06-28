@@ -17,7 +17,7 @@ if (toolchain_has_rust) {
     rustflags = [ "--edition=2015" ]
   }
 
-  if (enable_cxx) {
+  if (enable_rust_cxx) {
     # The version of cxx under //third_party/rust/chromium_crates_io/vendor.
     # Update this whenever cxx is rolled. Also update the version number in the
     # //third_party/rust/cxx/v1/cxx.h header.

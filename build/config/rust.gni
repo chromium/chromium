@@ -29,7 +29,7 @@ declare_args() {
   # The CXX tool is in //third_party/rust which is not shared with downstream
   # projects yet. So they need to copy the required dependencies and GN files
   # into their project to enable CXX there.
-  enable_cxx = build_with_chromium
+  enable_rust_cxx = build_with_chromium
 
   # The chromium prelude crate provides the `chromium::import!` macro which
   # is needed to depend on first-party rust libraries. Third-party libraries
@@ -118,6 +118,10 @@ declare_args() {
 
   # Rust gtest interop.
   enable_rust_gtest_interop = enable_rust
+
+  # Deprecated alias for `enable_rust_cxx`.
+  # TODO(crbug.com/40286066): Remove once downstream projects stop using this.
+  enable_cxx = enable_rust_cxx
 }
 
 # Use the Rust toolchain built in-tree. When false, we use the prebuilt Rust

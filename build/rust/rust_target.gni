@@ -8,8 +8,8 @@ import("//build/rust/rust_unit_test.gni")
 # The //build directory is re-used for non-Chromium projects. Do not support
 # cxx bindings in such contexts by default, because //third_party may be
 # missing. Projects that wish to use cxx bindings must explicitly set the
-# enable_cxx GN arg to true.
-if (enable_cxx) {
+# enable_rust_cxx GN arg to true.
+if (enable_rust_cxx) {
   import("//third_party/rust/cxx/chromium_integration/rust_cxx.gni")
 }
 
@@ -185,7 +185,7 @@ template("rust_target") {
   # generate Rust code internally, depending on what bindings are declared. If
   # set, it's a set of rust files that include Cxx bindings declarations.
   _cxx_bindings = []
-  assert(!defined(invoker.cxx_bindings) || enable_cxx,
+  assert(!defined(invoker.cxx_bindings) || enable_rust_cxx,
          "cxx bindings are not supported when building rust targets " +
              "outside the Chromium build.")
   if (defined(invoker.cxx_bindings)) {
