@@ -181,6 +181,7 @@ public class TabsSettingsUnitTest {
     public void testArchiveSettingsTitleAndSummary() {
         TabArchiveSettings archiveSettings =
                 new TabArchiveSettings(ChromeSharedPreferences.getInstance());
+        archiveSettings.setArchiveEnabled(true);
         archiveSettings.setArchiveTimeDeltaHours((int) TimeUnit.DAYS.toHours(14));
 
         TabsSettings tabsSettings = launchFragment();

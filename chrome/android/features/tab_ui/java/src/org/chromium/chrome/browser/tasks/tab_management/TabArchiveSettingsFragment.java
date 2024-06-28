@@ -18,8 +18,7 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 public class TabArchiveSettingsFragment extends ChromeBaseSettingsFragment {
     // Must match key in tab_archive_settings.xml
     static final String PREF_TAB_ARCHIVE_ALLOW_AUTODELETE = "tab_archive_allow_autodelete";
-
-    private static final int[] ARCHIVE_TIME_DELTA_OPTS = new int[] {0, 7, 14, 30};
+    static final String INACTIVE_TIMEDELTA_PREF = "tab_archive_time_delta";
 
     private TabArchiveSettings mArchiveSettings;
 
@@ -33,6 +32,11 @@ public class TabArchiveSettingsFragment extends ChromeBaseSettingsFragment {
     }
 
     private void configureSettings() {
+        // Archive time delta radio button.
+        TabArchiveTimeDeltaPreference archiveTimeDeltaPreference =
+                (TabArchiveTimeDeltaPreference) findPreference(INACTIVE_TIMEDELTA_PREF);
+        archiveTimeDeltaPreference.initialize(mArchiveSettings);
+
         // Auto delete switch.
         ChromeSwitchPreference enableAutoDeleteSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_TAB_ARCHIVE_ALLOW_AUTODELETE);

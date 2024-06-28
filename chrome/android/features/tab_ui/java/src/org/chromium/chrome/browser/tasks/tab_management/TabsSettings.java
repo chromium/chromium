@@ -37,6 +37,11 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
         getActivity().setTitle(R.string.tabs_settings_title);
 
         configureAutoOpenSyncedTabGroupsSwitch();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         configureTabArchiveSettings();
     }
 
@@ -74,12 +79,17 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
 
         TabArchiveSettings archiveSettings =
                 new TabArchiveSettings(ChromeSharedPreferences.getInstance());
-        int tabArchiveTimeDeltaDays = archiveSettings.getArchiveTimeDeltaDays();
-        tabArchiveSettingsPref.setSummary(
-                getResources()
-                        .getQuantityString(
-                                R.plurals.archive_settings_summary,
-                                tabArchiveTimeDeltaDays,
-                                tabArchiveTimeDeltaDays));
+        if (archiveSettings.getArchiveEnabled()) {
+            int tabArchiveTimeDeltaDays = archiveSettings.getArchiveTimeDeltaDays();
+            tabArchiveSettingsPref.setSummary(
+                    getResources()
+                            .getQuantityString(
+                                    R.plurals.archive_settings_summary,
+                                    tabArchiveTimeDeltaDays,
+                                    tabArchiveTimeDeltaDays));
+        } else {
+            tabArchiveSettingsPref.setSummary(
+                    getResources().getString(R.string.archive_settings_time_delta_never));
+        }
     }
 }

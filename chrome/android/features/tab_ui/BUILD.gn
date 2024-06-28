@@ -103,6 +103,7 @@ android_resources("java_resources") {
     "java/res/values/ids.xml",
     "java/res/values/styles.xml",
     "java/res/xml/tab_archive_settings.xml",
+    "java/res/xml/tab_archive_time_delta_preference.xml",
     "java/res/xml/tabs_settings.xml",
   ]
   deps = [

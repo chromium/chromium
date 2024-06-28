@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -13,8 +15,8 @@ import java.util.concurrent.TimeUnit;
 
 /** Class to manage reading/writing preferences related to tab declutter. */
 public class TabArchiveSettings {
-    static final boolean ARCHIVE_ENABLED_DEFAULT = true;
-    static final boolean AUTO_DELETE_ENABLED_DEFAULT = true;
+    @VisibleForTesting static final boolean ARCHIVE_ENABLED_DEFAULT = true;
+    @VisibleForTesting static final boolean AUTO_DELETE_ENABLED_DEFAULT = true;
 
     private final SharedPreferencesManager mPrefsManager;
 
@@ -25,18 +27,16 @@ public class TabArchiveSettings {
      */
     public TabArchiveSettings(SharedPreferencesManager prefsManager) {
         mPrefsManager = prefsManager;
-        // Turn off the archive feature by default for tests since we can't control when tabs
-        // are created, and tabs disappearing from tests is very unexpected. For archive tests,
-        // this will need to be turned on manually.
-        if (BuildConfig.IS_FOR_TEST) {
-            setArchiveEnabled(false);
-        }
     }
 
     /** Returns whether archive is enabled in settings. */
     public boolean getArchiveEnabled() {
+        // Turn off the archive feature by default for tests since we can't control when tabs
+        // are created, and tabs disappearing from tests is very unexpected. For archive tests,
+        // this will need to be turned on manually.
         return mPrefsManager.readBoolean(
-                ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_ENABLED, ARCHIVE_ENABLED_DEFAULT);
+                ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_ENABLED,
+                BuildConfig.IS_FOR_TEST ? false : ARCHIVE_ENABLED_DEFAULT);
     }
 
     /** Sets whether archive is enabled in settings. */
@@ -65,6 +65,11 @@ public class TabArchiveSettings {
     public void setArchiveTimeDeltaHours(int timeDeltaHours) {
         mPrefsManager.writeInt(
                 ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_TIME_DELTA_HOURS, timeDeltaHours);
+    }
+
+    /** Sets the time delta in daysused to determine if a tab is eligible for archive. */
+    public void setArchiveTimeDeltaDays(int timeDeltaHours) {
+        setArchiveTimeDeltaHours((int) TimeUnit.DAYS.toHours(timeDeltaHours));
     }
 
     /** Returns whether auto-deletion of archived tabs is enabled. */

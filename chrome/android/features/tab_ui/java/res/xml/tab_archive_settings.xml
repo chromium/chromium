@@ -9,7 +9,8 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- TODO(crbug.com/347121324): Create radio button preference. -->
+    <org.chromium.chrome.browser.tasks.tab_management.TabArchiveTimeDeltaPreference
+        android:key="tab_archive_time_delta" />
 
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="tab_archive_allow_autodelete"

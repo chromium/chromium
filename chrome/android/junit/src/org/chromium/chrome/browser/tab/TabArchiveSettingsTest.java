@@ -39,6 +39,7 @@ public class TabArchiveSettingsTest {
 
     @Test
     public void testSettings() {
+        mSettings.setArchiveEnabled(TabArchiveSettings.ARCHIVE_ENABLED_DEFAULT);
         assertEquals(TabArchiveSettings.ARCHIVE_ENABLED_DEFAULT, mSettings.getArchiveEnabled());
         assertEquals(ARCHIVE_TIME_DELTA_HOURS_DEFAULT, mSettings.getArchiveTimeDeltaHours());
         assertEquals(

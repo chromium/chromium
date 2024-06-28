@@ -835,6 +835,15 @@
       <message name="IDS_ARCHIVE_SETTINGS_ALLOW_AUTODELETE_SUMMARY" desc="The summary for toggle to allow tabs to be deleted automatically.">
         Inactive tabs will automatically be close. You can always find them in History.
       </message>
+      <message name="IDS_ARCHIVE_SETTINGS_TIME_DELTA" desc="The string to show how many days until a tab is considered inactive.">
+        {DAY_COUNT, plural,
+          =1 {After 1 day}
+          other {After <ph name="DAY_COUNT_MANY">%1$d<ex>15</ex></ph> days}
+        }
+      </message>
+      <message name="IDS_ARCHIVE_SETTINGS_TIME_DELTA_NEVER" desc="The string for the option to never archive tabs.">
+        Never
+      </message>
     </messages>
   </release>
 </grit>

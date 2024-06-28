@@ -80,16 +80,44 @@ public class TabArchiveSettingsFragmentUnitTest {
 
     @Test
     @SmallTest
-    public void testLaunchTabsSettingsAutoOpenSynedTabGroupsEnabled() {
+    public void testLaunchSettings() {
+        mArchiveSettings.setArchiveEnabled(true);
+        mArchiveSettings.setArchiveTimeDeltaDays(7);
         mArchiveSettings.setAutoDeleteEnabled(false);
 
         TabArchiveSettingsFragment tabArchiveSettingsFragment = launchFragment();
+
+        // Verify the correct radio button is checked.
+        TabArchiveTimeDeltaPreference archiveTimeDeltaPreference =
+                (TabArchiveTimeDeltaPreference)
+                        tabArchiveSettingsFragment.findPreference(
+                                TabArchiveSettingsFragment.INACTIVE_TIMEDELTA_PREF);
+        assertEquals(
+                "After 7 days",
+                archiveTimeDeltaPreference.getCheckedRadioButtonForTesting().getPrimaryText());
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.ArchiveSettings.TimeDeltaPreference", 0);
+        var radioButton = archiveTimeDeltaPreference.getRadioButtonForTesting(0);
+        radioButton.onClick(radioButton);
+        histogramWatcher.assertExpected();
+        assertFalse(mArchiveSettings.getArchiveEnabled());
+
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.ArchiveSettings.TimeDeltaPreference", 14);
+        radioButton = archiveTimeDeltaPreference.getRadioButtonForTesting(2);
+        radioButton.onClick(radioButton);
+        histogramWatcher.assertExpected();
+        assertTrue(mArchiveSettings.getArchiveEnabled());
+        assertEquals(14, mArchiveSettings.getArchiveTimeDeltaDays());
+
         ChromeSwitchPreference enableAutoDelete =
                 tabArchiveSettingsFragment.findPreference(
                         TabArchiveSettingsFragment.PREF_TAB_ARCHIVE_ALLOW_AUTODELETE);
         assertFalse(enableAutoDelete.isChecked());
 
-        var histogramWatcher =
+        histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Tabs.ArchiveSettings.AutoDeleteEnabled", true);
         enableAutoDelete.onClick();

@@ -106,6 +106,7 @@ public class TabArchiverTest {
         mTabArchiveSettings = new TabArchiveSettings(mSharedPrefs);
         // Clear prefs set by tests.
         mTabArchiveSettings.resetSettingsForTesting();
+        mTabArchiveSettings.setArchiveEnabled(true);
 
         mTabArchiver =
                 runOnUiThreadBlockingNoException(
