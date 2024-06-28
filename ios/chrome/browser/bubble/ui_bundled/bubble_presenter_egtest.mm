@@ -104,7 +104,7 @@ void ReloadFromOmnibox() {
 - (void)testTabGridIPH {
   RelaunchWithIPHFeature(@"IPH_iOSTabGridToolbarItemFeature",
                          /*safari_switcher=*/YES);
-  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGreyUI openNewTab];
   [ChromeEarlGrey waitForMainTabCount:2];
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(
