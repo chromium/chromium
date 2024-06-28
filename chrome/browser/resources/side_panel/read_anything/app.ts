@@ -863,7 +863,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
       // Disable the associated language if there are no other Google voices for
       // it.
-      const availableVoicesForLang = this.getVoices().filter(
+      const availableVoicesForLang = this.getVoices_().filter(
           v => getVoicePackConvertedLangIfExists(v.lang) === lang);
       if (availableVoicesForLang.length === 0 ||
           availableVoicesForLang.every(v => isEspeak(v))) {
@@ -948,7 +948,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
             // Force a refresh of the voices list since we might not get an
             // update the voices have changed.
-            this.getVoices(true);
+            this.getVoices_(true);
             this.showToast_();
           }
 
@@ -1048,7 +1048,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   onVoicesChanged() {
     // Get a new list of voices. This should be done before we call
     // refreshVoicePackStatuses();
-    this.getVoices(/*refresh =*/ true);
+    this.getVoices_(/*refresh =*/ true);
 
     // If voice was selected automatically and not by the user, check if
     // there's a higher quality voice available now.
@@ -1086,7 +1086,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   defaultVoice(): SpeechSynthesisVoice|undefined {
     const baseLang = this.speechSynthesisLanguage;
-    const allPossibleVoices = this.getVoices();
+    const allPossibleVoices = this.getVoices_();
     const voicesForLanguage =
         allPossibleVoices.filter(voice => voice.lang.startsWith(baseLang));
 
@@ -1151,7 +1151,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // If the default voice won't work, try another voice in that language.
     const baseLang = this.speechSynthesisLanguage;
     const voicesForLanguage =
-        this.getVoices().filter(voice => voice.lang.startsWith(baseLang));
+        this.getVoices_().filter(voice => voice.lang.startsWith(baseLang));
 
     // TODO(b/40927698): It's possible we can get stuck in an infinite loop
     // of jumping back and forth between two or more invalid voices, if
@@ -1180,8 +1180,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     return null;
   }
 
-  // TODO(b/346868764): Longer term, this shouldn't be public just for tests.
-  getVoices(refresh: boolean = false): SpeechSynthesisVoice[] {
+  private getVoices_(refresh: boolean = false): SpeechSynthesisVoice[] {
     if (!this.availableVoices_ || refresh) {
       let availableVoices = this.synth.getVoices();
       if (availableVoices.some(({localService}) => localService)) {
@@ -2192,7 +2191,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   restoreEnabledLanguagesFromPref() {
     // We need to make sure the languages we choose correspond to voices, so
     // refresh the list of voices and available langs
-    this.getVoices();
+    this.getVoices_();
 
     const storedLanguagesPref: string[] =
         chrome.readingMode.getLanguagesEnabledInPref();
@@ -2254,7 +2253,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
 
     const selectedVoice =
-        this.getVoices().filter(voice => voice.name === storedVoiceName);
+        this.getVoices_().filter(voice => voice.name === storedVoiceName);
     this.selectedVoice_ = selectedVoice && (selectedVoice.length > 0) ?
         selectedVoice[0] :
         this.defaultVoice();

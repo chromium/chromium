@@ -173,21 +173,23 @@ suite('UpdateVoicePack', () => {
             status.client, VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
       });
 
-  test('installed if non-natural voices are in the list for this lang', () => {
-    const lang = 'en';
+  test(
+      'unavailable if only non-natural voices are in the list for this lang',
+      () => {
+        const lang = 'en';
 
-    app.updateVoicePackStatus(lang, 'kInstalled');
+        app.updateVoicePackStatus(lang, 'kInstalled');
 
-    const status = app.getVoicePackStatusForTesting(lang);
-    assertEquals(
-        status.server.code, VoicePackServerStatusSuccessCode.INSTALLED);
-    assertEquals('Successful response', status.server.id);
-    assertEquals(
-        status.client, VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
-  });
+        const status = app.getVoicePackStatusForTesting(lang);
+        assertEquals(
+            status.server.code, VoicePackServerStatusSuccessCode.INSTALLED);
+        assertEquals('Successful response', status.server.id);
+        assertEquals(
+            status.client, VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
+      });
 
   test(
-      'available if non-natural voices are unsupported this lang and voices available',
+      'available if natural voices are unsupported for this lang and voices are available',
       () => {
         const lang = 'yue';
         createAndSetVoices(app, speechSynthesis, [
@@ -204,7 +206,7 @@ suite('UpdateVoicePack', () => {
       });
 
   test(
-      'installed if non-natural voices are unsupported this lang and voices unavailable',
+      'unavailable if natural voices are unsupported for this lang and voices unavailable',
       () => {
         const lang = 'yue';
 
@@ -218,29 +220,27 @@ suite('UpdateVoicePack', () => {
             status.client, VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
       });
 
-  test(
-      'refreshes getVoices() and marks newly available voices as available',
-      () => {
-        const lang = 'en-us';
-        // set installing status so that the old status is not empty.
-        app.updateVoicePackStatus(lang, 'kInstalling');
-        // Confirm en-us is not in the voice list yet
-        assertFalse(
-            app.synth.getVoices().some(v => v.lang.toLowerCase() === lang));
-        setNaturalVoicesForLang(lang);
+  test('available if natural voices are in installed for this lang', () => {
+    const lang = 'en-us';
+    // set installing status so that the old status is not empty.
+    app.updateVoicePackStatus(lang, 'kInstalling');
+    // set the voices on speech synthesis without triggering on voices
+    // changed, so we can verify that updateVoicePackStatus calls it.
+    speechSynthesis.setVoices([
+      createSpeechSynthesisVoice({lang: lang, name: 'Wall-e (Natural)'}),
+      createSpeechSynthesisVoice({lang: lang, name: 'Andy (Natural)'}),
+    ]);
 
-        app.updateVoicePackStatus(lang, 'kInstalled');
+    app.updateVoicePackStatus(lang, 'kInstalled');
 
-        // Confirm that updateVoicePackStatus refreshes the voice list and marks
-        // the language as available
-        const status = app.getVoicePackStatusForTesting(lang);
-        assertEquals(
-            status.server.code, VoicePackServerStatusSuccessCode.INSTALLED);
-        assertEquals('Successful response', status.server.id);
-        assertEquals(status.client, VoiceClientSideStatusCode.AVAILABLE);
-        assertTrue(app.getVoices().some(v => v.lang.toLowerCase() === lang));
-        assertTrue(!!app.getSpeechSynthesisVoice());
-      });
+    const status = app.getVoicePackStatusForTesting(lang);
+    assertEquals(
+        status.server.code, VoicePackServerStatusSuccessCode.INSTALLED);
+    assertEquals('Successful response', status.server.id);
+    // This would be INSTALLED_AND_UNAVIALABLE if the voice list wasn't
+    // refreshed.
+    assertEquals(status.client, VoiceClientSideStatusCode.AVAILABLE);
+  });
 
   test(
       'with flag switches to newly available voices if it\'s for the current language',
@@ -251,9 +251,6 @@ suite('UpdateVoicePack', () => {
         chrome.readingMode.baseLanguageForSpeech = lang;
         app.enabledLangs = [lang];
         chrome.readingMode.getStoredVoice = () => '';
-        // Confirm en-us is not in the voice list yet
-        assertFalse(
-            app.synth.getVoices().some(v => v.lang.toLowerCase() === lang));
         setNaturalVoicesForLang(lang);
 
         app.updateVoicePackStatus(lang, 'kInstalled');
