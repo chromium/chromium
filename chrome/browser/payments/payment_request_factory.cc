@@ -7,13 +7,11 @@
 #include <memory>
 #include <utility>
 
-#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/payments/chrome_payment_request_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/payments/content/payment_request.h"
-#include "components/payments/core/payment_prefs.h"
-#include "components/prefs/pref_service.h"
+#include "components/payments/core/payment_request_metrics.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -55,12 +53,8 @@ void RecordCanMakePaymentAllowedHistogram(
   }
   recorded_profiles->insert(profile);
 
-  const bool can_make_payment_enabled =
-      profile->GetPrefs()->GetBoolean(kCanMakePaymentEnabled);
-  base::UmaHistogramBoolean(
-      "PaymentRequest.IsCanMakePaymentAllowedByPref.PaymentRequestConstruction."
-      "Once",
-      can_make_payment_enabled);
+  RecordCanMakePaymentPrefMetrics(*profile->GetPrefs(),
+                                  "PaymentRequestConstruction.Once");
 }
 
 }  // namespace
