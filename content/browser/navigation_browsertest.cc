@@ -9082,6 +9082,12 @@ RenderFrameHostImpl* GetMainFrameSpeculativeRFH(WebContentsImpl* web_contents) {
       ->speculative_frame_host();
 }
 
+void VerifyDeferSpeculativeRFHActionUMA(const base::HistogramTester& tester,
+                                        DeferSpeculativeRFHAction action) {
+  tester.ExpectUniqueSample("Navigation.DeferSpeculativeRFHAction",
+                            static_cast<int>(action), 1);
+}
+
 class DeferSpeculativeRFHCreationTest : public NavigationBrowserTest {
  public:
   DeferSpeculativeRFHCreationTest() {
@@ -9170,10 +9176,16 @@ IN_PROC_BROWSER_TEST_P(DeferSpeculativeRFHCreationRenderProcessTest,
 
   GURL url = embedded_test_server()->GetURL("b.com", "/title1.html");
   TestNavigationManager nav_manager(web_contents, url);
+  base::HistogramTester histogram_tester;
 
   // The speculative RFH shall not be created when the navigation request is
   // created.
   ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, url));
+  DeferSpeculativeRFHAction expected_action =
+      WillWarmupSpareRenderProcess()
+          ? DeferSpeculativeRFHAction::kDeferredWithRenderProcessWarmUp
+          : DeferSpeculativeRFHAction::kDeferredWithoutRenderProcessWarmUp;
+  VerifyDeferSpeculativeRFHActionUMA(histogram_tester, expected_action);
   NavigationRequest* navigation_request =
       NavigationRequest::From(nav_manager.GetNavigationHandle());
   if (WillWarmupSpareRenderProcess()) {
@@ -9245,7 +9257,10 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
   GURL url = embedded_test_server()->GetURL("a.com", "/title2.html");
   TestNavigationManager nav_manager(web_contents, url);
   // Navigation from a crashed frame shall immediately create a speculative RFH.
+  base::HistogramTester histogram_tester;
   shell()->LoadURL(url);
+  VerifyDeferSpeculativeRFHActionUMA(histogram_tester,
+                                     DeferSpeculativeRFHAction::kNotDeferred);
   NavigationRequest* navigation_request =
       NavigationRequest::From(nav_manager.GetNavigationHandle());
   ASSERT_EQ(navigation_request->state(),
@@ -9270,7 +9285,10 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
   GURL url = GetWebUIURL(kChromeUIGpuHost);
   TestNavigationManager nav_manager(web_contents, url);
   // The speculative RFH shall be created when the navigation starts.
+  base::HistogramTester histogram_tester;
   shell()->LoadURL(url);
+  VerifyDeferSpeculativeRFHActionUMA(histogram_tester,
+                                     DeferSpeculativeRFHAction::kNotDeferred);
   NavigationRequest* navigation_request = main_frame()->navigation_request();
   ASSERT_EQ(navigation_request->state(),
             NavigationRequest::NavigationState::WAITING_FOR_RENDERER_RESPONSE);
@@ -9294,7 +9312,10 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
   GURL url("about:blank");
   TestNavigationManager nav_manager(web_contents, url);
   // The speculative RFH shall be created when the navigation starts.
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, url));
+  VerifyDeferSpeculativeRFHActionUMA(histogram_tester,
+                                     DeferSpeculativeRFHAction::kNotDeferred);
   NavigationRequest* navigation_request =
       NavigationRequest::From(nav_manager.GetNavigationHandle());
   ASSERT_EQ(navigation_request->state(),
@@ -9323,7 +9344,11 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
 
   // The speculative RFH shall not be created when the navigation request is
   // created.
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, url));
+  VerifyDeferSpeculativeRFHActionUMA(
+      histogram_tester,
+      DeferSpeculativeRFHAction::kDeferredWithoutRenderProcessWarmUp);
   NavigationRequest* navigation_request =
       NavigationRequest::From(nav_manager.GetNavigationHandle());
   ASSERT_TRUE(navigation_request);

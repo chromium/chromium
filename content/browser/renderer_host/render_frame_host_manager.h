@@ -87,6 +87,18 @@ enum class GetFrameHostForNavigationFailed {
   kIntentionalDefer,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(DeferSpeculativeRFHAction)
+enum class DeferSpeculativeRFHAction {
+  kNotDeferred = 0,
+  kDeferredWithRenderProcessWarmUp = 1,
+  kDeferredWithoutRenderProcessWarmUp = 2,
+  kMaxValue = kDeferredWithoutRenderProcessWarmUp,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:DeferSpeculativeRFHAction)
+
 // Manages RenderFrameHosts for a FrameTreeNode. It maintains a
 // current_frame_host() which is the content currently visible to the user. When
 // a frame is told to navigate to a different web site (as determined by
