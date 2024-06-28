@@ -5718,6 +5718,23 @@
             ]
         }
     ],
+    "ComposeEnableNudgeForUnspecifiedHint": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "ComposeEnableNudgeForUnspecifiedHint"
+                    ]
+                }
+            ]
+        }
+    ],
     "ComposeModelQualityLogging": [
         {
             "platforms": [
