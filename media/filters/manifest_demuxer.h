@@ -150,8 +150,9 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
     // and network fetches.
     virtual void StartWaitingForSeek() = 0;
 
-    // Abort any pending reads, parses, or network requests.
-    virtual void AbortPendingReads() = 0;
+    // Abort any pending reads, parses, or network requests. calls CB when
+    // finished.
+    virtual void AbortPendingReads(base::OnceClosure cb) = 0;
 
     // Returns whether this engine supports seeking. Some live stream content
     // can't be seeked.

@@ -19,6 +19,7 @@
 #include "media/base/pipeline_status.h"
 #include "media/filters/hls_data_source_provider.h"
 #include "media/filters/hls_demuxer_status.h"
+#include "media/filters/hls_network_access_impl.h"
 #include "media/filters/hls_rendition.h"
 #include "media/filters/hls_stats_reporter.h"
 #include "media/filters/manifest_demuxer.h"
@@ -56,7 +57,7 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
                     ManifestDemuxer::DelayCallback cb) override;
   void Seek(base::TimeDelta time, ManifestDemuxer::SeekCallback cb) override;
   void StartWaitingForSeek() override;
-  void AbortPendingReads() override;
+  void AbortPendingReads(base::OnceClosure cb) override;
   bool IsSeekable() const override;
   int64_t GetMemoryUsage() const override;
   void Stop() override;
@@ -217,10 +218,6 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   HlsDataSourceProvider::ReadCb BindStatsUpdate(
       HlsDataSourceProvider::ReadCb cb);
 
-  // Read the entire contents of a data source stream before calling cb.
-  void ReadUntilExhausted(HlsDataSourceProvider::ReadCb cb,
-                          HlsDataSourceProvider::ReadResult result);
-
   void ParsePlaylist(PipelineStatusCallback parse_complete_cb,
                      PlaylistParseInfo parse_info,
                      HlsDataSourceProvider::ReadResult m_stream);
@@ -267,7 +264,6 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
                                      GURL uri,
                                      hls::types::DecimalInteger version);
 
-  base::SequenceBound<HlsDataSourceProvider> data_source_provider_;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
 
   // root playlist, either multivariant or media.
@@ -276,6 +272,10 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   std::unique_ptr<MediaLog> media_log_;
   raw_ptr<ManifestDemuxerEngineHost> host_
       GUARDED_BY_CONTEXT(media_sequence_checker_) = nullptr;
+
+  // The network access implementation.
+  std::unique_ptr<HlsNetworkAccess> network_access_
+      GUARDED_BY_CONTEXT(media_sequence_checker_);
 
   // If the root playlist is multivariant, we need to store it for parsing the
   // dependent media playlists.

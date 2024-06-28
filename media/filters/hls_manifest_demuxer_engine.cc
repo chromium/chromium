@@ -159,10 +159,10 @@ HlsManifestDemuxerEngine::HlsManifestDemuxerEngine(
     bool was_already_tainted,
     GURL root_playlist_uri,
     MediaLog* media_log)
-    : data_source_provider_(std::move(dsp)),
-      media_task_runner_(std::move(media_task_runner)),
+    : media_task_runner_(std::move(media_task_runner)),
       root_playlist_uri_(std::move(root_playlist_uri)),
       media_log_(media_log->Clone()),
+      network_access_(std::make_unique<HlsNetworkAccessImpl>(std::move(dsp))),
       origin_tainted_(was_already_tainted) {
   // This is always created on the main sequence, but used on the media sequence
   DETACH_FROM_SEQUENCE(media_sequence_checker_);
@@ -227,7 +227,7 @@ void HlsManifestDemuxerEngine::StartWaitingForSeek() {
   }
 }
 
-void HlsManifestDemuxerEngine::AbortPendingReads() {
+void HlsManifestDemuxerEngine::AbortPendingReads(base::OnceClosure cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 }
 
@@ -252,7 +252,7 @@ void HlsManifestDemuxerEngine::Stop() {
     rendition->Stop();
   }
 
-  data_source_provider_.Reset();
+  network_access_.reset();
   weak_factory_.InvalidateWeakPtrs();
 
   multivariant_root_.reset();
@@ -264,9 +264,9 @@ void HlsManifestDemuxerEngine::Stop() {
 void HlsManifestDemuxerEngine::Seek(base::TimeDelta time,
                                     ManifestDemuxer::SeekCallback cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  if (!data_source_provider_) {
+  if (!network_access_) {
     // The pipeline can call Seek just after an error was surfaced. The error
-    // handler resets |data_source_provider_|, so we should just reply with
+    // handler resets |network_access_|, so we should just reply with
     // another error here.
     std::move(cb).Run(PIPELINE_ERROR_ABORT);
     return;
@@ -280,10 +280,9 @@ void HlsManifestDemuxerEngine::Seek(base::TimeDelta time,
 void HlsManifestDemuxerEngine::SeekAction(base::TimeDelta time,
                                           ManifestDemuxer::SeekCallback cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  data_source_provider_.AsyncCall(&HlsDataSourceProvider::AbortPendingReads)
-      .WithArgs(base::BindPostTaskToCurrentDefault(
-          base::BindOnce(&HlsManifestDemuxerEngine::ContinueSeekInternal,
-                         weak_factory_.GetWeakPtr(), time, std::move(cb))));
+  network_access_->AbortPendingReads(base::BindPostTaskToCurrentDefault(
+      base::BindOnce(&HlsManifestDemuxerEngine::ContinueSeekInternal,
+                     weak_factory_.GetWeakPtr(), time, std::move(cb))));
 }
 
 void HlsManifestDemuxerEngine::ContinueSeekInternal(
@@ -539,48 +538,10 @@ HlsDataSourceProvider::ReadCb HlsManifestDemuxerEngine::BindStatsUpdate(
                         weak_factory_.GetWeakPtr(), std::move(cb));
 }
 
-void HlsManifestDemuxerEngine::ReadUntilExhausted(
-    HlsDataSourceProvider::ReadCb cb,
-    HlsDataSourceProvider::ReadStatus::Or<std::unique_ptr<HlsDataSourceStream>>
-        result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  if (!result.has_value()) {
-    std::move(cb).Run(std::move(result).error());
-    return;
-  }
-  auto stream = std::move(result).value();
-  if (!stream->CanReadMore()) {
-    TRACE_EVENT_NESTABLE_ASYNC_END1("media", "HLS::ReadUrlToExhaustion", this,
-                                    "total read size", stream->buffer_size());
-    std::move(cb).Run(std::move(stream));
-    return;
-  }
-
-  ReadStream(std::move(stream),
-             base::BindOnce(&HlsManifestDemuxerEngine::ReadUntilExhausted,
-                            weak_factory_.GetWeakPtr(), std::move(cb)));
-}
-
 void HlsManifestDemuxerEngine::ReadManifest(const GURL& uri,
                                             HlsDataSourceProvider::ReadCb cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  if (!data_source_provider_) {
-    std::move(cb).Run(HlsDataSourceProvider::ReadStatus::Codes::kStopped);
-    return;
-  }
-
-  HlsDataSourceProvider::SegmentQueue queue;
-  queue.emplace(uri, std::nullopt);
-
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "HLS::ReadUrlToExhaustion", this,
-                                    "uri", uri);
-  data_source_provider_
-      .AsyncCall(&HlsDataSourceProvider::ReadFromCombinedUrlQueue)
-      .WithArgs(
-          std::move(queue),
-          base::BindPostTaskToCurrentDefault(base::BindOnce(
-              &HlsManifestDemuxerEngine::ReadUntilExhausted,
-              weak_factory_.GetWeakPtr(), BindStatsUpdate(std::move(cb)))));
+  network_access_->ReadManifest(std::move(uri), BindStatsUpdate(std::move(cb)));
 }
 
 void HlsManifestDemuxerEngine::ReadMediaSegment(
@@ -589,46 +550,16 @@ void HlsManifestDemuxerEngine::ReadMediaSegment(
     bool include_init,
     HlsDataSourceProvider::ReadCb cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  if (!data_source_provider_) {
-    std::move(cb).Run(HlsDataSourceProvider::ReadStatus::Codes::kStopped);
-    return;
-  }
-
-  if (!read_chunked) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN2("media", "HLS::ReadUrlToExhaustion", this,
-                                      "uri", segment.GetUri(), "include_init",
-                                      include_init);
-    cb = base::BindOnce(&HlsManifestDemuxerEngine::ReadUntilExhausted,
-                        weak_factory_.GetWeakPtr(), std::move(cb));
-  }
-
-  HlsDataSourceProvider::SegmentQueue queue;
-  if (include_init) {
-    if (auto init = segment.GetInitializationSegment()) {
-      queue.emplace(init->GetUri(), init->GetByteRange());
-    }
-  }
-  queue.emplace(segment.GetUri(), segment.GetByteRange());
-
-  data_source_provider_
-      .AsyncCall(&HlsDataSourceProvider::ReadFromCombinedUrlQueue)
-      .WithArgs(std::move(queue), base::BindPostTaskToCurrentDefault(
-                                      BindStatsUpdate(std::move(cb))));
+  network_access_->ReadMediaSegment(segment, read_chunked, include_init,
+                                    BindStatsUpdate(std::move(cb)));
 }
 
 void HlsManifestDemuxerEngine::ReadStream(
     std::unique_ptr<HlsDataSourceStream> stream,
     HlsDataSourceProvider::ReadCb cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  CHECK(stream);
-  if (!data_source_provider_) {
-    std::move(cb).Run(HlsDataSourceProvider::ReadStatus::Codes::kStopped);
-    return;
-  }
-  data_source_provider_
-      .AsyncCall(&HlsDataSourceProvider::ReadFromExistingStream)
-      .WithArgs(std::move(stream), base::BindPostTaskToCurrentDefault(
-                                       BindStatsUpdate(std::move(cb))));
+  network_access_->ReadStream(std::move(stream),
+                              BindStatsUpdate(std::move(cb)));
 }
 
 void HlsManifestDemuxerEngine::UpdateNetworkSpeed(uint64_t bps) {

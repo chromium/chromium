@@ -7,12 +7,56 @@
 
 #include <string_view>
 
+#include "media/base/cross_origin_data_source.h"
 #include "media/filters/hls_data_source_provider.h"
+#include "media/filters/hls_data_source_provider_impl.h"
 #include "media/filters/hls_rendition.h"
 #include "media/filters/manifest_demuxer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace media {
+
+class MockDataSource : public CrossOriginDataSource {
+ public:
+  ~MockDataSource() override;
+  MockDataSource();
+  // Mocked methods from CrossOriginDataSource
+  MOCK_METHOD(bool, IsCorsCrossOrigin, (), (const, override));
+  MOCK_METHOD(bool, HasAccessControl, (), (const, override));
+  MOCK_METHOD(const std::string&, GetMimeType, (), (const, override));
+  MOCK_METHOD(void,
+              Initialize,
+              (base::OnceCallback<void(bool)> init_cb),
+              (override));
+
+  // Mocked methods from DataSource
+  MOCK_METHOD(
+      void,
+      Read,
+      (int64_t position, int size, uint8_t* data, DataSource::ReadCB read_cb),
+      (override));
+  MOCK_METHOD(void, Stop, (), (override));
+  MOCK_METHOD(void, Abort, (), (override));
+  MOCK_METHOD(bool, GetSize, (int64_t * size_out), (override));
+  MOCK_METHOD(bool, IsStreaming, (), (override));
+  MOCK_METHOD(void, SetBitrate, (int bitrate), (override));
+  MOCK_METHOD(bool, PassedTimingAllowOriginCheck, (), (override));
+  MOCK_METHOD(bool, WouldTaintOrigin, (), (override));
+  MOCK_METHOD(bool, AssumeFullyBuffered, (), (const, override));
+  MOCK_METHOD(int64_t, GetMemoryUsage, (), (override));
+  MOCK_METHOD(void, SetPreload, (DataSource::Preload preload), (override));
+  MOCK_METHOD(GURL, GetUrlAfterRedirects, (), (const, override));
+  MOCK_METHOD(void,
+              OnBufferingHaveEnough,
+              (bool must_cancel_netops),
+              (override));
+  MOCK_METHOD(void,
+              OnMediaPlaybackRateChanged,
+              (double playback_rate),
+              (override));
+  MOCK_METHOD(void, OnMediaIsPlaying, (), (override));
+  CrossOriginDataSource* GetAsCrossOriginDataSource() override { return this; }
+};
 
 class MockHlsDataSourceProvider : public HlsDataSourceProvider {
  public:
@@ -32,20 +76,6 @@ class MockHlsDataSourceProvider : public HlsDataSourceProvider {
               AbortPendingReads,
               (base::OnceClosure callback),
               (override));
-};
-
-class StringHlsDataSourceStreamFactory {
- public:
-  static std::unique_ptr<HlsDataSourceStream> CreateStream(
-      std::string content,
-      bool taint_origin = false);
-};
-
-class FileHlsDataSourceStreamFactory {
- public:
-  static std::unique_ptr<HlsDataSourceStream> CreateStream(
-      std::string file,
-      bool taint_origin = false);
 };
 
 class MockManifestDemuxerEngineHost : public ManifestDemuxerEngineHost {
@@ -126,6 +156,8 @@ class MockHlsRenditionHost : public HlsRenditionHost {
   MOCK_METHOD(void, UpdateNetworkSpeed, (uint64_t), (override));
 
   MOCK_METHOD(void, SetEndOfStream, (bool), (override));
+
+  MOCK_METHOD(void, AbortPendingReads, (base::OnceClosure), (override));
 };
 
 class MockHlsRendition : public HlsRendition {
@@ -150,6 +182,34 @@ class MockHlsRendition : public HlsRendition {
               UpdatePlaylist,
               (scoped_refptr<hls::MediaPlaylist>, std::optional<GURL>),
               (override));
+};
+
+class StringHlsDataSourceStreamFactory {
+ public:
+  static std::unique_ptr<HlsDataSourceStream> CreateStream(
+      std::string content,
+      bool taint_origin = false);
+};
+
+class FileHlsDataSourceStreamFactory {
+ public:
+  static std::unique_ptr<HlsDataSourceStream> CreateStream(
+      std::string file,
+      bool taint_origin = false);
+};
+
+class MockDataSourceFactory
+    : public HlsDataSourceProviderImpl::DataSourceFactory {
+ public:
+  ~MockDataSourceFactory() override;
+  MockDataSourceFactory();
+  void CreateDataSource(GURL uri, DataSourceCb cb) override;
+  void AddReadExpectation(size_t from, size_t to, int response);
+  testing::NiceMock<MockDataSource>* PregenerateNextMock();
+
+ private:
+  std::unique_ptr<testing::NiceMock<MockDataSource>> next_mock_;
+  std::vector<std::tuple<size_t, size_t, int>> read_expectations_;
 };
 
 }  // namespace media

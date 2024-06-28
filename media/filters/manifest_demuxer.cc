@@ -146,7 +146,7 @@ void ManifestDemuxer::Initialize(DemuxerHost* host,
 void ManifestDemuxer::AbortPendingReads() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   chunk_demuxer_->AbortPendingReads();
-  impl_->AbortPendingReads();
+  impl_->AbortPendingReads(base::DoNothing());
 }
 
 void ManifestDemuxer::StartWaitingForSeek(base::TimeDelta seek_time) {

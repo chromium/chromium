@@ -43,7 +43,7 @@ class MockEngine : public ManifestDemuxer::Engine {
               (base::TimeDelta time, ManifestDemuxer::SeekCallback cb),
               (override));
   MOCK_METHOD(void, StartWaitingForSeek, (), (override));
-  MOCK_METHOD(void, AbortPendingReads, (), (override));
+  MOCK_METHOD(void, AbortPendingReads, (base::OnceClosure), (override));
   MOCK_METHOD(bool, IsSeekable, (), (const override));
   MOCK_METHOD(int64_t, GetMemoryUsage, (), (const, override));
   MOCK_METHOD(void, Stop, (), (override));
@@ -325,7 +325,7 @@ TEST_F(ManifestDemuxerTest, CancelSeekAfterDemuxerBeforeEngine) {
   ASSERT_TRUE(manifest_demuxer_->has_pending_seek_for_testing());
   ASSERT_TRUE(manifest_demuxer_->has_pending_event_for_testing());
 
-  EXPECT_CALL(*mock_engine_, AbortPendingReads());
+  EXPECT_CALL(*mock_engine_, AbortPendingReads(_));
   manifest_demuxer_->CancelPendingSeek(base::Seconds(5));
   task_environment_.RunUntilIdle();
   ASSERT_EQ(manifest_demuxer_->get_media_time_for_testing(),

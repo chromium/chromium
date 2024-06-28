@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/filters/hls_data_source_provider_impl.h"
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -11,9 +13,8 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
-#include "media/base/cross_origin_data_source.h"
 #include "media/base/mock_media_log.h"
-#include "media/filters/hls_data_source_provider_impl.h"
+#include "media/filters/hls_test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,88 +34,6 @@ using testing::Return;
 using testing::SaveArg;
 using testing::SetArgPointee;
 using testing::StrictMock;
-
-namespace {
-
-class MockDataSource : public CrossOriginDataSource {
- public:
-  // Mocked methods from CrossOriginDataSource
-  MOCK_METHOD(bool, IsCorsCrossOrigin, (), (const, override));
-  MOCK_METHOD(bool, HasAccessControl, (), (const, override));
-  MOCK_METHOD(const std::string&, GetMimeType, (), (const, override));
-  MOCK_METHOD(void,
-              Initialize,
-              (base::OnceCallback<void(bool)> init_cb),
-              (override));
-
-  // Mocked methods from DataSource
-  MOCK_METHOD(
-      void,
-      Read,
-      (int64_t position, int size, uint8_t* data, DataSource::ReadCB read_cb),
-      (override));
-  MOCK_METHOD(void, Stop, (), (override));
-  MOCK_METHOD(void, Abort, (), (override));
-  MOCK_METHOD(bool, GetSize, (int64_t * size_out), (override));
-  MOCK_METHOD(bool, IsStreaming, (), (override));
-  MOCK_METHOD(void, SetBitrate, (int bitrate), (override));
-  MOCK_METHOD(bool, PassedTimingAllowOriginCheck, (), (override));
-  MOCK_METHOD(bool, WouldTaintOrigin, (), (override));
-  MOCK_METHOD(bool, AssumeFullyBuffered, (), (const, override));
-  MOCK_METHOD(int64_t, GetMemoryUsage, (), (override));
-  MOCK_METHOD(void,
-              SetPreload,
-              (DataSource::Preload preload),
-              (override));
-  MOCK_METHOD(GURL, GetUrlAfterRedirects, (), (const, override));
-  MOCK_METHOD(void,
-              OnBufferingHaveEnough,
-              (bool must_cancel_netops),
-              (override));
-  MOCK_METHOD(void,
-              OnMediaPlaybackRateChanged,
-              (double playback_rate),
-              (override));
-  MOCK_METHOD(void, OnMediaIsPlaying, (), (override));
-  CrossOriginDataSource* GetAsCrossOriginDataSource() override { return this; }
-};
-
-class MockDataSourceFactory
-    : public HlsDataSourceProviderImpl::DataSourceFactory {
- public:
-  using MockDataSource = NiceMock<MockDataSource>;
-
-  ~MockDataSourceFactory() override = default;
-  MockDataSourceFactory() = default;
-  void CreateDataSource(GURL uri, DataSourceCb cb) override {
-    if (!next_mock_) {
-      PregenerateNextMock();
-      EXPECT_CALL(*next_mock_, Initialize).WillOnce(RunOnceCallback<0>(true));
-      for (const auto& e : read_expectations_) {
-        EXPECT_CALL(*next_mock_, Read(std::get<0>(e), std::get<1>(e), _, _))
-            .WillOnce(RunOnceCallback<3>(std::get<2>(e)));
-      }
-      read_expectations_.clear();
-      EXPECT_CALL(*next_mock_, Stop());
-    }
-    std::move(cb).Run(std::move(next_mock_));
-  }
-
-  void AddReadExpectation(size_t from, size_t to, int response) {
-    read_expectations_.emplace_back(from, to, response);
-  }
-
-  MockDataSource* PregenerateNextMock() {
-    next_mock_ = std::make_unique<MockDataSource>();
-    return next_mock_.get();
-  }
-
- private:
-  std::unique_ptr<MockDataSource> next_mock_;
-  std::vector<std::tuple<size_t, size_t, int>> read_expectations_;
-};
-
-}  // namespace
 
 class HlsDataSourceProviderImplUnittest : public testing::Test {
  public:
