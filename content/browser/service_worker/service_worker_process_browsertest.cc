@@ -164,7 +164,10 @@ class ServiceWorkerProcessBrowserTest
 // Tests that a service worker started due to a navigation shares the same
 // process as the navigation.
 // Flaky on Android; see https://crbug.com/1320972.
-#if BUILDFLAG(IS_ANDROID)
+// Flaky on TSan Linux; see https://crbug.com/349316554.
+#if BUILDFLAG(IS_ANDROID) ||                            \
+    ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+     defined(THREAD_SANITIZER))
 #define MAYBE_ServiceWorkerAndPageShareProcess \
   DISABLED_ServiceWorkerAndPageShareProcess
 #else
