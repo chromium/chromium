@@ -9,13 +9,16 @@
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
+#import "components/signin/public/identity_manager/account_capabilities.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "google_apis/gaia/core_account_id.h"
 #import "google_apis/gaia/gaia_auth_util.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/signin_util_internal.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
 
 namespace {
@@ -136,4 +139,21 @@ bool GetPreRestoreHistorySyncEnabled(PrefService* local_state) {
   }
   std::optional<bool> history_sync_enabled = dict.FindBool(kHistorySyncEnabled);
   return history_sync_enabled.value_or(false);
+}
+
+const std::vector<std::string>& GetAccountCapabilityNamesForPrefetch() {
+  return AccountCapabilities::GetSupportedAccountCapabilityNames();
+}
+
+void RunSystemCapabilitiesPrefetch(NSArray<id<SystemIdentity>>* identities,
+                                   FetchCapabilitiesCallback callback) {
+  const std::vector<std::string>& supported_capabilities =
+      GetAccountCapabilityNamesForPrefetch();
+  std::set<std::string> supported_capabilities_set(
+      supported_capabilities.begin(), supported_capabilities.end());
+
+  for (id<SystemIdentity> identity : identities) {
+    GetApplicationContext()->GetSystemIdentityManager()->FetchCapabilities(
+        identity, supported_capabilities_set, std::move(callback));
+  }
 }

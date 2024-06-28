@@ -4,10 +4,19 @@
 
 #import "ios/chrome/browser/signin/model/signin_util.h"
 
+#import "base/run_loop.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "google_apis/gaia/core_account_id.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/signin/model/account_capabilities_fetcher_ios.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
 class SigninUtilTest : public PlatformTest {
@@ -15,6 +24,12 @@ class SigninUtilTest : public PlatformTest {
   explicit SigninUtilTest() {
     local_state_.registry()->RegisterDictionaryPref(
         prefs::kIosPreRestoreAccountInfo);
+
+    chrome_browser_state_ = TestChromeBrowserState::Builder().Build();
+
+    account_manager_service_ =
+        ChromeAccountManagerServiceFactory::GetForBrowserState(
+            chrome_browser_state_.get());
   }
 
   AccountInfo FakeAccountFull() {
@@ -44,7 +59,16 @@ class SigninUtilTest : public PlatformTest {
     EXPECT_EQ(a.picture_url, b.picture_url);
   }
 
+  FakeSystemIdentityManager* fake_system_identity_manager() {
+    return FakeSystemIdentityManager::FromSystemIdentityManager(
+        GetApplicationContext()->GetSystemIdentityManager());
+  }
+
+ protected:
+  web::WebTaskEnvironment task_environment_;
   TestingPrefServiceSimple local_state_;
+  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  raw_ptr<ChromeAccountManagerService> account_manager_service_;
 };
 
 TEST_F(SigninUtilTest, StoreAndGetPreRestoreIdentityFull) {
@@ -84,4 +108,31 @@ TEST_F(SigninUtilTest, ClearPreRestoreIdentity) {
   ClearPreRestoreIdentity(&local_state_);
   EXPECT_FALSE(GetPreRestoreIdentity(&local_state_).has_value());
   EXPECT_FALSE(GetPreRestoreHistorySyncEnabled(&local_state_));
+}
+
+TEST_F(SigninUtilTest, RunSystemCapabilitiesPrefetch) {
+  FakeSystemIdentity* identity =
+      [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
+                                     gaiaID:@"foo1ID"
+                                       name:@"Fake Foo 1"];
+  fake_system_identity_manager()->AddIdentity(identity);
+
+  AccountCapabilitiesTestMutator* mutator =
+      fake_system_identity_manager()->GetCapabilitiesMutator(identity);
+  mutator->SetAllSupportedCapabilities(true);
+
+  base::RunLoop run_loop;
+  auto quit_closure = run_loop.QuitClosure();
+  auto callback = base::BindOnce(
+      ^(std::map<std::string, SystemIdentityCapabilityResult> result) {
+        ASSERT_EQ(result.size(), GetAccountCapabilityNamesForPrefetch().size());
+        for (const auto& pair : result) {
+          EXPECT_EQ(pair.second, SystemIdentityCapabilityResult::kTrue);
+        }
+        std::move(quit_closure).Run();
+      });
+
+  RunSystemCapabilitiesPrefetch(account_manager_service_->GetAllIdentities(),
+                                std::move(callback));
+  run_loop.Run();
 }

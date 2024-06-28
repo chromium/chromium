@@ -798,8 +798,16 @@ BASE_FEATURE(kPrefetchSystemCapabilitiesOnFirstRun,
              "PrefetchSystemCapabilitiesOnFirstRun",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrefetchSystemCapabilitiesOnAppStartup,
+             "PrefetchSystemCapabilitiesOnAppStartup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsPrefetchingSystemCapabilitiesOnFirstRun() {
   return base::FeatureList::IsEnabled(kPrefetchSystemCapabilitiesOnFirstRun);
+}
+
+bool IsPrefetchingSystemCapabilitiesOnAppStartup() {
+  return base::FeatureList::IsEnabled(kPrefetchSystemCapabilitiesOnAppStartup);
 }
 
 BASE_FEATURE(kSegmentationPlatformIosModuleRankerCaching,

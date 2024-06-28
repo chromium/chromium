@@ -123,6 +123,7 @@ class AccountCapabilities {
       const base::Value::Dict& account_capabilities);
   friend class AccountCapabilitiesFetcherGaia;
 #if BUILDFLAG(IS_IOS)
+  friend const std::vector<std::string>& GetAccountCapabilityNamesForPrefetch();
   friend class ios::AccountCapabilitiesFetcherIOS;
 #endif
   friend class AccountCapabilitiesTestMutator;

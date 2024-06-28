@@ -6,6 +6,7 @@
 
 #import "base/containers/contains.h"
 #import "base/feature_list.h"
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -24,6 +25,9 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
@@ -141,6 +145,18 @@ bool IsEmptyNTP(const web::WebState* web_state) {
     return;
   }
 
+  Browser* browser =
+      self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
+  // TODO(crbug.com/343699504): Remove pre-fetching capabilities once these
+  // are loaded in iSL.
+  if (IsPrefetchingSystemCapabilitiesOnAppStartup()) {
+    RunSystemCapabilitiesPrefetch(
+        ChromeAccountManagerServiceFactory::GetForBrowserState(
+            browser->GetBrowserState())
+            ->GetAllIdentities(),
+        base::DoNothing());
+  }
+
   if (!ShouldShowStartSurfaceForSceneState(self.sceneState)) {
     return;
   }
@@ -166,8 +182,6 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   }
 
   base::RecordAction(base::UserMetricsAction("IOS.StartSurface.Show"));
-  Browser* browser =
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
   StartSurfaceRecentTabBrowserAgent::FromBrowser(browser)->SaveMostRecentTab();
 
   // Activate the existing NTP tab for the Start surface.

@@ -79,10 +79,4 @@ void AccountCapabilitiesFetcherIOS::StartImpl() {
       std::move(callback));
 }
 
-// static
-const std::vector<std::string>&
-AccountCapabilitiesFetcherIOS::GetAccountCapabilityNamesForPrefetch() {
-  return AccountCapabilities::GetSupportedAccountCapabilityNames();
-}
-
 }  // namespace ios

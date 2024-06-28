@@ -4,6 +4,7 @@
 
 #import "ios/chrome/app/first_run_app_state_agent.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
@@ -20,9 +21,9 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/model/account_capabilities_fetcher_ios.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/ui/first_run/first_run_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
 #import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
@@ -153,28 +154,6 @@
 
 #pragma mark - internal
 
-// Pre-fetches system capabilities so that they can be cached for later usages.
-- (void)prefetchFirstRunCapabilities {
-  ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(
-          self.mainBrowser->GetBrowserState());
-  NSArray<id<SystemIdentity>>* identities =
-      accountManagerService->GetAllIdentities();
-
-  const std::vector<std::string>& supportedCapabilities = ios::
-      AccountCapabilitiesFetcherIOS::GetAccountCapabilityNamesForPrefetch();
-  std::set<std::string> supportedCapabilitiesSet(supportedCapabilities.begin(),
-                                                 supportedCapabilities.end());
-
-  for (id<SystemIdentity> identity : identities) {
-    GetApplicationContext()->GetSystemIdentityManager()->FetchCapabilities(
-        identity, supportedCapabilitiesSet,
-        base::BindOnce(^(std::map<std::string, SystemIdentityCapabilityResult>){
-            // Ignore the result.
-        }));
-  }
-}
-
 - (void)showFirstRunUI {
   DCHECK(self.appState.initStage == InitStageFirstRun);
 
@@ -186,8 +165,15 @@
   DCHECK(!_firstRunUIBlocker);
   _firstRunUIBlocker =
       std::make_unique<ScopedUIBlocker>(self.presentingSceneState);
+
+  // TODO(crbug.com/343699504): Remove pre-fetching capabilities once these are
+  // loaded in iSL.
   if (IsPrefetchingSystemCapabilitiesOnFirstRun()) {
-    [self prefetchFirstRunCapabilities];
+    RunSystemCapabilitiesPrefetch(
+        ChromeAccountManagerServiceFactory::GetForBrowserState(
+            self.mainBrowser->GetBrowserState())
+            ->GetAllIdentities(),
+        base::DoNothing());
   }
 
   FirstRunScreenProvider* provider = [[FirstRunScreenProvider alloc]
