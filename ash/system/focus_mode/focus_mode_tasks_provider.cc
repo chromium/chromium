@@ -12,6 +12,7 @@
 #include "ash/api/tasks/tasks_types.h"
 #include "base/barrier_closure.h"
 #include "base/ranges/algorithm.h"
+#include "base/ranges/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -108,10 +109,17 @@ class TaskFetcher {
 
   std::vector<FocusModeTask> GetTasks() && { return std::move(tasks_); }
 
+  bool error() const { return error_; }
+
  private:
   void OnGetTaskLists(bool sucess,
                       const ui::ListModel<api::TaskList>* api_task_lists) {
-    if (!api_task_lists || api_task_lists->item_count() == 0) {
+    if (!api_task_lists) {
+      error_ = true;
+      std::move(done_).Run();
+      return;
+    }
+    if (api_task_lists->item_count() == 0) {
       std::move(done_).Run();
       return;
     }
@@ -184,6 +192,8 @@ class TaskFetcher {
     std::move(barrier).Run();
   }
 
+  bool error_ = false;
+
   // Task list IDs, sorted by creation time.
   std::vector<std::pair<std::string, base::Time>> task_lists_;
 
@@ -225,6 +235,9 @@ void FocusModeTasksProvider::GetSortedTaskList(OnGetTasksCallback callback) {
 void FocusModeTasksProvider::GetTask(const std::string& task_list_id,
                                      const std::string& task_id,
                                      OnGetTaskCallback callback) {
+  CHECK(!task_list_id.empty());
+  CHECK(!task_id.empty());
+
   api::TasksController::Get()->tasks_delegate()->GetTasks(
       task_list_id, /*force_fetch=*/true,
       base::BindOnce(&FocusModeTasksProvider::OnTasksFetchedForTask,
@@ -275,9 +288,14 @@ void FocusModeTasksProvider::UpdateTask(const std::string& task_list_id,
 void FocusModeTasksProvider::OnTasksFetched() {
   CHECK(task_fetcher_);
 
-  task_fetch_time_ = base::Time::Now();
-  task_list_for_new_task_ = task_fetcher_->GetMostRecentlyUpdatedTaskList();
-  tasks_ = std::move(*task_fetcher_).GetTasks();
+  if (!task_fetcher_->error()) {
+    task_fetch_time_ = base::Time::Now();
+    task_list_for_new_task_ = task_fetcher_->GetMostRecentlyUpdatedTaskList();
+    tasks_ = std::move(*task_fetcher_).GetTasks();
+  } else {
+    tasks_ = {};
+    task_list_for_new_task_ = {};
+  }
   task_fetcher_ = nullptr;
 
   auto pending = std::move(get_tasks_requests_);
@@ -321,21 +339,26 @@ void FocusModeTasksProvider::OnTaskSaved(const std::string& task_list_id,
                                          bool completed,
                                          OnTaskSavedCallback callback,
                                          const api::Task* api_task) {
-  FocusModeTask task;
-
-  if (api_task) {
-    TaskId created_id = {.list_id = task_list_id, .id = api_task->id};
-    created_task_ids_.insert(created_id);
-    task.task_id = created_id;
-    task.title = api_task->title;
-    task.updated = api_task->updated;
-  } else {
+  if (!api_task || api_task->title.empty()) {
     // If there's an error, we clear the cache.
     task_fetch_time_ = {};
     if (completed) {
       deleted_task_ids_.erase({.list_id = task_list_id, .id = task_id});
     }
+    std::move(callback).Run(FocusModeTask());
+    return;
   }
+
+  TaskId created_id = {.list_id = task_list_id, .id = api_task->id};
+  created_task_ids_.insert(created_id);
+
+  // Try to find the task in the cache or insert it.
+  auto iter = base::ranges::find(tasks_, created_id, &FocusModeTask::task_id);
+
+  FocusModeTask& task = (iter != tasks_.end()) ? *iter : tasks_.emplace_back();
+  task.task_id = created_id;
+  task.title = api_task->title;
+  task.updated = api_task->updated;
 
   std::move(callback).Run(task);
 }
