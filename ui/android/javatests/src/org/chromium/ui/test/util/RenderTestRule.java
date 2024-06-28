@@ -157,7 +157,6 @@ public class RenderTestRule extends TestWatcher {
         Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID,
         Component.UI_BROWSER_NAVIGATION_GESTURENAV,
         Component.UI_BROWSER_NEW_TAB_PAGE,
-        Component.UI_BROWSER_NEW_TAB_PAGE_EXPLORE_SITES,
         Component.UI_BROWSER_OMNIBOX,
         Component.UI_BROWSER_PASSWORDS,
         Component.UI_BROWSER_SEARCH_VOICE,
@@ -205,7 +204,6 @@ public class RenderTestRule extends TestWatcher {
         String UI_BROWSER_MOBILE_TAB_SWITCHER_GRID = "UI>Browser>Mobile>TabSwitcher>Grid";
         String UI_BROWSER_NAVIGATION_GESTURENAV = "UI>Browser>Navigation>GestureNav";
         String UI_BROWSER_NEW_TAB_PAGE = "UI>Browser>NewTabPage";
-        String UI_BROWSER_NEW_TAB_PAGE_EXPLORE_SITES = "UI>Browser>NewTabPage>ExploreSites";
         String UI_BROWSER_OMNIBOX = "UI>Browser>Omnibox";
         String UI_BROWSER_PASSWORDS = "UI>Browser>Passwords";
         String UI_BROWSER_SEARCH_VOICE = "UI>Browser>Search>Voice";
