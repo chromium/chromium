@@ -414,8 +414,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       window.addEventListener('resize', this.windowResizeCallback_);
     }
 
-    // TODO(b/329677511): Font names should be displayed as
-    // "Font name (loading)" until the fonts have been loaded.
     this.initFonts_();
     this.loadFontsStylesheet();
   }
@@ -771,7 +769,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         Array.from(menu.getElementsByClassName('check-mark-hidden-false'));
     checked.forEach(element => {
       const iconElement = element as CrIconElement;
-      // TODO(crbug.com/40275871): Ensure this works with screen readers
       if (iconElement) {
         iconElement.classList.toggle('check-mark-hidden-true', true);
         iconElement.classList.toggle('check-mark-hidden-false', false);

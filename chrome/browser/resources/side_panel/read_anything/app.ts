@@ -2183,8 +2183,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (colorSuffix !== undefined) {
       this.updateTheme_(colorSuffix);
     }
-    // TODO(crbug.com/40927698): investigate using parent/child relationshiop
-    // instead of element by id.
     this.$.toolbar.restoreSettingsFromPrefs(colorSuffix);
   }
 
