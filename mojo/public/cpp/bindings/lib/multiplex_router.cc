@@ -518,10 +518,6 @@ void MultiplexRouter::CloseEndpointHandle(
 }
 
 void MultiplexRouter::NotifyLocalEndpointOfPeerClosure(InterfaceId id) {
-  if (!base::FeatureList::IsEnabled(features::kMojoFixAssociatedHandleLeak)) {
-    return;
-  }
-
   if (!task_runner_->RunsTasksInCurrentSequence()) {
     task_runner_->PostTask(
         FROM_HERE,

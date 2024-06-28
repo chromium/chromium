@@ -415,11 +415,6 @@ class ChannelAssociatedGroupController
   }
 
   void NotifyLocalEndpointOfPeerClosure(mojo::InterfaceId id) override {
-    if (!base::FeatureList::IsEnabled(
-            mojo::features::kMojoFixAssociatedHandleLeak)) {
-      return;
-    }
-
     if (!task_runner_->RunsTasksInCurrentSequence()) {
       task_runner_->PostTask(
           FROM_HERE, base::BindOnce(&ChannelAssociatedGroupController::

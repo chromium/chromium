@@ -112,14 +112,6 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       net::features::kThirdPartyStoragePartitioning);
 
-  if (!base::FeatureList::IsEnabled(
-          mojo::features::kMojoFixAssociatedHandleLeak)) {
-    // Disable support for partitioning blob URLs if the bug fix that prevents
-    // blob URL creation from hanging under certain conditions isn't enabled.
-    aw_feature_overrides.DisableFeature(
-        net::features::kSupportPartitionedBlobUrl);
-  }
-
   // Disable the passthrough on WebView.
   aw_feature_overrides.DisableFeature(
       ::features::kDefaultPassthroughCommandDecoder);

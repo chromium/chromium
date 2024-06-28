@@ -1195,10 +1195,6 @@ TEST_F(AssociatedInterfaceTest, CloseSerializedAssociatedEndpoints) {
   // lifetime is properly managed when associated endpoints are serialized into
   // a message that gets dropped before transmission.
 
-  // Force-enable the feature since this test requires it to pass.
-  base::test::ScopedFeatureList kFeatures{
-      features::kMojoFixAssociatedHandleLeak};
-
   Remote<mojom::ClumsyBinder> binder;
   ClumsyBinderImpl binder_impl(binder.BindNewPipeAndPassReceiver());
 

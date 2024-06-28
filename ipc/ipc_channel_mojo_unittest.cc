@@ -1307,10 +1307,6 @@ TEST_F(IPCChannelProxyMojoTest, DropAssociatedReceiverWithSyncCallInFlight) {
 DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE(
     SyncCallToDroppedReceiver,
     ChannelProxyClient) {
-  // Force-enable the fix, since ipc_tests doesn't initialize FeatureList.
-  const base::test::ScopedFeatureList kFeatures(
-      mojo::features::kMojoFixAssociatedHandleLeak);
-
   DummyListener listener;
   CreateProxy(&listener);
   RunProxy();
