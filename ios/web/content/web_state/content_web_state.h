@@ -249,6 +249,13 @@ class ContentWebState : public WebState,
   id keyboard_hiding_observer_;
   int keyboard_height_ = 0;
 
+  // The time that this ContentWebState was last made active. The initial value
+  // is the ContentWebState's creation time.
+  base::Time last_active_time_;
+
+  // The ContentWebState's creation time.
+  base::Time creation_time_;
+
   base::WeakPtrFactory<ContentWebState> weak_factory_{this};
 };
 
