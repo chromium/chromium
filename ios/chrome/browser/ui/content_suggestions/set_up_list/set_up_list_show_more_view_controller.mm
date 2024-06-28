@@ -31,7 +31,6 @@ const CGFloat kSetUpListStackViewTrailingInset = 20.0f;
 const CGFloat kSetUpListStackViewDescriptionSpacing = 33.0f;
 
 // A11y ID for the SetUpList title label.
-NSString* const kSetUpListSeeMoreAxId = @"kSetUpListSeeMoreAxId";
 NSString* const kSetUpListTitleAxId = @"kSetUpListTitleAxId";
 
 }  // namespace
@@ -56,8 +55,6 @@ NSString* const kSetUpListTitleAxId = @"kSetUpListTitleAxId";
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-
-  self.view.accessibilityIdentifier = kSetUpListSeeMoreAxId;
 
   // Determines background color of the entire view.
   UIView* backgroundView = [[UIView alloc] init];

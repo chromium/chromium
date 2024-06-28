@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "base/strings/stringprintf.h"
-#import "base/test/ios/wait_util.h"
 #import "base/threading/platform_thread.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -58,11 +57,10 @@ void TapNotification() {
       initWithBundleIdentifier:@"com.apple.springboard"];
   auto notification =
       springboardApplication.otherElements[@"Notification"].firstMatch;
-  BOOL notificationAppeared = [notification
-      waitForExistenceWithTimeout:base::test::ios::kWaitForUIElementTimeout
-                                      .InSecondsF()];
+  GREYAssert([notification waitForExistenceWithTimeout:4],
+             @"A notification did not appear");
   [notification tap];
-  XCTAssert(notificationAppeared, @"A notification did not appear");
+  [ChromeEarlGreyUI waitForAppToIdle];
 }
 
 // Dismiss a notification, if one exists.
@@ -74,30 +72,6 @@ void MaybeDismissNotification() {
   if ([notification waitForExistenceWithTimeout:2]) {
     [notification swipeUp];
   }
-}
-
-// Finds the element with the given `identifier` of given `type`.
-XCUIElement* GetElementMatchingIdentifier(XCUIApplication* app,
-                                          NSString* identifier,
-                                          XCUIElementType type) {
-  XCUIElementQuery* query = [[app.windows.firstMatch
-      descendantsMatchingType:type] matchingIdentifier:identifier];
-  return [query elementBoundByIndex:0];
-}
-
-// Finds the element with the given `label` of given `type`.
-XCUIElement* GetElementMatchingLabel(XCUIElement* parent,
-                                     NSString* label,
-                                     XCUIElementType type) {
-  NSPredicate* predicate =
-      [NSPredicate predicateWithBlock:^BOOL(id<XCUIElementAttributes> item,
-                                            NSDictionary* bindings) {
-        return [item.label isEqualToString:label];
-      }];
-
-  XCUIElementQuery* query =
-      [[parent descendantsMatchingType:type] matchingPredicate:predicate];
-  return [query elementBoundByIndex:0];
 }
 
 }  // namespace
@@ -142,29 +116,21 @@ XCUIElement* GetElementMatchingLabel(XCUIElement* parent,
 - (void)tearDown {
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kAppLevelPushNotificationPermissions];
-  [ChromeEarlGrey removeUserDefaultsObjectForKey:@"edoTestPort"];
   [super tearDown];
 }
 
 #pragma mark - Helpers
 
 // Opt in to Tips Notications via the SetUpList long-press menu.
-- (void)optInToTipsNotifications:(std::vector<TipsNotificationType>)types {
+- (void)optInToTipsNotifications {
   // Long press the SetUpList module.
   id<GREYMatcher> setUpList =
       grey_accessibilityID(set_up_list::kDefaultBrowserItemID);
   [[EarlGrey selectElementWithMatcher:setUpList]
       performAction:grey_longPress()];
 
-  // This uses kTipsNotificationsSentPref to mark all notifications except for
-  // the ones listed in `types` as "sent", which will ensure that they are not
-  // sent again during the current test case.
-  int sentBits = 0xffff;
-  for (auto type : types) {
-    sentBits ^= 1 << int(type);
-  }
-  [ChromeEarlGrey setIntegerValue:sentBits
-                forLocalStatePref:kTipsNotificationsSentPref];
+  // Clear pref that stores which notifications have been sent.
+  [ChromeEarlGrey resetDataForLocalStatePref:kTipsNotificationsSentPref];
 
   // Tap the menu item to enable notifications.
   TapText(@"Turn on Notifications");
@@ -195,7 +161,7 @@ XCUIElement* GetElementMatchingLabel(XCUIElement* parent,
 - (void)testToggleTipsNotificationsMenuItem {
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kAppLevelPushNotificationPermissions];
-  [self optInToTipsNotifications:{}];
+  [self optInToTipsNotifications];
   [self turnOffTipsNotifications];
 }
 
@@ -206,11 +172,7 @@ XCUIElement* GetElementMatchingLabel(XCUIElement* parent,
 
   MaybeDismissNotification();
 
-  [self optInToTipsNotifications:{
-                                     TipsNotificationType::kDefaultBrowser,
-                                     TipsNotificationType::kWhatsNew,
-                                     TipsNotificationType::kSignin,
-                                 }];
+  [self optInToTipsNotifications];
 
   // Wait for and tap the Default Browser Notification.
   TapNotification();
@@ -250,48 +212,6 @@ XCUIElement* GetElementMatchingLabel(XCUIElement* parent,
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
       performAction:grey_tap()];
-}
-
-// Tests triggering and interacting with SetUpList Continuation notification.
-- (void)testSetUpListContinuationNotification {
-  XCUIApplication* app = [[XCUIApplication alloc] init];
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  // Rewrite the edoTestPort so that it persists beyond an app termination.
-  id edoTestPort = [ChromeEarlGrey userDefaultsObjectForKey:@"edoTestPort"];
-  [ChromeEarlGrey removeUserDefaultsObjectForKey:@"edoTestPort"];
-  [ChromeEarlGrey setUserDefaultsObject:edoTestPort forKey:@"edoTestPort"];
-
-  MaybeDismissNotification();
-
-  [self
-      optInToTipsNotifications:{TipsNotificationType::kSetUpListContinuation}];
-  [ChromeEarlGreyUI waitForAppToIdle];
-  [app terminate];
-
-  //
-  // After app termination, EarlGrey functions and matchers don't work. XCUI*
-  // methods are used instead for the rest of this test.
-  //
-
-  // Wait for and tap the SetUpList Continuation Notification.
-  TapNotification();
-  XCTAssert([app waitForState:XCUIApplicationStateRunningForeground timeout:5],
-            @"The app should have reopened.");
-
-  // Verify that the SetUpList See More view is showing.
-  XCUIElement* setUpListView = GetElementMatchingIdentifier(
-      app, @"kSetUpListSeeMoreAxId", XCUIElementTypeAny);
-  XCTAssert([setUpListView waitForExistenceWithTimeout:5]);
-  XCUIElement* doneButton =
-      GetElementMatchingLabel(setUpListView, @"Done", XCUIElementTypeButton);
-  XCTAssert(doneButton.hittable);
-  [doneButton tap];
-
-  // Clear the edoTestPort so that it is not persisted beyond this test.
-  [ChromeEarlGrey removeUserDefaultsObjectForKey:@"edoTestPort"];
-  [[AppLaunchManager sharedManager]
-      ensureAppLaunchedWithConfiguration:[self appConfigurationForTestCase]];
 }
 
 @end
