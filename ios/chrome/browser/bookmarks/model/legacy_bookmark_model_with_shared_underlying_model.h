@@ -47,10 +47,10 @@ class LegacyBookmarkModelWithSharedUnderlyingModel
   ~LegacyBookmarkModelWithSharedUnderlyingModel() override;
 
   // LegacyBookmarkModel overrides.
-  const bookmarks::BookmarkNode* bookmark_bar_node() const override;
-  const bookmarks::BookmarkNode* other_node() const override;
-  const bookmarks::BookmarkNode* mobile_node() const override;
-  const bookmarks::BookmarkNode* managed_node() const override;
+  const bookmarks::BookmarkNode* subtle_bookmark_bar_node() const override;
+  const bookmarks::BookmarkNode* subtle_other_node() const override;
+  const bookmarks::BookmarkNode* subtle_mobile_node() const override;
+  const bookmarks::BookmarkNode* subtle_managed_node() const override;
   bool IsBookmarked(const GURL& url) const override;
   bool is_permanent_node(const bookmarks::BookmarkNode* node) const override;
   void AddObserver(bookmarks::BookmarkModelObserver* observer) override;

@@ -101,8 +101,9 @@ TEST_F(BookmarkActivityTest, ActivityTitle_AddBookmark) {
 // Tests that the title of the activity is edit when URL is already bookmarked.
 TEST_F(BookmarkActivityTest, ActivityTitle_EditBookmark) {
   // Add a bookmark.
-  const bookmarks::BookmarkNode* bookmark = AddBookmark(
-      local_or_syncable_bookmark_model_->mobile_node(), u"activity_test");
+  const bookmarks::BookmarkNode* bookmark =
+      AddBookmark(local_or_syncable_bookmark_model_->subtle_mobile_node(),
+                  u"activity_test");
   ASSERT_TRUE(local_or_syncable_bookmark_model_->IsBookmarked(bookmark->url()));
 
   BookmarkActivity* activity = CreateActivity(bookmark->url());

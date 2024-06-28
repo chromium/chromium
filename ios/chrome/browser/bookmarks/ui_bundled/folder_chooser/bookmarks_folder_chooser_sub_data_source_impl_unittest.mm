@@ -88,7 +88,7 @@ class BookmarksFolderChooserSubDataSourceImplTest
 
   void SetUp() override {
     BookmarkIOSUnitTestSupport::SetUp();
-    edited_nodes_.insert(AddURL(model()->mobile_node(), @"Test URL"));
+    edited_nodes_.insert(AddURL(model()->subtle_mobile_node(), @"Test URL"));
   }
 
   LegacyBookmarkModel* model() {
@@ -147,7 +147,7 @@ class BookmarksFolderChooserSubDataSourceImplTest
 // Tests that the sub data source correctly fetches visible folders.
 TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestVisibleFolderNodes) {
   const BookmarkNode* test_folder_node_1 =
-      AddFolder(model()->mobile_node(), test_folder_title_1);
+      AddFolder(model()->subtle_mobile_node(), test_folder_title_1);
   const BookmarkNode* test_folder_node_2 =
       AddFolder(test_folder_node_1, test_folder_title_2);
   edited_nodes_.insert(test_folder_node_2);
@@ -165,7 +165,7 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestVisibleFolderNodes) {
 // Tests that changing title of bookmarked folder node updates the UI.
 TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderTitleChange) {
   const BookmarkNode* test_folder_node =
-      AddFolder(model()->mobile_node(), test_folder_title_1);
+      AddFolder(model()->subtle_mobile_node(), test_folder_title_1);
   CreateSubDataSource();
 
   [[mock_consumer_ expect] notifyModelUpdated];
@@ -184,7 +184,7 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderTitleChange) {
 // Tests that adding a folder node in the bookmark model updates the UI.
 TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderAdded) {
   const BookmarkNode* test_folder_node_1 =
-      AddFolder(model()->mobile_node(), test_folder_title_1);
+      AddFolder(model()->subtle_mobile_node(), test_folder_title_1);
   CreateSubDataSource();
 
   [[mock_consumer_ expect] notifyModelUpdated];
@@ -205,7 +205,7 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderAdded) {
 // Tests that removing a folder node from the bookmark model updates the UI.
 TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderRemoved) {
   const BookmarkNode* test_folder_node_1 =
-      AddFolder(model()->mobile_node(), test_folder_title_1);
+      AddFolder(model()->subtle_mobile_node(), test_folder_title_1);
   const BookmarkNode* test_folder_node_2 =
       AddFolder(test_folder_node_1, test_folder_title_2);
   CreateSubDataSource();
@@ -232,7 +232,7 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderRemoved) {
 // Tests that removing all nodes in the bookmark model updates the UI.
 TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestAllFoldersRemoved) {
   const BookmarkNode* test_folder_node_1 =
-      AddFolder(model()->mobile_node(), test_folder_title_1);
+      AddFolder(model()->subtle_mobile_node(), test_folder_title_1);
   AddFolder(test_folder_node_1, test_folder_title_2);
   CreateSubDataSource();
 
@@ -252,13 +252,13 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestAllFoldersRemoved) {
 // Tests that moving a node in the bookmark model updates the UI.
 TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderMoved) {
   const BookmarkNode* test_folder_node_1 =
-      AddFolder(model()->mobile_node(), test_folder_title_1);
+      AddFolder(model()->subtle_mobile_node(), test_folder_title_1);
   const BookmarkNode* test_folder_node_2 =
       AddFolder(test_folder_node_1, test_folder_title_2);
   CreateSubDataSource();
 
   [[mock_consumer_ expect] notifyModelUpdated];
-  MoveNode(test_folder_node_2, model()->mobile_node());
+  MoveNode(test_folder_node_2, model()->subtle_mobile_node());
 
   [mock_consumer_ verify];
   std::vector<const BookmarkNode*> visible_folder_nodes =

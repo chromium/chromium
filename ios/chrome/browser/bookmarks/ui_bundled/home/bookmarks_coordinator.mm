@@ -666,7 +666,7 @@ enum class PresentedState {
     // Couldn't find the bookmark for the requested URL, just open mobile
     // bookmarks.
     [self presentBookmarksAtDisplayedFolderNode:_localOrSyncableBookmarkModel
-                                                    ->mobile_node()
+                                                    ->subtle_mobile_node()
                               selectingBookmark:nil];
   }
 }

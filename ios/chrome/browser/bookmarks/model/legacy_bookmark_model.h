@@ -99,11 +99,13 @@ class LegacyBookmarkModel : public KeyedService {
   void CommitPendingWriteForTest();
 
   // LegacyBookmarkModel has three top-level permanent nodes (as opposed to
-  // bookmarks::BookmarkModel that can have up to six).
-  virtual const bookmarks::BookmarkNode* bookmark_bar_node() const = 0;
-  virtual const bookmarks::BookmarkNode* other_node() const = 0;
-  virtual const bookmarks::BookmarkNode* mobile_node() const = 0;
-  virtual const bookmarks::BookmarkNode* managed_node() const = 0;
+  // bookmarks::BookmarkModel that can have up to six). Depending on how
+  // `this` was constructed, the getters below may expose the
+  // local-or-syncable permanent nodes or the account ones.
+  virtual const bookmarks::BookmarkNode* subtle_bookmark_bar_node() const = 0;
+  virtual const bookmarks::BookmarkNode* subtle_other_node() const = 0;
+  virtual const bookmarks::BookmarkNode* subtle_mobile_node() const = 0;
+  virtual const bookmarks::BookmarkNode* subtle_managed_node() const = 0;
 
   virtual bool IsBookmarked(const GURL& url) const = 0;
   virtual bool is_permanent_node(const bookmarks::BookmarkNode* node) const = 0;

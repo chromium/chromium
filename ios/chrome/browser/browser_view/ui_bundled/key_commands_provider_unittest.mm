@@ -983,7 +983,7 @@ TEST_F(KeyCommandsProviderTest, ValidateBookmarkCommand) {
 
   // Bookmark the page.
   const bookmarks::BookmarkNode* bookmark_bar =
-      bookmark_model_->bookmark_bar_node();
+      bookmark_model_->subtle_bookmark_bar_node();
   const bookmarks::BookmarkNode* bookmark =
       bookmark_model_->AddURL(bookmark_bar, 0, u"", url);
 

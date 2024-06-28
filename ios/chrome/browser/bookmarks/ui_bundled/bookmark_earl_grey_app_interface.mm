@@ -110,24 +110,25 @@ const bookmarks::BookmarkNode* GetFirstBookmarkWithTitle(
 
   NSString* firstTitle = @"First URL";
   const GURL firstGURL = GURL(base::SysNSStringToUTF8(firstURL));
-  bookmarkModel->AddURL(bookmarkModel->mobile_node(), 0,
+  bookmarkModel->AddURL(bookmarkModel->subtle_mobile_node(), 0,
                         base::SysNSStringToUTF16(firstTitle), firstGURL);
 
   NSString* secondTitle = @"Second URL";
   const GURL secondGURL = GURL(base::SysNSStringToUTF8(secondURL));
-  bookmarkModel->AddURL(bookmarkModel->mobile_node(), 0,
+  bookmarkModel->AddURL(bookmarkModel->subtle_mobile_node(), 0,
                         base::SysNSStringToUTF16(secondTitle), secondGURL);
 
   NSString* frenchTitle = @"French URL";
   const GURL thirdGURL = GURL(base::SysNSStringToUTF8(thirdURL));
-  bookmarkModel->AddURL(bookmarkModel->mobile_node(), 0,
+  bookmarkModel->AddURL(bookmarkModel->subtle_mobile_node(), 0,
                         base::SysNSStringToUTF16(frenchTitle), thirdGURL);
 
   NSString* folderTitle = @"Folder 1";
-  const bookmarks::BookmarkNode* folder1 = bookmarkModel->AddFolder(
-      bookmarkModel->mobile_node(), 0, base::SysNSStringToUTF16(folderTitle));
+  const bookmarks::BookmarkNode* folder1 =
+      bookmarkModel->AddFolder(bookmarkModel->subtle_mobile_node(), 0,
+                               base::SysNSStringToUTF16(folderTitle));
   folderTitle = @"Folder 1.1";
-  bookmarkModel->AddFolder(bookmarkModel->mobile_node(), 0,
+  bookmarkModel->AddFolder(bookmarkModel->subtle_mobile_node(), 0,
                            base::SysNSStringToUTF16(folderTitle));
 
   folderTitle = @"Folder 2";
@@ -157,18 +158,19 @@ const bookmarks::BookmarkNode* GetFirstBookmarkWithTitle(
       [BookmarkEarlGreyAppInterface bookmarkModelOfStorage:storageType];
 
   const GURL dummyURL = GURL(base::SysNSStringToUTF8(URL));
-  bookmarkModel->AddURL(bookmarkModel->mobile_node(), 0,
+  bookmarkModel->AddURL(bookmarkModel->subtle_mobile_node(), 0,
                         base::SysNSStringToUTF16(@"Bottom URL"), dummyURL);
 
   NSString* dummyTitle = @"Dummy URL";
   for (int i = 0; i < 20; i++) {
-    bookmarkModel->AddURL(bookmarkModel->mobile_node(), 0,
+    bookmarkModel->AddURL(bookmarkModel->subtle_mobile_node(), 0,
                           base::SysNSStringToUTF16(dummyTitle), dummyURL);
   }
   NSString* folderTitle = @"Folder 1";
-  const bookmarks::BookmarkNode* folder1 = bookmarkModel->AddFolder(
-      bookmarkModel->mobile_node(), 0, base::SysNSStringToUTF16(folderTitle));
-  bookmarkModel->AddURL(bookmarkModel->mobile_node(), 0,
+  const bookmarks::BookmarkNode* folder1 =
+      bookmarkModel->AddFolder(bookmarkModel->subtle_mobile_node(), 0,
+                               base::SysNSStringToUTF16(folderTitle));
+  bookmarkModel->AddURL(bookmarkModel->subtle_mobile_node(), 0,
                         base::SysNSStringToUTF16(@"Top URL"), dummyURL);
 
   // Add URLs to Folder 1.
@@ -227,7 +229,7 @@ const bookmarks::BookmarkNode* GetFirstBookmarkWithTitle(
 + (void)setLastUsedBookmarkFolderToMobileBookmarksInStorageType:
     (BookmarkModelType)storageType {
   const bookmarks::BookmarkNode* folder =
-      [self bookmarkModelOfStorage:storageType]->mobile_node();
+      [self bookmarkModelOfStorage:storageType]->subtle_mobile_node();
   SetLastUsedBookmarkFolder(
       chrome_test_util::GetOriginalBrowserState()->GetPrefs(), folder,
       storageType);
@@ -281,7 +283,7 @@ const bookmarks::BookmarkNode* GetFirstBookmarkWithTitle(
   GURL bookmarkURL = GURL(base::SysNSStringToUTF8(url));
   LegacyBookmarkModel* bookmarkModel =
       [BookmarkEarlGreyAppInterface bookmarkModelOfStorage:storageType];
-  bookmarkModel->AddNewURL(bookmarkModel->mobile_node(), 0,
+  bookmarkModel->AddNewURL(bookmarkModel->subtle_mobile_node(), 0,
                            base::SysNSStringToUTF16(title), bookmarkURL);
 
   return nil;

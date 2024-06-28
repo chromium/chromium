@@ -56,7 +56,7 @@ using bookmarks::BookmarkNode;
 #pragma mark - BookmarksFolderChooserSubDataSource
 
 - (const BookmarkNode*)mobileFolderNode {
-  return _bookmarkModel->mobile_node();
+  return _bookmarkModel->subtle_mobile_node();
 }
 
 - (std::vector<const BookmarkNode*>)visibleFolderNodes {

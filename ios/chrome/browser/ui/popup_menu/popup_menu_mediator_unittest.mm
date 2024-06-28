@@ -539,7 +539,7 @@ TEST_F(PopupMenuMediatorTest, TestBookmarksToolsMenuButtons) {
   CreatePrefs();
   SetUpBookmarks();
 
-  bookmark_model_->AddNewURL(bookmark_model_->mobile_node(), 0,
+  bookmark_model_->AddNewURL(bookmark_model_->subtle_mobile_node(), 0,
                              base::SysNSStringToUTF16(@"Test bookmark"), url);
   mediator_.webStateList = browser_->GetWebStateList();
   FakePopupMenuConsumer* consumer = [[FakePopupMenuConsumer alloc] init];

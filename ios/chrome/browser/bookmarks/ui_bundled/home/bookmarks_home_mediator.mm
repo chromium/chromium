@@ -280,7 +280,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   BOOL shouldDisplayCloudSlashIcon =
       [self shouldDisplayCloudSlashIconWithBookmarkModel:model];
   // Add "Mobile Bookmarks" to the table.
-  const BookmarkNode* mobileNode = model->mobile_node();
+  const BookmarkNode* mobileNode = model->subtle_mobile_node();
   BookmarksHomeNodeItem* mobileItem =
       [[BookmarksHomeNodeItem alloc] initWithType:BookmarksHomeItemTypeBookmark
                                      bookmarkNode:mobileNode];
@@ -289,7 +289,7 @@ bool IsABookmarkNodeSectionForIdentifier(
                 toSectionWithIdentifier:sectionIdentifier];
 
   // Add "Bookmarks Bar" and "Other Bookmarks" only when they are not empty.
-  const BookmarkNode* bookmarkBar = model->bookmark_bar_node();
+  const BookmarkNode* bookmarkBar = model->subtle_bookmark_bar_node();
   if (!bookmarkBar->children().empty()) {
     BookmarksHomeNodeItem* barItem = [[BookmarksHomeNodeItem alloc]
         initWithType:BookmarksHomeItemTypeBookmark
@@ -299,7 +299,7 @@ bool IsABookmarkNodeSectionForIdentifier(
                   toSectionWithIdentifier:sectionIdentifier];
   }
 
-  const BookmarkNode* otherBookmarks = model->other_node();
+  const BookmarkNode* otherBookmarks = model->subtle_other_node();
   if (!otherBookmarks->children().empty()) {
     BookmarksHomeNodeItem* otherItem = [[BookmarksHomeNodeItem alloc]
         initWithType:BookmarksHomeItemTypeBookmark
@@ -925,7 +925,8 @@ bool IsABookmarkNodeSectionForIdentifier(
   }
 
   // In addition to user-created bookmarks, there could be managed bookmarks.
-  if (model->managed_node() && !model->managed_node()->children().empty()) {
+  if (model->subtle_managed_node() &&
+      !model->subtle_managed_node()->children().empty()) {
     return YES;
   }
 

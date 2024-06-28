@@ -62,10 +62,10 @@ TEST_F(BookmarkModelFactoryTest, IsBookmarked) {
   const GURL kUrl3("https://baz.com/");
 
   local_or_syncable_bookmark_model_->AddURL(
-      local_or_syncable_bookmark_model_->bookmark_bar_node(), 0, u"title",
-      kUrl1);
-  account_bookmark_model_->AddURL(account_bookmark_model_->bookmark_bar_node(),
-                                  0, u"title", kUrl2);
+      local_or_syncable_bookmark_model_->subtle_bookmark_bar_node(), 0,
+      u"title", kUrl1);
+  account_bookmark_model_->AddURL(
+      account_bookmark_model_->subtle_bookmark_bar_node(), 0, u"title", kUrl2);
 
   ASSERT_TRUE(local_or_syncable_bookmark_model_->IsBookmarked(kUrl1));
   ASSERT_FALSE(local_or_syncable_bookmark_model_->IsBookmarked(kUrl2));
@@ -88,17 +88,17 @@ TEST_F(BookmarkModelFactoryTest, GetUniqueUrls) {
   const GURL kUrl3("https://baz.com/");
 
   local_or_syncable_bookmark_model_->AddURL(
-      local_or_syncable_bookmark_model_->bookmark_bar_node(), 0, u"title1",
-      kUrl1);
-  account_bookmark_model_->AddURL(account_bookmark_model_->bookmark_bar_node(),
-                                  0, u"title2", kUrl2);
+      local_or_syncable_bookmark_model_->subtle_bookmark_bar_node(), 0,
+      u"title1", kUrl1);
+  account_bookmark_model_->AddURL(
+      account_bookmark_model_->subtle_bookmark_bar_node(), 0, u"title2", kUrl2);
 
   // `kUrl3` exists in both.
   local_or_syncable_bookmark_model_->AddURL(
-      local_or_syncable_bookmark_model_->bookmark_bar_node(), 0, u"title3",
-      kUrl3);
-  account_bookmark_model_->AddURL(account_bookmark_model_->bookmark_bar_node(),
-                                  0, u"title4", kUrl3);
+      local_or_syncable_bookmark_model_->subtle_bookmark_bar_node(), 0,
+      u"title3", kUrl3);
+  account_bookmark_model_->AddURL(
+      account_bookmark_model_->subtle_bookmark_bar_node(), 0, u"title4", kUrl3);
 
   EXPECT_THAT(
       bookmark_model_->GetUniqueUrls(),

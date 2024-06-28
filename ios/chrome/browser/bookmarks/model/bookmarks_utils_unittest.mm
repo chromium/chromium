@@ -20,7 +20,7 @@ class BookmarksUtilsTest : public BookmarkIOSUnitTestSupport {
   void SetUp() override {
     BookmarkIOSUnitTestSupport::SetUp();
     prefs_ = chrome_browser_state_->GetPrefs();
-    mobile_node_ = local_or_syncable_bookmark_model_->mobile_node();
+    mobile_node_ = local_or_syncable_bookmark_model_->subtle_mobile_node();
     folder_node_ = AddFolder(mobile_node_, u"Folder");
     bookmark_node_ = AddBookmark(folder_node_, u"Bookmark");
   }

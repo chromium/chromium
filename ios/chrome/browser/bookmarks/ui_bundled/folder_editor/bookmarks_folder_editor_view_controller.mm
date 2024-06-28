@@ -435,15 +435,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
     // In this case, fall back to the default folder, which is the mobile node
     // for the same storage type as before (local or account).
     if (_localOrSyncableBookmarkModel->IsNodePartOfModel(_parentFolder)) {
-      _parentFolder = _localOrSyncableBookmarkModel->mobile_node();
-    } else if (!_accountBookmarkModel->mobile_node() ||
-               _accountBookmarkModel->mobile_node()->HasAncestor(node)) {
+      _parentFolder = _localOrSyncableBookmarkModel->subtle_mobile_node();
+    } else if (!_accountBookmarkModel->subtle_mobile_node() ||
+               _accountBookmarkModel->subtle_mobile_node()->HasAncestor(node)) {
       // When dealing with account bookmarks, it is possible that permanent
       // folders no longer exist (e.g. the user signed out). In this case, fall
       // back to the local model.
-      _parentFolder = _localOrSyncableBookmarkModel->mobile_node();
+      _parentFolder = _localOrSyncableBookmarkModel->subtle_mobile_node();
     } else {
-      _parentFolder = _accountBookmarkModel->mobile_node();
+      _parentFolder = _accountBookmarkModel->subtle_mobile_node();
     }
 
     [self updateParentFolderState];

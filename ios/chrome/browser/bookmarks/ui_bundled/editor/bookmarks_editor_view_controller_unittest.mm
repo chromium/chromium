@@ -55,7 +55,7 @@ TEST_F(BookmarksEditorViewControllerTest, Metrics) {
 // Checks sync can safely occurs before the view is loaded.
 TEST_F(BookmarksEditorViewControllerTest, CanSyncBeforeLoad) {
   const bookmarks::BookmarkNode* mobile_node =
-      local_or_syncable_bookmark_model_->mobile_node();
+      local_or_syncable_bookmark_model_->subtle_mobile_node();
   const bookmarks::BookmarkNode* bookmark = AddBookmark(mobile_node, u"foo");
   BookmarksEditorMediator* mediator = [[BookmarksEditorMediator alloc]
       initWithLocalOrSyncableBookmarkModel:local_or_syncable_bookmark_model_

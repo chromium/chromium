@@ -86,9 +86,10 @@ void LegacyBookmarkModel::SetDateAdded(const bookmarks::BookmarkNode* node,
 }
 
 bool LegacyBookmarkModel::HasNoUserCreatedBookmarksOrFolders() const {
-  return (!bookmark_bar_node() || bookmark_bar_node()->children().empty()) &&
-         (!other_node() || other_node()->children().empty()) &&
-         (!mobile_node() || mobile_node()->children().empty());
+  return (!subtle_bookmark_bar_node() ||
+          subtle_bookmark_bar_node()->children().empty()) &&
+         (!subtle_other_node() || subtle_other_node()->children().empty()) &&
+         (!subtle_mobile_node() || subtle_mobile_node()->children().empty());
 }
 
 const bookmarks::BookmarkNode* LegacyBookmarkModel::AddFolder(

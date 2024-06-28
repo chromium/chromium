@@ -179,7 +179,7 @@ bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service) {
 
 bool IsAccountBookmarkStorageAvailable(syncer::SyncService* sync_service,
                                        LegacyBookmarkModel* account_model) {
-  return account_model->mobile_node() != nullptr;
+  return account_model->subtle_mobile_node() != nullptr;
 }
 
 #pragma mark - Updating Bookmarks
@@ -576,8 +576,9 @@ bool MoveBookmarks(
 
   for (auto& [source_model, model_bookmarks] : cross_model_moves) {
     for (const bookmarks::BookmarkNode* source_permanent_folder :
-         {source_model->bookmark_bar_node(), source_model->mobile_node(),
-          source_model->other_node(), source_model->managed_node()}) {
+         {source_model->subtle_bookmark_bar_node(),
+          source_model->subtle_mobile_node(), source_model->subtle_other_node(),
+          source_model->subtle_managed_node()}) {
       if (!source_permanent_folder) {
         continue;
       }

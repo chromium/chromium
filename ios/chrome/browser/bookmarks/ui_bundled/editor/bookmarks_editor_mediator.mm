@@ -213,15 +213,15 @@
     // In this case, fall back to the default folder, which is the mobile node
     // for the same storage type as before (local or account).
     if (_localOrSyncableBookmarkModel->IsNodePartOfModel(self.folder)) {
-      [self changeFolder:_localOrSyncableBookmarkModel->mobile_node()];
-    } else if (!_accountBookmarkModel->mobile_node() ||
-               _accountBookmarkModel->mobile_node()->HasAncestor(node)) {
+      [self changeFolder:_localOrSyncableBookmarkModel->subtle_mobile_node()];
+    } else if (!_accountBookmarkModel->subtle_mobile_node() ||
+               _accountBookmarkModel->subtle_mobile_node()->HasAncestor(node)) {
       // When dealing with account bookmarks, it is possible that permanent
       // folders no longer exist (e.g. the user signed out). In this case, fall
       // back to the local model.
-      [self changeFolder:_localOrSyncableBookmarkModel->mobile_node()];
+      [self changeFolder:_localOrSyncableBookmarkModel->subtle_mobile_node()];
     } else {
-      [self changeFolder:_accountBookmarkModel->mobile_node()];
+      [self changeFolder:_accountBookmarkModel->subtle_mobile_node()];
     }
   }
 }

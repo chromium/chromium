@@ -74,20 +74,20 @@ std::vector<const BookmarkNode*> PrimaryPermanentNodes(
   // When dealing with account bookmarks, it is possible that they don't
   // actually exist (e.g. the user is signed out). It is guaranteed that all
   // exist or none.
-  if (!model->mobile_node()) {
+  if (!model->subtle_mobile_node()) {
     // Account bookmarks do not exist, no need to return them.
-    DCHECK(!model->bookmark_bar_node());
-    DCHECK(!model->other_node());
+    DCHECK(!model->subtle_bookmark_bar_node());
+    DCHECK(!model->subtle_other_node());
     return nodes;
   }
 
   // Account bookmarks do exist (all three). Return them.
-  DCHECK(model->bookmark_bar_node());
-  DCHECK(model->other_node());
+  DCHECK(model->subtle_bookmark_bar_node());
+  DCHECK(model->subtle_other_node());
 
-  nodes.push_back(model->mobile_node());
-  nodes.push_back(model->bookmark_bar_node());
-  nodes.push_back(model->other_node());
+  nodes.push_back(model->subtle_mobile_node());
+  nodes.push_back(model->subtle_bookmark_bar_node());
+  nodes.push_back(model->subtle_other_node());
   return nodes;
 }
 
@@ -154,13 +154,14 @@ const bookmarks::BookmarkNode* GetDefaultBookmarkFolder(
   }
 
   // Either preferences is not set, or refers to a non-existing folder.
-  BookmarkModelType type = (is_account_bookmark_model_available &&
-                            account_bookmark_model->mobile_node() != nullptr)
-                               ? BookmarkModelType::kAccount
-                               : BookmarkModelType::kLocalOrSyncable;
+  BookmarkModelType type =
+      (is_account_bookmark_model_available &&
+       account_bookmark_model->subtle_mobile_node() != nullptr)
+          ? BookmarkModelType::kAccount
+          : BookmarkModelType::kLocalOrSyncable;
   LegacyBookmarkModel* bookmark_model = GetBookmarkModelForType(
       type, local_or_syncable_bookmark_model, account_bookmark_model);
-  return bookmark_model->mobile_node();
+  return bookmark_model->subtle_mobile_node();
 }
 
 void MigrateLastUsedBookmarkFolderUponLocalIdsReassigned(

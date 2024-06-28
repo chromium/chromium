@@ -813,7 +813,7 @@ TEST_F(OverflowMenuMediatorTest, TestBookmarksToolsMenuButtons) {
   CreateBrowserStatePrefs();
   SetUpBookmarks();
   local_or_syncable_bookmark_model_->AddURL(
-      local_or_syncable_bookmark_model_->mobile_node(), 0,
+      local_or_syncable_bookmark_model_->subtle_mobile_node(), 0,
       base::SysNSStringToUTF16(@"Test bookmark"), bookmarkedURL);
   mediator_.webStateList = browser_->GetWebStateList();
   mediator_.browserStatePrefs = browserStatePrefs_.get();

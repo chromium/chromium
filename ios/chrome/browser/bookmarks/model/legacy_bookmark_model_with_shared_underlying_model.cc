@@ -122,7 +122,7 @@ LegacyBookmarkModelWithSharedUnderlyingModel::underlying_model() {
 }
 
 const bookmarks::BookmarkNode*
-LegacyBookmarkModelWithSharedUnderlyingModel::bookmark_bar_node() const {
+LegacyBookmarkModelWithSharedUnderlyingModel::subtle_bookmark_bar_node() const {
   return node_type_for_uuid_lookup_ ==
                  NodeTypeForUuidLookup::kLocalOrSyncableNodes
              ? underlying_model()->bookmark_bar_node()
@@ -130,7 +130,7 @@ LegacyBookmarkModelWithSharedUnderlyingModel::bookmark_bar_node() const {
 }
 
 const bookmarks::BookmarkNode*
-LegacyBookmarkModelWithSharedUnderlyingModel::other_node() const {
+LegacyBookmarkModelWithSharedUnderlyingModel::subtle_other_node() const {
   return node_type_for_uuid_lookup_ ==
                  NodeTypeForUuidLookup::kLocalOrSyncableNodes
              ? underlying_model()->other_node()
@@ -138,7 +138,7 @@ LegacyBookmarkModelWithSharedUnderlyingModel::other_node() const {
 }
 
 const bookmarks::BookmarkNode*
-LegacyBookmarkModelWithSharedUnderlyingModel::mobile_node() const {
+LegacyBookmarkModelWithSharedUnderlyingModel::subtle_mobile_node() const {
   return node_type_for_uuid_lookup_ ==
                  NodeTypeForUuidLookup::kLocalOrSyncableNodes
              ? underlying_model()->mobile_node()
@@ -199,7 +199,8 @@ const bookmarks::BookmarkNode* LegacyBookmarkModelWithSharedUnderlyingModel::
 
 bool LegacyBookmarkModelWithSharedUnderlyingModel::HasBookmarks() const {
   for (const bookmarks::BookmarkNode* permanent_node :
-       {bookmark_bar_node(), other_node(), mobile_node(), managed_node()}) {
+       {subtle_bookmark_bar_node(), subtle_other_node(), subtle_mobile_node(),
+        subtle_managed_node()}) {
     if (permanent_node && HasBookmarksRecursive(permanent_node)) {
       return true;
     }
@@ -464,8 +465,9 @@ LegacyBookmarkModelWithSharedUnderlyingModel::AsWeakPtr() {
 LegacyBookmarkModelWithSharedUnderlyingModel::NodeExcludedFromViewPredicate
 LegacyBookmarkModelWithSharedUnderlyingModel::GetNodeExcludedFromViewPredicate()
     const {
-  return NodeExcludedFromViewPredicate(bookmark_bar_node(), other_node(),
-                                       mobile_node(), managed_node());
+  return NodeExcludedFromViewPredicate(
+      subtle_bookmark_bar_node(), subtle_other_node(), subtle_mobile_node(),
+      subtle_managed_node());
 }
 
 bool LegacyBookmarkModelWithSharedUnderlyingModel::IsNodeExcludedFromView(
@@ -474,7 +476,7 @@ bool LegacyBookmarkModelWithSharedUnderlyingModel::IsNodeExcludedFromView(
 }
 
 const bookmarks::BookmarkNode*
-LegacyBookmarkModelWithSharedUnderlyingModel::managed_node() const {
+LegacyBookmarkModelWithSharedUnderlyingModel::subtle_managed_node() const {
   return managed_bookmark_service_ ? managed_bookmark_service_->managed_node()
                                    : nullptr;
 }

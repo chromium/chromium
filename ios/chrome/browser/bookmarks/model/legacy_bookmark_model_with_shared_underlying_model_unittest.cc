@@ -229,15 +229,16 @@ TEST_F(LegacyBookmarkModelWithSharedUnderlyingModelTest,
        NotifyBookmarkNodeAdded) {
   shared_model_->CreateAccountPermanentFolders();
 
-  ASSERT_THAT(local_view_.bookmark_bar_node(),
+  ASSERT_THAT(local_view_.subtle_bookmark_bar_node(),
               Eq(shared_model_->bookmark_bar_node()));
-  ASSERT_THAT(local_view_.mobile_node(), Eq(shared_model_->mobile_node()));
-  ASSERT_THAT(local_view_.other_node(), Eq(shared_model_->other_node()));
-  ASSERT_THAT(account_view_.bookmark_bar_node(),
+  ASSERT_THAT(local_view_.subtle_mobile_node(),
+              Eq(shared_model_->mobile_node()));
+  ASSERT_THAT(local_view_.subtle_other_node(), Eq(shared_model_->other_node()));
+  ASSERT_THAT(account_view_.subtle_bookmark_bar_node(),
               Eq(shared_model_->account_bookmark_bar_node()));
-  ASSERT_THAT(account_view_.mobile_node(),
+  ASSERT_THAT(account_view_.subtle_mobile_node(),
               Eq(shared_model_->account_mobile_node()));
-  ASSERT_THAT(account_view_.other_node(),
+  ASSERT_THAT(account_view_.subtle_other_node(),
               Eq(shared_model_->account_other_node()));
 
   EXPECT_CALL(local_view_observer_,
@@ -338,15 +339,16 @@ TEST_F(LegacyBookmarkModelWithSharedUnderlyingModelTest,
        NotifyBookmarkNodeMoved) {
   shared_model_->CreateAccountPermanentFolders();
 
-  ASSERT_THAT(local_view_.bookmark_bar_node(),
+  ASSERT_THAT(local_view_.subtle_bookmark_bar_node(),
               Eq(shared_model_->bookmark_bar_node()));
-  ASSERT_THAT(local_view_.mobile_node(), Eq(shared_model_->mobile_node()));
-  ASSERT_THAT(local_view_.other_node(), Eq(shared_model_->other_node()));
-  ASSERT_THAT(account_view_.bookmark_bar_node(),
+  ASSERT_THAT(local_view_.subtle_mobile_node(),
+              Eq(shared_model_->mobile_node()));
+  ASSERT_THAT(local_view_.subtle_other_node(), Eq(shared_model_->other_node()));
+  ASSERT_THAT(account_view_.subtle_bookmark_bar_node(),
               Eq(shared_model_->account_bookmark_bar_node()));
-  ASSERT_THAT(account_view_.mobile_node(),
+  ASSERT_THAT(account_view_.subtle_mobile_node(),
               Eq(shared_model_->account_mobile_node()));
-  ASSERT_THAT(account_view_.other_node(),
+  ASSERT_THAT(account_view_.subtle_other_node(),
               Eq(shared_model_->account_other_node()));
 
   const bookmarks::BookmarkNode* node1 = shared_model_->AddURL(

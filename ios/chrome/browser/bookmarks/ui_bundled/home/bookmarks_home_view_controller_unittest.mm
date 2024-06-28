@@ -51,7 +51,7 @@ TEST_F(BookmarksHomeViewControllerTest,
     controller.snackbarCommandsHandler = mockSnackbarCommandHandler;
 
     const bookmarks::BookmarkNode* mobileNode =
-        local_or_syncable_bookmark_model_->mobile_node();
+        local_or_syncable_bookmark_model_->subtle_mobile_node();
     AddBookmark(mobileNode, u"foo");
     controller.displayedFolderNode = mobileNode;
     // sections: Bookmarks, root profile, root account, message, batch upload.
@@ -117,7 +117,7 @@ TEST_F(BookmarksHomeViewControllerTest,
         local_or_syncable_bookmark_model_
             ->subtle_root_node_with_unspecified_children();
     const bookmarks::BookmarkNode* mobileNode =
-        local_or_syncable_bookmark_model_->mobile_node();
+        local_or_syncable_bookmark_model_->subtle_mobile_node();
     AddBookmark(mobileNode, u"foo");  // Ensure there are bookmarks
     controller.displayedFolderNode = rootNode;
     // sections: Promo, Bookmarks, root profile, root account, message, batch
@@ -186,7 +186,7 @@ TEST_F(BookmarksHomeViewControllerTest, Metrics) {
     controller.snackbarCommandsHandler = mockSnackbarCommandHandler;
 
     controller.displayedFolderNode =
-        local_or_syncable_bookmark_model_->mobile_node();
+        local_or_syncable_bookmark_model_->subtle_mobile_node();
     base::UserActionTester user_action_tester;
     std::string user_action = "MobileKeyCommandClose";
     ASSERT_EQ(user_action_tester.GetActionCount(user_action), 0);
