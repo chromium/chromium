@@ -113,6 +113,7 @@ class BrowserContext;
 class DocumentRef;
 struct GlobalRenderFrameHostId;
 struct GlobalRenderFrameHostToken;
+class NavigationHandle;
 class RenderProcessHost;
 class RenderViewHost;
 class RenderWidgetHost;
@@ -1113,6 +1114,16 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // browser (e.g. typing on the location bar) or from the renderer while having
   // transient user activation
   virtual bool IsLastCrossDocumentNavigationStartedByUser() const = 0;
+
+  // Returns NavigationHandles to pending-commit cross-document navigations.
+  // These navigations occur when the final RenderFrameHost for the navigation
+  // has been picked, the NavigationHandle ownership has been transferred
+  // to it, the CommitNavigation IPC has been sent to the renderer, and the
+  // navigation is waiting for the DidCommitNavigation acknowledgement. For
+  // more information on how these cross-document navigations are determined,
+  // refer to LifecycleState::kPendingCommit.
+  virtual std::vector<base::SafeRef<NavigationHandle>>
+  GetPendingCommitCrossDocumentNavigations() const = 0;
 
   // Checks Blink runtime-enabled features (BREF) to create and return
   // a CookieSettingOverrides pertaining to the last committed document in the

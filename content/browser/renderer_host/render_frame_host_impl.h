@@ -2192,6 +2192,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   bool IsLastCrossDocumentNavigationStartedByUser() const override;
 
+  std::vector<base::SafeRef<NavigationHandle>>
+  GetPendingCommitCrossDocumentNavigations() const override;
+
   net::CookieSettingOverrides GetCookieSettingOverrides() override;
 
   PolicyContainerHost* policy_container_host() {

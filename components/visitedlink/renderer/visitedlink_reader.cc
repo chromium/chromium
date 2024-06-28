@@ -136,6 +136,13 @@ void VisitedLinkReader::ResetVisitedLinks(bool invalidate_hashes) {
   WebView::ResetVisitedLinkState(invalidate_hashes);
 }
 
+void VisitedLinkReader::UpdateOriginSalts(
+    const base::flat_map<url::Origin, uint64_t>& origin_salts) {
+  for (const auto& [origin, salt] : origin_salts) {
+    AddOrUpdateSalt(origin, salt);
+  }
+}
+
 void VisitedLinkReader::FreeTable() {
   if (!hash_table_)
     return;

@@ -166,7 +166,10 @@ class TrackingVisitedLinkEventListener
       public VisitedLinkWriter::Listener {
  public:
   TrackingVisitedLinkEventListener()
-      : reset_count_(0), completely_reset_count_(0), add_count_(0) {}
+      : reset_count_(0),
+        completely_reset_count_(0),
+        add_count_(0),
+        salts_update_count_(0) {}
 
   void NewTable(base::ReadOnlySharedMemoryRegion* table_region) override {
     if (table_region->IsValid()) {
@@ -183,20 +186,24 @@ class TrackingVisitedLinkEventListener
     else
       reset_count_++;
   }
+  void UpdateOriginSalts() override { salts_update_count_++; }
 
   void SetUp() {
     reset_count_ = 0;
     add_count_ = 0;
+    salts_update_count_ = 0;
   }
 
   int reset_count() const { return reset_count_; }
   int completely_reset_count() { return completely_reset_count_; }
   int add_count() const { return add_count_; }
+  int salts_update_count() const { return salts_update_count_; }
 
  private:
   int reset_count_;
   int completely_reset_count_;
   int add_count_;
+  int salts_update_count_;
 };
 
 class VisitedLinkTest : public testing::Test {
@@ -1009,6 +1016,9 @@ TEST_F(PartitionedVisitedLinkTest, Listener) {
   // Verify that PartitionedVisitedLinkWriter::Listener::Reset(false) was called
   // when the hashtable was created.
   EXPECT_EQ(1, listener->reset_count());
+  // Verify that PartitionedVisitedLinkWriter::Listener::UpdateOriginSalts() was
+  // called when the hashtable finished building.
+  EXPECT_EQ(1, listener->salts_update_count());
 
   // Add test links to the hashtable.
   for (int i = 0; i < kTestCount; i++) {
@@ -1045,7 +1055,8 @@ class VisitCountingContext : public mojom::VisitedLinkNotificationSink {
         add_event_count_(0),
         reset_event_count_(0),
         completely_reset_event_count_(0),
-        new_table_count_(0) {}
+        new_table_count_(0),
+        salts_update_event_count_(0) {}
 
   VisitCountingContext(const VisitCountingContext&) = delete;
   VisitCountingContext& operator=(const VisitCountingContext&) = delete;
@@ -1094,6 +1105,15 @@ class VisitCountingContext : public mojom::VisitedLinkNotificationSink {
     NotifyUpdate();
   }
 
+  void UpdateOriginSalts(
+      const base::flat_map<url::Origin, uint64_t>& origin_salts) override {
+    salts_update_event_count_++;
+    for (const auto& [origin, salt] : origin_salts) {
+      salts_[origin] = salt;
+    }
+    NotifyUpdate();
+  }
+
   int add_count() const { return add_count_; }
   int add_event_count() const { return add_event_count_; }
   int reset_event_count() const { return reset_event_count_; }
@@ -1101,6 +1121,8 @@ class VisitCountingContext : public mojom::VisitedLinkNotificationSink {
     return completely_reset_event_count_;
   }
   int new_table_count() const { return new_table_count_; }
+  int salts_update_event_count() const { return salts_update_event_count_; }
+  std::map<url::Origin, uint64_t> salts() const { return salts_; }
 
  private:
   int add_count_;
@@ -1108,6 +1130,8 @@ class VisitCountingContext : public mojom::VisitedLinkNotificationSink {
   int reset_event_count_;
   int completely_reset_event_count_;
   int new_table_count_;
+  int salts_update_event_count_;
+  std::map<url::Origin, uint64_t> salts_;
 
   base::OnceClosure quit_closure_;
   mojo::ReceiverSet<mojom::VisitedLinkNotificationSink> receiver_;
@@ -1527,9 +1551,20 @@ TEST_F(PartitionedVisitedLinkEventsTest, Basics) {
   // Waiting for notifications that the table build is complete.
   content::RunAllTasksUntilIdle();
 
-  // A reset should be called after building the hashtable from the
-  // VisitedLinkDatabase.
+  // A reset and a salt update should be called after building the hashtable
+  // from the VisitedLinkDatabase.
   EXPECT_EQ(1, context()->reset_event_count());
+  EXPECT_EQ(1, context()->salts_update_event_count());
+  EXPECT_EQ(1u, context()->salts().size());
+
+  // Ensure that the salt sent to the VisitedLinkReader for a given origin is
+  // equivalent to what we have stored in PartitionedVisitedLinkWriter.
+  for (const auto& [origin, salt] : context()->salts()) {
+    const std::optional<uint64_t> expected_salt =
+        partitioned_writer_->GetOrAddOriginSalt(origin);
+    EXPECT_TRUE(expected_salt.has_value());
+    EXPECT_EQ(salt, expected_salt.value());
+  }
 
   // Add test links to the hashtable.
   const int kLinkCount = 3;

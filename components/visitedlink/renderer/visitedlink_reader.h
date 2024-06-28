@@ -53,6 +53,8 @@ class VisitedLinkReader : public VisitedLinkCommon,
   void AddVisitedLinks(
       const std::vector<VisitedLinkReader::Fingerprint>& fingerprints) override;
   void ResetVisitedLinks(bool invalidate_hashes) override;
+  void UpdateOriginSalts(
+      const base::flat_map<url::Origin, uint64_t>& origin_salts) override;
 
  private:
   void FreeTable();

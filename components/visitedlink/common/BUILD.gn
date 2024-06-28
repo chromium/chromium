@@ -24,5 +24,8 @@ static_library("common") {
 mojom("interfaces") {
   sources = [ "visitedlink.mojom" ]
 
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_origin",
+  ]
 }

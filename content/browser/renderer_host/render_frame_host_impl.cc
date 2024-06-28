@@ -3965,6 +3965,17 @@ bool RenderFrameHostImpl::IsLastCrossDocumentNavigationStartedByUser() const {
   return last_cross_document_navigation_started_by_user_;
 }
 
+std::vector<base::SafeRef<NavigationHandle>>
+RenderFrameHostImpl::GetPendingCommitCrossDocumentNavigations() const {
+  // Obtain the NavigationHandles corresponding to each of pending
+  // cross-document navigations for this RenderFrameHostImpl.
+  std::vector<base::SafeRef<NavigationHandle>> handles;
+  for (const auto& request : navigation_requests_) {
+    handles.push_back(request.first->GetSafeRef());
+  }
+  return handles;
+}
+
 void RenderFrameHostImpl::OnCreateChildFrame(
     int new_routing_id,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,

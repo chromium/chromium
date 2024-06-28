@@ -160,7 +160,8 @@ PartitionedVisitedLinkWriter::PartitionedVisitedLinkWriter(
     VisitedLinkDelegate* delegate)
     : browser_context_(browser_context),
       delegate_(delegate),
-      listener_(std::make_unique<VisitedLinkEventListener>(browser_context)) {}
+      listener_(
+          std::make_unique<VisitedLinkEventListener>(browser_context, this)) {}
 
 PartitionedVisitedLinkWriter::PartitionedVisitedLinkWriter(
     std::unique_ptr<Listener> listener,
@@ -471,6 +472,10 @@ void PartitionedVisitedLinkWriter::OnTableBuildComplete(
       listener_->Reset(false);
     }
   }
+
+  // Now that we have completed our build on the DB thread, we can recover the
+  // per-origin salts of navigations that took place during the build.
+  listener_->UpdateOriginSalts();
 
   // Notify the unit test that the build is complete (will be NULL in prod.)
   if (!build_complete_task_.is_null()) {

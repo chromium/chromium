@@ -38,14 +38,21 @@ class VisitedLinkEventListener
  public:
   explicit VisitedLinkEventListener(content::BrowserContext* browser_context);
 
+  // Used by PartitionedVisitedLinkWriter to provide and store a raw pointer to
+  // the owning object.
+  VisitedLinkEventListener(content::BrowserContext* browser_context,
+                           PartitionedVisitedLinkWriter* partitioned_writer);
+
   VisitedLinkEventListener(const VisitedLinkEventListener&) = delete;
   VisitedLinkEventListener& operator=(const VisitedLinkEventListener&) = delete;
 
   ~VisitedLinkEventListener() override;
 
+  // (Partitioned)VisitedLinkWriter::Listener overrides.
   void NewTable(base::ReadOnlySharedMemoryRegion* table_region) override;
   void Add(VisitedLinkWriter::Fingerprint fingerprint) override;
   void Reset(bool invalidate_hashes) override;
+  void UpdateOriginSalts() override;
 
   // Sets a custom timer to use for coalescing events for testing.
   // |coalesce_timer_override| must outlive this.
@@ -86,6 +93,12 @@ class VisitedLinkEventListener
   std::map<int, std::unique_ptr<VisitedLinkUpdater>> updaters_;
 
   base::ReadOnlySharedMemoryRegion table_region_;
+
+  // When constructed by a PartitionedVisitedLinkWriter, serves as pointer
+  // to owner - client is responsible for keeping this pointer valid
+  // during the lifetime of this VisitedLinkEventListener. Pointer is null if
+  // constructed by an unpartitioned VisitedLinkWriter.
+  raw_ptr<PartitionedVisitedLinkWriter> partitioned_writer_;
 
   // Used to filter RENDERER_PROCESS_CREATED notifications to renderers that
   // belong to this BrowserContext.
