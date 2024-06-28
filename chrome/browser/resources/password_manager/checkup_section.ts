@@ -417,7 +417,9 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
       case CheckState.RUNNING:
       case CheckState.CANCELED:
         return this.compromisedPasswords_.length ?
-            this.i18n('compromisedPasswordsTitle') :
+            this.i18n(
+                'compromisedPasswordsTitle',
+                this.compromisedPasswords_.length) :
             this.i18n('compromisedPasswordsEmpty');
       case CheckState.OFFLINE:
         return this.i18n('checkupErrorOffline', brandingName);
