@@ -30,6 +30,7 @@ namespace {
 
 constexpr char kDocumentWithNamedElement[] = "/select.html";
 constexpr char kDocumentWithImage[] = "/test_visual.html";
+constexpr char kDocumentWithVideo[] = "/media/bigbuck-player.html";
 
 class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
  public:
@@ -130,6 +131,33 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
         FlushEvents(),  // Required to fully render the menu before selection.
 
         SelectMenuItem(RenderViewContextMenu::kSearchForImageItem));
+  }
+
+  InteractiveTestApi::MultiStep OpenLensOverlayFromVideo() {
+    DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kVideoIsPlaying);
+
+    const GURL url = embedded_test_server()->GetURL(kDocumentWithVideo);
+    const char kPlayVideo[] = "(el) => { el.play(); }";
+    const DeepQuery kPathToVideo{"video"};
+    constexpr char kMediaIsPlaying[] =
+        "(el) => { return el.currentTime > 0.1 && !el.paused && !el.ended && "
+        "el.readyState > 2; }";
+
+    StateChange video_is_playing;
+    video_is_playing.event = kVideoIsPlaying;
+    video_is_playing.where = kPathToVideo;
+    video_is_playing.test_function = kMediaIsPlaying;
+
+    return Steps(
+        InstrumentTab(kActiveTab), NavigateWebContents(kActiveTab, url),
+        EnsurePresent(kActiveTab, kPathToVideo),
+        ExecuteJsAt(kActiveTab, kPathToVideo, kPlayVideo),
+        WaitForStateChange(kActiveTab, video_is_playing),
+        MoveMouseTo(kActiveTab, kPathToVideo), ClickMouse(ui_controls::RIGHT),
+        WaitForShow(RenderViewContextMenu::kSearchForVideoFrameItem),
+        FlushEvents(),  // Required to fully render the menu before selection.
+        SelectMenuItem(RenderViewContextMenu::kSearchForVideoFrameItem));
   }
 
  private:
@@ -380,6 +408,46 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, SearchForImage) {
 
   RunTestSequence(
       OpenLensOverlayFromImage(),
+
+      // The overlay controller is an independent floating widget
+      // associated with a tab rather than a browser window, so by
+      // convention gets its own element context.
+      InAnyContext(Steps(InstrumentNonTabWebView(
+                             kOverlayId, LensOverlayController::kOverlayId),
+                         WaitForWebContentsReady(
+                             kOverlayId, GURL("chrome-untrusted://lens")))),
+
+      // The side panel should open with the results frame.
+      InAnyContext(Steps(
+          FlushEvents(),
+          InstrumentNonTabWebView(
+              kOverlaySidePanelWebViewId,
+              LensOverlayController::kOverlaySidePanelWebViewId),
+          FlushEvents(),
+          EnsurePresent(kOverlaySidePanelWebViewId, kPathToResultsFrame))));
+}
+
+// This tests the following CUJ:
+//  (1) User navigates to a website.
+//  (2) User right-clicks a video and opens "Search with Google Lens".
+//  (3) Side panel opens with results.
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, SearchForVideoFrame) {
+  WaitForTemplateURLServiceToLoad();
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
+
+  const DeepQuery kPathToRegionSelection{
+      "lens-overlay-app",
+      "lens-selection-overlay",
+      "#regionSelectionLayer",
+  };
+  const DeepQuery kPathToResultsFrame{
+      "lens-side-panel-app",
+      "#results",
+  };
+
+  RunTestSequence(
+      OpenLensOverlayFromVideo(),
 
       // The overlay controller is an independent floating widget
       // associated with a tab rather than a browser window, so by

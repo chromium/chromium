@@ -841,6 +841,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu, kComposeMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu, kRegionSearchItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
                                       kSearchForImageItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
+                                      kSearchForVideoFrameItem);
 
 RenderViewContextMenu::RenderViewContextMenu(
     content::RenderFrameHost& render_frame_host,
@@ -2137,7 +2139,10 @@ void RenderViewContextMenu::AppendVideoItems() {
                                      GetImageSearchProviderName(provider)));
     }
 
-    // TODO(b/344600237): Add SetElementIdentifierAt() and interactive tests.
+    // Used for interactive tests. See LensOverlayControllerCUJTest.
+    const int command_index =
+        menu_model_.GetIndexOfCommandId(search_for_video_frame_idc).value();
+    menu_model_.SetElementIdentifierAt(command_index, kSearchForVideoFrameItem);
 
     MaybePrepareForLensQuery();
   }

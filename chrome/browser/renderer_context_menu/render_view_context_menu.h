@@ -110,6 +110,7 @@ class RenderViewContextMenu
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kComposeMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRegionSearchItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSearchForImageItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSearchForVideoFrameItem);
 
   using ExecutePluginActionCallback =
       base::OnceCallback<void(content::RenderFrameHost*,
