@@ -119,12 +119,9 @@ void IntegrityBlockParser::ReadAttributes() {
 
 void IntegrityBlockParser::ParseAttributes(
     AttributeMapParser::ParsingResult result) {
-  if (!result.has_value()) {
-    RunErrorCallback(std::move(result.error()));
-    return;
-  }
-
-  auto [attributes_map, offset_to_end_of_map] = std::move(result.value());
+  ASSIGN_OR_RETURN(
+      (auto [attributes_map, offset_to_end_of_map]), std::move(result),
+      [&](std::string error) { RunErrorCallback(std::move(error)); });
 
   const cbor::Value* web_bundle_id =
       base::FindOrNull(attributes_map, kWebBundleIdAttributeName);

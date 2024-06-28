@@ -105,12 +105,9 @@ void SignatureStackEntryParser::ReadSignatureStructure(
 
 void SignatureStackEntryParser::GetAttributesMap(
     AttributeMapParser::ParsingResult result) {
-  if (!result.has_value()) {
-    RunErrorCallback(std::move(result.error()));
-    return;
-  }
-
-  auto [attributes_map, offset_to_end_of_map] = std::move(result.value());
+  ASSIGN_OR_RETURN((auto [attributes_map, offset_to_end_of_map]),
+                   std::move(result),
+                   &SignatureStackEntryParser::RunErrorCallback, this);
 
   attributes_map_ = std::move(attributes_map);
   uint64_t attribute_map_size = offset_to_end_of_map - offset_in_stream_;
@@ -195,26 +192,26 @@ void SignatureStackEntryParser::EvaluateSignatureEntry(
         return;
       }
 
-      ASSIGN_OR_RETURN(
-          auto public_key, Ed25519PublicKey::Create(public_key_bytes),
-          [&](std::string error) { RunErrorCallback(std::move(error)); });
+      ASSIGN_OR_RETURN(auto public_key,
+                       Ed25519PublicKey::Create(public_key_bytes),
+                       &SignatureStackEntryParser::RunErrorCallback, this);
 
-      ASSIGN_OR_RETURN(
-          auto signature, Ed25519Signature::Create(signature_bytes),
-          [&](std::string error) { RunErrorCallback(std::move(error)); });
+      ASSIGN_OR_RETURN(auto signature,
+                       Ed25519Signature::Create(signature_bytes),
+                       &SignatureStackEntryParser::RunErrorCallback, this);
 
       signature_stack_entry_->signature_info = mojom::SignatureInfo::NewEd25519(
           mojom::SignatureInfoEd25519::New(public_key, signature));
 
     } break;
     case SignatureType::kEcdsaP256Sha256: {
-      ASSIGN_OR_RETURN(
-          auto public_key, EcdsaP256PublicKey::Create(public_key_bytes),
-          [&](std::string error) { RunErrorCallback(std::move(error)); });
+      ASSIGN_OR_RETURN(auto public_key,
+                       EcdsaP256PublicKey::Create(public_key_bytes),
+                       &SignatureStackEntryParser::RunErrorCallback, this);
 
-      ASSIGN_OR_RETURN(
-          auto signature, EcdsaP256SHA256Signature::Create(signature_bytes),
-          [&](std::string error) { RunErrorCallback(std::move(error)); });
+      ASSIGN_OR_RETURN(auto signature,
+                       EcdsaP256SHA256Signature::Create(signature_bytes),
+                       &SignatureStackEntryParser::RunErrorCallback, this);
 
       signature_stack_entry_->signature_info =
           mojom::SignatureInfo::NewEcdsaP256Sha256(
@@ -232,8 +229,8 @@ void SignatureStackEntryParser::EvaluateSignatureEntry(
       std::make_pair(std::move(signature_stack_entry_), offset_in_stream_));
 }
 
-void SignatureStackEntryParser::RunErrorCallback(const std::string& message) {
-  std::move(callback_).Run(base::unexpected{message});
+void SignatureStackEntryParser::RunErrorCallback(std::string message) {
+  std::move(callback_).Run(base::unexpected{std::move(message)});
 }
 
 }  // namespace web_package

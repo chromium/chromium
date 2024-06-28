@@ -41,7 +41,7 @@ class SignatureStackEntryParser {
   void ReadSignatureHeader(const std::optional<BinaryData>& data);
   void ReadSignatureValue(const std::optional<BinaryData>& data);
   void EvaluateSignatureEntry(BinaryData data);
-  void RunErrorCallback(const std::string& message);
+  void RunErrorCallback(std::string message);
 
   mojom::BundleIntegrityBlockSignatureStackEntryPtr signature_stack_entry_;
   AttributesMap attributes_map_;
