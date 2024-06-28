@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/geo/country_data.h"
 
+#include <array>
 #include <utility>
 
 #include "base/memory/singleton.h"
