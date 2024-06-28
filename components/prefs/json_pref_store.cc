@@ -57,7 +57,7 @@ namespace {
 const base::FilePath::CharType kBadExtension[] = FILE_PATH_LITERAL("bad");
 
 // Report a key that triggers a write into the Preferences files.
-void ReportKeyChangedToUMA(const std::string& key) {
+void ReportKeyChangedToUMA(std::string_view key) {
   // Truncate the sign bit. Even if the type is unsigned, UMA displays 32-bit
   // negative numbers.
   const uint32_t hash = base::PersistentHash(key) & 0x7FFFFFFF;
@@ -212,7 +212,7 @@ bool JsonPrefStore::IsInitializationComplete() const {
   return initialized_;
 }
 
-bool JsonPrefStore::GetMutableValue(const std::string& key,
+bool JsonPrefStore::GetMutableValue(std::string_view key,
                                     base::Value** result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -225,7 +225,7 @@ bool JsonPrefStore::GetMutableValue(const std::string& key,
   return true;
 }
 
-void JsonPrefStore::SetValue(const std::string& key,
+void JsonPrefStore::SetValue(std::string_view key,
                              base::Value value,
                              uint32_t flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -238,7 +238,7 @@ void JsonPrefStore::SetValue(const std::string& key,
   }
 }
 
-void JsonPrefStore::SetValueSilently(const std::string& key,
+void JsonPrefStore::SetValueSilently(std::string_view key,
                                      base::Value value,
                                      uint32_t flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -251,7 +251,7 @@ void JsonPrefStore::SetValueSilently(const std::string& key,
   }
 }
 
-void JsonPrefStore::RemoveValue(const std::string& key, uint32_t flags) {
+void JsonPrefStore::RemoveValue(std::string_view key, uint32_t flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (prefs_.RemoveByDottedPath(key)) {
@@ -259,15 +259,14 @@ void JsonPrefStore::RemoveValue(const std::string& key, uint32_t flags) {
   }
 }
 
-void JsonPrefStore::RemoveValueSilently(const std::string& key,
-                                        uint32_t flags) {
+void JsonPrefStore::RemoveValueSilently(std::string_view key, uint32_t flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   prefs_.RemoveByDottedPath(key);
   ScheduleWrite(flags);
 }
 
-void JsonPrefStore::RemoveValuesByPrefixSilently(const std::string& prefix) {
+void JsonPrefStore::RemoveValuesByPrefixSilently(std::string_view prefix) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RemoveValueSilently(prefix, /*flags*/ 0);
 }
@@ -338,7 +337,7 @@ void JsonPrefStore::SchedulePendingLossyWrites() {
     writer_.ScheduleWrite(this);
 }
 
-void JsonPrefStore::ReportValueChanged(const std::string& key, uint32_t flags) {
+void JsonPrefStore::ReportValueChanged(std::string_view key, uint32_t flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (pref_filter_)

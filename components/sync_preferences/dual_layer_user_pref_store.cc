@@ -180,7 +180,7 @@ base::Value::Dict DualLayerUserPrefStore::GetValues() const {
   return values;
 }
 
-void DualLayerUserPrefStore::SetValue(const std::string& key,
+void DualLayerUserPrefStore::SetValue(std::string_view key,
                                       base::Value value,
                                       uint32_t flags) {
   const base::Value* initial_value = nullptr;
@@ -213,8 +213,7 @@ void DualLayerUserPrefStore::SetValue(const std::string& key,
   }
 }
 
-void DualLayerUserPrefStore::RemoveValue(const std::string& key,
-                                         uint32_t flags) {
+void DualLayerUserPrefStore::RemoveValue(std::string_view key, uint32_t flags) {
   // Only proceed if the pref exists.
   if (!GetValue(key, nullptr)) {
     return;
@@ -236,7 +235,7 @@ void DualLayerUserPrefStore::RemoveValue(const std::string& key,
   }
 }
 
-bool DualLayerUserPrefStore::GetMutableValue(const std::string& key,
+bool DualLayerUserPrefStore::GetMutableValue(std::string_view key,
                                              base::Value** result) {
   if (!ShouldGetValueFromAccountStore(key)) {
     return local_pref_store_->GetMutableValue(key, result);
@@ -270,7 +269,7 @@ bool DualLayerUserPrefStore::GetMutableValue(const std::string& key,
   return true;
 }
 
-void DualLayerUserPrefStore::ReportValueChanged(const std::string& key,
+void DualLayerUserPrefStore::ReportValueChanged(std::string_view key,
                                                 uint32_t flags) {
   {
     base::AutoReset<bool> setting_prefs(&is_setting_prefs_, true);
@@ -306,7 +305,7 @@ void DualLayerUserPrefStore::ReportValueChanged(const std::string& key,
   }
 }
 
-void DualLayerUserPrefStore::SetValueSilently(const std::string& key,
+void DualLayerUserPrefStore::SetValueSilently(std::string_view key,
                                               base::Value value,
                                               uint32_t flags) {
   if (ShouldSetValueInAccountStore(key)) {
@@ -327,7 +326,7 @@ void DualLayerUserPrefStore::SetValueSilently(const std::string& key,
 }
 
 void DualLayerUserPrefStore::RemoveValuesByPrefixSilently(
-    const std::string& prefix) {
+    std::string_view prefix) {
   local_pref_store_->RemoveValuesByPrefixSilently(prefix);
 
   // RemoveValuesByPrefixSilently() is not used for the account store since it
@@ -421,7 +420,7 @@ void DualLayerUserPrefStore::OnStoreDeletionFromDisk() {
 }
 
 bool DualLayerUserPrefStore::ShouldSetValueInAccountStore(
-    const std::string& key) const {
+    std::string_view key) const {
   // A preference `key` is added to account store only if it is syncable,  the
   // corresponding pref type is active, and falls under the current user
   // consent, i.e. "privacy-sensitive" prefs require history opt-in.
@@ -433,7 +432,7 @@ bool DualLayerUserPrefStore::ShouldSetValueInAccountStore(
   auto metadata = pref_model_associator_client_->GetSyncablePrefsDatabase()
                       .GetSyncablePrefMetadata(key);
   // Checks if the pref type is active.
-  if (!active_types_.count(metadata->model_type()) &&
+  if (!active_types_.contains(metadata->model_type()) &&
       // Checks if the pref already exists in the account store.
       // This is to handle cases where a pref might pre-exist before sync is
       // initialized and the type is marked as active.
@@ -444,7 +443,7 @@ bool DualLayerUserPrefStore::ShouldSetValueInAccountStore(
 }
 
 bool DualLayerUserPrefStore::ShouldGetValueFromAccountStore(
-    const std::string& key) const {
+    std::string_view key) const {
   // A preference `key` is queried from account store only if it is syncable and
   // falls under the current user consent, i.e. "privacy-sensitive" prefs
   // require history opt-in.
@@ -561,7 +560,7 @@ bool DualLayerUserPrefStore::IsPrefKeyMergeable(std::string_view key) const {
 }
 
 const base::Value* DualLayerUserPrefStore::MaybeMerge(
-    const std::string& pref_name,
+    std::string_view pref_name,
     const base::Value& local_value,
     const base::Value& account_value) const {
   // Return the account value if `pref_name` is not mergeable.
@@ -596,7 +595,7 @@ const base::Value* DualLayerUserPrefStore::MaybeMerge(
   return merged_pref;
 }
 
-base::Value* DualLayerUserPrefStore::MaybeMerge(const std::string& pref_name,
+base::Value* DualLayerUserPrefStore::MaybeMerge(std::string_view pref_name,
                                                 base::Value& local_value,
                                                 base::Value& account_value) {
   // Doing const_cast should be safe as ultimately the value being pointed to is
@@ -606,7 +605,7 @@ base::Value* DualLayerUserPrefStore::MaybeMerge(const std::string& pref_name,
 }
 
 std::pair<base::Value, base::Value> DualLayerUserPrefStore::UnmergeValue(
-    const std::string& pref_name,
+    std::string_view pref_name,
     base::Value value,
     uint32_t flags) const {
   CHECK(ShouldSetValueInAccountStore(pref_name));

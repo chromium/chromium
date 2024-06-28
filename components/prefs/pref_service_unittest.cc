@@ -316,25 +316,25 @@ TEST(PrefServiceTest, SetTimeDeltaValue_ZeroTimeDelta) {
 // values to it.
 class WriteFlagChecker : public TestingPrefStore {
  public:
-  WriteFlagChecker() {}
+  WriteFlagChecker() = default;
 
-  void ReportValueChanged(const std::string& key, uint32_t flags) override {
+  void ReportValueChanged(std::string_view key, uint32_t flags) override {
     SetLastWriteFlags(flags);
   }
 
-  void SetValue(const std::string& key,
+  void SetValue(std::string_view key,
                 base::Value value,
                 uint32_t flags) override {
     SetLastWriteFlags(flags);
   }
 
-  void SetValueSilently(const std::string& key,
+  void SetValueSilently(std::string_view key,
                         base::Value value,
                         uint32_t flags) override {
     SetLastWriteFlags(flags);
   }
 
-  void RemoveValue(const std::string& key, uint32_t flags) override {
+  void RemoveValue(std::string_view key, uint32_t flags) override {
     SetLastWriteFlags(flags);
   }
 

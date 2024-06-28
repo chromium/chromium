@@ -4,7 +4,6 @@
 
 #include "components/prefs/segregated_pref_store.h"
 
-#include <string>
 #include <string_view>
 #include <utility>
 
@@ -107,35 +106,35 @@ base::Value::Dict SegregatedPrefStore::GetValues() const {
   return values;
 }
 
-void SegregatedPrefStore::SetValue(const std::string& key,
+void SegregatedPrefStore::SetValue(std::string_view key,
                                    base::Value value,
                                    uint32_t flags) {
   StoreForKey(key)->SetValue(key, std::move(value), flags);
 }
 
-void SegregatedPrefStore::RemoveValue(const std::string& key, uint32_t flags) {
+void SegregatedPrefStore::RemoveValue(std::string_view key, uint32_t flags) {
   StoreForKey(key)->RemoveValue(key, flags);
 }
 
 void SegregatedPrefStore::RemoveValuesByPrefixSilently(
-    const std::string& prefix) {
+    std::string_view prefix) {
   // Since we can't guarantee to have all the prefs in one the pref stores, we
   // have to push the removal command down to both of them.
   default_pref_store_->RemoveValuesByPrefixSilently(prefix);
   selected_pref_store_->RemoveValuesByPrefixSilently(prefix);
 }
 
-bool SegregatedPrefStore::GetMutableValue(const std::string& key,
+bool SegregatedPrefStore::GetMutableValue(std::string_view key,
                                           base::Value** result) {
   return StoreForKey(key)->GetMutableValue(key, result);
 }
 
-void SegregatedPrefStore::ReportValueChanged(const std::string& key,
+void SegregatedPrefStore::ReportValueChanged(std::string_view key,
                                              uint32_t flags) {
   StoreForKey(key)->ReportValueChanged(key, flags);
 }
 
-void SegregatedPrefStore::SetValueSilently(const std::string& key,
+void SegregatedPrefStore::SetValueSilently(std::string_view key,
                                            base::Value value,
                                            uint32_t flags) {
   StoreForKey(key)->SetValueSilently(key, std::move(value), flags);

@@ -10,7 +10,6 @@
 #include <memory>
 #include <optional>
 #include <set>
-#include <string>
 #include <string_view>
 
 #include "base/compiler_specific.h"
@@ -60,16 +59,16 @@ class COMPONENTS_PREFS_EXPORT SegregatedPrefStore : public PersistentPrefStore {
   base::Value::Dict GetValues() const override;
 
   // WriteablePrefStore implementation
-  void SetValue(const std::string& key,
+  void SetValue(std::string_view key,
                 base::Value value,
                 uint32_t flags) override;
-  void RemoveValue(const std::string& key, uint32_t flags) override;
-  void RemoveValuesByPrefixSilently(const std::string& prefix) override;
+  void RemoveValue(std::string_view key, uint32_t flags) override;
+  void RemoveValuesByPrefixSilently(std::string_view prefix) override;
 
   // PersistentPrefStore implementation
-  bool GetMutableValue(const std::string& key, base::Value** result) override;
-  void ReportValueChanged(const std::string& key, uint32_t flags) override;
-  void SetValueSilently(const std::string& key,
+  bool GetMutableValue(std::string_view key, base::Value** result) override;
+  void ReportValueChanged(std::string_view key, uint32_t flags) override;
+  void SetValueSilently(std::string_view key,
                         base::Value value,
                         uint32_t flags) override;
   bool ReadOnly() const override;

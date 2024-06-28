@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <map>
-#include <string>
 #include <string_view>
 
 #include "base/observer_list.h"
@@ -34,16 +33,16 @@ class COMPONENTS_PREFS_EXPORT ValueMapPrefStore : public WriteablePrefStore {
   bool HasObservers() const override;
 
   // WriteablePrefStore overrides:
-  void SetValue(const std::string& key,
+  void SetValue(std::string_view key,
                 base::Value value,
                 uint32_t flags) override;
-  void RemoveValue(const std::string& key, uint32_t flags) override;
-  bool GetMutableValue(const std::string& key, base::Value** value) override;
-  void ReportValueChanged(const std::string& key, uint32_t flags) override;
-  void SetValueSilently(const std::string& key,
+  void RemoveValue(std::string_view key, uint32_t flags) override;
+  bool GetMutableValue(std::string_view key, base::Value** value) override;
+  void ReportValueChanged(std::string_view key, uint32_t flags) override;
+  void SetValueSilently(std::string_view key,
                         base::Value value,
                         uint32_t flags) override;
-  void RemoveValuesByPrefixSilently(const std::string& prefix) override;
+  void RemoveValuesByPrefixSilently(std::string_view prefix) override;
 
  protected:
   ~ValueMapPrefStore() override;

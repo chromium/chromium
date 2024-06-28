@@ -25,7 +25,7 @@ base::Value::Dict InMemoryPrefStore::GetValues() const {
   return prefs_.AsDict();
 }
 
-bool InMemoryPrefStore::GetMutableValue(const std::string& key,
+bool InMemoryPrefStore::GetMutableValue(std::string_view key,
                                         base::Value** value) {
   return prefs_.GetValue(key, value);
 }
@@ -46,26 +46,25 @@ bool InMemoryPrefStore::IsInitializationComplete() const {
   return true;
 }
 
-void InMemoryPrefStore::SetValue(const std::string& key,
+void InMemoryPrefStore::SetValue(std::string_view key,
                                  base::Value value,
                                  uint32_t flags) {
   if (prefs_.SetValue(key, std::move(value)))
     ReportValueChanged(key, flags);
 }
 
-void InMemoryPrefStore::SetValueSilently(const std::string& key,
+void InMemoryPrefStore::SetValueSilently(std::string_view key,
                                          base::Value value,
                                          uint32_t flags) {
   prefs_.SetValue(key, std::move(value));
 }
 
-void InMemoryPrefStore::RemoveValue(const std::string& key, uint32_t flags) {
+void InMemoryPrefStore::RemoveValue(std::string_view key, uint32_t flags) {
   if (prefs_.RemoveValue(key))
     ReportValueChanged(key, flags);
 }
 
-void InMemoryPrefStore::RemoveValuesByPrefixSilently(
-    const std::string& prefix) {
+void InMemoryPrefStore::RemoveValuesByPrefixSilently(std::string_view prefix) {
   prefs_.ClearWithPrefix(prefix);
 }
 
@@ -85,7 +84,7 @@ void InMemoryPrefStore::ReadPrefsAsync(ReadErrorDelegate* error_delegate) {
   delete error_delegate;
 }
 
-void InMemoryPrefStore::ReportValueChanged(const std::string& key,
+void InMemoryPrefStore::ReportValueChanged(std::string_view key,
                                            uint32_t flags) {
   for (Observer& observer : observers_)
     observer.OnPrefValueChanged(key);

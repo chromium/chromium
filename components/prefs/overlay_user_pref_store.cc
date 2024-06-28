@@ -108,7 +108,7 @@ base::Value::Dict OverlayUserPrefStore::GetValues() const {
   return values;
 }
 
-bool OverlayUserPrefStore::GetMutableValue(const std::string& key,
+bool OverlayUserPrefStore::GetMutableValue(std::string_view key,
                                            base::Value** result) {
   if (ShallBeStoredInPersistent(key))
     return persistent_user_pref_store_->GetMutableValue(key, result);
@@ -128,7 +128,7 @@ bool OverlayUserPrefStore::GetMutableValue(const std::string& key,
   return true;
 }
 
-void OverlayUserPrefStore::SetValue(const std::string& key,
+void OverlayUserPrefStore::SetValue(std::string_view key,
                                     base::Value value,
                                     uint32_t flags) {
   if (ShallBeStoredInPersistent(key)) {
@@ -142,7 +142,7 @@ void OverlayUserPrefStore::SetValue(const std::string& key,
   ephemeral_user_pref_store_->SetValue(key, std::move(value), flags);
 }
 
-void OverlayUserPrefStore::SetValueSilently(const std::string& key,
+void OverlayUserPrefStore::SetValueSilently(std::string_view key,
                                             base::Value value,
                                             uint32_t flags) {
   if (ShallBeStoredInPersistent(key)) {
@@ -153,7 +153,7 @@ void OverlayUserPrefStore::SetValueSilently(const std::string& key,
   ephemeral_user_pref_store_->SetValueSilently(key, std::move(value), flags);
 }
 
-void OverlayUserPrefStore::RemoveValue(const std::string& key, uint32_t flags) {
+void OverlayUserPrefStore::RemoveValue(std::string_view key, uint32_t flags) {
   if (ShallBeStoredInPersistent(key)) {
     persistent_user_pref_store_->RemoveValue(key, flags);
     return;
@@ -163,7 +163,7 @@ void OverlayUserPrefStore::RemoveValue(const std::string& key, uint32_t flags) {
 }
 
 void OverlayUserPrefStore::RemoveValuesByPrefixSilently(
-    const std::string& prefix) {
+    std::string_view prefix) {
   NOTIMPLEMENTED();
 }
 
@@ -200,7 +200,7 @@ void OverlayUserPrefStore::SchedulePendingLossyWrites() {
   persistent_user_pref_store_->SchedulePendingLossyWrites();
 }
 
-void OverlayUserPrefStore::ReportValueChanged(const std::string& key,
+void OverlayUserPrefStore::ReportValueChanged(std::string_view key,
                                               uint32_t flags) {
   for (PrefStore::Observer& observer : observers_)
     observer.OnPrefValueChanged(key);
