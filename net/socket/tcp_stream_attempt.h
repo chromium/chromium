@@ -5,6 +5,8 @@
 #ifndef NET_SOCKET_TCP_STREAM_ATTEMPT_H_
 #define NET_SOCKET_TCP_STREAM_ATTEMPT_H_
 
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/socket/stream_attempt.h"
@@ -14,6 +16,10 @@ namespace net {
 // Represents a single TCP connection attempt.
 class NET_EXPORT_PRIVATE TcpStreamAttempt final : public StreamAttempt {
  public:
+  // This timeout is shorter than TransportConnectJob::ConnectionTimeout()
+  // because a TcpStreamAttempt only attempts a single TCP connection.
+  static constexpr base::TimeDelta kTcpHandshakeTimeout = base::Seconds(60);
+
   TcpStreamAttempt(const StreamAttemptParams* params, IPEndPoint ip_endpoint);
 
   TcpStreamAttempt(const TcpStreamAttempt&) = delete;
@@ -25,6 +31,10 @@ class NET_EXPORT_PRIVATE TcpStreamAttempt final : public StreamAttempt {
   int StartInternal() override;
 
   void OnIOComplete(int rv);
+
+  void OnTimeout();
+
+  base::OneShotTimer timeout_timer_;
 };
 
 }  // namespace net

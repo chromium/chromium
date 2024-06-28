@@ -90,7 +90,10 @@ class StreamAttemptHelper {
   }
 
   int WaitForCompletion() {
-    CHECK(!result_);
+    if (result_.has_value()) {
+      return *result_;
+    }
+
     base::RunLoop loop;
     completion_closure_ = loop.QuitClosure();
     loop.Run();
@@ -190,6 +193,19 @@ TEST_F(TcpStreamAttemptTest, FailureAsync) {
 
   rv = helper.WaitForCompletion();
   EXPECT_THAT(rv, IsError(ERR_CONNECTION_FAILED));
+}
+
+TEST_F(TcpStreamAttemptTest, Timeout) {
+  socket_factory().set_default_client_socket_type(
+      MockTransportClientSocketFactory::Type::kStalled);
+  StreamAttemptHelper helper(params(), MakeIPEndPoint("192.0.2.1"));
+  int rv = helper.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  FastForwardBy(TcpStreamAttempt::kTcpHandshakeTimeout);
+  rv = helper.WaitForCompletion();
+  EXPECT_THAT(rv, IsError(ERR_TIMED_OUT));
+  ASSERT_FALSE(helper.attempt()->ReleaseStreamSocket());
 }
 
 TEST_F(TcpStreamAttemptTest, Abort) {

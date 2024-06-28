@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
 #include "net/socket/client_socket_factory.h"
@@ -42,6 +44,12 @@ int TcpStreamAttempt::StartInternal() {
 
   TransportClientSocket* socket_ptr = stream_socket.get();
   SetStreamSocket(std::move(stream_socket));
+
+  CHECK(!timeout_timer_.IsRunning());
+  timeout_timer_.Start(
+      FROM_HERE, kTcpHandshakeTimeout,
+      base::BindOnce(&TcpStreamAttempt::OnTimeout, base::Unretained(this)));
+
   return socket_ptr->Connect(
       base::BindOnce(&TcpStreamAttempt::OnIOComplete, base::Unretained(this)));
 }
@@ -49,6 +57,11 @@ int TcpStreamAttempt::StartInternal() {
 void TcpStreamAttempt::OnIOComplete(int rv) {
   CHECK_NE(rv, ERR_IO_PENDING);
   NotifyOfCompletion(rv);
+}
+
+void TcpStreamAttempt::OnTimeout() {
+  SetStreamSocket(nullptr);
+  NotifyOfCompletion(ERR_TIMED_OUT);
 }
 
 }  // namespace net
