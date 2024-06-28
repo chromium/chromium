@@ -154,7 +154,7 @@ export class SubscriptionManager {
         }
         return priority;
       })
-      .filter((p) => p !== undefined) as number[];
+      .filter((p) => p !== undefined);
 
     if (priorities.length === 0) {
       // Not subscribed, return null.
