@@ -17853,6 +17853,29 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_EXPERIMENTAL_FEATURE_DISCLAIMER" desc="Text used for experimental features.">
       This is an experimental AI feature.
     </message>
+
+    <!-- Safety Hub elements. -->
+    <!-- TODO(crbug.com/324562205): Make strings translateable once finalized. -->
+    <if expr="is_android">
+        <message name="IDS_SETTINGS_SAFETY_HUB_SAFE_BROWSING_MENU_NOTIFICATION" translateable="false">
+          Get protection against dangerous sites
+        </message>
+        <message name="IDS_SETTINGS_SAFETY_HUB_REVIEW_NOTIFICATION_PERMISSIONS_MENU_NOTIFICATION" translateable="false">
+          {NUM_SITES, plural,
+          =1 {Found 1 site with lots of notifications}
+          other {Found {NUM_SITES} sites with lots of notifications}}
+        </message>
+        <message name="IDS_SETTINGS_SAFETY_HUB_REVOKED_PERMISSIONS_MENU_NOTIFICATION" translateable="false">
+          {NUM_SITES, plural,
+          =1 {Chrome removed permissions for 1 site}
+          other {Chrome removed permissions for {NUM_SITES} sites}}
+        </message>
+        <message name="IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION" translateable="false">
+          {NUM_SITES, plural,
+          =1 {Chrome removed permissions for 1 unused site}
+          other {Chrome removed permissions for {NUM_SITES} ununsed sites}}
+        </message>
+    </if>
   </messages>
 </release>
 </grit>

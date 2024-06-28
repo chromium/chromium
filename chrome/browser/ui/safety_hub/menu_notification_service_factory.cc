@@ -4,19 +4,25 @@
 
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
-#include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
+#include "chrome/common/chrome_features.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // static
 SafetyHubMenuNotificationServiceFactory*
@@ -41,8 +47,10 @@ SafetyHubMenuNotificationServiceFactory::
               .Build()) {
   DependsOn(UnusedSitePermissionsServiceFactory::GetInstance());
   DependsOn(NotificationPermissionsReviewServiceFactory::GetInstance());
+#if !BUILDFLAG(IS_ANDROID)
   DependsOn(PasswordStatusCheckServiceFactory::GetInstance());
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
+#endif  // BUIDFLAG(IS_ANDROID)
 }
 
 SafetyHubMenuNotificationServiceFactory::
@@ -56,6 +64,11 @@ SafetyHubMenuNotificationServiceFactory::BuildServiceInstanceForBrowserContext(
       UnusedSitePermissionsServiceFactory::GetForProfile(profile);
   NotificationPermissionsReviewService* notification_permission_review_service =
       NotificationPermissionsReviewServiceFactory::GetForProfile(profile);
+#if BUILDFLAG(IS_ANDROID)
+  return std::make_unique<SafetyHubMenuNotificationService>(
+      profile->GetPrefs(), unused_site_permissions_service,
+      notification_permission_review_service, profile);
+#else
   extensions::CWSInfoService* extension_info_service =
       extensions::CWSInfoService::Get(profile);
   PasswordStatusCheckService* password_check_service =
@@ -64,4 +77,5 @@ SafetyHubMenuNotificationServiceFactory::BuildServiceInstanceForBrowserContext(
       profile->GetPrefs(), unused_site_permissions_service,
       notification_permission_review_service, extension_info_service,
       password_check_service, profile);
+#endif  // BUILDFLAG(IS_ANDROID)
 }

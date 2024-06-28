@@ -79,6 +79,7 @@
 #include "chrome/browser/ui/network_profile_bubble.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/browser/ui/search_engines/keyword_editor_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/tabs/organization/prefs.h"
@@ -296,7 +297,6 @@
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_permission_utils.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
@@ -1864,6 +1864,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   QuietNotificationPermissionUiState::RegisterProfilePrefs(registry);
   RegisterBrowserUserPrefs(registry);
   RegisterPrefersDefaultScrollbarStylesPrefs(registry);
+  RegisterSafetyHubProfilePrefs(registry);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   settings::ResetSettingsHandler::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1992,7 +1993,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   PromoService::RegisterProfilePrefs(registry);
   RecipesService::RegisterProfilePrefs(registry);
   RegisterReadAnythingProfilePrefs(registry);
-  RegisterSafetyHubProfilePrefs(registry);
   settings::SettingsUI::RegisterProfilePrefs(registry);
   send_tab_to_self::RegisterProfilePrefs(registry);
   signin::RegisterProfilePrefs(registry);

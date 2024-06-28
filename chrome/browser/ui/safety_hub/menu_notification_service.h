@@ -11,14 +11,18 @@
 #include <optional>
 
 #include "base/time/time.h"
-#include "chrome/browser/extensions/cws_info_service.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/safety_hub/menu_notification.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
-#include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "components/keyed_service/core/keyed_service.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/cws_info_service.h"
+#include "chrome/browser/ui/safety_hub/password_status_check_service.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 struct MenuNotificationEntry {
   int command = 0;
@@ -69,8 +73,10 @@ class SafetyHubMenuNotificationService : public KeyedService {
       PrefService* pref_service,
       UnusedSitePermissionsService* unused_site_permissions_service,
       NotificationPermissionsReviewService* notification_permissions_service,
+#if !BUILDFLAG(IS_ANDROID)
       extensions::CWSInfoService* extension_info_service,
       PasswordStatusCheckService* password_check_service,
+#endif  // BUILDFLAG(IS_ANDROID)
       Profile* profile);
   SafetyHubMenuNotificationService(const SafetyHubMenuNotificationService&) =
       delete;

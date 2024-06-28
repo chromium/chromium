@@ -286,7 +286,6 @@ bool UnusedSitePermissionsService::UnusedSitePermissionsResult::
 
 std::u16string UnusedSitePermissionsService::UnusedSitePermissionsResult::
     GetNotificationString() const {
-#if !BUILDFLAG(IS_ANDROID)
   if (revoked_permissions_.empty()) {
     return std::u16string();
   }
@@ -296,10 +295,6 @@ std::u16string UnusedSitePermissionsService::UnusedSitePermissionsResult::
           ? IDS_SETTINGS_SAFETY_HUB_REVOKED_PERMISSIONS_MENU_NOTIFICATION
           : IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION,
       revoked_permissions_.size());
-#else
-  // Menu notifications are not present on Android.
-  return std::u16string();
-#endif
 }
 
 int UnusedSitePermissionsService::UnusedSitePermissionsResult::
