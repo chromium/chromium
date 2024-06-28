@@ -45,11 +45,11 @@ InformedRestoreItemView::InformedRestoreItemView(
       tab_count_(app_info.tab_count),
       inside_screenshot_(inside_screenshot) {
   SetBetweenChildSpacing(inside_screenshot_
-                             ? pine::kScreenshotIconRowChildSpacing
-                             : pine::kItemChildSpacing);
+                             ? informed_restore::kScreenshotIconRowChildSpacing
+                             : informed_restore::kItemChildSpacing);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-  SetID(pine::kItemViewID);
+  SetID(informed_restore::kItemViewID);
 
   auto* image_view = AddChildView(std::make_unique<InformedRestoreAppImageView>(
       app_id_,
@@ -57,13 +57,13 @@ InformedRestoreItemView::InformedRestoreItemView(
                          : InformedRestoreAppImageView::Type::kItem,
       base::BindOnce(&InformedRestoreItemView::UpdateTitle,
                      weak_ptr_factory_.GetWeakPtr())));
-  image_view->SetID(pine::kItemImageViewID);
+  image_view->SetID(informed_restore::kItemImageViewID);
 
   if (inside_screenshot_) {
     views::Separator* separator =
         AddChildView(std::make_unique<views::Separator>());
     separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
-    separator->SetPreferredLength(pine::kScreenshotIconRowIconSize);
+    separator->SetPreferredLength(informed_restore::kScreenshotIconRowIconSize);
   }
 
   // Add nested `BoxLayoutView`s, so we can have the title of the window on
@@ -72,10 +72,10 @@ InformedRestoreItemView::InformedRestoreItemView(
     AddChildView(
         views::Builder<views::BoxLayoutView>()
             .CopyAddressTo(&favicon_container_view_)
-            .SetID(pine::kFaviconContainerViewID)
+            .SetID(informed_restore::kFaviconContainerViewID)
             .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
             .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
-            .SetBetweenChildSpacing(pine::kScreenshotFaviconSpacing)
+            .SetBetweenChildSpacing(informed_restore::kScreenshotFaviconSpacing)
             .Build());
   } else {
     AddChildView(
@@ -86,11 +86,11 @@ InformedRestoreItemView::InformedRestoreItemView(
             .AddChildren(
                 views::Builder<views::Label>()
                     .CopyAddressTo(&title_label_view_)
-                    .SetEnabledColorId(pine::kPineItemTextColorId)
+                    .SetEnabledColorId(informed_restore::kPineItemTextColorId)
                     .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                     .CustomConfigure(base::BindOnce(
                         [](const base::WeakPtr<InformedRestoreItemView>
-                              weak_this,
+                               weak_this,
                            views::Label* label) {
                           TypographyProvider::Get()->StyleLabel(
                               TypographyToken::kCrosButton2, *label);
@@ -101,7 +101,7 @@ InformedRestoreItemView::InformedRestoreItemView(
                         weak_ptr_factory_.GetWeakPtr())),
                 views::Builder<views::BoxLayoutView>()
                     .CopyAddressTo(&favicon_container_view_)
-                    .SetID(pine::kFaviconContainerViewID)
+                    .SetID(informed_restore::kFaviconContainerViewID)
                     .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
                     .SetCrossAxisAlignment(
                         views::BoxLayout::CrossAxisAlignment::kCenter)
@@ -173,7 +173,8 @@ void InformedRestoreItemView::OnAllFaviconsLoaded(
         .SetImageSize(kFaviconPreferredSize);
 
     if (inside_screenshot_) {
-      builder.SetPreferredSize(pine::kScreenshotIconRowImageViewSize);
+      builder.SetPreferredSize(
+          informed_restore::kScreenshotIconRowImageViewSize);
     }
 
     // If the image data is null, use a default cube icon instead.
@@ -203,14 +204,16 @@ void InformedRestoreItemView::OnAllFaviconsLoaded(
             // display.
             .SetText(u"+" +
                      base::FormatNumber(tab_count_ - kTabOverflowThreshold))
-            .SetPreferredSize(inside_screenshot_
-                                  ? pine::kScreenshotIconRowImageViewSize
-                                  : kTabCountPreferredSize)
+            .SetPreferredSize(
+                inside_screenshot_
+                    ? informed_restore::kScreenshotIconRowImageViewSize
+                    : kTabCountPreferredSize)
             .SetEnabledColorId(cros_tokens::kCrosSysOnPrimaryContainer)
             .SetBackground(views::CreateThemedRoundedRectBackground(
                 cros_tokens::kCrosSysPrimaryContainer,
-                inside_screenshot_ ? pine::kScreenshotIconRowIconSize / 2
-                                   : kTabCountRounding))
+                inside_screenshot_
+                    ? informed_restore::kScreenshotIconRowIconSize / 2
+                    : kTabCountRounding))
             .Build());
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosLabel2,
                                           *count_label);

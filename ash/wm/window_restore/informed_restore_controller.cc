@@ -107,7 +107,8 @@ InformedRestoreController::~InformedRestoreController() {
   Shell::Get()->overview_controller()->RemoveObserver(this);
 }
 
-void InformedRestoreController::MaybeShowInformedRestoreOnboarding(bool restore_on) {
+void InformedRestoreController::MaybeShowInformedRestoreOnboarding(
+    bool restore_on) {
   if (onboarding_widget_ || !ShouldStartInformedRestoreOnboarding()) {
     return;
   }
@@ -128,9 +129,9 @@ void InformedRestoreController::MaybeShowInformedRestoreOnboarding(bool restore_
               restore_on
                   ? IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_ON_ACCEPT
                   : IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_OFF_ACCEPT))
-          .SetAcceptCallback(
-              base::BindOnce(&InformedRestoreController::OnOnboardingAcceptPressed,
-                             base::Unretained(this), restore_on))
+          .SetAcceptCallback(base::BindOnce(
+              &InformedRestoreController::OnOnboardingAcceptPressed,
+              base::Unretained(this), restore_on))
           .Build();
 
   // Since no additional view was set, the buttons will be center aligned.
@@ -159,8 +160,9 @@ void InformedRestoreController::MaybeShowInformedRestoreOnboarding(bool restore_
     dialog->SetCancelButtonText(l10n_util::GetStringUTF16(
         IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_OFF_CANCEL));
     // `this` is guaranteed to outlive the dialog.
-    dialog->SetCancelCallback(base::BindOnce(
-        &InformedRestoreController::OnOnboardingCancelPressed, base::Unretained(this)));
+    dialog->SetCancelCallback(
+        base::BindOnce(&InformedRestoreController::OnOnboardingCancelPressed,
+                       base::Unretained(this)));
   }
 
   views::Widget::InitParams params(
@@ -177,9 +179,9 @@ void InformedRestoreController::MaybeStartPineOverviewSessionDevAccelerator() {
   auto data = std::make_unique<InformedRestoreContentsData>();
   data->last_session_crashed = false;
   std::pair<base::OnceClosure, base::OnceClosure> split =
-      base::SplitOnceCallback(
-          base::BindOnce(&InformedRestoreController::MaybeEndPineOverviewSession,
-                         weak_ptr_factory_.GetWeakPtr()));
+      base::SplitOnceCallback(base::BindOnce(
+          &InformedRestoreController::MaybeEndPineOverviewSession,
+          weak_ptr_factory_.GetWeakPtr()));
   data->restore_callback = std::move(split.first);
   data->cancel_callback = std::move(split.second);
 
@@ -279,7 +281,8 @@ void InformedRestoreController::OnContentsDataUpdated() {
   contents_data_update_callbacks_.Notify();
 }
 
-void InformedRestoreController::OnOverviewModeEnding(OverviewSession* overview_session) {
+void InformedRestoreController::OnOverviewModeEnding(
+    OverviewSession* overview_session) {
   in_informed_restore_ = false;
   for (const auto& grid : overview_session->grid_list()) {
     if (grid->informed_restore_widget()) {
@@ -326,7 +329,7 @@ void InformedRestoreController::OnOverviewModeEndingAnimationComplete(bool cance
   }
 
   AnchoredNudgeData nudge_data(
-      pine::kSuggestionsNudgeId,
+      informed_restore::kSuggestionsNudgeId,
       NudgeCatalogName::kInformedRestoreEducationNudge,
       l10n_util::GetStringUTF16(IDS_ASH_INFORMED_RESTORE_EDUCATION_NUDGE));
   nudge_data.image_model =
@@ -427,7 +430,8 @@ void InformedRestoreController::OnOnboardingAcceptPressed(bool restore_on) {
   // Show toast letting users know the pref change will affect them next
   // session.
   Shell::Get()->toast_manager()->Show(ToastData(
-      pine::kOnboardingToastId, ToastCatalogName::kInformedRestoreOnboarding,
+      informed_restore::kOnboardingToastId,
+      ToastCatalogName::kInformedRestoreOnboarding,
       l10n_util::GetStringUTF16(IDS_ASH_INFORMED_RESTORE_ONBOARDING_TOAST)));
 
   // We only record the action taken if the user had Restore off.

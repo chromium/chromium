@@ -33,13 +33,13 @@ constexpr gfx::Size kOverflowCountPreferredSize(18, 18);
 InformedRestoreItemsOverflowView::InformedRestoreItemsOverflowView(
     const InformedRestoreContentsData::AppsInfos& apps_infos) {
   const int num_elements = static_cast<int>(apps_infos.size());
-  CHECK_GT(num_elements, pine::kMaxItems);
+  CHECK_GT(num_elements, informed_restore::kMaxItems);
 
   // TODO(hewer): Fix margins so the icons and text are aligned with
   // `InformedRestoreItemView` elements.
-  SetBetweenChildSpacing(pine::kItemChildSpacing);
+  SetBetweenChildSpacing(informed_restore::kItemChildSpacing);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
-  SetID(pine::kOverflowViewID);
+  SetID(informed_restore::kOverflowViewID);
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
 
   auto add_inner_box_layout_view =
@@ -68,14 +68,15 @@ InformedRestoreItemsOverflowView::InformedRestoreItemsOverflowView(
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
           .SetBackground(views::CreateThemedRoundedRectBackground(
-              pine::kIconBackgroundColorId, kOverflowBackgroundRounding))
+              informed_restore::kIconBackgroundColorId,
+              kOverflowBackgroundRounding))
           .Build());
   top_row_view = add_inner_box_layout_view(outer_box_view);
-  top_row_view->SetID(pine::kOverflowTopRowViewID);
+  top_row_view->SetID(informed_restore::kOverflowTopRowViewID);
 
   // Populate the `BoxLayoutView`s with window icons or a count of any excess
   // windows.
-  for (int i = pine::kOverflowMinThreshold; i < num_elements; ++i) {
+  for (int i = informed_restore::kOverflowMinThreshold; i < num_elements; ++i) {
     // If there are 5 or more overflow windows, save the last spot in the
     // bottom row to count the remaining windows.
     if (num_elements > kOverflowMaxElements && i >= kOverflowMaxThreshold) {
@@ -106,7 +107,7 @@ InformedRestoreItemsOverflowView::InformedRestoreItemsOverflowView(
         top_row_view->children().size() == 2u) {
       if (!bottom_row_view) {
         bottom_row_view = add_inner_box_layout_view(outer_box_view);
-        bottom_row_view->SetID(pine::kOverflowBottomRowViewID);
+        bottom_row_view->SetID(informed_restore::kOverflowBottomRowViewID);
       }
     }
 
@@ -115,7 +116,7 @@ InformedRestoreItemsOverflowView::InformedRestoreItemsOverflowView(
     auto image_view = std::make_unique<InformedRestoreAppImageView>(
         apps_infos[i].app_id, InformedRestoreAppImageView::Type::kOverflow,
         base::DoNothing());
-    image_view->SetID(pine::kOverflowImageViewID);
+    image_view->SetID(informed_restore::kOverflowImageViewID);
     row_view->AddChildView(std::move(image_view));
   }
 
@@ -127,7 +128,9 @@ InformedRestoreItemsOverflowView::InformedRestoreItemsOverflowView(
     outer_box_view->SetBetweenChildSpacing(kOverflowIconSpacing);
   } else {
     const int padding_height =
-        (pine::kOverflowIconPreferredSize.height() + kOverflowIconSpacing) / 2;
+        (informed_restore::kOverflowIconPreferredSize.height() +
+         kOverflowIconSpacing) /
+        2;
     outer_box_view->SetBetweenChildSpacing(0);
     outer_box_view->SetInsideBorderInsets(gfx::Insets::VH(padding_height, 0));
   }
@@ -136,11 +139,11 @@ InformedRestoreItemsOverflowView::InformedRestoreItemsOverflowView(
   views::Label* remaining_windows_label;
   AddChildView(views::Builder<views::Label>()
                    .CopyAddressTo(&remaining_windows_label)
-                   .SetEnabledColorId(pine::kPineItemTextColorId)
+                   .SetEnabledColorId(informed_restore::kPineItemTextColorId)
                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                    .SetText(l10n_util::GetPluralStringFUTF16(
                        IDS_ASH_FOREST_WINDOW_OVERFLOW_COUNT,
-                       num_elements - pine::kOverflowMinThreshold))
+                       num_elements - informed_restore::kOverflowMinThreshold))
                    .Build());
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                         *remaining_windows_label);

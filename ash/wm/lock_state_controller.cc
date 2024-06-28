@@ -136,9 +136,11 @@ void EncodeAndSaveImage(const base::FilePath& file_path, gfx::Image image) {
   // disk, decoded and shown with this size directly inside the informed restore
   // dialog later as well.
   const float aspect_ratio = static_cast<float>(image.Height()) / image.Width();
-  const int resized_image_height = aspect_ratio * pine::kPreviewContainerWidth;
+  const int resized_image_height =
+      aspect_ratio * informed_restore::kPreviewContainerWidth;
   const auto resized_image = gfx::ResizedImage(
-      image, gfx::Size(pine::kPreviewContainerWidth, resized_image_height));
+      image, gfx::Size(informed_restore::kPreviewContainerWidth,
+                       resized_image_height));
   auto png_bytes = resized_image.As1xPNGBytes();
   auto raw_data = base::make_span(png_bytes->data(), png_bytes->size());
   if (!base::WriteFile(file_path, raw_data)) {

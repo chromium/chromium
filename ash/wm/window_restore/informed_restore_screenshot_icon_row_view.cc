@@ -25,8 +25,8 @@ namespace ash {
 namespace {
 
 constexpr gfx::Insets kIconRowInsets =
-    gfx::Insets::TLBR(pine::kPreviewContainerRadius + 4, 4, 4, 4);
-constexpr int kIconRowHeight = pine::kScreenshotIconRowIconSize +
+    gfx::Insets::TLBR(informed_restore::kPreviewContainerRadius + 4, 4, 4, 4);
+constexpr int kIconRowHeight = informed_restore::kScreenshotIconRowIconSize +
                                kIconRowInsets.top() + kIconRowInsets.bottom();
 
 // Returns the preferred size of the icon row. `child_number` indicates the
@@ -34,15 +34,16 @@ constexpr int kIconRowHeight = pine::kScreenshotIconRowIconSize +
 // browser window opened, which means the favicons of the tabs will be shown
 // instead.
 gfx::Size GetPreferredSizeOfTheRow(int child_number, bool one_browser_window) {
-  int width = child_number * pine::kScreenshotIconRowIconSize +
+  int width = child_number * informed_restore::kScreenshotIconRowIconSize +
               kIconRowInsets.left() + kIconRowInsets.right() +
-              pine::kPreviewContainerRadius;
+              informed_restore::kPreviewContainerRadius;
   if (one_browser_window) {
-    width += 2 * pine::kScreenshotIconRowChildSpacing +
-             (child_number - 2) * pine::kScreenshotFaviconSpacing +
+    width += 2 * informed_restore::kScreenshotIconRowChildSpacing +
+             (child_number - 2) * informed_restore::kScreenshotFaviconSpacing +
              views::Separator::kThickness;
   } else {
-    width += (child_number - 1) * pine::kScreenshotIconRowChildSpacing;
+    width +=
+        (child_number - 1) * informed_restore::kScreenshotIconRowChildSpacing;
   }
   return gfx::Size(width, kIconRowHeight);
 }
@@ -51,10 +52,10 @@ gfx::Size GetPreferredSizeOfTheRow(int child_number, bool one_browser_window) {
 
 InformedRestoreScreenshotIconRowView::InformedRestoreScreenshotIconRowView(
     const InformedRestoreContentsData::AppsInfos& apps_infos) {
-  SetID(pine::kScreenshotIconRowViewID);
+  SetID(informed_restore::kScreenshotIconRowViewID);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart);
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-  SetBetweenChildSpacing(pine::kScreenshotIconRowChildSpacing);
+  SetBetweenChildSpacing(informed_restore::kScreenshotIconRowChildSpacing);
   SetInsideBorderInsets(kIconRowInsets);
   SetBackground(
       views::CreateThemedSolidBackground(kColorAshShieldAndBaseOpaque));
@@ -73,37 +74,39 @@ InformedRestoreScreenshotIconRowView::InformedRestoreScreenshotIconRowView(
                                                 /*inside_screenshot=*/true));
   } else {
     const bool exceed_max_elements =
-        elements_size > pine::kScreenshotIconRowMaxElements;
+        elements_size > informed_restore::kScreenshotIconRowMaxElements;
     // If there are more than `kScreenshotIconRowMaxElements` number of windows,
     // show `kScreenshotIconRowMaxElements - 1` number of icons and save the
     // last spot in the row to count the remaining windows.
-    const int num_icon = exceed_max_elements
-                             ? pine::kScreenshotIconRowMaxElements - 1
-                             : elements_size;
+    const int num_icon =
+        exceed_max_elements
+            ? informed_restore::kScreenshotIconRowMaxElements - 1
+            : elements_size;
 
     for (int i = 0; i < num_icon; i++) {
       auto image_view = std::make_unique<InformedRestoreAppImageView>(
           apps_infos[i].app_id, InformedRestoreAppImageView::Type::kScreenshot,
           base::DoNothing());
-      image_view->SetID(pine::kScreenshotImageViewID);
+      image_view->SetID(informed_restore::kScreenshotImageViewID);
       AddChildView(std::move(image_view));
     }
     if (exceed_max_elements) {
       auto* count_label = AddChildView(
           views::Builder<views::Label>()
               .SetText(u"+" + base::FormatNumber(elements_size - num_icon))
-              .SetPreferredSize(pine::kScreenshotIconRowImageViewSize)
+              .SetPreferredSize(
+                  informed_restore::kScreenshotIconRowImageViewSize)
               .SetEnabledColorId(cros_tokens::kCrosSysOnPrimaryContainer)
               .SetBackground(views::CreateThemedRoundedRectBackground(
                   cros_tokens::kCrosSysPrimaryContainer,
-                  pine::kScreenshotIconRowIconSize / 2.0))
+                  informed_restore::kScreenshotIconRowIconSize / 2.0))
               .Build());
       TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosLabel2,
                                             *count_label);
     }
   }
   int child_number =
-      std::min(pine::kScreenshotIconRowMaxElements,
+      std::min(informed_restore::kScreenshotIconRowMaxElements,
                one_browser_window ? static_cast<int>(apps_infos[0].tab_count)
                                   : elements_size);
   // Add the browser icon when there is only one browser window opened.

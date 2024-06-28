@@ -65,8 +65,8 @@ const PillButton* GetPineDialogRestoreButton() {
   const auto* contents_view =
       GetInformedRestoreContentsView();
   return contents_view
-             ? static_cast<const PillButton*>(
-                   contents_view->GetViewByID(pine::kRestoreButtonID))
+             ? static_cast<const PillButton*>(contents_view->GetViewByID(
+                   informed_restore::kRestoreButtonID))
              : nullptr;
 }
 
@@ -74,8 +74,8 @@ const PillButton* GetPineDialogCancelButton() {
   const auto* contents_view =
       GetInformedRestoreContentsView();
   return contents_view
-             ? static_cast<const PillButton*>(
-                   contents_view->GetViewByID(pine::kCancelButtonID))
+             ? static_cast<const PillButton*>(contents_view->GetViewByID(
+                   informed_restore::kCancelButtonID))
              : nullptr;
 }
 

@@ -14,7 +14,8 @@
 
 namespace ash {
 
-PineContextMenuModel::PineContextMenuModel() : ui::SimpleMenuModel(this) {
+InformedRestoreContextMenuModel::InformedRestoreContextMenuModel()
+    : ui::SimpleMenuModel(this) {
   const int group = 0;
   AddTitleWithStringId(IDS_ASH_PINE_DIALOG_CONTEXT_MENU_TITLE);
   AddRadioItemWithStringId(
@@ -29,9 +30,9 @@ PineContextMenuModel::PineContextMenuModel() : ui::SimpleMenuModel(this) {
   AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
 }
 
-PineContextMenuModel::~PineContextMenuModel() = default;
+InformedRestoreContextMenuModel::~InformedRestoreContextMenuModel() = default;
 
-bool PineContextMenuModel::IsCommandIdChecked(int command_id) const {
+bool InformedRestoreContextMenuModel::IsCommandIdChecked(int command_id) const {
   CHECK_GE(static_cast<int>(full_restore::RestoreOption::kMaxValue),
            command_id);
 
@@ -51,7 +52,8 @@ bool PineContextMenuModel::IsCommandIdChecked(int command_id) const {
   }
 }
 
-void PineContextMenuModel::ExecuteCommand(int command_id, int event_flags) {
+void InformedRestoreContextMenuModel::ExecuteCommand(int command_id,
+                                                     int event_flags) {
   CHECK_GE(static_cast<int>(full_restore::RestoreOption::kMaxValue),
            command_id);
 

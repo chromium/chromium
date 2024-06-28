@@ -23,11 +23,11 @@ constexpr int kItemIconBackgroundRounding = 10;
 gfx::Size GetImageSizeForType(const InformedRestoreAppImageView::Type type) {
   switch (type) {
     case InformedRestoreAppImageView::Type::kScreenshot:
-      return pine::kScreenshotIconRowImageViewSize;
+      return informed_restore::kScreenshotIconRowImageViewSize;
     case InformedRestoreAppImageView::Type::kItem:
       return kItemIconPreferredSize;
     case InformedRestoreAppImageView::Type::kOverflow:
-      return pine::kOverflowIconPreferredSize;
+      return informed_restore::kOverflowIconPreferredSize;
   }
 }
 
@@ -35,22 +35,22 @@ gfx::Size GetPreferredSizeForType(
     const InformedRestoreAppImageView::Type type) {
   switch (type) {
     case InformedRestoreAppImageView::Type::kScreenshot:
-      return pine::kScreenshotIconRowImageViewSize;
+      return informed_restore::kScreenshotIconRowImageViewSize;
     case InformedRestoreAppImageView::Type::kItem:
-      return pine::kItemIconBackgroundPreferredSize;
+      return informed_restore::kItemIconBackgroundPreferredSize;
     case InformedRestoreAppImageView::Type::kOverflow:
-      return pine::kOverflowIconPreferredSize;
+      return informed_restore::kOverflowIconPreferredSize;
   }
 }
 
 int GetIconSizeForType(const InformedRestoreAppImageView::Type type) {
   switch (type) {
     case InformedRestoreAppImageView::Type::kScreenshot:
-      return pine::kScreenshotIconRowIconSize;
+      return informed_restore::kScreenshotIconRowIconSize;
     case InformedRestoreAppImageView::Type::kItem:
-      return pine::kAppImageSize;
+      return informed_restore::kAppImageSize;
     case InformedRestoreAppImageView::Type::kOverflow:
-      return pine::kAppImageSize;
+      return informed_restore::kAppImageSize;
   }
 }
 
@@ -71,7 +71,7 @@ InformedRestoreAppImageView::InformedRestoreAppImageView(
 
   if (type_ == Type::kItem) {
     SetBackground(views::CreateThemedRoundedRectBackground(
-        pine::kIconBackgroundColorId, kItemIconBackgroundRounding));
+        informed_restore::kIconBackgroundColorId, kItemIconBackgroundRounding));
   }
 
   // The callback may be called synchronously.

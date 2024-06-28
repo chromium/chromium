@@ -10,18 +10,22 @@
 
 namespace ash {
 
-// A menu model that builds the contents of the Pine settings context menu.
-// Created when clicking on the Pine settings button.
-class ASH_EXPORT PineContextMenuModel : public ui::SimpleMenuModel,
-                                        public ui::SimpleMenuModel::Delegate {
+// A menu model that builds the contents of the informed restore dialog settings
+// context menu. Created when clicking on the informed restore dialog settings
+// button.
+class ASH_EXPORT InformedRestoreContextMenuModel
+    : public ui::SimpleMenuModel,
+      public ui::SimpleMenuModel::Delegate {
  public:
   // Used to identify the `views::Label` appended to the menu.
   static constexpr int kDescriptionId = -1;
 
-  PineContextMenuModel();
-  PineContextMenuModel(const PineContextMenuModel&) = delete;
-  PineContextMenuModel& operator=(const PineContextMenuModel&) = delete;
-  ~PineContextMenuModel() override;
+  InformedRestoreContextMenuModel();
+  InformedRestoreContextMenuModel(const InformedRestoreContextMenuModel&) =
+      delete;
+  InformedRestoreContextMenuModel& operator=(
+      const InformedRestoreContextMenuModel&) = delete;
+  ~InformedRestoreContextMenuModel() override;
 
   // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override;

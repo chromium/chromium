@@ -5,7 +5,9 @@
 #ifndef ASH_WM_WINDOW_RESTORE_INFORMED_RESTORE_TEST_BASE_H_
 #define ASH_WM_WINDOW_RESTORE_INFORMED_RESTORE_TEST_BASE_H_
 
+#include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/scoped_feature_list.h"
 
 namespace ash {
 
@@ -20,6 +22,9 @@ class InformedRestoreTestBase : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{features::kForestFeature};
 };
 
 }  // namespace ash

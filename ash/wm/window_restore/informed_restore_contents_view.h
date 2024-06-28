@@ -23,7 +23,7 @@ class MenuRunner;
 
 namespace ash {
 
-class PineContextMenuModel;
+class InformedRestoreContextMenuModel;
 
 // TODO(http://b/337339184): Change the layout when the display orientation
 // changes.
@@ -48,7 +48,7 @@ class ASH_EXPORT InformedRestoreContentsView : public views::BoxLayoutView {
   void UpdateContents();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(PineContextMenuModelTest,
+  FRIEND_TEST_ALL_PREFIXES(InformedRestoreContextMenuModelTest,
                            ShowContextMenuOnSettingsButtonClicked);
 
   // Callbacks for the buttons on the dialog.
@@ -74,7 +74,7 @@ class ASH_EXPORT InformedRestoreContentsView : public views::BoxLayoutView {
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   // The context menu model and its adapter for `settings_button_view_`.
-  std::unique_ptr<PineContextMenuModel> context_menu_model_;
+  std::unique_ptr<InformedRestoreContextMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuModelAdapter> menu_model_adapter_;
   // The menu runner that is responsible for the context menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;

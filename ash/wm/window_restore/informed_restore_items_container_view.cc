@@ -19,9 +19,10 @@ InformedRestoreItemsContainerView::InformedRestoreItemsContainerView(
   CHECK_GT(elements, 0);
 
   SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemBaseElevated, pine::kPreviewContainerRadius));
-  SetBetweenChildSpacing(pine::kItemsContainerChildSpacing);
-  SetInsideBorderInsets(pine::kItemsContainerInsets);
+      cros_tokens::kCrosSysSystemBaseElevated,
+      informed_restore::kPreviewContainerRadius));
+  SetBetweenChildSpacing(informed_restore::kItemsContainerChildSpacing);
+  SetInsideBorderInsets(informed_restore::kItemsContainerInsets);
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart);
   SetOrientation(views::BoxLayout::Orientation::kVertical);
 
@@ -29,7 +30,8 @@ InformedRestoreItemsContainerView::InformedRestoreItemsContainerView(
     const InformedRestoreContentsData::AppInfo& app_info = apps_infos[i];
     // If there are more than four elements, we will need to save the last
     // space for the overflow view to condense the remaining info.
-    if (elements > pine::kMaxItems && i >= pine::kOverflowMinThreshold) {
+    if (elements > informed_restore::kMaxItems &&
+        i >= informed_restore::kOverflowMinThreshold) {
       AddChildView(std::make_unique<InformedRestoreItemsOverflowView>(
           apps_infos));
       break;

@@ -20,12 +20,14 @@ struct InformedRestoreContentsData;
 
 // Controls showing the informed restore dialog. Receives data from the full
 // restore service and displays the data in a type of overview session.
-class ASH_EXPORT InformedRestoreController : public OverviewObserver,
-                                             public wm::ActivationChangeObserver {
+class ASH_EXPORT InformedRestoreController
+    : public OverviewObserver,
+      public wm::ActivationChangeObserver {
  public:
   InformedRestoreController();
   InformedRestoreController(const InformedRestoreController&) = delete;
-  InformedRestoreController& operator=(const InformedRestoreController&) = delete;
+  InformedRestoreController& operator=(const InformedRestoreController&) =
+      delete;
   ~InformedRestoreController() override;
 
   InformedRestoreContentsData* contents_data() { return contents_data_.get(); }

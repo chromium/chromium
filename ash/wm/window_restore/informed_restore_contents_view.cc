@@ -224,7 +224,7 @@ void InformedRestoreContentsView::OnCancelButtonPressed() {
 }
 
 void InformedRestoreContentsView::OnSettingsButtonPressed() {
-  context_menu_model_ = std::make_unique<PineContextMenuModel>();
+  context_menu_model_ = std::make_unique<InformedRestoreContextMenuModel>();
   menu_model_adapter_ = std::make_unique<views::MenuModelAdapter>(
       context_menu_model_.get(),
       base::BindRepeating(&InformedRestoreContentsView::OnMenuClosed,
@@ -238,8 +238,8 @@ void InformedRestoreContentsView::OnSettingsButtonPressed() {
 
   // Add a custom view to the bottom of the menu to inform users that changes
   // will not take place until the next time they sign in.
-  views::MenuItemView* container =
-      root_menu_item->AppendMenuItem(PineContextMenuModel::kDescriptionId);
+  views::MenuItemView* container = root_menu_item->AppendMenuItem(
+      InformedRestoreContextMenuModel::kDescriptionId);
   auto context_label = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_ASH_PINE_DIALOG_CONTEXT_MENU_EXTRA_INFO));
   context_label->SetMultiLine(true);
@@ -264,13 +264,13 @@ InformedRestoreContentsView::CreateSettingsButtonBuilder() {
   return views::Builder<views::ImageButton>(
              views::CreateVectorImageButtonWithNativeTheme(
                  base::BindRepeating(
-                      &InformedRestoreContentsView::OnSettingsButtonPressed,
-                      weak_ptr_factory_.GetWeakPtr()),
+                     &InformedRestoreContentsView::OnSettingsButtonPressed,
+                     weak_ptr_factory_.GetWeakPtr()),
                  kSettingsIcon, kSettingsIconSize))
       .CopyAddressTo(&settings_button_)
       .SetBackground(views::CreateThemedRoundedRectBackground(
           cros_tokens::kCrosSysSystemOnBase, kSettingsIconSize))
-      .SetID(pine::kSettingsButtonID)
+      .SetID(informed_restore::kSettingsButtonID)
       .SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SETTINGS));
 }
 
@@ -281,19 +281,17 @@ InformedRestoreContentsView::CreateButtonContainerBuilder() {
       .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
       .AddChildren(
           views::Builder<PillButton>()
-              .SetCallback(
-                  base::BindRepeating(
-                        &InformedRestoreContentsView::OnCancelButtonPressed,
-                        weak_ptr_factory_.GetWeakPtr()))
-              .SetID(pine::kCancelButtonID)
+              .SetCallback(base::BindRepeating(
+                  &InformedRestoreContentsView::OnCancelButtonPressed,
+                  weak_ptr_factory_.GetWeakPtr()))
+              .SetID(informed_restore::kCancelButtonID)
               .SetPillButtonType(PillButton::Type::kDefaultLargeWithoutIcon)
               .SetTextWithStringId(IDS_ASH_PINE_DIALOG_NO_THANKS_BUTTON),
           views::Builder<PillButton>()
-              .SetCallback(
-                  base::BindRepeating(
-                      &InformedRestoreContentsView::OnRestoreButtonPressed,
-                      weak_ptr_factory_.GetWeakPtr()))
-              .SetID(pine::kRestoreButtonID)
+              .SetCallback(base::BindRepeating(
+                  &InformedRestoreContentsView::OnRestoreButtonPressed,
+                  weak_ptr_factory_.GetWeakPtr()))
+              .SetID(informed_restore::kRestoreButtonID)
               .SetPillButtonType(PillButton::Type::kPrimaryLargeWithoutIcon)
               .SetTextWithStringId(IDS_ASH_PINE_DIALOG_RESTORE_BUTTON));
 }
@@ -353,14 +351,14 @@ void InformedRestoreContentsView::CreateChildViews() {
   gfx::Size screenshot_size;
   preview_container_view_ =
       AddChildView(views::Builder<views::BoxLayoutView>()
-                       .SetID(pine::kPreviewContainerViewID)
+                       .SetID(informed_restore::kPreviewContainerViewID)
                        .Build());
   if (showing_list_view_) {
     items_container_view_ = preview_container_view_->AddChildView(
         std::make_unique<InformedRestoreItemsContainerView>(
             contents_data->apps_infos));
-    preview_container_view_->SetPreferredSize(
-        gfx::Size(pine::kPreviewContainerWidth, kItemsViewContainerHeight));
+    preview_container_view_->SetPreferredSize(gfx::Size(
+        informed_restore::kPreviewContainerWidth, kItemsViewContainerHeight));
   } else {
     // TODO(http://b/338666906): Fix the screenshot view when in portrait mode,
     // and after transitioning to landscape mode.
@@ -393,7 +391,7 @@ void InformedRestoreContentsView::CreateChildViews() {
 
     icon_row_container_->layer()->SetFillsBoundsOpaquely(false);
     icon_row_container_->layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF(pine::kPreviewContainerRadius));
+        gfx::RoundedCornersF(informed_restore::kPreviewContainerRadius));
     screenshot_icon_row_view_ = icon_row_container_->AddChildView(
         std::make_unique<InformedRestoreScreenshotIconRowView>(
             contents_data->apps_infos));
@@ -470,13 +468,14 @@ void InformedRestoreContentsView::UpdateIconRowClipArea() {
   const gfx::Size icon_row_size = screenshot_icon_row_view_->GetPreferredSize();
   auto builder =
       RoundedRectCutoutPathBuilder(gfx::SizeF(image_view_->GetPreferredSize()));
-  builder.CornerRadius(pine::kPreviewContainerRadius);
+  builder.CornerRadius(informed_restore::kPreviewContainerRadius);
   builder.AddCutout(
       RoundedRectCutoutPathBuilder::Corner::kLowerLeft,
-      gfx::SizeF(icon_row_size.width() - pine::kPreviewContainerRadius,
-                 icon_row_size.height() - pine::kPreviewContainerRadius));
-  builder.CutoutOuterCornerRadius(pine::kPreviewContainerRadius);
-  builder.CutoutInnerCornerRadius(pine::kPreviewContainerRadius);
+      gfx::SizeF(
+          icon_row_size.width() - informed_restore::kPreviewContainerRadius,
+          icon_row_size.height() - informed_restore::kPreviewContainerRadius));
+  builder.CutoutOuterCornerRadius(informed_restore::kPreviewContainerRadius);
+  builder.CutoutInnerCornerRadius(informed_restore::kPreviewContainerRadius);
   image_view_->SetClipPath(builder.Build());
 }
 
