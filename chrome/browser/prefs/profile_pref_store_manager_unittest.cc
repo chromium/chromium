@@ -58,7 +58,7 @@ class RegistryVerifier : public PrefStore::Observer {
       : pref_registry_(pref_registry) {}
 
   // PrefStore::Observer implementation
-  void OnPrefValueChanged(const std::string& key) override {
+  void OnPrefValueChanged(std::string_view key) override {
     EXPECT_TRUE(base::Contains(*pref_registry_, key,
                                &PrefValueMap::Map::value_type::first))
         << "Unregistered key " << key << " was changed.";
@@ -91,8 +91,6 @@ class PrefStoreReadObserver : public PrefStore::Observer {
   }
 
   // PrefStore::Observer implementation
-  void OnPrefValueChanged(const std::string& key) override {}
-
   void OnInitializationCompleted(bool succeeded) override {
     if (stop_waiting_) {
       std::move(stop_waiting_).Run();

@@ -413,7 +413,7 @@ bool PrefModelAssociator::IsPrefRegistered(std::string_view name) const {
   return registered_preferences_.contains(name);
 }
 
-void PrefModelAssociator::OnPrefValueChanged(const std::string& name) {
+void PrefModelAssociator::OnPrefValueChanged(std::string_view name) {
   if (processing_syncer_changes_) {
     return;  // These are changes originating from us, ignore.
   }
@@ -433,15 +433,18 @@ void PrefModelAssociator::OnPrefValueChanged(const std::string& name) {
 
   base::AutoReset<bool> processing_changes(&processing_syncer_changes_, true);
 
-  NotifySyncedPrefObservers(name, /*from_sync=*/false);
+  // TODO: crbug.com/349741884: Eliminate this copy once the underlying methods
+  // accept std::string_view.
+  std::string name_str = std::string(name);
+  NotifySyncedPrefObservers(name_str, /*from_sync=*/false);
 
   syncer::SyncChangeList changes;
 
-  if (synced_preferences_.count(name) == 0) {
+  if (!synced_preferences_.contains(name)) {
     // Not in synced_preferences_ means no synced data. InitPrefAndAssociate(..)
     // will determine if we care about its data (e.g. if it has a default value
     // and hasn't been changed yet we don't) and take care syncing any new data.
-    InitPrefAndAssociate(syncer::SyncData(), name, &changes);
+    InitPrefAndAssociate(syncer::SyncData(), name_str, &changes);
   } else {
     // We are already syncing this preference, just update or delete its sync
     // node.
@@ -450,7 +453,7 @@ void PrefModelAssociator::OnPrefValueChanged(const std::string& name) {
     if (user_pref_value) {
       // If the pref was updated, update it.
       syncer::SyncData sync_data;
-      if (!CreatePrefSyncData(name, *user_pref_value, &sync_data)) {
+      if (!CreatePrefSyncData(name_str, *user_pref_value, &sync_data)) {
         LOG(ERROR) << "Failed to update preference.";
         return;
       }
@@ -458,8 +461,9 @@ void PrefModelAssociator::OnPrefValueChanged(const std::string& name) {
                            sync_data);
     } else {
       // Otherwise, the pref must have been cleared and hence delete it.
-      changes.emplace_back(FROM_HERE, syncer::SyncChange::ACTION_DELETE,
-                           syncer::SyncData::CreateLocalDelete(name, type_));
+      changes.emplace_back(
+          FROM_HERE, syncer::SyncChange::ACTION_DELETE,
+          syncer::SyncData::CreateLocalDelete(name_str, type_));
     }
   }
 

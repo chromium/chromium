@@ -174,7 +174,6 @@ class SupervisedUserSettingsService : public KeyedService,
   base::WeakPtr<SyncableService> AsWeakPtr() override;
 
   // PrefStore::Observer implementation:
-  void OnPrefValueChanged(const std::string& key) override;
   void OnInitializationCompleted(bool success) override;
 
   bool IsCustomPassphraseAllowed() const;

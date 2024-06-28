@@ -24,8 +24,7 @@ class MockPrefStoreObserver : public PrefStore::Observer {
   }
 
   // PrefStore::Observer implementation:
-  void OnPrefValueChanged(const std::string& key) override;
-  void OnInitializationCompleted(bool succeeded) override {}
+  void OnPrefValueChanged(std::string_view key) override;
 
  private:
   raw_ptr<DefaultPrefStore> pref_store_;
@@ -42,7 +41,7 @@ MockPrefStoreObserver::~MockPrefStoreObserver() {
   pref_store_->RemoveObserver(this);
 }
 
-void MockPrefStoreObserver::OnPrefValueChanged(const std::string& key) {
+void MockPrefStoreObserver::OnPrefValueChanged(std::string_view key) {
   change_count_++;
 }
 

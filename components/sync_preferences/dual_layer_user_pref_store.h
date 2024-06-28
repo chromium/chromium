@@ -133,7 +133,7 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
         delete;
 
     // PrefStore::Observer implementation.
-    void OnPrefValueChanged(const std::string& key) override;
+    void OnPrefValueChanged(std::string_view key) override;
     void OnInitializationCompleted(bool succeeded) override;
 
     bool initialization_succeeded() const;
@@ -158,7 +158,7 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
   bool ShouldGetValueFromAccountStore(const std::string& key) const;
 
   // Returns whether the pref with the given `key` is mergeable.
-  bool IsPrefKeyMergeable(const std::string& key) const;
+  bool IsPrefKeyMergeable(std::string_view key) const;
 
   // Produces a "merged" view of `account_value` and `local_value`. In case
   // `pref_name` is a mergeable pref, a new merged pref is returned, which is

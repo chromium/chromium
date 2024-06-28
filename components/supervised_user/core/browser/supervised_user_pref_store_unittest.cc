@@ -35,7 +35,7 @@ class SupervisedUserPrefStoreFixture : public PrefStore::Observer {
   bool initialization_completed() const { return initialization_completed_; }
 
   // PrefStore::Observer implementation:
-  void OnPrefValueChanged(const std::string& key) override;
+  void OnPrefValueChanged(std::string_view key) override;
   void OnInitializationCompleted(bool succeeded) override;
 
  private:
@@ -55,8 +55,7 @@ SupervisedUserPrefStoreFixture::~SupervisedUserPrefStoreFixture() {
   pref_store_->RemoveObserver(this);
 }
 
-void SupervisedUserPrefStoreFixture::OnPrefValueChanged(
-    const std::string& key) {
+void SupervisedUserPrefStoreFixture::OnPrefValueChanged(std::string_view key) {
   const base::Value* value = nullptr;
   ASSERT_TRUE(pref_store_->GetValue(key, &value));
   changed_prefs_.SetByDottedPath(key, value->Clone());

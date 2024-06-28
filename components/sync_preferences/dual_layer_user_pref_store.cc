@@ -32,7 +32,7 @@ DualLayerUserPrefStore::UnderlyingPrefStoreObserver::
 }
 
 void DualLayerUserPrefStore::UnderlyingPrefStoreObserver::OnPrefValueChanged(
-    const std::string& key) {
+    std::string_view key) {
   // Ignore this notification if it originated from the outer store - in that
   // case, `DualLayerUserPrefStore` itself will send notifications as
   // appropriate. This avoids dual notifications even though there are dual
@@ -550,7 +550,7 @@ void DualLayerUserPrefStore::DisableTypeAndClearAccountStore(
   }
 }
 
-bool DualLayerUserPrefStore::IsPrefKeyMergeable(const std::string& key) const {
+bool DualLayerUserPrefStore::IsPrefKeyMergeable(std::string_view key) const {
   if (!pref_model_associator_client_) {
     return false;
   }

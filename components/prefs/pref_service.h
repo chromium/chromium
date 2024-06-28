@@ -492,7 +492,6 @@ class COMPONENTS_PREFS_EXPORT PrefService {
     explicit PersistentPrefStoreLoadingObserver(PrefService* pref_service_);
 
     // PrefStore::Observer implementation
-    void OnPrefValueChanged(const std::string& key) override {}
     void OnInitializationCompleted(bool succeeded) override;
 
    private:

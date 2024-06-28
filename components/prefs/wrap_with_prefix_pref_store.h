@@ -72,7 +72,7 @@ class COMPONENTS_PREFS_EXPORT WrapWithPrefixPrefStore
   bool HasReadErrorDelegate() const override;
 
   // PrefStore::Observer implementation.
-  void OnPrefValueChanged(const std::string& key) override;
+  void OnPrefValueChanged(std::string_view key) override;
   void OnInitializationCompleted(bool succeeded) override;
 
  protected:

@@ -39,9 +39,10 @@ void PrefValueStore::PrefStoreKeeper::Initialize(
     pref_store_->AddObserver(this);
 }
 
-void PrefValueStore::PrefStoreKeeper::OnPrefValueChanged(
-    const std::string& key) {
-  pref_value_store_->OnPrefValueChanged(type_, key);
+void PrefValueStore::PrefStoreKeeper::OnPrefValueChanged(std::string_view key) {
+  // TODO: crbug.com/349741884 - Pass `std::string_view` once the interface is
+  // changed.
+  pref_value_store_->OnPrefValueChanged(type_, std::string(key));
 }
 
 void PrefValueStore::PrefStoreKeeper::OnInitializationCompleted(

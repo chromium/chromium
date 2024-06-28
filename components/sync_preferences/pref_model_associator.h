@@ -97,7 +97,7 @@ class PrefModelAssociator final : public syncer::SyncableService,
   base::WeakPtr<SyncableService> AsWeakPtr() override;
 
   // PrefStore::Observer implementation.
-  void OnPrefValueChanged(const std::string& key) override;
+  void OnPrefValueChanged(std::string_view name) override;
   void OnInitializationCompleted(bool succeeded) override;
 
   // Register a preference with the specified name for syncing. We do not care
@@ -195,7 +195,7 @@ class PrefModelAssociator final : public syncer::SyncableService,
   // to eventually match `registered_preferences_` as more preferences are
   // synced. It determines whether a preference change should update an existing
   // sync node or create a new sync node.
-  std::set<std::string> synced_preferences_;
+  std::set<std::string, std::less<>> synced_preferences_;
 
   // Sync's handler for outgoing changes. Non-null between
   // MergeDataAndStartSyncing() and StopSyncing().

@@ -6,7 +6,6 @@
 #define COMPONENTS_PREFS_PREF_STORE_H_
 
 #include <memory>
-#include <string>
 #include <string_view>
 
 #include "base/memory/ref_counted.h"
@@ -25,8 +24,8 @@ class COMPONENTS_PREFS_EXPORT PrefStore : public base::RefCounted<PrefStore> {
   // Observer interface for monitoring PrefStore.
   class COMPONENTS_PREFS_EXPORT Observer {
    public:
-    // Called when the value for the given |key| in the store changes.
-    virtual void OnPrefValueChanged(const std::string& key) {}
+    // Called when the value for the given `key` in the store changes.
+    virtual void OnPrefValueChanged(std::string_view key) {}
     // Notification about the PrefStore being fully initialized.
     virtual void OnInitializationCompleted(bool succeeded) {}
 
@@ -47,9 +46,9 @@ class COMPONENTS_PREFS_EXPORT PrefStore : public base::RefCounted<PrefStore> {
   // Whether the store has completed all asynchronous initialization.
   virtual bool IsInitializationComplete() const;
 
-  // Get the value for a given preference |key| and stores it in |*result|.
-  // |*result| is only modified if the return value is true and if |result|
-  // is not NULL. Ownership of the |*result| value remains with the PrefStore.
+  // Get the value for a given preference `key` and stores it in `*result`.
+  // `*result` is only modified if the return value is true and if `result`
+  // is not NULL. Ownership of the `*result` value remains with the PrefStore.
   virtual bool GetValue(std::string_view key,
                         const base::Value** result) const = 0;
 

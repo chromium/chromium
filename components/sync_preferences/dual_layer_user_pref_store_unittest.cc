@@ -6,6 +6,7 @@
 
 #include <map>
 #include <set>
+#include <string_view>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/mock_callback.h"
@@ -123,7 +124,7 @@ class MockPrefStoreObserver : public PrefStore::Observer {
  public:
   ~MockPrefStoreObserver() override = default;
 
-  MOCK_METHOD(void, OnPrefValueChanged, (const std::string& key), (override));
+  MOCK_METHOD(void, OnPrefValueChanged, (std::string_view), (override));
   MOCK_METHOD(void, OnInitializationCompleted, (bool succeeded), (override));
 };
 

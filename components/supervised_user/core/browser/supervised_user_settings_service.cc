@@ -459,9 +459,6 @@ SupervisedUserSettingsService::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void SupervisedUserSettingsService::OnPrefValueChanged(const std::string& key) {
-}
-
 void SupervisedUserSettingsService::OnInitializationCompleted(bool success) {
   if (!success) {
     // If this happens, it means the profile directory was not found. There is

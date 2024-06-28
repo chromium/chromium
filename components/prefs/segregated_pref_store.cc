@@ -23,7 +23,7 @@ SegregatedPrefStore::UnderlyingPrefStoreObserver::UnderlyingPrefStoreObserver(
 }
 
 void SegregatedPrefStore::UnderlyingPrefStoreObserver::OnPrefValueChanged(
-    const std::string& key) {
+    std::string_view key) {
   // Notify Observers only after all underlying PrefStores of the outer
   // SegregatedPrefStore are initialized.
   if (!outer_->IsInitializationComplete())

@@ -51,7 +51,7 @@ class ChangedValueWaiter : public PrefStore::Observer {
     QuitRunLoopIfNewValueIsPresent();
   }
 
-  void OnPrefValueChanged(const std::string& key) override {
+  void OnPrefValueChanged(std::string_view key) override {
     if (key == key_) {
       QuitRunLoopIfNewValueIsPresent();
     }

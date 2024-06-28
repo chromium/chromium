@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PREFS_PREF_STORE_OBSERVER_MOCK_H_
 #define COMPONENTS_PREFS_PREF_STORE_OBSERVER_MOCK_H_
 
-#include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -24,7 +24,7 @@ class PrefStoreObserverMock : public PrefStore::Observer {
   void VerifyAndResetChangedKey(const std::string& expected);
 
   // PrefStore::Observer implementation
-  void OnPrefValueChanged(const std::string& key) override;
+  void OnPrefValueChanged(std::string_view key) override;
   void OnInitializationCompleted(bool success) override;
 
   std::vector<std::string> changed_keys;

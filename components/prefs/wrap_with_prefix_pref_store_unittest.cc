@@ -58,7 +58,7 @@ class MockPrefStoreObserver : public PrefStore::Observer {
  public:
   ~MockPrefStoreObserver() override = default;
 
-  MOCK_METHOD(void, OnPrefValueChanged, (const std::string& key), (override));
+  MOCK_METHOD(void, OnPrefValueChanged, (std::string_view key), (override));
   MOCK_METHOD(void, OnInitializationCompleted, (bool succeeded), (override));
 };
 

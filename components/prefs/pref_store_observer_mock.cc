@@ -4,6 +4,8 @@
 
 #include "components/prefs/pref_store_observer_mock.h"
 
+#include <string_view>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 PrefStoreObserverMock::PrefStoreObserverMock()
@@ -19,8 +21,8 @@ void PrefStoreObserverMock::VerifyAndResetChangedKey(
   changed_keys.clear();
 }
 
-void PrefStoreObserverMock::OnPrefValueChanged(const std::string& key) {
-  changed_keys.push_back(key);
+void PrefStoreObserverMock::OnPrefValueChanged(std::string_view key) {
+  changed_keys.emplace_back(key);
 }
 
 void PrefStoreObserverMock::OnInitializationCompleted(bool success) {

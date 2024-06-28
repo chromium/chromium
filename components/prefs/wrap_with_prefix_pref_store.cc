@@ -132,11 +132,11 @@ void WrapWithPrefixPrefStore::ReportValueChanged(const std::string& key,
   return target_pref_store_->ReportValueChanged(AddDottedPrefix(key), flags);
 }
 
-void WrapWithPrefixPrefStore::OnPrefValueChanged(const std::string& key) {
+void WrapWithPrefixPrefStore::OnPrefValueChanged(std::string_view key) {
   if (!HasDottedPrefix(key)) {
     return;
   }
-  std::string original_key(RemoveDottedPrefix(key));
+  std::string_view original_key(RemoveDottedPrefix(key));
   for (PrefStore::Observer& observer : observers_) {
     observer.OnPrefValueChanged(original_key);
   }

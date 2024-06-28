@@ -118,13 +118,12 @@ void InterceptingPrefFilter::ReleasePrefs() {
 
 class MockPrefStoreObserver : public PrefStore::Observer {
  public:
-  MOCK_METHOD1(OnPrefValueChanged, void (const std::string&));
-  MOCK_METHOD1(OnInitializationCompleted, void (bool));
+  MOCK_METHOD(void, OnInitializationCompleted, (bool), (override));
 };
 
 class MockReadErrorDelegate : public PersistentPrefStore::ReadErrorDelegate {
  public:
-  MOCK_METHOD1(OnError, void(PersistentPrefStore::PrefReadError));
+  MOCK_METHOD(void, OnError, (PersistentPrefStore::PrefReadError), (override));
 };
 
 enum class CommitPendingWriteMode {

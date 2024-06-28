@@ -100,7 +100,7 @@ class COMPONENTS_PREFS_EXPORT SegregatedPrefStore : public PersistentPrefStore {
         delete;
 
     // PrefStore::Observer implementation
-    void OnPrefValueChanged(const std::string& key) override;
+    void OnPrefValueChanged(std::string_view key) override;
     void OnInitializationCompleted(bool succeeded) override;
 
     bool initialization_succeeded() const { return initialization_succeeded_; }
