@@ -31,11 +31,12 @@ VP8VaapiVideoDecoderDelegate::~VP8VaapiVideoDecoderDelegate() {
 
 scoped_refptr<VP8Picture> VP8VaapiVideoDecoderDelegate::CreateVP8Picture() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto va_surface = vaapi_dec_->CreateSurface();
-  if (!va_surface)
+  auto va_surface_handle = vaapi_dec_->CreateSurface();
+  if (!va_surface_handle) {
     return nullptr;
+  }
 
-  return new VaapiVP8Picture(std::move(va_surface));
+  return new VaapiVP8Picture(std::move(va_surface_handle));
 }
 
 bool VP8VaapiVideoDecoderDelegate::SubmitDecode(

@@ -5,7 +5,7 @@
 #ifndef MEDIA_GPU_VAAPI_VAAPI_DECODE_SURFACE_HANDLER_H_
 #define MEDIA_GPU_VAAPI_VAAPI_DECODE_SURFACE_HANDLER_H_
 
-#include "base/memory/scoped_refptr.h"
+#include "media/gpu/vaapi/vaapi_utils.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace media {
@@ -30,7 +30,7 @@ class VaapiDecodeSurfaceHandler {
   virtual ~VaapiDecodeSurfaceHandler() = default;
 
   // Returns a VASurface for decoding into, if available, or nullptr.
-  virtual scoped_refptr<VASurface> CreateSurface() = 0;
+  virtual std::unique_ptr<VASurfaceHandle> CreateSurface() = 0;
 
   // Called by the client to indicate that |va_surface_id| is ready to be
   // outputted. This can actually be called before decode is finished in

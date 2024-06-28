@@ -52,11 +52,12 @@ H265VaapiVideoDecoderDelegate::~H265VaapiVideoDecoderDelegate() = default;
 
 scoped_refptr<H265Picture> H265VaapiVideoDecoderDelegate::CreateH265Picture() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto va_surface = vaapi_dec_->CreateSurface();
-  if (!va_surface)
+  auto va_surface_handle = vaapi_dec_->CreateSurface();
+  if (!va_surface_handle) {
     return nullptr;
+  }
 
-  return new VaapiH265Picture(std::move(va_surface));
+  return new VaapiH265Picture(std::move(va_surface_handle));
 }
 
 bool H265VaapiVideoDecoderDelegate::IsChromaSamplingSupported(

@@ -479,7 +479,7 @@ void VaapiVideoDecoder::ClearDecodeTaskQueue(DecoderStatus status) {
   }
 }
 
-scoped_refptr<VASurface> VaapiVideoDecoder::CreateSurface() {
+std::unique_ptr<VASurfaceHandle> VaapiVideoDecoder::CreateSurface() {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, State::kDecoding);
@@ -524,16 +524,14 @@ scoped_refptr<VASurface> VaapiVideoDecoder::CreateSurface() {
   DCHECK_EQ(output_frames_.count(surface_id), 0u);
   output_frames_[surface_id] = frame;
 
-  // When the decoder is done using the frame for output or reference, it will
-  // drop its reference to the surface. We can then safely remove the associated
-  // video frame from |output_frames_|. To be notified when this happens we wrap
-  // the surface in another surface with ReleaseVideoFrame() as destruction
-  // observer.
-  VASurface::ReleaseCB release_frame_cb =
+  // Use ReleaseVideoFrame() as destruction observer to know when |decoder_| is
+  // done using the frame for output or reference. We can then safely remove the
+  // associated video frame from |output_frames_|.
+  VASurfaceHandle::ReleaseCB release_frame_cb =
       base::BindOnce(&VaapiVideoDecoder::ReleaseVideoFrame, weak_this_);
 
-  return new VASurface(surface_id, frame->layout().coded_size(),
-                       va_surface->format(), std::move(release_frame_cb));
+  return std::make_unique<VASurfaceHandle>(surface_id,
+                                           std::move(release_frame_cb));
 }
 
 void VaapiVideoDecoder::SurfaceReady(VASurfaceID va_surface_id,
@@ -543,6 +541,7 @@ void VaapiVideoDecoder::SurfaceReady(VASurfaceID va_surface_id,
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, State::kDecoding);
+  CHECK_NE(va_surface_id, VA_INVALID_SURFACE);
 
   // Find the timestamp associated with |buffer_id|. It's possible that a
   // surface is output multiple times for different |buffer_id|s (e.g. VP9

@@ -746,26 +746,29 @@ AV1VaapiVideoDecoderDelegate::~AV1VaapiVideoDecoderDelegate() {
 scoped_refptr<AV1Picture> AV1VaapiVideoDecoderDelegate::CreateAV1Picture(
     bool apply_grain) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto display_va_surface = vaapi_dec_->CreateSurface();
-  if (!display_va_surface)
+  auto display_va_surface_handle = vaapi_dec_->CreateSurface();
+  if (!display_va_surface_handle) {
     return nullptr;
+  }
 
-  auto reconstruct_va_surface = display_va_surface;
+  // TODO(339518553): Allow not-film grain nullptr |reconstruct_va_surface|.
+  auto reconstruct_va_surface = std::make_unique<VASurfaceHandle>(
+      display_va_surface_handle->id(), base::DoNothing());
   if (apply_grain) {
     // TODO(hiroh): When no surface is available here, this returns nullptr and
     // |display_va_surface| is released. Since the surface is back to the pool,
     // VaapiVideoDecoder will detect that there are surfaces available and will
     // start another decode task which means that CreateSurface() might fail
     // again for |reconstruct_va_surface| since only one surface might have gone
-    // back to the pool (the one for |display_va_surface|). We should avoid this
-    // loop for the sake of efficiency.
+    // back to the pool (the one for |display_va_surface_handle|). We should
+    // avoid this loop for the sake of efficiency.
     reconstruct_va_surface = vaapi_dec_->CreateSurface();
     if (!reconstruct_va_surface)
       return nullptr;
   }
 
   return base::MakeRefCounted<VaapiAV1Picture>(
-      std::move(display_va_surface), std::move(reconstruct_va_surface));
+      std::move(display_va_surface_handle), std::move(reconstruct_va_surface));
 }
 
 bool AV1VaapiVideoDecoderDelegate::OutputPicture(const AV1Picture& pic) {

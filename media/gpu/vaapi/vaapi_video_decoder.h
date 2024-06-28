@@ -80,7 +80,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   bool NeedsTranscryption() override;
 
   // VaapiDecodeSurfaceHandler implementation.
-  scoped_refptr<VASurface> CreateSurface() override;
+  std::unique_ptr<VASurfaceHandle> CreateSurface() override;
   void SurfaceReady(VASurfaceID va_surface_id,
                     int32_t buffer_id,
                     const gfx::Rect& visible_rect,

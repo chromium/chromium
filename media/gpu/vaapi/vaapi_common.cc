@@ -8,8 +8,8 @@
 
 namespace media {
 
-VaapiH264Picture::VaapiH264Picture(scoped_refptr<VASurface> va_surface)
-    : va_surface_(va_surface) {}
+VaapiH264Picture::VaapiH264Picture(std::unique_ptr<VASurfaceHandle> va_surface)
+    : va_surface_(std::move(va_surface)) {}
 
 VaapiH264Picture::~VaapiH264Picture() = default;
 
@@ -18,8 +18,8 @@ VaapiH264Picture* VaapiH264Picture::AsVaapiH264Picture() {
 }
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-VaapiH265Picture::VaapiH265Picture(scoped_refptr<VASurface> va_surface)
-    : va_surface_(va_surface) {}
+VaapiH265Picture::VaapiH265Picture(std::unique_ptr<VASurfaceHandle> va_surface)
+    : va_surface_(std::move(va_surface)) {}
 
 VaapiH265Picture::~VaapiH265Picture() = default;
 
@@ -29,8 +29,8 @@ VaapiH265Picture* VaapiH265Picture::AsVaapiH265Picture() {
 
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
-VaapiVP8Picture::VaapiVP8Picture(scoped_refptr<VASurface> va_surface)
-    : va_surface_(va_surface) {}
+VaapiVP8Picture::VaapiVP8Picture(std::unique_ptr<VASurfaceHandle> va_surface)
+    : va_surface_(std::move(va_surface)) {}
 
 VaapiVP8Picture::~VaapiVP8Picture() = default;
 
@@ -38,8 +38,8 @@ VaapiVP8Picture* VaapiVP8Picture::AsVaapiVP8Picture() {
   return this;
 }
 
-VaapiVP9Picture::VaapiVP9Picture(scoped_refptr<VASurface> va_surface)
-    : va_surface_(va_surface) {}
+VaapiVP9Picture::VaapiVP9Picture(std::unique_ptr<VASurfaceHandle> va_surface)
+    : va_surface_(std::move(va_surface)) {}
 
 VaapiVP9Picture::~VaapiVP9Picture() = default;
 
@@ -52,8 +52,8 @@ scoped_refptr<VP9Picture> VaapiVP9Picture::CreateDuplicate() {
 }
 
 VaapiAV1Picture::VaapiAV1Picture(
-    scoped_refptr<VASurface> display_va_surface,
-    scoped_refptr<VASurface> reconstruct_va_surface)
+    std::unique_ptr<VASurfaceHandle> display_va_surface,
+    std::unique_ptr<VASurfaceHandle> reconstruct_va_surface)
     : display_va_surface_(std::move(display_va_surface)),
       reconstruct_va_surface_(std::move(reconstruct_va_surface)) {}
 

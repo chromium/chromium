@@ -203,6 +203,9 @@ class ScopedID {
   ReleaseCB release_cb_;
 };
 
+// Shortcut for a VASurfaceID with tracked lifetime.
+using VASurfaceHandle = ScopedID<VASurfaceID>;
+
 // Adapts |frame_header| to the Vaapi data types.
 void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
                            const Vp8ReferenceFrameVector& reference_frames,

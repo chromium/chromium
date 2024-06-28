@@ -162,10 +162,9 @@ class H264VaapiVideoEncoderDelegateTest
 
 std::unique_ptr<VaapiVideoEncoderDelegate::EncodeJob>
 H264VaapiVideoEncoderDelegateTest::CreateEncodeJob(bool keyframe) {
-  auto va_surface = base::MakeRefCounted<VASurface>(
-      next_surface_id_++, DefaultVEAConfig().input_visible_size,
-      VA_RT_FORMAT_YUV420, base::DoNothing());
-  scoped_refptr<H264Picture> picture(new VaapiH264Picture(va_surface));
+  scoped_refptr<H264Picture> picture(
+      new VaapiH264Picture(std::make_unique<VASurfaceHandle>(
+          next_surface_id_++, base::DoNothing())));
 
   constexpr VABufferID kDummyVABufferID = 12;
   auto scoped_va_buffer = ScopedVABuffer::CreateForTesting(
