@@ -112,14 +112,6 @@ luci.notifier(
     ],
 )
 
-luci.notifier(
-    name = "weblayer-sheriff",
-    on_new_status = ["FAILURE"],
-    notify_emails = [
-        "weblayer-sheriff@grotations.appspotmail.com",
-    ],
-)
-
 TREE_CLOSING_STEPS_REGEXP = "\\b({})\\b".format("|".join([
     "bot_update",
     "compile",

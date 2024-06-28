@@ -29,7 +29,7 @@ ci.defaults.set(
 consoles.console_view(
     name = "chromium.android.fyi",
     ordering = {
-        None: ["android", "memory", "weblayer", "webview"],
+        None: ["android", "memory", "webview"],
     },
 )
 
