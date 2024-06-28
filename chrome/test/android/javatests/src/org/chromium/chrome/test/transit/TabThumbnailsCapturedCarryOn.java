@@ -5,19 +5,17 @@
 package org.chromium.chrome.test.transit;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.test.transit.CarryOn;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.Facility;
-import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
-// TODO(b/328451039): switch to a CarryOn from Facility.
 /** Facility to check for existence of tab thumbnails on disk. */
-public class TabThumbnailsCapturedFacility extends Facility<Station> {
+public class TabThumbnailsCapturedCarryOn extends CarryOn {
 
     private static class TabThumbnailCondition extends UiThreadCondition {
         private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -71,8 +69,7 @@ public class TabThumbnailsCapturedFacility extends Facility<Station> {
 
     private boolean mIsIncognito;
 
-    public TabThumbnailsCapturedFacility(Station station, boolean isIncognito) {
-        super(station);
+    public TabThumbnailsCapturedCarryOn(boolean isIncognito) {
         mIsIncognito = isIncognito;
     }
 
@@ -84,13 +81,5 @@ public class TabThumbnailsCapturedFacility extends Facility<Station> {
                 elements.declareEnterCondition(new TabModelSelectorCondition(activitySupplier));
         elements.declareEnterCondition(
                 new TabThumbnailCondition(tabModelSelectorSupplier, mIsIncognito));
-    }
-
-    /** Waits until all tab thumbnails are captured to disk. */
-    public static TabThumbnailsCapturedFacility waitForThumbnailsCaptured(
-            Station currentStation, boolean isIncognito) {
-        TabThumbnailsCapturedFacility thumbnailsCached =
-                new TabThumbnailsCapturedFacility(currentStation, isIncognito);
-        return currentStation.enterFacilitySync(thumbnailsCached, null);
     }
 }

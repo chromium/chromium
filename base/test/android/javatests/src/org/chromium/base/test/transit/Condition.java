@@ -14,6 +14,8 @@ import com.google.errorprone.annotations.FormatMethod;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus.Status;
+import org.chromium.base.test.transit.Transition.TransitionOptions;
+import org.chromium.base.test.transit.Transition.Trigger;
 
 /**
  * A condition that needs to be fulfilled for a state transition to be considered done.
@@ -263,5 +265,16 @@ public abstract class Condition {
     public static ConditionStatus fulfilledOrAwaiting(
             boolean isFulfilled, String message, Object... args) {
         return fulfilledOrAwaiting(isFulfilled, String.format(message, args));
+    }
+
+    /** Runs |trigger| and waits for one or more Conditions using a Transition. */
+    public static CarryOn runAndWaitFor(Trigger trigger, Condition... conditions) {
+        return runAndWaitFor(TransitionOptions.DEFAULT, trigger, conditions);
+    }
+
+    /** Versions of {@link #runAndWaitFor(Trigger, Condition...)} with {@link TransitionOptions}. */
+    public static CarryOn runAndWaitFor(
+            TransitionOptions options, Trigger trigger, Condition... conditions) {
+        return CarryOn.pickUp(CarryOn.fromConditions(conditions), options, trigger);
     }
 }

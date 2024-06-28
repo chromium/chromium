@@ -648,6 +648,7 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/test/transit/ActivityElement.java",
       "android/javatests/src/org/chromium/base/test/transit/BatchedPublicTransitRule.java",
       "android/javatests/src/org/chromium/base/test/transit/CallbackCondition.java",
+      "android/javatests/src/org/chromium/base/test/transit/CarryOn.java",
       "android/javatests/src/org/chromium/base/test/transit/Condition.java",
       "android/javatests/src/org/chromium/base/test/transit/ConditionChecker.java",
       "android/javatests/src/org/chromium/base/test/transit/ConditionStatus.java",

@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.transit.CarryOn;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -47,7 +48,7 @@ import org.chromium.chrome.test.transit.HubTabSwitcherStation;
 import org.chromium.chrome.test.transit.Journeys;
 import org.chromium.chrome.test.transit.NewTabPageStation;
 import org.chromium.chrome.test.transit.PageStation;
-import org.chromium.chrome.test.transit.TabThumbnailsCapturedFacility;
+import org.chromium.chrome.test.transit.TabThumbnailsCapturedCarryOn;
 import org.chromium.chrome.test.transit.WebPageStation;
 import org.chromium.chrome.test.transit.hub.HubNewTabGroupDialogFacility;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -114,9 +115,9 @@ public class TabSwitcherLayoutPTTest {
     private <T extends HubTabSwitcherBaseStation> T enterHTSWithThumbnailChecking(
             PageStation currentStation, Class<T> destinationType) {
         T tabSwitcherStation = currentStation.openHub(destinationType);
-        TabThumbnailsCapturedFacility.waitForThumbnailsCaptured(
-                tabSwitcherStation,
-                destinationType.isAssignableFrom(HubIncognitoTabSwitcherStation.class));
+        boolean isIncognito =
+                destinationType.isAssignableFrom(HubIncognitoTabSwitcherStation.class);
+        CarryOn.pickUp(new TabThumbnailsCapturedCarryOn(isIncognito), /* trigger= */ null);
         return tabSwitcherStation;
     }
 

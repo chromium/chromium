@@ -341,10 +341,22 @@ methods**.
 
 [**`Facility`**]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.Facility&ss=chromium
 
+### CarryOn
+
+A [** CarryOn **] represents something not tied to a Station, like data written
+to disk, or a popup that persists through different `Stations`.
+
+Multiple `CarryOns` may be active at one time.
+
+As with `Stations`, concrete, app-specific implementations of CarryOn should be
+created in the Transit Layer overriding **`declareElements()`**. It often won't
+have any transition methods.
+
 ### ConditionalStates
 
-Both `Station` and `Facility` extend [**`ConditionalState`**], which means they
-declare enter and exit conditions as `Elements` and have a linear lifecycle:
+`Station`, `Facility` and `CarryOn` extend [**`ConditionalState`**], which means
+they declare enter and exit conditions as `Elements` and have a linear
+lifecycle:
 
 * `NEW` -> `TRANSITIONING_TO` -> `ACTIVE` -> `TRANSITIONING_FROM` -> `FINISHED`
 
@@ -361,6 +373,10 @@ finished.
 
 Common `Condition` subclasses are provided by the Framework Layer (e.g.
 [`ViewConditions`] and [`CallbackCondition`]).
+
+A lightweight way to wait for multiple `Conditions` without creating any
+concrete `Stations`, `Facilities` or `CarryOns` is to use
+`Condition#runAndWaitFor()`.
 
 [`ViewConditions`]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.ViewCondition&ss=chromium
 [`CallbackCondition`]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.CallbackCondition&ss=chromium
@@ -432,6 +448,10 @@ Transitions into and out of `Facilities` are done by calling
 moves to another `Station`, any active `Facilities` have their exit conditions
 added to the transition conditions.
 
+Transitions into and out of `CarryOns` are done by calling `CarryOn#pickUp()`
+and `CarryOn#drop()`. `Condition#runAndWaitFor()` is a convenience shortcut for
+`CarryOn#pickUp()`.
+
 These methods takes as parameter a [`Trigger`], which is the code that should be
 run to actually make the app move to the next state. Often this will be a UI
 interaction like `() -> BUTTON_ELEMENT.perform(click())`.
@@ -483,9 +503,9 @@ timeouts, adding retries, or disabling the pre-check.
 
 ### Ownership of the Transit Layer {#ownership}
 
-The Chrome-specific `Stations`, `Facilities` and `Conditions` that comprise the
-Transit Layer should be owned by the same team responsible for the related
-production code.
+The Chrome-specific `Stations`, `Facilities`, `CarryOns` and `Conditions` that
+comprise the Transit Layer should be owned by the same team responsible for the
+related production code.
 
 The exception is the core of the Transit Layer, for example `PageStation`, which
 is not owned by specific teams, and will be owned by Clank Build/Code Health.

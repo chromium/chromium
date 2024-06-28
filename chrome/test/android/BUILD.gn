@@ -225,7 +225,7 @@ android_library("chrome_java_transit") {
     "javatests/src/org/chromium/chrome/test/transit/TabModelConditions.java",
     "javatests/src/org/chromium/chrome/test/transit/TabModelSelectorCondition.java",
     "javatests/src/org/chromium/chrome/test/transit/TabSwitcherActionMenuFacility.java",
-    "javatests/src/org/chromium/chrome/test/transit/TabThumbnailsCapturedFacility.java",
+    "javatests/src/org/chromium/chrome/test/transit/TabThumbnailsCapturedCarryOn.java",
     "javatests/src/org/chromium/chrome/test/transit/WebPageIncognitoAppMenuFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/WebPageRegularAppMenuFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/WebPageStation.java",
