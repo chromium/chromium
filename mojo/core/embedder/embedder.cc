@@ -43,7 +43,7 @@ namespace mojo::core {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) && !defined(ENABLE_IPCZ_ON_CHROMEOS)
 std::atomic<bool> g_mojo_ipcz_enabled{false};
 #else
 // Default to enabled even if InitFeatures() is never called.
