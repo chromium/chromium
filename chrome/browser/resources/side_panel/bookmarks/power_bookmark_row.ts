@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
@@ -46,6 +47,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
       compact: {type: Boolean},
       description: {type: String},
       descriptionMeta: {type: String},
+      bookmarksTreeViewEnabled: {type: Boolean},
       forceHover: {type: Boolean},
       hasCheckbox: {
         type: Boolean,
@@ -72,6 +74,8 @@ export class PowerBookmarkRowElement extends CrLitElement {
   compact: boolean = false;
   description: string = '';
   descriptionMeta: string = '';
+  bookmarksTreeViewEnabled: boolean =
+      loadTimeData.getBoolean('bookmarksTreeViewEnabled');
   forceHover: boolean = false;
   hasCheckbox: boolean = false;
   hasInput: boolean = false;

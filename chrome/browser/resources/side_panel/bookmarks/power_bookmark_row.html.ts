@@ -7,7 +7,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PowerBookmarkRowElement} from './power_bookmark_row.ts';
 
 export function getHtml(this: PowerBookmarkRowElement) {
-  return html`
+  const urlListItem = html`
 <cr-url-list-item id="crUrlListItem"
     role="listitem"
     .size="${this.listItemSize}"
@@ -57,4 +57,9 @@ export function getHtml(this: PowerBookmarkRowElement) {
     <iron-icon slot="folder-icon" icon="bookmarks:shopping-collection">
         </iron-icon>` : ''}
 </cr-url-list-item>`;
+
+return (this.bookmark?.children && this.bookmark.children.length > 0 &&
+    this.bookmarksTreeViewEnabled) ? html`
+<cr-expand-button no-hover id="expandButton">${urlListItem}
+    </cr-expand-button>` : urlListItem;
 }

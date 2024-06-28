@@ -43,3 +43,9 @@ iron-icon {
 cr-input.stroked:hover {
   --cr-input-hover-background-color: transparent;
 }
+
+cr-expand-button {
+  display: flex;
+  flex-direction: row-reverse;
+  --cr-section-vertical-padding: 0px;
+}

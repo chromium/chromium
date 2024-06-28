@@ -146,6 +146,25 @@ suite('SidePanelPowerBookmarksListTest', () => {
     await checkboxClicked;
   }
 
+  async function initializeUI() {
+    // Remove all children from document.body
+    while (document.body.firstChild) {
+      document.body.removeChild(document.body.firstChild);
+    }
+    powerBookmarksList = document.createElement('power-bookmarks-list');
+
+    // Ensure the PowerBookmarksListElement is given a fixed height to expand
+    // to.
+    const parentElement = document.createElement('div');
+    parentElement.style.height = '500px';
+    parentElement.appendChild(powerBookmarksList);
+    document.body.appendChild(parentElement);
+
+    await bookmarksApi.whenCalled('getFolders');
+    await waitAfterNextRender(powerBookmarksList);
+    flush();
+  }
+
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
@@ -174,18 +193,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
       emptyBodyGuest: 'guest body',
     });
 
-    powerBookmarksList = document.createElement('power-bookmarks-list');
-
-    // Ensure the PowerBookmarksListElement is given a fixed height to expand
-    // to.
-    const parentElement = document.createElement('div');
-    parentElement.style.height = '500px';
-    parentElement.appendChild(powerBookmarksList);
-    document.body.appendChild(parentElement);
-
-    await bookmarksApi.whenCalled('getFolders');
-    await waitAfterNextRender(powerBookmarksList);
-    flush();
+    await initializeUI();
   });
 
   test('GetsAndShowsTopLevelBookmarks', () => {
@@ -656,5 +664,28 @@ suite('SidePanelPowerBookmarksListTest', () => {
         newProduct);
     await flushTasks();
     assertFalse(isHidden(labels));
+  });
+
+  test('ShowsExpandButtonForFolders', async () => {
+    // Enabling the feature flag for ShowsExpandButtonForFolders test.
+    loadTimeData.overrideValues({bookmarksTreeViewEnabled: true});
+    await initializeUI();
+
+    const folderElement = getPowerBookmarksRowElement('5');
+    assertTrue(!!folderElement);
+
+    let expandButton =
+        folderElement.shadowRoot!.querySelector<PowerBookmarkRowElement>(
+            '#expandButton');
+    // Assert that the expand button is present for folders
+    assertTrue(!!expandButton);
+
+    const singleBookmarkElement = getPowerBookmarksRowElement('3');
+    assertTrue(!!singleBookmarkElement);
+
+    expandButton = singleBookmarkElement.shadowRoot!
+                       .querySelector<PowerBookmarkRowElement>('#expandButton');
+    // Assert that the expand button is not present for single bookmarks
+    assertFalse(!!expandButton);
   });
 });
