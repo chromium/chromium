@@ -2786,7 +2786,9 @@ class NavigationCookiesBrowserTest : public NavigationBaseBrowserTest {
 // Test how cookies are inherited in about:srcdoc iframes.
 //
 // Regression test: https://crbug.com/1003167.
-IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest, CookiesInheritedSrcDoc) {
+// Test is flaky on all platforms: https://crbug.com/339033006
+IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest,
+                       DISABLED_CookiesInheritedSrcDoc) {
   using Response = net::test_server::ControllableHttpResponse;
   Response response_1(https_server(), "/response_1");
   Response response_2(https_server(), "/response_2");

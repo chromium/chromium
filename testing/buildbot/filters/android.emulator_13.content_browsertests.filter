@@ -22,6 +22,3 @@
 # crbug.com/338082561
 -ViewTransitionBrowserTest.NavigationCancelledAfterScreenshot
 -ViewTransitionBrowserTest.NavigationCancelledBeforeScreenshot
-
-# crbug.com/339033006
--NavigationCookiesBrowserTest.CookiesInheritedSrcDoc
