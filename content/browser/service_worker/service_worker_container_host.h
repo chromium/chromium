@@ -676,8 +676,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
 // object hosts, delivers messages to/from the service worker, and dispatches
 // events on the container.
 class CONTENT_EXPORT ServiceWorkerContainerHost
-    : public blink::mojom::ServiceWorkerContainerHost,
-      public base::SupportsWeakPtr<ServiceWorkerContainerHost> {
+    : public blink::mojom::ServiceWorkerContainerHost {
  public:
   ServiceWorkerContainerHost(const ServiceWorkerContainerHost& other) = delete;
   ServiceWorkerContainerHost& operator=(
@@ -694,6 +693,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost
       override;
 
   virtual const base::WeakPtr<ServiceWorkerContextCore>& context() const = 0;
+  virtual base::WeakPtr<ServiceWorkerContainerHost> AsWeakPtr() = 0;
 
   // The URL of this context.
   virtual const GURL& url() const = 0;
@@ -824,6 +824,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
 
   // Implements ServiceWorkerContainerHost.
   const base::WeakPtr<ServiceWorkerContextCore>& context() const override;
+  base::WeakPtr<ServiceWorkerContainerHost> AsWeakPtr() override;
   const GURL& url() const override;
   bool AllowServiceWorker(const GURL& scope, const GURL& script_url) override;
   void DispatchExtendableMessageEvent(
@@ -952,6 +953,9 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
   // passed to the service worker. Bound on response commit.
   mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter_;
+
+  base::WeakPtrFactory<ServiceWorkerContainerHostForClient> weak_ptr_factory_{
+      this};
 };
 
 // ServiceWorkerContainerHostForServiceWorker is owned by ServiceWorkerHost,
@@ -988,6 +992,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForServiceWorker final
 
   // Implements ServiceWorkerContainerHost.
   const base::WeakPtr<ServiceWorkerContextCore>& context() const override;
+  base::WeakPtr<ServiceWorkerContainerHost> AsWeakPtr() override;
   const GURL& url() const override;
   bool AllowServiceWorker(const GURL& scope, const GURL& script_url) override;
   void DispatchExtendableMessageEvent(
@@ -1016,6 +1021,9 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForServiceWorker final
   const blink::StorageKey key_;
 
   const url::Origin top_frame_origin_;
+
+  base::WeakPtrFactory<ServiceWorkerContainerHostForServiceWorker>
+      weak_ptr_factory_{this};
 };
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSharedWorkerBlobURLFix);

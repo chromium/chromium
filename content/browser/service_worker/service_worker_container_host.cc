@@ -330,7 +330,7 @@ void ServiceWorkerContainerHostForClient::Register(
       script_url, key, *options,
       std::move(outside_fetch_client_settings_object),
       base::BindOnce(&ServiceWorkerContainerHostForClient::RegistrationComplete,
-                     base::AsWeakPtr(this), GURL(script_url),
+                     weak_ptr_factory_.GetWeakPtr(), GURL(script_url),
                      GURL(options->scope), std::move(wrapped_callback),
                      trace_id, mojo::GetBadMessageCallback()),
       global_frame_id, policy_container_policies_);
@@ -375,7 +375,7 @@ void ServiceWorkerContainerHostForClient::GetRegistration(
       ServiceWorkerRegistry::Purpose::kNotForNavigation, client_url, key,
       base::BindOnce(
           &ServiceWorkerContainerHostForClient::GetRegistrationComplete,
-          base::AsWeakPtr(this), std::move(callback), trace_id));
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback), trace_id));
 }
 
 void ServiceWorkerContainerHostForClient::GetRegistrations(
@@ -408,7 +408,7 @@ void ServiceWorkerContainerHostForClient::GetRegistrations(
       service_worker_client().key(),
       base::BindOnce(
           &ServiceWorkerContainerHostForClient::GetRegistrationsComplete,
-          base::AsWeakPtr(this), std::move(callback), trace_id));
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback), trace_id));
 }
 
 void ServiceWorkerContainerHostForClient::GetRegistrationForReady(
@@ -447,7 +447,7 @@ void ServiceWorkerContainerHostForClient::EnsureControllerServiceWorker(
       PurposeToEventType(purpose),
       base::BindOnce(
           &ServiceWorkerContainerHostForClient::StartControllerComplete,
-          base::AsWeakPtr(this), std::move(receiver)));
+          weak_ptr_factory_.GetWeakPtr(), std::move(receiver)));
 }
 
 void ServiceWorkerContainerHost::CloneContainerHost(
@@ -618,7 +618,7 @@ void ServiceWorkerContainerHostForClient::OnVersionAttributesChanged(
     registration->active_version()->RegisterStatusChangeCallback(
         base::BindOnce(&ServiceWorkerContainerHostForClient::
                            ReturnRegistrationForReadyIfNeeded,
-                       base::AsWeakPtr(this)));
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -1421,6 +1421,12 @@ ServiceWorkerContainerHostForClient::context() const {
   return service_worker_client().context();
 }
 
+base::WeakPtr<ServiceWorkerContainerHost>
+ServiceWorkerContainerHostForClient::AsWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 const GURL& ServiceWorkerContainerHostForClient::url() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return service_worker_client().url();
@@ -1430,6 +1436,12 @@ const base::WeakPtr<ServiceWorkerContextCore>&
 ServiceWorkerContainerHostForServiceWorker::context() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return context_;
+}
+
+base::WeakPtr<ServiceWorkerContainerHost>
+ServiceWorkerContainerHostForServiceWorker::AsWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 const GURL& ServiceWorkerContainerHostForServiceWorker::url() const {
@@ -2276,7 +2288,7 @@ void ServiceWorkerContainerHostForServiceWorker::DispatchExtendableMessageEvent(
       base::BindOnce(&DispatchExtendableMessageEventFromServiceWorker,
                      std::move(version), std::move(message),
                      url::Origin::Create(url()), std::make_optional(timeout),
-                     std::move(callback), base::AsWeakPtr(this)));
+                     std::move(callback), weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ServiceWorkerContainerHostForClient::DispatchExtendableMessageEvent(
