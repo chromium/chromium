@@ -310,7 +310,7 @@ _CONFIG = [
 
             # Byte order
             'base::BigEndian(Reader|Writer)',
-            'base::(numerics::)?U(8|16|32|64)(To|From)(Big|Little|Native)Endian',
+            'base::(numerics::)?((I|U)(8|16|32|64)|(Float|Double))(To|From)(Big|Little|Native)Endian',
             'base::(numerics::)?ByteSwap',
 
             # (Cryptographic) random number generation
