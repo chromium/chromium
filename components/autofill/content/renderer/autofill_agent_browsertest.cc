@@ -1197,7 +1197,7 @@ class AutofillAgentTestFocus : public AutofillAgentTest {
       </form>
     )");
     for (std::string_view id : kPermutationOfFields) {
-      ASSERT_FALSE(GetWebElementById(id).IsNull());
+      ASSERT_TRUE(GetWebElementById(id));
     }
   }
 

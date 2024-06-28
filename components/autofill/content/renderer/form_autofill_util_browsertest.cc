@@ -635,7 +635,7 @@ TEST_F(FormAutofillUtilsTest, FindFormByUniqueId) {
   // Expect null form element for non-existing form id.
   FormRendererId non_existing_form_id(GetFormRendererId(forms[0]).value() +
                                       1000);
-  EXPECT_TRUE(GetFormByRendererId(non_existing_form_id).IsNull());
+  EXPECT_FALSE(GetFormByRendererId(non_existing_form_id));
 }
 
 // Used in ParameterizedGetFormControlByRendererIdTest.

@@ -62,7 +62,7 @@ const WebString& GetWebString() {
 void MaybeAppendLabelWithoutControlDevtoolsIssue(
     WebLabelElement label,
     std::vector<FormIssue>& form_issues) {
-  if (!label.CorrespondingControl().IsNull()) {
+  if (label.CorrespondingControl()) {
     return;
   }
 
@@ -84,7 +84,7 @@ void MaybeAppendAriaLabelledByDevtoolsIssue(
                                  base::kWhitespaceUTF16, base::KEEP_WHITESPACE,
                                  base::SPLIT_WANT_NONEMPTY),
           [&](const auto& id) {
-            return element.GetDocument().GetElementById(WebString(id)).IsNull();
+            return !element.GetDocument().GetElementById(WebString(id));
           })) {
     form_issues.emplace_back(
         GenericIssueErrorType::kFormAriaLabelledByToNonExistingId,
@@ -281,8 +281,7 @@ std::vector<FormIssue> CheckForLabelsWithIncorrectForAttribute(
   WebElementCollection labels = document.GetElementsByHTMLTagName(label_attr);
   for (WebElement item = labels.FirstItem(); item; item = labels.NextItem()) {
     WebLabelElement label = item.To<WebLabelElement>();
-    if (!label.CorrespondingControl().IsNull() ||
-        !label.HasAttribute(for_attr)) {
+    if (label.CorrespondingControl() || !label.HasAttribute(for_attr)) {
       continue;
     }
 

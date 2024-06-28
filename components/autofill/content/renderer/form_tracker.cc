@@ -144,7 +144,7 @@ void FormTracker::AjaxSucceeded() {
 
 void FormTracker::TextFieldDidChange(const WebFormControlElement& element) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
-  DCHECK(!element.DynamicTo<WebInputElement>().IsNull() ||
+  DCHECK(element.DynamicTo<WebInputElement>() ||
          form_util::IsTextAreaElement(element));
   // If the element isn't focused then the changes don't matter. This check is
   // required to properly handle IME interactions.
@@ -200,19 +200,19 @@ void FormTracker::ElementDisappeared(const blink::WebElement& element) {
           features::kAutofillReplaceFormElementObserver)) {
     return;
   }
-  if (element.DynamicTo<WebFormElement>().IsNull() &&
-      element.DynamicTo<WebFormControlElement>().IsNull()) {
+  if (!element.DynamicTo<WebFormElement>() &&
+      !element.DynamicTo<WebFormControlElement>()) {
     return;
   }
   // If tracking a form, any disappearance other than that form is not
   // interesting.
-  if (!element.DynamicTo<WebFormElement>().IsNull() &&
+  if (element.DynamicTo<WebFormElement>() &&
       last_interacted_.form.GetId() != form_util::GetFormRendererId(element)) {
     return;
   }
   // If tracking a field, any disappearance other than that field is not
   // interesting.
-  if (!element.DynamicTo<WebFormControlElement>().IsNull() &&
+  if (element.DynamicTo<WebFormControlElement>() &&
       last_interacted_.formless_element.GetId() !=
           form_util::GetFieldRendererId(element)) {
     return;
@@ -269,7 +269,7 @@ void FormTracker::FormControlDidChangeImpl(
       form_util::GetFormControlByRendererId(element_id);
   // The frame or document or element could be null because this function is
   // called asynchronously.
-  if (!unsafe_render_frame() || !element || element.GetDocument().IsNull() ||
+  if (!unsafe_render_frame() || !element || !element.GetDocument() ||
       !element.GetDocument().GetFrame()) {
     return;
   }
