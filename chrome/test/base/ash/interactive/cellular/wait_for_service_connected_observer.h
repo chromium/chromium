@@ -25,9 +25,7 @@ class WaitForServiceConnectedObserver
                                                 NetworkStateHandler,
                                                 NetworkStateHandlerObserver> {
  public:
-  explicit WaitForServiceConnectedObserver(
-      NetworkStateHandler* network_state_handler,
-      const std::string& iccid);
+  explicit WaitForServiceConnectedObserver(const std::string& iccid);
   ~WaitForServiceConnectedObserver() override;
 
  private:

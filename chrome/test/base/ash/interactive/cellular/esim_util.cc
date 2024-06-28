@@ -10,13 +10,13 @@ namespace ash {
 
 EuiccInfo::EuiccInfo(unsigned int id)
     : path_(base::StringPrintf("/hermes/euicc%u", id)),
-      eid_(base::StringPrintf("%32u", id)) {}
+      eid_(base::StringPrintf("%032u", id)) {}
 
 EuiccInfo::~EuiccInfo() = default;
 
 EsimInfo::EsimInfo(unsigned int id)
     : profile_path_(base::StringPrintf("/hermes/profile%u", id)),
-      iccid_(base::StringPrintf("%18u", id)),
+      iccid_(base::StringPrintf("%018u", id)),
       name_(base::StringPrintf("Profile Name %u", id)),
       nickname_(base::StringPrintf("Profile Nickname %u", id)),
       service_provider_(base::StringPrintf("Service Provider %u", id)),

@@ -102,7 +102,11 @@ void FakeHermesProfileClient::EnableCarrierProfile(
     return;
   }
   for (auto& item : properties_map_) {
-    item.second.get()->state().ReplaceValue(hermes::profile::State::kInactive);
+    auto& state = item.second.get()->state();
+    if (state.value() != hermes::profile::State::kActive) {
+      continue;
+    }
+    state.ReplaceValue(hermes::profile::State::kInactive);
   }
   properties->state().ReplaceValue(hermes::profile::State::kActive);
 
