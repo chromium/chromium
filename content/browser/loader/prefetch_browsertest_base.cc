@@ -96,6 +96,10 @@ void PrefetchBrowserTestBase::OnPrefetchURLLoaderCalled() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::AutoLock lock(lock_);
   prefetch_url_loader_called_++;
+
+  if (prefetch_loader_callback_) {
+    std::move(prefetch_loader_callback_).Run();
+  }
 }
 
 int PrefetchBrowserTestBase::GetPrefetchURLLoaderCallCount() {
@@ -139,6 +143,11 @@ void PrefetchBrowserTestBase::WaitUntilLoaded(const GURL& url) {
   )";
 
   ASSERT_TRUE(ExecJs(shell()->web_contents(), JsReplace(script, url)));
+}
+
+void PrefetchBrowserTestBase::RegisterPrefetchLoaderCallback(
+    base::OnceClosure callback) {
+  prefetch_loader_callback_ = std::move(callback);
 }
 
 // static

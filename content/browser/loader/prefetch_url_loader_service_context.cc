@@ -82,6 +82,7 @@ void PrefetchURLLoaderServiceContext::CreatePrefetchLoaderAndStart(
     // either not be created due to the check in
     // `CorsURLLoaderFactory::CreateLoaderAndStart` or cancelled due to the
     // check `CancelRequestIfNonceMatchesAndUrlNotExempted`.
+    // TODO(crbug.com/349978810): Attach credentialless iframe nonce.
     std::optional<base::UnguessableToken> fenced_frame_nonce =
         current_context.render_frame_host->frame_tree_node()
             ->GetFencedFrameNonce();
@@ -265,11 +266,23 @@ PrefetchURLLoaderServiceContext::GenerateRecursivePrefetchToken(
     return base::UnguessableToken::Create();
   }
 
+  // Attach the fenced frame nonce to the request's IsolationInfo. If the nonce
+  // is marked revoked for untrusted network access, the request will either not
+  // be created due to the check in `CorsURLLoaderFactory::CreateLoaderAndStart`
+  // or cancelled due to the check
+  // `CancelRequestIfNonceMatchesAndUrlNotExempted`.
+  // TODO(crbug.com/349978810): Attach credentialless iframe nonce.
+  std::optional<base::UnguessableToken> fenced_frame_nonce =
+      current_context->render_frame_host
+          ? current_context->render_frame_host->frame_tree_node()
+                ->GetFencedFrameNonce()
+          : std::nullopt;
+
   // Create IsolationInfo.
   url::Origin destination_origin = url::Origin::Create(request.url);
   net::IsolationInfo preload_isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther, destination_origin,
-      destination_origin, net::SiteForCookies());
+      destination_origin, net::SiteForCookies(), /*nonce=*/fenced_frame_nonce);
 
   // Generate token.
   base::UnguessableToken return_token = base::UnguessableToken::Create();

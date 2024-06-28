@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_TEST_FENCED_FRAME_TEST_UTIL_H_
 #define CONTENT_PUBLIC_TEST_FENCED_FRAME_TEST_UTIL_H_
 
+#include <vector>
+
 #include "base/compiler_specific.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/web_contents.h"
@@ -102,6 +104,10 @@ GURL AddAndVerifyFencedFrameURL(
     FencedFrameURLMapping* fenced_frame_url_mapping,
     const GURL& https_url,
     scoped_refptr<FencedFrameReporter> fenced_frame_reporter = nullptr);
+
+// Exempt the `urls` from fenced frame untrusted network revocation.
+void ExemptUrlsFromFencedFrameNetworkRevocation(RenderFrameHost* rfh,
+                                                const std::vector<GURL>& urls);
 
 }  // namespace test
 

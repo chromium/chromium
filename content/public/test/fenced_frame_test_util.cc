@@ -4,6 +4,9 @@
 
 #include "content/public/test/fenced_frame_test_util.h"
 
+#include <vector>
+
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/typed_macros.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -57,7 +60,8 @@ FencedFrameTestHelper::FencedFrameTestHelper() {
        {blink::features::kFencedFramesLocalUnpartitionedDataAccess, {}},
        {blink::features::kFencedFramesCrossOriginEventReportingUnlabeledTraffic,
         {}},
-       {blink::features::kFencedFramesReportEventHeaderChanges, {}}},
+       {blink::features::kFencedFramesReportEventHeaderChanges, {}},
+       {blink::features::kExemptUrlFromNetworkRevocationForTesting, {}}},
       {/* disabled_features */});
 }
 
@@ -292,6 +296,15 @@ GURL AddAndVerifyFencedFrameURL(
   EXPECT_TRUE(urn_uuid->is_valid());
   return urn_uuid.value();
 }
+
+void ExemptUrlsFromFencedFrameNetworkRevocation(RenderFrameHost* rfh,
+                                                const std::vector<GURL>& urls) {
+  base::ranges::for_each(urls, [rfh](GURL url) {
+    static_cast<RenderFrameHostImpl*>(rfh)
+        ->ExemptUrlFromNetworkRevocationForTesting(url, base::DoNothing());
+  });
+}
+
 }  // namespace test
 
 }  // namespace content

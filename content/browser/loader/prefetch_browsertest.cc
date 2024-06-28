@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -1124,7 +1125,8 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest, FileToHttp) {
 
 class FencedFramePrefetchTest : public PrefetchBrowserTestBase {
  public:
-  FencedFramePrefetchTest() = default;
+  FencedFramePrefetchTest()
+      : cross_origin_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   void SetUpOnMainThread() override {
     PrefetchBrowserTestBase::SetUpOnMainThread();
@@ -1136,14 +1138,24 @@ class FencedFramePrefetchTest : public PrefetchBrowserTestBase {
         net::EmbeddedTestServer::CERT_TEST_NAMES);
     SetupCrossSiteRedirector(&embedded_https_test_server());
     net::test_server::RegisterDefaultHandlers(&embedded_https_test_server());
+
+    cross_origin_server()->SetSSLConfig(
+        net::EmbeddedTestServer::CERT_TEST_NAMES);
+    SetupCrossSiteRedirector(cross_origin_server());
+    net::test_server::RegisterDefaultHandlers(cross_origin_server());
   }
 
   content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
     return fenced_frame_test_helper_;
   }
 
+  net::EmbeddedTestServer* cross_origin_server() {
+    return &cross_origin_server_;
+  }
+
  private:
   test::FencedFrameTestHelper fenced_frame_test_helper_;
+  net::EmbeddedTestServer cross_origin_server_;
 };
 
 // Verify that prefetch works in fenced frame.
@@ -1248,6 +1260,284 @@ IN_PROC_BROWSER_TEST_F(FencedFramePrefetchTest, NetworkCutoffDisablesPrefetch) {
 
   // Shutdown the server.
   EXPECT_TRUE(embedded_https_test_server().ShutdownAndWaitUntilComplete());
+}
+
+// Similar to "PrefetchBrowserTest.CrossOriginWithPreloadCredentialled" but the
+// test procedure takes place within a fenced frame.
+// 1. Fenced frame navigates to `prefetch_path`.
+// 2. The response to navigation triggers a prefetch request to
+// `cross_origin_target_url`.
+// 3. The response to prefetch triggers a recursive prefetch request to
+// `preload_url`.
+IN_PROC_BROWSER_TEST_F(FencedFramePrefetchTest,
+                       CrossOriginWithPreloadCredentialled) {
+  ASSERT_TRUE(embedded_https_test_server().InitializeAndListen());
+  const auto port = embedded_https_test_server().port();
+  const char target_path[] = "/target.html";
+  const char preload_path[] = "/preload.js";
+
+  // Register the response to the recursive prefetch request.
+  RegisterResponse(preload_path,
+                   ResponseEntry(/*content=*/"document.title=\"done\";",
+                                 /*content_types=*/"text/javascript",
+                                 /*headers=*/
+                                 {{"cache-control", "public, max-age=600"},
+                                  {"Supports-Loading-Mode", "fenced-frame"}}));
+
+  // Set up request counters.
+  auto target_request_counter =
+      RequestCounter::CreateAndMonitor(cross_origin_server(), target_path);
+
+  base::RunLoop preload_waiter;
+  auto preload_request_counter = RequestCounter::CreateAndMonitor(
+      cross_origin_server(), preload_path, &preload_waiter);
+
+  // Start cross origin server.
+  RegisterRequestHandler(cross_origin_server());
+  ASSERT_TRUE(cross_origin_server()->Start());
+
+  // Register the response to the navigation request.
+  const GURL cross_origin_target_url =
+      cross_origin_server()->GetURL("b.test", target_path);
+  const char* prefetch_path = "/prefetch.html";
+  RegisterResponse(
+      prefetch_path,
+      ResponseEntry(/*content=*/JsReplace(
+                        R"(
+                        <body>
+                          <link rel='prefetch' href=$1 as='document'
+                            crossorigin='use-credentials'>
+                        </body>
+                      )",
+                        cross_origin_target_url),
+                    /*content_types=*/"text/html",
+                    /*headers=*/{{"Supports-Loading-Mode", "fenced-frame"}}));
+
+  RegisterRequestHandler(&embedded_https_test_server());
+  embedded_https_test_server().StartAcceptingConnections();
+  EXPECT_EQ(0, GetPrefetchURLLoaderCallCount());
+
+  // Register the response to the initial prefetch request.
+  const GURL preload_url =
+      cross_origin_server()->GetURL("c.test", preload_path);
+  RegisterResponse(
+      target_path,
+      ResponseEntry(
+          /*content=*/JsReplace(R"(
+                      <head>
+                        <title>
+                          Prefetch Target
+                        </title>
+                        <script src=$1></script>
+                      </head>
+                    )",
+                                preload_url),
+          /*content_types=*/"text/html",
+          /*headers=*/
+          {{
+               "link",
+               base::StringPrintf("<%s>;rel=\"preload\";as=\"script\"",
+                                  preload_url.spec().c_str()),
+           },
+           {
+               "Access-Control-Allow-Origin",
+               "https://a.test:" + base::NumberToString(port),
+           },
+           {
+               "Access-Control-Allow-Credentials",
+               "true",
+           },
+           {"Supports-Loading-Mode", "fenced-frame"}}));
+
+  // Create the fenced frame.
+  const GURL main_url =
+      embedded_https_test_server().GetURL("a.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  const GURL fenced_frame_url = embedded_https_test_server().GetURL(
+      "a.test", "/fenced_frames/title1.html");
+  RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_test_helper().CreateFencedFrame(
+          shell()->web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
+
+  // Loading a page that prefetches the target URL would increment both
+  // |target_request_counter| and |preload_request_counter|.
+  TestFrameNavigationObserver observer(fenced_frame_rfh);
+  EXPECT_TRUE(ExecJs(
+      shell()->web_contents()->GetPrimaryMainFrame(),
+      JsReplace(
+          R"(document.querySelector('fencedframe').config
+                            = new FencedFrameConfig($1);)",
+          embedded_https_test_server().GetURL("a.test", prefetch_path))));
+  observer.WaitForCommit();
+
+  // Expect there are two prefetch requests:
+  // 1. Navigation to `prefetch_path` which responses with a `link` element with
+  // `prefetch` attribute. This triggers a prefetch request.
+  // 2. The prefetch request from 1 to `cross_origin_target_url` gets a response
+  // with a `link` header with `preload` attribute. This is turned into a
+  // prefetch request because of the recursive prefetch token.
+  preload_waiter.Run();
+  EXPECT_EQ(1, target_request_counter->GetRequestCount());
+  EXPECT_EQ(1, preload_request_counter->GetRequestCount());
+  EXPECT_EQ(2, GetPrefetchURLLoaderCallCount());
+
+  // Shutdown the servers.
+  EXPECT_TRUE(embedded_https_test_server().ShutdownAndWaitUntilComplete());
+  EXPECT_TRUE(cross_origin_server()->ShutdownAndWaitUntilComplete());
+}
+
+// Similar to FencedFramePrefetchTest.CrossOriginWithPreloadCredentialled except
+// the fenced frame disables its network with exemption of the first prefetch
+// request url. This allows the first prefetch request to go through. However,
+// the second prefetch request, which is changed from a preload request because
+// of the recursive prefetch token, is blocked.
+IN_PROC_BROWSER_TEST_F(FencedFramePrefetchTest,
+                       NetworkCutoffDisablesRecursivePrefetch) {
+  ASSERT_TRUE(embedded_https_test_server().InitializeAndListen());
+  const auto port = embedded_https_test_server().port();
+  const char target_path[] = "/target.html";
+  const char preload_path[] = "/preload.js";
+
+  // Register the response to the recursive prefetch request.
+  RegisterResponse(preload_path,
+                   ResponseEntry(/*content=*/"document.title=\"done\";",
+                                 /*content_types=*/"text/javascript",
+                                 /*headers=*/
+                                 {{"cache-control", "public, max-age=600"},
+                                  {"Supports-Loading-Mode", "fenced-frame"}}));
+
+  // Set up request counters.
+  auto target_request_counter =
+      RequestCounter::CreateAndMonitor(cross_origin_server(), target_path);
+  auto preload_request_counter =
+      RequestCounter::CreateAndMonitor(cross_origin_server(), preload_path);
+
+  // Start cross origin server.
+  RegisterRequestHandler(cross_origin_server());
+  ASSERT_TRUE(cross_origin_server()->Start());
+
+  // Register the response to the navigation request.
+  const GURL cross_origin_target_url =
+      cross_origin_server()->GetURL("b.test", target_path);
+  const char* prefetch_path = "/prefetch.html";
+  RegisterResponse(
+      prefetch_path,
+      ResponseEntry(/*content=*/JsReplace(
+                        R"(
+                        <body>
+                          <link rel='prefetch' href=$1 as='document'
+                            crossorigin='use-credentials'>
+                        </body>
+                      )",
+                        cross_origin_target_url),
+                    /*content_types=*/"text/html",
+                    /*headers=*/
+                    {{
+                         "Access-Control-Allow-Origin",
+                         "https://a.test:" + base::NumberToString(port),
+                     },
+                     {"Supports-Loading-Mode", "fenced-frame"}}));
+
+  RegisterRequestHandler(&embedded_https_test_server());
+  embedded_https_test_server().StartAcceptingConnections();
+  EXPECT_EQ(0, GetPrefetchURLLoaderCallCount());
+
+  // Register the response to the initial prefetch request.
+  const GURL preload_url =
+      cross_origin_server()->GetURL("c.test", preload_path);
+  RegisterResponse(
+      target_path,
+      ResponseEntry(
+          /*content=*/JsReplace(R"(
+                      <head>
+                        <title>
+                          Prefetch Target
+                        </title>
+                        <script src=$1></script>
+                      </head>
+                    )",
+                                preload_url),
+          /*content_types=*/"text/html",
+          /*headers=*/
+          {{
+               "link",
+               base::StringPrintf("<%s>;rel=\"preload\";as=\"script\"",
+                                  preload_url.spec().c_str()),
+           },
+           {
+               "Access-Control-Allow-Origin",
+               "https://a.test:" + base::NumberToString(port),
+           },
+           {
+               "Access-Control-Allow-Credentials",
+               "true",
+           },
+           {"Supports-Loading-Mode", "fenced-frame"}}));
+
+  // Create the fenced frame.
+  const GURL main_url =
+      embedded_https_test_server().GetURL("a.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  const GURL fenced_frame_url = embedded_https_test_server().GetURL(
+      "a.test", "/fenced_frames/title1.html");
+  RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_test_helper().CreateFencedFrame(
+          shell()->web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
+
+  // This callback is invoked when the first `PrefetchURLLoader` is created.
+  // This is needed because once fenced frame commits the navigation, it gets
+  // a new nonce. The network revocation call needs to take place after the
+  // navigation but before the prefetch request is sent.
+  RegisterPrefetchLoaderCallback(base::BindLambdaForTesting([&]() {
+    // Disable fenced frame untrusted network but exempt
+    // `cross_origin_target_url`. This allows the prefetch request to this url.
+    // Note the exemption must be done first, otherwise the in-progress prefetch
+    // request to `cross_origin_target_url` will be blocked.
+    RenderFrameHost* rfh =
+        test::FencedFrameTestHelper::GetMostRecentlyAddedFencedFrame(
+            shell()->web_contents()->GetPrimaryMainFrame());
+
+    test::ExemptUrlsFromFencedFrameNetworkRevocation(rfh,
+                                                     {cross_origin_target_url});
+    EXPECT_TRUE(ExecJs(rfh, R"(
+      (async () => {
+        return window.fence.disableUntrustedNetwork();
+      })();
+    )"));
+  }));
+
+  // Monitor requests to `preload_url`.
+  URLLoaderMonitor monitor({preload_url});
+
+  // Navigate the fenced frame.
+  TestFrameNavigationObserver observer(fenced_frame_rfh);
+  EXPECT_TRUE(ExecJs(
+      shell()->web_contents()->GetPrimaryMainFrame(),
+      JsReplace(
+          R"(document.querySelector('fencedframe').config
+                            = new FencedFrameConfig($1);)",
+          embedded_https_test_server().GetURL("a.test", prefetch_path))));
+  observer.WaitForCommit();
+
+  // There should only be one prefetch request to `cross_origin_target_url`.
+  // The recursive prefetch request is blocked because the fenced frame has
+  // disabled its network and the request destination `preload_url` is not
+  // exempted.
+  EXPECT_EQ(monitor.WaitForRequestCompletion(preload_url).error_code,
+            net::ERR_NETWORK_ACCESS_REVOKED);
+  EXPECT_EQ(1, target_request_counter->GetRequestCount());
+  EXPECT_EQ(0, preload_request_counter->GetRequestCount());
+
+  // The `PrefetchURLLoader` is still called twice because the request did go
+  // through it. The recursive prefetch request was eventually blocked by the
+  // nonce network status check in `CorsURLLoaderFactory::CreateLoaderAndStart`.
+  EXPECT_EQ(2, GetPrefetchURLLoaderCallCount());
+
+  // Shutdown the servers.
+  EXPECT_TRUE(embedded_https_test_server().ShutdownAndWaitUntilComplete());
+  EXPECT_TRUE(cross_origin_server()->ShutdownAndWaitUntilComplete());
 }
 
 INSTANTIATE_TEST_SUITE_P(PrefetchBrowserTest,
