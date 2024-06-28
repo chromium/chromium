@@ -119,6 +119,7 @@
 #include "chrome/browser/ui/android/pdf/pdf_jni_headers/PdfUtils_jni.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "components/download/public/common/download_task_runner.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/common/content_features.h"
 #include "net/http/http_content_disposition.h"
@@ -336,6 +337,12 @@ void OnDownloadDialogClosed(
           ui::SelectedFileInfo(result.file_path));
       break;
   }
+}
+
+base::FilePath GetTempPdfDir() {
+  base::FilePath cache_dir;
+  base::android::GetCacheDirectory(&cache_dir);
+  return cache_dir.Append(kPdfDirName);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -655,10 +662,7 @@ bool ChromeDownloadManagerDelegate::DetermineDownloadTarget(
             profile_->GetPrefs()->GetString(prefs::kDefaultCharset),
             download->GetSuggestedFilename(), download->GetMimeType(),
             l10n_util::GetStringUTF8(IDS_DEFAULT_DOWNLOAD_FILENAME));
-        base::FilePath cache_dir;
-        base::android::GetCacheDirectory(&cache_dir);
-        download_path =
-            cache_dir.Append(kPdfDirName).Append(generated_filename);
+        download_path = GetTempPdfDir().Append(generated_filename);
         action = DownloadPathReservationTracker::UNIQUIFY;
       }
     } else {
@@ -2077,7 +2081,12 @@ void ChromeDownloadManagerDelegate::ConnectToQuarantineService(
 }
 
 void ChromeDownloadManagerDelegate::OnManagerInitialized() {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  if (ShouldOpenPdfInline()) {
+    download::GetDownloadTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce([]() { base::DeleteFile(GetTempPdfDir()); }));
+  }
+#else
   CancelAllEphemeralWarnings();
 #endif
 }
