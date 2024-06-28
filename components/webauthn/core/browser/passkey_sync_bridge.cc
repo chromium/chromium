@@ -379,6 +379,8 @@ bool PasskeySyncBridge::DeletePasskey(const std::string& credential_id,
 // Shadow chains are not handled separately since all passkeys are deleted
 // anyway.
 void PasskeySyncBridge::DeleteAllPasskeys() {
+  CHECK(IsReady());
+
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
   std::vector<PasskeyModelChange> changes;
@@ -435,6 +437,8 @@ sync_pb::WebauthnCredentialSpecifics PasskeySyncBridge::CreatePasskey(
     base::span<const uint8_t> trusted_vault_key,
     int32_t trusted_vault_key_version,
     std::vector<uint8_t>* public_key_spki_der_out) {
+  CHECK(IsReady());
+
   auto [specifics, public_key_spki_der] =
       webauthn::passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
           rp_id, user_entity, trusted_vault_key, trusted_vault_key_version);
@@ -451,6 +455,11 @@ sync_pb::WebauthnCredentialSpecifics PasskeySyncBridge::CreatePasskey(
 
 void PasskeySyncBridge::CreatePasskey(
     sync_pb::WebauthnCredentialSpecifics& passkey) {
+  // TODO(crbug.com/349547003): make it sure that all the callers check for
+  // that. If not, it's still safer to crash in this case to avoid losing the
+  // passkey.
+  CHECK(IsReady());
+
   CHECK(WebauthnCredentialSpecificsValid(passkey));
 
   std::string sync_id = passkey.sync_id();
@@ -470,6 +479,8 @@ std::string PasskeySyncBridge::AddNewPasskeyForTesting(
 void PasskeySyncBridge::AddPasskeyInternal(
     sync_pb::WebauthnCredentialSpecifics specifics) {
   CHECK(WebauthnCredentialSpecificsValid(specifics));
+  CHECK(IsReady());
+  CHECK(store_);
 
   std::string sync_id = specifics.sync_id();
   CHECK(!base::Contains(data_, sync_id));
