@@ -52,9 +52,8 @@ class MockGpuDelegate : public MailboxVideoFrameConverter::GpuDelegate {
                                             GrSurfaceOrigin surface_origin,
                                             SkAlphaType alpha_type,
                                             uint32_t usage));
-  MOCK_METHOD2(UpdateSharedImage,
-               bool(const gpu::Mailbox& mailbox,
-                    gfx::GpuFenceHandle in_fence_handle));
+  MOCK_METHOD1(UpdateSharedImage,
+               std::optional<gpu::SyncToken>(const gpu::Mailbox& mailbox));
   MOCK_METHOD2(WaitOnSyncTokenAndReleaseFrame,
                bool(scoped_refptr<FrameResource> frame,
                     const gpu::SyncToken& sync_token));

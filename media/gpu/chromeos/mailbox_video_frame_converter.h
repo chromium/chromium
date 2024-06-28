@@ -31,10 +31,6 @@ namespace gpu {
 class CommandBufferStub;
 }  // namespace gpu
 
-namespace gfx {
-struct GpuFenceHandle;
-}  // namespace gfx
-
 namespace media {
 
 // This class is used for converting DMA buffer-backed FrameResources to
@@ -64,8 +60,8 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter final
         GrSurfaceOrigin surface_origin,
         SkAlphaType alpha_type,
         uint32_t usage) = 0;
-    virtual bool UpdateSharedImage(const gpu::Mailbox& mailbox,
-                                   gfx::GpuFenceHandle in_fence_handle) = 0;
+    virtual std::optional<gpu::SyncToken> UpdateSharedImage(
+        const gpu::Mailbox& mailbox) = 0;
     virtual bool WaitOnSyncTokenAndReleaseFrame(
         scoped_refptr<FrameResource> frame,
         const gpu::SyncToken& sync_token) = 0;
@@ -126,7 +122,8 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter final
   void WrapSharedImageAndVideoFrameAndOutput(
       FrameResource* origin_frame,
       scoped_refptr<FrameResource> frame,
-      scoped_refptr<gpu::ClientSharedImage> shared_image);
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
+      const gpu::SyncToken& sync_token);
 
   // ConvertFrameImpl() delegates to this method to
   // GenerateSharedImageOnGPUThread() or just UpdateSharedImageOnGPUThread(),
@@ -159,9 +156,10 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter final
       UniqueID origin_frame_id,
       std::unique_ptr<ScopedSharedImage> scoped_shared_image);
 
-  // Updates the SharedImage associated to |mailbox|. Returns true if the update
-  // could be carried out, false otherwise.
-  bool UpdateSharedImageOnGPUThread(const gpu::Mailbox& mailbox);
+  // Updates the SharedImage associated to |mailbox|. Returns a sync token if
+  // the update could be carried out, or nullopt otherwise.
+  std::optional<gpu::SyncToken> UpdateSharedImageOnGPUThread(
+      const gpu::Mailbox& mailbox);
 
   // Waits on |sync_token|, keeping |frame| alive until it is signalled. It
   // trampolines threads to |gpu_task_runner| if necessary.
