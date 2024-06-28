@@ -22,10 +22,6 @@ class FileChangeServiceObserver : public base::CheckedObserver {
   // will not get called on file creation or deletion.
   virtual void OnFileModified(const storage::FileSystemURL& url) {}
 
-  // Invoked when a file has been copied from `src` to `dst`.
-  virtual void OnFileCopied(const storage::FileSystemURL& src,
-                            const storage::FileSystemURL& dst) {}
-
   // Invoked when a file has been moved from `src` to `dst`.
   virtual void OnFileMoved(const storage::FileSystemURL& src,
                            const storage::FileSystemURL& dst) {}

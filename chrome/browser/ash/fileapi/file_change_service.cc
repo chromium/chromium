@@ -32,12 +32,6 @@ void FileChangeService::NotifyFileModified(const storage::FileSystemURL& url) {
     observer.OnFileModified(url);
 }
 
-void FileChangeService::NotifyFileCopied(const storage::FileSystemURL& src,
-                                         const storage::FileSystemURL& dst) {
-  for (FileChangeServiceObserver& observer : observer_list_)
-    observer.OnFileCopied(src, dst);
-}
-
 void FileChangeService::NotifyFileMoved(const storage::FileSystemURL& src,
                                         const storage::FileSystemURL& dst) {
   for (FileChangeServiceObserver& observer : observer_list_)
