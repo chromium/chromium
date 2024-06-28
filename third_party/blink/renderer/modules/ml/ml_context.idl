@@ -37,7 +37,7 @@ dictionary MLSupportLimits {
 typedef record<DOMString, MLBuffer> MLNamedBuffers;
 
 [
-  RuntimeEnabled=MachineLearningCommon,
+  RuntimeEnabled=MachineLearningNeuralNetwork,
   SecureContext,
   Exposed=(Window, DedicatedWorker)
 ] interface MLContext {

@@ -19,6 +19,8 @@ using ml::model_loader::mojom::blink::CreateModelLoaderOptionsPtr;
 using ml::model_loader::mojom::blink::MLService;
 using ml::model_loader::mojom::blink::ModelLoader;
 
+class FakePartialWebNNContextProvider;
+
 // A fake MLService that intercepts Blink's browser interface request to the
 // ml.model_loader.MLService interface.
 class FakeMLService : public MLService {
@@ -54,6 +56,7 @@ class ScopedSetMLServiceBinder {
 
  private:
   const raw_ref<const BrowserInterfaceBrokerProxy> interface_broker_;
+  std::unique_ptr<FakePartialWebNNContextProvider> fake_webnn_context_provider_;
 };
 
 // A fake MLModelLoader Mojo interface implementation that backs a Blink

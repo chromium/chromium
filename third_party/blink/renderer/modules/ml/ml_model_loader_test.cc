@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/modules/ml/ml_model_loader.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "components/ml/mojom/web_platform_model.mojom-blink.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/webnn/public/mojom/features.mojom-features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -155,7 +157,9 @@ class FakeMLModel : public blink_mojom::Model {
 
 class MLModelLoaderTest : public testing::Test {
  public:
-  MLModelLoaderTest() = default;
+  MLModelLoaderTest()
+      : scoped_feature_list_(
+            webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
   MLModelLoaderTest(const MLModelLoaderTest&) = delete;
   MLModelLoaderTest(MLModelLoaderTest&&) = delete;
   ~MLModelLoaderTest() override = default;
@@ -200,6 +204,9 @@ class MLModelLoaderTest : public testing::Test {
   FakeMLService service_;
   FakeMLModelLoader loader_;
   FakeMLModel model_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(MLModelLoaderTest, UnsupportedContextOptions) {

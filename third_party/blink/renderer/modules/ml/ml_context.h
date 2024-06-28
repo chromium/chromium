@@ -54,14 +54,6 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
             webnn::mojom::blink::CreateContextSuccessPtr create_context_success,
             ScriptState* script_state);
 
-  // Used when context is created for model loader API.
-  MLContext(const V8MLDevicePreference device_preference,
-            const V8MLDeviceType device_type,
-            const V8MLPowerPreference power_preference,
-            const V8MLModelFormat model_format,
-            const unsigned int num_threads,
-            ML* ml);
-
   MLContext(const MLContext&) = delete;
   MLContext& operator=(const MLContext&) = delete;
 

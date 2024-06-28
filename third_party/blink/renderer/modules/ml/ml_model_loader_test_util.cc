@@ -6,6 +6,8 @@
 
 #include "components/ml/mojom/web_platform_model.mojom-blink.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -35,21 +37,72 @@ void FakeMLService::CreateModelLoader(CreateModelLoaderOptionsPtr opts,
   create_model_loader_.Run(std::move(opts), std::move(callback));
 }
 
+// A fake WebNNContextProvider that partially sets up the mojo pipe without
+// binding a `WebNNContext` remote.
+class FakePartialWebNNContextProvider
+    : public webnn::mojom::blink::WebNNContextProvider {
+ public:
+  explicit FakePartialWebNNContextProvider() : receiver_(this) {}
+  FakePartialWebNNContextProvider(const FakePartialWebNNContextProvider&) =
+      delete;
+  FakePartialWebNNContextProvider(FakePartialWebNNContextProvider&&) = delete;
+  ~FakePartialWebNNContextProvider() override = default;
+
+  void BindRequest(mojo::ScopedMessagePipeHandle handle) {
+    DCHECK(!receiver_.is_bound());
+    receiver_.Bind(
+        mojo::PendingReceiver<webnn::mojom::blink::WebNNContextProvider>(
+            std::move(handle)));
+  }
+
+ private:
+  // Override methods from webnn::mojom::WebNNContextProvider.
+  void CreateWebNNContext(webnn::mojom::blink::CreateContextOptionsPtr options,
+                          CreateWebNNContextCallback callback) override {
+    // Skip binding for `blink_remote` as it's not expected to be used by model
+    // loader.
+    mojo::PendingRemote<webnn::mojom::blink::WebNNContext> blink_remote;
+
+    webnn::ContextProperties context_properties{
+        webnn::InputOperandLayout::kNchw,
+        /*input_supported_data_types=*/webnn::SupportedDataTypes::All(),
+        /*constant_supported_data_types=*/webnn::SupportedDataTypes::All(),
+        /*gather_input_supported_data_types=*/webnn::SupportedDataTypes::All(),
+        /*gather_indices_supported_data_types=*/
+        webnn::SupportedDataTypes::All()};
+    auto success = webnn::mojom::blink::CreateContextSuccess::New(
+        std::move(blink_remote), std::move(context_properties));
+    std::move(callback).Run(
+        webnn::mojom::blink::CreateContextResult::NewSuccess(
+            std::move(success)));
+  }
+
+  mojo::Receiver<webnn::mojom::blink::WebNNContextProvider> receiver_;
+};
+
 ScopedSetMLServiceBinder::ScopedSetMLServiceBinder(FakeMLService* ml_service,
                                                    const V8TestingScope& scope)
     : interface_broker_(
-          scope.GetExecutionContext()->GetBrowserInterfaceBroker()) {
+          scope.GetExecutionContext()->GetBrowserInterfaceBroker()),
+      fake_webnn_context_provider_(
+          std::make_unique<FakePartialWebNNContextProvider>()) {
   interface_broker_->SetBinderForTesting(
       MLService::Name_,
       WTF::BindRepeating(&FakeMLService::BindFakeService,
                          // Safe to WTF::Unretained, we unregister the
                          // binder when the test finishes.
                          WTF::Unretained(ml_service)));
+  interface_broker_->SetBinderForTesting(
+      webnn::mojom::blink::WebNNContextProvider::Name_,
+      WTF::BindRepeating(&FakePartialWebNNContextProvider::BindRequest,
+                         WTF::Unretained(fake_webnn_context_provider_.get())));
 }
 
 ScopedSetMLServiceBinder::~ScopedSetMLServiceBinder() {
   interface_broker_->SetBinderForTesting(MLService::Name_,
                                          base::NullCallback());
+  interface_broker_->SetBinderForTesting(
+      webnn::mojom::blink::WebNNContextProvider::Name_, base::NullCallback());
 }
 
 FakeMLModelLoader::FakeMLModelLoader() = default;

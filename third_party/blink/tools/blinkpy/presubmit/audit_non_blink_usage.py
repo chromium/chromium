@@ -2100,6 +2100,7 @@ _CONFIG = [
             'third_party/blink/renderer/modules/ml/webnn/',
             'third_party/blink/renderer/modules/ml/ml_context.cc',
             'third_party/blink/renderer/modules/ml/ml_context.h',
+            'third_party/blink/renderer/modules/ml/ml_model_loader_test_util.cc',
         ],
         'allowed': [
             'blink_mojom::.+',

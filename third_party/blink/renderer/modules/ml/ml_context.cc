@@ -83,29 +83,18 @@ void MLContext::ValidateAndCreate(ScriptPromiseResolver<MLContext>* resolver,
                                   ML* ml) {
   ScopedMLTrace scoped_trace("MLContext::ValidateAndCreate");
 
-  if (base::FeatureList::IsEnabled(
-          webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
-    auto options_mojo = webnn::mojom::blink::CreateContextOptions::New(
-        ConvertBlinkDeviceTypeToMojo(options->deviceType()),
-        ConvertBlinkPowerPreferenceToMojo(options->powerPreference()),
-        options->numThreads());
+  auto options_mojo = webnn::mojom::blink::CreateContextOptions::New(
+      ConvertBlinkDeviceTypeToMojo(options->deviceType()),
+      ConvertBlinkPowerPreferenceToMojo(options->powerPreference()),
+      options->numThreads());
 
-    ml->RecordPendingResolver(resolver);
-    ml->CreateWebNNContext(
-        std::move(options_mojo),
-        WTF::BindOnce(&MLContext::OnCreateWebNNContext, WrapPersistent(options),
-                      WrapPersistent(ml), std::move(scoped_trace),
-                      WrapPersistent(resolver)));
-    return;
-  }
-
-  // MLContext is enabled when either WebNN or Model Loader API is enabled
-  // (`MachineLearningCommon`). So when WebNN is not enabled, return a minimal
-  // MLContext for Model Loader API.
-  resolver->Resolve(MakeGarbageCollected<MLContext>(
-      options->devicePreference(), options->deviceType(),
-      options->powerPreference(), options->modelFormat(), options->numThreads(),
-      ml));
+  ml->RecordPendingResolver(resolver);
+  ml->CreateWebNNContext(
+      std::move(options_mojo),
+      WTF::BindOnce(&MLContext::OnCreateWebNNContext, WrapPersistent(options),
+                    WrapPersistent(ml), std::move(scoped_trace),
+                    WrapPersistent(resolver)));
+  return;
 }
 
 MLContext::MLContext(
@@ -129,20 +118,6 @@ MLContext::MLContext(
                        ExecutionContext::From(script_state)
                            ->GetTaskRunner(TaskType::kMachineLearning));
 }
-
-MLContext::MLContext(const V8MLDevicePreference device_preference,
-                     const V8MLDeviceType device_type,
-                     const V8MLPowerPreference power_preference,
-                     const V8MLModelFormat model_format,
-                     const unsigned int num_threads,
-                     ML* ml)
-    : device_preference_(device_preference),
-      device_type_(device_type),
-      power_preference_(power_preference),
-      model_format_(model_format),
-      num_threads_(num_threads),
-      ml_(ml),
-      remote_context_(ml->GetExecutionContext()) {}
 
 MLContext::~MLContext() = default;
 
@@ -293,17 +268,9 @@ MLBuffer* MLContext::createBuffer(ScriptState* script_state,
     return nullptr;
   }
 
-  if (base::FeatureList::IsEnabled(
-          webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
-    return MLBuffer::Create(std::move(scoped_trace),
-                            ExecutionContext::From(script_state), this,
-                            descriptor, exception_state);
-  }
-
-  // TODO: crbug.com/325612086 - Remove this fallback.
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Not implemented");
-  return nullptr;
+  return MLBuffer::Create(std::move(scoped_trace),
+                          ExecutionContext::From(script_state), this,
+                          descriptor, exception_state);
 }
 
 void MLContext::writeBuffer(
