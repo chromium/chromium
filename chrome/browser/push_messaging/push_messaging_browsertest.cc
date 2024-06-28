@@ -534,8 +534,10 @@ void PushMessagingBrowserTestBase::EndpointToToken(const std::string& endpoint,
                                                    bool standard_protocol,
                                                    std::string* out_token) {
   size_t last_slash = endpoint.rfind('/');
+  ASSERT_NE(last_slash, std::string::npos);
 
-  ASSERT_EQ(kPushMessagingGcmEndpoint, endpoint.substr(0, last_slash + 1));
+  ASSERT_EQ(features::kPushMessagingGcmEndpointUrl.Get(),
+            endpoint.substr(0, last_slash + 1));
 
   ASSERT_LT(last_slash + 1, endpoint.length());  // Token must not be empty.
 

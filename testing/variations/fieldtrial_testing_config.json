@@ -17950,6 +17950,30 @@
             ]
         }
     ],
+    "PushMessagingGcmEndpointEnvironment": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Dogfood",
+                    "params": {
+                        "PushMessagingGcmEndpointUrl": "https://jmt17.google.com/fcm/send/"
+                    },
+                    "enable_features": [
+                        "PushMessagingGcmEndpointEnvironment"
+                    ]
+                }
+            ]
+        }
+    ],
     "QUIC": [
         {
             "platforms": [
