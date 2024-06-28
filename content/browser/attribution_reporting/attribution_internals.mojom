@@ -187,13 +187,11 @@ struct WebUIOsRegistration {
 
 // Observer for events relevant to the attribution internals WebUI.
 interface Observer {
-  // Called when the sources in storage changed, indicating that the observer
-  // should call `Handler::GetActiveSources()`.
-  OnSourcesChanged();
+  // Called when the sources in storage changed.
+  OnSourcesChanged(array<WebUISource> sources);
 
-  // Called when the reports in storage changed, indicating that the observer
-  // should call `Handler::GetReports()`.
-  OnReportsChanged();
+  // Called when the reports in storage changed.
+  OnReportsChanged(array<WebUIReport> reports);
 
   // Called when a source is registered, regardless of success or failure.
   OnSourceHandled(WebUISourceRegistration source);
@@ -228,15 +226,6 @@ interface Handler {
   // TODO(apaseltiner): Replace this polling-based interface with notifications.
   IsAttributionReportingEnabled() => (bool enabled,
                                       network.mojom.AttributionSupport attribution_support);
-
-  // Returns all active sources that are persisted in storage. This does
-  // not include expired sources, or sources that can no longer be attributed
-  // due to reaching policy limits.
-  GetActiveSources() => (array<WebUISource> sources);
-
-  // Returns all reports contained in storage, including those that are actively
-  // being sent.
-  GetReports() => (array<WebUIReport> reports);
 
   // Sends the given report, ignoring delay, returning when the operation has
   // been completed and the report has been cleared from storage.

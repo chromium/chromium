@@ -300,7 +300,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
-  ClickRefreshButton();
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
 
@@ -436,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       JsReplace(kScript, kMaxUint64String, kCompleteTitle)));
 
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
-  ClickRefreshButton();
+  manager()->NotifySourcesChanged();
   ASSERT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 
   const std::u16string kDetailedTitle = u"Detailed";
@@ -548,7 +547,6 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
   SetTitleOnReportsTableEmpty(kCompleteTitle);
-  ClickRefreshButton();
   ASSERT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
 
@@ -777,7 +775,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
     TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
-    ClickRefreshButton();
+    manager()->NotifyReportsChanged();
     ASSERT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
   }
 
@@ -933,7 +931,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   // Wait for the table to rendered.
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
-  ClickRefreshButton();
+  manager()->NotifyReportsChanged();
   manager()->NotifyReportSent(report,
                               /*is_debug_report=*/false,
                               SendResult(SendResult::Sent(SentResult::kSent,
@@ -1010,7 +1008,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   // Wait for the table to rendered.
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
-  ClickRefreshButton();
+  manager()->NotifySourcesChanged();
   ASSERT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 
   // Click the clear storage button and expect that the source table is emptied.
@@ -1230,7 +1228,7 @@ IN_PROC_BROWSER_TEST_F(
     ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
     TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
-    ClickRefreshButton();
+    manager()->NotifyReportsChanged();
     ASSERT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
   }
 }
@@ -1320,7 +1318,6 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   // TODO(apaseltiner): Add tests for other statuses.
 
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
-  ClickRefreshButton();
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
 

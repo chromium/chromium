@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INTERNALS_HANDLER_IMPL_H_
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -54,11 +55,6 @@ class AttributionInternalsHandlerImpl
   void IsAttributionReportingEnabled(
       attribution_internals::mojom::Handler::
           IsAttributionReportingEnabledCallback callback) override;
-  void GetActiveSources(
-      attribution_internals::mojom::Handler::GetActiveSourcesCallback callback)
-      override;
-  void GetReports(attribution_internals::mojom::Handler::GetReportsCallback
-                      callback) override;
   void SendReport(AttributionReport::Id,
                   attribution_internals::mojom::Handler::SendReportCallback
                       callback) override;
@@ -106,6 +102,8 @@ class AttributionInternalsHandlerImpl
 
   base::ScopedObservation<AttributionManager, AttributionObserver>
       manager_observation_{this};
+
+  base::WeakPtrFactory<AttributionInternalsHandlerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace content

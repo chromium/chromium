@@ -938,14 +938,6 @@ class AttributionInternals implements ObserverInterface {
         this.handler.$.bindNewPipeAndPassReceiver());
   }
 
-  onSourcesChanged(): void {
-    this.updateSources();
-  }
-
-  onReportsChanged(): void {
-    this.updateReports();
-  }
-
   onReportHandled(mojo: WebUIReport): void {
     this.addSentOrDroppedReport(mojo);
   }
@@ -1020,39 +1012,32 @@ class AttributionInternals implements ObserverInterface {
       attributionSupport.innerText =
           attributionSupportText[response.attributionSupport];
     });
-
-    this.updateSources();
-    this.updateReports();
   }
 
-  private updateSources(): void {
-    this.handler.getActiveSources().then(({sources}) => {
-      this.sources.updateRows(function*() {
-        for (const source of sources) {
-          yield newSource(source);
-        }
-      }());
-    });
+  onSourcesChanged(sources: WebUISource[]): void {
+    this.sources.updateRows(function*() {
+      for (const source of sources) {
+        yield newSource(source);
+      }
+    }());
   }
 
-  private updateReports(): void {
-    this.handler.getReports().then(({reports}) => {
-      this.eventLevelReports.updateRows(function*() {
-        for (const report of reports) {
-          if (report.data.eventLevelData !== undefined) {
-            yield new EventLevelReport(report);
-          }
+  onReportsChanged(reports: WebUIReport[]): void {
+    this.eventLevelReports.updateRows(function*() {
+      for (const report of reports) {
+        if (report.data.eventLevelData !== undefined) {
+          yield new EventLevelReport(report);
         }
-      }());
+      }
+    }());
 
-      this.aggregatableReports.updateRows(function*() {
-        for (const report of reports) {
-          if (report.data.aggregatableAttributionData !== undefined) {
-            yield new AggregatableReport(report);
-          }
+    this.aggregatableReports.updateRows(function*() {
+      for (const report of reports) {
+        if (report.data.aggregatableAttributionData !== undefined) {
+          yield new AggregatableReport(report);
         }
-      }());
-    });
+      }
+    }());
   }
 }
 

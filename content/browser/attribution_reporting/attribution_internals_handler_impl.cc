@@ -20,6 +20,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -104,10 +105,8 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
       attributability);
 }
 
-void ForwardSourcesToWebUI(
-    attribution_internals::mojom::Handler::GetActiveSourcesCallback
-        web_ui_callback,
-    std::vector<StoredSource> active_sources) {
+std::vector<attribution_internals::mojom::WebUISourcePtr> ToWebUISources(
+    const std::vector<StoredSource>& active_sources) {
   std::vector<attribution_internals::mojom::WebUISourcePtr> web_ui_sources;
   web_ui_sources.reserve(active_sources.size());
 
@@ -141,7 +140,7 @@ void ForwardSourcesToWebUI(
     web_ui_sources.push_back(WebUISource(source, attributability));
   }
 
-  std::move(web_ui_callback).Run(std::move(web_ui_sources));
+  return web_ui_sources;
 }
 
 attribution_internals::mojom::WebUIReportPtr WebUIReport(
@@ -216,18 +215,18 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
       std::move(status), std::move(data));
 }
 
-void ForwardReportsToWebUI(
-    attribution_internals::mojom::Handler::GetReportsCallback web_ui_callback,
-    std::vector<AttributionReport> pending_reports) {
+std::vector<attribution_internals::mojom::WebUIReportPtr> ToWebUIReports(
+    const std::vector<AttributionReport>& pending_reports) {
   std::vector<attribution_internals::mojom::WebUIReportPtr> web_ui_reports;
   web_ui_reports.reserve(pending_reports.size());
+
   for (const AttributionReport& report : pending_reports) {
     web_ui_reports.push_back(
         WebUIReport(report, /*is_debug_report=*/false,
                     ReportStatus::NewPending(Empty::New())));
   }
 
-  std::move(web_ui_callback).Run(std::move(web_ui_reports));
+  return web_ui_reports;
 }
 
 attribution_internals::mojom::NetworkStatusPtr NetworkStatus(int status) {
@@ -253,6 +252,8 @@ AttributionInternalsHandlerImpl::AttributionInternalsHandlerImpl(
     observer_.set_disconnect_handler(
         base::BindOnce(&AttributionInternalsHandlerImpl::OnObserverDisconnected,
                        base::Unretained(this)));
+    OnSourcesChanged();
+    OnReportsChanged();
   }
 }
 
@@ -280,26 +281,33 @@ void AttributionInternalsHandlerImpl::OnDebugModeChanged(bool debug_mode) {
   observer_->OnDebugModeChanged(debug_mode);
 }
 
-void AttributionInternalsHandlerImpl::GetActiveSources(
-    attribution_internals::mojom::Handler::GetActiveSourcesCallback callback) {
+void AttributionInternalsHandlerImpl::OnSourcesChanged() {
   if (AttributionManager* manager =
           AttributionManager::FromWebContents(web_ui_->GetWebContents())) {
-    manager->GetActiveSourcesForWebUI(
-        base::BindOnce(&ForwardSourcesToWebUI, std::move(callback)));
-  } else {
-    std::move(callback).Run({});
+    manager->GetActiveSourcesForWebUI(base::BindOnce(
+        [](base::WeakPtr<AttributionInternalsHandlerImpl> handler,
+           std::vector<StoredSource> sources) {
+          if (handler) {
+            handler->observer_->OnSourcesChanged(ToWebUISources(sources));
+          }
+        },
+        weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
-void AttributionInternalsHandlerImpl::GetReports(
-    attribution_internals::mojom::Handler::GetReportsCallback callback) {
+void AttributionInternalsHandlerImpl::OnReportsChanged() {
   if (AttributionManager* manager =
           AttributionManager::FromWebContents(web_ui_->GetWebContents())) {
     manager->GetPendingReportsForInternalUse(
         /*limit=*/1000,
-        base::BindOnce(&ForwardReportsToWebUI, std::move(callback)));
-  } else {
-    std::move(callback).Run({});
+        base::BindOnce(
+            [](base::WeakPtr<AttributionInternalsHandlerImpl> handler,
+               std::vector<AttributionReport> reports) {
+              if (handler) {
+                handler->observer_->OnReportsChanged(ToWebUIReports(reports));
+              }
+            },
+            weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -325,14 +333,6 @@ void AttributionInternalsHandlerImpl::ClearStorage(
   } else {
     std::move(callback).Run();
   }
-}
-
-void AttributionInternalsHandlerImpl::OnSourcesChanged() {
-  observer_->OnSourcesChanged();
-}
-
-void AttributionInternalsHandlerImpl::OnReportsChanged() {
-  observer_->OnReportsChanged();
 }
 
 namespace {
