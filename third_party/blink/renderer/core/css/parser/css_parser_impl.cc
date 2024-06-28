@@ -383,6 +383,9 @@ StyleRuleBase* CSSParserImpl::ParseRule(const String& string,
   if (stream.UncheckedPeek().GetType() == kAtKeywordToken) {
     rule = parser.ConsumeAtRule(stream, allowed_rules, CSSNestingType::kNone,
                                 /*parent_rule_for_nesting=*/nullptr);
+  } else if (allowed_rules == kPageMarginRules) {
+    // Style rules are not allowed inside @page.
+    rule = nullptr;
   } else {
     rule = parser.ConsumeQualifiedRule(stream, allowed_rules, nesting_type,
                                        parent_rule_for_nesting);

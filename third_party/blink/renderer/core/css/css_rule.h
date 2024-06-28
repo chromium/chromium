@@ -59,6 +59,7 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
     kPageRule = 6,
     kKeyframesRule = 7,
     kKeyframeRule = 8,
+    kMarginRule = 9,
     kNamespaceRule = 10,
     kCounterStyleRule = 11,
     kSupportsRule = 12,

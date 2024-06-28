@@ -52,6 +52,8 @@ class CORE_EXPORT CSSPageRule final : public CSSGroupingRule {
   String selectorText() const;
   void setSelectorText(const ExecutionContext*, const String&);
 
+  StyleRulePage* GetStyleRulePage() const { return page_rule_.Get(); }
+
   void Trace(Visitor*) const override;
 
  private:

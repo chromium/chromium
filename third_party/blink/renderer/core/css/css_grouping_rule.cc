@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/css/css_grouping_rule.h"
 
+#include "third_party/blink/renderer/core/css/css_page_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
@@ -71,14 +72,19 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
       parent_rule.ParserContext(execution_context->GetSecureContextMode()),
       style_sheet);
   StyleRuleBase* new_rule = nullptr;
-  StyleRule* parent_rule_for_nesting =
-      FindClosestParentStyleRuleOrNull(&parent_rule);
-  CSSNestingType nesting_type = parent_rule_for_nesting
-                                    ? CSSNestingType::kNesting
-                                    : CSSNestingType::kNone;
-  new_rule = CSSParser::ParseRule(
-      context, style_sheet ? style_sheet->Contents() : nullptr, nesting_type,
-      parent_rule_for_nesting, rule_string);
+  if (IsA<CSSPageRule>(parent_rule)) {
+    new_rule = CSSParser::ParseMarginRule(
+        context, style_sheet ? style_sheet->Contents() : nullptr, rule_string);
+  } else {
+    StyleRule* parent_rule_for_nesting =
+        FindClosestParentStyleRuleOrNull(&parent_rule);
+    CSSNestingType nesting_type = parent_rule_for_nesting
+                                      ? CSSNestingType::kNesting
+                                      : CSSNestingType::kNone;
+    new_rule = CSSParser::ParseRule(
+        context, style_sheet ? style_sheet->Contents() : nullptr, nesting_type,
+        parent_rule_for_nesting, rule_string);
+  }
 
   if (!new_rule) {
     exception_state.ThrowDOMException(

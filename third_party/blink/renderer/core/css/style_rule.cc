@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_layer_block_rule.h"
 #include "third_party/blink/renderer/core/css/css_layer_statement_rule.h"
+#include "third_party/blink/renderer/core/css/css_margin_rule.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
 #include "third_party/blink/renderer/core/css/css_namespace_rule.h"
@@ -345,6 +346,10 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
       rule = MakeGarbageCollected<CSSPageRule>(To<StyleRulePage>(self),
                                                parent_sheet);
       break;
+    case kPageMargin:
+      rule = MakeGarbageCollected<CSSMarginRule>(To<StyleRulePageMargin>(self),
+                                                 parent_sheet);
+      break;
     case kProperty:
       rule = MakeGarbageCollected<CSSPropertyRule>(To<StyleRuleProperty>(self),
                                                    parent_sheet);
@@ -416,7 +421,6 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
     case kFontFeature:
     case kKeyframe:
     case kCharset:
-    case kPageMargin:
     case kFunction:
     case kMixin:
     case kApplyMixin:

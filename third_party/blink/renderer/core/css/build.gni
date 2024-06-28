@@ -192,6 +192,8 @@ blink_core_sources_css = [
   "css_light_dark_value_pair.h",
   "css_appearance_auto_base_select_value_pair.cc",
   "css_appearance_auto_base_select_value_pair.h",
+  "css_margin_rule.cc",
+  "css_margin_rule.h",
   "css_markup.cc",
   "css_markup.h",
   "css_math_expression_node.cc",

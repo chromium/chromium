@@ -68,6 +68,9 @@ class CORE_EXPORT CSSParser {
   static CSSSelectorList* ParsePageSelector(const CSSParserContext&,
                                             StyleSheetContents*,
                                             const String&);
+  static StyleRuleBase* ParseMarginRule(const CSSParserContext*,
+                                        StyleSheetContents*,
+                                        const String&);
   static bool ParseDeclarationList(const CSSParserContext*,
                                    MutableCSSPropertyValueSet*,
                                    const String&);

@@ -462,12 +462,16 @@ void FrameSerializer::SerializeCSSRule(CSSRule* rule) {
       // when we implement it.
       break;
 
+    // TODO(crbug.com/40341678): Both page and margin rules may contain external
+    // resources (e.g. via background-image).
+    case CSSRule::kMarginRule:
+    case CSSRule::kPageRule:
+
     // Rules in which no external resources can be referenced
     case CSSRule::kCharsetRule:
     case CSSRule::kFontPaletteValuesRule:
     case CSSRule::kFontFeatureRule:
     case CSSRule::kFontFeatureValuesRule:
-    case CSSRule::kPageRule:
     case CSSRule::kPropertyRule:
     case CSSRule::kKeyframesRule:
     case CSSRule::kKeyframeRule:

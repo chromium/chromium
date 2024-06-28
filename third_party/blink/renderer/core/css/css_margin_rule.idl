@@ -1,0 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://drafts.csswg.org/cssom/#the-cssmarginrule-interface
+
+[
+    Exposed=Window,
+    RuntimeEnabled=PageMarginBoxes
+] interface CSSMarginRule : CSSRule {
+    readonly attribute DOMString name;
+    [SameObject, PutForwards=cssText] readonly attribute CSSStyleDeclaration style;
+};

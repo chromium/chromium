@@ -77,6 +77,8 @@ void CSSPageRule::setSelectorText(const ExecutionContext* execution_context,
 }
 
 String CSSPageRule::cssText() const {
+  // TODO(mstensho): Serialization needs to be specced:
+  // https://github.com/w3c/csswg-drafts/issues/9953
   StringBuilder result;
   result.Append("@page ");
   String page_selectors = selectorText();
@@ -91,20 +93,10 @@ String CSSPageRule::cssText() const {
     result.Append(' ');
   }
 
-  // TODO(sesse): Figure out a spec for serializing these rules.
-  // In particular, is it fine that we always put declarations first
-  // and then the @ rules in turn? And that we don't deduplicate them?
-  for (const StyleRuleBase* child_rule : page_rule_->ChildRules()) {
-    const StyleRulePageMargin* margin_rule =
-        To<StyleRulePageMargin>(child_rule);
-    result.Append(CssAtRuleIDToString(margin_rule->ID()));
-    result.Append(" { ");
-    String sub_decls = margin_rule->Properties().AsText();
-    result.Append(sub_decls);
-    if (!sub_decls.empty()) {
-      result.Append(' ');
-    }
-    result.Append("} ");
+  unsigned size = length();
+  for (unsigned i = 0; i < size; i++) {
+    result.Append(ItemInternal(i)->cssText());
+    result.Append(" ");
   }
 
   result.Append('}');

@@ -69,6 +69,14 @@ CSSSelectorList* CSSParser::ParsePageSelector(
                                           style_sheet_contents, context);
 }
 
+StyleRuleBase* CSSParser::ParseMarginRule(const CSSParserContext* context,
+                                          StyleSheetContents* style_sheet,
+                                          const String& rule) {
+  return CSSParserImpl::ParseRule(rule, context, CSSNestingType::kNone,
+                                  /*parent_rule_for_nesting=*/nullptr,
+                                  style_sheet, CSSParserImpl::kPageMarginRules);
+}
+
 StyleRuleBase* CSSParser::ParseRule(const CSSParserContext* context,
                                     StyleSheetContents* style_sheet,
                                     CSSNestingType nesting_type,
