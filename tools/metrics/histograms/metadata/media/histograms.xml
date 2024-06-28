@@ -7088,6 +7088,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="MediaPreviews.UI.Preview.{UiLocation}.Video.TimeToActionWithoutPreview"
+    units="ms" expires_after="2025-07-01">
+  <owner>ahmedmoussa@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the duration till media preview dialog closes if there were no
+    frames received.
+  </summary>
+  <token key="UiLocation">
+    <variant name="PageInfo"/>
+    <variant name="Permissions"/>
+  </token>
+</histogram>
+
+<histogram
     name="MediaPreviews.UI.Preview.{UiLocation}.Video.TotalVisibleDuration"
     units="ms" expires_after="2025-07-01">
   <owner>ahmedmoussa@google.com</owner>

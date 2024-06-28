@@ -88,12 +88,15 @@ class VideoStreamCoordinator
   base::RepeatingClosure frame_received_callback_for_test_;
 
   const media_preview_metrics::Context metrics_context_;
-  size_t video_stream_total_frames_;
+  size_t video_stream_total_frames_ = 0;
+  const base::TimeTicks video_stream_construction_time_;
   std::optional<base::TimeTicks> video_stream_request_time_;
   std::optional<base::TimeTicks> video_stream_start_time_;
   base::TimeDelta total_visible_preview_duration_;
+  std::optional<base::TimeDelta> time_to_action_without_preview_;
 
   bool has_permission_ = false;
+  bool has_requested_any_video_feed_ = false;
 
   std::optional<std::pair<media::VideoCaptureDeviceInfo,
                           mojo::Remote<video_capture::mojom::VideoSource>>>
