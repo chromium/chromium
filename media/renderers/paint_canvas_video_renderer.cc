@@ -1647,7 +1647,7 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
       mailboxes[i] = mailbox_holder.mailbox;
     }
 
-    auto mailbox_name_size = sizeof(mailboxes[0].name);
+    constexpr auto mailbox_name_size = sizeof(mailboxes[0].name);
     GLbyte mailbox_names[mailbox_name_size * SkYUVAInfo::kMaxPlanes];
     for (int i = 0; i < SkYUVAInfo::kMaxPlanes; i++) {
       memcpy(mailbox_names + mailbox_name_size * i, mailboxes[i].name,
