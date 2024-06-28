@@ -57,6 +57,7 @@ class MockFacilitatedPaymentsController : public FacilitatedPaymentsController {
       (base::span<const autofill::BankAccount> bank_account_suggestions,
        base::OnceCallback<void(bool, int64_t)> on_user_decision_callback),
       (override));
+  MOCK_METHOD(void, ShowProgressScreen, (), (override));
 };
 
 class ChromeFacilitatedPaymentsClientTest
@@ -121,4 +122,23 @@ TEST_F(ChromeFacilitatedPaymentsClientTest,
        ShowPixPaymentPrompt_NoBankAccounts) {
   EXPECT_CALL(controller(), Show);
   EXPECT_FALSE(base_client().ShowPixPaymentPrompt({}, base::DoNothing()));
+}
+
+// Test the client forwards call for showing the progress screen to the
+// controller.
+TEST_F(ChromeFacilitatedPaymentsClientTest, ShowProgressScreen) {
+  EXPECT_CALL(controller(), ShowProgressScreen);
+
+  base_client().ShowProgressScreen();
+}
+
+// Test that the controller is able to process requests to show different
+// screens back to back.
+TEST_F(ChromeFacilitatedPaymentsClientTest,
+       ControllerIsAbleToProcessBackToBackShowRequests) {
+  EXPECT_CALL(controller(), Show);
+  EXPECT_CALL(controller(), ShowProgressScreen);
+
+  base_client().ShowPixPaymentPrompt({}, base::DoNothing());
+  base_client().ShowProgressScreen();
 }

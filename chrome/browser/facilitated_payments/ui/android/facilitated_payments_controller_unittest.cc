@@ -36,6 +36,7 @@ class MockFacilitatedPaymentsBottomSheetBridge
       RequestShowContent,
       (base::span<const autofill::BankAccount> bank_account_suggestions),
       (override));
+  MOCK_METHOD(void, ShowProgressScreen, (), (override));
   MOCK_METHOD(void, OnDismissed, (), (override));
 };
 
@@ -134,4 +135,22 @@ TEST_F(FacilitatedPaymentsControllerTest, onBankAccountSelected) {
               Run(/*is_selected=*/true, /*selected_bank_account_id=*/100L));
 
   controller_->OnBankAccountSelected(nullptr, 100L);
+}
+
+// Test controller forwards call for showing the progress screen to the view.
+TEST_F(FacilitatedPaymentsControllerTest, ShowProgressScreen) {
+  EXPECT_CALL(*mock_view_, ShowProgressScreen);
+
+  controller_->ShowProgressScreen();
+}
+
+// Test that the view is able to process requests to show different screens back
+// to back.
+TEST_F(FacilitatedPaymentsControllerTest,
+       ViewIsAbleToProcessBackToBackShowRequests) {
+  EXPECT_CALL(*mock_view_, RequestShowContent);
+  EXPECT_CALL(*mock_view_, ShowProgressScreen);
+
+  controller_->Show(bank_accounts_, base::DoNothing());
+  controller_->ShowProgressScreen();
 }

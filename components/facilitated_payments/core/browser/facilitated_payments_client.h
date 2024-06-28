@@ -50,6 +50,10 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   virtual bool ShowPixPaymentPrompt(
       base::span<autofill::BankAccount> bank_account_suggestions,
       base::OnceCallback<void(bool, int64_t)> on_user_decision_callback);
+
+  // Shows a progress bar while users wait for server response after selecting a
+  // payment account.
+  virtual void ShowProgressScreen();
 };
 
 }  // namespace payments::facilitated

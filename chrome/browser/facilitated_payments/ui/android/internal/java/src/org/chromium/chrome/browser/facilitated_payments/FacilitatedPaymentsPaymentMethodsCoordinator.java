@@ -49,6 +49,11 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
         return mMediator.showSheet(bankAccounts);
     }
 
+    @Override
+    public void showProgressScreen() {
+        mMediator.showProgressScreen();
+    }
+
     /**
      * Connects the given model with the given view using Model Change Processors.
      *

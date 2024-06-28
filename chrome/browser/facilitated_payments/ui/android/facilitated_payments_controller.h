@@ -27,11 +27,15 @@ class FacilitatedPaymentsController {
 
   virtual ~FacilitatedPaymentsController();
 
-  // Shows the facilitated payments `view`. Returns whether the surface was
+  // Asks the `view_` to show the FOP selector. Returns whether the surface was
   // successfully shown.
   virtual bool Show(
       base::span<const autofill::BankAccount> bank_account_suggestions,
       base::OnceCallback<void(bool, int64_t)> on_user_decision_callback);
+
+  // Asks the `view_` to show the progress screen. Virtual for overriding in
+  // tests.
+  virtual void ShowProgressScreen();
 
   // Called whenever the surface gets hidden (regardless of the cause).
   virtual void OnDismissed(JNIEnv* env);

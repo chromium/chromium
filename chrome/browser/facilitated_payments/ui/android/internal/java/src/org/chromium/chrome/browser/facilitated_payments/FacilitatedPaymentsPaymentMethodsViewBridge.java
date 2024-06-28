@@ -68,7 +68,10 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
     }
 
     /**
-     * Requests to show the bottom sheet.
+     * Requests to show a FOP selector in a bottom sheet.
+     *
+     * <p>If a Facilitated Payments bottom sheet is being shown, then the FOP selector replaces the
+     * screen being shown. If not, opens a new bottom sheet and shows the FOP selector screen.
      *
      * <p>The bottom sheet may not be shown in some cases. {@see
      * BottomSheetController#requestShowContent}
@@ -81,5 +84,16 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
     @CalledByNative
     public boolean requestShowContent(@JniType("std::vector") Object[] bankAccounts) {
         return mComponent.showSheet((List<BankAccount>) (List<?>) Arrays.asList(bankAccounts));
+    }
+
+    /**
+     * Requests to show a progress screen in a bottom sheet.
+     *
+     * <p>If a Facilitated Payments bottom sheet is being shown, then the progress screen replaces
+     * the screen being shown. If not, opens a new bottom sheet and shows the progress screen.
+     */
+    @CalledByNative
+    public void showProgressScreen() {
+        mComponent.showProgressScreen();
     }
 }

@@ -25,45 +25,11 @@ FacilitatedPaymentsBottomSheetBridge::~FacilitatedPaymentsBottomSheetBridge() =
 
 bool FacilitatedPaymentsBottomSheetBridge::RequestShowContent(
     base::span<const autofill::BankAccount> bank_account_suggestions) {
-  if (java_bridge_) {
-    return false;  // Already shown.
-  }
-
-  if (web_contents_ == nullptr) {
-    return false;
-  }
-  if (!web_contents_->GetNativeView() ||
-      !web_contents_->GetNativeView()->GetWindowAndroid()) {
-    return false;  // No window attached (yet or anymore).
-  }
-
-  DCHECK(controller_);
-  base::android::ScopedJavaLocalRef<jobject> java_controller =
-      controller_->GetJavaObject();
-  if (!java_controller) {
-    return false;
-  }
-
-  if (web_contents_->GetBrowserContext() == nullptr) {
-    return false;
-  }
-
-  Profile* browser_profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  if (browser_profile == nullptr) {
+  if (!GetJavaBridge()) {
     return false;
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();
-
-  java_bridge_.Reset(Java_FacilitatedPaymentsPaymentMethodsViewBridge_create(
-      env, java_controller,
-      web_contents_->GetTopLevelNativeWindow()->GetJavaObject(),
-      browser_profile->GetJavaObject()));
-  if (!java_bridge_) {
-    return false;
-  }
-
   std::vector<base::android::ScopedJavaLocalRef<jobject>> bank_accounts_array;
   bank_accounts_array.reserve(bank_account_suggestions.size());
   for (const autofill::BankAccount& bank_account : bank_account_suggestions) {
@@ -72,7 +38,47 @@ bool FacilitatedPaymentsBottomSheetBridge::RequestShowContent(
             env, bank_account));
   }
   return Java_FacilitatedPaymentsPaymentMethodsViewBridge_requestShowContent(
-      env, java_bridge_, std::move(bank_accounts_array));
+      env, GetJavaBridge(), std::move(bank_accounts_array));
+}
+
+void FacilitatedPaymentsBottomSheetBridge::ShowProgressScreen() {
+  if (!GetJavaBridge()) {
+    return;
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_FacilitatedPaymentsPaymentMethodsViewBridge_showProgressScreen(
+      env, GetJavaBridge());
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+FacilitatedPaymentsBottomSheetBridge::GetJavaBridge() {
+  if (!java_bridge_) {
+    if (!web_contents_ || !web_contents_->GetNativeView() ||
+        !web_contents_->GetNativeView()->GetWindowAndroid() ||
+        !web_contents_->GetBrowserContext()) {
+      return nullptr;
+    }
+
+    Profile* browser_profile =
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+    if (!browser_profile) {
+      return nullptr;
+    }
+
+    base::android::ScopedJavaLocalRef<jobject> java_controller =
+        controller_->GetJavaObject();
+    if (!java_controller) {
+      return nullptr;
+    }
+
+    JNIEnv* env = base::android::AttachCurrentThread();
+    java_bridge_.Reset(Java_FacilitatedPaymentsPaymentMethodsViewBridge_create(
+        env, java_controller,
+        web_contents_->GetTopLevelNativeWindow()->GetJavaObject(),
+        browser_profile->GetJavaObject()));
+  }
+  return base::android::ScopedJavaLocalRef<jobject>(java_bridge_);
 }
 
 void FacilitatedPaymentsBottomSheetBridge::OnDismissed() {

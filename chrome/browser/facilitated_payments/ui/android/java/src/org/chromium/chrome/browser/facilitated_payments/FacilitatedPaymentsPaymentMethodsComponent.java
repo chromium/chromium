@@ -36,6 +36,9 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
             Delegate delegate,
             Profile profile);
 
-    /** Displays a new bottom sheet. */
+    /** Displays a FOP selector in a bottom sheet. */
     boolean showSheet(List<BankAccount> bankAccounts);
+
+    /** Displays a progress screen in a bottom sheet. */
+    void showProgressScreen();
 }

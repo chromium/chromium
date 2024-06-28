@@ -42,11 +42,17 @@ class FacilitatedPaymentsBottomSheetBridge {
   virtual bool RequestShowContent(
       base::span<const autofill::BankAccount> bank_account_suggestions);
 
+  // Triggers showing the progress screen. Virtual for overriding in tests.
+  virtual void ShowProgressScreen();
+
   // Called whenever the surface gets hidden (regardless of the cause). Virtual
   // for testing.
   virtual void OnDismissed();
 
  private:
+  // Lazily initializes and returns `java_bridge_`;
+  base::android::ScopedJavaLocalRef<jobject> GetJavaBridge();
+
   base::WeakPtr<content::WebContents> web_contents_;
   // Owner.
   raw_ptr<FacilitatedPaymentsController> controller_;

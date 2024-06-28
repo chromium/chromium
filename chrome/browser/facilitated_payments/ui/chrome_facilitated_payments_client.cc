@@ -83,6 +83,10 @@ bool ChromeFacilitatedPaymentsClient::ShowPixPaymentPrompt(
       std::move(on_user_decision_callback));
 }
 
+void ChromeFacilitatedPaymentsClient::ShowProgressScreen() {
+  facilitated_payments_controller_->ShowProgressScreen();
+}
+
 void ChromeFacilitatedPaymentsClient::
     SetFacilitatedPaymentsControllerForTesting(
         std::unique_ptr<FacilitatedPaymentsController> mock_controller) {

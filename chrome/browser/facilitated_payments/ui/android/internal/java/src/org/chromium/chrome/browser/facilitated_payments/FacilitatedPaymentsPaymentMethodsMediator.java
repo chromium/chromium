@@ -19,6 +19,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PROGRESS_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
 
 import android.content.Context;
@@ -88,6 +89,11 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         mInputProtector.markShowTime();
 
         return true;
+    }
+
+    void showProgressScreen() {
+        mModel.set(SCREEN, PROGRESS_SCREEN);
+        mModel.set(VISIBLE, true);
     }
 
     public void onDismissed(@StateChangeReason int reason) {
