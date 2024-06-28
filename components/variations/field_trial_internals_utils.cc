@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/version.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -125,6 +126,9 @@ void RegisterFieldTrialInternalsPrefs(PrefRegistrySimple& registry) {
 
 void ForceTrialsAtStartup(PrefService& local_state) {
   ExpirationInfo expiration = GetExpirationInfo(local_state);
+  base::UmaHistogramBoolean(
+      "Variations.ForcedFieldTrialsAtStartupForInternalsPage",
+      !expiration.expired);
   if (expiration.expired) {
     return;
   }

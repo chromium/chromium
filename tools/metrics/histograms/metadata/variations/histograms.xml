@@ -187,6 +187,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Variations.ForcedFieldTrialsAtStartupForInternalsPage"
+    enum="Boolean" expires_after="2024-10-15">
+  <owner>harringtond@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Reports whether any field trials were overridden with the metrics-internals
+    field trials tab. This is recorded once at startup.
+  </summary>
+</histogram>
+
 <histogram name="Variations.HasFutureSeed" enum="BooleanFutureSeed"
     expires_after="M117">
   <owner>caitlinfischer@google.com</owner>
