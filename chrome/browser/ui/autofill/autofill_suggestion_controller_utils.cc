@@ -168,7 +168,14 @@ void NotifyIphAboutAcceptedSuggestion(content::BrowserContext* browser_context,
     feature_engagement::TrackerFactory::GetForBrowserContext(browser_context)
         ->NotifyEvent("autofill_external_account_profile_suggestion_accepted");
   }
+
 #if !BUILDFLAG(IS_ANDROID)
+  if (suggestion.feature_for_iph ==
+      &feature_engagement::kIPHPlusAddressCreateSuggestionFeature) {
+    UserEducationService::MaybeNotifyPromoFeatureUsed(
+        browser_context,
+        feature_engagement::kIPHPlusAddressCreateSuggestionFeature);
+  }
   if (suggestion.type == SuggestionType::kComposeSavedStateNotification ||
       suggestion.type == SuggestionType::kComposeResumeNudge) {
     UserEducationService::MaybeNotifyPromoFeatureUsed(
