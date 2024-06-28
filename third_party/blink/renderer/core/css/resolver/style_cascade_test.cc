@@ -3064,6 +3064,30 @@ TEST_F(StyleCascadeTest, VerticalAlignBaselineSourceReversed) {
   EXPECT_EQ("auto", cascade.ComputedValue("baseline-source"));
 }
 
+TEST_F(StyleCascadeTest, WebkitBoxDecorationBreakOverlap) {
+  ScopedBoxDecorationBreakForTest scoped_feature(true);
+
+  TestCascade cascade(GetDocument());
+  cascade.Add("-webkit-box-decoration-break", "slice");
+  cascade.Add("box-decoration-break", "clone");
+  cascade.Apply();
+
+  EXPECT_EQ("clone", cascade.ComputedValue("box-decoration-break"));
+  EXPECT_EQ("clone", cascade.ComputedValue("-webkit-box-decoration-break"));
+}
+
+TEST_F(StyleCascadeTest, WebkitBoxDecorationBreakOverlapReverse) {
+  ScopedBoxDecorationBreakForTest scoped_feature(true);
+
+  TestCascade cascade(GetDocument());
+  cascade.Add("box-decoration-break", "slice");
+  cascade.Add("-webkit-box-decoration-break", "clone");
+  cascade.Apply();
+
+  EXPECT_EQ("clone", cascade.ComputedValue("box-decoration-break"));
+  EXPECT_EQ("clone", cascade.ComputedValue("-webkit-box-decoration-break"));
+}
+
 TEST_F(StyleCascadeTest, InitialDirection) {
   TestCascade cascade(GetDocument());
   cascade.Add("margin-inline-start:10px");

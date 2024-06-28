@@ -1675,6 +1675,17 @@ const CSSValue* Bottom::CSSValueFromComputedStyleInternal(
                                                     layout_object);
 }
 
+const CSSValue* BoxDecorationBreak::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  if (style.BoxDecorationBreak() == EBoxDecorationBreak::kSlice) {
+    return CSSIdentifierValue::Create(CSSValueID::kSlice);
+  }
+  return CSSIdentifierValue::Create(CSSValueID::kClone);
+}
+
 const CSSValue* BoxShadow::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -9681,13 +9692,11 @@ const CSSValue* WebkitBoxAlign::CSSValueFromComputedStyleInternal(
 
 const CSSValue* WebkitBoxDecorationBreak::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const LayoutObject*,
+    const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (style.BoxDecorationBreak() == EBoxDecorationBreak::kSlice) {
-    return CSSIdentifierValue::Create(CSSValueID::kSlice);
-  }
-  return CSSIdentifierValue::Create(CSSValueID::kClone);
+  return GetCSSPropertyBoxDecorationBreak().CSSValueFromComputedStyleInternal(
+      style, layout_object, allow_visited_style, value_phase);
 }
 
 const CSSValue* WebkitBoxDirection::CSSValueFromComputedStyleInternal(

@@ -672,6 +672,19 @@ void StyleCascade::ApplyWideOverlapping(CascadeResolver& resolver) {
       maybe_skip(GetCSSPropertyBaselineSource(), *priority);
     }
   }
+
+  // Note that -webkit-box-decoration-break isn't really more (or less)
+  // "wide" than the non-prefixed counterpart, but they still share
+  // a ComputedStyle location, and therefore need to be handled here.
+  const CSSProperty& webkit_box_decoration_break =
+      GetCSSPropertyWebkitBoxDecorationBreak();
+  if (!resolver.filter_.Rejects(webkit_box_decoration_break)) {
+    if (const CascadePriority* priority =
+            map_.Find(webkit_box_decoration_break.GetCSSPropertyName())) {
+      LookupAndApply(webkit_box_decoration_break, resolver);
+      maybe_skip(GetCSSPropertyBoxDecorationBreak(), *priority);
+    }
+  }
 }
 
 // Go through all properties that were found during the analyze phase

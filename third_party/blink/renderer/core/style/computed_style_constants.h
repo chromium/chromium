@@ -523,14 +523,6 @@ inline PositionVisibility& operator|=(PositionVisibility& a,
   return a = a | b;
 }
 
-// TODO(crbug.com/41295617): Unprefix -webkit-box-decoration-break
-// and remove this.
-enum class EBoxDecorationBreak : uint8_t {
-  kClone,
-  kSlice,
-  kMaxEnumValue = kSlice,
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_CONSTANTS_H_

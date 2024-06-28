@@ -120,6 +120,7 @@ All changes to this list should go through Blink's feature review process: http:
     border-top-style
     border-top-width
     bottom
+    box-decoration-break
     box-shadow
     box-sizing
     break-after

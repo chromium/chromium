@@ -2581,6 +2581,16 @@
       invalidate: ["inset", "out-of-flow", "scroll-anchor"],
     },
     {
+      name: "box-decoration-break",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      field_group: "box",
+      field_template: "keyword",
+      keywords: ["slice", "clone"],
+      default_value: "slice",
+      invalidate: ["layout", "paint"],
+      runtime_flag: "BoxDecorationBreak",
+    },
+    {
       name: "box-shadow",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
@@ -6094,13 +6104,9 @@
     },
     {
       name: "-webkit-box-decoration-break",
-      name_for_methods: "WebkitBoxDecorationBreak",
+      surrogate_for: "box-decoration-break",
       property_methods: ["CSSValueFromComputedStyleInternal"],
-      field_group: "box",
-      field_template: "keyword",
       keywords: ["slice", "clone"],
-      default_value: "slice",
-      invalidate: ["layout", "paint"],
     },
     {
       name: "-webkit-box-direction",

@@ -26602,6 +26602,7 @@ Called by update_use_counter_css.py.-->
   <int value="793" label="scroll-markers"/>
   <int value="794" label="anchor-scope"/>
   <int value="795" label="ruby-align"/>
+  <int value="796" label="box-decoration-break"/>
 </enum>
 
 <enum name="MediaEncryptionType">

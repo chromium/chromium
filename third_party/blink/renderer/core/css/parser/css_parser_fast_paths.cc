@@ -1470,6 +1470,11 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kStart || value_id == CSSValueID::kEnd ||
              value_id == CSSValueID::kCenter ||
              value_id == CSSValueID::kBaseline;
+    case CSSPropertyID::kBoxDecorationBreak:
+      if (!RuntimeEnabledFeatures::BoxDecorationBreakEnabled()) {
+        return false;
+      }
+      [[fallthrough]];
     case CSSPropertyID::kWebkitBoxDecorationBreak:
       return value_id == CSSValueID::kClone || value_id == CSSValueID::kSlice;
     case CSSPropertyID::kWebkitBoxDirection:
@@ -1692,6 +1697,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kBorderLeftStyle,
     CSSPropertyID::kBorderRightStyle,
     CSSPropertyID::kBorderTopStyle,
+    CSSPropertyID::kBoxDecorationBreak,
     CSSPropertyID::kBoxSizing,
     CSSPropertyID::kBufferedRendering,
     CSSPropertyID::kCaptionSide,

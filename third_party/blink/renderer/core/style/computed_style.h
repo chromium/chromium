@@ -2162,17 +2162,6 @@ class ComputedStyle final : public ComputedStyleBase {
            HasEffectiveAppearance() || BoxShadow();
   }
 
-  // TODO(crbug.com/41295617): Unprefix -webkit-box-decoration-break
-  // and remove this.
-  EBoxDecorationBreak BoxDecorationBreak() const {
-    switch (WebkitBoxDecorationBreak()) {
-      case EWebkitBoxDecorationBreak::kClone:
-        return EBoxDecorationBreak::kClone;
-      case EWebkitBoxDecorationBreak::kSlice:
-        return EBoxDecorationBreak::kSlice;
-    }
-  }
-
   PhysicalBoxStrut BoxDecorationOutsets() const;
 
   // Background utility functions.

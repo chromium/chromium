@@ -273,6 +273,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.BorderTopWidth() == b.BorderTopWidth();
     case CSSPropertyID::kBottom:
       return a.Bottom() == b.Bottom();
+    case CSSPropertyID::kBoxDecorationBreak:
+      return a.BoxDecorationBreak() == b.BoxDecorationBreak();
     case CSSPropertyID::kBoxShadow:
       return base::ValuesEquivalent(a.BoxShadow(), b.BoxShadow());
     case CSSPropertyID::kBoxSizing:

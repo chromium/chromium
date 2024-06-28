@@ -108,6 +108,7 @@ borderTopStyle
 borderTopWidth
 borderWidth
 bottom
+boxDecorationBreak
 boxShadow
 boxSizing
 breakAfter

@@ -114,6 +114,7 @@ border-top-right-radius: 0px
 border-top-style: none
 border-top-width: 0px
 bottom: auto
+box-decoration-break: slice
 box-shadow: none
 box-sizing: content-box
 break-after: auto
