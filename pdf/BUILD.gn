@@ -200,6 +200,7 @@ if (enable_pdf) {
         "pdfium/pdfium_font_win.cc",
         "pdfium/pdfium_font_win.h",
       ]
+      deps += [ "//third_party/re2" ]
     }
 
     if (is_chromeos) {

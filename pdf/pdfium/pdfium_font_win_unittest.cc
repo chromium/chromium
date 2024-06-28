@@ -143,10 +143,26 @@ TEST_F(PDFiumFontWinTest, FallbackFontsHangeul) {
   DeleteFont(id);
 }
 
-TEST_F(PDFiumFontWinTest, FinalFixups) {
+TEST_F(PDFiumFontWinTest, FinalFixupsArialBlack) {
   // ArialBlack with a low weight needs to be forced to weight kBlack.
   FontId id = MapFont(390, false, FXFONT_DEFAULT_CHARSET, FXFONT_FF_ROMAN,
                       "ArialBlack");
+  EXPECT_TRUE(id);
+  DeleteFont(id);
+}
+
+TEST_F(PDFiumFontWinTest, FinalFixupsComicSansMS) {
+  // ComicSansMS -> Comic Sans MS.
+  FontId id = MapFont(FXFONT_FW_NORMAL, false, FXFONT_DEFAULT_CHARSET,
+                      FXFONT_FF_ROMAN, "ComicSansMS");
+  EXPECT_TRUE(id);
+  DeleteFont(id);
+}
+
+TEST_F(PDFiumFontWinTest, FinalFixupsTrebuchetMS) {
+  // TrebuchetMS -> Trebuchet MS.
+  FontId id = MapFont(FXFONT_FW_NORMAL, false, FXFONT_DEFAULT_CHARSET,
+                      FXFONT_FF_ROMAN, "TrebuchetMS");
   EXPECT_TRUE(id);
   DeleteFont(id);
 }

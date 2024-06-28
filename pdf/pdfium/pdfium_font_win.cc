@@ -26,6 +26,7 @@
 #include "skia/ext/font_utils.h"
 #include "third_party/blink/public/platform/web_font_description.h"
 #include "third_party/pdfium/public/fpdf_sysfontinfo.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkFontStyle.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -295,13 +296,25 @@ class SkiaFontMapper {
                                 const SkFontStyle& style) {
     // Some fonts are specified with weights that Skia can't provide.
     // pdf.js/tests/issue5801.pdf specifies ArialBlack but a weight of 390.
-    if (face == "ArialBlack" || face == "Arial Black") {
-      SkFontStyle force_black = SkFontStyle(SkFontStyle::Weight::kBlack_Weight,
-                                            style.width(), style.slant());
-      return manager_->matchFamilyStyle("Arial", force_black);
+    // Commonly seen patterns: `ArialBlack` `Arial Black` & `Arial-Black`.
+    if (base::StartsWith(face, "Arial")) {
+      if (base::EndsWith(face, "Black")) {
+        SkFontStyle black = SkFontStyle(SkFontStyle::Weight::kBlack_Weight,
+                                        style.width(), style.slant());
+        return manager_->matchFamilyStyle("Arial", black);
+      }
+      if (base::EndsWith(face, "Narrow")) {
+        SkFontStyle narrow = SkFontStyle(SkFontStyle::Weight::kThin_Weight,
+                                         style.width(), style.slant());
+        return manager_->matchFamilyStyle("Arial", narrow);
+      }
     }
-    if (face == "ComicSansMS") {
-      return manager_->matchFamilyStyle("Comic Sans MS", style);
+    // Some fonts are specified without spaces in their name e.g. `ComicSansMS`.
+    std::string with_spaces(face);
+    // s/{lower case letter}{uppercase letter}/l u/g.
+    if (re2::RE2::GlobalReplace(&with_spaces, "(\\p{Ll})(\\p{Lu})", "\\1 \\2") >
+        0) {
+      return manager_->matchFamilyStyle(with_spaces.c_str(), style);
     }
     return nullptr;
   }
