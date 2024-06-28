@@ -1611,18 +1611,21 @@ void LensOverlayController::AddBackgroundBlur() {
   auto* ui_layer =
       tab_->GetBrowserWindowInterface()->GetWebView()->holder()->GetUILayer();
 
+  int blur_radius_pixels =
+      lens::features::GetLensOverlayLivePageBlurRadiusPixels();
+  if (blur_radius_pixels >= 0) {
 #if BUILDFLAG(IS_MAC)
-  // This fixes an issue on Mac where the blur will leak beyond the webpage
-  // and into the toolbar. Setting a clip rect forces the mask to not
-  // overflow. Clipping the rect breaks on linux, so gating the change to MacOS
-  // until a fix to cc allows for a universal solution. See b/328294684.
-  gfx::Rect web_contents_rect = tab_->GetContents()->GetContainerBounds();
-  ui_layer->SetClipRect(
-      gfx::Rect(0, lens::features::GetLensOverlayLivePageBlurRadiusPixels() - 2,
-                web_contents_rect.width(), web_contents_rect.height()));
+    // This fixes an issue on Mac where the blur will leak beyond the webpage
+    // and into the toolbar. Setting a clip rect forces the mask to not
+    // overflow. Clipping the rect breaks on linux, so gating the change to
+    // MacOS until a fix to cc allows for a universal solution. See b/328294684.
+    gfx::Rect web_contents_rect = tab_->GetContents()->GetContainerBounds();
+    ui_layer->SetClipRect(gfx::Rect(0, blur_radius_pixels - 2,
+                                    web_contents_rect.width(),
+                                    web_contents_rect.height()));
 #endif  // BUILDFLAG(IS_MAC)
-  ui_layer->SetLayerBlur(
-      lens::features::GetLensOverlayLivePageBlurRadiusPixels() / 3);
+    ui_layer->SetLayerBlur(blur_radius_pixels / 3);
+  }
 }
 
 void LensOverlayController::CloseRequestedByOverlayCloseButton() {
