@@ -196,7 +196,7 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeQueryInParens(
              range.Peek().GetType() == kFunctionToken &&
              range.Peek().FunctionId() == CSSValueID::kScrollState) {
     // scroll-state(stuck: [ none | top | left | right | bottom | inset-* ] )
-    // scroll-state(snapped: [ none | block | inline ] )
+    // scroll-state(snapped: [ none | block | inline | x | y ] )
     CSSParserTokenRange block = range.ConsumeBlock();
     block.ConsumeWhitespace();
     range.ConsumeWhitespace();

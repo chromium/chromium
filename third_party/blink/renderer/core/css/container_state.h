@@ -42,8 +42,8 @@ inline ContainerStuckLogical Flip(ContainerStuckLogical stuck) {
 // its scroll container in a given direction.
 enum class ContainerSnapped {
   kNone = 0,
-  kBlock = 1 << 0,
-  kInline = 1 << 1,
+  kX = 1 << 0,
+  kY = 1 << 1,
 };
 
 using ContainerSnappedFlags = unsigned;

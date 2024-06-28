@@ -62,13 +62,15 @@
   }
 
   test_condition_known('scroll-state(snapped)');
+  test_condition_known('scroll-state(snapped: x)');
+  test_condition_known('scroll-state(snapped: y)');
   test_condition_known('scroll-state(snapped: none)');
   test_condition_known('scroll-state(snapped: block)');
   test_condition_known('scroll-state(snapped: inline)');
   test_condition_known('(scroll-state(snapped: block))');
   test_condition_known('scroll-state((snapped: inline))');
   test_condition_known('scroll-state(not ((snapped: inline) and (snapped: block)))');
-  test_condition_known('scroll-state((snapped: block) or (snapped: inline))');
+  test_condition_known('scroll-state((snapped: x) or (snapped: y))');
 
   test_condition_unknown('scroll-state(snapped: auto)');
   test_condition_unknown('scroll-state(snapped: true)');

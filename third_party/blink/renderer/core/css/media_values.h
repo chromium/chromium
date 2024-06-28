@@ -124,16 +124,23 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   virtual ContainerSnappedFlags SnappedFlags() const {
     return static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone);
   }
+  // For evaluating scroll-state(snapped: x/y)
+  bool SnappedX() const {
+    return SnappedFlags() &
+           static_cast<ContainerSnappedFlags>(ContainerSnapped::kX);
+  }
+  bool SnappedY() const {
+    return SnappedFlags() &
+           static_cast<ContainerSnappedFlags>(ContainerSnapped::kY);
+  }
   // For evaluating scroll-state(snapped: block/inline)
-  bool SnappedBlock() const {
-    return SnappedFlags() &
-           static_cast<ContainerSnappedFlags>(ContainerSnapped::kBlock);
+  bool SnappedBlock() const;
+  bool SnappedInline() const;
+  // For boolean context evaluation.
+  bool Snapped() const {
+    return SnappedFlags() !=
+           static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone);
   }
-  bool SnappedInline() const {
-    return SnappedFlags() &
-           static_cast<ContainerSnappedFlags>(ContainerSnapped::kInline);
-  }
-  bool Snapped() const { return SnappedBlock() || SnappedInline(); }
   // Returns the container element used to retrieve base style and parent style
   // when computing the computed value of a style() container query.
   virtual Element* ContainerElement() const { return nullptr; }

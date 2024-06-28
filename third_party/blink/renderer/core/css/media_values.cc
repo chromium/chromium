@@ -88,6 +88,20 @@ std::optional<double> MediaValues::BlockSize() const {
   return Width();
 }
 
+bool MediaValues::SnappedBlock() const {
+  if (blink::IsHorizontalWritingMode(GetWritingMode())) {
+    return SnappedY();
+  }
+  return SnappedX();
+}
+
+bool MediaValues::SnappedInline() const {
+  if (blink::IsHorizontalWritingMode(GetWritingMode())) {
+    return SnappedX();
+  }
+  return SnappedY();
+}
+
 MediaValues* MediaValues::CreateDynamicIfFrameExists(LocalFrame* frame) {
   if (frame) {
     return MediaValuesDynamic::Create(frame);

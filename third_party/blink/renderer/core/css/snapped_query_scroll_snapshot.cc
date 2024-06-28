@@ -16,10 +16,6 @@ SnappedQueryScrollSnapshot::SnappedQueryScrollSnapshot(
     : ScrollSnapshotClient(scroller.GetLayoutBox()->GetDocument().GetFrame()),
       scroller_(&scroller) {}
 
-bool SnappedQueryScrollSnapshot::IsHorizontalWritingMode() const {
-  return scroller_->GetLayoutBox()->IsHorizontalWritingMode();
-}
-
 void SnappedQueryScrollSnapshot::InvalidateSnappedTarget(Element* target) {
   if (target) {
     if (ContainerQueryEvaluator* evaluator =

@@ -29,9 +29,6 @@ class SnappedQueryScrollSnapshot
   Element* GetSnappedTargetX() const { return snapped_target_x_; }
   Element* GetSnappedTargetY() const { return snapped_target_y_; }
 
-  // Returns true if the writing-mode of the scroller is horizontal
-  bool IsHorizontalWritingMode() const;
-
   // ScrollSnapshotClient:
   void UpdateSnapshot() override;
   bool ValidateSnapshot() override;

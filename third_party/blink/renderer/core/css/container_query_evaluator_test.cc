@@ -425,9 +425,9 @@ TEST_F(ContainerQueryEvaluatorTest, SnapContainerChanged) {
 
   ContainerQueryEvaluator* evaluator =
       CreateEvaluatorForType(type_scroll_state);
-  SnapContainerChanged(
-      evaluator, static_cast<ContainerSnappedFlags>(ContainerSnapped::kBlock),
-      type_scroll_state);
+  SnapContainerChanged(evaluator,
+                       static_cast<ContainerSnappedFlags>(ContainerSnapped::kY),
+                       type_scroll_state);
 
   EXPECT_TRUE(EvalAndAdd(evaluator, *container_query_snap_block));
   EXPECT_FALSE(EvalAndAdd(evaluator, *container_query_snap_inline));
@@ -435,11 +435,11 @@ TEST_F(ContainerQueryEvaluatorTest, SnapContainerChanged) {
 
   // Calling SnapContainerChanged with the values we already have should not
   // produce a Change.
-  EXPECT_EQ(Change::kNone,
-            SnapContainerChanged(
-                evaluator,
-                static_cast<ContainerSnappedFlags>(ContainerSnapped::kBlock),
-                type_scroll_state));
+  EXPECT_EQ(
+      Change::kNone,
+      SnapContainerChanged(
+          evaluator, static_cast<ContainerSnappedFlags>(ContainerSnapped::kY),
+          type_scroll_state));
   EXPECT_EQ(2u, GetResults(evaluator).size());
 
   // EvalAndAdding the same queries again is allowed.
@@ -448,13 +448,12 @@ TEST_F(ContainerQueryEvaluatorTest, SnapContainerChanged) {
   EXPECT_EQ(2u, GetResults(evaluator).size());
 
   // Add inline snapped.
-  EXPECT_EQ(
-      Change::kNearestContainer,
-      SnapContainerChanged(
-          evaluator,
-          static_cast<ContainerSnappedFlags>(ContainerSnapped::kBlock) |
-              static_cast<ContainerSnappedFlags>(ContainerSnapped::kInline),
-          type_scroll_state));
+  EXPECT_EQ(Change::kNearestContainer,
+            SnapContainerChanged(
+                evaluator,
+                static_cast<ContainerSnappedFlags>(ContainerSnapped::kX) |
+                    static_cast<ContainerSnappedFlags>(ContainerSnapped::kY),
+                type_scroll_state));
   EXPECT_EQ(0u, GetResults(evaluator).size());
 
   // Now both block and inline queries should return true.

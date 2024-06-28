@@ -309,16 +309,15 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::SizeContainerChanged(
 void ContainerQueryEvaluator::SetPendingSnappedStateFromScrollSnapshot(
     const SnappedQueryScrollSnapshot& snapshot) {
   Element* container = ContainerElement();
-  bool is_horizontal = snapshot.IsHorizontalWritingMode();
   pending_snapped_ =
       static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone);
   if (snapshot.GetSnappedTargetX() == container) {
-    pending_snapped_ |= static_cast<ContainerSnappedFlags>(
-        is_horizontal ? ContainerSnapped::kInline : ContainerSnapped::kBlock);
+    pending_snapped_ |=
+        static_cast<ContainerSnappedFlags>(ContainerSnapped::kX);
   }
   if (snapshot.GetSnappedTargetY() == container) {
-    pending_snapped_ |= static_cast<ContainerSnappedFlags>(
-        is_horizontal ? ContainerSnapped::kBlock : ContainerSnapped::kInline);
+    pending_snapped_ |=
+        static_cast<ContainerSnappedFlags>(ContainerSnapped::kY);
   }
 
   if (pending_snapped_ != snapped_) {

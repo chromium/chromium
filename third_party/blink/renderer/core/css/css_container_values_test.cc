@@ -106,10 +106,28 @@ TEST_F(CSSContainerValuesTest, SnappedNone) {
   EXPECT_FALSE(values->Snapped());
 }
 
+TEST_F(CSSContainerValuesTest, SnappedX) {
+  SetContainerWritingDirection(WritingMode::kHorizontalTb, TextDirection::kLtr);
+  MediaValues* values = CreateSnappedValues(
+      static_cast<ContainerSnappedFlags>(ContainerSnapped::kX));
+  EXPECT_TRUE(values->SnappedX());
+  EXPECT_FALSE(values->SnappedY());
+  EXPECT_TRUE(values->Snapped());
+}
+
+TEST_F(CSSContainerValuesTest, SnappedY) {
+  SetContainerWritingDirection(WritingMode::kHorizontalTb, TextDirection::kLtr);
+  MediaValues* values = CreateSnappedValues(
+      static_cast<ContainerSnappedFlags>(ContainerSnapped::kY));
+  EXPECT_FALSE(values->SnappedX());
+  EXPECT_TRUE(values->SnappedY());
+  EXPECT_TRUE(values->Snapped());
+}
+
 TEST_F(CSSContainerValuesTest, SnappedBlock) {
   SetContainerWritingDirection(WritingMode::kHorizontalTb, TextDirection::kLtr);
   MediaValues* values = CreateSnappedValues(
-      static_cast<ContainerSnappedFlags>(ContainerSnapped::kBlock));
+      static_cast<ContainerSnappedFlags>(ContainerSnapped::kY));
   EXPECT_TRUE(values->SnappedBlock());
   EXPECT_FALSE(values->SnappedInline());
   EXPECT_TRUE(values->Snapped());
@@ -118,7 +136,7 @@ TEST_F(CSSContainerValuesTest, SnappedBlock) {
 TEST_F(CSSContainerValuesTest, SnappedInline) {
   SetContainerWritingDirection(WritingMode::kHorizontalTb, TextDirection::kLtr);
   MediaValues* values = CreateSnappedValues(
-      static_cast<ContainerSnappedFlags>(ContainerSnapped::kInline));
+      static_cast<ContainerSnappedFlags>(ContainerSnapped::kX));
   EXPECT_FALSE(values->SnappedBlock());
   EXPECT_TRUE(values->SnappedInline());
   EXPECT_TRUE(values->Snapped());
@@ -127,8 +145,8 @@ TEST_F(CSSContainerValuesTest, SnappedInline) {
 TEST_F(CSSContainerValuesTest, SnappedBoth) {
   SetContainerWritingDirection(WritingMode::kHorizontalTb, TextDirection::kLtr);
   MediaValues* values = CreateSnappedValues(
-      static_cast<ContainerSnappedFlags>(ContainerSnapped::kBlock) |
-      static_cast<ContainerSnappedFlags>(ContainerSnapped::kInline));
+      static_cast<ContainerSnappedFlags>(ContainerSnapped::kX) |
+      static_cast<ContainerSnappedFlags>(ContainerSnapped::kY));
   EXPECT_TRUE(values->SnappedBlock());
   EXPECT_TRUE(values->SnappedInline());
   EXPECT_TRUE(values->Snapped());
