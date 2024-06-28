@@ -1458,7 +1458,6 @@ public class ManageSyncSettingsTest {
                                         ManageSyncSettings.PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE);
         @Nullable Integer backgroundColor = toggle.getBackgroundColor();
         Assert.assertNotNull(backgroundColor);
-        Assert.assertTrue(backgroundColor.equals(R.color.iph_highlight_blue));
     }
 
     @Test

@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
+import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.chrome.browser.usage_stats.UsageStatsConsentDialog;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
@@ -128,7 +129,8 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
         mPasswordsAccountStorage.setOnPreferenceChangeListener(this);
         if (getArguments() != null
                 && getArguments().getBoolean(AccountStorageToggleFragmentArgs.HIGHLIGHT)) {
-            mPasswordsAccountStorage.setBackgroundColor(R.color.iph_highlight_blue);
+            mPasswordsAccountStorage.setBackgroundColor(
+                    ChromeSemanticColorUtils.getIphHighlightColor(getContext()));
         }
         SyncServiceFactory.getForProfile(getProfile()).addSyncStateChangedListener(this);
 
