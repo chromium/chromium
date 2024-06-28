@@ -646,7 +646,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.IncludedResponseEffectiveSameSite"
-    enum="CookieEffectiveSameSite" expires_after="2024-06-30">
+    enum="CookieEffectiveSameSite" expires_after="2024-12-30">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -948,7 +948,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.RequestSameSiteContext" enum="SameSiteCookieContext"
-    expires_after="2024-07-07">
+    expires_after="2025-01-07">
   <owner>bingler@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
