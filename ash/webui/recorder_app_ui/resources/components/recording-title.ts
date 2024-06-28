@@ -55,7 +55,8 @@ export class RecordingTitle extends ReactiveLitElement {
       position-anchor: --title-textfield;
       inset-area: bottom span-right;
       margin-top: 4.5px;
-      width: 360px;
+      max-width: 402px;
+      min-width: 360px;
     }
 
     #title {
