@@ -48,4 +48,27 @@
       waitForUIElementToDisappearWithMatcher:lensOverlayContainerMatcher];
 }
 
+// Tests that when pressing the escape keyboard button, closes the overlay
+// container.
+- (void)testPressEscapeHidesLensOverlayContainer {
+  [ChromeEarlGrey loadURL:GURL("about:blank")];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:chrome_test_util::TabShareButton()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
+      performAction:grey_tap()];
+
+  id<GREYMatcher> lensOverlayContainerMatcher =
+      grey_accessibilityID(kLenscontainerViewAccessibilityIdentifier);
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:lensOverlayContainerMatcher];
+
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"escape" flags:0];
+
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:lensOverlayContainerMatcher];
+}
+
 @end

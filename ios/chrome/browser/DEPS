@@ -180,6 +180,7 @@ include_rules = [
   "-ios/chrome/browser/ui",
   "-ios/common/ui",
   "+ios/chrome/browser/ui/commands",
+  "+ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h",
 
   # For tests.
   "+ios/chrome/test",

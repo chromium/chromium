@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 
 namespace {
 
@@ -116,10 +117,30 @@ const CGFloat closeButtonTrailingPadding = 16.0;
   return YES;
 }
 
+#pragma mark - UIResponder
+
+// To always be able to register key commands via -keyCommands, the VC must be
+// able to become first responder.
+- (BOOL)canBecomeFirstResponder {
+  return YES;
+}
+
+- (NSArray<UIKeyCommand*>*)keyCommands {
+  return @[ UIKeyCommand.cr_close ];
+}
+
+- (void)keyCommand_close {
+  [self escapeButtonPressed];
+}
+
 #pragma mark - Actions
 
 - (void)closeButtonPressed {
   [_overlayCommandsHandler destroyLensUI:YES];
+}
+
+- (void)escapeButtonPressed {
+  [self closeButtonPressed];
 }
 
 @end
