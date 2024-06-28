@@ -48,7 +48,10 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link TabsSettings}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
+@EnableFeatures({
+    ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+    ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH
+})
 @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
 public class TabsSettingsUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -146,6 +149,16 @@ public class TabsSettingsUnitTest {
     @SmallTest
     @DisableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
     public void testTabGroupSyncSettingsHiddenWhenFeatureOff() {
+        TabsSettings tabsSettings = launchFragment();
+        ChromeSwitchPreference autoOpenSyncedTabGroupsSwitch =
+                tabsSettings.findPreference(TabsSettings.PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH);
+        assertFalse(autoOpenSyncedTabGroupsSwitch.isVisible());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH)
+    public void testTabGroupSyncSettingsHiddenWhenKillswitchEnabled() {
         TabsSettings tabsSettings = launchFragment();
         ChromeSwitchPreference autoOpenSyncedTabGroupsSwitch =
                 tabsSettings.findPreference(TabsSettings.PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH);

@@ -1019,16 +1019,36 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+        ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH
+    })
     @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
-    public void testTabsSettingsOn_GroupSync() {
+    public void testTabsSettingsOn_GroupSync_KillSwitchInactive() {
         launchSettingsActivity();
         assertSettingsExists(MainSettings.PREF_TABS, TabsSettings.class);
     }
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
+    @DisableFeatures({
+        ChromeFeatureList.ANDROID_TAB_DECLUTTER,
+        ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH
+    })
+    public void testTabsSettingsOn_GroupSync_KillSwitchActive() {
+        launchSettingsActivity();
+        Assert.assertNull(
+                "Tabs settings should not be shown",
+                mMainSettings.findPreference(MainSettings.PREF_TABS));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+        ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH
+    })
     @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
     public void testTabsSettingsOn_Declutter() {
         launchSettingsActivity();
@@ -1041,6 +1061,7 @@ public class MainSettingsFragmentTest {
         ChromeFeatureList.ANDROID_TAB_DECLUTTER,
         ChromeFeatureList.TAB_GROUP_SYNC_ANDROID
     })
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH)
     public void testTabsSettingsOff() {
         launchSettingsActivity();
         Assert.assertNull(
