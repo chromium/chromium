@@ -200,9 +200,11 @@ std::unique_ptr<TracingScenario> TracingScenario::Create(
     const perfetto::protos::gen::ScenarioConfig& config,
     bool enable_privacy_filter,
     bool enable_package_name_filter,
+    bool request_startup_tracing,
     Delegate* scenario_delegate) {
   auto scenario = base::WrapUnique(
-      new TracingScenario(config, scenario_delegate, enable_privacy_filter));
+      new TracingScenario(config, scenario_delegate, enable_privacy_filter,
+                          request_startup_tracing));
   if (!scenario->Initialize(config, enable_package_name_filter)) {
     return nullptr;
   }
@@ -212,10 +214,12 @@ std::unique_ptr<TracingScenario> TracingScenario::Create(
 TracingScenario::TracingScenario(
     const perfetto::protos::gen::ScenarioConfig& config,
     Delegate* scenario_delegate,
-    bool enable_privacy_filter)
+    bool enable_privacy_filter,
+    bool request_startup_tracing)
     : TracingScenarioBase(config.scenario_name()),
       config_hash_(base::MD5String(config.SerializeAsString())),
       privacy_filtering_enabled_(enable_privacy_filter),
+      request_startup_tracing_(request_startup_tracing),
       trace_config_(config.trace_config()),
       scenario_delegate_(scenario_delegate) {}
 
@@ -413,11 +417,13 @@ bool TracingScenario::OnStartTrigger(
 
   SetState(State::kRecording);
 
-  perfetto::Tracing::SetupStartupTracingOpts opts;
-  opts.timeout_ms = kStartupTracingTimeoutMs;
-  opts.backend = perfetto::kCustomBackend;
-  tracing::PerfettoTracedProcess::Get()->RequestStartupTracing(trace_config_,
-                                                               opts);
+  if (request_startup_tracing_) {
+    perfetto::Tracing::SetupStartupTracingOpts opts;
+    opts.timeout_ms = kStartupTracingTimeoutMs;
+    opts.backend = perfetto::kCustomBackend;
+    tracing::PerfettoTracedProcess::Get()->RequestStartupTracing(trace_config_,
+                                                                 opts);
+  }
 
   tracing_session_->SetOnStopCallback([task_runner = task_runner_,
                                        weak_ptr = GetWeakPtr()]() {

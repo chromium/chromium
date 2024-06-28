@@ -37,7 +37,6 @@
 #include "build/build_config.h"
 #include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/tracing/background_startup_tracing_observer.h"
 #include "content/browser/tracing/background_tracing_active_scenario.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/browser/tracing/background_tracing_rule.h"
@@ -73,63 +72,14 @@ using testing::_;
 constexpr char kDefaultCategories[] = "toplevel";
 
 class TestStartupPreferenceManagerImpl
-    : public BackgroundStartupTracingObserver::PreferenceManager {
+    : public BackgroundTracingManagerImpl::PreferenceManager {
  public:
-  void SetBackgroundStartupTracingEnabled(bool enabled) override {
-    enabled_ = enabled;
-  }
+  void SetBackgroundStartupTracingEnabled(bool enabled) { enabled_ = enabled; }
 
   bool GetBackgroundStartupTracingEnabled() const override { return enabled_; }
 
  private:
   bool enabled_ = false;
-};
-
-// An helper class that observes tracing states transition and allows
-// synchronisation with tests. The class adds itself as a tracelog
-// enable state observer and provides methods to wait for a given state.
-//
-// Usage:
-//   TestTraceLogHelper tracelog_helper;
-//   [... start tracing ...]
-//   tracelog_helper.WaitForStartTracing();
-//   [... stop tracing ...]
-//   tracing_controller->StopTracing();
-//   tracelog_helper.WaitForStopTracing();
-class TestTraceLogHelper : public TraceLog::EnabledStateObserver {
- public:
-  TestTraceLogHelper() {
-    EXPECT_FALSE(TraceLog::GetInstance()->IsEnabled());
-    TraceLog::GetInstance()->AddEnabledStateObserver(this);
-  }
-
-  ~TestTraceLogHelper() override {
-    EXPECT_FALSE(TraceLog::GetInstance()->IsEnabled());
-    TraceLog::GetInstance()->RemoveEnabledStateObserver(this);
-
-    // Ensures tracing got enabled/disabled only once.
-    EXPECT_EQ(1, enable_count);
-    EXPECT_EQ(1, disable_count);
-  }
-
-  void OnTraceLogEnabled() override {
-    wait_for_start_tracing_.QuitWhenIdle();
-    enable_count++;
-  }
-
-  void OnTraceLogDisabled() override {
-    wait_for_stop_tracing_.QuitWhenIdle();
-    disable_count++;
-  }
-
-  void WaitForStartTracing() { wait_for_start_tracing_.Run(); }
-  void WaitForStopTracing() { wait_for_stop_tracing_.Run(); }
-
- private:
-  int enable_count = 0;
-  int disable_count = 0;
-  base::RunLoop wait_for_start_tracing_;
-  base::RunLoop wait_for_stop_tracing_;
 };
 
 // A helper class that observes background tracing states transition, receives
@@ -1586,98 +1536,46 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
                        SetupStartupTracing) {
-  TestBackgroundTracingHelper background_tracing_helper;
-
   std::unique_ptr<TestStartupPreferenceManagerImpl> preferences_moved(
       new TestStartupPreferenceManagerImpl);
   TestStartupPreferenceManagerImpl* preferences = preferences_moved.get();
-  BackgroundStartupTracingObserver::GetInstance()
-      .SetPreferenceManagerForTesting(std::move(preferences_moved));
+  BackgroundTracingManagerImpl::GetInstance().SetPreferenceManagerForTesting(
+      std::move(preferences_moved));
   preferences->SetBackgroundStartupTracingEnabled(false);
 
-  std::unique_ptr<BackgroundTracingConfig> config(
-      BackgroundTracingConfigImpl::ReactiveFromDict(base::Value::Dict().Set(
-          "configs", base::Value::List().Append(
-                         base::Value::Dict()
-                             .Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED")
-                             .Set("trigger_name", "startup")
-                             .Set("trigger_delay", 600)))));
+  perfetto::protos::gen::ChromeFieldTracingConfig config;
+  EXPECT_TRUE(BackgroundTracingManager::GetInstance().InitializeFieldScenarios(
+      config, BackgroundTracingManager::ANONYMIZE_DATA));
 
-  EXPECT_TRUE(BackgroundTracingManager::GetInstance().SetActiveScenario(
-      std::move(config), BackgroundTracingManager::NO_DATA_FILTERING));
-
-  // Since we specified a delay in the scenario, we should still be tracing
-  // at this point.
-  EXPECT_FALSE(
-      BackgroundTracingManagerImpl::GetInstance().IsTracingForTesting());
-  EXPECT_TRUE(preferences->GetBackgroundStartupTracingEnabled());
-
-  // Abort the scenario.
-  background_tracing_helper.ExpectOnScenarioIdle("");
-  BackgroundTracingManager::GetInstance().AbortScenarioForTesting();
-  background_tracing_helper.WaitForScenarioIdle();
-
-  EXPECT_FALSE(background_tracing_helper.trace_received());
+  EXPECT_FALSE(base::trace_event::EmitNamedTrigger(
+      base::trace_event::kStartupTracingTriggerName));
 }
 
-// TODO(crbug.com/40267734): Re-enable this test once fixed
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CASTOS)
-#define MAYBE_RunStartupTracing DISABLED_RunStartupTracing
-#else
-#define MAYBE_RunStartupTracing RunStartupTracing
-#endif
-IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
-                       MAYBE_RunStartupTracing) {
-  TestTraceLogHelper tracelog_helper;
+IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest, RunStartupTracing) {
   TestBackgroundTracingHelper background_tracing_helper;
 
   std::unique_ptr<TestStartupPreferenceManagerImpl> preferences_moved(
       new TestStartupPreferenceManagerImpl);
   TestStartupPreferenceManagerImpl* preferences = preferences_moved.get();
-  BackgroundStartupTracingObserver::GetInstance()
-      .SetPreferenceManagerForTesting(std::move(preferences_moved));
+  BackgroundTracingManagerImpl::GetInstance().SetPreferenceManagerForTesting(
+      std::move(preferences_moved));
   preferences->SetBackgroundStartupTracingEnabled(true);
 
-  std::unique_ptr<BackgroundTracingConfig> config(
-      BackgroundTracingConfigImpl::ReactiveFromDict(
-          base::Value::Dict()
-              .Set("configs",
-                   base::Value::List().Append(
-                       base::Value::Dict()
-                           .Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED")
-                           .Set("trigger_name", "foo")
-                           .Set("trigger_delay", 10)))
-              .Set("custom_categories", kDefaultCategories)));
+  perfetto::protos::gen::ChromeFieldTracingConfig config;
+  EXPECT_TRUE(BackgroundTracingManager::GetInstance().InitializeFieldScenarios(
+      config, BackgroundTracingManager::ANONYMIZE_DATA));
 
-  EXPECT_TRUE(BackgroundTracingManager::GetInstance().SetActiveScenario(
-      std::move(config), BackgroundTracingManager::ANONYMIZE_DATA));
-  base::trace_event::EmitNamedTrigger(
-      base::trace_event::kStartupTracingTriggerName);
+  background_tracing_helper.ExpectOnScenarioActive("Startup");
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger(
+      base::trace_event::kStartupTracingTriggerName));
 
-  tracelog_helper.WaitForStartTracing();
   background_tracing_helper.WaitForTraceStarted();
 
-  EXPECT_TRUE(BackgroundTracingManagerImpl::GetInstance()
-                  .GetActiveScenarioForTesting()
-                  ->GetConfig()
-                  ->requires_anonymized_data());
-
-  // Since we specified a delay in the scenario, we should still be tracing
-  // at this point.
-  EXPECT_TRUE(
-      BackgroundTracingManagerImpl::GetInstance().IsTracingForTesting());
-
-  BackgroundTracingManagerImpl::GetInstance()
-      .GetActiveScenarioForTesting()
-      ->FireTimerForTesting();
-
-  background_tracing_helper.WaitForTraceReceived();
-  background_tracing_helper.ExpectOnScenarioIdle("");
-  BackgroundTracingManager::GetInstance().AbortScenarioForTesting();
+  background_tracing_helper.ExpectOnScenarioIdle("Startup");
   background_tracing_helper.WaitForScenarioIdle();
 
+  background_tracing_helper.WaitForTraceReceived();
   EXPECT_TRUE(background_tracing_helper.trace_received());
-  EXPECT_FALSE(preferences->GetBackgroundStartupTracingEnabled());
 }
 
 namespace {

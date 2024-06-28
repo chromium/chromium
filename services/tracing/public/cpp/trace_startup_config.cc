@@ -336,7 +336,6 @@ bool TraceStartupConfig::EnableFromBackgroundTracing() {
     return false;
   }
 
-  SetBackgroundStartupTracingEnabled(false);
   perfetto_config_ = GetDefaultBackgroundStartupConfig();
 
   is_enabled_ = true;

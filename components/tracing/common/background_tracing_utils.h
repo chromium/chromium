@@ -86,6 +86,9 @@ COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
 bool ShouldAnonymizeFieldTracing();
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
+bool ShouldTraceStartup();
+
+COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
 std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
 GetPresetTracingConfig();
 

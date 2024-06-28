@@ -44,6 +44,8 @@ const base::FeatureParam<std::string> kFieldTracingConfig{&kFieldTracing,
                                                           "config", ""};
 const base::FeatureParam<bool> kFieldTracingAnonymized{&kFieldTracing,
                                                        "anonymized", true};
+const base::FeatureParam<bool> kStartupFieldTracing{&kFieldTracing, "startup",
+                                                    false};
 const base::FeatureParam<std::string> kPresetTracingConfig{&kPresetTracing,
                                                            "config", ""};
 
@@ -278,6 +280,10 @@ GetFieldTracingConfig() {
 
 bool ShouldAnonymizeFieldTracing() {
   return kFieldTracingAnonymized.Get();
+}
+
+bool ShouldTraceStartup() {
+  return kStartupFieldTracing.Get();
 }
 
 std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>

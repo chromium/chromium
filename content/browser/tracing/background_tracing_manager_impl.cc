@@ -26,7 +26,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/variations/hashing.h"
-#include "content/browser/tracing/background_startup_tracing_observer.h"
 #include "content/browser/tracing/background_tracing_active_scenario.h"
 #include "content/browser/tracing/background_tracing_agent_client_impl.h"
 #include "content/browser/tracing/background_tracing_rule.h"
@@ -181,6 +180,16 @@ void GetProtoValueOnDatabaseTaskRunner(
       .Run(std::move(trace_content), std::move(serialized_system_profile));
 }
 
+class PreferenceManagerImpl
+    : public BackgroundTracingManagerImpl::PreferenceManager {
+ public:
+  bool GetBackgroundStartupTracingEnabled() const override {
+    return tracing::TraceStartupConfig::GetInstance().IsEnabled() &&
+           tracing::TraceStartupConfig::GetInstance().GetSessionOwner() ==
+               tracing::TraceStartupConfig::SessionOwner::kBackgroundTracing;
+  }
+};
+
 }  // namespace
 
 BASE_FEATURE(kBackgroundTracingDatabase,
@@ -248,7 +257,7 @@ BackgroundTracingManagerImpl::BackgroundTracingManagerImpl()
   BackgroundTracingManager::SetInstance(this);
   NamedTriggerManager::SetInstance(this);
   g_background_tracing_manager_impl = this;
-  BackgroundStartupTracingObserver::GetInstance();
+  preferences_ = std::make_unique<PreferenceManagerImpl>();
 }
 
 BackgroundTracingManagerImpl::~BackgroundTracingManagerImpl() {
@@ -491,10 +500,29 @@ bool BackgroundTracingManagerImpl::InitializeFieldScenarios(
 
   // Guaranteed by RequestActivateScenario() above.
   DCHECK(enabled_scenarios_.empty());
+
+  if (preferences_->GetBackgroundStartupTracingEnabled()) {
+    perfetto::protos::gen::ScenarioConfig scenario_config;
+    scenario_config.set_scenario_name("Startup");
+    *scenario_config.mutable_trace_config() =
+        tracing::TraceStartupConfig::GetDefaultBackgroundStartupConfig();
+    scenario_config.add_start_rules()->set_manual_trigger_name(
+        base::trace_event::kStartupTracingTriggerName);
+    scenario_config.add_upload_rules()->set_delay_ms(30000);
+
+    // Startup tracing was already requested earlier for this scenario.
+    auto startup_scenario = TracingScenario::Create(
+        scenario_config, requires_anonymized_data, enable_package_name_filter,
+        /*request_startup_tracing=*/false, this);
+    field_scenarios_.push_back(std::move(startup_scenario));
+    enabled_scenarios_.push_back(field_scenarios_.back().get());
+    enabled_scenarios_.back()->Enable();
+  }
+
   for (const auto& scenario_config : config.scenarios()) {
     auto scenario =
         TracingScenario::Create(scenario_config, requires_anonymized_data,
-                                enable_package_name_filter, this);
+                                enable_package_name_filter, true, this);
     if (!scenario) {
       return false;
     }
@@ -518,7 +546,7 @@ std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenarios(
   for (const auto& scenario_config : config.scenarios()) {
     auto scenario =
         TracingScenario::Create(scenario_config, enable_privacy_filter,
-                                enable_package_name_filter, this);
+                                enable_package_name_filter, true, this);
     if (!scenario) {
       continue;
     }
@@ -580,20 +608,11 @@ bool BackgroundTracingManagerImpl::SetActiveScenario(
     DataFiltering data_filtering) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  std::unique_ptr<BackgroundTracingConfigImpl> config_impl(
-      static_cast<BackgroundTracingConfigImpl*>(config.release()));
-  config_impl = BackgroundStartupTracingObserver::GetInstance()
-                    .IncludeStartupConfigIfNeeded(std::move(config_impl));
-  bool startup_tracing_enabled = BackgroundStartupTracingObserver::GetInstance()
-                                     .enabled_in_current_session();
-  if (startup_tracing_enabled) {
-    // Anonymize data for startup tracing by default. We currently do not
-    // support storing the config in preferences for next session.
-    data_filtering = DataFiltering::ANONYMIZE_DATA;
-  }
-  if (!config_impl) {
+  if (!config) {
     return false;
   }
+  std::unique_ptr<BackgroundTracingConfigImpl> config_impl(
+      static_cast<BackgroundTracingConfigImpl*>(config.release()));
 
   if (!RequestActivateScenario()) {
     return false;
@@ -629,10 +648,6 @@ bool BackgroundTracingManagerImpl::SetActiveScenario(
   }
 
   InitializeTraceReportDatabase();
-
-  if (startup_tracing_enabled) {
-    RecordMetric(Metrics::STARTUP_SCENARIO_TRIGGERED);
-  }
 
   legacy_active_scenario_->StartTracingIfConfigNeedsIt();
   RecordMetric(Metrics::SCENARIO_ACTIVATED_SUCCESSFULLY);
@@ -886,6 +901,11 @@ void BackgroundTracingManagerImpl::SaveTraceForTesting(
   OnProtoDataComplete(std::move(serialized_trace), scenario_name, rule_name,
                       /*privacy_filter_enabled*/ true,
                       /*is_crash_scenario=*/false, uuid);
+}
+
+void BackgroundTracingManagerImpl::SetPreferenceManagerForTesting(
+    std::unique_ptr<PreferenceManager> preferences) {
+  preferences_ = std::move(preferences);
 }
 
 size_t BackgroundTracingManagerImpl::GetScenarioSavedCount(

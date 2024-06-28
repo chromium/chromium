@@ -2143,8 +2143,6 @@ source_set("browser") {
     "synthetic_trial_syncer.cc",
     "theme_helper.cc",
     "theme_helper.h",
-    "tracing/background_startup_tracing_observer.cc",
-    "tracing/background_startup_tracing_observer.h",
     "tracing/background_tracing_active_scenario.cc",
     "tracing/background_tracing_active_scenario.h",
     "tracing/background_tracing_agent_client_impl.cc",

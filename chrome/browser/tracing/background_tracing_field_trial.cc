@@ -8,6 +8,7 @@
 #include "components/tracing/common/background_tracing_utils.h"
 #include "content/public/browser/background_tracing_config.h"
 #include "content/public/browser/background_tracing_manager.h"
+#include "services/tracing/public/cpp/trace_startup_config.h"
 
 namespace tracing {
 
@@ -68,6 +69,9 @@ bool MaybeSetupBackgroundTracingFromFieldTrial() {
   } else if (!tracing::ShouldAnonymizeFieldTracing()) {
     data_filtering = BackgroundTracingManager::NO_DATA_FILTERING;
   }
+
+  tracing::TraceStartupConfig::GetInstance().SetBackgroundStartupTracingEnabled(
+      tracing::ShouldTraceStartup());
 
   auto& manager = BackgroundTracingManager::GetInstance();
   auto field_tracing_config = tracing::GetFieldTracingConfig();

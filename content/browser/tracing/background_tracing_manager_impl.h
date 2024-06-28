@@ -60,6 +60,14 @@ class BackgroundTracingManagerImpl
         tracing::mojom::BackgroundTracingAgent* agent) = 0;
   };
 
+  // Delegate to store and read application preferences for startup tracing, to
+  // isolate the feature for testing.
+  class PreferenceManager {
+   public:
+    virtual bool GetBackgroundStartupTracingEnabled() const = 0;
+    virtual ~PreferenceManager() = default;
+  };
+
   using ScenarioCountMap = base::flat_map<std::string, size_t>;
   using FinishedProcessingCallback =
       TraceUploadList::FinishedProcessingCallback;
@@ -194,6 +202,8 @@ class BackgroundTracingManagerImpl
                                           const std::string& scenario_name,
                                           const std::string& rule_name,
                                           const base::Token& uuid) override;
+  CONTENT_EXPORT void SetPreferenceManagerForTesting(
+      std::unique_ptr<PreferenceManager> preferences);
 
  private:
 #if BUILDFLAG(IS_ANDROID)
@@ -253,6 +263,8 @@ class BackgroundTracingManagerImpl
   std::set<raw_ptr<tracing::mojom::BackgroundTracingAgent, SetExperimental>>
       agents_;
   std::set<raw_ptr<AgentObserver, SetExperimental>> agent_observers_;
+
+  std::unique_ptr<PreferenceManager> preferences_;
 
   std::map<int, mojo::Remote<tracing::mojom::BackgroundTracingAgentProvider>>
       pending_agents_;
