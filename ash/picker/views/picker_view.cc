@@ -569,14 +569,17 @@ void PickerView::SetPseudoFocusedView(views::View* view) {
 
   if (IsContainedInSubmenu(view)) {
     active_item_container_ = submenu_controller_.GetSubmenuView();
-  } else if (emoji_bar_view_ != nullptr && emoji_bar_view_->Contains(view)) {
-    active_item_container_ = emoji_bar_view_;
   } else {
-    // TODO: b/347103427 - There are cases where `view` might not be in either
-    // the emoji bar or the active page, e.g. the back button in the search
-    // field. Properly handle these cases, e.g. by making the main container a
-    // PickerTraversableItemContainer.
-    active_item_container_ = main_container_view_->active_page();
+    submenu_controller_.Close();
+    if (emoji_bar_view_ != nullptr && emoji_bar_view_->Contains(view)) {
+      active_item_container_ = emoji_bar_view_;
+    } else {
+      // TODO: b/347103427 - There are cases where `view` might not be in either
+      // the emoji bar or the active page, e.g. the back button in the search
+      // field. Properly handle these cases, e.g. by making the main container a
+      // PickerTraversableItemContainer.
+      active_item_container_ = main_container_view_->active_page();
+    }
   }
 
   RemovePickerPseudoFocusFromView(pseudo_focused_view_);

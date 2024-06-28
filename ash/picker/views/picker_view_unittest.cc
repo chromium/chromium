@@ -1311,6 +1311,70 @@ TEST_F(PickerViewTest, ShiftTabKeyNavigatesSearchResultsWithoutEmojiBar) {
               Optional(PickerSearchResult::Text(u"Result B")));
 }
 
+TEST_F(PickerViewTest, ShowsSubmenuOnMouseHover) {
+  FakePickerViewDelegate delegate({
+      .zero_state_suggested_results =
+          {PickerSearchResult::NewWindow(
+               PickerSearchResult::NewWindowData::Type::kDoc),
+           PickerSearchResult::NewWindow(
+               PickerSearchResult::NewWindowData::Type::kSheet)},
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  GetEventGenerator()->MoveMouseTo(picker_view->zero_state_view_for_testing()
+                                       .primary_section_view_for_testing()
+                                       ->item_views_for_testing()[0]
+                                       ->GetBoundsInScreen()
+                                       .CenterPoint());
+
+  PickerSubmenuController& submenu_controller =
+      picker_view->submenu_controller_for_testing();
+  views::test::WidgetVisibleWaiter(submenu_controller.widget_for_testing())
+      .Wait();
+  EXPECT_NE(submenu_controller.GetSubmenuView(), nullptr);
+}
+
+// This is an edge case where the user can open a submenu with mouse hover while
+// they are using keyboard to navigate the main PickerView. Since the keyboard
+// selection can be separate to the mouse hover selection, we just close the
+// submenu if the user resumes keyboard navigation in the main PickerView.
+TEST_F(PickerViewTest, ClosesSubmenuWhenResumingKeyboardNavigationInMainView) {
+  FakePickerViewDelegate delegate({
+      .available_categories = {PickerCategory::kExpressions},
+      .zero_state_suggested_results =
+          {PickerSearchResult::NewWindow(
+               PickerSearchResult::NewWindowData::Type::kDoc),
+           PickerSearchResult::NewWindow(
+               PickerSearchResult::NewWindowData::Type::kSheet)},
+      .emoji_results = {PickerSearchResult::Emoji(u"😊"),
+                        PickerSearchResult::Symbol(u"♬")},
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  // Start keyboard navigation.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_UP, ui::EF_NONE);
+  // Mouse hover over an item with a submenu to show a submenu.
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  GetEventGenerator()->MoveMouseTo(picker_view->zero_state_view_for_testing()
+                                       .primary_section_view_for_testing()
+                                       ->item_views_for_testing()[0]
+                                       ->GetBoundsInScreen()
+                                       .CenterPoint());
+  PickerSubmenuController& submenu_controller =
+      picker_view->submenu_controller_for_testing();
+  views::test::WidgetVisibleWaiter(submenu_controller.widget_for_testing())
+      .Wait();
+  // Resume keyboard navigation.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RIGHT, ui::EF_NONE);
+
+  views::test::WidgetDestroyedWaiter(submenu_controller.widget_for_testing())
+      .Wait();
+  EXPECT_EQ(submenu_controller.GetSubmenuView(), nullptr);
+}
+
 TEST_F(PickerViewTest, ClearsSearchWhenClickingOnCategoryResult) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
