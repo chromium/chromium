@@ -11,6 +11,8 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -18,7 +20,7 @@
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/service/sync_internals_util.h"
 #include "components/sync/service/sync_service.h"
-#include "components/sync/test/fake_sync_service.h"
+#include "components/sync/test/mock_sync_service.h"
 #include "components/sync_user_events/fake_user_event_service.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
@@ -41,42 +43,13 @@ class TestableSyncInternalsMessageHandler : public SyncInternalsMessageHandler {
   }
 };
 
-class TestSyncService : public syncer::FakeSyncService {
- public:
-  void AddObserver(SyncServiceObserver* observer) override {
-    ++add_observer_count_;
-  }
-
-  void RemoveObserver(SyncServiceObserver* observer) override {
-    ++remove_observer_count_;
-  }
-
-  void GetAllNodesForDebugging(
-      base::OnceCallback<void(base::Value::List)> callback) override {
-    get_all_nodes_callback_ = std::move(callback);
-  }
-
-  void GetEntityCountsForDebugging(
-      base::RepeatingCallback<void(const syncer::TypeEntitiesCount&)> callback)
-      const override {
-    return callback.Run(syncer::TypeEntitiesCount(syncer::PASSWORDS));
-  }
-
-  int add_observer_count() const { return add_observer_count_; }
-  int remove_observer_count() const { return remove_observer_count_; }
-  base::OnceCallback<void(base::Value::List)> get_all_nodes_callback() {
-    return std::move(get_all_nodes_callback_);
-  }
-
- private:
-  int add_observer_count_ = 0;
-  int remove_observer_count_ = 0;
-  base::OnceCallback<void(base::Value::List)> get_all_nodes_callback_;
-};
-
-static std::unique_ptr<KeyedService> BuildTestSyncService(
+static std::unique_ptr<KeyedService> BuildMockSyncService(
     content::BrowserContext* context) {
-  return std::make_unique<TestSyncService>();
+  auto sync_service = std::make_unique<syncer::MockSyncService>();
+  ON_CALL(*sync_service, GetEntityCountsForDebugging)
+      .WillByDefault(base::test::RunCallback<0>(
+          syncer::TypeEntitiesCount(syncer::PASSWORDS)));
+  return sync_service;
 }
 
 static std::unique_ptr<KeyedService> BuildFakeUserEventService(
@@ -101,9 +74,6 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
     about_information_.Set("some_sync_state", "some_value");
 
     web_ui_.set_web_contents(web_contents());
-    test_sync_service_ = static_cast<TestSyncService*>(
-        SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            profile(), base::BindRepeating(&BuildTestSyncService)));
     fake_user_event_service_ = static_cast<FakeUserEventService*>(
         browser_sync::UserEventServiceFactory::GetInstance()
             ->SetTestingFactoryAndUse(
@@ -121,6 +91,11 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {{SyncServiceFactory::GetInstance(),
+             base::BindRepeating(&BuildMockSyncService)}};
+  }
+
   // Returns copies of the same constant dictionary, |about_information_|.
   base::Value::Dict ConstructFakeAboutInformation(SyncService* service,
                                                   const std::string& channel) {
@@ -129,7 +104,10 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
     return about_information_.Clone();
   }
 
-  TestSyncService* test_sync_service() { return test_sync_service_; }
+  syncer::MockSyncService* mock_sync_service() {
+    return static_cast<syncer::MockSyncService*>(
+        SyncServiceFactory::GetForProfile(profile()));
+  }
 
   FakeUserEventService* fake_user_event_service() {
     return fake_user_event_service_;
@@ -166,7 +144,6 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
 
  private:
   content::TestWebUI web_ui_;
-  raw_ptr<TestSyncService, DanglingUntriaged> test_sync_service_ = nullptr;
   raw_ptr<FakeUserEventService, DanglingUntriaged> fake_user_event_service_ =
       nullptr;
   std::unique_ptr<TestableSyncInternalsMessageHandler> handler_;
@@ -177,31 +154,31 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObservers) {
-  EXPECT_EQ(0, test_sync_service()->add_observer_count());
+  EXPECT_CALL(*mock_sync_service(), AddObserver);
+  EXPECT_CALL(*mock_sync_service(), RemoveObserver).Times(0);
   handler()->HandleRequestDataAndRegisterForUpdates(base::Value::List());
-  EXPECT_EQ(1, test_sync_service()->add_observer_count());
+  testing::Mock::VerifyAndClearExpectations(mock_sync_service());
 
-  EXPECT_EQ(0, test_sync_service()->remove_observer_count());
+  EXPECT_CALL(*mock_sync_service(), AddObserver).Times(0);
+  EXPECT_CALL(*mock_sync_service(), RemoveObserver);
   ResetHandler();
-  EXPECT_EQ(1, test_sync_service()->remove_observer_count());
-
-  // Add call should not have increased since the initial subscription.
-  EXPECT_EQ(1, test_sync_service()->add_observer_count());
 }
 
 TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversDisallowJavascript) {
-  EXPECT_EQ(0, test_sync_service()->add_observer_count());
+  EXPECT_CALL(*mock_sync_service(), AddObserver);
+  EXPECT_CALL(*mock_sync_service(), RemoveObserver).Times(0);
   handler()->HandleRequestDataAndRegisterForUpdates(base::Value::List());
-  EXPECT_EQ(1, test_sync_service()->add_observer_count());
+  testing::Mock::VerifyAndClearExpectations(mock_sync_service());
 
-  EXPECT_EQ(0, test_sync_service()->remove_observer_count());
+  EXPECT_CALL(*mock_sync_service(), AddObserver).Times(0);
+  EXPECT_CALL(*mock_sync_service(), RemoveObserver);
   handler()->DisallowJavascript();
-  EXPECT_EQ(1, test_sync_service()->remove_observer_count());
+  testing::Mock::VerifyAndClearExpectations(mock_sync_service());
 
   // Deregistration should not repeat, no counts should increase.
+  EXPECT_CALL(*mock_sync_service(), AddObserver).Times(0);
+  EXPECT_CALL(*mock_sync_service(), RemoveObserver).Times(0);
   ResetHandler();
-  EXPECT_EQ(1, test_sync_service()->add_observer_count());
-  EXPECT_EQ(1, test_sync_service()->remove_observer_count());
 }
 
 TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversSyncDisabled) {
@@ -219,8 +196,11 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversSyncDisabled) {
 TEST_F(SyncInternalsMessageHandlerTest, HandleGetAllNodes) {
   base::Value::List args;
   args.Append("getAllNodes_0");
+  base::OnceCallback<void(base::Value::List)> get_all_nodes_callback;
+  ON_CALL(*mock_sync_service(), GetAllNodesForDebugging)
+      .WillByDefault(MoveArg<0>(&get_all_nodes_callback));
   handler()->HandleGetAllNodes(args);
-  test_sync_service()->get_all_nodes_callback().Run(base::Value::List());
+  std::move(get_all_nodes_callback).Run(base::Value::List());
   EXPECT_EQ(1, CallCountWithName("cr.webUIResponse"));
 
   base::Value::List args2;
@@ -229,13 +209,13 @@ TEST_F(SyncInternalsMessageHandlerTest, HandleGetAllNodes) {
   // This  breaks the weak ref the callback is hanging onto. Which results in
   // the call count not incrementing.
   handler()->DisallowJavascript();
-  test_sync_service()->get_all_nodes_callback().Run(base::Value::List());
+  std::move(get_all_nodes_callback).Run(base::Value::List());
   EXPECT_EQ(1, CallCountWithName("cr.webUIResponse"));
 
   base::Value::List args3;
   args3.Append("getAllNodes_2");
   handler()->HandleGetAllNodes(args3);
-  test_sync_service()->get_all_nodes_callback().Run(base::Value::List());
+  std::move(get_all_nodes_callback).Run(base::Value::List());
   EXPECT_EQ(2, CallCountWithName("cr.webUIResponse"));
 }
 

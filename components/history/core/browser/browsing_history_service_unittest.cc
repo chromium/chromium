@@ -21,7 +21,7 @@
 #include "components/history/core/test/fake_web_history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/sync/service/sync_service_observer.h"
-#include "components/sync/test/fake_sync_service.h"
+#include "components/sync/test/mock_sync_service.h"
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -55,21 +55,6 @@ struct TestResult {
   int64_t hour_offset;  // Visit time in hours past the baseline time.
   HistoryEntry::EntryType type;
   std::string remote_icon_url_for_uma;
-};
-
-class TestSyncService : public syncer::FakeSyncService {
- public:
-  int GetObserverCount() { return observer_count_; }
-
- private:
-  void AddObserver(syncer::SyncServiceObserver* observer) override {
-    observer_count_++;
-  }
-  void RemoveObserver(syncer::SyncServiceObserver* observer) override {
-    observer_count_--;
-  }
-
-  int observer_count_ = 0;
 };
 
 class TestBrowsingHistoryDriver : public BrowsingHistoryDriver {
@@ -295,7 +280,7 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
 
   HistoryService* local_history() { return local_history_.get(); }
   TestWebHistoryService* web_history() { return &web_history_; }
-  TestSyncService* sync() { return &sync_service_; }
+  syncer::MockSyncService* sync() { return &sync_service_; }
   TestBrowsingHistoryDriver* driver() { return &driver_; }
   base::MockOneShotTimer* timer() { return timer_; }
   TestBrowsingHistoryService* service() {
@@ -312,7 +297,7 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
   base::ScopedTempDir history_dir_;
   std::unique_ptr<HistoryService> local_history_;
   TestWebHistoryService web_history_;
-  TestSyncService sync_service_;
+  syncer::MockSyncService sync_service_;
   TestBrowsingHistoryDriver driver_;
   raw_ptr<base::MockOneShotTimer, DanglingUntriaged> timer_;
   std::unique_ptr<TestBrowsingHistoryService> browsing_history_service_;
@@ -685,25 +670,26 @@ TEST_F(BrowsingHistoryServiceTest, WebHistoryTimeout) {
 }
 
 TEST_F(BrowsingHistoryServiceTest, ObservingWebHistory) {
-  ResetService(driver(), nullptr, sync());
-
   // No need to observe SyncService since we have a WebHistory already.
-  EXPECT_EQ(0, sync()->GetObserverCount());
+  EXPECT_CALL(*sync(), AddObserver).Times(0);
+  EXPECT_CALL(*sync(), RemoveObserver).Times(0);
+
+  ResetService(driver(), nullptr, sync());
 
   web_history()->TriggerOnWebHistoryDeleted();
   EXPECT_EQ(1, driver()->GetHistoryDeletedCount());
 }
 
 TEST_F(BrowsingHistoryServiceTest, ObservingWebHistoryDelayedWeb) {
+  // Since there's no WebHistory, observations should be set up on Sync.
+  EXPECT_CALL(*sync(), AddObserver);
+  EXPECT_CALL(*sync(), RemoveObserver).Times(0);
+
   driver()->SetWebHistory(nullptr);
   ResetService(driver(), nullptr, sync());
 
-  // Since there's no WebHistory, observations should have been setup on Sync.
-  EXPECT_EQ(1, sync()->GetObserverCount());
-
   // OnStateChanged() is a no-op if WebHistory is still inaccessible.
   service()->OnStateChanged(sync());
-  EXPECT_EQ(1, sync()->GetObserverCount());
 
   driver()->SetWebHistory(web_history());
   // Since WebHistory is currently not being observed, triggering a history
@@ -714,8 +700,10 @@ TEST_F(BrowsingHistoryServiceTest, ObservingWebHistoryDelayedWeb) {
   // Once OnStateChanged() gets called, the BrowsingHistoryService switches from
   // observing SyncService to WebHistoryService. As such, RemoveObserver should
   // have been called on SyncService, so lets verify.
+  testing::Mock::VerifyAndClearExpectations(sync());
+  EXPECT_CALL(*sync(), AddObserver).Times(0);
+  EXPECT_CALL(*sync(), RemoveObserver);
   service()->OnStateChanged(sync());
-  EXPECT_EQ(0, sync()->GetObserverCount());
 
   // Only now should deletion should be propagated through.
   web_history()->TriggerOnWebHistoryDeleted();
