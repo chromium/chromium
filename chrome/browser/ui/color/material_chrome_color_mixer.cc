@@ -13,6 +13,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
+#include "ui/gfx/color_palette.h"
 
 namespace {
 
@@ -149,6 +150,22 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorFeaturePromoBubbleDefaultButtonForeground] = {
       kColorFeaturePromoBubbleBackground};
   mixer[kColorFeaturePromoBubbleForeground] = {ui::kColorSysOnPrimary};
+
+  // WebAuthn modal dialog colors.
+  mixer[kColorWebAuthnBackArrowButtonIcon] = {ui::kColorSysPrimary};
+  mixer[kColorWebAuthnBackArrowButtonIconDisabled] = {
+      ui::kColorSysStateDisabled};
+  mixer[kColorWebAuthnHoverButtonForeground] = {ui::kColorSysOnSurface};
+  mixer[kColorWebAuthnHoverButtonForegroundDisabled] = {
+      ui::kColorSysStateDisabled};
+  mixer[kColorWebAuthnIconColor] = {ui::kColorSysPrimary};
+  mixer[kColorWebAuthnIconColorDisabled] = {ui::kColorSysStateDisabled};
+  mixer[kColorWebAuthnPinTextfieldBottomBorder] =
+      PickGoogleColor(ui::kColorSysPrimary, ui::kColorSysSurface,
+                      color_utils::kMinimumVisibleContrastRatio);
+  mixer[kColorWebAuthnProgressRingBackground] = ui::SetAlpha(
+      kColorWebAuthnProgressRingForeground, gfx::kGoogleGreyAlpha400);
+  mixer[kColorWebAuthnProgressRingForeground] = {ui::kColorSysPrimary};
 
 #if BUILDFLAG(ENABLE_COMPOSE)
   // Compose colors.
@@ -342,6 +359,4 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorToolbarTextDefault] = {ui::kColorSysOnSurfaceSecondary};
   mixer[kColorToolbarTextDisabled] = {kColorToolbarTextDisabledDefault};
   mixer[kColorToolbarTextDisabledDefault] = {ui::kColorSysStateDisabled};
-
-  mixer[kColorWebAuthnIconColor] = {ui::kColorSysPrimary};
 }

@@ -272,7 +272,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
       controller_->SelectAccount(
           std::move(responses),
           base::BindOnce([](device::AuthenticatorGetAssertionResponse) {}));
-    } else if (name == "account_select") {
+    } else if (name == "account_select" || name == "account_select_disabled") {
       // These strings attempt to exercise the encoding of direction and
       // language from https://github.com/w3c/webauthn/pull/1530.
 
@@ -567,6 +567,11 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_account_select) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
+                       InvokeUi_account_select_disabled) {
   ShowAndVerifyUi();
 }
 

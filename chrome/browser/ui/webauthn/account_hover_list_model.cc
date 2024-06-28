@@ -38,15 +38,14 @@ AccountHoverListModel::AccountHoverListModel(
     : delegate_(delegate) {
   for (const device::DiscoverableCredentialMetadata& cred :
        dialog_model->creds) {
-    ui::ColorId icon_color = kColorWebAuthnIconColor;
-    if (dialog_model->ui_disabled_) {
-      // TODO(crbug.com/348445885): use custom color.
-      icon_color = ui::kColorIconDisabled;
-    }
-    items_.emplace_back(NameTokenForDisplay(cred.user.name.value_or("")), u"",
-                        ui::ImageModel::FromVectorIcon(
-                            vector_icons::kPasskeyIcon, icon_color, kIconSize),
-                        !dialog_model->ui_disabled_);
+    items_.emplace_back(
+        NameTokenForDisplay(cred.user.name.value_or("")), u"",
+        ui::ImageModel::FromVectorIcon(vector_icons::kPasskeyIcon,
+                                       dialog_model->ui_disabled_
+                                           ? kColorWebAuthnIconColorDisabled
+                                           : kColorWebAuthnIconColor,
+                                       kIconSize),
+        !dialog_model->ui_disabled_);
   }
 }
 

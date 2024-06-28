@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/webauthn/webauthn_hover_button.h"
 
 #include "base/strings/string_util.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -112,10 +113,9 @@ WebAuthnHoverButton::WebAuthnHoverButton(
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetProperty(views::kTableColAndRowSpanKey,
                       gfx::Size(/*width=*/1, /*height=*/1));
-  if (!GetEnabled()) {
-    // TODO(crbug.com/348445885): use a custom color.
-    title_->SetEnabledColorId(ui::kColorLabelForegroundDisabled);
-  }
+  title_->SetEnabledColorId(GetEnabled()
+                                ? kColorWebAuthnHoverButtonForeground
+                                : kColorWebAuthnHoverButtonForegroundDisabled);
 
   if (secondary_icon) {
     secondary_icon_view_ =
@@ -129,10 +129,9 @@ WebAuthnHoverButton::WebAuthnHoverButton(
         subtitle_text, views::style::CONTEXT_LABEL,
         views::style::STYLE_BODY_3));
     subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    if (!GetEnabled()) {
-      // TODO(crbug.com/348445885): use a custom color.
-      subtitle_->SetEnabledColorId(ui::kColorLabelForegroundDisabled);
-    }
+    subtitle_->SetEnabledColorId(
+        GetEnabled() ? kColorWebAuthnHoverButtonForeground
+                     : kColorWebAuthnHoverButtonForegroundDisabled);
   }
 
   GetViewAccessibility().SetName(
