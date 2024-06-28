@@ -280,6 +280,7 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
         "mp4a.40.2",
 #endif
         "vp9",
+        "av01",
         "opus",
     };
     static const char* const kAudioCodecsForMp4[] = {
@@ -317,12 +318,14 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
                     });
 
     if (!match && mp4_mime_type && video) {
-      // `avc1` is a special case for video, it allows `avc1.<profile>.<level>`.
+      // It supports full qualified string for `avc1` and `av01` codecs, e.g.
+      //  `avc1.<profile>.<level>`, `av01.<profile>.<level>.<color depth>.*`.
       auto parsed_result =
           media::ParseVideoCodecString(type.Ascii(), codec_string.Ascii(),
                                        /*allow_ambiguous_matches=*/false);
       match =
-          parsed_result && (parsed_result->codec == media::VideoCodec::kH264);
+          parsed_result && (parsed_result->codec == media::VideoCodec::kH264 ||
+                            parsed_result->codec == media::VideoCodec::kAV1);
     }
 
     if (!match) {

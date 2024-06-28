@@ -17,6 +17,7 @@
 #include "media/muxers/mp4_muxer_delegate_fragment.h"
 #include "media/muxers/mp4_type_conversion.h"
 #include "media/muxers/output_position_tracker.h"
+#include "third_party/libgav1/src/src/obu_parser.h"
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 #include "media/formats/mp4/h264_annex_b_to_avc_bitstream_converter.h"
@@ -126,7 +127,7 @@ void Mp4MuxerDelegate::AddVideoFrame(
   DVLOG(1) << __func__ << ", " << params.AsHumanReadableString();
 
   if (!video_track_index_.has_value()) {
-    CHECK(codec_description.has_value() || (params.codec == VideoCodec::kVP9));
+    CHECK(codec_description.has_value() || (params.codec != VideoCodec::kH264));
     CHECK(is_key_frame);
     CHECK(start_video_time_.is_null());
     CHECK_NE(params.codec, VideoCodec::kUnknown);
@@ -194,6 +195,22 @@ void Mp4MuxerDelegate::BuildMovieVideoTrack(
         video_profile_.value_or(VP9PROFILE_PROFILE0), video_level_.value_or(0),
         color_space);
     visual_sample_entry.vp_decoder_configuration = std::move(vp_config);
+  } else if (video_codec_ == VideoCodec::kAV1) {
+    CHECK(!codec_description.has_value());
+
+    visual_sample_entry.compressor_name = "AV1 Coding";
+
+    mp4::writable_boxes::AV1CodecConfiguration av1_config;
+    size_t config_size = 0;
+    auto codec_descriptions = libgav1::ObuParser::GetAV1CodecConfigurationBox(
+        reinterpret_cast<const uint8_t*>(encoded_data.c_str()),
+        encoded_data.size(), &config_size);
+    CHECK(codec_descriptions);
+    CHECK_GT(config_size, 0u);
+
+    av1_config.av1_decoder_configuration_data.assign(
+        &codec_descriptions[0], &codec_descriptions[config_size]);
+    visual_sample_entry.av1_decoder_configuration = std::move(av1_config);
   } else {
     NOTREACHED_IN_MIGRATION();
   }

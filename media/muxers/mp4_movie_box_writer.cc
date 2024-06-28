@@ -677,6 +677,11 @@ Mp4MovieVisualSampleEntryBoxWriter::Mp4MovieVisualSampleEntryBoxWriter(
       AddChildBox(std::make_unique<Mp4MovieVPCodecConfigurationBoxWriter>(
           context, box_->vp_decoder_configuration.value()));
       break;
+    case VideoCodec::kAV1:
+      CHECK(box_->av1_decoder_configuration.has_value());
+      AddChildBox(std::make_unique<Mp4MovieAV1CodecConfigurationBoxWriter>(
+          context, box_->av1_decoder_configuration.value()));
+      break;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     case VideoCodec::kH264:
       CHECK(box_->avc_decoder_configuration.has_value());
@@ -698,6 +703,9 @@ void Mp4MovieVisualSampleEntryBoxWriter::Write(BoxByteStream& writer) {
   switch (box_->codec) {
     case VideoCodec::kVP9:
       writer.StartBox(mp4::FOURCC_VP09);
+      break;
+    case VideoCodec::kAV1:
+      writer.StartBox(mp4::FOURCC_AV01);
       break;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     case VideoCodec::kH264:
@@ -940,6 +948,26 @@ void Mp4MovieVPCodecConfigurationBoxWriter::Write(BoxByteStream& writer) {
   writer.WriteU8(static_cast<uint8_t>(video_color_space.matrix));
   writer.WriteU16(/*codecInitializationData Size*/ 0);
 
+  writer.EndBox();
+}
+
+// Mp4MovieAV1CodecConfigurationBoxWriter (`vpcC`) class.
+Mp4MovieAV1CodecConfigurationBoxWriter::Mp4MovieAV1CodecConfigurationBoxWriter(
+    const Mp4MuxerContext& context,
+    const mp4::writable_boxes::AV1CodecConfiguration& box)
+    : Mp4BoxWriter(context), box_(box) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+Mp4MovieAV1CodecConfigurationBoxWriter::
+    ~Mp4MovieAV1CodecConfigurationBoxWriter() = default;
+
+void Mp4MovieAV1CodecConfigurationBoxWriter::Write(BoxByteStream& writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  writer.StartFullBox(mp4::FOURCC_AV1C);
+  writer.WriteBytes(box_->av1_decoder_configuration_data.data(),
+                    box_->av1_decoder_configuration_data.size());
   writer.EndBox();
 }
 

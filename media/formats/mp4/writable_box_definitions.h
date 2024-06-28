@@ -93,7 +93,7 @@ struct MEDIA_EXPORT ElementaryStreamDescriptor : FullBox {
   std::vector<uint8_t> aac_codec_description;
 };
 
-// AVC DecoderConfiguration Record (`avcc`) box.
+// AVC DecoderConfiguration Record (`avcC`) box.
 struct MEDIA_EXPORT AVCDecoderConfiguration : Box {
   // Refer AVCDecoderConfigurationRecord of box_definitions.h
   // because it provides Serialize method and the format
@@ -102,6 +102,7 @@ struct MEDIA_EXPORT AVCDecoderConfiguration : Box {
 };
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
+// VP9 DecoderConfiguration Record (`vpcC`) box.
 struct MEDIA_EXPORT VPCodecConfiguration : FullBox {
   VPCodecConfiguration(VideoCodecProfile profile,
                        uint8_t level,
@@ -112,7 +113,16 @@ struct MEDIA_EXPORT VPCodecConfiguration : FullBox {
   gfx::ColorSpace color_space;
 };
 
-// VisualSampleEtnry (`avc1`, 'vp09') box.
+// AV1 DecoderConfiguration Record (`av1C`) box.
+struct MEDIA_EXPORT AV1CodecConfiguration : FullBox {
+  AV1CodecConfiguration();
+  ~AV1CodecConfiguration();
+  AV1CodecConfiguration(const AV1CodecConfiguration&);
+  AV1CodecConfiguration& operator=(const AV1CodecConfiguration&);
+  std::vector<uint8_t> av1_decoder_configuration_data;
+};
+
+// VisualSampleEntry (`avc1`, 'vp09', 'av01') box.
 struct MEDIA_EXPORT VisualSampleEntry : Box {
   explicit VisualSampleEntry(VideoCodec codec);
   ~VisualSampleEntry();
@@ -134,6 +144,7 @@ struct MEDIA_EXPORT VisualSampleEntry : Box {
   std::optional<AVCDecoderConfiguration> avc_decoder_configuration;
 #endif
   std::optional<VPCodecConfiguration> vp_decoder_configuration;
+  std::optional<AV1CodecConfiguration> av1_decoder_configuration;
 
   PixelAspectRatioBox pixel_aspect_ratio;
 };

@@ -212,6 +212,14 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
     return true;
   }
 
+  bool IsAv1CodecSupported(const String codecs) {
+#if BUILDFLAG(ENABLE_LIBAOM)
+    return true;
+#else
+    return codecs.Find("av1") != kNotFound && codecs.Find("av01") != kNotFound;
+#endif
+  }
+
   WeakCell<AudioTrackRecorder::CallbackInterface>* GetAudioCallbackInterface() {
     return media_recorder_handler_->audio_recorders_[0]
         ->callback_interface_for_testing();
@@ -412,14 +420,6 @@ class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
     }
 #endif
     return true;
-  }
-
-  bool IsAv1CodecSupported(const String codecs) {
-#if BUILDFLAG(ENABLE_LIBAOM)
-    return true;
-#else
-    return codecs.Find("av1") != kNotFound && codecs.Find("av01") != kNotFound;
-#endif
   }
 
   bool IsAvc1CodecSupported(const String codecs) {
@@ -1029,13 +1029,15 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
   const String good_mp4_video_mime_types[] = {"video/mp4"};
   const String bad_mp4_video_mime_types[] = {"video/MP4"};
 
-  const String good_mp4_video_codecs[] = {"avc1", "avc1.420034", "vp9"};
-  const String bad_mp4_video_codecs[] = {"h264", "vp8", "avc11", "aVc1",
-                                         "avc1.123456"};
+  const String good_mp4_video_codecs[] = {"avc1", "avc1.420034", "vp9", "av01",
+                                          "av01.2.19H.08.0.000.09.16.09.1"};
+  const String bad_mp4_video_codecs[] = {"h264", "vp8",         "avc11",
+                                         "aVc1", "avc1.123456", "av1"};
 
-  const String good_mp4_video_codecs_non_proprietory[] = {"vp9"};
+  const String good_mp4_video_codecs_non_proprietory[] = {
+      "vp9", "av01", "av01.2.19H.08.0.000.09.16.09.1"};
   const String bad_mp4_video_codecs_non_proprietory[] = {
-      "avc1", "h264", "vp8", "avc11", "aVc1", "avc1.123456"};
+      "avc1", "h264", "vp8", "avc11", "aVc1", "avc1.123456", "av1"};
 
   // audio types.
   const String good_mp4_audio_mime_types[] = {"audio/mp4"};
@@ -1055,6 +1057,9 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
     // success cases.
     for (const auto& type : good_mp4_video_mime_types) {
       for (const auto& codec : good_mp4_video_codecs) {
+        if (!IsAv1CodecSupported(codec)) {
+          continue;
+        }
         EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(type, codec));
       }
     }
@@ -1070,6 +1075,9 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
 
     for (const auto& type : good_mp4_video_mime_types) {
       for (const auto& video_codec : good_mp4_video_codecs) {
+        if (!IsAv1CodecSupported(video_codec)) {
+          continue;
+        }
         for (const auto& audio_codec : good_mp4_audio_codecs) {
           if (!IsTargetAudioCodecSupported(audio_codec)) {
             continue;
@@ -1088,6 +1096,9 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
     // failure cases.
     for (const auto& type : bad_mp4_video_mime_types) {
       for (const auto& codec : good_mp4_video_codecs) {
+        if (!IsAv1CodecSupported(codec)) {
+          continue;
+        }
         EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(type, codec));
       }
     }
@@ -1101,6 +1112,9 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
     // success cases.
     for (const auto& type : good_mp4_video_mime_types) {
       for (const auto& codec : good_mp4_video_codecs_non_proprietory) {
+        if (!IsAv1CodecSupported(codec)) {
+          continue;
+        }
         EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(type, codec));
       }
     }
@@ -1113,6 +1127,9 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
 
     for (const auto& type : good_mp4_video_mime_types) {
       for (const auto& video_codec : good_mp4_video_codecs_non_proprietory) {
+        if (!IsAv1CodecSupported(video_codec)) {
+          continue;
+        }
         for (const auto& audio_codec : good_mp4_audio_codecs_non_proprietory) {
           String codecs = video_codec + "," + audio_codec;
           EXPECT_TRUE(
@@ -1160,12 +1177,18 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
 
     for (const auto& type : good_mp4_audio_mime_types) {
       for (const auto& codec : good_mp4_video_codecs) {
+        if (!IsAv1CodecSupported(codec)) {
+          continue;
+        }
         EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(type, codec));
       }
     }
 
     for (const auto& type : good_mp4_audio_mime_types) {
       for (const auto& video_codec : good_mp4_video_codecs) {
+        if (!IsAv1CodecSupported(video_codec)) {
+          continue;
+        }
         for (const auto& audio_codec : good_mp4_audio_codecs) {
           String codecs = video_codec + "," + audio_codec;
           EXPECT_FALSE(
@@ -1198,12 +1221,18 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     for (const auto& type : good_mp4_video_mime_types) {
       for (const auto& codec : good_mp4_video_codecs) {
+        if (!IsAv1CodecSupported(codec)) {
+          continue;
+        }
         EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(type, codec));
       }
     }
 #else
     for (const auto& type : good_mp4_video_mime_types) {
       for (const auto& codec : good_mp4_video_codecs) {
+        if (!IsAv1CodecSupported(codec)) {
+          continue;
+        }
         EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(type, codec));
       }
     }

@@ -108,4 +108,11 @@ OpusSpecificBox::~OpusSpecificBox() = default;
 OpusSpecificBox::OpusSpecificBox(const OpusSpecificBox&) = default;
 OpusSpecificBox& OpusSpecificBox::operator=(const OpusSpecificBox&) = default;
 
+AV1CodecConfiguration::AV1CodecConfiguration() = default;
+AV1CodecConfiguration::~AV1CodecConfiguration() = default;
+AV1CodecConfiguration::AV1CodecConfiguration(const AV1CodecConfiguration&) =
+    default;
+AV1CodecConfiguration& AV1CodecConfiguration::operator=(
+    const AV1CodecConfiguration&) = default;
+
 }  // namespace media::mp4::writable_boxes

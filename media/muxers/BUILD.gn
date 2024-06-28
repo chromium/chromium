@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//media/media_options.gni")
+import("//third_party/libgav1/options.gni")
 
 source_set("muxers") {
   # Do not expand the visibility here without double-checking with OWNERS, this
@@ -51,6 +52,9 @@ source_set("muxers") {
     "//third_party/libwebm",
     "//ui/gfx/geometry",
   ]
+
+  assert(use_libgav1_parser)
+  deps += [ "//third_party/libgav1:libgav1_parser" ]
 
   configs += [ "//media:subcomponent_config" ]
 }

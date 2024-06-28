@@ -55,7 +55,8 @@ DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieOpusSpecificBoxWriter,
                              mp4::writable_boxes::OpusSpecificBox);
 DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieVPCodecConfigurationBoxWriter,
                              mp4::writable_boxes::VPCodecConfiguration);
-
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieAV1CodecConfigurationBoxWriter,
+                             mp4::writable_boxes::AV1CodecConfiguration);
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieAVCDecoderConfigurationBoxWriter,
                              mp4::writable_boxes::AVCDecoderConfiguration);
