@@ -39,7 +39,11 @@ class PhishyInteractionTracker {
   PhishyInteractionTracker(const PhishyInteractionTracker&) = delete;
   PhishyInteractionTracker& operator=(const PhishyInteractionTracker&) = delete;
 
-  virtual ~PhishyInteractionTracker();
+  ~PhishyInteractionTracker();
+
+  // Records unlogged data if the page is phishy when the WebContents is about
+  // to be destroyed.
+  void WebContentsDestroyed();
 
   // Records unlogged data if the page is phishy. Gets called when the primary
   // page is changed.

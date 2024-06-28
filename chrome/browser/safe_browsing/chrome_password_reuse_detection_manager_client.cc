@@ -258,6 +258,10 @@ ChromePasswordReuseDetectionManagerClient::
       base::RepeatingClosure());
 }
 
+void ChromePasswordReuseDetectionManagerClient::WebContentsDestroyed() {
+  phishy_interaction_tracker_.WebContentsDestroyed();
+}
+
 void ChromePasswordReuseDetectionManagerClient::PrimaryPageChanged(
     content::Page& page) {
   // Suspends logging on WebUI sites.

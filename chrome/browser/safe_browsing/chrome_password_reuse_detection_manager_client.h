@@ -83,6 +83,7 @@ class ChromePasswordReuseDetectionManagerClient
       ChromePasswordReuseDetectionManagerClient>;
 
   // content::WebContentsObserver overrides.
+  void WebContentsDestroyed() override;
   void PrimaryPageChanged(content::Page& page) override;
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void OnPaste() override;
