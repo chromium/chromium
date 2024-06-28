@@ -206,15 +206,15 @@ TEST_P(ReadWriteCardsManagerImplTest, QuickAnswersAndMahiControllersDeclined) {
   content::ContextMenuParams params;
 
   if (IsMahiEnabled()) {
-    // When Mahi is enabled and no text is selected, Mahi controller should be
-    // fetched.
+    // When Mahi is enabled and Magic Boost consent is declined, no controller
+    // should be fetched.
     manager_->FetchController(
         params, &profile,
         base::BindOnce(
             &ExpectControllersEqual,
             "Wrong quick answers/mahi controller is fetched when no text is "
             "selected and Mahi is enabled",
-            std::vector<ReadWriteCardController*>{mahi_menu_controller()}));
+            std::vector<ReadWriteCardController*>{}));
 
     // When Mahi is enabled and text is selected, both Mahi and quick answers
     // controller should be fetched.
@@ -225,8 +225,7 @@ TEST_P(ReadWriteCardsManagerImplTest, QuickAnswersAndMahiControllersDeclined) {
             &ExpectControllersEqual,
             "Wrong quick answers/mahi controller is fetched when text is "
             "selected and Mahi is enabled",
-            std::vector<ReadWriteCardController*>{quick_answers_controller(),
-                                                  mahi_menu_controller()}));
+            std::vector<ReadWriteCardController*>{}));
     return;
   }
 

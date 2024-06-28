@@ -144,15 +144,4 @@ TEST_F(MagicBoostCardControllerTest, ShowOptInCardAgain) {
   ASSERT_TRUE(card_controller_.opt_in_widget_for_test());
 }
 
-TEST_F(MagicBoostCardControllerTest, ShouldShowHmrOptIn) {
-  magic_boost_state_->AsyncWriteConsentStatus(HMRConsentStatus::kUnset);
-  EXPECT_TRUE(card_controller_.ShouldShowHmrOptIn());
-
-  magic_boost_state_->AsyncWriteConsentStatus(HMRConsentStatus::kDeclined);
-  EXPECT_FALSE(card_controller_.ShouldShowHmrOptIn());
-
-  magic_boost_state_->AsyncWriteConsentStatus(HMRConsentStatus::kApproved);
-  EXPECT_FALSE(card_controller_.ShouldShowHmrOptIn());
-}
-
 }  // namespace chromeos

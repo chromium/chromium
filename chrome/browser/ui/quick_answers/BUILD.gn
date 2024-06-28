@@ -48,6 +48,7 @@ source_set("quick_answers") {
     "//chrome/browser/ui/views/editor_menu:utils",
     "//chrome/browser/ui/views/mahi",
     "//chromeos/components/editor_menu/public/cpp",
+    "//chromeos/components/magic_boost/public/cpp:cpp",
     "//chromeos/components/quick_answers",
     "//chromeos/components/quick_answers/public/cpp:cpp",
     "//chromeos/components/quick_answers/public/cpp:prefs",

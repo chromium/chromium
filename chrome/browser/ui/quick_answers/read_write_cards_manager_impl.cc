@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/editor_menu/editor_menu_controller_impl.h"
 #include "chrome/browser/ui/views/editor_menu/utils/editor_types.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_controller.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -98,13 +99,18 @@ ReadWriteCardsManagerImpl::GetControllers(
   const bool should_show_mahi =
       mahi_menu_controller_ && chromeos::features::IsMahiEnabled();
 
+  std::optional<HMRConsentStatus> hmr_consent_status;
+  if (chromeos::features::IsMagicBoostEnabled()) {
+    hmr_consent_status = MagicBoostState::Get()->hmr_consent_status();
+  }
+
   // Check if we should go through Magic Boost opt-in flow.
   const bool should_opt_in_orca_with_magic_boost =
       editor_mode == editor_menu::EditorMode::kPromoCard;
   const bool should_opt_in_hmr_with_magic_boost =
       (!editor_mode || editor_mode == editor_menu::EditorMode::kBlocked) &&
-      (should_show_mahi || should_show_qa) && magic_boost_card_controller_ &&
-      magic_boost_card_controller_->ShouldShowHmrOptIn();
+      (should_show_mahi || should_show_qa) &&
+      hmr_consent_status == HMRConsentStatus::kUnset;
 
   if (magic_boost_card_controller_ && (should_opt_in_hmr_with_magic_boost ||
                                        should_opt_in_orca_with_magic_boost)) {
@@ -134,13 +140,20 @@ ReadWriteCardsManagerImpl::GetControllers(
   // Otherwise, use Quick Answers and Mahi if available.
   std::vector<base::WeakPtr<chromeos::ReadWriteCardController>> controllers;
 
+  if (hmr_consent_status == HMRConsentStatus::kDeclined) {
+    return controllers;
+  }
+
+  if (hmr_consent_status) {
+    CHECK(hmr_consent_status == HMRConsentStatus::kApproved ||
+          hmr_consent_status == HMRConsentStatus::kPending);
+  }
+
   if (should_show_qa) {
     controllers.emplace_back(quick_answers_controller_->GetWeakPtr());
   }
 
   if (should_show_mahi) {
-    // TODO(b/347355740): Maybe check for consent status and disable showing the
-    // card here.
     controllers.emplace_back(mahi_menu_controller_->GetWeakPtr());
   }
 

@@ -63,10 +63,6 @@ class MagicBoostCardController : public ReadWriteCardController {
   // Shows/closes Magic Boost disclaimer widget.
   void ShowDisclaimerUi(int64_t display_id);
 
-  // Checks consent status of Help me read to decide if we should show the opt
-  // in UI or not.
-  virtual bool ShouldShowHmrOptIn();
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void BindMagicBoostControllerCrosapiForTesting(
       mojo::PendingRemote<crosapi::mojom::MagicBoostController> pending_remote);

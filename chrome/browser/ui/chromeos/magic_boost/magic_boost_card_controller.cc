@@ -121,12 +121,6 @@ void MagicBoostCardController::ShowDisclaimerUi(int64_t display_id) {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
-bool MagicBoostCardController::ShouldShowHmrOptIn() {
-  auto consent_status = MagicBoostState::Get()->hmr_consent_status();
-  return consent_status ? consent_status.value() == HMRConsentStatus::kUnset
-                        : false;
-}
-
 base::WeakPtr<MagicBoostCardController> MagicBoostCardController::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
