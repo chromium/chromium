@@ -24,6 +24,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/media/media_devices_permission_checker.h"
@@ -319,13 +320,17 @@ struct MediaDevicesManager::EnumerationRequest {
 // on each device change. The cost of performing multiple redundant
 // invalidations is significantly lower than the cost of issuing multiple
 // redundant enumerations.
+// In some rare cases, issuing an enumeration might also trigger (spurious)
+// system notifications. This can cause an infinite loop of
+// enumerations/notifications that can keep a cache invalid indefinitely and
+// would cause client enumerateDevices() calls to hang
+// (see https://crbug.com/325590346). To prevent this, the cache enters a
+// relaxed mode after multiple spurious invalidations, such that further
+// invalidations are ignored and the cache is considered valid for some time
+// after an enumeration.
 class MediaDevicesManager::CacheInfo {
  public:
-  CacheInfo()
-      : current_event_sequence_(0),
-        seq_last_update_(0),
-        seq_last_invalidation_(0),
-        is_update_ongoing_(false) {}
+  CacheInfo() = default;
 
   void InvalidateCache() {
     DCHECK(thread_checker_.CalledOnValidThread());
@@ -334,7 +339,14 @@ class MediaDevicesManager::CacheInfo {
 
   bool IsLastUpdateValid() const {
     DCHECK(thread_checker_.CalledOnValidThread());
-    return seq_last_update_ > seq_last_invalidation_ && !is_update_ongoing_;
+    return (seq_last_update_ > seq_last_invalidation_ && !is_update_ongoing_) ||
+           (is_in_relaxed_mode_ && LastUpdateIsRecent());
+  }
+
+  bool NeedsUpdate() const {
+    return is_in_relaxed_mode_ ? seq_last_invalidation_ > seq_last_update_ &&
+                                     LastUpdateHasExpired()
+                               : seq_last_invalidation_ > seq_last_update_;
   }
 
   void UpdateStarted() {
@@ -348,6 +360,10 @@ class MediaDevicesManager::CacheInfo {
     DCHECK(thread_checker_.CalledOnValidThread());
     DCHECK(is_update_ongoing_);
     is_update_ongoing_ = false;
+    if (is_in_relaxed_mode_) {
+      seq_last_update_ = NewEventSequence();
+      time_last_update_ = base::TimeTicks::Now();
+    }
   }
 
   bool is_update_ongoing() const {
@@ -355,16 +371,47 @@ class MediaDevicesManager::CacheInfo {
     return is_update_ongoing_;
   }
 
+  void ResetSpuriousInvalidations() {
+    DCHECK(thread_checker_.CalledOnValidThread());
+    num_spurious_invalidations_ = 0;
+  }
+
+  void RecordSpuriousInvalidation() {
+    DCHECK(thread_checker_.CalledOnValidThread());
+    if (is_in_relaxed_mode_) {
+      return;
+    }
+    ++num_spurious_invalidations_;
+    if (TooManySpuriousInvalidations()) {
+      is_in_relaxed_mode_ = true;
+      ResetSpuriousInvalidations();
+    }
+  }
+
  private:
+  bool TooManySpuriousInvalidations() const {
+    return num_spurious_invalidations_ >= kMaxSpuriousInvalidations;
+  }
+
   int64_t NewEventSequence() {
     DCHECK(thread_checker_.CalledOnValidThread());
     return ++current_event_sequence_;
   }
 
-  int64_t current_event_sequence_;
-  int64_t seq_last_update_;
-  int64_t seq_last_invalidation_;
-  bool is_update_ongoing_;
+  bool LastUpdateHasExpired() const {
+    return (base::TimeTicks::Now() - time_last_update_) >=
+           kExpireTimeInRelaxedMode;
+  }
+
+  bool LastUpdateIsRecent() const { return !LastUpdateHasExpired(); }
+
+  int64_t current_event_sequence_ = 0;
+  int64_t seq_last_update_ = 0;
+  int64_t seq_last_invalidation_ = 0;
+  bool is_update_ongoing_ = false;
+  int num_spurious_invalidations_ = 0;
+  bool is_in_relaxed_mode_ = false;
+  base::TimeTicks time_last_update_;
   base::ThreadChecker thread_checker_;
 };
 
@@ -388,7 +435,7 @@ MediaDevicesManager::SubscriptionRequest::operator=(SubscriptionRequest&&) =
 class MediaDevicesManager::AudioServiceDeviceListener
     : public audio::mojom::DeviceListener {
  public:
-  AudioServiceDeviceListener(base::RepeatingClosure disconnect_cb)
+  explicit AudioServiceDeviceListener(base::RepeatingClosure disconnect_cb)
       : disconnect_cb_(std::move(disconnect_cb)) {
     ConnectToService();
   }
@@ -484,18 +531,23 @@ void MediaDevicesManager::EnumerateDevices(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   StartMonitoring();
 
-  requests_.emplace_back(requested_types, std::move(callback));
+  client_requests_.emplace_back(requested_types, std::move(callback));
   bool all_results_cached = true;
   for (size_t i = 0;
        i < static_cast<size_t>(MediaDeviceType::kNumMediaDeviceTypes); ++i) {
+    // Reset the spurious invalidation count in case of a new client request to
+    // reduce the probability of entering relaxed mode in the cache and
+    // returning potentially outdated results.
+    cache_infos_[i].ResetSpuriousInvalidations();
     if (requested_types[i] && cache_policies_[i] == CachePolicy::NO_CACHE) {
       all_results_cached = false;
       DoEnumerateDevices(static_cast<MediaDeviceType>(i));
     }
   }
 
-  if (all_results_cached)
-    ProcessRequests();
+  if (all_results_cached) {
+    ProcessClientRequests();
+  }
 }
 
 void MediaDevicesManager::EnumerateAndRankDevices(
@@ -990,8 +1042,9 @@ void MediaDevicesManager::DoEnumerateDevices(MediaDeviceType type) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(blink::IsValidMediaDeviceType(type));
   CacheInfo& cache_info = cache_infos_[static_cast<size_t>(type)];
-  if (cache_info.is_update_ongoing())
+  if (cache_info.is_update_ongoing()) {
     return;
+  }
   SendLogMessage(base::StringPrintf("DoEnumerateDevices({type=%s})",
                                     DeviceTypeToString(type)));
 
@@ -1080,14 +1133,13 @@ void MediaDevicesManager::DevicesEnumerated(
   SendLogMessage(GetDevicesEnumeratedLogString(type, snapshot));
 
   if (cache_policies_[static_cast<size_t>(type)] == CachePolicy::NO_CACHE) {
-    for (auto& request : requests_)
+    for (auto& request : client_requests_) {
       request.has_seen_result[static_cast<size_t>(type)] = true;
+    }
   }
 
-  // Note that IsLastUpdateValid is always true when policy is NO_CACHE.
-  if (cache_infos_[static_cast<size_t>(type)].IsLastUpdateValid()) {
-    ProcessRequests();
-  } else {
+  ProcessClientRequests();
+  if (!cache_infos_[static_cast<size_t>(type)].IsLastUpdateValid()) {
     DoEnumerateDevices(type);
   }
 }
@@ -1095,11 +1147,12 @@ void MediaDevicesManager::DevicesEnumerated(
 void MediaDevicesManager::UpdateSnapshot(
     MediaDeviceType type,
     const blink::WebMediaDeviceInfoArray& new_snapshot,
-    bool ignore_group_id) {
+    bool use_group_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(blink::IsValidMediaDeviceType(type));
 
   bool need_update_device_change_subscribers = false;
+  bool current_snapshot_changed = false;
   blink::WebMediaDeviceInfoArray& old_snapshot =
       current_snapshot_[static_cast<size_t>(type)];
 
@@ -1111,10 +1164,10 @@ void MediaDevicesManager::UpdateSnapshot(
   // Update the cached snapshot and send notifications only if the device list
   // has changed.
   if (!base::ranges::equal(new_snapshot, old_snapshot,
-                           ignore_group_id ? EqualDeviceExcludingGroupID
-                                           : EqualDeviceIncludingGroupID)) {
+                           use_group_id ? EqualDeviceIncludingGroupID
+                                        : EqualDeviceExcludingGroupID)) {
     // Prevent sending notifications until group IDs are updated using
-    // a heuristic in ProcessRequests().
+    // a heuristic in ProcessClientRequests().
     // TODO(crbug.com/41263713): Remove |is_video_with_group_ids| and the
     // corresponding checks when the video-capture subsystem supports
     // group IDs.
@@ -1134,6 +1187,19 @@ void MediaDevicesManager::UpdateSnapshot(
         (type != MediaDeviceType::kMediaVideoInput ||
          is_video_with_good_group_ids);
     current_snapshot_[static_cast<size_t>(type)] = new_snapshot;
+    current_snapshot_changed = true;
+  }
+
+  // `use_group_id` is true only to update group IDs for video devices before
+  // potentially sending a result to clients, and false when it is the result of
+  // an enumeration potentially triggered by an invalidation.
+  // Update the spurious invalidation counts only in the latter case.
+  if (!use_group_id) {
+    if (!current_snapshot_changed) {
+      cache_infos_[static_cast<size_t>(type)].RecordSpuriousInvalidation();
+    } else {
+      cache_infos_[static_cast<size_t>(type)].ResetSpuriousInvalidations();
+    }
   }
 
   // Generate salts for each subscriber even if the device list hasn't changed,
@@ -1154,7 +1220,7 @@ void MediaDevicesManager::UpdateSnapshot(
   }
 }
 
-void MediaDevicesManager::ProcessRequests() {
+void MediaDevicesManager::ProcessClientRequests() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   // Populate the group ID field for video devices using a heuristic that looks
   // for device coincidences with audio input devices.
@@ -1172,16 +1238,19 @@ void MediaDevicesManager::ProcessRequests() {
                             video_device_info);
     }
     UpdateSnapshot(MediaDeviceType::kMediaVideoInput, video_devices,
-                   false /* ignore_group_id */);
+                   /*use_group_id=*/true);
   }
 
-  std::erase_if(requests_, [this](EnumerationRequest& request) {
+  std::erase_if(client_requests_, [this](EnumerationRequest& request) {
     if (IsEnumerationRequestReady(request)) {
       std::move(request.callback).Run(current_snapshot_);
       return true;
     }
     return false;
   });
+  if (client_requests_.empty()) {
+    client_requests_can_be_resolved_.fill(false);
+  }
 }
 
 bool MediaDevicesManager::IsEnumerationRequestReady(
@@ -1194,12 +1263,16 @@ bool MediaDevicesManager::IsEnumerationRequestReady(
       continue;
     switch (cache_policies_[i]) {
       case CachePolicy::SYSTEM_MONITOR:
-        if (!cache_infos_[i].IsLastUpdateValid())
-          is_ready = false;
+        if (cache_infos_[i].IsLastUpdateValid()) {
+          client_requests_can_be_resolved_[i] = true;
+        } else {
+          is_ready = client_requests_can_be_resolved_[i];
+        }
         break;
       case CachePolicy::NO_CACHE:
-        if (!request_info.has_seen_result[i])
+        if (!request_info.has_seen_result[i]) {
           is_ready = false;
+        }
         break;
       default:
         NOTREACHED_IN_MIGRATION();
@@ -1216,7 +1289,9 @@ void MediaDevicesManager::HandleDevicesChanged(MediaDeviceType type) {
                                       DeviceTypeToString(type)));
   }
   cache_infos_[static_cast<size_t>(type)].InvalidateCache();
-  DoEnumerateDevices(type);
+  if (cache_infos_[static_cast<size_t>(type)].NeedsUpdate()) {
+    DoEnumerateDevices(type);
+  }
 }
 
 void MediaDevicesManager::MaybeStopRemovedInputDevices(
@@ -1285,6 +1360,12 @@ void MediaDevicesManager::OnSaltAndOriginForSubscription(
   bool salt_reset =
       request.last_seen_device_id_salt_ &&
       salt_and_origin.device_id_salt() != request.last_seen_device_id_salt_;
+  if (salt_reset) {
+    // Salt changes fire invalidations because the the device IDs as seen by
+    // clients change. This means that if we see a new salt it may be due
+    // to a valid invalidation, so we reset the spurious count.
+    cache_infos_[static_cast<size_t>(type)].ResetSpuriousInvalidations();
+  }
 
   if (devices_changed || salt_reset) {
     MediaDevicesManager::CheckPermissionForDeviceChange(
