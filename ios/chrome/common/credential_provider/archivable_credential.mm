@@ -145,6 +145,18 @@ BOOL stringsAreEqual(NSString* rhs, NSString* lhs) {
   return self.credentialId.length > 0;
 }
 
+// TODO(crbug.com/330355124): Convenience getter to have a valid URL for
+// passkeys. Remove once all passkey related uses have been removed.
+- (NSString*)serviceName {
+  return self.isPasskey ? _rpId : _serviceName;
+}
+
+// TODO(crbug.com/330355124): Convenience getter to have a valid URL for
+// passkeys. Remove once all passkey related uses have been removed.
+- (NSString*)serviceIdentifier {
+  return self.isPasskey ? _rpId : _serviceIdentifier;
+}
+
 - (BOOL)isEqual:(id)other {
   if (other == self) {
     return YES;

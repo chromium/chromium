@@ -33,11 +33,11 @@
 // The delegate for the actions in the consumer.
 @property(nonatomic, weak) id<CredentialListHandler> delegate;
 
-// Tells the consumer to show the passed in suggested and all passwords.
-- (void)presentSuggestedPasswords:(NSArray<id<Credential>>*)suggested
-                     allPasswords:(NSArray<id<Credential>>*)all
-                    showSearchBar:(BOOL)showSearchBar
-            showNewPasswordOption:(BOOL)showNewPasswordOption;
+// Tells the consumer to show the passed in suggested and all credentials.
+- (void)presentSuggestedCredentials:(NSArray<id<Credential>>*)suggested
+                     allCredentials:(NSArray<id<Credential>>*)all
+                      showSearchBar:(BOOL)showSearchBar
+              showNewPasswordOption:(BOOL)showNewPasswordOption;
 
 // Sets the prompt to show for the view.
 - (void)setTopPrompt:(NSString*)prompt;

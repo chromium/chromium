@@ -58,11 +58,11 @@ UIColor* BackgroundColor() {
 // Search controller that contains search bar.
 @property(nonatomic, strong) UISearchController* searchController;
 
-// Current list of suggested passwords.
-@property(nonatomic, copy) NSArray<id<Credential>>* suggestedPasswords;
+// Current list of suggested credentials.
+@property(nonatomic, copy) NSArray<id<Credential>>* suggestedCredentials;
 
-// Current list of all passwords.
-@property(nonatomic, copy) NSArray<id<Credential>>* allPasswords;
+// Current list of all credentials.
+@property(nonatomic, copy) NSArray<id<Credential>>* allCredentials;
 
 // Indicates if the option to create a new password should be presented.
 @property(nonatomic, assign) BOOL showNewPasswordOption;
@@ -130,12 +130,12 @@ UIColor* BackgroundColor() {
 
 #pragma mark - CredentialListConsumer
 
-- (void)presentSuggestedPasswords:(NSArray<id<Credential>>*)suggested
-                     allPasswords:(NSArray<id<Credential>>*)all
-                    showSearchBar:(BOOL)showSearchBar
-            showNewPasswordOption:(BOOL)showNewPasswordOption {
-  self.suggestedPasswords = suggested;
-  self.allPasswords = all;
+- (void)presentSuggestedCredentials:(NSArray<id<Credential>>*)suggested
+                     allCredentials:(NSArray<id<Credential>>*)all
+                      showSearchBar:(BOOL)showSearchBar
+              showNewPasswordOption:(BOOL)showNewPasswordOption {
+  self.suggestedCredentials = suggested;
+  self.allCredentials = all;
   self.showNewPasswordOption = showNewPasswordOption;
   [self.tableView reloadData];
   [self.tableView layoutIfNeeded];
@@ -166,10 +166,10 @@ UIColor* BackgroundColor() {
     numberOfRowsInSection:(NSInteger)section {
   if ([self isEmptyTable]) {
     return 0;
-  } else if ([self isSuggestedPasswordSection:section]) {
-    return [self numberOfRowsInSuggestedPasswordSection];
+  } else if ([self isSuggestedCredentialSection:section]) {
+    return [self numberOfRowsInSuggestedCredentialSection];
   } else {
-    return self.allPasswords.count;
+    return self.allCredentials.count;
   }
 }
 
@@ -290,7 +290,7 @@ UIColor* BackgroundColor() {
   if ([self isGlobalHeaderSection:section]) {
     return UITableViewAutomaticDimension;
   }
-  if ([self isSuggestedPasswordSection:section]) {
+  if ([self isSuggestedCredentialSection:section]) {
     return 0;
   }
   return kNewCredentialHeaderHeight;
@@ -333,7 +333,7 @@ UIColor* BackgroundColor() {
   return cancelButton;
 }
 
-// Creates a button to be displayed as accessory of the password row item.
+// Creates a button to be displayed as accessory of the credential row item.
 - (UIView*)infoIconButton {
   UIImage* image = [UIImage imageNamed:@"info_icon"];
   image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -379,11 +379,12 @@ UIColor* BackgroundColor() {
   [self.delegate showDetailsForCredential:credential];
 }
 
-// Returns number of sections to display based on `suggestedPasswords` and
-// `allPasswords`. If no sections with data, returns 1 for the 'no data' banner.
+// Returns number of sections to display based on `suggestedCredentials` and
+// `allCredentials`. If no sections with data, returns 1 for the 'no data'
+// banner.
 - (int)numberOfSections {
-  if ([self numberOfRowsInSuggestedPasswordSection] == 0 ||
-      [self.allPasswords count] == 0) {
+  if ([self numberOfRowsInSuggestedCredentialSection] == 0 ||
+      [self.allCredentials count] == 0) {
     return 1;
   }
   return 2;
@@ -391,15 +392,15 @@ UIColor* BackgroundColor() {
 
 // Returns YES if there is no data to display.
 - (BOOL)isEmptyTable {
-  return [self numberOfRowsInSuggestedPasswordSection] == 0 &&
-         [self.allPasswords count] == 0;
+  return [self numberOfRowsInSuggestedCredentialSection] == 0 &&
+         [self.allCredentials count] == 0;
 }
 
-// Returns YES if given section is for suggested passwords.
-- (BOOL)isSuggestedPasswordSection:(int)section {
+// Returns YES if given section is for suggested credentials.
+- (BOOL)isSuggestedCredentialSection:(int)section {
   int sections = [self numberOfSections];
   if ((sections == 2 && section == 0) ||
-      (sections == 1 && [self numberOfRowsInSuggestedPasswordSection])) {
+      (sections == 1 && [self numberOfRowsInSuggestedCredentialSection])) {
     return YES;
   } else {
     return NO;
@@ -413,32 +414,33 @@ UIColor* BackgroundColor() {
 
 // Returns the credential at the passed index.
 - (id<Credential>)credentialForIndexPath:(NSIndexPath*)indexPath {
-  if ([self isSuggestedPasswordSection:indexPath.section]) {
+  if ([self isSuggestedCredentialSection:indexPath.section]) {
     if (indexPath.row >=
-        base::checked_cast<NSInteger>(self.suggestedPasswords.count)) {
+        base::checked_cast<NSInteger>(self.suggestedCredentials.count)) {
       return nil;
     }
-    return self.suggestedPasswords[indexPath.row];
+    return self.suggestedCredentials[indexPath.row];
   } else {
     if (indexPath.row >=
-        base::checked_cast<NSInteger>(self.allPasswords.count)) {
+        base::checked_cast<NSInteger>(self.allCredentials.count)) {
       return nil;
     }
-    return self.allPasswords[indexPath.row];
+    return self.allCredentials[indexPath.row];
   }
 }
 
 // Returns true if the passed index corresponds to the Create New Password Cell.
 - (BOOL)isIndexPathNewPasswordRow:(NSIndexPath*)indexPath {
-  if ([self isSuggestedPasswordSection:indexPath.section]) {
-    return indexPath.row == NSInteger(self.suggestedPasswords.count);
+  if ([self isSuggestedCredentialSection:indexPath.section]) {
+    return indexPath.row == NSInteger(self.suggestedCredentials.count);
   }
   return NO;
 }
 
-// Returns the number of rows in suggested passwords section.
-- (NSUInteger)numberOfRowsInSuggestedPasswordSection {
-  return [self.suggestedPasswords count] + (self.showNewPasswordOption ? 1 : 0);
+// Returns the number of rows in suggested credentials section.
+- (NSUInteger)numberOfRowsInSuggestedCredentialSection {
+  return
+      [self.suggestedCredentials count] + (self.showNewPasswordOption ? 1 : 0);
 }
 
 // Returns the title of the given section
@@ -446,8 +448,12 @@ UIColor* BackgroundColor() {
   if ([self isEmptyTable]) {
     return NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_NO_SEARCH_RESULTS",
                              @"No search results found");
-  } else if ([self isSuggestedPasswordSection:section]) {
+  } else if ([self isSuggestedCredentialSection:section]) {
     return nil;
+  } else if ([self.allCredentials count] > 0 &&
+             self.allCredentials[0].isPasskey) {
+    return NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_ALL_PASSKEYS",
+                             @"All Passkeys");
   } else {
     return NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_ALL_PASSWORDS",
                              @"All Passwords");

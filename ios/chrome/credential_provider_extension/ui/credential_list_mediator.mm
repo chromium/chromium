@@ -103,10 +103,10 @@
         [self.UIHandler showEmptyCredentials];
         return;
       }
-      [self.consumer presentSuggestedPasswords:self.suggestedCredentials
-                                  allPasswords:self.allCredentials
-                                 showSearchBar:self.allCredentials.count > 0
-                         showNewPasswordOption:canCreatePassword];
+      [self.consumer presentSuggestedCredentials:self.suggestedCredentials
+                                  allCredentials:self.allCredentials
+                                   showSearchBar:self.allCredentials.count > 0
+                           showNewPasswordOption:canCreatePassword];
     });
   });
 }
@@ -129,10 +129,10 @@
                                IsPasswordCreationUserEnabled() &&
                                self.serviceIdentifiers.count > 0;
   if (!filter.length) {
-    [self.consumer presentSuggestedPasswords:self.suggestedCredentials
-                                allPasswords:self.allCredentials
-                               showSearchBar:YES
-                       showNewPasswordOption:showNewPasswordOption];
+    [self.consumer presentSuggestedCredentials:self.suggestedCredentials
+                                allCredentials:self.allCredentials
+                                 showSearchBar:YES
+                         showNewPasswordOption:showNewPasswordOption];
     return;
   }
 
@@ -151,10 +151,10 @@
       [all addObject:credential];
     }
   }
-  [self.consumer presentSuggestedPasswords:suggested
-                              allPasswords:all
-                             showSearchBar:YES
-                     showNewPasswordOption:showNewPasswordOption];
+  [self.consumer presentSuggestedCredentials:suggested
+                              allCredentials:all
+                               showSearchBar:YES
+                       showNewPasswordOption:showNewPasswordOption];
 }
 
 - (void)showDetailsForCredential:(id<Credential>)credential {
