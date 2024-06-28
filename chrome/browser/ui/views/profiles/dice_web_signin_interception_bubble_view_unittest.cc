@@ -250,10 +250,7 @@ TEST_F(DiceWebSigninInterceptionBubbleViewTestBase, SigninPendingHistograms) {
   // web with different account, therefore inducing an inconsistent state.
   identity_test_env()->SetPrimaryAccount(personal_account_.email,
                                          signin::ConsentLevel::kSignin);
-  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
-      personal_account_.account_id,
-      GoogleServiceAuthError(
-          GoogleServiceAuthError::State::USER_NOT_SIGNED_UP));
+  identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
 
   {
     base::HistogramTester histogram_tester;

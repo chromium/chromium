@@ -82,15 +82,15 @@ class SigninMetricsServiceTest : public ::testing::Test {
     ASSERT_TRUE(
         identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
-    TriggerErrorStateInAccount(
-        identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
+    identity_test_environment_.SetInvalidRefreshTokenForPrimaryAccount();
   }
 
   void TriggerErrorStateInSecondaryAccount(AccountInfo account) {
     ASSERT_NE(account, identity_manager()->GetPrimaryAccountInfo(
                            signin::ConsentLevel::kSignin));
 
-    TriggerErrorStateInAccount(account.account_id);
+    identity_test_environment_.SetInvalidRefreshTokenForAccount(
+        account.account_id);
   }
 
   void ResolveSigninPending(Resolution resolution) {
@@ -102,13 +102,7 @@ class SigninMetricsServiceTest : public ::testing::Test {
     // Clear the error.
     switch (resolution) {
       case Resolution::kReauth:
-        // Calling `IdentityTestEnvironment::SetRefreshTokenForPrimaryAccount()`
-        // will not fire the notification event in unit tests. Directly fire it
-        // here.
-        identity_test_environment_
-            .UpdatePersistentErrorOfRefreshTokenForAccount(
-                core_account_info.account_id,
-                GoogleServiceAuthError::AuthErrorNone());
+        identity_test_environment_.SetRefreshTokenForPrimaryAccount();
         return;
       case Resolution::kWebSignin: {
         AccountInfo account_info =
@@ -116,13 +110,7 @@ class SigninMetricsServiceTest : public ::testing::Test {
         account_info.access_point =
             signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN;
         identity_test_environment_.UpdateAccountInfoForAccount(account_info);
-        // Calling `IdentityTestEnvironment::SetRefreshTokenForPrimaryAccount()`
-        // will not fire the notification event in unit tests. Directly fire it
-        // here.
-        identity_test_environment_
-            .UpdatePersistentErrorOfRefreshTokenForAccount(
-                account_info.account_id,
-                GoogleServiceAuthError::AuthErrorNone());
+        identity_test_environment_.SetRefreshTokenForPrimaryAccount();
         return;
       }
       case Resolution::kSignout:
@@ -161,29 +149,6 @@ class SigninMetricsServiceTest : public ::testing::Test {
  private:
   signin::IdentityManager* identity_manager() {
     return identity_test_environment_.identity_manager();
-  }
-
-  void TriggerErrorStateInAccount(CoreAccountId account_id) {
-    // Inject the error.
-    // Calling
-    // `IdentityTestEnvironment::SetInvalidRefreshTokenForPrimaryAccount()` will
-    // not fire the notification event in unit tests. Directly fire it here.
-    GoogleServiceAuthError error1 =
-        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                CREDENTIALS_REJECTED_BY_SERVER);
-    identity_test_environment_.UpdatePersistentErrorOfRefreshTokenForAccount(
-        account_id, error1);
-
-    // Trigger two different errors to make sure the effect of the error is well
-    // propagated and not dismissed due to caching the last error.
-    GoogleServiceAuthError error2 =
-        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                CREDENTIALS_REJECTED_BY_CLIENT);
-    ASSERT_NE(error1, error2);
-    identity_test_environment_.UpdatePersistentErrorOfRefreshTokenForAccount(
-        account_id, error2);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -263,7 +228,6 @@ TEST_F(SigninMetricsServiceTest, SigninPendingResolutionAfterRestart) {
   histogram_tester.ExpectTotalCount(
       "Signin.SigninPending.ResolutionTime.Signout", 1);
 }
-#endif
 
 TEST_F(SigninMetricsServiceTest, ReceivingNewTokenWhileNotInError) {
   base::HistogramTester histogram_tester;
@@ -311,6 +275,7 @@ TEST_F(SigninMetricsServiceTest, ReceivingMultipleErrorsDoesNotResetPref) {
   EXPECT_EQ(signin_pending_start_time,
             pref_service().GetTime(kSigninPendingStartTimePrefForTesting));
 }
+#endif
 
 TEST_F(SigninMetricsServiceTest,
        SecondaryAccountsErrorDoNotTriggerPendingPrefStartTime) {

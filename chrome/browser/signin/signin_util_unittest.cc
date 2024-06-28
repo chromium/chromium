@@ -390,9 +390,7 @@ TEST(SignedInStatesTest, SignedInStates) {
             signin_util::GetSignedInState(identity_manager));
 
   // Sync paused state.
-  identity_test_env.UpdatePersistentErrorOfRefreshTokenForAccount(
-      info.account_id, GoogleServiceAuthError(
-                           GoogleServiceAuthError::State::USER_NOT_SIGNED_UP));
+  identity_test_env.SetInvalidRefreshTokenForPrimaryAccount();
   EXPECT_EQ(SignedInState::kSyncPaused,
             signin_util::GetSignedInState(identity_manager));
 

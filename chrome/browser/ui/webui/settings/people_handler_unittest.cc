@@ -1355,11 +1355,7 @@ class PeopleHandlerWithExplicitBrowserSigninTest : public PeopleHandlerTest {
     ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
 
     // Inject the error.
-    identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
-        identity_manager()->GetPrimaryAccountId(ConsentLevel::kSignin),
-        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                CREDENTIALS_REJECTED_BY_CLIENT));
+    identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
   }
 
   bool HasSyncStatusUpdateChangedEvent() {
@@ -1371,9 +1367,7 @@ class PeopleHandlerWithExplicitBrowserSigninTest : public PeopleHandlerTest {
         identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
     // Clear the error.
-    identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
-        identity_manager()->GetPrimaryAccountId(ConsentLevel::kSignin),
-        GoogleServiceAuthError::AuthErrorNone());
+    identity_test_env()->SetRefreshTokenForPrimaryAccount();
   }
 
   void SimulateSignout() {

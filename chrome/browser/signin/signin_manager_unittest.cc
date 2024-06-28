@@ -123,17 +123,31 @@ class SigninManagerTest
     return GetParam().explicit_browser_signin;
   }
 
-  void SigninImplicitlyWithAccount(
-      const std::string& email,
-      ConsentLevel consent_level = ConsentLevel::kSignin) {
+  void Signin(const std::string& email,
+              signin_metrics::AccessPoint access_point,
+              ConsentLevel consent_level) {
     identity_test_env()->MakeAccountAvailable(
         identity_test_env()
             ->CreateAccountAvailabilityOptionsBuilder()
-            .WithAccessPoint(
-                signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN)
+            .WithAccessPoint(access_point)
             .AsPrimary(consent_level)
             .Build(email));
     CHECK(identity_manager()->HasPrimaryAccount(consent_level));
+  }
+
+  void SigninImplicitlyWithAccount(
+      const std::string& email,
+      ConsentLevel consent_level = ConsentLevel::kSignin) {
+    Signin(email, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
+           consent_level);
+  }
+
+  void SigninExplicitlyWithAccount(const std::string& email) {
+    CHECK(base::FeatureList::IsEnabled(
+        switches::kExplicitBrowserSigninUIOnDesktop));
+    Signin(email,
+           signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
+           ConsentLevel::kSignin);
   }
 
   void ExpectUnconsentedPrimaryAccountSetEvent(
@@ -251,7 +265,7 @@ TEST_P(
 
 TEST_P(
     SigninManagerTest,
-    UnconsentedPrimaryAccountUpdatedOnItsAccountRefreshTokenUpdateWithInvalidTokenWhenNoSyncConsent) {
+    UnconsentedPrimaryAccountUpdatedOnItsAccountRefreshTokenUpdateWithPersistentErrorWhenNoSyncConsent) {
   // Prerequisite: add an unconsented primary account, incl. proper cookies.
   AccountInfo account = MakeAccountAvailableWithCookies(kTestEmail);
   if (explicit_browser_signin()) {
@@ -261,7 +275,11 @@ TEST_P(
   InitializeSignoutDecision();
 
   // Invalid token.
-  SetInvalidRefreshTokenForAccount(identity_manager(), account.account_id);
+  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager()->GetPrimaryAccountId(ConsentLevel::kSignin),
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_CLIENT));
 
   if (is_signout_allowed()) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -289,6 +307,38 @@ TEST_P(
     EXPECT_EQ(identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin),
               account);
   }
+}
+
+TEST_P(
+    SigninManagerTest,
+    UnconsentedPrimaryAccountUpdatedOnItsAccountRefreshTokenUpdateWithInvalidTokenWhenNoSyncConsent) {
+  // Setting an invalid refresh token is only possible when signing out is not
+  // allowed (e.g. enterprise/kids accounts) or when ExplicitBrowserSignin is
+  // enabled with an explicit signed in account.
+  if (is_signout_allowed() && !explicit_browser_signin()) {
+    GTEST_SKIP();
+  }
+
+  // Prerequisite: add an unconsented primary account, incl. proper cookies.
+  AccountInfo account = MakeAccountAvailableWithCookies(kTestEmail);
+  if (explicit_browser_signin()) {
+    // When attempting to set an invalid refresh token, the account must be
+    // explicitly signed in. Implicitly signed in accounts will be removed and
+    // create an undesired flow.
+    SigninExplicitlyWithAccount(account.email);
+  }
+  ExpectUnconsentedPrimaryAccountSetEvent(account);
+  InitializeSignoutDecision();
+
+  // Invalid token.
+  SetInvalidRefreshTokenForAccount(identity_manager(), account.account_id);
+
+  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  EXPECT_EQ(identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin),
+            account);
+  EXPECT_TRUE(
+      identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
+          account.account_id));
 }
 
 TEST_P(
