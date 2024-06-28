@@ -9,6 +9,7 @@
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/webid/account_selection_modal_view.h"
@@ -57,7 +58,14 @@ FedCmAccountSelectionView::FedCmAccountSelectionView(
     : AccountSelectionView(delegate),
       content::WebContentsObserver(delegate->GetWebContents()),
       is_web_contents_visible_(delegate->GetWebContents()->GetVisibility() ==
-                               content::Visibility::VISIBLE) {}
+                               content::Visibility::VISIBLE) {
+  auto* lens_overlay_controller =
+      LensOverlayController::GetController(delegate_->GetWebContents());
+  if (lens_overlay_controller) {
+    is_lens_overlay_showing_ = lens_overlay_controller->IsOverlayShowing();
+    lens_overlay_controller_observation_.Observe(lens_overlay_controller);
+  }
+}
 
 FedCmAccountSelectionView::~FedCmAccountSelectionView() {
   notify_delegate_of_dismiss_ = false;
@@ -302,7 +310,7 @@ bool FedCmAccountSelectionView::Show(
        *popup_window_state_ ==
            PopupWindowResult::kAccountsReceivedAndPopupNotClosedByIdp)) {
     is_modal_closed_but_accounts_fetch_pending_ = false;
-    if (is_web_contents_visible_ &&
+    if (is_web_contents_visible_ && !is_lens_overlay_showing_ &&
         account_selection_view_->CanFitInWebContents()) {
       ShowDialogWidget();
       if (accounts_displayed_callback_) {
@@ -400,7 +408,7 @@ bool FedCmAccountSelectionView::ShowFailureDialog(
 
   if (create_view || is_modal_closed_but_accounts_fetch_pending_) {
     is_modal_closed_but_accounts_fetch_pending_ = false;
-    if (is_web_contents_visible_ &&
+    if (is_web_contents_visible_ && !is_lens_overlay_showing_ &&
         account_selection_view_->CanFitInWebContents()) {
       ShowDialogWidget();
     }
@@ -470,7 +478,7 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
     input_protector_ = std::make_unique<views::InputEventActivationProtector>();
   }
 
-  if (is_web_contents_visible_ &&
+  if (is_web_contents_visible_ && !is_lens_overlay_showing_ &&
       account_selection_view_->CanFitInWebContents()) {
     ShowDialogWidget();
   }
@@ -518,7 +526,7 @@ bool FedCmAccountSelectionView::ShowLoadingDialog(
     input_protector_ = std::make_unique<views::InputEventActivationProtector>();
   }
 
-  if (create_view && is_web_contents_visible_) {
+  if (create_view && is_web_contents_visible_ && !is_lens_overlay_showing_) {
     ShowDialogWidget();
   }
   // Else:
@@ -557,25 +565,12 @@ std::optional<std::string> FedCmAccountSelectionView::GetSubtitle() const {
 void FedCmAccountSelectionView::OnVisibilityChanged(
     content::Visibility visibility) {
   is_web_contents_visible_ = visibility == content::Visibility::VISIBLE;
-  if (!GetDialogWidget() || popup_window_ ||
-      is_modal_closed_but_accounts_fetch_pending_) {
+  if (!IsDialogWidgetReady()) {
     return;
   }
 
-  // TODO(crbug.com/340368623): Figure out what to do when button flow modal
-  // cannot fit in web contents.
-  if (is_web_contents_visible_ &&
-      (account_selection_view_->CanFitInWebContents() ||
-       GetDialogType() == DialogType::MODAL)) {
-    // We need to update the dialog's position in case the window was resized
-    // while it was not visible. The dialog position is already being updated
-    // automatically if the window was resized while it is visible.
-    account_selection_view_->UpdateDialogPosition();
-    ShowDialogWidget();
-    if (accounts_displayed_callback_) {
-      std::move(accounts_displayed_callback_).Run();
-    }
-    GetDialogWidget()->widget_delegate()->SetCanActivate(true);
+  if (ShouldShowDialogWidget()) {
+    UpdateAndShowDialogWidget();
   } else {
     HideDialogWidget();
   }
@@ -1059,7 +1054,8 @@ void FedCmAccountSelectionView::PrimaryMainFrameWasResized(bool width_changed) {
   }
 
   if (account_selection_view_->CanFitInWebContents()) {
-    if (!GetDialogWidget()->IsVisible() && is_web_contents_visible_) {
+    if (!GetDialogWidget()->IsVisible() && is_web_contents_visible_ &&
+        !is_lens_overlay_showing_) {
       account_selection_view_->UpdateDialogPosition();
       ShowDialogWidget();
     }
@@ -1071,6 +1067,31 @@ void FedCmAccountSelectionView::PrimaryMainFrameWasResized(bool width_changed) {
   }
 }
 
+bool FedCmAccountSelectionView::IsDialogWidgetReady() {
+  return GetDialogWidget() && !popup_window_ &&
+         !is_modal_closed_but_accounts_fetch_pending_;
+}
+
+bool FedCmAccountSelectionView::ShouldShowDialogWidget() {
+  // TODO(crbug.com/340368623): Figure out what to do when button flow modal
+  // cannot fit in web contents.
+  return is_web_contents_visible_ && !is_lens_overlay_showing_ &&
+         (account_selection_view_->CanFitInWebContents() ||
+          GetDialogType() == DialogType::MODAL);
+}
+
+void FedCmAccountSelectionView::UpdateAndShowDialogWidget() {
+  // We need to update the dialog's position in case the window was resized
+  // while it was not visible. The dialog position is already being updated
+  // automatically if the window was resized while it is visible.
+  account_selection_view_->UpdateDialogPosition();
+  ShowDialogWidget();
+  if (accounts_displayed_callback_) {
+    std::move(accounts_displayed_callback_).Run();
+  }
+  GetDialogWidget()->widget_delegate()->SetCanActivate(true);
+}
+
 void FedCmAccountSelectionView::HideDialogWidget() {
   // On Mac, NativeWidgetMac::Activate() ignores the views::Widget visibility.
   // Make the views::Widget non-activatable while it is hidden to prevent the
@@ -1079,4 +1100,28 @@ void FedCmAccountSelectionView::HideDialogWidget() {
   GetDialogWidget()->Hide();
   GetDialogWidget()->widget_delegate()->SetCanActivate(false);
   input_protector_->VisibilityChanged(false);
+}
+
+void FedCmAccountSelectionView::OnLensOverlayDidShow() {
+  is_lens_overlay_showing_ = true;
+  if (!IsDialogWidgetReady()) {
+    return;
+  }
+
+  HideDialogWidget();
+}
+
+void FedCmAccountSelectionView::OnLensOverlayDidClose() {
+  is_lens_overlay_showing_ = false;
+  if (!IsDialogWidgetReady()) {
+    return;
+  }
+
+  if (ShouldShowDialogWidget()) {
+    UpdateAndShowDialogWidget();
+  }
+}
+
+void FedCmAccountSelectionView::SetIsLensOverlayShowingForTesting(bool value) {
+  is_lens_overlay_showing_ = value;
 }

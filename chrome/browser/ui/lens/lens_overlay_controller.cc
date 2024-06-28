@@ -1095,6 +1095,9 @@ void LensOverlayController::DidCaptureScreenshot(
 
   ShowOverlay();
 
+  for (Observer& observer : observers_) {
+    observer.OnLensOverlayDidShow();
+  }
   state_ = State::kStartingWebUI;
 }
 
@@ -1268,6 +1271,11 @@ void LensOverlayController::CloseUIPart2(
   fullscreen_observation_.Reset();
 
   multimodal_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
+
+  for (Observer& observer : observers_) {
+    observer.OnLensOverlayDidClose();
+  }
+
   state_ = State::kOff;
 
   base::UmaHistogramEnumeration("Lens.Overlay.Dismissed", dismissal_source);

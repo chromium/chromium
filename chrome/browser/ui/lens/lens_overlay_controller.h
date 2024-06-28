@@ -84,6 +84,16 @@ class LensOverlayController : public LensSearchboxClient,
                               public SidePanelViewStateObserver,
                               public views::ViewObserver {
  public:
+  // Observer of LensOverlayController events.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called after showing the Lens Overlay.
+    virtual void OnLensOverlayDidShow() {}
+
+    // Called after closing the Lens Overlay.
+    virtual void OnLensOverlayDidClose() {}
+  };
+
   LensOverlayController(tabs::TabInterface* tab,
                         variations::VariationsClient* variations_client,
                         signin::IdentityManager* identity_manager,
@@ -333,6 +343,14 @@ class LensOverlayController : public LensSearchboxClient,
   void OnSidePanelHidden();
 
   tabs::TabInterface* GetTabInterface();
+
+  // Adds the given observer from the observer list.
+  void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
+
+  // Removes the given observer from the observer list.
+  void RemoveObserver(Observer* observer) {
+    observers_.RemoveObserver(observer);
+  }
 
   // Testing function to issue a Lens (region selection) request.
   void IssueLensRequestForTesting(lens::mojom::CenterRotatedBoxPtr region);
@@ -806,6 +824,9 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Prevents other features from showing tab-modal UI.
   std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;
+
+  // List of observers of this controller.
+  base::ObserverList<Observer> observers_;
 
   // ---------------Browser window scoped state: START---------------------
   // State that is scoped to the browser window must be reset when the tab is
