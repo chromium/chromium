@@ -26,8 +26,10 @@ source_set("media_foundation_util") {
   configs += [ "//media:subcomponent_config" ]
   deps = [
     "//base",
+    "//gpu/ipc/common",
     "//media:shared_memory_support",
     "//media/base",
+    "//third_party/libyuv",
   ]
   libs = [
     "d3d11.lib",

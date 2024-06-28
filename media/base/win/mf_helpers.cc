@@ -7,6 +7,7 @@
 #include <initguid.h>
 
 #include <d3d11.h>
+#include <d3d11_4.h>
 #include <ks.h>
 #include <ksmedia.h>
 #include <mfapi.h>
@@ -25,7 +26,9 @@
 #if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 #include "media/formats/mp4/ac4.h"
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+#include "gpu/ipc/common/dxgi_helpers.h"
 #include "media/media_buildflags.h"
+#include "third_party/libyuv/include/libyuv.h"
 
 namespace media {
 
@@ -564,6 +567,51 @@ GUID VideoCodecToMFSubtype(VideoCodec codec, VideoCodecProfile profile) {
   }
 }
 
+GUID VideoPixelFormatToMFSubtype(VideoPixelFormat video_pixel_format) {
+  switch (video_pixel_format) {
+    case VideoPixelFormat::PIXEL_FORMAT_I420:
+      return MFVideoFormat_I420;
+    case VideoPixelFormat::PIXEL_FORMAT_YV12:
+      return MFVideoFormat_YV12;
+    case VideoPixelFormat::PIXEL_FORMAT_NV12:
+      return MFVideoFormat_NV12;
+    case VideoPixelFormat::PIXEL_FORMAT_NV21:
+      return MFVideoFormat_NV21;
+    case VideoPixelFormat::PIXEL_FORMAT_YUY2:
+      return MFVideoFormat_YUY2;
+    case VideoPixelFormat::PIXEL_FORMAT_ARGB:
+      return MFVideoFormat_ARGB32;
+    case VideoPixelFormat::PIXEL_FORMAT_XRGB:
+      return MFVideoFormat_RGB32;
+    case VideoPixelFormat::PIXEL_FORMAT_RGB24:
+      return MFVideoFormat_RGB24;
+    default:
+      return GUID_NULL;
+  }
+}
+
+MFVideoPrimaries VideoPrimariesToMFVideoPrimaries(
+    VideoColorSpace::PrimaryID primaries) {
+  switch (primaries) {
+    case VideoColorSpace::PrimaryID::BT709:
+      return MFVideoPrimaries_BT709;
+    case VideoColorSpace::PrimaryID::BT470M:
+      return MFVideoPrimaries_BT470_2_SysM;
+    case VideoColorSpace::PrimaryID::BT470BG:
+      return MFVideoPrimaries_BT470_2_SysBG;
+    case VideoColorSpace::PrimaryID::SMPTE170M:
+      return MFVideoPrimaries_SMPTE170M;
+    case VideoColorSpace::PrimaryID::SMPTE240M:
+      return MFVideoPrimaries_SMPTE240M;
+    case VideoColorSpace::PrimaryID::BT2020:
+      return MFVideoPrimaries_BT2020;
+    case VideoColorSpace::PrimaryID::EBU_3213_E:
+      return MFVideoPrimaries_EBU3213;
+    default:
+      return MFVideoPrimaries_Unknown;
+  }
+}
+
 HRESULT GenerateSampleFromDecoderBuffer(
     const scoped_refptr<DecoderBuffer>& buffer,
     IMFSample** sample_out,
@@ -715,6 +763,135 @@ HRESULT CreateDecryptConfigFromSample(
     *decrypt_config = DecryptConfig::CreateCbcsConfig(
         key_id_string, iv_string, subsamples, encryption_pattern);
   }
+
+  return S_OK;
+}
+
+HRESULT GenerateSampleFromVideoFrame(
+    const VideoFrame* frame,
+    DXGIDeviceManager* dxgi_device_manager,
+    bool use_dxgi_buffer,
+    Microsoft::WRL::ComPtr<ID3D11Texture2D>* staging_texture,
+    DWORD buffer_alignment,
+    IMFSample** sample_out) {
+  constexpr size_t kOneMicrosecondInMFSampleTimeUnits = 10;
+
+  HRESULT hr;
+  Microsoft::WRL::ComPtr<IMFSample> sample;
+  hr = MFCreateSample(&sample);
+  RETURN_ON_HR_FAILURE(hr, "Failed to create sample", hr);
+
+  if (frame->storage_type() ==
+          VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER &&
+      dxgi_device_manager != nullptr) {
+    gfx::GpuMemoryBufferHandle buffer_handle =
+        frame->GetGpuMemoryBufferHandle();
+    if (buffer_handle.is_null()) {
+      LOG(ERROR) << "Failed to get GMB for input frame";
+      return MF_E_INVALID_STREAM_DATA;
+    }
+
+    CHECK_EQ(buffer_handle.type, gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
+
+    auto d3d_device = dxgi_device_manager->GetDevice();
+    if (!d3d_device) {
+      LOG(ERROR) << "Failed to get device from MF DXGI device manager";
+      return E_HANDLE;
+    }
+
+    Microsoft::WRL::ComPtr<ID3D11Device1> device1;
+    hr = d3d_device.As(&device1);
+    RETURN_ON_HR_FAILURE(hr, "Failed to query ID3D11Device1", hr);
+
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture;
+    hr = device1->OpenSharedResource1(buffer_handle.dxgi_handle.Get(),
+                                      IID_PPV_ARGS(&input_texture));
+    RETURN_ON_HR_FAILURE(hr, "Failed to open shared GMB D3D texture", hr);
+
+    if (use_dxgi_buffer) {
+      Microsoft::WRL::ComPtr<IMFMediaBuffer> mf_buffer;
+      hr = MFCreateDXGISurfaceBuffer(__uuidof(ID3D11Texture2D),
+                                     input_texture.Get(), 0, FALSE, &mf_buffer);
+      RETURN_ON_HR_FAILURE(hr, "Failed to create MF DXGI surface buffer", hr);
+
+      DWORD buffer_length = 0;
+      hr = mf_buffer->GetMaxLength(&buffer_length);
+      RETURN_ON_HR_FAILURE(hr, "Failed to get max buffer length", hr);
+      hr = mf_buffer->SetCurrentLength(buffer_length);
+      RETURN_ON_HR_FAILURE(hr, "Failed to set current buffer length", hr);
+
+      RETURN_ON_HR_FAILURE(hr, "Failed to create sample", hr);
+      hr = sample->AddBuffer(mf_buffer.Get());
+      RETURN_ON_HR_FAILURE(hr, "Failed to add buffer to sample", hr);
+      hr = sample->SetSampleTime(frame->timestamp().InMicroseconds() *
+                                 kOneMicrosecondInMFSampleTimeUnits);
+      RETURN_ON_HR_FAILURE(hr, "Failed to set sample timestamp", hr);
+    } else {
+      Microsoft::WRL::ComPtr<IMFMediaBuffer> input_buffer;
+      size_t allocation_size =
+          VideoFrame::AllocationSize(frame->format(), frame->coded_size());
+      hr = MFCreateAlignedMemoryBuffer(
+          allocation_size,
+          buffer_alignment == 0 ? buffer_alignment : buffer_alignment - 1,
+          &input_buffer);
+      RETURN_ON_HR_FAILURE(
+          hr, "Failed to create memory buffer for input sample", hr);
+
+      MediaBufferScopedPointer scoped_buffer(input_buffer.Get());
+      bool copy_succeeded = gpu::CopyD3D11TexToMem(
+          input_texture.Get(), scoped_buffer.get(), scoped_buffer.max_length(),
+          d3d_device.Get(), staging_texture);
+      if (!copy_succeeded) {
+        LOG(ERROR) << "Failed to copy sample to memory.";
+        return E_FAIL;
+      }
+
+      size_t copied_bytes = frame->visible_rect().width() *
+                            frame->visible_rect().height() * 3 / 2;
+      hr = input_buffer->SetCurrentLength(copied_bytes);
+      RETURN_ON_HR_FAILURE(hr, "Failed to set current buffer length", hr);
+      hr = sample->AddBuffer(input_buffer.Get());
+      RETURN_ON_HR_FAILURE(hr, "Failed to add buffer to sample", hr);
+    }
+  } else if (frame->HasTextures()) {
+    // TODO:Handle non-GMB textures.  This needs access to SharedImageManager.
+    // See crbug.com/40162806
+    return E_UNEXPECTED;
+  } else {
+    size_t allocation_size = VideoFrame::AllocationSize(
+        frame->format(), frame->visible_rect().size());
+    Microsoft::WRL::ComPtr<IMFMediaBuffer> input_buffer;
+    hr = MFCreateAlignedMemoryBuffer(
+        allocation_size,
+        buffer_alignment == 0 ? buffer_alignment : buffer_alignment - 1,
+        &input_buffer);
+    RETURN_ON_HR_FAILURE(hr, "Failed to create memory buffer", hr);
+    MediaBufferScopedPointer scoped_buffer(input_buffer.Get());
+    size_t buffer_offset = 0;
+    for (size_t i = 0; i < VideoFrame::NumPlanes(frame->format()); i++) {
+      // |width| in libyuv::CopyPlane() is in bytes, not pixels.
+      gfx::Size plane_size = VideoFrame::PlaneSize(
+          frame->format(), i, frame->visible_rect().size());
+      libyuv::CopyPlane(frame->visible_data(i),
+                        frame->layout().planes()[i].stride,
+                        scoped_buffer.get() + buffer_offset,
+                        frame->layout().planes()[i].stride, plane_size.width(),
+                        plane_size.height());
+      buffer_offset +=
+          plane_size.height() *
+          VideoFrame::RowBytes(i, frame->format(), plane_size.width());
+    }
+    hr = input_buffer->SetCurrentLength(allocation_size);
+    RETURN_ON_HR_FAILURE(hr, "Failed to set current buffer length", hr);
+    hr = sample->AddBuffer(input_buffer.Get());
+    RETURN_ON_HR_FAILURE(hr, "Failed to add buffer to sample", hr);
+  }
+
+  hr = sample->SetSampleTime(frame->timestamp().InMicroseconds() *
+                             kOneMicrosecondInMFSampleTimeUnits);
+  RETURN_ON_HR_FAILURE(hr, "Failed to set sample timestamp", hr);
+
+  *sample_out = sample.Detach();
 
   return S_OK;
 }
