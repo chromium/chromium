@@ -80,6 +80,27 @@ InkRect GetEraserRect(const gfx::PointF& center, int distance_to_center) {
   };
 }
 
+void UnionInkRects(std::optional<InkRect>& result_rect,
+                   const InkRect& new_rect) {
+  if (result_rect.has_value()) {
+    auto& value = result_rect.value();
+    value.x_min = std::min(value.x_min, new_rect.x_min);
+    value.y_min = std::min(value.y_min, new_rect.y_min);
+    value.x_max = std::max(value.x_max, new_rect.x_max);
+    value.y_max = std::max(value.y_max, new_rect.y_max);
+  } else {
+    result_rect = new_rect;
+  }
+}
+
+gfx::Rect InkRectToEnclosingGfxRect(const InkRect& rect) {
+  const float x = rect.x_min;
+  const float y = rect.y_min;
+  const float width = rect.x_max - x;
+  const float height = rect.y_max - y;
+  return gfx::ToEnclosingRect(gfx::RectF(x, y, width, height));
+}
+
 }  // namespace
 
 PdfInkModule::PdfInkModule(Client& client) : client_(client) {
@@ -450,17 +471,7 @@ bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
 
     stroke.should_draw = false;
 
-    // Take a union of `shape_rect` and `invalidate_rect`.
-    InkRect shape_rect = shape.Bounds();
-    if (invalidate_rect.has_value()) {
-      auto& value = invalidate_rect.value();
-      value.x_min = std::min(value.x_min, shape_rect.x_min);
-      value.y_min = std::min(value.y_min, shape_rect.y_min);
-      value.x_max = std::max(value.x_max, shape_rect.x_max);
-      value.y_max = std::max(value.y_max, shape_rect.y_max);
-    } else {
-      invalidate_rect = shape_rect;
-    }
+    UnionInkRects(invalidate_rect, shape.Bounds());
   }
 
   if (!invalidate_rect.has_value()) {
@@ -468,11 +479,7 @@ bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
   }
 
   // If `invalidate_rect` has a value, then something got erased.
-  const float x = invalidate_rect.value().x_min;
-  const float y = invalidate_rect.value().y_min;
-  const float width = invalidate_rect.value().x_max - x;
-  const float height = invalidate_rect.value().y_max - y;
-  client_->Invalidate(gfx::ToEnclosingRect(gfx::RectF(x, y, width, height)));
+  client_->Invalidate(InkRectToEnclosingGfxRect(invalidate_rect.value()));
   return true;
 }
 
