@@ -564,6 +564,13 @@ void ViewAccessibility::SetIsInvisible(bool is_invisible) {
   SetState(ax::mojom::State::kInvisible, is_invisible);
 }
 
+void ViewAccessibility::SetIsDefault(bool is_default) {
+  if (data_.HasState(ax::mojom::State::kDefault) == is_default) {
+    return;
+  }
+  SetState(ax::mojom::State::kDefault, is_default);
+}
+
 void ViewAccessibility::SetIsEnabled(bool is_enabled) {
   RETURN_IF_UNAVAILABLE();
   if (is_enabled == GetIsEnabled()) {
