@@ -144,6 +144,10 @@ ASH_EXPORT int GetWindowLength(aura::Window* window, bool horizontal);
 chromeos::WindowStateType GetWindowStateTypeFromSnapPosition(
     SnapPosition snap_position);
 
+// Returns the corresponding `SnapPosition` for the given
+// `chromeos::WindowStateType`, which must be snapped.
+SnapPosition ToSnapPosition(chromeos::WindowStateType type);
+
 // Transforms `window` based on whether it is the primary or secondary window
 // and its distance from `divider_position` during split view resizing.
 void SetWindowTransformDuringResizing(aura::Window* window,

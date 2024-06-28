@@ -179,6 +179,10 @@ bool SplitViewDivider::HasDividerWidget() const {
   return !!divider_widget_;
 }
 
+bool SplitViewDivider::IsDividerWidgetVisible() const {
+  return divider_widget_ && divider_widget_->IsVisible();
+}
+
 void SplitViewDivider::SetVisible(bool visible) {
   if (target_visibility_ != visible) {
     target_visibility_ = visible;

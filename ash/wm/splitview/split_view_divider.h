@@ -81,6 +81,8 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   // Returns true if the divider widget is created.
   bool HasDividerWidget() const;
 
+  bool IsDividerWidgetVisible() const;
+
   // Updates the divider's target visibility.
   void SetVisible(bool visible);
 

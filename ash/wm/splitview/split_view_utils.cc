@@ -395,6 +395,17 @@ WindowStateType GetWindowStateTypeFromSnapPosition(SnapPosition snap_position) {
   }
 }
 
+SnapPosition ToSnapPosition(chromeos::WindowStateType type) {
+  switch (type) {
+    case WindowStateType::kPrimarySnapped:
+      return SnapPosition::kPrimary;
+    case WindowStateType::kSecondarySnapped:
+      return SnapPosition::kSecondary;
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
 bool IsSnapped(aura::Window* window) {
   return window && WindowState::Get(window)->IsSnapped();
 }

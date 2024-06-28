@@ -57,6 +57,14 @@ class SnapGroup : public aura::WindowObserver,
   // Cleans up prior to deletion. Must be called before the object is destroyed.
   void Shutdown();
 
+  // Given `window` which belongs to this snap group, the snapped `state_type`
+  // and `snap_ratio`, returns the current snapped window bounds in root window
+  // coordinates.
+  gfx::Rect GetSnappedWindowBoundsInRoot(
+      aura::Window* window,
+      const chromeos::WindowStateType state_type,
+      float snap_ratio) const;
+
   // These functions return the snapped window in the specified snap position
   // (left/top or right/bottom) based on the display's orientation.
   //

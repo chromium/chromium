@@ -121,6 +121,20 @@ void SnapGroup::Shutdown() {
   StopObservingWindows();
 }
 
+gfx::Rect SnapGroup::GetSnappedWindowBoundsInRoot(
+    aura::Window* window,
+    const chromeos::WindowStateType state_type,
+    float snap_ratio) const {
+  // TODO(b/347723336): Find a deterministic way to determine
+  // `account_for_divider_width`.
+  gfx::Rect bounds_in_parent = GetSnappedWindowBoundsInScreen(
+      ToSnapPosition(state_type), window, snap_ratio,
+      /*account_for_divider_width=*/
+      snap_group_divider_.IsDividerWidgetVisible());
+  wm::ConvertRectFromScreen(window->GetRootWindow(), &bounds_in_parent);
+  return bounds_in_parent;
+}
+
 aura::Window* SnapGroup::GetPhysicallyLeftOrTopWindow() {
   return IsPhysicallyLeftOrTop(window1_) ? window1_ : window2_;
 }
