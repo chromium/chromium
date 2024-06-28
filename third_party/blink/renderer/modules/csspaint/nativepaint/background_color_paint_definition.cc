@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/animation/css_color_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
+#include "third_party/blink/renderer/core/css/css_color_mix_value.h"
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_deferred_image.h"
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_input.h"
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_style_property_map.h"
@@ -164,9 +165,32 @@ bool ValidateColorValue(const Element* element,
                         const CSSValue* value,
                         const InterpolableValue* interpolable_value) {
   if (value) {
-    // Cannot composite a background color animation that depends on
-    // currentColor. For now, the color must resolve to a simple color.
-    // TODO(crbug.com/1255912): handle system color.
+    if (value->IsIdentifierValue()) {
+      CSSValueID value_id = To<CSSIdentifierValue>(value)->GetValueID();
+      if (StyleColor::IsSystemColorIncludingDeprecated(value_id)) {
+        // The color depends on the color-scheme. Though we can resolve the
+        // color values, we presently lack a method to update the colors should
+        // the color-scheme change during the course of the animation.
+        // TODO(crbug.com/40795239): handle system color.
+        return false;
+      }
+      if (value_id == CSSValueID::kCurrentcolor) {
+        // Do not composite a background color animation that depends on
+        // currentcolor until we have a mechanism to update the compositor
+        // keyframes when currentcolor changes.
+        return false;
+      }
+    } else if (value->IsColorMixValue()) {
+      const cssvalue::CSSColorMixValue* color_mix =
+          To<cssvalue::CSSColorMixValue>(value);
+      if (!ValidateColorValue(element, &color_mix->Color1(), nullptr) ||
+          !ValidateColorValue(element, &color_mix->Color2(), nullptr)) {
+        // Unresolved color mix or a color mix with a system color dependency.
+        // Either way, fall back to main.
+        return false;
+      }
+    }
+
     const CSSPropertyName property_name =
         CSSPropertyName(CSSPropertyID::kBackgroundColor);
     const CSSValue* computed_value = StyleResolver::ComputeValue(

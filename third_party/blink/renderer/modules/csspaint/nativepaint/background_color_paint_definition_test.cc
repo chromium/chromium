@@ -363,6 +363,115 @@ TEST_F(BackgroundColorPaintDefinitionTest, MultipleAnimationsFallback) {
             ElementAnimations::CompositedPaintStatus::kNotComposited);
 }
 
+// Lack mechanism to re-snapshot keyframes on a change to current color.
+TEST_F(BackgroundColorPaintDefinitionTest, FallbackToMainCurrentColor) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes text-reveal {
+        from { background-color: currentcolor; }
+        to { background-color: transparent; }
+      }
+      #target {
+        animation: text-reveal 1s forwards;
+      }
+    </style>
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  Element* element = GetElementById("target");
+  EXPECT_TRUE(element->GetElementAnimations());
+  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
+  EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNotComposited);
+  EXPECT_FALSE(element->GetElementAnimations()
+                   ->Animations()
+                   .begin()
+                   ->key->HasActiveAnimationsOnCompositor());
+}
+
+// System colors depend on theme. Presently lack mechanism to re-snapshot the
+// keyframes on a change to the color scheme.
+TEST_F(BackgroundColorPaintDefinitionTest, FallbackToMainSystemColor) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes fade-background {
+        from { background-color: ButtonFace; }
+        to { background-color: transparent; }
+      }
+      #target {
+        animation: fade-background 1s forwards;
+      }
+    </style>
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  Element* element = GetElementById("target");
+  EXPECT_TRUE(element->GetElementAnimations());
+  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
+  EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNotComposited);
+  EXPECT_FALSE(element->GetElementAnimations()
+                   ->Animations()
+                   .begin()
+                   ->key->HasActiveAnimationsOnCompositor());
+}
+
+// Composite even with a complex color expression provided it evaluates to
+// a simple color without dependencies on system colors or currentcolor.
+TEST_F(BackgroundColorPaintDefinitionTest, CompositeColorMix) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes colorize {
+        from { background-color: color-mix(in lch, plum, pink); }
+        to { background-color: transparent; }
+      }
+      #target {
+        animation: colorize 1s forwards;
+      }
+    </style>
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  Element* element = GetElementById("target");
+  EXPECT_TRUE(element->GetElementAnimations());
+  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
+  EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kComposited);
+  EXPECT_TRUE(element->GetElementAnimations()
+                  ->Animations()
+                  .begin()
+                  ->key->HasActiveAnimationsOnCompositor());
+}
+
+TEST_F(BackgroundColorPaintDefinitionTest, FallbackToMainOnUnresolvedColorMix) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes colorize {
+        from { background-color: color-mix(in lch, currentcolor, pink); }
+        to { background-color: transparent; }
+      }
+      #target {
+        animation: colorize 1s forwards;
+      }
+    </style>
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  Element* element = GetElementById("target");
+  EXPECT_TRUE(element->GetElementAnimations());
+  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
+  EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNotComposited);
+  EXPECT_FALSE(element->GetElementAnimations()
+                   ->Animations()
+                   .begin()
+                   ->key->HasActiveAnimationsOnCompositor());
+}
+
 // Test that paint is invalidated in the case that a second background color
 // animation is added.
 TEST_F(BackgroundColorPaintDefinitionTest,
