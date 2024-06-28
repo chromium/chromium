@@ -180,6 +180,8 @@ class SyncServiceImplTest : public ::testing::Test {
     ON_CALL(*sync_client, CreateModelTypeControllers)
         .WillByDefault(Return(ByMove(std::move(controllers))));
     ON_CALL(*sync_client, IsPasswordSyncAllowed).WillByDefault(Return(true));
+    ON_CALL(*sync_client, GetIdentityManager)
+        .WillByDefault(Return(identity_manager()));
 
     service_ = std::make_unique<SyncServiceImpl>(
         sync_service_impl_bundle_.CreateBasicInitParams(
@@ -201,12 +203,13 @@ class SyncServiceImplTest : public ::testing::Test {
     sync_client_ = sync_client.get();
     ON_CALL(*sync_client, CreateModelTypeControllers)
         .WillByDefault(Return(ByMove(std::move(controllers))));
+    ON_CALL(*sync_client, GetIdentityManager)
+        .WillByDefault(Return(identity_manager()));
 
     SyncServiceImpl::InitParams init_params =
         sync_service_impl_bundle_.CreateBasicInitParams(std::move(sync_client));
 
     prefs()->SetBoolean(prefs::kEnableLocalSyncBackend, true);
-    init_params.identity_manager = nullptr;
 
     service_ = std::make_unique<SyncServiceImpl>(std::move(init_params));
     service_->Initialize();

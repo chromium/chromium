@@ -73,6 +73,8 @@ class SyncServiceImplStartupTest : public testing::Test {
         sync_service_impl_bundle_.CreateSyncClientMock();
     ON_CALL(*sync_client, CreateModelTypeControllers)
         .WillByDefault(Return(ByMove(std::move(controllers))));
+    ON_CALL(*sync_client, GetIdentityManager)
+        .WillByDefault(Return(sync_service_impl_bundle_.identity_manager()));
 
     sync_service_ = std::make_unique<SyncServiceImpl>(
         sync_service_impl_bundle_.CreateBasicInitParams(

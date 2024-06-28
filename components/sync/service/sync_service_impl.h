@@ -87,9 +87,6 @@ class SyncServiceImpl : public SyncService,
     ~InitParams();
 
     std::unique_ptr<SyncClient> sync_client;
-    // TODO(treib): Remove this and instead retrieve it via
-    // SyncClient::GetIdentityManager (but mind LocalSync).
-    raw_ptr<signin::IdentityManager> identity_manager = nullptr;
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
     raw_ptr<network::NetworkConnectionTracker> network_connection_tracker =
         nullptr;

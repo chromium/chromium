@@ -11,7 +11,6 @@
 #import "base/time/time.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/base/model_type.h"
 #import "components/sync/base/sync_util.h"
 #import "components/sync/service/sync_service.h"
@@ -50,9 +49,10 @@ WebViewSyncServiceFactory::WebViewSyncServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "SyncService",
           BrowserStateDependencyManager::GetInstance()) {
-  // The SyncService depends on various SyncableServices being around
+  // The SyncServiceImpl depends on various KeyedServices being around
   // when it is shut down.  Specify those dependencies here to build the proper
-  // destruction order.
+  // destruction order. Note that some of the dependencies are listed here but
+  // actually plumbed in WebViewSyncClient, which this factory constructs.
   DependsOn(WebViewDeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(WebViewIdentityManagerFactory::GetInstance());
   DependsOn(WebViewWebDataServiceWrapperFactory::GetInstance());
@@ -71,12 +71,9 @@ WebViewSyncServiceFactory::BuildServiceInstanceFor(
   WebViewBrowserState* browser_state =
       WebViewBrowserState::FromBrowserState(context);
 
-  signin::IdentityManager* identity_manager =
-      WebViewIdentityManagerFactory::GetForBrowserState(browser_state);
   WebViewGCMProfileServiceFactory::GetForBrowserState(browser_state);
 
   syncer::SyncServiceImpl::InitParams init_params;
-  init_params.identity_manager = identity_manager;
   init_params.sync_client = WebViewSyncClient::Create(browser_state);
   init_params.url_loader_factory = browser_state->GetSharedURLLoaderFactory();
   init_params.network_connection_tracker =

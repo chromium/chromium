@@ -162,9 +162,6 @@ std::unique_ptr<KeyedService> BuildSyncService(
     // TODO(atwilson): Change AboutSigninInternalsFactory to load on startup
     // once http://crbug.com/171406 has been fixed.
     AboutSigninInternalsFactory::GetForProfile(profile);
-
-    init_params.identity_manager =
-        IdentityManagerFactory::GetForProfile(profile);
   }
 
   auto sync_service =
@@ -242,7 +239,7 @@ SyncServiceFactory::SyncServiceFactory()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
-  // The SyncServiceImpl depends on various SyncableServices being around
+  // The SyncServiceImpl depends on various KeyedServices being around
   // when it is shut down.  Specify those dependencies here to build the proper
   // destruction order. Note that some of the dependencies are listed here but
   // actually plumbed in ChromeSyncClient, which this factory constructs.

@@ -85,8 +85,6 @@ std::unique_ptr<KeyedService> BuildSyncService(web::BrowserState* context) {
   ios::AboutSigninInternalsFactory::GetForBrowserState(browser_state);
 
   syncer::SyncServiceImpl::InitParams init_params;
-  init_params.identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
   init_params.sync_client =
       std::make_unique<IOSChromeSyncClient>(browser_state);
   init_params.url_loader_factory = browser_state->GetSharedURLLoaderFactory();
@@ -198,9 +196,10 @@ SyncServiceFactory::SyncServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "SyncService",
           BrowserStateDependencyManager::GetInstance()) {
-  // The SyncService depends on various SyncableServices being around
+  // The SyncServiceImpl depends on various KeyedServices being around
   // when it is shut down.  Specify those dependencies here to build the proper
-  // destruction order.
+  // destruction order. Note that some of the dependencies are listed here but
+  // actually plumbed in IOSChromeSyncClient, which this factory constructs.
   DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
   DependsOn(ConsentAuditorFactory::GetInstance());
   DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());

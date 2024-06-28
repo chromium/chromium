@@ -213,7 +213,9 @@ SyncServiceImpl::InitParams::~InitParams() = default;
 SyncServiceImpl::SyncServiceImpl(InitParams init_params)
     : sync_client_(std::move(init_params.sync_client)),
       sync_prefs_(sync_client_->GetPrefService()),
-      identity_manager_(std::move(init_params.identity_manager)),
+      identity_manager_(sync_prefs_.IsLocalSyncEnabled()
+                            ? nullptr
+                            : sync_client_->GetIdentityManager()),
       auth_manager_(std::make_unique<SyncAuthManager>(
           identity_manager_,
           base::BindRepeating(&SyncServiceImpl::AccountStateChanged,
