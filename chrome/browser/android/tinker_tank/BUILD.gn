@@ -16,4 +16,7 @@ android_library("delegate_java") {
     "//chrome/browser/tabmodel:java",
     "//components/browser_ui/bottomsheet/android:java",
   ]
+  if (defined(enable_tinker_tank_internal) && enable_tinker_tank_internal) {
+    jar_excluded_patterns = [ "*/TinkerTankDelegateImpl.class" ]
+  }
 }
