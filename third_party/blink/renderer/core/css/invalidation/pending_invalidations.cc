@@ -27,6 +27,10 @@ void PendingInvalidations::ScheduleInvalidationSetsForNode(
 
   if (node.GetStyleChangeType() < kSubtreeStyleChange) {
     for (auto& invalidation_set : invalidation_lists.descendants) {
+      if (invalidation_set->InvalidatesNth()) {
+        PossiblyScheduleNthPseudoInvalidations(node);
+      }
+
       if (invalidation_set->WholeSubtreeInvalid()) {
         auto* shadow_root = DynamicTo<ShadowRoot>(node);
         auto* subtree_root = shadow_root ? &shadow_root->host() : &node;
@@ -49,10 +53,6 @@ void PendingInvalidations::ScheduleInvalidationSetsForNode(
         node.SetNeedsStyleRecalc(kLocalStyleChange,
                                  StyleChangeReasonForTracing::Create(
                                      style_change_reason::kRelatedStyleRule));
-      }
-
-      if (invalidation_set->InvalidatesNth()) {
-        PossiblyScheduleNthPseudoInvalidations(node);
       }
 
       if (!invalidation_set->IsEmpty()) {

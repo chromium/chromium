@@ -137,7 +137,10 @@ class CORE_EXPORT InvalidationSet
   void SetInvalidatesSelf() { invalidates_self_ = true; }
   bool InvalidatesSelf() const { return invalidates_self_; }
 
-  void SetInvalidatesNth() { invalidates_nth_ = true; }
+  void SetInvalidatesNth() {
+    DCHECK(!IsSelfInvalidationSet());
+    invalidates_nth_ = true;
+  }
   bool InvalidatesNth() const { return invalidates_nth_; }
 
   void SetTreeBoundaryCrossing() {
@@ -208,6 +211,7 @@ class CORE_EXPORT InvalidationSet
   // Flags (omitted if false):
   //
   //  $ - Invalidates self.
+  //  N - Invalidates Nth sibling.
   //  W - Whole subtree invalid.
   //  C - Invalidates custom pseudo.
   //  T - Tree boundary crossing.
