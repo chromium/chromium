@@ -488,12 +488,6 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                                            uint32_t usage,
                                            std::string debug_label,
                                            gfx::BufferUsage buffer_usage) {
-  if (!format.is_single_plane()) {
-    // Only single plane format is supported as of now.
-    LOG(ERROR) << "Invalid format " << format.ToString();
-    return false;
-  }
-
   if (!viz::HasEquivalentBufferFormat(format)) {
     // Client GMB code still operates on BufferFormat so the SharedImageFormat
     // received here must have an equivalent BufferFormat.
@@ -501,7 +495,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
     return false;
   }
 
-  auto buffer_format = SinglePlaneSharedImageFormatToBufferFormat(format);
+  auto buffer_format = ToBufferFormat(format);
   auto native_buffer_supported =
       IsNativeBufferSupported(buffer_format, buffer_usage);
 
