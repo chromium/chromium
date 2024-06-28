@@ -82,12 +82,16 @@ bool DeskActionView::ChildHasFocus() const {
 }
 
 void DeskActionView::OnViewFocused(views::View* observed) {
-  CHECK(observed == combine_desks_button_ || observed == close_all_button_);
+  CHECK(observed);
+  CHECK(observed == context_menu_button_ || observed == combine_desks_button_ ||
+        observed == close_all_button_);
   OnFocusChange();
 }
 
 void DeskActionView::OnViewBlurred(views::View* observed) {
-  CHECK(observed == combine_desks_button_ || observed == close_all_button_);
+  CHECK(observed);
+  CHECK(observed == context_menu_button_ || observed == combine_desks_button_ ||
+        observed == close_all_button_);
   OnFocusChange();
 }
 
