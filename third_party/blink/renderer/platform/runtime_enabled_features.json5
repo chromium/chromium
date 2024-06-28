@@ -4361,11 +4361,6 @@
       name: "WebAuthAuthenticatorAttachment",
       status: "test",
     },
-    // https://w3c.github.io/webauthn/#enum-hints
-    {
-      name: "WebAuthenticationHints",
-      status: "experimental",
-    },
     // https://w3c.github.io/webauthn/#dom-publickeycredential-tojson
     // https://w3c.github.io/webauthn/#sctn-parseCreationOptionsFromJSON
     // https://w3c.github.io/webauthn/#sctn-parseRequestOptionsFromJSON
