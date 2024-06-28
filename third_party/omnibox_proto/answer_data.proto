@@ -1,3 +1,7 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 syntax = 'proto2';
 
 option optimize_for = LITE_RUNTIME;
@@ -6,6 +10,8 @@ option java_outer_classname = 'AnswerDataProto';
 
 package omnibox;
 
+// Data to render an individual answer block.
+// Next ID: 7
 message AnswerData {
   optional FormattedString headline = 1;
   optional FormattedString subhead = 2;
@@ -37,11 +43,10 @@ message FormattedString {
     optional string text = 2;
     optional ColorType color = 3;
     optional bool is_bolded = 4;
-    optional bool is_italized = 5;
+    optional bool is_italicized = 5;
     optional bool is_underlined = 6;
     // The type of unicode icon.
     optional UnicodeSymbolType unicode_symbol_type = 7;
-    // Do not make this a packed field since it's not supported in EML.
     repeated FormationOption formation_options = 9;
     // The URL to navigate to when clicking on this link.
     optional string embedded_url = 8;
@@ -62,12 +67,12 @@ message FormattedString {
   // The formation options.
   enum FormationOption {
     NOT_SET = 0;
-    // This field is use if there is an icon fragment before the current
+    // This field is used if there is an icon fragment before the current
     // fragment. https://screenshot.googleplex.com/6E7fTQASHA4z3fh
     ICONIZED_TEXT = 1;
-    // This field is used if the text fragment needs to be badged.
+    // This field is used if the text fragment needs to be boxed.
     // https://screenshot.googleplex.com/3uTwuEwirW4foud
-    BADGED_TEXT = 2;
+    BOXED_TEXT = 2;
   }
 
   enum ColorType {
