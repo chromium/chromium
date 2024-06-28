@@ -18736,22 +18736,6 @@
             ]
         }
     ],
-    "RestoreSignedInAccountAndSettingsFromBackupAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithMetrics_20240507",
-                    "enable_features": [
-                        "RestoreSignedInAccountAndSettingsFromBackup",
-                        "UpdateMetricsServicesStateInRestore"
-                    ]
-                }
-            ]
-        }
-    ],
     "RetryGetVideoCaptureDeviceInfos": [
         {
             "platforms": [
@@ -22558,10 +22542,12 @@
                         "HideSettingsSignInPromo",
                         "ReadingListEnableSyncTransportModeUponSignIn",
                         "ReplaceSyncPromosWithSignInPromos",
+                        "RestoreSignedInAccountAndSettingsFromBackup",
                         "SyncEnableContactInfoDataTypeForCustomPassphraseUsers",
                         "SyncEnableContactInfoDataTypeInTransportMode",
                         "SyncEnableWalletMetadataInTransportMode",
-                        "SyncEnableWalletOfferInTransportMode"
+                        "SyncEnableWalletOfferInTransportMode",
+                        "UpdateMetricsServicesStateInRestore"
                     ]
                 }
             ]
