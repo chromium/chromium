@@ -120,10 +120,6 @@ crbug.com/1254940 http/tests/security/contentSecurityPolicy/nonces/scriptnonce-r
 
 crbug.com/1459010 fast/events/hit-test-counts.html [ Failure ]
 
-# Image isn't present:
-crbug.com/1254944 svg/dynamic-updates/SVGFEComponentTransferElement-dom-tableValues-attr.html [ Failure Pass ]
-crbug.com/1254944 svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-tableValues-prop.html [ Failure Pass ]
-
 # Fails flakily or times out
 
 # Unknown media state flakiness (likely due to layout occuring earlier than expected):
