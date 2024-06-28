@@ -4,12 +4,15 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <functional>
 #include <random>
 #include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/hash/hash.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/fuzzing/atspi_in_process_fuzzer.pb.h"
@@ -24,6 +27,15 @@ constexpr auto kBlockedControls =
     base::MakeFixedFlatSet<std::string_view>({"Close"});
 
 using ScopedAtspiAccessible = ScopedGObject<AtspiAccessible>;
+
+// We inform centipede of control paths we've explored, to
+// bias centipede towards exploring new controls.
+static constexpr size_t kNumControlsToDeclareToCentipede = 65536;
+__attribute__((used,
+               retain,
+               section("__centipede_extra_features"))) static uint64_t
+    extra_features[kNumControlsToDeclareToCentipede];
+constexpr uint64_t kControlsReachedDomain = 0;
 
 // This fuzzer attempts to explore the space of Chromium UI controls using
 // the ATSPI Linux accessibility API. The hope is that virtually all Chromium
@@ -42,6 +54,9 @@ using ScopedAtspiAccessible = ScopedGObject<AtspiAccessible>;
 // allow fuzzing infrastructure to test on different Chromium versions to
 // determine regression or fix ranges (subject to the caveats listed below
 // about this fuzzer's inability to reset UI state right now.)
+// Also, the initial layers of single-child controls are skipped, and that could
+// theoretically reduce test case stability if the nature of those first
+// layers change.
 //
 // See the discussion about the custom mutator to see the main cost of
 // identifying controls by name.
@@ -78,7 +93,17 @@ class AtspiInProcessFuzzer
   static std::optional<size_t> FindMatchingControl(
       const std::vector<ScopedAtspiAccessible>& controls,
       const test::fuzzing::atspi_fuzzing::PathElement& selector);
-  static bool AttemptMutateMessage(AtspiInProcessFuzzer::FuzzCase& input,
+
+  static size_t MutateUsingLPM(uint8_t* data,
+                               size_t size,
+                               size_t max_size,
+                               unsigned int seed);
+
+  static std::optional<size_t> MutateUsingNameAndRole(uint8_t* data,
+                                                      size_t size,
+                                                      size_t max_size,
+                                                      std::minstd_rand& random);
+  static bool AttemptMutateMessage(AtspiInProcessFuzzer::FuzzCase& message,
                                    std::minstd_rand& random);
 
   // Control names we've encountered anywhere in the tree; used in custom
@@ -139,15 +164,32 @@ void AtspiInProcessFuzzer::LoadAPage() {
 
 int AtspiInProcessFuzzer::Fuzz(
     const test::fuzzing::atspi_fuzzing::FuzzCase& fuzz_case) {
+  size_t control_path_id = 0;
+  // Immediately reject cases where any name or role isn't a valid string,
+  // instead of wasting time handling some of their actions.
+  // We specifically reject \0 characters as this can cause crashes.
   for (const test::fuzzing::atspi_fuzzing::Action& action :
        fuzz_case.action()) {
-    if (action.path_to_control_size() < 2) {
-      // The first couple of levels deep in the accessibility tree are things
-      // like the application itself, which are not really interactive.
-      // The libfuzzer mutator seems to bias to producing small test cases
-      // which want to explore just those nodes. Shortcut things a bit by
-      // skipping those without pointlessly poking at the controls.
-      return -1;
+    for (const test::fuzzing::atspi_fuzzing::PathElement& path_element :
+         action.path_to_control()) {
+      switch (path_element.element_type_case()) {
+        case test::fuzzing::atspi_fuzzing::PathElement::kNamed: {
+          const std::string& name = path_element.named().name();
+          if (name.empty() || name.find('\0') != std::string::npos ||
+              !base::IsStringUTF8(name)) {
+            return -1;
+          }
+        } break;
+        case test::fuzzing::atspi_fuzzing::PathElement::kAnonymous: {
+          const std::string& role = path_element.anonymous().role();
+          if (role.empty() || role.find('\0') != std::string::npos ||
+              !base::IsStringUTF8(role)) {
+            return -1;
+          }
+        } break;
+        default:
+          break;
+      }
     }
   }
 
@@ -173,7 +215,19 @@ int AtspiInProcessFuzzer::Fuzz(
     // Enumerate available controls after each action we take - obviously,
     // clicking on one button may make more buttons available
     ScopedAtspiAccessible current_control = GetRootNode();
+    // Drill immediately down to the first level which has a choice of controls.
+    // The topmost layers each have one child and are the outermost
+    // application, which remains the same. (Worse, the outermost control
+    // has a name which varies based on RAM usage, so our fuzzer would struggle
+    // to make stable test cases.)
     std::vector<ScopedAtspiAccessible> children = GetChildren(current_control);
+    while (children.size() == 1) {
+      current_control = children[0];
+      children = GetChildren(current_control);
+    }
+
+    // Keep a record of the control path so we can inform centipede
+    std::vector<size_t> current_control_path;
     for (const test::fuzzing::atspi_fuzzing::PathElement& path_element :
          action.path_to_control()) {
       // Record all known children for our custom mutator
@@ -190,6 +244,23 @@ int AtspiInProcessFuzzer::Fuzz(
         return -1;
       }
       current_control = children[*selected_control];
+      current_control_path.push_back(*selected_control);
+
+      // Inform centipede of the control path we've reached.
+      // We give it a hash of the ordinal path to the control - this doesn't
+      // need to be stable across Chromium versions. Each time we
+      // declare a new hash here, centipede will know that this is an
+      // especially interesting input.
+      if (control_path_id < kNumControlsToDeclareToCentipede) {
+        base::span<uint8_t> path_data(
+            reinterpret_cast<uint8_t*>(current_control_path.data()),
+            current_control_path.size() * sizeof(size_t));
+        size_t hash =
+            base::FastHash(path_data) & std::numeric_limits<uint32_t>::max();
+        extra_features[control_path_id++] =
+            (kControlsReachedDomain << 32) | hash;
+      }
+
       children = GetChildren(current_control);
     }
 
@@ -203,14 +274,12 @@ int AtspiInProcessFuzzer::Fuzz(
     switch (action.action_choice_case()) {
       case test::fuzzing::atspi_fuzzing::Action::kTakeAction:
         if (!InvokeAction(current_control, action.take_action().action_id())) {
-          return 0;  // didn't work this time, but could conceivably work in
-                     // future, so don't reject it from the corpus
+          return -1;
         }
         break;
       case test::fuzzing::atspi_fuzzing::Action::kReplaceText:
         if (!ReplaceText(current_control, action.replace_text().new_text())) {
-          return 0;  // didn't work this time, but could conceivably work in
-                     // future, so don't reject it from the corpus
+          return -1;
         }
         break;
       case test::fuzzing::atspi_fuzzing::Action::kSetSelection: {
@@ -218,8 +287,7 @@ int AtspiInProcessFuzzer::Fuzz(
             action.set_selection().selected_child().begin(),
             action.set_selection().selected_child().end());
         if (!SetSelection(current_control, new_selection)) {
-          return 0;  // didn't work this time, but could conceivably work in
-                     // future, so don't reject it from the corpus
+          return -1;
         }
       } break;
       case test::fuzzing::atspi_fuzzing::Action::ACTION_CHOICE_NOT_SET:
@@ -482,6 +550,32 @@ size_t SaveMessageAsText(const AtspiInProcessFuzzer::FuzzCase& message,
 
 }  // namespace
 
+size_t AtspiInProcessFuzzer::MutateUsingLPM(uint8_t* data,
+                                            size_t size,
+                                            size_t max_size,
+                                            unsigned int seed) {
+  AtspiInProcessFuzzer::FuzzCase input;
+  return protobuf_mutator::libfuzzer::CustomProtoMutator(
+      false, data, size, max_size, seed, &input);
+}
+
+// Returns nullopt if we don't successfully mutate this
+std::optional<size_t> AtspiInProcessFuzzer::MutateUsingNameAndRole(
+    uint8_t* data,
+    size_t size,
+    size_t max_size,
+    std::minstd_rand& random) {
+  AtspiInProcessFuzzer::FuzzCase input;
+  base::span<uint8_t> message_data(data, size);
+  if (!ParseTextMessage(message_data, &input)) {
+    return std::nullopt;
+  }
+  if (AttemptMutateMessage(input, random)) {
+    return SaveMessageAsText(input, data, max_size);
+  }
+  return std::nullopt;
+}
+
 // Returns false if we don't successfully mutate this
 bool AtspiInProcessFuzzer::AttemptMutateMessage(
     AtspiInProcessFuzzer::FuzzCase& input,
@@ -512,6 +606,9 @@ bool AtspiInProcessFuzzer::AttemptMutateMessage(
     size_t replacement_name = std::uniform_int_distribution<size_t>(
         0, known_names.size() - 1)(random);
     std::string name = GetNth(known_names, replacement_name);
+    if (name == path_element->named().name()) {
+      return false;
+    }
     *path_element->mutable_named()->mutable_name() = name;
   } else {
     if (known_roles.empty()) {
@@ -520,6 +617,9 @@ bool AtspiInProcessFuzzer::AttemptMutateMessage(
     size_t replacement_role = std::uniform_int_distribution<size_t>(
         0, known_roles.size() - 1)(random);
     std::string role = GetNth(known_roles, replacement_role);
+    if (role == path_element->anonymous().role()) {
+      return false;
+    }
     *path_element->mutable_anonymous()->mutable_role() = role;
   }
   return true;
@@ -530,36 +630,32 @@ size_t AtspiInProcessFuzzer::CustomMutator(uint8_t* data,
                                            size_t max_size,
                                            unsigned int seed) {
   std::minstd_rand random(seed);
-  AtspiInProcessFuzzer::FuzzCase input;
 
   // 0 = use just libprotobuf-mutator
   // 1 = use libprotobuf-mutator then our mutator
   //     (sometimes this might be useful for instance to get from "panel 2"
   //     to "frame 3", or something. "panel 3" might not be a valid control.)
-  // 2 = use just our mutator
-  int mutation_strategy = std::uniform_int_distribution(0, 2)(random);
+  // 2-6 = use just our mutator
+  int mutation_strategy = std::uniform_int_distribution(0, 6)(random);
 
-  if (mutation_strategy != 0) {
-    if (mutation_strategy == 1) {
-      size = protobuf_mutator::libfuzzer::CustomProtoMutator(
-          false, data, size, max_size, seed, &input);
+  switch (mutation_strategy) {
+    case 0:
+      return MutateUsingLPM(data, size, max_size, random());
+    case 1: {
+      size = MutateUsingLPM(data, size, max_size, random());
+      std::optional<size_t> new_size =
+          MutateUsingNameAndRole(data, size, max_size, random);
+      return new_size.value_or(size);
     }
-
-    // Try to mutate it ourselves. If it doesn't work, we drop out
-    // to standard lpm mutation
-    // lpm ignores errors; so shall we.
-    base::span<uint8_t> message_data(data, size);
-    ParseTextMessage(message_data, &input);
-    bool mutated_ok = AttemptMutateMessage(input, random);
-    if (mutated_ok) {
-      return SaveMessageAsText(input, data, size);
-    } else if (mutation_strategy == 1) {
-      // We already used lpm mutation
-      return size;
-    }  // otherwise fall through and use lpm below
+    default: {
+      std::optional<size_t> new_size =
+          MutateUsingNameAndRole(data, size, max_size, random);
+      if (!new_size.has_value()) {
+        return MutateUsingLPM(data, size, max_size, random());
+      }
+      return *new_size;
+    }
   }
-  return protobuf_mutator::libfuzzer::CustomProtoMutator(
-      false, data, size, max_size, seed, &input);
 }
 
 // A custom mutator which sometimes uses the standard libprotobuf-mutator,
@@ -592,6 +688,14 @@ size_t AtspiInProcessFuzzer::CustomMutator(uint8_t* data,
 // it is effective - it enables the fuzzer to reach into controls in a
 // fairly rapid fashion, while still using control names within the test
 // cases wherever possible.
+//
+// CENTIPEDE: Unfortunately, in centipede, the mutator runs in a different
+// invocation of the process than the actual fuzzer. The custom mutator
+// therefore has no access to the real control names and roles which have
+// been discovered, and always falls back to using the regular LPM mutator.
+// This makes the fuzzer significantly less effective. In the future
+// we could work around this by persisting the control names to disk, or
+// similar.
 extern "C" size_t LLVMFuzzerCustomMutator(uint8_t* data,
                                           size_t size,
                                           size_t max_size,
