@@ -3857,14 +3857,6 @@ TEST_P(GLES2DecoderTest, BindTextureValidArgs) {
   EXPECT_CALL(*gl_, BindTexture(GL_TEXTURE_2D, kServiceTextureId))
       .Times(1)
       .RetiresOnSaturation();
-  if (!feature_info()->gl_version_info().BehavesLikeGLES() &&
-      feature_info()->gl_version_info().IsAtLeastGL(3, 2)) {
-    EXPECT_CALL(*gl_, TexParameteri(GL_TEXTURE_2D,
-                                    GL_DEPTH_TEXTURE_MODE,
-                                    GL_RED))
-        .Times(1)
-        .RetiresOnSaturation();
-  }
   cmds::BindTexture cmd;
   cmd.Init(GL_TEXTURE_2D, client_texture_id_);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
@@ -3877,14 +3869,6 @@ TEST_P(GLES2DecoderTest, BindTextureValidArgsNewId) {
       .RetiresOnSaturation();
   EXPECT_CALL(*gl_, GenTextures(1, _))
       .WillOnce(SetArgPointee<1>(kNewServiceId));
-  if (!feature_info()->gl_version_info().BehavesLikeGLES() &&
-      feature_info()->gl_version_info().IsAtLeastGL(3, 2)) {
-    EXPECT_CALL(*gl_, TexParameteri(GL_TEXTURE_2D,
-                                    GL_DEPTH_TEXTURE_MODE,
-                                    GL_RED))
-        .Times(1)
-        .RetiresOnSaturation();
-  }
   cmds::BindTexture cmd;
   cmd.Init(GL_TEXTURE_2D, kNewClientId);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));

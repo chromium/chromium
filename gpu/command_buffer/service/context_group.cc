@@ -427,20 +427,9 @@ gpu::ContextResult ContextGroup::Initialize(
                     : gpu::ContextResult::kFatalFailure;
   }
 
-  if (feature_info_->gl_version_info().BehavesLikeGLES()) {
-    GetIntegerv(GL_MAX_FRAGMENT_UNIFORM_VECTORS,
-        &max_fragment_uniform_vectors_);
-    GetIntegerv(GL_MAX_VARYING_VECTORS, &max_varying_vectors_);
-    GetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, &max_vertex_uniform_vectors_);
-  } else {
-    GetIntegerv(
-        GL_MAX_FRAGMENT_UNIFORM_COMPONENTS, &max_fragment_uniform_vectors_);
-    max_fragment_uniform_vectors_ /= 4;
-    GetIntegerv(GL_MAX_VARYING_FLOATS, &max_varying_vectors_);
-    max_varying_vectors_ /= 4;
-    GetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS, &max_vertex_uniform_vectors_);
-    max_vertex_uniform_vectors_ /= 4;
-  }
+  GetIntegerv(GL_MAX_FRAGMENT_UNIFORM_VECTORS, &max_fragment_uniform_vectors_);
+  GetIntegerv(GL_MAX_VARYING_VECTORS, &max_varying_vectors_);
+  GetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, &max_vertex_uniform_vectors_);
 
   const GLint kMinFragmentUniformVectors = 16;
   const GLint kMinVaryingVectors = 8;

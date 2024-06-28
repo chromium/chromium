@@ -36,8 +36,6 @@ struct GL_EXPORT GLVersionInfo {
                      (major_version == major && minor_version >= minor));
   }
 
-  bool BehavesLikeGLES() const { return is_es; }
-
   struct VersionStrings {
     const char* gl_version;
     const char* glsl_version;

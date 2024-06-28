@@ -418,27 +418,15 @@ void TestHelper::SetupContextGroupInitExpectations(
       .WillOnce(SetArgPointee<1>(kMaxVertexTextureImageUnits))
       .RetiresOnSaturation();
 
-  if (gl_info.is_es) {
-    EXPECT_CALL(*gl, GetIntegerv(GL_MAX_FRAGMENT_UNIFORM_VECTORS, _))
-        .WillOnce(SetArgPointee<1>(kMaxFragmentUniformVectors))
-        .RetiresOnSaturation();
-    EXPECT_CALL(*gl, GetIntegerv(GL_MAX_VARYING_VECTORS, _))
-        .WillOnce(SetArgPointee<1>(kMaxVaryingVectors))
-        .RetiresOnSaturation();
-    EXPECT_CALL(*gl, GetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, _))
-        .WillOnce(SetArgPointee<1>(kMaxVertexUniformVectors))
-        .RetiresOnSaturation();
-  } else {
-    EXPECT_CALL(*gl, GetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS, _))
-        .WillOnce(SetArgPointee<1>(kMaxFragmentUniformComponents))
-        .RetiresOnSaturation();
-    EXPECT_CALL(*gl, GetIntegerv(GL_MAX_VARYING_FLOATS, _))
-        .WillOnce(SetArgPointee<1>(kMaxVaryingFloats))
-        .RetiresOnSaturation();
-    EXPECT_CALL(*gl, GetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS, _))
-        .WillOnce(SetArgPointee<1>(kMaxVertexUniformComponents))
-        .RetiresOnSaturation();
-  }
+  EXPECT_CALL(*gl, GetIntegerv(GL_MAX_FRAGMENT_UNIFORM_VECTORS, _))
+      .WillOnce(SetArgPointee<1>(kMaxFragmentUniformVectors))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl, GetIntegerv(GL_MAX_VARYING_VECTORS, _))
+      .WillOnce(SetArgPointee<1>(kMaxVaryingVectors))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl, GetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, _))
+      .WillOnce(SetArgPointee<1>(kMaxVertexUniformVectors))
+      .RetiresOnSaturation();
 
   EXPECT_CALL(*gl, GetIntegerv(GL_MAX_VERTEX_OUTPUT_COMPONENTS, _))
       .Times(testing::Between(0, 1))

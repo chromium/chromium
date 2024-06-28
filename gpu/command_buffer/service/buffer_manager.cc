@@ -404,9 +404,8 @@ bool BufferManager::UseShadowBuffer(GLenum target, GLenum usage) {
   const bool is_client_side_array = IsUsageClientSideArray(usage);
 
   // TODO(zmo): Don't shadow buffer data on ES3. crbug.com/491002.
-  return (
-      target == GL_ELEMENT_ARRAY_BUFFER || allow_buffers_on_multiple_targets_ ||
-      is_client_side_array);
+  return (target == GL_ELEMENT_ARRAY_BUFFER ||
+          allow_buffers_on_multiple_targets_ || is_client_side_array);
 }
 
 void BufferManager::SetInfo(Buffer* buffer,

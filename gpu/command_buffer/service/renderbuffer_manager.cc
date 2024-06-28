@@ -294,21 +294,10 @@ bool RenderbufferManager::ComputeEstimatedRenderbufferSize(
 
 GLenum RenderbufferManager::InternalRenderbufferFormatToImplFormat(
     GLenum impl_format) const {
-  if (!feature_info_->gl_version_info().BehavesLikeGLES()) {
-    switch (impl_format) {
-      case GL_DEPTH_COMPONENT16:
-        return GL_DEPTH_COMPONENT;
-      case GL_RGBA4:
-      case GL_RGB5_A1:
-        return GL_RGBA;
-      case GL_RGB565:
-        return GL_RGB;
-    }
-  } else {
-    // Upgrade 16-bit depth to 24-bit if possible.
-    if (impl_format == GL_DEPTH_COMPONENT16 &&
-        feature_info_->feature_flags().oes_depth24)
-      return GL_DEPTH_COMPONENT24;
+  // Upgrade 16-bit depth to 24-bit if possible.
+  if (impl_format == GL_DEPTH_COMPONENT16 &&
+      feature_info_->feature_flags().oes_depth24) {
+    return GL_DEPTH_COMPONENT24;
   }
   return impl_format;
 }

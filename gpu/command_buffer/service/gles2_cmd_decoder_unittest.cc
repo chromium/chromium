@@ -1219,6 +1219,11 @@ TEST_P(GLES2DecoderManualInitTest, MemoryTrackerCopyTexImage2D) {
 }
 
 TEST_P(GLES2DecoderManualInitTest, MemoryTrackerRenderbufferStorage) {
+  const GLsizei kWidth = 8;
+  const GLsizei kHeight = 4;
+  const GLenum kFormat = GL_RGBA4;
+  const size_t kNumOfBytesPerPixel = 2;
+
   auto memory_tracker = std::make_unique<SizeOnlyMemoryTracker>();
   auto* memory_tracker_ptr = memory_tracker.get();
   set_memory_tracker(std::move(memory_tracker));
@@ -1232,14 +1237,16 @@ TEST_P(GLES2DecoderManualInitTest, MemoryTrackerRenderbufferStorage) {
       .WillOnce(Return(GL_NO_ERROR))
       .WillOnce(Return(GL_NO_ERROR))
       .RetiresOnSaturation();
-  EXPECT_CALL(*gl_, RenderbufferStorageEXT(GL_RENDERBUFFER, GL_RGBA, 8, 4))
+  EXPECT_CALL(*gl_,
+              RenderbufferStorageEXT(GL_RENDERBUFFER, kFormat, kWidth, kHeight))
       .Times(1)
       .RetiresOnSaturation();
   cmds::RenderbufferStorage cmd;
-  cmd.Init(GL_RENDERBUFFER, GL_RGBA4, 8, 4);
+  cmd.Init(GL_RENDERBUFFER, kFormat, kWidth, kHeight);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_EQ(128u, memory_tracker_ptr->GetSize());
+  EXPECT_EQ(kWidth * kHeight * kNumOfBytesPerPixel,
+            memory_tracker_ptr->GetSize());
 }
 
 TEST_P(GLES2DecoderManualInitTest, MemoryTrackerBufferData) {

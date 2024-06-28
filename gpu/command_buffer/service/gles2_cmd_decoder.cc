@@ -3134,12 +3134,6 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
   util_.set_num_compressed_texture_formats(
       validators_->compressed_texture_format.GetValues().size());
 
-  if (!gl_version_info().BehavesLikeGLES()) {
-    // We have to enable vertex array 0 on GL with compatibility profile or it
-    // won't render. Note that ES or GL with core profile does not have this
-    // issue.
-    state_.vertex_attrib_manager->SetDriverVertexAttribEnabled(0, true);
-  }
   api()->glGenBuffersARBFn(1, &attrib_0_buffer_id_);
   api()->glBindBufferFn(GL_ARRAY_BUFFER, attrib_0_buffer_id_);
   api()->glVertexAttribPointerFn(0, 1, GL_FLOAT, GL_FALSE, 0, nullptr);
@@ -3221,17 +3215,6 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
 
     state_.viewport_width = surface->GetSize().width();
     state_.viewport_height = surface->GetSize().height();
-  }
-
-  // OpenGL ES 2.0 implicitly enables the desktop GL capability
-  // VERTEX_PROGRAM_POINT_SIZE and doesn't expose this enum. This fact
-  // isn't well documented; it was discovered in the Khronos OpenGL ES
-  // mailing list archives. It also implicitly enables the desktop GL
-  // capability GL_POINT_SPRITE to provide access to the gl_PointCoord
-  // variable in fragment shaders.
-  if (!gl_version_info().BehavesLikeGLES()) {
-    api()->glEnableFn(GL_VERTEX_PROGRAM_POINT_SIZE);
-    api()->glEnableFn(GL_POINT_SPRITE);
   }
 
   // ES3 requires seamless cubemap. ES2 does not.
@@ -5597,16 +5580,6 @@ void GLES2DecoderImpl::DoBindTexture(GLenum target, GLuint client_id) {
     api()->glBindTextureFn(target, texture->service_id());
     if (texture->target() == 0) {
       texture_manager()->SetTarget(texture_ref, target);
-      if (!gl_version_info().BehavesLikeGLES() &&
-          gl_version_info().IsAtLeastGL(3, 2)) {
-        // In Desktop GL core profile and GL ES, depth textures are always
-        // sampled to the RED channel, whereas on Desktop GL compatibility
-        // proifle, they are sampled to RED, LUMINANCE, INTENSITY, or ALPHA
-        // channel, depending on the DEPTH_TEXTURE_MODE value.
-        // In theory we only need to apply this for depth textures, but it is
-        // simpler to apply to all textures.
-        api()->glTexParameteriFn(target, GL_DEPTH_TEXTURE_MODE, GL_RED);
-      }
     }
   } else {
     api()->glBindTextureFn(target, 0);
@@ -5763,9 +5736,7 @@ void GLES2DecoderImpl::DoResumeTransformFeedback() {
 
 void GLES2DecoderImpl::DoDisableVertexAttribArray(GLuint index) {
   if (state_.vertex_attrib_manager->Enable(index, false)) {
-    if (index != 0 || gl_version_info().BehavesLikeGLES()) {
-      state_.vertex_attrib_manager->SetDriverVertexAttribEnabled(index, false);
-    }
+    state_.vertex_attrib_manager->SetDriverVertexAttribEnabled(index, false);
   } else {
     LOCAL_SET_GL_ERROR(
         GL_INVALID_VALUE,
@@ -9593,19 +9564,14 @@ void GLES2DecoderImpl::RestoreStateForAttrib(
                             ? state_.bound_array_buffer->service_id()
                             : 0);
 
-  // Never touch vertex attribute 0's state (in particular, never disable it)
-  // when running on desktop GL with compatibility profile because it will
-  // never be re-enabled.
-  if (attrib_index != 0 || gl_version_info().BehavesLikeGLES()) {
-    // Restore the vertex attrib array enable-state according to
-    // the VertexAttrib enabled_in_driver value (which really represents the
-    // state of the virtual context - not the driver - notably, above the
-    // vertex array object emulation layer).
-    if (attrib->enabled_in_driver()) {
-      api()->glEnableVertexAttribArrayFn(attrib_index);
-    } else {
-      api()->glDisableVertexAttribArrayFn(attrib_index);
-    }
+  // Restore the vertex attrib array enable-state according to
+  // the VertexAttrib enabled_in_driver value (which really represents the
+  // state of the virtual context - not the driver - notably, above the
+  // vertex array object emulation layer).
+  if (attrib->enabled_in_driver()) {
+    api()->glEnableVertexAttribArrayFn(attrib_index);
+  } else {
+    api()->glDisableVertexAttribArrayFn(attrib_index);
   }
 }
 

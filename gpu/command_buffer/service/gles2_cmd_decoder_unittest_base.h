@@ -301,7 +301,6 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
   void DoRenderbufferStorageMultisampleCHROMIUM(GLenum target,
                                                 GLsizei samples,
                                                 GLenum internal_format,
-                                                GLenum gl_format,
                                                 GLsizei width,
                                                 GLsizei height,
                                                 bool expect_bind);
@@ -380,9 +379,11 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
                         GLsizei width,
                         GLsizei height,
                         GLint border);
-  void DoRenderbufferStorage(
-      GLenum target, GLenum internal_format, GLenum actual_format,
-      GLsizei width, GLsizei height, GLenum error);
+  void DoRenderbufferStorage(GLenum target,
+                             GLenum internal_format,
+                             GLsizei width,
+                             GLsizei height,
+                             GLenum error);
   void DoFramebufferRenderbuffer(
       GLenum target,
       GLenum attachment,

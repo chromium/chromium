@@ -1760,8 +1760,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawClearsAfterRenderbufferStorageInFBO) {
       GL_RENDERBUFFER, client_renderbuffer_id_, kServiceRenderbufferId);
   DoBindFramebuffer(
       GL_FRAMEBUFFER, client_framebuffer_id_, kServiceFramebufferId);
-  DoRenderbufferStorage(
-      GL_RENDERBUFFER, GL_RGBA4, GL_RGBA, 100, 50, GL_NO_ERROR);
+  DoRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA4, 100, 50, GL_NO_ERROR);
   DoFramebufferRenderbuffer(GL_FRAMEBUFFER,
                             GL_COLOR_ATTACHMENT0,
                             GL_RENDERBUFFER,
@@ -1892,7 +1891,6 @@ TEST_P(GLES2DecoderWithShaderTest,
       GL_FRAMEBUFFER, client_framebuffer_id_, kServiceFramebufferId);
   DoRenderbufferStorage(GL_RENDERBUFFER,
                         GL_DEPTH_COMPONENT16,
-                        GL_DEPTH_COMPONENT,
                         1,
                         1,
                         GL_NO_ERROR);

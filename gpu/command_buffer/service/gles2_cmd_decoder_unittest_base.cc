@@ -273,9 +273,6 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
 
   AddExpectationsForBindVertexArrayOES();
 
-  if (!group_->feature_info()->gl_version_info().BehavesLikeGLES()) {
-    SetDriverVertexAttribEnabled(0, true);
-  }
   static GLuint attrib_0_id[] = {
     kServiceAttrib0BufferId,
   };
@@ -359,16 +356,6 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
   EXPECT_CALL(*gl_, GetIntegerv(GL_STENCIL_BITS, _))
       .WillOnce(SetArgPointee<1>(normalized_init.has_stencil ? 8 : 0))
       .RetiresOnSaturation();
-
-  if (!group_->feature_info()->gl_version_info().BehavesLikeGLES()) {
-    EXPECT_CALL(*gl_, Enable(GL_VERTEX_PROGRAM_POINT_SIZE))
-        .Times(1)
-        .RetiresOnSaturation();
-
-    EXPECT_CALL(*gl_, Enable(GL_POINT_SPRITE))
-        .Times(1)
-        .RetiresOnSaturation();
-  }
 
   if (group_->feature_info()->gl_version_info().IsAtLeastGL(3, 2)) {
     EXPECT_CALL(*gl_, Enable(GL_TEXTURE_CUBE_MAP_SEAMLESS))
@@ -1275,7 +1262,6 @@ void GLES2DecoderTestBase::DoRenderbufferStorageMultisampleCHROMIUM(
     GLenum target,
     GLsizei samples,
     GLenum internal_format,
-    GLenum gl_format,
     GLsizei width,
     GLsizei height,
     bool expect_bind) {
@@ -1283,8 +1269,8 @@ void GLES2DecoderTestBase::DoRenderbufferStorageMultisampleCHROMIUM(
       .WillOnce(Return(GL_NO_ERROR))
       .RetiresOnSaturation();
   EnsureRenderbufferBound(expect_bind);
-  EXPECT_CALL(*gl_, RenderbufferStorageMultisample(target, samples, gl_format,
-                                                   width, height))
+  EXPECT_CALL(*gl_, RenderbufferStorageMultisample(
+                        target, samples, internal_format, width, height))
       .Times(1)
       .RetiresOnSaturation();
   EXPECT_CALL(*gl_, GetError())
@@ -1333,11 +1319,6 @@ void GLES2DecoderTestBase::DoBindTexture(
   EXPECT_CALL(*gl_, BindTexture(target, service_id))
       .Times(1)
       .RetiresOnSaturation();
-  if (!group_->feature_info()->gl_version_info().BehavesLikeGLES() &&
-      group_->feature_info()->gl_version_info().IsAtLeastGL(3, 2)) {
-    EXPECT_CALL(*gl_, TexParameteri(target, GL_DEPTH_TEXTURE_MODE, GL_RED))
-        .Times(AtMost(1));
-  }
   cmds::BindTexture cmd;
   cmd.Init(target, client_id);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
@@ -1564,14 +1545,16 @@ void GLES2DecoderTestBase::DoCopyTexImage2D(
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
 }
 
-void GLES2DecoderTestBase::DoRenderbufferStorage(
-    GLenum target, GLenum internal_format, GLenum actual_format,
-    GLsizei width, GLsizei height,  GLenum error) {
+void GLES2DecoderTestBase::DoRenderbufferStorage(GLenum target,
+                                                 GLenum internal_format,
+                                                 GLsizei width,
+                                                 GLsizei height,
+                                                 GLenum error) {
   EXPECT_CALL(*gl_, GetError())
       .WillOnce(Return(GL_NO_ERROR))
       .RetiresOnSaturation();
-  EXPECT_CALL(*gl_, RenderbufferStorageEXT(
-      target, actual_format, width, height))
+  EXPECT_CALL(*gl_,
+              RenderbufferStorageEXT(target, internal_format, width, height))
       .Times(1)
       .RetiresOnSaturation();
   EXPECT_CALL(*gl_, GetError())
@@ -1730,16 +1713,14 @@ void GLES2DecoderTestBase::AddExpectationsForRestoreAttribState(GLuint attrib) {
       .Times(1)
       .RetiresOnSaturation();
 
-  if (attrib != 0 || group_->feature_info()->gl_version_info().is_es) {
-    // TODO(bajones): Not sure if I can tell which of these will be called
-    EXPECT_CALL(*gl_, EnableVertexAttribArray(attrib))
-        .Times(testing::AtMost(1))
-        .RetiresOnSaturation();
+  // TODO(bajones): Not sure if I can tell which of these will be called
+  EXPECT_CALL(*gl_, EnableVertexAttribArray(attrib))
+      .Times(testing::AtMost(1))
+      .RetiresOnSaturation();
 
-    EXPECT_CALL(*gl_, DisableVertexAttribArray(attrib))
-        .Times(testing::AtMost(1))
-        .RetiresOnSaturation();
-  }
+  EXPECT_CALL(*gl_, DisableVertexAttribArray(attrib))
+      .Times(testing::AtMost(1))
+      .RetiresOnSaturation();
 }
 
 // GCC requires these declarations, but MSVC requires they not be present
