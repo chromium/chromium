@@ -28,9 +28,6 @@ class LogoBridge {
 
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
 
-  // TODO(treib): Double-check the observer contract (esp. for
-  // LogoService::GetLogo()).
-  //
   // Gets the current non-animated logo (downloading it if necessary) and passes
   // it to the observer.
   // The observer's |onLogoAvailable| is guaranteed to be called at least once:

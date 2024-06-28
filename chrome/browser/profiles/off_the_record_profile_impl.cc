@@ -412,8 +412,6 @@ OffTheRecordProfileImpl::GetExtensionSpecialStoragePolicy() {
 }
 
 bool OffTheRecordProfileImpl::IsChild() const {
-  // TODO(treib): If we ever allow incognito for child accounts, evaluate
-  // whether we want to just return false here.
   return profile_->IsChild();
 }
 

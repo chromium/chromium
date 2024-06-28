@@ -1046,9 +1046,6 @@ void SyncServiceImpl::OnEngineInitialized(bool success,
                                           bool is_first_time_sync_configure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(treib): Based on some crash reports, it seems like the user could have
-  // signed out already at this point, so many of the steps below, including
-  // datatype reconfiguration, should not be triggered.
   DCHECK(IsEngineAllowedToRun());
 
   // The very first time the backend initializes is effectively the first time
