@@ -190,8 +190,8 @@ chromium-metrics-reviews@google.com.
   <owner>cuianthony@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
-    Histogram for recording the reason why a Compose dialog that had shown the
-    FRE UI closed. Recorded once per session when it is closed or destroyed.
+    Reports the close reason for sessions where the FRE UI was shown. Recorded
+    on session destruction only for session where the FRE dialog was shown.
   </summary>
 </histogram>
 
@@ -215,8 +215,8 @@ chromium-metrics-reviews@google.com.
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
-    Histogram for recording the reason why a Compose dialog that had shown the
-    MSBB UI closed. Recorded once per session when it is closed or destroyed.
+    Reports the close reason for sessions where the MSBB UI was shown. Recorded
+    on session destruction only for session where the MSBB dialog was shown.
   </summary>
 </histogram>
 
@@ -373,9 +373,10 @@ chromium-metrics-reviews@google.com.
   <owner>perrier@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
-    Count of the number of times the Compose dialog was shown in a session where
-    {FinalStatus}. Recorded once per session when it is closed or destroyed.
-    {ComposeEvalLocation} if a mix of Server and OnDevice requests were used for
+    Count of the number of times the main Compose dialog was shown in a session
+    where {FinalStatus}. Is not recorded if the session never passed the FRE or
+    MSBB disclaimers. Recorded once per session when it is closed or destroyed.
+    {ComposeEvalLocation} If a mix of Server and OnDevice requests were used for
     this session, or no requests were made, then neither Server nor OnDevice
     variant is recorded.
   </summary>

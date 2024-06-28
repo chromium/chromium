@@ -101,7 +101,7 @@ enum class ComposeSessionCloseReason {
 // Keep in sync with ComposeSessionEventCounts in
 // src/tools/metrics/histograms/metadata/compose/enums.xml.
 enum class ComposeSessionEventTypes {
-  kDialogShown = 0,
+  kMainDialogShown = 0,
   kFREShown = 1,
   kFREAccepted = 2,
   kMSBBShown = 3,
@@ -126,7 +126,10 @@ enum class ComposeSessionEventTypes {
   kRedoClicked = 22,
   kResultEdited = 23,
   kEditedResultInserted = 24,
-  kMaxValue = kEditedResultInserted,
+  kSuccessfulRequest = 25,
+  kFailedRequest = 26,
+  kComposeDialogOpened = 27,
+  kMaxValue = kComposeDialogOpened,
 };
 
 // Enum for recording the show status of both the HMW context menu item and
@@ -241,14 +244,20 @@ struct ComposeSessionEvents {
   ~ComposeSessionEvents() = default;
 
   // Logging counters.
+  // Times we have opened Compose to any section (main, FRE, or MSBB).
+  unsigned int compose_dialog_open_count = 0;
+  // Times we have shown the Compose prompot (i.e. past the FRE & MSBB).
+  unsigned int compose_prompt_view_count = 0;
   // The total number of Compose Requests for the session.
-  unsigned int compose_count = 0;
-  // Times we have shown the compose dialog.
-  unsigned int dialog_shown_count = 0;
-  // Times we have shown the first run dialog.
-  unsigned int fre_dialog_shown_count = 0;
-  // Times we have shown the dialog to enable MSBB.
-  unsigned int msbb_dialog_shown_count = 0;
+  unsigned int compose_requests_count = 0;
+  // The total number of successful Compose requests.
+  unsigned int successful_requests_count = 0;
+  // The total number of Compose requests with an error.
+  unsigned int failed_requests_count = 0;
+  // Times we have shown the first run view.
+  unsigned int fre_view_count = 0;
+  // Times we have shown the view to enable MSBB.
+  unsigned int msbb_view_count = 0;
   // Times the user has pressed "undo" this session.
   unsigned int undo_count = 0;
   // Times the user has pressed "redo" this session.
@@ -478,6 +487,11 @@ void LogComposeRequestFeedback(EvalLocation eval_location,
                                ComposeRequestFeedback feedback);
 
 void LogComposeSelectAllStatus(ComposeSelectAllStatus select_all_status);
+
+// Emit an enum for for each event present in `session_events`.
+// Split the event counts histogram on `eval_location` if provided.
+void LogComposeSessionEventCounts(std::optional<EvalLocation> eval_location,
+                                  const ComposeSessionEvents& session_events);
 
 }  // namespace compose
 

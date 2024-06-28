@@ -123,7 +123,7 @@ class ProactiveNudgeTracker::EngagementTracker {
     if (events.inserted_results) {
       ReportIfFirst(
           ProactiveNudgeDerivedEngagement::kAcceptedComposeSuggestion);
-    } else if (events.compose_count > 0) {
+    } else if (events.compose_requests_count > 0) {
       ReportIfFirst(
           ProactiveNudgeDerivedEngagement::kGeneratedComposeSuggestion);
     } else {

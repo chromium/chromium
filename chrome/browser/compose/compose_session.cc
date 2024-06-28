@@ -269,29 +269,32 @@ ComposeSession::~ComposeSession() {
     observer_->OnSessionComplete(node_id_, close_reason_, session_events_);
   }
 
-  if (session_events_.fre_dialog_shown_count > 0 &&
+  // TODO(http://b/348656057): Refactor to remove early returns.
+  if (session_events_.fre_view_count > 0 &&
       (!fre_complete_ || session_events_.fre_completed_in_session)) {
     compose::LogComposeFirstRunSessionCloseReason(fre_close_reason_);
     compose::LogComposeFirstRunSessionDialogShownCount(
-        fre_close_reason_, session_events_.fre_dialog_shown_count);
+        fre_close_reason_, session_events_.fre_view_count);
     if (!fre_complete_) {
       compose::LogComposeSessionDuration(session_duration_->Elapsed(), ".FRE");
+      compose::LogComposeSessionEventCounts(std::nullopt, session_events_);
       return;
     }
   }
-  if (session_events_.msbb_dialog_shown_count > 0 &&
+  if (session_events_.msbb_view_count > 0 &&
       (!current_msbb_state_ || session_events_.msbb_enabled_in_session)) {
     compose::LogComposeMSBBSessionDialogShownCount(
-        msbb_close_reason_, session_events_.msbb_dialog_shown_count);
+        msbb_close_reason_, session_events_.msbb_view_count);
     compose::LogComposeMSBBSessionCloseReason(msbb_close_reason_);
     if (!current_msbb_state_) {
       compose::LogComposeSessionDuration(session_duration_->Elapsed(), ".MSBB");
+      compose::LogComposeSessionEventCounts(std::nullopt, session_events_);
       return;
     }
   }
 
-  if (session_events_.dialog_shown_count < 1) {
-    // Do not report any further metrics if the dialog was never shown.
+  if (session_events_.compose_dialog_open_count < 1) {
+    // Do not report any further metrics if the dialog was never opened.
     // This is mostly like because the session was the debug session but
     // could occur if the tab closes while Compose is opening.
     return;
@@ -435,6 +438,10 @@ void ComposeSession::MakeRequest(
   active_mojo_state_->has_pending_request = true;
   active_mojo_state_->feedback =
       compose::mojom::UserFeedback::kUserFeedbackUnspecified;
+
+  // Increase Compose count regardless of status of request.
+  ++session_events_.compose_requests_count;
+
   // TODO(b/300974056): Move this to the overall feature-enabled check.
   if (!session_ ||
       !base::FeatureList::IsEnabled(
@@ -444,9 +451,6 @@ void ComposeSession::MakeRequest(
                  request_reason);
     return;
   }
-
-  // Increase compose count regardless of status of request.
-  session_events_.compose_count += 1;
 
   if (!collect_inner_text_ || got_inner_text_) {
     RequestWithSession(std::move(request), request_reason, is_input_edited);
@@ -691,6 +695,7 @@ void ComposeSession::ModelExecutionComplete(
                                    compose::mojom::ComposeStatus::kOk);
   compose::LogComposeRequestDuration(request_delta, eval_location,
                                      /* is_ok */ true);
+  ++session_events_.successful_requests_count;
 }
 
 void ComposeSession::AddNewResponseToHistory(
@@ -719,6 +724,7 @@ void ComposeSession::ProcessError(
   compose::LogComposeRequestStatus(is_page_language_supported_, error);
   compose::LogComposeRequestStatus(eval_location, is_page_language_supported_,
                                    error);
+  ++session_events_.failed_requests_count;
 
   // Feedback can not be given for a request with an error so report now.
   compose::LogComposeRequestFeedback(
@@ -1004,17 +1010,19 @@ void ComposeSession::MaybeRefreshInnerText(bool has_selection) {
   // the dialog is hidden.
   currently_has_selection_ = has_selection;
 
+  ++session_events_.compose_dialog_open_count;
+
   if (!fre_complete_) {
-    session_events_.fre_dialog_shown_count += 1;
+    ++session_events_.fre_view_count;
     return;
   }
   if (!current_msbb_state_) {
-    session_events_.msbb_dialog_shown_count += 1;
+    ++session_events_.msbb_view_count;
     return;
   }
 
   // Session is initialized at the main dialog UI state.
-  session_events_.dialog_shown_count += 1;
+  ++session_events_.compose_prompt_view_count;
 
   RefreshInnerText();
 
@@ -1122,7 +1130,7 @@ void ComposeSession::SetFirstRunCloseReason(
                           kFirstRunDisclaimerAcknowledgedWithoutInsert) {
     if (current_msbb_state_) {
       // The FRE dialog progresses directly to the main dialog.
-      session_events_.dialog_shown_count = 1;
+      session_events_.compose_prompt_view_count = 1;
       base::RecordAction(
           base::UserMetricsAction("Compose.DialogSeen.MainDialog"));
     } else {
