@@ -181,7 +181,7 @@ bool WebMTracksParser::OnListEnd(int id) {
           return false;
         }
         media_tracks_->AddAudioTrack(
-            audio_decoder_config_,
+            audio_decoder_config_, true,
             static_cast<StreamParser::TrackId>(track_num_),
             MediaTrack::Kind("main"), MediaTrack::Label(track_name_),
             MediaTrack::Language(track_language_));
@@ -209,7 +209,7 @@ bool WebMTracksParser::OnListEnd(int id) {
           return false;
         }
         media_tracks_->AddVideoTrack(
-            video_decoder_config_,
+            video_decoder_config_, true,
             static_cast<StreamParser::TrackId>(track_num_),
             MediaTrack::Kind("main"), MediaTrack::Label(track_name_),
             MediaTrack::Language(track_language_));

@@ -35,6 +35,7 @@ class MEDIA_EXPORT MediaTracks {
   // Adds a new audio track. The |bytestreamTrackId| must uniquely identify the
   // track within the bytestream.
   MediaTrack* AddAudioTrack(const AudioDecoderConfig& config,
+                            bool enabled,
                             StreamParser::TrackId bytestream_track_id,
                             const MediaTrack::Kind& kind,
                             const MediaTrack::Label& label,
@@ -42,6 +43,7 @@ class MEDIA_EXPORT MediaTracks {
   // Adds a new video track. The |bytestreamTrackId| must uniquely identify the
   // track within the bytestream.
   MediaTrack* AddVideoTrack(const VideoDecoderConfig& config,
+                            bool enabled,
                             StreamParser::TrackId bytestream_track_id,
                             const MediaTrack::Kind& kind,
                             const MediaTrack::Label& label,

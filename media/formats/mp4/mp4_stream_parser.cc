@@ -667,7 +667,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
       audio_track_ids_.insert(audio_track_id);
       const char* track_kind = (audio_track_ids_.size() == 1 ? "main" : "");
       media_tracks->AddAudioTrack(
-          audio_config, audio_track_id, MediaTrack::Kind(track_kind),
+          audio_config, true, audio_track_id, MediaTrack::Kind(track_kind),
           MediaTrack::Label(track->media.handler.name),
           MediaTrack::Language(track->media.header.language()));
       continue;
@@ -767,7 +767,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
       auto track_kind =
           MediaTrack::Kind(video_track_ids_.size() == 1 ? "main" : "");
       media_tracks->AddVideoTrack(
-          video_config, video_track_id, track_kind,
+          video_config, true, video_track_id, track_kind,
           MediaTrack::Label(track->media.handler.name),
           MediaTrack::Language(track->media.header.language()));
       continue;

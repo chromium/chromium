@@ -504,8 +504,9 @@ TEST_F(FFmpegDemuxerTest, Initialize_Multitrack_Disabled) {
   CreateDemuxer("multitrack-disabled.mp4");
   InitializeDemuxer();
 
-  std::vector<DemuxerStream*> streams = demuxer_->GetAllStreams();
-  EXPECT_EQ(1u, streams.size());
+  ASSERT_EQ(2u, media_tracks_->tracks().size());
+  EXPECT_FALSE(media_tracks_->tracks()[0]->enabled());
+  EXPECT_TRUE(media_tracks_->tracks()[1]->enabled());
 }
 
 TEST_F(FFmpegDemuxerTest, Initialize_Track_Disabled) {
@@ -515,8 +516,8 @@ TEST_F(FFmpegDemuxerTest, Initialize_Track_Disabled) {
   InitializeDemuxer();
 
   // The track enabled flag should be ignored when all tracks are disabled.
-  std::vector<DemuxerStream*> streams = demuxer_->GetAllStreams();
-  EXPECT_EQ(1u, streams.size());
+  ASSERT_EQ(1u, media_tracks_->tracks().size());
+  EXPECT_TRUE(media_tracks_->tracks()[0]->enabled());
 }
 #endif
 

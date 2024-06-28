@@ -21,6 +21,7 @@ class MEDIA_EXPORT MediaTrack {
   using Label = base::StrongAlias<class LabelTag, std::string>;
   using Language = base::StrongAlias<class LanguageTag, std::string>;
   MediaTrack(Type type,
+             bool enabled,
              StreamParser::TrackId bytestream_track_id,
              const Kind& kind,
              const Label& label,
@@ -28,6 +29,7 @@ class MEDIA_EXPORT MediaTrack {
   ~MediaTrack();
 
   Type type() const { return type_; }
+  bool enabled() const { return enabled_; }
 
   StreamParser::TrackId bytestream_track_id() const {
     return bytestream_track_id_;
@@ -45,6 +47,7 @@ class MEDIA_EXPORT MediaTrack {
 
  private:
   Type type_;
+  bool enabled_;
 
   // |bytestream_track_id_| is read from the bytestream and is guaranteed to be
   // unique only within the scope of single bytestream's initialization segment.

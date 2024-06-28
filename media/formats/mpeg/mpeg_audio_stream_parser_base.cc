@@ -296,7 +296,7 @@ int MPEGAudioStreamParserBase::ParseFrame(const uint8_t* data,
 
     std::unique_ptr<MediaTracks> media_tracks(new MediaTracks());
     if (config_.IsValidConfig()) {
-      media_tracks->AddAudioTrack(config_, kMpegAudioTrackId,
+      media_tracks->AddAudioTrack(config_, true, kMpegAudioTrackId,
                                   MediaTrack::Kind("main"), MediaTrack::Label(),
                                   MediaTrack::Language());
     }

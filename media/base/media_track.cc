@@ -7,11 +7,13 @@
 namespace media {
 
 MediaTrack::MediaTrack(Type type,
+                       bool enabled,
                        StreamParser::TrackId bytestream_track_id,
                        const Kind& kind,
                        const Label& label,
                        const Language& lang)
     : type_(type),
+      enabled_(enabled),
       bytestream_track_id_(bytestream_track_id),
       kind_(kind),
       label_(label),

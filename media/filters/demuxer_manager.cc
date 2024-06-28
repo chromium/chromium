@@ -731,19 +731,13 @@ void DemuxerManager::OnFFmpegMediaTracksUpdated(
     return;
   }
 
-  // Only the first audio track and the first video track are enabled by
-  // default to match blink logic.
-  bool is_first_audio_track = true;
-  bool is_first_video_track = true;
   for (const auto& track : tracks->tracks()) {
     if (track->type() == MediaTrack::Type::kAudio) {
       client_->AddAudioTrack(track->id().value(), track->label().value(),
-                             track->language().value(), is_first_audio_track);
-      is_first_audio_track = false;
+                             track->language().value(), track->enabled());
     } else if (track->type() == MediaTrack::Type::kVideo) {
       client_->AddVideoTrack(track->id().value(), track->label().value(),
-                             track->language().value(), is_first_video_track);
-      is_first_video_track = false;
+                             track->language().value(), track->enabled());
     } else {
       // Text tracks are not supported through this code path.
       NOTREACHED_IN_MIGRATION();
