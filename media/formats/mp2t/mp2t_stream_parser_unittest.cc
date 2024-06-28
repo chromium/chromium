@@ -79,7 +79,6 @@ std::string DecryptSampleAES(const std::string& key,
                              bool has_pattern) {
   DCHECK(input);
   EXPECT_EQ(input_size % 16, 0);
-  crypto::EnsureOpenSSLInit();
   std::string result;
   const EVP_CIPHER* cipher = EVP_aes_128_cbc();
   ScopedCipherCTX ctx;

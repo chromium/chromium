@@ -11,7 +11,6 @@
 
 #include "components/reporting/encryption/primitives.h"
 #include "crypto/aead.h"
-#include "crypto/openssl_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
@@ -28,27 +27,18 @@ namespace test {
 
 void GenerateEncryptionKeyPair(uint8_t private_key[kKeySize],
                                uint8_t public_value[kKeySize]) {
-  // Make sure OpenSSL is initialized, in order to avoid data races later.
-  crypto::EnsureOpenSSLInit();
-
   X25519_keypair(public_value, private_key);
 }
 
 void RestoreSharedSecret(const uint8_t private_key[kKeySize],
                          const uint8_t peer_public_value[kKeySize],
                          uint8_t shared_secret[kKeySize]) {
-  // Make sure OpenSSL is initialized, in order to avoid data races later.
-  crypto::EnsureOpenSSLInit();
-
   ASSERT_TRUE(X25519(shared_secret, private_key, peer_public_value));
 }
 
 void PerformSymmetricDecryption(const uint8_t symmetric_key[kKeySize],
                                 std::string_view input_data,
                                 std::string* output_data) {
-  // Make sure OpenSSL is initialized, in order to avoid data races later.
-  crypto::EnsureOpenSSLInit();
-
   // Decrypt the data with symmetric key using AEAD interface.
   crypto::Aead aead(crypto::Aead::CHACHA20_POLY1305);
   CHECK_EQ(aead.KeyLength(), kKeySize);
@@ -68,18 +58,12 @@ void PerformSymmetricDecryption(const uint8_t symmetric_key[kKeySize],
 
 void GenerateSigningKeyPair(uint8_t private_key[kSignKeySize],
                             uint8_t public_value[kKeySize]) {
-  // Make sure OpenSSL is initialized, in order to avoid data races later.
-  crypto::EnsureOpenSSLInit();
-
   ED25519_keypair(public_value, private_key);
 }
 
 void SignMessage(const uint8_t signing_key[kSignKeySize],
                  std::string_view message,
                  uint8_t signature[kSignatureSize]) {
-  // Make sure OpenSSL is initialized, in order to avoid data races later.
-  crypto::EnsureOpenSSLInit();
-
   ASSERT_THAT(
       ED25519_sign(signature, reinterpret_cast<const uint8_t*>(message.data()),
                    message.size(), signing_key),

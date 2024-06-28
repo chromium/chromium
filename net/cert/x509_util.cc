@@ -15,7 +15,6 @@
 #include <memory>
 #include <string_view>
 
-#include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -97,24 +96,6 @@ const EVP_MD* ToEVP(DigestAlgorithm alg) {
   }
   return nullptr;
 }
-
-class BufferPoolSingleton {
- public:
-  BufferPoolSingleton() {
-    crypto::EnsureOpenSSLInit();
-
-    pool_ = CRYPTO_BUFFER_POOL_new();
-  }
-
-  CRYPTO_BUFFER_POOL* pool() { return pool_; }
-
- private:
-  // The singleton is leaky, so there is no need to use a smart pointer.
-  raw_ptr<CRYPTO_BUFFER_POOL> pool_;
-};
-
-base::LazyInstance<BufferPoolSingleton>::Leaky g_buffer_pool_singleton =
-    LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
 
@@ -347,7 +328,6 @@ bool CreateCert(EVP_PKEY* subject_key,
                 std::string_view issuer,
                 EVP_PKEY* issuer_key,
                 std::string* der_encoded) {
-  crypto::EnsureOpenSSLInit();
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
   // See RFC 5280, section 4.1. First, construct the TBSCertificate.
@@ -449,7 +429,8 @@ bool CreateSelfSignedCert(EVP_PKEY* key,
 }
 
 CRYPTO_BUFFER_POOL* GetBufferPool() {
-  return g_buffer_pool_singleton.Get().pool();
+  static CRYPTO_BUFFER_POOL* const kSharedPool = CRYPTO_BUFFER_POOL_new();
+  return kSharedPool;
 }
 
 bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
@@ -510,7 +491,6 @@ scoped_refptr<X509Certificate> CreateX509CertificateFromBuffers(
 bool CreateCertBuffersFromPKCS7Bytes(
     base::span<const uint8_t> data,
     std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>* handles) {
-  crypto::EnsureOpenSSLInit();
   crypto::OpenSSLErrStackTracer err_cleaner(FROM_HERE);
 
   CBS der_data;

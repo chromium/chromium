@@ -437,7 +437,6 @@ bool SoftBindAttestationFlowImpl::GenerateLeafCert(
     base::Time not_valid_before,
     base::Time not_valid_after,
     std::string* der_encoded_cert) {
-  crypto::EnsureOpenSSLInit();
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
   bssl::ScopedCBB cbb;

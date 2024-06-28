@@ -37,7 +37,6 @@
 #endif
 
 #if !BUILDFLAG(IS_NACL)
-#include "third_party/boringssl/src/include/openssl/crypto.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
 #endif
 
@@ -185,8 +184,6 @@ void RandBytesInternal(span<uint8_t> output, bool avoid_allocation) {
 #if !BUILDFLAG(IS_NACL)
   // The BoringSSL experiment takes priority over everything else.
   if (!avoid_allocation && internal::UseBoringSSLForRandBytes()) {
-    // Ensure BoringSSL is initialized so it can use things like RDRAND.
-    CRYPTO_library_init();
     // BoringSSL's RAND_bytes always returns 1. Any error aborts the program.
     (void)RAND_bytes(output.data(), output.size());
     return;

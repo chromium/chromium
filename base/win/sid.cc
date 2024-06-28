@@ -29,7 +29,6 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/windows_version.h"
-#include "third_party/boringssl/src/include/openssl/crypto.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace base::win {
@@ -131,7 +130,6 @@ Sid Sid::FromNamedCapability(const std::wstring& capability_name) {
   if (known_cap != known_capabilities->end()) {
     return FromKnownCapability(known_cap->second);
   }
-  CRYPTO_library_init();
   static_assert((SHA256_DIGEST_LENGTH / sizeof(DWORD)) ==
                 SECURITY_APP_PACKAGE_RID_COUNT);
   DWORD rids[(SHA256_DIGEST_LENGTH / sizeof(DWORD)) + 2];

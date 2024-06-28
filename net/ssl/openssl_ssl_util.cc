@@ -37,8 +37,6 @@ namespace {
 class OpenSSLNetErrorLibSingleton {
  public:
   OpenSSLNetErrorLibSingleton() {
-    crypto::EnsureOpenSSLInit();
-
     // Allocate a new error library value for inserting net errors into
     // OpenSSL. This does not register any ERR_STRING_DATA for the errors, so
     // stringifying error codes through OpenSSL will return NULL.

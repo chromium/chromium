@@ -10,7 +10,6 @@
 #include <string_view>
 
 #include "base/logging.h"
-#include "third_party/boringssl/src/include/openssl/crypto.h"
 #include "third_party/boringssl/src/include/openssl/err.h"
 
 namespace crypto {
@@ -32,8 +31,6 @@ int OpenSSLErrorCallback(const char* str, size_t len, void* context) {
 }
 
 }  // namespace
-
-void EnsureOpenSSLInit() {}
 
 void ClearOpenSSLERRStack(const base::Location& location) {
   if (DCHECK_IS_ON() && VLOG_IS_ON(1)) {

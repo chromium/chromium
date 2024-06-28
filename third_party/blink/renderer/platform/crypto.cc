@@ -12,7 +12,6 @@
 namespace blink {
 
 Digestor::Digestor(HashAlgorithm algorithm) {
-  crypto::EnsureOpenSSLInit();
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
   const EVP_MD* evp_md = nullptr;

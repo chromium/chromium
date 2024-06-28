@@ -26,7 +26,6 @@
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
 #include "content/browser/sandbox_parameters_mac.h"
-#include "crypto/openssl_util.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "sandbox/mac/sandbox_compiler.h"
 #include "sandbox/mac/seatbelt.h"
@@ -193,7 +192,6 @@ TEST_F(SandboxMacTest, ClipboardAccess) {
 MULTIPROCESS_TEST_MAIN(SSLProcess) {
   CheckCreateSeatbeltServer();
 
-  crypto::EnsureOpenSSLInit();
   // Ensure that RAND_bytes is functional within the sandbox.
   uint8_t byte;
   CHECK(RAND_bytes(&byte, 1) == 1);

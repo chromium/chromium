@@ -56,12 +56,6 @@ class ScopedOpenSSLSafeSizeBuffer {
   unsigned char min_sized_buffer_[MIN_SIZE];
 };
 
-// Deprecated. This function was historically needed to initialize BoringSSL,
-// but BoringSSL now initializes itself internally.
-//
-// TODO(crbug.com/348923058): Remove calls to this function.
-CRYPTO_EXPORT void EnsureOpenSSLInit();
-
 // Drains the OpenSSL ERR_get_error stack. On a debug build the error codes
 // are send to VLOG(1), on a release build they are disregarded. In most
 // cases you should pass FROM_HERE as the |location|.
@@ -77,9 +71,7 @@ class OpenSSLErrStackTracer {
   // messages. Note any diagnostic emitted will be tagged with the location of
   // the constructor call as it's not possible to trace a destructor's callsite.
   explicit OpenSSLErrStackTracer(const base::Location& location)
-      : location_(location) {
-    EnsureOpenSSLInit();
-  }
+      : location_(location) {}
 
   OpenSSLErrStackTracer(const OpenSSLErrStackTracer&) = delete;
   OpenSSLErrStackTracer& operator=(const OpenSSLErrStackTracer&) = delete;

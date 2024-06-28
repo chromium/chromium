@@ -19,7 +19,6 @@
 #include "chromeos/ash/services/quick_pair/public/cpp/not_discoverable_advertisement.h"
 #include "chromeos/ash/services/quick_pair/public/mojom/fast_pair_data_parser.mojom.h"
 #include "components/cross_device/logging/logging.h"
-#include "crypto/openssl_util.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -146,9 +145,7 @@ mojom::BatteryInfoPtr CreateBatteryInfo(uint8_t battery_byte) {
 
 FastPairDataParser::FastPairDataParser(
     mojo::PendingReceiver<mojom::FastPairDataParser> receiver)
-    : receiver_(this, std::move(receiver)) {
-  crypto::EnsureOpenSSLInit();
-}
+    : receiver_(this, std::move(receiver)) {}
 
 FastPairDataParser::~FastPairDataParser() = default;
 

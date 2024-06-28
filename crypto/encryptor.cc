@@ -46,7 +46,6 @@ bool Encryptor::Init(const SymmetricKey* key,
   DCHECK(key);
   DCHECK(mode == CBC || mode == CTR);
 
-  EnsureOpenSSLInit();
   if (mode == CBC && iv.size() != AES_BLOCK_SIZE)
     return false;
   // CTR mode passes the starting counter separately, via SetCounter().

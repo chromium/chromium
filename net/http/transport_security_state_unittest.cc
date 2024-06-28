@@ -33,7 +33,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "crypto/openssl_util.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
 #include "net/base/hash_value.h"
@@ -139,8 +138,6 @@ class TransportSecurityStateTest : public ::testing::Test,
   ~TransportSecurityStateTest() override {
     SetTransportSecurityStateSourceForTesting(nullptr);
   }
-
-  void SetUp() override { crypto::EnsureOpenSSLInit(); }
 
   static void DisableStaticPins(TransportSecurityState* state) {
     state->enable_static_pins_ = false;

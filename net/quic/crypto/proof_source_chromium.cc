@@ -28,8 +28,6 @@ ProofSourceChromium::~ProofSourceChromium() = default;
 bool ProofSourceChromium::Initialize(const base::FilePath& cert_path,
                                      const base::FilePath& key_path,
                                      const base::FilePath& sct_path) {
-  crypto::EnsureOpenSSLInit();
-
   std::string cert_data;
   if (!base::ReadFileToString(cert_path, &cert_data)) {
     DLOG(FATAL) << "Unable to read certificates.";

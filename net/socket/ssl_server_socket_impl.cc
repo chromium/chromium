@@ -943,7 +943,6 @@ SSLServerContextImpl::SSLServerContextImpl(
 }
 
 void SSLServerContextImpl::Init() {
-  crypto::EnsureOpenSSLInit();
   ssl_ctx_.reset(SSL_CTX_new(TLS_with_buffers_method()));
   SSL_CTX_set_session_cache_mode(ssl_ctx_.get(), SSL_SESS_CACHE_SERVER);
   uint8_t session_ctx_id = 0;

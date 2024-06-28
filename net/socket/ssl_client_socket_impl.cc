@@ -193,7 +193,6 @@ class SSLClientSocketImpl::SSLContext {
   friend struct base::DefaultSingletonTraits<SSLContext>;
 
   SSLContext() {
-    crypto::EnsureOpenSSLInit();
     ssl_socket_data_index_ =
         SSL_get_ex_new_index(0, nullptr, nullptr, nullptr, nullptr);
     DCHECK_NE(ssl_socket_data_index_, -1);

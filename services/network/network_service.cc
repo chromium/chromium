@@ -95,7 +95,6 @@
 #include "services/network/url_loader.h"
 
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
-#include "crypto/openssl_util.h"
 #include "third_party/boringssl/src/include/openssl/cpu.h"
 #endif
 
@@ -391,9 +390,6 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
   initialized_ = true;
 
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
-  // Make sure OpenSSL is initialized before using it to histogram data.
-  crypto::EnsureOpenSSLInit();
-
   // Measure Android kernels with missing AT_HWCAP2 auxv fields. See
   // https://crbug.com/boringssl/46.
   UMA_HISTOGRAM_BOOLEAN("Net.NeedsHWCAP2Workaround",

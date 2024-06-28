@@ -31,7 +31,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "crypto/openssl_util.h"
 #include "crypto/sha2.h"
 #include "net/cert/root_store_proto_full/root_store.pb.h"
 #include "third_party/boringssl/src/include/openssl/bio.h"
@@ -337,8 +336,6 @@ int main(int argc, char** argv) {
   settings.logging_dest =
       logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   logging::InitLogging(settings);
-
-  crypto::EnsureOpenSSLInit();
 
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
   base::FilePath proto_path = command_line.GetSwitchValuePath("write-proto");

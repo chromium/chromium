@@ -12,7 +12,6 @@
 
 #include "base/check_op.h"
 #include "crypto/aead.h"
-#include "crypto/openssl_util.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/hkdf.h"
@@ -30,9 +29,6 @@ static_assert(ED25519_SIGNATURE_LEN == kSignatureSize, "ED25519 mismatch");
 bool ComputeSharedSecret(const uint8_t peer_public_value[kKeySize],
                          uint8_t shared_secret[kKeySize],
                          uint8_t generated_public_value[kKeySize]) {
-  // Make sure OpenSSL is initialized, in order to avoid data races later.
-  crypto::EnsureOpenSSLInit();
-
   // Generate new pair of private key and public value.
   uint8_t out_private_key[kKeySize];
   X25519_keypair(generated_public_value, out_private_key);
@@ -48,9 +44,6 @@ bool ComputeSharedSecret(const uint8_t peer_public_value[kKeySize],
 
 bool ProduceSymmetricKey(const uint8_t shared_secret[kKeySize],
                          uint8_t symmetric_key[kKeySize]) {
-  // Make sure OpenSSL is initialized, in order to avoid data races later.
-  crypto::EnsureOpenSSLInit();
-
   // Produce symmetric key from shared secret using HKDF.
   // Since the original keys were only used once, no salt and context is needed.
   // Since the keys above are only used once, no salt and context is provided.
@@ -68,9 +61,6 @@ bool ProduceSymmetricKey(const uint8_t shared_secret[kKeySize],
 bool PerformSymmetricEncryption(const uint8_t symmetric_key[kKeySize],
                                 std::string_view input_data,
                                 std::string* output_data) {
-  // Make sure OpenSSL is initialized, in order to avoid data races later.
-  crypto::EnsureOpenSSLInit();
-
   // Encrypt the data with symmetric key using AEAD interface.
   crypto::Aead aead(crypto::Aead::CHACHA20_POLY1305);
   CHECK_EQ(aead.KeyLength(), kKeySize);
@@ -97,9 +87,6 @@ bool PerformSymmetricEncryption(const uint8_t symmetric_key[kKeySize],
 bool VerifySignature(const uint8_t verification_key[kKeySize],
                      std::string_view message,
                      const uint8_t signature[kSignatureSize]) {
-  // Make sure OpenSSL is initialized, in order to avoid data races later.
-  crypto::EnsureOpenSSLInit();
-
   // Verify message
   if (1 != ED25519_verify(reinterpret_cast<const uint8_t*>(message.data()),
                           message.size(), signature, verification_key)) {

@@ -19,12 +19,7 @@ namespace {
 
 class SecureHashSHA256 : public SecureHash {
  public:
-  SecureHashSHA256() {
-    // Ensure that CPU features detection is performed before using
-    // BoringSSL. This will enable hw accelerated implementations.
-    EnsureOpenSSLInit();
-    SHA256_Init(&ctx_);
-  }
+  SecureHashSHA256() { SHA256_Init(&ctx_); }
 
   SecureHashSHA256(const SecureHashSHA256& other) {
     memcpy(&ctx_, &other.ctx_, sizeof(ctx_));
@@ -56,12 +51,7 @@ class SecureHashSHA256 : public SecureHash {
 
 class SecureHashSHA512 : public SecureHash {
  public:
-  SecureHashSHA512() {
-    // Ensure that CPU features detection is performed before using
-    // BoringSSL. This will enable hw accelerated implementations.
-    EnsureOpenSSLInit();
-    SHA512_Init(&ctx_);
-  }
+  SecureHashSHA512() { SHA512_Init(&ctx_); }
 
   SecureHashSHA512(const SecureHashSHA512& other) {
     memcpy(&ctx_, &other.ctx_, sizeof(ctx_));

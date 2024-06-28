@@ -9,7 +9,6 @@
 #include "crypto/openssl_util.h"
 #include "crypto/symmetric_key.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
-#include "third_party/boringssl/src/include/openssl/crypto.h"
 #include "third_party/boringssl/src/include/openssl/err.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 
@@ -35,16 +34,8 @@
 
 namespace media {
 
-AesCbcCrypto::AesCbcCrypto() {
-  // Ensure the crypto library is initialized. CRYPTO_library_init may be
-  // safely called concurrently.
-  CRYPTO_library_init();
-  EVP_CIPHER_CTX_init(&ctx_);
-}
-
-AesCbcCrypto::~AesCbcCrypto() {
-  EVP_CIPHER_CTX_cleanup(&ctx_);
-}
+AesCbcCrypto::AesCbcCrypto() = default;
+AesCbcCrypto::~AesCbcCrypto() = default;
 
 bool AesCbcCrypto::Initialize(const crypto::SymmetricKey& key,
                               base::span<const uint8_t> iv) {
@@ -64,12 +55,12 @@ bool AesCbcCrypto::Initialize(const crypto::SymmetricKey& key,
     return false;
   }
 
-  if (!EVP_DecryptInit_ex(&ctx_, cipher, nullptr, key_data, iv.data())) {
+  if (!EVP_DecryptInit_ex(ctx_.get(), cipher, nullptr, key_data, iv.data())) {
     DVLOG(1) << "EVP_DecryptInit_ex() failed.";
     return false;
   }
 
-  if (!EVP_CIPHER_CTX_set_padding(&ctx_, 0)) {
+  if (!EVP_CIPHER_CTX_set_padding(ctx_.get(), 0)) {
     DVLOG(1) << "EVP_CIPHER_CTX_set_padding() failed.";
     return false;
   }
@@ -81,13 +72,14 @@ bool AesCbcCrypto::Decrypt(base::span<const uint8_t> encrypted_data,
                            uint8_t* decrypted_data) {
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
-  if (encrypted_data.size_bytes() % EVP_CIPHER_CTX_block_size(&ctx_) != 0) {
+  if (encrypted_data.size_bytes() % EVP_CIPHER_CTX_block_size(ctx_.get()) !=
+      0) {
     DVLOG(1) << "Encrypted bytes not a multiple of block size.";
     return false;
   }
 
   int out_length;
-  if (!EVP_DecryptUpdate(&ctx_, decrypted_data, &out_length,
+  if (!EVP_DecryptUpdate(ctx_.get(), decrypted_data, &out_length,
                          encrypted_data.data(), encrypted_data.size_bytes())) {
     DVLOG(1) << "EVP_DecryptUpdate() failed.";
     return false;

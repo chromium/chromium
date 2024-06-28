@@ -26,7 +26,6 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "crypto/ec_private_key.h"
-#include "crypto/openssl_util.h"
 #include "crypto/rsa_private_key.h"
 #include "crypto/sha2.h"
 #include "net/cert/asn1_util.h"
@@ -1089,7 +1088,6 @@ CertBuilder::CertBuilder(CRYPTO_BUFFER* orig_cert,
   if (!issuer_)
     issuer_ = this;
 
-  crypto::EnsureOpenSSLInit();
   if (orig_cert)
     InitFromCert(
         bssl::der::Input(x509_util::CryptoBufferAsStringPiece(orig_cert)));

@@ -21,7 +21,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "crypto/openssl_util.h"
 #include "net/tools/transport_security_state_generator/input_file_parsers.h"
 #include "net/tools/transport_security_state_generator/pinsets.h"
 #include "net/tools/transport_security_state_generator/preloaded_state_generator.h"
@@ -193,8 +192,6 @@ bool CheckHostnames(const TransportSecurityStateEntries& entries) {
 }  // namespace
 
 int main(int argc, char* argv[]) {
-  crypto::EnsureOpenSSLInit();
-
   base::AtExitManager at_exit_manager;
   base::CommandLine::Init(argc, argv);
   const base::CommandLine& command_line =

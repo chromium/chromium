@@ -8,7 +8,6 @@
 #include "components/webcrypto/algorithm_implementation.h"
 #include "components/webcrypto/algorithm_implementations.h"
 #include "components/webcrypto/status.h"
-#include "crypto/openssl_util.h"
 
 namespace webcrypto {
 
@@ -32,9 +31,7 @@ class AlgorithmRegistry {
         hkdf_(CreateHkdfImplementation()),
         pbkdf2_(CreatePbkdf2Implementation()),
         ed25519_(CreateEd25519Implementation()),
-        x25519_(CreateX25519Implementation()) {
-    crypto::EnsureOpenSSLInit();
-  }
+        x25519_(CreateX25519Implementation()) {}
 
   const AlgorithmImplementation* GetAlgorithm(
       blink::WebCryptoAlgorithmId id) const {
