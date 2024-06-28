@@ -1376,7 +1376,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private playNextGranularity_() {
     this.recordNextClick();
     this.synth.cancel();
-    this.resetPreviousHighlight();
+    this.resetPreviousHighlight_();
     // Reset the word boundary index whenever we move the granularity position.
     this.resetToDefaultWordBoundaryState();
     chrome.readingMode.movePositionToNextGranularity();
@@ -1566,7 +1566,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.movePlaybackToNode_(startingNodeId, startingOffset);
       // Set everything to previous and then play the next granularity, which
       // includes the selection.
-      this.resetPreviousHighlight();
+      this.resetPreviousHighlight_();
       if (!this.highlightAndPlayMessage()) {
         this.onSpeechFinished();
       }
@@ -1812,8 +1812,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         this.playText(utteranceText.substring(endBoundary));
         return;
       }
-      // TODO(crbug.com/40927698): Handle already selected text.
-      this.resetPreviousHighlight();
 
       // Now that we've finiished reading this utterance, update the Granularity
       // state to point to the next one
@@ -1922,6 +1920,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return;
     }
 
+    this.resetPreviousHighlight_();
     for (let i = 0; i < nextTextIds.length; i++) {
       const nodeId = nextTextIds[i];
       const element = this.domNodeToAxNodeIdMap_.keyFrom(nodeId) as HTMLElement;
@@ -2131,7 +2130,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // determine what's currently being highlighted.
   private resetPreviousHighlightAndRemoveCurrentHighlight() {
     this.removeCurrentHighlight();
-    this.resetPreviousHighlight();
+    this.resetPreviousHighlight_();
   }
 
   private removeCurrentHighlight() {
@@ -2145,8 +2144,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  // TODO(b/346868764): Longer term, this shouldn't be public just for tests.
-  resetPreviousHighlight() {
+  private resetPreviousHighlight_() {
     this.previousHighlights_.forEach((element) => {
       if (element) {
         element.classList.add(previousReadHighlightClass);

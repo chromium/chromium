@@ -74,7 +74,6 @@ suite('UpdateContentSelectionWithHighlights', () => {
       app.highlightNodes([textNodeIds[i]!]);
       i++;
     }
-    app.resetPreviousHighlight();
 
     // highlight given node
     fakeTree.highlightNode(id);
@@ -90,7 +89,6 @@ suite('UpdateContentSelectionWithHighlights', () => {
       app.highlightNodes([textNodeIds[i]!]);
       i++;
     }
-    app.resetPreviousHighlight();
 
     // highlight given nodes
     fakeTree.setReadingHighlight(fromId, fromOffset, toId, toOffset);
