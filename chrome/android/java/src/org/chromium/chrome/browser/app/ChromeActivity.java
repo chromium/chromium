@@ -270,6 +270,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private static final String TAG = "ChromeActivity";
     private static final int CONTENT_VIS_DELAY_MS = 5;
     public static final String UNFOLD_LATENCY_BEGIN_TIMESTAMP = "unfold_latency_begin_timestamp";
+    public static final String IS_FROM_RECREATING = "is_from_recreating";
     private C mComponent;
 
     /** Used to generate a unique ID for each ChromeActivity. */
@@ -403,6 +404,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private boolean mBlockingDrawForAppRestart;
     private Runnable mShowContentRunnable;
     private boolean mIsRecreatingForTabletModeChange;
+    private boolean mIsRecreating;
     // This is only used on automotive.
     private @Nullable MissingDeviceLockLauncher mMissingDeviceLockLauncher;
     // Handling the dismissal of tab modal dialog.
@@ -1366,6 +1368,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         super.onStopWithNative();
     }
 
+    @CallSuper
+    @Override
+    public void recreate() {
+        super.recreate();
+        mIsRecreating = true;
+    }
+
     @Override
     public void onNewIntentWithNative(Intent intent) {
         if (mFullscreenVideoPictureInPictureController != null) {
@@ -1615,6 +1624,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             outState.putLong(
                     UNFOLD_LATENCY_BEGIN_TIMESTAMP, getOnPauseBeforeFoldRecreateTimestampMs());
         }
+        outState.putBoolean(IS_FROM_RECREATING, mIsRecreating);
         mRootUiCoordinator.onSaveInstanceState(outState, mIsRecreatingForTabletModeChange);
     }
 

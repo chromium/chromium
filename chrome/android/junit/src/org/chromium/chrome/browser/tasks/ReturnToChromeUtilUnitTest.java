@@ -60,6 +60,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
@@ -996,6 +997,46 @@ public class ReturnToChromeUtilUnitTest {
         doReturn(true)
                 .when(mSaveInstanceState)
                 .getBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, false);
+        assertTrue(
+                ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
+                        true, intent, mSaveInstanceState, mTabModelSelector, mInactivityTracker));
+    }
+
+    @Test
+    @SmallTest
+    public void testShouldNotShowNtpOnRecreate() {
+        assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
+
+        // Sets main intent from launcher:
+        Intent intent = createMainIntentFromLauncher();
+
+        // Sets background time to make the return time arrive:
+        ChromeSharedPreferences.getInstance()
+                .addToStringSet(
+                        ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF, "0");
+        START_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
+        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(0, false));
+
+        // There should always be at least 1 tab. Otherwise one will be created regardless.
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
+        doReturn(1).when(mTabModelSelector).getTotalTabCount();
+        assertTrue(HomepagePolicyManager.isInitializedWithNative());
+
+        assertTrue(IntentUtils.isMainIntentFromLauncher(intent));
+        assertTrue(
+                ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
+                        true, intent, mSaveInstanceState, mTabModelSelector, mInactivityTracker));
+
+        doReturn(true)
+                .when(mSaveInstanceState)
+                .getBoolean(ChromeActivity.IS_FROM_RECREATING, false);
+        assertFalse(
+                ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
+                        true, intent, mSaveInstanceState, mTabModelSelector, mInactivityTracker));
+
+        doReturn(false)
+                .when(mSaveInstanceState)
+                .getBoolean(ChromeActivity.IS_FROM_RECREATING, false);
         assertTrue(
                 ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
                         true, intent, mSaveInstanceState, mTabModelSelector, mInactivityTracker));
