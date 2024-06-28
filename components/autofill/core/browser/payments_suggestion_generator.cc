@@ -770,9 +770,9 @@ bool ShouldShowVirtualCardOption(const CreditCard* candidate_card,
       candidate_server_card = candidate_card;
       break;
     case CreditCard::RecordType::kFullServerCard:
-      break;
     case CreditCard::RecordType::kVirtualCard:
-      // Should not happen since virtual card is not persisted.
+      // Should not happen since virtual cards and full server cards are not
+      // persisted.
       NOTREACHED_NORETURN();
   }
   if (!candidate_server_card) {

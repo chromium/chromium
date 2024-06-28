@@ -7672,15 +7672,21 @@ class BrowserAutofillManagerTestForSharingNickname
     return local_card;
   }
 
-  CreditCard GetServerCard() {
-    CreditCard full_server_card(CreditCard::RecordType::kFullServerCard,
-                                "c789");
-    test::SetCreditCardInfo(&full_server_card, "Clyde Barrow",
-                            "378282246310005" /* American Express */, "04",
-                            "2910", "1");
-    full_server_card.SetNickname(base::UTF8ToUTF16(server_nickname_));
-    full_server_card.set_guid(MakeGuid(2));
-    return full_server_card;
+  CreditCard GetServerCard(const std::string& network) {
+    CHECK(network == kVisaCard || network == kAmericanExpressCard);
+
+    const std::string last_four = network == kVisaCard ? "3456" : "0005";
+    const std::string expiry_year = network == kVisaCard ? "2999" : "2910";
+
+    CreditCard masked_server_card(CreditCard::RecordType::kMaskedServerCard,
+                                  "c789");
+    test::SetCreditCardInfo(&masked_server_card, "Clyde Barrow",
+                            last_four.c_str(), /*expiration_month=*/"04",
+                            expiry_year.c_str(), /*billing_address_id=*/"1");
+    masked_server_card.SetNetworkForMaskedCard(network);
+    masked_server_card.SetNickname(base::UTF8ToUTF16(server_nickname_));
+    masked_server_card.set_guid(MakeGuid(2));
+    return masked_server_card;
   }
 
   base::test::ScopedFeatureList card_metadata_flags_;
@@ -7693,6 +7699,9 @@ INSTANTIATE_TEST_SUITE_P(,
                          BrowserAutofillManagerTestForSharingNickname,
                          testing::ValuesIn(kShareNicknameTestParam));
 
+// Tests that when there is a duplicate local and server card that will be
+// combined into a single suggestion, the merged suggestion inherits the correct
+// expected nickname.
 TEST_P(BrowserAutofillManagerTestForSharingNickname,
        VerifySuggestion_DuplicateCards) {
   personal_data().test_payments_data_manager().ClearCreditCards();
@@ -7701,7 +7710,7 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
   CreditCard local_card = GetLocalCard();
   personal_data().payments_data_manager().AddCreditCard(local_card);
   personal_data().test_payments_data_manager().AddServerCreditCard(
-      GetServerCard());
+      GetServerCard(kAmericanExpressCard));
   ASSERT_EQ(2U,
             personal_data().payments_data_manager().GetCreditCards().size());
 
@@ -7721,6 +7730,8 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
            /*with_gpay_logo=*/true)});
 }
 
+// Tests that when there are two unrelated local and server cards, they are
+// shown separately and each displays their own nickname.
 TEST_P(BrowserAutofillManagerTestForSharingNickname,
        VerifySuggestion_UnrelatedCards) {
   personal_data().test_payments_data_manager().ClearCreditCards();
@@ -7730,9 +7741,7 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
   personal_data().payments_data_manager().AddCreditCard(local_card);
 
   std::vector<CreditCard> server_cards;
-  CreditCard server_card = GetServerCard();
-  // Make sure the cards are different by giving a different card number.
-  server_card.SetNumber(u"371449635320005");
+  CreditCard server_card = GetServerCard(kVisaCard);
   personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
 
   ASSERT_EQ(2U,
@@ -7749,8 +7758,7 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
   external_delegate()->CheckSuggestions(
       form.fields()[1].global_id(),
       {GetCardSuggestion(kAmericanExpressCard, local_nickname_),
-       GetCardSuggestion(kAmericanExpressCard, server_nickname_),
-       CreateSeparator(),
+       GetCardSuggestion(kVisaCard, server_nickname_), CreateSeparator(),
        CreateManageCreditCardsSuggestion(
            /*with_gpay_logo=*/false)});
 }
