@@ -357,10 +357,22 @@ device_event_log::LogLevel LogLevelForFileErrors() {
              : device_event_log::LOG_LEVEL_DEBUG;
 }
 
-void CleanUpTempFiles(const base::FilePath& file1,
-                      const base::FilePath& file2) {
-  base::DeleteFile(file1);
-  base::DeleteFile(file2);
+void CleanUpTempFiles(base::FilePath checksum_filepath,
+                      base::File checksum_file,
+                      base::FilePath firmware_filepath,
+                      base::File firmware_file) {
+  if (!checksum_filepath.empty()) {
+    base::DeleteFile(checksum_filepath);
+  }
+  if (checksum_file.IsValid()) {
+    checksum_file.Close();
+  }
+  if (!firmware_filepath.empty()) {
+    base::DeleteFile(firmware_filepath);
+  }
+  if (firmware_file.IsValid()) {
+    firmware_file.Close();
+  }
 }
 
 std::string ReadFileToString(const base::FilePath& filename) {
@@ -1007,53 +1019,42 @@ void FirmwareUpdateManager::RefreshRemote() {
       base::BindOnce(
           [](const base::FilePath& path) { return CreateDirIfNotExists(path); },
           cache_path),
-      base::BindOnce(
-          &FirmwareUpdateManager::CreateTempFileAndDownload,
-          weak_ptr_factory_.GetWeakPtr(), cache_path,
-          std::string(kMirrorZipFileName), std::string(kMirrorJcatFileName),
-          base::BindOnce(&FirmwareUpdateManager::OnGetChecksumFile,
-                         weak_ptr_factory_.GetWeakPtr(), cache_path),
-          base::BindOnce(&FirmwareUpdateManager::RefreshRemoteComplete,
-                         weak_ptr_factory_.GetWeakPtr())));
+      base::BindOnce(&FirmwareUpdateManager::CreateTempFileAndDownload,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     cache_path.Append(kMirrorZipFileName),
+                     std::string(kMirrorJcatFileName),
+                     base::BindOnce(&FirmwareUpdateManager::OnGetChecksumFile,
+                                    weak_ptr_factory_.GetWeakPtr())));
 }
 
 void FirmwareUpdateManager::CreateTempFileAndDownload(
-    const base::FilePath& cache_path,
-    const std::string& filename,
-    const std::string& download_filename,
-    DownloadCompleteCallback on_download_callback,
-    MethodCallback completion_callback,
+    base::FilePath local_path,
+    std::string download_filename,
+    DownloadCompleteCallback callback,
     bool create_dir_success) {
   if (!create_dir_success) {
     FIRMWARE_LOG(ERROR)
         << "Firmware update directory does not exist and cannot be created.";
-    std::move(completion_callback)
-        .Run(MethodResult::kFailedToCreateUpdateDirectory);
+    RefreshRemoteComplete(MethodResult::kFailedToCreateUpdateDirectory);
     return;
   }
-
-  const base::FilePath local_path = cache_path.Append(filename);
 
   // Create the patch file.
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&CreateAndClearFile, local_path),
       base::BindOnce(&FirmwareUpdateManager::DownloadLvfsMirrorFile,
-                     weak_ptr_factory_.GetWeakPtr(), cache_path,
-                     download_filename, local_path,
-                     std::move(on_download_callback),
-                     std::move(completion_callback)));
+                     weak_ptr_factory_.GetWeakPtr(), download_filename,
+                     local_path, std::move(callback)));
 }
 
 void FirmwareUpdateManager::DownloadLvfsMirrorFile(
-    const base::FilePath& cache_path,
     std::string filename,
-    const base::FilePath& download_filepath,
-    DownloadCompleteCallback on_download_callback,
-    MethodCallback completion_callback,
+    base::FilePath download_filepath,
+    DownloadCompleteCallback callback,
     bool write_file_success) {
   if (!write_file_success) {
     FIRMWARE_LOG(ERROR) << "Writing to file failed: " << download_filepath;
-    std::move(completion_callback).Run(MethodResult::kFailedToCreatePatchFile);
+    RefreshRemoteComplete(MethodResult::kFailedToCreatePatchFile);
     return;
   }
   FIRMWARE_LOG(DEBUG) << "File created at: " << download_filepath;
@@ -1070,7 +1071,7 @@ void FirmwareUpdateManager::DownloadLvfsMirrorFile(
   if (!loader_factory) {
     DEVICE_LOG(device_event_log::LOG_TYPE_FIRMWARE, LogLevelForFileErrors())
         << "Url loader factory not found";
-    std::move(completion_callback).Run(MethodResult::kFailedToDownloadToFile);
+    RefreshRemoteComplete(MethodResult::kFailedToDownloadToFile);
     return;
   }
   // Save the pointer before moving `simple_loader` in the following call to
@@ -1081,59 +1082,51 @@ void FirmwareUpdateManager::DownloadLvfsMirrorFile(
       loader_factory.get(),
       base::BindOnce(&FirmwareUpdateManager::GetFileDescriptor,
                      weak_ptr_factory_.GetWeakPtr(), std::move(simple_loader),
-                     std::move(on_download_callback),
-                     std::move(completion_callback)),
+                     std::move(callback)),
       download_filepath);
 }
 
 void FirmwareUpdateManager::GetFileDescriptor(
     std::unique_ptr<network::SimpleURLLoader> simple_loader,
-    DownloadCompleteCallback on_download_callback,
-    MethodCallback completion_callback,
+    DownloadCompleteCallback callback,
     base::FilePath download_path) {
   if (simple_loader->NetError() != net::OK) {
     DEVICE_LOG(device_event_log::LOG_TYPE_FIRMWARE, LogLevelForFileErrors())
         << "Downloading to file failed with error code: "
         << GetResponseCode(simple_loader.get()) << ", network error "
         << simple_loader->NetError();
-    std::move(completion_callback).Run(MethodResult::kFailedToDownloadToFile);
+    RefreshRemoteComplete(MethodResult::kFailedToDownloadToFile);
     return;
   }
   FIRMWARE_LOG(DEBUG) << "File downloaded to " << download_path;
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&OpenAndGetFile, download_path),
-      base::BindOnce(std::move(on_download_callback), download_path,
-                     std::move(completion_callback)));
+      base::BindOnce(std::move(callback), std::move(download_path)));
 }
 
-void FirmwareUpdateManager::OnGetChecksumFile(
-    const base::FilePath& cache_path,
-    const base::FilePath& checksum_filepath,
-    MethodCallback completion_callback,
-    base::File checksum_file) {
-  if (!checksum_file.IsValid()) {
-    FIRMWARE_LOG(ERROR) << "Invalid file: " << checksum_filepath;
-    std::move(completion_callback).Run(MethodResult::kInvalidPatchFile);
+void FirmwareUpdateManager::OnGetChecksumFile(base::FilePath checksum_filepath,
+                                              base::File checksum_file) {
+  checksum_filepath_ = std::move(checksum_filepath);
+  checksum_file_ = std::move(checksum_file);
+  if (!checksum_file_.IsValid()) {
+    FIRMWARE_LOG(ERROR) << "Invalid file: " << checksum_filepath_;
+    RefreshRemoteComplete(MethodResult::kInvalidPatchFile);
     return;
   }
-  FIRMWARE_LOG(DEBUG) << "OnGetChecksumFile: " << checksum_filepath
+  FIRMWARE_LOG(DEBUG) << "OnGetChecksumFile: " << checksum_filepath_
                       << ", Reading file to string.";
   task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&ReadFileToString, checksum_filepath),
+      FROM_HERE, base::BindOnce(&ReadFileToString, checksum_filepath_),
       base::BindOnce(&FirmwareUpdateManager::GetFirmwareFilename,
-                     weak_ptr_factory_.GetWeakPtr(), checksum_filepath,
-                     std::move(checksum_file), std::move(completion_callback)));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FirmwareUpdateManager::GetFirmwareFilename(
-    const base::FilePath& checksum_filepath,
-    base::File checksum_file,
-    MethodCallback completion_callback,
     std::string file_contents) {
   size_t file_len = file_contents.size();
   if (file_len == 0) {
-    FIRMWARE_LOG(ERROR) << "Invalid file contents: " << checksum_filepath;
-    std::move(completion_callback).Run(MethodResult::kInvalidPatchFile);
+    FIRMWARE_LOG(ERROR) << "Invalid file contents: " << checksum_filepath_;
+    RefreshRemoteComplete(MethodResult::kInvalidPatchFile);
     return;
   }
   if (file_len > 8) {
@@ -1146,25 +1139,20 @@ void FirmwareUpdateManager::GetFirmwareFilename(
     }
   }
 
-  FIRMWARE_LOG(DEBUG) << "GetFirmwareFilename: " << checksum_filepath
+  FIRMWARE_LOG(DEBUG) << "GetFirmwareFilename: " << checksum_filepath_
                       << ", Uncompressing and parsing checksum file.";
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&UncompressFileAndGetFilename, file_contents),
       base::BindOnce(&FirmwareUpdateManager::TriggerDownloadOfFirmwareFile,
-                     weak_ptr_factory_.GetWeakPtr(), checksum_filepath,
-                     std::move(checksum_file), std::move(completion_callback)));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FirmwareUpdateManager::TriggerDownloadOfFirmwareFile(
-    const base::FilePath& checksum_filepath,
-    base::File checksum_file,
-    MethodCallback completion_callback,
     std::string firmware_filename) {
-  if (firmware_filename == "") {
+  if (firmware_filename.empty()) {
     FIRMWARE_LOG(ERROR)
         << "Failed to get firmware file name from checksum file";
-    std::move(completion_callback)
-        .Run(MethodResult::kFailedToGetFirmwareFilename);
+    RefreshRemoteComplete(MethodResult::kFailedToGetFirmwareFilename);
     return;
   }
   FIRMWARE_LOG(DEBUG) << "Got firmware filename: " << firmware_filename;
@@ -1174,46 +1162,33 @@ void FirmwareUpdateManager::TriggerDownloadOfFirmwareFile(
       base::BindOnce(
           [](const base::FilePath& path) { return CreateDirIfNotExists(path); },
           cache_path),
-      base::BindOnce(
-          &FirmwareUpdateManager::CreateTempFileAndDownload,
-          weak_ptr_factory_.GetWeakPtr(), cache_path, firmware_filename,
-          firmware_filename,
-          base::BindOnce(&FirmwareUpdateManager::UpdateMetadata,
-                         weak_ptr_factory_.GetWeakPtr(), checksum_filepath,
-                         std::move(checksum_file)),
-          std::move(completion_callback)));
+      base::BindOnce(&FirmwareUpdateManager::CreateTempFileAndDownload,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     cache_path.Append(firmware_filename),
+                     std::move(firmware_filename),
+                     base::BindOnce(&FirmwareUpdateManager::UpdateMetadata,
+                                    weak_ptr_factory_.GetWeakPtr())));
 }
 
-void FirmwareUpdateManager::UpdateMetadata(
-    const base::FilePath& checksum_filepath,
-    base::File checksum_file,
-    const base::FilePath& firmware_filepath,
-    MethodCallback completion_callback,
-    base::File firmware_file) {
-  FIRMWARE_LOG(EVENT) << "UpdateMetadata: " << firmware_filepath;
-  if (!firmware_file.IsValid()) {
-    FIRMWARE_LOG(ERROR) << "Invalid file: " << firmware_filepath;
-    std::move(completion_callback).Run(MethodResult::kInvalidPatchFile);
+void FirmwareUpdateManager::UpdateMetadata(base::FilePath firmware_filepath,
+                                           base::File firmware_file) {
+  firmware_filepath_ = std::move(firmware_filepath);
+  firmware_file_ = std::move(firmware_file);
+  FIRMWARE_LOG(EVENT) << "UpdateMetadata: " << firmware_filepath_;
+  if (!firmware_file_.IsValid()) {
+    FIRMWARE_LOG(ERROR) << "Invalid file: " << firmware_filepath_;
+    RefreshRemoteComplete(MethodResult::kInvalidPatchFile);
     return;
   }
   FwupdClient::Get()->UpdateMetadata(
-      kLVFSRemoteId, base::ScopedFD(firmware_file.TakePlatformFile()),
-      base::ScopedFD(checksum_file.TakePlatformFile()),
+      kLVFSRemoteId, base::ScopedFD(firmware_file_.TakePlatformFile()),
+      base::ScopedFD(checksum_file_.TakePlatformFile()),
       base::BindOnce(&FirmwareUpdateManager::OnUpdateMetadataResponse,
-                     weak_ptr_factory_.GetWeakPtr(), checksum_filepath,
-                     firmware_filepath, std::move(completion_callback)));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FirmwareUpdateManager::OnUpdateMetadataResponse(
-    const base::FilePath& checksum_filepath,
-    const base::FilePath& firmware_filepath,
-    MethodCallback completion_callback,
-    FwupdDbusResult result) {
-  task_runner_->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&CleanUpTempFiles, checksum_filepath, firmware_filepath),
-      base::BindOnce(std::move(completion_callback),
-                     GetMethodResultFromFwupdDbusResult(result)));
+void FirmwareUpdateManager::OnUpdateMetadataResponse(FwupdDbusResult result) {
+  RefreshRemoteComplete(GetMethodResultFromFwupdDbusResult(result));
 }
 
 void FirmwareUpdateManager::RefreshRemoteComplete(MethodResult result) {
@@ -1225,8 +1200,14 @@ void FirmwareUpdateManager::RefreshRemoteComplete(MethodResult result) {
   }
   firmware_update::metrics::EmitRefreshRemoteResult(result);
 
-  // Continue requesting devices after refresh remote is complete.
-  RequestDevices();
+  // Cleanup and continue requesting devices after refresh remote is complete.
+  task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&CleanUpTempFiles, std::move(checksum_filepath_),
+                     std::move(checksum_file_), std::move(firmware_filepath_),
+                     std::move(firmware_file_)),
+      base::BindOnce(&FirmwareUpdateManager::RequestDevices,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FirmwareUpdateManager::AddDeviceRequestObserver(
