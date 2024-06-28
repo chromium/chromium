@@ -17,6 +17,7 @@
 #include "base/types/pass_key.h"
 #include "base/types/token_type.h"
 #include "build/build_config.h"
+#include "components/performance_manager/decorators/page_aggregator_data.h"
 #include "components/performance_manager/decorators/page_load_tracker_decorator_data.h"
 #include "components/performance_manager/freezing/frozen_data.h"
 #include "components/performance_manager/graph/node_attached_data.h"
@@ -32,7 +33,6 @@ namespace performance_manager {
 
 class FrameNodeImpl;
 class FrozenFrameAggregator;
-class PageAggregatorAccess;
 
 // The starting state of various boolean properties of the PageNode.
 enum class PagePropertyFlag {
@@ -50,14 +50,13 @@ class PageNodeImpl
     : public PublicNodeImpl<PageNodeImpl, PageNode>,
       public TypedNodeBase<PageNodeImpl, PageNode, PageNodeObserver>,
       public SupportsNodeInlineData<PageLoadTrackerDecoratorData,
+                                    PageAggregatorData,
 #if !BUILDFLAG(IS_ANDROID)
                                     SiteDataNodeData,
 #endif
                                     FrozenData> {
  public:
   using PassKey = base::PassKey<PageNodeImpl>;
-  using PageAggregatorDataStorage =
-      InternalNodeAttachedDataStorage<sizeof(uintptr_t) + 16>;
 
   // A unique token to identify the PageNode and its associated WebContents for
   // the lifetime of the browser. Most node types use an existing unique
@@ -176,12 +175,6 @@ class PageNodeImpl
   base::WeakPtr<PageNodeImpl> GetWeakPtrOnUIThread();
   base::WeakPtr<PageNodeImpl> GetWeakPtr();
 
-  // Accessors to some of the NodeAttachedData:
-  PageAggregatorDataStorage& GetPageAggregatorData(
-      base::PassKey<PageAggregatorAccess>) {
-    return page_aggregator_data_;
-  }
-
   // Functions meant to be called by a FrameNodeImpl:
   void AddFrame(base::PassKey<FrameNodeImpl>, FrameNodeImpl* frame_node);
   void RemoveFrame(base::PassKey<FrameNodeImpl>, FrameNodeImpl* frame_node);
@@ -192,22 +185,21 @@ class PageNodeImpl
     SetLifecycleState(lifecycle_state);
   }
 
-  // Functions meant to be called by PageAggregatorAccess:
-  void SetIsHoldingWebLock(base::PassKey<PageAggregatorAccess>,
+  // Functions meant to be called by PageAggregatorData:
+  void SetIsHoldingWebLock(base::PassKey<PageAggregatorData>,
                            bool is_holding_weblock) {
     SetIsHoldingWebLock(is_holding_weblock);
   }
-  void SetIsHoldingIndexedDBLock(base::PassKey<PageAggregatorAccess>,
+  void SetIsHoldingIndexedDBLock(base::PassKey<PageAggregatorData>,
                                  bool is_holding_indexeddb_lock) {
     SetIsHoldingIndexedDBLock(is_holding_indexeddb_lock);
   }
-  void SetHadFormInteraction(base::PassKey<PageAggregatorAccess>,
+  void SetHadFormInteraction(base::PassKey<PageAggregatorData>,
                              bool had_form_interaction) {
     SetHadFormInteraction(had_form_interaction);
   }
 
-  void SetHadUserEdits(base::PassKey<PageAggregatorAccess>,
-                       bool had_user_edits) {
+  void SetHadUserEdits(base::PassKey<PageAggregatorData>, bool had_user_edits) {
     SetHadUserEdits(had_user_edits);
   }
 
@@ -372,10 +364,6 @@ class PageNodeImpl
   ObservedProperty::
       NotifiesOnlyOnChanges<bool, &PageNodeObserver::OnHadUserEditsChanged>
           had_user_edits_ GUARDED_BY_CONTEXT(sequence_checker_){false};
-
-  // Inline storage for PageAggregatorAccess user data.
-  PageAggregatorDataStorage page_aggregator_data_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtr<PageNodeImpl> weak_this_;
   base::WeakPtrFactory<PageNodeImpl> weak_factory_

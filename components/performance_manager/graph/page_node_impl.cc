@@ -53,7 +53,6 @@ PageNodeImpl::~PageNodeImpl() {
   DCHECK_EQ(nullptr, opener_frame_node_);
   DCHECK_EQ(nullptr, embedder_frame_node_);
   DCHECK_EQ(EmbeddingType::kInvalid, embedding_type_);
-  DCHECK(!page_aggregator_data_);
 }
 
 const std::string& PageNodeImpl::GetBrowserContextID() const {
@@ -504,7 +503,6 @@ void PageNodeImpl::OnBeforeLeavingGraph() {
 void PageNodeImpl::RemoveNodeAttachedData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DestroyNodeInlineDataStorage();
-  page_aggregator_data_.Reset();
 }
 
 const FrameNode* PageNodeImpl::GetOpenerFrameNode() const {

@@ -5,11 +5,14 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_DECORATORS_PAGE_AGGREGATOR_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_DECORATORS_PAGE_AGGREGATOR_H_
 
+#include "components/performance_manager/decorators/page_aggregator_data.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 
 namespace performance_manager {
+
+class PageNode;
 
 // Computes page level properties. The current properties tracked by this
 // aggregator are:
@@ -29,7 +32,7 @@ class PageAggregator : public FrameNode::ObserverDefaultImpl,
   ~PageAggregator() override;
 
  private:
-  class Data;
+  using Data = PageAggregatorData;
 
   // FrameNodeObserver implementation:
   void OnFrameNodeAdded(const FrameNode* frame_node) override;

@@ -18,6 +18,8 @@ static_library("performance_manager") {
     "decorators/frame_visibility_decorator.h",
     "decorators/page_aggregator.cc",
     "decorators/page_aggregator.h",
+    "decorators/page_aggregator_data.cc",
+    "decorators/page_aggregator_data.h",
     "decorators/page_live_state_decorator.cc",
     "decorators/page_load_tracker_decorator.cc",
     "decorators/page_load_tracker_decorator.h",
