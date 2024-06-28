@@ -2962,7 +2962,9 @@ bool ComputedStyleBuilder::SetEffectiveZoom(float f) {
 // Compute the FontOrientation from this style. It's derived from WritingMode
 // and TextOrientation.
 FontOrientation ComputedStyleBuilder::ComputeFontOrientation() const {
-  if (blink::IsHorizontalWritingMode(GetWritingMode())) {
+  // https://drafts.csswg.org/css-writing-modes/#propdef-text-orientation
+  // > the property has no effect in horizontal typographic modes.
+  if (IsHorizontalTypographicMode(GetWritingMode())) {
     return FontOrientation::kHorizontal;
   }
   switch (GetTextOrientation()) {

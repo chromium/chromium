@@ -85,6 +85,15 @@ inline bool IsParallelWritingMode(WritingMode a, WritingMode b) {
   return (a == WritingMode::kHorizontalTb) == (b == WritingMode::kHorizontalTb);
 }
 
+// Returns true if the specified writing-mode is a horizontal typographic
+// mode; modes horizontal-tb, sideways-lr, and sideways-rl.
+// https://drafts.csswg.org/css-writing-modes/#horizontal-typographic-mode
+inline bool IsHorizontalTypographicMode(WritingMode writing_mode) {
+  return writing_mode == WritingMode::kHorizontalTb ||
+         writing_mode == WritingMode::kSidewaysLr ||
+         writing_mode == WritingMode::kSidewaysRl;
+}
+
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, WritingMode);
 
 }  // namespace blink
