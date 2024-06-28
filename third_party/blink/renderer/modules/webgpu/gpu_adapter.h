@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -51,16 +52,10 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<wgpu::Adapter> {
 
   ScriptPromise<GPUAdapterInfo> requestAdapterInfo(ScriptState* script_state);
 
-  // Console warnings should generally be attributed to a GPUDevice, but in
-  // cases where there is no device warnings can be surfaced here. It's expected
-  // that very few warning will need to be shown for a given adapter, and as a
-  // result the maximum allowed warnings is lower than the per-device count.
-  void AddConsoleWarning(ExecutionContext* execution_context,
-                         const char* message);
-
  private:
   void OnRequestDeviceCallback(ScriptState* script_state,
                                const GPUDeviceDescriptor* descriptor,
+                               GPUDeviceProxy* proxy,
                                ScriptPromiseResolver<GPUDevice>* resolver,
                                wgpu::RequestDeviceStatus status,
                                wgpu::Device dawn_device,
@@ -88,9 +83,6 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<wgpu::Adapter> {
   HeapVector<Member<GPUMemoryHeapInfo>> memory_heaps_;
   std::optional<uint32_t> d3d_shader_model_;
   std::optional<uint32_t> vk_driver_version_;
-
-  static constexpr int kMaxAllowedConsoleWarnings = 50;
-  int allowed_console_warnings_remaining_ = kMaxAllowedConsoleWarnings;
 };
 
 }  // namespace blink

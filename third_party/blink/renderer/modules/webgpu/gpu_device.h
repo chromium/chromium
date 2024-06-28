@@ -22,16 +22,17 @@ namespace blink {
 class ExecutionContext;
 class ExternalTextureCache;
 class GPUAdapter;
-class GPUBuffer;
-class GPUBufferDescriptor;
-class GPUCommandEncoder;
-class GPUCommandEncoderDescriptor;
 class GPUBindGroup;
 class GPUBindGroupDescriptor;
 class GPUBindGroupLayout;
 class GPUBindGroupLayoutDescriptor;
+class GPUBuffer;
+class GPUBufferDescriptor;
+class GPUCommandEncoder;
+class GPUCommandEncoderDescriptor;
 class GPUComputePipeline;
 class GPUComputePipelineDescriptor;
+class GPUDevice;
 class GPUDeviceDescriptor;
 class GPUDeviceLostInfo;
 class GPUError;
@@ -67,6 +68,41 @@ enum class GPUSingletonWarning {
   kCount,  // Must be last
 };
 
+// A proxy class to the device that's created when we call
+// GPUAdapter.requestDevice. This provides a mechanism for us to create the
+// necessary callbacks to pass to the DeviceDescriptor before we actually have
+// the wgpu::Device necessary to create the GPUDevice.
+class GPUDeviceProxy : public GarbageCollected<GPUDeviceProxy> {
+ public:
+  GPUDeviceProxy();
+
+  WGPUOnceCallback<
+      void(const wgpu::Device&, wgpu::DeviceLostReason, const char*)>*
+  MakeLostCallback();
+
+  WGPURepeatingCallback<
+      void(const wgpu::Device&, wgpu::ErrorType, const char*)>*
+  GetUncapturedErrorCallback();
+
+  void Trace(Visitor* visitor) const;
+
+ private:
+  friend class GPUDevice;
+
+  void OnUncapturedErrorCallback(const wgpu::Device& device,
+                                 wgpu::ErrorType type,
+                                 const char* message);
+  void OnLostCallback(const wgpu::Device& device,
+                      wgpu::DeviceLostReason reason,
+                      const char* message);
+
+  Member<GPUDevice> device_;
+
+  std::unique_ptr<WGPURepeatingCallback<
+      void(const wgpu::Device&, wgpu::ErrorType, const char*)>>
+      uncaptured_error_callback_;
+};
+
 class GPUDevice final : public EventTarget,
                         public ExecutionContextClient,
                         public DawnObject<wgpu::Device> {
@@ -77,6 +113,7 @@ class GPUDevice final : public EventTarget,
   explicit GPUDevice(ExecutionContext* execution_context,
                      scoped_refptr<DawnControlClientHolder> dawn_control_client,
                      GPUAdapter* adapter,
+                     GPUDeviceProxy* proxy,
                      wgpu::Device dawn_device,
                      const GPUDeviceDescriptor* descriptor,
                      GPUDeviceLostInfo* lost_info = nullptr);
@@ -171,6 +208,7 @@ class GPUDevice final : public EventTarget,
   void UntrackMappableBuffer(GPUBuffer* buffer);
 
  private:
+  friend class GPUDeviceProxy;
   using LostProperty = ScriptPromiseProperty<GPUDeviceLostInfo, IDLUndefined>;
 
   // Used by USING_PRE_FINALIZER.
@@ -178,9 +216,11 @@ class GPUDevice final : public EventTarget,
   void DissociateMailboxes();
   void UnmapAllMappableBuffers(v8::Isolate* isolate);
 
-  void OnUncapturedError(WGPUErrorType errorType, const char* message);
+  void OnLostCallback(wgpu::DeviceLostReason reason, const char* message);
+  void OnUncapturedErrorCallback(wgpu::ErrorType errorType,
+                                 const char* message);
+
   void OnLogging(WGPULoggingType loggingType, const char* message);
-  void OnDeviceLostError(WGPUDeviceLostReason, const char* message);
 
   void OnPopErrorScopeCallback(
       ScriptPromiseResolver<IDLNullable<GPUError>>* resolver,
@@ -207,21 +247,13 @@ class GPUDevice final : public EventTarget,
   }
 
   Member<GPUAdapter> adapter_;
+  Member<GPUDeviceProxy> proxy_;
   Member<GPUSupportedFeatures> features_;
   Member<GPUSupportedLimits> limits_;
   Member<GPUQueue> queue_;
   Member<LostProperty> lost_property_;
-  std::unique_ptr<WGPURepeatingCallback<void(WGPUErrorType, const char*)>>
-      error_callback_;
   std::unique_ptr<WGPURepeatingCallback<void(WGPULoggingType, const char*)>>
       logging_callback_;
-  // lost_callback_ is stored as a unique_ptr since it may never be called.
-  // We need to be sure to free it on deletion of the device.
-  // Inside OnDeviceLostError we'll release the unique_ptr to avoid a double
-  // free.
-  std::unique_ptr<
-      WGPURepeatingCallback<void(WGPUDeviceLostReason, const char*)>>
-      lost_callback_;
 
   static constexpr int kMaxAllowedConsoleWarnings = 500;
   int allowed_console_warnings_remaining_ = kMaxAllowedConsoleWarnings;

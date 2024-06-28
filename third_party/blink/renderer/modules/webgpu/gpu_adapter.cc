@@ -173,27 +173,6 @@ GPUAdapter::GPUAdapter(
   }
 }
 
-void GPUAdapter::AddConsoleWarning(ExecutionContext* execution_context,
-                                   const char* message) {
-  if (execution_context && allowed_console_warnings_remaining_ > 0) {
-    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kRendering,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        StringFromASCIIAndUTF8(message));
-    execution_context->AddConsoleMessage(console_message);
-
-    allowed_console_warnings_remaining_--;
-    if (allowed_console_warnings_remaining_ == 0) {
-      auto* final_message = MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kRendering,
-          mojom::blink::ConsoleMessageLevel::kWarning,
-          "WebGPU: too many warnings, no more warnings will be reported to the "
-          "console for this GPUAdapter.");
-      execution_context->AddConsoleMessage(final_message);
-    }
-  }
-}
-
 GPUSupportedFeatures* GPUAdapter::features() const {
   return features_.Get();
 }
@@ -221,6 +200,7 @@ bool GPUAdapter::isCompatibilityMode() const {
 void GPUAdapter::OnRequestDeviceCallback(
     ScriptState* script_state,
     const GPUDeviceDescriptor* descriptor,
+    GPUDeviceProxy* proxy,
     ScriptPromiseResolver<GPUDevice>* resolver,
     wgpu::RequestDeviceStatus status,
     wgpu::Device dawn_device,
@@ -245,7 +225,7 @@ void GPUAdapter::OnRequestDeviceCallback(
       ExecutionContext* execution_context =
           ExecutionContext::From(script_state);
       auto* device = MakeGarbageCollected<GPUDevice>(
-          execution_context, GetDawnControlClient(), this,
+          execution_context, GetDawnControlClient(), this, proxy,
           std::move(dawn_device), descriptor, device_lost_info);
 
       if (device_lost_info) {
@@ -266,25 +246,8 @@ void GPUAdapter::OnRequestDeviceCallback(
     case wgpu::RequestDeviceStatus::Error:
     case wgpu::RequestDeviceStatus::Unknown:
     case wgpu::RequestDeviceStatus::InstanceDropped:
-      if (dawn_device) {
-        // Immediately force the device to be lost.
-        auto* device_lost_info = MakeGarbageCollected<GPUDeviceLostInfo>(
-            wgpu::DeviceLostReason::Unknown,
-            StringFromASCIIAndUTF8(error_message));
-        ExecutionContext* execution_context =
-            ExecutionContext::From(script_state);
-        auto* device = MakeGarbageCollected<GPUDevice>(
-            execution_context, GetDawnControlClient(), this,
-            std::move(dawn_device), descriptor, device_lost_info);
-        // Resolve with the lost device.
-        resolver->Resolve(device);
-      } else {
-        // If a device is not returned, that means that an error occurred while
-        // validating features or limits, and as a result the promise should be
-        // rejected with an OperationError.
         resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
                                          StringFromASCIIAndUTF8(error_message));
-      }
       break;
   }
 }
@@ -340,9 +303,22 @@ ScriptPromise<GPUDevice> GPUAdapter::requestDevice(
     dawn_desc.defaultQueue.label = queueLabel.c_str();
   }
 
+  // Set the device level callbacks on the descriptor.
+  auto* device_proxy = MakeGarbageCollected<GPUDeviceProxy>();
+  auto* device_lost_callback = device_proxy->MakeLostCallback();
+  auto* device_uncaptured_error_callback =
+      device_proxy->GetUncapturedErrorCallback();
+  dawn_desc.SetDeviceLostCallback(wgpu::CallbackMode::AllowSpontaneous,
+                                  device_lost_callback->UnboundCallback(),
+                                  device_lost_callback->AsUserdata());
+  dawn_desc.SetUncapturedErrorCallback(
+      device_uncaptured_error_callback->UnboundCallback(),
+      device_uncaptured_error_callback->AsUserdata());
+
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
       WTF::BindOnce(&GPUAdapter::OnRequestDeviceCallback, WrapPersistent(this),
-                    WrapPersistent(script_state), WrapPersistent(descriptor))));
+                    WrapPersistent(script_state), WrapPersistent(descriptor),
+                    WrapPersistent(device_proxy))));
 
   GetHandle().RequestDevice(&dawn_desc, wgpu::CallbackMode::AllowSpontaneous,
                             callback->UnboundCallback(),
