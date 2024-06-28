@@ -187,8 +187,12 @@ TEST_F(CompileHintsForStreamingTest, PreferCrowdsourcedHints) {
 }
 
 TEST_F(CompileHintsForStreamingTest, ProduceCrowdsourcedHint) {
+  // Disable local compile hints, since otherwise we'd always produce compile
+  // hints anyway, and couldn't test producing compile hints for crowdsourcing
+  // purposes.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kForceProduceCompileHints);
+  scoped_feature_list.InitWithFeatures({features::kForceProduceCompileHints},
+                                       {features::kLocalCompileHints});
 
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.Initialize();
