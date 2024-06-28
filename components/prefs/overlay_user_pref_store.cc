@@ -26,9 +26,7 @@ class OverlayUserPrefStore::ObserverAdapter : public PrefStore::Observer {
 
   // Methods of PrefStore::Observer.
   void OnPrefValueChanged(std::string_view key) override {
-    // TODO: crbug.com/349741884 - Pass `std::string_view` once the interface is
-    // changed.
-    parent_->OnPrefValueChanged(ephemeral_user_pref_store_, std::string(key));
+    parent_->OnPrefValueChanged(ephemeral_user_pref_store_, key);
   }
   void OnInitializationCompleted(bool succeeded) override {
     parent_->OnInitializationCompleted(ephemeral_user_pref_store_, succeeded);
@@ -225,7 +223,7 @@ OverlayUserPrefStore::~OverlayUserPrefStore() {
 }
 
 void OverlayUserPrefStore::OnPrefValueChanged(bool ephemeral,
-                                              const std::string& key) {
+                                              std::string_view key) {
   if (ephemeral) {
     ReportValueChanged(key, DEFAULT_PREF_WRITE_FLAGS);
   } else {

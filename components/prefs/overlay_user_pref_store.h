@@ -81,7 +81,7 @@ class COMPONENTS_PREFS_EXPORT OverlayUserPrefStore
  private:
   class ObserverAdapter;
 
-  void OnPrefValueChanged(bool ephemeral, const std::string& key);
+  void OnPrefValueChanged(bool ephemeral, std::string_view key);
   void OnInitializationCompleted(bool ephemeral, bool succeeded);
 
   // Returns true if |key| corresponds to a preference that shall be stored in
