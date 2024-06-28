@@ -166,13 +166,13 @@ media::VideoEncodeAccelerator::SupportedRateControlMode BitrateToSupportedMode(
       return media::VideoEncodeAccelerator::kConstantMode;
     case media::Bitrate::Mode::kVariable:
       return media::VideoEncodeAccelerator::kVariableMode
-#if BUILDFLAG(IS_ANDROID)
-             // On Android we allow CBR-only encoders to be used for VBR because
-             // most devices don't properly advertise support for VBR encoding.
-             // In most cases they will initialize successfully when configured
-             // for VBR.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+             // On Android and ChromeOS we allow CBR-only encoders to be used
+             // for VBR because most devices don't properly advertise support
+             // for VBR encoding. In most cases they will initialize
+             // successfully when configured for VBR.
              | media::VideoEncodeAccelerator::kConstantMode
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
           ;
 
     case media::Bitrate::Mode::kExternal:
