@@ -127,6 +127,7 @@ found in the LICENSE file.
                 android:inputType="number"
                 android:maxLength="5"
                 android:minHeight="@dimen/min_touch_target_size"
+                android:textAppearance="@style/TextAppearance.TextLarge.Primary"
                 tools:ignore="Autofill,LabelFor" />
         </LinearLayout>
 
@@ -158,6 +159,7 @@ found in the LICENSE file.
                 android:imeOptions="actionNext"
                 android:inputType="number"
                 android:minHeight="@dimen/min_touch_target_size"
+                android:textAppearance="@style/TextAppearance.TextLarge.Primary"
                 tools:ignore="Autofill,LabelFor" />
         </LinearLayout>
 
