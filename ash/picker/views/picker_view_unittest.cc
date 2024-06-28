@@ -23,6 +23,8 @@
 #include "ash/picker/views/picker_search_results_view.h"
 #include "ash/picker/views/picker_section_list_view.h"
 #include "ash/picker/views/picker_section_view.h"
+#include "ash/picker/views/picker_submenu_controller.h"
+#include "ash/picker/views/picker_submenu_view.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/picker/views/picker_widget.h"
@@ -59,6 +61,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/ax_event_counter.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "url/gurl.h"
@@ -118,6 +121,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
 
   struct Options {
     std::vector<PickerCategory> available_categories;
+    std::vector<PickerSearchResult> zero_state_suggested_results;
     FakeSearchFunction search_function;
     PickerActionType action_type = PickerActionType::kInsert;
     std::vector<PickerSearchResult> emoji_results;
@@ -138,7 +142,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
 
   void GetZeroStateSuggestedResults(
       SuggestedResultsCallback callback) override {
-    callback.Run({});
+    callback.Run(options_.zero_state_suggested_results);
   }
 
   void GetResultsForCategory(PickerCategory category,
@@ -1137,6 +1141,71 @@ TEST_F(PickerViewTest, DownArrowKeyNavigatesSearchResults) {
   EXPECT_THAT(delegate.last_inserted_result(),
               Optional(PickerSearchResult::BrowsingHistory(
                   GURL("http://bar.com"), u"Bar", ui::ImageModel())));
+}
+
+TEST_F(PickerViewTest, RightArrowKeyShowsSubmenu) {
+  FakePickerViewDelegate delegate({
+      .zero_state_suggested_results =
+          {PickerSearchResult::NewWindow(
+               PickerSearchResult::NewWindowData::Type::kDoc),
+           PickerSearchResult::NewWindow(
+               PickerSearchResult::NewWindowData::Type::kSheet)},
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RIGHT, ui::EF_NONE);
+
+  EXPECT_NE(GetPickerViewFromWidget(*widget)
+                ->submenu_controller_for_testing()
+                .GetSubmenuView(),
+            nullptr);
+}
+
+TEST_F(PickerViewTest, LeftArrowKeyClosesSubmenu) {
+  FakePickerViewDelegate delegate({
+      .zero_state_suggested_results =
+          {PickerSearchResult::NewWindow(
+               PickerSearchResult::NewWindowData::Type::kDoc),
+           PickerSearchResult::NewWindow(
+               PickerSearchResult::NewWindowData::Type::kSheet)},
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RIGHT, ui::EF_NONE);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_LEFT, ui::EF_NONE);
+
+  PickerSubmenuController& submenu_controller =
+      GetPickerViewFromWidget(*widget)->submenu_controller_for_testing();
+  views::test::WidgetDestroyedWaiter(submenu_controller.widget_for_testing())
+      .Wait();
+  EXPECT_EQ(submenu_controller.GetSubmenuView(), nullptr);
+}
+
+TEST_F(PickerViewTest, KeyEventsNavigateWithinSubmenu) {
+  FakePickerViewDelegate delegate({
+      .zero_state_suggested_results =
+          {PickerSearchResult::NewWindow(
+               PickerSearchResult::NewWindowData::Type::kDoc),
+           PickerSearchResult::NewWindow(
+               PickerSearchResult::NewWindowData::Type::kSheet)},
+      .action_type = PickerActionType::kOpen,
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  // Open submenu, navigate down to next submenu item, then select the item.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RIGHT, ui::EF_NONE);
+  ViewDrawnWaiter().Wait(GetPickerViewFromWidget(*widget)
+                             ->submenu_controller_for_testing()
+                             .GetSubmenuView());
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+
+  EXPECT_THAT(delegate.last_opened_result(),
+              Optional(PickerSearchResult::NewWindow(
+                  PickerSearchResult::NewWindowData::Type::kSheet)));
 }
 
 TEST_F(PickerViewTest, TabKeyNavigatesSearchResults) {

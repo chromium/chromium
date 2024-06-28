@@ -42,6 +42,8 @@ class ASH_EXPORT PickerItemWithSubmenuView : public PickerItemView {
 
   bool IsEmpty() const;
 
+  void ShowSubmenu();
+
   // PickerItemView:
   void OnMouseEntered(const ui::MouseEvent& event) override;
 

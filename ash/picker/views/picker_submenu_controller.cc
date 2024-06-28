@@ -66,6 +66,7 @@ void PickerSubmenuController::Show(
   widget_->Show();
   anchor_view_observation_.Reset();
   anchor_view_observation_.Observe(anchor_view);
+  anchor_view_ = anchor_view;
 
   // This forces the Widget to reposition itself based on the anchor.
   widget_->OnRootViewLayoutInvalidated();
@@ -75,7 +76,19 @@ void PickerSubmenuController::Close() {
   if (widget_) {
     widget_->Close();
   }
+  anchor_view_ = nullptr;
   anchor_view_observation_.Reset();
+}
+
+PickerSubmenuView* PickerSubmenuController::GetSubmenuView() {
+  if (!widget_) {
+    return nullptr;
+  }
+  return static_cast<PickerSubmenuView*>(widget_->widget_delegate());
+}
+
+views::View* PickerSubmenuController::GetAnchorView() {
+  return anchor_view_;
 }
 
 }  // namespace ash

@@ -122,6 +122,27 @@ TEST_F(PickerSubmenuControllerTest, ClosesWidgetWhenAnchorViewIsHidden) {
   views::test::WidgetDestroyedWaiter(controller.widget_for_testing()).Wait();
 }
 
+TEST_F(PickerSubmenuControllerTest, GetsSubmenuView) {
+  PickerSubmenuController controller;
+  auto anchor_widget = CreateFramelessTestWidget();
+  anchor_widget->SetContentsView(std::make_unique<views::View>());
+
+  controller.Show(anchor_widget->GetContentsView(), {});
+
+  EXPECT_NE(controller.GetSubmenuView(), nullptr);
+}
+
+TEST_F(PickerSubmenuControllerTest, GetsAnchorView) {
+  PickerSubmenuController controller;
+  auto anchor_widget = CreateFramelessTestWidget();
+  auto* anchor_view =
+      anchor_widget->SetContentsView(std::make_unique<views::View>());
+
+  controller.Show(anchor_view, {});
+
+  EXPECT_EQ(controller.GetAnchorView(), anchor_view);
+}
+
 TEST_F(PickerSubmenuControllerTest, TriggersCallbackWhenClickingOnItem) {
   PickerSubmenuController controller;
   auto anchor_widget = CreateFramelessTestWidget();

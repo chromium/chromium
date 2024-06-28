@@ -114,6 +114,10 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   gfx::Rect GetTargetBounds(const gfx::Rect& anchor_bounds,
                             PickerLayoutType layout_type);
 
+  PickerSubmenuController& submenu_controller_for_testing() {
+    return submenu_controller_;
+  }
+
   PickerSearchFieldView& search_field_view_for_testing() {
     return *search_field_view_;
   }
@@ -178,6 +182,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // Clears the current results in the emoji bar and shows recent and
   // placeholder emojis instead.
   void ResetEmojiBarToZeroState();
+
+  // Returns true if `view` is contained in a submenu of this PickerView.
+  bool IsContainedInSubmenu(views::View* view);
 
   std::optional<PickerCategory> selected_category_;
 

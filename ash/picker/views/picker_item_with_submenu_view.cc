@@ -106,8 +106,7 @@ bool PickerItemWithSubmenuView::IsEmpty() const {
   return entries_.empty();
 }
 
-void PickerItemWithSubmenuView::OnMouseEntered(const ui::MouseEvent& event) {
-  // TODO: b/343092747 - Pass the submenu list items to this class.
+void PickerItemWithSubmenuView::ShowSubmenu() {
   if (GetSubmenuController() == nullptr) {
     return;
   }
@@ -120,6 +119,10 @@ void PickerItemWithSubmenuView::OnMouseEntered(const ui::MouseEvent& event) {
         callback));
   }
   GetSubmenuController()->Show(this, std::move(items));
+}
+
+void PickerItemWithSubmenuView::OnMouseEntered(const ui::MouseEvent& event) {
+  ShowSubmenu();
 }
 
 const std::u16string& PickerItemWithSubmenuView::GetTextForTesting() const {

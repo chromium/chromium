@@ -13,6 +13,7 @@
 #include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/views/picker_emoji_bar_view.h"
+#include "ash/picker/views/picker_item_with_submenu_view.h"
 #include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/picker/views/picker_main_container_view.h"
 #include "ash/picker/views/picker_page_view.h"
@@ -22,6 +23,8 @@
 #include "ash/picker/views/picker_search_results_view_delegate.h"
 #include "ash/picker/views/picker_strings.h"
 #include "ash/picker/views/picker_style.h"
+#include "ash/picker/views/picker_submenu_controller.h"
+#include "ash/picker/views/picker_submenu_view.h"
 #include "ash/picker/views/picker_traversable_item_container.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/picker/views/picker_zero_state_view.h"
@@ -317,6 +320,12 @@ bool PickerView::MovePseudoFocusDown() {
 }
 
 bool PickerView::MovePseudoFocusLeft() {
+  if (IsContainedInSubmenu(pseudo_focused_view_)) {
+    SetPseudoFocusedView(submenu_controller_.GetAnchorView());
+    submenu_controller_.Close();
+    return true;
+  }
+
   if (views::View* left_item =
           active_item_container_->GetItemLeftOf(pseudo_focused_view_)) {
     SetPseudoFocusedView(left_item);
@@ -326,6 +335,13 @@ bool PickerView::MovePseudoFocusLeft() {
 }
 
 bool PickerView::MovePseudoFocusRight() {
+  if (views::IsViewClass<PickerItemWithSubmenuView>(pseudo_focused_view_)) {
+    views::AsViewClass<PickerItemWithSubmenuView>(pseudo_focused_view_)
+        ->ShowSubmenu();
+    SetPseudoFocusedView(submenu_controller_.GetSubmenuView()->GetTopItem());
+    return true;
+  }
+
   if (views::View* right_item =
           active_item_container_->GetItemRightOf(pseudo_focused_view_)) {
     SetPseudoFocusedView(right_item);
@@ -345,8 +361,7 @@ bool PickerView::AdvancePseudoFocus(PickerPseudoFocusDirection direction) {
 
 void PickerView::OnViewIsDeleting(View* observed_view) {
   CHECK_EQ(observed_view, pseudo_focused_view_);
-  pseudo_focused_view_ = nullptr;
-  pseudo_focused_view_observation_.Reset();
+  SetPseudoFocusedView(nullptr);
 }
 
 gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& anchor_bounds,
@@ -534,7 +549,10 @@ void PickerView::SetActivePage(PickerPageView* page_view) {
 
 void PickerView::AdvanceActiveItemContainer(
     PickerPseudoFocusDirection direction) {
-  if (emoji_bar_view_ == nullptr || active_item_container_ == emoji_bar_view_) {
+  if (active_item_container_ == submenu_controller_.GetSubmenuView()) {
+    // Just keep the submenu as the active item container.
+  } else if (emoji_bar_view_ == nullptr ||
+             active_item_container_ == emoji_bar_view_) {
     active_item_container_ = main_container_view_->active_page();
   } else {
     active_item_container_ = emoji_bar_view_;
@@ -549,7 +567,9 @@ void PickerView::SetPseudoFocusedView(views::View* view) {
     return;
   }
 
-  if (emoji_bar_view_ != nullptr && emoji_bar_view_->Contains(view)) {
+  if (IsContainedInSubmenu(view)) {
+    active_item_container_ = submenu_controller_.GetSubmenuView();
+  } else if (emoji_bar_view_ != nullptr && emoji_bar_view_->Contains(view)) {
     active_item_container_ = emoji_bar_view_;
   } else {
     // TODO: b/347103427 - There are cases where `view` might not be in either
@@ -608,6 +628,11 @@ void PickerView::ResetEmojiBarToZeroState() {
   }
 
   emoji_bar_view_->SetSearchResults(std::move(emoji_bar_results));
+}
+
+bool PickerView::IsContainedInSubmenu(views::View* view) {
+  return submenu_controller_.GetSubmenuView() != nullptr &&
+         submenu_controller_.GetSubmenuView()->Contains(view);
 }
 
 BEGIN_METADATA(PickerView)

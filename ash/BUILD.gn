@@ -3821,6 +3821,7 @@ test("ash_unittests") {
     "picker/views/picker_section_view_unittest.cc",
     "picker/views/picker_skeleton_loader_view_unittest.cc",
     "picker/views/picker_submenu_controller_unittest.cc",
+    "picker/views/picker_submenu_view_unittest.cc",
     "picker/views/picker_view_unittest.cc",
     "picker/views/picker_widget_unittest.cc",
     "picker/views/picker_zero_state_view_unittest.cc",

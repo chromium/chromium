@@ -8,17 +8,20 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace views {
+class View;
 class Widget;
 }  // namespace views
 
 namespace ash {
 
 class PickerItemView;
+class PickerSubmenuView;
 
 class ASH_EXPORT PickerSubmenuController : public views::ViewObserver {
  public:
@@ -41,10 +44,20 @@ class ASH_EXPORT PickerSubmenuController : public views::ViewObserver {
   // Closes the submenu.
   void Close();
 
+  // Gets the currently showing submenu view, or returns nullptr if no submenu
+  // is showing.
+  PickerSubmenuView* GetSubmenuView();
+
+  // Gets the anchor view for the currently showing submenu, or returns nullptr
+  // if no submenu is showing.
+  views::View* GetAnchorView();
+
   views::Widget* widget_for_testing() { return widget_.get(); }
 
  private:
   views::UniqueWidgetPtr widget_;
+
+  raw_ptr<views::View> anchor_view_;
 
   base::ScopedObservation<views::View, views::ViewObserver>
       anchor_view_observation_{this};

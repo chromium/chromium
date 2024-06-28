@@ -55,12 +55,12 @@ PickerSubmenuView::PickerSubmenuView(
       kPickerContainerBackgroundColor, kPickerContainerBorderRadius));
 
   // Don't allow submenus within submenus.
-  auto* section_view = AddChildView(std::make_unique<PickerSectionView>(
+  section_view_ = AddChildView(std::make_unique<PickerSectionView>(
       kSubmenuWidth, /*asset_fetcher=*/nullptr,
       /*submenu_controller=*/nullptr));
 
   for (std::unique_ptr<PickerItemView>& item : items) {
-    section_view->AddItem(std::move(item));
+    section_view_->AddItem(std::move(item));
   }
 }
 
@@ -80,6 +80,34 @@ gfx::Size PickerSubmenuView::CalculatePreferredSize(
       views::WidgetDelegateView::CalculatePreferredSize(available_size)
           .height();
   return gfx::Size(kSubmenuWidth, preferred_height);
+}
+
+views::View* PickerSubmenuView::GetTopItem() {
+  return section_view_->GetTopItem();
+}
+
+views::View* PickerSubmenuView::GetBottomItem() {
+  return section_view_->GetBottomItem();
+}
+
+views::View* PickerSubmenuView::GetItemAbove(views::View* item) {
+  return section_view_->GetItemAbove(item);
+}
+
+views::View* PickerSubmenuView::GetItemBelow(views::View* item) {
+  return section_view_->GetItemBelow(item);
+}
+
+views::View* PickerSubmenuView::GetItemLeftOf(views::View* item) {
+  return section_view_->GetItemLeftOf(item);
+}
+
+views::View* PickerSubmenuView::GetItemRightOf(views::View* item) {
+  return section_view_->GetItemRightOf(item);
+}
+
+bool PickerSubmenuView::ContainsItem(views::View* item) {
+  return Contains(item);
 }
 
 gfx::Rect PickerSubmenuView::GetDesiredBounds(const gfx::Rect& anchor_rect) {
