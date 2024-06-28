@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_mixer.h"
 #include "media/mojo/mojom/speech_recognition.mojom-blink.h"

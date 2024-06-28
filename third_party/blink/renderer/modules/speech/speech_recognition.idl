@@ -39,9 +39,12 @@
     attribute boolean continuous;
     attribute boolean interimResults;
     attribute unsigned long maxAlternatives;
+    [RuntimeEnabled=MediaStreamTrackWebSpeech] attribute boolean localService;
+    [RuntimeEnabled=MediaStreamTrackWebSpeech] attribute boolean allowCloudFallback;
 
     // methods to drive the speech interaction
     [RaisesException, Measure] void start();
+    [RaisesException, Measure, RuntimeEnabled=MediaStreamTrackWebSpeech] void start(MediaStreamTrack track);
     [ImplementedAs=stopFunction] void stop();
     void abort();
 

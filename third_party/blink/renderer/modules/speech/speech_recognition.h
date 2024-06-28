@@ -45,7 +45,9 @@ namespace blink {
 class ExceptionState;
 class ExecutionContext;
 class LocalDOMWindow;
+class MediaStreamTrack;
 class SpeechRecognitionController;
+class SpeechRecognitionMediaStreamAudioSink;
 
 class MODULES_EXPORT SpeechRecognition final
     : public EventTarget,
@@ -63,23 +65,30 @@ class MODULES_EXPORT SpeechRecognition final
 
   // SpeechRecognition.idl implemementation.
   // Attributes.
-  SpeechGrammarList* grammars() { return grammars_.Get(); }
+  SpeechGrammarList* grammars() const { return grammars_.Get(); }
   void setGrammars(SpeechGrammarList* grammars) { grammars_ = grammars; }
-  String lang() { return lang_; }
+  String lang() const { return lang_; }
   void setLang(const String& lang) { lang_ = lang; }
-  bool continuous() { return continuous_; }
+  bool continuous() const { return continuous_; }
   void setContinuous(bool continuous) { continuous_ = continuous; }
-  bool interimResults() { return interim_results_; }
+  bool interimResults() const { return interim_results_; }
   void setInterimResults(bool interim_results) {
     interim_results_ = interim_results;
   }
-  unsigned maxAlternatives() { return max_alternatives_; }
+  unsigned maxAlternatives() const { return max_alternatives_; }
   void setMaxAlternatives(unsigned max_alternatives) {
     max_alternatives_ = max_alternatives;
   }
+  void setLocalService(bool local_service) { local_service_ = local_service; }
+  bool localService() const { return local_service_; }
+  void setAllowCloudFallback(bool allow_cloud_fallback) {
+    allow_cloud_fallback_ = allow_cloud_fallback;
+  }
+  bool allowCloudFallback() const { return allow_cloud_fallback_; }
 
   // Callable by the user.
   void start(ExceptionState&);
+  void start(MediaStreamTrack*, ExceptionState&);
   void stopFunction();
   void abort();
 
@@ -126,16 +135,19 @@ class MODULES_EXPORT SpeechRecognition final
  private:
   void OnConnectionError();
   void StartInternal(ExceptionState* exception_state);
-
+  Member<MediaStreamTrack> stream_track_;
   Member<SpeechGrammarList> grammars_;
   String lang_;
-  bool continuous_;
-  bool interim_results_;
-  uint32_t max_alternatives_;
+  bool continuous_ = false;
+  bool interim_results_ = false;
+  uint32_t max_alternatives_ = 1;
+  bool local_service_ = true;
+  bool allow_cloud_fallback_ = true;
 
+  Member<SpeechRecognitionMediaStreamAudioSink> sink_;
   Member<SpeechRecognitionController> controller_;
-  bool started_;
-  bool stopping_;
+  bool started_ = false;
+  bool stopping_ = false;
   HeapVector<Member<SpeechRecognitionResult>> final_results_;
   HeapMojoReceiver<media::mojom::blink::SpeechRecognitionSessionClient,
                    SpeechRecognition>

@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/modules/speech/speech_recognition_controller.h"
 
 #include <memory>
+#include <optional>
 
 #include "media/mojo/mojom/speech_recognizer.mojom-blink.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -67,7 +68,12 @@ void SpeechRecognitionController::Start(
     const String& lang,
     bool continuous,
     bool interim_results,
-    uint32_t max_alternatives) {
+    uint32_t max_alternatives,
+    bool on_device,
+    bool allow_cloud_fallback,
+    mojo::PendingReceiver<media::mojom::blink::SpeechRecognitionAudioForwarder>
+        audio_forwarder,
+    std::optional<media::AudioParameters> audio_parameters) {
   media::mojom::blink::StartSpeechRecognitionRequestParamsPtr msg_params =
       media::mojom::blink::StartSpeechRecognitionRequestParams::New();
   for (unsigned i = 0; i < grammars.length(); i++) {

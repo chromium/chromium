@@ -2564,6 +2564,9 @@
       base_feature: "none",
     },
     {
+      name: "MediaStreamTrackWebSpeech",
+    },
+    {
       name: "MessagePortCloseEvent",
       status: "test",
     },
