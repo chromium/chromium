@@ -12,6 +12,9 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -112,9 +115,14 @@ public class TabResumptionModuleMediator {
                     new MultiTabObserver() {
                         @Override
                         public void onClosingStateChanged(Tab tab, boolean closing) {
-                            if (closing) {
-                                mReloadSessionCallback.run();
-                            }
+                            if (!closing) return;
+
+                            // Tab is being closed and only cleanup should be done. We'd like to
+                            // reload, but doing so eagerly now is error-prone (in particular,
+                            // mTabModel.getTabById() on the closing Tab would return non-null).
+                            // Therefore defer reload by posting on current task runner.
+                            assert ThreadUtils.runningOnUiThread();
+                            PostTask.postTask(TaskTraits.UI_DEFAULT, mReloadSessionCallback);
                         }
                     };
 
@@ -416,7 +424,11 @@ public class TabResumptionModuleMediator {
      */
     private boolean isSuggestionValid(SuggestionEntry entry) {
         if (entry.isLocalTab()) {
-            return mTabModel.getTabById(entry.localTabId) != null;
+            // We already detect closure the of a suggested Local Tab, and perform refresh. Below
+            // guards against glitches where a Local Tab somehow gets closed, or is in the closing
+            // state, but still get suggested.
+            Tab tab = mTabModel.getTabById(entry.localTabId);
+            return tab != null && !tab.isClosing();
         }
 
         return !TextUtils.isEmpty(entry.title);

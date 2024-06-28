@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
+import static android.os.Looper.getMainLooper;
+
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.robolectric.Shadows.shadowOf;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
@@ -27,6 +30,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -45,6 +49,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -95,6 +100,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupportExtended {
     private TabResumptionModuleMediator mMediator;
 
     private int mReloadSessionCounter;
+    private CallbackHelper mReloadSessionCallbackHelper;
 
     @Before
     public void setUp() {
@@ -117,6 +123,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupportExtended {
                         /* urlImageProvider= */ mUrlImageProvider,
                         /* reloadSessionCallback= */ () -> {
                             ++mReloadSessionCounter;
+                            mReloadSessionCallbackHelper.notifyCalled();
                         },
                         /* statusChangedCallback= */ () -> {},
                         /* seeMoreLinkClickCallback= */ () -> {},
@@ -484,6 +491,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupportExtended {
                 Arrays.asList(
                         SuggestionEntry.createFromLocalTab(tab0),
                         SuggestionEntry.createFromLocalTab(tab1));
+        mReloadSessionCallbackHelper = new CallbackHelper();
 
         mMediator.loadModule();
         verify(mDataProvider, times(1)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
@@ -508,6 +516,12 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupportExtended {
         mTabObserverMap.get(tab0.getId()).onClosingStateChanged(tab0, /* closing= */ false);
         Assert.assertEquals(0, mReloadSessionCounter);
         mTabObserverMap.get(tab0.getId()).onClosingStateChanged(tab0, /* closing= */ true);
+        try {
+            shadowOf(getMainLooper()).idle();
+            mReloadSessionCallbackHelper.waitForNext();
+        } catch (TimeoutException e) {
+            Assert.fail("Timed out waiting for reload callback.");
+        }
         Assert.assertEquals(1, mReloadSessionCounter);
 
         // Simulate ending session: Observation should be released.
