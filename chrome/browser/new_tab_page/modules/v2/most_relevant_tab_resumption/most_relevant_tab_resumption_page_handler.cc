@@ -160,8 +160,15 @@ void MostRelevantTabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
     return;
   }
 
-  auto fetch_options =
-      FetchOptions::CreateDefaultFetchOptionsForTabResumption();
+  FetchOptions::URLTypeSet remote_types = {
+      FetchOptions::URLType::kActiveRemoteTab,
+      FetchOptions::URLType::kRemoteVisit};
+  FetchOptions fetch_options =
+      base::FeatureList::IsEnabled(
+          ntp_features::kNtpMostRelevantTabResumptionModuleLocal)
+          ? FetchOptions::CreateDefaultFetchOptionsForTabResumption()
+          : FetchOptions::CreateFetchOptionsForTabResumption(remote_types);
+
   // Filter certain content categories, generally for use cases where a device
   // and profile may be shared by multiple family members.
   fetch_options.transforms.insert(
@@ -174,7 +181,7 @@ void MostRelevantTabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
   visited_url_ranking_service->FetchURLVisitAggregates(
       fetch_options,
       base::BindOnce(
-          &MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates,
+          &MostRelevantTabResumptionPageHandler::OnURLVisitAggregatesFetched,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
@@ -242,6 +249,24 @@ void MostRelevantTabResumptionPageHandler::RestoreTab(
   visited_url_ranking_service->RecordAction(
       visited_url_ranking::ScoredURLUserAction::kSeen, tab->url_key,
       segmentation_platform::TrainingRequestId(tab->training_request_id));
+}
+
+void MostRelevantTabResumptionPageHandler::OnURLVisitAggregatesFetched(
+    GetTabsCallback callback,
+    visited_url_ranking::ResultStatus status,
+    std::vector<visited_url_ranking::URLVisitAggregate> url_visit_aggregates) {
+  if (status != visited_url_ranking::ResultStatus::kSuccess) {
+    std::move(callback).Run({});
+  }
+  auto* visited_url_ranking_service =
+      visited_url_ranking::VisitedURLRankingServiceFactory::GetForProfile(
+          profile_);
+  visited_url_ranking_service->RankURLVisitAggregates(
+      {.key = visited_url_ranking::kTabResumptionRankerKey},
+      std::move(url_visit_aggregates),
+      base::BindOnce(
+          &MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates(

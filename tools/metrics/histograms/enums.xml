@@ -18723,6 +18723,8 @@ from previous Chrome versions.
   <int value="-731133967" label="AutofillSettingsCardTypeSplit:disabled"/>
   <int value="-731125936"
       label="ShowRelatedWebsiteSetsPermissionGrants:enabled"/>
+  <int value="-730917842"
+      label="NtpMostRelevantTabResumptionModuleLocal:enabled"/>
   <int value="-729269661" label="PPAPISharedImagesSwapChain:enabled"/>
   <int value="-728461030" label="AutofillPruneSuggestions:disabled"/>
   <int value="-728187009" label="NtpRealboxSuggestionAnswers:enabled"/>
@@ -19125,6 +19127,8 @@ from previous Chrome versions.
   <int value="-555341956" label="AutofillSaveAndFillVPA:enabled"/>
   <int value="-554140610" label="NtpRealboxCr23All:disabled"/>
   <int value="-553732400" label="ShoppingPageTypes:enabled"/>
+  <int value="-553134643"
+      label="NtpMostRelevantTabResumptionModuleLocal:disabled"/>
   <int value="-552937174"
       label="AccessibilityCaretBlinkIntervalSetting:disabled"/>
   <int value="-552565840" label="SplitKeyboardRefactor:enabled"/>

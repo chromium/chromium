@@ -7018,6 +7018,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          ntp_features::kNtpMostRelevantTabResumptionModuleDeviceIcon)},
 
+    {"ntp-most-relevant-tab-resumption-module-local",
+     flag_descriptions::kNtpMostRelevantTabResumptionModuleLocalName,
+     flag_descriptions::kNtpMostRelevantTabResumptionModuleLocalDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         ntp_features::kNtpMostRelevantTabResumptionModuleLocal)},
+
     {"ntp-outlook-calendar-module",
      flag_descriptions::kNtpOutlookCalendarModuleName,
      flag_descriptions::kNtpOutlookCalendarModuleDescription, kOsDesktop,

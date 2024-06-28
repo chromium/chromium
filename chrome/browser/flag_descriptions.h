@@ -2964,6 +2964,9 @@ extern const char kNtpChromeCartHistoryClusterCoexistDescription[];
 extern const char kNtpMostRelevantTabResumptionModuleName[];
 extern const char kNtpMostRelevantTabResumptionModuleDescription[];
 
+extern const char kNtpMostRelevantTabResumptionModuleLocalName[];
+extern const char kNtpMostRelevantTabResumptionModuleLocalDescription[];
+
 extern const char kNtpMostRelevantTabResumptionModuleDeviceIconName[];
 extern const char kNtpMostRelevantTabResumptionModuleDeviceIconDescription[];
 

@@ -56,6 +56,12 @@ class MostRelevantTabResumptionPageHandler
                              int64_t visit_request_id) override;
 
   // Invoked when the URL visit aggregates have been fetched.
+  void OnURLVisitAggregatesFetched(
+      GetTabsCallback callback,
+      visited_url_ranking::ResultStatus status,
+      std::vector<visited_url_ranking::URLVisitAggregate> url_visit_aggregates);
+
+  // Invoked when the URL visit aggregates have been ranked.
   void OnGotRankedURLVisitAggregates(
       GetTabsCallback callback,
       visited_url_ranking::ResultStatus status,
