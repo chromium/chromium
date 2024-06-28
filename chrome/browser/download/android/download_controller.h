@@ -26,12 +26,11 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/download/android/dangerous_download_dialog_bridge.h"
+#include "chrome/browser/download/android/download_app_verification_request.h"
 #include "chrome/browser/download/android/download_callback_validator.h"
 #include "chrome/browser/download/android/download_controller_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
-
-class DownloadAppVerificationRequest;
 
 class DownloadController : public DownloadControllerBase {
  public:

@@ -16,10 +16,8 @@
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
-#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/profile_key_startup_accessor.h"
 #include "chrome/browser/android/profile_key_util.h"
@@ -43,8 +41,6 @@
 #include "components/download/public/common/download_item.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/pdf/common/constants.h"
-#include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
-#include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
@@ -474,6 +470,7 @@ void DownloadController::OnDangerousDownload(download::DownloadItem* item) {
           item, base::BindOnce(&DownloadController::OnAppVerificationComplete,
                                // Unretained is safe because this is a singleton
                                base::Unretained(this)));
+  app_verification_requests_[item]->Start();
 }
 
 void DownloadController::ShowDangerousDownloadDialog(
@@ -541,69 +538,3 @@ void DownloadController::OnAppVerificationComplete(
 
   ShowDangerousDownloadDialog(item);
 }
-
-// Encapsulates the process of checking whether app verification is
-// enabled and possibly prompting the user to enable app verification.
-class DownloadAppVerificationRequest : public download::DownloadItem::Observer {
- public:
-  // On request completion, this class calls back with:
-  // - Whether a prompt was shown to the user
-  // - The associated `DownloadItem`
-  using AppVerificationCallback =
-      base::OnceCallback<void(bool, download::DownloadItem*)>;
-  DownloadAppVerificationRequest(download::DownloadItem* item,
-                                 AppVerificationCallback callback)
-      : item_(item), callback_(std::move(callback)) {
-    item_->AddObserver(this);
-    // This is to ensure that `IsVerifyAppsEnabled` is not called before
-    // we exit this constructor.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&DownloadAppVerificationRequest::Start,
-                                  weak_factory_.GetWeakPtr()));
-  }
-
-  ~DownloadAppVerificationRequest() override { item_->RemoveObserver(this); }
-
- private:
-  void Start() {
-    safe_browsing::SafeBrowsingApiHandlerBridge::GetInstance()
-        .StartIsVerifyAppsEnabled(
-            base::BindOnce(&DownloadAppVerificationRequest::IsVerifyAppsEnabled,
-                           weak_factory_.GetWeakPtr()));
-  }
-  // DownloadItem::Observer
-  void OnDownloadDestroyed(download::DownloadItem* item) override {
-    // It's safe to pass `item` in the callback because the callback
-    // immediately deletes `this`.
-    std::move(callback_).Run(false, item);
-    // Do not add code after this. Callback may delete `this`.
-  }
-
-  void IsVerifyAppsEnabled(safe_browsing::VerifyAppsEnabledResult result) {
-    base::UmaHistogramEnumeration(
-        "SBClientDownload.AndroidAppVerificationResult", result);
-
-    if (result != safe_browsing::VerifyAppsEnabledResult::SUCCESS_NOT_ENABLED) {
-      std::move(callback_).Run(false, item_);
-      // Do not add code after this. Callback may delete `this`.
-      return;
-    }
-
-    safe_browsing::SafeBrowsingApiHandlerBridge::GetInstance()
-        .StartEnableVerifyApps(base::BindOnce(
-            &DownloadAppVerificationRequest::EnableVerifyAppsDone,
-            weak_factory_.GetWeakPtr()));
-  }
-
-  void EnableVerifyAppsDone(safe_browsing::VerifyAppsEnabledResult result) {
-    base::UmaHistogramEnumeration(
-        "SBClientDownload.AndroidAppVerificationPromptResult", result);
-
-    std::move(callback_).Run(true, item_);
-    // Do not add code after this. Callback may delete `this`.
-  }
-
-  raw_ptr<download::DownloadItem> item_;
-  AppVerificationCallback callback_;
-  base::WeakPtrFactory<DownloadAppVerificationRequest> weak_factory_{this};
-};
