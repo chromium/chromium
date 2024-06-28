@@ -52,16 +52,6 @@
     "expires": "Jul 1, 2024"
   },
   {
-    "prefix": "page-margin-boxes",
-    "platforms": ["Linux"],
-    "bases": ["external/wpt/css/css-page",
-              "wpt_internal/printing"],
-    "exclusive_tests": ["external/wpt/css/css-page/margin-boxes"],
-    "args": ["--enable-blink-features=PageMarginBoxes"],
-    "owners": ["mstensho@chromium.org"],
-    "expires": "Jul 1, 2024"
-  },
-  {
     "prefix": "pna-navigations-enabled",
     "platforms": ["Linux", "Mac", "win"],
     "bases": ["external/wpt/fetch/private-network-access"],
