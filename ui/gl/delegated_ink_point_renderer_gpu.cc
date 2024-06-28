@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
@@ -114,7 +115,10 @@ void DelegatedInkPointRendererGpu::ReportPointsDrawn() {
                         now - timestamp);
     most_recent_timestamp = std::max(timestamp, most_recent_timestamp);
   }
-  CHECK_GE(most_recent_timestamp, metadata_->timestamp());
+  // TODO(crbug.com/40784171): Understand why we are being sent points from
+  // browser process that break this assertion so frequently and prevent it from
+  // happening.
+  // CHECK_GE(most_recent_timestamp, metadata_->timestamp());
   base::UmaHistogramTimes(
       "Renderer.DelegatedInkTrail.LatencyImprovement.OS.WithoutPrediction",
       most_recent_timestamp - metadata_->timestamp());
