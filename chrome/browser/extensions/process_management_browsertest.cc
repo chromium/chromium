@@ -22,6 +22,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -473,15 +474,25 @@ IN_PROC_BROWSER_TEST_P(ChromeWebStoreProcessTest,
   WebContents* cws_contents = open_url(GetWebstorePage(), non_cws_contents_1);
 
   // The second non-Webstore page should have been given a different
-  // WebContents, but share the same process with the page that opened it.
+  // WebContents.
   EXPECT_NE(non_cws_contents_1, non_cws_contents_2);
-  EXPECT_EQ(non_cws_contents_1->GetPrimaryMainFrame()->GetProcess(),
-            non_cws_contents_2->GetPrimaryMainFrame()->GetProcess());
+  // The two non-Webstore urls are same-site, but cross-origin. If
+  // kOriginKeyedProcessesByDefault is enabled they will be placed in different
+  // processes, otherwise they'll share a process.
+  if (content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault()) {
+    EXPECT_NE(non_cws_contents_1->GetPrimaryMainFrame()->GetProcess(),
+              non_cws_contents_2->GetPrimaryMainFrame()->GetProcess());
+  } else {
+    EXPECT_EQ(non_cws_contents_1->GetPrimaryMainFrame()->GetProcess(),
+              non_cws_contents_2->GetPrimaryMainFrame()->GetProcess());
+  }
 
   // The Webstore page should have been given a separate WebContents and process
   // than the page that opened it.
   EXPECT_NE(non_cws_contents_1, cws_contents);
   EXPECT_NE(non_cws_contents_1->GetPrimaryMainFrame()->GetProcess(),
+            cws_contents->GetPrimaryMainFrame()->GetProcess());
+  EXPECT_NE(non_cws_contents_2->GetPrimaryMainFrame()->GetProcess(),
             cws_contents->GetPrimaryMainFrame()->GetProcess());
 }
 
