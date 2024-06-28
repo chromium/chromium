@@ -175,6 +175,10 @@ class BuildConfigGenerator extends DefaultTask {
     @Input
     boolean ignoreDEPS
 
+    /** Whether .info files and BUILD.gn are in a cipd/ subdirectory. */
+    @Input
+    boolean allFilesInCipd
+
     /** The URI of the file BuildConfigGenerator.groovy */
     @Input
     @SourceURI
@@ -561,8 +565,9 @@ class BuildConfigGenerator extends DefaultTask {
         if (condition != null) {
           sb.append("if ($condition) {\n")
         }
+        boolean isAndroidX = targetName.startsWith('androidx')
         if (dependency.extension == 'jar') {
-            String targetType = targetName.startsWith('androidx') ? 'androidx_java_prebuilt' : 'java_prebuilt'
+            String targetType = isAndroidX ? 'androidx_java_prebuilt' : 'java_prebuilt'
             sb.append("""\
                 ${targetType}("${targetName}") {
                   jar_path = "${DOWNLOAD_ROOT_DIRECTORY}/${libPath}/${dependency.fileName}"
@@ -572,16 +577,15 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  supports_android = true\n')
             }
         } else if (dependency.extension == 'aar') {
-            String targetType = (targetName.startsWith('androidx') ?
-                    'androidx_android_aar_prebuilt' : 'android_aar_prebuilt')
+            String targetType = isAndroidX ? 'androidx_android_aar_prebuilt' : 'android_aar_prebuilt'
+            String maybeSubdir = allFilesInCipd ? "${DOWNLOAD_ROOT_DIRECTORY}/" : ""
             sb.append("""\
                 ${targetType}("${targetName}") {
                   aar_path = "${DOWNLOAD_ROOT_DIRECTORY}/${libPath}/${dependency.fileName}"
-                  info_path = "${libPath}/${BuildConfigGenerator.reducedDepencencyId(dependency.id)}.info"
+                  info_path = "${maybeSubdir}${libPath}/${BuildConfigGenerator.reducedDepencencyId(dependency.id)}.info"
             """.stripIndent(/* forceGroovyBehavior */ true))
         } else if (dependency.extension == 'group') {
-            String targetType = (targetName.startsWith('androidx') ?
-                    'androidx_java_group' : 'java_group')
+            String targetType = isAndroidX ? 'androidx_java_group' : 'java_group'
             sb.append("""\
                 ${targetType}("${targetName}") {
             """.stripIndent(/* forceGroovyBehavior */ true))
@@ -639,8 +643,8 @@ class BuildConfigGenerator extends DefaultTask {
     }
 
     boolean isInDifferentRepo(ChromiumDepGraph.DependencyDescription dependency) {
-        boolean isAndroidxRepository = (repositoryPath == 'third_party/androidx')
-        boolean isAndroidxDependency = (dependency.id.startsWith('androidx'))
+        boolean isAndroidxRepository = repositoryPath.startsWith('third_party/androidx')
+        boolean isAndroidxDependency = dependency.id.startsWith('androidx')
         if (isAndroidxRepository != isAndroidxDependency) {
             return true
         }
