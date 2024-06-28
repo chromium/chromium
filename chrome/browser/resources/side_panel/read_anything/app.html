@@ -107,10 +107,11 @@
     font-size: 1em;
   }
 
-  .hiddenImg {
+  /* Not using :host because ReadAnythingElement does not use ShadowDOM. */
+  read-anynthing-app:not([images-enabled]) img,
+  read-anything-app:not([images-enabled]) figure {
     display: none;
   }
-
 </style>
 <div id="appFlexParent" on-keydown="onKeyDown_">
   <div id="toolbar-container" hidden="[[!isWebUIToolbarVisible_]]">

@@ -53,9 +53,6 @@ const overflowXScroll = 'scroll';
 const minWidthTypical = 'auto';
 const minWidthOverflow = 'fit-content';
 
-// Images CSS Classes.
-const HIDDEN_IMAGE = 'hiddenImg';
-
 // A two-way map where each key is unique and each value is unique. The keys are
 // DOM nodes and the values are numbers, representing AXNodeIDs.
 class TwoWayMap<K, V> extends Map<K, V> {
@@ -162,6 +159,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         type: Object,
         observer: 'onSpeechPlayingStateChanged_',
       },
+
+      imagesEnabled: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
     };
   }
 
@@ -267,6 +270,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     pauseSource: PauseActionSource.DEFAULT,
     isAudioCurrentlyPlaying: false,
   };
+
+  private imagesEnabled: boolean;
 
   maxSpeechLength = 175;
 
@@ -838,13 +843,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   updateImages() {
-    document.querySelectorAll('img, figure').forEach((element) => {
-      if (chrome.readingMode.imagesEnabled) {
-        element.classList.remove(HIDDEN_IMAGE);
-      } else {
-        element.classList.add(HIDDEN_IMAGE);
-      }
-    });
+    this.imagesEnabled = chrome.readingMode.imagesEnabled;
   }
 
   updateVoicePackStatusFromInstallResponse(lang: string, status: string) {
