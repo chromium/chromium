@@ -103,13 +103,6 @@ BASE_FEATURE(kUseExternalVkImageBackingOnChromeOS,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_WIN)
-// Only allow shmem overlays for NV12 on Windows.
-constexpr bool kAllowShmOverlays = true;
-#else
-constexpr bool kAllowShmOverlays = false;
-#endif
-
 const char* GmbTypeToString(gfx::GpuMemoryBufferType type) {
   switch (type) {
     case gfx::EMPTY_BUFFER:
@@ -541,8 +534,10 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
         if (CompoundImageBacking::IsValidSharedMemoryBufferFormat(size,
                                                                   format)) {
           factory =
-              GetFactoryByUsage(usage | SHARED_IMAGE_USAGE_CPU_UPLOAD, format,
-                                size, /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
+              GetFactoryByUsage(CompoundImageBacking::GetGpuSharedImageUsage(
+                                    SharedImageUsageSet(usage)),
+                                format, size,
+                                /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
           use_compound = factory != nullptr;
         }
       }
@@ -555,8 +550,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
 
       if (use_compound) {
         backing = CompoundImageBacking::CreateSharedMemory(
-            factory, kAllowShmOverlays, mailbox, format, size, color_space,
-            surface_origin, alpha_type, usage, debug_label, buffer_usage);
+            factory, mailbox, format, size, color_space, surface_origin,
+            alpha_type, SharedImageUsage(usage), debug_label, buffer_usage);
       } else {
         backing = factory->CreateSharedImage(
             mailbox, format, surface_handle, size, color_space, surface_origin,
@@ -652,8 +647,10 @@ bool SharedImageFactory::CreateSharedImage(
     // Check if CompoundImageBacking can hold shared memory buffer plus
     // another GPU backing type to satisfy requirements.
     if (CompoundImageBacking::IsValidSharedMemoryBufferFormat(size, format)) {
-      factory = GetFactoryByUsage(usage | SHARED_IMAGE_USAGE_CPU_UPLOAD, format,
-                                  size, /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
+      factory =
+          GetFactoryByUsage(CompoundImageBacking::GetGpuSharedImageUsage(
+                                SharedImageUsageSet(usage)),
+                            format, size, /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
       use_compound = factory != nullptr;
     }
   }
@@ -666,8 +663,8 @@ bool SharedImageFactory::CreateSharedImage(
   std::unique_ptr<SharedImageBacking> backing;
   if (use_compound) {
     backing = CompoundImageBacking::CreateSharedMemory(
-        factory, kAllowShmOverlays, mailbox, std::move(buffer_handle), format,
-        size, color_space, surface_origin, alpha_type, usage,
+        factory, mailbox, std::move(buffer_handle), format, size, color_space,
+        surface_origin, alpha_type, SharedImageUsage(usage),
         std::move(debug_label));
   } else {
     backing = factory->CreateSharedImage(
@@ -722,9 +719,10 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
       const auto plane_format = viz::GetSinglePlaneSharedImageFormat(
           GetPlaneBufferFormat(plane, format));
       const gfx::Size plane_size = GetPlaneSize(plane, size);
-      factory =
-          GetFactoryByUsage(usage | SHARED_IMAGE_USAGE_CPU_UPLOAD, plane_format,
-                            plane_size, /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
+      factory = GetFactoryByUsage(CompoundImageBacking::GetGpuSharedImageUsage(
+                                      SharedImageUsageSet(usage)),
+                                  plane_format, plane_size, /*pixel_data=*/{},
+                                  gfx::EMPTY_BUFFER);
       use_compound = factory != nullptr;
     }
   }
@@ -737,8 +735,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
   std::unique_ptr<SharedImageBacking> backing;
   if (use_compound) {
     backing = CompoundImageBacking::CreateSharedMemory(
-        factory, kAllowShmOverlays, mailbox, std::move(handle), format, plane,
-        size, color_space, surface_origin, alpha_type, usage,
+        factory, mailbox, std::move(handle), format, plane, size, color_space,
+        surface_origin, alpha_type, SharedImageUsage(usage),
         std::move(debug_label));
   } else {
     backing = factory->CreateSharedImage(

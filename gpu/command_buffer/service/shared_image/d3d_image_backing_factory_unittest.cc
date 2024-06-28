@@ -1863,10 +1863,9 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
     // CompoundImageBacking wrapping D3DImageBacking is required for shared
     // memory support.
     auto backing = CompoundImageBacking::CreateSharedMemory(
-        shared_image_factory_.get(), /*allow_shm_overlays=*/true, mailboxes[i],
-        std::move(shm_gmb_handle), gfx::BufferFormat::YUV_420_BIPLANAR,
-        planes[i], size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, usage, "TestLabel");
+        shared_image_factory_.get(), mailboxes[i], std::move(shm_gmb_handle),
+        gfx::BufferFormat::YUV_420_BIPLANAR, planes[i], size, gfx::ColorSpace(),
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "TestLabel");
     EXPECT_NE(backing, nullptr);
 
     shared_image_backings.push_back(std::move(backing));
@@ -2034,10 +2033,9 @@ void D3DImageBackingFactoryTest::RunCreateFromSharedMemoryMultiplanarTest(
   // CompoundImageBacking wrapping D3DImageBacking is required for shared
   // memory support.
   auto backing = CompoundImageBacking::CreateSharedMemory(
-      shared_image_factory_.get(), /*allow_shm_overlays=*/true, mailbox,
-      std::move(shm_gmb_handle), viz::MultiPlaneFormat::kNV12, size,
-      gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-      "TestLabel");
+      shared_image_factory_.get(), mailbox, std::move(shm_gmb_handle),
+      viz::MultiPlaneFormat::kNV12, size, gfx::ColorSpace(),
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "TestLabel");
   EXPECT_NE(backing, nullptr);
 
   EXPECT_EQ(backing->mailbox(), mailbox);

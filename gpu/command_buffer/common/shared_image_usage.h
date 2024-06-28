@@ -130,9 +130,14 @@ class SharedImageUsageSet {
     }
   }
 
-  // Unions with 'set_b' and returns result.
+  // Unions with 'set_b' and stores result in self.
   inline constexpr void PutAll(gpu::SharedImageUsageSet set_b) {
     set_storage_ = set_storage_ | static_cast<uint32_t>(set_b);
+  }
+
+  // Removes all values in 'set_b' from our set.
+  inline constexpr void RemoveAll(gpu::SharedImageUsageSet set_b) {
+    set_storage_ = set_storage_ & ~static_cast<uint32_t>(set_b);
   }
 
   // Test set membership via intersection. Returns true if 'set_b' is a subset.

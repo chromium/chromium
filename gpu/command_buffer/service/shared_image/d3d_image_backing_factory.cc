@@ -547,6 +547,19 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
     return false;
   }
 
+  const bool is_scanout = usage.HasAny(gpu::SHARED_IMAGE_USAGE_SCANOUT);
+  const bool is_video_decode =
+      usage.HasAny(gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE);
+  if (is_scanout) {
+    if (!is_video_decode && gmb_type != gfx::DXGI_SHARED_HANDLE) {
+      return false;
+    } else {
+      // Video decode and video frames via GMBs are handled specially in
+      // |SwapChainPresenter|, so we must assume it's safe to create a scanout
+      // image backing for it.
+    }
+  }
+
   if (gmb_type == gfx::EMPTY_BUFFER) {
     if (GetDXGIFormatForCreateTexture(format) == DXGI_FORMAT_UNKNOWN) {
       return false;

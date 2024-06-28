@@ -145,7 +145,7 @@ class CompoundImageBackingTest : public testing::Test {
 
   // Create a compound backing containing shared memory + GPU backing.
   std::unique_ptr<SharedImageBacking> CreateCompoundBacking(
-      bool allow_shm_overlays = false) {
+      bool add_scanout_usage = false) {
     constexpr gfx::Size size(100, 100);
     constexpr gfx::BufferFormat buffer_format = gfx::BufferFormat::RGBA_8888;
     constexpr gfx::BufferUsage buffer_usage =
@@ -157,14 +157,16 @@ class CompoundImageBackingTest : public testing::Test {
             buffer_usage);
 
     return CompoundImageBacking::CreateSharedMemory(
-        &test_factory_, allow_shm_overlays, Mailbox::Generate(),
-        std::move(handle), viz::GetSinglePlaneSharedImageFormat(buffer_format),
-        size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
-        SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel");
+        &test_factory_, Mailbox::Generate(), std::move(handle),
+        viz::GetSinglePlaneSharedImageFormat(buffer_format), size,
+        gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
+        add_scanout_usage
+            ? SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_SCANOUT
+            : SHARED_IMAGE_USAGE_DISPLAY_READ,
+        "TestLabel");
   }
 
-  std::unique_ptr<SharedImageBacking> CreateMultiplanarCompoundBacking(
-      bool allow_shm_overlays = false) {
+  std::unique_ptr<SharedImageBacking> CreateMultiplanarCompoundBacking() {
     constexpr gfx::Size size(100, 100);
     constexpr gfx::BufferFormat buffer_format =
         gfx::BufferFormat::YUV_420_BIPLANAR;
@@ -177,9 +179,9 @@ class CompoundImageBackingTest : public testing::Test {
             buffer_usage);
 
     return CompoundImageBacking::CreateSharedMemory(
-        &test_factory_, allow_shm_overlays, Mailbox::Generate(),
-        std::move(handle), viz::MultiPlaneFormat::kNV12, size,
-        gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
+        &test_factory_, Mailbox::Generate(), std::move(handle),
+        viz::MultiPlaneFormat::kNV12, size, gfx::ColorSpace(),
+        kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
         SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel");
   }
 
@@ -346,8 +348,11 @@ TEST_F(CompoundImageBackingTest, ReadbackToMemory) {
   EXPECT_TRUE(GetGpuHasLatestContent(compound_backing));
 }
 
+#if BUILDFLAG(IS_WIN)
+// Tests the behavior of |kAllowShmemOverlays|, which is only true on Windows.
+// In this case we expect there to be scanout access, but no GPU access.
 TEST_F(CompoundImageBackingTest, NoUploadOnOverlayMemoryAccess) {
-  auto backing = CreateCompoundBacking(/*allow_shm_overlays=*/true);
+  auto backing = CreateCompoundBacking(/*add_scanout_usage=*/true);
   auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
 
   auto factory_rep = manager_.Register(std::move(backing), &tracker_);
@@ -356,15 +361,14 @@ TEST_F(CompoundImageBackingTest, NoUploadOnOverlayMemoryAccess) {
       manager_.ProduceOverlay(compound_backing->mailbox(), &tracker_);
   auto access = overlay_rep->BeginScopedReadAccess();
 
-#if BUILDFLAG(IS_WIN)
   std::optional<gl::DCLayerOverlayImage> overlay_image =
       access->GetDCLayerOverlayImage();
   ASSERT_TRUE(overlay_image);
   EXPECT_EQ(overlay_image->type(), gl::DCLayerOverlayType::kNV12Pixmap);
-#endif
 
   EXPECT_FALSE(HasGpuBacking(compound_backing));
 }
+#endif
 
 TEST_F(CompoundImageBackingTest, LazyAllocationFailsCreate) {
   auto backing = CreateCompoundBacking();
