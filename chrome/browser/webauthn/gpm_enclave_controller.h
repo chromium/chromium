@@ -5,10 +5,14 @@
 #ifndef CHROME_BROWSER_WEBAUTHN_GPM_ENCLAVE_CONTROLLER_H_
 #define CHROME_BROWSER_WEBAUTHN_GPM_ENCLAVE_CONTROLLER_H_
 
+#include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -40,6 +44,10 @@ class ICloudRecoveryKey;
 namespace signin {
 class PrimaryAccountAccessTokenFetcher;
 }  // namespace signin
+
+namespace sync_pb {
+class WebauthnCredentialSpecifics;
+}  // namespace sync_pb
 
 class Profile;
 
@@ -188,6 +196,7 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
   void OnTouchIDComplete(bool success) override;
   void OnForgotGPMPinPressed() override;
   void OnReauthComplete(std::string rapt) override;
+  void OnGpmPasskeysReset(bool success) override;
 
   // Starts a create() or get() action with the enclave.
   void StartTransaction();

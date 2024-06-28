@@ -96,6 +96,11 @@ const base::FeatureParam<bool> kWebAuthnGpmPin{
     &kWebAuthnEnclaveAuthenticator, kWebAuthnGpmPinFeatureParameterName,
     /*default_value=*/false};
 
+// Enabled by default in M128. Remove in or after M131.
+BASE_FEATURE(kWebAuthnPasskeysReset,
+             "WebAuthnPasskeysReset",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enabled in M118 on all platforms except ChromeOS. Enabled on M121 for
 // ChromeOS. Remove in or after M124.
 BASE_FEATURE(kWebAuthnFilterGooglePasskeys,

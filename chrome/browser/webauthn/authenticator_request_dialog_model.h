@@ -201,7 +201,9 @@ class AuthenticatorRequestDialogController;
   AUTHENTICATOR_REQUEST_EVENT_1(OnModelDestroyed,                             \
                                 AuthenticatorRequestDialogModel*)             \
   /* Called when make credential flow ended with passkey being saved. */      \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnPasskeySaved)
+  AUTHENTICATOR_REQUEST_EVENT_0(OnPasskeySaved)                               \
+  /* Called when the GPM passkeys are reset successfully or not. */           \
+  AUTHENTICATOR_REQUEST_EVENT_1(OnGpmPasskeysReset, bool)
 
 // Each Step defines a unique UI state. Setting a Step causes the matching
 // dialog or window to appear.

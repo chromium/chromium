@@ -5,17 +5,37 @@
 #include "chrome/browser/webauthn/gpm_enclave_controller.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <iterator>
 #include <memory>
+#include <optional>
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
+#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
-#include "base/time/default_clock.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "build/buildflag.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -27,17 +47,21 @@
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/trusted_vault/frontend_trusted_vault_connection.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
+#include "components/webauthn/core/browser/passkey_model.h"
 #include "content/public/browser/render_frame_host.h"
 #include "device/fido/enclave/constants.h"
 #include "device/fido/enclave/metrics.h"
+#include "device/fido/enclave/types.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/platform_user_verification_policy.h"
@@ -1269,4 +1293,18 @@ void GPMEnclaveController::HandlePINValidationResult(
       model_->SetStep(Step::kGPMLockedPin);
       break;
   }
+}
+
+void GPMEnclaveController::OnGpmPasskeysReset(bool success) {
+  CHECK(model_->step() == Step::kRecoverSecurityDomain);
+  if (!success ||
+      model_->request_type != device::FidoRequestType::kMakeCredential ||
+      !device::kWebAuthnGpmPin.Get()) {
+    model_->CancelAuthenticatorRequest();
+    return;
+  }
+  // TODO(crbug.com/342554229): There might be a race between other members of
+  // the domain. Maybe re-download the account state.
+  account_state_ = AccountState::kEmpty;
+  model_->SetStep(AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
 }
