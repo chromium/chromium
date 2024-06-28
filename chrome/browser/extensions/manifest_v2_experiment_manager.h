@@ -10,6 +10,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/mv2_deprecation_impact_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
@@ -121,6 +122,9 @@ class ManifestV2ExperimentManager : public KeyedService,
                             const Extension* extension,
                             bool is_update) override;
 
+  // Called when the management policy for MV2 is changed.
+  void OnManagementPolicyChanged();
+
   // The current stage of the MV2 deprecation experiments.
   const MV2ExperimentStage experiment_stage_;
 
@@ -135,6 +139,8 @@ class ManifestV2ExperimentManager : public KeyedService,
   // The associated BrowserContext. Guaranteed to be safe to use since this is
   // a KeyedService for the context.
   raw_ptr<content::BrowserContext> browser_context_;
+
+  PrefChangeRegistrar pref_change_registrar_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};

@@ -14,6 +14,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
@@ -436,6 +438,13 @@ class ManifestV2ExperimentManagerDisableWithReEnableAndPolicyUnitTest
                                  base::Value(static_cast<int>(pref_value)));
   }
 
+  // Clears the MV2 policy.
+  void ClearMV2Policy() {
+    sync_preferences::TestingPrefServiceSyncable* pref_service =
+        testing_profile()->GetTestingPrefService();
+    pref_service->RemoveManagedPref(pref_names::kManifestV2Availability);
+  }
+
   void AddPolicyInstalledMV2Extension(const ExtensionId& id,
                                       mojom::ManifestLocation location) {
     sync_preferences::TestingPrefServiceSyncable* pref_service =
@@ -556,6 +565,40 @@ TEST_F(
             extension_id, /*manifest_version=*/2, Manifest::TYPE_EXTENSION,
             test_case.manifest_location, HashedExtensionId(extension_id)));
   }
+}
+
+TEST_F(ManifestV2ExperimentManagerDisableWithReEnableAndPolicyUnitTest,
+       ExtensionsAreReEnabledOrDisabledOnPolicyChange) {
+  // Install an MV2 extension and bootstrap the manager by disabling affected
+  // extensions.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("test extension").SetManifestVersion(2).Build();
+  service()->AddExtension(extension.get());
+  const ExtensionId extension_id = extension->id();
+
+  experiment_manager()->DisableAffectedExtensionsForTesting();
+
+  // The extension should be disabled.
+  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile());
+
+  EXPECT_TRUE(registry()->disabled_extensions().Contains(extension_id));
+  EXPECT_EQ(
+      static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
+      extension_prefs->GetDisableReasons(extension_id));
+
+  // Set the MV2 policy to allow all MV2 extensions.
+  SetMV2PolicyLevel(MV2PolicyLevel::kAllowed);
+
+  // The extension should be enabled, since it's now allowed.
+  EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
+  EXPECT_EQ(0, extension_prefs->GetDisableReasons(extension_id));
+
+  // Clear the MV2 policy. The extension should now be disabled again.
+  ClearMV2Policy();
+  EXPECT_TRUE(registry()->disabled_extensions().Contains(extension_id));
+  EXPECT_EQ(
+      static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
+      extension_prefs->GetDisableReasons(extension_id));
 }
 
 }  // namespace extensions

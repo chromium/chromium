@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/disable_reason.h"
@@ -18,6 +19,7 @@
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/pref_names.h"
 #include "extensions/browser/pref_types.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
@@ -154,6 +156,16 @@ ManifestV2ExperimentManager::ManifestV2ExperimentManager(
       .Post(FROM_HERE,
             base::BindOnce(&ManifestV2ExperimentManager::OnExtensionSystemReady,
                            weak_factory_.GetWeakPtr()));
+
+  // Listen to management policy changes. `Unretained` is safe since the
+  // `pref_change_registrar` is owned by this class.
+  pref_change_registrar_.Init(
+      Profile::FromBrowserContext(browser_context_)->GetPrefs());
+  pref_change_registrar_.Add(
+      pref_names::kManifestV2Availability,
+      base::BindRepeating(
+          &ManifestV2ExperimentManager::OnManagementPolicyChanged,
+          base::Unretained(this)));
 }
 
 ManifestV2ExperimentManager::~ManifestV2ExperimentManager() = default;
@@ -357,6 +369,19 @@ void ManifestV2ExperimentManager::OnExtensionInstalled(
   }
 
   MaybeReEnableExtension(*extension);
+}
+
+void ManifestV2ExperimentManager::OnManagementPolicyChanged() {
+  // The management policy has changed. Go through all disabled extensions to
+  // check if any should be re-enabled, and go through all enabled extensions
+  // to see if any should be disabled (if the experiment is active).
+  CheckDisabledExtensions();
+
+  if (GetCurrentExperimentStage() != MV2ExperimentStage::kDisableWithReEnable) {
+    return;
+  }
+
+  DisableAffectedExtensions();
 }
 
 bool ManifestV2ExperimentManager::DidUserReEnableExtensionForTesting(
