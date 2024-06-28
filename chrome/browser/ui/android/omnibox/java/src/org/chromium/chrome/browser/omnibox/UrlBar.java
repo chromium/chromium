@@ -212,6 +212,7 @@ public abstract class UrlBar extends AutocompleteEditText {
         // the first draw.
         setFocusable(false);
         setFocusableInTouchMode(false);
+        setHorizontalFadingEdgeEnabled(true);
         // Use a global draw instead of View#onDraw in case this View is not visible.
         FirstDrawDetector.waitForFirstDraw(
                 this,
@@ -339,10 +340,22 @@ public abstract class UrlBar extends AutocompleteEditText {
         mFocused = focused;
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
 
+        setHorizontalFadingEdgeEnabled(!focused);
+
         if (focused) {
             mPendingScroll = false;
         }
         fixupTextDirection();
+    }
+
+    @Override
+    protected float getRightFadingEdgeStrength() {
+        return 0.0f;
+    }
+
+    @Override
+    protected float getLeftFadingEdgeStrength() {
+        return getScrollX() > 0 ? 1.0f : 0.0f;
     }
 
     @Override

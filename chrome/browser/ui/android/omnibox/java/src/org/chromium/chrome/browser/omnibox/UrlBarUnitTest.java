@@ -53,6 +53,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -657,5 +658,38 @@ public class UrlBarUnitTest {
 
             clearInvocations(mUrlBar);
         }
+    }
+
+    @Test
+    public void horizontalFadingEdge_followsScrollWhenNotFocused() {
+        // By default we show up unfocused.
+        mUrlBar.setScrollX(0);
+        assertTrue(mUrlBar.isHorizontalFadingEdgeEnabled());
+        assertEquals(0.f, mUrlBar.getRightFadingEdgeStrength(), MathUtils.EPSILON);
+        assertEquals(0.f, mUrlBar.getLeftFadingEdgeStrength(), MathUtils.EPSILON);
+
+        // Scroll the view to the left. This should present fading edge now.
+        mUrlBar.setScrollX(100);
+        assertTrue(mUrlBar.isHorizontalFadingEdgeEnabled());
+        assertEquals(0.f, mUrlBar.getRightFadingEdgeStrength(), MathUtils.EPSILON);
+        assertEquals(1.f, mUrlBar.getLeftFadingEdgeStrength(), MathUtils.EPSILON);
+
+        // Scroll back to initial position. Observe no fading.
+        mUrlBar.setScrollX(0);
+        assertTrue(mUrlBar.isHorizontalFadingEdgeEnabled());
+        assertEquals(0.f, mUrlBar.getRightFadingEdgeStrength(), MathUtils.EPSILON);
+        assertEquals(0.f, mUrlBar.getLeftFadingEdgeStrength(), MathUtils.EPSILON);
+    }
+
+    @Test
+    public void horizontalFadingEdge_noFadeInWhenFocused() {
+        measureAndLayoutUrlBar();
+        mUrlBar.setScrollX(100);
+        mUrlBar.onFocusChanged(true, View.LAYOUT_DIRECTION_LTR, null);
+        assertFalse(mUrlBar.isHorizontalFadingEdgeEnabled());
+
+        // NOTE: defocusing should restore fading edge.
+        mUrlBar.onFocusChanged(false, View.LAYOUT_DIRECTION_LTR, null);
+        assertTrue(mUrlBar.isHorizontalFadingEdgeEnabled());
     }
 }
