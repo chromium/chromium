@@ -25,6 +25,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsView.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsViewBinder.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsViewBridge.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsProgressScreen.java",
   ]
 
   srcjar_deps = [ ":jni" ]
@@ -54,10 +55,12 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/lock_icon.xml",
     "java/res/layout/bank_account_item.xml",
     "java/res/layout/facilitated_payments_fop_selector.xml",
     "java/res/layout/facilitated_payments_payment_methods_additional_info.xml",
     "java/res/layout/facilitated_payments_payment_methods_sheet_header_item.xml",
+    "java/res/layout/facilitated_payments_progress_screen.xml",
     "java/res/layout/facilitated_payments_sequence_view.xml",
     "java/res/values/dimens.xml",
   ]

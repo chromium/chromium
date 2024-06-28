@@ -17,6 +17,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PROGRESS_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.UNINITIALIZED;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
 
@@ -60,12 +61,21 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
                         model.set(SCREEN_VIEW_MODEL, fop_selector_screen.getModel());
                         break;
                     }
+                case PROGRESS_SCREEN:
+                    {
+                        FacilitatedPaymentsSequenceView progress_screen =
+                                new FacilitatedPaymentsProgressScreen();
+                        progress_screen.setupView(view.getScreenHolder());
+                        view.setNextScreen(progress_screen);
+                        model.set(SCREEN_VIEW_MODEL, progress_screen.getModel());
+                        break;
+                    }
                 default:
                     assert model.get(SCREEN) == UNINITIALIZED : "Undefined screen type.";
             }
+        } else if (propertyKey == SCREEN_VIEW_MODEL) {
             // This property contains the model to manipulate the {@link #SCREEN} view. No need to
             // update the {@code view} for this property. Intentional fall-through.
-        } else if (propertyKey == SCREEN_VIEW_MODEL) {
         } else if (propertyKey == DISMISS_HANDLER) {
             view.setDismissHandler(model.get(DISMISS_HANDLER));
         } else {

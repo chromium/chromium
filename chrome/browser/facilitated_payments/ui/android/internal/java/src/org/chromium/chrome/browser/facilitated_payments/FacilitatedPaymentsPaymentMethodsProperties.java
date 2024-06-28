@@ -55,6 +55,8 @@ class FacilitatedPaymentsPaymentMethodsProperties {
         int UNINITIALIZED = 0;
         // The screen showing the user's payment instruments.
         int FOP_SELECTOR = 1;
+        // The screen showing a progress spinner.
+        int PROGRESS_SCREEN = 2;
     }
 
     /**

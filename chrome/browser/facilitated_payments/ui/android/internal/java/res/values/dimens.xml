@@ -10,4 +10,7 @@ found in the LICENSE file.
     <dimen name="facilitated_payments_product_icon_margin_vertical">12dp</dimen>
     <dimen name="facilitated_payments_horizontal_margin">8dp</dimen>
     <dimen name="facilitated_payments_additional_info_margin_top">20dp</dimen>
+    <dimen name="facilitated_payments_progress_screen_height">356dp</dimen>
+    <dimen name="facilitated_payments_progress_bar_size">100dp</dimen>
+    <dimen name="facilitated_payments_progress_screen_lock_size">40dp</dimen>
 </resources>

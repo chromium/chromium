@@ -14,9 +14,13 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PROGRESS_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -102,7 +106,6 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                             new PropertyModel.Builder(
                                             FacilitatedPaymentsPaymentMethodsProperties.ALL_KEYS)
                                     .with(VISIBLE, false)
-                                    .with(SCREEN, FOP_SELECTOR)
                                     .build();
                     mView =
                             new FacilitatedPaymentsPaymentMethodsView(
@@ -120,6 +123,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
     public void testVisibilityChangedByModel() {
         runOnUiThreadBlocking(
                 () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
                     mModel.get(SCREEN_VIEW_MODEL)
                             .get(SCREEN_ITEMS)
                             .add(
@@ -136,6 +140,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
     public void testBankAccountShown() {
         runOnUiThreadBlocking(
                 () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
                     mModel.get(SCREEN_VIEW_MODEL)
                             .get(SCREEN_ITEMS)
                             .add(
@@ -167,6 +172,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
     public void testDescriptionLine1() {
         runOnUiThreadBlocking(
                 () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
                     mModel.get(SCREEN_VIEW_MODEL)
                             .get(SCREEN_ITEMS)
                             .add(FacilitatedPaymentsPaymentMethodsMediator.buildAdditionalInfo());
@@ -186,6 +192,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         runOnUiThreadBlocking(
                 () -> {
                     PropertyModel bankAccountModel = createBankAccountModel(BANK_ACCOUNT_1);
+                    mModel.set(SCREEN, FOP_SELECTOR);
                     mModel.get(SCREEN_VIEW_MODEL)
                             .get(SCREEN_ITEMS)
                             .add(new ListItem(BANK_ACCOUNT, bankAccountModel));
@@ -198,6 +205,21 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
         TextView buttonText = mView.getContentView().findViewById(R.id.touch_to_fill_button_title);
         assertThat(buttonText.getText(), is("Continue"));
+    }
+
+    @Test
+    @MediumTest
+    public void testProgressScreen() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, PROGRESS_SCREEN);
+                    mModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // Verify that the {@link ProgressBar} is shown.
+        assertThat(
+                viewElementExists((ViewGroup) mView.getContentView(), ProgressBar.class), is(true));
     }
 
     private PropertyModel createBankAccountModel(BankAccount bankAccount) {
@@ -214,5 +236,20 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
     private TextView getBankAccountSummaryAt(int index) {
         return getBankAccounts().getChildAt(index).findViewById(R.id.bank_account_summary);
+    }
+
+    private static boolean viewElementExists(ViewGroup parent, Class<?> clazz) {
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            View child = parent.getChildAt(i);
+            if (clazz.isInstance(child)) {
+                return true;
+            }
+            if (child instanceof ViewGroup) {
+                if (viewElementExists((ViewGroup) child, clazz)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
