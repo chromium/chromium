@@ -1834,54 +1834,114 @@ TEST_F(NetworkContextTest, NotifyExternalCacheHit) {
     }
 
     for (const GURL& url : kUrls) {
-      for (bool is_subframe_document_resource : {false, true}) {
-        mojom::NetworkContextParamsPtr context_params =
-            CreateNetworkContextParamsForTesting();
-        context_params->http_cache_enabled = true;
-        base::SimpleTestClock clock;
-        std::unique_ptr<NetworkContext> network_context =
-            CreateContextWithParams(std::move(context_params));
-        net::HttpCache* cache = network_context->url_request_context()
-                                    ->http_transaction_factory()
-                                    ->GetCache();
-        // We expect that every cache operation below is done synchronously
-        // because we're using an in-memory backend.
+      mojom::NetworkContextParamsPtr context_params =
+          CreateNetworkContextParamsForTesting();
+      context_params->http_cache_enabled = true;
+      base::SimpleTestClock clock;
+      std::unique_ptr<NetworkContext> network_context =
+          CreateContextWithParams(std::move(context_params));
+      net::HttpCache* cache = network_context->url_request_context()
+                                  ->http_transaction_factory()
+                                  ->GetCache();
+      // We expect that every cache operation below is done synchronously
+      // because we're using an in-memory backend.
 
-        // The disk cache is lazily instantiated, force it and ensure it's
-        // valid.
-        auto [rv, backend] = cache->GetBackend(base::DoNothing());
-        ASSERT_EQ(rv, net::OK);
-        ASSERT_NE(backend, nullptr);
-        static_cast<disk_cache::MemBackendImpl*>(backend)->SetClockForTesting(
-            &clock);
+      // The disk cache is lazily instantiated, force it and ensure it's
+      // valid.
+      auto [rv, backend] = cache->GetBackend(base::DoNothing());
+      ASSERT_EQ(rv, net::OK);
+      ASSERT_NE(backend, nullptr);
+      static_cast<disk_cache::MemBackendImpl*>(backend)->SetClockForTesting(
+          &clock);
 
-        clock.SetNow(kNow1);
-        net::NetworkIsolationKey isolation_key(kOrigin, kOrigin);
-        net::HttpRequestInfo request_info;
-        request_info.url = url;
-        request_info.is_subframe_document_resource =
-            is_subframe_document_resource;
-        request_info.network_isolation_key = isolation_key;
-        request_info.network_anonymization_key =
-            net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
-                isolation_key);
-        disk_cache::EntryResult result = backend->OpenOrCreateEntry(
-            *net::HttpCache::GenerateCacheKeyForRequest(&request_info),
-            net::LOWEST, base::BindOnce([](disk_cache::EntryResult) {}));
-        ASSERT_EQ(result.net_error(), net::OK);
+      clock.SetNow(kNow1);
+      net::NetworkIsolationKey isolation_key(kOrigin, kOrigin);
+      net::HttpRequestInfo request_info;
+      request_info.url = url;
+      request_info.network_isolation_key = isolation_key;
+      request_info.network_anonymization_key =
+          net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+              isolation_key);
+      disk_cache::EntryResult result = backend->OpenOrCreateEntry(
+          *net::HttpCache::GenerateCacheKeyForRequest(&request_info),
+          net::LOWEST, base::BindOnce([](disk_cache::EntryResult) {}));
+      ASSERT_EQ(result.net_error(), net::OK);
 
-        disk_cache::ScopedEntryPtr entry(result.ReleaseEntry());
-        EXPECT_EQ(entry->GetLastUsed(), kNow1);
+      disk_cache::ScopedEntryPtr entry(result.ReleaseEntry());
+      EXPECT_EQ(entry->GetLastUsed(), kNow1);
 
-        clock.SetNow(kNow2);
-        network_context->NotifyExternalCacheHit(
-            url, url.scheme(), isolation_key, is_subframe_document_resource,
-            /*include_credentials=*/true);
+      clock.SetNow(kNow2);
+      network_context->NotifyExternalCacheHit(url, url.scheme(), isolation_key,
+                                              /*include_credentials=*/true);
 
-        EXPECT_EQ(entry->GetLastUsed(), kNow2);
-      }
+      EXPECT_EQ(entry->GetLastUsed(), kNow2);
     }
   }
+}
+
+// NotifyExternalCacheHit currently assumes that the cache hits are for
+// resources, so ensure that entries corresponding to subframe navigations don't
+// get updated unexpectedly.
+TEST_F(NetworkContextTest, NotifyExternalCacheHit_IsSubframeDocumentResource) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      net::features::kSplitCacheByNetworkIsolationKey);
+  const GURL kUrl = GURL("http://www.google.com/");
+  const url::Origin kOrigin = url::Origin::Create(GURL("http://a.com"));
+  const net::NetworkIsolationKey kNetworkIsolationKey(kOrigin, kOrigin);
+  constexpr base::Time kNow1 = base::Time::UnixEpoch() + base::Hours(18);
+  constexpr base::Time kNow2 = base::Time::UnixEpoch() + base::Hours(11);
+
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  context_params->http_cache_enabled = true;
+  base::SimpleTestClock clock;
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(context_params));
+  net::HttpCache* cache = network_context->url_request_context()
+                              ->http_transaction_factory()
+                              ->GetCache();
+  // We expect that every cache operation below is done synchronously
+  // because we're using an in-memory backend.
+
+  // The disk cache is lazily instantiated, force it and ensure it's
+  // valid.
+  auto [rv, backend] = cache->GetBackend(base::DoNothing());
+  ASSERT_EQ(rv, net::OK);
+  ASSERT_NE(backend, nullptr);
+  static_cast<disk_cache::MemBackendImpl*>(backend)->SetClockForTesting(&clock);
+
+  clock.SetNow(kNow1);
+  net::HttpRequestInfo navigation_request_info;
+  navigation_request_info.url = kUrl;
+  navigation_request_info.network_isolation_key = kNetworkIsolationKey;
+  navigation_request_info.is_subframe_document_resource = true;
+  disk_cache::EntryResult navigation_result = backend->OpenOrCreateEntry(
+      *net::HttpCache::GenerateCacheKeyForRequest(&navigation_request_info),
+      net::LOWEST, base::BindOnce([](disk_cache::EntryResult) {}));
+  ASSERT_EQ(navigation_result.net_error(), net::OK);
+
+  disk_cache::ScopedEntryPtr navigation_entry(navigation_result.ReleaseEntry());
+  EXPECT_EQ(navigation_entry->GetLastUsed(), kNow1);
+
+  net::HttpRequestInfo resource_request_info;
+  resource_request_info.url = kUrl;
+  resource_request_info.network_isolation_key = kNetworkIsolationKey;
+  resource_request_info.is_subframe_document_resource = false;
+  disk_cache::EntryResult resource_result = backend->OpenOrCreateEntry(
+      *net::HttpCache::GenerateCacheKeyForRequest(&resource_request_info),
+      net::LOWEST, base::BindOnce([](disk_cache::EntryResult) {}));
+  ASSERT_EQ(resource_result.net_error(), net::OK);
+
+  disk_cache::ScopedEntryPtr resource_entry(resource_result.ReleaseEntry());
+
+  clock.SetNow(kNow2);
+  network_context->NotifyExternalCacheHit(kUrl, kUrl.scheme(),
+                                          kNetworkIsolationKey,
+                                          /*include_credentials=*/true);
+
+  EXPECT_EQ(navigation_entry->GetLastUsed(), kNow1);
+  EXPECT_EQ(resource_entry->GetLastUsed(), kNow2);
 }
 
 TEST_F(NetworkContextTest, CountHttpCache) {

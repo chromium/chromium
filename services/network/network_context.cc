@@ -1908,14 +1908,12 @@ void NetworkContext::VerifyCertForSignedExchange(
 void NetworkContext::NotifyExternalCacheHit(const GURL& url,
                                             const std::string& http_method,
                                             const net::NetworkIsolationKey& key,
-                                            bool is_subframe_document_resource,
                                             bool include_credentials) {
   net::HttpCache* cache =
       url_request_context_->http_transaction_factory()->GetCache();
   if (!cache)
     return;
-  cache->OnExternalCacheHit(url, http_method, key,
-                            is_subframe_document_resource, include_credentials);
+  cache->OnExternalCacheHit(url, http_method, key, include_credentials);
 }
 
 void NetworkContext::SetCorsOriginAccessListsForOrigin(

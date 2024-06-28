@@ -7058,7 +7058,6 @@ void WebContentsImpl::DidLoadResourceFromMemoryCache(
 
   partition->GetNetworkContext()->NotifyExternalCacheHit(
       url, http_method, source->GetNetworkIsolationKey(),
-      /*is_subframe_document_resource=*/false,
       /*include_credentials=*/include_credentials);
 }
 

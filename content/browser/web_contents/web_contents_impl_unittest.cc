@@ -384,7 +384,6 @@ class MockNetworkContext : public network::TestNetworkContext {
               (const GURL&,
                const std::string&,
                const net::NetworkIsolationKey&,
-               bool,
                bool),
               (override));
 
@@ -2642,9 +2641,9 @@ TEST_F(WebContentsImplTest,
 
     // If the NotifyExternalCacheHit call is reached then we know the CHECKs
     // were evaluated but didn't trigger.
-    EXPECT_CALL(mock_network_context,
-                NotifyExternalCacheHit(kImgUrl, kGet, ::testing::_,
-                                       ::testing::_, ::testing::_))
+    EXPECT_CALL(
+        mock_network_context,
+        NotifyExternalCacheHit(kImgUrl, kGet, ::testing::_, ::testing::_))
         .WillOnce(base::test::InvokeFuture(signal));
 
     contents()->DidLoadResourceFromMemoryCache(main_test_rfh(), kImgUrl, kGet,
