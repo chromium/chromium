@@ -3,16 +3,16 @@
 // found in the LICENSE file.
 
 enum UmaName {
-  NEW_PAGE_UMA = 'Accessibility.ReadAnything.NewPage',
-  LANGUAGE_UMA = 'Accessibility.ReadAnything.ReadAloud.Language',
-  VOICE_UMA = 'Accessibility.ReadAnything.ReadAloud.Voice',
-  TEXT_SETTINGS_CHANGE_UMA = 'Accessibility.ReadAnything.SettingsChange',
-  HIGHLIGHT_STATE_UMA = 'Accessibility.ReadAnything.ReadAloud.HighlightState',
-  VOICE_SPEED_UMA = 'Accessibility.ReadAnything.ReadAloud.VoiceSpeed',
-  SPEECH_SETTINGS_CHANGE_UMA =
+  NEW_PAGE = 'Accessibility.ReadAnything.NewPage',
+  LANGUAGE = 'Accessibility.ReadAnything.ReadAloud.Language',
+  VOICE = 'Accessibility.ReadAnything.ReadAloud.Voice',
+  TEXT_SETTINGS_CHANGE = 'Accessibility.ReadAnything.SettingsChange',
+  HIGHLIGHT_STATE = 'Accessibility.ReadAnything.ReadAloud.HighlightState',
+  VOICE_SPEED = 'Accessibility.ReadAnything.ReadAloud.VoiceSpeed',
+  SPEECH_SETTINGS_CHANGE =
       'Accessibility.ReadAnything.ReadAloud.SettingsChange',
-  SPEECH_PLAYBACK_UMA = 'Accessibility.ReadAnything.SpeechPlaybackSession',
-  SPEECH_ERROR_UMA = 'Accessibility.ReadAnything.SpeechError',
+  SPEECH_PLAYBACK = 'Accessibility.ReadAnything.SpeechPlaybackSession',
+  SPEECH_ERROR = 'Accessibility.ReadAnything.SpeechError',
 }
 
 // Enum for logging when we play speech on a page.
@@ -114,7 +114,7 @@ export interface MetricsBrowserProxy {
 export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
   recordSpeechError(error: ReadAnythingSpeechError) {
     chrome.metricsPrivate.recordEnumerationValue(
-        UmaName.SPEECH_ERROR_UMA, error, ReadAnythingSpeechError.COUNT);
+        UmaName.SPEECH_ERROR, error, ReadAnythingSpeechError.COUNT);
   }
 
   recordTime(umaName: string, time: number) {
@@ -123,56 +123,56 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
 
   recordNewPage() {
     chrome.metricsPrivate.recordEnumerationValue(
-        UmaName.NEW_PAGE_UMA, ReadAnythingNewPage.NEW_PAGE,
+        UmaName.NEW_PAGE, ReadAnythingNewPage.NEW_PAGE,
         ReadAnythingNewPage.COUNT);
   }
 
   recordNewPageWithSpeech(): void {
     chrome.metricsPrivate.recordEnumerationValue(
-        UmaName.NEW_PAGE_UMA, ReadAnythingNewPage.SPEECH_PLAYED_ON_NEW_PAGE,
+        UmaName.NEW_PAGE, ReadAnythingNewPage.SPEECH_PLAYED_ON_NEW_PAGE,
         ReadAnythingNewPage.COUNT);
   }
 
   recordHighlightOn() {
     chrome.metricsPrivate.recordEnumerationValue(
-        UmaName.HIGHLIGHT_STATE_UMA, ReadAloudHighlightState.HIGHLIGHT_ON,
+        UmaName.HIGHLIGHT_STATE, ReadAloudHighlightState.HIGHLIGHT_ON,
         ReadAloudHighlightState.COUNT);
   }
 
   recordHighlightOff() {
     chrome.metricsPrivate.recordEnumerationValue(
-        UmaName.HIGHLIGHT_STATE_UMA, ReadAloudHighlightState.HIGHLIGHT_OFF,
+        UmaName.HIGHLIGHT_STATE, ReadAloudHighlightState.HIGHLIGHT_OFF,
         ReadAloudHighlightState.COUNT);
   }
 
   recordVoiceType(voiceType: ReadAnythingVoiceType) {
     chrome.metricsPrivate.recordEnumerationValue(
-        UmaName.VOICE_UMA, voiceType, ReadAnythingVoiceType.COUNT);
+        UmaName.VOICE, voiceType, ReadAnythingVoiceType.COUNT);
   }
 
   recordLanguage(lang: string) {
     chrome.metricsPrivate.recordSparseValueWithHashMetricName(
-        UmaName.LANGUAGE_UMA, lang);
+        UmaName.LANGUAGE, lang);
   }
 
   recordTextSettingsChange(settingsChange: ReadAnythingSettingsChange) {
     chrome.metricsPrivate.recordEnumerationValue(
-        UmaName.TEXT_SETTINGS_CHANGE_UMA, settingsChange,
+        UmaName.TEXT_SETTINGS_CHANGE, settingsChange,
         ReadAnythingSettingsChange.COUNT);
   }
 
   recordSpeechSettingsChange(settingsChange: ReadAloudSettingsChange) {
     chrome.metricsPrivate.recordEnumerationValue(
-        UmaName.SPEECH_SETTINGS_CHANGE_UMA, settingsChange,
+        UmaName.SPEECH_SETTINGS_CHANGE, settingsChange,
         ReadAloudSettingsChange.COUNT);
   }
 
   recordVoiceSpeed(index: number) {
-    chrome.metricsPrivate.recordSmallCount(UmaName.VOICE_SPEED_UMA, index);
+    chrome.metricsPrivate.recordSmallCount(UmaName.VOICE_SPEED, index);
   }
 
   recordSpeechPlaybackLength(time: number) {
-    chrome.metricsPrivate.recordLongTime(UmaName.SPEECH_PLAYBACK_UMA, time);
+    chrome.metricsPrivate.recordLongTime(UmaName.SPEECH_PLAYBACK, time);
   }
 
   static getInstance(): MetricsBrowserProxy {
