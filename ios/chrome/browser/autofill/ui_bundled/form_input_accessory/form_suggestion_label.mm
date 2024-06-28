@@ -340,6 +340,7 @@ UILabel* TextLabel(NSString* text,
   UILabel* creditCardLabel = [[UILabel alloc] init];
   creditCardLabel.font = label.font;
   creditCardLabel.text = [label.text substringFromIndex:range.location];
+  creditCardLabel.textColor = label.textColor;
   // The credit card number should not be compressible.
   [creditCardLabel
       setContentCompressionResistancePriority:UILayoutPriorityRequired
