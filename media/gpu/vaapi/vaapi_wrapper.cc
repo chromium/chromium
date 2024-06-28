@@ -2655,18 +2655,6 @@ VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
 }
 
 std::unique_ptr<NativePixmapAndSizeInfo>
-VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBuf(const VASurface& va_surface) {
-  VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (va_surface.id() == VA_INVALID_SURFACE || va_surface.size().IsEmpty() ||
-      va_surface.format() == kInvalidVaRtFormat) {
-    LOG(ERROR) << "Cannot export an invalid surface";
-    return nullptr;
-  }
-  return ExportVASurfaceAsNativePixmapDmaBufUnwrapped(va_surface.id(),
-                                                      va_surface.size());
-}
-
-std::unique_ptr<NativePixmapAndSizeInfo>
 VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBuf(
     const ScopedVASurface& scoped_va_surface) {
   VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

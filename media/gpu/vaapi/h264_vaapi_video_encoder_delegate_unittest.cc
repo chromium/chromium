@@ -9,7 +9,6 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "media/base/video_bitrate_allocation.h"
-#include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -12,7 +12,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/lock.h"
 #include "build/chromeos_buildflags.h"
-#include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/gpu/vp8_picture.h"

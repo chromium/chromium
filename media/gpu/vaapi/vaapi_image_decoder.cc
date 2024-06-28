@@ -8,7 +8,6 @@
 
 #include "base/logging.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "ui/gfx/geometry/size.h"

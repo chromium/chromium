@@ -6,7 +6,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/trace_event/trace_event.h"
-#include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_decode_surface_handler.h"
 #include "media/gpu/vaapi/vaapi_utils.h"

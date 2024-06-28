@@ -32,7 +32,6 @@
 #include "build/chromeos_buildflags.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/media_gpu_export.h"
-#include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/video/video_decode_accelerator.h"
 #include "media/video/video_encode_accelerator.h"
@@ -447,8 +446,6 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // Implementations of the pixmap exporter for both types of VASurface.
   // See ExportVASurfaceAsNativePixmapDmaBufUnwrapped() for further
   // documentation.
-  std::unique_ptr<NativePixmapAndSizeInfo> ExportVASurfaceAsNativePixmapDmaBuf(
-      const VASurface& va_surface);
   std::unique_ptr<NativePixmapAndSizeInfo> ExportVASurfaceAsNativePixmapDmaBuf(
       const ScopedVASurface& scoped_va_surface);
 

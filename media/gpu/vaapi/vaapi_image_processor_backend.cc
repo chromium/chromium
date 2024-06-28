@@ -5,7 +5,6 @@
 #include "media/gpu/vaapi/vaapi_image_processor_backend.h"
 
 #include <stdint.h>
-
 #include <va/va.h>
 
 #include "base/containers/contains.h"
@@ -24,7 +23,6 @@
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "ui/gfx/native_pixmap.h"

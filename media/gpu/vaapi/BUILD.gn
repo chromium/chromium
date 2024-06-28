@@ -140,8 +140,6 @@ source_set("vaapi_status") {
 source_set("common") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
-    "va_surface.cc",
-    "va_surface.h",
     "vaapi_common.cc",
     "vaapi_common.h",
     "vaapi_utils.cc",

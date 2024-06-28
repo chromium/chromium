@@ -13,7 +13,6 @@
 #include "base/time/default_tick_clock.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/cdm_context.h"
-#include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_decode_surface_handler.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 

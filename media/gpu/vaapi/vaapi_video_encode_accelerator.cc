@@ -46,7 +46,6 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/av1_vaapi_video_encoder_delegate.h"
 #include "media/gpu/vaapi/h264_vaapi_video_encoder_delegate.h"
-#include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"

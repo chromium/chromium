@@ -4,9 +4,6 @@
 
 #include "media/gpu/vaapi/vaapi_image_decode_accelerator_worker.h"
 
-#include "base/task/thread_pool.h"
-#include "string.h"
-
 #include <utility>
 
 #include "base/containers/span.h"
@@ -17,16 +14,17 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_image_decoder.h"
 #include "media/gpu/vaapi/vaapi_jpeg_decoder.h"
 #include "media/gpu/vaapi/vaapi_webp_decoder.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/parsers/webp_parser.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "string.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
