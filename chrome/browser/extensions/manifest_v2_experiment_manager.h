@@ -103,6 +103,9 @@ class ManifestV2ExperimentManager : public KeyedService,
   // if the user hasn't chosen to re-enable them.
   void DisableAffectedExtensions();
 
+  // Loops through disabled extensions and checks if any should be re-enabled.
+  void CheckDisabledExtensions();
+
   // Re-enables the `extension` if it should no longer be disabled by the MV2
   // deprecation (e.g., if it updated to MV3).
   void MaybeReEnableExtension(const Extension& extension);

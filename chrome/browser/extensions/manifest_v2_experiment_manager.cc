@@ -250,6 +250,8 @@ void ManifestV2ExperimentManager::OnExtensionSystemReady() {
     return;
   }
 
+  CheckDisabledExtensions();
+
   // TODO(https://crbug.com/339061151): Add metrics for disabled extension
   // counts.
   DisableAffectedExtensions();
@@ -280,6 +282,20 @@ void ManifestV2ExperimentManager::DisableAffectedExtensions() {
         extension->id(), disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION);
     extension_prefs()->SetBooleanPref(extension->id(),
                                       kMV2DeprecationDidDisablePref, true);
+  }
+}
+
+void ManifestV2ExperimentManager::CheckDisabledExtensions() {
+  ExtensionRegistry* extension_registry =
+      ExtensionRegistry::Get(browser_context_);
+  ExtensionSet disabled_extensions;
+  // Loop through all disabled extensions. For each, check if they should be
+  // re-enabled (e.g. because they've updated to MV3 or a change in policy
+  // settings).
+  // Use a copy of the set to avoid changing the set while iterating.
+  disabled_extensions.InsertAll(extension_registry->disabled_extensions());
+  for (const auto& extension : disabled_extensions) {
+    MaybeReEnableExtension(*extension);
   }
 }
 
