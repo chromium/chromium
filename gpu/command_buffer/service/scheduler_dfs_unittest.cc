@@ -802,8 +802,10 @@ TEST_F(SchedulerDfsTest, StreamPriorities) {
   SyncToken sync_token2(namespace_id, command_buffer_id2, 1);
 
   // Make sure that waiting for fences does not change sequence priorities.
-  seq2->AddTask(/*closure=*/{}, {sync_token1}, /*report_callback=*/{});
-  seq3->AddTask(/*closure=*/{}, {sync_token2}, /*report_callback=*/{});
+  seq2->AddTask(/*closure=*/{}, {sync_token1}, /*release=*/{},
+                /*report_callback=*/{});
+  seq3->AddTask(/*closure=*/{}, {sync_token2}, /*release=*/{},
+                /*report_callback=*/{});
   EXPECT_EQ(SchedulingPriority::kLow, seq1->current_priority());
   EXPECT_EQ(SchedulingPriority::kNormal, seq2->current_priority());
   EXPECT_EQ(SchedulingPriority::kHigh, seq3->current_priority());

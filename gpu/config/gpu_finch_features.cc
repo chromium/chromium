@@ -830,4 +830,21 @@ bool IncreaseBufferCountForHighFrameRate() {
 
 #endif
 
+// When this flag and kUseGpuSchedulerDfs are both enabled, stops using
+// gpu::SyncPointOrderData for sync point validation, uses gpu::TaskGraph
+// instead.
+// Graph-based validation doesn't require sync point releases are submitted to
+// the scheduler prior to their corresponding waits. Therefore it allows to
+// remove the synchronous flush done by VerifySyncTokens().
+//
+// TODO(b/324276400): Work in progress.
+BASE_FEATURE(kSyncPointGraphValidation,
+             "SyncPointGraphValidation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsSyncPointGraphValidationEnabled() {
+  return base::FeatureList::IsEnabled(kUseGpuSchedulerDfs) &&
+         base::FeatureList::IsEnabled(kSyncPointGraphValidation);
+}
+
 }  // namespace features

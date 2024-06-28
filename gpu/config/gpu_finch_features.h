@@ -134,6 +134,12 @@ GPU_EXPORT bool IncreaseBufferCountForHighFrameRate();
 GPU_EXPORT bool IncreaseBufferCountForWebViewOverlays();
 #endif
 
+// Don't directly check this flag. Instead, please call
+// IsSyncPointGraphValidationEnabled().
+GPU_EXPORT BASE_DECLARE_FEATURE(kSyncPointGraphValidation);
+
+GPU_EXPORT bool IsSyncPointGraphValidationEnabled();
+
 }  // namespace features
 
 #endif  // GPU_CONFIG_GPU_FINCH_FEATURES_H_

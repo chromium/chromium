@@ -67,7 +67,8 @@ SchedulerDfs::Sequence::Sequence(
     SchedulingPriority priority)
     : TaskGraph::Sequence(scheduler->task_graph_,
                           base::BindRepeating(&Sequence::OnFrontTaskUnblocked,
-                                              base::Unretained(this))),
+                                              base::Unretained(this)),
+                          task_runner),
       scheduler_(scheduler),
       task_runner_(std::move(task_runner)),
       default_priority_(priority),
@@ -134,9 +135,11 @@ void SchedulerDfs::Sequence::ContinueTask(base::OnceClosure closure) {
 uint32_t SchedulerDfs::Sequence::AddTask(
     base::OnceClosure closure,
     std::vector<SyncToken> wait_fences,
+    const SyncToken& release,
     TaskGraph::ReportingCallback report_callback) {
-  uint32_t order_num = TaskGraph::Sequence::AddTask(
-      std::move(closure), std::move(wait_fences), std::move(report_callback));
+  uint32_t order_num =
+      TaskGraph::Sequence::AddTask(std::move(closure), std::move(wait_fences),
+                                   release, std::move(report_callback));
 
   TRACE_EVENT_WITH_FLOW0("gpu,toplevel.flow", "SchedulerDfs::ScheduleTask",
                          GetTaskFlowId(sequence_id_.value(), order_num),
@@ -267,8 +270,9 @@ void SchedulerDfs::ScheduleTaskHelper(Task task) {
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
 
+  // TODO(b/324276400): Add support for `release`.
   sequence->AddTask(std::move(task.closure), std::move(task.sync_token_fences),
-                    std::move(task.report_callback));
+                    /*release=*/{}, std::move(task.report_callback));
 
   TryScheduleSequence(sequence);
 }

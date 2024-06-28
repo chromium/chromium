@@ -492,6 +492,7 @@ test("gpu_unittests") {
     "command_buffer/service/shared_image/gl_repack_utils_unittest.cc",
     "command_buffer/service/shared_memory_region_wrapper_unittest.cc",
     "command_buffer/service/sync_point_manager_unittest.cc",
+    "command_buffer/service/task_graph_unittest.cc",
     "command_buffer/service/texture_manager_unittest.cc",
     "command_buffer/service/transfer_buffer_manager_unittest.cc",
     "command_buffer/service/transform_feedback_manager_unittest.cc",

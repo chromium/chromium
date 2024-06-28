@@ -23,6 +23,20 @@
 
 namespace gpu {
 
+struct GPU_EXPORT SyncPointClientId {
+  SyncPointClientId() = default;
+  SyncPointClientId(CommandBufferNamespace in_namespace_id,
+                    CommandBufferId in_command_buffer_id);
+
+  bool operator<(const SyncPointClientId& other) const {
+    return std::tie(namespace_id, command_buffer_id) <
+           std::tie(other.namespace_id, other.command_buffer_id);
+  }
+
+  CommandBufferNamespace namespace_id = CommandBufferNamespace::INVALID;
+  CommandBufferId command_buffer_id;
+};
+
 // A Sync Token is a binary blob which represents a waitable fence sync
 // on a particular command buffer namespace and id.
 // See src/gpu/GLES2/extensions/CHROMIUM/CHROMIUM_sync_point.txt for more
@@ -76,6 +90,10 @@ struct GPU_EXPORT SyncToken {
                                           const SyncToken&) = default;
 
   std::string ToDebugString() const;
+
+  SyncPointClientId GetClientId() const {
+    return SyncPointClientId(namespace_id_, command_buffer_id_);
+  }
 
  private:
   bool verified_flush_;

@@ -149,6 +149,8 @@ class GPU_EXPORT SyncPointOrderData
   // FinishProcessingOrderNumber.
   base::queue<uint32_t> unprocessed_order_nums_ GUARDED_BY(lock_);
 
+  // This variable is only used when graph-based validation is disabled.
+  //
   // In situations where we are waiting on fence syncs that do not exist, we
   // validate by making sure the order number does not pass the order number
   // which the wait command was issued. If the order number reaches the
@@ -246,7 +248,7 @@ class GPU_EXPORT SyncPointClientState
   void EnsureWaitReleased(uint64_t release, uint64_t callback_id)
       LOCKS_EXCLUDED(fence_sync_lock_);
 
-  void ReleaseFenceSyncHelper(uint64_t release)
+  bool EnsureFenceSyncReleased(uint64_t release)
       LOCKS_EXCLUDED(fence_sync_lock_);
 
   // Sync point manager is guaranteed to exist in the lifetime of the client.
@@ -322,11 +324,6 @@ class GPU_EXPORT SyncPointManager {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       base::OnceClosure callback) LOCKS_EXCLUDED(lock_);
 
-  // WaitOutOfOrder allows waiting for a sync token indefinitely, so it
-  // should be used with trusted sync tokens only.
-  bool WaitOutOfOrder(const SyncToken& trusted_sync_token,
-                      base::OnceClosure callback) LOCKS_EXCLUDED(lock_);
-
   // Used by SyncPointOrderData.
   uint32_t GenerateOrderNumber();
 
@@ -340,6 +337,14 @@ class GPU_EXPORT SyncPointManager {
   void DestroySyncPointClientState(
       scoped_refptr<SyncPointClientState> client_state)
       LOCKS_EXCLUDED(lock_, client_state->fence_sync_lock_);
+
+  // If `release` has not been reached yet, releases and returns true.
+  // Returns false otherwise.
+  bool EnsureFenceSyncReleased(const SyncToken& release) LOCKS_EXCLUDED(lock_);
+
+  // Whether to rely on gpu::TaskGraph (instead of SyncPointOrderData) to
+  // perform sync point validation.
+  bool graph_validation_enabled() const { return graph_validation_enabled_; }
 
  private:
   using ClientStateMap =
@@ -374,6 +379,8 @@ class GPU_EXPORT SyncPointManager {
   SequenceId::Generator sequence_id_generator_ GUARDED_BY(lock_);
 
   mutable base::Lock lock_;
+
+  const bool graph_validation_enabled_ = false;
 };
 
 }  // namespace gpu

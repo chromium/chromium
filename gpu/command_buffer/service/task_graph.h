@@ -5,6 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_TASK_GRAPH_H_
 #define GPU_COMMAND_BUFFER_SERVICE_TASK_GRAPH_H_
 
+#include <map>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -12,13 +13,19 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "gpu/command_buffer/service/retaining_one_shot_timer_holder.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/gpu_export.h"
+
+namespace base {
+class SingleThreadTaskRunner;
+}
 
 namespace gpu {
 
@@ -40,8 +47,12 @@ class GPU_EXPORT TaskGraph {
 
   ~TaskGraph();
 
+  static constexpr base::TimeDelta kMaxValidationDelay = base::Seconds(6);
+  static constexpr base::TimeDelta kMinValidationDelay = base::Seconds(3);
+
   SequenceId CreateSequence(
-      base::RepeatingClosure front_task_unblocked_callback)
+      base::RepeatingClosure front_task_unblocked_callback,
+      scoped_refptr<base::SingleThreadTaskRunner> validation_runner)
       LOCKS_EXCLUDED(lock_);
 
   void AddSequence(std::unique_ptr<Sequence> sequence) LOCKS_EXCLUDED(lock_);
@@ -49,6 +60,10 @@ class GPU_EXPORT TaskGraph {
   void DestroySequence(SequenceId sequence_id) LOCKS_EXCLUDED(lock_);
 
   SyncPointManager* sync_point_manager() { return sync_point_manager_; }
+
+  bool graph_validation_enabled() const {
+    return sync_point_manager_->graph_validation_enabled();
+  }
 
   // Returns the lock that must be held when accessing Sequence instances
   // directly. Please also see comments of GetSequence().
@@ -70,7 +85,8 @@ class GPU_EXPORT TaskGraph {
     //   even if those methods result a new front task which is not blocked.
     // - It is called while holding `TaskGraph::lock_`.
     Sequence(TaskGraph* task_graph,
-             base::RepeatingClosure front_task_unblocked_callback);
+             base::RepeatingClosure front_task_unblocked_callback,
+             scoped_refptr<base::SingleThreadTaskRunner> validation_runner);
 
     Sequence(const Sequence&) = delete;
     Sequence& operator=(const Sequence&) = delete;
@@ -90,6 +106,7 @@ class GPU_EXPORT TaskGraph {
     // Enqueues a task in the sequence and returns the generated order number.
     virtual uint32_t AddTask(base::OnceClosure closure,
                              std::vector<SyncToken> wait_fences,
+                             const SyncToken& release,
                              ReportingCallback report_callback)
         EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
 
@@ -124,6 +141,11 @@ class GPU_EXPORT TaskGraph {
                          uint32_t order_num,
                          SequenceId release_sequence_id)
         EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
+
+    const SyncToken& current_task_release() const
+        EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_) {
+      return current_task_release_;
+    }
 
     // Returns true if the sequence is not empty, and the first task does not
     // have any pending dependencies.
@@ -173,12 +195,14 @@ class GPU_EXPORT TaskGraph {
       Task(Task&& other);
       Task(base::OnceClosure closure,
            uint32_t order_num,
+           const SyncToken& release,
            ReportingCallback report_callback);
       ~Task();
       Task& operator=(Task&& other);
 
       base::OnceClosure closure;
       uint32_t order_num;
+      SyncToken release;
 
       ReportingCallback report_callback;
       // Note: this time is only correct once the last fence has been removed,
@@ -186,33 +210,101 @@ class GPU_EXPORT TaskGraph {
       base::TimeTicks running_ready = base::TimeTicks::Now();
       base::TimeTicks first_dependency_added;
       base::TimeTicks registration = base::TimeTicks::Now();
+
+      // Records whether this task has been validated. Used if graph validation
+      // is enabled.
+      bool validated = false;
     };
+
+    using TaskIter = typename base::circular_deque<Task>::iterator;
+
+    // Must NOT be accessed under `&TaskGraph::lock_`.
+    void StopValidation() LOCKS_EXCLUDED(&TaskGraph::lock_);
+
+    void UpdateValidationTimer() EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
+
+    // Returns the range of wait fences for `task`.
+    std::pair<WaitFenceConstIter, WaitFenceConstIter> GetTaskWaitFences(
+        const Task& task) const EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
+
+    const Task* FindReleaseTask(const SyncToken& sync_token) const
+        EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
 
     RAW_PTR_EXCLUSION TaskGraph* const task_graph_ = nullptr;
     const scoped_refptr<SyncPointOrderData> order_data_;
     const SequenceId sequence_id_;
 
-    // Called while holding `Taskgraph::lock_`.
-    const base::RepeatingClosure front_task_unblocked_callback_;
+    const base::RepeatingClosure front_task_unblocked_callback_
+        GUARDED_BY(&TaskGraph::lock_);
+
+    // While processing a task, the task is removed from `tasks_`. This field is
+    // used to preserve `release` of the task. So that it can be used in task
+    // dependency validation; or if the task is later continued. In task
+    // dependency validation, `current_task_release_` is treated as if it has
+    // been released, because it no long has any precondition.
+    SyncToken current_task_release_ GUARDED_BY(&TaskGraph::lock_);
 
     // Deque of tasks. Tasks are inserted at the back with increasing order
     // number generated from SyncPointOrderData. If a running task needs to be
     // continued, it is inserted at the front with the same order number.
     base::circular_deque<Task> tasks_ GUARDED_BY(&TaskGraph::lock_);
 
-    // Map of fences that this sequence is waiting on. Fences are ordered in
+    // Set of fences that this sequence is waiting on. Fences are ordered in
     // increasing order number but may be removed out of order. Tasks are
     // blocked if there's a wait fence with order number less than or equal to
     // the task's order number.
     WaitFenceSet wait_fences_ GUARDED_BY(&TaskGraph::lock_);
+
+    scoped_refptr<RetainingOneShotTimerHolder> validation_timer_;
   };
 
  private:
+  // Records the validation state for a sequence.
+  struct ValidateState {
+    // Next task in the sequence to validate.
+    Sequence::TaskIter next_to_validate;
+    bool validating = false;
+  };
+
   void SyncTokenFenceReleased(const SyncToken& sync_token,
                               uint32_t order_num,
                               SequenceId release_sequence_id,
                               SequenceId waiting_sequence_id)
       LOCKS_EXCLUDED(lock_);
+
+  // Validates task dependencies, starting from `root_sequence`.
+  void ValidateSequenceTaskFenceDeps(Sequence* root_sequence)
+      LOCKS_EXCLUDED(lock_);
+
+  using ReleaseMap = base::flat_map<SyncPointClientId, uint64_t>;
+
+  // Note: GetSequenceValidateState() implementation requires a container that
+  // doesn't invalidate references to existing elements on insertion. Therefore,
+  // base::flat_map cannot be used.
+  using ValidateStateMap = std::map<SequenceId, ValidateState>;
+
+  // Validates dependencies for the task of `task_iter` on `sequence`.
+  //
+  // `pending_releases`: releases that are supposed to happen once the validated
+  // tasks are executed.
+  // `force_releases`: releases that need to be forcefully done to avoid invalid
+  // waits.
+  // `validate_states`: validation state of all the sequences.
+  void ValidateTaskFenceDeps(Sequence* sequence,
+                             Sequence::TaskIter task_iter,
+                             ReleaseMap* pending_releases,
+                             ReleaseMap* force_releases,
+                             ValidateStateMap* validate_states)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Gets ValidateState for given `sequence`. It does necessary initialization
+  // if the object hasn't been created yet, including updating
+  // `pending_releases` with release of the currently ongoing task and validated
+  // tasks.
+  ValidateState& GetSequenceValidateState(ValidateStateMap* validate_states,
+                                          ReleaseMap* pending_releases,
+                                          Sequence* sequence)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   mutable base::Lock lock_;
 

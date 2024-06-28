@@ -164,6 +164,7 @@ class GPU_EXPORT SchedulerDfs {
 
     uint32_t AddTask(base::OnceClosure closure,
                      std::vector<SyncToken> wait_fences,
+                     const SyncToken& release,
                      TaskGraph::ReportingCallback report_callback) override
         EXCLUSIVE_LOCKS_REQUIRED(lock());
 
