@@ -55,6 +55,7 @@ const char kReplaceDownloadedImagesScript[] =
     "    var imgTags = document.getElementsByTagName(\"img\");"
     "    for(image of imgTags) {"
     "        image.src = imgData[image.src] || image.src;"
+    "        image.removeAttribute('srcset');"
     "    }"
     "}, false);"
     "</script>";
