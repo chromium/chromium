@@ -136,16 +136,7 @@ class UserEventSyncBridgeTest : public testing::Test {
   TestGlobalIdMapper* mapper() { return &test_global_id_mapper_; }
 
   std::map<std::string, sync_pb::EntitySpecifics> GetAllDataForDebugging() {
-    base::RunLoop loop;
-    std::unique_ptr<DataBatch> batch;
-    bridge_->GetAllDataForDebugging(base::BindOnce(
-        [](base::RunLoop* loop, std::unique_ptr<DataBatch>* out_batch,
-           std::unique_ptr<DataBatch> batch) {
-          *out_batch = std::move(batch);
-          loop->Quit();
-        },
-        &loop, &batch));
-    loop.Run();
+    std::unique_ptr<DataBatch> batch = bridge_->GetAllDataForDebugging();
     EXPECT_NE(nullptr, batch);
 
     std::map<std::string, sync_pb::EntitySpecifics> storage_key_to_specifics;
@@ -160,18 +151,7 @@ class UserEventSyncBridgeTest : public testing::Test {
 
   std::unique_ptr<sync_pb::EntitySpecifics> GetDataForCommit(
       const std::string& storage_key) {
-    base::RunLoop loop;
-    std::unique_ptr<DataBatch> batch;
-    bridge_->GetDataForCommit(
-        {storage_key},
-        base::BindOnce(
-            [](base::RunLoop* loop, std::unique_ptr<DataBatch>* out_batch,
-               std::unique_ptr<DataBatch> batch) {
-              *out_batch = std::move(batch);
-              loop->Quit();
-            },
-            &loop, &batch));
-    loop.Run();
+    std::unique_ptr<DataBatch> batch = bridge_->GetDataForCommit({storage_key});
     EXPECT_NE(nullptr, batch);
 
     std::unique_ptr<sync_pb::EntitySpecifics> specifics;

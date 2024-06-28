@@ -120,8 +120,8 @@ std::optional<ModelError> UserEventSyncBridge::ApplyIncrementalSyncChanges(
   return {};
 }
 
-void UserEventSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                           DataCallback callback) {
+std::unique_ptr<DataBatch> UserEventSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   CHECK(store_);
 
   auto batch = std::make_unique<MutableDataBatch>();
@@ -134,10 +134,10 @@ void UserEventSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
       batch->Put(it->first, MoveToEntityData(std::move(specifics)));
     }
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
-void UserEventSyncBridge::GetAllDataForDebugging(DataCallback callback) {
+std::unique_ptr<DataBatch> UserEventSyncBridge::GetAllDataForDebugging() {
   CHECK(store_);
 
   auto batch = std::make_unique<MutableDataBatch>();
@@ -145,7 +145,7 @@ void UserEventSyncBridge::GetAllDataForDebugging(DataCallback callback) {
     auto specifics_copy = std::make_unique<UserEventSpecifics>(specifics);
     batch->Put(storage_key, MoveToEntityData(std::move(specifics_copy)));
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 std::string UserEventSyncBridge::GetClientTag(const EntityData& entity_data) {

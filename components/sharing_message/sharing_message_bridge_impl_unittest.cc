@@ -161,13 +161,8 @@ TEST_F(SharingMessageBridgeTest, ShouldInvokeCallbackOnSuccess) {
   // Check that GetDataForCommit() doesn't return anything after successful
   // commit.
   base::MockCallback<syncer::ModelTypeSyncBridge::DataCallback> data_callback;
-  std::unique_ptr<DataBatch> data_batch;
-  EXPECT_CALL(data_callback, Run(_))
-      .WillOnce([&data_batch](std::unique_ptr<DataBatch> batch) {
-        data_batch = std::move(batch);
-      });
-
-  bridge()->GetDataForCommit({storage_key}, data_callback.Get());
+  std::unique_ptr<DataBatch> data_batch =
+      bridge()->GetDataForCommit({storage_key});
   ASSERT_THAT(data_batch, NotNull());
   EXPECT_FALSE(data_batch->HasNext());
 }
@@ -305,14 +300,7 @@ TEST_F(SharingMessageBridgeTest, ShouldReturnUnsyncedData) {
   bridge()->SendSharingMessage(CreateSpecifics(payload2), callback.Get());
 
   base::MockCallback<syncer::ModelTypeSyncBridge::DataCallback> data_callback;
-  std::unique_ptr<DataBatch> data_batch;
-  EXPECT_CALL(data_callback, Run(_))
-      .Times(2)
-      .WillRepeatedly([&data_batch](std::unique_ptr<DataBatch> batch) {
-        data_batch = std::move(batch);
-      });
-
-  bridge()->GetAllDataForDebugging(data_callback.Get());
+  std::unique_ptr<DataBatch> data_batch = bridge()->GetAllDataForDebugging();
   ASSERT_THAT(data_batch, NotNull());
   std::unordered_map<std::string, std::string> storage_key_to_payload =
       ExtractStorageKeyAndPayloads(std::move(data_batch));
@@ -326,7 +314,7 @@ TEST_F(SharingMessageBridgeTest, ShouldReturnUnsyncedData) {
 
   // Add another one invalid storage key.
   storage_key_list.push_back("invalid_storage_key");
-  bridge()->GetDataForCommit(std::move(storage_key_list), data_callback.Get());
+  data_batch = bridge()->GetDataForCommit(std::move(storage_key_list));
   ASSERT_THAT(data_batch, NotNull());
   storage_key_to_payload = ExtractStorageKeyAndPayloads(std::move(data_batch));
   EXPECT_THAT(storage_key_to_payload,

@@ -144,8 +144,8 @@ SharingMessageBridgeImpl::ApplyIncrementalSyncChanges(
   return {};
 }
 
-void SharingMessageBridgeImpl::GetDataForCommit(StorageKeyList storage_keys,
-                                                DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> SharingMessageBridgeImpl::GetDataForCommit(
+    StorageKeyList storage_keys) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
 
   for (const std::string& storage_key : storage_keys) {
@@ -157,10 +157,11 @@ void SharingMessageBridgeImpl::GetDataForCommit(StorageKeyList storage_keys,
     batch->Put(storage_key, CopyToEntityData(iter->second.specifics));
   }
 
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
-void SharingMessageBridgeImpl::GetAllDataForDebugging(DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+SharingMessageBridgeImpl::GetAllDataForDebugging() {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
 
   for (const auto& cth_to_commit : pending_commits_) {
@@ -170,7 +171,7 @@ void SharingMessageBridgeImpl::GetAllDataForDebugging(DataCallback callback) {
     batch->Put(storage_key, std::move(entity_data));
   }
 
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 std::string SharingMessageBridgeImpl::GetClientTag(

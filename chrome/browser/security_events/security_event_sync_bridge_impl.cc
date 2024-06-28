@@ -125,8 +125,8 @@ SecurityEventSyncBridgeImpl::ApplyIncrementalSyncChanges(
   return {};
 }
 
-void SecurityEventSyncBridgeImpl::GetDataForCommit(StorageKeyList storage_keys,
-                                                   DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+SecurityEventSyncBridgeImpl::GetDataForCommit(StorageKeyList storage_keys) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   const std::map<std::string, sync_pb::SecurityEventSpecifics>& in_memory_data =
       store_->in_memory_data();
@@ -136,16 +136,16 @@ void SecurityEventSyncBridgeImpl::GetDataForCommit(StorageKeyList storage_keys,
       batch->Put(it->first, ToEntityData(it->second));
     }
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
-void SecurityEventSyncBridgeImpl::GetAllDataForDebugging(
-    DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+SecurityEventSyncBridgeImpl::GetAllDataForDebugging() {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const auto& [storage_key, specifics] : store_->in_memory_data()) {
     batch->Put(storage_key, ToEntityData(specifics));
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 std::string SecurityEventSyncBridgeImpl::GetClientTag(
