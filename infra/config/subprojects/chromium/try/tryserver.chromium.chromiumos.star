@@ -394,10 +394,7 @@ try_.builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    tryjob = try_.job(
-        # TODO(crbug.com/349972035): Re-enable when fixed.
-        experiment_percentage = 100,
-    ),
+    tryjob = try_.job(),
 )
 
 try_.builder(

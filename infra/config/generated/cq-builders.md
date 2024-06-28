@@ -55,6 +55,8 @@ These builders must pass before a CL may land that affects files outside of
 
     * Replaced with builder: [lacros-amd64-generic-rel-gtest-and-tast](https://ci.chromium.org/p/chromium/builders/try/lacros-amd64-generic-rel-gtest-and-tast) when CL owner is in group [google/chromeos-pa@google.com](https://chrome-infra-auth.appspot.com/auth/lookup?p=google/chromeos-pa@google.com)
 
+* [lacros-arm-generic-rel](https://ci.chromium.org/p/chromium/builders/try/lacros-arm-generic-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""lacros-arm-generic-rel""))
+
 * [linux-chromeos-compile-dbg](https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-compile-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-chromeos-compile-dbg""))
 
 * [linux-chromeos-rel](https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-chromeos-rel""))
@@ -677,9 +679,6 @@ as required builders.
 
 * [ios-simulator-exp](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-exp) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator-exp""))
   * Experiment percentage: 5.0
-
-* [lacros-arm-generic-rel](https://ci.chromium.org/p/chromium/builders/try/lacros-arm-generic-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""lacros-arm-generic-rel""))
-  * Experiment percentage: 100.0
 
 * [linux-full-remote-rel](https://ci.chromium.org/p/chromium/builders/try/linux-full-remote-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-full-remote-rel""))
   * Experiment percentage: 10.0
