@@ -232,8 +232,35 @@ bool IsValidLocalData(const sync_pb::NigoriLocalData& local_data) {
     // |local_data| should not be stored before initial sync is done.
     return false;
   }
-  // More validations is to be added here (e.g. for crbug.com/40681149).
-  return true;
+
+  const sync_pb::NigoriModel& nigori_model = local_data.nigori_model();
+  switch (nigori_model.passphrase_type()) {
+    case NigoriSpecifics::UNKNOWN:
+      // The only legit way to persist UNKNOWN passphrase type is to not
+      // complete keystore initialization upon initial sync, the keystore keys
+      // are supposed to be available - otherwise bridge issues ModelError.
+      return nigori_model.keystore_key_size() > 0;
+    case NigoriSpecifics::CUSTOM_PASSPHRASE:
+      if (nigori_model.custom_passphrase_key_derivation_params()
+              .custom_passphrase_key_derivation_method() ==
+          NigoriSpecifics::UNSPECIFIED) {
+        // Custom passphrase Nigori should have specified key derivation method.
+        return false;
+      }
+      [[fallthrough]];
+    case NigoriSpecifics::IMPLICIT_PASSPHRASE:
+    case NigoriSpecifics::FROZEN_IMPLICIT_PASSPHRASE:
+    case NigoriSpecifics::TRUSTED_VAULT_PASSPHRASE:
+    case NigoriSpecifics::KEYSTORE_PASSPHRASE:
+      // With real passphrase type encryption keys must always be present
+      // (either decrypted or pending decryption).
+      return nigori_model.cryptographer_data().key_bag().key_size() > 0 ||
+             nigori_model.has_pending_keys();
+  }
+
+  // All new validation logic should be added either before or into the switch
+  // above.
+  NOTREACHED_NORETURN();
 }
 
 std::optional<CrossUserSharingPublicKey> PublicKeyFromProto(

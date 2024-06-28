@@ -19,6 +19,7 @@
 #include "components/sync/nigori/nigori_state.h"
 #include "components/sync/nigori/nigori_storage.h"
 #include "components/sync/protocol/entity_data.h"
+#include "components/sync/protocol/nigori_local_data.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/test/nigori_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -2109,6 +2110,56 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldIgnoreLocalDataWithoutInitialSyncDone) {
   sync_pb::NigoriLocalData local_data = nigori_local_data();
   // Mimic corrupted (empty) |initial_sync_state| field.
   local_data.mutable_model_type_state()->clear_initial_sync_state();
+
+  // Ensure that bridge ignores local state.
+  EXPECT_CALL(*processor(),
+              ModelReadyToSync(NotNull(), IsEmptyMetadataBatch()));
+  MimicRestartWithLocalData(local_data);
+  EXPECT_TRUE(PerformInitialSyncWithSimpleKeystoreNigori());
+}
+
+// The only legit scenario when UNKNOWN passphrase type gets persisted is when
+// keystore keys are present, but commit wasn't completed before browser
+// restart. Otherwise it indicates data corruption and it is safer to ignore
+// such state.
+TEST_F(NigoriSyncBridgeImplTest,
+       ShouldIgnoreLocalDataWithUnknownPassphraseWithoutKeystoreKeys) {
+  sync_pb::NigoriLocalData local_data;
+  // Set INITIAL_SYNC_DONE, because otherwise the data will be dropped anyway.
+  local_data.mutable_model_type_state()->set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  // Don't set passphrase type (e.g. UNKNOWN will be used) and keystore keys
+  // (this makes state invalid).
+
+  // Ensure that bridge ignores local state.
+  EXPECT_CALL(*processor(),
+              ModelReadyToSync(NotNull(), IsEmptyMetadataBatch()));
+  MimicRestartWithLocalData(local_data);
+  EXPECT_TRUE(PerformInitialSyncWithSimpleKeystoreNigori());
+}
+
+TEST_F(NigoriSyncBridgeImplTest,
+       ShouldIgnoreLocalDataWithCustomPassphraseWithoutKeyDerivationParams) {
+  ASSERT_TRUE(PerformInitialSyncWithNigori(BuildCustomPassphraseNigoriSpecifics(
+      Pbkdf2PassphraseKeyParamsForTesting("passphrase"))));
+  sync_pb::NigoriLocalData local_data = nigori_local_data();
+  // Mimic corrupted custom passphrase key derivation params.
+  local_data.mutable_nigori_model()
+      ->clear_custom_passphrase_key_derivation_params();
+
+  // Ensure that bridge ignores local state.
+  EXPECT_CALL(*processor(),
+              ModelReadyToSync(NotNull(), IsEmptyMetadataBatch()));
+  MimicRestartWithLocalData(local_data);
+  EXPECT_TRUE(PerformInitialSyncWithSimpleKeystoreNigori());
+}
+
+TEST_F(NigoriSyncBridgeImplTest,
+       ShouldIgnoreLocalDataWithRealPassphraseTypeWithoutEncryptionKeys) {
+  ASSERT_TRUE(PerformInitialSyncWithSimpleKeystoreNigori());
+  sync_pb::NigoriLocalData local_data = nigori_local_data();
+  // Mimic corrupted cryptographer data state.
+  local_data.mutable_nigori_model()->clear_cryptographer_data();
 
   // Ensure that bridge ignores local state.
   EXPECT_CALL(*processor(),
