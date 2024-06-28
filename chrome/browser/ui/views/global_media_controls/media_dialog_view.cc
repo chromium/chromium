@@ -397,6 +397,12 @@ MediaDialogView::GetItemsForTesting() const {
   return active_sessions_view_->items_for_testing();  // IN-TEST
 }
 
+const std::map<const std::string,
+               global_media_controls::MediaItemUIUpdatedView*>&
+MediaDialogView::GetUpdatedItemsForTesting() const {
+  return active_sessions_view_->updated_items_for_testing();  // IN-TEST
+}
+
 const global_media_controls::MediaItemUIListView*
 MediaDialogView::GetListViewForTesting() const {
   return active_sessions_view_;

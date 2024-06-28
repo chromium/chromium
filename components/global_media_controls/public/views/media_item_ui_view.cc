@@ -377,9 +377,7 @@ void MediaItemUIView::SetScrollView(views::ScrollView* scroll_view) {
 void MediaItemUIView::UpdateFooterView(
     std::unique_ptr<MediaItemUIFooter> footer_view) {
   if (footer_view_) {
-    RemoveChildView(footer_view_);
-    delete footer_view_;
-    footer_view_ = nullptr;
+    RemoveChildViewT(footer_view_.ExtractAsDangling());
   }
 
   if (footer_view) {
@@ -391,9 +389,7 @@ void MediaItemUIView::UpdateFooterView(
 void MediaItemUIView::UpdateDeviceSelector(
     std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view) {
   if (device_selector_view_) {
-    RemoveChildView(device_selector_view_);
-    delete device_selector_view_;
-    device_selector_view_ = nullptr;
+    RemoveChildViewT(device_selector_view_.ExtractAsDangling());
   }
 
   if (device_selector_view) {

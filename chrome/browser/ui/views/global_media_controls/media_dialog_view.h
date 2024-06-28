@@ -107,6 +107,10 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   const std::map<const std::string, global_media_controls::MediaItemUIView*>&
   GetItemsForTesting() const;
 
+  const std::map<const std::string,
+                 global_media_controls::MediaItemUIUpdatedView*>&
+  GetUpdatedItemsForTesting() const;
+
   const global_media_controls::MediaItemUIListView* GetListViewForTesting()
       const;
 

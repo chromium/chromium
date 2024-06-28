@@ -70,6 +70,11 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIListView
     return items_;
   }
 
+  const std::map<const std::string, MediaItemUIUpdatedView*>&
+  updated_items_for_testing() const {
+    return updated_items_;
+  }
+
  private:
   // If media::kGlobalMediaControlsUpdatedUI on non-CrOS is enabled,
   // `updated_items_` is used, otherwise `items_` is used. `items_` is always

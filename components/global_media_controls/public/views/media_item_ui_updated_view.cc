@@ -474,8 +474,7 @@ void MediaItemUIUpdatedView::UpdateDeviceSelectorView(
     std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view) {
   // Remove the existing device selector view.
   if (device_selector_view_) {
-    RemoveChildViewT(device_selector_view_);
-    device_selector_view_ = nullptr;
+    RemoveChildViewT(device_selector_view_.ExtractAsDangling());
     start_casting_button_->SetCallback(views::Button::PressedCallback());
   }
   // Add the new device selector view.
@@ -492,8 +491,7 @@ void MediaItemUIUpdatedView::UpdateFooterView(
     std::unique_ptr<MediaItemUIFooter> footer_view) {
   // Remove the existing footer view.
   if (footer_view_) {
-    RemoveChildViewT(footer_view_);
-    footer_view_ = nullptr;
+    RemoveChildViewT(footer_view_.ExtractAsDangling());
   }
   // Add the new footer view.
   if (footer_view) {
