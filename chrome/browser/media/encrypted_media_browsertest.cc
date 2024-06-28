@@ -1163,10 +1163,11 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_StorageIdTest) {
 }
 
 // TODO(crbug.com/40601162): Times out in debug builds.
-#ifdef NDEBUG
-#define MAYBE_MultipleCdmTypes MultipeCdmTypes
-#else
+// TODO(crbug.com/40916095, crbug.com/348996697): Test flakiness.
+#if !defined(NDEBUG) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_MultipleCdmTypes DISABLED_MultipeCdmTypes
+#else
+#define MAYBE_MultipleCdmTypes MultipeCdmTypes
 #endif
 IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_MultipleCdmTypes) {
   base::StringPairs empty_query_params;
