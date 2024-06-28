@@ -20,7 +20,6 @@
 #include "components/performance_manager/decorators/page_aggregator_data.h"
 #include "components/performance_manager/decorators/page_load_tracker_decorator_data.h"
 #include "components/performance_manager/freezing/frozen_data.h"
-#include "components/performance_manager/graph/node_attached_data.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "url/gurl.h"

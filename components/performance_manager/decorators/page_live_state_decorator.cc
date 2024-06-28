@@ -11,8 +11,8 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/decorators/decorators_utils.h"
-#include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/public/graph/node_attached_data.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -27,9 +27,11 @@ namespace {
 // out of the header file.
 class PageLiveStateDataImpl
     : public PageLiveStateDecorator::Data,
-      public NodeAttachedDataImpl<PageLiveStateDataImpl> {
+      public ExternalNodeAttachedDataImpl<PageLiveStateDataImpl> {
  public:
-  struct Traits : public NodeAttachedDataInMap<PageNodeImpl> {};
+  explicit PageLiveStateDataImpl(const PageNodeImpl* page_node)
+      : page_node_(page_node) {}
+
   ~PageLiveStateDataImpl() override = default;
   PageLiveStateDataImpl(const PageLiveStateDataImpl& other) = delete;
   PageLiveStateDataImpl& operator=(const PageLiveStateDataImpl&) = delete;
@@ -235,14 +237,6 @@ class PageLiveStateDataImpl
   }
 
  private:
-  // Make the impl our friend so it can access the constructor and any
-  // storage providers.
-  friend class ::performance_manager::NodeAttachedDataImpl<
-      PageLiveStateDataImpl>;
-
-  explicit PageLiveStateDataImpl(const PageNodeImpl* page_node)
-      : page_node_(page_node) {}
-
   bool is_connected_to_usb_device_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
   bool is_connected_to_bluetooth_device_ GUARDED_BY_CONTEXT(sequence_checker_) =

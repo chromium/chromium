@@ -97,8 +97,6 @@ static_library("performance_manager") {
     "graph/initializing_frame_node_observer.h",
     "graph/node.cc",
     "graph/node_attached_data.cc",
-    "graph/node_attached_data.h",
-    "graph/node_attached_data_impl.h",
     "graph/node_base.cc",
     "graph/node_base.h",
     "graph/node_data_describer.cc",

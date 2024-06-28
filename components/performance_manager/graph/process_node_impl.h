@@ -16,7 +16,6 @@
 #include "base/types/pass_key.h"
 #include "components/performance_manager/decorators/process_priority_aggregator_data.h"
 #include "components/performance_manager/freezing/frozen_data.h"
-#include "components/performance_manager/graph/node_attached_data.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/graph/node_inline_data.h"
 #include "components/performance_manager/graph/properties.h"

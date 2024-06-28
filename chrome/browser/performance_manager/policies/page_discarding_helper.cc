@@ -17,11 +17,11 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/performance_manager/mechanisms/page_discarder.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
-#include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/decorators/tab_page_decorator.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
+#include "components/performance_manager/public/graph/node_attached_data.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/node_data_describer_util.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -43,15 +43,11 @@ namespace {
 // TODO(sebmarchand): The only reason for a discard attempt to fail is if we try
 // to discard a prerenderer, remove this once we can detect if a PageNode is a
 // prerenderer in CanDiscard().
-class DiscardAttemptMarker : public NodeAttachedDataImpl<DiscardAttemptMarker> {
+class DiscardAttemptMarker
+    : public ExternalNodeAttachedDataImpl<DiscardAttemptMarker> {
  public:
-  struct Traits : public NodeAttachedDataInMap<PageNodeImpl> {};
-  ~DiscardAttemptMarker() override = default;
-
- private:
-  friend class ::performance_manager::NodeAttachedDataImpl<
-      DiscardAttemptMarker>;
   explicit DiscardAttemptMarker(const PageNodeImpl* page_node) {}
+  ~DiscardAttemptMarker() override = default;
 };
 
 const char kDescriberName[] = "PageDiscardingHelper";

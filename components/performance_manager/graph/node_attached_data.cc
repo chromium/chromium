@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/performance_manager/graph/node_attached_data.h"
+#include "components/performance_manager/public/graph/node_attached_data.h"
 
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "components/performance_manager/graph/graph_impl.h"
+#include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/public/graph/node.h"
 
 namespace performance_manager {

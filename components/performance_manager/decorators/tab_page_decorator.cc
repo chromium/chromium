@@ -9,16 +9,14 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
-#include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/public/graph/node_attached_data.h"
 
 namespace performance_manager {
 
 class TabPageDecorator::Data
-    : public NodeAttachedDataImpl<TabPageDecorator::Data> {
+    : public ExternalNodeAttachedDataImpl<TabPageDecorator::Data> {
  public:
-  struct Traits : public NodeAttachedDataInMap<PageNodeImpl> {};
-
   explicit Data(const PageNodeImpl* page_node)
       : tab_handle_(base::WrapUnique(new TabHandle(page_node))) {}
 
@@ -29,8 +27,6 @@ class TabPageDecorator::Data
   }
 
  private:
-  friend class NodeAttachedDataImpl<TabPageDecorator::Data>;
-
   std::unique_ptr<TabHandle> tab_handle_;
 };
 

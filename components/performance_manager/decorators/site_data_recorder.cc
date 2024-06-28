@@ -7,7 +7,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/node_inline_data.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache.h"
