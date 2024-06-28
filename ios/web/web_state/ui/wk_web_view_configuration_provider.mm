@@ -82,6 +82,12 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
         setWebsiteDataStore:[WKWebsiteDataStore nonPersistentDataStore]];
   }
 
+  // Explicitly set the default data store to the configuration. The data store
+  // always can be obtained from the configuration.
+  if (configuration_.websiteDataStore == nil) {
+    [configuration_ setWebsiteDataStore:[WKWebsiteDataStore defaultDataStore]];
+  }
+
   [configuration_ setIgnoresViewportScaleLimits:YES];
 
   @try {

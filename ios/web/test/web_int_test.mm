@@ -13,6 +13,7 @@
 #import "base/test/scoped_run_loop_timeout.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/common/web_view_creation_util.h"
+#import "ios/web/public/browser_state_utils.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/web_state_observer.h"
@@ -67,7 +68,9 @@ void WebIntTest::SetUp() {
   WebTest::SetUp();
 
   // Remove any previously existing WKWebView data.
-  RemoveWKWebViewCreatedData([WKWebsiteDataStore defaultDataStore],
+  WKWebsiteDataStore* data_store =
+      GetDataStoreForBrowserState(GetBrowserState());
+  RemoveWKWebViewCreatedData(data_store,
                              [WKWebsiteDataStore allWebsiteDataTypes]);
 
   // Create the WebState.
@@ -86,6 +89,8 @@ void WebIntTest::TearDown() {
   // call ClearBrowingData, which can take a very long time with an unresponsive
   // WebProcess. Work around this problem by force closing WKWebView and its
   // network process via private APIs.
+  WKWebsiteDataStore* data_store =
+      GetDataStoreForBrowserState(GetBrowserState());
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
   WKWebView* web_view = base::apple::ObjCCast<WKWebView>(
@@ -93,11 +98,10 @@ void WebIntTest::TearDown() {
           ->GetWebViewNavigationProxy());
   [web_view performSelector:@selector(_close)];
 
-  [[WKWebsiteDataStore defaultDataStore]
-      performSelector:@selector(_terminateNetworkProcess)];
+  [data_store performSelector:@selector(_terminateNetworkProcess)];
 #pragma clang diagnostic pop
 
-  RemoveWKWebViewCreatedData([WKWebsiteDataStore defaultDataStore],
+  RemoveWKWebViewCreatedData(data_store,
                              [WKWebsiteDataStore allWebsiteDataTypes]);
 
   WebTest::TearDown();

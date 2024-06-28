@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
+#import "ios/web/public/browser_state_utils.h"
 #import "ios/web/public/security/certificate_policy_cache.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -67,12 +68,13 @@ bool ClearCookiesAndSiteData() {
 
 bool ClearAllWebStateBrowsingData() {
   __block bool callback_finished = false;
-  [[WKWebsiteDataStore defaultDataStore]
-      removeDataOfTypes:[WKWebsiteDataStore allWebsiteDataTypes]
-          modifiedSince:[NSDate distantPast]
-      completionHandler:^{
-        callback_finished = true;
-      }];
+  WKWebsiteDataStore* data_store =
+      web::GetDataStoreForBrowserState(GetOriginalBrowserState());
+  [data_store removeDataOfTypes:[WKWebsiteDataStore allWebsiteDataTypes]
+                  modifiedSince:[NSDate distantPast]
+              completionHandler:^{
+                callback_finished = true;
+              }];
   return WaitUntilConditionOrTimeout(base::Seconds(20), ^{
     return callback_finished;
   });

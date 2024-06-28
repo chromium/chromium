@@ -10,6 +10,7 @@
 #import "base/time/time.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/browser_state.h"
+#import "ios/web/public/browser_state_utils.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 
 namespace web {
@@ -94,10 +95,10 @@ void ClearBrowsingData(BrowserState* browser_state,
     closure = std::move(remove_dummy_web_view).Then(std::move(closure));
   }
 
-  [[WKWebsiteDataStore defaultDataStore]
-      removeDataOfTypes:types_to_remove
-          modifiedSince:modified_since.ToNSDate()
-      completionHandler:base::CallbackToBlock(std::move(closure))];
+  WKWebsiteDataStore* data_store = GetDataStoreForBrowserState(browser_state);
+  [data_store removeDataOfTypes:types_to_remove
+                  modifiedSince:modified_since.ToNSDate()
+              completionHandler:base::CallbackToBlock(std::move(closure))];
 }
 
 }  // namespace web

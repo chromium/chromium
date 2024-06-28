@@ -81,6 +81,7 @@
 #import "ios/testing/verify_custom_webkit.h"
 #import "ios/web/common/features.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
+#import "ios/web/public/browser_state_utils.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -163,8 +164,9 @@ NSString* SerializedValue(const base::Value* value) {
 + (void)killWebKitNetworkProcess {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
-  [[WKWebsiteDataStore defaultDataStore]
-      performSelector:@selector(_terminateNetworkProcess)];
+  WKWebsiteDataStore* dataStore = web::GetDataStoreForBrowserState(
+      chrome_test_util::GetOriginalBrowserState());
+  [dataStore performSelector:@selector(_terminateNetworkProcess)];
 #pragma clang diagnostic pop
 }
 

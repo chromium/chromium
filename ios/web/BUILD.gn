@@ -58,6 +58,7 @@ source_set("web") {
 
   sources = [
     "browser_state.mm",
+    "browser_state_utils.mm",
     "browser_url_rewriter_impl.h",
     "browser_url_rewriter_impl.mm",
     "crw_navigation_item_storage.mm",
