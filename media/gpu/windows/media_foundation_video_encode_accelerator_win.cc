@@ -1998,6 +1998,11 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
   output_data_buffer.pSample = nullptr;
   DWORD status = 0;
   HRESULT hr = encoder_->ProcessOutput(0, 1, &output_data_buffer, &status);
+  // If there is an IMFCollection of events, release it
+  if (output_data_buffer.pEvents != nullptr) {
+    DVLOG(3) << "Got events from ProcessOutput, but discarding.";
+    output_data_buffer.pEvents->Release();
+  }
   if (hr == MF_E_TRANSFORM_STREAM_CHANGE) {
     hr = S_OK;
     ComMFMediaType media_type;
@@ -2015,7 +2020,9 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
   RETURN_ON_HR_FAILURE(hr, "Couldn't get encoded data", );
   DVLOG(3) << "Got encoded data " << hr;
 
+  ComMFSample output_sample;
   ComMFMediaBuffer output_buffer;
+  output_sample.Attach(output_data_buffer.pSample);
   hr = output_data_buffer.pSample->GetBufferByIndex(0, &output_buffer);
   RETURN_ON_HR_FAILURE(hr, "Couldn't get buffer by index", );
 
@@ -2172,8 +2179,6 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
       memcpy(encode_output->memory(), scoped_buffer.get(), size);
     }
     encoder_output_queue_.push_back(std::move(encode_output));
-    output_data_buffer.pSample->Release();
-    output_data_buffer.pSample = nullptr;
     return;
   }
 
@@ -2196,9 +2201,6 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
 
     memcpy(buffer_ref->mapping.memory(), scoped_buffer.get(), size);
   }
-
-  output_data_buffer.pSample->Release();
-  output_data_buffer.pSample = nullptr;
 
   client_->BitstreamBufferReady(buffer_ref->id, md);
 }
