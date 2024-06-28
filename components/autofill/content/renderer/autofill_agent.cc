@@ -444,8 +444,9 @@ void AutofillAgent::FocusedElementChangedDeprecated(const WebElement& element) {
       element.DynamicTo<WebFormControlElement>();
 
   bool focus_moved_to_new_form = false;
-  if (last_focused_form && (!form_control_element ||
-                            last_focused_form != form_control_element.Form())) {
+  if (last_focused_form &&
+      (!form_control_element ||
+       last_focused_form != form_util::GetOwningForm(form_control_element))) {
     // The focused element is not part of the last interacted form (could be
     // in a different form).
     if (auto* autofill_driver = unsafe_autofill_driver()) {
