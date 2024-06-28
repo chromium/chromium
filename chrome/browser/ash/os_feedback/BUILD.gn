@@ -24,6 +24,7 @@ static_library("os_feedback") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/multidevice_setup",
+    "//chrome/browser/ash/system_logs",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/system_web_apps",
@@ -42,7 +43,10 @@ static_library("os_feedback") {
     "//url",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/system_web_apps/apps" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/system_logs",
+    "//chrome/browser/ash/system_web_apps/apps",
+  ]
 }
 
 source_set("unit_tests") {

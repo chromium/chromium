@@ -1250,6 +1250,7 @@ source_set("extensions") {
       "//chrome/browser/ash/net",
       "//chrome/browser/ash/ownership",
       "//chrome/browser/ash/remote_apps",
+      "//chrome/browser/ash/system_logs",
       "//chrome/browser/ash/system_web_apps/apps",
       "//chrome/browser/devtools",
       "//chrome/browser/nearby_sharing/common",
@@ -1316,6 +1317,7 @@ source_set("extensions") {
       "//chrome/browser/ash/customization",
       "//chrome/browser/ash/net",
       "//chrome/browser/ash/system_web_apps/apps",
+      "//chrome/browser/ash/system_logs",
     ]
 
     if (is_cfm) {
