@@ -3887,45 +3887,6 @@ static_library("browser") {
       "download/offline_item_model_manager.h",
       "download/offline_item_model_manager_factory.cc",
       "download/offline_item_model_manager_factory.h",
-      "enterprise/connectors/analysis/analysis_service_settings.cc",
-      "enterprise/connectors/analysis/analysis_service_settings.h",
-      "enterprise/connectors/analysis/analysis_settings.cc",
-      "enterprise/connectors/analysis/analysis_settings.h",
-      "enterprise/connectors/analysis/content_analysis_delegate.cc",
-      "enterprise/connectors/analysis/content_analysis_delegate.h",
-      "enterprise/connectors/analysis/content_analysis_delegate_base.h",
-      "enterprise/connectors/analysis/content_analysis_dialog.cc",
-      "enterprise/connectors/analysis/content_analysis_dialog.h",
-      "enterprise/connectors/analysis/content_analysis_downloads_delegate.cc",
-      "enterprise/connectors/analysis/content_analysis_downloads_delegate.h",
-      "enterprise/connectors/analysis/files_request_handler.cc",
-      "enterprise/connectors/analysis/files_request_handler.h",
-      "enterprise/connectors/analysis/page_print_analysis_request.cc",
-      "enterprise/connectors/analysis/page_print_analysis_request.h",
-      "enterprise/connectors/analysis/request_handler_base.cc",
-      "enterprise/connectors/analysis/request_handler_base.h",
-      "enterprise/connectors/common.cc",
-      "enterprise/connectors/common.h",
-      "enterprise/connectors/connectors_manager.cc",
-      "enterprise/connectors/connectors_manager.h",
-      "enterprise/connectors/connectors_service.cc",
-      "enterprise/connectors/connectors_service.h",
-      "enterprise/connectors/reporting/browser_crash_event_router.cc",
-      "enterprise/connectors/reporting/browser_crash_event_router.h",
-      "enterprise/connectors/reporting/crash_reporting_context.cc",
-      "enterprise/connectors/reporting/crash_reporting_context.h",
-      "enterprise/connectors/reporting/extension_install_event_router.cc",
-      "enterprise/connectors/reporting/extension_install_event_router.h",
-      "enterprise/connectors/reporting/extension_telemetry_event_router.cc",
-      "enterprise/connectors/reporting/extension_telemetry_event_router.h",
-      "enterprise/connectors/reporting/metrics_utils.cc",
-      "enterprise/connectors/reporting/metrics_utils.h",
-      "enterprise/connectors/reporting/realtime_reporting_client.cc",
-      "enterprise/connectors/reporting/realtime_reporting_client.h",
-      "enterprise/connectors/reporting/realtime_reporting_client_factory.cc",
-      "enterprise/connectors/reporting/realtime_reporting_client_factory.h",
-      "enterprise/connectors/reporting/reporting_service_settings.cc",
-      "enterprise/connectors/reporting/reporting_service_settings.h",
       "enterprise/reporting/browser_report_generator_desktop.cc",
       "enterprise/reporting/browser_report_generator_desktop.h",
       "enterprise/reporting/extension_info.cc",
@@ -6667,14 +6628,65 @@ static_library("browser") {
     deps += [ "//components/enterprise/idle" ]
   }
 
-  if (is_linux || is_win || is_mac) {
+  if (enterprise_cloud_content_analysis) {
     sources += [
-      "enterprise/chrome_browser_main_extra_parts_enterprise.cc",
-      "enterprise/chrome_browser_main_extra_parts_enterprise.h",
+      "enterprise/connectors/analysis/analysis_service_settings.cc",
+      "enterprise/connectors/analysis/analysis_service_settings.h",
+      "enterprise/connectors/analysis/analysis_settings.cc",
+      "enterprise/connectors/analysis/analysis_settings.h",
+      "enterprise/connectors/analysis/content_analysis_delegate.cc",
+      "enterprise/connectors/analysis/content_analysis_delegate.h",
+      "enterprise/connectors/analysis/content_analysis_delegate_base.h",
+      "enterprise/connectors/analysis/content_analysis_dialog.cc",
+      "enterprise/connectors/analysis/content_analysis_dialog.h",
+      "enterprise/connectors/analysis/content_analysis_downloads_delegate.cc",
+      "enterprise/connectors/analysis/content_analysis_downloads_delegate.h",
+      "enterprise/connectors/analysis/files_request_handler.cc",
+      "enterprise/connectors/analysis/files_request_handler.h",
+      "enterprise/connectors/analysis/page_print_analysis_request.cc",
+      "enterprise/connectors/analysis/page_print_analysis_request.h",
+      "enterprise/connectors/analysis/request_handler_base.cc",
+      "enterprise/connectors/analysis/request_handler_base.h",
+      "enterprise/connectors/common.cc",
+      "enterprise/connectors/common.h",
+      "enterprise/connectors/connectors_manager.cc",
+      "enterprise/connectors/connectors_manager.h",
+      "enterprise/connectors/connectors_service.cc",
+      "enterprise/connectors/connectors_service.h",
+      "enterprise/connectors/reporting/browser_crash_event_router.cc",
+      "enterprise/connectors/reporting/browser_crash_event_router.h",
+      "enterprise/connectors/reporting/crash_reporting_context.cc",
+      "enterprise/connectors/reporting/crash_reporting_context.h",
+      "enterprise/connectors/reporting/extension_install_event_router.cc",
+      "enterprise/connectors/reporting/extension_install_event_router.h",
+      "enterprise/connectors/reporting/extension_telemetry_event_router.cc",
+      "enterprise/connectors/reporting/extension_telemetry_event_router.h",
+      "enterprise/connectors/reporting/metrics_utils.cc",
+      "enterprise/connectors/reporting/metrics_utils.h",
+      "enterprise/connectors/reporting/realtime_reporting_client.cc",
+      "enterprise/connectors/reporting/realtime_reporting_client.h",
+      "enterprise/connectors/reporting/realtime_reporting_client_factory.cc",
+      "enterprise/connectors/reporting/realtime_reporting_client_factory.h",
+      "enterprise/connectors/reporting/reporting_service_settings.cc",
+      "enterprise/connectors/reporting/reporting_service_settings.h",
+    ]
+  }
+
+  if (enterprise_local_content_analysis) {
+    sources += [
       "enterprise/connectors/analysis/local_binary_upload_service.cc",
       "enterprise/connectors/analysis/local_binary_upload_service.h",
       "enterprise/connectors/analysis/local_binary_upload_service_factory.cc",
       "enterprise/connectors/analysis/local_binary_upload_service_factory.h",
+    ]
+    public_deps +=
+        [ "//chrome/browser/enterprise/connectors/analysis:sdk_manager" ]
+  }
+
+  if (is_linux || is_win || is_mac) {
+    sources += [
+      "enterprise/chrome_browser_main_extra_parts_enterprise.cc",
+      "enterprise/chrome_browser_main_extra_parts_enterprise.h",
       "enterprise/connectors/device_trust/attestation/browser/attestation_switches.cc",
       "enterprise/connectors/device_trust/attestation/browser/attestation_switches.h",
       "enterprise/connectors/device_trust/attestation/browser/attester.h",
@@ -6754,10 +6766,7 @@ static_library("browser") {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
       "//chrome/services/system_signals/public/cpp/browser",
     ]
-    public_deps += [
-      "//chrome/browser/enterprise/connectors/analysis:sdk_manager",
-      "//components/enterprise/core",
-    ]
+    public_deps += [ "//components/enterprise/core" ]
 
     if (is_win) {
       deps += [ "//components/device_signals/core/browser/win" ]
