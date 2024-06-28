@@ -198,6 +198,7 @@ class PdfInkModuleTest : public testing::Test {
 
   FakeClient& client() { return client_; }
   PdfInkModule& ink_module() { return ink_module_; }
+  const PdfInkModule& ink_module() const { return ink_module_; }
 
  private:
   base::test::ScopedFeatureList feature_list_{features::kPdfInk2};
@@ -372,6 +373,51 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
   void ApplyStrokeWithMouseAtPoints(
       const gfx::PointF& mouse_down_point,
       base::span<const gfx::PointF> mouse_move_points,
+      const gfx::PointF& mouse_up_point) {
+    ApplyStrokeWithMouseAtPointsMaybeHandled(
+        mouse_down_point, mouse_move_points, mouse_up_point,
+        /*expect_mouse_events_handled=*/true);
+  }
+  void ApplyStrokeWithMouseAtPointsNotHandled(
+      const gfx::PointF& mouse_down_point,
+      base::span<const gfx::PointF> mouse_move_points,
+      const gfx::PointF& mouse_up_point) {
+    ApplyStrokeWithMouseAtPointsMaybeHandled(
+        mouse_down_point, mouse_move_points, mouse_up_point,
+        /*expect_mouse_events_handled=*/false);
+  }
+
+  void RunStrokeCheckTest(bool annotation_mode_enabled) {
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateSetAnnotationModeMessage(annotation_mode_enabled)));
+    EXPECT_EQ(annotation_mode_enabled, ink_module().enabled());
+
+    ApplyStrokeWithMouseAtPointsMaybeHandled(
+        kMouseDownLocation, base::span_from_ref(kMouseMoveLocation),
+        kMouseUpLocation,
+        /*expect_mouse_events_handled=*/annotation_mode_enabled);
+
+    const int expected_count = annotation_mode_enabled ? 1 : 0;
+    EXPECT_EQ(expected_count, client().stroke_finished_count());
+  }
+
+  void SelectEraserTool() {
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateSetAnnotationBrushMessage("eraser", nullptr)));
+  }
+
+  PdfInkModule::DocumentStrokeInputPointsMap StrokeInputPositions() const {
+    return ink_module().GetStrokesInputPositionsForTesting();
+  }
+  PdfInkModule::DocumentStrokeInputPointsMap VisibleStrokeInputPositions()
+      const {
+    return ink_module().GetVisibleStrokesInputPositionsForTesting();
+  }
+
+ private:
+  void ApplyStrokeWithMouseAtPointsMaybeHandled(
+      const gfx::PointF& mouse_down_point,
+      base::span<const gfx::PointF> mouse_move_points,
       const gfx::PointF& mouse_up_point,
       bool expect_mouse_events_handled) {
     blink::WebMouseEvent mouse_down_event =
@@ -398,25 +444,6 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
             .Build();
     EXPECT_EQ(expect_mouse_events_handled,
               ink_module().HandleInputEvent(mouse_up_event));
-  }
-
-  void RunStrokeCheckTest(bool annotation_mode_enabled) {
-    EXPECT_TRUE(ink_module().OnMessage(
-        CreateSetAnnotationModeMessage(annotation_mode_enabled)));
-    EXPECT_EQ(annotation_mode_enabled, ink_module().enabled());
-
-    ApplyStrokeWithMouseAtPoints(
-        kMouseDownLocation, base::span_from_ref(kMouseMoveLocation),
-        kMouseUpLocation,
-        /*expect_mouse_events_handled=*/annotation_mode_enabled);
-
-    const int expected_count = annotation_mode_enabled ? 1 : 0;
-    EXPECT_EQ(expected_count, client().stroke_finished_count());
-  }
-
-  void SelectEraserTool() {
-    EXPECT_TRUE(ink_module().OnMessage(
-        CreateSetAnnotationBrushMessage("eraser", nullptr)));
   }
 };
 
@@ -450,7 +477,7 @@ TEST_F(PdfInkModuleStrokeTest, CanonicalAnnotationPoints) {
   // the PdfInkModule::Client setup.
   constexpr gfx::PointF kCanonicalMouseDownPosition(47.0f, 44.5f);
   constexpr gfx::PointF kCanonicalMouseMovePosition(42.0f, 39.5f);
-  EXPECT_THAT(ink_module().GetStrokesInputPositionsForTesting(),
+  EXPECT_THAT(StrokeInputPositions(),
               ElementsAre(Pair(0, PdfInkModule::PageStrokeInputPoints{
                                       {kCanonicalMouseDownPosition,
                                        kCanonicalMouseMovePosition}})));
@@ -512,17 +539,16 @@ TEST_F(PdfInkModuleStrokeTest, StrokeOutsidePage) {
   InitializeVerticalTwoPageLayout();
 
   // Start out without any strokes.
-  EXPECT_TRUE(ink_module().GetStrokesInputPositionsForTesting().empty());
+  EXPECT_TRUE(StrokeInputPositions().empty());
 
   // A stroke that starts outside of any page does not generate a stroke, even
   // if it crosses into a page.
-  ApplyStrokeWithMouseAtPoints(
+  ApplyStrokeWithMouseAtPointsNotHandled(
       kTwoPageVerticalLayoutPointOutsidePages,
       base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage0),
-      kTwoPageVerticalLayoutPoint3InsidePage0,
-      /*expect_mouse_events_handled=*/false);
+      kTwoPageVerticalLayoutPoint3InsidePage0);
 
-  EXPECT_TRUE(ink_module().GetStrokesInputPositionsForTesting().empty());
+  EXPECT_TRUE(StrokeInputPositions().empty());
 }
 
 TEST_F(PdfInkModuleStrokeTest, StrokeInsidePages) {
@@ -530,28 +556,24 @@ TEST_F(PdfInkModuleStrokeTest, StrokeInsidePages) {
   InitializeVerticalTwoPageLayout();
 
   // Start out without any strokes.
-  EXPECT_TRUE(ink_module().GetStrokesInputPositionsForTesting().empty());
+  EXPECT_TRUE(StrokeInputPositions().empty());
 
   // A stroke in the first page generates a stroke only for that page.
   ApplyStrokeWithMouseAtPoints(
       kTwoPageVerticalLayoutPoint1InsidePage0,
       base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage0),
-      kTwoPageVerticalLayoutPoint3InsidePage0,
-      /*expect_mouse_events_handled=*/true);
+      kTwoPageVerticalLayoutPoint3InsidePage0);
 
-  EXPECT_THAT(ink_module().GetStrokesInputPositionsForTesting(),
-              ElementsAre(Pair(0, testing::SizeIs(1))));
+  EXPECT_THAT(StrokeInputPositions(), ElementsAre(Pair(0, testing::SizeIs(1))));
 
   // A stroke in the second page generates a stroke only for that page.
   ApplyStrokeWithMouseAtPoints(
       kTwoPageVerticalLayoutPoint1InsidePage1,
       base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage1),
-      kTwoPageVerticalLayoutPoint3InsidePage1,
-      /*expect_mouse_events_handled=*/true);
+      kTwoPageVerticalLayoutPoint3InsidePage1);
 
-  EXPECT_THAT(
-      ink_module().GetStrokesInputPositionsForTesting(),
-      ElementsAre(Pair(0, testing::SizeIs(1)), Pair(1, testing::SizeIs(1))));
+  EXPECT_THAT(StrokeInputPositions(), ElementsAre(Pair(0, testing::SizeIs(1)),
+                                                  Pair(1, testing::SizeIs(1))));
 }
 
 TEST_F(PdfInkModuleStrokeTest, StrokeAcrossPages) {
@@ -559,18 +581,16 @@ TEST_F(PdfInkModuleStrokeTest, StrokeAcrossPages) {
   InitializeVerticalTwoPageLayout();
 
   // Start out without any strokes.
-  EXPECT_TRUE(ink_module().GetStrokesInputPositionsForTesting().empty());
+  EXPECT_TRUE(StrokeInputPositions().empty());
 
   // A stroke that starts in first page and ends in the second page only
   // generates one stroke in the first page.
   ApplyStrokeWithMouseAtPoints(
       kTwoPageVerticalLayoutPoint1InsidePage0,
       base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage1),
-      kTwoPageVerticalLayoutPoint3InsidePage1,
-      /*expect_mouse_events_handled=*/true);
+      kTwoPageVerticalLayoutPoint3InsidePage1);
 
-  EXPECT_THAT(ink_module().GetStrokesInputPositionsForTesting(),
-              ElementsAre(Pair(0, testing::SizeIs(1))));
+  EXPECT_THAT(StrokeInputPositions(), ElementsAre(Pair(0, testing::SizeIs(1))));
 }
 
 TEST_F(PdfInkModuleStrokeTest, StrokePageExitAndReentry) {
@@ -578,15 +598,14 @@ TEST_F(PdfInkModuleStrokeTest, StrokePageExitAndReentry) {
   InitializeVerticalTwoPageLayout();
 
   // Start out without any strokes.
-  EXPECT_TRUE(ink_module().GetStrokesInputPositionsForTesting().empty());
+  EXPECT_TRUE(StrokeInputPositions().empty());
 
   ApplyStrokeWithMouseAtPoints(kTwoPageVerticalLayoutPoint1InsidePage0,
                                kTwoPageVerticalLayoutPageExitAndReentryPoints,
-                               kTwoPageVerticalLayoutPoint3InsidePage0,
-                               /*expect_mouse_events_handled=*/true);
+                               kTwoPageVerticalLayoutPoint3InsidePage0);
 
   EXPECT_THAT(
-      ink_module().GetStrokesInputPositionsForTesting(),
+      StrokeInputPositions(),
       ElementsAre(Pair(
           0,
           ElementsAre(ElementsAreArray(
@@ -601,7 +620,7 @@ TEST_F(PdfInkModuleStrokeTest, EraseStroke) {
 
   // Check that there are now some visible strokes.
   EXPECT_THAT(
-      ink_module().GetVisibleStrokesInputPositionsForTesting(),
+      VisibleStrokeInputPositions(),
       ElementsAre(Pair(0, ElementsAre(ElementsAre(kMouseDownLocation,
                                                   kMouseMoveLocation)))));
   EXPECT_EQ(1, client().stroke_finished_count());
@@ -610,24 +629,22 @@ TEST_F(PdfInkModuleStrokeTest, EraseStroke) {
   SelectEraserTool();
   ApplyStrokeWithMouseAtPoints(kMouseDownLocation,
                                base::span_from_ref(kMouseDownLocation),
-                               kMouseDownLocation,
-                               /*expect_mouse_events_handled=*/true);
+                               kMouseDownLocation);
 
   // Now there are no visible strokes left.
   // TODO(crbug.com/339682315): Update the test expectations when the Ink
   // library is no longer just a stub.
-  EXPECT_TRUE(ink_module().GetVisibleStrokesInputPositionsForTesting().empty());
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Erasing counts as another stroke action.
   EXPECT_EQ(2, client().stroke_finished_count());
 
   // Stroke again. The stroke that have already been erased should stay erased.
   ApplyStrokeWithMouseAtPoints(kMouseDownLocation,
                                base::span_from_ref(kMouseDownLocation),
-                               kMouseDownLocation,
-                               /*expect_mouse_events_handled=*/true);
+                               kMouseDownLocation);
 
   // Still no visible strokes.
-  EXPECT_TRUE(ink_module().GetVisibleStrokesInputPositionsForTesting().empty());
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Nothing got erased, so the count stays at 2.
   EXPECT_EQ(2, client().stroke_finished_count());
 }
@@ -637,18 +654,17 @@ TEST_F(PdfInkModuleStrokeTest, EraseOnPageWithoutStrokes) {
   InitializeSimpleSinglePageBasicLayout();
 
   // Verify there are no visible strokes to start with.
-  EXPECT_TRUE(ink_module().GetVisibleStrokesInputPositionsForTesting().empty());
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
 
   // Stroke with the eraser tool when there are no strokes on the page.
   SelectEraserTool();
   ApplyStrokeWithMouseAtPoints(kMouseDownLocation,
                                base::span_from_ref(kMouseDownLocation),
-                               kMouseDownLocation,
-                               /*expect_mouse_events_handled=*/true);
+                               kMouseDownLocation);
 
   // Verify there are still no visible strokes and StrokeFinished() never got
   // called.
-  EXPECT_TRUE(ink_module().GetVisibleStrokesInputPositionsForTesting().empty());
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   EXPECT_EQ(0, client().stroke_finished_count());
 }
 
@@ -658,7 +674,7 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokeEntirelyOffPage) {
 
   // Check that there are now some visible strokes.
   EXPECT_THAT(
-      ink_module().GetVisibleStrokesInputPositionsForTesting(),
+      VisibleStrokeInputPositions(),
       ElementsAre(Pair(0, ElementsAre(ElementsAre(kMouseDownLocation,
                                                   kMouseMoveLocation)))));
   EXPECT_EQ(1, client().stroke_finished_count());
@@ -666,14 +682,14 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokeEntirelyOffPage) {
   // Stroke with the eraser tool outside of the page.
   SelectEraserTool();
   constexpr gfx::PointF kOffPageLocation(99.0f, 99.0f);
-  ApplyStrokeWithMouseAtPoints(
-      kOffPageLocation, base::span_from_ref(kOffPageLocation), kOffPageLocation,
-      /*expect_mouse_events_handled=*/false);
+  ApplyStrokeWithMouseAtPointsNotHandled(kOffPageLocation,
+                                         base::span_from_ref(kOffPageLocation),
+                                         kOffPageLocation);
 
   // Check that the visible strokes remain, and StrokeFinished() did not get
   // called again.
   EXPECT_THAT(
-      ink_module().GetVisibleStrokesInputPositionsForTesting(),
+      VisibleStrokeInputPositions(),
       ElementsAre(Pair(0, ElementsAre(ElementsAre(kMouseDownLocation,
                                                   kMouseMoveLocation)))));
   EXPECT_EQ(1, client().stroke_finished_count());
@@ -688,12 +704,11 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokeErasesTwoStrokes) {
   static constexpr gfx::PointF kMouseUpLocation2 = gfx::PointF(30.0f, 30.0f);
   ApplyStrokeWithMouseAtPoints(kMouseDownLocation2,
                                base::span_from_ref(kMouseMoveLocation),
-                               kMouseUpLocation2,
-                               /*expect_mouse_events_handled=*/true);
+                               kMouseUpLocation2);
 
   // Check that there are now some visible strokes.
   EXPECT_THAT(
-      ink_module().GetVisibleStrokesInputPositionsForTesting(),
+      VisibleStrokeInputPositions(),
       ElementsAre(Pair(
           0,
           ElementsAre(ElementsAre(kMouseDownLocation, kMouseMoveLocation),
@@ -705,11 +720,10 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokeErasesTwoStrokes) {
   SelectEraserTool();
   ApplyStrokeWithMouseAtPoints(kMouseMoveLocation,
                                base::span_from_ref(kMouseMoveLocation),
-                               kMouseMoveLocation,
-                               /*expect_mouse_events_handled=*/true);
+                               kMouseMoveLocation);
 
   // Check that there are now no visible strokes.
-  EXPECT_TRUE(ink_module().GetVisibleStrokesInputPositionsForTesting().empty());
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   EXPECT_EQ(3, client().stroke_finished_count());
 }
 
@@ -718,15 +732,14 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokePageExitAndReentry) {
   InitializeVerticalTwoPageLayout();
 
   // Start out without any strokes.
-  EXPECT_TRUE(ink_module().GetStrokesInputPositionsForTesting().empty());
+  EXPECT_TRUE(StrokeInputPositions().empty());
 
   ApplyStrokeWithMouseAtPoints(kTwoPageVerticalLayoutPoint1InsidePage0,
                                kTwoPageVerticalLayoutPageExitAndReentryPoints,
-                               kTwoPageVerticalLayoutPoint3InsidePage0,
-                               /*expect_mouse_events_handled=*/true);
+                               kTwoPageVerticalLayoutPoint3InsidePage0);
 
   EXPECT_THAT(
-      ink_module().GetStrokesInputPositionsForTesting(),
+      StrokeInputPositions(),
       ElementsAre(Pair(
           0,
           ElementsAre(ElementsAreArray(
@@ -740,19 +753,18 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokePageExitAndReentry) {
   SelectEraserTool();
   ApplyStrokeWithMouseAtPoints(kTwoPageVerticalLayoutPoint1InsidePage0,
                                kTwoPageVerticalLayoutPageExitAndReentryPoints,
-                               kTwoPageVerticalLayoutPoint3InsidePage0,
-                               /*expect_mouse_events_handled=*/true);
+                               kTwoPageVerticalLayoutPoint3InsidePage0);
 
   // The strokes are all still there, but none of them are visible.
   EXPECT_THAT(
-      ink_module().GetStrokesInputPositionsForTesting(),
+      StrokeInputPositions(),
       ElementsAre(Pair(
           0,
           ElementsAre(ElementsAreArray(
                           kTwoPageVerticalLayoutPageExitAndReentrySegment1),
                       ElementsAreArray(
                           kTwoPageVerticalLayoutPageExitAndReentrySegment2)))));
-  EXPECT_TRUE(ink_module().GetVisibleStrokesInputPositionsForTesting().empty());
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Erasing counts as another stroke action.
   EXPECT_EQ(2, client().stroke_finished_count());
 }
@@ -780,18 +792,18 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoEmpty) {
   InitializeSimpleSinglePageBasicLayout();
   EnableAnnotationMode();
 
-  EXPECT_TRUE(ink_module().GetStrokesInputPositionsForTesting().empty());
-  EXPECT_TRUE(ink_module().GetVisibleStrokesInputPositionsForTesting().empty());
+  EXPECT_TRUE(StrokeInputPositions().empty());
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
 
   // Spurious undo message is a no-op.
   PerformUndo();
-  EXPECT_TRUE(ink_module().GetStrokesInputPositionsForTesting().empty());
-  EXPECT_TRUE(ink_module().GetVisibleStrokesInputPositionsForTesting().empty());
+  EXPECT_TRUE(StrokeInputPositions().empty());
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
 
   // Spurious redo message is a no-op.
   PerformRedo();
-  EXPECT_TRUE(ink_module().GetStrokesInputPositionsForTesting().empty());
-  EXPECT_TRUE(ink_module().GetVisibleStrokesInputPositionsForTesting().empty());
+  EXPECT_TRUE(StrokeInputPositions().empty());
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
 }
 
 TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBasic) {
@@ -800,35 +812,32 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBasic) {
 
   const auto kMatcher = ElementsAre(Pair(
       0, ElementsAre(ElementsAre(kMouseDownLocation, kMouseMoveLocation))));
-  EXPECT_THAT(ink_module().GetStrokesInputPositionsForTesting(), kMatcher);
-  EXPECT_THAT(ink_module().GetVisibleStrokesInputPositionsForTesting(),
-              kMatcher);
+  EXPECT_THAT(StrokeInputPositions(), kMatcher);
+  EXPECT_THAT(VisibleStrokeInputPositions(), kMatcher);
   // RunStrokeCheckTest() performed the only stroke.
   EXPECT_EQ(1, client().stroke_finished_count());
 
   PerformUndo();
-  EXPECT_THAT(ink_module().GetStrokesInputPositionsForTesting(), kMatcher);
-  EXPECT_TRUE(ink_module().GetVisibleStrokesInputPositionsForTesting().empty());
+  EXPECT_THAT(StrokeInputPositions(), kMatcher);
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Undo/redo here and below do not trigger StrokeFinished().
   EXPECT_EQ(1, client().stroke_finished_count());
 
   // Spurious undo message is a no-op.
   PerformUndo();
-  EXPECT_THAT(ink_module().GetStrokesInputPositionsForTesting(), kMatcher);
-  EXPECT_TRUE(ink_module().GetVisibleStrokesInputPositionsForTesting().empty());
+  EXPECT_THAT(StrokeInputPositions(), kMatcher);
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   EXPECT_EQ(1, client().stroke_finished_count());
 
   PerformRedo();
-  EXPECT_THAT(ink_module().GetStrokesInputPositionsForTesting(), kMatcher);
-  EXPECT_THAT(ink_module().GetVisibleStrokesInputPositionsForTesting(),
-              kMatcher);
+  EXPECT_THAT(StrokeInputPositions(), kMatcher);
+  EXPECT_THAT(VisibleStrokeInputPositions(), kMatcher);
   EXPECT_EQ(1, client().stroke_finished_count());
 
   // Spurious redo message is a no-op.
   PerformRedo();
-  EXPECT_THAT(ink_module().GetStrokesInputPositionsForTesting(), kMatcher);
-  EXPECT_THAT(ink_module().GetVisibleStrokesInputPositionsForTesting(),
-              kMatcher);
+  EXPECT_THAT(StrokeInputPositions(), kMatcher);
+  EXPECT_THAT(VisibleStrokeInputPositions(), kMatcher);
   EXPECT_EQ(1, client().stroke_finished_count());
 }
 
@@ -841,24 +850,21 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBetweenDraws) {
   constexpr gfx::PointF kMouseUpLocation1 = gfx::PointF(31.0f, 17.0f);
   ApplyStrokeWithMouseAtPoints(kMouseDownLocation1,
                                base::span_from_ref(kMouseMoveLocation1),
-                               kMouseUpLocation1,
-                               /*expect_mouse_events_handled=*/true);
+                               kMouseUpLocation1);
 
   constexpr gfx::PointF kMouseDownLocation2 = gfx::PointF(12.0f, 15.0f);
   constexpr gfx::PointF kMouseMoveLocation2 = gfx::PointF(22.0f, 25.0f);
   constexpr gfx::PointF kMouseUpLocation2 = gfx::PointF(32.0f, 17.0f);
   ApplyStrokeWithMouseAtPoints(kMouseDownLocation2,
                                base::span_from_ref(kMouseMoveLocation2),
-                               kMouseUpLocation2,
-                               /*expect_mouse_events_handled=*/true);
+                               kMouseUpLocation2);
 
   constexpr gfx::PointF kMouseDownLocation3 = gfx::PointF(13.0f, 15.0f);
   constexpr gfx::PointF kMouseMoveLocation3 = gfx::PointF(23.0f, 25.0f);
   constexpr gfx::PointF kMouseUpLocation3 = gfx::PointF(33.0f, 17.0f);
   ApplyStrokeWithMouseAtPoints(kMouseDownLocation3,
                                base::span_from_ref(kMouseMoveLocation3),
-                               kMouseUpLocation3,
-                               /*expect_mouse_events_handled=*/true);
+                               kMouseUpLocation3);
 
   // After drawing 4 strokes above, there should be 4 strokes that are all
   // visible.
@@ -870,34 +876,33 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBetweenDraws) {
   const auto kInitial4StrokeMatchersSpan =
       base::make_span(kInitial4StrokeMatchers);
   EXPECT_THAT(
-      ink_module().GetStrokesInputPositionsForTesting(),
+      StrokeInputPositions(),
       ElementsAre(Pair(0, ElementsAreArray(kInitial4StrokeMatchersSpan))));
   EXPECT_THAT(
-      ink_module().GetVisibleStrokesInputPositionsForTesting(),
+      VisibleStrokeInputPositions(),
       ElementsAre(Pair(0, ElementsAreArray(kInitial4StrokeMatchersSpan))));
 
   // Undo makes 3 strokes visible.
   PerformUndo();
   EXPECT_THAT(
-      ink_module().GetStrokesInputPositionsForTesting(),
+      StrokeInputPositions(),
       ElementsAre(Pair(0, ElementsAreArray(kInitial4StrokeMatchersSpan))));
-  EXPECT_THAT(ink_module().GetVisibleStrokesInputPositionsForTesting(),
+  EXPECT_THAT(VisibleStrokeInputPositions(),
               ElementsAre(Pair(
                   0, ElementsAreArray(kInitial4StrokeMatchersSpan.first(3u)))));
 
   // Undo again makes 2 strokes visible.
   PerformUndo();
   EXPECT_THAT(
-      ink_module().GetStrokesInputPositionsForTesting(),
+      StrokeInputPositions(),
       ElementsAre(Pair(0, ElementsAreArray(kInitial4StrokeMatchersSpan))));
-  EXPECT_THAT(ink_module().GetVisibleStrokesInputPositionsForTesting(),
+  EXPECT_THAT(VisibleStrokeInputPositions(),
               ElementsAre(Pair(
                   0, ElementsAreArray(kInitial4StrokeMatchersSpan.first(2u)))));
 
   ApplyStrokeWithMouseAtPoints(kMouseDownLocation3,
                                base::span_from_ref(kMouseMoveLocation3),
-                               kMouseUpLocation3,
-                               /*expect_mouse_events_handled=*/true);
+                               kMouseUpLocation3);
 
   // The 2 strokes that were undone have been discarded, and the newly drawn
   // stroke takes their place.
@@ -906,45 +911,44 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBetweenDraws) {
       ElementsAre(kMouseDownLocation1, kMouseMoveLocation1),
       ElementsAre(kMouseDownLocation3, kMouseMoveLocation3)};
   const auto kNext3StrokeMatchersSpan = base::make_span(kNext3StrokeMatchers);
-  EXPECT_THAT(ink_module().GetStrokesInputPositionsForTesting(),
+  EXPECT_THAT(StrokeInputPositions(),
               ElementsAre(Pair(0, ElementsAreArray(kNext3StrokeMatchersSpan))));
-  EXPECT_THAT(ink_module().GetVisibleStrokesInputPositionsForTesting(),
+  EXPECT_THAT(VisibleStrokeInputPositions(),
               ElementsAre(Pair(0, ElementsAreArray(kNext3StrokeMatchersSpan))));
 
   // Undo makes 2 strokes visible.
   PerformUndo();
-  EXPECT_THAT(ink_module().GetStrokesInputPositionsForTesting(),
+  EXPECT_THAT(StrokeInputPositions(),
               ElementsAre(Pair(0, ElementsAreArray(kNext3StrokeMatchersSpan))));
-  EXPECT_THAT(ink_module().GetVisibleStrokesInputPositionsForTesting(),
+  EXPECT_THAT(VisibleStrokeInputPositions(),
               ElementsAre(Pair(
                   0, ElementsAreArray(kNext3StrokeMatchersSpan.first(2u)))));
 
   // Undo again makes 1 strokes visible.
   PerformUndo();
-  EXPECT_THAT(ink_module().GetStrokesInputPositionsForTesting(),
+  EXPECT_THAT(StrokeInputPositions(),
               ElementsAre(Pair(0, ElementsAreArray(kNext3StrokeMatchersSpan))));
-  EXPECT_THAT(ink_module().GetVisibleStrokesInputPositionsForTesting(),
+  EXPECT_THAT(VisibleStrokeInputPositions(),
               ElementsAre(Pair(
                   0, ElementsAreArray(kNext3StrokeMatchersSpan.first(1u)))));
 
   // Undo again makes no strokes visible.
   PerformUndo();
-  EXPECT_THAT(ink_module().GetStrokesInputPositionsForTesting(),
+  EXPECT_THAT(StrokeInputPositions(),
               ElementsAre(Pair(0, ElementsAreArray(kNext3StrokeMatchersSpan))));
-  EXPECT_TRUE(ink_module().GetVisibleStrokesInputPositionsForTesting().empty());
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
 
   ApplyStrokeWithMouseAtPoints(kMouseDownLocation2,
                                base::span_from_ref(kMouseMoveLocation2),
-                               kMouseUpLocation2,
-                               /*expect_mouse_events_handled=*/true);
+                               kMouseUpLocation2);
 
   // All strokes were undone, so they all got discarded. The newly drawn stroke
   // is the only one remaining.
   const auto kFinal1StrokeMatcher =
       ElementsAre(kMouseDownLocation2, kMouseMoveLocation2);
-  EXPECT_THAT(ink_module().GetStrokesInputPositionsForTesting(),
+  EXPECT_THAT(StrokeInputPositions(),
               ElementsAre(Pair(0, ElementsAre(kFinal1StrokeMatcher))));
-  EXPECT_THAT(ink_module().GetVisibleStrokesInputPositionsForTesting(),
+  EXPECT_THAT(VisibleStrokeInputPositions(),
               ElementsAre(Pair(0, ElementsAre(kFinal1StrokeMatcher))));
 }
 
@@ -955,13 +959,11 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoOnTwoPages) {
   ApplyStrokeWithMouseAtPoints(
       kTwoPageVerticalLayoutPoint1InsidePage0,
       base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage0),
-      kTwoPageVerticalLayoutPoint3InsidePage0,
-      /*expect_mouse_events_handled=*/true);
+      kTwoPageVerticalLayoutPoint3InsidePage0);
   ApplyStrokeWithMouseAtPoints(
       kTwoPageVerticalLayoutPoint1InsidePage1,
       base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage1),
-      kTwoPageVerticalLayoutPoint3InsidePage1,
-      /*expect_mouse_events_handled=*/true);
+      kTwoPageVerticalLayoutPoint3InsidePage1);
 
   // Canonical coordinates.
   const auto kPage0Matcher =
@@ -970,32 +972,30 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoOnTwoPages) {
   const auto kPage1Matcher =
       Pair(1, ElementsAre(ElementsAre(gfx::PointF(5.0f, 5.0f),
                                       gfx::PointF(10.0f, 10.0f))));
-  EXPECT_THAT(ink_module().GetStrokesInputPositionsForTesting(),
+  EXPECT_THAT(StrokeInputPositions(),
               ElementsAre(kPage0Matcher, kPage1Matcher));
-  EXPECT_THAT(ink_module().GetVisibleStrokesInputPositionsForTesting(),
+  EXPECT_THAT(VisibleStrokeInputPositions(),
               ElementsAre(kPage0Matcher, kPage1Matcher));
 
   PerformUndo();
-  EXPECT_THAT(ink_module().GetStrokesInputPositionsForTesting(),
+  EXPECT_THAT(StrokeInputPositions(),
               ElementsAre(kPage0Matcher, kPage1Matcher));
-  EXPECT_THAT(ink_module().GetVisibleStrokesInputPositionsForTesting(),
-              ElementsAre(kPage0Matcher));
+  EXPECT_THAT(VisibleStrokeInputPositions(), ElementsAre(kPage0Matcher));
 
   PerformUndo();
-  EXPECT_THAT(ink_module().GetStrokesInputPositionsForTesting(),
+  EXPECT_THAT(StrokeInputPositions(),
               ElementsAre(kPage0Matcher, kPage1Matcher));
-  EXPECT_TRUE(ink_module().GetVisibleStrokesInputPositionsForTesting().empty());
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
 
   PerformRedo();
-  EXPECT_THAT(ink_module().GetStrokesInputPositionsForTesting(),
+  EXPECT_THAT(StrokeInputPositions(),
               ElementsAre(kPage0Matcher, kPage1Matcher));
-  EXPECT_THAT(ink_module().GetVisibleStrokesInputPositionsForTesting(),
-              ElementsAre(kPage0Matcher));
+  EXPECT_THAT(VisibleStrokeInputPositions(), ElementsAre(kPage0Matcher));
 
   PerformRedo();
-  EXPECT_THAT(ink_module().GetStrokesInputPositionsForTesting(),
+  EXPECT_THAT(StrokeInputPositions(),
               ElementsAre(kPage0Matcher, kPage1Matcher));
-  EXPECT_THAT(ink_module().GetVisibleStrokesInputPositionsForTesting(),
+  EXPECT_THAT(VisibleStrokeInputPositions(),
               ElementsAre(kPage0Matcher, kPage1Matcher));
 }
 
