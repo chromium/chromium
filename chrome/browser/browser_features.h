@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -112,6 +113,10 @@ BASE_DECLARE_FEATURE(kQuickSettingsPWANotifications);
 #if !BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kReadAnythingPermanentAccessibility);
 #endif
+
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+BASE_DECLARE_FEATURE(kRegisterWinUpdateHelper);
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 BASE_DECLARE_FEATURE(kRestartNetworkServiceUnsandboxedForFailedLaunch);
 BASE_DECLARE_FEATURE(kSandboxExternalProtocolBlocked);

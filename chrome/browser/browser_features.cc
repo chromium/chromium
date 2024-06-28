@@ -273,6 +273,14 @@ BASE_FEATURE(kReadAnythingPermanentAccessibility,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// When this feature is enabled, Chrome will register win_update_helper with
+// Omaha, to be run on OS upgrade.
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+BASE_FEATURE(kRegisterWinUpdateHelper,
+             "RegisterWinUpdateHelper",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 // When this feature is enabled, the network service will restart unsandboxed if
 // a previous attempt to launch it sandboxed failed.
 BASE_FEATURE(kRestartNetworkServiceUnsandboxedForFailedLaunch,
