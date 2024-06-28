@@ -62,6 +62,9 @@ CONTENT_EXPORT extern const char kCookieDeprecationLabelName[];
 CONTENT_EXPORT extern const char kCookieDeprecationTestingDisableAdsAPIsName[];
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCooperativeScheduling);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCrashReporting);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDeferSpeculativeRFHCreation);
+CONTENT_EXPORT extern const base::FeatureParam<bool>
+    kWarmupSpareProcessCreationWhenDeferRFH;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDigitalGoodsApi);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDIPS);
 CONTENT_EXPORT extern const base::FeatureParam<bool>

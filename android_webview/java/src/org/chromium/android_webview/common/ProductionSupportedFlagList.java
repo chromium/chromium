@@ -1044,6 +1044,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AccessibilityFeatures.ACCESSIBILITY_PRUNE_REDUNDANT_INLINE_TEXT,
                 "Prune redundant text for AX inline text boxes during serialization"),
+        Flag.baseFeature(
+                ContentFeatures.DEFER_SPECULATIVE_RFH_CREATION,
+                "Enables deferring the speculative render frame host creation when the"
+                        + "navigation starts"),
 
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.

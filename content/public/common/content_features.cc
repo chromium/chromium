@@ -227,6 +227,20 @@ BASE_FEATURE(kCrashReporting,
              "CrashReporting",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables deferring the creation of the speculative RFH when the navigation
+// starts. The creation of a speculative RFH consumes about 2ms and is blocking
+// the network request. With this feature the creation will be deferred until
+// the browser initializes the network request. The speculative RFH will be
+// created while the network service is sending the request in parallel.
+BASE_FEATURE(kDeferSpeculativeRFHCreation,
+             "DeferSpeculativeRFHCreation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// When enabled, the browser will create the render process if necessary even
+// if the speculative render frame host creation is deferred by feature
+// DeferSpeculativeRFHCreation.
+const base::FeatureParam<bool> kWarmupSpareProcessCreationWhenDeferRFH{
+    &kDeferSpeculativeRFHCreation, "warmup_spare_process", false};
+
 // Controls whether the Digital Goods API is enabled.
 // https://github.com/WICG/digital-goods/
 BASE_FEATURE(kDigitalGoodsApi,

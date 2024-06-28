@@ -28,9 +28,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kCodeCacheDeletionWithoutFilter);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCriticalClientHint);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDataUrlsHaveStableNonce);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDataUrlsHaveOriginAsUrl);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kDeferSpeculativeRFHCreation);
-CONTENT_EXPORT extern const base::FeatureParam<bool>
-    kWarmupSpareProcessCreationWhenDeferRFH;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDesktopCaptureChangeSource);
 #if BUILDFLAG(IS_MAC)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDeviceMonitorMac);
