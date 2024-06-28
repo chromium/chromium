@@ -7550,10 +7550,6 @@ crbug.com/345499788 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/
 crbug.com/345499788 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/reduction.https.any.html?npu [ Skip Timeout ]
 crbug.com/345499788 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/reduction.https.any.worker.html?npu [ Skip Timeout ]
 
-# Temporarily disable as it's failing due to increasing <option> height in <select>:
-crbug.com/341124482 fast/forms/select-popup/popup-menu-mouse-operations.html [ Failure Pass ]
-crbug.com/341124482 fast/forms/select-popup/popup-menu-scrollbar-button-scrolls.html [ Failure Pass ]
-
 # Not working tests at the timing of adding virtual/prerender2-fallback-prefetch-spec-rules
 crbug.com/346751886 virtual/prerender2-fallback-prefetch-spec-rules/http/tests/inspector-protocol/prerender/prerender-ua-override.js [ Failure ]
 
