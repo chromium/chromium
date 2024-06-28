@@ -8,6 +8,7 @@
 
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -158,6 +159,22 @@ TEST(NigoriKeyBagTest, ShouldIgnoreDeprecatedKeyNameProtoField) {
   ASSERT_THAT(restored_key_bag, SizeIs(1));
   EXPECT_TRUE(restored_key_bag.HasKey(real_key_name));
   EXPECT_FALSE(restored_key_bag.HasKey(actual_key_name_in_proto));
+}
+
+TEST(NigoriKeyBagTest, ShouldEncryptAndDecrypt) {
+  NigoriKeyBag key_bag = NigoriKeyBag::CreateEmpty();
+  const std::string key_name = key_bag.AddKey(CreateTestNigori("password1"));
+  ASSERT_TRUE(key_bag.HasKey(key_name));
+
+  const std::string data = "qwerty";
+  const sync_pb::EncryptedData encrypted_data =
+      key_bag.EncryptWithKey(key_name, data);
+  EXPECT_THAT(encrypted_data.key_name(), Eq(key_name));
+
+  std::string decrypted_data;
+  EXPECT_TRUE(key_bag.CanDecrypt(encrypted_data));
+  EXPECT_TRUE(key_bag.Decrypt(encrypted_data, &decrypted_data));
+  EXPECT_THAT(decrypted_data, Eq(data));
 }
 
 }  // namespace

@@ -165,8 +165,8 @@ bool CryptographerImpl::EncryptString(const std::string& decrypted,
     return false;
   }
 
-  return key_bag_.EncryptWithKey(default_encryption_key_name_, decrypted,
-                                 encrypted);
+  *encrypted = key_bag_.EncryptWithKey(default_encryption_key_name_, decrypted);
+  return true;
 }
 
 bool CryptographerImpl::DecryptToString(const sync_pb::EncryptedData& encrypted,

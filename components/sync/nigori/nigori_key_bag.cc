@@ -133,20 +133,16 @@ void NigoriKeyBag::AddAllUnknownKeysFrom(const NigoriKeyBag& other) {
   }
 }
 
-bool NigoriKeyBag::EncryptWithKey(
+sync_pb::EncryptedData NigoriKeyBag::EncryptWithKey(
     const std::string& key_name,
-    const std::string& input,
-    sync_pb::EncryptedData* encrypted_output) const {
-  DCHECK(encrypted_output);
-  DCHECK(HasKey(key_name));
+    const std::string& input) const {
+  CHECK(HasKey(key_name));
 
-  encrypted_output->set_blob(
-      nigori_map_.find(key_name)->second->Encrypt(input));
-  encrypted_output->set_key_name(key_name);
+  sync_pb::EncryptedData result;
+  result.set_blob(nigori_map_.find(key_name)->second->Encrypt(input));
+  result.set_key_name(key_name);
 
-  // TODO(crbug.com/40868132): returned value is always true, update interface
-  // to return void or `encrypted_output`.
-  return true;
+  return result;
 }
 
 bool NigoriKeyBag::CanDecrypt(
