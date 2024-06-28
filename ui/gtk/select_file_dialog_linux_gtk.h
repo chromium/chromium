@@ -142,7 +142,7 @@ class SelectFileDialogLinuxGtk : public ui::SelectFileDialogLinux,
 
   // Only used on GTK3 since GTK4 provides its own preview.
   // The GtkImage widget for showing previews of selected images.
-  raw_ptr<GtkWidget> preview_ = nullptr;
+  raw_ptr<GtkWidget, DanglingUntriaged> preview_ = nullptr;
 
   base::flat_map<GtkWidget*, DialogState> dialogs_;
 };
