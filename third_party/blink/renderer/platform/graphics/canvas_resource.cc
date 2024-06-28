@@ -568,6 +568,9 @@ void CanvasResourceRasterSharedImage::TearDown() {
       shared_image_interface->DestroySharedImage(
           shared_image_sync_token,
           std::move(owning_thread_data().client_shared_image));
+      // Clear `texture_target_` now that the SharedImage from which it was
+      // computed is destroyed.
+      texture_target_ = 0;
     }
     if (raster_interface) {
       if (owning_thread_data().texture_id_for_read_access) {
