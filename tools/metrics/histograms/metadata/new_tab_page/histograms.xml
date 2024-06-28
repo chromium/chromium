@@ -541,10 +541,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Drive.FileClick" units="index"
-    expires_after="2024-07-21">
+    expires_after="2025-07-21">
   <owner>tiborg@chromium.org</owner>
-  <owner>aee@chromium.org</owner>
-  <owner>andrevincent@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Logged when a user clicks on a file within the Drive Module. The index is
     equal to the index of the file.
@@ -1524,7 +1523,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.OneGoogleBar.RequestLatency" units="ms"
-    expires_after="2024-08-04">
+    expires_after="2025-08-04">
   <owner>tiborg@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1535,7 +1534,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.OneGoogleBar.ShownTime" units="ms"
-    expires_after="2024-08-04">
+    expires_after="2025-08-04">
   <owner>tiborg@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1625,8 +1624,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Promos.DismissAction" enum="NtpPromoDismissAction"
-    expires_after="2024-07-07">
-  <owner>danpeng@google.com</owner>
+    expires_after="2025-07-07">
+  <owner>tiborg@chromium.org</owner>
   <owner>pauladedeji@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -1677,10 +1676,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Promos.ShownTime" units="ms"
-    expires_after="2024-07-07">
-  <owner>danpeng@google.com</owner>
+    expires_after="2025-07-07">
   <owner>tiborg@chromium.org</owner>
-  <owner>yyushkina@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Histogram of the time, in milliseconds since navigation start, it took until
@@ -2107,8 +2104,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.Width" units="pixels" expires_after="2024-06-30">
-  <owner>danpeng@google.com</owner>
+<histogram name="NewTabPage.Width" units="pixels" expires_after="2025-06-30">
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
