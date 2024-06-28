@@ -861,7 +861,6 @@ Mock_glGetFramebufferPixelLocalStorageParameterivRobustANGLE(GLint plane,
                                                              GLsizei* length,
                                                              GLint* params);
 static GLenum GL_BINDING_CALL Mock_glGetGraphicsResetStatus(void);
-static GLenum GL_BINDING_CALL Mock_glGetGraphicsResetStatusARB(void);
 static GLenum GL_BINDING_CALL Mock_glGetGraphicsResetStatusEXT(void);
 static GLenum GL_BINDING_CALL Mock_glGetGraphicsResetStatusKHR(void);
 static void GL_BINDING_CALL Mock_glGetInteger64i_v(GLenum target,

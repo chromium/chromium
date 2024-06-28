@@ -329,7 +329,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_ARB_framebuffer_object");
   ext.b_GL_ARB_internalformat_query =
       gfx::HasExtension(extensions, "GL_ARB_internalformat_query");
-  ext.b_GL_ARB_robustness = gfx::HasExtension(extensions, "GL_ARB_robustness");
   ext.b_GL_ARB_timer_query =
       gfx::HasExtension(extensions, "GL_ARB_timer_query");
   ext.b_GL_ARB_vertex_array_object =
@@ -1404,10 +1403,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
     fn.glGetGraphicsResetStatusARBFn =
         reinterpret_cast<glGetGraphicsResetStatusARBProc>(
             GetGLProcAddress("glGetGraphicsResetStatus"));
-  } else if (ext.b_GL_ARB_robustness) {
-    fn.glGetGraphicsResetStatusARBFn =
-        reinterpret_cast<glGetGraphicsResetStatusARBProc>(
-            GetGLProcAddress("glGetGraphicsResetStatusARB"));
   } else if (ext.b_GL_KHR_robustness) {
     fn.glGetGraphicsResetStatusARBFn =
         reinterpret_cast<glGetGraphicsResetStatusARBProc>(

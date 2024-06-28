@@ -2056,11 +2056,6 @@ GLenum GL_BINDING_CALL MockGLInterface::Mock_glGetGraphicsResetStatus(void) {
   return interface_->GetGraphicsResetStatusARB();
 }
 
-GLenum GL_BINDING_CALL MockGLInterface::Mock_glGetGraphicsResetStatusARB(void) {
-  MakeGlMockFunctionUnique("glGetGraphicsResetStatusARB");
-  return interface_->GetGraphicsResetStatusARB();
-}
-
 GLenum GL_BINDING_CALL MockGLInterface::Mock_glGetGraphicsResetStatusEXT(void) {
   MakeGlMockFunctionUnique("glGetGraphicsResetStatusEXT");
   return interface_->GetGraphicsResetStatusARB();
@@ -5615,9 +5610,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
   if (strcmp(name, "glGetGraphicsResetStatus") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glGetGraphicsResetStatus);
-  if (strcmp(name, "glGetGraphicsResetStatusARB") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(
-        Mock_glGetGraphicsResetStatusARB);
   if (strcmp(name, "glGetGraphicsResetStatusEXT") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glGetGraphicsResetStatusEXT);

@@ -1939,7 +1939,6 @@ struct ExtensionsGL {
   bool b_GL_APPLE_vertex_array_object;
   bool b_GL_ARB_framebuffer_object;
   bool b_GL_ARB_internalformat_query;
-  bool b_GL_ARB_robustness;
   bool b_GL_ARB_timer_query;
   bool b_GL_ARB_vertex_array_object;
   bool b_GL_CHROMIUM_bind_uniform_location;

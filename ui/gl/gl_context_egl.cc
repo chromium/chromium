@@ -601,8 +601,7 @@ unsigned int GLContextEGL::CheckStickyGraphicsResetStatusImpl() {
   const ExtensionsGL& ext = g_current_gl_driver->ext;
   if ((graphics_reset_status_ == GL_NO_ERROR) &&
       gl_display_->ext->b_EGL_EXT_create_context_robustness &&
-      (ext.b_GL_KHR_robustness || ext.b_GL_EXT_robustness ||
-       ext.b_GL_ARB_robustness)) {
+      (ext.b_GL_KHR_robustness || ext.b_GL_EXT_robustness)) {
     graphics_reset_status_ = glGetGraphicsResetStatusARB();
   }
   return graphics_reset_status_;

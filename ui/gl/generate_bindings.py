@@ -901,8 +901,8 @@ GL_FUNCTIONS = [
       'GLint plane, GLenum pname, GLsizei bufSize, GLsizei* length, '
       'GLint* params', },
 { 'return_type': 'GLenum',
-  'names': ['glGetGraphicsResetStatusARB',
-            'glGetGraphicsResetStatusKHR',
+  'known_as': 'glGetGraphicsResetStatusARB',
+  'names': ['glGetGraphicsResetStatusKHR',
             'glGetGraphicsResetStatusEXT',
             'glGetGraphicsResetStatus'],
   'arguments': 'void', },
