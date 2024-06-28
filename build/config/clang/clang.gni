@@ -15,6 +15,9 @@ declare_args() {
       is_clang && !is_nacl && current_os != "zos" &&
       default_toolchain != "//build/toolchain/cros:target"
 
+  # Use this instead of clang_use_chrome_plugins to enable just the raw-ptr-plugin.
+  clang_use_raw_ptr_plugin = false
+
   enable_check_raw_ptr_fields =
       build_with_chromium && !is_official_build &&
       ((is_linux && !is_castos) || (is_android && !is_cast_android) || is_mac ||

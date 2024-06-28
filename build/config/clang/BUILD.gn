@@ -11,7 +11,7 @@ if (is_ios) {
 }
 
 config("raw_ptr_check") {
-  if (clang_use_chrome_plugins) {
+  if (clang_use_chrome_plugins || clang_use_raw_ptr_plugin) {
     cflags = []
 
     # The plugin is built directly into clang, so there's no need to load it
