@@ -224,9 +224,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   synth = window.speechSynthesis;
 
-  // TODO(b/346868764): Longer term, selectedVoice shouldn't be public just
-  // for tests.
-  selectedVoice: SpeechSynthesisVoice|undefined;
+  private selectedVoice_: SpeechSynthesisVoice|undefined;
   // The set of languages currently enabled for use by Read Aloud. This
   // includes user-enabled languages and auto-downloaded languages. The former
   // are stored in preferences. The latter are not.
@@ -1061,7 +1059,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
               voice.lang.startsWith(chrome.readingMode.baseLanguageForSpeech));
 
       if (naturalVoicesForLang) {
-        this.selectedVoice = naturalVoicesForLang[0];
+        this.selectedVoice_ = naturalVoicesForLang[0];
         this.resetSpeechPostSettingChange_();
       }
     }
@@ -1072,19 +1070,19 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     // If the selected voice is now unavailable, such as after an uninstall,
     // reselect a new voice.
-    if (this.selectedVoice &&
+    if (this.selectedVoice_ &&
         !this.availableVoices_.some(
-            voice => areVoicesEqual(voice, this.selectedVoice!))) {
-      this.selectedVoice = undefined;
+            voice => areVoicesEqual(voice, this.selectedVoice_!))) {
+      this.selectedVoice_ = undefined;
       this.getSpeechSynthesisVoice();
     }
   }
 
   getSpeechSynthesisVoice(): SpeechSynthesisVoice|undefined {
-    if (!this.selectedVoice) {
-      this.selectedVoice = this.defaultVoice();
+    if (!this.selectedVoice_) {
+      this.selectedVoice_ = this.defaultVoice();
     }
-    return this.selectedVoice;
+    return this.selectedVoice_;
   }
 
   defaultVoice(): SpeechSynthesisVoice|undefined {
@@ -1096,8 +1094,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (!voicesForLanguage || (voicesForLanguage.length === 0)) {
       // Stay with the current voice if no voices are available for this
       // language.
-      return this.selectedVoice ?
-          this.selectedVoice :
+      return this.selectedVoice_ ?
+          this.selectedVoice_ :
           this.getNaturalVoiceOrDefault_(allPossibleVoices);
     }
 
@@ -1368,7 +1366,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // sync and we call stopSpeech before playSpeech.
     if (this.playSessionStartTime > 0) {
       this.logger_.logSpeechPlaySession(
-          this.playSessionStartTime, this.selectedVoice);
+          this.playSessionStartTime, this.selectedVoice_);
       this.playSessionStartTime = -1;
     }
   }
@@ -1694,7 +1692,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // maximum text length if we're using a local voice. If we do somehow
     // attempt to speak text that's too long, this will be able to be handled
     // by listening for a text-too-long error in message.onerror.
-    const isTextTooLong = this.selectedVoice?.localService ?
+    const isTextTooLong = this.selectedVoice_?.localService ?
         false :
         utteranceText.length > this.maxSpeechLength;
     const endBoundary = isTextTooLong ?
@@ -1758,12 +1756,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // The voice designated in SpeechSynthesisUtterance voice attribute
       // is not available.
       if (error.error === 'voice-unavailable') {
-        let newVoice = this.selectedVoice ? this.selectedVoice : null;
-        this.selectedVoice = undefined;
+        let newVoice = this.selectedVoice_ ? this.selectedVoice_ : null;
+        this.selectedVoice_ = undefined;
         newVoice = this.getAlternativeVoice(newVoice);
 
         if (newVoice) {
-          this.selectedVoice = newVoice;
+          this.selectedVoice_ = newVoice;
         }
       }
 
@@ -2062,9 +2060,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     event.preventDefault();
     event.stopPropagation();
 
-    this.selectedVoice = event.detail.selectedVoice;
+    this.selectedVoice_ = event.detail.selectedVoice;
     chrome.readingMode.onVoiceChange(
-        this.selectedVoice.name, this.selectedVoice.lang);
+        this.selectedVoice_.name, this.selectedVoice_.lang);
 
     this.resetSpeechPostSettingChange_();
   }
@@ -2095,7 +2093,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     chrome.readingMode.onLanguagePrefChange(toggledLanguage, !currentlyEnabled);
 
-    if (!currentlyEnabled && !this.selectedVoice) {
+    if (!currentlyEnabled && !this.selectedVoice_) {
       // If there were no enabled languages (and thus no selected voice), select
       // a voice.
       this.getSpeechSynthesisVoice();
@@ -2236,7 +2234,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // read aloud, so we check it against user preferences to see if it was
     // user-chosen.
     if (storedVoiceName) {
-      return this.selectedVoice?.name === storedVoiceName;
+      return this.selectedVoice_?.name === storedVoiceName;
     }
     return false;
   }
@@ -2252,13 +2250,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     const storedVoiceName = chrome.readingMode.getStoredVoice();
     if (!storedVoiceName) {
-      this.selectedVoice = this.defaultVoice();
+      this.selectedVoice_ = this.defaultVoice();
       return;
     }
 
     const selectedVoice =
         this.getVoices().filter(voice => voice.name === storedVoiceName);
-    this.selectedVoice = selectedVoice && (selectedVoice.length > 0) ?
+    this.selectedVoice_ = selectedVoice && (selectedVoice.length > 0) ?
         selectedVoice[0] :
         this.defaultVoice();
   }
@@ -2430,7 +2428,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // change.
   isReadAloudPlayable(
       hasContent: boolean = this.hasContent_,
-      selectedVoice: SpeechSynthesisVoice|undefined = this.selectedVoice,
+      selectedVoice: SpeechSynthesisVoice|undefined = this.selectedVoice_,
       speechEngineLoaded: boolean = this.speechEngineLoaded,
       willDrawAgainSoon: boolean = this.willDrawAgainSoon_): boolean {
     return hasContent && speechEngineLoaded && (selectedVoice !== undefined) &&

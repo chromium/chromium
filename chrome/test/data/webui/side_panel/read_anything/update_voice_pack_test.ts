@@ -4,12 +4,12 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
-import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {convertLangOrLocaleForVoicePackManager, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createAndSetVoices, createSpeechSynthesisVoice, setVoices} from './common.js';
+import {createAndSetVoices, createSpeechSynthesisVoice, emitEvent, setVoices} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -239,7 +239,7 @@ suite('UpdateVoicePack', () => {
         assertEquals('Successful response', status.server.id);
         assertEquals(status.client, VoiceClientSideStatusCode.AVAILABLE);
         assertTrue(app.getVoices().some(v => v.lang.toLowerCase() === lang));
-        assertTrue(!!app.selectedVoice);
+        assertTrue(!!app.getSpeechSynthesisVoice());
       });
 
   test(
@@ -258,9 +258,10 @@ suite('UpdateVoicePack', () => {
 
         app.updateVoicePackStatus(lang, 'kInstalled');
 
-        assertTrue(!!app.selectedVoice);
-        assertEquals(lang, app.selectedVoice.lang);
-        assertTrue(app.selectedVoice.name.includes('Natural'));
+        const selectedVoice = app.getSpeechSynthesisVoice();
+        assertTrue(!!selectedVoice);
+        assertEquals(lang, selectedVoice.lang);
+        assertTrue(selectedVoice.name.includes('Natural'));
       });
 
   test(
@@ -275,14 +276,15 @@ suite('UpdateVoicePack', () => {
           name: 'Portuguese voice 1',
           lang: chrome.readingMode.baseLanguageForSpeech,
         });
-        app.selectedVoice = currentVoice;
+        emitEvent(
+            app, ToolbarEvent.VOICE, {detail: {selectedVoice: currentVoice}});
         chrome.readingMode.getStoredVoice = () => '';
         setVoices(app, speechSynthesis, [currentVoice]);
 
         app.updateVoicePackStatus(installedLang, 'kInstalled');
 
         // The selected voice should stay the same as it was.
-        assertEquals(currentVoice, app.selectedVoice);
+        assertEquals(currentVoice, app.getSpeechSynthesisVoice());
       });
 
   test('with error code marks the status', () => {

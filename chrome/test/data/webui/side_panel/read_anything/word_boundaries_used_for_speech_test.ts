@@ -6,10 +6,10 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ReadAnythingElement, WordBoundaryState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {PauseActionSource, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {PauseActionSource, ToolbarEvent, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createSpeechSynthesisVoice, suppressInnocuousErrors} from './common.js';
+import {createSpeechSynthesisVoice, emitEvent, suppressInnocuousErrors} from './common.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 suite('WordBoundariesUsedForSpeech', () => {
@@ -70,9 +70,9 @@ suite('WordBoundariesUsedForSpeech', () => {
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
     app.enabledLangs = ['en-US'];
-    app.selectedVoice =
+    const selectedVoice =
         createSpeechSynthesisVoice({lang: 'en', name: 'Kristi'});
-    app.getSpeechSynthesisVoice();
+    emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
     flush();
     chrome.readingMode.setContentForTesting(axTree, [2, 4]);
   });

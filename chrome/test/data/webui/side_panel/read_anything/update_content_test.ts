@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {suppressInnocuousErrors} from './common.js';
+import {createSpeechSynthesisVoice, emitEvent, suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {FakeTreeBuilder} from './fake_tree_builder.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -45,14 +45,10 @@ suite('UpdateContent', () => {
         .build(readingMode);
 
     app.enabledLangs = ['en-US'];
-    app.selectedVoice = {
-      lang: 'en',
-      name: 'Kristi',
-      default: false,
-      localService: true,
-      voiceURI: '',
-    };
-    app.getSpeechSynthesisVoice();
+
+    const selectedVoice =
+        createSpeechSynthesisVoice({lang: 'en', name: 'Kristi'});
+    emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
   });
 
   suite('after update content, read aloud is', () => {

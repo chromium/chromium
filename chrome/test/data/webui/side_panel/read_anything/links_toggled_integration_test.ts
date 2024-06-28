@@ -80,7 +80,6 @@ suite('LinksToggledIntegration', () => {
     const selectedVoice =
         createSpeechSynthesisVoice({lang: 'en', name: 'Kristi'});
     emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
-    app.getSpeechSynthesisVoice();
   });
 
   suite('by default', () => {

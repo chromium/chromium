@@ -4,11 +4,11 @@
 
 // import {flush} from
 // '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createAndSetVoices, createSpeechSynthesisVoice, setVoices, suppressInnocuousErrors} from './common.js';
+import {createAndSetVoices, createSpeechSynthesisVoice, emitEvent, setVoices, suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -107,14 +107,14 @@ suite('PrefsTest', () => {
       test('to the stored voice for this language if there is one', () => {
         chrome.readingMode.getStoredVoice = () => otherVoice.name;
         app.restoreSettingsFromPrefs();
-        assertEquals(otherVoice, app.selectedVoice);
+        assertEquals(otherVoice, app.getSpeechSynthesisVoice());
       });
 
       test('to a default voice if the stored voice is invalid', () => {
         chrome.readingMode.getStoredVoice = () => 'Matt';
         app.enabledLangs = [langForDefaultVoice];
         app.restoreSettingsFromPrefs();
-        assertEquals(defaultVoice, app.selectedVoice);
+        assertEquals(defaultVoice, app.getSpeechSynthesisVoice());
       });
 
       suite('when there is no stored voice for this language', () => {
@@ -128,16 +128,17 @@ suite('PrefsTest', () => {
           });
 
           test('to the current voice if there is one', () => {
-            app.selectedVoice = otherVoice;
+            emitEvent(
+                app, ToolbarEvent.VOICE, {detail: {selectedVoice: otherVoice}});
             app.enabledLangs = [otherVoice.lang];
             app.restoreSettingsFromPrefs();
-            assertEquals(otherVoice, app.selectedVoice);
+            assertEquals(otherVoice, app.getSpeechSynthesisVoice());
           });
 
           test('to the device default if there\'s no current voice', () => {
             app.enabledLangs = [langForDefaultVoice, otherVoice.lang];
             app.restoreSettingsFromPrefs();
-            assertEquals(defaultVoice, app.selectedVoice);
+            assertEquals(defaultVoice, app.getSpeechSynthesisVoice());
           });
         });
 
@@ -145,7 +146,7 @@ suite('PrefsTest', () => {
           app.enabledLangs = [lang1];
           app.speechSynthesisLanguage = lang1;
           app.restoreSettingsFromPrefs();
-          assertEquals(defaultVoiceWithLang1, app.selectedVoice);
+          assertEquals(defaultVoiceWithLang1, app.getSpeechSynthesisVoice());
         });
 
         test(
@@ -154,7 +155,7 @@ suite('PrefsTest', () => {
               app.enabledLangs = [lang2];
               app.speechSynthesisLanguage = lang2;
               app.restoreSettingsFromPrefs();
-              const currentSelectedVoice = app.selectedVoice;
+              const currentSelectedVoice = app.getSpeechSynthesisVoice();
               assertTrue(!!currentSelectedVoice);
               assertEquals(firstVoiceWithLang2.name, currentSelectedVoice.name);
               assertEquals(firstVoiceWithLang2.lang, currentSelectedVoice.lang);
