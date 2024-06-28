@@ -15,6 +15,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterStringPref(prefs::kProfileUserDisplayName, std::string());
   registry->RegisterStringPref(prefs::kProfileUserEmail, std::string());
+
+  registry->RegisterStringPref(prefs::kPolicyRecoveryToken, std::string());
+  registry->RegisterStringPref(prefs::kPolicyRecoveryClientId, std::string());
 }
 
 }  // namespace enterprise_signin

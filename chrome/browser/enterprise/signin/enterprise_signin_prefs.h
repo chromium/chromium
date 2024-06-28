@@ -27,6 +27,14 @@ inline constexpr char kProfileUserDisplayName[] =
     "enterprise_signin.profile_user_display_name";
 inline constexpr char kProfileUserEmail[] =
     "enterprise_signin.profile_user_email";
+
+// Pref storage for information needed to restore OIDC profiles when policies
+// are lost. `kProfileUserEmail` is also needed to identify the user.
+inline constexpr char kPolicyRecoveryToken[] =
+    "enterprise_signin.policy_recovery_token";
+inline constexpr char kPolicyRecoveryClientId[] =
+    "enterprise_signin.policy_recovery_client_id";
+
 }  // namespace prefs
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);

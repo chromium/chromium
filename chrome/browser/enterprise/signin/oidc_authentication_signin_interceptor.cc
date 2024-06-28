@@ -15,6 +15,7 @@
 #include "chrome/browser/enterprise/identifiers/profile_id_delegate_impl.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
+#include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "chrome/browser/enterprise/signin/oidc_authentication_signin_interceptor_factory.h"
 #include "chrome/browser/enterprise/signin/oidc_managed_profile_creation_delegate.h"
 #include "chrome/browser/enterprise/signin/oidc_metrics_utils.h"
@@ -397,7 +398,6 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
   new_profile->GetPrefs()->SetBoolean(
       device_signals::prefs::kDeviceSignalsPermanentConsentReceived, true);
 
-  // Generate a color theme for new profiles
   if (!switch_to_entry_) {
     VLOG_POLICY(2, OIDC_ENROLLMENT)
         << "Created new OIDC-managed profile with preset profile ID: "
@@ -418,9 +418,17 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
           OidcProfileCreationResult::kMismatchingProfileId, dasher_based_);
     }
 
+    // Generate a color theme for new profiles
     ThemeServiceFactory::GetForProfile(new_profile.get())
         ->SetUserColorAndBrowserColorVariant(
             profile_color_, ui::mojom::BrowserColorVariant::kTonalSpot);
+
+    // Create a backup copy of the dm token/client ID in case of losing cached
+    // policies.
+    new_profile->GetPrefs()->SetString(
+        enterprise_signin::prefs::kPolicyRecoveryToken, dm_token_);
+    new_profile->GetPrefs()->SetString(
+        enterprise_signin::prefs::kPolicyRecoveryClientId, client_id_);
   } else {
     VLOG_POLICY(2, OIDC_ENROLLMENT) << "Profile switched sucessfully";
   }
