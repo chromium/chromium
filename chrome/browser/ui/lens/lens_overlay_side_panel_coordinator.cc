@@ -38,6 +38,10 @@ namespace lens {
 
 namespace {
 
+inline constexpr char kChromeSideSearchVersionHeaderName[] =
+    "X-Chrome-Side-Search-Version";
+inline constexpr char kChromeSideSearchVersionHeaderValue[] = "1";
+
 bool IsSiteTrusted(const GURL& url) {
   if (google_util::IsGoogleDomainUrl(
           url, google_util::ALLOW_SUBDOMAIN,
@@ -215,7 +219,9 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
   }
 
   // If we expect to load this URL in the side panel, show the loading
-  // page.
+  // page and any feature-specific request headers.
+  navigation_handle->SetRequestHeader(kChromeSideSearchVersionHeaderName,
+                                      kChromeSideSearchVersionHeaderValue);
   lens_overlay_controller_->SetSidePanelIsLoadingResults(true);
 }
 
