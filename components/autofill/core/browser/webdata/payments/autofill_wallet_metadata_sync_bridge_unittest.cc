@@ -406,14 +406,8 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
 
   std::vector<WalletMetadataSpecifics> GetAllLocalData() {
     std::vector<WalletMetadataSpecifics> data;
-    // Perform an async call synchronously for testing.
-    base::RunLoop loop;
-    bridge()->GetAllDataForDebugging(base::BindLambdaForTesting(
-        [&loop, &data](std::unique_ptr<DataBatch> batch) {
-          ExtractWalletMetadataSpecificsFromDataBatch(std::move(batch), &data);
-          loop.Quit();
-        }));
-    loop.Run();
+    ExtractWalletMetadataSpecificsFromDataBatch(
+        bridge()->GetAllDataForDebugging(), &data);
     return data;
   }
 
@@ -432,16 +426,8 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
   std::vector<WalletMetadataSpecifics> GetLocalData(
       AutofillWalletMetadataSyncBridge::StorageKeyList storage_keys) {
     std::vector<WalletMetadataSpecifics> data;
-    // Perform an async call synchronously for testing.
-    base::RunLoop loop;
-    bridge()->GetDataForCommit(
-        storage_keys, base::BindLambdaForTesting(
-                          [&loop, &data](std::unique_ptr<DataBatch> batch) {
-                            ExtractWalletMetadataSpecificsFromDataBatch(
-                                std::move(batch), &data);
-                            loop.Quit();
-                          }));
-    loop.Run();
+    ExtractWalletMetadataSpecificsFromDataBatch(
+        bridge()->GetDataForCommit(storage_keys), &data);
     return data;
   }
 

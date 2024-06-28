@@ -377,19 +377,19 @@ AutofillWalletMetadataSyncBridge::ApplyIncrementalSyncChanges(
                             std::move(entity_data));
 }
 
-void AutofillWalletMetadataSyncBridge::GetDataForCommit(
-    StorageKeyList storage_keys,
-    DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+AutofillWalletMetadataSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   // Build a set out of the list to allow quick lookup.
   std::unordered_set<std::string> storage_keys_set(storage_keys.begin(),
                                                    storage_keys.end());
-  GetDataImpl(std::move(storage_keys_set), std::move(callback));
+  return GetDataImpl(std::move(storage_keys_set));
 }
 
-void AutofillWalletMetadataSyncBridge::GetAllDataForDebugging(
-    DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+AutofillWalletMetadataSyncBridge::GetAllDataForDebugging() {
   // Get all data by not providing any |storage_keys| filter.
-  GetDataImpl(/*storage_keys=*/std::nullopt, std::move(callback));
+  return GetDataImpl(/*storage_keys_set=*/std::nullopt);
 }
 
 std::string AutofillWalletMetadataSyncBridge::GetClientTag(
@@ -565,9 +565,9 @@ void AutofillWalletMetadataSyncBridge::DeleteOldOrphanMetadata() {
   // existing data.
 }
 
-void AutofillWalletMetadataSyncBridge::GetDataImpl(
-    std::optional<std::unordered_set<std::string>> storage_keys_set,
-    DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+AutofillWalletMetadataSyncBridge::GetDataImpl(
+    std::optional<std::unordered_set<std::string>> storage_keys_set) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
@@ -581,7 +581,7 @@ void AutofillWalletMetadataSyncBridge::GetDataImpl(
     }
   }
 
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 void AutofillWalletMetadataSyncBridge::UploadInitialLocalData(

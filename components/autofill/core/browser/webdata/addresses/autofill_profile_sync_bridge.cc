@@ -162,15 +162,15 @@ AutofillProfileSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void AutofillProfileSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                                 DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> AutofillProfileSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<std::unique_ptr<AutofillProfile>> entries;
   if (!GetAutofillTable()->GetAutofillProfiles(
           AutofillProfile::Source::kLocalOrSyncable, &entries)) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load entries from table."});
-    return;
+    return nullptr;
   }
 
   std::unordered_set<std::string> keys_set(storage_keys.begin(),
@@ -182,10 +182,11 @@ void AutofillProfileSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
       batch->Put(key, CreateEntityDataFromAutofillProfile(*entry));
     }
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
-void AutofillProfileSyncBridge::GetAllDataForDebugging(DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+AutofillProfileSyncBridge::GetAllDataForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<std::unique_ptr<AutofillProfile>> entries;
@@ -193,7 +194,7 @@ void AutofillProfileSyncBridge::GetAllDataForDebugging(DataCallback callback) {
           AutofillProfile::Source::kLocalOrSyncable, &entries)) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load entries from table."});
-    return;
+    return nullptr;
   }
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
@@ -201,7 +202,7 @@ void AutofillProfileSyncBridge::GetAllDataForDebugging(DataCallback callback) {
     batch->Put(GetStorageKeyFromAutofillProfile(*entry),
                CreateEntityDataFromAutofillProfile(*entry));
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 void AutofillProfileSyncBridge::ActOnLocalChange(

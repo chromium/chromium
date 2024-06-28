@@ -262,16 +262,10 @@ TEST_F(ContactInfoSyncBridgeTest, GetDataForCommit) {
   const AutofillProfile profile2 = TestProfile(kGUID2);
   AddAutofillProfilesToTable({profile1, profile2});
 
-  // Synchronously get data the data of `kGUID1`.
-  std::vector<AutofillProfile> profiles;
-  base::RunLoop loop;
-  bridge().GetDataForCommit(
-      {kGUID1},
-      base::BindLambdaForTesting([&](std::unique_ptr<syncer::DataBatch> batch) {
-        profiles = ExtractAutofillProfilesFromDataBatch(std::move(batch));
-        loop.Quit();
-      }));
-  loop.Run();
+  // Get data the data of `kGUID1`.
+  std::vector<AutofillProfile> profiles =
+      ExtractAutofillProfilesFromDataBatch(bridge().GetDataForCommit({kGUID1}));
+
   EXPECT_THAT(profiles, ElementsAre(profile1));
 }
 
@@ -281,15 +275,9 @@ TEST_F(ContactInfoSyncBridgeTest, GetAllDataForDebugging) {
   const AutofillProfile profile2 = TestProfile(kGUID2);
   AddAutofillProfilesToTable({profile1, profile2});
 
-  // Synchronously gets all data from the `bridge()`.
-  std::vector<AutofillProfile> profiles;
-  base::RunLoop loop;
-  bridge().GetAllDataForDebugging(
-      base::BindLambdaForTesting([&](std::unique_ptr<syncer::DataBatch> batch) {
-        profiles = ExtractAutofillProfilesFromDataBatch(std::move(batch));
-        loop.Quit();
-      }));
-  loop.Run();
+  std::vector<AutofillProfile> profiles =
+      ExtractAutofillProfilesFromDataBatch(bridge().GetAllDataForDebugging());
+
   EXPECT_THAT(profiles, UnorderedElementsAre(profile1, profile2));
 }
 

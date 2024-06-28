@@ -446,16 +446,9 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest, GetDataForCommit) {
   table()->AddServerCvc(server_cvc2);
 
   // Synchronously get data of `server_cvc1`.
-  std::vector<ServerCvc> server_cvc_from_get_data;
-  base::RunLoop loop;
-  bridge()->GetDataForCommit(
-      {base::NumberToString(server_cvc1.instrument_id)},
-      base::BindLambdaForTesting([&](std::unique_ptr<syncer::DataBatch> batch) {
-        server_cvc_from_get_data =
-            ExtractServerCvcDataFromDataBatch(std::move(batch));
-        loop.Quit();
-      }));
-  loop.Run();
+  std::vector<ServerCvc> server_cvc_from_get_data =
+      ExtractServerCvcDataFromDataBatch(bridge()->GetDataForCommit(
+          {base::NumberToString(server_cvc1.instrument_id)}));
 
   EXPECT_THAT(server_cvc_from_get_data, testing::ElementsAre(server_cvc1));
 }
@@ -469,15 +462,8 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest, GetAllDataForDebugging) {
   table()->AddServerCvc(server_cvc1);
   table()->AddServerCvc(server_cvc2);
 
-  std::vector<ServerCvc> server_cvc_from_get_all;
-  base::RunLoop loop;
-  bridge()->GetAllDataForDebugging(
-      base::BindLambdaForTesting([&](std::unique_ptr<syncer::DataBatch> batch) {
-        server_cvc_from_get_all =
-            ExtractServerCvcDataFromDataBatch(std::move(batch));
-        loop.Quit();
-      }));
-  loop.Run();
+  std::vector<ServerCvc> server_cvc_from_get_all =
+      ExtractServerCvcDataFromDataBatch(bridge()->GetAllDataForDebugging());
 
   EXPECT_THAT(server_cvc_from_get_all,
               testing::UnorderedElementsAre(server_cvc1, server_cvc2));

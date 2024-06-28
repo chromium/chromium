@@ -56,9 +56,9 @@ class AutofillWalletOfferSyncBridge : public base::SupportsUserData::Data,
   std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
-  void GetDataForCommit(StorageKeyList storage_keys,
-                        DataCallback callback) override;
-  void GetAllDataForDebugging(DataCallback callback) override;
+  std::unique_ptr<syncer::DataBatch> GetDataForCommit(
+      StorageKeyList storage_keys) override;
+  std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
   bool SupportsIncrementalUpdates() const override;
@@ -66,8 +66,8 @@ class AutofillWalletOfferSyncBridge : public base::SupportsUserData::Data,
                                    delete_metadata_change_list) override;
 
  private:
-  // Helper function to send all offer data to the callback.
-  void GetAllDataImpl(DataCallback callback);
+  // Helper function to retrieve all offer data.
+  std::unique_ptr<syncer::DataBatch> GetAllDataImpl();
 
   // Merges synced remote offer data.
   void MergeRemoteData(const syncer::EntityChangeList& entity_data);

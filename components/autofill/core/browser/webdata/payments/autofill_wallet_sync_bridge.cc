@@ -230,14 +230,16 @@ AutofillWalletSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void AutofillWalletSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                                DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> AutofillWalletSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   // This data type is never synced "up" so we don't need to implement this.
   NOTIMPLEMENTED();
+  return nullptr;
 }
 
-void AutofillWalletSyncBridge::GetAllDataForDebugging(DataCallback callback) {
-  GetAllDataImpl(std::move(callback), /*enforce_utf8=*/true);
+std::unique_ptr<syncer::DataBatch>
+AutofillWalletSyncBridge::GetAllDataForDebugging() {
+  return GetAllDataImpl(/*enforce_utf8=*/true);
 }
 
 std::string AutofillWalletSyncBridge::GetClientTag(
@@ -274,12 +276,13 @@ void AutofillWalletSyncBridge::ApplyDisableSyncChanges(
   SetSyncData(syncer::EntityChangeList(), /*notify_webdata_backend=*/false);
 }
 
-void AutofillWalletSyncBridge::GetAllDataForTesting(DataCallback callback) {
-  GetAllDataImpl(std::move(callback), /*enforce_utf8=*/false);
+std::unique_ptr<syncer::DataBatch>
+AutofillWalletSyncBridge::GetAllDataForTesting() {
+  return GetAllDataImpl(/*enforce_utf8=*/false);
 }
 
-void AutofillWalletSyncBridge::GetAllDataImpl(DataCallback callback,
-                                              bool enforce_utf8) {
+std::unique_ptr<syncer::DataBatch> AutofillWalletSyncBridge::GetAllDataImpl(
+    bool enforce_utf8) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<std::unique_ptr<CreditCard>> cards;
@@ -295,7 +298,7 @@ void AutofillWalletSyncBridge::GetAllDataImpl(DataCallback callback,
        !GetAutofillTable()->GetMaskedBankAccounts(bank_accounts))) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load entries from table."});
-    return;
+    return nullptr;
   }
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
@@ -307,7 +310,7 @@ void AutofillWalletSyncBridge::GetAllDataImpl(DataCallback callback,
             entry->instrument_id(), benefits)) {
       change_processor()->ReportError(
           {FROM_HERE, "Failed to load entries from table."});
-      return;
+      return nullptr;
     }
     for (const CreditCardBenefit& benefit : benefits) {
       CHECK(*absl::visit(
@@ -345,7 +348,7 @@ void AutofillWalletSyncBridge::GetAllDataImpl(DataCallback callback,
     }
   }
 
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 void AutofillWalletSyncBridge::SetSyncData(

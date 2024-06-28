@@ -205,14 +205,8 @@ class AutofillWalletOfferSyncBridgeTest : public testing::Test {
 
   std::vector<AutofillOfferSpecifics> GetAllLocalData() {
     std::vector<AutofillOfferSpecifics> data;
-    // Perform an async call synchronously for testing.
-    base::RunLoop loop;
-    bridge()->GetAllDataForDebugging(base::BindLambdaForTesting(
-        [&loop, &data](std::unique_ptr<syncer::DataBatch> batch) {
-          ExtractAutofillOfferSpecificsFromDataBatch(std::move(batch), &data);
-          loop.Quit();
-        }));
-    loop.Run();
+    ExtractAutofillOfferSpecificsFromDataBatch(
+        bridge()->GetAllDataForDebugging(), &data);
     return data;
   }
 

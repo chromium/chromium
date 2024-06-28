@@ -293,8 +293,7 @@ class AutocompleteSyncBridgeTest : public testing::Test {
   }
 
   void VerifyAllData(const std::vector<AutofillSpecifics>& expected) {
-    bridge()->GetAllDataForDebugging(
-        base::BindOnce(&VerifyDataBatch, ExpectedMap(expected)));
+    VerifyDataBatch(ExpectedMap(expected), bridge()->GetAllDataForDebugging());
   }
 
   AutocompleteSyncBridge* bridge() { return bridge_.get(); }
@@ -418,9 +417,9 @@ TEST_F(AutocompleteSyncBridgeTest, GetDataForCommit) {
   const AutofillSpecifics specifics2 = CreateSpecifics(2);
   const AutofillSpecifics specifics3 = CreateSpecifics(3);
   SaveSpecificsToTable({specifics1, specifics2, specifics3});
-  bridge()->GetDataForCommit(
-      {GetStorageKey(specifics1), GetStorageKey(specifics3)},
-      base::BindOnce(&VerifyDataBatch, ExpectedMap({specifics1, specifics3})));
+  VerifyDataBatch(ExpectedMap({specifics1, specifics3}),
+                  bridge()->GetDataForCommit(
+                      {GetStorageKey(specifics1), GetStorageKey(specifics3)}));
 }
 
 TEST_F(AutocompleteSyncBridgeTest, GetDataForCommitNotExist) {
@@ -428,10 +427,10 @@ TEST_F(AutocompleteSyncBridgeTest, GetDataForCommitNotExist) {
   const AutofillSpecifics specifics2 = CreateSpecifics(2);
   const AutofillSpecifics specifics3 = CreateSpecifics(3);
   SaveSpecificsToTable({specifics1, specifics2});
-  bridge()->GetDataForCommit(
-      {GetStorageKey(specifics1), GetStorageKey(specifics2),
-       GetStorageKey(specifics3)},
-      base::BindOnce(&VerifyDataBatch, ExpectedMap({specifics1, specifics2})));
+  VerifyDataBatch(ExpectedMap({specifics1, specifics2}),
+                  bridge()->GetDataForCommit({GetStorageKey(specifics1),
+                                              GetStorageKey(specifics2),
+                                              GetStorageKey(specifics3)}));
 }
 
 TEST_F(AutocompleteSyncBridgeTest, GetAllData) {

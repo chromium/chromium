@@ -155,17 +155,10 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, GetDataForCommit) {
   const VirtualCardUsageData usage_data2 = test::GetVirtualCardUsageData2();
   table()->SetVirtualCardUsageData({usage_data1, usage_data2});
 
-  // Synchronously get data the data of `usage_data_1`.
-  std::vector<VirtualCardUsageData> virtual_card_usage_data;
-  base::RunLoop loop;
-  bridge()->GetDataForCommit(
-      {*usage_data1.usage_data_id()},
-      base::BindLambdaForTesting([&](std::unique_ptr<syncer::DataBatch> batch) {
-        virtual_card_usage_data =
-            ExtractVirtualCardUsageDataFromDataBatch(std::move(batch));
-        loop.Quit();
-      }));
-  loop.Run();
+  // Get data the data of `usage_data_1`.
+  std::vector<VirtualCardUsageData> virtual_card_usage_data =
+      ExtractVirtualCardUsageDataFromDataBatch(
+          bridge()->GetDataForCommit({*usage_data1.usage_data_id()}));
   EXPECT_THAT(virtual_card_usage_data, testing::ElementsAre(usage_data1));
 }
 
@@ -175,15 +168,9 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, GetAllDataForDebugging) {
   const VirtualCardUsageData usage_data2 = test::GetVirtualCardUsageData2();
   table()->SetVirtualCardUsageData({usage_data1, usage_data2});
 
-  std::vector<VirtualCardUsageData> virtual_card_usage_data;
-  base::RunLoop loop;
-  bridge()->GetAllDataForDebugging(
-      base::BindLambdaForTesting([&](std::unique_ptr<syncer::DataBatch> batch) {
-        virtual_card_usage_data =
-            ExtractVirtualCardUsageDataFromDataBatch(std::move(batch));
-        loop.Quit();
-      }));
-  loop.Run();
+  std::vector<VirtualCardUsageData> virtual_card_usage_data =
+      ExtractVirtualCardUsageDataFromDataBatch(
+          bridge()->GetAllDataForDebugging());
   EXPECT_THAT(virtual_card_usage_data,
               testing::UnorderedElementsAre(usage_data1, usage_data2));
 }

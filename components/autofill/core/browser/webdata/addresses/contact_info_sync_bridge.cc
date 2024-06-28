@@ -138,8 +138,8 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void ContactInfoSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                             DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> ContactInfoSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::ranges::sort(storage_keys);
   auto filter_by_keys = base::BindRepeating(
@@ -147,18 +147,14 @@ void ContactInfoSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
         return base::ranges::binary_search(storage_keys, guid);
       },
       storage_keys);
-  if (std::unique_ptr<syncer::MutableDataBatch> batch =
-          GetDataAndFilter(filter_by_keys)) {
-    std::move(callback).Run(std::move(batch));
-  }
+  return GetDataAndFilter(filter_by_keys);
 }
 
-void ContactInfoSyncBridge::GetAllDataForDebugging(DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+ContactInfoSyncBridge::GetAllDataForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (std::unique_ptr<syncer::MutableDataBatch> batch = GetDataAndFilter(
-          base::BindRepeating([](const std::string& guid) { return true; }))) {
-    std::move(callback).Run(std::move(batch));
-  }
+  return GetDataAndFilter(
+      base::BindRepeating([](const std::string& guid) { return true; }));
 }
 
 bool ContactInfoSyncBridge::IsEntityDataValid(

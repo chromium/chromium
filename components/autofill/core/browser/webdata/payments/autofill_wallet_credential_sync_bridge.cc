@@ -154,29 +154,29 @@ AutofillWalletCredentialSyncBridge::ApplyIncrementalSyncChanges(
   return change_processor()->GetError();
 }
 
-void AutofillWalletCredentialSyncBridge::GetDataForCommit(
-    StorageKeyList storage_keys,
-    DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+AutofillWalletCredentialSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::ranges::sort(storage_keys);
-  std::vector<std::unique_ptr<ServerCvc>> filterd_server_cvc_list;
+  std::vector<std::unique_ptr<ServerCvc>> filtered_server_cvc_list;
   for (std::unique_ptr<ServerCvc>& server_cvc_from_list :
        GetAutofillTable()->GetAllServerCvcs()) {
     if (base::ranges::binary_search(
             storage_keys,
             base::NumberToString(server_cvc_from_list->instrument_id))) {
-      filterd_server_cvc_list.push_back(std::move(server_cvc_from_list));
+      filtered_server_cvc_list.push_back(std::move(server_cvc_from_list));
     }
   }
-  std::move(callback).Run(ConvertToDataBatch(filterd_server_cvc_list));
+  return ConvertToDataBatch(filtered_server_cvc_list);
 }
 
-void AutofillWalletCredentialSyncBridge::GetAllDataForDebugging(
-    DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+AutofillWalletCredentialSyncBridge::GetAllDataForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const std::vector<std::unique_ptr<ServerCvc>>& server_cvc_list =
       GetAutofillTable()->GetAllServerCvcs();
-  std::move(callback).Run(ConvertToDataBatch(server_cvc_list));
+  return ConvertToDataBatch(server_cvc_list);
 }
 
 std::string AutofillWalletCredentialSyncBridge::GetClientTag(

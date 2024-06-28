@@ -73,9 +73,9 @@ class AutofillWalletMetadataSyncBridge
   std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
-  void GetDataForCommit(StorageKeyList storage_keys,
-                        DataCallback callback) override;
-  void GetAllDataForDebugging(DataCallback callback) override;
+  std::unique_ptr<syncer::DataBatch> GetDataForCommit(
+      StorageKeyList storage_keys) override;
+  std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
@@ -106,12 +106,11 @@ class AutofillWalletMetadataSyncBridge
   //  delete M when they receive an update from the Walllet server.
   void DeleteOldOrphanMetadata();
 
-  // Reads local wallet metadata from the database and passes them into
-  // |callback|. If |storage_keys_set| is not set, it returns all data entries.
-  // Otherwise, it returns only entries with storage key in |storage_keys_set|.
-  void GetDataImpl(
-      std::optional<std::unordered_set<std::string>> storage_keys_set,
-      DataCallback callback);
+  // Reads local wallet metadata from the database and returns it. If
+  // |storage_keys_set| is not set, it returns all data entries. Otherwise, it
+  // returns only entries with storage key in |storage_keys_set|.
+  std::unique_ptr<syncer::DataBatch> GetDataImpl(
+      std::optional<std::unordered_set<std::string>> storage_keys_set);
 
   // Uploads local data that is not part of |entity_data| sent from the server
   // during initial MergeFullSyncData().

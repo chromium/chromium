@@ -107,13 +107,15 @@ AutofillWalletOfferSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void AutofillWalletOfferSyncBridge::GetDataForCommit(
-    StorageKeyList storage_keys,
-    DataCallback callback) {}
+std::unique_ptr<syncer::DataBatch>
+AutofillWalletOfferSyncBridge::GetDataForCommit(StorageKeyList storage_keys) {
+  // This data type is never synced "up" so this doesn't need to be implemented.
+  return nullptr;
+}
 
-void AutofillWalletOfferSyncBridge::GetAllDataForDebugging(
-    DataCallback callback) {
-  GetAllDataImpl(std::move(callback));
+std::unique_ptr<syncer::DataBatch>
+AutofillWalletOfferSyncBridge::GetAllDataForDebugging() {
+  return GetAllDataImpl();
 }
 
 std::string AutofillWalletOfferSyncBridge::GetClientTag(
@@ -140,14 +142,15 @@ void AutofillWalletOfferSyncBridge::ApplyDisableSyncChanges(
   MergeRemoteData(syncer::EntityChangeList());
 }
 
-void AutofillWalletOfferSyncBridge::GetAllDataImpl(DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+AutofillWalletOfferSyncBridge::GetAllDataImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<std::unique_ptr<AutofillOfferData>> offers;
   if (!GetAutofillTable()->GetAutofillOffers(&offers)) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load offer data from table."});
-    return;
+    return nullptr;
   }
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
@@ -164,7 +167,7 @@ void AutofillWalletOfferSyncBridge::GetAllDataImpl(DataCallback callback) {
     batch->Put(GetStorageKeyFromSpecifics(*offer_specifics),
                std::move(entity_data));
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 void AutofillWalletOfferSyncBridge::MergeRemoteData(
