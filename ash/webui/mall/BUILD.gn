@@ -23,6 +23,7 @@ source_set("mall") {
     "//ash/webui/mall/resources",
     "//base",
     "//chromeos/constants/",
+    "//components/strings:components_strings_grit",
     "//content/public/browser",
     "//ui/webui",
   ]

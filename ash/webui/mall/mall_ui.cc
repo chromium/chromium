@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/url_constants.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -31,6 +32,7 @@ MallUI::MallUI(content::WebUI* web_ui, std::unique_ptr<MallUIDelegate> delegate)
   auto* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(), ash::kChromeUIMallHost);
   source->SetDefaultResource(IDR_ASH_MALL_CROS_APP_INDEX_HTML);
+  source->AddLocalizedString("message", IDS_ERRORPAGES_HEADING_YOU_ARE_OFFLINE);
   source->AddResourcePaths(
       base::make_span(kAshMallCrosAppResources, kAshMallCrosAppResourcesSize));
 
