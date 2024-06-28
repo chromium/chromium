@@ -79,7 +79,6 @@ src/webgpu/util/unions.ts
 src/webgpu/util/texture/base.ts
 src/webgpu/util/texture/layout.ts
 src/webgpu/format_info.ts
-src/webgpu/util/buffer.ts
 src/webgpu/util/pretty_diff_tables.ts
 src/webgpu/util/check_contents.ts
 src/webgpu/util/command_buffer_maker.ts
