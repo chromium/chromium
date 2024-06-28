@@ -8,8 +8,14 @@
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
 namespace history_embeddings {
 
+// Please use `IsFeatureManagementHistoryEmbeddingEnabled()` instead
+// of using `kHistoryEmbeddings` directly.
 BASE_FEATURE(kHistoryEmbeddings,
              "HistoryEmbeddings",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -97,5 +103,14 @@ const base::FeatureParam<bool> kUseDatabaseBeforeEmbedder(
     &kHistoryEmbeddings,
     "UseDatabaseBeforeEmbedder",
     false);
+
+bool IsHistoryEmbeddingEnabled() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return chromeos::features::IsFeatureManagementHistoryEmbeddingEnabled() &&
+         base::FeatureList::IsEnabled(kHistoryEmbeddings);
+#else
+  return base::FeatureList::IsEnabled(kHistoryEmbeddings);
+#endif
+}
 
 }  // namespace history_embeddings

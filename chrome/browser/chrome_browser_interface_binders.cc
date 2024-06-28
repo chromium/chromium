@@ -1241,7 +1241,7 @@ void PopulateChromeWebUIFrameBinders(
           history_clusters::mojom::PageHandler, HistoryUI>(map);
     }
   }
-  if (base::FeatureList::IsEnabled(history_embeddings::kHistoryEmbeddings)) {
+  if (history_embeddings::IsHistoryEmbeddingEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
         history_embeddings::mojom::PageHandler, HistoryUI>(map);
   }

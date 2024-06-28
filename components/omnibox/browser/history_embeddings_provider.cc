@@ -41,8 +41,9 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
   done_ = true;
   matches_.clear();
 
-  if (!base::FeatureList::IsEnabled(history_embeddings::kHistoryEmbeddings))
+  if (!history_embeddings::IsHistoryEmbeddingEnabled()) {
     return;
+  }
 
   // Remove the keyword from input if we're in keyword mode for a starter pack
   // engine.

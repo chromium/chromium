@@ -93,6 +93,8 @@ extern const base::FeatureParam<bool> kRebuildEmbeddings;
 // to the minimum necessary for new passages, with no redundant recomputes.
 extern const base::FeatureParam<bool> kUseDatabaseBeforeEmbedder;
 
+bool IsHistoryEmbeddingEnabled();
+
 }  // namespace history_embeddings
 
 #endif  // COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_FEATURES_H_

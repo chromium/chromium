@@ -176,7 +176,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsUploadOfficeToCloudForEnterpriseEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled();
-
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+bool IsFeatureManagementHistoryEmbeddingEnabled();
 }  // namespace features
 }  // namespace chromeos
 

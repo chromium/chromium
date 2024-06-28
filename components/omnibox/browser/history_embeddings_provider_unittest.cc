@@ -31,6 +31,10 @@
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace {
 AutocompleteInput CreateAutocompleteInput(const std::u16string input) {
   return {input, metrics::OmniboxEventProto::OTHER, TestSchemeClassifier()};
@@ -123,8 +127,16 @@ TEST_F(HistoryEmbeddingsProviderTest, Start) {
 
   // When the feature is disabled, should early exit.
   base::test::ScopedFeatureList disabled_feature;
-  disabled_feature.InitAndDisableFeature(
-      history_embeddings::kHistoryEmbeddings);
+  disabled_feature.InitWithFeatures(
+      {
+#if BUILDFLAG(IS_CHROMEOS)
+          {
+              chromeos::features::kFeatureManagementHistoryEmbedding,
+          }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      },
+      /*disabled_features=*/{history_embeddings::kHistoryEmbeddings});
+
   EXPECT_CALL(history_embeddings_service_,
               Search(testing::_, testing::_, testing::_, testing::_))
       .Times(0);
@@ -132,9 +144,15 @@ TEST_F(HistoryEmbeddingsProviderTest, Start) {
 
   // Short queries should be blocked.
   base::test::ScopedFeatureList enabled_feature;
-  enabled_feature.InitAndEnableFeatureWithParameters(
-      history_embeddings::kHistoryEmbeddings,
-      {{history_embeddings::kSearchQueryMinimumWordCount.name, "3"}});
+  enabled_feature.InitWithFeaturesAndParameters(
+      {{history_embeddings::kHistoryEmbeddings,
+        {{history_embeddings::kSearchQueryMinimumWordCount.name, "3"}}},
+#if BUILDFLAG(IS_CHROMEOS)
+       {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      },
+      /*disabled_features=*/{});
+
   EXPECT_CALL(history_embeddings_service_,
               Search(testing::_, testing::_, testing::_, testing::_))
       .Times(0);
@@ -149,8 +167,15 @@ TEST_F(HistoryEmbeddingsProviderTest, Start) {
 }
 
 TEST_F(HistoryEmbeddingsProviderTest, Start_MultipleSequentialSearches) {
-  base::test::ScopedFeatureList enabled_feature{
-      history_embeddings::kHistoryEmbeddings};
+  base::test::ScopedFeatureList enabled_feature;
+  enabled_feature.InitWithFeatures(
+      {
+          {history_embeddings::kHistoryEmbeddings},
+#if BUILDFLAG(IS_CHROMEOS)
+          {chromeos::features::kFeatureManagementHistoryEmbedding},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      },
+      /*disabled_features=*/{});
 
   // Start 1st search.
   history_embeddings_provider_->Start(CreateAutocompleteInput(u"1 1 1"), false);
@@ -176,8 +201,15 @@ TEST_F(HistoryEmbeddingsProviderTest, Start_MultipleSequentialSearches) {
 }
 
 TEST_F(HistoryEmbeddingsProviderTest, Start_MultipleParallelSearches) {
-  base::test::ScopedFeatureList enabled_feature{
-      history_embeddings::kHistoryEmbeddings};
+  base::test::ScopedFeatureList enabled_feature;
+  enabled_feature.InitWithFeatures(
+      {
+          {history_embeddings::kHistoryEmbeddings},
+#if BUILDFLAG(IS_CHROMEOS)
+          {chromeos::features::kFeatureManagementHistoryEmbedding},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      },
+      /*disabled_features=*/{});
 
   // Start 1st search.
   history_embeddings_provider_->Start(CreateAutocompleteInput(u"1 1 1"), false);
@@ -200,8 +232,15 @@ TEST_F(HistoryEmbeddingsProviderTest, Start_MultipleParallelSearches) {
 
 TEST_F(HistoryEmbeddingsProviderTest,
        Start_MultipleParallelSearchesWithSameQuery) {
-  base::test::ScopedFeatureList enabled_feature{
-      history_embeddings::kHistoryEmbeddings};
+  base::test::ScopedFeatureList enabled_feature;
+  enabled_feature.InitWithFeatures(
+      {
+          {history_embeddings::kHistoryEmbeddings},
+#if BUILDFLAG(IS_CHROMEOS)
+          {chromeos::features::kFeatureManagementHistoryEmbedding},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      },
+      /*disabled_features=*/{});
 
   // Start 1st search.
   history_embeddings_provider_->Start(CreateAutocompleteInput(u"1 1 1"), false);
@@ -231,9 +270,14 @@ TEST_F(HistoryEmbeddingsProviderTest,
 TEST_F(HistoryEmbeddingsProviderTest,
        Start_MultipleParallelSearchesWithIneligibleQuery) {
   base::test::ScopedFeatureList enabled_feature;
-  enabled_feature.InitAndEnableFeatureWithParameters(
-      history_embeddings::kHistoryEmbeddings,
-      {{history_embeddings::kSearchQueryMinimumWordCount.name, "3"}});
+  enabled_feature.InitWithFeaturesAndParameters(
+      {{history_embeddings::kHistoryEmbeddings,
+        {{history_embeddings::kSearchQueryMinimumWordCount.name, "3"}}},
+#if BUILDFLAG(IS_CHROMEOS)
+       {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      },
+      /*disabled_features=*/{});
 
   // Start 1st search.
   history_embeddings_provider_->Start(CreateAutocompleteInput(u"1 1 1"), false);
@@ -252,8 +296,15 @@ TEST_F(HistoryEmbeddingsProviderTest,
 }
 
 TEST_F(HistoryEmbeddingsProviderTest, Start_Stop_SearchCompletesAfterStop) {
-  base::test::ScopedFeatureList enabled_feature{
-      history_embeddings::kHistoryEmbeddings};
+  base::test::ScopedFeatureList enabled_feature;
+  enabled_feature.InitWithFeatures(
+      {
+          {history_embeddings::kHistoryEmbeddings},
+#if BUILDFLAG(IS_CHROMEOS)
+          {chromeos::features::kFeatureManagementHistoryEmbedding},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      },
+      /*disabled_features=*/{});
 
   // Start search.
   history_embeddings_provider_->Start(CreateAutocompleteInput(u"1 1 1"), false);

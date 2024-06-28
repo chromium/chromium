@@ -29,6 +29,10 @@
 #include "ui/base/l10n/time_format.h"
 #include "ui/webui/resources/cr_components/history_embeddings/history_embeddings.mojom.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 std::unique_ptr<KeyedService> BuildTestHistoryEmbeddingsService(
     content::BrowserContext* browser_context) {
   auto* profile = Profile::FromBrowserContext(browser_context);
@@ -70,7 +74,13 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
         /*enabled_features=*/{{history_embeddings::kHistoryEmbeddings,
                                {{"UseMlEmbedder", "false"}}},
                               {feature_engagement::kIPHHistorySearchFeature,
-                               {}}},
+                               {}},
+#if BUILDFLAG(IS_CHROMEOS)
+                              {chromeos::features::
+                                   kFeatureManagementHistoryEmbedding,
+                               {{}}}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        },
         /*disabled_features=*/{});
     MockOptimizationGuideKeyedService::InitializeWithExistingTestLocalState();
 
