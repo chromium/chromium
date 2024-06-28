@@ -1616,7 +1616,7 @@ void AXObject::SerializeHTMLId(ui::AXNodeData* node_data) const {
 void AXObject::SerializeHTMLAttributes(ui::AXNodeData* node_data) const {
   Element* element = GetElement();
   DCHECK(element);
-  for (const Attribute& attr : element->Attributes()) {
+  for (const Attribute& attr : element->AttributesWithoutUpdate()) {
     std::string name = attr.LocalName().LowerASCII().Utf8();
     if (name == "id" || name == "class") {
       // Attribute already in kHtmlId or kClassName.
