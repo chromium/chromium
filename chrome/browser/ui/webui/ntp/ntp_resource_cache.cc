@@ -353,6 +353,10 @@ void NTPResourceCache::CreateNewTabGuestHTML() {
                           l10n_util::GetStringUTF16(IDS_LEARN_MORE));
     localized_strings.Set("enterpriseInfoHintLink",
                           chrome::kLearnMoreEnterpriseURL);
+    localized_strings.Set(
+        "enterpriseLearnMoreA11yLabel",
+        l10n_util::GetStringUTF16(
+            IDS_NEW_TAB_ENTERPRISE_GUEST_SESSION_LEARN_MORE_ACCESSIBILITY_TEXT));
     std::u16string enterprise_info;
     if (connector->IsCloudManaged()) {
       const std::string enterprise_domain_manager =
@@ -369,6 +373,7 @@ void NTPResourceCache::CreateNewTabGuestHTML() {
     localized_strings.Set("enterpriseInfoMessage", "");
     localized_strings.Set("enterpriseLearnMore", "");
     localized_strings.Set("enterpriseInfoHintLink", "");
+    localized_strings.Set("enterpriseLearnMoreA11yLabel", "");
   }
 #endif
 

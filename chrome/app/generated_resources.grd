@@ -12728,6 +12728,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             desc="Accessibility label for a link labeled 'Learn more' that links to a help article about browsing as a guest.">
           Learn more about browsing as a guest
         </message>
+        <message name="IDS_NEW_TAB_ENTERPRISE_GUEST_SESSION_LEARN_MORE_ACCESSIBILITY_TEXT"
+            desc="Accessibility label for a link labeled 'Learn more' that links to a help article about enterprise enrolled devices.">
+          Learn more about enterprise enrolled devices
+        </message>
         <message name="IDS_NEW_TAB_TILE_GRID_ACCESSIBLE_DESCRIPTION"
                  desc="Help message for screenreader users, spoken when navigating to a tile grid for the first time.">
           Use left and right arrow keys to navigate.
