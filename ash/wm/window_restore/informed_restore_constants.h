@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_WINDOW_RESTORE_PINE_CONSTANTS_H_
-#define ASH_WM_WINDOW_RESTORE_PINE_CONSTANTS_H_
+#ifndef ASH_WM_WINDOW_RESTORE_INFORMED_RESTORE_CONSTANTS_H_
+#define ASH_WM_WINDOW_RESTORE_INFORMED_RESTORE_CONSTANTS_H_
 
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
@@ -92,4 +92,4 @@ enum ViewID : int {
 
 }  // namespace ash::pine
 
-#endif  // ASH_WM_WINDOW_RESTORE_PINE_CONSTANTS_H_
+#endif  // ASH_WM_WINDOW_RESTORE_INFORMED_RESTORE_CONSTANTS_H_

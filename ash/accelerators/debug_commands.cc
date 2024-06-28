@@ -38,7 +38,7 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "ash/wm/window_restore/pine_controller.h"
+#include "ash/wm/window_restore/informed_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
@@ -252,7 +252,7 @@ void HandleToggleVirtualTrackpad() {
 }
 
 void HandleShowInformedRestore() {
-  if (auto* pine_controller = Shell::Get()->pine_controller()) {
+  if (auto* pine_controller = Shell::Get()->informed_restore_controller()) {
     pine_controller->MaybeStartPineOverviewSessionDevAccelerator();
   }
 }

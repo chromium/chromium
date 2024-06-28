@@ -296,7 +296,7 @@ std::vector<views::Widget*> OverviewFocusCycler::GetTraversableWidgets(
     maybe_add_widget(grid->saved_desk_library_widget());
     maybe_add_widget(grid->desks_widget());
     maybe_add_widget(grid->save_desk_button_container_widget());
-    maybe_add_widget(grid->pine_widget());
+    maybe_add_widget(grid->informed_restore_widget());
     maybe_add_widget(grid->birch_bar_widget());
     maybe_add_widget(grid->faster_splitview_widget());
     maybe_add_widget(grid->no_windows_widget());

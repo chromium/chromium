@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/window_restore/pine_context_menu_model.h"
+#include "ash/wm/window_restore/informed_restore_context_menu_model.h"
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"

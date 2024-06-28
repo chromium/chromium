@@ -4,7 +4,7 @@
 
 #include "ash/wm/window_restore/informed_restore_items_container_view.h"
 
-#include "ash/wm/window_restore/pine_constants.h"
+#include "ash/wm/window_restore/informed_restore_constants.h"
 #include "ash/wm/window_restore/informed_restore_item_view.h"
 #include "ash/wm/window_restore/informed_restore_items_overflow_view.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"

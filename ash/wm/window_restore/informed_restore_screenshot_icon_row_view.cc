@@ -9,7 +9,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
 #include "ash/wm/window_restore/informed_restore_app_image_view.h"
-#include "ash/wm/window_restore/pine_constants.h"
+#include "ash/wm/window_restore/informed_restore_constants.h"
 #include "ash/wm/window_restore/informed_restore_item_view.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/i18n/number_formatting.h"

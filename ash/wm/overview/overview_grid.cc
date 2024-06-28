@@ -78,7 +78,7 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_restore/informed_restore_contents_view.h"
-#include "ash/wm/window_restore/pine_controller.h"
+#include "ash/wm/window_restore/informed_restore_controller.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_constants.h"
@@ -547,7 +547,7 @@ bool ShouldShowBirchBar(aura::Window* root_window) {
 bool ShouldShowPineDialog(aura::Window* root_window) {
   return root_window == Shell::GetPrimaryRootWindow() &&
          features::IsForestFeatureEnabled() &&
-         !!Shell::Get()->pine_controller()->contents_data();
+         !!Shell::Get()->informed_restore_controller()->contents_data();
 }
 
 }  // namespace
@@ -658,12 +658,12 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
     }
   }
 
-  if (pine_widget_) {
+  if (informed_restore_widget_) {
     if (exit_type == OverviewEnterExitType::kImmediateExit) {
-      ImmediatelyCloseWidgetOnExit(std::move(pine_widget_));
+      ImmediatelyCloseWidgetOnExit(std::move(informed_restore_widget_));
     } else {
       // This animation continues past the lifetime of `this`.
-      FadeOutWidgetFromOverview(std::move(pine_widget_),
+      FadeOutWidgetFromOverview(std::move(informed_restore_widget_),
                                 OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_FADE_OUT);
     }
   }
@@ -714,16 +714,16 @@ void OverviewGrid::PrepareForOverview() {
   // TODO(b/326434696): Currently this will return false if there is no restore
   // data in the pine contents data. Show the zero-state dialog.
   if (ShouldShowPineDialog(root_window_)) {
-    pine_widget_ =
+    informed_restore_widget_ =
         InformedRestoreContentsView::Create(GetGridEffectiveBounds());
-    pine_widget_->ShowInactive();
+    informed_restore_widget_->ShowInactive();
 
     // If the enter type is immediate, `ShowInactive()` is sufficient as
-    // `pine_widget_` has no default animation. Otherwise, set the opacity to
-    // 0.f and perform a fade in animation.
+    // `informed_restore_widget_` has no default animation. Otherwise, set the
+    // opacity to 0.f and perform a fade in animation.
     if (enter_exit_type != OverviewEnterExitType::kImmediateEnter) {
-      pine_widget_->SetOpacity(0.f);
-      FadeInWidgetToOverview(pine_widget_.get(),
+      informed_restore_widget_->SetOpacity(0.f);
+      FadeInWidgetToOverview(informed_restore_widget_.get(),
                              OVERVIEW_ANIMATION_ENTER_OVERVIEW_MODE_FADE_IN,
                              /*observe=*/true);
     }
@@ -1331,10 +1331,10 @@ void OverviewGrid::OnDisplayMetricsChanged(uint32_t changed_metrics) {
   // primary display orientation. If the pine widget exists, then this overview
   // grid is on the primary display, so we can tell the contents view to update
   // on rotation.
-  if (pine_widget_ &&
+  if (informed_restore_widget_ &&
       (changed_metrics & display::DisplayObserver::DISPLAY_METRIC_ROTATION)) {
     views::AsViewClass<InformedRestoreContentsView>(
-        pine_widget_->GetContentsView())
+        informed_restore_widget_->GetContentsView())
         ->UpdateOrientation();
   }
 
@@ -2177,10 +2177,10 @@ void OverviewGrid::ShowSavedDeskLibrary() {
 
   desks_bar_view_->UpdateButtonsForSavedDeskGrid();
 
-  if (pine_widget_) {
-    pine_widget_->GetNativeWindow()->SetEventTargetingPolicy(
+  if (informed_restore_widget_) {
+    informed_restore_widget_->GetNativeWindow()->SetEventTargetingPolicy(
         aura::EventTargetingPolicy::kNone);
-    PerformFadeOutLayer(pine_widget_->GetLayer(), /*animate=*/true,
+    PerformFadeOutLayer(informed_restore_widget_->GetLayer(), /*animate=*/true,
                         base::DoNothing());
   }
 }
@@ -2311,14 +2311,14 @@ void OverviewGrid::RefreshGridBounds(bool animate) {
                               /*ignored_items=*/{}, animate);
   UpdateNoWindowsWidget(empty(), animate, /*is_continuous_enter=*/false);
 
-  if (pine_widget_) {
+  if (informed_restore_widget_) {
     InformedRestoreContentsView* contents_view =
         views::AsViewClass<InformedRestoreContentsView>(
-            pine_widget_->GetContentsView());
+            informed_restore_widget_->GetContentsView());
     CHECK(contents_view);
     gfx::Rect pine_bounds = GetGridEffectiveBounds();
     pine_bounds.ClampToCenteredSize(contents_view->GetPreferredSize());
-    pine_widget_->SetBounds(pine_bounds);
+    informed_restore_widget_->SetBounds(pine_bounds);
   }
 
   if (scoped_overview_wallpaper_clipper_) {
@@ -3268,10 +3268,10 @@ void OverviewGrid::OnSavedDeskGridFadedOut() {
   UpdateSaveDeskButtons();
   UpdateNoWindowsWidget(/*no_items=*/empty(), /*animate=*/true,
                         /*is_continuous_enter=*/false);
-  if (pine_widget_) {
-    pine_widget_->GetNativeWindow()->SetEventTargetingPolicy(
+  if (informed_restore_widget_) {
+    informed_restore_widget_->GetNativeWindow()->SetEventTargetingPolicy(
         aura::EventTargetingPolicy::kTargetAndDescendants);
-    PerformFadeInLayer(pine_widget_->GetLayer(), /*animate=*/true);
+    PerformFadeInLayer(informed_restore_widget_->GetLayer(), /*animate=*/true);
   }
 }
 

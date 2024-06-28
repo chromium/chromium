@@ -7,7 +7,7 @@
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
-#include "ash/wm/window_restore/pine_constants.h"
+#include "ash/wm/window_restore/informed_restore_constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/window_restore/pine_controller.h"
+#include "ash/wm/window_restore/informed_restore_controller.h"
 
 #include "ash/birch/birch_model.h"
 #include "ash/constants/ash_features.h"
@@ -28,7 +28,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/window_restore/informed_restore_contents_data.h"
-#include "ash/wm/window_restore/pine_constants.h"
+#include "ash/wm/window_restore/informed_restore_constants.h"
 #include "ash/wm/window_restore/window_restore_metrics.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "ash/wm/window_util.h"
@@ -67,15 +67,15 @@ bool ShouldShowInformedRestoreImage(const gfx::ImageSkia& image) {
   const gfx::Size image_size = image.size();
   const bool is_image_landscape = image_size.width() > image_size.height();
 
-  // TODO(minch|sammiequon): The pine dialog will only be shown inside the
-  // primary display for now. Change the logic here if it changes.
-  const display::Display display_with_pine =
+  // TODO(minch|sammiequon): The informed restore dialog will only be shown
+  // inside the primary display for now. Change the logic here if it changes.
+  const display::Display display_with_dialog =
       display::Screen::GetScreen()->GetPrimaryDisplay();
   const bool is_display_landscape = chromeos::IsLandscapeOrientation(
-      chromeos::GetDisplayCurrentOrientation(display_with_pine));
+      chromeos::GetDisplayCurrentOrientation(display_with_dialog));
 
-  // Show the image only if the pine image and the display showing it both have
-  // the same orientation.
+  // Show the image only if the image and the display showing it both have the
+  // same orientation.
   return is_image_landscape == is_display_landscape;
 }
 
@@ -97,17 +97,17 @@ bool ShouldStartInformedRestoreOnboarding() {
 
 }  // namespace
 
-PineController::PineController() {
+InformedRestoreController::InformedRestoreController() {
   Shell::Get()->overview_controller()->AddObserver(this);
 
   activation_change_observation_.Observe(Shell::Get()->activation_client());
 }
 
-PineController::~PineController() {
+InformedRestoreController::~InformedRestoreController() {
   Shell::Get()->overview_controller()->RemoveObserver(this);
 }
 
-void PineController::MaybeShowInformedRestoreOnboarding(bool restore_on) {
+void InformedRestoreController::MaybeShowInformedRestoreOnboarding(bool restore_on) {
   if (onboarding_widget_ || !ShouldStartInformedRestoreOnboarding()) {
     return;
   }
@@ -129,7 +129,7 @@ void PineController::MaybeShowInformedRestoreOnboarding(bool restore_on) {
                   ? IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_ON_ACCEPT
                   : IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_OFF_ACCEPT))
           .SetAcceptCallback(
-              base::BindOnce(&PineController::OnOnboardingAcceptPressed,
+              base::BindOnce(&InformedRestoreController::OnOnboardingAcceptPressed,
                              base::Unretained(this), restore_on))
           .Build();
 
@@ -160,7 +160,7 @@ void PineController::MaybeShowInformedRestoreOnboarding(bool restore_on) {
         IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_OFF_CANCEL));
     // `this` is guaranteed to outlive the dialog.
     dialog->SetCancelCallback(base::BindOnce(
-        &PineController::OnOnboardingCancelPressed, base::Unretained(this)));
+        &InformedRestoreController::OnOnboardingCancelPressed, base::Unretained(this)));
   }
 
   views::Widget::InitParams params(
@@ -173,12 +173,12 @@ void PineController::MaybeShowInformedRestoreOnboarding(bool restore_on) {
   onboarding_widget_->Show();
 }
 
-void PineController::MaybeStartPineOverviewSessionDevAccelerator() {
+void InformedRestoreController::MaybeStartPineOverviewSessionDevAccelerator() {
   auto data = std::make_unique<InformedRestoreContentsData>();
   data->last_session_crashed = false;
   std::pair<base::OnceClosure, base::OnceClosure> split =
       base::SplitOnceCallback(
-          base::BindOnce(&PineController::MaybeEndPineOverviewSession,
+          base::BindOnce(&InformedRestoreController::MaybeEndPineOverviewSession,
                          weak_ptr_factory_.GetWeakPtr()));
   data->restore_callback = std::move(split.first);
   data->cancel_callback = std::move(split.second);
@@ -225,7 +225,7 @@ void PineController::MaybeStartPineOverviewSessionDevAccelerator() {
   MaybeStartPineOverviewSession(std::move(data));
 }
 
-void PineController::MaybeStartPineOverviewSession(
+void InformedRestoreController::MaybeStartPineOverviewSession(
     std::unique_ptr<InformedRestoreContentsData> contents_data) {
   CHECK(features::IsForestFeatureEnabled());
 
@@ -258,38 +258,38 @@ void PineController::MaybeStartPineOverviewSession(
 
   RecordPineScreenshotDurations(Shell::Get()->local_state());
   image_util::DecodeImageFile(
-      base::BindOnce(&PineController::OnInformedRestoreImageDecoded,
+      base::BindOnce(&InformedRestoreController::OnInformedRestoreImageDecoded,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
       GetInformedRestoreImagePath(), data_decoder::mojom::ImageCodec::kPng);
 }
 
-void PineController::MaybeEndPineOverviewSession() {
+void InformedRestoreController::MaybeEndPineOverviewSession() {
   contents_data_.reset();
   OverviewController::Get()->EndOverview(OverviewEndAction::kAccelerator,
                                          OverviewEnterExitType::kNormal);
 }
 
 base::CallbackListSubscription
-PineController::RegisterContentsDataUpdateCallback(
+InformedRestoreController::RegisterContentsDataUpdateCallback(
     base::RepeatingClosure callback) {
   return contents_data_update_callbacks_.Add(std::move(callback));
 }
 
-void PineController::OnContentsDataUpdated() {
+void InformedRestoreController::OnContentsDataUpdated() {
   contents_data_update_callbacks_.Notify();
 }
 
-void PineController::OnOverviewModeEnding(OverviewSession* overview_session) {
+void InformedRestoreController::OnOverviewModeEnding(OverviewSession* overview_session) {
   in_informed_restore_ = false;
   for (const auto& grid : overview_session->grid_list()) {
-    if (grid->pine_widget()) {
+    if (grid->informed_restore_widget()) {
       in_informed_restore_ = true;
       break;
     }
   }
 }
 
-void PineController::OnOverviewModeEndingAnimationComplete(bool canceled) {
+void InformedRestoreController::OnOverviewModeEndingAnimationComplete(bool canceled) {
   // If `canceled` is true, overview was reentered before the exit animations
   // were finished. `in_informed_restore_` will be reset the next time overview
   // ends.
@@ -341,7 +341,7 @@ void PineController::OnOverviewModeEndingAnimationComplete(bool canceled) {
   prefs->SetTime(prefs::kInformedRestoreNudgeLastShown, now);
 }
 
-void PineController::OnWindowActivated(ActivationReason reason,
+void InformedRestoreController::OnWindowActivated(ActivationReason reason,
                                        aura::Window* gained_active,
                                        aura::Window* lost_active) {
   if (gained_active && window_util::IsWindowUserPositionable(gained_active) &&
@@ -351,7 +351,7 @@ void PineController::OnWindowActivated(ActivationReason reason,
   }
 }
 
-void PineController::OnInformedRestoreImageDecoded(
+void InformedRestoreController::OnInformedRestoreImageDecoded(
     base::TimeTicks start_time,
     const gfx::ImageSkia& image) {
   CHECK(contents_data_);
@@ -363,8 +363,7 @@ void PineController::OnInformedRestoreImageDecoded(
     RecordScreenshotOnShutdownStatus(
         ScreenshotOnShutdownStatus::kFailedOnDifferentOrientations);
   }
-  // Delete the pine image from the disk to avoid stale screenshot on next
-  // time showing the dialog.
+  // Delete the image from the disk to avoid stale screenshot on next time showing the dialog.
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::HIGHEST},
       base::BindOnce(base::IgnoreResult(&base::DeleteFile),
@@ -373,7 +372,7 @@ void PineController::OnInformedRestoreImageDecoded(
   StartPineOverviewSession();
 }
 
-void PineController::StartPineOverviewSession() {
+void InformedRestoreController::StartPineOverviewSession() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceBirchFetch)) {
     LOG(WARNING) << "Forcing Birch data fetch";
@@ -399,7 +398,7 @@ void PineController::StartPineOverviewSession() {
                                            OverviewEnterExitType::kPine);
 }
 
-void PineController::OnOnboardingAcceptPressed(bool restore_on) {
+void InformedRestoreController::OnOnboardingAcceptPressed(bool restore_on) {
   // Wait until the onboarding widget is destroyed before starting overview,
   // since we disallow entering overview while system modal windows are open.
   // Use a weak ptr since `this` can be deleted before we close all windows.
@@ -407,7 +406,7 @@ void PineController::OnOnboardingAcceptPressed(bool restore_on) {
   if (contents_data_) {
     onboarding_widget_->widget_delegate()->RegisterDeleteDelegateCallback(
         base::BindOnce(
-            [](const base::WeakPtr<PineController>& weak_this) {
+            [](const base::WeakPtr<InformedRestoreController>& weak_this) {
               if (weak_this) {
                 weak_this->StartPineOverviewSession();
               }
@@ -435,7 +434,7 @@ void PineController::OnOnboardingAcceptPressed(bool restore_on) {
   RecordOnboardingAction(/*restore=*/true);
 }
 
-void PineController::OnOnboardingCancelPressed() {
+void InformedRestoreController::OnOnboardingCancelPressed() {
   // The cancel button would only exist if the user had Restore off.
   RecordOnboardingAction(/*restore=*/false);
 }

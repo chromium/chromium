@@ -22,7 +22,7 @@
 #include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "ash/wm/desks/templates/saved_desk_controller.h"
 #include "ash/wm/window_restore/informed_restore_contents_data.h"
-#include "ash/wm/window_restore/pine_controller.h"
+#include "ash/wm/window_restore/informed_restore_controller.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/barrier_callback.h"
 #include "base/command_line.h"
@@ -195,9 +195,10 @@ class DelegateImpl : public FullRestoreService::Delegate {
     // A unit test that does not override this default delegate may not have ash
     // shell.
     if (Shell::HasInstance()) {
-      CHECK(Shell::Get()->pine_controller());
-      Shell::Get()->pine_controller()->MaybeStartPineOverviewSession(
-          std::move(contents_data));
+      CHECK(Shell::Get()->informed_restore_controller());
+      Shell::Get()
+          ->informed_restore_controller()
+          ->MaybeStartPineOverviewSession(std::move(contents_data));
     }
   }
 
@@ -205,23 +206,25 @@ class DelegateImpl : public FullRestoreService::Delegate {
     // A unit test that does not override this default delegate may not have ash
     // shell.
     if (Shell::HasInstance()) {
-      CHECK(Shell::Get()->pine_controller());
-      Shell::Get()->pine_controller()->MaybeEndPineOverviewSession();
+      CHECK(Shell::Get()->informed_restore_controller());
+      Shell::Get()
+          ->informed_restore_controller()
+          ->MaybeEndPineOverviewSession();
     }
   }
 
   InformedRestoreContentsData* GetInformedRestoreContentData() override {
     if (Shell::HasInstance()) {
-      CHECK(Shell::Get()->pine_controller());
-      return Shell::Get()->pine_controller()->contents_data();
+      CHECK(Shell::Get()->informed_restore_controller());
+      return Shell::Get()->informed_restore_controller()->contents_data();
     }
     return nullptr;
   }
 
   void OnInformedRestoreContentsDataUpdated() override {
     if (Shell::HasInstance()) {
-      CHECK(Shell::Get()->pine_controller());
-      Shell::Get()->pine_controller()->OnContentsDataUpdated();
+      CHECK(Shell::Get()->informed_restore_controller());
+      Shell::Get()->informed_restore_controller()->OnContentsDataUpdated();
     }
   }
 };
@@ -956,9 +959,10 @@ void FullRestoreService::MaybeShowInformedRestoreOnboarding(bool restore_on) {
   if (Shell::HasInstance() && !profile_->IsNewProfile() &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kNoFirstRun)) {
-    CHECK(Shell::Get()->pine_controller());
-    Shell::Get()->pine_controller()->MaybeShowInformedRestoreOnboarding(
-        restore_on);
+    CHECK(Shell::Get()->informed_restore_controller());
+    Shell::Get()
+        ->informed_restore_controller()
+        ->MaybeShowInformedRestoreOnboarding(restore_on);
   }
 }
 

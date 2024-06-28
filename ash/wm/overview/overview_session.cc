@@ -47,7 +47,7 @@
 #include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_properties.h"
-#include "ash/wm/window_restore/pine_controller.h"
+#include "ash/wm/window_restore/informed_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
@@ -1724,7 +1724,7 @@ void OverviewSession::OnSplitViewStateChanged(
   // Entering or exiting splitview is unexpected behavior in an informed restore
   // overview session.
   if (features::IsForestFeatureEnabled()) {
-    CHECK(!Shell::Get()->pine_controller()->contents_data());
+    CHECK(!Shell::Get()->informed_restore_controller()->contents_data());
   }
 
   UpdateNoWindowsWidgetOnEachGrid(/*animate=*/false,

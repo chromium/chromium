@@ -27,7 +27,9 @@ class OverviewGridTestApi {
 
   const gfx::Rect bounds() const { return overview_grid_->bounds_; }
   float scroll_offset() const { return overview_grid_->scroll_offset_; }
-  views::Widget* pine_widget() { return overview_grid_->pine_widget_.get(); }
+  views::Widget* informed_restore_widget() {
+    return overview_grid_->informed_restore_widget_.get();
+  }
   const views::Widget* birch_bar_widget() const {
     return overview_grid_->birch_bar_widget_.get();
   }

@@ -512,8 +512,12 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
     return saved_desk_library_widget_.get();
   }
 
-  views::Widget* pine_widget() { return pine_widget_.get(); }
-  const views::Widget* pine_widget() const { return pine_widget_.get(); }
+  views::Widget* informed_restore_widget() {
+    return informed_restore_widget_.get();
+  }
+  const views::Widget* informed_restore_widget() const {
+    return informed_restore_widget_.get();
+  }
 
   views::Widget* feedback_widget() { return feedback_widget_.get(); }
 
@@ -533,7 +537,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   friend class DesksTemplatesTest;
   friend class OverviewGridTestApi;
   friend class OverviewTestBase;
-  FRIEND_TEST_ALL_PREFIXES(PineTest, ZoomDisplay);
 
   // Struct which holds data required to perform nudges. Nudge in the context of
   // overview view means an overview item is currently being dragged vertically
@@ -720,8 +723,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // The widget that contains the view for all saved desks.
   std::unique_ptr<views::Widget> saved_desk_library_widget_;
 
-  // The widget that contains the `PineContentsView`.
-  std::unique_ptr<views::Widget> pine_widget_;
+  // The widget that contains the `InformedRestoreContentsView`.
+  std::unique_ptr<views::Widget> informed_restore_widget_;
 
   // The widget that contains a `PillButton` to open a feedback page.
   std::unique_ptr<views::Widget> feedback_widget_;

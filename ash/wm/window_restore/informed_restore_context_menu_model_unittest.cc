@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/window_restore/pine_context_menu_model.h"
+#include "ash/wm/window_restore/informed_restore_context_menu_model.h"
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -16,9 +16,9 @@
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/window_restore/informed_restore_contents_data.h"
 #include "ash/wm/window_restore/informed_restore_contents_view.h"
+#include "ash/wm/window_restore/informed_restore_controller.h"
 #include "ash/wm/window_restore/informed_restore_test_base.h"
-#include "ash/wm/window_restore/pine_context_menu_model.h"
-#include "ash/wm/window_restore/pine_controller.h"
+#include "ash/wm/window_restore/informed_restore_context_menu_model.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/app_constants/constants.h"
@@ -71,14 +71,14 @@ TEST_F(PineContextMenuModelTest, ShowContextMenuOnSettingsButtonClicked) {
   auto contents_data = std::make_unique<InformedRestoreContentsData>();
   contents_data->apps_infos.emplace_back(app_constants::kChromeAppId, "Title",
                                          /*window_id=*/0);
-  Shell::Get()->pine_controller()->MaybeStartPineOverviewSession(
+  Shell::Get()->informed_restore_controller()->MaybeStartPineOverviewSession(
       std::move(contents_data));
   WaitForOverviewEntered();
 
   // Get the active Pine widget.
   OverviewGrid* grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(grid);
-  auto* pine_widget = OverviewGridTestApi(grid).pine_widget();
+  auto* pine_widget = OverviewGridTestApi(grid).informed_restore_widget();
   ASSERT_TRUE(pine_widget);
 
   // The context menu should not be open.

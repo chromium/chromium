@@ -235,7 +235,7 @@
 #include "ash/wm/window_animations.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_properties.h"
-#include "ash/wm/window_restore/pine_controller.h"
+#include "ash/wm/window_restore/informed_restore_controller.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_shadow_controller_delegate.h"
@@ -933,7 +933,7 @@ Shell::~Shell() {
   post_login_glanceables_metrics_reporter_.reset();
 
   // Has to happen before `~OverviewController` since it's an observer.
-  pine_controller_.reset();
+  informed_restore_controller_.reset();
 
   // Has to happen before `~MruWindowTracker` and after
   // `~GameDashboardController`.
@@ -1782,7 +1782,8 @@ void Shell::Init(
 
   float_controller_ = std::make_unique<FloatController>();
   if (features::IsForestFeatureEnabled()) {
-    pine_controller_ = std::make_unique<PineController>();
+    informed_restore_controller_ =
+        std::make_unique<InformedRestoreController>();
   }
   pip_controller_ = std::make_unique<PipController>();
 

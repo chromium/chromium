@@ -16,12 +16,12 @@
 #include "ash/style/typography.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_properties.h"
+#include "ash/wm/window_restore/informed_restore_constants.h"
 #include "ash/wm/window_restore/informed_restore_contents_data.h"
+#include "ash/wm/window_restore/informed_restore_context_menu_model.h"
+#include "ash/wm/window_restore/informed_restore_controller.h"
 #include "ash/wm/window_restore/informed_restore_items_container_view.h"
 #include "ash/wm/window_restore/informed_restore_screenshot_icon_row_view.h"
-#include "ash/wm/window_restore/pine_constants.h"
-#include "ash/wm/window_restore/pine_context_menu_model.h"
-#include "ash/wm/window_restore/pine_controller.h"
 #include "ash/wm/window_restore/window_restore_metrics.h"
 #include "chromeos/ui/base/display_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -86,7 +86,7 @@ InformedRestoreContentsView::InformedRestoreContentsView() :
   SetBetweenChildSpacing(kContentsChildSpacing);
   SetInsideBorderInsets(kContentsInsets);
 
-  auto* pine_controller = Shell::Get()->pine_controller();
+  auto* pine_controller = Shell::Get()->informed_restore_controller();
   contents_data_updated_subscription_ =
       pine_controller->RegisterContentsDataUpdateCallback(base::BindRepeating(
           &InformedRestoreContentsView::UpdateContents,
@@ -172,7 +172,7 @@ void InformedRestoreContentsView::UpdateOrientation() {
 
 void InformedRestoreContentsView::UpdateContents() {
   const auto& apps_infos =
-      Shell::Get()->pine_controller()->contents_data()->apps_infos;
+      Shell::Get()->informed_restore_controller()->contents_data()->apps_infos;
 
   // Update the titles and favicons by recreating the items container or
   // screenshot icon row.
@@ -190,7 +190,7 @@ void InformedRestoreContentsView::UpdateContents() {
 
 void InformedRestoreContentsView::OnRestoreButtonPressed() {
   if (InformedRestoreContentsData* contents_data =
-          Shell::Get()->pine_controller()->contents_data()) {
+          Shell::Get()->informed_restore_controller()->contents_data()) {
     if (contents_data->restore_callback) {
       RecordTimeToAction(base::TimeTicks::Now() - creation_time_,
                          showing_list_view_);
@@ -208,7 +208,7 @@ void InformedRestoreContentsView::OnRestoreButtonPressed() {
 
 void InformedRestoreContentsView::OnCancelButtonPressed() {
   if (InformedRestoreContentsData* contents_data =
-          Shell::Get()->pine_controller()->contents_data()) {
+          Shell::Get()->informed_restore_controller()->contents_data()) {
     if (contents_data->cancel_callback) {
       RecordTimeToAction(base::TimeTicks::Now() - creation_time_,
                          showing_list_view_);
@@ -308,7 +308,7 @@ void InformedRestoreContentsView::CreateChildViews() {
                                 : views::BoxLayout::Orientation::kVertical);
 
   const InformedRestoreContentsData* contents_data =
-      Shell::Get()->pine_controller()->contents_data();
+      Shell::Get()->informed_restore_controller()->contents_data();
   CHECK(contents_data);
   const int title_message_id = contents_data->last_session_crashed
                                    ? IDS_ASH_PINE_DIALOG_CRASH_TITLE

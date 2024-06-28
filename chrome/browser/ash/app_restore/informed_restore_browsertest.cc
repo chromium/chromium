@@ -14,11 +14,11 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ash/wm/window_restore/informed_restore_constants.h"
 #include "ash/wm/window_restore/informed_restore_contents_data.h"
 #include "ash/wm/window_restore/informed_restore_contents_view.h"
+#include "ash/wm/window_restore/informed_restore_controller.h"
 #include "ash/wm/window_restore/informed_restore_test_api.h"
-#include "ash/wm/window_restore/pine_constants.h"
-#include "ash/wm/window_restore/pine_controller.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -49,7 +49,8 @@ const InformedRestoreContentsView* GetInformedRestoreContentsView() {
     return nullptr;
   }
 
-  views::Widget* pine_widget = OverviewGridTestApi(overview_grid).pine_widget();
+  views::Widget* pine_widget =
+      OverviewGridTestApi(overview_grid).informed_restore_widget();
   if (!pine_widget) {
     return nullptr;
   }
@@ -433,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, TabInfoWithinLimit) {
   // The informed restore dialog is built based on the values in this data
   // structure.
   const InformedRestoreContentsData* contents_data =
-      Shell::Get()->pine_controller()->contents_data();
+      Shell::Get()->informed_restore_controller()->contents_data();
   ASSERT_TRUE(contents_data);
   const InformedRestoreContentsData::AppsInfos& apps_infos =
       contents_data->apps_infos;
@@ -485,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, TabInfoOutsideLimit) {
   // The informed restore dialog is built based on the values in this data
   // structure.
   const InformedRestoreContentsData* contents_data =
-      Shell::Get()->pine_controller()->contents_data();
+      Shell::Get()->informed_restore_controller()->contents_data();
   ASSERT_TRUE(contents_data);
   const InformedRestoreContentsData::AppsInfos& apps_infos =
       contents_data->apps_infos;
@@ -537,7 +538,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, AppInfo) {
   // The informed restore dialog is built based on the values in this data
   // structure.
   const InformedRestoreContentsData* contents_data =
-      Shell::Get()->pine_controller()->contents_data();
+      Shell::Get()->informed_restore_controller()->contents_data();
   ASSERT_TRUE(contents_data);
   const InformedRestoreContentsData::AppsInfos& apps_infos =
       contents_data->apps_infos;
@@ -576,12 +577,12 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, ReenterOverviewPineSession) {
   WaitForOverviewEnterAnimation();
   ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_TRUE(GetPineDialogRestoreButton());
-  EXPECT_TRUE(Shell::Get()->pine_controller()->contents_data());
+  EXPECT_TRUE(Shell::Get()->informed_restore_controller()->contents_data());
 
   // Exit overview without clicking restore or cancel.
   ToggleOverview();
   WaitForOverviewExitAnimation();
-  EXPECT_TRUE(Shell::Get()->pine_controller()->contents_data());
+  EXPECT_TRUE(Shell::Get()->informed_restore_controller()->contents_data());
 
   // Reenter overview. Test that the dialog is still visible.
   ToggleOverview();
@@ -596,7 +597,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, ReenterOverviewPineSession) {
   ASSERT_TRUE(Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
       AcceleratorAction::kNewWindow, {}));
   waiter.Wait();
-  EXPECT_FALSE(Shell::Get()->pine_controller()->contents_data());
+  EXPECT_FALSE(Shell::Get()->informed_restore_controller()->contents_data());
 
   // Reentering overview this time should not show the dialog.
   ToggleOverview();
@@ -712,8 +713,10 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreOnboardingTest, Onboarding) {
 
   // Attempt to show the dialog again. Since we've already shown it, we
   // don't show it again.
-  Shell::Get()->pine_controller()->MaybeShowInformedRestoreOnboarding(
-      /*restore_on=*/true);
+  Shell::Get()
+      ->informed_restore_controller()
+      ->MaybeShowInformedRestoreOnboarding(
+          /*restore_on=*/true);
   EXPECT_FALSE(InformedRestoreTestApi().GetOnboardingDialog());
 }
 

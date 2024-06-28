@@ -30,7 +30,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/session_state_animator_impl.h"
-#include "ash/wm/window_restore/pine_constants.h"
+#include "ash/wm/window_restore/informed_restore_constants.h"
 #include "ash/wm/window_restore/window_restore_metrics.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "ash/wm/workspace/backdrop_controller.h"

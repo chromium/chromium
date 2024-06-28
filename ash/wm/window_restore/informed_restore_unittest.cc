@@ -24,17 +24,17 @@
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/window_restore/informed_restore_app_image_view.h"
+#include "ash/wm/window_restore/informed_restore_constants.h"
 #include "ash/wm/window_restore/informed_restore_contents_data.h"
 #include "ash/wm/window_restore/informed_restore_contents_view.h"
+#include "ash/wm/window_restore/informed_restore_context_menu_model.h"
+#include "ash/wm/window_restore/informed_restore_controller.h"
 #include "ash/wm/window_restore/informed_restore_item_view.h"
 #include "ash/wm/window_restore/informed_restore_items_container_view.h"
 #include "ash/wm/window_restore/informed_restore_items_overflow_view.h"
 #include "ash/wm/window_restore/informed_restore_screenshot_icon_row_view.h"
 #include "ash/wm/window_restore/informed_restore_test_api.h"
 #include "ash/wm/window_restore/informed_restore_test_base.h"
-#include "ash/wm/window_restore/pine_constants.h"
-#include "ash/wm/window_restore/pine_context_menu_model.h"
-#include "ash/wm/window_restore/pine_controller.h"
 #include "ash/wm/window_restore/window_restore_metrics.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/command_line.h"
@@ -78,7 +78,7 @@ class InformedRestoreTest : public InformedRestoreTestBase {
   // Starts an overview session with an informed restore dialog created from
   // `data`.
   void StartOverviewSession(std::unique_ptr<InformedRestoreContentsData> data) {
-    Shell::Get()->pine_controller()->MaybeStartPineOverviewSession(
+    Shell::Get()->informed_restore_controller()->MaybeStartPineOverviewSession(
         std::move(data));
     WaitForOverviewEntered();
 
@@ -86,14 +86,14 @@ class InformedRestoreTest : public InformedRestoreTestBase {
         OverviewController::Get()->overview_session();
     ASSERT_TRUE(overview_session);
 
-    // Check that the pine widget exists.
+    // Check that the informed restore widget exists.
     OverviewGrid* grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
     ASSERT_TRUE(grid);
-    auto* pine_widget = OverviewGridTestApi(grid).pine_widget();
-    ASSERT_TRUE(pine_widget);
+    auto* widget = OverviewGridTestApi(grid).informed_restore_widget();
+    ASSERT_TRUE(widget);
 
     const auto* contents_view = views::AsViewClass<InformedRestoreContentsView>(
-        pine_widget->GetContentsView());
+        widget->GetContentsView());
     ASSERT_TRUE(contents_view);
     ASSERT_TRUE(contents_view->GetViewByID(pine::kPreviewContainerViewID));
   }
@@ -101,7 +101,7 @@ class InformedRestoreTest : public InformedRestoreTestBase {
   const InformedRestoreContentsView* GetContentsView() const {
     return views::AsViewClass<InformedRestoreContentsView>(
         OverviewGridTestApi(Shell::GetPrimaryRootWindow())
-            .pine_widget()
+            .informed_restore_widget()
             ->GetContentsView());
   }
 
@@ -141,7 +141,9 @@ class InformedRestoreTest : public InformedRestoreTestBase {
     // Create callbacks which close the informed restore overview session to
     // simulate production behavior.
     base::OnceClosure callback = base::BindLambdaForTesting([]() {
-      Shell::Get()->pine_controller()->MaybeEndPineOverviewSession();
+      Shell::Get()
+          ->informed_restore_controller()
+          ->MaybeEndPineOverviewSession();
     });
     std::pair<base::OnceClosure, base::OnceClosure> split =
         base::SplitOnceCallback(std::move(callback));
@@ -195,13 +197,15 @@ class InformedRestoreTest : public InformedRestoreTestBase {
 };
 
 TEST_F(InformedRestoreTest, NoOverflow) {
-  // Start an informed restore overview session with restore data for one window.
+  // Start an informed restore overview session with restore data for one
+  // window.
   StartOverviewSession(MakeTestAppIds(1));
   EXPECT_FALSE(GetContentsView()->GetViewByID(pine::kOverflowViewID));
 }
 
 TEST_F(InformedRestoreTest, TwoWindowOverflow) {
-  // Start an informed restore overview session with restore data for two overflow windows.
+  // Start an informed restore overview session with restore data for two
+  // overflow windows.
   StartOverviewSession(MakeTestAppIds(pine::kOverflowMinThreshold + 2));
 
   EXPECT_EQ(2u, GetOverflowImageCount());
@@ -216,7 +220,8 @@ TEST_F(InformedRestoreTest, TwoWindowOverflow) {
 }
 
 TEST_F(InformedRestoreTest, ThreeWindowOverflow) {
-  // Start an informed restore overview session with restore data for three overflow windows.
+  // Start an informed restore overview session with restore data for three
+  // overflow windows.
   StartOverviewSession(MakeTestAppIds(pine::kOverflowMinThreshold + 3));
 
   EXPECT_EQ(3u, GetOverflowImageCount());
@@ -234,7 +239,8 @@ TEST_F(InformedRestoreTest, ThreeWindowOverflow) {
 }
 
 TEST_F(InformedRestoreTest, FourWindowOverflow) {
-  // Start an informed restore overview session with restore data for four overflow windows.
+  // Start an informed restore overview session with restore data for four
+  // overflow windows.
   StartOverviewSession(MakeTestAppIds(pine::kOverflowMinThreshold + 4));
 
   EXPECT_EQ(4u, GetOverflowImageCount());
@@ -255,7 +261,8 @@ TEST_F(InformedRestoreTest, FivePlusWindowOverflow) {
   auto data = std::make_unique<InformedRestoreContentsData>();
   data->last_session_crashed = false;
 
-  // Start an informed restore overview session with restore data for five overflow windows.
+  // Start an informed restore overview session with restore data for five
+  // overflow windows.
   StartOverviewSession(MakeTestAppIds(pine::kOverflowMinThreshold + 5));
 
   // The image view map should only have three elements as the fourth slot is
@@ -274,8 +281,8 @@ TEST_F(InformedRestoreTest, FivePlusWindowOverflow) {
                     .size());
 }
 
-// Tests that the pine screenshot should not be shown if it has different
-// orientation as the display will show it.
+// Tests that the informed restore screenshot should not be shown if it has
+// different orientation as the display will show it.
 TEST_F(InformedRestoreTest, NoScreenshotWithDifferentDisplayOrientation) {
   UpdateDisplay("800x600");
   display::test::DisplayManagerTestApi(display_manager())
@@ -292,12 +299,11 @@ TEST_F(InformedRestoreTest, NoScreenshotWithDifferentDisplayOrientation) {
   base::ScopedTempDir temp_dir;
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  const base::FilePath file_path =
-      temp_dir.GetPath().AppendASCII("test_pine.png");
+  const base::FilePath file_path = temp_dir.GetPath().AppendASCII("test.png");
   TakeAndSaveInformedRestoreScreenshot(file_path);
   ASSERT_TRUE(base::PathExists(file_path));
 
-  // Rotate the display and show the pine dialog.
+  // Rotate the display and show the informed restore dialog.
   test_api.SetDisplayRotation(display::Display::ROTATE_270,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
@@ -305,7 +311,7 @@ TEST_F(InformedRestoreTest, NoScreenshotWithDifferentDisplayOrientation) {
 
   StartOverviewSession(MakeTestAppIds(1));
   const InformedRestoreContentsData* contents_data =
-      Shell::Get()->pine_controller()->contents_data();
+      Shell::Get()->informed_restore_controller()->contents_data();
   ASSERT_TRUE(contents_data);
   // The image inside `InformedRestoreContentsData` should be null when the
   // landscape image is going to be shown inside a display in the portrait
@@ -325,20 +331,19 @@ TEST_F(InformedRestoreTest, ScreenshotIconRowMaxElements) {
   base::ScopedTempDir temp_dir;
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  const base::FilePath file_path =
-      temp_dir.GetPath().AppendASCII("test_pine.png");
+  const base::FilePath file_path = temp_dir.GetPath().AppendASCII("test.png");
   TakeAndSaveInformedRestoreScreenshot(file_path);
   ASSERT_TRUE(base::PathExists(file_path));
 
   // Starts the session with the maximum number of elements that can be shown
   // inside the icon row.
   StartOverviewSession(MakeTestAppIds(pine::kScreenshotIconRowMaxElements));
-  auto* pine_controller = Shell::Get()->pine_controller();
+  auto* controller = Shell::Get()->informed_restore_controller();
   const InformedRestoreContentsData* contents_data =
-      pine_controller->contents_data();
+      controller->contents_data();
   EXPECT_TRUE(contents_data && !contents_data->image.isNull());
   // The image in the disk should be deleted to avoid stale screenshot on next
-  // time to show the pine dialog.
+  // time to show the informed restore dialog.
   EXPECT_FALSE(base::PathExists(file_path));
   // Screenshot icon row should be shown when there is a screenshot.
   const InformedRestoreScreenshotIconRowView* screenshot_icon_row_view =
@@ -352,7 +357,7 @@ TEST_F(InformedRestoreTest, ScreenshotIconRowMaxElements) {
   histogram_tester.ExpectBucketCount(kDialogScreenshotVisibility, true, 1);
   histogram_tester.ExpectBucketCount(kDialogScreenshotVisibility, false, 0);
 
-  pine_controller->MaybeEndPineOverviewSession();
+  controller->MaybeEndPineOverviewSession();
   // Starts the session again, the dialog should show with listview instead of
   // the screenshot.
   StartOverviewSession(MakeTestAppIds(pine::kScreenshotIconRowMaxElements));
@@ -364,14 +369,14 @@ TEST_F(InformedRestoreTest, ScreenshotIconRowExceedMaxElements) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   TakeAndSaveInformedRestoreScreenshot(
-      temp_dir.GetPath().AppendASCII("test_pine.png"));
+      temp_dir.GetPath().AppendASCII("test.png"));
 
   // Starts the session with more elements that can be shown inside the icon
   // row.
   StartOverviewSession(
       MakeTestAppIds(pine::kScreenshotIconRowMaxElements + 2));
   const InformedRestoreContentsData* contents_data =
-      Shell::Get()->pine_controller()->contents_data();
+      Shell::Get()->informed_restore_controller()->contents_data();
   EXPECT_TRUE(contents_data && !contents_data->image.isNull());
   // Screenshot icon row should be shown when there is a screenshot.
   const InformedRestoreScreenshotIconRowView* screenshot_icon_row_view =
@@ -401,7 +406,7 @@ TEST_F(InformedRestoreTest, NudgePreferences) {
     ToggleOverview();
   };
 
-  // Start pine session, then end overview. Test we show the nudge.
+  // Start inforemd restore session, then end overview. Test we show the nudge.
   test_start_and_end_overview();
   EXPECT_TRUE(
       anchored_nudge_manager->GetShownNudgeForTest(pine::kSuggestionsNudgeId));
@@ -448,7 +453,7 @@ TEST_F(InformedRestoreTest, InformedRestoreNudge) {
   // Start and end overview normally. Test we don't show the nudge.
   ToggleOverview();
   auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
-  ASSERT_FALSE(OverviewGridTestApi(overview_grid).pine_widget());
+  ASSERT_FALSE(OverviewGridTestApi(overview_grid).informed_restore_widget());
   ToggleOverview();
   EXPECT_FALSE(
       anchored_nudge_manager->GetShownNudgeForTest(pine::kSuggestionsNudgeId));
@@ -460,8 +465,10 @@ TEST_F(InformedRestoreTest, OnboardingToast) {
   GetTestPrefService()->SetBoolean(prefs::kShowInformedRestoreOnboarding, true);
 
   EXPECT_FALSE(ToastManager::Get()->IsToastShown(pine::kOnboardingToastId));
-  Shell::Get()->pine_controller()->MaybeShowInformedRestoreOnboarding(
-      /*restore_on=*/false);
+  Shell::Get()
+      ->informed_restore_controller()
+      ->MaybeShowInformedRestoreOnboarding(
+          /*restore_on=*/false);
   auto* dialog = InformedRestoreTestApi().GetOnboardingDialog();
   LeftClickOn(dialog->GetAcceptButtonForTesting());
   EXPECT_TRUE(ToastManager::Get()->IsToastShown(pine::kOnboardingToastId));
@@ -478,8 +485,8 @@ TEST_F(InformedRestoreTest, OnboardingMetrics) {
   histogram_tester.ExpectTotalCount(kInformedRestoreOnboardingHistogram, 0);
 
   // Press "Accept". Test we increment `true`.
-  auto* pine_controller = Shell::Get()->pine_controller();
-  pine_controller->MaybeShowInformedRestoreOnboarding(/*restore_on=*/false);
+  auto* controller = Shell::Get()->informed_restore_controller();
+  controller->MaybeShowInformedRestoreOnboarding(/*restore_on=*/false);
   auto* dialog = InformedRestoreTestApi().GetOnboardingDialog();
   LeftClickOn(dialog->GetAcceptButtonForTesting());
   views::test::WidgetDestroyedWaiter(dialog->GetWidget()).Wait();
@@ -489,8 +496,7 @@ TEST_F(InformedRestoreTest, OnboardingMetrics) {
   GetTestPrefService()->SetBoolean(prefs::kShowInformedRestoreOnboarding, true);
 
   // Press "Cancel". Test we increment `false`.
-  pine_controller->MaybeShowInformedRestoreOnboarding(
-      /*restore_on=*/false);
+  controller->MaybeShowInformedRestoreOnboarding(/*restore_on=*/false);
   dialog = InformedRestoreTestApi().GetOnboardingDialog();
   LeftClickOn(dialog->GetCancelButtonForTesting());
   views::test::WidgetDestroyedWaiter(dialog->GetWidget()).Wait();
@@ -503,7 +509,7 @@ TEST_F(InformedRestoreTest, OnboardingMetrics) {
   histogram_tester.ExpectTotalCount(kInformedRestoreOnboardingHistogram, 2);
 
   // Show the onboarding dialog with 'Restore' on. Test we don't record.
-  pine_controller->MaybeShowInformedRestoreOnboarding(
+  controller->MaybeShowInformedRestoreOnboarding(
       /*restore_on=*/true);
   dialog = InformedRestoreTestApi().GetOnboardingDialog();
   LeftClickOn(dialog->GetAcceptButtonForTesting());
@@ -574,9 +580,10 @@ TEST_F(InformedRestoreTest, CloseDialogMetrics) {
                                   ClosePineDialogType::kListviewCancelButton),
                               1)));
 
-  // Test exiting the pine overview session without clicking any buttons.
+  // Test exiting the informed restore overview session without clicking any
+  // buttons.
   StartOverviewSession(MakeTestAppIds(1));
-  Shell::Get()->pine_controller()->MaybeEndPineOverviewSession();
+  Shell::Get()->informed_restore_controller()->MaybeEndPineOverviewSession();
   EXPECT_THAT(
       histogram_tester_list_view.GetAllSamples(kDialogClosedHistogram),
       BucketsAre(
@@ -617,7 +624,7 @@ TEST_F(InformedRestoreTest, CloseDialogMetrics) {
               1)));
 
   StartOverviewSession(MakeTestAppIdsWithImage(1));
-  Shell::Get()->pine_controller()->MaybeEndPineOverviewSession();
+  Shell::Get()->informed_restore_controller()->MaybeEndPineOverviewSession();
   EXPECT_THAT(
       histogram_tester_screenshot.GetAllSamples(kDialogClosedHistogram),
       BucketsAre(
@@ -639,7 +646,7 @@ TEST_F(InformedRestoreTest, ToggleOverviewToExit) {
   OverviewGrid* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
-  EXPECT_TRUE(OverviewGridTestApi(overview_grid).pine_widget());
+  EXPECT_TRUE(OverviewGridTestApi(overview_grid).informed_restore_widget());
 
   // Exit overview by without clicking the restore or cancel buttons.
   ToggleOverview();
@@ -648,7 +655,7 @@ TEST_F(InformedRestoreTest, ToggleOverviewToExit) {
   ToggleOverview();
   overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
-  EXPECT_TRUE(OverviewGridTestApi(overview_grid).pine_widget());
+  EXPECT_TRUE(OverviewGridTestApi(overview_grid).informed_restore_widget());
 }
 
 TEST_F(InformedRestoreTest, ClickRestoreToExit) {
@@ -657,19 +664,20 @@ TEST_F(InformedRestoreTest, ClickRestoreToExit) {
   OverviewGrid* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
-  views::Widget* pine_widget = OverviewGridTestApi(overview_grid).pine_widget();
-  ASSERT_TRUE(pine_widget);
+  views::Widget* widget =
+      OverviewGridTestApi(overview_grid).informed_restore_widget();
+  ASSERT_TRUE(widget);
 
   // Exit overview by clicking the restore or cancel buttons.
   const views::View* restore_button =
-      pine_widget->GetContentsView()->GetViewByID(pine::kRestoreButtonID);
+      widget->GetContentsView()->GetViewByID(pine::kRestoreButtonID);
   LeftClickOn(restore_button);
   ASSERT_FALSE(OverviewController::Get()->overview_session());
 
   ToggleOverview();
   overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
-  EXPECT_FALSE(OverviewGridTestApi(overview_grid).pine_widget());
+  EXPECT_FALSE(OverviewGridTestApi(overview_grid).informed_restore_widget());
 }
 
 TEST_F(InformedRestoreTest, InformedRestoreItemView) {
@@ -694,8 +702,8 @@ TEST_F(InformedRestoreTest, InformedRestoreItemView) {
       item_view->GetViewByID(pine::kFaviconContainerViewID)->children().size());
 }
 
-// Tests that the informed restore dialog remains in the center after zooming the display up
-// or down.
+// Tests that the informed restore dialog remains in the center after zooming
+// the display up or down.
 TEST_F(InformedRestoreTest, ZoomDisplay) {
   StartOverviewSession(MakeTestAppIds(1));
 
@@ -703,9 +711,9 @@ TEST_F(InformedRestoreTest, ZoomDisplay) {
   OverviewGrid* overview_grid = GetOverviewGridForRoot(root);
   ASSERT_TRUE(overview_grid);
   OverviewGridTestApi overview_grid_test_api(overview_grid);
-  views::Widget* pine_widget = overview_grid_test_api.pine_widget();
-  ASSERT_TRUE(pine_widget);
-  const gfx::Rect& initial_bounds = pine_widget->GetWindowBoundsInScreen();
+  views::Widget* widget = overview_grid_test_api.informed_restore_widget();
+  ASSERT_TRUE(widget);
+  const gfx::Rect& initial_bounds = widget->GetWindowBoundsInScreen();
   const int half_birch_bar_paddings =
       16 + 0.5 * overview_grid_test_api.birch_bar_widget()
                      ->GetWindowBoundsInScreen()
@@ -714,12 +722,12 @@ TEST_F(InformedRestoreTest, ZoomDisplay) {
   // Checks the widget bounds. The x should be exactly centered in the display,
   // the y is near the place half of birch bar paddings away from center and the
   // size remains the same.
-  auto verify_widget_bounds = [&root, &pine_widget, &initial_bounds,
+  auto verify_widget_bounds = [&root, &widget, &initial_bounds,
                                &half_birch_bar_paddings](
                                   const std::string& test_name) {
     SCOPED_TRACE(test_name);
     const gfx::Rect root_bounds = root->GetBoundsInScreen();
-    const gfx::Rect widget_bounds = pine_widget->GetWindowBoundsInScreen();
+    const gfx::Rect widget_bounds = widget->GetWindowBoundsInScreen();
     EXPECT_EQ(root_bounds.CenterPoint().x(), widget_bounds.CenterPoint().x());
     EXPECT_LT(widget_bounds.CenterPoint().y(), root_bounds.CenterPoint().y());
     EXPECT_GT(widget_bounds.CenterPoint().y(),
@@ -727,8 +735,8 @@ TEST_F(InformedRestoreTest, ZoomDisplay) {
     EXPECT_EQ(initial_bounds.size(), widget_bounds.size());
   };
 
-  // Zoom up twice and down once and verify the bounds of the pine widget at all
-  // stages.
+  // Zoom up twice and down once and verify the bounds of the informed restore
+  // widget at all stages.
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   const int64_t display_id = WindowTreeHostManager::GetPrimaryDisplayId();
   display_manager->ZoomDisplay(display_id, /*up=*/true);
@@ -745,14 +753,14 @@ TEST_F(InformedRestoreTest, InformedRestoreWidgetTabTraversal) {
 
   StartOverviewSession(MakeTestAppIds(1));
 
-  views::Widget* pine_widget =
+  views::Widget* widget =
       OverviewGridTestApi(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow()))
-          .pine_widget();
-  ASSERT_TRUE(pine_widget);
-  views::FocusManager* focus_manager = pine_widget->GetFocusManager();
+          .informed_restore_widget();
+  ASSERT_TRUE(widget);
+  views::FocusManager* focus_manager = widget->GetFocusManager();
   const InformedRestoreContentsView* contents = GetContentsView();
 
-  // Tab a couple times through the pine widgets focusable views.
+  // Tab a couple times through the informed restore widgets focusable views.
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_EQ(contents->GetViewByID(pine::kCancelButtonID),
             focus_manager->GetFocusedView());
@@ -767,7 +775,8 @@ TEST_F(InformedRestoreTest, InformedRestoreWidgetTabTraversal) {
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_FALSE(focus_manager->GetFocusedView());
 
-  // Reverse focus and verify it lands on the pine widgets last focusable view.
+  // Reverse focus and verify it lands on the informed restore widgets last
+  // focusable view.
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(contents->GetViewByID(pine::kSettingsButtonID),
             focus_manager->GetFocusedView());
@@ -790,14 +799,15 @@ TEST_F(InformedRestoreTest, LayoutLandscapeToPortrait) {
   OverviewGrid* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
-  views::Widget* pine_widget = OverviewGridTestApi(overview_grid).pine_widget();
-  ASSERT_TRUE(pine_widget);
+  views::Widget* widget =
+      OverviewGridTestApi(overview_grid).informed_restore_widget();
+  ASSERT_TRUE(widget);
 
   // In landscape mode, the `InformedRestoreContentsView` should have two
   // children: a left hand side contents view, and a right hand side contents
   // view.
   auto* contents_view = views::AsViewClass<InformedRestoreContentsView>(
-      pine_widget->GetContentsView());
+      widget->GetContentsView());
   ASSERT_TRUE(contents_view);
   EXPECT_EQ(contents_view->children().size(), 2u);
 
@@ -808,20 +818,20 @@ TEST_F(InformedRestoreTest, LayoutLandscapeToPortrait) {
       display::Display::ROTATE_90, display::Display::RotationSource::ACTIVE);
   ASSERT_TRUE(chromeos::IsPortraitOrientation(
       orientation_test_api.GetCurrentOrientation()));
-  ASSERT_TRUE(pine_widget);
+  ASSERT_TRUE(widget);
 
   // In portrait mode, the `InformedRestoreContentsView` should have three
   // children: the title and description container (header), the
   // `InformedRestoreItemsContainerView`, and the buttons container
   // (footer).
   contents_view = views::AsViewClass<InformedRestoreContentsView>(
-      pine_widget->GetContentsView());
+      widget->GetContentsView());
   ASSERT_TRUE(contents_view);
   EXPECT_EQ(contents_view->children().size(), 3u);
 }
 
-// Tests that the contents are laid out correctly when the display is in portrait
-// mode and transitions to landscape mode.
+// Tests that the contents are laid out correctly when the display is in
+// portrait mode and transitions to landscape mode.
 TEST_F(InformedRestoreTest, LayoutPortraitToLandscape) {
   // Rotate the display to put it in portrait mode.
   ScreenOrientationControllerTestApi orientation_test_api(
@@ -836,15 +846,16 @@ TEST_F(InformedRestoreTest, LayoutPortraitToLandscape) {
   OverviewGrid* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
-  views::Widget* pine_widget = OverviewGridTestApi(overview_grid).pine_widget();
-  ASSERT_TRUE(pine_widget);
+  views::Widget* widget =
+      OverviewGridTestApi(overview_grid).informed_restore_widget();
+  ASSERT_TRUE(widget);
 
   // In portrait mode, the `InformedRestoreContentsView` should have three
   // children: the title and description container (header), the
   // `InformedRestoreItemsContainerView`, and the buttons container
   // (footer).
   auto* contents_view = views::AsViewClass<InformedRestoreContentsView>(
-      pine_widget->GetContentsView());
+      widget->GetContentsView());
   ASSERT_TRUE(contents_view);
   EXPECT_EQ(contents_view->children().size(), 3u);
 
@@ -853,13 +864,13 @@ TEST_F(InformedRestoreTest, LayoutPortraitToLandscape) {
       display::Display::ROTATE_180, display::Display::RotationSource::ACTIVE);
   ASSERT_FALSE(chromeos::IsPortraitOrientation(
       orientation_test_api.GetCurrentOrientation()));
-  ASSERT_TRUE(pine_widget);
+  ASSERT_TRUE(widget);
 
   // In landscape mode, the `InformedRestoreContentsView` should have two
   // children: a left hand side contents view, and a right hand side contents
   // view.
   contents_view = views::AsViewClass<InformedRestoreContentsView>(
-      pine_widget->GetContentsView());
+      widget->GetContentsView());
   ASSERT_TRUE(contents_view);
   EXPECT_EQ(contents_view->children().size(), 2u);
 }
@@ -881,13 +892,15 @@ TEST_F(InformedRestoreTest, FeedbackButtonOnlyOnPrimaryDisplay) {
   // button.
   OverviewGrid* primary_overview_grid = GetOverviewGridForRoot(root_0);
   ASSERT_TRUE(primary_overview_grid);
-  EXPECT_TRUE(OverviewGridTestApi(primary_overview_grid).pine_widget());
+  EXPECT_TRUE(
+      OverviewGridTestApi(primary_overview_grid).informed_restore_widget());
   EXPECT_TRUE(primary_overview_grid->feedback_widget());
 
   // The secondary display should not be showing either widget.
   OverviewGrid* secondary_overview_grid = GetOverviewGridForRoot(root_1);
   ASSERT_TRUE(secondary_overview_grid);
-  EXPECT_FALSE(OverviewGridTestApi(secondary_overview_grid).pine_widget());
+  EXPECT_FALSE(
+      OverviewGridTestApi(secondary_overview_grid).informed_restore_widget());
   EXPECT_FALSE(secondary_overview_grid->feedback_widget());
 }
 
