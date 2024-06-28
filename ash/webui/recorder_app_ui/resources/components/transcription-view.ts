@@ -57,7 +57,7 @@ export class TranscriptionView extends ReactiveLitElement {
       grid-template-columns: minmax(calc(12px + 40px + 10px), max-content) 1fr;
       max-height: 100%;
       overflow-y: auto;
-      padding: 12px 0;
+      padding: 12px 0 64px;
       width: 100%;
     }
 
