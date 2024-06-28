@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -329,7 +330,7 @@ bool BrowserRootView::OnMouseWheel(const ui::MouseWheelEvent& event) {
   // Scroll-event-changes-tab is incompatible with scrolling tabstrip, so
   // disable it if the latter feature is enabled.
   if (browser_defaults::kScrollEventChangesTab &&
-      !base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
+      !base::FeatureList::IsEnabled(tabs::kScrollableTabStrip)) {
     // Switch to the left/right tab if the wheel-scroll happens over the
     // tabstrip, or the empty space beside the tabstrip.
     views::View* hit_view = GetEventHandlerForPoint(event.location());

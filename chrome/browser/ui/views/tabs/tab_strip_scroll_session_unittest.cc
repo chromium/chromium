@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_session.h"
 
 #include <memory>
+
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -50,7 +52,7 @@ class TabStripScrollSessionWithTimerTestBase : public ChromeViewsTestBase {
   explicit TabStripScrollSessionWithTimerTestBase(
       TabDragController::ScrollWithDragStrategy strategy)
       : strategy_(strategy) {
-    scoped_feature_list_.InitWithFeatures({features::kScrollableTabStrip}, {});
+    scoped_feature_list_.InitWithFeatures({tabs::kScrollableTabStrip}, {});
   }
 
   ~TabStripScrollSessionWithTimerTestBase() override = default;

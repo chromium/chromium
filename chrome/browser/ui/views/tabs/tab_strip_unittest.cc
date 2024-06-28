@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -107,11 +108,9 @@ class TabStripTestBase : public ChromeViewsTestBase {
         animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
             gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {
     if (scrolling_enabled) {
-      scoped_feature_list_.InitWithFeatures({features::kScrollableTabStrip},
-                                            {});
+      scoped_feature_list_.InitWithFeatures({tabs::kScrollableTabStrip}, {});
     } else {
-      scoped_feature_list_.InitWithFeatures({},
-                                            {features::kScrollableTabStrip});
+      scoped_feature_list_.InitWithFeatures({}, {tabs::kScrollableTabStrip});
     }
   }
   TabStripTestBase(const TabStripTestBase&) = delete;

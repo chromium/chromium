@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/frame/window_frame_util.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -149,7 +150,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
     }
   }
 
-  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
+  if (base::FeatureList::IsEnabled(tabs::kScrollableTabStrip)) {
     std::unique_ptr<TabStripScrollContainer> scroll_container =
         std::make_unique<TabStripScrollContainer>(std::move(tab_strip));
     tab_strip_scroll_container_ = scroll_container.get();
@@ -266,7 +267,7 @@ bool TabStripRegionView::IsRectInWindowCaption(const gfx::Rect& rect) {
   // true.
   if (tab_strip_container_->HitTestRect(
           get_target_rect(tab_strip_container_))) {
-    if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
+    if (base::FeatureList::IsEnabled(tabs::kScrollableTabStrip)) {
       TabStripScrollContainer* scroll_container =
           views::AsViewClass<TabStripScrollContainer>(tab_strip_container_);
 

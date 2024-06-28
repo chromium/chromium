@@ -2011,15 +2011,15 @@ const FeatureEntry::FeatureVariation kOrganicRepeatableQueriesVariations[] = {
     {"12+ uses, once in last 7d", kRepeatableQueries_12Searches_7Days,
      std::size(kRepeatableQueries_12Searches_7Days), nullptr},
 };
-
+#if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kMinimumTabWidthSettingPinned[] = {
-    {features::kMinimumTabWidthFeatureParameterName, "54"}};
+    {tabs::kMinimumTabWidthFeatureParameterName, "54"}};
 const FeatureEntry::FeatureParam kMinimumTabWidthSettingMedium[] = {
-    {features::kMinimumTabWidthFeatureParameterName, "72"}};
+    {tabs::kMinimumTabWidthFeatureParameterName, "72"}};
 const FeatureEntry::FeatureParam kMinimumTabWidthSettingLarge[] = {
-    {features::kMinimumTabWidthFeatureParameterName, "140"}};
+    {tabs::kMinimumTabWidthFeatureParameterName, "140"}};
 const FeatureEntry::FeatureParam kMinimumTabWidthSettingFull[] = {
-    {features::kMinimumTabWidthFeatureParameterName, "256"}};
+    {tabs::kMinimumTabWidthFeatureParameterName, "256"}};
 
 const FeatureEntry::FeatureVariation kTabScrollingVariations[] = {
     {" - tabs shrink to pinned tab width", kMinimumTabWidthSettingPinned,
@@ -2030,7 +2030,7 @@ const FeatureEntry::FeatureVariation kTabScrollingVariations[] = {
      std::size(kMinimumTabWidthSettingLarge), nullptr},
     {" - tabs don't shrink", kMinimumTabWidthSettingFull,
      std::size(kMinimumTabWidthSettingFull), nullptr}};
-
+#endif
 const FeatureEntry::FeatureParam kTabScrollingButtonPositionRight[] = {
     {features::kTabScrollingButtonPositionParameterName, "0"}};
 const FeatureEntry::FeatureParam kTabScrollingButtonPositionLeft[] = {
@@ -6745,14 +6745,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabGroupsSaveUIUpdateName,
      flag_descriptions::kTabGroupsSaveUIUpdateDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(tab_groups::kTabGroupsSaveUIUpdate)},
-
+#if !BUILDFLAG(IS_ANDROID)
     {flag_descriptions::kScrollableTabStripFlagId,
      flag_descriptions::kScrollableTabStripName,
      flag_descriptions::kScrollableTabStripDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kScrollableTabStrip,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(tabs::kScrollableTabStrip,
                                     kTabScrollingVariations,
                                     "TabScrolling")},
-
+#endif
     {flag_descriptions::kTabScrollingButtonPositionFlagId,
      flag_descriptions::kTabScrollingButtonPositionName,
      flag_descriptions::kTabScrollingButtonPositionDescription, kOsDesktop,

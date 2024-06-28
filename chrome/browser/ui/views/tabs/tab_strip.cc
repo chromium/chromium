@@ -1944,7 +1944,7 @@ gfx::Size TabStrip::CalculatePreferredSize(
 }
 
 void TabStrip::Layout(PassKey) {
-  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
+  if (base::FeatureList::IsEnabled(tabs::kScrollableTabStrip)) {
     // With tab scrolling, the TabStrip is the contents view of a ScrollView and
     // as such is expected to set its own bounds during layout.
     // (With great sizing power comes great sizing responsibility).

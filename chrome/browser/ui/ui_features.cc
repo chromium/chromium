@@ -275,12 +275,6 @@ BASE_FEATURE(kSidePanelResizing,
              "SidePanelResizing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables tabs to scroll in the tabstrip. https://crbug.com/951078
-BASE_FEATURE(kScrollableTabStrip,
-             "ScrollableTabStrip",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const char kMinimumTabWidthFeatureParameterName[] = "minTabWidth";
-
 // Enables buttons when scrolling the tabstrip https://crbug.com/951078
 BASE_FEATURE(kTabScrollingButtonPosition,
              "TabScrollingButtonPosition",

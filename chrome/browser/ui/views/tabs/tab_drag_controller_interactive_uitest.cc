@@ -3419,7 +3419,7 @@ class DetachToBrowserTabDragControllerTestWithScrollableTabStripEnabled
     : public DetachToBrowserTabDragControllerTest {
  public:
   DetachToBrowserTabDragControllerTestWithScrollableTabStripEnabled() {
-    scoped_feature_list_.InitWithFeatures({features::kScrollableTabStrip}, {});
+    scoped_feature_list_.InitWithFeatures({tabs::kScrollableTabStrip}, {});
   }
 
  private:

@@ -15,6 +15,12 @@ BASE_FEATURE(kSplitTabStrip,
              "SplitTabStrip",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables tabs to scroll in the tabstrip. https://crbug.com/951078
+BASE_FEATURE(kScrollableTabStrip,
+             "ScrollableTabStrip",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const char kMinimumTabWidthFeatureParameterName[] = "minTabWidth";
+
 // Enables tab scrolling while dragging tabs in tabstrip
 // https://crbug.com/1145747
 BASE_FEATURE(kScrollableTabStripWithDragging,

@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/tab_container_impl.h"
-
 #include <memory>
 
 #include "base/memory/raw_ref.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
+#include "chrome/browser/ui/views/tabs/tab_container_impl.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
@@ -958,7 +958,7 @@ TEST_F(TabContainerTest, UnderlineBoundsTabVisibilityChange) {
 
   // This test is only valid with scrolling off, since it pertains to tab
   // visibility stuff that scrolling doesn't do.
-  ASSERT_FALSE(base::FeatureList::IsEnabled(features::kScrollableTabStrip));
+  ASSERT_FALSE(base::FeatureList::IsEnabled(tabs::kScrollableTabStrip));
 
   SetTabContainerWidth(200);
   // Add tabs to a single group until the last one is not visible.
@@ -994,7 +994,7 @@ TEST_F(TabContainerTest, UnderlineBoundsCollapsedGroupHeaderVisibilityChange) {
 
   // This test is only valid with scrolling off, since it pertains to tab
   // visibility stuff that scrolling doesn't do.
-  ASSERT_FALSE(base::FeatureList::IsEnabled(features::kScrollableTabStrip));
+  ASSERT_FALSE(base::FeatureList::IsEnabled(tabs::kScrollableTabStrip));
 
   SetTabContainerWidth(200);
   // Create a tab group with one tab and collapse it.

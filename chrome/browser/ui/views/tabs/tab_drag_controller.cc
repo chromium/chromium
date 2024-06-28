@@ -485,7 +485,7 @@ TabDragController::Liveness TabDragController::Init(
 
   ref->window_finder_ = std::make_unique<WindowFinder>();
 
-  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip) &&
+  if (base::FeatureList::IsEnabled(tabs::kScrollableTabStrip) &&
       base::FeatureList::IsEnabled(tabs::kScrollableTabStripWithDragging)) {
     const int drag_with_scroll_mode = base::GetFieldTrialParamByFeatureAsInt(
         tabs::kScrollableTabStripWithDragging,

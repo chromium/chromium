@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
@@ -36,12 +37,10 @@ class TabStripRegionViewTestBase : public ChromeViewsTestBase {
             gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {
     if (has_scrolling) {
       scoped_feature_list_.InitWithFeatures(
-          {features::kScrollableTabStrip,
-           features::kTabScrollingButtonPosition},
+          {tabs::kScrollableTabStrip, features::kTabScrollingButtonPosition},
           {});
     } else {
-      scoped_feature_list_.InitWithFeatures({},
-                                            {features::kScrollableTabStrip});
+      scoped_feature_list_.InitWithFeatures({}, {tabs::kScrollableTabStrip});
     }
   }
   TabStripRegionViewTestBase(const TabStripRegionViewTestBase&) = delete;

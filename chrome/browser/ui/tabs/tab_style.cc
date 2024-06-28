@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/tab_style.h"
 
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
@@ -70,12 +71,12 @@ int ChromeRefresh2023TabStyle::GetMinimumActiveWidth() const {
   const gfx::Insets insets = GetContentsInsets();
   const int min_active_width =
       close_button_size + insets.left() + insets.right();
-  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
+  if (base::FeatureList::IsEnabled(tabs::kScrollableTabStrip)) {
     return std::max(
         min_active_width,
         base::GetFieldTrialParamByFeatureAsInt(
-            features::kScrollableTabStrip,
-            features::kMinimumTabWidthFeatureParameterName, min_active_width));
+            tabs::kScrollableTabStrip,
+            tabs::kMinimumTabWidthFeatureParameterName, min_active_width));
   }
   return min_active_width;
 }
@@ -89,12 +90,12 @@ int ChromeRefresh2023TabStyle::GetMinimumInactiveWidth() const {
   int min_inactive_width =
       kInteriorWidth - GetSeparatorSize().width() + GetTabOverlap();
 
-  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
-    return std::max(min_inactive_width,
-                    base::GetFieldTrialParamByFeatureAsInt(
-                        features::kScrollableTabStrip,
-                        features::kMinimumTabWidthFeatureParameterName,
-                        min_inactive_width));
+  if (base::FeatureList::IsEnabled(tabs::kScrollableTabStrip)) {
+    return std::max(
+        min_inactive_width,
+        base::GetFieldTrialParamByFeatureAsInt(
+            tabs::kScrollableTabStrip,
+            tabs::kMinimumTabWidthFeatureParameterName, min_inactive_width));
   }
 
   return min_inactive_width;

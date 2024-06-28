@@ -11,6 +11,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/types/to_address.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -240,7 +241,7 @@ void TabContainerImpl::SetActiveTab(std::optional<size_t> prev_active_index,
     CompleteAnimationAndLayout();
   }
 
-  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip) &&
+  if (base::FeatureList::IsEnabled(tabs::kScrollableTabStrip) &&
       new_active_index.has_value()) {
     ScrollTabToVisible(new_active_index.value());
   }
@@ -1618,7 +1619,7 @@ bool TabContainerImpl::ShouldTabBeVisible(const Tab* tab) const {
   // N.B. This is separate from the tab being potentially scrolled offscreen -
   // this solely determines whether the tab should be clipped for the
   // pre-scrolling overflow behavior.
-  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
+  if (base::FeatureList::IsEnabled(tabs::kScrollableTabStrip)) {
     return true;
   }
 
