@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
 
 using TokenError = content::IdentityCredentialTokenError;
 
@@ -71,7 +72,8 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
  private:
   // Returns either true if the java counterpart of this bridge is initialized
   // successfully or false if the creation failed.
-  bool MaybeCreateJavaObject();
+  bool MaybeCreateJavaObject(
+      blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kWidget);
 
   base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;
 };

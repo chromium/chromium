@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -82,6 +83,7 @@ public class AccountSelectionCoordinator
             Tab tab,
             WindowAndroid windowAndroid,
             BottomSheetController sheetController,
+            @RpMode.EnumType int rpMode,
             AccountSelectionComponent.Delegate delegate) {
         mBottomSheetController = sheetController;
         mWindowAndroid = windowAndroid;
@@ -93,7 +95,7 @@ public class AccountSelectionCoordinator
                         .build();
         // Construct view and its related adaptor to be displayed in the bottom sheet.
         ModelList sheetItems = new ModelList();
-        View contentView = setupContentView(context, model, sheetItems);
+        View contentView = setupContentView(context, model, sheetItems, rpMode);
         mSheetItemListView = contentView.findViewById(R.id.sheet_item_list);
 
         // Setup the bottom sheet content view.
@@ -124,11 +126,18 @@ public class AccountSelectionCoordinator
                         avatarSize);
     }
 
-    static View setupContentView(Context context, PropertyModel model, ModelList sheetItems) {
+    static View setupContentView(
+            Context context,
+            PropertyModel model,
+            ModelList sheetItems,
+            @RpMode.EnumType int rpMode) {
+        int accountSelectionSheetLayout =
+                rpMode == RpMode.BUTTON
+                        ? R.layout.account_selection_button_mode_sheet
+                        : R.layout.account_selection_sheet;
         View contentView =
                 (LinearLayout)
-                        LayoutInflater.from(context)
-                                .inflate(R.layout.account_selection_sheet, null);
+                        LayoutInflater.from(context).inflate(accountSelectionSheetLayout, null);
 
         PropertyModelChangeProcessor.create(
                 model, contentView, AccountSelectionViewBinder::bindContentView);

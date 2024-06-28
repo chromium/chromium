@@ -30,12 +30,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
-import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
+import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
@@ -53,47 +57,48 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.url.GURL;
-import org.chromium.url.JUnitTestGURLs;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
 /**
  * View tests for the Account Selection component ensure that model changes are reflected in the
- * sheet.
+ * sheet. This class is parameterized to run all tests for each RP mode.
  */
-@RunWith(BaseRobolectricTestRunner.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 public class AccountSelectionViewTest {
+    @Parameter(0)
+    public @RpMode.EnumType int mRpMode;
+
+    @Parameters
+    public static Collection<Object> data() {
+        return Arrays.asList(new Object[] {RpMode.WIDGET, RpMode.BUTTON});
+    }
+
+    @Rule(order = -2)
+    public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
+
     // Note that these are not actual ETLD+1 values, but this is irrelevant for the purposes of this
     // test.
-    private static final String TEST_IDP_ETLD_PLUS_ONE = JUnitTestGURLs.EXAMPLE_URL.getSpec();
-    private static final String TEST_RP_ETLD_PLUS_ONE = JUnitTestGURLs.URL_1.getSpec();
-    private static final GURL TEST_PROFILE_PIC = JUnitTestGURLs.EXAMPLE_URL;
-    private static final GURL TEST_CONFIG_URL = JUnitTestGURLs.URL_1;
-    private static final GURL TEST_LOGIN_URL = JUnitTestGURLs.URL_2;
-
-    private static final Account ANA =
-            new Account("Ana", "ana@email.example", "Ana Doe", "Ana", TEST_PROFILE_PIC, null, true);
-    private static final Account NO_ONE =
-            new Account("", "", "No Subject", "", TEST_PROFILE_PIC, null, true);
-    private static final Account BOB =
-            new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, null, true);
-
-    private static final GURL TEST_ERROR_URL = JUnitTestGURLs.URL_1;
-    private static final GURL TEST_EMPTY_ERROR_URL = new GURL("");
+    private static final String TEST_IDP_ETLD_PLUS_ONE = "https://idp.com";
+    private static final String TEST_RP_ETLD_PLUS_ONE = "https://rp.com";
 
     // Android chrome strings may have link tags which needs to be removed before comparing with the
     // actual text on the dialog.
     private static final String LINK_TAG_REGEX = "<[^>]*>";
 
-    private static final IdentityProviderMetadata TEST_IDP_METADATA =
-            new IdentityProviderMetadata(
-                    Color.BLUE,
-                    Color.GREEN,
-                    "https://icon-url.example",
-                    TEST_CONFIG_URL,
-                    TEST_LOGIN_URL,
-                    false);
+    // Constants but can only be initialized after parameterized test runner setup.
+    private GURL mTestProfilePicUrl;
+    private GURL mTestConfigUrl;
+    private GURL mTestLoginUrl;
+    private GURL mTestErrorUrl;
+    private GURL mTestEmptyErrorUrl;
+    private Account mAnaAccount;
+    private Account mNoOneAccount;
+    private Account mBobAccount;
+    private IdentityProviderMetadata mTestIdpMetadata;
 
     private class RpContext {
         public String mValue;
@@ -178,7 +183,7 @@ public class AccountSelectionViewTest {
         private final String appendExtraDescription(String code, GURL url) {
             String initialDescription = mCodeToDescription.get(code);
             if (AccountSelectionViewBinder.GENERIC.equals(code)) {
-                if (TEST_EMPTY_ERROR_URL.equals(url)) {
+                if (mTestEmptyErrorUrl.equals(url)) {
                     return initialDescription;
                 }
                 return initialDescription
@@ -188,7 +193,7 @@ public class AccountSelectionViewTest {
                                 .replaceAll(LINK_TAG_REGEX, "");
             }
 
-            if (TEST_EMPTY_ERROR_URL.equals(url)) {
+            if (mTestEmptyErrorUrl.equals(url)) {
                 return initialDescription
                         + " "
                         + mResources.getString(
@@ -224,6 +229,49 @@ public class AccountSelectionViewTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
+        mTestProfilePicUrl = new GURL("https://profile-picture.com");
+        mTestConfigUrl = new GURL("https://idp.com/fedcm.json");
+        mTestLoginUrl = new GURL("https://idp.com/login");
+        mTestErrorUrl = new GURL("https://idp.com/error");
+        mTestEmptyErrorUrl = new GURL("");
+
+        mAnaAccount =
+                new Account(
+                        "Ana",
+                        "ana@email.example",
+                        "Ana Doe",
+                        "Ana",
+                        mTestProfilePicUrl,
+                        /* pictureBitmap= */ null,
+                        /* isSignIn= */ true);
+        mNoOneAccount =
+                new Account(
+                        "",
+                        "",
+                        "No Subject",
+                        "",
+                        mTestProfilePicUrl,
+                        /* pictureBitmap= */ null,
+                        /* isSignIn= */ true);
+        mBobAccount =
+                new Account(
+                        "Bob",
+                        "",
+                        "Bob",
+                        "",
+                        mTestProfilePicUrl,
+                        /* pictureBitmap= */ null,
+                        /* isSignIn= */ true);
+
+        mTestIdpMetadata =
+                new IdentityProviderMetadata(
+                        Color.BLUE,
+                        Color.GREEN,
+                        "https://icon-url.example",
+                        mTestConfigUrl,
+                        mTestLoginUrl,
+                        false);
+
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(
@@ -236,7 +284,7 @@ public class AccountSelectionViewTest {
                             mSheetAccountItems = new ModelList();
                             mContentView =
                                     AccountSelectionCoordinator.setupContentView(
-                                            activity, mModel, mSheetAccountItems);
+                                            activity, mModel, mSheetAccountItems, mRpMode);
                             activity.setContentView(mContentView);
                             mResources = activity.getResources();
                         });
@@ -341,22 +389,25 @@ public class AccountSelectionViewTest {
     @Test
     public void testAccountsChangedByModel() {
         mSheetAccountItems.addAll(
-                asList(buildAccountItem(ANA), buildAccountItem(NO_ONE), buildAccountItem(BOB)));
+                asList(
+                        buildAccountItem(mAnaAccount),
+                        buildAccountItem(mNoOneAccount),
+                        buildAccountItem(mBobAccount)));
         ShadowLooper.shadowMainLooper().idle();
 
         assertEquals(View.VISIBLE, mContentView.getVisibility());
         assertEquals("Incorrect account count", 3, getAccounts().getChildCount());
-        assertEquals("Incorrect name", ANA.getName(), getAccountNameAt(0).getText());
-        assertEquals("Incorrect email", ANA.getEmail(), getAccountEmailAt(0).getText());
-        assertEquals("Incorrect name", NO_ONE.getName(), getAccountNameAt(1).getText());
-        assertEquals("Incorrect email", NO_ONE.getEmail(), getAccountEmailAt(1).getText());
-        assertEquals("Incorrect name", BOB.getName(), getAccountNameAt(2).getText());
-        assertEquals("Incorrect email", BOB.getEmail(), getAccountEmailAt(2).getText());
+        assertEquals("Incorrect name", mAnaAccount.getName(), getAccountNameAt(0).getText());
+        assertEquals("Incorrect email", mAnaAccount.getEmail(), getAccountEmailAt(0).getText());
+        assertEquals("Incorrect name", mNoOneAccount.getName(), getAccountNameAt(1).getText());
+        assertEquals("Incorrect email", mNoOneAccount.getEmail(), getAccountEmailAt(1).getText());
+        assertEquals("Incorrect name", mBobAccount.getName(), getAccountNameAt(2).getText());
+        assertEquals("Incorrect email", mBobAccount.getEmail(), getAccountEmailAt(2).getText());
     }
 
     @Test
     public void testAccountsAreClickable() {
-        mSheetAccountItems.addAll(Collections.singletonList(buildAccountItem(ANA)));
+        mSheetAccountItems.addAll(Collections.singletonList(buildAccountItem(mAnaAccount)));
         ShadowLooper.shadowMainLooper().idle();
 
         assertEquals(View.VISIBLE, mContentView.getVisibility());
@@ -365,7 +416,7 @@ public class AccountSelectionViewTest {
 
         getAccounts().getChildAt(0).performClick();
 
-        waitForEvent(mAccountCallback).onResult(eq(ANA));
+        waitForEvent(mAccountCallback).onResult(eq(mAnaAccount));
     }
 
     @Test
@@ -376,14 +427,14 @@ public class AccountSelectionViewTest {
                 new MVCListAdapter.ListItem(
                         AccountSelectionProperties.ITEM_TYPE_ACCOUNT,
                         new PropertyModel.Builder(AccountProperties.ALL_KEYS)
-                                .with(AccountProperties.ACCOUNT, ANA)
+                                .with(AccountProperties.ACCOUNT, mAnaAccount)
                                 .with(AccountProperties.ON_CLICK_LISTENER, null)
                                 .build()));
         ShadowLooper.shadowMainLooper().idle();
 
         mModel.set(
                 ItemProperties.CONTINUE_BUTTON,
-                buildContinueButton(ANA, TEST_IDP_METADATA, HeaderType.SIGN_IN));
+                buildContinueButton(mAnaAccount, mTestIdpMetadata, HeaderType.SIGN_IN));
         assertEquals(View.VISIBLE, mContentView.getVisibility());
 
         assertNotNull(getAccounts().getChildAt(0));
@@ -392,7 +443,7 @@ public class AccountSelectionViewTest {
         assertTrue(continueButton.isShown());
         continueButton.performClick();
 
-        waitForEvent(mAccountCallback).onResult(eq(ANA));
+        waitForEvent(mAccountCallback).onResult(eq(mAnaAccount));
     }
 
     @Test
@@ -427,13 +478,13 @@ public class AccountSelectionViewTest {
                         expectedTextColor,
                         /* brandBackgroundColor= */ Color.GREEN,
                         "https://icon-url.example",
-                        TEST_CONFIG_URL,
-                        TEST_LOGIN_URL,
+                        mTestConfigUrl,
+                        mTestLoginUrl,
                         false);
 
         mModel.set(
                 ItemProperties.CONTINUE_BUTTON,
-                buildContinueButton(ANA, idpMetadata, HeaderType.SIGN_IN));
+                buildContinueButton(mAnaAccount, idpMetadata, HeaderType.SIGN_IN));
 
         assertEquals(View.VISIBLE, mContentView.getVisibility());
 
@@ -513,7 +564,7 @@ public class AccountSelectionViewTest {
 
         mModel.set(
                 ItemProperties.CONTINUE_BUTTON,
-                buildContinueButton(null, TEST_IDP_METADATA, HeaderType.SIGN_IN_TO_IDP_STATIC));
+                buildContinueButton(null, mTestIdpMetadata, HeaderType.SIGN_IN_TO_IDP_STATIC));
         ButtonCompat continueButton =
                 mContentView.findViewById(R.id.account_selection_continue_btn);
         assertTrue(continueButton.isShown());
@@ -527,23 +578,21 @@ public class AccountSelectionViewTest {
     public void testErrorDisplayed() {
         final TokenError[] mErrors =
                 new TokenError[] {
-                    new TokenError(AccountSelectionViewBinder.GENERIC, TEST_EMPTY_ERROR_URL),
-                    new TokenError(AccountSelectionViewBinder.GENERIC, TEST_ERROR_URL),
+                    new TokenError(AccountSelectionViewBinder.GENERIC, mTestEmptyErrorUrl),
+                    new TokenError(AccountSelectionViewBinder.GENERIC, mTestErrorUrl),
+                    new TokenError(AccountSelectionViewBinder.INVALID_REQUEST, mTestEmptyErrorUrl),
+                    new TokenError(AccountSelectionViewBinder.INVALID_REQUEST, mTestErrorUrl),
                     new TokenError(
-                            AccountSelectionViewBinder.INVALID_REQUEST, TEST_EMPTY_ERROR_URL),
-                    new TokenError(AccountSelectionViewBinder.INVALID_REQUEST, TEST_ERROR_URL),
+                            AccountSelectionViewBinder.UNAUTHORIZED_CLIENT, mTestEmptyErrorUrl),
+                    new TokenError(AccountSelectionViewBinder.UNAUTHORIZED_CLIENT, mTestErrorUrl),
+                    new TokenError(AccountSelectionViewBinder.ACCESS_DENIED, mTestEmptyErrorUrl),
+                    new TokenError(AccountSelectionViewBinder.ACCESS_DENIED, mTestErrorUrl),
                     new TokenError(
-                            AccountSelectionViewBinder.UNAUTHORIZED_CLIENT, TEST_EMPTY_ERROR_URL),
-                    new TokenError(AccountSelectionViewBinder.UNAUTHORIZED_CLIENT, TEST_ERROR_URL),
-                    new TokenError(AccountSelectionViewBinder.ACCESS_DENIED, TEST_EMPTY_ERROR_URL),
-                    new TokenError(AccountSelectionViewBinder.ACCESS_DENIED, TEST_ERROR_URL),
+                            AccountSelectionViewBinder.TEMPORARILY_UNAVAILABLE, mTestEmptyErrorUrl),
                     new TokenError(
-                            AccountSelectionViewBinder.TEMPORARILY_UNAVAILABLE,
-                            TEST_EMPTY_ERROR_URL),
-                    new TokenError(
-                            AccountSelectionViewBinder.TEMPORARILY_UNAVAILABLE, TEST_ERROR_URL),
-                    new TokenError(AccountSelectionViewBinder.SERVER_ERROR, TEST_EMPTY_ERROR_URL),
-                    new TokenError(AccountSelectionViewBinder.SERVER_ERROR, TEST_ERROR_URL)
+                            AccountSelectionViewBinder.TEMPORARILY_UNAVAILABLE, mTestErrorUrl),
+                    new TokenError(AccountSelectionViewBinder.SERVER_ERROR, mTestEmptyErrorUrl),
+                    new TokenError(AccountSelectionViewBinder.SERVER_ERROR, mTestErrorUrl)
                 };
 
         for (TokenError error : mErrors) {

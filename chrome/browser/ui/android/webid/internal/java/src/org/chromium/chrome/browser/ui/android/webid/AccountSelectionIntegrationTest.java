@@ -49,12 +49,16 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
+import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -62,7 +66,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -74,15 +78,28 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Integration tests for the Account Selection component check that the calls to the Account
- * Selection API end up rendering a View.
+ * Selection API end up rendering a View. This class is parameterized to run all tests for each RP
+ * mode.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(ParameterizedRunner.class)
+@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AccountSelectionIntegrationTest {
+    @ParameterAnnotations.ClassParameter
+    private static List<ParameterSet> sClassParams =
+            Arrays.asList(
+                    new ParameterSet().value(RpMode.WIDGET).name("widget"),
+                    new ParameterSet().value(RpMode.BUTTON).name("button"));
+
+    public AccountSelectionIntegrationTest(@RpMode.EnumType int rpMode) {
+        mRpMode = rpMode;
+    }
+
     private static final String EXAMPLE_ETLD_PLUS_ONE = "example.com";
     private static final String TEST_ETLD_PLUS_ONE_1 = "one.com";
     private static final String TEST_ETLD_PLUS_ONE_2 = "two.com";
@@ -127,6 +144,7 @@ public class AccountSelectionIntegrationTest {
     private String mTestUrlTermsOfService;
     private String mTestUrlPrivacyPolicy;
     private ClientIdMetadata mClientIdMetadata;
+    private @RpMode.EnumType int mRpMode;
 
     @Before
     public void setUp() throws InterruptedException {
@@ -142,6 +160,7 @@ public class AccountSelectionIntegrationTest {
                                     mActivityTestRule.getActivity().getActivityTab(),
                                     mActivityTestRule.getActivity().getWindowAndroid(),
                                     mBottomSheetController,
+                                    mRpMode,
                                     mMockBridge);
                 });
 
@@ -374,6 +393,7 @@ public class AccountSelectionIntegrationTest {
                                     activity.getActivityTab(),
                                     activity.getWindowAndroid(),
                                     customTabController,
+                                    mRpMode,
                                     mMockBridge);
                     customTabComponent.closeModalDialog();
                 });

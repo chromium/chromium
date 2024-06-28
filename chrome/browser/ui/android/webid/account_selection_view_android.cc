@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/android/color_utils_android.h"
 #include "ui/android/window_android.h"
@@ -169,8 +170,7 @@ bool AccountSelectionViewAndroid::Show(
     Account::SignInMode sign_in_mode,
     blink::mojom::RpMode rp_mode,
     const std::optional<content::IdentityProviderData>& new_account_idp) {
-  // TODO(crbug.com/41491333): Use rp_mode for button flows on Android.
-  if (!MaybeCreateJavaObject()) {
+  if (!MaybeCreateJavaObject(rp_mode)) {
     // It's possible that the constructor cannot access the bottom sheet clank
     // component. That case may be temporary but we can't let users in a
     // waiting state so report that AccountSelectionView is dismissed instead.
@@ -213,8 +213,11 @@ bool AccountSelectionViewAndroid::ShowFailureDialog(
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
     const content::IdentityProviderMetadata& idp_metadata) {
-  // TODO(crbug.com/41491333): Use rp_mode for button flows on Android.
-  if (!MaybeCreateJavaObject()) {
+  // ShowFailureDialog is never called in button mode.
+  // TODO(crbug.com/347736746): Remove rp_mode from this method.
+  CHECK(rp_mode == blink::mojom::RpMode::kWidget);
+
+  if (!MaybeCreateJavaObject(rp_mode)) {
     // It's possible that the constructor cannot access the bottom sheet clank
     // component. That case may be temporary but we can't let users in a
     // waiting state so report that AccountSelectionView is dismissed instead.
@@ -241,8 +244,9 @@ bool AccountSelectionViewAndroid::ShowErrorDialog(
     blink::mojom::RpMode rp_mode,
     const content::IdentityProviderMetadata& idp_metadata,
     const std::optional<TokenError>& error) {
-  // TODO(crbug.com/41491333): Use rp_mode for button flows on Android.
-  if (!MaybeCreateJavaObject()) {
+  // TODO(crbug.com/347117752): Implement button mode error dialog.
+  if (rp_mode == blink::mojom::RpMode::kButton ||
+      !MaybeCreateJavaObject(rp_mode)) {
     // It's possible that the constructor cannot access the bottom sheet clank
     // component. That case may be temporary but we can't let users in a
     // waiting state so report that AccountSelectionView is dismissed instead.
@@ -267,8 +271,15 @@ bool AccountSelectionViewAndroid::ShowLoadingDialog(
     const std::string& idp_for_display,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode) {
-  // TODO(crbug.com/327273595): Prototype button flow on Android.
-  return false;
+  if (!MaybeCreateJavaObject(rp_mode)) {
+    // It's possible that the constructor cannot access the bottom sheet clank
+    // component. That case may be temporary but we can't let users in a
+    // waiting state so report that AccountSelectionView is dismissed instead.
+    delegate_->OnDismiss(DismissReason::kOther);
+    return false;
+  }
+  // TODO(crbug.com/327273595): Add button flow loading dialog on Android.
+  return true;
 }
 
 std::string AccountSelectionViewAndroid::GetTitle() const {
@@ -358,7 +369,8 @@ void AccountSelectionViewAndroid::OnAccountsDisplayed(JNIEnv* env) {
   delegate_->OnAccountsDisplayed();
 }
 
-bool AccountSelectionViewAndroid::MaybeCreateJavaObject() {
+bool AccountSelectionViewAndroid::MaybeCreateJavaObject(
+    blink::mojom::RpMode rp_mode) {
   if (delegate_->GetNativeView() == nullptr ||
       delegate_->GetNativeView()->GetWindowAndroid() == nullptr) {
     return false;  // No window attached (yet or anymore).
@@ -366,10 +378,12 @@ bool AccountSelectionViewAndroid::MaybeCreateJavaObject() {
   if (java_object_internal_) {
     return true;
   }
+  JNIEnv* env = AttachCurrentThread();
   java_object_internal_ = Java_AccountSelectionBridge_create(
-      AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+      env, reinterpret_cast<intptr_t>(this),
       delegate_->GetWebContents()->GetJavaWebContents(),
-      delegate_->GetNativeView()->GetWindowAndroid()->GetJavaObject());
+      delegate_->GetNativeView()->GetWindowAndroid()->GetJavaObject(),
+      static_cast<jint>(rp_mode));
   return !!java_object_internal_;
 }
 

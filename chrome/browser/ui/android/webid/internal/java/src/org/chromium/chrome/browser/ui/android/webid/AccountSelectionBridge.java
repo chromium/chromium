@@ -12,6 +12,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
@@ -46,10 +47,12 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
             long nativeView,
             Tab tab,
             WindowAndroid windowAndroid,
-            BottomSheetController bottomSheetController) {
+            BottomSheetController bottomSheetController,
+            @RpMode.EnumType int rpMode) {
         mNativeView = nativeView;
         mAccountSelectionComponent =
-                new AccountSelectionCoordinator(tab, windowAndroid, bottomSheetController, this);
+                new AccountSelectionCoordinator(
+                        tab, windowAndroid, bottomSheetController, rpMode, this);
     }
 
     @CalledByNative
@@ -72,12 +75,16 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
 
     @CalledByNative
     private static @Nullable AccountSelectionBridge create(
-            long nativeView, WebContents webContents, WindowAndroid windowAndroid) {
+            long nativeView,
+            WebContents webContents,
+            WindowAndroid windowAndroid,
+            @RpMode.EnumType int rpMode) {
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
         if (bottomSheetController == null) return null;
         Tab tab = TabUtils.fromWebContents(webContents);
-        return new AccountSelectionBridge(nativeView, tab, windowAndroid, bottomSheetController);
+        return new AccountSelectionBridge(
+                nativeView, tab, windowAndroid, bottomSheetController, rpMode);
     }
 
     @CalledByNative
