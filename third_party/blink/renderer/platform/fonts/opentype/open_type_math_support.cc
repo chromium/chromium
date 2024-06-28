@@ -24,7 +24,7 @@ float HarfBuzzUnitsToFloat(hb_position_t value) {
 // Latin Modern, STIX Two, XITS, Asana, Deja Vu, Libertinus and TeX Gyre fonts
 // provide at most 13 size variant and 5 assembly parts.
 // See https://chromium-review.googlesource.com/c/chromium/src/+/2074678
-unsigned kMaxHarfBuzzRecords = 20;
+constexpr unsigned kMaxHarfBuzzRecords = 20;
 
 hb_direction_t HarfBuzzDirection(
     blink::OpenTypeMathStretchData::StretchAxis stretch_axis) {
