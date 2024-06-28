@@ -28,7 +28,6 @@ constexpr char kTestProfileId[] = "00000000-0000-0000-0000-000000000001";
 constexpr char kTestProfile2Id[] = "00000000-0000-0000-0000-000000000002";
 constexpr char kTestLocalCardId[] = "10000000-0000-0000-0000-000000000001";
 constexpr char kTestMaskedCardId[] = "10000000-0000-0000-0000-000000000002";
-constexpr char kTestFullServerCardId[] = "10000000-0000-0000-0000-000000000003";
 // These variables store the GUIDs of a Local and a masked Server card which
 // have the same card attributes, i.e., are duplicates of each other.
 constexpr char kTestDuplicateLocalCardId[] =
@@ -69,14 +68,12 @@ class AutofillMetricsBaseTest {
   // something.
   void RecreateCreditCards(bool include_local_credit_card,
                            bool include_masked_server_credit_card,
-                           bool include_full_server_credit_card,
                            bool masked_card_is_enrolled_for_virtual_card);
 
-  // Creates a local, masked server, full server, and/or virtual credit card,
-  // according to the parameters.
+  // Creates a local, masked server, and/or virtual credit card, according to
+  // the parameters.
   void CreateCreditCards(bool include_local_credit_card,
                          bool include_masked_server_credit_card,
-                         bool include_full_server_credit_card,
                          bool masked_card_is_enrolled_for_virtual_card);
 
   // Creates a local card and then a duplicate server card with the same

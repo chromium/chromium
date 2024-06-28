@@ -117,7 +117,6 @@ TEST_P(TouchToFillForPaymentMethodsTest,
        AllAutofilledAndAccepted_TouchToFill_CreditCards) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/false,
-                      /*include_full_server_credit_card=*/false,
                       /*masked_card_is_enrolled_for_virtual_card=*/false);
   TouchToFillForPaymentMethodsTestCase test_case = GetParam();
   FormData form = CreateForm(GetFields(test_case.field_types));

@@ -308,8 +308,8 @@ class CreditCardAccessManager
   // Helper function to fetch virtual cards.
   void FetchVirtualCard();
 
-  // Helper function to fetch local or full server cards.
-  void FetchLocalOrFullServerCard();
+  // Helper function to fetch local cards.
+  void FetchLocalCard();
 
   // Checks if Mandatory Re-auth is needed after the card has been returned. If
   // needed, starts the device authentication flow before filling the form.

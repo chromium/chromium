@@ -349,8 +349,12 @@ void CreditCardAccessManager::FetchCreditCard(
     case CreditCard::RecordType::kMaskedServerCard:
       return FetchMaskedServerCard();
     case CreditCard::RecordType::kLocalCard:
+      return FetchLocalCard();
     case CreditCard::RecordType::kFullServerCard:
-      return FetchLocalOrFullServerCard();
+      // Full server cards are only possible after a previous unmasking on the
+      // same page. When that happens, subsequent repeat fills of the unmasked
+      // card should flow through the cache and not reach here.
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -1228,7 +1232,9 @@ void CreditCardAccessManager::FetchVirtualCard() {
       *card_, GetWeakPtr());
 }
 
-void CreditCardAccessManager::FetchLocalOrFullServerCard() {
+void CreditCardAccessManager::FetchLocalCard() {
+  CHECK_EQ(card_->record_type(), CreditCard::RecordType::kLocalCard);
+
 #if !BUILDFLAG(IS_IOS)
   // Latency metrics should only be logged if the user is verifiable.
   if (is_user_verifiable_.value_or(false)) {
@@ -1238,8 +1244,7 @@ void CreditCardAccessManager::FetchLocalOrFullServerCard() {
   }
 #endif
 
-  // Check if we need to authenticate the user before filling the local card
-  // or full server card.
+  // Check if we need to authenticate the user before filling the local card.
   if (payments_data_manager().IsPaymentMethodsMandatoryReauthEnabled()) {
     // `StartDeviceAuthenticationForFilling()` will asynchronously trigger
     // the re-authentication flow, so we should avoid calling `Reset()`
@@ -1251,12 +1256,12 @@ void CreditCardAccessManager::FetchLocalOrFullServerCard() {
           autofill_metrics::CvcFillingFlowType::kNoInteractiveAuthentication,
           card_->record_type());
     }
-    // Fill immediately if local card or full server card, as we do not need to
-    // authenticate the user.
+    // Fill immediately if local card, as we do not need to authenticate the
+    // user.
     std::move(on_credit_card_fetched_callback_)
         .Run(CreditCardFetchResult::kSuccess, card_.get());
 
-    // This local or full server card autofill flow did not have any interactive
+    // This local card autofill flow did not have any interactive
     // authentication, so notify the FormDataImporter of this.
     autofill_client()
         .GetFormDataImporter()

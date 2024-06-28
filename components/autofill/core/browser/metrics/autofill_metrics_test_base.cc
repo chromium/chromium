@@ -220,19 +220,16 @@ void AutofillMetricsBaseTest::OnCreditCardFetchingFailed() {
 void AutofillMetricsBaseTest::RecreateCreditCards(
     bool include_local_credit_card,
     bool include_masked_server_credit_card,
-    bool include_full_server_credit_card,
     bool masked_card_is_enrolled_for_virtual_card) {
   personal_data().test_payments_data_manager().ClearCreditCards();
   CreateCreditCards(include_local_credit_card,
                     include_masked_server_credit_card,
-                    include_full_server_credit_card,
                     masked_card_is_enrolled_for_virtual_card);
 }
 
 void AutofillMetricsBaseTest::CreateCreditCards(
     bool include_local_credit_card,
     bool include_masked_server_credit_card,
-    bool include_full_server_credit_card,
     bool masked_card_is_enrolled_for_virtual_card) {
   if (include_local_credit_card) {
     CreditCard local_credit_card = test::GetCreditCard();
@@ -252,14 +249,6 @@ void AutofillMetricsBaseTest::CreateCreditCards(
     }
     personal_data().test_payments_data_manager().AddServerCreditCard(
         masked_server_credit_card);
-  }
-  if (include_full_server_credit_card) {
-    CreditCard full_server_credit_card(CreditCard::RecordType::kFullServerCard,
-                                       "server_id_2");
-    full_server_credit_card.set_guid("10000000-0000-0000-0000-000000000003");
-    full_server_credit_card.set_instrument_id(2);
-    personal_data().test_payments_data_manager().AddServerCreditCard(
-        full_server_credit_card);
   }
 }
 
