@@ -190,7 +190,7 @@ class WebGPUSwapBufferProviderTest : public testing::Test {
   static constexpr wgpu::TextureUsage kUsage =
       wgpu::TextureUsage::RenderAttachment;
   static constexpr wgpu::TextureUsage kInternalUsage =
-      wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::CopyDst;
+      wgpu::TextureUsage::CopyDst;
 
   void SetUp() override {
     auto webgpu = std::make_unique<MockWebGPUInterface>();
@@ -768,10 +768,13 @@ TEST_F(WebGPUSwapBufferProviderTest,
   EXPECT_EQ(texture.GetWidth(), static_cast<uint32_t>(kSize.width()));
 }
 
-// Verifies that GetLastWebGPUMailboxTexture() passes the internal usage that
-// was supplied to the swapbuffer on creation when invoking AssociateMailbox().
+// Verifies that GetNewTexture() passes client-specified internal usages to
+// AssociateMailbox() and additionally adds RenderAttachment as an internal
+// usage when associating the mailbox to ensure that lazy clearing is supported.
 TEST_F(WebGPUSwapBufferProviderTest,
-       GetLastWebGPUMailboxTexturePassesInternalUsageWhenAssociatingMailbox) {
+       GetNewTexturePassesClientSpecifiedInternalUsagePlusRenderAttachment) {
+  ASSERT_EQ(kInternalUsage & wgpu::TextureUsage::RenderAttachment, 0);
+
   const gfx::Size kSize(10, 20);
 
   EXPECT_EQ(webgpu_->internal_usage_from_most_recent_associate_mailbox_call,
@@ -785,7 +788,7 @@ TEST_F(WebGPUSwapBufferProviderTest,
   provider_->GetNewTexture(kSize);
 
   EXPECT_EQ(webgpu_->internal_usage_from_most_recent_associate_mailbox_call,
-            kInternalUsage);
+            kInternalUsage | wgpu::TextureUsage::RenderAttachment);
 }
 
 }  // namespace blink
