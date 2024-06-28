@@ -438,9 +438,7 @@ TEST_F(StructTraitsTest, GpuFeatureInfo) {
   GpuFeatureInfo output;
   ASSERT_TRUE(mojom::GpuFeatureInfo::Deserialize(
       mojom::GpuFeatureInfo::Serialize(&input), &output));
-  EXPECT_TRUE(std::equal(input.status_values,
-                         input.status_values + NUMBER_OF_GPU_FEATURE_TYPES,
-                         output.status_values));
+  EXPECT_EQ(input.status_values, output.status_values);
 }
 
 }  // namespace gpu

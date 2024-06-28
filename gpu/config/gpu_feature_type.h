@@ -26,6 +26,9 @@ enum GpuFeatureType {
   GPU_FEATURE_TYPE_WEBNN,
   NUMBER_OF_GPU_FEATURE_TYPES
 };
+static_assert(GpuFeatureType::NUMBER_OF_GPU_FEATURE_TYPES == 13,
+              "Please update the mojo definition of the length of "
+              "GpuFeatureInfo.status_values");
 
 }  // namespace gpu
 
