@@ -30,7 +30,6 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../../hats_browser_proxy.js';
 import {loadTimeData} from '../../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideStepsEligibleAndReached} from '../../metrics_browser_proxy.js';
@@ -287,10 +286,6 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         {
           nextStep: PrivacyGuideStep.AD_TOPICS,
           onForwardNavigation: () => {
-            // TODO(crbug.com/331970504): Align on when HaTS survey should be
-            // shown since COOKIES step might not be the last one anymore.
-            HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
-                TrustSafetyInteraction.COMPLETED_PRIVACY_GUIDE);
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.COOKIES_NEXT_BUTTON);
             this.metricsBrowserProxy_.recordAction(

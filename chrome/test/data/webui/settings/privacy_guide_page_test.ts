@@ -11,7 +11,7 @@ import {CookiePrimarySetting, PrivacyGuideStep, SafeBrowsingSetting} from 'chrom
 import type {SettingsPrefsElement, SyncStatus} from 'chrome://settings/settings.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction, CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideBrowserProxyImpl, PrivacyGuideInteractions, resetRouterForTesting, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createPrivacyGuidePageForTest, navigateToStep, clickNextOnWelcomeStep, setCookieSetting, setParametersForCookiesStep, setParametersForHistorySyncStep, setParametersForSafeBrowsingStep, setSafeBrowsingSetting, setupPrivacyGuidePageForTest, setupPrivacyRouteForTest, setupSync, shouldShowCookiesCard, shouldShowHistorySyncCard, shouldShowSafeBrowsingCard} from './privacy_guide_test_util.js';
@@ -1079,8 +1079,12 @@ suite('AdTopicsCardNavigations', function() {
         page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-    flush();
+    await microtasksFinished();
     assertCompletionCardVisible(page);
+    // HaTS gets triggered if the user navigates to the completion page.
+    const interaction =
+        await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
+    assertEquals(TrustSafetyInteraction.COMPLETED_PRIVACY_GUIDE, interaction);
   });
 });
 
