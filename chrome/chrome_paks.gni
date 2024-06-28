@@ -386,8 +386,10 @@ template("chrome_extra_paks") {
       sources += [
         "$root_gen_dir/chrome/common/chromeos/extensions/chromeos_system_extensions_resources.pak",
         "$root_gen_dir/chrome/kerberos_resources.pak",
+        "$root_gen_dir/chrome/office_web_app_resources.pak",
       ]
       deps += [
+        "//chrome/browser/resources:office_web_app_resources",
         "//chrome/browser/resources/chromeos/kerberos:resources",
         "//chrome/common/chromeos/extensions:resources",
       ]

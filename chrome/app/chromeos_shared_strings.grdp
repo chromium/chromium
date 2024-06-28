@@ -51,4 +51,9 @@
     Parallels Desktop
   </message>
 
+  <!-- Office web app string-->
+  <message name="IDS_OFFICE_FILE_HANDLER_APP_MICROSOFT" desc="App name for Microsoft 365.">
+    Microsoft 365
+  </message>
+
 </grit-part>

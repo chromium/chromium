@@ -7223,9 +7223,13 @@ test("unit_tests") {
   ]
 
   if (is_chromeos) {
-    sources += [ "../browser/device_reauth/chromeos/device_authenticator_chromeos_unittest.cc" ]
+    sources += [
+      "../browser/chromeos/office_web_app/office_web_app_unittest.cc",
+      "../browser/device_reauth/chromeos/device_authenticator_chromeos_unittest.cc",
+    ]
 
     deps += [
+      "//chrome/browser/chromeos/office_web_app:office_web_app",
       "//chromeos/components/kiosk:test_support",
       "//chromeos/components/mgs:test_support",
       "//chromeos/dbus/tpm_manager:tpm_manager",

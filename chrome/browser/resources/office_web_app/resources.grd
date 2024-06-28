@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/office_web_app_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="grit/office_web_app_resources_map.cc"
+            type="resource_file_map_source" />
+    <output filename="grit/office_web_app_resources_map.h"
+            type="resource_map_header" />
+    <output filename="office_web_app_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <includes>
+      <if expr="is_chromeos">
+        <include name="IDR_OFFICE_WEB_APP_ICONS_OFFICE_192_PNG" file="icons/office_192.png" type="BINDATA" />
+      </if>
+    </includes>
+  </release>
+</grit>

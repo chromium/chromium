@@ -7147,9 +7147,6 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_OFFICE_FILE_HANDLER_APP_GOOGLE_SLIDES" desc="App name for Google Slides.">
     Google Slides
   </message>
-  <message name="IDS_OFFICE_FILE_HANDLER_APP_MICROSOFT" desc="App name for Microsoft 365.">
-    Microsoft 365
-  </message>
   <message name="IDS_OFFICE_FILE_HANDLER_APP_OTHERS" desc="App name for others.">
     Other apps
   </message>
