@@ -1,0 +1,25 @@
+# Copyright 2014 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+if (is_chrome_branded) {
+  enterprise_companion_company_short_name = "Google"
+  enterprise_companion_company_short_name_uppercase = "GOOGLE"
+  enterprise_companion_product_full_name = "ChromeEnterpriseCompanion"
+  mac_enterprise_companion_bundle_identifier =
+      "com.google.ChromeEnterpriseCompanion"
+} else {
+  enterprise_companion_company_short_name = "Chromium"
+  enterprise_companion_company_short_name_uppercase = "CHROMIUM"
+  enterprise_companion_product_full_name = "ChromiumEnterpriseCompanion"
+  mac_enterprise_companion_bundle_identifier =
+      "org.chromium.ChromiumEnterpriseCompanion"
+}
+
+device_management_server_url = "https://m.google.com/devicemanagement/data/api"
+device_management_realtime_reporting_url =
+    "https://chromereporting-pa.googleapis.com/v1/events"
+device_management_encrypted_reporting_url =
+    "https://chromereporting-pa.googleapis.com/v1/record"

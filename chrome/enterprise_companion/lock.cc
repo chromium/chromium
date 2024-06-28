@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/enterprise_companion/enterprise_companion_branding.h"
 #include "components/named_system_lock/lock.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -17,11 +18,11 @@
 namespace {
 
 #if BUILDFLAG(IS_LINUX)
-constexpr char kLockName[] = "/ChromeEnterpriseCompanion.lock";
+constexpr char kLockName[] = "/" PRODUCT_FULLNAME_STRING ".lock";
 #elif BUILDFLAG(IS_MAC)
-constexpr char kLockName[] = "org.chromium.ChromeEnterpriseCompanion.lock";
+constexpr char kLockName[] = MAC_BUNDLE_IDENTIFIER_STRING ".lock";
 #elif BUILDFLAG(IS_WIN)
-constexpr wchar_t kLockName[] = L"Global\\GChromeEnterpriseCompanion";
+constexpr wchar_t kLockName[] = L"Global\\G" PRODUCT_FULLNAME_STRING;
 
 CSecurityDesc GetAdminDaclSecurityDescriptor() {
   CDacl dacl;

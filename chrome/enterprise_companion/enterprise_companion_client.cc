@@ -4,16 +4,23 @@
 
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
 
+#include "chrome/enterprise_companion/enterprise_companion_branding.h"
+
 namespace enterprise_companion {
 
-mojo::NamedPlatformChannel::ServerName GetServerName() {
+namespace {
 #if BUILDFLAG(IS_MAC)
-  return "org.chromium.ChromeEnterpriseCompanion.service";
+constexpr char kServerName[] = MAC_BUNDLE_IDENTIFIER_STRING ".service";
 #elif BUILDFLAG(IS_LINUX)
-  return "/run/Chromium/ChromeEnterpriseCompanion/service.sk";
+constexpr char kServerName[] =
+    "/run/" COMPANY_SHORTNAME_STRING "/" PRODUCT_FULLNAME_STRING "/service.sk";
 #elif BUILDFLAG(IS_WIN)
-  return L"ChromeEnterpriseCompanionService";
+constexpr wchar_t kServerName[] = PRODUCT_FULLNAME_STRING L"Service";
 #endif
+}  // namespace
+
+mojo::NamedPlatformChannel::ServerName GetServerName() {
+  return kServerName;
 }
 
 }  // namespace enterprise_companion

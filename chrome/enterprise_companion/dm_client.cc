@@ -22,6 +22,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
+#include "chrome/enterprise_companion/enterprise_companion_branding.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/enterprise_companion_version.h"
 #include "components/policy/core/common/cloud/client_data_delegate.h"
@@ -62,11 +63,10 @@ class DMConfiguration : public policy::DeviceManagementService::Configuration {
   ~DMConfiguration() override = default;
 
   std::string GetDMServerUrl() const override {
-    return "https://m.google.com/devicemanagement/data/api";
+    return DEVICE_MANAGEMENT_SERVER_URL;
   }
   std::string GetAgentParameter() const override {
-    return base::StrCat(
-        {"ChromeEnterpriseCompanion ", kEnterpriseCompanionVersion});
+    return base::StrCat({PRODUCT_FULLNAME_STRING, kEnterpriseCompanionVersion});
   }
   std::string GetPlatformParameter() const override {
     int32_t major = 0;
@@ -79,10 +79,10 @@ class DMConfiguration : public policy::DeviceManagementService::Configuration {
         bugfix);
   }
   std::string GetRealtimeReportingServerUrl() const override {
-    return "https://chromereporting-pa.googleapis.com/v1/events";
+    return DEVICE_MANAGEMENT_REALTIME_REPORTING_URL;
   }
   std::string GetEncryptedReportingServerUrl() const override {
-    return "https://chromereporting-pa.googleapis.com/v1/record";
+    return DEVICE_MANAGEMENT_ENCRYPTED_REPORTING_URL;
   }
   std::string GetReportingConnectorServerUrl(
       content::BrowserContext* context) const override {

@@ -1,10 +1,38 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 import("//build/util/process_version.gni")
+import("//chrome/enterprise_companion/branding.gni")
 import("//testing/test.gni")
 
 process_version("version_header") {
   sources = [ "//chrome/VERSION" ]
   template_file = "enterprise_companion_version.h.in"
   output = "$target_gen_dir/enterprise_companion_version.h"
+}
+
+process_version("branding_header") {
+  sources = [ "//chrome/VERSION" ]
+  extra_args = [
+    "-e",
+    "COMPANY_SHORTNAME=\"$enterprise_companion_company_short_name\"",
+    "-e",
+    "COMPANY_SHORTNAME_UPPERCASE=\"$enterprise_companion_company_short_name_uppercase\"",
+    "-e",
+    "DEVICE_MANAGEMENT_ENCRYPTED_REPORTING_URL=\"$device_management_encrypted_reporting_url\"",
+    "-e",
+    "DEVICE_MANAGEMENT_REALTIME_REPORTING_URL=\"$device_management_realtime_reporting_url\"",
+    "-e",
+    "DEVICE_MANAGEMENT_SERVER_URL=\"$device_management_server_url\"",
+    "-e",
+    "MAC_BUNDLE_IDENTIFIER=\"$mac_enterprise_companion_bundle_identifier\"",
+    "-e",
+    "PRODUCT_FULLNAME=\"$enterprise_companion_product_full_name\"",
+  ]
+
+  template_file = "enterprise_companion_branding.h.in"
+  output = "$target_gen_dir/enterprise_companion_branding.h"
 }
 
 source_set("base") {
@@ -27,6 +55,7 @@ source_set("base") {
     "url_loader_factory_provider.h",
   ]
   deps = [
+    ":branding_header",
     ":client",
     ":version_header",
     "mojom/",
@@ -74,7 +103,10 @@ static_library("client") {
     "enterprise_companion_client.cc",
     "enterprise_companion_client.h",
   ]
-  deps = [ "//mojo/public/cpp/platform" ]
+  deps = [
+    ":branding_header",
+    "//mojo/public/cpp/platform",
+  ]
 }
 
 if (!is_official_build) {
