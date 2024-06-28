@@ -135,8 +135,11 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
                                     std::vector<std::string> passages,
                                     std::vector<Embedding> passages_embeddings,
                                     ComputeEmbeddingsStatus status) {
+    for (const std::string& passage : passages) {
+      url_passages.passages.add_passages(passage);
+    }
     service_->OnPassagesEmbeddingsComputed(
-        std::move(url_passages), std::move(passages),
+        /*embedding_cache=*/{}, std::move(url_passages), std::move(passages),
         std::move(passages_embeddings), status);
   }
 
@@ -185,8 +188,8 @@ TEST_F(HistoryEmbeddingsServiceTest, OnHistoryDeletions) {
   AddTestHistoryPage("http://test3.com");
 
   // Add a fake set of passages for all visits.
-  UrlPassages url_passages(/*url_id=*/1, /*visit_id=*/1, base::Time::Now());
   std::vector<std::string> passages = {"test passage 1", "test passage 2"};
+  UrlPassages url_passages(/*url_id=*/1, /*visit_id=*/1, base::Time::Now());
   std::vector<Embedding> passages_embeddings = {
       Embedding(std::vector<float>(768, 1.0f)),
       Embedding(std::vector<float>(768, 1.0f))};

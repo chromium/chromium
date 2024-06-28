@@ -141,6 +141,18 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Both"/>
 </enum>
 
+<enum name="EmbeddingsExtractionCancelled">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="TabHelper.DidFinishLoad"/>
+  <int value="2" label="TabHelper.ExtractPassages.Url"/>
+  <int value="3" label="TabHelper.ExtractPassages.Reschedule"/>
+  <int value="4" label="TabHelper.ExtractPassagesWithHistoryData.Results"/>
+  <int value="5" label="TabHelper.ExtractPassagesWithHistoryData.Time"/>
+  <int value="6" label="TabHelper.ExtractPassagesWithHistoryData.Guid"/>
+  <int value="7" label="Service.RetrievePassages"/>
+  <int value="8" label="Service.RetrievePassagesWithUrlData"/>
+</enum>
+
 <enum name="EmbeddingsModelInfoStatus">
   <int value="0" label="Unknown"/>
   <int value="1" label="Model info is valid"/>

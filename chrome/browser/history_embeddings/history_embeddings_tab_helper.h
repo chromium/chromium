@@ -57,7 +57,8 @@ class HistoryEmbeddingsTabHelper
   friend class content::WebContentsUserData<HistoryEmbeddingsTabHelper>;
 
   // Utility method to delay passage extraction until tabs are done loading.
-  void ScheduleExtraction(content::WeakDocumentPtr weak_render_frame_host);
+  // Returns true if actually scheduled; false if weak pointer was invalidated.
+  bool ScheduleExtraction(content::WeakDocumentPtr weak_render_frame_host);
 
   // This is called some time after `DidFinishLoad` to do passage extraction.
   // Calls may be canceled by weak pointer invalidation.
@@ -77,10 +78,6 @@ class HistoryEmbeddingsTabHelper
   history_embeddings::HistoryEmbeddingsService* GetHistoryEmbeddingsService();
   // `GetHistoryService()` may return nullptr.
   history::HistoryService* GetHistoryService();
-
-  // Keeps track of how many tabs are loading so we can wait until they're
-  // all done before starting passage extraction.
-  size_t loading_tab_count_;
 
   // Data saved from the `HistoryTabHelper` call to
   // `OnUpdatedHistoryForNavigation` which happens in `DidFinishNavigation`

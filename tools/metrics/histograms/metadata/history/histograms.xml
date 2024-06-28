@@ -1750,6 +1750,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.DatabaseAsCacheAccessTime.StorageRead"
+    units="ms" expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    The time spent on the Storage sequence to read existing passages and
+    embeddings from the database so it can be used as a cache to avoid
+    re-embedding identical passages from the same URL. Logged each time page
+    passages are retrieved when the kUseDatabaseBeforeEmbedder feature parameter
+    is enabled. (This metric includes SQL query time only; no waits.)
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.DatabaseAsCacheAccessTime.TotalWait"
+    units="ms" expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    The time the HistoryEmbeddingsService waited to receive existing passages
+    and embeddings from its database Storage sequence. Logged each time page
+    passages are retrieved when the kUseDatabaseBeforeEmbedder feature parameter
+    is enabled. (This metric includes the SQL query time plus sequence waits.)
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.DatabaseCachedPassageRatio" units="%"
+    expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Percentage of passages that skip the embedder because the stored data for
+    the URL was retrieved and used as a cache. These passages reuse the
+    embedding stored for the identical passage in the database, thus saving the
+    embedder this portion of work. Logged regardless of presence/absence of
+    existing data for the URL, as long as the kUseDatabaseBeforeEmbedder feature
+    parameter is enabled.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.Embedder.CacheHit" enum="Boolean"
     expires_after="2024-12-31">
   <owner>sophiechang@chromium.org</owner>
@@ -1906,6 +1945,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether an attempt to tokenize an input string to the embedder was
     successful. Logged each time the embedder attempts to tokenize a string.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.ExtractionCancelled"
+    enum="EmbeddingsExtractionCancelled" expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Signals a reason code when passage extraction, embedding, etc. is cancelled
+    before completion and storage to database. Logged with different codes at
+    various stages of extraction, embedding, etc.
   </summary>
 </histogram>
 

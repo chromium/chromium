@@ -87,6 +87,12 @@ extern const base::FeatureParam<int> kMaxPassagesPerPage;
 extern const base::FeatureParam<bool> kDeleteEmbeddings;
 extern const base::FeatureParam<bool> kRebuildEmbeddings;
 
+// When true (the default), passages and embeddings from the database are
+// used as a perfect cache to avoid re-embedding any passages that already
+// exist in a given url_id's stored data. This reduces embedding workload
+// to the minimum necessary for new passages, with no redundant recomputes.
+extern const base::FeatureParam<bool> kUseDatabaseBeforeEmbedder;
+
 }  // namespace history_embeddings
 
 #endif  // COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_FEATURES_H_

@@ -26,14 +26,7 @@ namespace history_embeddings {
 class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
-    // The feature must be enabled first or else the service isn't initialized
-    // properly.
-    feature_list_.InitWithFeaturesAndParameters(
-        {{kHistoryEmbeddings,
-          {{"UseMlEmbedder", "false"}, {"SendQualityLog", "true"}}},
-         {page_content_annotations::features::kPageContentAnnotations, {{}}}},
-        /*disabled_features=*/{});
-
+    InitializeFeatureList();
     InProcessBrowserTest::SetUp();
   }
 
@@ -67,7 +60,15 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
         &page_content_annotator_);
   }
 
-  virtual void InitializeFeatureList() {}
+  virtual void InitializeFeatureList() {
+    // The feature must be enabled first or else the service isn't initialized
+    // properly.
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kHistoryEmbeddings,
+          {{"UseMlEmbedder", "false"}, {"SendQualityLog", "true"}}},
+         {page_content_annotations::features::kPageContentAnnotations, {{}}}},
+        /*disabled_features=*/{});
+  }
 
   base::test::ScopedFeatureList feature_list_;
 
@@ -90,7 +91,8 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest, BrowserRetrievesPassages) {
   base::test::TestFuture<UrlPassages> future;
   callback_for_tests() = future.GetRepeatingCallback();
   service()->RetrievePassages(
-      {}, web_contents->GetPrimaryMainFrame()->GetWeakDocumentPtr());
+      1, 1, base::Time::Now(),
+      web_contents->GetPrimaryMainFrame()->GetWeakDocumentPtr());
 
   UrlPassages url_passages = future.Take();
 
@@ -203,6 +205,56 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest, LogDataIsPrepared) {
       3, false);
   histogram_tester.ExpectUniqueSample(
       "History.Embeddings.Quality.LogEntryPrepared", true, 1);
+}
+
+class HistoryEmbeddingsWithDatabaseCacheBrowserTest
+    : public HistoryEmbeddingsBrowserTest {
+  void InitializeFeatureList() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kHistoryEmbeddings,
+          {{"UseMlEmbedder", "false"},
+           {"SendQualityLog", "true"},
+           {"UseDatabaseBeforeEmbedder", "true"}}},
+         {page_content_annotations::features::kPageContentAnnotations, {{}}}},
+        /*disabled_features=*/{});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsWithDatabaseCacheBrowserTest,
+                       RepeatedRetrievalUsesDatabase) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(embedded_test_server()->Start());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/inner_text/test1.html")));
+
+  base::test::TestFuture<UrlPassages> future;
+  callback_for_tests() = future.GetRepeatingCallback();
+  service()->RetrievePassages(
+      1, 1, base::Time::Now(),
+      web_contents->GetPrimaryMainFrame()->GetWeakDocumentPtr());
+
+  UrlPassages url_passages = future.Take();
+  ASSERT_EQ(url_passages.passages.passages_size(), 1);
+  ASSERT_EQ(url_passages.passages.passages(0), "A a B C b a 2 D");
+
+  // First time, the cache isn't used because there's no data yet.
+  histogram_tester.ExpectUniqueSample(
+      "History.Embeddings.DatabaseCachedPassageRatio", 0, 1);
+  EXPECT_EQ(0, histogram_tester.GetBucketCount(
+                   "History.Embeddings.DatabaseCachedPassageRatio", 100));
+
+  // Retrieve again for the same URL, new visit.
+  service()->RetrievePassages(
+      1, 2, base::Time::Now(),
+      web_contents->GetPrimaryMainFrame()->GetWeakDocumentPtr());
+  url_passages = future.Take();
+  ASSERT_EQ(url_passages.passages.passages_size(), 1);
+  ASSERT_EQ(url_passages.passages.passages(0), "A a B C b a 2 D");
+
+  // This time all the passages were found in existing data.
+  EXPECT_EQ(1, histogram_tester.GetBucketCount(
+                   "History.Embeddings.DatabaseCachedPassageRatio", 100));
 }
 
 }  // namespace history_embeddings
