@@ -121,10 +121,6 @@ class CC_EXPORT PictureLayerImpl
   // Used for benchmarking
   RasterSource* GetRasterSource() const { return raster_source_.get(); }
 
-  const DiscardableImageMap* GetDiscardableImageMapForTesting() const {
-    return discardable_image_map_.get();
-  }
-
   // This enum is the return value of the InvalidateRegionForImages() call. The
   // possible values represent the fact that there are no images on this layer
   // (kNoImages), the fact that the invalidation images don't cause an

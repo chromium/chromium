@@ -138,6 +138,12 @@ class FakeContentLayerClient : public ContentLayerClient {
     skottie_data_.push_back(std::move(skottie_data));
   }
 
+  // PaintContentsToDisplayList() will return this display_list instead of
+  // drawing the rects / images.
+  void set_display_item_list(scoped_refptr<DisplayItemList> display_list) {
+    display_list_ = std::move(display_list);
+  }
+
   SkCanvas* last_canvas() const { return last_canvas_; }
 
   void set_bounds(gfx::Size bounds) {
@@ -159,6 +165,7 @@ class FakeContentLayerClient : public ContentLayerClient {
   bool has_non_aa_paint_ = false;
   bool has_draw_text_op_ = false;
   std::vector<SkottieData> skottie_data_;
+  scoped_refptr<DisplayItemList> display_list_;
 };
 
 }  // namespace cc

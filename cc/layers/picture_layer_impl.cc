@@ -2095,14 +2095,17 @@ void PictureLayerImpl::InvalidateRasterInducingScrolls(
   if (!raster_source_ || !raster_source_->GetDisplayItemList()) {
     return;
   }
-  const base::flat_map<ElementId, gfx::Rect>& raster_inducing_scrolls =
+  const DisplayItemList::RasterInducingScrollMap& raster_inducing_scrolls =
       raster_source_->GetDisplayItemList()->raster_inducing_scrolls();
   Region invalidation;
+  bool should_regenerate_discardable_image_map = false;
   for (ElementId element_id : scrolls_to_invalidate) {
     auto it = raster_inducing_scrolls.find(element_id);
     if (it != raster_inducing_scrolls.end()) {
-      UnionUpdateRect(it->second);
-      invalidation.Union(it->second);
+      UnionUpdateRect(it->second.visual_rect);
+      invalidation.Union(it->second.visual_rect);
+      should_regenerate_discardable_image_map |=
+          it->second.has_discardable_images;
     }
   }
   if (invalidation.IsEmpty()) {
@@ -2110,7 +2113,9 @@ void PictureLayerImpl::InvalidateRasterInducingScrolls(
   }
   // Raster-inducing scroll may affect the discardable image map due to changed
   // scroll offsets.
-  RegenerateDiscardableImageMap();
+  if (should_regenerate_discardable_image_map) {
+    RegenerateDiscardableImageMap();
+  }
   invalidation_.Union(invalidation);
   tilings_->Invalidate(invalidation);
 }

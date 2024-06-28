@@ -16593,8 +16593,8 @@ TEST_F(LayerTreeHostImplTest, CheckerImagingTileInvalidation) {
     else
       EXPECT_FALSE(tile->HasRasterTask());
   }
-  const auto expected_invalidation = ImageRectsToRegion(
-      root->GetDiscardableImageMapForTesting()->GetRectsForImage(
+  const auto expected_invalidation =
+      ImageRectsToRegion(root->discardable_image_map()->GetRectsForImage(
           checkerable_image.stable_id()));
   EXPECT_EQ(expected_invalidation, *(root->GetPendingInvalidation()));
 }

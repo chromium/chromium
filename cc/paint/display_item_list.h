@@ -209,7 +209,17 @@ class CC_PAINT_EXPORT DisplayItemList
 
   std::optional<gfx::Rect> bounds() const { return rtree_.bounds(); }
 
-  const base::flat_map<ElementId, gfx::Rect>& raster_inducing_scrolls() const {
+  struct RasterInducingScrollInfo {
+    // See PushDrawScrollingContentsOp() for how we handle visual rect of
+    // nested DrawScrollingContentsOp.
+    gfx::Rect visual_rect;
+    bool has_discardable_images;
+  };
+  // Maps scroll element ids of DrawScrollingContentsOps to info.
+  // This is only kept in the top-level DisplayItemList after recording.
+  using RasterInducingScrollMap =
+      base::flat_map<ElementId, RasterInducingScrollInfo>;
+  const RasterInducingScrollMap& raster_inducing_scrolls() const {
     return raster_inducing_scrolls_;
   }
 
@@ -233,12 +243,7 @@ class CC_PAINT_EXPORT DisplayItemList
       visual_rects_[paired_begin_stack_.back().first_index].Union(visual_rect);
   }
 
-  // Maps scroll element ids of `DrawScrollingContentsOp`s to visual rects.
-  // For a nested `DrawScrollingContentsOp`, the scroll element id is of the
-  // nested op, and the visual rect is of the top-level
-  // `DrawScrollingContentsOp` in this DisplayItemList. This is kept in the
-  // top-level DisplayItemList only after recording.
-  base::flat_map<ElementId, gfx::Rect> raster_inducing_scrolls_;
+  RasterInducingScrollMap raster_inducing_scrolls_;
 
   // RTree stores offsets into the paint op buffer. It's available after
   // Finalize().

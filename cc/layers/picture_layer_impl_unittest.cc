@@ -6513,6 +6513,103 @@ TEST_F(LegacySWPictureLayerImplTest,
             pending_layer()->HighResTiling()->raster_transform().translation());
 }
 
+TEST_F(LegacySWPictureLayerImplTest, InvalidateRasterInducingScrolls) {
+  auto scroll_list1 = base::MakeRefCounted<DisplayItemList>();
+  PaintImage image = CreateDiscardablePaintImage(gfx::Size(300, 200));
+  scroll_list1->StartPaint();
+  scroll_list1->push<DrawImageOp>(image, 0.f, 0.f);
+  scroll_list1->EndPaintOfUnpaired(gfx::Rect(300, 200));
+  scroll_list1->Finalize();
+
+  auto scroll_list2 = base::MakeRefCounted<DisplayItemList>();
+  scroll_list2->StartPaint();
+  scroll_list2->push<DrawColorOp>(SkColors::kBlack, SkBlendMode::kSrcOver);
+  scroll_list2->EndPaintOfUnpaired(gfx::Rect(1000, 1000));
+  scroll_list2->Finalize();
+
+  ElementId scroll_element_id1(123);
+  ElementId scroll_element_id2(456);
+  auto display_list = base::MakeRefCounted<DisplayItemList>();
+  // Draw scrolling contents op under a clip.
+  display_list->StartPaint();
+  display_list->push<SaveOp>();
+  display_list->push<ClipRectOp>(SkRect::MakeWH(200, 200), SkClipOp::kIntersect,
+                                 false);
+  display_list->EndPaintOfPairedBegin();
+  display_list->PushDrawScrollingContentsOp(scroll_element_id1, scroll_list1,
+                                            gfx::Rect(200, 200));
+  display_list->StartPaint();
+  display_list->push<RestoreOp>();
+  display_list->EndPaintOfPairedEnd();
+  // Draw another scrolling contents op under a translate and a clip.
+  display_list->StartPaint();
+  display_list->push<SaveOp>();
+  display_list->push<TranslateOp>(100.f, 300.f);
+  display_list->push<ClipRectOp>(SkRect::MakeWH(200, 200), SkClipOp::kIntersect,
+                                 false);
+  display_list->EndPaintOfPairedBegin();
+  display_list->PushDrawScrollingContentsOp(scroll_element_id2, scroll_list2,
+                                            gfx::Rect(100, 300, 200, 200));
+  display_list->StartPaint();
+  display_list->push<RestoreOp>();
+  display_list->EndPaintOfPairedEnd();
+  display_list->Finalize();
+
+  EXPECT_EQ(2u, display_list->raster_inducing_scrolls().size());
+  auto& info1 = display_list->raster_inducing_scrolls().at(scroll_element_id1);
+  EXPECT_EQ(gfx::Rect(200, 200), info1.visual_rect);
+  EXPECT_TRUE(info1.has_discardable_images);
+  auto& info2 = display_list->raster_inducing_scrolls().at(scroll_element_id2);
+  EXPECT_EQ(gfx::Rect(100, 300, 200, 200), info2.visual_rect);
+  EXPECT_FALSE(info2.has_discardable_images);
+
+  FakeContentLayerClient client;
+  client.set_display_item_list(display_list);
+  gfx::Size layer_bounds(500, 500);
+  RecordingSource recording;
+  Region invalidation;
+  recording.Update(layer_bounds, 1, client, invalidation);
+  auto raster = FakeRasterSource::CreateFromRecordingSource(recording);
+  SetupTreesWithInvalidation(raster, raster, invalidation);
+  pending_layer()->set_invalidation(Region());
+
+  auto pending_image_map = pending_layer()->discardable_image_map();
+  auto active_image_map = active_layer()->discardable_image_map();
+  EXPECT_TRUE(pending_image_map);
+  EXPECT_EQ(pending_image_map, active_image_map);
+
+  // Invalidating scroll_element_id1 will invalidate both scroll visual rect
+  // and the discardable image map.
+  pending_layer()->InvalidateRasterInducingScrolls({scroll_element_id1});
+  EXPECT_EQ(info1.visual_rect, pending_layer()->invalidation().bounds());
+  EXPECT_TRUE(active_layer()->invalidation().IsEmpty());
+  pending_image_map = pending_layer()->discardable_image_map();
+  EXPECT_EQ(active_image_map, active_layer()->discardable_image_map());
+  EXPECT_NE(pending_image_map, active_image_map);
+
+  ActivateTree();
+  SetupPendingTreeWithInvalidation(raster, Region());
+  EXPECT_TRUE(pending_layer()->invalidation().IsEmpty());
+  EXPECT_EQ(info1.visual_rect, active_layer()->invalidation().bounds());
+  EXPECT_EQ(pending_image_map, pending_layer()->discardable_image_map());
+  active_image_map = active_layer()->discardable_image_map();
+  EXPECT_EQ(pending_image_map, active_image_map);
+
+  // scroll_list2 doesn't contain discardable images. Invalidating
+  // scroll_element_id2 will invalidate scroll visual rect only.
+  pending_layer()->InvalidateRasterInducingScrolls({scroll_element_id2});
+  EXPECT_EQ(info2.visual_rect, pending_layer()->invalidation().bounds());
+  EXPECT_EQ(pending_image_map, pending_layer()->discardable_image_map());
+  EXPECT_EQ(pending_image_map, active_layer()->discardable_image_map());
+
+  ActivateTree();
+  SetupPendingTreeWithInvalidation(raster, Region());
+  EXPECT_TRUE(pending_layer()->invalidation().IsEmpty());
+  EXPECT_EQ(info2.visual_rect, active_layer()->invalidation().bounds());
+  EXPECT_EQ(pending_image_map, pending_layer()->discardable_image_map());
+  EXPECT_EQ(pending_image_map, pending_layer()->discardable_image_map());
+}
+
 enum {
   kCanUseLCDText = 1 << 0,
   kLayersAlwaysAllowedLCDText = 1 << 1,

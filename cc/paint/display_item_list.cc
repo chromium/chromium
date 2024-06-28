@@ -446,16 +446,18 @@ void DisplayItemList::PushDrawScrollingContentsOp(
     const gfx::Rect& visual_rect) {
   StartPaint();
   push<DrawScrollingContentsOp>(scroll_element_id, display_item_list);
-  for (auto& [nested_scroll_element_id, _] :
+  for (auto& [nested_scroll_element_id, info] :
        std::move(display_item_list->raster_inducing_scrolls_)) {
     // For a nested scroller, we use the parent scroller's visual rect (which
     // will eventually use the top-level scroller's visual rect in the layer).
     // This will cause over-invalidation when the nested scroller scrolls, but
     // avoids the complexity and cost of mapping the visual rect of nested
     // scroller to the layer space, especially when the parent scroller scrolls.
-    raster_inducing_scrolls_[nested_scroll_element_id] = visual_rect;
+    raster_inducing_scrolls_[nested_scroll_element_id] =
+        RasterInducingScrollInfo{visual_rect, info.has_discardable_images};
   }
-  raster_inducing_scrolls_[scroll_element_id] = visual_rect;
+  raster_inducing_scrolls_[scroll_element_id] = RasterInducingScrollInfo{
+      visual_rect, display_item_list->has_discardable_images()};
   EndPaintOfUnpaired(visual_rect);
 }
 

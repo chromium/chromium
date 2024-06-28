@@ -1238,8 +1238,9 @@ TEST_P(PaintChunksToCcLayerTest, ScrollingContentsIntoDisplayItemList) {
                     PaintOpIs<cc::DrawRecordOp>()));  // chunk 2
     EXPECT_EQ(
         gfx::Rect(5, 5, 20, 30),
-        cc_list->raster_inducing_scrolls().at(
-            scroll_state.Transform().ScrollNode()->GetCompositorElementId()));
+        cc_list->raster_inducing_scrolls()
+            .at(scroll_state.Transform().ScrollNode()->GetCompositorElementId())
+            .visual_rect);
     const auto& scrolling_contents_op =
         static_cast<const cc::DrawScrollingContentsOp&>(
             cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(3));
@@ -1307,8 +1308,9 @@ TEST_P(PaintChunksToCcLayerTest,
                   PaintOpIs<cc::DrawRecordOp>()));  // chunk 3
   EXPECT_EQ(
       gfx::Rect(5, 5, 20, 30),
-      cc_list->raster_inducing_scrolls().at(
-          scroll_state.Transform().ScrollNode()->GetCompositorElementId()));
+      cc_list->raster_inducing_scrolls()
+          .at(scroll_state.Transform().ScrollNode()->GetCompositorElementId())
+          .visual_rect);
   const auto& scrolling_contents_op =
       static_cast<const cc::DrawScrollingContentsOp&>(
           cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(3));
@@ -1405,8 +1407,9 @@ TEST_P(PaintChunksToCcLayerTest,
 
   EXPECT_EQ(
       gfx::Rect(5, 5, 20, 30),
-      cc_list->raster_inducing_scrolls().at(
-          scroll_state.Transform().ScrollNode()->GetCompositorElementId()));
+      cc_list->raster_inducing_scrolls()
+          .at(scroll_state.Transform().ScrollNode()->GetCompositorElementId())
+          .visual_rect);
   const auto& scrolling_contents_op1 =
       static_cast<const cc::DrawScrollingContentsOp&>(
           cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(4));
@@ -1475,14 +1478,16 @@ TEST_P(PaintChunksToCcLayerTest, NestedScrollingContentsIntoDisplayItemList) {
                     PaintOpIs<cc::DrawScrollingContentsOp>(),
                     PaintOpIs<cc::RestoreOp>(),       // </overflow-clip1>
                     PaintOpIs<cc::DrawRecordOp>()));  // chunk 3
-    EXPECT_EQ(
-        gfx::Rect(5, 5, 20, 30),
-        cc_list->raster_inducing_scrolls().at(
-            scroll_state1.Transform().ScrollNode()->GetCompositorElementId()));
-    EXPECT_EQ(
-        gfx::Rect(5, 5, 20, 30),
-        cc_list->raster_inducing_scrolls().at(
-            scroll_state2.Transform().ScrollNode()->GetCompositorElementId()));
+    EXPECT_EQ(gfx::Rect(5, 5, 20, 30), cc_list->raster_inducing_scrolls()
+                                           .at(scroll_state1.Transform()
+                                                   .ScrollNode()
+                                                   ->GetCompositorElementId())
+                                           .visual_rect);
+    EXPECT_EQ(gfx::Rect(5, 5, 20, 30), cc_list->raster_inducing_scrolls()
+                                           .at(scroll_state2.Transform()
+                                                   .ScrollNode()
+                                                   ->GetCompositorElementId())
+                                           .visual_rect);
     const auto& scrolling_contents_op1 =
         static_cast<const cc::DrawScrollingContentsOp&>(
             cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(3));
@@ -1576,12 +1581,14 @@ TEST_P(PaintChunksToCcLayerTest,
                   PaintOpIs<cc::RestoreOp>()));  // </overflow-clip>
   EXPECT_EQ(
       gfx::Rect(5, 5, 20, 30),
-      cc_list->raster_inducing_scrolls().at(
-          scroll_state1.Transform().ScrollNode()->GetCompositorElementId()));
+      cc_list->raster_inducing_scrolls()
+          .at(scroll_state1.Transform().ScrollNode()->GetCompositorElementId())
+          .visual_rect);
   EXPECT_EQ(
       gfx::Rect(5, 5, 20, 30),
-      cc_list->raster_inducing_scrolls().at(
-          scroll_state2.Transform().ScrollNode()->GetCompositorElementId()));
+      cc_list->raster_inducing_scrolls()
+          .at(scroll_state2.Transform().ScrollNode()->GetCompositorElementId())
+          .visual_rect);
   const auto& scrolling_contents_op1 =
       static_cast<const cc::DrawScrollingContentsOp&>(
           cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(3));
