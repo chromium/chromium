@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/349653202): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/webnn/dml/command_queue.h"
 
 #include "base/check_is_test.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -124,7 +120,7 @@ scoped_refptr<CommandQueue> CommandQueue::Create(ID3D12Device* d3d12_device) {
 }
 
 HRESULT CommandQueue::ExecuteCommandList(ID3D12CommandList* command_list) {
-  return ExecuteCommandLists(base::make_span(&command_list, 1u));
+  return ExecuteCommandLists(base::span_from_ref(command_list));
 }
 
 HRESULT CommandQueue::ExecuteCommandLists(
