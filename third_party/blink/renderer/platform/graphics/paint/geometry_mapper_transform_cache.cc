@@ -70,7 +70,7 @@ void GeometryMapperTransformCache::Update(
     to_2d_translation_root_ += translation;
 
     if (parent.plane_root_transform_) {
-      plane_root_transform_.emplace();
+      plane_root_transform_.emplace(PlaneRootTransform());
       plane_root_transform_->plane_root = parent.plane_root();
       plane_root_transform_->to_plane_root = parent.to_plane_root();
       plane_root_transform_->to_plane_root.Translate(translation.x(),
@@ -98,7 +98,7 @@ void GeometryMapperTransformCache::Update(
       // as the 2d translation root.
       plane_root_transform_ = std::nullopt;
     } else {
-      plane_root_transform_.emplace();
+      plane_root_transform_.emplace(PlaneRootTransform());
       plane_root_transform_->plane_root = parent.plane_root();
       plane_root_transform_->to_plane_root.MakeIdentity();
       parent.ApplyToPlaneRoot(plane_root_transform_->to_plane_root);
@@ -140,7 +140,7 @@ void GeometryMapperTransformCache::UpdateScreenTransform(
   parent_node->UpdateScreenTransform();
   const auto& parent = parent_node->GetTransformCache();
 
-  screen_transform_.emplace();
+  screen_transform_.emplace(ScreenTransform());
   parent.ApplyToScreen(screen_transform_->to_screen);
   if (node.FlattensInheritedTransform())
     screen_transform_->to_screen.Flatten();
