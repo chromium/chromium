@@ -2262,21 +2262,11 @@ bool OverviewGrid::IsSavedDeskNameBeingModified() const {
 void OverviewGrid::UpdateNoWindowsWidget(bool no_items,
                                          bool animate,
                                          bool is_continuous_enter) {
-  // `no_windows_widget_` will show under two conditions:
-  // 1. In normal full overview, when there are no items and the saved desk
-  // library is not showing;
-  // 2. In faster split screen setup, the `no_windows_widget_` show to indicate
-  // either no windows available to pair or select a window to complete the
-  // window layout.
-  if (window_util::IsInFasterSplitScreenSetupSession(root_window_)) {
-    UpdateFasterSplitViewWidget();
-    return;
-  }
-
+  // `no_windows_widget_` will show in normal full overview, when there are no
+  // items and the saved desk library is not showing.
   if (!no_items || IsShowingSavedDeskLibrary() ||
       ShouldShowPineDialog(root_window_)) {
     no_windows_widget_.reset();
-    UpdateFasterSplitViewWidget();
     return;
   }
 

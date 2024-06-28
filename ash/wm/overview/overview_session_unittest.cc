@@ -78,6 +78,7 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
+#include "ash/wm/splitview/split_view_test_util.h"
 #include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -11114,6 +11115,64 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   EXPECT_FALSE(InOverviewSession());
   EXPECT_FALSE(SplitViewController::Get(root_windows[0])->InSplitViewMode());
   EXPECT_FALSE(SplitViewController::Get(root_windows[1])->InSplitViewMode());
+}
+
+// Tests the no windows widget does not show in faster split screen setup.
+TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
+       NoWindowsWidget) {
+  UpdateDisplay("800x600,800x600");
+  const aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+
+  // Enter overview normally. Test we show the no windows widget.
+  ToggleOverview();
+  EXPECT_TRUE(GetOverviewGridForRoot(root_windows[0])->no_windows_widget());
+  EXPECT_TRUE(GetOverviewGridForRoot(root_windows[1])->no_windows_widget());
+  ToggleOverview();
+
+  // Test faster splitscreen setup with 1 window: Snapping the only window won't
+  // start partial overview so no widget.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow(gfx::Rect(0, 0, 200, 200)));
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
+  VerifyNotSplitViewOverviewSession(w1.get());
+
+  // Test overview -> drag to snap setup with 1 window: Overview will end so no
+  // widget.
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+  DragWindowTo(GetOverviewItemForWindow(w1.get()), gfx::PointF(0, 0));
+  auto* window_state = WindowState::Get(w1.get());
+  ASSERT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            window_state->GetStateType());
+  VerifyNotSplitViewOverviewSession(w1.get());
+
+  // Create 2 windows on the first display, then snap to start partial overview.
+  std::unique_ptr<aura::Window> w2(CreateAppWindow(gfx::Rect(0, 0, 200, 200)));
+
+  // Test faster splitscreen setup with 2 windows.
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
+  VerifySplitViewOverviewSession(w1.get());
+
+  // TODO(b/313505530): Determine when to show the widget.
+  EXPECT_FALSE(GetOverviewGridForRoot(root_windows[0])->no_windows_widget());
+  EXPECT_FALSE(GetOverviewGridForRoot(root_windows[1])->no_windows_widget());
+
+  // Exit partial overview and enter full overview.
+  ToggleOverview();
+  VerifyNotSplitViewOverviewSession(w1.get());
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  // Test overview -> drag to snap setup with 2 windows.
+  DragWindowTo(GetOverviewItemForWindow(w1.get()), gfx::PointF(0, 0));
+  ASSERT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            window_state->GetStateType());
+  VerifySplitViewOverviewSession(w1.get(), /*faster_split_screen_setup=*/false);
+
+  // TODO(b/313505530): Determine when to show the widget.
+  EXPECT_FALSE(GetOverviewGridForRoot(root_windows[0])->no_windows_widget());
+  EXPECT_FALSE(GetOverviewGridForRoot(root_windows[1])->no_windows_widget());
 }
 
 // -----------------------------------------------------------------------------
