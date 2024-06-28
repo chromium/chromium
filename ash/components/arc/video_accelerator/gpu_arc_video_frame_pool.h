@@ -91,6 +91,8 @@ class GpuArcVideoFramePool : public mojom::VideoFramePool,
 
   void OnRequestVideoFramesDone();
 
+  void Stop();
+
   // The local video frame pool mojo service.
   mojo::AssociatedReceiver<mojom::VideoFramePool> video_frame_pool_receiver_;
   // The remote video frame pool mojo client.
@@ -120,6 +122,8 @@ class GpuArcVideoFramePool : public mojom::VideoFramePool,
   // calling mojom::VideoFramePoolClient::RequestVideoFrames().
   bool awaiting_request_frames_ack_ = false;
   static constexpr uint32_t kMinVersionForRequestFramesAck = 1;
+
+  bool has_error_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // The client task runner and its sequence checker. All methods should be run
   // on this task runner.

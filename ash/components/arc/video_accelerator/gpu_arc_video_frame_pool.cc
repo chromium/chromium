@@ -75,6 +75,9 @@ GpuArcVideoFramePool::GpuArcVideoFramePool(
 
   weak_this_ = weak_this_factory_.GetWeakPtr();
 
+  video_frame_pool_receiver_.set_disconnect_handler(
+      base::BindOnce(&GpuArcVideoFramePool::Stop, weak_this_));
+
   client_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
@@ -98,6 +101,8 @@ void GpuArcVideoFramePool::Initialize(
   VLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  CHECK(!has_error_);
+
   if (pool_client_) {
     DVLOGF(3) << "Attempting to call GpuArcVideoFramePool::Initialize() when "
                  "it is already initialized";
@@ -107,12 +112,17 @@ void GpuArcVideoFramePool::Initialize(
   pool_client_version_ = client.version();
 
   pool_client_.Bind(std::move(client));
+
+  pool_client_.set_disconnect_handler(
+      base::BindOnce(&GpuArcVideoFramePool::Stop, weak_this_));
 }
 
 void GpuArcVideoFramePool::AddVideoFrame(mojom::VideoFramePtr video_frame,
                                          AddVideoFrameCallback callback) {
   DVLOGF(3) << "id: " << video_frame->id;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  CHECK(!has_error_);
 
   if (!pool_client_version_) {
     DVLOGF(3) << "Unknown pool client version. Discarding video frame.";
@@ -240,7 +250,7 @@ void GpuArcVideoFramePool::RequestFrames(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!notify_layout_changed_cb_);
 
-  if (!pool_client_version_) {
+  if (has_error_ || !pool_client_version_) {
     std::move(notify_layout_changed_cb)
         .Run(media::CroStatus::Codes::kFailedToGetFrameLayout);
     return;
@@ -276,6 +286,7 @@ void GpuArcVideoFramePool::RequestFrames(
 void GpuArcVideoFramePool::OnRequestVideoFramesDone() {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!has_error_);
   CHECK(pool_client_version_.has_value());
   CHECK_GE(pool_client_version_.value(), kMinVersionForRequestFramesAck);
 
@@ -294,6 +305,11 @@ std::optional<int32_t> GpuArcVideoFramePool::GetVideoFrameId(
     const media::VideoFrame* video_frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(video_frame);
+
+  if (has_error_) {
+    return std::nullopt;
+  }
+
   auto it =
       buffer_id_to_video_frame_id_.find(media::GetSharedMemoryId(*video_frame));
   return it != buffer_id_to_video_frame_id_.end()
@@ -306,6 +322,10 @@ void GpuArcVideoFramePool::OnFrameReleased(
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (has_error_) {
+    return;
+  }
+
   auto it =
       buffer_id_to_video_frame_id_.find(origin_frame->GetSharedMemoryId());
   DCHECK(it != buffer_id_to_video_frame_id_.end());
@@ -317,6 +337,9 @@ gfx::GpuMemoryBufferHandle GpuArcVideoFramePool::CreateGpuMemoryHandle(
     const std::vector<VideoFramePlane>& planes,
     media::VideoPixelFormat pixel_format,
     uint64_t modifier) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!has_error_);
+
   // Check whether we need to use protected buffers.
   if (!secure_mode_.has_value()) {
     base::ScopedFD dup_fd(HANDLE_EINTR(dup(fd.get())));
@@ -371,6 +394,9 @@ gfx::GpuMemoryBufferHandle GpuArcVideoFramePool::CreateGpuMemoryHandle(
 scoped_refptr<media::FrameResource> GpuArcVideoFramePool::CreateFrame(
     gfx::GpuMemoryBufferHandle gmb_handle,
     media::VideoPixelFormat pixel_format) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!has_error_);
+
   auto buffer_format = media::VideoPixelFormatToGfxBufferFormat(pixel_format);
   CHECK(buffer_format);
   // Usage is SCANOUT_CPU_READ_WRITE because we may need to map the buffer in
@@ -381,6 +407,28 @@ scoped_refptr<media::FrameResource> GpuArcVideoFramePool::CreateFrame(
       base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
           coded_size_, *buffer_format,
           std::move(gmb_handle.native_pixmap_handle)));
+}
+
+void GpuArcVideoFramePool::Stop() {
+  VLOGF(2);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (has_error_) {
+    return;
+  }
+
+  has_error_ = true;
+
+  weak_this_factory_.InvalidateWeakPtrs();
+
+  pool_client_version_.reset();
+  pool_client_.reset();
+  video_frame_pool_receiver_.reset();
+
+  if (notify_layout_changed_cb_) {
+    std::move(notify_layout_changed_cb_)
+        .Run(media::CroStatus::Codes::kFailedToGetFrameLayout);
+  }
 }
 
 }  // namespace arc
