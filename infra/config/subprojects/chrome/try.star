@@ -217,6 +217,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "linux-cft",
+)
+
+chrome_internal_verifier(
     builder = "linux-chromeos-chrome",
 )
 
@@ -244,6 +248,10 @@ chrome_internal_verifier(
 chrome_internal_verifier(
     branch_selector = branches.selector.MAC_BRANCHES,
     builder = "mac-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "mac-cft",
 )
 
 chrome_internal_verifier(
@@ -288,6 +296,10 @@ chrome_internal_verifier(
 chrome_internal_verifier(
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder = "win-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "win-cft",
 )
 
 chrome_internal_verifier(
