@@ -727,6 +727,11 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // bottom sheet has been dismissed.
   registry->RegisterIntegerPref(prefs::kIosPasswordBottomSheetDismissCount, 0);
 
+  // Register pref used to count the number of consecutive times the password
+  // generation bottom sheet has been dismissed.
+  registry->RegisterIntegerPref(
+      prefs::kIosPasswordGenerationBottomSheetDismissCount, 0);
+
   // Register pref used to determine if Browser Lockdown Mode is enabled.
   registry->RegisterBooleanPref(prefs::kBrowserLockdownModeEnabled, false);
 

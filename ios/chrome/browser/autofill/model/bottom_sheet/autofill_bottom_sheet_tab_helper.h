@@ -50,6 +50,10 @@ class AutofillBottomSheetTabHelper
   // dismissed before it gets disabled.
   static constexpr int kPasswordBottomSheetMaxDismissCount = 3;
 
+  // Maximum number of times the password generation bottom sheet can be
+  // dismissed before it gets disabled.
+  static constexpr int kPasswordGenerationBottomSheetMaxDismissCount = 3;
+
   AutofillBottomSheetTabHelper(const AutofillBottomSheetTabHelper&) = delete;
   AutofillBottomSheetTabHelper& operator=(const AutofillBottomSheetTabHelper&) =
       delete;
@@ -148,7 +152,11 @@ class AutofillBottomSheetTabHelper
 
   // Check whether the password bottom sheet has been dismissed too many times
   // by the user.
-  bool HasReachedDismissLimit();
+  bool HasReachedPasswordSuggestionDismissLimit();
+
+  // Check whether the password generation bottom sheet has been dismissed
+  // too many times by the user.
+  bool HasReachedPasswordGenerationDismissLimit();
 
   // Prepare bottom sheet using data from the form prediction.
   void AttachListeners(

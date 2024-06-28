@@ -17,6 +17,7 @@
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/plus_addresses/plus_address_types.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
@@ -144,8 +145,8 @@ void AutofillBottomSheetTabHelper::ShowPaymentsBottomSheet(
 void AutofillBottomSheetTabHelper::AttachPasswordListeners(
     const std::vector<autofill::FieldRendererId>& renderer_ids,
     const std::string& frame_id) {
-  // Verify that the bottom sheet hasn't been dismissed too many times.
-  if (HasReachedDismissLimit()) {
+  // Verify that the password bottom sheet hasn't been dismissed too many times.
+  if (HasReachedPasswordSuggestionDismissLimit()) {
     return;
   }
 
@@ -347,9 +348,9 @@ AutofillBottomSheetTabHelper::GetVirtualCardEnrollmentCallbacks() {
 
 // Private methods
 
-bool AutofillBottomSheetTabHelper::HasReachedDismissLimit() {
-  PrefService* const pref_service =
-      ChromeBrowserState ::FromBrowserState(web_state_->GetBrowserState())
+bool AutofillBottomSheetTabHelper::HasReachedPasswordSuggestionDismissLimit() {
+  const PrefService* pref_service =
+      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState())
           ->GetPrefs();
   bool dismissLimitReached =
       pref_service->GetInteger(prefs::kIosPasswordBottomSheetDismissCount) >=
@@ -357,6 +358,15 @@ bool AutofillBottomSheetTabHelper::HasReachedDismissLimit() {
   base::UmaHistogramBoolean("IOS.IsEnabled.Password.BottomSheet",
                             !dismissLimitReached);
   return dismissLimitReached;
+}
+
+bool AutofillBottomSheetTabHelper::HasReachedPasswordGenerationDismissLimit() {
+  const PrefService* pref_service =
+      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState())
+          ->GetPrefs();
+  return pref_service->GetInteger(
+             prefs::kIosPasswordGenerationBottomSheetDismissCount) >=
+         kPasswordGenerationBottomSheetMaxDismissCount;
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(AutofillBottomSheetTabHelper)

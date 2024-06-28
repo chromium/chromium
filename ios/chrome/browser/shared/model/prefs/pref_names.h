@@ -278,6 +278,12 @@ inline constexpr char kIosParcelTrackingPolicyEnabled[] =
 inline constexpr char kIosPasswordBottomSheetDismissCount[] =
     "ios.password_bottom_sheet_dismiss_count";
 
+// The number of consecutive times the user dismissed the password bottom sheet.
+// This gets reset to 0 whenever the user selects the generated password from
+// the bottom sheet or from the keyboard accessory.
+inline constexpr char kIosPasswordGenerationBottomSheetDismissCount[] =
+    "ios.password_generation_bottom_sheet_dismiss_count";
+
 // The user's account info from before a device restore.
 inline constexpr char kIosPreRestoreAccountInfo[] =
     "ios.pre_restore_account_info";
