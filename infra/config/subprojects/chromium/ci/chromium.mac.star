@@ -96,6 +96,7 @@ ci.builder(
             "remoteexec",
             "minimal_symbols",
             "x64",
+            "mac",
         ],
     ),
     cpu = cpu.ARM64,
@@ -134,6 +135,7 @@ ci.builder(
             "debug_builder",
             "remoteexec",
             "x64",
+            "mac",
         ],
     ),
     os = os.MAC_ANY,
@@ -171,6 +173,7 @@ ci.builder(
         configs = [
             "release_builder",
             "remoteexec",
+            "mac",
             "arm64",
         ],
     ),
@@ -204,6 +207,7 @@ ci.builder(
         configs = [
             "debug_builder",
             "remoteexec",
+            "mac",
             "arm64",
         ],
     ),
@@ -246,6 +250,7 @@ ci.builder(
             "release_builder",
             "remoteexec",
             "minimal_symbols",
+            "mac",
         ],
     ),
     os = os.MAC_DEFAULT,
@@ -277,6 +282,7 @@ ci.builder(
         configs = [
             "release_builder",
             "remoteexec",
+            "mac",
             "x64",
         ],
     ),
