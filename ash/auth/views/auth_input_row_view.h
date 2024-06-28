@@ -127,6 +127,7 @@ class ASH_EXPORT AuthInputRowView : public views::View,
   void CreateAndConfigureInputRow();
   void CreateAndConfigureCapslockIcon();
   void CreateAndConfigureTextfieldContainer();
+  void CreateFocusRingForInputRow();
   void CreateAndConfigureDisplayTextButton();
   void CreateAndConfigureSubmitButton();
 

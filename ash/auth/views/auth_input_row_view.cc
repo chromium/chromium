@@ -15,6 +15,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/color_util.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/style_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -39,7 +40,9 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
@@ -92,7 +95,15 @@ constexpr const int kIconSizeDp = 20;
 // the input textfield.
 constexpr const int kInputTextfieldMarginDp = 2;
 
+// The corner radius of the input row.
 constexpr const int kInputRowCornerRadiusDp = 8;
+
+// The inset of the input row and it's focus ring.
+constexpr const int kInputRowFocusRingInsetDp = 2;
+
+// The focus ring corner radius.
+constexpr const int kInputRowFocusRingRadiusDp =
+    kInputRowCornerRadiusDp + kInputRowFocusRingInsetDp;
 
 // Horizontal spacing between the end of the input textfield and the display
 // text button. Note that the input textfield has a 2dp margin so the
@@ -137,6 +148,7 @@ AuthInputRowView::AuthInputRowView(AuthType auth_type) : auth_type_(auth_type) {
   CreateAndConfigureInputRow();
   CreateAndConfigureCapslockIcon();
   CreateAndConfigureTextfieldContainer();
+  CreateFocusRingForInputRow();
   CreateAndConfigureDisplayTextButton();
   CreateAndConfigureSubmitButton();
   SetDisplayTextButtonVisible(true);
@@ -167,9 +179,13 @@ void AuthInputRowView::CreateAndConfigureInputRow() {
       views::BoxLayout::MainAxisAlignment::kCenter);
 
   input_row_ =
-      input_row_container->AddChildView(std::make_unique<NonAccessibleView>());
+      input_row_container->AddChildView(std::make_unique<views::View>());
   input_row_->SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase, kInputRowCornerRadiusDp));
+
+  input_row_->SetBorder(std::make_unique<views::HighlightBorder>(
+      kInputRowCornerRadiusDp,
+      views::HighlightBorder::Type::kHighlightBorderNoShadow));
 
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
@@ -179,8 +195,6 @@ void AuthInputRowView::CreateAndConfigureInputRow() {
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   input_row_layout_ = input_row_->SetLayoutManager(std::move(layout));
-
-  views::FocusRing::Install(input_row_);
 
   // Make the input row fill the view.
   input_row_container_layout->SetFlexForView(input_row_, 1);
@@ -210,6 +224,24 @@ void AuthInputRowView::CreateAndConfigureTextfieldContainer() {
   textfield_->AddObserver(this);
 
   input_row_layout_->SetFlexForView(textfield_container, 1);
+}
+
+void AuthInputRowView::CreateFocusRingForInputRow() {
+  CHECK_NE(textfield_, nullptr);
+
+  StyleUtil::SetUpFocusRingForView(input_row_);
+  views::FocusRing::Get(input_row_)
+      ->SetPathGenerator(
+          std::make_unique<views::RoundRectHighlightPathGenerator>(
+              -gfx::Insets::VH(kInputRowFocusRingInsetDp,
+                               kInputRowFocusRingInsetDp),
+              kInputRowFocusRingRadiusDp));
+  views::FocusRing::Get(input_row_)
+      ->SetHasFocusPredicate(base::BindRepeating(
+          [](const AuthTextfield* textfield, const views::View* view) {
+            return textfield->IsActive();
+          },
+          textfield_));
 }
 
 void AuthInputRowView::CreateAndConfigureSubmitButton() {
@@ -265,6 +297,7 @@ void AuthInputRowView::CreateAndConfigureDisplayTextButton() {
 }
 
 void AuthInputRowView::OnTextfieldBlur() {
+  views::FocusRing::Get(input_row_)->SchedulePaint();
   SetCapsLockHighlighted(false);
   for (auto& observer : observers_) {
     observer.OnTextfieldBlur();
@@ -272,6 +305,7 @@ void AuthInputRowView::OnTextfieldBlur() {
 }
 
 void AuthInputRowView::OnTextfieldFocus() {
+  views::FocusRing::Get(input_row_)->SchedulePaint();
   SetCapsLockHighlighted(true);
   for (auto& observer : observers_) {
     observer.OnTextfieldFocus();

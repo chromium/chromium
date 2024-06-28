@@ -122,28 +122,28 @@ TEST_F(InputRowWithPasswordPixelTest, DayMode) {
   DarkLightModeControllerImpl::Get()->SetDarkModeEnabledForTest(false);
   //  Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "DayMode", /*revision_number=*/0, container_view_));
+      "DayMode", /*revision_number=*/1, container_view_));
 }
 
 TEST_F(InputRowWithPasswordPixelTest, VisibleText) {
   DarkLightModeControllerImpl::Get()->SetDarkModeEnabledForTest(false);
   LeftClickOn(test_api_->GetDisplayTextButton());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "VisibleText", /*revision_number=*/0, container_view_));
+      "VisibleText", /*revision_number=*/1, container_view_));
 }
 
 TEST_F(InputRowWithPasswordPixelTest, FocusDisplayTextButton) {
   auth_input_->GetFocusManager()->SetFocusedView(
       test_api_->GetDisplayTextButton());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "FocusDisplayTextButton", /*revision_number=*/0, container_view_));
+      "FocusDisplayTextButton", /*revision_number=*/1, container_view_));
 }
 
 TEST_F(InputRowWithPasswordPixelTest, FocusSubmitButton) {
   DarkLightModeControllerImpl::Get()->SetDarkModeEnabledForTest(false);
   auth_input_->GetFocusManager()->SetFocusedView(test_api_->GetSubmitButton());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "FocusSubmitButton", /*revision_number=*/0, container_view_));
+      "FocusSubmitButton", /*revision_number=*/1, container_view_));
 }
 
 }  // namespace

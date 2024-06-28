@@ -38,20 +38,25 @@ constexpr int kIconSizeDp = 20;
 
 // The max width of the AuthTextfield.
 constexpr int kAuthTextfieldMaxWidthDp = 216;
+
+// Font type for text.
+constexpr TypographyToken kTextFont = TypographyToken::kCrosBody2;
+
+// Font type for hidden text.
+constexpr TypographyToken kHiddenTextFont = TypographyToken::kCrosDisplay5;
 }
 
 AuthTextfield::AuthTextfield(AuthType auth_type)
     : SystemTextfield(Type::kMedium),
       SystemTextfieldController(this),
       auth_type_(auth_type) {
-  const gfx::FontList font_list =
-      ash::TypographyProvider::Get()->ResolveTypographyToken(
-          TypographyToken::kCrosBody2);
 
   SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  set_placeholder_font_list(font_list);
-  SetFontList(font_list);
+  set_placeholder_font_list(
+      ash::TypographyProvider::Get()->ResolveTypographyToken(kTextFont));
+  SetFontList(
+      ash::TypographyProvider::Get()->ResolveTypographyToken(kHiddenTextFont));
   SetObscuredGlyphSpacing(kPasswordGlyphSpacing);
   // Remove focus ring to remain consistent with other implementations of
   // login input fields.
@@ -257,6 +262,8 @@ void AuthTextfield::ShowText() {
   if (IsTextVisible()) {
     return;
   }
+  SetFontList(
+      ash::TypographyProvider::Get()->ResolveTypographyToken(kTextFont));
   switch (auth_type_) {
     case AuthType::kPassword:
       SetTextInputType(ui::TEXT_INPUT_TYPE_NULL);
@@ -274,6 +281,8 @@ void AuthTextfield::HideText() {
   if (!IsTextVisible()) {
     return;
   }
+  SetFontList(
+      ash::TypographyProvider::Get()->ResolveTypographyToken(kHiddenTextFont));
   SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   for (auto& observer : observers_) {
     observer.OnTextVisibleChanged(false);
