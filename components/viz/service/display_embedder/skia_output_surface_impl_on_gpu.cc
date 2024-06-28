@@ -1880,9 +1880,6 @@ void SkiaOutputSurfaceImplOnGpu::SetVSyncDisplayID(int64_t display_id) {
 }
 
 void SkiaOutputSurfaceImplOnGpu::SetFrameRate(float frame_rate) {
-  if (gl_surface_) {
-    gl_surface_->SetFrameRate(frame_rate);
-  }
   if (presenter_) {
     presenter_->SetFrameRate(frame_rate);
   }

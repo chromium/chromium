@@ -204,7 +204,6 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // Return the interface used for querying EGL timestamps.
   virtual EGLTimestampClient* GetEGLTimestampClient();
 
-  virtual void SetFrameRate(float frame_rate) {}
   static GLSurface* GetCurrent();
 
   virtual void SetCurrent();
