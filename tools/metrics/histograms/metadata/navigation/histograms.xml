@@ -1832,12 +1832,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.{Stage}.{FrameType}" units="ms"
-    expires_after="2023-05-06">
+    expires_after="2024-11-27">
   <owner>cduvall@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
   <summary>
     Measures the amount of time the {Stage} stage takes in early navigation.
     Logged for any navigation that reaches the stage.
+
+    This was not reported between 2023-05-06 and 2024-06-28.
   </summary>
   <token key="Stage">
     <variant name="BeginNavigationImpl"
