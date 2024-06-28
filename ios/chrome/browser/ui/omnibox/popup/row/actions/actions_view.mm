@@ -9,6 +9,8 @@
 #import "ios/chrome/browser/ui/omnibox/popup/row/actions/suggest_action.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 /// The scroll view height.
@@ -156,14 +158,20 @@ const CGFloat kLeadingPadding = 61;
       [actionButton addTarget:self
                        action:@selector(callButtonTapped)
              forControlEvents:UIControlEventTouchUpInside];
+      actionButton.accessibilityLabel = l10n_util::GetNSString(
+          IDS_IOS_CALL_OMNIBOX_ACTION_ACCESSIBILITY_LABEL);
     } else if (action.type == omnibox::ActionInfo_ActionType_DIRECTIONS) {
       [actionButton addTarget:self
                        action:@selector(directionsButtonTapped)
              forControlEvents:UIControlEventTouchUpInside];
+      actionButton.accessibilityLabel = l10n_util::GetNSString(
+          IDS_IOS_DIRECTIONS_OMNIBOX_ACTION_ACCESSIBILITY_LABEL);
     } else if (action.type == omnibox::ActionInfo_ActionType_REVIEWS) {
       [actionButton addTarget:self
                        action:@selector(reviewsButtonTapped)
              forControlEvents:UIControlEventTouchUpInside];
+      actionButton.accessibilityLabel = l10n_util::GetNSString(
+          IDS_IOS_REVIEWS_OMNIBOX_ACTION_ACCESSIBILITY_LABEL);
     }
   }
 

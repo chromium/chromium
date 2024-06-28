@@ -808,6 +808,9 @@
       <message name="IDS_IOS_CALL_OMNIBOX_ACTION" desc="Call suggestion action button [iOS only]">
         Call
       </message>
+      <message name="IDS_IOS_CALL_OMNIBOX_ACTION_ACCESSIBILITY_LABEL" desc="The accessibility label for the Call suggestion action button [iOS only]">
+        Connect with a business by initiating a phone call
+      </message>
       <message name="IDS_IOS_CARD_STACK_SCROLLED_NOTIFICATION" desc="The accessibility description for page scrolled notification [iOS only]">
         <ph name="INCOGNITO">$1<ex>Incognito</ex></ph> Tabs <ph name="FIRST_VISIBLE_TAB">$2<ex>3</ex></ph> through <ph name="LAST_VISIBLE_TAB">$3<ex>5</ex></ph> of <ph name="NUMBER_OF_OPEN_TABS">$4<ex>12</ex></ph>
       </message>
@@ -1398,6 +1401,9 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_DIRECTIONS_OMNIBOX_ACTION" desc="Directions suggestion action button [iOS only]">
         Directions
+      </message>
+      <message name="IDS_IOS_DIRECTIONS_OMNIBOX_ACTION_ACCESSIBILITY_LABEL" desc="The accessibility label for the Directions suggestion action button [iOS only]">
+        Get directions to your destination with turn by turn guidance with using the navigation feature
       </message>
       <message name="IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE" desc="The title of the continue button on the disconnect dialog [Length: 20em].">
         Sign Out
@@ -3959,6 +3965,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_REVIEWS_OMNIBOX_ACTION" desc="Reviews suggestion action button [iOS only]">
         Reviews
+      </message>
+      <message name="IDS_IOS_REVIEWS_OMNIBOX_ACTION_ACCESSIBILITY_LABEL" desc="The accessibility label for the Reviews suggestion action button  [iOS only]">
+        Read customer evaluations of products, services, or experience to help inform your decisions with reviews
       </message>
       <message name="IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_COMPROMISED_PASSWORD" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Password check finds a compromised password issue. [iOS only]">
         You have compromised passwords.
