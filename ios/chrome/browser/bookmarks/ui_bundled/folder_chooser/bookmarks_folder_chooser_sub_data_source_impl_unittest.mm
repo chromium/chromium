@@ -36,9 +36,6 @@ enum class TestParam {
 
 // The argument provided when `bookmarkNodeDeleted:` was called.
 @property(nonatomic, assign) const BookmarkNode* bookmarkNodeDeletedArg;
-// The argument provided when `bookmarkModelWillRemoveAllNodes:` was called.
-@property(nonatomic, assign)
-    const LegacyBookmarkModel* bookmarkModelWillRemoveAllNodesArg;
 
 - (instancetype)initWithNodes:(const std::set<const BookmarkNode*>&)nodes;
 
@@ -62,10 +59,8 @@ enum class TestParam {
   _bookmarkNodeDeletedArg = bookmarkNode;
 }
 
-- (void)bookmarkModelWillRemoveAllNodes:
-    (const LegacyBookmarkModel*)bookmarkModel {
+- (void)bookmarkModelWillRemoveAllNodes {
   _editedNodes.clear();
-  _bookmarkModelWillRemoveAllNodesArg = bookmarkModel;
 }
 
 - (const std::set<const BookmarkNode*>&)editedNodes {
@@ -246,8 +241,6 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestAllFoldersRemoved) {
   RemoveAllNodes();
 
   [mock_consumer_ verify];
-  ASSERT_EQ(model(),
-            fake_parent_data_source_.bookmarkModelWillRemoveAllNodesArg);
   std::vector<const BookmarkNode*> visible_folder_nodes =
       [sub_data_source_ visibleFolderNodes];
   ASSERT_EQ(1u, visible_folder_nodes.size());

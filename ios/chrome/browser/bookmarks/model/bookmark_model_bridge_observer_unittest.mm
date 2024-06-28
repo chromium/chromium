@@ -72,28 +72,24 @@
 
 #pragma mark - BookmarkModelBridgeObserver
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-    didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
+- (void)didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
 }
 
-- (void)bookmarkModelRemovedAllNodes:(LegacyBookmarkModel*)model {
+- (void)bookmarkModelRemovedAllNodes {
 }
 
-- (void)bookmarkModelLoaded:(LegacyBookmarkModel*)model {
+- (void)bookmarkModelLoaded {
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-        didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
+- (void)didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-          didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
-           fromParent:(const bookmarks::BookmarkNode*)oldParent
-             toParent:(const bookmarks::BookmarkNode*)newParent {
+- (void)didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
+         fromParent:(const bookmarks::BookmarkNode*)oldParent
+           toParent:(const bookmarks::BookmarkNode*)newParent {
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-        didDeleteNode:(const bookmarks::BookmarkNode*)node
+- (void)didDeleteNode:(const bookmarks::BookmarkNode*)node
            fromFolder:(const bookmarks::BookmarkNode*)folder {
   [_owner bookmarkNodeDeleted];
 }

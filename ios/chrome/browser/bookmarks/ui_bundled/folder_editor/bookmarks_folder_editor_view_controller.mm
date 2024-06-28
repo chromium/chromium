@@ -390,27 +390,24 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - BookmarkModelBridgeObserver
 
-- (void)bookmarkModelLoaded:(LegacyBookmarkModel*)model {
+- (void)bookmarkModelLoaded {
   // The bookmark model is assumed to be loaded when this controller is created.
   NOTREACHED_IN_MIGRATION();
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-        didChangeNode:(const BookmarkNode*)bookmarkNode {
+- (void)didChangeNode:(const BookmarkNode*)bookmarkNode {
   if (bookmarkNode == _parentFolder) {
     [self updateParentFolderState];
   }
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-    didChangeChildrenForNode:(const BookmarkNode*)bookmarkNode {
+- (void)didChangeChildrenForNode:(const BookmarkNode*)bookmarkNode {
   // No-op.
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-          didMoveNode:(const BookmarkNode*)bookmarkNode
-           fromParent:(const BookmarkNode*)oldParent
-             toParent:(const BookmarkNode*)newParent {
+- (void)didMoveNode:(const BookmarkNode*)bookmarkNode
+         fromParent:(const BookmarkNode*)oldParent
+           toParent:(const BookmarkNode*)newParent {
   if (_ignoresOwnMove) {
     return;
   }
@@ -421,9 +418,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-       willDeleteNode:(const bookmarks::BookmarkNode*)node
-           fromFolder:(const bookmarks::BookmarkNode*)folder {
+- (void)willDeleteNode:(const bookmarks::BookmarkNode*)node
+            fromFolder:(const bookmarks::BookmarkNode*)folder {
   if (_folder->HasAncestor(node)) {
     _folder = nullptr;
     if (_ignoresOwnMove) {
@@ -454,18 +450,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-        didDeleteNode:(const BookmarkNode*)node
+- (void)didDeleteNode:(const BookmarkNode*)node
            fromFolder:(const BookmarkNode*)folder {
   // No-op. Bookmark deletion handled in
   // `bookmarkModel:willDeleteNode:fromFolder:`
 }
 
-- (void)bookmarkModelRemovedAllNodes:(LegacyBookmarkModel*)model {
+- (void)bookmarkModelRemovedAllNodes {
   // Nothing more to do.
 }
 
-- (void)bookmarkModelWillRemoveAllNodes:(const LegacyBookmarkModel*)model {
+- (void)bookmarkModelWillRemoveAllNodes {
   // The current node is going to be deleted.
   // Just close the view.
   [self dismiss];

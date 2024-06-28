@@ -569,19 +569,18 @@ class SpotlightBookmarkModelBridge;
 
 #pragma mark - BookmarkModelBridgeObserver
 
-- (void)bookmarkModelLoaded:(LegacyBookmarkModel*)model {
+- (void)bookmarkModelLoaded {
   [self reindexBookmarksIfNeeded];
 }
 
-- (void)bookmarkModelBeingDeleted:(LegacyBookmarkModel*)model {
+- (void)bookmarkModelBeingDeleted {
   _accountBookmarkModel = nullptr;
   _localOrSyncableBookmarkModel = nullptr;
 
   [self stopIndexing];
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-        didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
+- (void)didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   if (self.isAppInBackground) {
     // Normally, no model updates should happen in background.
     // In case they do, process them on foreground.
@@ -602,13 +601,11 @@ class SpotlightBookmarkModelBridge;
   [self refreshNodeInIndex:bookmarkNode];
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-    didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
+- (void)didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-           didAddNode:(const bookmarks::BookmarkNode*)node
-             toFolder:(const bookmarks::BookmarkNode*)folder {
+- (void)didAddNode:(const bookmarks::BookmarkNode*)node
+          toFolder:(const bookmarks::BookmarkNode*)folder {
   if (self.isAppInBackground) {
     // Normally, no model updates should happen in background.
     // In case they do, process them on foreground.
@@ -629,10 +626,9 @@ class SpotlightBookmarkModelBridge;
   [self refreshNodeInIndex:node];
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-          didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
-           fromParent:(const bookmarks::BookmarkNode*)oldParent
-             toParent:(const bookmarks::BookmarkNode*)newParent {
+- (void)didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
+         fromParent:(const bookmarks::BookmarkNode*)oldParent
+           toParent:(const bookmarks::BookmarkNode*)newParent {
   if (self.isAppInBackground) {
     // Normally, no model updates should happen in background.
     // In case they do, process them on foreground.
@@ -653,12 +649,11 @@ class SpotlightBookmarkModelBridge;
   [self refreshNodeInIndex:bookmarkNode];
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-        didDeleteNode:(const bookmarks::BookmarkNode*)node
+- (void)didDeleteNode:(const bookmarks::BookmarkNode*)node
            fromFolder:(const bookmarks::BookmarkNode*)folder {
 }
 
-- (void)bookmarkModelRemovedAllNodes:(LegacyBookmarkModel*)model {
+- (void)bookmarkModelRemovedAllNodes {
   if (self.isAppInBackground) {
     // Normally, no model updates should happen in background.
     // In case they do, process them on foreground.
@@ -679,9 +674,8 @@ class SpotlightBookmarkModelBridge;
   [self clearAllBookmarkSpotlightItems];
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-       willDeleteNode:(const bookmarks::BookmarkNode*)node
-           fromFolder:(const bookmarks::BookmarkNode*)folder {
+- (void)willDeleteNode:(const bookmarks::BookmarkNode*)node
+            fromFolder:(const bookmarks::BookmarkNode*)folder {
   if (self.isAppInBackground) {
     // Normally, no model updates should happen in background.
     // In case they do, process them on foreground.
@@ -703,8 +697,7 @@ class SpotlightBookmarkModelBridge;
 }
 
 // The node favicon changed.
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-    didChangeFaviconForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
+- (void)didChangeFaviconForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   if (self.isAppInBackground) {
     // Normally, no model updates should happen in background.
     // In case they do, process them on foreground.
@@ -725,8 +718,7 @@ class SpotlightBookmarkModelBridge;
   [self refreshNodeInIndex:bookmarkNode];
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-    willChangeBookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode {
+- (void)willChangeBookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   if (self.isAppInBackground) {
     // Normally, no model updates should happen in background.
     // In case they do, process them on foreground.

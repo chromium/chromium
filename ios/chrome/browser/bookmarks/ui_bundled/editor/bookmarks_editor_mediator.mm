@@ -158,12 +158,11 @@
 
 #pragma mark - BookmarkModelBridgeObserver
 
-- (void)bookmarkModelLoaded:(LegacyBookmarkModel*)model {
+- (void)bookmarkModelLoaded {
   // No-op.
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-        didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
+- (void)didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   if (self.ignoresBookmarkModelChanges) {
     return;
   }
@@ -177,8 +176,7 @@
             folderName:bookmark_utils_ios::TitleForBookmarkNode(_folder)];
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-    didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
+- (void)didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   if (self.ignoresBookmarkModelChanges) {
     return;
   }
@@ -186,10 +184,9 @@
   [self updateFolderLabel];
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-          didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
-           fromParent:(const bookmarks::BookmarkNode*)oldParent
-             toParent:(const bookmarks::BookmarkNode*)newParent {
+- (void)didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
+         fromParent:(const bookmarks::BookmarkNode*)oldParent
+           toParent:(const bookmarks::BookmarkNode*)newParent {
   if (self.ignoresBookmarkModelChanges) {
     return;
   }
@@ -199,9 +196,8 @@
   }
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-       willDeleteNode:(const bookmarks::BookmarkNode*)node
-           fromFolder:(const bookmarks::BookmarkNode*)folder {
+- (void)willDeleteNode:(const bookmarks::BookmarkNode*)node
+            fromFolder:(const bookmarks::BookmarkNode*)folder {
   if (self.ignoresBookmarkModelChanges) {
     return;
   }
@@ -230,18 +226,17 @@
   }
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-        didDeleteNode:(const bookmarks::BookmarkNode*)node
+- (void)didDeleteNode:(const bookmarks::BookmarkNode*)node
            fromFolder:(const bookmarks::BookmarkNode*)folder {
   // No-op. Bookmark deletion handled in
   // `bookmarkModel:willDeleteNode:fromFolder:`
 }
 
-- (void)bookmarkModelRemovedAllNodes:(LegacyBookmarkModel*)model {
+- (void)bookmarkModelRemovedAllNodes {
   // Nothing more to do.
 }
 
-- (void)bookmarkModelWillRemoveAllNodes:(const LegacyBookmarkModel*)model {
+- (void)bookmarkModelWillRemoveAllNodes {
   // The current node is going to be deleted.
   // Just close the view.
   [self.delegate bookmarkEditorMediatorWantsDismissal:self];

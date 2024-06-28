@@ -159,8 +159,7 @@ using bookmarks::BookmarkNode;
   }
 }
 
-- (void)bookmarkModelWillRemoveAllNodes:
-    (const LegacyBookmarkModel*)bookmarkModel {
+- (void)bookmarkModelWillRemoveAllNodes {
   _editedNodes.clear();
   _selectedFolderNode = nil;
   // Nothing to move so exit the folder chooser.

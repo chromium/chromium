@@ -26,8 +26,7 @@ class LegacyBookmarkModel;
 // Called when a bookmark node is deleted from the model.
 - (void)bookmarkNodeDeleted:(const bookmarks::BookmarkNode*)bookmarkNode;
 // Called before all the bookmark nodes in the model are deleted.
-- (void)bookmarkModelWillRemoveAllNodes:
-    (const LegacyBookmarkModel*)bookmarkModel;
+- (void)bookmarkModelWillRemoveAllNodes;
 // The set of nodes that are being considered for a move by folder chooser.
 - (const std::set<const bookmarks::BookmarkNode*>&)editedNodes;
 

@@ -528,31 +528,27 @@ bool IsABookmarkNodeSectionForIdentifier(
 
 #pragma mark - BookmarkModelBridgeObserver
 
-- (void)bookmarkModelWillRemoveAllNodes:(const LegacyBookmarkModel*)model {
-  CHECK(model);
-  if (model == [self displayedBookmarkModel]) {
-    if (self.displayedNode && self.displayedNode->is_permanent_node()) {
-      // All Bookmarks home mediators will receive
-      // `bookmarkModelWillRemoveAllNodes:`. However, the navigation controller
-      // should be edited only once. In order to ensure a single Bookmarks home
-      // view controller request the navigation controller to change we call
-      // `displayRoot` a single time, in the permanent folder.
-      [self.consumer displayRoot];
-    }
-    self.displayedNode = nullptr;
+- (void)bookmarkModelWillRemoveAllNodes {
+  if (self.displayedNode && self.displayedNode->is_permanent_node()) {
+    // All Bookmarks home mediators will receive
+    // `bookmarkModelWillRemoveAllNodes:`. However, the navigation controller
+    // should be edited only once. In order to ensure a single Bookmarks home
+    // view controller request the navigation controller to change we call
+    // `displayRoot` a single time, in the permanent folder.
+    [self.consumer displayRoot];
   }
+  self.displayedNode = nullptr;
 }
 
 // BookmarkModelBridgeObserver Callbacks
 // Instances of this class automatically observe the bookmark model.
 // The bookmark model has loaded.
-- (void)bookmarkModelLoaded:(LegacyBookmarkModel*)model {
+- (void)bookmarkModelLoaded {
   NOTREACHED_IN_MIGRATION();
 }
 
 // The node has changed, but not its children.
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-        didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
+- (void)didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   // The root folder changed. Do nothing.
   if (bookmarkNode == self.displayedNode) {
     return;
@@ -565,8 +561,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 // The node has not changed, but its children have.
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-    didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
+- (void)didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   // In search mode, we want to refresh any changes (like undo).
   if (self.currentlyShowingSearchResults) {
     [self.consumer refreshContents];
@@ -593,10 +588,9 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 // The node has moved to a new parent folder.
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-          didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
-           fromParent:(const bookmarks::BookmarkNode*)oldParent
-             toParent:(const bookmarks::BookmarkNode*)newParent {
+- (void)didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
+         fromParent:(const bookmarks::BookmarkNode*)oldParent
+           toParent:(const bookmarks::BookmarkNode*)newParent {
   if (oldParent == self.displayedNode || newParent == self.displayedNode) {
     // A folder was added or removed from the currently displayed folder.
     [self.consumer refreshContents];
@@ -604,9 +598,8 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 // `node` will be deleted from `folder`.
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-       willDeleteNode:(const bookmarks::BookmarkNode*)node
-           fromFolder:(const bookmarks::BookmarkNode*)folder {
+- (void)willDeleteNode:(const bookmarks::BookmarkNode*)node
+            fromFolder:(const bookmarks::BookmarkNode*)folder {
   DCHECK(node);
   if (self.displayedNode == node) {
     [self.consumer closeThisFolder];
@@ -614,19 +607,17 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 // `node` was deleted from `folder`.
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-        didDeleteNode:(const bookmarks::BookmarkNode*)node
+- (void)didDeleteNode:(const bookmarks::BookmarkNode*)node
            fromFolder:(const bookmarks::BookmarkNode*)folder {
   [self.consumer refreshContents];
 }
 
 // All non-permanent nodes have been removed.
-- (void)bookmarkModelRemovedAllNodes:(LegacyBookmarkModel*)model {
+- (void)bookmarkModelRemovedAllNodes {
   // TODO(crbug.com/40508042) Check if this case is applicable in the new UI.
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-    didChangeFaviconForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
+- (void)didChangeFaviconForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   // Only urls have favicons.
   DCHECK(bookmarkNode->is_url());
 

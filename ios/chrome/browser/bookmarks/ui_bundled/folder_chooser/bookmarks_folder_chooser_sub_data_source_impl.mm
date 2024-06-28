@@ -66,46 +66,42 @@ using bookmarks::BookmarkNode;
 
 #pragma mark - BookmarkModelBridgeObserver
 
-- (void)bookmarkModelLoaded:(LegacyBookmarkModel*)model {
+- (void)bookmarkModelLoaded {
   // The bookmark model is assumed to be loaded when this controller is created.
   NOTREACHED_IN_MIGRATION();
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-        didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
+- (void)didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   if (bookmarkNode->is_folder()) {
     [_consumer notifyModelUpdated];
   }
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-    didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
+- (void)didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   [_consumer notifyModelUpdated];
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-          didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
-           fromParent:(const bookmarks::BookmarkNode*)oldParent
-             toParent:(const bookmarks::BookmarkNode*)newParent {
+- (void)didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
+         fromParent:(const bookmarks::BookmarkNode*)oldParent
+           toParent:(const bookmarks::BookmarkNode*)newParent {
   if (bookmarkNode->is_folder()) {
     [_consumer notifyModelUpdated];
   }
 }
 
-- (void)bookmarkModel:(LegacyBookmarkModel*)model
-        didDeleteNode:(const bookmarks::BookmarkNode*)node
+- (void)didDeleteNode:(const bookmarks::BookmarkNode*)node
            fromFolder:(const bookmarks::BookmarkNode*)folder {
   [_parentDataSource bookmarkNodeDeleted:node];
   [_consumer notifyModelUpdated];
 }
 
-- (void)bookmarkModelWillRemoveAllNodes:(const LegacyBookmarkModel*)model {
+- (void)bookmarkModelWillRemoveAllNodes {
   // `_consumer` is notified after the nodes are acutally deleted in
   // `bookmarkModelRemovedAllNodes`.
-  [_parentDataSource bookmarkModelWillRemoveAllNodes:model];
+  [_parentDataSource bookmarkModelWillRemoveAllNodes];
 }
 
-- (void)bookmarkModelRemovedAllNodes:(LegacyBookmarkModel*)model {
+- (void)bookmarkModelRemovedAllNodes {
   [_consumer notifyModelUpdated];
 }
 
