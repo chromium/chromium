@@ -13,9 +13,12 @@ import {assertInstanceof, checkEnumVariant} from './assert.js';
 type KeyPath = string[];
 
 interface Issue {
+  schema: Schema<unknown>;
   path: KeyPath;
   message: string;
 }
+
+type IssueWithoutSchema = Omit<Issue, 'schema'>;
 
 /**
  * A validation error is thrown when the schema fails to validate the input.
@@ -31,7 +34,7 @@ export class ValidationError extends Error {
 class Context {
   path: KeyPath = ['$'];
 
-  issue: Issue|null = null;
+  issue: IssueWithoutSchema|null = null;
 
   pushKey(key: string) {
     this.path.push(key);
@@ -69,9 +72,10 @@ export class Schema<T> {
     }
     // If the test failed, ctx.issue should be non-null. Adding a default value
     // in case it's missing.
-    throw new ValidationError(
-      ctx.issue ?? {path: ['$'], message: 'validation error'},
-    );
+    throw new ValidationError({
+      schema: this,
+      ...(ctx.issue ?? {path: ['$'], message: 'validation error'}),
+    });
   }
 
   parseJson(input: string): T {

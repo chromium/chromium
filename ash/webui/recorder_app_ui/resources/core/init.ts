@@ -15,7 +15,8 @@ import {initContext} from './lit/context.js';
 import {PlatformHandler} from './platform_handler.js';
 import {RecordingDataManager} from './recording_data_manager.js';
 import {installRouter} from './state/route.js';
-import {init as initSettings} from './state/settings.js';
+import {init as initSettings, settingsSchema} from './state/settings.js';
+import * as localStorage from './utils/local_storage.js';
 import {ValidationError} from './utils/schema.js';
 
 /**
@@ -68,30 +69,43 @@ export class ErrorView extends LitElement {
         return this.error;
       }
     })();
-    const clearAllData = async () => {
-      if (confirm('Really clear all recorder app data?')) {
-        await this.dataDir?.clear();
-        window.location.reload();
-      }
-    };
     // TODO(pihsun): This is for dogfooding only, should remove this before
     // launch.
-    if (this.error instanceof ValidationError && this.dataDir !== null) {
-      return html`<div>
-        Failed to validate stored data. This is likely caused by data format
-        change. Try
-        <a href="#" @click=${clearAllData}>clear all data</a>. Please report
-        this if the issue persists after clearing all data. (Note that this is
-        only for early dogfooding when we still make non backward-compatible
-        changes.)
-        <pre>${errorDisplay}</pre>
-      </div>`;
-    } else {
-      return html`<div>
-        Unexpected error happened, please report this.
-        <pre>${errorDisplay}</pre>
-      </div>`;
+    if (this.error instanceof ValidationError) {
+      if (this.error.issue.schema === settingsSchema) {
+        // This is caused by settings schema change, clear the localStorage and
+        // refresh.
+        console.error(
+          'Detected settings schema change, clear settings and reloading...',
+        );
+        localStorage.remove(localStorage.Key.SETTINGS);
+        window.location.reload();
+        return nothing;
+      }
+      if (this.dataDir !== null) {
+        const clearRecordings = async () => {
+          if (confirm('Really clear all recorder app data?')) {
+            await this.dataDir?.clear();
+            window.location.reload();
+          }
+        };
+        return html`<div>
+          Failed to validate stored data. This is likely caused by data format
+          change. Try
+          <a href="#" @click=${clearRecordings}>clear recordings.</a>. Please
+          report this if the issue persists after clear recordings. (Note that
+          this is only for early dogfooding when we still make
+          backward-incompatible changes.)
+          <pre>${errorDisplay}</pre>
+        </div>`;
+      }
+      // Unknown validation error happened before dataDir is available,
+      // fallthrough to generic case.
     }
+    return html`<div>
+      Unexpected error happened, please report this.
+      <pre>${errorDisplay}</pre>
+    </div>`;
   }
 }
 
@@ -120,7 +134,9 @@ export async function init(platformHandler: PlatformHandler): Promise<void> {
   window.addEventListener('unhandledrejection', (rejection) => {
     handleError(rejection.reason);
   });
-  window.addEventListener('error', handleError);
+  window.addEventListener('error', (errorEvent) => {
+    handleError(errorEvent.error);
+  });
 
   installRouter();
   initSettings();

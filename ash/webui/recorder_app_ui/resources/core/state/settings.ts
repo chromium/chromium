@@ -8,7 +8,7 @@ import {AudioSource} from '../recording_session.js';
 import * as localStorage from '../utils/local_storage.js';
 import {Infer, z} from '../utils/schema.js';
 
-const settingsSchema = z.object({
+export const settingsSchema = z.object({
   audioSource: z.nativeEnum(AudioSource),
   onboardingDone: z.boolean(),
 });

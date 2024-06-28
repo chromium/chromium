@@ -42,3 +42,10 @@ export function set<T extends JsonSerializable>(key: Key, value: T): void {
   const item = JSON.stringify(value);
   window.localStorage.setItem(key, item);
 }
+
+/**
+ * Removes a value in local storage.
+ */
+export function remove(key: Key): void {
+  window.localStorage.removeItem(key);
+}
