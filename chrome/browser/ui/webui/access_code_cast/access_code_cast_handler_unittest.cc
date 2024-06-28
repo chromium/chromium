@@ -95,6 +95,9 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
                                              discovery_network_monitor_.get(),
                                              &dual_media_sink_service_)) {
     mock_cast_socket_service_->SetTaskRunnerForTest(mock_time_task_runner_);
+    // `identity_test_environment_` starts signed-out while `sync_service_`
+    // starts signed-in, make them consistent.
+    sync_service_.SetSignedOut();
   }
 
   void SetUp() override {
@@ -186,8 +189,8 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
     return access_code_cast_sink_service_.get();
   }
 
-  signin::IdentityTestEnvironment& identity_test_env() {
-    return identity_test_env_;
+  signin::IdentityManager* identity_manager() {
+    return identity_test_env_.identity_manager();
   }
 
   syncer::SyncService& sync_service() { return sync_service_; }
@@ -262,16 +265,20 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
     }
   }
 
-  void SetProfileConsent(signin::ConsentLevel consent_level) {
-    identity_test_env_.SetPrimaryAccount(kEmail, consent_level);
+  void SignIn(signin::ConsentLevel consent_level) {
+    CoreAccountInfo account_info =
+        identity_test_env_.SetPrimaryAccount(kEmail, consent_level);
+    if (consent_level == signin::ConsentLevel::kSync) {
+      sync_service_.SetSignedInWithSyncFeatureOn(account_info);
+    } else {
+      sync_service_.SetSignedInWithoutSyncFeature(account_info);
+    }
   }
 
   void SetPausedSynServiceState() {
     sync_service_.SetTransportState(
         syncer::SyncService::TransportState::PAUSED);
   }
-
-  void SetSyncConsent() { sync_service_.SetHasSyncConsent(true); }
 
   const MediaSinkInternal& cast_sink_1() { return cast_sink_1_; }
   const MediaSinkInternal& cast_sink_2() { return cast_sink_2_; }
@@ -326,7 +333,10 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
 
   raw_ptr<MockMediaRouter, AcrossTasksDanglingUntriaged> router_;
   std::unique_ptr<LoggerImpl> logger_;
+  // `identity_test_env_` and `sync_service_` must stay private, so they are
+  // always controlled together by SignIn().
   signin::IdentityTestEnvironment identity_test_env_;
+  syncer::TestSyncService sync_service_;
 
   static std::vector<DiscoveryNetworkInfo> GetFakeNetworkInfo() {
     return {
@@ -359,7 +369,6 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
       mojom::RouteRequestResultCode::OK;
   MediaSinkInternal cast_sink_1_;
   MediaSinkInternal cast_sink_2_;
-  syncer::TestSyncService sync_service_;
 };
 
 TEST_F(AccessCodeCastHandlerTest, OnSinkAddedResult) {
@@ -531,11 +540,10 @@ TEST_F(AccessCodeCastHandlerTest, RouteAlreadyExists) {
 // for the profile.
 TEST_F(AccessCodeCastHandlerTest, ProfileSyncError) {
   MockAddSinkCallback mock_callback_failure;
-  handler()->SetIdentityManagerForTesting(
-      identity_test_env().identity_manager());
+  handler()->SetIdentityManagerForTesting(identity_manager());
   handler()->SetSyncServiceForTesting(&sync_service());
 
-  SetProfileConsent(signin::ConsentLevel::kSignin);
+  SignIn(signin::ConsentLevel::kSignin);
 
   EXPECT_CALL(mock_callback_failure,
               Run(AddSinkResultCode::PROFILE_SYNC_ERROR));
@@ -549,10 +557,9 @@ TEST_F(AccessCodeCastHandlerTest, ProfileSyncError) {
 // for the profile.
 TEST_F(AccessCodeCastHandlerTest, ProfileSyncPaused) {
   MockAddSinkCallback mock_callback_failure;
-  handler()->SetIdentityManagerForTesting(
-      identity_test_env().identity_manager());
+  handler()->SetIdentityManagerForTesting(identity_manager());
   handler()->SetSyncServiceForTesting(&sync_service());
-  SetProfileConsent(signin::ConsentLevel::kSync);
+  SignIn(signin::ConsentLevel::kSync);
   SetPausedSynServiceState();
 
   EXPECT_CALL(mock_callback_failure,
@@ -567,12 +574,10 @@ TEST_F(AccessCodeCastHandlerTest, ProfileSyncPaused) {
 // for the profile.
 TEST_F(AccessCodeCastHandlerTest, ProfileSyncSuccess) {
   MockAddSinkCallback mock_callback_success;
-  handler()->SetIdentityManagerForTesting(
-      identity_test_env().identity_manager());
+  handler()->SetIdentityManagerForTesting(identity_manager());
   handler()->SetSyncServiceForTesting(&sync_service());
 
-  SetProfileConsent(signin::ConsentLevel::kSync);
-  SetSyncConsent();
+  SignIn(signin::ConsentLevel::kSync);
 
   EXPECT_CALL(mock_callback_success, Run(AddSinkResultCode::UNKNOWN_ERROR))
       .Times(1);

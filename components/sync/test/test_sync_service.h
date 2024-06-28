@@ -55,7 +55,6 @@ class TestSyncService : public SyncService {
   void SetDisableReasons(DisableReasonSet disable_reasons);
   void SetTransportState(TransportState transport_state);
   void SetLocalSyncEnabled(bool local_sync_enabled);
-  void SetHasSyncConsent(bool has_consent);
 
   // Setters to mimic common auth error scenarios. Note that these functions
   // may change the transport state, as returned by GetTransportState().

@@ -97,12 +97,14 @@ using NiceMockWebWrapper = testing::NiceMock<MockWebWrapper>;
 class ShoppingServiceTest : public ShoppingServiceTestBase,
                             public testing::WithParamInterface<bool> {
  public:
-  ShoppingServiceTest() = default;
+  ShoppingServiceTest()
+      : ShoppingServiceTest(syncer::SyncService::TransportState::ACTIVE) {}
   ShoppingServiceTest(const ShoppingServiceTest&) = delete;
   ShoppingServiceTest operator=(const ShoppingServiceTest&) = delete;
   ~ShoppingServiceTest() override = default;
 
-  void SetUp() override {
+  explicit ShoppingServiceTest(
+      syncer::SyncService::TransportState initial_sync_transport_state) {
     if (ShouldEnableReplaceSyncPromosWithSignInPromos()) {
       // `syncer::kSyncEnableBookmarksInTransportMode` must be enabled too in
       // order to use account bookmarks.
@@ -118,14 +120,16 @@ class ShoppingServiceTest : public ShoppingServiceTestBase,
           syncer::kReplaceSyncPromosWithSignInPromos);
     }
 
-    sync_service_->SetHasSyncConsent(
-        !ShouldEnableReplaceSyncPromosWithSignInPromos());
+    if (ShouldEnableReplaceSyncPromosWithSignInPromos()) {
+      sync_service_->SetSignedInWithoutSyncFeature();
+    } else {
+      sync_service_->SetSignedInWithSyncFeatureOn();
+    }
+    sync_service_->SetTransportState(initial_sync_transport_state);
 
     static_cast<bookmarks::TestBookmarkClient*>(bookmark_model_->client())
         ->SetIsSyncFeatureEnabledIncludingBookmarks(
             !ShouldEnableReplaceSyncPromosWithSignInPromos());
-
-    ShoppingServiceTestBase::SetUp();
   }
 
   bool ShouldEnableReplaceSyncPromosWithSignInPromos() const {
@@ -1273,20 +1277,16 @@ TEST_P(ShoppingServiceTest,
 
 class ShoppingServiceReadyTest : public ShoppingServiceTest {
  public:
-  ShoppingServiceReadyTest() = default;
+  ShoppingServiceReadyTest()
+      : ShoppingServiceTest(syncer::SyncService::TransportState::INITIALIZING) {
+  }
   ShoppingServiceReadyTest(const ShoppingServiceReadyTest&) = delete;
   ShoppingServiceReadyTest operator=(const ShoppingServiceReadyTest&) = delete;
   ~ShoppingServiceReadyTest() override = default;
-
-  void SetUp() override {
-    sync_service_->SetTransportState(
-        syncer::SyncService::TransportState::INITIALIZING);
-
-    ShoppingServiceTest::SetUp();
-  }
 };
 
-TEST_P(ShoppingServiceReadyTest, TestServiceReadyDelaysForSync) {
+TEST_P(ShoppingServiceReadyTest,
+       TestServiceReadyDelaysForSync_TransportStartsInactive) {
   test_features_.InitWithFeatures({kShoppingList}, {});
 
   bool service_ready = false;
@@ -1297,11 +1297,9 @@ TEST_P(ShoppingServiceReadyTest, TestServiceReadyDelaysForSync) {
 
   base::RunLoop().RunUntilIdle();
 
-  // The ready check should not have run since sync is not ready.
+  // The ready check shouldn't have run since transport state is INITIALIZING.
   ASSERT_FALSE(service_ready);
 
-  sync_service_->SetHasSyncConsent(true);
-  sync_service_->SetInitialSyncFeatureSetupComplete(true);
   sync_service_->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   sync_service_->FireStateChanged();
 
@@ -1311,11 +1309,10 @@ TEST_P(ShoppingServiceReadyTest, TestServiceReadyDelaysForSync) {
   ASSERT_TRUE(service_ready);
 }
 
-TEST_P(ShoppingServiceReadyTest, TestServiceReadyDelaysForSync_SyncActive) {
+TEST_P(ShoppingServiceReadyTest,
+       TestServiceReadyDelaysForSync_TransportStartsActive) {
   test_features_.InitWithFeatures({kShoppingList}, {});
 
-  sync_service_->SetHasSyncConsent(true);
-  sync_service_->SetInitialSyncFeatureSetupComplete(true);
   sync_service_->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   sync_service_->FireStateChanged();
 

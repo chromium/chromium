@@ -47,10 +47,11 @@ class AddressDataCleanerTest : public testing::Test {
   AddressDataCleaner data_cleaner_;
 };
 
-// Tests that for non-syncing users `MaybeCleanupAddressData()` immediately
-// performs clean-ups.
-TEST_F(AddressDataCleanerTest, MaybeCleanupAddressData_NotSyncing) {
-  sync_service_.SetHasSyncConsent(false);
+// Tests that for users not syncing addresses, `MaybeCleanupAddressData()`
+// immediately performs clean-ups.
+TEST_F(AddressDataCleanerTest, MaybeCleanupAddressData_NotSyncingAddresses) {
+  // Disable UserSelectableType::kAutofill.
+  sync_service_.GetUserSettings()->SetSelectedTypes(false, {});
   ASSERT_TRUE(test_api(data_cleaner_).AreCleanupsPending());
   data_cleaner_.MaybeCleanupAddressData();
   EXPECT_FALSE(test_api(data_cleaner_).AreCleanupsPending());
@@ -58,7 +59,7 @@ TEST_F(AddressDataCleanerTest, MaybeCleanupAddressData_NotSyncing) {
 
 // Tests that for syncing users `MaybeCleanupAddressData()` doesn't perform
 // clean-ups, since it's expecting another call once sync is ready.
-TEST_F(AddressDataCleanerTest, MaybeCleanupAddressData_Syncing) {
+TEST_F(AddressDataCleanerTest, MaybeCleanupAddressData_SyncingAddresses) {
   sync_service_.SetDownloadStatusFor(
       {syncer::ModelType::AUTOFILL_PROFILE, syncer::ModelType::CONTACT_INFO},
       syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);

@@ -263,6 +263,12 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
 
     signin::UpdateAccountInfoForAccount(GetIdentityManager(), account_info);
 
+    if (consent_level == signin::ConsentLevel::kSync) {
+      GetTestSyncService()->SetSignedInWithSyncFeatureOn(account_info);
+    } else {
+      GetTestSyncService()->SetSignedInWithoutSyncFeature(account_info);
+    }
+
     return account_info;
   }
 
@@ -397,7 +403,6 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
 
     // Triggers Sync Error.
     GetTestSyncService()->SetTrustedVaultKeyRequired(true);
-    GetTestSyncService()->SetHasSyncConsent(false);
     GetTestSyncService()->FireStateChanged();
   }
 
@@ -407,7 +412,6 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
 
     // Clear Sync Error introduces in `SimulateSyncError()`.
     GetTestSyncService()->SetTrustedVaultKeyRequired(false);
-    GetTestSyncService()->SetHasSyncConsent(true);
     GetTestSyncService()->FireStateChanged();
   }
 

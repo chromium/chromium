@@ -169,7 +169,7 @@ TEST_F(AutofillExperimentsTest,
        IsCardUploadEnabled_TransportWithAddresses_AutofillSelected) {
   base::test::ScopedFeatureList feature{
       syncer::kSyncEnableContactInfoDataTypeInTransportMode};
-  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetSignedInWithoutSyncFeature();
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kAutofill,
@@ -182,7 +182,7 @@ TEST_F(AutofillExperimentsTest,
        IsCardUploadEnabled_TransportWithAddresses_AutofillDisabled) {
   base::test::ScopedFeatureList features{
       syncer::kSyncEnableContactInfoDataTypeInTransportMode};
-  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetSignedInWithoutSyncFeature();
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kPayments});
@@ -204,7 +204,7 @@ TEST_F(AutofillExperimentsTest,
   base::test::ScopedFeatureList feature;
   feature.InitAndDisableFeature(
       syncer::kSyncEnableContactInfoDataTypeInTransportMode);
-  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetSignedInWithoutSyncFeature();
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kAutofill,
@@ -218,7 +218,7 @@ TEST_F(AutofillExperimentsTest,
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(
       syncer::kSyncEnableContactInfoDataTypeInTransportMode);
-  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetSignedInWithoutSyncFeature();
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kPayments});
@@ -260,7 +260,7 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_PaymentsTypeNotSelected) {
 TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_TransportModeOnly) {
   // When we don't have Sync consent, Sync will start in Transport-only mode
   // (if allowed).
-  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetSignedInWithoutSyncFeature();
 
   EXPECT_TRUE(
       IsCreditCardUploadEnabled(AutofillMetrics::PaymentsSigninState::

@@ -91,7 +91,7 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
 
       case SYNC_FEATURE_DISABLED_BUT_PREFERENCES_ENABLED:
         sync_service_ = std::make_unique<syncer::TestSyncService>();
-        sync_service_->SetHasSyncConsent(false);
+        sync_service_->SetSignedInWithoutSyncFeature();
         CHECK(sync_service_->GetUserSettings()->GetSelectedTypes().Has(
             syncer::UserSelectableType::kPreferences));
         CHECK(!sync_service_->IsSyncFeatureEnabled());

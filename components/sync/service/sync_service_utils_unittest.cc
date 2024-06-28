@@ -205,9 +205,9 @@ TEST(SyncServiceUtilsTest, UploadToGoogleEnabledInTransportMode) {
   ASSERT_EQ(UploadState::ACTIVE,
             GetUploadToGoogleState(&service, syncer::BOOKMARKS));
 
-  // Mark the syncing account as non-primary. With this, only Sync-the-transport
-  // (not Sync-the-feature) can run.
-  service.SetHasSyncConsent(false);
+  // Sign in without kSync consent. With this, only Sync-the-transport (not
+  // Sync-the-feature) can run.
+  service.SetSignedInWithoutSyncFeature();
   ASSERT_FALSE(service.CanSyncFeatureStart());
 
   // Regardless, if the datatype is active, it means uploading data is also

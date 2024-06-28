@@ -25,9 +25,9 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
  public:
   SyncSessionDurationsMetricsRecorderTest()
       : identity_test_env_(&test_url_loader_factory_) {
-    sync_service_.SetHasSyncConsent(false);
-    sync_service_.SetDisableReasons(
-        {SyncService::DISABLE_REASON_NOT_SIGNED_IN});
+    // `identity_test_env_` is signed-out by default, whereas `sync_service_` is
+    // signed-in by default. Make them consistent.
+    sync_service_.SetSignedOut();
   }
 
   SyncSessionDurationsMetricsRecorderTest(
@@ -37,14 +37,17 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
 
   ~SyncSessionDurationsMetricsRecorderTest() override = default;
 
-  void EnableSync() {
+  void SignIn(signin::ConsentLevel consent_level) {
+    AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+        "foo@gmail.com", consent_level);
     // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
     // deleted from the codebase. See ConsentLevel::kSync documentation for
     // details.
-    identity_test_env_.MakePrimaryAccountAvailable("foo@gmail.com",
-                                                   signin::ConsentLevel::kSync);
-    sync_service_.SetHasSyncConsent(true);
-    sync_service_.SetDisableReasons(SyncService::DisableReasonSet());
+    if (consent_level == signin::ConsentLevel::kSync) {
+      sync_service_.SetSignedInWithSyncFeatureOn(account_info);
+    } else {
+      sync_service_.SetSignedInWithoutSyncFeature(account_info);
+    }
     sync_service_.FireStateChanged();
   }
 
@@ -54,12 +57,9 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
     DCHECK_EQ(sync_service_.GetTransportState(),
               SyncService::TransportState::PAUSED);
 
-    // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
-    // deleted from the codebase. See ConsentLevel::kSync documentation for
-    // details.
     identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
         identity_test_env_.identity_manager()->GetPrimaryAccountId(
-            signin::ConsentLevel::kSync),
+            signin::ConsentLevel::kSignin),
         GoogleServiceAuthError(
             GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
   }
@@ -153,7 +153,7 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, NotOptedInToSync) {
 }
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest, OptedInToSync_SyncActive) {
-  EnableSync();
+  SignIn(signin::ConsentLevel::kSync);
 
   base::HistogramTester ht;
   StartAndEndSession(kSessionTime);
@@ -166,7 +166,7 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, OptedInToSync_SyncActive) {
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest,
        OptedInToSync_SyncDisabledByEnterprisePolicy) {
-  EnableSync();
+  SignIn(signin::ConsentLevel::kSync);
   sync_service_.SetDisableReasons(
       {SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
 
@@ -184,7 +184,7 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest,
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest,
        OptedInToSync_PrimaryAccountInAuthError) {
-  EnableSync();
+  SignIn(signin::ConsentLevel::kSync);
   SetInvalidCredentialsAuthError();
 
   base::HistogramTester ht;
@@ -199,9 +199,8 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest,
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest,
        SyncDisabled_PrimaryAccountInAuthError) {
-  EnableSync();
+  SignIn(signin::ConsentLevel::kSignin);
   SetInvalidCredentialsAuthError();
-  sync_service_.SetHasSyncConsent(false);
 
   base::HistogramTester ht;
   StartAndEndSession(kSessionTime);
@@ -239,7 +238,7 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest,
 }
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest, SyncUnknownOnStartup) {
-  EnableSync();
+  SignIn(signin::ConsentLevel::kSync);
 
   // Simulate sync initializing (before first connection to the server).
   sync_service_.SetLastCycleSnapshot(syncer::SyncCycleSnapshot());
@@ -257,7 +256,7 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, SyncUnknownOnStartup) {
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest,
        SyncUnknownOnStartupThenStarts) {
-  EnableSync();
+  SignIn(signin::ConsentLevel::kSync);
 
   // Simulate sync initializing (before first connection to the server).
   SyncCycleSnapshot active_sync_snapshot =
@@ -301,7 +300,7 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, EnableSync) {
   {
     base::HistogramTester ht;
     metrics_recorder.OnSessionStarted(base::TimeTicks::Now());
-    EnableSync();
+    SignIn(signin::ConsentLevel::kSync);
     // The initial state of the record was: sync_status = OFF, acount_status=OFF
     // When sync gets initialized, 2 things happen:
     // 1. account_status=ON. => Log NotOptedInToSyncWithoutAccount
@@ -323,7 +322,7 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, EnableSync) {
 }
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest, EnterAuthError) {
-  EnableSync();
+  SignIn(signin::ConsentLevel::kSync);
   SyncSessionDurationsMetricsRecorder metrics_recorder(
       &sync_service_, identity_test_env_.identity_manager());
 
@@ -347,7 +346,7 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, EnterAuthError) {
 }
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest, FixedAuthError) {
-  EnableSync();
+  SignIn(signin::ConsentLevel::kSync);
   SetInvalidCredentialsAuthError();
   SyncSessionDurationsMetricsRecorder metrics_recorder(
       &sync_service_, identity_test_env_.identity_manager());

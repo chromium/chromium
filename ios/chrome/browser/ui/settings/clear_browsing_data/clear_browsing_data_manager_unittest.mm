@@ -200,7 +200,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestModel) {
 // but sync is off.
 TEST_F(ClearBrowsingDataManagerTest, TestModelSignedInSyncOff) {
   // Ensure that sync is not running.
-  test_sync_service_->SetHasSyncConsent(false);
+  test_sync_service_->SetSignedInWithoutSyncFeature();
 
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
       ->SignIn(fake_identity(),

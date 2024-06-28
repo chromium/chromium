@@ -17,15 +17,6 @@
 namespace unified_consent {
 namespace {
 
-class TestSyncService : public syncer::TestSyncService {
- public:
-  TestSyncService() {
-    GetUserSettings()->SetSelectedTypes(
-        /*sync_everything=*/false,
-        /*types=*/syncer::UserSelectableTypeSet());
-  }
-};
-
 class UrlKeyedDataCollectionConsentHelperTest
     : public testing::Test,
       public UrlKeyedDataCollectionConsentHelper::Observer {
@@ -33,6 +24,9 @@ class UrlKeyedDataCollectionConsentHelperTest
   // testing::Test:
   void SetUp() override {
     UnifiedConsentService::RegisterPrefs(pref_service_.registry());
+    sync_service_.GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false,
+        /*types=*/syncer::UserSelectableTypeSet());
   }
 
   void OnUrlKeyedDataCollectionConsentStateChanged(
@@ -43,7 +37,7 @@ class UrlKeyedDataCollectionConsentHelperTest
  protected:
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::vector<bool> state_changed_notifications_;
-  TestSyncService sync_service_;
+  syncer::TestSyncService sync_service_;
 };
 
 TEST_F(UrlKeyedDataCollectionConsentHelperTest, AnonymizedDataCollection) {
@@ -153,7 +147,7 @@ TEST_F(UrlKeyedDataCollectionConsentHelperTest,
   EXPECT_TRUE(helper->IsEnabled());
 
   helper->AddObserver(this);
-  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetSignedInWithoutSyncFeature();
   EXPECT_FALSE(sync_service_.IsSyncFeatureEnabled());
   EXPECT_TRUE(helper->IsEnabled());
   EXPECT_EQ(0U, state_changed_notifications_.size());

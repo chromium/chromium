@@ -81,7 +81,7 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, AllEnabled) {
 TEST_F(SyncFeatureStatusForMigrationsRecorderTest, NoSyncConsent) {
   // Sync-the-feature is disabled, but all the data types are active (in
   // transport mode).
-  sync_service().SetHasSyncConsent(false);
+  sync_service().SetSignedInWithoutSyncFeature();
   ASSERT_FALSE(sync_service().IsSyncFeatureEnabled());
   ASSERT_TRUE(sync_service().GetActiveDataTypes().Has(syncer::BOOKMARKS));
   ASSERT_TRUE(sync_service().GetActiveDataTypes().Has(syncer::PASSWORDS));

@@ -306,9 +306,7 @@ class FloatingWorkspaceServiceTest : public testing::Test {
     return display_service_.get();
   }
 
-  syncer::TestSyncService* test_sync_service() {
-    return test_sync_service_.get();
-  }
+  syncer::TestSyncService* test_sync_service() { return &test_sync_service_; }
 
   ui::UserActivityDetector* user_activity_detector() {
     return ui::UserActivityDetector::Get();
@@ -391,6 +389,11 @@ class FloatingWorkspaceServiceTest : public testing::Test {
     fake_user_manager()->UserLoggedIn(account_id_, username_hash,
                                       /*browser_restart=*/false,
                                       /*is_child=*/false);
+    CoreAccountInfo account_info;
+    account_info.email = kTestAccount;
+    account_info.gaia = "gaia";
+    account_info.account_id = CoreAccountId::FromGaiaId(account_info.gaia);
+    test_sync_service_.SetSignedInWithSyncFeatureOn(account_info);
 
     auto prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
@@ -407,7 +410,6 @@ class FloatingWorkspaceServiceTest : public testing::Test {
         std::make_unique<NotificationDisplayServiceTester>(profile_.get());
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     AddTestNetworkDevice();
-    test_sync_service_ = std::make_unique<syncer::TestSyncService>();
     user_activity_detector()->set_last_activity_time_for_test(
         base::TimeTicks::Now());
     cache_ = std::make_unique<apps::AppRegistryCache>();
@@ -433,7 +435,7 @@ class FloatingWorkspaceServiceTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<syncer::TestSyncService> test_sync_service_;
+  syncer::TestSyncService test_sync_service_;
   std::unique_ptr<desks_storage::FakeDeskSyncService> fake_desk_sync_service_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -814,13 +816,14 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
       FloatingWorkspaceService::GetForProfile(profile());
-  test_sync_service()->SetHasSyncConsent(false);
+  test_sync_service()->SetDisableReasons(
+      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
   ASSERT_FALSE(test_sync_service()->IsSyncFeatureEnabled());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service());
   test_sync_service()->FireStateChanged();
   EXPECT_TRUE(HasNotificationFor(kNotificationForNoNetworkConnection));
-  test_sync_service()->SetHasSyncConsent(true);
+  test_sync_service()->SetDisableReasons({});
   ASSERT_TRUE(test_sync_service()->IsSyncFeatureEnabled());
   test_sync_service()->FireStateChanged();
   EXPECT_FALSE(HasNotificationFor(kNotificationForNoNetworkConnection));
@@ -2024,6 +2027,11 @@ class FloatingWorkspaceServiceMultiUserTest
     fake_user_manager()->UserLoggedIn(account_id2_, username_hash2,
                                       /*browser_restart=*/false,
                                       /*is_child=*/false);
+    CoreAccountInfo account_info;
+    account_info.email = kTestAccount2;
+    account_info.gaia = "gaia2";
+    account_info.account_id = CoreAccountId::FromGaiaId(account_info.gaia);
+    test_sync_service()->SetSignedInWithSyncFeatureOn(account_info);
     fake_desk_sync_service2_ =
         std::make_unique<desks_storage::FakeDeskSyncService>(
             /*skip_engine_connection=*/true);
