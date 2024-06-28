@@ -51,7 +51,6 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/transient_window_manager.h"
 #include "ui/wm/core/window_util.h"
@@ -161,16 +160,6 @@ void ApplyAnimationSettings(
   }
 }
 
-// Returns BubbleDialogDelegateView if |transient_window| is a bubble dialog.
-views::BubbleDialogDelegate* AsBubbleDialogDelegate(
-    aura::Window* transient_window) {
-  views::Widget* widget =
-      views::Widget::GetWidgetForNativeWindow(transient_window);
-  if (!widget || !widget->widget_delegate())
-    return nullptr;
-  return widget->widget_delegate()->AsBubbleDialogDelegate();
-}
-
 // Returns the corresponding snap action source metric string component with
 // given `snap_action_source`.
 const char* GetSnapActionSourceMetricComponent(
@@ -265,7 +254,7 @@ void WindowTransformAnimationObserver::OnImplicitAnimationsCompleted() {
        wm::TransientWindowManager::GetOrCreate(window_)->transient_children()) {
     // For now we only care about bubble dialog type transient children.
     views::BubbleDialogDelegate* bubble_delegate_view =
-        AsBubbleDialogDelegate(transient_window);
+        window_util::AsBubbleDialogDelegate(transient_window);
     if (bubble_delegate_view) {
       if (!bubble_delegate_view->GetAnchorRect().IsEmpty() ||
           bubble_delegate_view->GetAnchorView()) {

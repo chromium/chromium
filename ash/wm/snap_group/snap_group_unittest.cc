@@ -5406,6 +5406,56 @@ TEST_F(SnapGroupOverviewTest, OverviewItemFillMode) {
   }
 }
 
+// Verifies bubble transient windows hide in Overview, reappear on Overview
+// exit, while other transient windows (unless `kHideInOverviewKey` is set to
+// true) remain visible.
+TEST_F(SnapGroupOverviewTest, HideBubbleTransientInOverview) {
+  std::unique_ptr<aura::Window> w0(CreateAppWindow(gfx::Rect(0, 0, 300, 300)));
+  std::unique_ptr<aura::Window> w1(
+      CreateAppWindow(gfx::Rect(500, 20, 200, 200)));
+  SnapTwoTestWindows(w0.get(), w1.get());
+
+  // Create a bubble widget that's anchored to `w0`.
+  auto bubble_delegate0 = std::make_unique<views::BubbleDialogDelegateView>(
+      NonClientFrameViewAsh::Get(w0.get()), views::BubbleBorder::TOP_RIGHT);
+
+  // The line below is essential to make sure that the bubble doesn't get closed
+  // when entering overview.
+  bubble_delegate0->set_close_on_deactivate(false);
+  bubble_delegate0->set_parent_window(w0.get());
+  views::Widget* bubble_widget0(views::BubbleDialogDelegateView::CreateBubble(
+      std::move(bubble_delegate0)));
+  aura::Window* bubble_window0 = bubble_widget0->GetNativeWindow();
+  ASSERT_TRUE(window_util::AsBubbleDialogDelegate(bubble_window0));
+
+  bubble_widget0->Show();
+  EXPECT_TRUE(wm::HasTransientAncestor(bubble_window0, w0.get()));
+
+  // Verify that the bubble is created inside its anchor widget.
+  EXPECT_TRUE(
+      w0->GetBoundsInScreen().Contains(bubble_window0->GetBoundsInScreen()));
+
+  // By default `w1_transient` is `MODAL_TYPE_NONE`.
+  std::unique_ptr<aura::Window> w1_transient(
+      CreateTransientChildWindow(w1.get(), gfx::Rect(510, 30, 50, 30)));
+  wm::AddTransientChild(w1.get(), w1_transient.get());
+
+  // Verify that bubble transient windows are hidden on entering Overview mode.
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+  EXPECT_FALSE(bubble_window0->IsVisible());
+  EXPECT_TRUE(w1_transient->IsVisible());
+
+  // Verify that bubble transient windows reappear on exiting Overview mode.
+  ToggleOverview();
+  ASSERT_FALSE(IsInOverviewSession());
+
+  EXPECT_TRUE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w0.get(), w1.get()));
+  EXPECT_TRUE(bubble_window0->IsVisible());
+  EXPECT_TRUE(w1_transient->IsVisible());
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupDesksTest:
 using SnapGroupDesksTest = SnapGroupTest;

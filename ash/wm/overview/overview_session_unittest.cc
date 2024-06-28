@@ -21,6 +21,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
+#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/frame_throttler/mock_frame_throttling_observer.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -138,6 +139,7 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
@@ -1437,6 +1439,39 @@ TEST_P(OverviewSessionTest, ClickModalWindowParent) {
 
   // Clicking on window1 should activate child1.
   EXPECT_TRUE(wm::IsActiveWindow(child.get()));
+}
+
+// Verifies bubble transient windows hide in Overview, reappear on Overview
+// exit.
+TEST_P(OverviewSessionTest, HideBubbleTransient) {
+  std::unique_ptr<aura::Window> window(
+      CreateAppWindow(gfx::Rect(0, 0, 300, 300)));
+
+  // Create a bubble widget that's anchored to frame.
+  auto bubble_delegate = std::make_unique<views::BubbleDialogDelegateView>(
+      NonClientFrameViewAsh::Get(window.get()), views::BubbleBorder::TOP_RIGHT);
+
+  // The line below is essential to make sure that the bubble doesn't get closed
+  // when entering overview.
+  bubble_delegate->set_close_on_deactivate(false);
+  bubble_delegate->set_parent_window(window.get());
+  views::Widget* bubble_widget(views::BubbleDialogDelegateView::CreateBubble(
+      std::move(bubble_delegate)));
+  aura::Window* bubble_window = bubble_widget->GetNativeWindow();
+  ASSERT_TRUE(window_util::AsBubbleDialogDelegate(bubble_window));
+
+  bubble_widget->Show();
+  EXPECT_TRUE(wm::HasTransientAncestor(bubble_window, window.get()));
+
+  // Hides bubble transient windows on entering Overview mode.
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+  EXPECT_FALSE(bubble_window->IsVisible());
+
+  // Re-shows bubble transient windows on exiting Overview mode.
+  ToggleOverview();
+  ASSERT_FALSE(IsInOverviewSession());
+  EXPECT_TRUE(bubble_window->IsVisible());
 }
 
 // Tests that windows remain on the display they are currently on in overview

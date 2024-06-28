@@ -31,6 +31,7 @@ class LocatedEvent;
 }  // namespace ui
 
 namespace views {
+class BubbleDialogDelegate;
 class View;
 }  // namespace views
 
@@ -201,6 +202,11 @@ ASH_EXPORT void SetTransform(aura::Window* window,
 // hidden if |top_inset| is not zero.
 ASH_EXPORT gfx::RectF GetTransformedBounds(aura::Window* transformed_window,
                                 int top_inset);
+
+// Returns the `BubbleDialogDelegate` associated with the given
+// `transient_window`, if it's a bubble dialog.
+ASH_EXPORT views::BubbleDialogDelegate* AsBubbleDialogDelegate(
+    aura::Window* transient_window);
 
 // If multi profile is on, check if |window| should be shown for the current
 // user.

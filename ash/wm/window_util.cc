@@ -729,6 +729,16 @@ gfx::RectF GetTransformedBounds(aura::Window* transformed_window,
   return bounds;
 }
 
+views::BubbleDialogDelegate* AsBubbleDialogDelegate(
+    aura::Window* transient_window) {
+  views::Widget* widget =
+      views::Widget::GetWidgetForNativeWindow(transient_window);
+  if (!widget || !widget->widget_delegate()) {
+    return nullptr;
+  }
+  return widget->widget_delegate()->AsBubbleDialogDelegate();
+}
+
 bool ShouldShowForCurrentUser(aura::Window* window) {
   MultiUserWindowManager* multi_user_window_manager =
       MultiUserWindowManagerImpl::Get();

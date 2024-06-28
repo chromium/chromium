@@ -160,16 +160,20 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
     event_targeting_blocker_map_[transient] =
         std::make_unique<aura::ScopedWindowEventTargetingBlocker>(transient);
 
-    transient->SetProperty(chromeos::kIsShowingInOverviewKey, true);
-
-    // Add this as |aura::WindowObserver| for observing |kHideInOverviewKey|
-    // property changes.
-    window_observations_.AddObservation(transient);
+    if (window_util::AsBubbleDialogDelegate(transient)) {
+      transient->SetProperty(kHideInOverviewKey, true);
+    } else {
+      transient->SetProperty(chromeos::kIsShowingInOverviewKey, true);
+      // Add this as `aura::WindowObserver` for observing `kHideInOverviewKey`
+      // property changes.
+      window_observations_.AddObservation(transient);
+    }
 
     // Hide transient children which have been specified to be hidden in
     // overview mode.
-    if (transient != window && transient->GetProperty(kHideInOverviewKey))
+    if (transient != window && transient->GetProperty(kHideInOverviewKey)) {
       transient_children_to_hide.push_back(transient);
+    }
   }
 
   if (!transient_children_to_hide.empty())
