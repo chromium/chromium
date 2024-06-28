@@ -30,7 +30,7 @@ Prefs are not for:
    `RegisterProfilePrefs()` as appropriate.
 1. If your pref should be synced (only an option for profile prefs), add one of
    the `SYNCABLE_PREF` flags when registering it and add it to the syncable
-   prefs database (see components/sync_preferences/README.md for details):
+   prefs database (see [components/sync_preferences/README.md] for details):
    * iOS-specific syncable prefs should be added to
      ios/chrome/browser/sync/prefs/ios_chrome_syncable_prefs_database.cc.
    * Syncable prefs which are not valid for iOS should be added to
@@ -60,8 +60,7 @@ Visually such settings are typically grayed out to prevent confusing the user
 but nothing prevents C++ from setting a user pref that doesn't take effect.
 
 To add a new `PrefStore` in the precedence order, see
-[PrefStoreType](https://source.chromium.org/chromium/chromium/src/+/main:components/prefs/pref_value_store.h?q=%22enum%20PrefStoreType%22&ss=chromium)
-in `PrefValueStore`.
+[PrefStoreType] in `PrefValueStore`.
 
 ## Deleting an old pref
 _Most_ deleted prefs should be left in a delete-self state for 1 year to help
@@ -71,7 +70,7 @@ your CL with another CL that removes 1+ year old deletions; someone else will
 clean up after you in 1 year.
 
 1. Move the pref name declaration to the anonymous namespace of
-   [chrome/browser/prefs/browser_prefs.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/prefs/browser_prefs.cc)
+   [chrome/browser/prefs/browser_prefs.cc]
 1. Move registration code into `RegisterProfilePrefsForMigration()` or
    `RegisterLocalStatePrefsForMigration()` as appropriate.
 1. If the old registration code had the `SYNCABLE_PREF` flag, remove it now
@@ -85,8 +84,8 @@ clean up after you in 1 year.
 
 ### Deleting an old pref exposed by a policy
 If the pref is exposed via policy, you will need to mark the policy as
-deprecated by following the steps in [add_new_policy.md](https://chromium.googlesource.com/chromium/src/+/main/docs/enterprise/add_new_policy.md#deprecating-a-policy).
-Deleting the pref logic (steps above) will then need to wait a few milestones.
+deprecated by following the steps in [add_new_policy.md]. Deleting the
+pref logic (steps above) will then need to wait a few milestones.
 
 Note: If the pref was _only_ exposed as a policy in the Managed Prefs (with no
 UI to allow an end-user to adjust the pref) then there is no need to set the
@@ -108,12 +107,11 @@ migrating a pref that also is used on iOS, then the pref may also need to be
 migrated or cleared specifically for iOS as well. This could be by doing the
 migration in feature code that's called by all platforms instead of here, or by
 calling migration code in the appropriate place for iOS specifically, e.g.
-[ios/chrome/browser/prefs/browser_prefs.mm](https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/browser/prefs/browser_prefs.mm).
+[ios/chrome/browser/shared/model/prefs/browser_prefs.mm].
 
 As per [deleting an old pref](#deleting-an-old-pref), if the old pref is also a
 policy, you will need to mark it deprecated for a few milestones first as
-described in
-[add_new_policy.md](https://chromium.googlesource.com/chromium/src/+/main/docs/enterprise/add_new_policy.md#deprecating-a-policy).
+described in [add_new_policy.md].
 
 Migration code will want to read the old pref using
 `base::PrefService::GetUserPrefValue()` (as opposed to
@@ -135,3 +133,10 @@ you will need to either:
    new pref name. There are ad-hoc examples of this in the codebase but this is
    generally trickier. If you do add/find a generic way of doing this, please
    augment this documentation :).
+
+
+[components/sync_preferences/README.md]: ../../../components/sync_preferences/README.md
+[PrefStoreType]: https://source.chromium.org/chromium/chromium/src/+/main:components/prefs/pref_value_store.h?q=%22enum%20PrefStoreType%22
+[chrome/browser/prefs/browser_prefs.cc]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/prefs/browser_prefs.cc
+[add_new_policy.md]: ../../../docs/enterprise/add_new_policy.md#deprecating-a-policy
+[ios/chrome/browser/shared/model/prefs/browser_prefs.mm]: https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/browser/shared/model/prefs/browser_prefs.mm
