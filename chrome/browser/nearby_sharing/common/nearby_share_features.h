@@ -21,6 +21,8 @@ bool IsSelfShareEnabled();
 BASE_DECLARE_FEATURE(kNearbySharingVisibilityReminder);
 BASE_DECLARE_FEATURE(kNearbySharingWebRtc);
 BASE_DECLARE_FEATURE(kNearbySharingWifiLan);
+BASE_DECLARE_FEATURE(kQuickShareV2);
+bool IsQuickShareV2Enabled();
 
 }  // namespace features
 

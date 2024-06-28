@@ -17203,6 +17203,7 @@ from previous Chrome versions.
   <int value="-1448094672" label="CCTBrandTransparency:disabled"/>
   <int value="-1448056519" label="MlUrlScoring:enabled"/>
   <int value="-1447849019" label="AppSpecificHistory:disabled"/>
+  <int value="-1447457836" label="QuickShareV2:disabled"/>
   <int value="-1447314734" label="QuerySearchBurnInPeriod:enabled"/>
   <int value="-1447147245" label="VideoPlayerNativeControls:enabled"/>
   <int value="-1447000031" label="PrivateStateTokensDevUI:disabled"/>
@@ -17690,6 +17691,7 @@ from previous Chrome versions.
   <int value="-1243449299" label="WebPrinting:disabled"/>
   <int value="-1241868814" label="WebAuthenticationPhoneSupport:disabled"/>
   <int value="-1241747717" label="enable-android-password-link"/>
+  <int value="-1241220708" label="QuickShareV2:enabled"/>
   <int value="-1241002324" label="FocusMode:enabled"/>
   <int value="-1239605812" label="MlUrlSearchBlending:disabled"/>
   <int value="-1239515260" label="OmniboxDisableCGIParamMatching:disabled"/>

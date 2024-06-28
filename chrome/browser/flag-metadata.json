@@ -7441,6 +7441,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "quick-share-v2",
+    "owners": [ "brandosocarras@google.com", "chromeos-cross-device-eng@google.com"],
+    "expiry_milestone": 133
+  },
+  {
     "name": "quickoffice-force-file-download",
     "owners": ["simmonsjosh@google.com"],
     "expiry_milestone": 130

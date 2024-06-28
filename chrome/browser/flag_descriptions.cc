@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "flag_descriptions.h"
 #include "media/gpu/buildflags.h"
 #include "pdf/buildflags.h"
 
@@ -3063,6 +3064,12 @@ const char kQuickDeleteAndroidFollowupName[] =
 const char kQuickDeleteAndroidFollowupDescription[] =
     "Enables some follow up work on Clear Browsing Data for Quick Delete, "
     "including an improved post delete experience and animations.";
+
+const char kQuickShareV2Name[] = "Quick Share v2";
+const char kQuickShareV2Description[] =
+    "Enables Quick Share v2, which defaults Quick Share to 'Your Devices' "
+    "visibility, removes the 'Selected Contacts' visibility, removes the Quick "
+    "Share On/Off toggle.";
 
 const char kSendTabToSelfIOSPushNotificationsName[] =
     "Send tab to self iOS push notifications";

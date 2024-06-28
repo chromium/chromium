@@ -8716,6 +8716,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShimlessRMAComplianceCheckName,
      flag_descriptions::kShimlessRMAComplianceCheckDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kShimlessRMAComplianceCheck)},
+    {"quick-share-v2", flag_descriptions::kQuickShareV2Name,
+     flag_descriptions::kQuickShareV2Description, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kQuickShareV2)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
