@@ -10906,9 +10906,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20240627",
+                    "params": {
+                        "utility-process-params": "{\"is-supported\":true}"
+                    },
                     "enable_features": [
-                        "HeapProfilerCentralControl"
+                        "HeapProfilerCentralControl",
+                        "HeapProfilerReporting"
                     ]
                 }
             ]
