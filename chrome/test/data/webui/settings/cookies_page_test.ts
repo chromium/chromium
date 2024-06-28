@@ -539,6 +539,7 @@ suite('TrackingProtectionRolloutUx', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       enableTrackingProtectionRolloutUx: true,
+      is3pcdCookieSettingsRedesignEnabled: true,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
