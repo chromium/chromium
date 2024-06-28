@@ -152,22 +152,22 @@ class TestBirchClient : public BirchClient {
     tab_provider_ = std::make_unique<TestBirchDataProvider<BirchTabItem>>(
         base::BindRepeating(&BirchModel::SetRecentTabItems,
                             base::Unretained(birch_model)),
-        prefs::kBirchUseRecentTabs);
+        prefs::kBirchUseChromeTabs);
     last_active_provider_ =
         std::make_unique<TestBirchDataProvider<BirchLastActiveItem>>(
             base::BindRepeating(&BirchModel::SetLastActiveItems,
                                 base::Unretained(birch_model)),
-            prefs::kBirchUseLastActive);
+            prefs::kBirchUseChromeTabs);
     most_visited_provider_ =
         std::make_unique<TestBirchDataProvider<BirchMostVisitedItem>>(
             base::BindRepeating(&BirchModel::SetMostVisitedItems,
                                 base::Unretained(birch_model)),
-            prefs::kBirchUseMostVisited);
+            prefs::kBirchUseChromeTabs);
     self_share_provider_ =
         std::make_unique<TestBirchDataProvider<BirchSelfShareItem>>(
             base::BindRepeating(&BirchModel::SetSelfShareItems,
                                 base::Unretained(birch_model)),
-            prefs::kBirchUseSelfShare);
+            prefs::kBirchUseChromeTabs);
     lost_media_provider_ =
         std::make_unique<TestBirchDataProvider<BirchLostMediaItem>>(
             base::BindRepeating(&BirchModel::SetLostMediaItems,
@@ -344,8 +344,7 @@ class BirchBarTestBase : public AshTestBase {
     for (const auto& pref_name :
          {prefs::kBirchShowSuggestions, prefs::kBirchUseCalendar,
           prefs::kBirchUseWeather, prefs::kBirchUseFileSuggest,
-          prefs::kBirchUseRecentTabs, prefs::kBirchUseReleaseNotes,
-          prefs::kBirchUseSelfShare}) {
+          prefs::kBirchUseChromeTabs, prefs::kBirchUseReleaseNotes}) {
       GetPrefService()->SetBoolean(pref_name, true);
     }
 
@@ -888,7 +887,7 @@ TEST_P(BirchBarMenuTest, CustomizeSuggestions) {
   auto* tab_item = sub_menu->GetMenuItemAt(4);
   EXPECT_EQ(tab_item->GetCommand(),
             base::to_underlying(
-                BirchBarContextMenuModel::CommandId::kOtherDeviceSuggestions));
+                BirchBarContextMenuModel::CommandId::kChromeTabSuggestions));
   type_to_item[BirchItemType::kTab] = tab_item;
 
   // Deselect all types of suggestions one by one.
@@ -915,6 +914,7 @@ TEST_P(BirchBarMenuTest, CustomizeSuggestions) {
 TEST_P(BirchBarMenuTest, CustomizeSuggestionsExtended) {
   SetLastActiveItems(/*num=*/1);
   SetMostVisitedItems(/*num=*/1);
+  SetSelfShareItems(/*num=*/1);
 
   // Set show suggestions initially.
   GetPrefService()->SetBoolean(prefs::kBirchShowSuggestions, true);
@@ -928,7 +928,9 @@ TEST_P(BirchBarMenuTest, CustomizeSuggestionsExtended) {
 
   // At the beginning, all types should be shown on the bar.
   EXPECT_TRUE(HasSuggestionTypes(
-      {BirchItemType::kLastActive, BirchItemType::kMostVisited}, bar_chips));
+      {BirchItemType::kLastActive, BirchItemType::kMostVisited,
+       BirchItemType::kSelfShare},
+      bar_chips));
 
   auto* root_window_controller = RootWindowController::ForWindow(root_window);
   // Right clicking on the wallpaper of the first display to show the context
@@ -940,35 +942,24 @@ TEST_P(BirchBarMenuTest, CustomizeSuggestionsExtended) {
       root_window_controller->menu_model_adapter_for_testing();
   EXPECT_TRUE(model_adapter->IsShowingMenu());
 
-  base::flat_map<BirchItemType, views::MenuItemView*> type_to_item;
   auto* sub_menu = model_adapter->root_for_testing()->GetSubmenu();
-  auto* last_active_item = sub_menu->GetMenuItemAt(5);
-  EXPECT_EQ(last_active_item->GetCommand(),
+  auto* tab_item = sub_menu->GetMenuItemAt(4);
+  EXPECT_EQ(tab_item->GetCommand(),
             base::to_underlying(
-                BirchBarContextMenuModel::CommandId::kLastActiveSuggestions));
-  type_to_item[BirchItemType::kLastActive] = last_active_item;
+                BirchBarContextMenuModel::CommandId::kChromeTabSuggestions));
 
-  auto* most_visited_item = sub_menu->GetMenuItemAt(6);
-  EXPECT_EQ(most_visited_item->GetCommand(),
-            base::to_underlying(
-                BirchBarContextMenuModel::CommandId::kMostVisitedSuggestions));
-  type_to_item[BirchItemType::kMostVisited] = most_visited_item;
-
-  // Deselect all types of suggestions one by one.
-  for (auto type : {BirchItemType::kLastActive, BirchItemType::kMostVisited}) {
-    LeftClickOn(type_to_item[type]);
-    EXPECT_FALSE(HasSuggestionTypes({type}, bar_chips));
-  }
+  // Deselect tab suggestions.
+  LeftClickOn(tab_item);
 
   // There is no suggestions showing on the bar.
   EXPECT_TRUE(bar_chips.empty());
 
-  // Re-select all types of suggestions one by one.
-  std::vector<BirchItemType> new_types;
-  for (auto type : {BirchItemType::kLastActive, BirchItemType::kMostVisited}) {
-    LeftClickOn(type_to_item[type]);
-    EXPECT_TRUE(HasSuggestionTypes(new_types, bar_chips));
-  }
+  // Re-select tab suggestions.
+  LeftClickOn(tab_item);
+  EXPECT_TRUE(HasSuggestionTypes(
+      {BirchItemType::kLastActive, BirchItemType::kMostVisited,
+       BirchItemType::kSelfShare},
+      bar_chips));
 }
 
 // Tests resetting suggestions from context menu.
@@ -1025,7 +1016,7 @@ TEST_P(BirchBarMenuTest, ResetSuggestions) {
   EXPECT_TRUE(model_adapter->IsShowingMenu());
 
   auto* sub_menu = model_adapter->root_for_testing()->GetSubmenu();
-  auto* reset_item = sub_menu->GetMenuItemAt(7);
+  auto* reset_item = sub_menu->GetMenuItemAt(5);
   EXPECT_EQ(reset_item->GetCommand(),
             base::to_underlying(BirchBarContextMenuModel::CommandId::kReset));
 
@@ -1034,8 +1025,7 @@ TEST_P(BirchBarMenuTest, ResetSuggestions) {
   LeftClickOn(reset_item);
   EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseCalendar));
   EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseFileSuggest));
-  EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseRecentTabs));
-  EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseSelfShare));
+  EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseChromeTabs));
 
   EXPECT_EQ(4u, bar_chips.size());
   EXPECT_TRUE(
@@ -1057,13 +1047,11 @@ TEST_P(BirchBarMenuTest, ResetSuggestionsExtended) {
   auto grid_test_api = OverviewGridTestApi(root_window);
   const auto& bar_chips = grid_test_api.GetBirchChips();
 
-  // Disable the last active suggestions such that only most visited suggestions
-  // are shown.
+  // Disable the Chrome Tabs suggestions such that nothing is shown.
   auto* pref_service = GetPrefService();
-  pref_service->SetBoolean(prefs::kBirchUseLastActive, false);
+  pref_service->SetBoolean(prefs::kBirchUseChromeTabs, false);
 
-  EXPECT_EQ(1u, bar_chips.size());
-  EXPECT_TRUE(HasSuggestionTypes({BirchItemType::kMostVisited}, bar_chips));
+  EXPECT_EQ(0u, bar_chips.size());
 
   auto* root_window_controller = RootWindowController::ForWindow(root_window);
   // Right clicking on the wallpaper of the first display to show the context
@@ -1077,15 +1065,14 @@ TEST_P(BirchBarMenuTest, ResetSuggestionsExtended) {
   EXPECT_TRUE(model_adapter->IsShowingMenu());
 
   auto* sub_menu = model_adapter->root_for_testing()->GetSubmenu();
-  auto* reset_item = sub_menu->GetMenuItemAt(7);
+  auto* reset_item = sub_menu->GetMenuItemAt(5);
   EXPECT_EQ(reset_item->GetCommand(),
             base::to_underlying(BirchBarContextMenuModel::CommandId::kReset));
 
   // Clicking on the reset button to enable all suggestions pref and all types
   // of suggestion chips should be shown on the bar.
   LeftClickOn(reset_item);
-  EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseLastActive));
-  EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseMostVisited));
+  EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseChromeTabs));
 
   EXPECT_EQ(2u, bar_chips.size());
   EXPECT_TRUE(HasSuggestionTypes(
@@ -1297,8 +1284,8 @@ TEST_P(BirchBarMenuTest, HideSuggestionTypes) {
         break;
       case BirchItemType::kTab:
         hide_suggestions_item_id = base::to_underlying(
-            BirchChipContextMenuModel::CommandId::kHideOtherDeviceSuggestions);
-        pref_name = prefs::kBirchUseRecentTabs;
+            BirchChipContextMenuModel::CommandId::kHideChromeTabSuggestions);
+        pref_name = prefs::kBirchUseChromeTabs;
         break;
       default:
         break;

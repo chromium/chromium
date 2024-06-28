@@ -42,25 +42,11 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
                       u"Hide all Google Drive suggestions",
                       CreateIconForMenuItem(kForbidIcon));
       break;
-    case BirchSuggestionType::kTab:
+    case BirchSuggestionType::kChromeTab:
       add_hide_suggestion_item();
-      AddItemWithIcon(
-          base::to_underlying(CommandId::kHideOtherDeviceSuggestions),
-          u"Hide all Chrome suggestions", CreateIconForMenuItem(kForbidIcon));
-      break;
-    case BirchSuggestionType::kLastActive:
-      add_hide_suggestion_item();
-      AddItemWithIcon(
-          base::to_underlying(CommandId::kHideLastActiveSuggestions),
-          u"Hide last tab opened suggestions",
-          CreateIconForMenuItem(kForbidIcon));
-      break;
-    case BirchSuggestionType::kMostVisited:
-      add_hide_suggestion_item();
-      AddItemWithIcon(
-          base::to_underlying(CommandId::kHideMostVisitedSuggestions),
-          u"Hide frequently visited tab suggestions",
-          CreateIconForMenuItem(kForbidIcon));
+      AddItemWithIcon(base::to_underlying(CommandId::kHideChromeTabSuggestions),
+                      u"Hide all Chrome suggestions",
+                      CreateIconForMenuItem(kForbidIcon));
       break;
     default:
       break;

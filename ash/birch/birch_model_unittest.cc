@@ -459,10 +459,7 @@ TEST_F(BirchModelTest, DisablingAllPrefsCausesNoFetch) {
   ASSERT_TRUE(prefs);
   prefs->SetBoolean(prefs::kBirchUseCalendar, false);
   prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
-  prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
-  prefs->SetBoolean(prefs::kBirchUseLastActive, false);
-  prefs->SetBoolean(prefs::kBirchUseMostVisited, false);
-  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
+  prefs->SetBoolean(prefs::kBirchUseChromeTabs, false);
   prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
@@ -504,10 +501,7 @@ TEST_F(BirchModelTest, EnablingOnePrefsCausesFetch) {
   ASSERT_TRUE(prefs);
   prefs->SetBoolean(prefs::kBirchUseCalendar, true);
   prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
-  prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
-  prefs->SetBoolean(prefs::kBirchUseLastActive, false);
-  prefs->SetBoolean(prefs::kBirchUseMostVisited, false);
-  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
+  prefs->SetBoolean(prefs::kBirchUseChromeTabs, false);
   prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
@@ -580,10 +574,7 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
   ASSERT_TRUE(prefs);
   prefs->SetBoolean(prefs::kBirchUseCalendar, false);
   prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
-  prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
-  prefs->SetBoolean(prefs::kBirchUseLastActive, false);
-  prefs->SetBoolean(prefs::kBirchUseMostVisited, false);
-  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
+  prefs->SetBoolean(prefs::kBirchUseChromeTabs, false);
   prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
@@ -612,10 +603,7 @@ TEST_F(BirchModelTest, DisablingPrefsMarksDataFresh) {
   ASSERT_TRUE(prefs);
   prefs->SetBoolean(prefs::kBirchUseCalendar, false);
   prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
-  prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
-  prefs->SetBoolean(prefs::kBirchUseLastActive, false);
-  prefs->SetBoolean(prefs::kBirchUseMostVisited, false);
-  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
+  prefs->SetBoolean(prefs::kBirchUseChromeTabs, false);
   prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
@@ -692,10 +680,7 @@ TEST_F(BirchModelTest, EnablePrefsDuringFetchCausesDataFetchRequest) {
   ASSERT_TRUE(prefs);
   prefs->SetBoolean(prefs::kBirchUseCalendar, false);
   prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
-  prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
-  prefs->SetBoolean(prefs::kBirchUseLastActive, false);
-  prefs->SetBoolean(prefs::kBirchUseMostVisited, false);
-  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
+  prefs->SetBoolean(prefs::kBirchUseChromeTabs, false);
   prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
 
@@ -716,10 +701,7 @@ TEST_F(BirchModelTest, EnablePrefsDuringFetchCausesDataFetchRequest) {
   // enabled data type.
   prefs->SetBoolean(prefs::kBirchUseCalendar, true);
   prefs->SetBoolean(prefs::kBirchUseFileSuggest, true);
-  prefs->SetBoolean(prefs::kBirchUseRecentTabs, true);
-  prefs->SetBoolean(prefs::kBirchUseLastActive, true);
-  prefs->SetBoolean(prefs::kBirchUseMostVisited, true);
-  prefs->SetBoolean(prefs::kBirchUseSelfShare, true);
+  prefs->SetBoolean(prefs::kBirchUseChromeTabs, true);
   prefs->SetBoolean(prefs::kBirchUseLostMedia, true);
 
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, true);
@@ -1784,9 +1766,7 @@ TEST_F(BirchModelTest, RecordProviderHiddenHistograms) {
   ASSERT_TRUE(prefs);
   prefs->SetBoolean(prefs::kBirchUseCalendar, false);
   prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
-  prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
-  prefs->SetBoolean(prefs::kBirchUseLastActive, false);
-  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
+  prefs->SetBoolean(prefs::kBirchUseChromeTabs, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
 

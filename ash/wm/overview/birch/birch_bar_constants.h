@@ -12,10 +12,8 @@ enum class BirchSuggestionType {
   kWeather,
   kCalendar,
   kDrive,
-  kTab,
+  kChromeTab,
   kExplore,
-  kLastActive,
-  kMostVisited,
   kUndefined,
 };
 

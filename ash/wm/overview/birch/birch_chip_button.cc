@@ -112,12 +112,12 @@ BirchSuggestionType GetSuggestionTypeFromItemType(BirchItemType item_type) {
     case BirchItemType::kAttachment:
     case BirchItemType::kFile:
       return BirchSuggestionType::kDrive;
+    // All tab types are "Chrome browser" in the UI.
     case BirchItemType::kTab:
-      return BirchSuggestionType::kTab;
     case BirchItemType::kLastActive:
-      return BirchSuggestionType::kLastActive;
     case BirchItemType::kMostVisited:
-      return BirchSuggestionType::kMostVisited;
+    case BirchItemType::kSelfShare:
+      return BirchSuggestionType::kChromeTab;
     case BirchItemType::kReleaseNotes:
       return BirchSuggestionType::kExplore;
     default:
@@ -293,18 +293,9 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
       birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kDrive,
                                                   /*show=*/false);
       break;
-    case base::to_underlying(CommandId::kHideOtherDeviceSuggestions):
-      birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kTab,
-                                                  /*show=*/false);
-      break;
-    case base::to_underlying(CommandId::kHideLastActiveSuggestions):
+    case base::to_underlying(CommandId::kHideChromeTabSuggestions):
       birch_bar_controller->SetShowSuggestionType(
-          BirchSuggestionType::kLastActive,
-          /*show=*/false);
-      break;
-    case base::to_underlying(CommandId::kHideMostVisitedSuggestions):
-      birch_bar_controller->SetShowSuggestionType(
-          BirchSuggestionType::kMostVisited,
+          BirchSuggestionType::kChromeTab,
           /*show=*/false);
       break;
     case base::to_underlying(CommandId::kFeedback):

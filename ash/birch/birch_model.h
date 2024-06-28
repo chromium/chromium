@@ -204,10 +204,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   // Called when a data provider pref changes.
   void OnCalendarPrefChanged();
   void OnFileSuggestPrefChanged();
-  void OnRecentTabPrefChanged();
-  void OnLastActivePrefChanged();
-  void OnMostVisitedPrefChanged();
-  void OnSelfSharePrefChanged();
+  void OnChromeTabsPrefChanged();
   void OnLostMediaPrefChanged();
   void OnWeatherPrefChanged();
   void OnReleaseNotesPrefChanged();
@@ -271,10 +268,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
 
   PrefChangeRegistrar calendar_pref_registrar_;
   PrefChangeRegistrar file_suggest_pref_registrar_;
-  PrefChangeRegistrar recent_tab_pref_registrar_;
-  PrefChangeRegistrar last_active_pref_registrar_;
-  PrefChangeRegistrar most_visited_pref_registrar_;
-  PrefChangeRegistrar self_share_pref_registrar_;
+  PrefChangeRegistrar chrome_tabs_pref_registrar_;
   PrefChangeRegistrar lost_media_pref_registrar_;
   PrefChangeRegistrar weather_pref_registrar_;
   PrefChangeRegistrar release_notes_pref_registrar_;

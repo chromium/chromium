@@ -278,11 +278,9 @@ void DisableAllDataTypePrefsExcept(const char* exception) {
       Shell::Get()->session_controller()->GetPrimaryUserPrefService();
   ASSERT_TRUE(pref_service);
   const char* kDataPrefs[] = {
-      prefs::kBirchUseCalendar,    prefs::kBirchUseFileSuggest,
-      prefs::kBirchUseRecentTabs,  prefs::kBirchUseLastActive,
-      prefs::kBirchUseMostVisited, prefs::kBirchUseSelfShare,
-      prefs::kBirchUseLostMedia,   prefs::kBirchUseReleaseNotes,
-      prefs::kBirchUseWeather,
+      prefs::kBirchUseCalendar,     prefs::kBirchUseFileSuggest,
+      prefs::kBirchUseChromeTabs,   prefs::kBirchUseLostMedia,
+      prefs::kBirchUseReleaseNotes, prefs::kBirchUseWeather,
   };
   for (const char* pref : kDataPrefs) {
     if (strcmp(pref, exception)) {
@@ -503,9 +501,9 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, RecentTabsChip) {
   TestRecentTabsProvider recent_tabs_provider;
   birch_keyed_service->set_recent_tabs_provider_for_test(&recent_tabs_provider);
 
-  // Disable the prefs for data providers other than this one. This ensures
+  // Disable the prefs for data providers other than chrome tabs. This ensures
   // the data is fresh once the test provider replies.
-  DisableAllDataTypePrefsExcept(prefs::kBirchUseRecentTabs);
+  DisableAllDataTypePrefsExcept(prefs::kBirchUseChromeTabs);
 
   // Ensure the item remover is initialized, otherwise data fetches won't
   // complete.
@@ -546,9 +544,9 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, LastActiveChip) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kBirchIsMorning);
 
-  // Disable the prefs for data providers other than last active. This ensures
+  // Disable the prefs for data providers other than chrome tabs. This ensures
   // the data is fresh once the last active provider replies.
-  DisableAllDataTypePrefsExcept(prefs::kBirchUseLastActive);
+  DisableAllDataTypePrefsExcept(prefs::kBirchUseChromeTabs);
 
   // Ensure the item remover is initialized, otherwise data fetches won't
   // complete.
@@ -590,9 +588,9 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, MostVisitedChip) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kBirchIsMorning);
 
-  // Disable the prefs for data providers other than most visited. This ensures
+  // Disable the prefs for data providers other than chrome tabs. This ensures
   // the data is fresh once the most visited provider replies.
-  DisableAllDataTypePrefsExcept(prefs::kBirchUseMostVisited);
+  DisableAllDataTypePrefsExcept(prefs::kBirchUseChromeTabs);
 
   // Ensure the item remover is initialized, otherwise data fetches won't
   // complete.
@@ -629,9 +627,9 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, SelfShareChip) {
   TestSelfShareProvider self_share_provider;
   birch_keyed_service->set_self_share_provider_for_test(&self_share_provider);
 
-  // Disable the prefs for data providers other than self share. This ensures
+  // Disable the prefs for data providers other than chrome tabs. This ensures
   // the data is fresh once the self share provider replies.
-  DisableAllDataTypePrefsExcept(prefs::kBirchUseSelfShare);
+  DisableAllDataTypePrefsExcept(prefs::kBirchUseChromeTabs);
 
   // Ensure the item remover is initialized, otherwise data fetches won't
   // complete.

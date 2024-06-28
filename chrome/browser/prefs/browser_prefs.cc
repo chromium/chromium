@@ -1065,6 +1065,12 @@ constexpr char kHoldingSpaceWallpaperNudgeUserFirstEligibleSessionTime[] =
 // Deprecated 06/2024.
 constexpr char kLocalUserFilesMigrationEnabled[] =
     "filebrowser.local_user_files_migration_enabled";
+
+// Deprecated 06/2024.
+constexpr char kBirchUseRecentTabs[] = "ash.birch.use_recent_tabs";
+constexpr char kBirchUseLastActive[] = "ash.birch.use_last_active";
+constexpr char kBirchUseMostVisited[] = "ash.birch.use_most_visited";
+constexpr char kBirchUseSelfShare[] = "ash.birch.use_self_share";
 #endif
 
 // Register local state used only for migration (clearing or moving to a new
@@ -1477,6 +1483,12 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterUint64Pref(
       kHoldingSpaceWallpaperNudgeNudgeShownCountCounterfactual, 0u);
   registry->RegisterUint64Pref(kHoldingSpaceWallpaperNudgeNudgeShownCount, 0u);
+
+  // Deprecated 06/2024
+  registry->RegisterBooleanPref(kBirchUseRecentTabs, true);
+  registry->RegisterBooleanPref(kBirchUseLastActive, true);
+  registry->RegisterBooleanPref(kBirchUseMostVisited, true);
+  registry->RegisterBooleanPref(kBirchUseSelfShare, true);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -2783,6 +2795,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(
       kHoldingSpaceWallpaperNudgeNudgeShownCountCounterfactual);
   profile_prefs->ClearPref(kHoldingSpaceWallpaperNudgeNudgeShownCount);
+
+  // Added 06/2024.
+  profile_prefs->ClearPref(kBirchUseRecentTabs);
+  profile_prefs->ClearPref(kBirchUseLastActive);
+  profile_prefs->ClearPref(kBirchUseMostVisited);
+  profile_prefs->ClearPref(kBirchUseSelfShare);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)

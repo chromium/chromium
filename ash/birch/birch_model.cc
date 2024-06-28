@@ -56,10 +56,10 @@ BirchModel::BirchModel()
     : calendar_data_(prefs::kBirchUseCalendar, "Calendar"),
       attachment_data_(prefs::kBirchUseFileSuggest, "Attachment"),
       file_suggest_data_(prefs::kBirchUseFileSuggest, "File"),
-      recent_tab_data_(prefs::kBirchUseRecentTabs, "Tab"),
-      last_active_data_(prefs::kBirchUseLastActive, "LastActive"),
-      most_visited_data_(prefs::kBirchUseMostVisited, "MostVisited"),
-      self_share_data_(prefs::kBirchUseSelfShare, "SelfShare"),
+      recent_tab_data_(prefs::kBirchUseChromeTabs, "Tab"),
+      last_active_data_(prefs::kBirchUseChromeTabs, "LastActive"),
+      most_visited_data_(prefs::kBirchUseChromeTabs, "MostVisited"),
+      self_share_data_(prefs::kBirchUseChromeTabs, "SelfShare"),
       lost_media_data_(prefs::kBirchUseLostMedia, "LostMedia"),
       release_notes_data_(prefs::kBirchUseReleaseNotes, "ReleaseNotes"),
       weather_data_(prefs::kBirchUseWeather, "Weather"),
@@ -91,10 +91,7 @@ void BirchModel::RemoveObserver(Observer* observer) {
 void BirchModel::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kBirchUseCalendar, true);
   registry->RegisterBooleanPref(prefs::kBirchUseFileSuggest, true);
-  registry->RegisterBooleanPref(prefs::kBirchUseRecentTabs, true);
-  registry->RegisterBooleanPref(prefs::kBirchUseLastActive, true);
-  registry->RegisterBooleanPref(prefs::kBirchUseMostVisited, true);
-  registry->RegisterBooleanPref(prefs::kBirchUseSelfShare, true);
+  registry->RegisterBooleanPref(prefs::kBirchUseChromeTabs, true);
   registry->RegisterBooleanPref(prefs::kBirchUseLostMedia, true);
   registry->RegisterBooleanPref(prefs::kBirchUseWeather, true);
   registry->RegisterBooleanPref(prefs::kBirchUseReleaseNotes, true);
@@ -653,25 +650,10 @@ void BirchModel::InitPrefChangeRegistrars() {
       prefs::kBirchUseFileSuggest,
       base::BindRepeating(&BirchModel::OnFileSuggestPrefChanged,
                           base::Unretained(this)));
-  recent_tab_pref_registrar_.Init(prefs);
-  recent_tab_pref_registrar_.Add(
-      prefs::kBirchUseRecentTabs,
-      base::BindRepeating(&BirchModel::OnRecentTabPrefChanged,
-                          base::Unretained(this)));
-  last_active_pref_registrar_.Init(prefs);
-  last_active_pref_registrar_.Add(
-      prefs::kBirchUseLastActive,
-      base::BindRepeating(&BirchModel::OnLastActivePrefChanged,
-                          base::Unretained(this)));
-  most_visited_pref_registrar_.Init(prefs);
-  most_visited_pref_registrar_.Add(
-      prefs::kBirchUseMostVisited,
-      base::BindRepeating(&BirchModel::OnMostVisitedPrefChanged,
-                          base::Unretained(this)));
-  self_share_pref_registrar_.Init(prefs);
-  self_share_pref_registrar_.Add(
-      prefs::kBirchUseSelfShare,
-      base::BindRepeating(&BirchModel::OnSelfSharePrefChanged,
+  chrome_tabs_pref_registrar_.Init(prefs);
+  chrome_tabs_pref_registrar_.Add(
+      prefs::kBirchUseChromeTabs,
+      base::BindRepeating(&BirchModel::OnChromeTabsPrefChanged,
                           base::Unretained(this)));
   lost_media_pref_registrar_.Init(prefs);
   lost_media_pref_registrar_.Add(
@@ -707,29 +689,14 @@ void BirchModel::OnFileSuggestPrefChanged() {
   }
 }
 
-void BirchModel::OnRecentTabPrefChanged() {
+void BirchModel::OnChromeTabsPrefChanged() {
   if (birch_client_) {
     StartDataFetchIfNeeded(recent_tab_data_,
                            birch_client_->GetRecentTabsProvider());
-  }
-}
-
-void BirchModel::OnLastActivePrefChanged() {
-  if (birch_client_) {
     StartDataFetchIfNeeded(last_active_data_,
                            birch_client_->GetLastActiveProvider());
-  }
-}
-
-void BirchModel::OnMostVisitedPrefChanged() {
-  if (birch_client_) {
     StartDataFetchIfNeeded(most_visited_data_,
                            birch_client_->GetMostVisitedProvider());
-  }
-}
-
-void BirchModel::OnSelfSharePrefChanged() {
-  if (birch_client_) {
     StartDataFetchIfNeeded(self_share_data_,
                            birch_client_->GetSelfShareProvider());
   }
@@ -763,14 +730,15 @@ void BirchModel::RecordProviderHiddenHistograms() {
                             !prefs->GetBoolean(prefs::kBirchUseCalendar));
   base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.FileSuggest",
                             !prefs->GetBoolean(prefs::kBirchUseFileSuggest));
+  // TODO(b/349885612): Consolidate histograms for "Chrome Tabs".
   base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.RecentTabs",
-                            !prefs->GetBoolean(prefs::kBirchUseRecentTabs));
+                            !prefs->GetBoolean(prefs::kBirchUseChromeTabs));
   base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.LastActive",
-                            !prefs->GetBoolean(prefs::kBirchUseLastActive));
+                            !prefs->GetBoolean(prefs::kBirchUseChromeTabs));
   base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.MostVisited",
-                            !prefs->GetBoolean(prefs::kBirchUseMostVisited));
+                            !prefs->GetBoolean(prefs::kBirchUseChromeTabs));
   base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.SelfShare",
-                            !prefs->GetBoolean(prefs::kBirchUseSelfShare));
+                            !prefs->GetBoolean(prefs::kBirchUseChromeTabs));
   base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.LostMedia",
                             !prefs->GetBoolean(prefs::kBirchUseLostMedia));
   base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.Weather",
