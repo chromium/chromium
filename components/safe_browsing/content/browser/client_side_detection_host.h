@@ -179,28 +179,34 @@ class ClientSideDetectionHost
   // Called when pre-classification checks are done for the phishing
   // classifiers. |request_type| is passed in to specify the process that
   // requests the classification.
-  void OnPhishingPreClassificationDone(ClientSideDetectionType request_type,
-                                       bool should_classify,
-                                       bool is_sample_ping);
+  void OnPhishingPreClassificationDone(
+      ClientSideDetectionType request_type,
+      bool should_classify,
+      bool is_sample_ping,
+      std::optional<bool> did_match_high_confidence_allowlist);
 
   // `verdict` is a wrapped ClientPhishingRequest protocol message, `result`
   // is the outcome of the renderer classification. `request_type` is passed in
   // to specify the process that requests the classification, which is passed
   // along from OnPhishingPreClassificationDone().
-  void PhishingDetectionDone(ClientSideDetectionType request_type,
-                             bool is_sample_ping,
-                             mojom::PhishingDetectorResult result,
-                             std::optional<mojo_base::ProtoWrapper> verdict);
+  void PhishingDetectionDone(
+      ClientSideDetectionType request_type,
+      bool is_sample_ping,
+      std::optional<bool> did_match_high_confidence_allowlist,
+      mojom::PhishingDetectorResult result,
+      std::optional<mojo_base::ProtoWrapper> verdict);
 
   // `verdict` is the ClientPhishingRequest passed into PhishingDetectionDone().
   void MaybeSendClientPhishingRequest(
-      std::unique_ptr<ClientPhishingRequest> verdict);
+      std::unique_ptr<ClientPhishingRequest> verdict,
+      std::optional<bool> did_match_high_confidence_allowlist);
 
   // |verdict| is an encoded ClientPhishingRequest protocol message, |result| is
   // the outcome of the renderer image embedding. The verdict is passed into
   // this function after the renderer classification is finished.
   void PhishingImageEmbeddingDone(
       std::unique_ptr<ClientPhishingRequest> verdict,
+      std::optional<bool> did_match_high_confidence_allowlist,
       mojom::PhishingImageEmbeddingResult result,
       std::optional<mojo_base::ProtoWrapper> image_feature_embedding);
 
@@ -213,6 +219,7 @@ class ClientSideDetectionHost
   void MaybeShowPhishingWarning(
       bool is_from_cache,
       ClientSideDetectionType request_type,
+      std::optional<bool> did_match_high_confidence_allowlist,
       GURL phishing_url,
       bool is_phishing,
       std::optional<net::HttpStatusCode> response_code);
@@ -254,10 +261,12 @@ class ClientSideDetectionHost
 
   // Send the client report to CSD server.
   void SendRequest(std::unique_ptr<ClientPhishingRequest> verdict,
-                   const std::string& access_token);
+                   const std::string& access_token,
+                   std::optional<bool> did_match_high_confidence_allowlist);
 
   // Called when token_fetcher_ has fetched the token.
   void OnGotAccessToken(std::unique_ptr<ClientPhishingRequest> verdict,
+                        std::optional<bool> did_match_high_confidence_allowlist,
                         const std::string& access_token);
 
   // Check if sample ping can be sent to Safe Browsing.

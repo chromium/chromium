@@ -393,16 +393,25 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
   }
 
   void PhishingDetectionDone(std::optional<mojo_base::ProtoWrapper> verdict) {
-    csd_host_->PhishingDetectionDone(ClientSideDetectionType::TRIGGER_MODELS,
-                                     /*is_sample_ping=*/false,
-                                     mojom::PhishingDetectorResult::SUCCESS,
-                                     std::move(verdict));
+    csd_host_->PhishingDetectionDone(
+        ClientSideDetectionType::TRIGGER_MODELS,
+        /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false,
+        mojom::PhishingDetectorResult::SUCCESS, std::move(verdict));
+  }
+
+  void PhishingDetectionDoneWithHighConfidenceAllowlistMatch(
+      std::optional<mojo_base::ProtoWrapper> verdict) {
+    csd_host_->PhishingDetectionDone(
+        ClientSideDetectionType::TRIGGER_MODELS,
+        /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/true,
+        mojom::PhishingDetectorResult::SUCCESS, std::move(verdict));
   }
 
   void PhishingDetectionError(mojom::PhishingDetectorResult error) {
-    csd_host_->PhishingDetectionDone(ClientSideDetectionType::TRIGGER_MODELS,
-                                     /*is_sample_ping=*/false, error,
-                                     std::nullopt);
+    csd_host_->PhishingDetectionDone(
+        ClientSideDetectionType::TRIGGER_MODELS,
+        /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false,
+        error, std::nullopt);
   }
 
   void ExpectPreClassificationChecks(const GURL& url,
@@ -556,6 +565,8 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
     GTEST_SKIP();
 
+  base::HistogramTester histogram_tester;
+
   // Case 3: client thinks the page is phishing and so does the server.
   // We show an interstitial.
   ClientSideDetectionService::ClientReportPhishingRequestCallback cb;
@@ -593,6 +604,10 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
       FROM_HERE,
       base::BindOnce(&MockSafeBrowsingUIManager::InvokeOnBlockingPageComplete,
                      ui_manager_, resource.callback));
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.HighConfidenceAllowlistMatchOnServerVerdictPhishy",
+      false, 1);
 }
 
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
@@ -681,6 +696,66 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneVerdictNotPhishing) {
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _)).Times(0);
   PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+}
+
+TEST_F(
+    ClientSideDetectionHostTest,
+    PhishingDetectionDoneServerModelPhishyAndExistsInHighConfidenceAllowlist) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+
+  // Client thinks the page is phishing and so does the server.
+  // We show an interstitial.
+  ClientSideDetectionService::ClientReportPhishingRequestCallback cb;
+  GURL phishing_url("http://phishingurl.com/");
+  ClientPhishingRequest verdict;
+  verdict.set_url(phishing_url.spec());
+  verdict.set_client_score(1.0f);
+  verdict.set_is_phishing(true);
+
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                 PartiallyEqualVerdict(verdict), _, _))
+      .WillOnce(MoveArg<1>(&cb));
+  // Bypass the preclassification check with where the allowlist check occurs,
+  // since this unit test strictly tests post classification allowlist match
+  // check.
+  PhishingDetectionDoneWithHighConfidenceAllowlistMatch(
+      mojo_base::ProtoWrapper(verdict));
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+  ASSERT_FALSE(cb.is_null());
+
+  UnsafeResource resource;
+  EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_))
+      .WillOnce(SaveArg<0>(&resource));
+  std::move(cb).Run(phishing_url, true, net::HTTP_OK);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(Mock::VerifyAndClear(ui_manager_.get()));
+  EXPECT_EQ(phishing_url, resource.url);
+  EXPECT_EQ(phishing_url, resource.original_url);
+  EXPECT_EQ(SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING,
+            resource.threat_type);
+  EXPECT_EQ(ThreatSource::CLIENT_SIDE_DETECTION, resource.threat_source);
+  EXPECT_EQ(web_contents(),
+            unsafe_resource_util::GetWebContentsForResource(resource));
+
+  // Make sure the client object will be deleted.
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&MockSafeBrowsingUIManager::InvokeOnBlockingPageComplete,
+                     ui_manager_, resource.callback));
+
+  // Test that the histogram has been logged that the allowlist did exist with
+  // the server model verdict phishy.
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.ServerModelDetectsPhishing", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.HighConfidenceAllowlistMatchOnServerVerdictPhishy",
+      true, 1);
 }
 
 TEST_F(ClientSideDetectionHostTest,
@@ -1510,14 +1585,15 @@ class ClientSideDetectionHostNotificationTest
   void PhishingDetectionDone(mojo_base::ProtoWrapper verdict) {
     csd_host_->PhishingDetectionDone(
         ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT,
-        /*is_sample_ping=*/false, mojom::PhishingDetectorResult::SUCCESS,
-        std::move(verdict));
+        /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false,
+        mojom::PhishingDetectorResult::SUCCESS, std::move(verdict));
   }
 
   void PhishingDetectionError(mojom::PhishingDetectorResult error) {
     csd_host_->PhishingDetectionDone(
         ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT,
-        /*is_sample_ping=*/false, error, std::nullopt);
+        /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false,
+        error, std::nullopt);
   }
 
   void WaitForBubbleToBeShown() {

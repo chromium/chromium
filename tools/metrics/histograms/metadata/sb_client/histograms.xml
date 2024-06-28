@@ -678,6 +678,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SBClientPhishing.HighConfidenceAllowlistMatchOnServerVerdictPhishy{RequestType}"
+    enum="BooleanMatched" expires_after="2025-06-26">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether the URL was on the high-confidence allowlist. Logged when the
+    post classification server model verdict comes back to be phishy.
+  </summary>
+  <token key="RequestType" variants="ClientSideDetectionRequestType"/>
+</histogram>
+
 <histogram name="SBClientPhishing.ImageEmbedder.Event"
     enum="SBPhishingClassifierEvent" expires_after="2024-11-12">
   <owner>andysjlim@chromium.org</owner>
