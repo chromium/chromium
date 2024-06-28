@@ -78,7 +78,7 @@ bool IsCompatibleHDRMetadata(
 DCLayerResult ValidateYUVOverlay(
     const gfx::ProtectedVideoType& protected_video_type,
     const gfx::ColorSpace& video_color_space,
-    const gfx::BufferFormat& buffer_format,
+    const SharedImageFormat si_format,
     const std::optional<gfx::HDRMetadata>& hdr_metadata,
     bool has_overlay_support,
     bool has_p010_video_processor_support,
@@ -119,14 +119,14 @@ DCLayerResult ValidateYUVOverlay(
 
     // Do not promote hdr overlay if buffer is not in 10bit P010 format. as this
     // may cause blue output result if content is NV12 8bit HDR10.
-    if (buffer_format != gfx::BufferFormat::P010) {
+    if (si_format != MultiPlaneFormat::kP010) {
       return DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_P010;
     }
   }
 
   // Only promote overlay for 10bit+ contents when video processor can
   // handle P010 contents, otherwise disable overlay.
-  if (buffer_format == gfx::BufferFormat::P010 &&
+  if (si_format == MultiPlaneFormat::kP010 &&
       !has_p010_video_processor_support) {
     return DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_P010_VIDEO_PROCESSOR_SUPPORT;
   }
@@ -281,10 +281,10 @@ DCLayerResult ValidateTextureQuad(
         resource_provider->GetColorSpace(quad->resource_id());
     const auto& hdr_metadata =
         resource_provider->GetHDRMetadata(quad->resource_id());
-    auto buffer_format =
-        resource_provider->GetBufferFormat(quad->resource_id());
+    auto si_format =
+        resource_provider->GetSharedImageFormat(quad->resource_id());
     auto result = ValidateYUVOverlay(
-        quad->protected_video_type, color_space, buffer_format, hdr_metadata,
+        quad->protected_video_type, color_space, si_format, hdr_metadata,
         has_overlay_support, has_p010_video_processor_support,
         allowed_yuv_overlay_count, processed_yuv_overlay_count);
     return result;
