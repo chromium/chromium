@@ -299,6 +299,7 @@ void SyncManagerImpl::ShutdownOnSyncThread() {
   if (sync_encryption_handler_) {
     sync_encryption_handler_->RemoveObserver(&debug_info_event_listener_);
     sync_encryption_handler_->RemoveObserver(this);
+    sync_encryption_handler_->RemoveObserver(encryption_observer_proxy_.get());
   }
 
   RemoveObserver(&debug_info_event_listener_);

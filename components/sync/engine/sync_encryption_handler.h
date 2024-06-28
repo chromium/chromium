@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/passphrase_enums.h"
@@ -29,16 +30,14 @@ enum class PassphraseType;
 // Sync's encryption handler. Handles tracking encrypted types, ensuring the
 // cryptographer encrypts with the proper key and has the most recent keybag,
 // and keeps the nigori node up to date.
-// Implementations of this class must be assumed to be non-thread-safe. All
-// methods must be invoked on the sync thread.
+// All methods must be invoked on the sync sequence.
 class SyncEncryptionHandler {
  public:
-  // All Observer methods are done synchronously from within a transaction and
-  // on the sync thread.
-  class Observer {
+  // All Observer methods are called on the sync sequence.
+  class Observer : public base::CheckedObserver {
    public:
     Observer() = default;
-    virtual ~Observer() = default;
+    ~Observer() override = default;
 
     // Called when user interaction is required to obtain a valid passphrase for
     // decryption.

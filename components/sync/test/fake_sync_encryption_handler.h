@@ -53,8 +53,7 @@ class FakeSyncEncryptionHandler : public KeystoreKeysHandler,
   bool SetKeystoreKeys(const std::vector<std::vector<uint8_t>>& keys) override;
 
  private:
-  base::ObserverList<SyncEncryptionHandler::Observer>::
-      UncheckedAndDanglingUntriaged observers_;
+  base::ObserverList<SyncEncryptionHandler::Observer> observers_;
   std::vector<uint8_t> keystore_key_;
   FakeCryptographer fake_cryptographer_;
 };

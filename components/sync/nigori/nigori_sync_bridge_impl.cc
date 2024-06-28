@@ -315,11 +315,7 @@ class NigoriSyncBridgeImpl::BroadcastingObserver
   }
 
  private:
-  // TODO(crbug.com/40609954): consider using checked ObserverList once
-  // SyncEncryptionHandlerImpl is no longer needed or consider refactoring old
-  // implementation to use checked ObserverList as well.
-  base::ObserverList<SyncEncryptionHandler::Observer>::
-      UncheckedAndDanglingUntriaged observers_;
+  base::ObserverList<SyncEncryptionHandler::Observer> observers_;
 };
 
 NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
