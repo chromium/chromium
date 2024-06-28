@@ -7,7 +7,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -108,6 +110,15 @@ base::FilePath DemoComponents::GetExternalExtensionsPrefsPath() const {
 }
 
 void DemoComponents::LoadAppComponent(base::OnceClosure load_callback) {
+  const auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(ash::switches::kDemoModeSwaContentDirectory)) {
+    OnAppComponentLoaded(std::move(load_callback),
+                         component_updater::ComponentManagerAsh::Error::NONE,
+                         base::FilePath(command_line->GetSwitchValueASCII(
+                             ash::switches::kDemoModeSwaContentDirectory)));
+    return;
+  }
+
   g_browser_process->platform_part()->component_manager_ash()->Load(
       kDemoModeAppComponentName,
       component_updater::ComponentManagerAsh::MountPolicy::kMount,
@@ -155,6 +166,15 @@ void DemoComponents::LoadResourcesComponent(base::OnceClosure load_callback) {
   if (resources_load_requested_)
     return;
   resources_load_requested_ = true;
+
+  const auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(ash::switches::kDemoModeResourceDirectory)) {
+    InstalledComponentLoaded(
+        component_updater::ComponentManagerAsh::Error::NONE,
+        base::FilePath(command_line->GetSwitchValueASCII(
+            ash::switches::kDemoModeResourceDirectory)));
+    return;
+  }
 
   auto component_manager_ash =
       g_browser_process->platform_part()->component_manager_ash();

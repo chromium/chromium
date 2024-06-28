@@ -411,6 +411,10 @@ const char kDemoModeScreensaverApp[] = "demo-mode-screensaver-extension";
 // downloading from Omaha).
 const char kDemoModeSwaContentDirectory[] = "demo-mode-swa-content-directory";
 
+// Directory from which to fetch the demo mode resource content (instead of
+// downloading from Omaha).
+const char kDemoModeResourceDirectory[] = "demo-mode-resource-directory";
+
 // Time in seconds before a machine at OOBE is considered derelict.
 const char kDerelictDetectionTimeout[] = "derelict-detection-timeout";
 
