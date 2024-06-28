@@ -161,7 +161,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    // Previously disabled: http://crbug.com/1296677
+    @DisabledTest(message = "Flaky, see crbug.com/40821849")
     public void testNonResolveContentVisibility() throws Exception {
         // Simulate a non-resolve search and make sure no Content is created.
         simulateNonResolveSearch("search");
