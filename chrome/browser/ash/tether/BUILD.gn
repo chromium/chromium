@@ -20,6 +20,7 @@ static_library("tether") {
     "//base",
     "//chrome/browser/ash/device_sync",
     "//chrome/browser/ash/multidevice_setup",
+    "//chrome/browser/ash/secure_channel",
     "//chrome/browser/profiles",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/tether",

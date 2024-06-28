@@ -41,6 +41,7 @@ static_library("phonehub") {
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/device_sync",
     "//chrome/browser/ash/multidevice_setup",
+    "//chrome/browser/ash/secure_channel",
     "//chrome/browser/favicon",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",

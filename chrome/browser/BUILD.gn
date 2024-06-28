@@ -5339,6 +5339,7 @@ static_library("browser") {
       "//chrome/browser/ash/privacy_hub",
       "//chrome/browser/ash/quick_pair",
       "//chrome/browser/ash/release_notes",
+      "//chrome/browser/ash/secure_channel",
       "//chrome/browser/ash/sharesheet",
       "//chrome/browser/ash/shimless_rma",
       "//chrome/browser/ash/smart_reader",
