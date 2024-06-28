@@ -1852,6 +1852,15 @@ https://chromium.googlesource.com/chromiumos/platform2/+/main/secagentd/proto/se
   <int value="2" label="Suspended"/>
 </enum>
 
+<enum name="TelemetryExtensionRoutineCategory">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Memory"/>
+  <int value="2" label="VolumeButton"/>
+  <int value="3" label="Fan"/>
+  <int value="4" label="LedLitUp"/>
+  <int value="5" label="kNetworkBandwidth"/>
+</enum>
+
 <enum name="UmaInitParamsResult">
   <int value="0" label="Client ID and entropy sources were found"/>
   <int value="1" label="Only the client ID was found"/>

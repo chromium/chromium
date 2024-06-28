@@ -4170,6 +4170,28 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.TelemetryExtension.RoutineCreation"
+    enum="TelemetryExtensionRoutineCategory" expires_after="2024-12-31">
+  <owner>weiluanwang@google.com</owner>
+  <owner>dennyh@google.com</owner>
+  <owner>cros-tdm-tpe-eng@google.com</owner>
+  <summary>
+    The specific routine category created in the Telemetry extension. This is
+    emitted every time a routine is created.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.TelemetryExtension.RoutineSupportedStatusQuery"
+    enum="TelemetryExtensionRoutineCategory" expires_after="2024-12-31">
+  <owner>weiluanwang@google.com</owner>
+  <owner>dennyh@google.com</owner>
+  <owner>cros-tdm-tpe-eng@google.com</owner>
+  <summary>
+    The specific routine category queried in the Telemetry extension. This is
+    emitted every time a client queries whether a routine category is supported.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.TypeC.CableSpeed" enum="CableSpeedMetric"
     expires_after="2024-11-03">
   <owner>pmalani@chromium.org</owner>

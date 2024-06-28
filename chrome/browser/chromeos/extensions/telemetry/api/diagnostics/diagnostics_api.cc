@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/diagnostics_api_converters.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/diagnostics_api_metrics.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/remote_diagnostics_service_strategy.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_manager.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
@@ -526,6 +527,8 @@ void OsDiagnosticsCreateRoutineFunction::RunIfAllowed() {
         NewUnrecognizedArgument(false);
   }
 
+  RecordRoutineCreation(mojo_arg.value()->which());
+
   // Network bandwidth routine is guarded by `os.diagnostics.network_info_mlab`
   // permission.
   if (mojo_arg.value()->is_network_bandwidth() &&
@@ -774,6 +777,8 @@ void OsDiagnosticsIsRoutineArgumentSupportedFunction::RunIfAllowed() {
     mojo_arg = crosapi::mojom::TelemetryDiagnosticRoutineArgument::
         NewUnrecognizedArgument(false);
   }
+
+  RecordRoutineSupportedStatusQuery(mojo_arg.value()->which());
 
   // Network bandwidth routine is guarded by `os.diagnostics.network_info_mlab`
   // permission.
