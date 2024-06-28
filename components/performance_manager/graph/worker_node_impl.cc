@@ -230,6 +230,7 @@ void WorkerNodeImpl::OnJoiningGraph() {
   weak_factory_.BindToCurrentSequence(
       base::subtle::BindWeakPtrFactoryPassKey());
 
+  NodeAttachedDataStorage::Create(this);
   execution_context::WorkerExecutionContext::Create(this, this);
 
   process_node_->AddWorker(this);

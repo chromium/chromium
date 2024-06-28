@@ -11,7 +11,6 @@
 #include <map>
 #include <memory>
 #include <unordered_set>
-#include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -145,12 +144,6 @@ class GraphImpl : public Graph {
   void NotifyFrameNodeInitializing(const FrameNode* frame_node);
   void NotifyFrameNodeTearingDown(const FrameNode* frame_node);
 
-  // A |key| of nullptr counts all instances associated with the |node|. A
-  // |node| of null counts all instances associated with the |key|. If both are
-  // null then the entire map size is provided.
-  size_t GetNodeAttachedDataCountForTesting(const Node* node,
-                                            const void* key) const;
-
   // Allows explicitly invoking SystemNode destruction for testing.
   void ReleaseSystemNodeForTesting() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -204,7 +197,6 @@ class GraphImpl : public Graph {
 
   void DispatchNodeAddedNotifications(NodeBase* node);
   void DispatchNodeRemovedNotifications(NodeBase* node);
-  void RemoveNodeAttachedData(NodeBase* node);
 
   // Returns a new serialization ID.
   friend class NodeBase;
@@ -268,14 +260,6 @@ class GraphImpl : public Graph {
 
   // Allocated on first use.
   mutable std::unique_ptr<NodeDataDescriberRegistry> describer_registry_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // User data storage for the graph.
-  friend class NodeAttachedDataMapHelper;
-  using NodeAttachedDataKey = std::pair<const Node*, const void*>;
-  using NodeAttachedDataMap =
-      std::map<NodeAttachedDataKey, std::unique_ptr<NodeAttachedData>>;
-  NodeAttachedDataMap node_attached_data_map_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Storage for GraphRegistered objects.

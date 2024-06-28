@@ -16,6 +16,7 @@
 #include "base/types/pass_key.h"
 #include "components/performance_manager/decorators/process_priority_aggregator_data.h"
 #include "components/performance_manager/freezing/frozen_data.h"
+#include "components/performance_manager/graph/node_attached_data_storage.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/graph/node_inline_data.h"
 #include "components/performance_manager/graph/properties.h"
@@ -54,7 +55,9 @@ class ProcessNodeImpl
     : public PublicNodeImpl<ProcessNodeImpl, ProcessNode>,
       public TypedNodeBase<ProcessNodeImpl, ProcessNode, ProcessNodeObserver>,
       public mojom::ProcessCoordinationUnit,
-      public SupportsNodeInlineData<ProcessPriorityAggregatorData, FrozenData> {
+      public SupportsNodeInlineData<NodeAttachedDataStorage,
+                                    ProcessPriorityAggregatorData,
+                                    FrozenData> {
  public:
   using PassKey = base::PassKey<ProcessNodeImpl>;
 

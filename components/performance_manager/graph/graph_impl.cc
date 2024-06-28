@@ -368,24 +368,6 @@ Graph::NodeSetView<WorkerNodeImpl*> GraphImpl::GetAllWorkerNodeImpls() const {
   return NodeSetView<WorkerNodeImpl*>(GetNodesOfType(NodeTypeEnum::kWorker));
 }
 
-size_t GraphImpl::GetNodeAttachedDataCountForTesting(const Node* node,
-                                                     const void* key) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!node && !key)
-    return node_attached_data_map_.size();
-
-  size_t count = 0;
-  for (auto& node_data : node_attached_data_map_) {
-    if (node && node_data.first.first != node)
-      continue;
-    if (key && node_data.first.second != key)
-      continue;
-    ++count;
-  }
-
-  return count;
-}
-
 void GraphImpl::AddNewNode(NodeBase* new_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!node_in_transition_);
@@ -420,8 +402,7 @@ void GraphImpl::RemoveNode(NodeBase* node) {
   node_in_transition_ = node;
   node_in_transition_state_ = NodeState::kLeavingGraph;
   DispatchNodeRemovedNotifications(node);
-  RemoveNodeAttachedData(node);    // Data added via the public interface.
-  node->RemoveNodeAttachedData();  // Data added via the private interface.
+  node->RemoveNodeAttachedData();
   node->LeaveGraph();
   node_in_transition_ = nullptr;
   node_in_transition_state_ = NodeState::kNotInGraph;
@@ -585,16 +566,6 @@ void GraphImpl::DispatchNodeRemovedNotifications(NodeBase* node) {
       }
     } break;
   }
-}
-
-void GraphImpl::RemoveNodeAttachedData(NodeBase* node) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const Node* public_node = node->ToNode();
-  auto lower =
-      node_attached_data_map_.lower_bound(std::make_pair(public_node, nullptr));
-  auto upper = node_attached_data_map_.lower_bound(
-      std::make_pair(public_node + 1, nullptr));
-  node_attached_data_map_.erase(lower, upper);
 }
 
 int64_t GraphImpl::GetNextNodeSerializationId() {

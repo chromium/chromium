@@ -587,6 +587,7 @@ void FrameNodeImpl::OnJoiningGraph() {
   weak_factory_.BindToCurrentSequence(
       base::subtle::BindWeakPtrFactoryPassKey());
 
+  NodeAttachedDataStorage::Create(this);
   execution_context::FrameExecutionContext::Create(this, this);
 
   // Enable querying this node using process and frame routing ids.

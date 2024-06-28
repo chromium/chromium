@@ -34,21 +34,16 @@ TEST_F(NodeAttachedDataTest, PublicNodeAttachedData) {
   PageNodeImpl* page_node_impl = mock_graph.page.get();
   const PageNode* page_node = page_node_impl;
 
-  EXPECT_EQ(0u, graph()->GetNodeAttachedDataCountForTesting(nullptr, nullptr));
   BarData* bar_data = BarData::Get(page_node);
   EXPECT_FALSE(bar_data);
 
   bar_data = BarData::GetOrCreate(page_node);
   EXPECT_TRUE(bar_data);
-  EXPECT_EQ(1u, graph()->GetNodeAttachedDataCountForTesting(nullptr, nullptr));
-  EXPECT_EQ(1u, graph()->GetNodeAttachedDataCountForTesting(
-                    page_node_impl, bar_data->GetKey()));
   EXPECT_EQ(page_node, bar_data->page_node_);
 
   EXPECT_EQ(bar_data, BarData::Get(page_node));
 
   EXPECT_TRUE(BarData::Destroy(page_node));
-  EXPECT_EQ(0u, graph()->GetNodeAttachedDataCountForTesting(nullptr, nullptr));
   EXPECT_FALSE(BarData::Destroy(page_node));
   EXPECT_FALSE(BarData::Get(page_node));
 }

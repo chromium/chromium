@@ -482,6 +482,8 @@ void PageNodeImpl::OnJoiningGraph() {
   // thread in the constructor, can only be dereferenced on the graph sequence.
   weak_factory_.BindToCurrentSequence(
       base::subtle::BindWeakPtrFactoryPassKey());
+
+  NodeAttachedDataStorage::Create(this);
 }
 
 void PageNodeImpl::OnBeforeLeavingGraph() {

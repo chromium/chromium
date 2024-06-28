@@ -12,6 +12,7 @@
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "components/performance_manager/execution_context/execution_context_impl.h"
+#include "components/performance_manager/graph/node_attached_data_storage.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/graph/node_inline_data.h"
 #include "components/performance_manager/public/graph/frame_node.h"
@@ -37,7 +38,8 @@ class FrameNodeImpl
     : public PublicNodeImpl<FrameNodeImpl, FrameNode>,
       public TypedNodeBase<FrameNodeImpl, FrameNode, FrameNodeObserver>,
       public mojom::DocumentCoordinationUnit,
-      public SupportsNodeInlineData<execution_context::FrameExecutionContext> {
+      public SupportsNodeInlineData<NodeAttachedDataStorage,
+                                    execution_context::FrameExecutionContext> {
  public:
   static const char kDefaultPriorityReason[];
 

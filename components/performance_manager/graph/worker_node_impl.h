@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "components/performance_manager/execution_context/execution_context_impl.h"
+#include "components/performance_manager/graph/node_attached_data_storage.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/graph/node_inline_data.h"
 #include "components/performance_manager/public/graph/worker_node.h"
@@ -27,7 +28,8 @@ class ProcessNodeImpl;
 class WorkerNodeImpl
     : public PublicNodeImpl<WorkerNodeImpl, WorkerNode>,
       public TypedNodeBase<WorkerNodeImpl, WorkerNode, WorkerNodeObserver>,
-      public SupportsNodeInlineData<execution_context::WorkerExecutionContext> {
+      public SupportsNodeInlineData<NodeAttachedDataStorage,
+                                    execution_context::WorkerExecutionContext> {
  public:
   static const char kDefaultPriorityReason[];
 
