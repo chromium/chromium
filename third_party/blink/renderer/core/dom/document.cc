@@ -448,6 +448,9 @@ bool DefaultFaviconAllowedByCSP(const Document* document, const IconURL& icon) {
       ContentSecurityPolicy::CheckHeaderType::kCheckAll);
 }
 
+// The sampling rate for UKM.
+constexpr double kUkmSamplingRate = 0.001;
+
 }  // namespace
 
 static const unsigned kCMaxWriteRecursionDepth = 21;
@@ -7514,15 +7517,21 @@ void Document::FinishedParsing() {
   fetcher_->ClearPreloads(ResourceFetcher::kClearSpeculativeMarkupPreloads);
 
   // Record histograms of ShapeText.
-  if (!data_->accumulated_shape_text_elapsed_time_.is_zero()) {
+  if (IsEligibleForRecordingShapeTextMetrics()) {
     base::UmaHistogramMicrosecondsTimes(
-        "Blink.Layout.InlineNode.ShapeText.TotalTime.InOutermostMainFrame2",
+        "Blink.Layout.InlineNode.ShapeText.TotalTime.InOutermostMainFrame3",
         data_->accumulated_shape_text_elapsed_time_);
-  }
-  if (!data_->max_shape_text_elapsed_time_.is_zero()) {
     base::UmaHistogramMicrosecondsTimes(
-        "Blink.Layout.InlineNode.ShapeText.MaxTime.InOutermostMainFrame2",
+        "Blink.Layout.InlineNode.ShapeText.MaxTime.InOutermostMainFrame3",
         data_->max_shape_text_elapsed_time_);
+    // UKM data is sampled at a frequency of `kUkmSamplingRate`.
+    if (base::RandDouble() < kUkmSamplingRate) {
+      ukm::builders::Blink_ShapeText(UkmSourceID())
+          .SetTotalTime(
+              data_->accumulated_shape_text_elapsed_time_.InMicroseconds())
+          .SetMaxTime(data_->max_shape_text_elapsed_time_.InMicroseconds())
+          .Record(UkmRecorder());
+    }
   }
 }
 
@@ -7795,14 +7804,17 @@ FontMatchingMetrics* Document::GetFontMatchingMetrics() {
   return font_matching_metrics_.get();
 }
 
+bool Document::IsEligibleForRecordingShapeTextMetrics() const {
+  return IsInOutermostMainFrame() && !HasFinishedParsing() &&
+         !IsInitialEmptyDocument() && Url().ProtocolIsInHTTPFamily();
+}
+
 void Document::MaybeRecordShapeTextElapsedTime(base::TimeDelta elapsed_time) {
-  if (!IsInOutermostMainFrame() || HasFinishedParsing() ||
-      IsInitialEmptyDocument() || !Url().ProtocolIsInHTTPFamily()) {
-    return;
+  if (IsEligibleForRecordingShapeTextMetrics()) {
+    data_->accumulated_shape_text_elapsed_time_ += elapsed_time;
+    data_->max_shape_text_elapsed_time_ =
+        std::max(data_->max_shape_text_elapsed_time_, elapsed_time);
   }
-  data_->accumulated_shape_text_elapsed_time_ += elapsed_time;
-  data_->max_shape_text_elapsed_time_ =
-      std::max(data_->max_shape_text_elapsed_time_, elapsed_time);
 }
 
 bool Document::AllowInlineEventHandler(Node* node,

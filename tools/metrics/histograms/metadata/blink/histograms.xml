@@ -2801,7 +2801,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Blink.Layout.InlineNode.ShapeText.MaxTime.InOutermostMainFrame2"
+    name="Blink.Layout.InlineNode.ShapeText.MaxTime.InOutermostMainFrame3"
     units="microseconds" expires_after="2024-12-08">
   <owner>chikamune@chromium.org</owner>
   <owner>
@@ -2817,7 +2817,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Blink.Layout.InlineNode.ShapeText.TotalTime.InOutermostMainFrame2"
+    name="Blink.Layout.InlineNode.ShapeText.TotalTime.InOutermostMainFrame3"
     units="microseconds" expires_after="2024-12-08">
   <owner>chikamune@chromium.org</owner>
   <owner>
