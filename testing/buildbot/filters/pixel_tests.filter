@@ -36,6 +36,7 @@ DesktopPaymentsWindowManagerInteractiveUiTest*
 DocumentPictureInPicturePixelTest.*
 EditAddressProfileDialogControllerImplTest.InvokeUi_*
 *EmbeddedPermissionPromptUiTest.InvokeUi_*
+MahiMenuPixelBrowserTest.*
 ManagedUserNoticeUIDialogPixelTest.*
 ManagedUserNoticeUIWindowPixelTest.*
 ExtensionInstallDialogViewInteractiveBrowserTest.*
