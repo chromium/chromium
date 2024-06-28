@@ -65,14 +65,16 @@ bool IsBrowserProcess() {
 + (instancetype)sharedInstance {
   WebContentsOcclusionCheckerMac* __strong* sharedInstance =
       [self sharedOcclusionChecker];
-  if (*sharedInstance == nil) {
-    *sharedInstance = [[self alloc] init];
 
-    // Checking if occlusion tracking is the cause of crashes in utility
-    // processes (and how that's possible). See https://crbug.com/1276322 .
-    if (!IsBrowserProcess())
-      base::debug::DumpWithoutCrashing();
+  // It seems a utility process can trigger a call to
+  // +[WebContentsViewCocoa initialize] (from a non-main thread!), which calls
+  // out to here to create the occlusion tracker. To guard against that, and
+  // any other other potential callers, only create the tracker if we're
+  // running inside the browser process. https://crbug.com/349984532 .
+  if (*sharedInstance == nil && IsBrowserProcess()) {
+    *sharedInstance = [[self alloc] init];
   }
+
   return *sharedInstance;
 }
 
