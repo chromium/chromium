@@ -651,8 +651,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // The indices of the views in |view_model_| that are visible.
   std::vector<size_t> visible_views_indices_;
 
-  std::unique_ptr<views::BoundsAnimator> bounds_animator_;
-
   // Pointer device that initiated the current drag operation. If there is no
   // current dragging operation, this is NONE.
   Pointer drag_pointer_ = NONE;
@@ -795,6 +793,8 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   // The index in the shelf app icons where the |current_ghost_view_| will show.
   std::optional<size_t> current_ghost_view_index_ = std::nullopt;
+
+  std::unique_ptr<views::BoundsAnimator> bounds_animator_;
 
   // When the scrollable shelf is enabled, |shelf_button_delegate_| should
   // be ScrollableShelfView.
