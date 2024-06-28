@@ -38,6 +38,19 @@ static_assert(FILTERING_BEHAVIOR_MAX * kHistogramFilteringBehaviorSpacing +
                   kSupervisedUserURLFilteringResultHistogramMax,
               "Invalid kSupervisedUserURLFilteringResultHistogramMax value");
 
+std::string WebFilterTypeToDisplayString(WebFilterType web_filter_type) {
+  switch (web_filter_type) {
+    case WebFilterType::kAllowAllSites:
+      return "allow_all_sites";
+    case WebFilterType::kCertainSites:
+      return "allow_certain_sites";
+    case WebFilterType::kTryToBlockMatureSites:
+      return "block_mature_sites";
+    case WebFilterType::kMixed:
+      NOTREACHED_NORETURN();
+  }
+}
+
 int GetHistogramValueForTransitionType(ui::PageTransition transition_type) {
   int value =
       static_cast<int>(ui::PageTransitionStripQualifier(transition_type));

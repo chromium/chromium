@@ -34,6 +34,10 @@ enum class WebFilterType {
   kMaxValue = kMixed,
 };
 
+// Returns the string equivalent of a Web Filter type. This is a user-visible
+// string included in the user feedback log.
+std::string WebFilterTypeToDisplayString(WebFilterType web_filter_type);
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //

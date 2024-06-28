@@ -353,21 +353,6 @@ bool SupervisedUserURLFilter::HostMatchesPattern(
   return trimmed_host == trimmed_pattern;
 }
 
-// static
-std::string SupervisedUserURLFilter::WebFilterTypeToDisplayString(
-    WebFilterType web_filter_type) {
-  switch (web_filter_type) {
-    case WebFilterType::kAllowAllSites:
-      return "allow_all_sites";
-    case WebFilterType::kCertainSites:
-      return "allow_certain_sites";
-    case WebFilterType::kTryToBlockMatureSites:
-      return "block_mature_sites";
-    case WebFilterType::kMixed:
-      NOTREACHED_NORETURN();
-  }
-}
-
 SupervisedUserFilterTopLevelResult
 SupervisedUserURLFilter::GetHistogramValueForTopLevelFilteringBehavior(
     FilteringBehavior behavior,
