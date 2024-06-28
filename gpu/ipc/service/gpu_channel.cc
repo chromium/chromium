@@ -330,6 +330,16 @@ void GpuChannelMessageFilter::Destroy() {
     return;
 
   image_decode_accelerator_stub_->Shutdown();
+
+  // Ensure all sync points from this channel are released.
+  for (const auto& entry : route_sequences_) {
+    gpu_channel_->sync_point_manager()->EnsureFenceSyncReleased(
+        SyncToken(CommandBufferNamespace::GPU_IO,
+                  CommandBufferIdFromChannelAndRoute(gpu_channel_->client_id(),
+                                                     entry.first),
+                  UINT64_MAX));
+  }
+
   gpu_channel_ = nullptr;
 }
 
@@ -398,12 +408,21 @@ void GpuChannelMessageFilter::FlushDeferredRequests(
       DLOG(ERROR) << "Invalid route id in flush list";
       continue;
     }
+
+    SyncToken release;
+    if (request->release_count != 0) {
+      release = SyncToken(CommandBufferNamespace::GPU_IO,
+                          CommandBufferIdFromChannelAndRoute(
+                              gpu_channel_->client_id(), routing_id),
+                          request->release_count);
+    }
+
     tasks.emplace_back(
-        it->second /* sequence_id */,
+        /*sequence_id=*/it->second,
         base::BindOnce(&gpu::GpuChannel::ExecuteDeferredRequest,
                        gpu_channel_->AsWeakPtr(), std::move(request->params),
                        request->release_count),
-        std::move(request->sync_token_fences));
+        std::move(request->sync_token_fences), release);
   }
 
   // Threading: GpuChannelManager outlives gpu_channel_, so even though it is a

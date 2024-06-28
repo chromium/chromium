@@ -49,7 +49,16 @@ class GPU_EXPORT Scheduler {
     Task(SequenceId sequence_id,
          base::OnceClosure closure,
          std::vector<SyncToken> sync_token_fences,
+         const SyncToken& release,
          ReportingCallback report_callback = ReportingCallback());
+
+    // TODO(b/324276400): Remove this constructor after converting callsites to
+    // explicitly specify `release`.
+    Task(SequenceId sequence_id,
+         base::OnceClosure closure,
+         std::vector<SyncToken> sync_token_fences,
+         ReportingCallback report_callback = ReportingCallback());
+
     Task(Task&& other);
     ~Task();
     Task& operator=(Task&& other);
@@ -57,6 +66,11 @@ class GPU_EXPORT Scheduler {
     SequenceId sequence_id;
     base::OnceClosure closure;
     std::vector<SyncToken> sync_token_fences;
+
+    // The release that is expected to be reached after execution of this task.
+    // Used when graph-based sync point validation is enabled.
+    SyncToken release;
+
     ReportingCallback report_callback;
   };
 

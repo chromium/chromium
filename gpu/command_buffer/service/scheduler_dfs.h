@@ -88,6 +88,10 @@ class GPU_EXPORT SchedulerDfs {
   base::SingleThreadTaskRunner* GetTaskRunnerForTesting(SequenceId sequence_id)
       LOCKS_EXCLUDED(lock());
 
+  bool graph_validation_enabled() const {
+    return task_graph_->graph_validation_enabled();
+  }
+
  private:
   struct SchedulingState {
     SchedulingState();

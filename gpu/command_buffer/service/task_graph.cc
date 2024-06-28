@@ -145,6 +145,7 @@ void TaskGraph::Sequence::ContinueTask(base::OnceClosure closure) {
 
   tasks_.push_front({std::move(closure), order_num, current_task_release_,
                      ReportingCallback()});
+  current_task_release_.Clear();
   order_data_->PauseProcessingOrderNumber(order_num);
 }
 

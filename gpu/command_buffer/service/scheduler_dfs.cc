@@ -195,7 +195,7 @@ SequenceId SchedulerDfs::CreateSequence(
     CHECK_EQ(task_graph_->GetSequence(id), sequence_ptr);
     scheduler_sequence_map_.emplace(id, sequence_ptr);
   }
-  return sequence_ptr->sequence_id();
+  return id;
 }
 
 SequenceId SchedulerDfs::CreateSequenceForTesting(SchedulingPriority priority) {
@@ -270,9 +270,8 @@ void SchedulerDfs::ScheduleTaskHelper(Task task) {
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
 
-  // TODO(b/324276400): Add support for `release`.
   sequence->AddTask(std::move(task.closure), std::move(task.sync_token_fences),
-                    /*release=*/{}, std::move(task.report_callback));
+                    task.release, std::move(task.report_callback));
 
   TryScheduleSequence(sequence);
 }
@@ -579,6 +578,7 @@ void SchedulerDfs::ExecuteSequence(const SequenceId sequence_id) {
 
   base::OnceClosure closure;
   uint32_t order_num = sequence->BeginTask(&closure);
+  SyncToken release = sequence->current_task_release();
 
   TRACE_EVENT_WITH_FLOW0("gpu,toplevel.flow", "SchedulerDfs::RunNextTask",
                          GetTaskFlowId(sequence_id.value(), order_num),
@@ -599,8 +599,18 @@ void SchedulerDfs::ExecuteSequence(const SequenceId sequence_id) {
 
     std::move(closure).Run();
 
-    if (order_data->IsProcessingOrderNumber())
+    if (order_data->IsProcessingOrderNumber()) {
       order_data->FinishProcessingOrderNumber(order_num);
+
+      if (graph_validation_enabled() && release.HasData()) {
+        bool updated =
+            task_graph_->sync_point_manager()->EnsureFenceSyncReleased(release);
+        LOG_IF(ERROR, updated)
+            << "Task of sequence " << sequence_id
+            << " didn't release fence sync up to " << release.ToDebugString()
+            << " as expected. Enforced release.";
+      }
+    }
   }
 
   total_blocked_time_ += blocked_time;
