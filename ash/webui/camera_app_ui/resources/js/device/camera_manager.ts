@@ -582,11 +582,8 @@ export class CameraManager implements EventListener {
     this.scheduler.reconfigurer.setShouldSuspend(this.shouldSuspend());
     const perfLogger = PerfLogger.getInstance();
     if (loadTimeData.isVideoCaptureDisallowed()) {
-      if (this.watchdog === null) {
-        nav.open(ViewName.WARNING, WarningType.DISABLED_CAMERA);
-        this.watchdog = new ResumeStateWatchdog(() => this.doReconfigure());
-        perfLogger.interrupt();
-      }
+      nav.open(ViewName.WARNING, WarningType.DISABLED_CAMERA);
+      perfLogger.interrupt();
       return false;
     }
     try {
