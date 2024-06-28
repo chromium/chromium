@@ -605,7 +605,7 @@ TEST_P(PipWindowResizerTest, PipWindowFlungAvoidsFloatingKeyboard) {
                                         base::DoNothing());
   const display::Display display = WindowState::Get(window())->GetDisplay();
   keyboard_controller->ShowKeyboardInDisplay(display);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   aura::Window* keyboard_window = keyboard_controller->GetKeyboardWindow();
   keyboard_window->SetBounds(gfx::Rect(8, 150, 100, 100));

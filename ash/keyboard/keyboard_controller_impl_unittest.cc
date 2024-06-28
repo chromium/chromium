@@ -515,7 +515,7 @@ TEST_F(KeyboardControllerImplTest, VisualBoundsInMultipleDisplays) {
   keyboard_ui_controller()->ShowKeyboardInDisplay(
       display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
           .GetSecondaryDisplay());
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   gfx::Rect root_bounds = keyboard_ui_controller()->visual_bounds_in_root();
   EXPECT_EQ(0, root_bounds.x());
@@ -533,7 +533,7 @@ TEST_F(KeyboardControllerImplTest, OccludedBoundsInMultipleDisplays) {
   keyboard_ui_controller()->ShowKeyboardInDisplay(
       display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
           .GetSecondaryDisplay());
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   gfx::Rect screen_bounds =
       keyboard_ui_controller()->GetWorkspaceOccludedBoundsInScreen();
@@ -690,7 +690,7 @@ TEST_F(KeyboardControllerImplTest, ShowKeyboardInSecondaryDisplay) {
   keyboard_ui_controller()->ShowKeyboardInDisplay(GetSecondaryDisplay());
   EXPECT_EQ(GetSecondaryRootWindow(),
             keyboard_ui_controller()->GetRootWindow());
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
   EXPECT_TRUE(
       !keyboard_ui_controller()->GetKeyboardWindow()->bounds().IsEmpty());
 }
@@ -705,7 +705,7 @@ TEST_F(KeyboardControllerImplTest, SwipeUpToShowHotSeat) {
   keyboard_controller()->SetEnableFlag(KeyboardEnableFlag::kExtensionEnabled);
 
   keyboard_ui_controller()->ShowKeyboard(/* lock */ false);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   gfx::Rect display_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
@@ -717,7 +717,7 @@ TEST_F(KeyboardControllerImplTest, SwipeUpToShowHotSeat) {
                                              num_scroll_steps);
 
   // Keyboard should hide and gesture should forward to the shelf.
-  ASSERT_TRUE(keyboard::WaitUntilHidden());
+  ASSERT_TRUE(keyboard::test::WaitUntilHidden());
   EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
 }
 
@@ -731,7 +731,7 @@ TEST_F(KeyboardControllerImplTest, FlingUpToShowOverviewMode) {
   keyboard_controller()->SetEnableFlag(KeyboardEnableFlag::kExtensionEnabled);
 
   keyboard_ui_controller()->ShowKeyboard(/* lock */ false);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   gfx::Rect display_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
@@ -747,7 +747,7 @@ TEST_F(KeyboardControllerImplTest, FlingUpToShowOverviewMode) {
                                              scroll_steps);
 
   // Keyboard should hide and gesture should forward to the shelf.
-  ASSERT_TRUE(keyboard::WaitUntilHidden());
+  ASSERT_TRUE(keyboard::test::WaitUntilHidden());
   EXPECT_EQ(HotseatState::kShownHomeLauncher,
             GetShelfLayoutManager()->hotseat_state());
 }
@@ -760,7 +760,7 @@ TEST_F(KeyboardControllerImplTest, SwipeUpDoesntHideKeyboardInClamshellMode) {
   keyboard_controller()->SetEnableFlag(KeyboardEnableFlag::kExtensionEnabled);
 
   keyboard_ui_controller()->ShowKeyboard(/* lock */ false);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   gfx::Rect display_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
@@ -771,7 +771,7 @@ TEST_F(KeyboardControllerImplTest, SwipeUpDoesntHideKeyboardInClamshellMode) {
   GetEventGenerator()->GestureScrollSequence(start, end, time_delta,
                                              num_scroll_steps);
 
-  EXPECT_FALSE(keyboard::IsKeyboardHiding());
+  EXPECT_FALSE(keyboard::test::IsKeyboardHiding());
 }
 
 TEST_F(KeyboardControllerImplTest, RecordsKeyRepeatSettings) {

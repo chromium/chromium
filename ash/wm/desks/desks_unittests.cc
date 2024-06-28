@@ -7798,7 +7798,7 @@ TEST_P(DesksTest, NameNudgesTabletMode) {
   // created and the virtual keyboard should be shown.
   ui::DeviceDataManagerTestApi().SetKeyboardDevices({});
   GestureTapOnView(desks_bar_view->new_desk_button(), event_generator);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
   EXPECT_TRUE(keyboard::KeyboardUIController::Get()->IsKeyboardVisible());
   EXPECT_EQ(4u, desks_bar_view->mini_views().size());
   desk_name_view = desks_bar_view->mini_views()[3]->desk_name_view();

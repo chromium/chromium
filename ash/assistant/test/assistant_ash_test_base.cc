@@ -345,7 +345,8 @@ void AssistantAshTestBase::DismissKeyboard() {
 
 bool AssistantAshTestBase::IsKeyboardShowing() const {
   auto* keyboard_controller = keyboard::KeyboardUIController::Get();
-  return keyboard_controller->IsEnabled() && keyboard::IsKeyboardShowing();
+  return keyboard_controller->IsEnabled() &&
+         keyboard::test::IsKeyboardShowing();
 }
 
 TestAssistantService* AssistantAshTestBase::assistant_service() {

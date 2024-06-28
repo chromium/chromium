@@ -136,7 +136,7 @@ class LockActionHandlerLayoutManagerTest : public AshTestBase {
 
     if (show) {
       keyboard->ShowKeyboard(true);
-      ASSERT_TRUE(keyboard::WaitUntilShown());
+      ASSERT_TRUE(keyboard::test::WaitUntilShown());
     } else {
       keyboard->HideKeyboardByUser();
     }

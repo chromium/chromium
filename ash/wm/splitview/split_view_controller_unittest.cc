@@ -171,7 +171,7 @@ class TestTextInputClient : public ui::DummyTextInputClient {
     }
 
     ime->SetVirtualKeyboardVisibilityIfEnabled(true);
-    ASSERT_TRUE(keyboard::WaitUntilShown());
+    ASSERT_TRUE(keyboard::test::WaitUntilShown());
   }
 
   // When the text client is unfocused, hide the virtual keyboard.

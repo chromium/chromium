@@ -159,7 +159,7 @@ TEST_F(PipTest, PipInitialPositionAvoidsObstacles) {
 
   auto* keyboard_controller = keyboard::KeyboardUIController::Get();
   keyboard_controller->ShowKeyboard(/*lock=*/true);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
   aura::Window* keyboard_window = keyboard_controller->GetKeyboardWindow();
   keyboard_window->SetBounds(gfx::Rect(0, 300, 400, 100));
 
@@ -175,7 +175,7 @@ TEST_F(PipTest, TargetBoundsAffectedByWorkAreaChange) {
   // Place a keyboard window at the initial position of a PIP window.
   auto* keyboard_controller = keyboard::KeyboardUIController::Get();
   keyboard_controller->ShowKeyboard(/*lock=*/true);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
   aura::Window* keyboard_window = keyboard_controller->GetKeyboardWindow();
   keyboard_window->SetBounds(gfx::Rect(0, 300, 400, 100));
 
@@ -308,7 +308,7 @@ TEST_F(PipTest, PipSnappedToEdgeWhenSavingSnapFraction) {
   // edges.
   auto* keyboard_controller = keyboard::KeyboardUIController::Get();
   keyboard_controller->ShowKeyboardInDisplay(window_state->GetDisplay());
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
   aura::Window* keyboard_window = keyboard_controller->GetKeyboardWindow();
   keyboard_window->SetBounds(gfx::Rect(0, 300, 400, 100));
 

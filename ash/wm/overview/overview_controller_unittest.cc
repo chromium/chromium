@@ -769,7 +769,7 @@ class OverviewVirtualKeyboardTest : public OverviewControllerTest {
     keyboard::test::WaitUntilLoaded();
 
     keyboard_ui_controller()->GetKeyboardWindow()->SetBounds(
-        keyboard::KeyboardBoundsFromRootBounds(
+        keyboard::test::KeyboardBoundsFromRootBounds(
             Shell::GetPrimaryRootWindow()->bounds(), 100));
     // Wait for keyboard window to load.
     base::RunLoop().RunUntilIdle();
@@ -782,21 +782,21 @@ class OverviewVirtualKeyboardTest : public OverviewControllerTest {
 
 TEST_F(OverviewVirtualKeyboardTest, ToggleOverviewModeHidesVirtualKeyboard) {
   keyboard_ui_controller()->ShowKeyboard(false /* locked */);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   EnterOverview();
 
   // Timeout failure here if the keyboard does not hide.
-  keyboard::WaitUntilHidden();
+  keyboard::test::WaitUntilHidden();
 }
 
 TEST_F(OverviewVirtualKeyboardTest,
        ToggleOverviewModeDoesNotHideLockedVirtualKeyboard) {
   keyboard_ui_controller()->ShowKeyboard(true /* locked */);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   EnterOverview();
-  EXPECT_FALSE(keyboard::IsKeyboardHiding());
+  EXPECT_FALSE(keyboard::test::IsKeyboardHiding());
 }
 
 // Tests that frame throttling starts and ends accordingly when overview starts

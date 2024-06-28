@@ -209,7 +209,7 @@ TEST_P(CollisionDetectionUtilsDisplayTest,
        MovementAreaIncludesKeyboardIfKeyboardIsShown) {
   auto* keyboard_controller = keyboard::KeyboardUIController::Get();
   keyboard_controller->ShowKeyboardInDisplay(GetDisplay());
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
   aura::Window* keyboard_window = keyboard_controller->GetKeyboardWindow();
 
   constexpr int keyboard_height = 100;
@@ -304,7 +304,7 @@ TEST_P(CollisionDetectionUtilsDisplayTest,
   keyboard_controller->SetContainerType(keyboard::ContainerType::kFloating,
                                         gfx::Rect(), base::DoNothing());
   keyboard_controller->ShowKeyboardInDisplay(display);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
   aura::Window* keyboard_window = keyboard_controller->GetKeyboardWindow();
   keyboard_window->SetBounds(gfx::Rect(0, 0, 100, 100));
 
@@ -406,7 +406,7 @@ TEST_P(CollisionDetectionUtilsDisplayTest, GetRestingPositionAvoidsKeyboard) {
 
   auto* keyboard_controller = keyboard::KeyboardUIController::Get();
   keyboard_controller->ShowKeyboardInDisplay(display);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
   aura::Window* keyboard_window = keyboard_controller->GetKeyboardWindow();
 
   constexpr int keyboard_height = 100;

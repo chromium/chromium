@@ -6504,7 +6504,7 @@ TEST_P(AppsGridViewTabletTest, ChangeFolderNameShouldUpdateShadows) {
   // and shadow bounds.
   auto* keyboard_controller = keyboard::KeyboardUIController::Get();
   keyboard_controller->ShowKeyboard(false);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   gfx::Rect folder_bounds_with_keyboard =
       folder_apps_grid_view()->GetBoundsInScreen();

@@ -13,13 +13,10 @@ class Rect;
 
 namespace keyboard {
 
-// TODO(shend): Move other methods into test namespace.
 namespace test {
 
 // Waits until the keyboard window finishes loading.
 bool WaitUntilLoaded();
-
-}  // namespace test
 
 // Waits until the keyboard is fully shown, with no pending animations.
 bool WaitUntilShown();
@@ -37,6 +34,8 @@ bool IsKeyboardHiding();
 // may be specified by |keyboard_height|, or a default height is used.
 gfx::Rect KeyboardBoundsFromRootBounds(const gfx::Rect& root_bounds,
                                        int keyboard_height = 100);
+
+}  // namespace test
 
 }  // namespace keyboard
 

@@ -90,7 +90,7 @@ class LockLayoutManagerTest : public AshTestBase {
 
     if (show) {
       keyboard->ShowKeyboard(false);
-      ASSERT_TRUE(keyboard::WaitUntilShown());
+      ASSERT_TRUE(keyboard::test::WaitUntilShown());
     } else {
       keyboard->HideKeyboardByUser();
     }

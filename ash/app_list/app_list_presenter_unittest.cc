@@ -2276,7 +2276,7 @@ TEST_P(AppListBubbleAndTabletTest,
 
   auto* const keyboard_ui_controller = keyboard::KeyboardUIController::Get();
   keyboard_ui_controller->ShowKeyboard(false /* locked */);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   // Show remove suggestion dialog.
   result_view->GetWidget()->LayoutRootViewIfNecessary();
@@ -3360,7 +3360,7 @@ TEST_P(PopulatedAppListWithVKEnabledTest,
   // Manually show the virtual keyboard.
   auto* const keyboard_controller = keyboard::KeyboardUIController::Get();
   keyboard_controller->ShowKeyboard(true /* locked */);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   // Touch the apps_grid outside of any apps. Expect that the keyboard is
   // closed.
@@ -3369,7 +3369,7 @@ TEST_P(PopulatedAppListWithVKEnabledTest,
 
   // Reshow the VKeyboard
   keyboard_controller->ShowKeyboard(true);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   // Touch the apps_grid between two apps. Expect that the keyboard is closed.
   GetEventGenerator()->GestureTapAt(between_apps);
@@ -4604,7 +4604,7 @@ TEST_P(AppListPresenterVirtualKeyboardTest,
   // Manually show the virtual keyboard.
   auto* const keyboard_controller = keyboard::KeyboardUIController::Get();
   keyboard_controller->ShowKeyboard(true);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   // Tap or click outside the searchbox, the virtual keyboard should hide.
   ClickOrTap(GetPointOutsideSearchbox());
@@ -4638,7 +4638,7 @@ TEST_P(AppListPresenterVirtualKeyboardTest,
   // Manually show the virtual keyboard.
   auto* const keyboard_controller = keyboard::KeyboardUIController::Get();
   keyboard_controller->ShowKeyboard(true);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   // Tap or click outside the searchbox, the virtual keyboard should hide and
   // the searchbox should be inactive when there is no text in the searchbox.

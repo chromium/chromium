@@ -173,7 +173,7 @@ class SystemModalContainerLayoutManagerTest : public AshTestBase {
 
     if (show) {
       keyboard->ShowKeyboard(true /* lock */);
-      ASSERT_TRUE(keyboard::WaitUntilShown());
+      ASSERT_TRUE(keyboard::test::WaitUntilShown());
     } else {
       keyboard->HideKeyboardByUser();
     }

@@ -239,7 +239,7 @@ class KeyboardUIControllerTest : public aura::test::AuraTestBase,
     if (client && client->GetTextInputType() != ui::TEXT_INPUT_TYPE_NONE &&
         client->GetTextInputMode() != ui::TEXT_INPUT_MODE_NONE) {
       input_method->SetVirtualKeyboardVisibilityIfEnabled(true);
-      ASSERT_TRUE(WaitUntilShown());
+      ASSERT_TRUE(test::WaitUntilShown());
     }
   }
 

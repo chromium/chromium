@@ -65,8 +65,6 @@ bool WaitUntilLoaded() {
   return true;
 }
 
-}  // namespace test
-
 bool WaitUntilShown() {
   // KeyboardController send a visibility update once the show animation
   // finishes.
@@ -102,5 +100,7 @@ gfx::Rect KeyboardBoundsFromRootBounds(const gfx::Rect& root_bounds,
   return gfx::Rect(root_bounds.x(), root_bounds.bottom() - keyboard_height,
                    root_bounds.width(), keyboard_height);
 }
+
+}  // namespace test
 
 }  // namespace keyboard

@@ -2249,7 +2249,7 @@ TEST_F(WorkspaceLayoutManagerKeyboardTest,
 
   // Open keyboard in sticky mode.
   kb_controller->ShowKeyboard(true);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   int shift =
       work_area.height() - kb_controller->GetKeyboardWindow()->bounds().y();

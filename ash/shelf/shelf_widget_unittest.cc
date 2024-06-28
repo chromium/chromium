@@ -1188,7 +1188,7 @@ class ShelfWidgetVirtualKeyboardTest : public AshTestBase {
 
 TEST_F(ShelfWidgetVirtualKeyboardTest, ClickingHidesVirtualKeyboard) {
   keyboard_ui_controller()->ShowKeyboard(false /* locked */);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->set_current_screen_location(
@@ -1196,12 +1196,12 @@ TEST_F(ShelfWidgetVirtualKeyboardTest, ClickingHidesVirtualKeyboard) {
   generator->ClickLeftButton();
 
   // Times out if test fails.
-  ASSERT_TRUE(keyboard::WaitUntilHidden());
+  ASSERT_TRUE(keyboard::test::WaitUntilHidden());
 }
 
 TEST_F(ShelfWidgetVirtualKeyboardTest, TappingHidesVirtualKeyboard) {
   keyboard_ui_controller()->ShowKeyboard(false /* locked */);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->set_current_screen_location(
@@ -1209,22 +1209,22 @@ TEST_F(ShelfWidgetVirtualKeyboardTest, TappingHidesVirtualKeyboard) {
   generator->PressTouch();
 
   // Times out if test fails.
-  ASSERT_TRUE(keyboard::WaitUntilHidden());
+  ASSERT_TRUE(keyboard::test::WaitUntilHidden());
 }
 
 TEST_F(ShelfWidgetVirtualKeyboardTest, DoesNotHideLockedVirtualKeyboard) {
   keyboard_ui_controller()->ShowKeyboard(true /* locked */);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->set_current_screen_location(
       GetShelfWidget()->GetWindowBoundsInScreen().CenterPoint());
 
   generator->ClickLeftButton();
-  EXPECT_FALSE(keyboard::IsKeyboardHiding());
+  EXPECT_FALSE(keyboard::test::IsKeyboardHiding());
 
   generator->PressTouch();
-  EXPECT_FALSE(keyboard::IsKeyboardHiding());
+  EXPECT_FALSE(keyboard::test::IsKeyboardHiding());
 }
 
 }  // namespace
