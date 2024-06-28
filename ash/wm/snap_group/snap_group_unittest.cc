@@ -3448,6 +3448,38 @@ TEST_F(SnapGroupTest, UnresizableCanSnapWindowWontFormSnapGroup) {
                                                             unresizable.get()));
 }
 
+// Tests that re-snapping to the opposite side with a different snap ratio
+// updates the bounds correctly. Regression test for http://b/349951979.
+TEST_F(SnapGroupTest, ReSnapToOppositeSnapRatio) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+
+  // Re-snap `w1` to secondary 1/3.
+  SnapOneTestWindow(w1.get(), WindowStateType::kSecondarySnapped,
+                    chromeos::kOneThirdSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  EXPECT_NEAR(
+      std::round(GetWorkAreaBounds().width() * chromeos::kOneThirdSnapRatio),
+      w1->GetBoundsInScreen().width(), 1);
+
+  // Re-snap `w1` to primary 2/3.
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kTwoThirdSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  EXPECT_NEAR(
+      std::round(GetWorkAreaBounds().width() * chromeos::kTwoThirdSnapRatio),
+      w1->GetBoundsInScreen().width(), 1);
+
+  // Re-snap `w1` to secondary 1/2.
+  SnapOneTestWindow(w1.get(), WindowStateType::kSecondarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  EXPECT_EQ(
+      std::round(GetWorkAreaBounds().width() * chromeos::kDefaultSnapRatio),
+      w1->GetBoundsInScreen().width());
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupFloatTest:
 
