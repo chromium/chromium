@@ -171,7 +171,7 @@ TEST(PartitionAllocAsMalloc, Realloc) {
   constexpr size_t alloc_size = 100;
   void* data = PartitionMalloc(nullptr, alloc_size, nullptr);
   EXPECT_TRUE(data);
-  void* data2 = PartitionMalloc(nullptr, 2 * alloc_size, nullptr);
+  void* data2 = PartitionRealloc(nullptr, data, 2u * alloc_size, nullptr);
   EXPECT_TRUE(data2);
   EXPECT_NE(data2, data);
   PartitionFree(nullptr, data2, nullptr);
