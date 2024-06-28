@@ -12,7 +12,6 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_button_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_bubble.h"
@@ -51,7 +50,6 @@ PerformanceInterventionButton::PerformanceInterventionButton(
 PerformanceInterventionButton::~PerformanceInterventionButton() = default;
 
 void PerformanceInterventionButton::Show() {
-  is_active_ = true;
   SetVisible(true);
   PreferredSizeChanged();
   CreateBubble();
@@ -77,12 +75,14 @@ void PerformanceInterventionButton::OnWidgetDestroying(views::Widget* widget) {
 
 void PerformanceInterventionButton::OnThemeChanged() {
   ToolbarButton::OnThemeChanged();
-  UpdateIconColor();
+  SetImageModel(
+      ButtonState::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(
+          kMemorySaverChromeRefreshIcon,
+          GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive)));
 }
 
 void PerformanceInterventionButton::OnClicked() {
-  is_active_ = false;
-  UpdateIconColor();
   if (IsBubbleShowing()) {
     PerformanceInterventionBubble::CloseBubble(bubble_dialog_model_host_);
   } else {
@@ -95,18 +95,6 @@ void PerformanceInterventionButton::CreateBubble() {
   bubble_dialog_model_host_ = PerformanceInterventionBubble::CreateBubble(
       browser_view_->browser(), this, controller_.get());
   scoped_widget_observation_.Observe(bubble_dialog_model_host_->GetWidget());
-}
-
-void PerformanceInterventionButton::UpdateIconColor() {
-  const ui::ColorId icon_color =
-      is_active_ ? kColorPerformanceInterventionButtonIconActive
-                 : kColorPerformanceInterventionButtonIconInactive;
-
-  // TODO(crbug.com/349825499): Use a different icon or change the naming
-  SetImageModel(
-      ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(kMemorySaverChromeRefreshIcon,
-                                     GetColorProvider()->GetColor(icon_color)));
 }
 
 BEGIN_METADATA(PerformanceInterventionButton)
