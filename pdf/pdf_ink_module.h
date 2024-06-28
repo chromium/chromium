@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -20,6 +21,7 @@
 #include "pdf/ink/ink_affine_transform.h"
 #include "pdf/ink/ink_stroke_input.h"
 #include "pdf/page_orientation.h"
+#include "pdf/pdf_ink_undo_redo_model.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -189,6 +191,8 @@ class PdfInkModule {
     // Returns an available ID and advance the next available ID internally.
     size_t GetIdAndAdvance();
 
+    void ResetIdTo(size_t id);
+
    private:
     // The next available ID for use in FinishedStrokeState.
     size_t next_stroke_id_ = 0;
@@ -255,6 +259,12 @@ class PdfInkModule {
       const gfx::PointF& position,
       int page_index);
 
+  void ApplyUndoRedoCommands(const PdfInkUndoRedoModel::Commands& commands);
+  void ApplyUndoRedoCommandsHelper(std::set<size_t> ids, bool should_draw);
+
+  void ApplyUndoRedoDiscards(
+      const PdfInkUndoRedoModel::DiscardedDrawCommands& discards);
+
   const raw_ref<Client> client_;
 
   bool enabled_ = false;
@@ -267,6 +277,8 @@ class PdfInkModule {
 
   // The state of the strokes that have been completed.
   DocumentStrokesMap strokes_;
+
+  PdfInkUndoRedoModel undo_redo_model_;
 
   RenderTransformCallback draw_render_transform_callback_for_testing_;
 };

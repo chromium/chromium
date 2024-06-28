@@ -10,6 +10,7 @@
 #include <limits>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -18,6 +19,7 @@
 #include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "pdf/ink/ink_affine_transform.h"
@@ -295,6 +297,11 @@ bool PdfInkModule::StartStroke(const gfx::PointF& position) {
   // Invalidate area around this one point.
   client_->Invalidate(state.brush->GetInvalidateArea(position, position));
 
+  std::optional<PdfInkUndoRedoModel::DiscardedDrawCommands> discards =
+      undo_redo_model_.StartDraw();
+  CHECK(discards.has_value());
+  ApplyUndoRedoDiscards(discards.value());
+
   // Remember this location to support invalidating all of the area between
   // this location and the next position.
   CHECK(!state.input_last_event_position.has_value());
@@ -376,10 +383,15 @@ bool PdfInkModule::FinishStroke() {
       size_t id = stroke_id_generator_.GetIdAndAdvance();
       strokes_[state.page_index].push_back(
           FinishedStrokeState(segment->CopyToStroke(), id));
+      bool undo_redo_success = undo_redo_model_.Draw(id);
+      CHECK(undo_redo_success);
     }
   }
 
   client_->StrokeFinished();
+
+  bool undo_redo_success = undo_redo_model_.FinishDraw();
+  CHECK(undo_redo_success);
 
   // Reset `state` now that the stroke operation is done.
   state.inputs.clear();
@@ -400,6 +412,12 @@ bool PdfInkModule::StartEraseStroke(const gfx::PointF& position) {
   EraserState& state = erasing_stroke_state();
   CHECK(!state.erasing);
   state.erasing = true;
+
+  std::optional<PdfInkUndoRedoModel::DiscardedDrawCommands> discards =
+      undo_redo_model_.StartErase();
+  CHECK(discards.has_value());
+  ApplyUndoRedoDiscards(discards.value());
+
   state.did_erase_strokes = EraseHelper(position, page_index);
   return true;
 }
@@ -429,6 +447,9 @@ bool PdfInkModule::FinishEraseStroke() {
   if (!state.erasing) {
     return false;
   }
+
+  bool undo_redo_success = undo_redo_model_.FinishErase();
+  CHECK(undo_redo_success);
 
   if (state.did_erase_strokes) {
     client_->StrokeFinished();
@@ -472,6 +493,9 @@ bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
     stroke.should_draw = false;
 
     UnionInkRects(invalidate_rect, shape.Bounds());
+
+    bool undo_redo_success = undo_redo_model_.Erase(stroke.id);
+    CHECK(undo_redo_success);
   }
 
   if (!invalidate_rect.has_value()) {
@@ -486,13 +510,13 @@ bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
 void PdfInkModule::HandleAnnotationRedoMessage(
     const base::Value::Dict& message) {
   CHECK(enabled_);
-  // TODO(crbug.com/335521182): Implement redo.
+  ApplyUndoRedoCommands(undo_redo_model_.Redo());
 }
 
 void PdfInkModule::HandleAnnotationUndoMessage(
     const base::Value::Dict& message) {
   CHECK(enabled_);
-  // TODO(crbug.com/335521182): Implement undo.
+  ApplyUndoRedoCommands(undo_redo_model_.Undo());
 }
 
 void PdfInkModule::HandleSetAnnotationBrushMessage(
@@ -591,6 +615,117 @@ gfx::PointF PdfInkModule::ConvertEventPositionToCanonicalPosition(
                                           client_->GetZoom());
 }
 
+void PdfInkModule::ApplyUndoRedoCommands(
+    const PdfInkUndoRedoModel::Commands& commands) {
+  switch (PdfInkUndoRedoModel::GetCommandsType(commands)) {
+    case PdfInkUndoRedoModel::CommandsType::kNone: {
+      return;
+    }
+    case PdfInkUndoRedoModel::CommandsType::kDraw: {
+      ApplyUndoRedoCommandsHelper(
+          PdfInkUndoRedoModel::GetDrawCommands(commands).value(),
+          /*should_draw=*/true);
+      return;
+    }
+    case PdfInkUndoRedoModel::CommandsType::kErase: {
+      ApplyUndoRedoCommandsHelper(
+          PdfInkUndoRedoModel::GetEraseCommands(commands).value(),
+          /*should_draw=*/false);
+      return;
+    }
+  }
+}
+
+void PdfInkModule::ApplyUndoRedoCommandsHelper(std::set<size_t> ids,
+                                               bool should_draw) {
+  CHECK(!strokes_.empty());
+  CHECK(!ids.empty());
+
+  for (auto& [page_index, page_ink_strokes] : strokes_) {
+    std::vector<size_t> page_ids;
+    page_ids.reserve(page_ink_strokes.size());
+    for (const auto& stroke : page_ink_strokes) {
+      page_ids.push_back(stroke.id);
+    }
+
+    std::vector<size_t> ids_to_apply_command;
+    base::ranges::set_intersection(ids, page_ids,
+                                   std::back_inserter(ids_to_apply_command));
+    if (ids_to_apply_command.empty()) {
+      continue;
+    }
+
+    // `it` is always valid, because all the IDs in `ids_to_apply_command` are
+    // in `page_ink_strokes`.
+    auto it = page_ink_strokes.begin();
+    std::optional<InkRect> invalidate_rect;
+    for (size_t id : ids_to_apply_command) {
+      it = base::ranges::lower_bound(
+          it, page_ink_strokes.end(), id, {},
+          [](const FinishedStrokeState& state) { return state.id; });
+      auto& stroke = *it;
+      CHECK_NE(stroke.should_draw, should_draw);
+      stroke.should_draw = should_draw;
+
+      UnionInkRects(invalidate_rect, stroke.stroke->GetShape().Bounds());
+
+      ids.erase(id);
+    }
+
+    CHECK(invalidate_rect.has_value());
+    client_->Invalidate(InkRectToEnclosingGfxRect(invalidate_rect.value()));
+
+    if (ids.empty()) {
+      return;  // Return early if there is nothing left to apply.
+    }
+  }
+}
+
+void PdfInkModule::ApplyUndoRedoDiscards(
+    const PdfInkUndoRedoModel::DiscardedDrawCommands& discards) {
+  if (discards.empty()) {
+    return;
+  }
+
+  // Although `discards` contain the full set of IDs to discard, only the first
+  // ID is needed here. This is because the `page_ink_strokes` values in
+  // `strokes_` are in sorted order. All elements in `page_ink_strokes` with the
+  // first ID or larger IDs can be discarded.
+  const size_t start_id = *discards.begin();
+  for (auto& [page_index, page_ink_strokes] : strokes_) {
+    // Find the first element in `page_ink_strokes` whose ID >= `start_id`.
+    auto it = base::ranges::lower_bound(
+        page_ink_strokes, start_id, {},
+        [](const FinishedStrokeState& state) { return state.id; });
+    page_ink_strokes.erase(it, page_ink_strokes.end());
+  }
+
+  // Check the pages with strokes and remove the ones that are now empty.
+  // Also find the maximum stroke ID that is in use.
+  std::optional<size_t> max_stroke_id;
+  for (auto it = strokes_.begin(); it != strokes_.end();) {
+    const auto& page_ink_strokes = it->second;
+    if (page_ink_strokes.empty()) {
+      it = strokes_.erase(it);
+    } else {
+      max_stroke_id =
+          std::max(max_stroke_id.value_or(0), page_ink_strokes.back().id);
+      ++it;
+    }
+  }
+
+  // Now that some strokes have been discarded, Let the StrokeIdGenerator know
+  // there are IDs available for reuse.
+  if (max_stroke_id.has_value()) {
+    // Since some stroke(s) got discarded, the maximum stroke ID value cannot be
+    // the max integer value. Thus adding 1 will not overflow.
+    CHECK_NE(max_stroke_id.value(), std::numeric_limits<size_t>::max());
+    stroke_id_generator_.ResetIdTo(max_stroke_id.value() + 1);
+  } else {
+    stroke_id_generator_.ResetIdTo(0);
+  }
+}
+
 PdfInkModule::DrawingStrokeState::DrawingStrokeState() = default;
 
 PdfInkModule::DrawingStrokeState::~DrawingStrokeState() = default;
@@ -616,6 +751,10 @@ size_t PdfInkModule::StrokeIdGenerator::GetIdAndAdvance() {
   // Die intentionally if `next_stroke_id_` is about to overflow.
   CHECK_NE(next_stroke_id_, std::numeric_limits<size_t>::max());
   return next_stroke_id_++;
+}
+
+void PdfInkModule::StrokeIdGenerator::ResetIdTo(size_t id) {
+  next_stroke_id_ = id;
 }
 
 }  // namespace chrome_pdf
