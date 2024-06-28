@@ -352,9 +352,9 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationModeMessage) {
 class PdfInkModuleStrokeTest : public PdfInkModuleTest {
  protected:
   // Mouse locations used for `RunStrokeCheckTest()`.
-  static constexpr gfx::PointF kMouseDownLocation = gfx::PointF(10.0f, 15.0f);
-  static constexpr gfx::PointF kMouseMoveLocation = gfx::PointF(20.0f, 25.0f);
-  static constexpr gfx::PointF kMouseUpLocation = gfx::PointF(30.0f, 17.0f);
+  static constexpr gfx::PointF kMouseDownPoint = gfx::PointF(10.0f, 15.0f);
+  static constexpr gfx::PointF kMouseMovePoint = gfx::PointF(20.0f, 25.0f);
+  static constexpr gfx::PointF kMouseUpPoint = gfx::PointF(30.0f, 17.0f);
 
   void InitializeSimpleSinglePageBasicLayout() {
     // Single page layout that matches visible area.
@@ -393,8 +393,7 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
     EXPECT_EQ(annotation_mode_enabled, ink_module().enabled());
 
     ApplyStrokeWithMouseAtPointsMaybeHandled(
-        kMouseDownLocation, base::span_from_ref(kMouseMoveLocation),
-        kMouseUpLocation,
+        kMouseDownPoint, base::span_from_ref(kMouseMovePoint), kMouseUpPoint,
         /*expect_mouse_events_handled=*/annotation_mode_enabled);
 
     const int expected_count = annotation_mode_enabled ? 1 : 0;
@@ -619,17 +618,15 @@ TEST_F(PdfInkModuleStrokeTest, EraseStroke) {
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
   // Check that there are now some visible strokes.
-  EXPECT_THAT(
-      VisibleStrokeInputPositions(),
-      ElementsAre(Pair(0, ElementsAre(ElementsAre(kMouseDownLocation,
-                                                  kMouseMoveLocation)))));
+  EXPECT_THAT(VisibleStrokeInputPositions(),
+              ElementsAre(Pair(0, ElementsAre(ElementsAre(kMouseDownPoint,
+                                                          kMouseMovePoint)))));
   EXPECT_EQ(1, client().stroke_finished_count());
 
   // Stroke with the eraser tool.
   SelectEraserTool();
-  ApplyStrokeWithMouseAtPoints(kMouseDownLocation,
-                               base::span_from_ref(kMouseDownLocation),
-                               kMouseDownLocation);
+  ApplyStrokeWithMouseAtPoints(
+      kMouseDownPoint, base::span_from_ref(kMouseDownPoint), kMouseDownPoint);
 
   // Now there are no visible strokes left.
   // TODO(crbug.com/339682315): Update the test expectations when the Ink
@@ -639,9 +636,8 @@ TEST_F(PdfInkModuleStrokeTest, EraseStroke) {
   EXPECT_EQ(2, client().stroke_finished_count());
 
   // Stroke again. The stroke that have already been erased should stay erased.
-  ApplyStrokeWithMouseAtPoints(kMouseDownLocation,
-                               base::span_from_ref(kMouseDownLocation),
-                               kMouseDownLocation);
+  ApplyStrokeWithMouseAtPoints(
+      kMouseDownPoint, base::span_from_ref(kMouseDownPoint), kMouseDownPoint);
 
   // Still no visible strokes.
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
@@ -658,9 +654,8 @@ TEST_F(PdfInkModuleStrokeTest, EraseOnPageWithoutStrokes) {
 
   // Stroke with the eraser tool when there are no strokes on the page.
   SelectEraserTool();
-  ApplyStrokeWithMouseAtPoints(kMouseDownLocation,
-                               base::span_from_ref(kMouseDownLocation),
-                               kMouseDownLocation);
+  ApplyStrokeWithMouseAtPoints(
+      kMouseDownPoint, base::span_from_ref(kMouseDownPoint), kMouseDownPoint);
 
   // Verify there are still no visible strokes and StrokeFinished() never got
   // called.
@@ -673,25 +668,22 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokeEntirelyOffPage) {
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
   // Check that there are now some visible strokes.
-  EXPECT_THAT(
-      VisibleStrokeInputPositions(),
-      ElementsAre(Pair(0, ElementsAre(ElementsAre(kMouseDownLocation,
-                                                  kMouseMoveLocation)))));
+  EXPECT_THAT(VisibleStrokeInputPositions(),
+              ElementsAre(Pair(0, ElementsAre(ElementsAre(kMouseDownPoint,
+                                                          kMouseMovePoint)))));
   EXPECT_EQ(1, client().stroke_finished_count());
 
   // Stroke with the eraser tool outside of the page.
   SelectEraserTool();
-  constexpr gfx::PointF kOffPageLocation(99.0f, 99.0f);
-  ApplyStrokeWithMouseAtPointsNotHandled(kOffPageLocation,
-                                         base::span_from_ref(kOffPageLocation),
-                                         kOffPageLocation);
+  constexpr gfx::PointF kOffPagePoint(99.0f, 99.0f);
+  ApplyStrokeWithMouseAtPointsNotHandled(
+      kOffPagePoint, base::span_from_ref(kOffPagePoint), kOffPagePoint);
 
   // Check that the visible strokes remain, and StrokeFinished() did not get
   // called again.
-  EXPECT_THAT(
-      VisibleStrokeInputPositions(),
-      ElementsAre(Pair(0, ElementsAre(ElementsAre(kMouseDownLocation,
-                                                  kMouseMoveLocation)))));
+  EXPECT_THAT(VisibleStrokeInputPositions(),
+              ElementsAre(Pair(0, ElementsAre(ElementsAre(kMouseDownPoint,
+                                                          kMouseMovePoint)))));
   EXPECT_EQ(1, client().stroke_finished_count());
 }
 
@@ -700,27 +692,24 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokeErasesTwoStrokes) {
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
   // Draw a second stroke.
-  static constexpr gfx::PointF kMouseDownLocation2 = gfx::PointF(10.0f, 30.0f);
-  static constexpr gfx::PointF kMouseUpLocation2 = gfx::PointF(30.0f, 30.0f);
-  ApplyStrokeWithMouseAtPoints(kMouseDownLocation2,
-                               base::span_from_ref(kMouseMoveLocation),
-                               kMouseUpLocation2);
+  constexpr gfx::PointF kMouseDownPoint2 = gfx::PointF(10.0f, 30.0f);
+  constexpr gfx::PointF kMouseUpPoint2 = gfx::PointF(30.0f, 30.0f);
+  ApplyStrokeWithMouseAtPoints(
+      kMouseDownPoint2, base::span_from_ref(kMouseMovePoint), kMouseUpPoint2);
 
   // Check that there are now some visible strokes.
   EXPECT_THAT(
       VisibleStrokeInputPositions(),
       ElementsAre(Pair(
-          0,
-          ElementsAre(ElementsAre(kMouseDownLocation, kMouseMoveLocation),
-                      ElementsAre(kMouseDownLocation2, kMouseMoveLocation)))));
+          0, ElementsAre(ElementsAre(kMouseDownPoint, kMouseMovePoint),
+                         ElementsAre(kMouseDownPoint2, kMouseMovePoint)))));
   EXPECT_EQ(2, client().stroke_finished_count());
 
-  // Stroke with the eraser tool at `kMouseMoveLocation`, where it will
+  // Stroke with the eraser tool at `kMouseMovePoint`, where it will
   // intersect with both strokes.
   SelectEraserTool();
-  ApplyStrokeWithMouseAtPoints(kMouseMoveLocation,
-                               base::span_from_ref(kMouseMoveLocation),
-                               kMouseMoveLocation);
+  ApplyStrokeWithMouseAtPoints(
+      kMouseMovePoint, base::span_from_ref(kMouseMovePoint), kMouseMovePoint);
 
   // Check that there are now no visible strokes.
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
@@ -810,8 +799,8 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBasic) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
-  const auto kMatcher = ElementsAre(Pair(
-      0, ElementsAre(ElementsAre(kMouseDownLocation, kMouseMoveLocation))));
+  const auto kMatcher = ElementsAre(
+      Pair(0, ElementsAre(ElementsAre(kMouseDownPoint, kMouseMovePoint))));
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
   EXPECT_THAT(VisibleStrokeInputPositions(), kMatcher);
   // RunStrokeCheckTest() performed the only stroke.
@@ -845,34 +834,31 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBetweenDraws) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
-  constexpr gfx::PointF kMouseDownLocation1 = gfx::PointF(11.0f, 15.0f);
-  constexpr gfx::PointF kMouseMoveLocation1 = gfx::PointF(21.0f, 25.0f);
-  constexpr gfx::PointF kMouseUpLocation1 = gfx::PointF(31.0f, 17.0f);
-  ApplyStrokeWithMouseAtPoints(kMouseDownLocation1,
-                               base::span_from_ref(kMouseMoveLocation1),
-                               kMouseUpLocation1);
+  constexpr gfx::PointF kMouseDownPoint1 = gfx::PointF(11.0f, 15.0f);
+  constexpr gfx::PointF kMouseMovePoint1 = gfx::PointF(21.0f, 25.0f);
+  constexpr gfx::PointF kMouseUpPoint1 = gfx::PointF(31.0f, 17.0f);
+  ApplyStrokeWithMouseAtPoints(
+      kMouseDownPoint1, base::span_from_ref(kMouseMovePoint1), kMouseUpPoint1);
 
-  constexpr gfx::PointF kMouseDownLocation2 = gfx::PointF(12.0f, 15.0f);
-  constexpr gfx::PointF kMouseMoveLocation2 = gfx::PointF(22.0f, 25.0f);
-  constexpr gfx::PointF kMouseUpLocation2 = gfx::PointF(32.0f, 17.0f);
-  ApplyStrokeWithMouseAtPoints(kMouseDownLocation2,
-                               base::span_from_ref(kMouseMoveLocation2),
-                               kMouseUpLocation2);
+  constexpr gfx::PointF kMouseDownPoint2 = gfx::PointF(12.0f, 15.0f);
+  constexpr gfx::PointF kMouseMovePoint2 = gfx::PointF(22.0f, 25.0f);
+  constexpr gfx::PointF kMouseUpPoint2 = gfx::PointF(32.0f, 17.0f);
+  ApplyStrokeWithMouseAtPoints(
+      kMouseDownPoint2, base::span_from_ref(kMouseMovePoint2), kMouseUpPoint2);
 
-  constexpr gfx::PointF kMouseDownLocation3 = gfx::PointF(13.0f, 15.0f);
-  constexpr gfx::PointF kMouseMoveLocation3 = gfx::PointF(23.0f, 25.0f);
-  constexpr gfx::PointF kMouseUpLocation3 = gfx::PointF(33.0f, 17.0f);
-  ApplyStrokeWithMouseAtPoints(kMouseDownLocation3,
-                               base::span_from_ref(kMouseMoveLocation3),
-                               kMouseUpLocation3);
+  constexpr gfx::PointF kMouseDownPoint3 = gfx::PointF(13.0f, 15.0f);
+  constexpr gfx::PointF kMouseMovePoint3 = gfx::PointF(23.0f, 25.0f);
+  constexpr gfx::PointF kMouseUpPoint3 = gfx::PointF(33.0f, 17.0f);
+  ApplyStrokeWithMouseAtPoints(
+      kMouseDownPoint3, base::span_from_ref(kMouseMovePoint3), kMouseUpPoint3);
 
   // After drawing 4 strokes above, there should be 4 strokes that are all
   // visible.
   const auto kInitial4StrokeMatchers = {
-      ElementsAre(kMouseDownLocation, kMouseMoveLocation),
-      ElementsAre(kMouseDownLocation1, kMouseMoveLocation1),
-      ElementsAre(kMouseDownLocation2, kMouseMoveLocation2),
-      ElementsAre(kMouseDownLocation3, kMouseMoveLocation3)};
+      ElementsAre(kMouseDownPoint, kMouseMovePoint),
+      ElementsAre(kMouseDownPoint1, kMouseMovePoint1),
+      ElementsAre(kMouseDownPoint2, kMouseMovePoint2),
+      ElementsAre(kMouseDownPoint3, kMouseMovePoint3)};
   const auto kInitial4StrokeMatchersSpan =
       base::make_span(kInitial4StrokeMatchers);
   EXPECT_THAT(
@@ -900,16 +886,15 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBetweenDraws) {
               ElementsAre(Pair(
                   0, ElementsAreArray(kInitial4StrokeMatchersSpan.first(2u)))));
 
-  ApplyStrokeWithMouseAtPoints(kMouseDownLocation3,
-                               base::span_from_ref(kMouseMoveLocation3),
-                               kMouseUpLocation3);
+  ApplyStrokeWithMouseAtPoints(
+      kMouseDownPoint3, base::span_from_ref(kMouseMovePoint3), kMouseUpPoint3);
 
   // The 2 strokes that were undone have been discarded, and the newly drawn
   // stroke takes their place.
   const auto kNext3StrokeMatchers = {
-      ElementsAre(kMouseDownLocation, kMouseMoveLocation),
-      ElementsAre(kMouseDownLocation1, kMouseMoveLocation1),
-      ElementsAre(kMouseDownLocation3, kMouseMoveLocation3)};
+      ElementsAre(kMouseDownPoint, kMouseMovePoint),
+      ElementsAre(kMouseDownPoint1, kMouseMovePoint1),
+      ElementsAre(kMouseDownPoint3, kMouseMovePoint3)};
   const auto kNext3StrokeMatchersSpan = base::make_span(kNext3StrokeMatchers);
   EXPECT_THAT(StrokeInputPositions(),
               ElementsAre(Pair(0, ElementsAreArray(kNext3StrokeMatchersSpan))));
@@ -938,14 +923,13 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBetweenDraws) {
               ElementsAre(Pair(0, ElementsAreArray(kNext3StrokeMatchersSpan))));
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
 
-  ApplyStrokeWithMouseAtPoints(kMouseDownLocation2,
-                               base::span_from_ref(kMouseMoveLocation2),
-                               kMouseUpLocation2);
+  ApplyStrokeWithMouseAtPoints(
+      kMouseDownPoint2, base::span_from_ref(kMouseMovePoint2), kMouseUpPoint2);
 
   // All strokes were undone, so they all got discarded. The newly drawn stroke
   // is the only one remaining.
   const auto kFinal1StrokeMatcher =
-      ElementsAre(kMouseDownLocation2, kMouseMoveLocation2);
+      ElementsAre(kMouseDownPoint2, kMouseMovePoint2);
   EXPECT_THAT(StrokeInputPositions(),
               ElementsAre(Pair(0, ElementsAre(kFinal1StrokeMatcher))));
   EXPECT_THAT(VisibleStrokeInputPositions(),
