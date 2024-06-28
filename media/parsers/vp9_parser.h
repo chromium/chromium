@@ -20,6 +20,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/media_export.h"
 #include "media/base/video_color_space.h"
@@ -243,7 +244,9 @@ struct MEDIA_EXPORT Vp9FrameHeader {
   // Pointer to the beginning of frame data. It is a responsibility of the
   // client of the Vp9Parser to maintain validity of this data while it is
   // being used outside of that class.
-  const uint8_t* data;
+  // RAW_PTR_EXCLUSION: Rewriting causes unrelated test failures.
+  // TODO(crbug.com/349424269): Fix tests and rewrite.
+  RAW_PTR_EXCLUSION const uint8_t* data;
 
   // Size of |data| in bytes.
   size_t frame_size;
