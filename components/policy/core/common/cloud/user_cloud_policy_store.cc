@@ -78,6 +78,10 @@ void StorePolicyToDiskOnBackgroundThread(
     key_info.set_signing_key(policy.new_public_key());
     key_info.set_signing_key_signature(
         policy.new_public_key_verification_signature_deprecated());
+    key_info.set_new_public_key_verification_data(
+        policy.new_public_key_verification_data());
+    key_info.set_new_public_key_verification_data_signature(
+        policy.new_public_key_verification_data_signature());
     key_info.set_verification_key(GetPolicyVerificationKey());
     std::string key_data;
     if (!key_info.SerializeToString(&key_data)) {
@@ -269,9 +273,10 @@ void DesktopCloudPolicyStore::ValidateKeyAndSignature(
     DLOG_IF(WARNING, !cached_key->has_signing_key())
         << "Unsigned policy blob detected";
 
-    validator->ValidateCachedKey(cached_key->signing_key(),
-                                 cached_key->signing_key_signature(),
-                                 owning_domain);
+    validator->ValidateCachedKey(
+        cached_key->signing_key(), cached_key->signing_key_signature(),
+        owning_domain, cached_key->new_public_key_verification_data(),
+        cached_key->new_public_key_verification_data_signature());
     // Loading from cache, so don't allow key rotation.
     validator->ValidateSignature(cached_key->signing_key());
   } else {

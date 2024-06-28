@@ -216,12 +216,16 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
   // successfully.
   void ValidatePayload();
 
-  // Instruct the validator to check that |cached_key| is valid by verifying the
-  // |cached_key_signature| using the passed |owning_domain| and the baked-in
-  // policy verification key.
+  // Instruct the validator to check that |new_cached_key| is valid by verifying
+  // the |new_cached_key_signature|. As a backup, if that validation fails, the
+  // deprecated validation of |cached_key| verifying the |cached_key_signature|
+  // using the passed |owning_domain| and the baked-in policy verification key
+  // is applied. The later is planned to be removed in the future.
   void ValidateCachedKey(const std::string& cached_key,
                          const std::string& cached_key_signature,
-                         const std::string& owning_domain);
+                         const std::string& owning_domain,
+                         const std::string& new_cached_key,
+                         const std::string& new_cached_key_signature);
 
   // Instruct the validator to check that the signature on the policy blob
   // verifies against |key|.
@@ -341,7 +345,8 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
 
   // Returns if the domain from the new_public_key_verification_data matches
   // the domain extracted from the |policy_|.
-  bool CheckDomainInPublicKeyVerificationData();
+  bool CheckDomainInPublicKeyVerificationData(
+      const std::string& new_public_key_verification_data);
 
   // Sets the owning domain used to verify new public keys, and ensures that
   // callers don't try to set conflicting values.
@@ -387,6 +392,8 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
   std::string key_;
   std::string cached_key_;
   std::string cached_key_signature_;
+  std::string new_cached_key_;
+  std::string new_cached_key_signature_;
   std::optional<std::string> verification_key_;
   std::string owning_domain_;
   bool allow_key_rotation_;

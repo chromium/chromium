@@ -200,11 +200,15 @@ void CloudPolicyValidatorBase::ValidatePayload() {
 void CloudPolicyValidatorBase::ValidateCachedKey(
     const std::string& cached_key,
     const std::string& cached_key_signature,
-    const std::string& owning_domain) {
+    const std::string& owning_domain,
+    const std::string& new_public_key_verification_data,
+    const std::string& new_public_key_verification_data_signature) {
   validation_flags_ |= VALIDATE_CACHED_KEY;
   set_owning_domain(owning_domain);
   cached_key_ = cached_key;
   cached_key_signature_ = cached_key_signature;
+  new_cached_key_ = new_public_key_verification_data;
+  new_cached_key_signature_ = new_public_key_verification_data_signature;
 }
 
 void CloudPolicyValidatorBase::ValidateSignature(const std::string& key) {
@@ -438,7 +442,8 @@ bool CloudPolicyValidatorBase::CheckNewPublicKeyVerificationSignature() {
                       verification_key_.value(),
                       policy_->new_public_key_verification_data_signature(),
                       em::PolicyFetchRequest::SHA256_RSA) &&
-      CheckDomainInPublicKeyVerificationData()) {
+      CheckDomainInPublicKeyVerificationData(
+          policy_->new_public_key_verification_data())) {
     UMA_HISTOGRAM_ENUMERATION(kMetricKeySignatureVerification,
                               MetricKeySignatureVerification::kSuccess);
     // Signature verification succeeded - return success to the caller.
@@ -513,10 +518,10 @@ std::string CloudPolicyValidatorBase::ExtractDomainFromPolicy() {
   return domain;
 }
 
-bool CloudPolicyValidatorBase::CheckDomainInPublicKeyVerificationData() {
+bool CloudPolicyValidatorBase::CheckDomainInPublicKeyVerificationData(
+    const std::string& new_public_key_verification_data) {
   em::PublicKeyVerificationData public_key_data;
-  if (!public_key_data.ParseFromString(
-          policy_->new_public_key_verification_data())) {
+  if (!public_key_data.ParseFromString(new_public_key_verification_data)) {
     LOG_POLICY(ERROR, POLICY_FETCHING)
         << "Failed to deserialize new public key.";
     return false;
@@ -590,15 +595,32 @@ CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckCachedKey() {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  if (VerifySignature(new_cached_key_, verification_key_.value(),
+                      new_cached_key_signature_,
+                      em::PolicyFetchRequest::SHA256_RSA) &&
+      CheckDomainInPublicKeyVerificationData(new_cached_key_)) {
+    UMA_HISTOGRAM_ENUMERATION(kMetricKeySignatureVerification,
+                              MetricKeySignatureVerification::kSuccess);
+    // Signature verification succeeded - return success to the caller.
+    DVLOG_POLICY(1, POLICY_FETCHING) << "Signature verification succeeded";
+    return VALIDATION_OK;
+  }
+
+  LOG_POLICY(ERROR, POLICY_FETCHING) << "New signature verification failed";
+
   if (!CheckVerificationKeySignatureDeprecated(
           cached_key_, verification_key_.value(), cached_key_signature_)) {
     LOG_POLICY(ERROR, POLICY_FETCHING)
         << "Cached key signature verification failed";
+    UMA_HISTOGRAM_ENUMERATION(kMetricKeySignatureVerification,
+                              MetricKeySignatureVerification::kFailed);
     return VALIDATION_BAD_KEY_VERIFICATION_SIGNATURE;
   } else {
     DVLOG_POLICY(1, POLICY_FETCHING)
         << "Cached key signature verification succeeded";
   }
+  UMA_HISTOGRAM_ENUMERATION(kMetricKeySignatureVerification,
+                            MetricKeySignatureVerification::kDeprecatedSuccess);
   return VALIDATION_OK;
 }
 
