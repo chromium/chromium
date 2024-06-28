@@ -935,6 +935,10 @@ static void SHA256DigestHex(const v8::FunctionCallbackInfo<v8::Value>& args) {
     sprintf(digestHex + i * 2, "%02x", digest[i]);
   }
 
+  // The content being hashed can vary when replaying if source contents have been
+  // replaced, so we record/replay the result.
+  recordreplay::RecordReplayBytes("SHA256DigestHex", digestHex, 65);
+
   args.GetReturnValue().Set(ToV8String(isolate, digestHex));
 }
 
