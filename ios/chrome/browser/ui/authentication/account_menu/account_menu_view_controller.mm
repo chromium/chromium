@@ -76,7 +76,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20.0;
                           kManageYourGoogleAccountIdentifier)
               handler:^(UIAction* action) {
                 base::RecordAction(base::UserMetricsAction(
-                    "Signin_AccountMenu_ManageAccounts"));
+                    "Signin_AccountMenu_ManageAccount"));
                 [self.delegate didTapManageYourGoogleAccount];
               }];
   // TODO(crbug.com/336719423): Add the primary account email as subtitle.

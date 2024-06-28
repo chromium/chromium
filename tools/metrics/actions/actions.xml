@@ -35377,6 +35377,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_AccountMenu_ManageAccount">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user tap to manage the account from the account menu’s
+    menu. iOS only.
+  </description>
+</action>
+
 <action name="Signin_AccountPicker_Close">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
