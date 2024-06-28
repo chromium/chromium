@@ -101,6 +101,12 @@ config("xnnpack_config") {
       "XNN_ENABLE_ARM_I8MM=1",
     ]
   }
+
+  if (current_cpu == "x86" || current_cpu == "x64") {
+    defines += [
+      "XNN_ENABLE_AVXVNNI=1",
+    ]
+  }
 }
 '''.strip()
 
