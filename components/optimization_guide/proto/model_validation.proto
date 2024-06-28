@@ -1,0 +1,23 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "ModelValidationProto";
+
+package optimization_guide.proto;
+
+import "components/optimization_guide/proto/model_execution.proto";
+import "components/optimization_guide/proto/model_quality_service.proto";
+
+message ModelValidationInput {
+  // The requests for the feature to be used for validation.
+  repeated ExecuteRequest requests = 2;
+}
+
+message ModelValidationOutput {
+  // The requests to send AI data logs to the model quality server.
+  repeated LogAiDataRequest log_ai_data_requests = 1;
+}
