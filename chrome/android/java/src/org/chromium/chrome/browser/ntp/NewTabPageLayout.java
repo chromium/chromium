@@ -704,7 +704,14 @@ public class NewTabPageLayout extends LinearLayout {
     }
 
     void onUrlFocusAnimationChanged() {
-        if (mDisableUrlFocusChangeAnimations || mIsViewMoving) return;
+        /**
+         * Avoid Y-translation when animation is disabled, view is moving or on tablet form-factor.
+         * Context for tablets - Unlike phones, this method is not called on tablets during URL
+         * focus post NTP load. However when physical keyboard is present, we try to auto-focus URL
+         * during page load causing this method to be called. Disabling this for all cases on this
+         * form-factor since this translation does not WAI. (see crbug.com/40910640)
+         */
+        if (mDisableUrlFocusChangeAnimations || mIsViewMoving || mIsTablet) return;
 
         // Translate so that the search box is at the top, but only upwards.
         float percent = mSearchProviderHasLogo ? mUrlFocusChangePercent : 0;
