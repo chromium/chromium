@@ -228,12 +228,13 @@ suite('PersonalizationRouterElementTest', function() {
   });
 
   test('hides wallpaper selected on non root path sea pen', async () => {
-    loadTimeData.overrideValues({isSeaPenEnabled: true});
+    loadTimeData.overrideValues(
+        {isSeaPenEnabled: true, isSeaPenTextInputEnabled: true});
 
     const routerElement = initElement(PersonalizationRouterElement);
     await waitAfterNextRender(routerElement);
 
-    routerElement.goToRoute(Paths.SEA_PEN_COLLECTION, {
+    routerElement.goToRoute(Paths.SEA_PEN_RESULTS, {
       seaPenTemplateId: SeaPenTemplateId.kFlower.toString(),
     });
     await waitAfterNextRender(routerElement);
@@ -245,10 +246,17 @@ suite('PersonalizationRouterElementTest', function() {
         getComputedStyle(seaPenRouterElement).display, 'none',
         'sea-pen-router is shown');
 
-    const wallpaperSelected =
-        routerElement.shadowRoot!.getElementById('wallpaperSelected');
+    // No wallpaper-selected in Template results page.
     assertFalse(
-        !!wallpaperSelected, 'wallpaper-selected should not be displayed');
+        !!routerElement.shadowRoot!.getElementById('wallpaperSelected'),
+        'wallpaper-selected should not be displayed in template results page');
+
+    // No wallpaper-selected in Freeform subpage.
+    routerElement.goToRoute(Paths.SEA_PEN_FREEFORM);
+    await waitAfterNextRender(routerElement);
+    assertFalse(
+        !!routerElement.shadowRoot!.getElementById('wallpaperSelected'),
+        'wallpaper-selected should not be displayed in freeform page');
   });
 
   test('supports transition animation', async () => {

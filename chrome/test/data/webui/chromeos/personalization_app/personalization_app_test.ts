@@ -753,7 +753,7 @@ suite('sea pen', () => {
               .trim();
 
       // Goes back to sea pen root page.
-      seaPenRouter.goToRoute(SeaPenPaths.ROOT);
+      seaPenRouter.goToRoute(SeaPenPaths.TEMPLATES);
 
       {
         // Verifies the image is set properly.

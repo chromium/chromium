@@ -28,8 +28,9 @@ import {getTemplateIdFromString} from './sea_pen_utils.js';
 import {maybeDoPageTransition} from './transition.js';
 
 export enum SeaPenPaths {
-  ROOT = '',
+  TEMPLATES = '',
   RESULTS = '/results',
+  FREEFORM = '/freeform',
 }
 
 export interface SeaPenQueryParams {
@@ -103,6 +104,12 @@ export class SeaPenRouterElement extends WithSeaPenStore {
     // switching template; otherwise, states from the last query search will
     // remain in sea-pen-images element.
     cleanUpSwitchingTemplate(this.getStore());
+    // TODO(b/347323691): remove the QUERY case when Freeform is removed from
+    // template list.
+    if (templateId === QUERY) {
+      this.goToRoute(SeaPenPaths.FREEFORM);
+      return;
+    }
     this.goToRoute(
         SeaPenPaths.RESULTS, {seaPenTemplateId: templateId.toString()});
   }
@@ -152,14 +159,8 @@ export class SeaPenRouterElement extends WithSeaPenStore {
     if (!Object.values(SeaPenPaths).includes(relativePath as SeaPenPaths)) {
       // If arriving at an unknown path, go back to the root path.
       console.warn('SeaPenRouter unknown path', relativePath);
-      this.goToRoute(SeaPenPaths.ROOT);
+      this.goToRoute(SeaPenPaths.TEMPLATES);
     }
-  }
-
-  private shouldShowTextInputQuery_(
-      relativePath: string|null, templateId: string|null): boolean {
-    return isSeaPenTextInputEnabled() && relativePath === SeaPenPaths.RESULTS &&
-        templateId === QUERY;
   }
 
   private shouldShowTemplateQuery_(
@@ -168,18 +169,22 @@ export class SeaPenRouterElement extends WithSeaPenStore {
         (!!templateId && templateId !== 'Query');
   }
 
-  private shouldShowSeaPenRoot_(relativePath: string|null): boolean {
+  private shouldShowSeaPenTemplates_(relativePath: string|null): boolean {
     if (typeof relativePath !== 'string') {
       return false;
     }
-    return relativePath === SeaPenPaths.ROOT;
+    return relativePath === SeaPenPaths.TEMPLATES;
   }
 
-  private shouldShowSeaPenImages_(relativePath: string|null): boolean {
+  private shouldShowSeaPenTemplateImages_(relativePath: string|null): boolean {
     if (typeof relativePath !== 'string') {
       return false;
     }
     return relativePath === SeaPenPaths.RESULTS;
+  }
+
+  private shouldShowSeaPenFreeform_(relativePath: string|null): boolean {
+    return isSeaPenTextInputEnabled() && relativePath === SeaPenPaths.FREEFORM;
   }
 
   private onBottomContainerClicked_(): void {
@@ -209,6 +214,10 @@ export class SeaPenRouterElement extends WithSeaPenStore {
     // focus on the first template if the deleted recent image is the only image
     // or the last image of recent images list.
     this.focusOnFirstTemplate_();
+  }
+
+  private onRecentFreeformImageDelete_() {
+    // TODO(b/347328001): add the function implementation.
   }
 
   private focusOnFirstTemplate_() {

@@ -745,7 +745,8 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
             Paths.SEA_PEN_COLLECTION);
         return;
       case kSeaPenPromptingId:
-        // TODO(b/347323749): add the correct routing path.
+        PersonalizationRouterElement.instance().goToRoute(
+            Paths.SEA_PEN_FREEFORM);
         return;
       default:
         assert(

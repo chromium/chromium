@@ -49,7 +49,7 @@ suite('SeaPenRouterElementTest', function() {
 
   test('shows templates and recent elements', async () => {
     routerElement = initElement(SeaPenRouterElement, {basePath: '/base'});
-    routerElement.goToRoute(SeaPenPaths.ROOT);
+    routerElement.goToRoute(SeaPenPaths.TEMPLATES);
     await waitAfterNextRender(routerElement);
 
     assertTrue(
@@ -78,14 +78,13 @@ suite('SeaPenRouterElementTest', function() {
   });
 
   test(
-      'shows input query element if text input enabled and free form template is selected',
+      'shows freeform page with input query, recent images and images elements',
       async () => {
         loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
         routerElement = initElement(SeaPenRouterElement, {
           basePath: '/base',
         });
-        routerElement.goToRoute(
-            SeaPenPaths.RESULTS, {seaPenTemplateId: 'Query'});
+        routerElement.goToRoute(SeaPenPaths.FREEFORM);
         await waitAfterNextRender(routerElement);
 
         assertTrue(
@@ -93,15 +92,14 @@ suite('SeaPenRouterElementTest', function() {
                 SeaPenInputQueryElement.is),
             'input query element shown on root');
 
-        const seaPenImagesElement =
-            routerElement.shadowRoot!.querySelector(SeaPenImagesElement.is);
         assertTrue(
-            !!seaPenImagesElement, 'sea-pen-images shown on result page');
+            !!routerElement.shadowRoot!.querySelector(
+                SeaPenRecentWallpapersElement.is),
+            'sea-pen-recent-wallpapers shown on freeform page');
 
         assertTrue(
-            !!seaPenImagesElement.shadowRoot!.querySelector(
-                SeaPenZeroStateSvgElement.is),
-            'zero state svg is shown after selecting free form template from root');
+            !!routerElement.shadowRoot!.querySelector(SeaPenImagesElement.is),
+            'sea-pen-images shown on freeform page');
       });
 
   test(
@@ -110,7 +108,7 @@ suite('SeaPenRouterElementTest', function() {
         routerElement = initElement(SeaPenRouterElement, {
           basePath: '/base',
         });
-        routerElement.goToRoute(SeaPenPaths.ROOT);
+        routerElement.goToRoute(SeaPenPaths.TEMPLATES);
         await waitAfterNextRender(routerElement);
 
         const seaPenTemplatesElement =

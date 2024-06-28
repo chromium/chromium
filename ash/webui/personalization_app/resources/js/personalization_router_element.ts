@@ -34,6 +34,7 @@ export enum Paths {
   ROOT = '/',
   SEA_PEN_COLLECTION = '/wallpaper/sea-pen',
   SEA_PEN_RESULTS = '/wallpaper/sea-pen/results',
+  SEA_PEN_FREEFORM = '/wallpaper/sea-pen/freeform',
   USER = '/user',
 }
 
@@ -204,8 +205,8 @@ export class PersonalizationRouterElement extends PolymerElement {
     return isSeaPenAllowed() && isSeaPenPath(path);
   }
 
-  private shouldShowWallpaperSelected_(templateId: string|null): boolean {
-    return !templateId;
+  private shouldShowWallpaperSelected_(path: string|null): boolean {
+    return path === Paths.SEA_PEN_COLLECTION;
   }
 
   private shouldShowBreadcrumb_(path: string|null): boolean {

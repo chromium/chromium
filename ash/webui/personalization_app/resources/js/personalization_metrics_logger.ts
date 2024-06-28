@@ -23,8 +23,9 @@ const enum MetricsPath {
   USER = 7,
   WALLPAPER_SEA_PEN_COLLECTION = 8,
   WALLPAPER_SEA_PEN_RESULTS = 9,
+  WALLPAPER_SEA_PEN_FREEFORM = 10,
 
-  MAX_VALUE = WALLPAPER_SEA_PEN_RESULTS,
+  MAX_VALUE = WALLPAPER_SEA_PEN_FREEFORM,
 }
 
 const enum HistogramName {
@@ -66,6 +67,8 @@ function toMetricsEnum(path: Paths) {
       return MetricsPath.WALLPAPER_SEA_PEN_COLLECTION;
     case Paths.SEA_PEN_RESULTS:
       return MetricsPath.WALLPAPER_SEA_PEN_RESULTS;
+    case Paths.SEA_PEN_FREEFORM:
+      return MetricsPath.WALLPAPER_SEA_PEN_FREEFORM;
   }
 }
 

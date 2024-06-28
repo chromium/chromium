@@ -123,7 +123,7 @@ suite('VcBackgroundUITest', () => {
 
   test('verifies breadcrumbs when create button clicked', async () => {
     const seaPenRouter = getSeaPenRouter();
-    seaPenRouter.goToRoute(SeaPenPaths.ROOT);
+    seaPenRouter.goToRoute(SeaPenPaths.TEMPLATES);
     await waitAfterNextRender(seaPenRouter);
 
     const seaPenTemplateElements = getSeaPenTemplateElements();

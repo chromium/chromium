@@ -95,7 +95,7 @@
 </style>
 <div id="topContainer">
   <slot></slot>
-  <template is="dom-if" if="[[shouldShowTextInputQuery_(relativePath_, queryParams_.seaPenTemplateId)]]" restamp>
+  <template is="dom-if" if="[[shouldShowSeaPenFreeform_(relativePath_)]]" restamp>
     <sea-pen-input-query></sea-pen-input-query>
   </template>
   <template is="dom-if" if="[[shouldShowTemplateQuery_(relativePath_, queryParams_.seaPenTemplateId)]]" restamp>
@@ -111,15 +111,21 @@
   <!-- Prevent left margin from collapsing on narrow window in RTL -->
   <div class="leftspacerbottom"></div>
   <div id="bottomInnerContainer">
-    <template is="dom-if" if="[[shouldShowSeaPenRoot_(relativePath_)]]" restamp>
+    <template is="dom-if" if="[[shouldShowSeaPenTemplates_(relativePath_)]]" restamp>
       <sea-pen-templates></sea-pen-templates>
       <sea-pen-recent-wallpapers
           on-sea-pen-recent-image-delete="onRecentImageDelete_">
       </sea-pen-recent-wallpapers>
     </template>
-    <template is="dom-if" if="[[shouldShowSeaPenImages_(relativePath_)]]" restamp>
+    <template is="dom-if" if="[[shouldShowSeaPenTemplateImages_(relativePath_)]]" restamp>
       <sea-pen-images template-id="[[getTemplateIdFromQueryParams_(queryParams_.seaPenTemplateId)]]">
       </sea-pen-images>
+    </template>
+    <template is="dom-if" if="[[shouldShowSeaPenFreeform_(relativePath_)]]" restamp>
+      <sea-pen-recent-wallpapers
+          on-sea-pen-recent-image-delete="onRecentFreeformImageDelete_">
+      </sea-pen-recent-wallpapers>
+      <sea-pen-images template-id="Query"></sea-pen-images>
     </template>
   </div>
   <template is="dom-if" if="[[showSeaPenIntroductionDialog_]]" restamp>

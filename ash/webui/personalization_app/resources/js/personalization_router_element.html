@@ -80,7 +80,7 @@
   </template>
   <template is="dom-if" if="[[shouldShowSeaPen_(path_)]]" restamp>
     <sea-pen-router base-path="[[seaPenBasePath_]]" class="always-show-top">
-      <template is="dom-if" if="[[shouldShowWallpaperSelected_(queryParams_.seaPenTemplateId)]]" restamp>
+      <template is="dom-if" if="[[shouldShowWallpaperSelected_(path_)]]" restamp>
         <wallpaper-selected id="wallpaperSelected"></wallpaper-selected>
       </template>
     </sea-pen-router>
