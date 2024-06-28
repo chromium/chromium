@@ -397,10 +397,6 @@ if (!profile_manager) {
 `CHECK_IS_TEST();` will crash outside of tests. This asserts that the test-only
 code path is not accidentally or maliciously taken in production.
 
-### TODOs
-
-See the language agnostic [TODO guidance](../todos.md).
-
 ## Miscellany
 
   * Use UTF-8 file encodings and LF line endings.

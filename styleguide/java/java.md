@@ -315,7 +315,9 @@ Values of `Integer` type are also supported, which allows using a sentinel
 
 ### TODOs
 
-See the language agnostic [TODO guidance](../todos.md).
+* TODO should follow chromium convention. Examples:
+  * `TODO(username): Some sentence here.`
+  * `TODO(crbug.com/40192027): Even better to use a bug for context.`
 
 ### Parameter Comments
 
