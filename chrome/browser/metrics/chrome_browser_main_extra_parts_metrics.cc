@@ -1155,8 +1155,8 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
         std::make_unique<PowerMetricsReporter>(process_monitor_.get());
   }
 
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kPerformanceIntervention)) {
+  if (performance_manager::features::
+          ShouldUsePerformanceInterventionBackend()) {
     performance_intervention_metrics_reporter_ =
         std::make_unique<PerformanceInterventionMetricsReporter>(
             g_browser_process->local_state());

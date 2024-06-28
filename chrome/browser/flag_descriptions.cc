@@ -2889,6 +2889,12 @@ const char kCrosSystemLevelPermissionBlockedWarningsDescription[] =
     "disabled in the OS.";
 #endif
 
+const char kPerformanceInterventionUiName[] =
+    "Enable performance intervention suggestions.";
+const char kPerformanceInterventionUiDescription[] =
+    "When enabled, performance intervention UI will automatically pop up and "
+    "suggest tabs to take action on during times of poor performance.";
+
 const char kPermissionPredictionsName[] = "Permission Predictions";
 const char kPermissionPredictionsDescription[] =
     "Use the Permission Predictions Service to surface permission requests "

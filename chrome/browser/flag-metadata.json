@@ -6971,6 +6971,14 @@
     "expiry_milestone": 118
   },
   {
+    "name": "performance-intervention-ui",
+    "owners": [
+      "stluong@chromium.org",
+      "chrome-performance-ui-team@google.com"
+    ],
+    "expiry_milestone": 133
+  },
+  {
     "name": "permissive-usb-passthrough",
     "owners": [
       "drmasquatch@chromium.org"

@@ -24356,6 +24356,7 @@ from previous Chrome versions.
   <int value="1630159957" label="SharingSendViaSync:disabled"/>
   <int value="1630283072" label="CrOSAutoSelect:enabled"/>
   <int value="1630988998" label="VrBrowsingExperimentalRendering:disabled"/>
+  <int value="1631147591" label="PerformanceInterventionUI:enabled"/>
   <int value="1632112977" label="ash-disable-tablet-autohide-titlebars"/>
   <int value="1632176267" label="PDFViewerUpdate:enabled"/>
   <int value="1633456034" label="chrome-home-swipe-logic"/>
@@ -24787,6 +24788,7 @@ from previous Chrome versions.
       label="AutofillEnablePrefetchingRiskDataForRetrieval:enabled"/>
   <int value="1803470125" label="SyncUSSSessions:enabled"/>
   <int value="1803914892" label="TemporaryUnexpireFlagsM76:enabled"/>
+  <int value="1805706414" label="PerformanceInterventionUI:disabled"/>
   <int value="1805859042"
       label="ExtractRelatedSearchesFromPrefetchedZPSResponse:enabled"/>
   <int value="1806220475" label="IgnoreSyncEncryptionKeysLongMissing:disabled"/>

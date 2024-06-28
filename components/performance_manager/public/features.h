@@ -91,6 +91,8 @@ BASE_DECLARE_FEATURE(kPerformanceIntervention);
 // This enables the performance intervention UI
 BASE_DECLARE_FEATURE(kPerformanceInterventionUI);
 
+bool ShouldUsePerformanceInterventionBackend();
+
 // This represents the version number for the string displayed on the
 // Performance Intervention Dialog.
 extern const base::FeatureParam<int> kInterventionDialogStringVersion;

@@ -85,6 +85,11 @@ BASE_FEATURE(kPerformanceInterventionUI,
              "PerformanceInterventionUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+bool ShouldUsePerformanceInterventionBackend() {
+  return base::FeatureList::IsEnabled(kPerformanceIntervention) ||
+         base::FeatureList::IsEnabled(kPerformanceInterventionUI);
+}
+
 const base::FeatureParam<int> kInterventionDialogStringVersion{
     &kPerformanceInterventionUI, "intervention_dialog_version", 1};
 

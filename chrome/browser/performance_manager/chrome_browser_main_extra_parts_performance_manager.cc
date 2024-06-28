@@ -275,8 +275,8 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
       new performance_manager::user_tuning::BatterySaverModeManager(
           g_browser_process->local_state()));
 
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kPerformanceIntervention)) {
+  if (performance_manager::features::
+          ShouldUsePerformanceInterventionBackend()) {
     performance_detection_manager_ = base::WrapUnique(
         new performance_manager::user_tuning::PerformanceDetectionManager());
   }

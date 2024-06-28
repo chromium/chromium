@@ -433,8 +433,8 @@ void ToolbarView::Init() {
         std::make_unique<BatterySaverButton>(browser_view_));
   }
 
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kPerformanceIntervention)) {
+  if (performance_manager::features::
+          ShouldUsePerformanceInterventionBackend()) {
     performance_intervention_button_ = container_view_->AddChildView(
         std::make_unique<PerformanceInterventionButton>(browser_view_));
   }
