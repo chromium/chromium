@@ -8,9 +8,15 @@ import {AudioSource} from '../recording_session.js';
 import * as localStorage from '../utils/local_storage.js';
 import {Infer, z} from '../utils/schema.js';
 
+export enum RecordingSortType {
+  DATE = 'DATE',
+  NAME = 'NAME',
+}
+
 export const settingsSchema = z.object({
   audioSource: z.nativeEnum(AudioSource),
   onboardingDone: z.boolean(),
+  recordingSortType: z.nativeEnum(RecordingSortType),
 });
 
 type Settings = Infer<typeof settingsSchema>;
@@ -18,6 +24,7 @@ type Settings = Infer<typeof settingsSchema>;
 const defaultSettings: Settings = {
   audioSource: AudioSource.USER_MEDIA,
   onboardingDone: false,
+  recordingSortType: RecordingSortType.DATE,
 };
 
 export const settings = signal(defaultSettings);

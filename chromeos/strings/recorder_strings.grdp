@@ -52,6 +52,21 @@ You can turn this off at anytime in Settings.
   <message desc="Header of the recording list." name="IDS_RECORDER_RECORDING_LIST_HEADER">
     My Recordings
   </message>
+  <message desc="Label of the menu item to sort the recordings by the recorded date." name="IDS_RECORDER_RECORDING_LIST_SORT_BY_DATE_OPTION">
+    Date modified
+  </message>
+  <message desc="Label of the menu item to sort the recordings by the recording name alphabetically." name="IDS_RECORDER_RECORDING_LIST_SORT_BY_NAME_OPTION">
+    Name (A to Z)
+  </message>
+  <message desc="Header of the group of recordings recorded this month." name="IDS_RECORDER_RECORDING_LIST_THIS_MONTH_HEADER">
+    This month
+  </message>
+  <message desc="Header of the group of recordings recorded today." name="IDS_RECORDER_RECORDING_LIST_TODAY_HEADER">
+    Today
+  </message>
+  <message desc="Header of the group of recordings recorded this yesterday." name="IDS_RECORDER_RECORDING_LIST_YESTERDAY_HEADER">
+    Yesterday
+  </message>
   <message desc="Button to cancel deleting recording in the delete recording dialog." name="IDS_RECORDER_RECORD_DELETE_DIALOG_CANCEL_BUTTON">
     Cancel
   </message>

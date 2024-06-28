@@ -77,3 +77,62 @@ const TIME_FORMAT = new Intl.DateTimeFormat('en-US', {
 export function formatTime(timestamp: number): string {
   return TIME_FORMAT.format(new Date(timestamp)).toLowerCase().replace(' ', '');
 }
+
+/**
+ * Returns the timestamp of today's date, which is today at exactly 12:00 AM.
+ *
+ * @return The timestamp of today's date.
+ * @example getToday() => 1719244800000.
+ */
+export function getToday(): number {
+  const today = new Date();
+  today.setHours(0);
+  today.setMinutes(0);
+  today.setSeconds(0);
+  today.setMilliseconds(0);
+  return today.getTime();
+}
+
+/**
+ * Returns the timestamp of yesterday's date.
+ *
+ * @return The timestamp of yesterday's date.
+ * @example getYesterday() => 1719158400000.
+ */
+export function getYesterday(): number {
+  const dayInMilliseconds = 24 * 60 * 60 * 1000;
+  const yesterday = new Date(getToday());
+  return yesterday.getTime() - dayInMilliseconds;
+}
+
+const MONTH_FORMAT = new Intl.DateTimeFormat('en-US', {
+  month: 'long',
+  year: 'numeric',
+});
+
+/**
+ * Format the timestamp into a string of month and year.
+ *
+ * TODO: b/336963138 - Handle i18n.
+ *
+ * @param timestamp Number of milliseconds elapsed since epoch.
+ * @return The string containing month and year.
+ * @example getMonthLabel(975902640000) => 'December 2000'.
+ */
+export function getMonthLabel(timestamp: number): string {
+  return MONTH_FORMAT.format(new Date(timestamp));
+}
+
+/**
+ * Returns whether the timestamp is in the current month.
+ *
+ * @param timestamp Number of milliseconds elapsed since epoch.
+ * @return The boolean indicating if the timestamp is in the current month.
+ * @example isInThisMonth(1719244800000) => true.
+ */
+export function isInThisMonth(timestamp: number): boolean {
+  const now = new Date();
+  const date = new Date(timestamp);
+  return date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear();
+}
