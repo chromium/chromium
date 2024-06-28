@@ -28,11 +28,12 @@
 
 @implementation VirtualCardEnrollmentBottomSheetMediator
 
-- (id)initWithUiModel:(std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model
-                     callbacks:
-                         (autofill::VirtualCardEnrollmentCallbacks)callbacks
-    browserCoordinatorCommands:
-        (id<BrowserCoordinatorCommands>)browserCoordinatorCommands {
+- (instancetype)initWithUiModel:
+                    (std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model
+                      callbacks:
+                          (autofill::VirtualCardEnrollmentCallbacks)callbacks
+     browserCoordinatorCommands:
+         (id<BrowserCoordinatorCommands>)browserCoordinatorCommands {
   self = [super init];
   if (self) {
     UIImage* icon = nil;

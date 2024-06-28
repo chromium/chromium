@@ -4,16 +4,21 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/virtual_card_enrollment_bottom_sheet_coordinator.h"
 
+#import "base/memory/weak_ptr.h"
 #import "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/virtual_card_enrollment_callbacks.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/virtual_card_enrollment_bottom_sheet_delegate.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/virtual_card_enrollment_bottom_sheet_mediator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/virtual_card_enrollment_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/virtual_card_enrollment_bottom_sheet_delegate.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/virtual_card_enrollment_bottom_sheet_mediator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/virtual_card_enrollment_bottom_sheet_view_controller.h"
 
 @interface VirtualCardEnrollmentBottomSheetCoordinator () <
     VirtualCardEnrollmentBottomSheetDelegate>
@@ -24,21 +29,15 @@
 
 @end
 
-#import "base/memory/weak_ptr.h"
-#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
-#import "ios/chrome/browser/autofill/model/bottom_sheet/virtual_card_enrollment_callbacks.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-
 @implementation VirtualCardEnrollmentBottomSheetCoordinator {
-  std::unique_ptr<autofill::VirtualCardEnrollUiModel> model_;
-  std::optional<autofill::VirtualCardEnrollmentCallbacks> callbacks_;
-  Browser* browser_;
-  ChromeBrowserState* browser_state_;
+  std::unique_ptr<autofill::VirtualCardEnrollUiModel> _model;
+  std::optional<autofill::VirtualCardEnrollmentCallbacks> _callbacks;
+  Browser* _browser;
+  ChromeBrowserState* _browser_state;
 
   // Opening links on the enrollment bottom sheet is delegated to this
   // dispatcher.
-  __weak id<ApplicationCommands> dispatcher_;
+  __weak id<ApplicationCommands> _dispatcher;
 }
 
 @synthesize mediator;
@@ -52,22 +51,21 @@
   if (self) {
     web::WebState* activeWebState =
         self.browser->GetWebStateList()->GetActiveWebState();
-    self->model_ = std::move(model);
-    self->callbacks_ =
-        AutofillBottomSheetTabHelper::FromWebState(activeWebState)
-            ->GetVirtualCardEnrollmentCallbacks();
-    self->browser_ = browser;
-    self->browser_state_ = self.browser->GetBrowserState();
-    self->dispatcher_ = HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                                           ApplicationCommands);
+    _model = std::move(model);
+    _callbacks = AutofillBottomSheetTabHelper::FromWebState(activeWebState)
+                     ->GetVirtualCardEnrollmentCallbacks();
+    _browser = browser;
+    _browser_state = self.browser->GetBrowserState();
+    _dispatcher = HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                                     ApplicationCommands);
   }
   return self;
 }
 
 - (void)start {
   self.mediator = [[VirtualCardEnrollmentBottomSheetMediator alloc]
-                 initWithUiModel:std::move(self->model_)
-                       callbacks:std::move(callbacks_.value())
+                 initWithUiModel:std::move(_model)
+                       callbacks:std::move(_callbacks.value())
       browserCoordinatorCommands:HandlerForProtocol(
                                      self.browser->GetCommandDispatcher(),
                                      BrowserCoordinatorCommands)];
@@ -102,7 +100,7 @@
 #pragma mark VirtualCardEnrollmentBottomSheetDelegate
 
 - (void)didTapLinkURL:(CrURL*)url text:(NSString*)text {
-  [dispatcher_
+  [_dispatcher
       openURLInNewTab:[OpenNewTabCommand
                           commandWithURLFromChrome:url.gurl
                                        inIncognito:self.browser
