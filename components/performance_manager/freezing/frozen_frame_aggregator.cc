@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/freezing/frozen_frame_aggregator.h"
 
+#include "components/performance_manager/freezing/frozen_data.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
@@ -15,98 +16,9 @@ namespace performance_manager {
 
 using LifecycleState = performance_manager::mojom::LifecycleState;
 
-// Provides FrozenFrameAggregator machinery access to some internals of a
-// PageNodeImpl and ProcessNodeImpl.
-class FrozenFrameAggregatorAccess {
- public:
-  using StorageType = PageNodeImpl::FrozenFrameDataStorage;
-
-  static StorageType* GetInternalStorage(PageNodeImpl* page_node) {
-    return &page_node->GetFrozenFrameData(
-        base::PassKey<FrozenFrameAggregatorAccess>());
-  }
-
-  static StorageType* GetInternalStorage(ProcessNodeImpl* process_node) {
-    return &process_node->frozen_frame_data_;
-  }
-
-  static void SetLifecycleState(PageNodeImpl* page_node,
-                                LifecycleState lifecycle_state) {
-    page_node->SetLifecycleState(base::PassKey<FrozenFrameAggregatorAccess>(),
-                                 lifecycle_state);
-  }
-
-  static void NotifyAllFramesInProcessFrozen(ProcessNodeImpl* process_node) {
-    process_node->OnAllFramesInProcessFrozen();
-  }
-};
-
 namespace {
 
 const char kDescriberName[] = "FrozenFrameAggregator";
-
-// Private implementation of the node attached data. This keeps the complexity
-// out of the header file.
-class FrozenDataImpl : public FrozenFrameAggregator::Data,
-                       public NodeAttachedDataImpl<FrozenDataImpl> {
- public:
-  using StorageType = FrozenFrameAggregatorAccess::StorageType;
-
-  // This data is tracked persistently for page and process nodes, so uses
-  // internal node storage.
-  struct Traits : public NodeAttachedDataInternalOnNodeType<PageNodeImpl>,
-                  public NodeAttachedDataInternalOnNodeType<ProcessNodeImpl> {};
-
-  explicit FrozenDataImpl(const PageNodeImpl* page_node) {}
-  explicit FrozenDataImpl(const ProcessNodeImpl* process_node) {}
-
-  FrozenDataImpl(const FrozenDataImpl&) = delete;
-  FrozenDataImpl& operator=(const FrozenDataImpl&) = delete;
-
-  ~FrozenDataImpl() override = default;
-
-  static StorageType* GetInternalStorage(PageNodeImpl* page_node) {
-    return FrozenFrameAggregatorAccess::GetInternalStorage(page_node);
-  }
-
-  static StorageType* GetInternalStorage(ProcessNodeImpl* process_node) {
-    return FrozenFrameAggregatorAccess::GetInternalStorage(process_node);
-  }
-
-  // Returns the current "is_frozen" state. A collection of frames is considered
-  // frozen if its non-empty, and all of the frames are frozen.
-  bool IsFrozen() const {
-    return current_frame_count > 0 && frozen_frame_count == current_frame_count;
-  }
-
-  // Returns the state as an equivalent LifecycleState.
-  LifecycleState AsLifecycleState() const {
-    if (IsFrozen())
-      return LifecycleState::kFrozen;
-    return LifecycleState::kRunning;
-  }
-
-  // Applies a change to frame counts. Returns true if that causes the frozen
-  // state to change for this object.
-  bool ChangeFrameCounts(int32_t current_frame_delta,
-                         int32_t frozen_frame_delta) {
-    DCHECK(current_frame_delta != 0 || frozen_frame_delta != 0);
-    DCHECK_GE(1, abs(current_frame_delta));
-    DCHECK_GE(1, abs(frozen_frame_delta));
-    // We should never have (-1, 1) or (1, -1).
-    DCHECK_NE(-current_frame_delta, frozen_frame_delta);
-
-    // If the deltas are negative, the counts need to be positive.
-    DCHECK(current_frame_delta >= 0 || current_frame_count > 0);
-    DCHECK(frozen_frame_delta >= 0 || frozen_frame_count > 0);
-
-    bool was_frozen = IsFrozen();
-    current_frame_count += current_frame_delta;
-    frozen_frame_count += frozen_frame_delta;
-
-    return IsFrozen() != was_frozen;
-  }
-};
 
 bool IsFrozen(const FrameNodeImpl* frame_node) {
   return frame_node->GetLifecycleState() == LifecycleState::kFrozen;
@@ -157,33 +69,25 @@ void FrozenFrameAggregator::OnTakenFromGraph(Graph* graph) {
 }
 
 void FrozenFrameAggregator::OnPageNodeAdded(const PageNode* page_node) {
-  auto* page_impl = PageNodeImpl::FromNode(page_node);
-  DCHECK_EQ(LifecycleState::kRunning, page_impl->GetLifecycleState());
-  FrozenDataImpl::GetOrCreate(page_impl);
+  DCHECK_EQ(LifecycleState::kRunning, page_node->GetLifecycleState());
+  FrozenData::Create(PageNodeImpl::FromNode(page_node));
+}
+
+void FrozenFrameAggregator::OnProcessNodeAdded(
+    const ProcessNode* process_node) {
+  FrozenData::Create(ProcessNodeImpl::FromNode(process_node));
 }
 
 base::Value::Dict FrozenFrameAggregator::DescribePageNodeData(
     const PageNode* node) const {
-  FrozenDataImpl* data = FrozenDataImpl::Get(PageNodeImpl::FromNode(node));
-  if (data == nullptr)
-    return base::Value::Dict();
-
-  base::Value::Dict ret;
-  ret.Set("current_frame_count", static_cast<int>(data->current_frame_count));
-  ret.Set("frozen_frame_count", static_cast<int>(data->frozen_frame_count));
-  return ret;
+  FrozenData& data = FrozenData::Get(PageNodeImpl::FromNode(node));
+  return data.Describe();
 }
 
 base::Value::Dict FrozenFrameAggregator::DescribeProcessNodeData(
     const ProcessNode* node) const {
-  FrozenDataImpl* data = FrozenDataImpl::Get(ProcessNodeImpl::FromNode(node));
-  if (data == nullptr)
-    return base::Value::Dict();
-
-  base::Value::Dict ret;
-  ret.Set("current_frame_count", static_cast<int>(data->current_frame_count));
-  ret.Set("frozen_frame_count", static_cast<int>(data->frozen_frame_count));
-  return ret;
+  FrozenData& data = FrozenData::Get(ProcessNodeImpl::FromNode(node));
+  return data.Describe();
 }
 
 void FrozenFrameAggregator::RegisterObservers(Graph* graph) {
@@ -225,37 +129,25 @@ void FrozenFrameAggregator::UpdateFrameCounts(FrameNodeImpl* frame_node,
 
   auto* page_node = frame_node->page_node();
   auto* process_node = frame_node->process_node();
-  auto* page_data = FrozenDataImpl::Get(page_node);
-  auto* process_data = FrozenDataImpl::GetOrCreate(process_node);
+  FrozenData& page_data = FrozenData::Get(page_node);
+  FrozenData& process_data = FrozenData::Get(process_node);
 
   // We should only have frames attached to renderer processes.
   DCHECK_EQ(content::PROCESS_TYPE_RENDERER, process_node->GetProcessType());
 
   // Set the page lifecycle state based on the state of the frame tree.
-  if (page_data->ChangeFrameCounts(current_frame_delta, frozen_frame_delta)) {
-    FrozenFrameAggregatorAccess::SetLifecycleState(
-        page_node, page_data->AsLifecycleState());
+  if (page_data.ChangeFrameCounts(current_frame_delta, frozen_frame_delta)) {
+    page_node->SetLifecycleState(base::PassKey<FrozenFrameAggregator>(),
+                                 page_data.AsLifecycleState());
   }
 
   // Update the process state, and notify when all frames in the tree are
   // frozen.
-  if (process_data->ChangeFrameCounts(current_frame_delta,
-                                      frozen_frame_delta) &&
-      process_data->IsFrozen()) {
-    FrozenFrameAggregatorAccess::NotifyAllFramesInProcessFrozen(process_node);
+  if (process_data.ChangeFrameCounts(current_frame_delta, frozen_frame_delta) &&
+      process_data.IsFrozen()) {
+    process_node->OnAllFramesInProcessFrozen(
+        base::PassKey<FrozenFrameAggregator>());
   }
-}
-
-// static
-FrozenFrameAggregator::Data* FrozenFrameAggregator::Data::GetForTesting(
-    PageNodeImpl* page_node) {
-  return FrozenDataImpl::Get(page_node);
-}
-
-// static
-FrozenFrameAggregator::Data* FrozenFrameAggregator::Data::GetForTesting(
-    ProcessNodeImpl* process_node) {
-  return FrozenDataImpl::Get(process_node);
 }
 
 }  // namespace performance_manager

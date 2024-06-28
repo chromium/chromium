@@ -18,6 +18,7 @@
 #include "base/types/token_type.h"
 #include "build/build_config.h"
 #include "components/performance_manager/decorators/page_load_tracker_decorator_data.h"
+#include "components/performance_manager/freezing/frozen_data.h"
 #include "components/performance_manager/graph/node_attached_data.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -30,7 +31,7 @@
 namespace performance_manager {
 
 class FrameNodeImpl;
-class FrozenFrameAggregatorAccess;
+class FrozenFrameAggregator;
 class PageAggregatorAccess;
 
 // The starting state of various boolean properties of the PageNode.
@@ -48,16 +49,13 @@ using PagePropertyFlags = base::
 class PageNodeImpl
     : public PublicNodeImpl<PageNodeImpl, PageNode>,
       public TypedNodeBase<PageNodeImpl, PageNode, PageNodeObserver>,
-      public SupportsNodeInlineData<PageLoadTrackerDecoratorData
+      public SupportsNodeInlineData<PageLoadTrackerDecoratorData,
 #if !BUILDFLAG(IS_ANDROID)
-                                    ,
-                                    SiteDataNodeData
+                                    SiteDataNodeData,
 #endif
-                                    > {
+                                    FrozenData> {
  public:
   using PassKey = base::PassKey<PageNodeImpl>;
-  using FrozenFrameDataStorage =
-      InternalNodeAttachedDataStorage<sizeof(uintptr_t) + 8>;
   using PageAggregatorDataStorage =
       InternalNodeAttachedDataStorage<sizeof(uintptr_t) + 16>;
 
@@ -179,10 +177,6 @@ class PageNodeImpl
   base::WeakPtr<PageNodeImpl> GetWeakPtr();
 
   // Accessors to some of the NodeAttachedData:
-  FrozenFrameDataStorage& GetFrozenFrameData(
-      base::PassKey<FrozenFrameAggregatorAccess>) {
-    return frozen_frame_data_;
-  }
   PageAggregatorDataStorage& GetPageAggregatorData(
       base::PassKey<PageAggregatorAccess>) {
     return page_aggregator_data_;
@@ -192,8 +186,8 @@ class PageNodeImpl
   void AddFrame(base::PassKey<FrameNodeImpl>, FrameNodeImpl* frame_node);
   void RemoveFrame(base::PassKey<FrameNodeImpl>, FrameNodeImpl* frame_node);
 
-  // Function meant to be called by FrozenFrameAggregatorAccess.
-  void SetLifecycleState(base::PassKey<FrozenFrameAggregatorAccess>,
+  // Function meant to be called by FrozenFrameAggregator.
+  void SetLifecycleState(base::PassKey<FrozenFrameAggregator>,
                          LifecycleState lifecycle_state) {
     SetLifecycleState(lifecycle_state);
   }
@@ -378,10 +372,6 @@ class PageNodeImpl
   ObservedProperty::
       NotifiesOnlyOnChanges<bool, &PageNodeObserver::OnHadUserEditsChanged>
           had_user_edits_ GUARDED_BY_CONTEXT(sequence_checker_){false};
-
-  // Inline storage for FrozenFrameAggregator user data.
-  FrozenFrameDataStorage frozen_frame_data_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Inline storage for PageAggregatorAccess user data.
   PageAggregatorDataStorage page_aggregator_data_

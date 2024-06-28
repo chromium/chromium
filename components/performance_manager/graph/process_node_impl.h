@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "components/performance_manager/decorators/process_priority_aggregator_data.h"
+#include "components/performance_manager/freezing/frozen_data.h"
 #include "components/performance_manager/graph/node_attached_data.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/graph/node_inline_data.h"
@@ -33,6 +34,7 @@
 namespace performance_manager {
 
 class FrameNodeImpl;
+class FrozenFrameAggregator;
 class ProcessNodeImpl;
 class WorkerNodeImpl;
 
@@ -53,7 +55,7 @@ class ProcessNodeImpl
     : public PublicNodeImpl<ProcessNodeImpl, ProcessNode>,
       public TypedNodeBase<ProcessNodeImpl, ProcessNode, ProcessNodeObserver>,
       public mojom::ProcessCoordinationUnit,
-      public SupportsNodeInlineData<ProcessPriorityAggregatorData> {
+      public SupportsNodeInlineData<ProcessPriorityAggregatorData, FrozenData> {
  public:
   using PassKey = base::PassKey<ProcessNodeImpl>;
 
@@ -147,6 +149,10 @@ class ProcessNodeImpl
   // Adds a new type of hosted content to the |hosted_content_types| bit field.
   void add_hosted_content_type(ContentType content_type);
 
+  void OnAllFramesInProcessFrozen(base::PassKey<FrozenFrameAggregator>) {
+    OnAllFramesInProcessFrozen();
+  }
+
   void OnAllFramesInProcessFrozenForTesting() { OnAllFramesInProcessFrozen(); }
   static void FireBackgroundTracingTriggerOnUIForTesting(
       const std::string& trigger_name);
@@ -162,7 +168,6 @@ class ProcessNodeImpl
                       base::TimeTicks launch_time);
 
  private:
-  friend class FrozenFrameAggregatorAccess;
   friend class ProcessMetricsDecoratorAccess;
 
   using AnyChildProcessHostProxy =
@@ -233,10 +238,6 @@ class ProcessNodeImpl
   NodeSet frame_nodes_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   NodeSet worker_nodes_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Inline storage for FrozenFrameAggregator user data.
-  InternalNodeAttachedDataStorage<sizeof(uintptr_t) + 8> frozen_frame_data_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtr<ProcessNodeImpl> weak_this_;
   base::WeakPtrFactory<ProcessNodeImpl> weak_factory_

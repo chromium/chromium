@@ -74,6 +74,8 @@ static_library("performance_manager") {
     "freezing/freezing.cc",
     "freezing/freezing_policy.cc",
     "freezing/freezing_policy.h",
+    "freezing/frozen_data.cc",
+    "freezing/frozen_data.h",
     "freezing/frozen_frame_aggregator.cc",
     "freezing/frozen_frame_aggregator.h",
     "graph/frame_node.cc",

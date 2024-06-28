@@ -64,10 +64,9 @@ class FrozenFrameAggregatorTest : public GraphTestHarness {
   void ExpectData(NodeType* node,
                   uint32_t current_frame_count,
                   uint32_t frozen_frame_count) {
-    auto* data = FrozenFrameAggregator::Data::GetForTesting(node);
-    EXPECT_TRUE(data);
-    EXPECT_EQ(current_frame_count, data->current_frame_count);
-    EXPECT_EQ(frozen_frame_count, data->frozen_frame_count);
+    FrozenData& data = FrozenData::Get(node);
+    EXPECT_EQ(current_frame_count, data.current_frame_count());
+    EXPECT_EQ(frozen_frame_count, data.frozen_frame_count());
   }
 
   void ExpectPageData(uint32_t current_frame_count,
@@ -78,11 +77,6 @@ class FrozenFrameAggregatorTest : public GraphTestHarness {
   void ExpectProcessData(uint32_t current_frame_count,
                          uint32_t frozen_frame_count) {
     ExpectData(process_node_.get(), current_frame_count, frozen_frame_count);
-  }
-
-  void ExpectNoProcessData() {
-    EXPECT_EQ(nullptr,
-              FrozenFrameAggregator::Data::GetForTesting(process_node_.get()));
   }
 
   void ExpectRunning() {
@@ -108,12 +102,11 @@ class FrozenFrameAggregatorTest : public GraphTestHarness {
 };
 
 TEST_F(FrozenFrameAggregatorTest, NotCurrent) {
-  // The data should be created when the frame is made current.
-  ExpectNoProcessData();
+  ExpectProcessData(0, 0);
 
   // Add a non-current main frame.
   auto f0 = CreateFrame(nullptr, /*is_current=*/false);
-  ExpectNoProcessData();
+  ExpectProcessData(0, 0);
 
   // Make it current. The frame starts being counted.
   f0->SetIsCurrent(true);
@@ -131,8 +124,7 @@ TEST_F(FrozenFrameAggregatorTest, ProcessAggregation) {
   MockProcessNodeObserver obs;
   graph()->AddProcessNodeObserver(&obs);
 
-  // The data should be created on first aggregation.
-  ExpectNoProcessData();
+  ExpectProcessData(0, 0);
 
   // Add a main frame.
   auto f0 = CreateFrame(nullptr);

@@ -94,7 +94,6 @@ ProcessNodeImpl::~ProcessNodeImpl() {
   // TODO(crbug.com/40051698): Turn this into a DCHECK once the issue is
   //                                  resolved.
   CHECK(worker_nodes_.empty());
-  DCHECK(!frozen_frame_data_);
 }
 
 void ProcessNodeImpl::Bind(
@@ -437,7 +436,6 @@ void ProcessNodeImpl::OnBeforeLeavingGraph() {
 void ProcessNodeImpl::RemoveNodeAttachedData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DestroyNodeInlineDataStorage();
-  frozen_frame_data_.Reset();
 }
 
 }  // namespace performance_manager

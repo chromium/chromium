@@ -14,8 +14,6 @@
 namespace performance_manager {
 
 class FrameNodeImpl;
-class PageNodeImpl;
-class ProcessNodeImpl;
 
 // The FrozenFrameAggregator is responsible for tracking frame frozen states,
 // and aggregating this property to the page and process nodes. As a GraphOwned
@@ -27,8 +25,6 @@ class FrozenFrameAggregator : public FrameNode::ObserverDefaultImpl,
                               public PageNode::ObserverDefaultImpl,
                               public ProcessNode::ObserverDefaultImpl {
  public:
-  struct Data;
-
   // TODO(chrisha): Check that the graph is empty when this observer is added!
   // https://www.crbug.com/952891
   FrozenFrameAggregator();
@@ -50,6 +46,9 @@ class FrozenFrameAggregator : public FrameNode::ObserverDefaultImpl,
 
   // PageNodeObserver implementation:
   void OnPageNodeAdded(const PageNode* page_node) override;
+
+  // ProcessNodeObserver implementation:
+  void OnProcessNodeAdded(const ProcessNode* process_node) override;
 
   // NodeDataDescriber implementation:
   base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
@@ -75,20 +74,6 @@ class FrozenFrameAggregator : public FrameNode::ObserverDefaultImpl,
   void UpdateFrameCounts(FrameNodeImpl* frame_node,
                          int32_t current_frame_delta,
                          int32_t frozen_frame_delta);
-};
-
-// This struct is stored internally on page and process nodes using
-// InlineNodeAttachedDataStorage.
-struct FrozenFrameAggregator::Data {
-  // The number of current frames associated with a given page/process.
-  uint32_t current_frame_count = 0;
-
-  // The number of frozen current frames associated with a given page/process.
-  // This is always <= |current_frame_count|.
-  uint32_t frozen_frame_count = 0;
-
-  static Data* GetForTesting(PageNodeImpl* page_node);
-  static Data* GetForTesting(ProcessNodeImpl* process_node);
 };
 
 }  // namespace performance_manager

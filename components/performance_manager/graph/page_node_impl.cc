@@ -53,7 +53,6 @@ PageNodeImpl::~PageNodeImpl() {
   DCHECK_EQ(nullptr, opener_frame_node_);
   DCHECK_EQ(nullptr, embedder_frame_node_);
   DCHECK_EQ(EmbeddingType::kInvalid, embedding_type_);
-  DCHECK(!frozen_frame_data_);
   DCHECK(!page_aggregator_data_);
 }
 
@@ -505,7 +504,6 @@ void PageNodeImpl::OnBeforeLeavingGraph() {
 void PageNodeImpl::RemoveNodeAttachedData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DestroyNodeInlineDataStorage();
-  frozen_frame_data_.Reset();
   page_aggregator_data_.Reset();
 }
 
