@@ -137,11 +137,6 @@ class Buffer {
 
   class Texture;
 
-  Buffer(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
-         unsigned query_type,
-         bool use_zero_copy,
-         bool is_overlay_candidate,
-         bool y_invert);
   Buffer(gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle,
          gfx::BufferFormat buffer_format,
          gfx::Size size,
@@ -209,9 +204,6 @@ class Buffer {
   void OnIsProtectedNativePixmapHandle(bool is_protected);
 #endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 
-  // The GPU memory buffer that contains the contents of this buffer.
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
-
   // Contains the content of this buffer instead of |gpu_memory_buffer_| when
   // MappableSI is enabled.
   gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle_;
@@ -271,8 +263,6 @@ class Buffer {
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
   ProtectedBufferState protected_buffer_state_ = ProtectedBufferState::UNKNOWN;
 #endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
-
-  const bool is_mappable_si_enabled_;
 
   base::WeakPtrFactory<Buffer> weak_ptr_factory_{this};
 };

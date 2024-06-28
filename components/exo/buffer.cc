@@ -54,11 +54,6 @@
 namespace exo {
 namespace {
 
-// Allow MappableSI to be used in Exo::Buffer.
-BASE_FEATURE(kAlwaysUseMappableSIForExoBuffer,
-             "AlwaysUseMappableSIForExoBuffer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // The amount of time before we wait for release queries using
 // GetQueryObjectuivEXT(GL_QUERY_RESULT_EXT).
 const int kWaitForReleaseDelayMs = 500;
@@ -150,21 +145,7 @@ gpu::SharedImageInterface* GetSharedImageInterface() {
   ui::ContextFactory* context_factory =
       aura::Env::GetInstance()->context_factory();
   CHECK(context_factory);
-  // Note : This can fail if GPU acceleration has been disabled. It can create
-  // some subtle differences when MappableSI is enabled vs disabled. If the GPU
-  // acceleration has been disabled and |context_provider| is null, this method
-  // will return null and hence no MappableSI/ClientSharedImage(backed by a
-  // GpuMemoryBuffer) will be created when MappableSI is enabled.
-  // Whereas for MappableSI disabled, we will still end up having a valid
-  // |gpu_memory_buffer_| via other path in the code. Eventually both should
-  // result in the same behavior because having no MappableSI as well as a valid
-  // (but empty)|gpu_memory_buffer_| will result in capturing the same
-  // results(empty bitmap) in Buffer::CreateBitmap(). This is because the only
-  // way we write to the |gpu_memory_buffer_| is via creating a shared image out
-  // of it in Buffer::Texture::Texture() which will never be called if there is
-  // no |context_provider|. So both paths will also end
-  // up returning false in Buffer::ProduceTransferableResource() which will
-  // result in generating solid draw quad.
+  // Note : This can fail if GPU acceleration has been disabled.
   scoped_refptr<viz::RasterContextProvider> context_provider =
       context_factory->SharedMainThreadRasterContextProvider();
   if (!context_provider) {
@@ -188,7 +169,6 @@ class Buffer::Texture : public viz::ContextLostObserver {
           gfx::ColorSpace color_space,
           gpu::SyncToken& sync_token_out);
   Texture(scoped_refptr<viz::RasterContextProvider> context_provider,
-          gfx::GpuMemoryBuffer* gpu_memory_buffer,
           gfx::GpuMemoryBufferHandle* gpu_memory_buffer_handle,
           const gfx::BufferFormat buffer_format,
           const gfx::Size& size,
@@ -214,7 +194,7 @@ class Buffer::Texture : public viz::ContextLostObserver {
   void Release(base::OnceCallback<void(gfx::GpuFenceHandle)> callback,
                viz::ReturnedResource resource);
 
-  // Updates the contents referenced by |gpu_memory_buffer_| returned by
+  // Updates the contents referenced by |gpu_memory_buffer_handle_| returned by
   // mailbox().
   // Returns a sync token that can be used when accessing the SharedImage from a
   // different context.
@@ -248,10 +228,6 @@ class Buffer::Texture : public viz::ContextLostObserver {
   void WaitForRelease();
   const void* GetBufferId() const;
 
-  const raw_ptr<gfx::GpuMemoryBuffer, DanglingUntriaged> gpu_memory_buffer_;
-
-  // Note that |gpu_memory_buffer_handle_| is used instead of
-  // |gpu_memory_buffer_| when MappableSI is enabled.
   // Note that the owning reference to this pointers is ::Buffer which can be
   // destroyed before it when ::Buffer::Texture is destroyed via
   // ::Buffer::Texture::ReleaseSharedImage(). This causes pointer to dangle. But
@@ -269,7 +245,6 @@ class Buffer::Texture : public viz::ContextLostObserver {
   const base::TimeDelta wait_for_release_delay_;
   base::TimeTicks wait_for_release_time_;
   bool wait_for_release_pending_ = false;
-  const bool is_mappable_si_enabled_;
   base::WeakPtrFactory<Texture> weak_ptr_factory_{this};
 };
 
@@ -278,13 +253,10 @@ Buffer::Texture::Texture(
     const gfx::Size& size,
     gfx::ColorSpace color_space,
     gpu::SyncToken& sync_token_out)
-    : gpu_memory_buffer_(nullptr),
-      gpu_memory_buffer_handle_(nullptr),
+    : gpu_memory_buffer_handle_(nullptr),
       size_(size),
       context_provider_(std::move(context_provider)),
-      query_type_(GL_COMMANDS_COMPLETED_CHROMIUM),
-      is_mappable_si_enabled_(
-          base::FeatureList::IsEnabled(kAlwaysUseMappableSIForExoBuffer)) {
+      query_type_(GL_COMMANDS_COMPLETED_CHROMIUM) {
   gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
 
   // These SharedImages are used over the raster interface as both the source
@@ -311,7 +283,6 @@ Buffer::Texture::Texture(
 
 Buffer::Texture::Texture(
     scoped_refptr<viz::RasterContextProvider> context_provider,
-    gfx::GpuMemoryBuffer* gpu_memory_buffer,
     gfx::GpuMemoryBufferHandle* gpu_memory_buffer_handle,
     const gfx::BufferFormat buffer_format,
     const gfx::Size& size,
@@ -320,18 +291,12 @@ Buffer::Texture::Texture(
     base::TimeDelta wait_for_release_delay,
     bool is_overlay_candidate,
     gpu::SyncToken& sync_token_out)
-    : gpu_memory_buffer_(gpu_memory_buffer),
-      gpu_memory_buffer_handle_(gpu_memory_buffer_handle),
+    : gpu_memory_buffer_handle_(gpu_memory_buffer_handle),
       size_(size),
       context_provider_(std::move(context_provider)),
       query_type_(query_type),
-      wait_for_release_delay_(wait_for_release_delay),
-      is_mappable_si_enabled_(
-          base::FeatureList::IsEnabled(kAlwaysUseMappableSIForExoBuffer)) {
-  // Adding checks to avoid running into issues until the feature is fully
-  // enabled.
-  CHECK((is_mappable_si_enabled_ && !gpu_memory_buffer_handle_->is_null()) ||
-        (!is_mappable_si_enabled_ && gpu_memory_buffer));
+      wait_for_release_delay_(wait_for_release_delay) {
+  CHECK(!gpu_memory_buffer_handle_->is_null());
 
   gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
 
@@ -346,17 +311,10 @@ Buffer::Texture::Texture(
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 
-  if (is_mappable_si_enabled_) {
-    shared_image_ = sii->CreateSharedImage(
-        {GetSharedImageFormat(buffer_format), size_, color_space, usage,
-         gpu::kExoTextureLabelPrefix},
-        gpu_memory_buffer_handle_->Clone());
-  } else {
-    shared_image_ = sii->CreateSharedImage(
-        {GetSharedImageFormat(buffer_format), size_, color_space, usage,
-         gpu::kExoTextureLabelPrefix},
-        gpu_memory_buffer_->CloneHandle());
-  }
+  shared_image_ =
+      sii->CreateSharedImage({GetSharedImageFormat(buffer_format), size_,
+                              color_space, usage, gpu::kExoTextureLabelPrefix},
+                             gpu_memory_buffer_handle_->Clone());
   CHECK(shared_image_);
   DCHECK(!shared_image_->mailbox().IsZero());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
@@ -560,9 +518,7 @@ void Buffer::Texture::WaitForRelease() {
 }
 
 const void* Buffer::Texture::GetBufferId() const {
-  return is_mappable_si_enabled_
-             ? static_cast<const void*>(gpu_memory_buffer_handle_)
-             : static_cast<const void*>(gpu_memory_buffer_);
+  return static_cast<const void*>(gpu_memory_buffer_handle_);
 }
 
 Buffer::BufferRelease::BufferRelease(
@@ -593,24 +549,6 @@ Buffer::Buffer()
              kDefaultIsOverlayCandidate,
              kDefaultYInvert) {}
 
-Buffer::Buffer(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
-               unsigned query_type,
-               bool use_zero_copy,
-               bool is_overlay_candidate,
-               bool y_invert)
-    : gpu_memory_buffer_(std::move(gpu_memory_buffer)),
-      gpu_memory_buffer_handle_(gfx::GpuMemoryBufferHandle()),
-      buffer_format_(gpu_memory_buffer_ ? gpu_memory_buffer_->GetFormat()
-                                        : kDefaultBufferFormat),
-      size_(gpu_memory_buffer_ ? gpu_memory_buffer_->GetSize() : kDefaultSize),
-      query_type_(query_type),
-      use_zero_copy_(use_zero_copy),
-      is_overlay_candidate_(is_overlay_candidate),
-      y_invert_(y_invert),
-      wait_for_release_delay_(base::Milliseconds(kWaitForReleaseDelayMs)),
-      is_mappable_si_enabled_(
-          base::FeatureList::IsEnabled(kAlwaysUseMappableSIForExoBuffer)) {}
-
 Buffer::Buffer(gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle,
                gfx::BufferFormat buffer_format,
                gfx::Size size,
@@ -619,8 +557,7 @@ Buffer::Buffer(gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle,
                bool use_zero_copy,
                bool is_overlay_candidate,
                bool y_invert)
-    : gpu_memory_buffer_(nullptr),
-      gpu_memory_buffer_handle_(std::move(gpu_memory_buffer_handle)),
+    : gpu_memory_buffer_handle_(std::move(gpu_memory_buffer_handle)),
       buffer_format_(buffer_format),
       size_(size),
       buffer_usage_(buffer_usage),
@@ -628,9 +565,7 @@ Buffer::Buffer(gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle,
       use_zero_copy_(use_zero_copy),
       is_overlay_candidate_(is_overlay_candidate),
       y_invert_(y_invert),
-      wait_for_release_delay_(base::Milliseconds(kWaitForReleaseDelayMs)),
-      is_mappable_si_enabled_(
-          base::FeatureList::IsEnabled(kAlwaysUseMappableSIForExoBuffer)) {}
+      wait_for_release_delay_(base::Milliseconds(kWaitForReleaseDelayMs)) {}
 
 Buffer::~Buffer() {}
 
@@ -644,30 +579,9 @@ std::unique_ptr<Buffer> Buffer::CreateBufferFromGMBHandle(
     bool use_zero_copy,
     bool is_overlay_candidate,
     bool y_invert) {
-  const bool is_mappable_si_enabled =
-      base::FeatureList::IsEnabled(kAlwaysUseMappableSIForExoBuffer);
-  if (is_mappable_si_enabled) {
-    return base::WrapUnique(new Buffer(
-        std::move(buffer_handle), buffer_format, buffer_size, buffer_usage,
-        query_type, use_zero_copy, is_overlay_candidate, y_invert));
-  }
-
-  gpu::GpuMemoryBufferSupport gpu_memory_buffer_support;
-  auto gpu_memory_buffer =
-      gpu_memory_buffer_support.CreateGpuMemoryBufferImplFromHandle(
-          std::move(buffer_handle), buffer_size, buffer_format, buffer_usage,
-          base::DoNothing());
-  if (!gpu_memory_buffer) {
-    LOG(ERROR) << "Failed to create GpuMemoryBuffer from handle.";
-    return nullptr;
-  }
-
-  // Note that for now we are always creating a GMB from GMBHandle here. This
-  // will help clients to move away from using GMB to create Exo::Buffer while
-  // still keep the code inside here intact.
-  return base::WrapUnique(new Buffer(std::move(gpu_memory_buffer), query_type,
-                                     use_zero_copy, is_overlay_candidate,
-                                     y_invert));
+  return base::WrapUnique(new Buffer(
+      std::move(buffer_handle), buffer_format, buffer_size, buffer_usage,
+      query_type, use_zero_copy, is_overlay_candidate, y_invert));
 }
 
 // static
@@ -679,64 +593,43 @@ std::unique_ptr<Buffer> Buffer::CreateBuffer(
     gpu::SurfaceHandle surface_handle,
     base::WaitableEvent* shutdown_event,
     bool is_overlay_candidate) {
-  const bool is_mappable_si_enabled =
-      base::FeatureList::IsEnabled(kAlwaysUseMappableSIForExoBuffer);
-  if (is_mappable_si_enabled) {
-    scoped_refptr<gpu::ClientSharedImage> shared_image;
-    auto* sii = GetSharedImageInterface();
-    if (sii) {
-      // Note that we are creating this mappable shared image only to get a
-      // GMBHandle from it and use below to create ::Buffer.
-      // TODO(vikassoni) : Once MappableSI is fully launched
-      // and we remove legacy code paths, refactor ::Buffer and
-      // ::Buffer::Texture to use this MappableSI created below directly in
-      // ::Buffer::Texture instead of creating new SI in it.
-      // ::Buffer will keep a GMB handle as well as MappableSI when handles
-      // comes externally via ::CreateBufferFromGMBHandle whereas only
-      // MappableSI for ::CreateBuffer calls. ::Buffer also needs to handle
-      // context loss since its using a SI.
-      // Currently creating ::Buffer from MappableSI below and then using that
-      // ::Buffer to create
-      // ::Buffer::Texture does not work well as the ::Buffer does not implement
-      // ContextLostObserver like ::Buffer::Texture. Even if ::Buffer does
-      // implement ContextLostObserver and destroys the MappableSI correctly, it
-      // still needs to recreate it when contexts are recreated. This behaviour
-      // will be different from using |gpu_memory_buffer_| currently as it does
-      // not need to be destroyed and recreated on context loss.
-      shared_image = sii->CreateSharedImage(
-          {GetSharedImageFormat(buffer_format), buffer_size, gfx::ColorSpace(),
-           kDefaultMappableSIUsage, "ExoBufferCreateBuffer"},
-          surface_handle, buffer_usage);
-    }
-    if (!shared_image) {
-      LOG(ERROR) << "Failed to create a mappable shared image.";
-      return nullptr;
-    }
-    std::unique_ptr<Buffer> buffer = base::WrapUnique(
-        new Buffer(shared_image->CloneGpuMemoryBufferHandle(), buffer_format,
-                   buffer_size, buffer_usage, kDefaultQueryType,
-                   kDefaultUseZeroCopy, is_overlay_candidate, kDefaultYInvert));
-
-    // Destroy the |shared_image| as it will no longer be used. Note that the
-    // underlying handle is already cloned above and will not be destroyed by
-    // destroying the |shared_image|.
-    sii->DestroySharedImage(gpu::SyncToken(), std::move(shared_image));
-    return buffer;
+  scoped_refptr<gpu::ClientSharedImage> shared_image;
+  auto* sii = GetSharedImageInterface();
+  if (sii) {
+    // Note that we are creating this mappable shared image only to get a
+    // GMBHandle from it and use below to create ::Buffer.
+    // TODO(vikassoni) : Once MappableSI is fully launched
+    // and we remove legacy code paths, refactor ::Buffer and
+    // ::Buffer::Texture to use this MappableSI created below directly in
+    // ::Buffer::Texture instead of creating new SI in it.
+    // ::Buffer will keep a GMB handle as well as MappableSI when handles
+    // comes externally via ::CreateBufferFromGMBHandle whereas only
+    // MappableSI for ::CreateBuffer calls. ::Buffer also needs to handle
+    // context loss since its using a SI.
+    // Currently creating ::Buffer from MappableSI below and then using that
+    // ::Buffer to create ::Buffer::Texture does not work well as the ::Buffer
+    // does not implement ContextLostObserver like ::Buffer::Texture. Even if
+    // ::Buffer does implement ContextLostObserver and destroys the MappableSI
+    // correctly, it still needs to recreate it when contexts are recreated.
+    shared_image = sii->CreateSharedImage(
+        {GetSharedImageFormat(buffer_format), buffer_size, gfx::ColorSpace(),
+         kDefaultMappableSIUsage, "ExoBufferCreateBuffer"},
+        surface_handle, buffer_usage);
   }
-
-  auto gpu_memory_buffer =
-      aura::Env::GetInstance()
-          ->context_factory()
-          ->GetGpuMemoryBufferManager()
-          ->CreateGpuMemoryBuffer(buffer_size, buffer_format, buffer_usage,
-                                  surface_handle, shutdown_event);
-  if (!gpu_memory_buffer) {
-    LOG(ERROR) << "Failed to create GpuMemoryBuffer from handle.";
+  if (!shared_image) {
+    LOG(ERROR) << "Failed to create a mappable shared image.";
     return nullptr;
   }
-  return base::WrapUnique(new Buffer(std::move(gpu_memory_buffer),
-                                     kDefaultQueryType, kDefaultUseZeroCopy,
-                                     is_overlay_candidate, kDefaultYInvert));
+  std::unique_ptr<Buffer> buffer = base::WrapUnique(
+      new Buffer(shared_image->CloneGpuMemoryBufferHandle(), buffer_format,
+                 buffer_size, buffer_usage, kDefaultQueryType,
+                 kDefaultUseZeroCopy, is_overlay_candidate, kDefaultYInvert));
+
+  // Destroy the |shared_image| as it will no longer be used. Note that the
+  // underlying handle is already cloned above and will not be destroyed by
+  // destroying the |shared_image|.
+  sii->DestroySharedImage(gpu::SyncToken(), std::move(shared_image));
+  return buffer;
 }
 
 bool Buffer::ProduceTransferableResource(
@@ -791,15 +684,14 @@ bool Buffer::ProduceTransferableResource(
   resource->resource_source =
       viz::TransferableResource::ResourceSource::kExoBuffer;
 
-  // Create a new image texture for |gpu_memory_buffer_| if one doesn't already
-  // exist. The contents of this buffer are copied to |texture| using a call to
-  // CopyTexImage.
+  // Create a new image texture for |gpu_memory_buffer_handle_| if one doesn't
+  // already exist. The contents of this buffer are copied to |texture| using a
+  // call to CopyTexImage.
   if (!contents_texture_) {
     contents_texture_ = std::make_unique<Texture>(
-        context_provider, gpu_memory_buffer_.get(), &gpu_memory_buffer_handle_,
-        buffer_format_, size_, color_space, query_type_,
-        wait_for_release_delay_, is_overlay_candidate_,
-        resource->mutable_sync_token());
+        context_provider, &gpu_memory_buffer_handle_, buffer_format_, size_,
+        color_space, query_type_, wait_for_release_delay_,
+        is_overlay_candidate_, resource->mutable_sync_token());
   }
   Texture* contents_texture = contents_texture_.get();
 
@@ -817,12 +709,8 @@ bool Buffer::ProduceTransferableResource(
   // require a secure output.
   if (secure_output_only &&
       protected_buffer_state_ == ProtectedBufferState::UNKNOWN &&
-      ((is_mappable_si_enabled_ && !gpu_memory_buffer_handle_.is_null()) ||
-       (!is_mappable_si_enabled_ && gpu_memory_buffer_)) &&
-      protected_native_pixmap_query) {
-    gfx::GpuMemoryBufferHandle gmb_handle =
-        is_mappable_si_enabled_ ? gpu_memory_buffer_handle_.Clone()
-                                : gpu_memory_buffer_->CloneHandle();
+      !gpu_memory_buffer_handle_.is_null() && protected_native_pixmap_query) {
+    gfx::GpuMemoryBufferHandle gmb_handle = gpu_memory_buffer_handle_.Clone();
     if (!gmb_handle.native_pixmap_handle.planes.empty()) {
       base::ScopedFD pixmap_handle(HANDLE_EINTR(
           dup(gmb_handle.native_pixmap_handle.planes[0].fd.get())));
@@ -945,9 +833,7 @@ gfx::BufferFormat Buffer::GetFormat() const {
 // GMBs will go away and clients will end up using either GMBHandle or Mappable
 // shared image. Below method will be updated accordingly.
 const void* Buffer::GetBufferId() const {
-  return is_mappable_si_enabled_
-             ? static_cast<const void*>(&gpu_memory_buffer_handle_)
-             : static_cast<const void*>(gpu_memory_buffer_.get());
+  return static_cast<const void*>(&gpu_memory_buffer_handle_);
 }
 
 SkColor4f Buffer::GetColor() const {
@@ -1057,69 +943,43 @@ void Buffer::FenceSignalled(uint64_t commit_id) {
 
 SkBitmap Buffer::CreateBitmap() {
   SkBitmap bitmap;
-  void* memory = nullptr;
-  int stride = 0;
-  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
-  gpu::SharedImageInterface* sii = nullptr;
-  scoped_refptr<gpu::ClientSharedImage> shared_image;
-
   SkColorType color_type = GetColorTypeForBitmapCreation(GetFormat());
   if (color_type == SkColorType::kUnknown_SkColorType) {
     return bitmap;
   }
 
-  if (is_mappable_si_enabled_) {
-    sii = GetSharedImageInterface();
-    if (gpu_memory_buffer_handle_.is_null() || !sii) {
-      return bitmap;
-    }
+  auto* sii = GetSharedImageInterface();
+  if (gpu_memory_buffer_handle_.is_null() || !sii) {
+    return bitmap;
+  }
 
-    // We only need to create this shared image in order to Map the
-    // |gpu_memory_buffer_handle_| to cpu visible memory.
-    shared_image = sii->CreateSharedImage(
-        {GetSharedImageFormat(buffer_format_), size_, gfx::ColorSpace(),
-         kDefaultMappableSIUsage, "ExoBufferCreateBitmap"},
-        gpu::kNullSurfaceHandle, buffer_usage_,
-        gpu_memory_buffer_handle_.Clone());
+  // We only need to create this shared image in order to Map the
+  // |gpu_memory_buffer_handle_| to cpu visible memory.
+  auto shared_image = sii->CreateSharedImage(
+      {GetSharedImageFormat(buffer_format_), size_, gfx::ColorSpace(),
+       kDefaultMappableSIUsage, "ExoBufferCreateBitmap"},
+      gpu::kNullSurfaceHandle, buffer_usage_,
+      gpu_memory_buffer_handle_.Clone());
 
-    mapping = shared_image->Map();
-    if (!mapping) {
-      DLOG(ERROR) << "Failed to map MappableSI.";
-      return bitmap;
-    }
-
-    memory = mapping->Memory(0);
-    stride = mapping->Stride(0);
-  } else {
-    if (!gpu_memory_buffer_) {
-      return bitmap;
-    }
-
-    if (!gpu_memory_buffer_->Map()) {
-      DLOG(ERROR) << "Failed to map |gpu_memory_buffer_|.";
-      return bitmap;
-    }
-
-    memory = gpu_memory_buffer_->memory(0);
-    stride = gpu_memory_buffer_->stride(0);
+  auto mapping = shared_image->Map();
+  if (!mapping) {
+    LOG(ERROR) << "Failed to map MappableSI.";
+    return bitmap;
   }
 
   gfx::Size size = GetSize();
   SkImageInfo image_info = SkImageInfo::Make(size.width(), size.height(),
                                              color_type, kPremul_SkAlphaType);
 
-  SkPixmap pixmap = SkPixmap(image_info, memory, stride);
+  SkPixmap pixmap =
+      SkPixmap(image_info, mapping->Memory(0), mapping->Stride(0));
   bitmap.allocPixels(image_info);
   bitmap.writePixels(pixmap);
   bitmap.setImmutable();
-  if (is_mappable_si_enabled_) {
-    mapping.reset();
-    // Destroy this shared image as we no longer need it.
-    sii->DestroySharedImage(gpu::SyncToken(), std::move(shared_image));
-  } else {
-    gpu_memory_buffer_->Unmap();
-  }
+  mapping.reset();
 
+  // Destroy this shared image as we no longer need it.
+  sii->DestroySharedImage(gpu::SyncToken(), std::move(shared_image));
   return bitmap;
 }
 
