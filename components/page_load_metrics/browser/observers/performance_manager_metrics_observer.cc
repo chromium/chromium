@@ -254,6 +254,12 @@ ObservePolicy PerformanceManagerMetricsObserver::LogMetricsIfLoaded(
   std::optional<base::TimeDelta> loaded_idle_delta;
   if (!loaded_idle_time_.is_null()) {
     loaded_idle_delta = loaded_idle_time_ - navigation_start_time;
+    if (loaded_idle_delta->is_negative()) {
+      // `navigation_start_time` is reported from renderers so can't be
+      // guaranteed monotonically increasing compared to TimeTicks::Now() taken
+      // in this process. Bail out if it's not valid.
+      return STOP_OBSERVING;
+    }
   }
 
   const page_load_metrics::ContentfulPaintTimingInfo& lcp_info =
