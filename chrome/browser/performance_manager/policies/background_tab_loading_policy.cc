@@ -393,10 +393,7 @@ void BackgroundTabLoadingPolicy::OnMemoryPressure(
 
 SiteDataReader* BackgroundTabLoadingPolicy::GetSiteDataReader(
     const PageNode* page_node) const {
-  auto* data = SiteDataRecorder::Data::FromPageNode(page_node);
-  if (!data)
-    return nullptr;
-  return data->reader();
+  return SiteDataRecorder::Data::GetReaderForPageNode(page_node);
 }
 
 void BackgroundTabLoadingPolicy::ScoreTab(

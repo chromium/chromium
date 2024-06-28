@@ -16,18 +16,22 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "base/types/token_type.h"
+#include "build/build_config.h"
 #include "components/performance_manager/decorators/page_load_tracker_decorator_data.h"
 #include "components/performance_manager/graph/node_attached_data.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/performance_manager/decorators/site_data_node_data.h"
+#endif
+
 namespace performance_manager {
 
 class FrameNodeImpl;
 class FrozenFrameAggregatorAccess;
 class PageAggregatorAccess;
-class SiteDataAccess;
 
 // The starting state of various boolean properties of the PageNode.
 enum class PagePropertyFlag {
@@ -44,7 +48,12 @@ using PagePropertyFlags = base::
 class PageNodeImpl
     : public PublicNodeImpl<PageNodeImpl, PageNode>,
       public TypedNodeBase<PageNodeImpl, PageNode, PageNodeObserver>,
-      public SupportsNodeInlineData<PageLoadTrackerDecoratorData> {
+      public SupportsNodeInlineData<PageLoadTrackerDecoratorData
+#if !BUILDFLAG(IS_ANDROID)
+                                    ,
+                                    SiteDataNodeData
+#endif
+                                    > {
  public:
   using PassKey = base::PassKey<PageNodeImpl>;
   using FrozenFrameDataStorage =
@@ -170,10 +179,6 @@ class PageNodeImpl
   base::WeakPtr<PageNodeImpl> GetWeakPtr();
 
   // Accessors to some of the NodeAttachedData:
-  std::unique_ptr<NodeAttachedData>& GetSiteData(
-      base::PassKey<SiteDataAccess>) {
-    return site_data_;
-  }
   FrozenFrameDataStorage& GetFrozenFrameData(
       base::PassKey<FrozenFrameAggregatorAccess>) {
     return frozen_frame_data_;
@@ -373,10 +378,6 @@ class PageNodeImpl
   ObservedProperty::
       NotifiesOnlyOnChanges<bool, &PageNodeObserver::OnHadUserEditsChanged>
           had_user_edits_ GUARDED_BY_CONTEXT(sequence_checker_){false};
-
-  // Storage for SiteDataNodeData user data.
-  std::unique_ptr<NodeAttachedData> site_data_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Inline storage for FrozenFrameAggregator user data.
   FrozenFrameDataStorage frozen_frame_data_

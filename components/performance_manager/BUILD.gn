@@ -281,6 +281,8 @@ static_library("performance_manager") {
 
   if (!is_android) {
     sources += [
+      "decorators/site_data_node_data.cc",
+      "decorators/site_data_node_data.h",
       "decorators/site_data_recorder.cc",
       "persistence/site_data/exponential_moving_average.cc",
       "persistence/site_data/exponential_moving_average.h",
