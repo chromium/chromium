@@ -11,9 +11,11 @@
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/controls/text_with_controls_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/tracking_protection_feature.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -24,6 +26,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -61,6 +64,46 @@ std::unique_ptr<views::View> CreateFullWidthSeparator() {
 std::unique_ptr<views::View> CreatePaddedSeparator() {
   return CreateSeparator(/*padded=*/true);
 }
+
+const gfx::VectorIcon& GetFeatureIcon(
+    content_settings::TrackingProtectionFeatureType feature_type,
+    bool enabled) {
+  switch (feature_type) {
+    case FeatureType::kThirdPartyCookies:
+      return enabled ? views::kEyeRefreshIcon : views::kEyeCrossedRefreshIcon;
+    default:
+      // TODO(http://b/5605065): Update placeholder icon.
+      return views::kEyeRefreshIcon;
+  }
+}
+
+std::u16string GetFeatureLabel(
+    content_settings::TrackingProtectionFeatureType feature_type) {
+  switch (feature_type) {
+    case content_settings::TrackingProtectionFeatureType::kThirdPartyCookies:
+      return l10n_util::GetStringUTF16(
+          IDS_COOKIE_CONTROLS_BUBBLE_THIRD_PARTY_COOKIES_LABEL);
+    default:
+      return {};
+  }
+}
+
+std::u16string GetStatusString(
+    content_settings::TrackingProtectionBlockingStatus status) {
+  switch (status) {
+    case content_settings::TrackingProtectionBlockingStatus::kAllowed:
+      return l10n_util::GetStringUTF16(
+          IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE);
+    case content_settings::TrackingProtectionBlockingStatus::kBlocked:
+      return l10n_util::GetStringUTF16(
+          IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE);
+    case content_settings::TrackingProtectionBlockingStatus::kLimited:
+      return l10n_util::GetStringUTF16(
+          IDS_TRACKING_PROTECTION_BUBBLE_3PC_LIMITED_SUBTITLE);
+    default:
+      return {};
+  }
+}
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsContentView, kTitle);
@@ -78,9 +121,6 @@ CookieControlsContentView::CookieControlsContentView() {
   AddChildView(CreateFullWidthSeparator());
   if (IsNewUiEnabled()) {
     AddDescriptionRow();
-    AddFeatureRow(FeatureType::kThirdPartyCookies);
-    // TODO(https://b/344856056): Add support for ACT feature and managed cookie
-    // rows
   } else {
     AddContentLabels();
     AddToggleRow();
@@ -163,6 +203,8 @@ void CookieControlsContentView::SetFeedbackSectionVisibility(bool visible) {
   if (visible && base::FeatureList::IsEnabled(
                      content_settings::features::kUserBypassFeedback)) {
     feedback_section_->SetVisible(true);
+    // Ensure that the feedback row is always below ACT feature rows.
+    ReorderChildView(feedback_section_, children().size());
   } else {
     feedback_section_->SetVisible(false);
   }
@@ -186,21 +228,52 @@ void CookieControlsContentView::AddDescriptionRow() {
                 description_row_->GetFirstLineHeight()));
   toggle_button_->SetVisible(true);
   toggle_button_->SetProperty(views::kElementIdentifierKey, kToggleButton);
+  // TODO(https://b/344856056): Update this accessibility label for the new UI.
+  // This function call is left in temporarily for testing.
+  toggle_button_->GetViewAccessibility().SetName(
+      description_row_->title()->GetText());
 }
 
-void CookieControlsContentView::AddFeatureRow(FeatureType feature_type) {
+const ui::ElementIdentifier CookieControlsContentView::GetFeatureIdentifier(
+    content_settings::TrackingProtectionFeatureType feature_type) {
   switch (feature_type) {
+    case content_settings::TrackingProtectionFeatureType::kThirdPartyCookies:
+      return IsNewUiEnabled() ? kThirdPartyCookiesLabel : kToggleLabel;
+    default:
+      return {};
+  }
+}
+
+void CookieControlsContentView::AddFeatureRow(
+    content_settings::TrackingProtectionFeature feature,
+    bool protections_on) {
+  RichControlsContainerView* row = nullptr;
+  views::Label* label = nullptr;
+
+  switch (feature.feature_type) {
     case FeatureType::kThirdPartyCookies: {
-      cookies_row_ =
-          AddChildView(std::make_unique<RichControlsContainerView>());
-      cookies_row_->SetTitle(l10n_util::GetStringUTF16(
-          IDS_COOKIE_CONTROLS_BUBBLE_THIRD_PARTY_COOKIES_LABEL));
-      // The label will be provided via SetCookiesLabel().
-      cookies_label_ = cookies_row_->AddSecondaryLabel(u"");
+      if (cookies_row_ == nullptr) {
+        cookies_row_ =
+            AddChildView(std::make_unique<RichControlsContainerView>());
+      }
+      if (cookies_label_ == nullptr) {
+        cookies_label_ =
+            cookies_row_->AddSecondaryLabel(GetStatusString(feature.status));
+      }
+      row = cookies_row_;
+      label = cookies_label_;
     } break;
     default:
-      break;
+      return;
   }
+
+  row->SetTitle(GetFeatureLabel(feature.feature_type));
+  label->SetProperty(views::kElementIdentifierKey,
+                     GetFeatureIdentifier(feature.feature_type));
+  label->SetText(GetStatusString(feature.status));
+  row->SetIcon(ui::ImageModel::FromVectorIcon(
+      GetFeatureIcon(feature.feature_type, !protections_on), ui::kColorIcon,
+      GetDefaultIconSize()));
 }
 
 void CookieControlsContentView::AddToggleRow() {
@@ -297,10 +370,11 @@ gfx::Size CookieControlsContentView::CalculatePreferredSize(
   } else {
     title_width = title_->GetPreferredSize().width() + margins;
   }
-  int cookies_row_width = cookies_row_->GetPreferredSize().width();
 
   int desired_width = std::clamp(
-      IsNewUiEnabled() ? title_width : std::max(title_width, cookies_row_width),
+      IsNewUiEnabled()
+          ? title_width
+          : std::max(title_width, cookies_row_->GetPreferredSize().width()),
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DistanceMetric::DISTANCE_BUBBLE_PREFERRED_WIDTH),
       kMaxBubbleWidth);

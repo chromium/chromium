@@ -60,12 +60,21 @@ class CookieControlsBubbleViewController
   void ApplyThirdPartyCookiesAllowedState(CookieControlsEnforcement enforcement,
                                           base::Time expiration);
   void ApplyThirdPartyCookiesBlockedState();
+
   std::u16string GetStatusLabel(
       content_settings::TrackingProtectionBlockingStatus blocking_status);
+
+  void FillDescriptionAndToggle(CookieControlsEnforcement enforcement,
+                                base::Time expiration);
 
   void FillViewForThirdPartyCookies(
       content_settings::TrackingProtectionFeature cookies_feature,
       base::Time expiration);
+
+  void FillViewForTrackingProtection(
+      CookieControlsEnforcement enforcement,
+      base::Time expiration,
+      std::vector<content_settings::TrackingProtectionFeature> features);
 
   void CloseBubble();
 

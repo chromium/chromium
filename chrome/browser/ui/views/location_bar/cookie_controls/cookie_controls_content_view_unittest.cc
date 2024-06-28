@@ -4,14 +4,19 @@
 
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_content_view.h"
 
+#include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/content_settings/core/common/cookie_controls_enforcement.h"
+#include "components/content_settings/core/common/tracking_protection_feature.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
 
 using ::testing::Contains;
@@ -67,6 +72,57 @@ TEST_F(CookieControlsContentViewUnitTest, ToggleButton_UpdatedSites) {
   // u16string.
   EXPECT_THAT(GetToggleButton()->GetViewAccessibility().GetCachedName(),
               Eq(expected));
+}
+
+}  // namespace
+
+class CookieControlsContentViewTrackingProtectionUnitTest
+    : public TestWithBrowserView {
+ public:
+  CookieControlsContentViewTrackingProtectionUnitTest()
+      : view_(std::make_unique<CookieControlsContentView>()) {}
+
+  CookieControlsContentViewTrackingProtectionUnitTest(
+      const CookieControlsContentViewTrackingProtectionUnitTest&) = delete;
+  ~CookieControlsContentViewTrackingProtectionUnitTest() override = default;
+
+ protected:
+  ui::ImageModel GetImageModel(const gfx::VectorIcon& icon) {
+    return ui::ImageModel::FromVectorIcon(
+        icon, ui::kColorIcon, GetLayoutConstant(PAGE_INFO_ICON_SIZE));
+  }
+  RichControlsContainerView* GetCookiesRow() { return view_->cookies_row_; }
+  CookieControlsContentView* GetContentView() { return view_.get(); }
+
+  std::unique_ptr<CookieControlsContentView> view_;
+};
+
+namespace {
+
+TEST_F(CookieControlsContentViewTrackingProtectionUnitTest,
+       CreateRowForThirdPartyCookiesWithProtectionsOff) {
+  content_settings::TrackingProtectionFeature feature = {
+      content_settings::TrackingProtectionFeatureType::kThirdPartyCookies,
+      CookieControlsEnforcement::kNoEnforcement,
+      content_settings::TrackingProtectionBlockingStatus::kLimited};
+  GetContentView()->AddFeatureRow(feature, true);
+
+  EXPECT_EQ(GetCookiesRow()->GetTitleForTesting(), u"Third-party cookies");
+  EXPECT_EQ(GetCookiesRow()->GetIconImageModelForTesting(),
+            GetImageModel(views::kEyeCrossedRefreshIcon));
+}
+
+TEST_F(CookieControlsContentViewTrackingProtectionUnitTest,
+       CreateRowForThirdPartyCookiesWithProtectionsOn) {
+  content_settings::TrackingProtectionFeature feature = {
+      content_settings::TrackingProtectionFeatureType::kThirdPartyCookies,
+      CookieControlsEnforcement::kNoEnforcement,
+      content_settings::TrackingProtectionBlockingStatus::kLimited};
+  GetContentView()->AddFeatureRow(feature, false);
+
+  EXPECT_EQ(GetCookiesRow()->GetTitleForTesting(), u"Third-party cookies");
+  EXPECT_EQ(GetCookiesRow()->GetIconImageModelForTesting(),
+            GetImageModel(views::kEyeRefreshIcon));
 }
 
 }  // namespace

@@ -19,6 +19,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/browser/ui/cookie_controls_util.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
+#include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/tracking_protection_feature.h"
 #include "components/favicon/core/favicon_service.h"
@@ -35,11 +36,11 @@
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
-using TrackingProtectionFeature = content_settings::TrackingProtectionFeature;
-using TrackingProtectionFeatureType =
-    content_settings::TrackingProtectionFeatureType;
-
 namespace {
+
+using TrackingProtectionFeature = ::content_settings::TrackingProtectionFeature;
+using TrackingProtectionFeatureType =
+    ::content_settings::TrackingProtectionFeatureType;
 
 constexpr int kProgressBarHeight = 3;
 
@@ -157,7 +158,6 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
       label_title, l10n_util::GetStringUTF16(label_description));
   // New UB UI toggle matches protections state (off when protections off).
   bubble_view_->GetContentView()->SetToggleIsOn(!IsNewUiEnabled());
-  bubble_view_->GetContentView()->SetToggleIcon(GetToggleIcon(true));
 }
 
 void CookieControlsBubbleViewController::ApplyThirdPartyCookiesBlockedState() {
@@ -172,7 +172,6 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesBlockedState() {
           IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION));
   // New UB UI toggle matches protections state (on when protections on).
   bubble_view_->GetContentView()->SetToggleIsOn(IsNewUiEnabled());
-  bubble_view_->GetContentView()->SetToggleIcon(GetToggleIcon(false));
 }
 
 void CookieControlsBubbleViewController::FillViewForThirdPartyCookies(
@@ -183,6 +182,8 @@ void CookieControlsBubbleViewController::FillViewForThirdPartyCookies(
   } else {
     ApplyThirdPartyCookiesAllowedState(cookies_feature.enforcement, expiration);
   }
+  bubble_view_->GetContentView()->SetToggleIcon(
+      GetToggleIcon(!protections_on_));
   bubble_view_->GetContentView()->SetCookiesLabel(
       GetStatusLabel(cookies_feature.status));
   switch (cookies_feature.enforcement) {
@@ -245,21 +246,40 @@ void CookieControlsBubbleViewController::OnStatusChanged(
   protections_on_ = protections_on;
   blocking_status_ = blocking_status;
 
-  if (!controls_visible) {
+  if (!controls_visible || features.empty()) {
     bubble_view_->CloseWidget();
     return;
   }
+  if (IsNewUiEnabled()) {
+    FillViewForTrackingProtection(enforcement, expiration, features);
+  } else {
+    // The legacy UI only supports 3PC blocking.
+    CHECK(features[0].feature_type ==
+          TrackingProtectionFeatureType::kThirdPartyCookies);
+    FillViewForThirdPartyCookies(features[0], expiration);
+  }
+}
 
+void CookieControlsBubbleViewController::FillViewForTrackingProtection(
+    CookieControlsEnforcement enforcement,
+    base::Time expiration,
+    std::vector<content_settings::TrackingProtectionFeature> features) {
+  // Fill description strings and toggle state.
+  if (protections_on_) {
+    ApplyThirdPartyCookiesBlockedState();
+  } else {
+    ApplyThirdPartyCookiesAllowedState(enforcement, expiration);
+  }
+
+  // Fill feature rows
   std::vector<TrackingProtectionFeature>::iterator it;
   for (it = features.begin(); it != features.end(); it++) {
-    switch (it->feature_type) {
-      case TrackingProtectionFeatureType::kThirdPartyCookies:
-        FillViewForThirdPartyCookies(*it, expiration);
-        break;
-      default:
-        break;
-    }
+    bubble_view_->GetContentView()->AddFeatureRow(*it, protections_on_);
   }
+  // Show the feedback link if the user disabled protections
+  bubble_view_->GetContentView()->SetFeedbackSectionVisibility(
+      !protections_on_ &&
+      enforcement == CookieControlsEnforcement::kNoEnforcement);
 }
 
 void CookieControlsBubbleViewController::

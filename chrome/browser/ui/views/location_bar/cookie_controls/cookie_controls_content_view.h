@@ -11,10 +11,10 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
 
 class RichControlsContainerView;
-
 namespace views {
 class Label;
 class ToggleButton;
@@ -56,12 +56,16 @@ class CookieControlsContentView : public views::View {
   base::CallbackListSubscription RegisterFeedbackButtonPressedCallback(
       base::RepeatingClosureList::CallbackType callback);
 
+  void AddFeatureRow(content_settings::TrackingProtectionFeature feature,
+                     bool protections_on);
+
  protected:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
  private:
   friend class CookieControlsContentViewUnitTest;
+  friend class CookieControlsContentViewTrackingProtectionUnitTest;
 
   void NotifyToggleButtonPressedCallback();
   void NotifyFeedbackButtonPressedCallback();
@@ -79,9 +83,10 @@ class CookieControlsContentView : public views::View {
   raw_ptr<views::ImageView> enforced_icon_ = nullptr;
 
   // Used for new UI.
-  void AddFeatureRow(
-      content_settings::TrackingProtectionFeatureType feature_type);
   void AddDescriptionRow();
+  const ui::ElementIdentifier GetFeatureIdentifier(
+      content_settings::TrackingProtectionFeatureType feature_type);
+
   raw_ptr<TextWithControlsView> description_row_ = nullptr;
   raw_ptr<views::ToggleButton> toggle_button_ = nullptr;
 
