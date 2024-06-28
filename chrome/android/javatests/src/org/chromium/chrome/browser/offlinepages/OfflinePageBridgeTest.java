@@ -25,8 +25,9 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.MaxAndroidSdkLevel;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.OfflinePageModelObserver;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.SavePageCallback;
@@ -460,8 +461,43 @@ public class OfflinePageBridgeTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.Q) // https://crbug.com/40188570
-    public void testGetLoadUrlParamsForOpeningMhtmlFileUrl() throws Exception {
+    @MinAndroidSdkLevel(
+            value = VERSION_CODES.R,
+            reason = "OfflinePage File Path is content uri on R+")
+    // TODO: expand this test to match testGetLoadUrlParamsForOpeningMhtmlFileUrl_File.
+    public void testGetLoadUrlParamsForOpeningMhtmlFileUrl_ContentUri() throws Exception {
+        sActivityTestRule.loadUrl(mTestPage);
+        savePage(SavePageResult.SUCCESS, mTestPage);
+        List<OfflinePageItem> allPages = OfflineTestUtil.getAllPages();
+        Assert.assertEquals(1, allPages.size());
+        OfflinePageItem offlinePage = allPages.get(0);
+
+        // The content URL pointing to the archive file should be replaced with http/https URL of
+        // the offline page.
+        String contentUrl = offlinePage.getFilePath();
+        LoadUrlParams loadUrlParams = getLoadUrlParamsForOpeningMhtmlFileOrContent(contentUrl);
+        Assert.assertEquals(offlinePage.getUrl(), loadUrlParams.getUrl());
+        String extraHeaders = loadUrlParams.getVerbatimHeaders();
+        Assert.assertNotNull(extraHeaders);
+        Assert.assertNotEquals(-1, extraHeaders.indexOf("reason=content_url_intent"));
+        Assert.assertNotEquals(
+                "intent_url field not found in header: " + extraHeaders,
+                -1,
+                extraHeaders.indexOf(
+                        "intent_url="
+                                + Base64.encodeToString(
+                                        ApiCompatibilityUtils.getBytesUtf8(contentUrl),
+                                        Base64.NO_WRAP)));
+        Assert.assertNotEquals(
+                -1, extraHeaders.indexOf("id=" + Long.toString(offlinePage.getOfflineId())));
+    }
+
+    @Test
+    @MediumTest
+    @MaxAndroidSdkLevel(
+            value = VERSION_CODES.Q,
+            reason = "OfflinePage File Path is content uri on R+")
+    public void testGetLoadUrlParamsForOpeningMhtmlFileUrl_File() throws Exception {
         sActivityTestRule.loadUrl(mTestPage);
         savePage(SavePageResult.SUCCESS, mTestPage);
         List<OfflinePageItem> allPages = OfflineTestUtil.getAllPages();
