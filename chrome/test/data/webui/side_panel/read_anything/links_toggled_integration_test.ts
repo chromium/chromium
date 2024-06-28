@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {LINK_TOGGLE_BUTTON_ID, NEXT_GRANULARITY_EVENT, PauseActionSource} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {LINK_TOGGLE_BUTTON_ID, PauseActionSource, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechSynthesisVoice, emitEvent, suppressInnocuousErrors} from './common.js';
@@ -77,8 +77,9 @@ suite('LinksToggledIntegration', () => {
             '#' + LINK_TOGGLE_BUTTON_ID)!;
     chrome.readingMode.setContentForTesting(axTree, [2, 4]);
     app.enabledLangs = ['en-US'];
-    app.selectedVoice =
+    const selectedVoice =
         createSpeechSynthesisVoice({lang: 'en', name: 'Kristi'});
+    emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
     app.getSpeechSynthesisVoice();
   });
 
@@ -124,7 +125,7 @@ suite('LinksToggledIntegration', () => {
     suite('and after speech finishes', () => {
       setup(() => {
         for (let i = 0; i < axTree.nodes.length + 1; i++) {
-          emitEvent(app, NEXT_GRANULARITY_EVENT);
+          emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
         }
       });
 

@@ -7,7 +7,7 @@ import {BrowserProxy} from '//resources/cr_components/color_change_listener/brow
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {HIGHLIGHT_TOGGLE_EVENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {suppressInnocuousErrors} from './common.js';
@@ -36,7 +36,7 @@ suite('HighlightToggle', () => {
         toolbar.shadowRoot!.querySelector<CrIconButtonElement>('#highlight')!;
 
     highlightOn = undefined;
-    document.addEventListener(HIGHLIGHT_TOGGLE_EVENT, event => {
+    document.addEventListener(ToolbarEvent.HIGHLIGHT_TOGGLE, event => {
       highlightOn = (event as CustomEvent).detail.highlightOn;
     });
   });

@@ -12,6 +12,25 @@ export const spinnerDebounceTimeout = 150;
 export const playFromSelectionTimeout = spinnerDebounceTimeout + 25;
 export const toastDurationMs = 10000;
 
+// Events emitted from the toolbar to the app
+export enum ToolbarEvent {
+  LETTER_SPACING = 'letter-spacing-change',
+  LINE_SPACING = 'line-spacing-change',
+  THEME = 'theme-change',
+  FONT_SIZE = 'font-size-change',
+  FONT = 'font-change',
+  RATE = 'rate-change',
+  PLAY_PAUSE = 'play-pause-click',
+  HIGHLIGHT_TOGGLE = 'highlight-toggle',
+  NEXT_GRANULARITY = 'next-granularity-click',
+  PREVIOUS_GRANULARITY = 'previous-granularity-click',
+  LINKS = 'links-toggle',
+  IMAGES = 'images-toggle',
+  VOICE = 'select-voice',
+  LANGUAGE_TOGGLE = 'voice-language-toggle',
+  PLAY_PREVIEW = 'preview-voice',
+}
+
 const ACTIVE_CSS_CLASS = 'active';
 
 export function getCurrentSpeechRate(): number {

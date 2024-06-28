@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {NEXT_GRANULARITY_EVENT, PREVIOUS_GRANULARITY_EVENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {emitEvent, suppressInnocuousErrors, waitForPlayFromSelection} from './common.js';
@@ -49,11 +49,11 @@ suite('ReadAloudHighlight', () => {
   };
 
   function emitNextGranularity(): void {
-    emitEvent(app, NEXT_GRANULARITY_EVENT);
+    emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
   }
 
   function emitPreviousGranularity(): void {
-    emitEvent(app, PREVIOUS_GRANULARITY_EVENT);
+    emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
   }
 
   setup(() => {

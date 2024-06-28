@@ -18,7 +18,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {openMenu} from './common.js';
+import {openMenu, ToolbarEvent} from './common.js';
 import type {LanguageMenuElement} from './language_menu.js';
 import {ReadAloudSettingsChange} from './metrics_browser_proxy.js';
 import {ReadAnythingLogger} from './read_anything_logger.js';
@@ -48,8 +48,6 @@ interface VoiceDropdownItem {
 }
 
 // Events emitted from the voice selection menu to the app
-export const PLAY_PREVIEW_EVENT = 'preview-voice';
-
 const spBodyPadding = window.getComputedStyle(document.body)
                           .getPropertyValue('--sp-body-padding');
 
@@ -180,7 +178,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
         ReadAloudSettingsChange.VOICE_NAME_CHANGE);
     const selectedVoice = event.model.item.voice;
 
-    this.dispatchEvent(new CustomEvent('select-voice', {
+    this.dispatchEvent(new CustomEvent(ToolbarEvent.VOICE, {
       bubbles: true,
       composed: true,
       detail: {
@@ -196,11 +194,10 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
     event.stopImmediatePropagation();
 
     const previewVoice = event.model.item.voice;
-    this.dispatchEvent(new CustomEvent(PLAY_PREVIEW_EVENT, {
+    this.dispatchEvent(new CustomEvent(ToolbarEvent.PLAY_PREVIEW, {
       bubbles: true,
       composed: true,
-      detail: event.model.item.previewPlaying ? null
-                                              : { previewVoice },
+      detail: event.model.item.previewPlaying ? null : {previewVoice},
     }));
   }
 

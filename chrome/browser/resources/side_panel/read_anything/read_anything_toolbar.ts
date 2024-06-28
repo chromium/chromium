@@ -24,7 +24,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {Debouncer, PolymerElement, timeOut} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getCurrentSpeechRate, minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout} from './common.js';
+import {getCurrentSpeechRate, minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout, ToolbarEvent} from './common.js';
 import {ReadAloudSettingsChange, ReadAnythingSettingsChange} from './metrics_browser_proxy.js';
 import {ReadAnythingLogger, TimeFrom, TimeTo} from './read_anything_logger.js';
 import {getTemplate} from './read_anything_toolbar.html.js';
@@ -80,20 +80,6 @@ export const LINK_TOGGLE_BUTTON_ID = 'link-toggle-button';
 export const IMAGES_ENABLED_ICON = 'read-anything:images-enabled';
 export const IMAGES_DISABLED_ICON = 'read-anything:images-disabled';
 export const IMAGES_TOGGLE_BUTTON_ID = 'images-toggle-button';
-
-// Events emitted from the toolbar to the app
-export const LETTER_SPACING_EVENT = 'letter-spacing-change';
-export const LINE_SPACING_EVENT = 'line-spacing-change';
-export const THEME_EVENT = 'theme-change';
-export const FONT_SIZE_EVENT = 'font-size-change';
-export const FONT_EVENT = 'font-change';
-export const RATE_EVENT = 'rate-change';
-export const PLAY_PAUSE_EVENT = 'play-pause-click';
-export const HIGHLIGHT_TOGGLE_EVENT = 'highlight-toggle';
-export const NEXT_GRANULARITY_EVENT = 'next-granularity-click';
-export const PREVIOUS_GRANULARITY_EVENT = 'previous-granularity-click';
-export const LINKS_EVENT = 'links-toggle';
-export const IMAGES_EVENT = 'images-toggle';
 
 // Constants for styling the toolbar when page zoom changes.
 const whiteSpaceTypical = 'nowrap';
@@ -642,11 +628,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private onNextGranularityClick_() {
-    this.emitEvent_(NEXT_GRANULARITY_EVENT);
+    this.emitEvent_(ToolbarEvent.NEXT_GRANULARITY);
   }
 
   private onPreviousGranularityClick_() {
-    this.emitEvent_(PREVIOUS_GRANULARITY_EVENT);
+    this.emitEvent_(ToolbarEvent.PREVIOUS_GRANULARITY);
   }
 
   private onTextStyleMenuButtonClick_(event: DomRepeatEvent<MenuButton>) {
@@ -699,7 +685,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       button.setAttribute('title', loadTimeData.getString('turnHighlightOn'));
     }
 
-    this.emitEvent_(HIGHLIGHT_TOGGLE_EVENT, {
+    this.emitEvent_(ToolbarEvent.HIGHLIGHT_TOGGLE, {
       highlightOn: turnOn,
     });
   }
@@ -707,19 +693,19 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private onLetterSpacingClick_(event: DomRepeatEvent<MenuStateItem<number>>) {
     this.onTextStyleClick_(
         event, ReadAnythingSettingsChange.LETTER_SPACING_CHANGE,
-        this.$.letterSpacingMenu.get(), LETTER_SPACING_EVENT);
+        this.$.letterSpacingMenu.get(), ToolbarEvent.LETTER_SPACING);
   }
 
   private onLineSpacingClick_(event: DomRepeatEvent<MenuStateItem<number>>) {
     this.onTextStyleClick_(
         event, ReadAnythingSettingsChange.LINE_HEIGHT_CHANGE,
-        this.$.lineSpacingMenu.get(), LINE_SPACING_EVENT);
+        this.$.lineSpacingMenu.get(), ToolbarEvent.LINE_SPACING);
   }
 
   private onColorClick_(event: DomRepeatEvent<MenuStateItem<string>>) {
     this.onTextStyleClick_(
         event, ReadAnythingSettingsChange.THEME_CHANGE, this.$.colorMenu.get(),
-        THEME_EVENT);
+        ToolbarEvent.THEME);
   }
 
   private onTextStyleClick_(
@@ -749,7 +735,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   private propagateFontChange_(fontName: string) {
     chrome.readingMode.onFontChange(fontName);
-    this.emitEvent_(FONT_EVENT, {
+    this.emitEvent_(ToolbarEvent.FONT, {
       fontName,
     });
     this.style.fontFamily = chrome.readingMode.getValidatedFontName(fontName);
@@ -761,7 +747,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     // Log which rate is chosen by index rather than the rate value itself.
     this.logger_.logVoiceSpeed(event.model.index);
     chrome.readingMode.onSpeechRateChange(event.model.item);
-    this.emitEvent_(RATE_EVENT);
+    this.emitEvent_(ToolbarEvent.RATE);
     this.setRateIcon_(event.model.item);
     this.setCheckMarkForMenu_(this.$.rateMenu.getIfExists(), event.model.index);
 
@@ -821,7 +807,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         ReadAnythingSettingsChange.LINKS_ENABLED_CHANGE);
 
     chrome.readingMode.onLinksEnabledToggled();
-    this.emitEvent_(LINKS_EVENT);
+    this.emitEvent_(ToolbarEvent.LINKS);
     this.updateLinkToggleButton();
   }
 
@@ -833,7 +819,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         ReadAnythingSettingsChange.IMAGES_ENABLED_CHANGE);
 
     chrome.readingMode.onImagesEnabledToggled();
-    this.emitEvent_(IMAGES_EVENT);
+    this.emitEvent_(ToolbarEvent.IMAGES);
     this.updateImagesToggleButton();
   }
 
@@ -865,7 +851,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.logger_.logTextSettingsChange(
         ReadAnythingSettingsChange.FONT_SIZE_CHANGE);
     chrome.readingMode.onFontSizeChanged(increase);
-    this.emitEvent_(FONT_SIZE_EVENT);
+    this.emitEvent_(ToolbarEvent.FONT_SIZE);
     // Don't close the menu
   }
 
@@ -873,11 +859,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.logger_.logTextSettingsChange(
         ReadAnythingSettingsChange.FONT_SIZE_CHANGE);
     chrome.readingMode.onFontSizeReset();
-    this.emitEvent_(FONT_SIZE_EVENT);
+    this.emitEvent_(ToolbarEvent.FONT_SIZE);
   }
 
   private onPlayPauseClick_() {
-    this.emitEvent_(PLAY_PAUSE_EVENT);
+    this.emitEvent_(ToolbarEvent.PLAY_PAUSE);
   }
 
   private onToolbarKeyDown_(e: KeyboardEvent) {

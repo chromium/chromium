@@ -7,7 +7,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {FONT_EVENT, FONT_SIZE_EVENT, HIGHLIGHT_TOGGLE_EVENT, LANGUAGE_TOGGLE_EVENT, LETTER_SPACING_EVENT, LINE_SPACING_EVENT, NEXT_GRANULARITY_EVENT, PLAY_PAUSE_EVENT, PREVIOUS_GRANULARITY_EVENT, RATE_EVENT, THEME_EVENT, VoiceClientSideStatusCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ToolbarEvent, VoiceClientSideStatusCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {emitEvent, suppressInnocuousErrors} from './common.js';
@@ -38,7 +38,7 @@ suite('AppReceivesToolbarChanges', () => {
     }
 
     function emitLetterSpacing(spacing: number): void {
-      emitEvent(app, LETTER_SPACING_EVENT, {detail: {data: spacing}});
+      emitEvent(app, ToolbarEvent.LETTER_SPACING, {detail: {data: spacing}});
     }
 
     test('container letter spacing updated', () => {
@@ -63,7 +63,7 @@ suite('AppReceivesToolbarChanges', () => {
     }
 
     function emitLineSpacing(spacing: number): void {
-      emitEvent(app, LINE_SPACING_EVENT, {detail: {data: spacing}});
+      emitEvent(app, ToolbarEvent.LINE_SPACING, {detail: {data: spacing}});
     }
 
     test('container line spacing updated', () => {
@@ -89,7 +89,7 @@ suite('AppReceivesToolbarChanges', () => {
     }
 
     function emitFontSize(): void {
-      emitEvent(app, FONT_SIZE_EVENT);
+      emitEvent(app, ToolbarEvent.FONT_SIZE);
     }
 
     test('container font size updated', () => {
@@ -148,7 +148,7 @@ suite('AppReceivesToolbarChanges', () => {
     }
 
     function emitColorTheme(color: string): void {
-      emitEvent(app, THEME_EVENT, {detail: {data: color}});
+      emitEvent(app, ToolbarEvent.THEME, {detail: {data: color}});
       flush();
     }
 
@@ -172,7 +172,7 @@ suite('AppReceivesToolbarChanges', () => {
     }
 
     function emitFont(fontName: string): void {
-      emitEvent(app, FONT_EVENT, {detail: {fontName}});
+      emitEvent(app, ToolbarEvent.FONT, {detail: {fontName}});
     }
 
     function assertFontsEqual(actual: string, expected: string): void {
@@ -194,7 +194,7 @@ suite('AppReceivesToolbarChanges', () => {
 
   suite('on language toggle', () => {
     function emitLanguageToggle(lang: string): void {
-      emitEvent(app, LANGUAGE_TOGGLE_EVENT, {detail: {language: lang}});
+      emitEvent(app, ToolbarEvent.LANGUAGE_TOGGLE, {detail: {language: lang}});
     }
 
     test('enabled languages are added', () => {
@@ -282,7 +282,7 @@ suite('AppReceivesToolbarChanges', () => {
 
   suite('on speech rate change', () => {
     function emitRate(): void {
-      emitEvent(app, RATE_EVENT);
+      emitEvent(app, ToolbarEvent.RATE);
     }
 
     test('speech rate updated', () => {
@@ -321,7 +321,7 @@ suite('AppReceivesToolbarChanges', () => {
     });
 
     function emitPlayPause(): void {
-      emitEvent(app, PLAY_PAUSE_EVENT);
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
     }
 
     suite('by default', () => {
@@ -386,11 +386,11 @@ suite('AppReceivesToolbarChanges', () => {
     }
 
     function emitHighlight(highlightOn: boolean): void {
-      emitEvent(app, HIGHLIGHT_TOGGLE_EVENT, {detail: {highlightOn}});
+      emitEvent(app, ToolbarEvent.HIGHLIGHT_TOGGLE, {detail: {highlightOn}});
     }
 
     setup(() => {
-      emitEvent(app, THEME_EVENT, {detail: {data: ''}});
+      emitEvent(app, ToolbarEvent.THEME, {detail: {data: ''}});
       app.updateContent();
       app.playSpeech();
     });
@@ -408,13 +408,13 @@ suite('AppReceivesToolbarChanges', () => {
     suite('after update color theme', () => {
       test('uses colored highlight with highlights on', () => {
         emitHighlight(true);
-        emitEvent(app, THEME_EVENT, {detail: {data: '-blue'}});
+        emitEvent(app, ToolbarEvent.THEME, {detail: {data: '-blue'}});
         assertNotEquals('transparent', highlightColor());
       });
 
       test('uses transparent highlight with highlights off', () => {
         emitHighlight(false);
-        emitEvent(app, THEME_EVENT, {detail: {data: '-yellow'}});
+        emitEvent(app, ToolbarEvent.THEME, {detail: {data: '-yellow'}});
         assertEquals('transparent', highlightColor());
       });
     });
@@ -426,11 +426,11 @@ suite('AppReceivesToolbarChanges', () => {
     });
 
     function emitNextGranularity(): void {
-      emitEvent(app, NEXT_GRANULARITY_EVENT);
+      emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
     }
 
     function emitPreviousGranularity(): void {
-      emitEvent(app, PREVIOUS_GRANULARITY_EVENT);
+      emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
     }
 
     suite('next', () => {

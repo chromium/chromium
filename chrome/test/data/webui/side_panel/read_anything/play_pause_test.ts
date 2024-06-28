@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PLAY_PAUSE_EVENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
@@ -41,7 +41,8 @@ suite('PlayPause', () => {
     granularityContainer = toolbar.shadowRoot!.querySelector<HTMLElement>(
         '#granularity-container')!;
     clickEmitted = false;
-    document.addEventListener(PLAY_PAUSE_EVENT, () => clickEmitted = true);
+    document.addEventListener(
+        ToolbarEvent.PLAY_PAUSE, () => clickEmitted = true);
   });
 
   test('on click emits play event', () => {

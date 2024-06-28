@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {NEXT_GRANULARITY_EVENT, PauseActionSource, PREVIOUS_GRANULARITY_EVENT, RATE_EVENT, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {PauseActionSource, ToolbarEvent, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechSynthesisVoice, emitEvent, suppressInnocuousErrors, waitForPlayFromSelection} from './common.js';
@@ -312,7 +312,7 @@ suite('Speech', () => {
     chrome.readingMode.initAxPositionWithNode(2);
     const expectedNumSentences = totalSentences - 1;
 
-    emitEvent(app, NEXT_GRANULARITY_EVENT);
+    emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
 
     assertEquals(expectedNumSentences, speechSynthesis.spokenUtterances.length);
     const utteranceTexts = getSpokenTexts();
@@ -325,7 +325,7 @@ suite('Speech', () => {
     app.playSpeech();
     speechSynthesis.clearSpokenUtterances();
 
-    emitEvent(app, PREVIOUS_GRANULARITY_EVENT);
+    emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
 
     assertEquals(1, speechSynthesis.spokenUtterances.length);
     assertEquals(paragraph2.at(-1)!, speechSynthesis.spokenUtterances[0]!.text);
@@ -443,7 +443,7 @@ suite('Speech', () => {
     });
 
     test('rate change cancels and restarts speech', () => {
-      emitEvent(app, RATE_EVENT);
+      emitEvent(app, ToolbarEvent.RATE);
 
       assertGT(speechSynthesis.spokenUtterances.length, 0);
       assertTrue(speechSynthesis.canceled);

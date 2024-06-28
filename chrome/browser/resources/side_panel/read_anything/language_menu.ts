@@ -19,7 +19,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {toastDurationMs} from './common.js';
+import {toastDurationMs, ToolbarEvent} from './common.js';
 import {getTemplate} from './language_menu.html.js';
 import {AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, VoiceClientSideStatusCode} from './voice_language_util.js';
 
@@ -45,8 +45,6 @@ interface LanguageDropdownItem {
 }
 
 const LanguageMenuElementBase = WebUiListenerMixin(I18nMixin(PolymerElement));
-
-export const LANGUAGE_TOGGLE_EVENT = 'voice-language-toggle';
 
 export class LanguageMenuElement extends LanguageMenuElementBase {
   static get is() {
@@ -280,8 +278,8 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
               },
               disabled: this.enabledLangs && this.enabledLangs.includes(lang) &&
                   (lang.toLowerCase() === selectedLangLowerCase),
-              callback: () =>
-                  this.dispatchEvent(new CustomEvent(LANGUAGE_TOGGLE_EVENT, {
+              callback: () => this.dispatchEvent(
+                  new CustomEvent(ToolbarEvent.LANGUAGE_TOGGLE, {
                     bubbles: true,
                     composed: true,
                     detail: {
