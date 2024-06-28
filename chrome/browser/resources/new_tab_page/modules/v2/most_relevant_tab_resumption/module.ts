@@ -15,6 +15,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import type {Tab} from '../../../history_types.mojom-webui.js';
 import {DeviceType} from '../../../history_types.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
+import {ScoredURLUserAction} from '../../../most_relevant_tab_resumption.mojom-webui.js';
 import type {InfoDialogElement} from '../../info_dialog.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElementV2} from '../module_header.js';
@@ -180,8 +181,8 @@ private shouldShowDeviceIcon_:
         Number(e.model.item.relativeTime.microseconds / 1000n));
 
     const tab = this.tabs[e.model.index];
-    MostRelevantTabResumptionProxyImpl.getInstance()
-        .handler.recordActivatedAction(tab.urlKey, tab.trainingRequestId);
+    MostRelevantTabResumptionProxyImpl.getInstance().handler.recordAction(
+        ScoredURLUserAction.kActivated, tab.urlKey, tab.trainingRequestId);
   }
 
   private computeDomain_(tab: Tab): string {
@@ -236,6 +237,11 @@ async function createElement():
 
   const element = new MostRelevantTabResumptionModuleElement();
   element.tabs = tabs;
+
+  tabs.slice(0, MAX_TABS).forEach((tab) => {
+    MostRelevantTabResumptionProxyImpl.getInstance().handler.recordAction(
+        ScoredURLUserAction.kSeen, tab.urlKey, tab.trainingRequestId);
+  });
 
   return element;
 }
