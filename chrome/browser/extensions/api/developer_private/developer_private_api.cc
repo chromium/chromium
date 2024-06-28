@@ -1147,17 +1147,19 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
   if (update.acknowledge_mv2_deprecation_warning.value_or(false)) {
     ManifestV2ExperimentManager* experiment_manager =
         ManifestV2ExperimentManager::Get(browser_context());
-    if (experiment_manager->GetCurrentExperimentStage() !=
-        MV2ExperimentStage::kNone) {
-      experiment_manager->MarkWarningAsAcknowledged(extension->id());
-    }
-    // There isn't a separate observer for the MV2 acknowledged state changing,
-    // but this is the only place it's changed. Just fire the event directly.
-    DeveloperPrivateEventRouter* event_router =
-        DeveloperPrivateAPI::Get(browser_context())
-            ->developer_private_event_router();
-    if (event_router) {
-      event_router->OnExtensionConfigurationChanged(extension->id());
+    if (experiment_manager->GetCurrentExperimentStage() ==
+        MV2ExperimentStage::kWarning) {
+      experiment_manager->MarkNoticeAsAcknowledged(extension->id());
+
+      // There isn't a separate observer for the MV2 acknowledged state
+      // changing, but this is the only place it's changed. Just fire the event
+      // directly.
+      DeveloperPrivateEventRouter* event_router =
+          DeveloperPrivateAPI::Get(browser_context())
+              ->developer_private_event_router();
+      if (event_router) {
+        event_router->OnExtensionConfigurationChanged(extension->id());
+      }
     }
   }
   if (update.pinned_to_toolbar) {

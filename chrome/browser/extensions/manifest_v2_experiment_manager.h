@@ -64,13 +64,13 @@ class ManifestV2ExperimentManager : public KeyedService,
       mojom::ManifestLocation manifest_location,
       const HashedExtensionId& hashed_id);
 
-  // Returns true if the given `extension_id` has been acknowledged by the user
-  // during the warning stage of the MV2 deprecation.
-  bool DidUserAcknowledgeWarning(const ExtensionId& extension_id);
+  // Returns true if the notice for `extension_id` has been acknowledged by the
+  // user during the current MV2 deprecation `experiment_stage_`.
+  bool DidUserAcknowledgeNotice(const ExtensionId& extension_id);
 
-  // Called to indicate the user chose to acknowledge the warning for the given
-  // `extension_id`.
-  void MarkWarningAsAcknowledged(const ExtensionId& extension_id);
+  // Called to indicate the user chose to acknowledge the notice for
+  // `extension_id` during the current MV2 deprecation `experiment_stage_`.
+  void MarkNoticeAsAcknowledged(const ExtensionId& extension_id);
 
   // Returns true if the user has acknowledge the global warning for the MV2
   // deprecation.

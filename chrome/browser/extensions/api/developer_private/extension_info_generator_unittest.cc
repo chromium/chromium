@@ -1609,7 +1609,7 @@ TEST_F(ExtensionInfoGeneratorWithMV2DeprecationUnitTest,
   ManifestV2ExperimentManager* experiment_manager =
       ManifestV2ExperimentManager::Get(browser_context());
   EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
-  EXPECT_FALSE(experiment_manager->DidUserAcknowledgeWarning(extension->id()));
+  EXPECT_FALSE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
 
   {
     std::unique_ptr<developer::ExtensionInfo> info =
@@ -1617,7 +1617,7 @@ TEST_F(ExtensionInfoGeneratorWithMV2DeprecationUnitTest,
     EXPECT_FALSE(info->did_acknowledge_mv2_deprecation_warning);
   }
 
-  experiment_manager->MarkWarningAsAcknowledged(extension->id());
+  experiment_manager->MarkNoticeAsAcknowledged(extension->id());
 
   {
     std::unique_ptr<developer::ExtensionInfo> info =

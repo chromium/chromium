@@ -162,7 +162,7 @@ TEST_F(ManifestV2ExperimentManagerWarningUnitTest, MV2ExtensionsAreAffected) {
 }
 
 TEST_F(ManifestV2ExperimentManagerWarningUnitTest,
-       MarkingWarningsAsAcknowledged) {
+       MarkingNoticeAsAcknowledged) {
   scoped_refptr<const Extension> ext1 =
       ExtensionBuilder("one")
           .SetManifestVersion(2)
@@ -177,13 +177,13 @@ TEST_F(ManifestV2ExperimentManagerWarningUnitTest,
   service()->AddExtension(ext1.get());
   service()->AddExtension(ext2.get());
 
-  EXPECT_FALSE(experiment_manager()->DidUserAcknowledgeWarning(ext1->id()));
-  EXPECT_FALSE(experiment_manager()->DidUserAcknowledgeWarning(ext2->id()));
+  EXPECT_FALSE(experiment_manager()->DidUserAcknowledgeNotice(ext1->id()));
+  EXPECT_FALSE(experiment_manager()->DidUserAcknowledgeNotice(ext2->id()));
 
-  experiment_manager()->MarkWarningAsAcknowledged(ext1->id());
+  experiment_manager()->MarkNoticeAsAcknowledged(ext1->id());
 
-  EXPECT_TRUE(experiment_manager()->DidUserAcknowledgeWarning(ext1->id()));
-  EXPECT_FALSE(experiment_manager()->DidUserAcknowledgeWarning(ext2->id()));
+  EXPECT_TRUE(experiment_manager()->DidUserAcknowledgeNotice(ext1->id()));
+  EXPECT_FALSE(experiment_manager()->DidUserAcknowledgeNotice(ext2->id()));
 }
 
 TEST_F(ManifestV2ExperimentManagerWarningUnitTest,
@@ -373,6 +373,31 @@ TEST_F(ManifestV2ExperimentManagerDisableWithReEnableUnitTest,
         extension_id, test_case.manifest_version, Manifest::TYPE_EXTENSION,
         test_case.manifest_location, HashedExtensionId(extension_id)));
   }
+}
+
+TEST_F(ManifestV2ExperimentManagerDisableWithReEnableUnitTest,
+       MarkingNoticeAsAcknowledged) {
+  scoped_refptr<const Extension> ext1 =
+      ExtensionBuilder("one")
+          .SetManifestVersion(2)
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .Build();
+  scoped_refptr<const Extension> ext2 =
+      ExtensionBuilder("two")
+          .SetManifestVersion(2)
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .Build();
+
+  service()->AddExtension(ext1.get());
+  service()->AddExtension(ext2.get());
+
+  EXPECT_FALSE(experiment_manager()->DidUserAcknowledgeNotice(ext1->id()));
+  EXPECT_FALSE(experiment_manager()->DidUserAcknowledgeNotice(ext2->id()));
+
+  experiment_manager()->MarkNoticeAsAcknowledged(ext1->id());
+
+  EXPECT_TRUE(experiment_manager()->DidUserAcknowledgeNotice(ext1->id()));
+  EXPECT_FALSE(experiment_manager()->DidUserAcknowledgeNotice(ext2->id()));
 }
 
 enum class MV2PolicyLevel {

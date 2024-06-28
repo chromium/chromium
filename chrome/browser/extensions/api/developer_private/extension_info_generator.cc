@@ -26,6 +26,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -961,8 +962,11 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   CHECK(mv2_experiment_manager);
   info->is_affected_by_mv2_deprecation =
       mv2_experiment_manager->IsExtensionAffected(extension);
-  info->did_acknowledge_mv2_deprecation_warning =
-      mv2_experiment_manager->DidUserAcknowledgeWarning(extension.id());
+  if (mv2_experiment_manager->GetCurrentExperimentStage() ==
+      MV2ExperimentStage::kWarning) {
+    info->did_acknowledge_mv2_deprecation_warning =
+        mv2_experiment_manager->DidUserAcknowledgeNotice(extension.id());
+  }
   if (info->web_store_url.length() > 0) {
     info->recommendations_url =
         extension_urls::GetNewWebstoreItemRecommendationsUrl(extension.id())

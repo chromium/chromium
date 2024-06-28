@@ -3202,7 +3202,7 @@ TEST_F(DeveloperPrivateApiWithMV2DeprecationUnitTest,
   ManifestV2ExperimentManager* experiment_manager =
       ManifestV2ExperimentManager::Get(browser_context());
   EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
-  EXPECT_FALSE(experiment_manager->DidUserAcknowledgeWarning(extension->id()));
+  EXPECT_FALSE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
 
   auto update_function = base::MakeRefCounted<
       api::DeveloperPrivateUpdateExtensionConfigurationFunction>();
@@ -3216,7 +3216,7 @@ TEST_F(DeveloperPrivateApiWithMV2DeprecationUnitTest,
   EXPECT_TRUE(RunFunction(update_function, args));
 
   EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
-  EXPECT_TRUE(experiment_manager->DidUserAcknowledgeWarning(extension->id()));
+  EXPECT_TRUE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
 }
 
 TEST_F(DeveloperPrivateApiWithMV2DeprecationUnitTest,

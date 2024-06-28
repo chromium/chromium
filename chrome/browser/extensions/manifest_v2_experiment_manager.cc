@@ -27,9 +27,15 @@ namespace extensions {
 namespace {
 
 // Stores the bit for whether the user has acknowledged the MV2 deprecation
-// warning for a given extension.
+// notice for a given extension in the warning stage.
 constexpr PrefMap kMV2DeprecationExtensionWarningAcknowledgedPref = {
     "mv2_deprecation_warning_ack", PrefType::kBool,
+    PrefScope::kExtensionSpecific};
+
+// Stores the bit for whether the user has acknowledged the MV2 deprecation
+// notice for a given extension in the disabled stage.
+constexpr PrefMap kMV2DeprecationExtensionDisabledAcknowledgedPref = {
+    "mv2_deprecation_disabled_ack", PrefType::kBool,
     PrefScope::kExtensionSpecific};
 
 // Stores a bit for whether the extension has been disabled as part of the
@@ -115,6 +121,20 @@ MV2ExperimentStage CalculateCurrentExperimentStage() {
   return MV2ExperimentStage::kNone;
 }
 
+// Returns the pref that stores whether the user has acknowledged the MV2
+// deprecation notice for a given extension in `experiment_stage`.
+PrefMap GetExtensionAcknowledgedPrefFor(MV2ExperimentStage experiment_stage) {
+  switch (experiment_stage) {
+    case MV2ExperimentStage::kNone:
+      // There is no notice for this stage, thus it cannot be acknowledged.
+      NOTREACHED_NORETURN();
+    case MV2ExperimentStage::kWarning:
+      return kMV2DeprecationExtensionWarningAcknowledgedPref;
+    case MV2ExperimentStage::kDisableWithReEnable:
+      return kMV2DeprecationExtensionDisabledAcknowledgedPref;
+  }
+}
+
 }  // namespace
 
 ManifestV2ExperimentManager::ManifestV2ExperimentManager(
@@ -193,19 +213,19 @@ bool ManifestV2ExperimentManager::ShouldBlockExtensionInstallation(
                                              hashed_id);
 }
 
-bool ManifestV2ExperimentManager::DidUserAcknowledgeWarning(
+bool ManifestV2ExperimentManager::DidUserAcknowledgeNotice(
     const ExtensionId& extension_id) {
   bool acknowledged = false;
-  return extension_prefs()->ReadPrefAsBoolean(
-             extension_id, kMV2DeprecationExtensionWarningAcknowledgedPref,
-             &acknowledged) &&
+  PrefMap pref = GetExtensionAcknowledgedPrefFor(experiment_stage_);
+  return extension_prefs()->ReadPrefAsBoolean(extension_id, pref,
+                                              &acknowledged) &&
          acknowledged;
 }
 
-void ManifestV2ExperimentManager::MarkWarningAsAcknowledged(
+void ManifestV2ExperimentManager::MarkNoticeAsAcknowledged(
     const ExtensionId& extension_id) {
-  extension_prefs()->SetBooleanPref(
-      extension_id, kMV2DeprecationExtensionWarningAcknowledgedPref, true);
+  PrefMap pref = GetExtensionAcknowledgedPrefFor(experiment_stage_);
+  extension_prefs()->SetBooleanPref(extension_id, pref, true);
 }
 
 bool ManifestV2ExperimentManager::DidUserAcknowledgeWarningGlobally() {
