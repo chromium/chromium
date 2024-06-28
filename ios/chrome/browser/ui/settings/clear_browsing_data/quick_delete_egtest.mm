@@ -330,7 +330,9 @@ void ExpectClearBrowsingDataNavigationHistograms(
 }
 
 // Tests that the number of browsing history items is shown on the browsing data
-// row when browsing history is selected as a data type to be deleted.
+// row when browsing history is selected as a data type to be deleted. It also
+// tests that the history entries get deleted when the deletion of browsing data
+// is selected.
 - (void)testBrowsingHistoryForDeletion {
   // Add entry to the history service.
   [ChromeEarlGrey addHistoryServiceTypedURL:mockURL];
@@ -354,11 +356,22 @@ void ExpectClearBrowsingDataNavigationHistograms(
                  ContainsPartialText(l10n_util::GetPluralNSStringF(
                      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES, 1))]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the browsing data button.
+  [ChromeEarlGreyUI
+      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
+                                         l10n_util::GetNSString(
+                                             IDS_IOS_CLEAR_BUTTON))];
+
+  // Check that the history entry was deleted.
+  GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 0,
+                  @"History entries were not deleted.");
 }
 
 // Tests that the number of browsing history items is shown on the browsing data
 // row when browsing history is selected as a data type to be deleted and when
-// the user syncs history.
+// the user syncs history. It also tests that the history entries get deleted
+// when the deletion of browsing data is selected.
 - (void)testBrowsingHistoryForDeletionWithHistorySync {
   // Sign in and enable history sync.
   [self signInAndEnableHistorySync];
@@ -388,13 +401,21 @@ void ExpectClearBrowsingDataNavigationHistograms(
                      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES_SYNCED, 1))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Swipe the bottom sheet down.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
-      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+  // Tap the browsing data button.
+  [ChromeEarlGreyUI
+      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
+                                         l10n_util::GetNSString(
+                                             IDS_IOS_CLEAR_BUTTON))];
+
+  // Check that the history entry was deleted.
+  GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 0,
+                  @"History entries were not deleted.");
 }
 
 // Tests that the number of browsing history items is not shown on the browsing
 // data row when browsing history is not selected as a data type to be deleted.
+// It also tests that the history entries do not get deleted when the deletion
+// of browsing data is selected.
 - (void)testKeepBrowsingHistory {
   // Add entry to the history service.
   [ChromeEarlGrey addHistoryServiceTypedURL:mockURL];
@@ -418,6 +439,16 @@ void ExpectClearBrowsingDataNavigationHistograms(
                  ContainsPartialText(l10n_util::GetPluralNSStringF(
                      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES, 2))]
       assertWithMatcher:grey_nil()];
+
+  // Tap the browsing data button.
+  [ChromeEarlGreyUI
+      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
+                                         l10n_util::GetNSString(
+                                             IDS_IOS_CLEAR_BUTTON))];
+
+  // Check that the history entry was not deleted.
+  GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 1,
+                  @"History entries were deleted.");
 }
 
 // Tests that cookies are shown as a possible type to be deleted on the browsing
@@ -529,7 +560,8 @@ void ExpectClearBrowsingDataNavigationHistograms(
 }
 
 // Tests that the number of passwords is shown on the browsing data row if
-// passwords is selected as a data type to be deleted.
+// passwords is selected as a data type to be deleted. It also tests the
+// password gets deleted when the deletion of browsing data is selected.
 - (void)testPasswordsForDeletion {
   // Add password to password autofill store.
   int kPasswordCount = 1;
@@ -556,10 +588,23 @@ void ExpectClearBrowsingDataNavigationHistograms(
           ContainsPartialText(l10n_util::GetPluralNSStringF(
               IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS, kPasswordCount))]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the browsing data button.
+  [ChromeEarlGreyUI
+      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
+                                         l10n_util::GetNSString(
+                                             IDS_IOS_CLEAR_BUTTON))];
+
+  // Check that the stored password was removed.
+  GREYAssertEqual(
+      0, [PasswordSettingsAppInterface passwordProfileStoreResultsCount],
+      @"Stored password was not removed.");
 }
 
 // Tests that the number of passwords is not shown on the browsing data row if
-// passwords is not selected as a data type to be deleted.
+// passwords is not selected as a data type to be deleted. It also tests that
+// the password does not get deleted when the deletion of browsing data is
+// selected.
 - (void)testKeepPasswords {
   // Save a card to the payments data manager.
   int kPasswordCount = 1;
@@ -586,10 +631,22 @@ void ExpectClearBrowsingDataNavigationHistograms(
                  ContainsPartialText(l10n_util::GetPluralNSStringF(
                      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS,
                      kPasswordCount))] assertWithMatcher:grey_nil()];
+
+  // Tap the browsing data button.
+  [ChromeEarlGreyUI
+      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
+                                         l10n_util::GetNSString(
+                                             IDS_IOS_CLEAR_BUTTON))];
+
+  // Check that the stored password was not removed.
+  GREYAssertEqual(
+      1, [PasswordSettingsAppInterface passwordProfileStoreResultsCount],
+      @"Stored password was removed.");
 }
 
 // Tests that the number of payment methods is shown on the browsing data row if
-// form data is selected as a data type to be deleted.
+// form data is selected as a data type to be deleted. It also tests that the
+// cards gets deleted when the deletion of browsing data is selected.
 - (void)testPaymentMethodsForDeletion {
   // Save a card to the payments data manager.
   [AutofillAppInterface saveLocalCreditCard];
@@ -612,10 +669,21 @@ void ExpectClearBrowsingDataNavigationHistograms(
                  ContainsPartialText(l10n_util::GetPluralNSStringF(
                      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PAYMENT_METHODS, 1))]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the browsing data button.
+  [ChromeEarlGreyUI
+      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
+                                         l10n_util::GetNSString(
+                                             IDS_IOS_CLEAR_BUTTON))];
+
+  // Check that the stored card was removed.
+  GREYAssertEqual(0, [AutofillAppInterface localCreditCount],
+                  @"Stored card was not removed.");
 }
 
 // Tests that the number of cards is not shown on the browsing data row if form
-// data is not selected as a data type to be deleted.
+// data is not selected as a data type to be deleted. It also tests that the
+// cards does not get deleted when the deletion of browsing data is selected.
 - (void)testKeepPaymentMethods {
   // Save a card.
   [AutofillAppInterface saveLocalCreditCard];
@@ -639,6 +707,16 @@ void ExpectClearBrowsingDataNavigationHistograms(
                  ContainsPartialText(l10n_util::GetPluralNSStringF(
                      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PAYMENT_METHODS, 1))]
       assertWithMatcher:grey_nil()];
+
+  // Tap the browsing data button.
+  [ChromeEarlGreyUI
+      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
+                                         l10n_util::GetNSString(
+                                             IDS_IOS_CLEAR_BUTTON))];
+
+  // Check that the stored card was not removed.
+  GREYAssertEqual(1, [AutofillAppInterface localCreditCount],
+                  @"Stored card was removed.");
 }
 
 // Tests that if there is no data available for deletion of the selected data
@@ -768,6 +846,59 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kQuickDeleteFooterIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that a user in the `ConsentLevel::kSignin` state will remain signed in
+// after clearing their browsing history.
+- (void)testUserSignedInWhenClearingBrowsingData {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  // Open Quick Delete and delete browsing data.
+  [self openQuickDeleteFromThreeDotMenu];
+  [ChromeEarlGreyUI
+      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
+                                         l10n_util::GetNSString(
+                                             IDS_IOS_CLEAR_BUTTON))];
+
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
+
+// Tests that a supervised user in the `ConsentLevel::kSync` state will remain
+// signed-in after clearing their browsing history.
+// TODO(crbug.com/40066949): Delete this test after the syncing state is gone.
+- (void)testSupervisedUserSyncingWhenClearingBrowsingData {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:fakeIdentity];
+  [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
+
+  // Open Quick Delete and delete browsing data.
+  [self openQuickDeleteFromThreeDotMenu];
+  [ChromeEarlGreyUI
+      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
+                                         l10n_util::GetNSString(
+                                             IDS_IOS_CLEAR_BUTTON))];
+
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
+
+// Tests that a supervised user in the `ConsentLevel::kSignin` state will remain
+// signed-in after clearing their browsing history.
+- (void)testSupervisedUserSignedInWhenClearingBrowsingData {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:fakeIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  // Open Quick Delete and delete browsing data.
+  [self openQuickDeleteFromThreeDotMenu];
+  [ChromeEarlGreyUI
+      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
+                                         l10n_util::GetNSString(
+                                             IDS_IOS_CLEAR_BUTTON))];
+
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 @end

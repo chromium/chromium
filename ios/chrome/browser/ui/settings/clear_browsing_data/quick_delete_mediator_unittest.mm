@@ -15,6 +15,8 @@
 #import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
@@ -68,12 +70,18 @@ class QuickDeleteMediatorTest : public PlatformTest {
 
     signin::IdentityManager* identityManager =
         IdentityManagerFactory::GetForBrowserState(browser_state_.get());
+    BrowsingDataRemover* browsing_data_remover =
+        BrowsingDataRemoverFactory::GetForBrowserState(browser_state_.get());
+    DiscoverFeedService* discover_feed_service =
+        DiscoverFeedServiceFactory::GetForBrowserState(browser_state_.get());
 
     mediator_ = [[QuickDeleteMediator alloc]
                              initWithPrefs:browser_state_.get()->GetPrefs()
         browsingDataCounterWrapperProducer:
             fake_browsing_data_counter_wrapper_producer_
-                           identityManager:identityManager];
+                           identityManager:identityManager
+                       browsingDataRemover:browsing_data_remover
+                       discoverFeedService:discover_feed_service];
   }
 
   ~QuickDeleteMediatorTest() override {

@@ -6,6 +6,8 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -31,18 +33,29 @@
 }
 
 #pragma mark - ChromeCoordinator
+
 - (void)start {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
+
+  CHECK(!browserState->IsOffTheRecord());
+
   BrowsingDataCounterWrapperProducer* producer =
       [[BrowsingDataCounterWrapperProducer alloc]
           initWithBrowserState:browserState];
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForBrowserState(browserState);
+  BrowsingDataRemover* browsingDataRemover =
+      BrowsingDataRemoverFactory::GetForBrowserState(browserState);
+  DiscoverFeedService* discoverFeedService =
+      DiscoverFeedServiceFactory::GetForBrowserState(browserState);
 
   _mediator =
       [[QuickDeleteMediator alloc] initWithPrefs:browserState->GetPrefs()
               browsingDataCounterWrapperProducer:producer
-                                 identityManager:identityManager];
+                                 identityManager:identityManager
+                             browsingDataRemover:browsingDataRemover
+                             discoverFeedService:discoverFeedService];
+  _mediator.presentationHandler = self;
 
   _viewController = [[QuickDeleteViewController alloc] init];
   _mediator.consumer = _viewController;

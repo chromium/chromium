@@ -14,18 +14,28 @@ class IdentityManager;
 }  // namespace signin
 
 @class BrowsingDataCounterWrapperProducer;
+class BrowsingDataRemover;
+class DiscoverFeedService;
 class PrefService;
+@protocol QuickDeleteCommands;
 @protocol QuickDeleteConsumer;
+@protocol QuickDeletePresentationCommands;
 
 // Mediator for the Quick Delete UI.
 @interface QuickDeleteMediator : NSObject <QuickDeleteMutator>
 
 @property(nonatomic, weak) id<QuickDeleteConsumer> consumer;
 
+// Local dispatcher for presentation commands of quick delete.
+@property(nonatomic, weak) id<QuickDeletePresentationCommands>
+    presentationHandler;
+
 - (instancetype)initWithPrefs:(PrefService*)prefs
     browsingDataCounterWrapperProducer:
         (BrowsingDataCounterWrapperProducer*)counterWrapperProducer
                        identityManager:(signin::IdentityManager*)identityManager
+                   browsingDataRemover:(BrowsingDataRemover*)browsingDataRemover
+                   discoverFeedService:(DiscoverFeedService*)discoverFeedService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

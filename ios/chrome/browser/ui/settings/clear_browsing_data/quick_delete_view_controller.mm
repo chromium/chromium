@@ -147,7 +147,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  // TODO(crbug.com/335387869): Trigger deletion.
+  [_mutator triggerDeletion];
 }
 
 - (void)confirmationAlertSecondaryAction {

@@ -15,6 +15,9 @@ enum class TimePeriod;
 // Called when the user selects a `timeRange` for the deletion of browsing data.
 - (void)timeRangeSelected:(browsing_data::TimePeriod)timeRange;
 
+// Called when the user decides to go through with the deletion.
+- (void)triggerDeletion;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_QUICK_DELETE_MUTATOR_H_

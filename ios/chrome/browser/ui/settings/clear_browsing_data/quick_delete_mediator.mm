@@ -12,8 +12,12 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_counter_wrapper_producer.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_consumer.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_presentation_commands.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -23,6 +27,8 @@
 @implementation QuickDeleteMediator {
   raw_ptr<PrefService> _prefs;
   BrowsingDataCounterWrapperProducer* _counterWrapperProducer;
+  raw_ptr<BrowsingDataRemover> _browsingDataRemover;
+  raw_ptr<DiscoverFeedService> _discoverFeedService;
 
   // Summaries based on the results returned by `_counters`. If they're nil, it
   // means that the counter for the browsing data type in `_counters` has not
@@ -51,8 +57,10 @@
 - (instancetype)initWithPrefs:(PrefService*)prefs
     browsingDataCounterWrapperProducer:
         (BrowsingDataCounterWrapperProducer*)counterWrapperProducer
-                       identityManager:
-                           (signin::IdentityManager*)identityManager {
+                       identityManager:(signin::IdentityManager*)identityManager
+                   browsingDataRemover:(BrowsingDataRemover*)browsingDataRemover
+                   discoverFeedService:
+                       (DiscoverFeedService*)discoverFeedService {
   if (self = [super init]) {
     _prefs = prefs;
     _counterWrapperProducer = counterWrapperProducer;
@@ -60,6 +68,8 @@
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(
             _identityManager, self);
+    _browsingDataRemover = browsingDataRemover;
+    _discoverFeedService = discoverFeedService;
   }
   return self;
 }
@@ -87,6 +97,8 @@
   _prefs = nil;
   _identityManagerObserver.reset();
   _identityManager = nil;
+  _browsingDataRemover = nullptr;
+  _discoverFeedService = nullptr;
 }
 
 #pragma mark - QuickDeleteMutator
@@ -96,6 +108,52 @@
                      static_cast<int>(timeRange));
 
   [self restartCounters];
+}
+
+- (void)triggerDeletion {
+  BrowsingDataRemoveMask removeMask = BrowsingDataRemoveMask::REMOVE_NOTHING;
+
+  if (_prefs->GetBoolean(browsing_data::prefs::kDeleteBrowsingHistory)) {
+    removeMask |= BrowsingDataRemoveMask::REMOVE_HISTORY;
+
+    // If browsing History will be cleared set the kLastClearBrowsingDataTime.
+    // TODO(crbug.com/40693626): This pref is used by the Feed to prevent the
+    // showing of customized content after history has been cleared. We might
+    // want to create a specific Pref for this.
+    _prefs->SetInt64(browsing_data::prefs::kLastClearBrowsingDataTime,
+                     base::Time::Now().ToTimeT());
+
+    _discoverFeedService->BrowsingHistoryCleared();
+  }
+
+  if (_prefs->GetBoolean(browsing_data::prefs::kDeleteCookies)) {
+    removeMask |= BrowsingDataRemoveMask::REMOVE_SITE_DATA;
+  }
+
+  if (_prefs->GetBoolean(browsing_data::prefs::kDeleteCache)) {
+    removeMask |= BrowsingDataRemoveMask::REMOVE_CACHE;
+  }
+
+  if (_prefs->GetBoolean(browsing_data::prefs::kDeletePasswords)) {
+    removeMask |= BrowsingDataRemoveMask::REMOVE_PASSWORDS;
+  }
+
+  if (_prefs->GetBoolean(browsing_data::prefs::kDeleteFormData)) {
+    removeMask |= BrowsingDataRemoveMask::REMOVE_FORM_DATA;
+  }
+
+  __weak QuickDeleteMediator* weakSelf = self;
+  void (^removeBrowsingDidFinishCompletionBlock)(void) = ^void() {
+    // TODO(crbug.com/347919133): Trigger post-delete experience.
+    [weakSelf.presentationHandler dismissQuickDelete];
+  };
+
+  browsing_data::TimePeriod timePeriod = static_cast<browsing_data::TimePeriod>(
+      _prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriod));
+
+  _browsingDataRemover->Remove(
+      timePeriod, removeMask,
+      base::BindOnce(removeBrowsingDidFinishCompletionBlock));
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
