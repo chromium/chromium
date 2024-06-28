@@ -157,6 +157,15 @@ BASE_FEATURE(kWaylandPerSurfaceScale,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_OZONE)
 
+#if BUILDFLAG(IS_LINUX)
+// If this feature is enabled, users not specify --ozone-platform-hint switch
+// will get --ozone-platform-hint=auto treatment. https://crbug.com/40250220.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_FEATURE(kOverrideDefaultOzonePlatformHintToAuto,
+             "OverrideDefaultOzonePlatformHintToAuto",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_LINUX)
+
 // Update of the virtual keyboard settings UI as described in
 // https://crbug.com/876901.
 BASE_FEATURE(kInputMethodSettingsUiUpdate,

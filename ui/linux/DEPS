@@ -22,5 +22,6 @@ specific_include_rules = {
   ],
   "display_server_utils.cc": [
     "+ui/ozone",
+    "+third_party/angle"
   ],
 }
