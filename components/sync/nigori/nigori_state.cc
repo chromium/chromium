@@ -298,14 +298,19 @@ sync_pb::NigoriSpecifics NigoriState::ToSpecificsProto() const {
   if (cryptographer->CanEncrypt()) {
     EncryptEncryptionKeys(*cryptographer,
                           specifics.mutable_encryption_keybag());
-  } else {
-    DCHECK(pending_keys.has_value());
-    // This case is reachable only from processor's GetAllNodesForDebugging(),
+  } else if (pending_keys.has_value()) {
+    // This case is reachable only from bridge's GetDataForDebugging(),
     // since currently commit is never issued while bridge has |pending_keys_|.
     // Note: with complete support of TRUSTED_VAULT mode, commit might be
     // issued in this case as well.
     *specifics.mutable_encryption_keybag() = *pending_keys;
+  } else {
+    // This case is reachable only from bridge's GetDataForDebugging(), and
+    // indicates that the client received empty NigoriSpecifics and unable to
+    // initialize them (e.g. there are no keystore keys).
+    return specifics;
   }
+
   specifics.set_keybag_is_frozen(true);
   specifics.set_encrypt_everything(encrypt_everything);
   specifics.set_passphrase_type(passphrase_type);
