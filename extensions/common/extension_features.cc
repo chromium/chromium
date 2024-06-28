@@ -130,10 +130,6 @@ BASE_FEATURE(kNewExtensionFaviconHandling,
              "ExtensionsNewFaviconHandling",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kNewWebstoreDomain,
-             "NewWebstoreDomain",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // To investigate signal beacon loss in crrev.com/c/2262402.
 BASE_FEATURE(kReportKeepaliveUkm,
              "ReportKeepaliveUkm",

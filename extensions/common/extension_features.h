@@ -150,10 +150,6 @@ BASE_DECLARE_FEATURE(kLaunchWindowsNativeHostsDirectly);
 // Controls whether extensions can use the new favicon fetching in Manifest V3.
 BASE_DECLARE_FEATURE(kNewExtensionFaviconHandling);
 
-// If enabled, allows APIs used by the webstore to be exposed on the URL for the
-// new webstore.
-BASE_DECLARE_FEATURE(kNewWebstoreDomain);
-
 // To investigate signal beacon loss in crrev.com/c/2262402.
 BASE_DECLARE_FEATURE(kReportKeepaliveUkm);
 
