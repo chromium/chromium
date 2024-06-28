@@ -39,6 +39,7 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher_change_tracker.h"
+#include "content/browser/file_system_access/file_path_watcher/file_path_watcher_histogram.h"
 
 namespace content {
 namespace {
@@ -109,10 +110,11 @@ class CompletionIOPortThread final : public base::PlatformThread::Delegate {
   }
 
   // Thread safe.
-  std::optional<WatcherEntryId> AddWatcher(
-      FilePathWatcherImpl& watcher,
-      base::win::ScopedHandle watched_handle,
-      base::FilePath watched_path);
+  base::expected<CompletionIOPortThread::WatcherEntryId,
+                 WatchWithChangeInfoResult>
+  AddWatcher(FilePathWatcherImpl& watcher,
+             base::win::ScopedHandle watched_handle,
+             base::FilePath watched_path);
 
   // Thread safe.
   void RemoveWatcher(WatcherEntryId watcher_id);
@@ -227,7 +229,7 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
 
   // Sets up a watch handle for either `target_` or one of its ancestors.
   // Returns true on success.
-  [[nodiscard]] bool SetupWatchHandleForTarget();
+  [[nodiscard]] WatchWithChangeInfoResult SetupWatchHandleForTarget();
 
   void CloseWatchHandle();
 
@@ -275,7 +277,8 @@ DWORD CompletionIOPortThread::SetupWatch(WatcherEntry& watcher_entry) {
   return ERROR_SUCCESS;
 }
 
-std::optional<CompletionIOPortThread::WatcherEntryId>
+base::expected<CompletionIOPortThread::WatcherEntryId,
+               WatchWithChangeInfoResult>
 CompletionIOPortThread::AddWatcher(FilePathWatcherImpl& watcher,
                                    base::win::ScopedHandle watched_handle,
                                    base::FilePath watched_path) {
@@ -286,7 +289,8 @@ CompletionIOPortThread::AddWatcher(FilePathWatcherImpl& watcher,
       watched_handle.get(), io_completion_port_.get(),
       static_cast<ULONG_PTR>(watcher_id.GetUnsafeValue()), 1);
   if (port == nullptr) {
-    return std::nullopt;
+    return base::unexpected(
+        WatchWithChangeInfoResult::kWinCreateIoCompletionPortError);
   }
 
   auto [it, inserted] = watcher_entries_.emplace(
@@ -301,7 +305,8 @@ CompletionIOPortThread::AddWatcher(FilePathWatcherImpl& watcher,
 
   if (result != ERROR_SUCCESS) {
     watcher_entries_.erase(it);
-    return std::nullopt;
+    return base::unexpected(
+        WatchWithChangeInfoResult::kWinReadDirectoryChangesWError);
   }
 
   return watcher_id;
@@ -469,7 +474,11 @@ bool FilePathWatcherImpl::WatchWithChangeInfo(
 
   change_tracker_ = FilePathWatcherChangeTracker(target_, options.type);
 
-  return SetupWatchHandleForTarget();
+  WatchWithChangeInfoResult result = SetupWatchHandleForTarget();
+
+  RecordWatchWithChangeInfoResultUma(result);
+
+  return result == WatchWithChangeInfoResult::kSuccess;
 }
 
 void FilePathWatcherImpl::Cancel() {
@@ -501,7 +510,7 @@ void FilePathWatcherImpl::BufferOverflowed() {
 void FilePathWatcherImpl::WatchedDirectoryDeleted(
     base::FilePath watched_path,
     base::HeapArray<uint8_t> notification_batch) {
-  if (!SetupWatchHandleForTarget()) {
+  if (SetupWatchHandleForTarget() != WatchWithChangeInfoResult::kSuccess) {
     // `this` may be deleted after `callback_` is run.
     callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/true);
     return;
@@ -568,7 +577,7 @@ void FilePathWatcherImpl::ProcessNotificationBatch(
   }
 }
 
-bool FilePathWatcherImpl::SetupWatchHandleForTarget() {
+WatchWithChangeInfoResult FilePathWatcherImpl::SetupWatchHandleForTarget() {
   CloseWatchHandle();
 
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -595,7 +604,7 @@ bool FilePathWatcherImpl::SetupWatchHandleForTarget() {
     // We're in an unknown state if `CreateDirectoryHandle` returns an `kFatal`
     // error, so return failure.
     if (result.error() == CreateFileHandleError::kFatal) {
-      return false;
+      return WatchWithChangeInfoResult::kWinCreateFileHandleErrorFatal;
     }
 
     // Abort if we hit the root directory.
@@ -603,7 +612,7 @@ bool FilePathWatcherImpl::SetupWatchHandleForTarget() {
     base::FilePath parent(path_to_watch.DirName());
     if (parent == path_to_watch) {
       DLOG(ERROR) << "Reached the root directory";
-      return false;
+      return WatchWithChangeInfoResult::kWinReachedRootDirectory;
     }
     path_to_watch = std::move(parent);
   }
@@ -619,7 +628,7 @@ bool FilePathWatcherImpl::SetupWatchHandleForTarget() {
       // We're in an unknown state if `CreateDirectoryHandle` returns an
       // `kFatal` error, so return failure.
       if (result.error() == CreateFileHandleError::kFatal) {
-        return false;
+        return WatchWithChangeInfoResult::kWinCreateFileHandleErrorFatal;
       }
       // Otherwise go with the current `watched_handle`.
       break;
@@ -628,10 +637,17 @@ bool FilePathWatcherImpl::SetupWatchHandleForTarget() {
     watched_path = path_to_watch;
   }
 
-  watcher_id_ = CompletionIOPortThread::Get()->AddWatcher(
+  auto watcher_id_or_error = CompletionIOPortThread::Get()->AddWatcher(
       *this, std::move(watched_handle), std::move(watched_path));
 
-  return watcher_id_.has_value();
+  if (watcher_id_or_error.has_value()) {
+    watcher_id_ = watcher_id_or_error.value();
+
+    return WatchWithChangeInfoResult::kSuccess;
+  } else {
+    watcher_id_ = std::nullopt;
+    return watcher_id_or_error.error();
+  }
 }
 
 void FilePathWatcherImpl::CloseWatchHandle() {

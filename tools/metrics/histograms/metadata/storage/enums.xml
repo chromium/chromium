@@ -147,6 +147,18 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Dismissed by user"/>
 </enum>
 
+<enum name="FileSystemAccessWatchWithChangeInfoResult">
+  <int value="0" label="Successfully setup watch"/>
+  <int value="1" label="Linux, the OS inotify limit was reached"/>
+  <int value="2"
+      label="Windows, a fatal error occured when trying to open a file entry
+             to watch"/>
+  <int value="3"
+      label="Windows, reached the root directory and couldn't watch it"/>
+  <int value="4" label="Windows, error when calling CreateIoCompletionPort"/>
+  <int value="5" label="Windows, error when calling ReadDirectoryChangesW"/>
+</enum>
+
 <enum name="ImportantSitesReason">
   <int value="0" label="Engagement"/>
   <int value="1" label="Durable"/>

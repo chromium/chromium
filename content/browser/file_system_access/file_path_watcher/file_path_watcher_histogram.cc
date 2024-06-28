@@ -1,0 +1,16 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "file_path_watcher_histogram.h"
+
+#include "base/metrics/histogram_functions.h"
+
+namespace content {
+
+void RecordWatchWithChangeInfoResultUma(WatchWithChangeInfoResult result) {
+  base::UmaHistogramEnumeration(
+      "Storage.FileSystemAccess.WatchWithChangeInfoResult", result);
+}
+
+}  // namespace content

@@ -547,6 +547,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.FileSystemAccess.WatchWithChangeInfoResult"
+    enum="FileSystemAccessWatchWithChangeInfoResult" expires_after="2025-06-27">
+  <owner>memmott@chromium.org</owner>
+  <owner>dslee@chromium.org</owner>
+  <owner>christinesm@chromium.org</owner>
+  <summary>
+    Records if content::FilePathWatcher::WatchWitchChangeInfo succeeds and if it
+    doesn't, how it fails. Recorded for every call.
+  </summary>
+</histogram>
+
 <histogram
     name="Storage.FileSystemAccess.{OpType}PermissionRequestOutcome.{EntryType}"
     enum="FileSystemAccessPermissionRequestOutcome" expires_after="2024-09-01">

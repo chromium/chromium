@@ -995,6 +995,8 @@ source_set("browser") {
     "file_system_access/features.h",
     "file_system_access/file_path_watcher/file_path_watcher.cc",
     "file_system_access/file_path_watcher/file_path_watcher.h",
+    "file_system_access/file_path_watcher/file_path_watcher_histogram.cc",
+    "file_system_access/file_path_watcher/file_path_watcher_histogram.h",
     "file_system_access/file_system_access_access_handle_host_impl.cc",
     "file_system_access/file_system_access_access_handle_host_impl.h",
     "file_system_access/file_system_access_bucket_path_watcher.cc",

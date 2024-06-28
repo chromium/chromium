@@ -46,6 +46,7 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher.h"
+#include "content/browser/file_system_access/file_path_watcher/file_path_watcher_histogram.h"
 
 namespace content {
 
@@ -852,10 +853,14 @@ bool FilePathWatcherImpl::WatchWithChangeInfo(
   watches_.emplace_back(base::FilePath::StringType());
 
   if (!UpdateWatches()) {
+    RecordWatchWithChangeInfoResultUma(
+        WatchWithChangeInfoResult::kInotifyWatchLimitExceeded);
     Cancel();
     // Note `callback` is not invoked since false is returned.
     return false;
   }
+
+  RecordWatchWithChangeInfoResultUma(WatchWithChangeInfoResult::kSuccess);
 
   return true;
 }
