@@ -303,8 +303,6 @@ class ContentAnalysisDialog : public views::DialogDelegate,
 
   std::unique_ptr<ContentAnalysisDelegateBase> delegate_;
 
-  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
-
   // Views above the buttons. `contents_view_` owns every other view.
   raw_ptr<views::BoxLayoutView> contents_view_ = nullptr;
   raw_ptr<DeepScanningTopImageView> image_ = nullptr;
