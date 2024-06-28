@@ -15,41 +15,41 @@
 
 namespace payments::facilitated {
 
-FacilitatedPaymentsBottomSheetBridge::FacilitatedPaymentsBottomSheetBridge() =
-    default;
+FacilitatedPaymentsBottomSheetBridge::FacilitatedPaymentsBottomSheetBridge(
+    content::WebContents* web_contents,
+    FacilitatedPaymentsController* controller)
+    : web_contents_(web_contents->GetWeakPtr()), controller_(controller) {}
 
 FacilitatedPaymentsBottomSheetBridge::~FacilitatedPaymentsBottomSheetBridge() =
     default;
 
 bool FacilitatedPaymentsBottomSheetBridge::RequestShowContent(
-    base::span<const autofill::BankAccount> bank_account_suggestions,
-    FacilitatedPaymentsController* controller,
-    content::WebContents* web_contents) {
+    base::span<const autofill::BankAccount> bank_account_suggestions) {
   if (java_bridge_) {
     return false;  // Already shown.
   }
 
-  if (web_contents == nullptr) {
+  if (web_contents_ == nullptr) {
     return false;
   }
-  if (!web_contents->GetNativeView() ||
-      !web_contents->GetNativeView()->GetWindowAndroid()) {
+  if (!web_contents_->GetNativeView() ||
+      !web_contents_->GetNativeView()->GetWindowAndroid()) {
     return false;  // No window attached (yet or anymore).
   }
 
-  DCHECK(controller);
+  DCHECK(controller_);
   base::android::ScopedJavaLocalRef<jobject> java_controller =
-      controller->GetJavaObject();
+      controller_->GetJavaObject();
   if (!java_controller) {
     return false;
   }
 
-  if (web_contents->GetBrowserContext() == nullptr) {
+  if (web_contents_->GetBrowserContext() == nullptr) {
     return false;
   }
 
   Profile* browser_profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   if (browser_profile == nullptr) {
     return false;
   }
@@ -58,7 +58,7 @@ bool FacilitatedPaymentsBottomSheetBridge::RequestShowContent(
 
   java_bridge_.Reset(Java_FacilitatedPaymentsPaymentMethodsViewBridge_create(
       env, java_controller,
-      web_contents->GetTopLevelNativeWindow()->GetJavaObject(),
+      web_contents_->GetTopLevelNativeWindow()->GetJavaObject(),
       browser_profile->GetJavaObject()));
   if (!java_bridge_) {
     return false;
@@ -73,6 +73,10 @@ bool FacilitatedPaymentsBottomSheetBridge::RequestShowContent(
   }
   return Java_FacilitatedPaymentsPaymentMethodsViewBridge_requestShowContent(
       env, java_bridge_, std::move(bank_accounts_array));
+}
+
+void FacilitatedPaymentsBottomSheetBridge::OnDismissed() {
+  java_bridge_.Reset();
 }
 
 }  // namespace payments::facilitated

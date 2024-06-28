@@ -31,19 +31,16 @@ class FacilitatedPaymentsBottomSheetBridgeTest
 };
 
 TEST_F(FacilitatedPaymentsBottomSheetBridgeTest, RequestShowContent) {
-  FacilitatedPaymentsBottomSheetBridge bridge;
+  FacilitatedPaymentsController controller(web_contents());
+  FacilitatedPaymentsBottomSheetBridge bridge =
+      FacilitatedPaymentsBottomSheetBridge(web_contents(), &controller);
   const std::vector<autofill::BankAccount> bank_accounts_ = {
       autofill::test::CreatePixBankAccount(100L),
       autofill::test::CreatePixBankAccount(200L)};
 
-  FacilitatedPaymentsController controller;
-
-  bool did_show =
-      bridge.RequestShowContent(bank_accounts_, &controller, web_contents());
-
   // A Java BottomSheetController can't be initialized from the native side. So
   // no bottom sheet is shown.
-  EXPECT_FALSE(did_show);
+  EXPECT_FALSE(bridge.RequestShowContent(bank_accounts_));
 }
 
 }  // namespace

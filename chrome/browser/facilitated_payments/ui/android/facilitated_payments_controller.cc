@@ -11,37 +11,39 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/facilitated_payments/ui/android/internal/jni/FacilitatedPaymentsPaymentMethodsControllerBridge_jni.h"
 
-FacilitatedPaymentsController::FacilitatedPaymentsController() = default;
-FacilitatedPaymentsController::~FacilitatedPaymentsController() = default;
-
 namespace {
 const int64_t kFakeInstrumentId = -1L;
 }  // namespace
 
+FacilitatedPaymentsController::FacilitatedPaymentsController(
+    content::WebContents* web_contents)
+    : view_(std::make_unique<
+            payments::facilitated::FacilitatedPaymentsBottomSheetBridge>(
+          web_contents,
+          this)) {}
+
+FacilitatedPaymentsController::~FacilitatedPaymentsController() = default;
+
 bool FacilitatedPaymentsController::Show(
-    content::WebContents* web_contents,
-    std::unique_ptr<payments::facilitated::FacilitatedPaymentsBottomSheetBridge>
-        view,
     base::span<const autofill::BankAccount> bank_account_suggestions,
     base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
-  // Abort if facilitated payments surface is already shown or no bank accounts.
-  if (view_ || bank_account_suggestions.empty()) {
+  // Abort if there are no bank accounts.
+  if (bank_account_suggestions.empty()) {
     return false;
   }
 
-  if (!view->RequestShowContent(std::move(bank_account_suggestions), this,
-                                web_contents)) {
+  if (!view_->RequestShowContent(std::move(bank_account_suggestions))) {
+    view_->OnDismissed();
     java_object_.Reset();
     return false;
   }
 
-  view_ = std::move(view);
   on_user_decision_callback_ = std::move(on_user_decision_callback);
   return true;
 }
 
 void FacilitatedPaymentsController::OnDismissed(JNIEnv* env) {
-  view_.reset();
+  view_->OnDismissed();
   java_object_.Reset();
 
   if (on_user_decision_callback_) {
@@ -65,4 +67,10 @@ FacilitatedPaymentsController::GetJavaObject() {
             reinterpret_cast<intptr_t>(this));
   }
   return base::android::ScopedJavaLocalRef<jobject>(java_object_);
+}
+
+void FacilitatedPaymentsController::SetViewForTesting(
+    std::unique_ptr<payments::facilitated::FacilitatedPaymentsBottomSheetBridge>
+        view) {
+  view_ = std::move(view);
 }

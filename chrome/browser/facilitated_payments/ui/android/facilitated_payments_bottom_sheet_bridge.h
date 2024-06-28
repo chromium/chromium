@@ -8,6 +8,8 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "ui/android/window_android.h"
 
@@ -23,7 +25,9 @@ namespace payments::facilitated {
 // bottom sheet on Android.
 class FacilitatedPaymentsBottomSheetBridge {
  public:
-  FacilitatedPaymentsBottomSheetBridge();
+  FacilitatedPaymentsBottomSheetBridge(
+      content::WebContents* web_contents,
+      FacilitatedPaymentsController* controller);
 
   FacilitatedPaymentsBottomSheetBridge(
       const FacilitatedPaymentsBottomSheetBridge&) = delete;
@@ -36,11 +40,16 @@ class FacilitatedPaymentsBottomSheetBridge {
   // Return true if a new bottom sheet is created and shown. Otherwise, return
   // false.
   virtual bool RequestShowContent(
-      base::span<const autofill::BankAccount> bank_account_suggestions,
-      FacilitatedPaymentsController* controller,
-      content::WebContents* web_contents);
+      base::span<const autofill::BankAccount> bank_account_suggestions);
+
+  // Called whenever the surface gets hidden (regardless of the cause). Virtual
+  // for testing.
+  virtual void OnDismissed();
 
  private:
+  base::WeakPtr<content::WebContents> web_contents_;
+  // Owner.
+  raw_ptr<FacilitatedPaymentsController> controller_;
   // The corresponding Java FacilitatedPaymentsPaymentMethodsViewBridge. This
   // bridge is used to pass info and commands from native side to Java side for
   // showing UI prompts.

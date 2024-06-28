@@ -24,7 +24,7 @@ ChromeFacilitatedPaymentsClient::ChromeFacilitatedPaymentsClient(
                       /*client=*/this,
                       optimization_guide_decider),
       facilitated_payments_controller_(
-          std::make_unique<FacilitatedPaymentsController>()) {}
+          std::make_unique<FacilitatedPaymentsController>(web_contents)) {}
 
 ChromeFacilitatedPaymentsClient::~ChromeFacilitatedPaymentsClient() = default;
 
@@ -79,9 +79,6 @@ bool ChromeFacilitatedPaymentsClient::ShowPixPaymentPrompt(
     base::span<autofill::BankAccount> bank_account_suggestions,
     base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
   return facilitated_payments_controller_->Show(
-      &GetWebContents(),
-      std::make_unique<
-          payments::facilitated::FacilitatedPaymentsBottomSheetBridge>(),
       std::move(bank_account_suggestions),
       std::move(on_user_decision_callback));
 }

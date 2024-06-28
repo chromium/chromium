@@ -47,15 +47,14 @@ class MockOptimizationGuideDecider
 
 class MockFacilitatedPaymentsController : public FacilitatedPaymentsController {
  public:
-  MockFacilitatedPaymentsController() = default;
+  explicit MockFacilitatedPaymentsController(content::WebContents* web_contents)
+      : FacilitatedPaymentsController(web_contents) {}
+  ~MockFacilitatedPaymentsController() override = default;
 
   MOCK_METHOD(
       bool,
       Show,
-      (content::WebContents * web_contents,
-       std::unique_ptr<
-           payments::facilitated::FacilitatedPaymentsBottomSheetBridge> view,
-       base::span<const autofill::BankAccount> bank_account_suggestions,
+      (base::span<const autofill::BankAccount> bank_account_suggestions,
        base::OnceCallback<void(bool, int64_t)> on_user_decision_callback),
       (override));
 };
@@ -67,7 +66,8 @@ class ChromeFacilitatedPaymentsClientTest
     ChromeRenderViewHostTestHarness::SetUp();
     client_ = std::make_unique<ChromeFacilitatedPaymentsClient>(
         web_contents(), &optimization_guide_decider_);
-    auto controller = std::make_unique<MockFacilitatedPaymentsController>();
+    auto controller =
+        std::make_unique<MockFacilitatedPaymentsController>(web_contents());
     controller_ = controller.get();
     client().SetFacilitatedPaymentsControllerForTesting(std::move(controller));
   }

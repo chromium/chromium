@@ -9,14 +9,17 @@
 
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_bottom_sheet_bridge.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
-#include "content/public/browser/web_contents.h"
+
+namespace content {
+class WebContents;
+}
 
 // Controller of the bottom sheet surface for filling facilitated payments
 // payment methods on Android. It is responsible for showing the view and
 // handling user interactions.
 class FacilitatedPaymentsController {
  public:
-  FacilitatedPaymentsController();
+  explicit FacilitatedPaymentsController(content::WebContents* web_contents);
 
   FacilitatedPaymentsController(const FacilitatedPaymentsController&) = delete;
   FacilitatedPaymentsController& operator=(
@@ -27,9 +30,6 @@ class FacilitatedPaymentsController {
   // Shows the facilitated payments `view`. Returns whether the surface was
   // successfully shown.
   virtual bool Show(
-      content::WebContents* web_contents,
-      std::unique_ptr<
-          payments::facilitated::FacilitatedPaymentsBottomSheetBridge> view,
       base::span<const autofill::BankAccount> bank_account_suggestions,
       base::OnceCallback<void(bool, int64_t)> on_user_decision_callback);
 
@@ -40,10 +40,14 @@ class FacilitatedPaymentsController {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
+  void SetViewForTesting(
+      std::unique_ptr<
+          payments::facilitated::FacilitatedPaymentsBottomSheetBridge> view);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsControllerTest, OnDismissed);
 
-  // View that displays the surface, owned by `this`.
+  // View that displays the surface.
   std::unique_ptr<payments::facilitated::FacilitatedPaymentsBottomSheetBridge>
       view_;
   // The corresponding Java FacilitatedPaymentsControllerBridge. This bridge is
