@@ -336,10 +336,6 @@ public class LocationBarCoordinator
             mSubCoordinator =
                     new LocationBarCoordinatorPhone(
                             (LocationBarPhone) locationBarLayout, mStatusCoordinator);
-            ((UrlBar) mUrlBar)
-                    .setVerticalInset(
-                            context.getResources()
-                                    .getDimensionPixelSize(R.dimen.location_bar_vertical_margin));
         } else if (isTabletLayout()) {
             mSubCoordinator =
                     new LocationBarCoordinatorTablet((LocationBarTablet) locationBarLayout);

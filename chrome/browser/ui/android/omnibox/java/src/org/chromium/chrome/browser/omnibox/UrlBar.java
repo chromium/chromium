@@ -104,12 +104,14 @@ public abstract class UrlBar extends AutocompleteEditText {
      */
     private final KeyboardHideHelper mKeyboardHideHelper;
 
+    private final Rect mClipBounds = new Rect();
+    private final Runnable mEnforceMaxTextHeight = this::enforceMaxTextHeight;
+
     private boolean mFocused;
     private boolean mAllowFocus = true;
     private boolean mTypingStartedEventSent;
 
     private boolean mPendingScroll;
-    private int mLocationBarVerticalInset;
 
     // Captures the current intended text scroll type.
     // This may not be effective if mPendingScroll is true.
@@ -219,10 +221,12 @@ public abstract class UrlBar extends AutocompleteEditText {
                     // make the URL bar focusable so that touches etc. activate it.
                     setFocusable(mAllowFocus);
                     setFocusableInTouchMode(mAllowFocus);
-                    enforceMaxTextHeight();
                 });
 
         setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        int verticalPadding =
+                getResources().getDimensionPixelSize(R.dimen.url_bar_vertical_padding);
+        setPaddingRelative(0, verticalPadding, 0, verticalPadding);
 
         mKeyboardHideHelper =
                 new KeyboardHideHelper(
@@ -237,6 +241,26 @@ public abstract class UrlBar extends AutocompleteEditText {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             setIsHandwritingDelegate(true);
         }
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        canvas.save();
+
+        // Ensure glitch text does not render outside of the url bar bounds.
+        // Glitch text can be generated online using glitch text generators.
+        // Set the clipping bounds to the padding
+        mClipBounds.left = getScrollX();
+        mClipBounds.top = getPaddingTop();
+        mClipBounds.right = getScrollX() + getWidth();
+        mClipBounds.bottom = getHeight() - getPaddingBottom();
+        canvas.clipRect(mClipBounds);
+
+        super.onDraw(canvas);
+        canvas.restore();
+
+        // Notify listeners if the URL's direction has changed.
+        updateUrlDirection();
     }
 
     public void destroy() {
@@ -256,10 +280,6 @@ public abstract class UrlBar extends AutocompleteEditText {
     /** Set the delegate to be used for text context menu actions. */
     public void setTextContextMenuDelegate(UrlBarTextContextMenuDelegate delegate) {
         mTextContextMenuDelegate = delegate;
-    }
-
-    public void setVerticalInset(int verticalInset) {
-        mLocationBarVerticalInset = verticalInset;
     }
 
     /**
@@ -433,14 +453,6 @@ public abstract class UrlBar extends AutocompleteEditText {
             }
         }
         return super.onTouchEvent(event);
-    }
-
-    @Override
-    public void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-
-        // Notify listeners if the URL's direction has changed.
-        updateUrlDirection();
     }
 
     /**
@@ -971,6 +983,7 @@ public abstract class UrlBar extends AutocompleteEditText {
     @Override
     public void layout(int left, int top, int right, int bottom) {
         super.layout(left, top, right, bottom);
+        post(mEnforceMaxTextHeight);
 
         // Note: this must happen after the *entire* layout cycle completes.
         // Running this during onLayout guarantees that isLayoutRequested will remain true,
@@ -1113,18 +1126,26 @@ public abstract class UrlBar extends AutocompleteEditText {
 
     @VisibleForTesting
     void enforceMaxTextHeight() {
-        int maxTextHeightPx = getMaxTextHeight();
+        int viewHeight = getHeight() - getPaddingTop() - getPaddingBottom();
         // Don't touch the text size if the view has not measured and shown yet, or if it's a
         // subject to custom layout constraints (e.g. CCT) that might result with font size being
         // too small.
-        if (maxTextHeightPx <= 0) return;
+        if (viewHeight <= 0) return;
 
         var fontMetrics = getPaint().getFontMetrics();
         var effectiveFontHeightPx = getMaxHeightOfFont(fontMetrics);
 
-        if (effectiveFontHeightPx > maxTextHeightPx) {
+        if (effectiveFontHeightPx > viewHeight) {
+            // Allow the effective font height an extra 2px to ensure aliasing does not get trimmed.
+            // Floating point font size means certain glyphs extending from top to bottom
+            // (e.g. found in Burmese language) may produce aliasing that expands vertically.
+            // Delay the computation until after comparison so that we don't need to worry about
+            // epsilon when comparing floats: once applied, the newly calculated effective font
+            // height should be smaller by the size expressed below.
+            effectiveFontHeightPx += 2.f;
+
             // we need to shrink the text to fit in the text field.
-            var scaleRatio = maxTextHeightPx / effectiveFontHeightPx;
+            var scaleRatio = viewHeight / effectiveFontHeightPx;
             setTextSize(TypedValue.COMPLEX_UNIT_PX, getTextSize() * scaleRatio);
         }
     }
@@ -1133,16 +1154,6 @@ public abstract class UrlBar extends AutocompleteEditText {
     @Px
     static float getMaxHeightOfFont(Paint.FontMetrics fontMetrics) {
         return fontMetrics.bottom - fontMetrics.top;
-    }
-
-    @VisibleForTesting
-    @Px
-    int getMaxTextHeight() {
-        // Note: CCT uses UrlBar to present text. The UrlBar on CCT does not have a reliable
-        // inflated height when CCT is showing for the first time, as the logic is yet to decide
-        // what to present in the LocationBar. UrlBar is `GONE` and typically reports "0" until
-        // the logic decides to present it at a later time.
-        return Math.max(getHeight() - mLocationBarVerticalInset, 0);
     }
 
     /**

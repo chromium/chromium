@@ -707,7 +707,9 @@ public class UrlBarTest {
                     mUrlBar.setTextSize(TypedValue.COMPLEX_UNIT_PX, 100);
                     mUrlBar.enforceMaxTextHeight();
                     Assert.assertTrue(
-                            mUrlBar.getMaxTextHeight()
+                            mUrlBar.getHeight()
+                                            - mUrlBar.getPaddingTop()
+                                            - mUrlBar.getPaddingBottom()
                                     >= UrlBar.getMaxHeightOfFont(
                                             TextViewCompat.getTextMetricsParams(mUrlBar)
                                                     .getTextPaint()

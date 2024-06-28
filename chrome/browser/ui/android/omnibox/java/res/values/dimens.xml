@@ -17,6 +17,9 @@ found in the LICENSE file.
     <dimen name="toolbar_identity_disc_size">24dp</dimen>
     <dimen name="toolbar_url_focus_translation_x">10dp</dimen>
 
+    <!-- URL bar -->
+    <dimen name="url_bar_vertical_padding">@dimen/location_bar_vertical_margin</dimen>
+
     <!-- Bottom Toolbar -->
     <dimen name="split_toolbar_button_height">56dp</dimen>
     <dimen name="split_toolbar_button_width">@dimen/split_toolbar_button_height</dimen>

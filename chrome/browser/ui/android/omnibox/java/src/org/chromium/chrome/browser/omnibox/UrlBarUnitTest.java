@@ -494,7 +494,7 @@ public class UrlBarUnitTest {
         mUrlBar.setScrollState(UrlBar.ScrollType.SCROLL_TO_TLD, mShortDomain.length());
         verify(mUrlBar, times(1)).calculateVisibleHint();
         String visibleHint = mUrlBar.getVisibleTextPrefixHint().toString();
-        assertEquals(url2.substring(0, NUMBER_OF_VISIBLE_CHARACTERS + 1), visibleHint);
+        assertEquals(url2.substring(0, NUMBER_OF_VISIBLE_CHARACTERS + 2), visibleHint);
     }
 
     @Test
