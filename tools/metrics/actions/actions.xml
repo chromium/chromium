@@ -39511,13 +39511,11 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="SupervisedUsers_Extensions_ExtensionInstallDialog_AskedParent">
-  <owner>tobyhuang@chromium.org</owner>
-  <owner>agawronska@chromium.org</owner>
-  <owner>danan@chromium.org</owner>
-  <owner>cros-families@google.com</owner>
+<action name="SupervisedUsers_Extensions_ExtensionInstallDialog_ChildAccepted">
+  <owner>anthie@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
   <description>
-    Emitted when a supervised user clicks &quot;Ask a parent&quot; on the
+    Emitted when a supervised user clicks &quot;Add Extension&quot; on the
     Extension Install Dialog.
   </description>
 </action>

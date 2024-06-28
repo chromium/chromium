@@ -894,8 +894,14 @@ void WebstorePrivateBeginInstallWithManifest3Function::ShowInstallDialog(
     // to configure the install prompt to indicate that this is a child
     // asking a parent for installation permission.
     prompt->set_requires_parent_permission(requires_parent_permission);
-    if (requires_parent_permission) {
+    // Record metrics for supervised users that are in "Skip parent approval"-mode
+    // and use the Extension install dialog (that is used by non-supervised
+    // users).
+    if (supervised_user::AreExtensionsPermissionsEnabled(
+            *profile_->GetPrefs())) {
       prompt->AddObserver(&supervised_user_extensions_metrics_recorder_);
+    }
+    if (requires_parent_permission) {
       // Bypass the install prompt dialog if V2 is enabled. The
       // ParentAccessDialog handles both the blocked and install use case.
 #if BUILDFLAG(IS_CHROMEOS)
