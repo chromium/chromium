@@ -27,7 +27,13 @@ void SearchScoringSignalsAnnotator::AnnotateResult(
     if (!match.scoring_signals->has_search_suggest_relevance()) {
       match.scoring_signals->set_search_suggest_relevance(0);
     }
-    match.scoring_signals->set_is_search_suggest_entity(
-        match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
+    UpdateIsSearchSuggestEntity(match);
   }
+}
+
+// static
+void SearchScoringSignalsAnnotator::UpdateIsSearchSuggestEntity(
+    AutocompleteMatch& match) {
+  match.scoring_signals->set_is_search_suggest_entity(
+      match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
 }

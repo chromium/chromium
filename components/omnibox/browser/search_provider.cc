@@ -40,6 +40,7 @@
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
+#include "components/omnibox/browser/search_scoring_signals_annotator.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/url_prefix.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -1537,6 +1538,16 @@ AutocompleteMatch SearchProvider::NavigationToMatch(
   match.RecordAdditionalInfo(kShouldPrefetchKey, kFalse);
 
   match.from_keyword = navigation.from_keyword();
+
+  // Initialize the ML scoring signals for this suggestion if needed.
+  if (!match.scoring_signals) {
+    match.scoring_signals = std::make_optional<ScoringSignals>();
+  }
+
+  if (navigation.relevance_from_server()) {
+    match.scoring_signals->set_search_suggest_relevance(navigation.relevance());
+  }
+  SearchScoringSignalsAnnotator::UpdateIsSearchSuggestEntity(match);
 
   return match;
 }

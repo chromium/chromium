@@ -26,6 +26,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
+#include "components/omnibox/browser/search_scoring_signals_annotator.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search/search.h"
@@ -535,9 +536,10 @@ void BaseSearchProvider::AddMatchToMap(
     match.scoring_signals = std::make_optional<ScoringSignals>();
   }
 
-  match.scoring_signals->set_search_suggest_relevance(result.relevance());
-  match.scoring_signals->set_is_search_suggest_entity(
-      match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
+  if (result.relevance_from_server()) {
+    match.scoring_signals->set_search_suggest_relevance(result.relevance());
+  }
+  SearchScoringSignalsAnnotator::UpdateIsSearchSuggestEntity(match);
 
   // Try to add `match` to `map`.
   // NOTE: Keep this ToLower() call in sync with url_database.cc.

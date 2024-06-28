@@ -23,6 +23,10 @@ class SearchScoringSignalsAnnotator
   // signals.
   void AnnotateResult(const AutocompleteInput& input,
                       AutocompleteResult* result) override;
+
+  // Sets the value of the `is_search_suggest_entity` scoring signal based on
+  // the match type.
+  static void UpdateIsSearchSuggestEntity(AutocompleteMatch& match);
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_SEARCH_SCORING_SIGNALS_ANNOTATOR_H_
