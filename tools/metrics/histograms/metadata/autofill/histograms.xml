@@ -738,8 +738,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.AddressTokenVerificationStatusAtProfileUsage.{AddressType}"
-    enum="AufofillStructuredTokenVerificationStatus" expires_after="2024-06-30">
+    enum="AufofillStructuredTokenVerificationStatus" expires_after="2024-12-12">
   <owner>koerber@google.com</owner>
+  <owner>vizcay@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     For each {AddressType} in a given AutofillProfile, the verification status
