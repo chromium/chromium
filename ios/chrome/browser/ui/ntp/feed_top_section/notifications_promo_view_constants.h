@@ -19,7 +19,8 @@ enum class ContentNotificationTopOfFeedPromoAction {
   kMainButtonTapped = 2,
   kDismissedFromCloseButton = 3,
   kDismissedFromSecondaryButton = 4,
-  kMaxValue = kDismissedFromSecondaryButton,
+  kDisplayed = 5,
+  kMaxValue = kDisplayed,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/content/enums.xml)
 

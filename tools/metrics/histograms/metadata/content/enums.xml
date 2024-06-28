@@ -92,6 +92,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Main button tapped, to show OS prompt"/>
   <int value="3" label="Dismissed Promo from close button"/>
   <int value="4" label="Dismissed Promo from secondary button"/>
+  <int value="5" label="Promo was shown to the user"/>
 </enum>
 
 <enum name="ContentSettingBubbleAction">
