@@ -243,7 +243,6 @@ class GoToSummaryOutlinesButton : public IconButton,
  public:
   // NOTE: `controller` outlives `GoToSummaryOutlinesButton` so it is safe to
   // use `base::Unretained()` here.
-  // TODO(b/319264190): Replace the a11y string.
   explicit GoToSummaryOutlinesButton(MahiUiController* ui_controller)
       : IconButton(
             /*callback=*/base::BindRepeating(
@@ -257,7 +256,9 @@ class GoToSummaryOutlinesButton : public IconButton,
                 base::Unretained(ui_controller)),
             IconButton::Type::kSmallFloating,
             &kEcheArrowBackIcon,
-            /*accessible_name=*/u"Back to summary",
+            /*accessible_name=*/
+            l10n_util::GetStringUTF16(
+                IDS_ASH_MAHI_PANEL_GO_TO_SUMMARY_BUTTON_ACCESSIBLE_NAME),
             /*is_togglable=*/false,
             /*has_border=*/false),
         MahiUiController::Delegate(ui_controller) {}
@@ -299,7 +300,6 @@ class GoToQuestionAndAnswerButton : public IconButton,
  public:
   // NOTE: `controller` outlives `GoToQuestionAndAnswerButton` so it is safe to
   // use `base::Unretained()` here.
-  // TODO(b/319264190): Replace the a11y string.
   explicit GoToQuestionAndAnswerButton(MahiUiController* ui_controller)
       : IconButton(
             /*callback=*/base::BindRepeating(
@@ -314,7 +314,9 @@ class GoToQuestionAndAnswerButton : public IconButton,
                 base::Unretained(ui_controller)),
             IconButton::Type::kSmallFloating,
             &kQuickSettingsRightArrowIcon,
-            /*accessible_name=*/u"Back to Q&A view",
+            /*accessible_name=*/
+            l10n_util::GetStringUTF16(
+                IDS_ASH_MAHI_PANEL_GO_TO_QUESTION_AND_ANSWER_BUTTON_ACCESSIBLE_NAME),
             /*is_togglable=*/false,
             /*has_border=*/false),
         MahiUiController::Delegate(ui_controller) {}
@@ -653,8 +655,8 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
                           .SetBackgroundEnabled(false)
                           .SetBorder(
                               views::CreateEmptyBorder(kInputTextfieldPadding))
-                          // TODO(b/319264190): Replace string.
-                          .SetPlaceholderText(u"Ask a question.")
+                          .SetPlaceholderText(l10n_util::GetStringUTF16(
+                              IDS_ASH_MAHI_PANEL_INPUT_PLACEHOLDER_TEXT))
                           .SetFontList(
                               TypographyProvider::Get()->ResolveTypographyToken(
                                   TypographyToken::kCrosAnnotation1))
@@ -678,8 +680,8 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
           .SetVectorIcon(&vector_icons::kSendIcon)
           .SetCallback(base::BindRepeating(&MahiPanelView::OnSendButtonPressed,
                                            weak_ptr_factory_.GetWeakPtr()))
-          // TODO(b/319264190): Replace string.
-          .SetAccessibleName(u"Send")
+          .SetAccessibleName(l10n_util::GetStringUTF16(
+              IDS_ASH_MAHI_PANEL_INPUT_TEXTFIELD_SEND_BUTTON_ACCESSIBLE_NAME))
           .Build());
 
   question_textfield_->RemoveHoverEffect();
@@ -780,9 +782,8 @@ std::unique_ptr<views::View> MahiPanelView::CreateHeaderRow() {
               IconButton::Builder()
                   .SetType(IconButton::Type::kMediumFloating)
                   .SetVectorIcon(&kMediumOrLargeCloseButtonIcon)
-                  // TODO(b/319264190): Replace the string used here with
-                  // the correct string ID.
-                  .SetAccessibleName(u"Close button")
+                  .SetAccessibleName(l10n_util::GetStringUTF16(
+                      IDS_ASH_MAHI_PANEL_CLOSE_BUTTON_ACCESSIBLE_NAME))
                   .Build())
               .SetID(mahi_constants::ViewId::kCloseButton)
               .SetCallback(

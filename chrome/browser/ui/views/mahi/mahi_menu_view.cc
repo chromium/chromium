@@ -95,10 +95,6 @@ void StyleMenuButton(views::LabelButton* button, const gfx::VectorIcon& icon) {
       kButtonPadding));
 }
 
-std::u16string GetMahiMenuTitle() {
-  return l10n_util::GetStringUTF16(magic_boost::kMahiMenuTitleStringId);
-}
-
 }  // namespace
 
 // Controller for the `textfield_` owned by `MahiMenuView`. Enables the
@@ -172,11 +168,10 @@ MahiMenuView::MahiMenuView(Surface surface)
           views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                    views::MaximumFlexSizeRule::kUnbounded)));
 
-  // TODO(b/318733118): Finish building the menu UI.
   auto* header_label =
       header_left_container->AddChildView(std::make_unique<views::Label>(
-          GetMahiMenuTitle(), views::style::CONTEXT_DIALOG_TITLE,
-          views::style::STYLE_HEADLINE_5));
+          l10n_util::GetStringUTF16(IDS_ASH_MAHI_MENU_TITLE),
+          views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_HEADLINE_5));
   header_label->SetEnabledColorId(ui::kColorSysOnSurface);
   header_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 

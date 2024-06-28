@@ -5274,6 +5274,9 @@ No devices connected.
       <message name="IDS_ASH_MAHI_REFRESH_BANNER_LABEL_TEXT" desc="Text for the refresh banner shown above the mahi panel.">
         Refresh <ph name="CONTENT_TITLE">$1<ex>test content title</ex></ph>
       </message>
+      <message name="IDS_ASH_MAHI_REFRESH_BANNER_BUTTON_ACCESSIBLE_NAME" desc="Tooltip for the Mahi refresh contents button.">
+        Refresh content
+      </message>
       <message name="IDS_ASH_MAHI_RESPONSE_STATUS_INAPPROPRIATE_LABEL_TEXT" desc="Text of the service response that suggests the previous Mahi request is inappropriate">
         Can’t help with this. Try another request.
       </message>
@@ -5297,6 +5300,24 @@ No devices connected.
       </message>
       <message name="IDS_ASH_MAHI_EDUCATIONAL_NUDGE_BODY" desc="Body for the educational nudge used to discover the Mahi feature">
         Use Help me read to quickly summarize content or ask questions
+      </message>
+      <message name="IDS_ASH_MAHI_CONTENT_SOURCE_BUTTON_ACCESSIBLE_NAME" desc="Tooltip for the Mahi content source button.">
+        Content source information
+      </message>
+      <message name="IDS_ASH_MAHI_PANEL_GO_TO_SUMMARY_BUTTON_ACCESSIBLE_NAME" desc="Tooltip for the button that takes the user to the Mahi summary page.">
+        Back to summary
+      </message>
+      <message name="IDS_ASH_MAHI_PANEL_GO_TO_QUESTION_AND_ANSWER_BUTTON_ACCESSIBLE_NAME" desc="Tooltip for the button that takes the user to the Mahi question and answer page.">
+        Back to question
+      </message>
+      <message name="IDS_ASH_MAHI_PANEL_INPUT_PLACEHOLDER_TEXT" desc="Placeholder text for the Mahi panel input textfield.">
+        Ask a question.
+      </message>
+      <message name="IDS_ASH_MAHI_PANEL_INPUT_TEXTFIELD_SEND_BUTTON_ACCESSIBLE_NAME" desc="Tooltip for the Mahi panel input textfield send button.">
+        Send
+      </message>
+      <message name="IDS_ASH_MAHI_PANEL_CLOSE_BUTTON_ACCESSIBLE_NAME" desc="Tooltip for the Mahi panel close button.">
+        Close
       </message>
 
       <!-- Magic boost -->

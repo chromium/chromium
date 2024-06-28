@@ -367,7 +367,7 @@
         Enter a prompt
       </message>
       <message name="IDS_EDITOR_MENU_SETTINGS_TOOLTIP" desc="Tooltip text for the settings button in the Editor Menu.">
-        Help me write settings
+        Settings
       </message>
       <message name="IDS_EDITOR_MENU_FREEFORM_TEXTFIELD_ARROW_BUTTON_TOOLTIP" desc="Tooltip text for the arrow button in the freeform textfield in the Editor Menu.">
         Submit
@@ -377,9 +377,8 @@
       </message>
 
       <!-- Mahi -->
-      <!-- TODO(b/331127382): Finalize Mahi strings and mark them translateable. -->
       <message name="IDS_MAHI_EXPERIMENT_BADGE_ACCESSIBLE_NAME" desc="Accessible name of the badge to indicate that it is an experimental feature." translateable="false">
-        AI-powered experimental feature
+        Experiment
       </message>
       <message name="IDS_MAHI_FEEDBACK_PLACEHOLDER" desc="Placeholder text displayed in the feedback text box">
         Feedback for mahi feature
@@ -393,20 +392,14 @@
       <message name="IDS_MAHI_MENU_INPUT_TEXTHOLDER" desc="The textholder for the input textfield inside the Mahi menu" translateable="false">
         Ask question, e.g. "What is this page about?"
       </message>
-      <message name="IDS_MAHI_MENU_TITLE_SHORT" desc="A short version of the title text of the Mahi menu" translateable="false">
-        Mahi Menu
-      </message>
-      <message name="IDS_MAHI_CONDENSED_MENU_BUTTON_LABEL_SHORT" desc="A short version of the label that appears on the condensed Mahi menu button" translateable="false">
-        Open panel
-      </message>
       <message name="IDS_MAHI_PANEL_SUMMARY_SECTION_NAME" desc="The name for the summary section that lies within the Mahi panel">
         Summary
       </message>
       <message name="IDS_MAHI_PANEL_OUTLINES_SECTION_NAME" desc="The name for the outlines section that lies within the Mahi panel">
         Outlines
       </message>
-      <message name="IDS_MAHI_MENU_INPUT_SEND_BUTTON_ACCESSIBLE_NAME" desc="Accessible name of the badge to indicate that it is an experimental feature." translateable="false">
-        Send button
+      <message name="IDS_MAHI_MENU_INPUT_SEND_BUTTON_ACCESSIBLE_NAME" desc="Accessible name of the badge to indicate that it is an experimental feature.">
+        Send
       </message>
 
       <!-- Magic Boost -->
@@ -427,6 +420,12 @@
       </message>
       <message name="IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_ACCEPT_BUTTON" desc="Text shown for the secondary button of the Magic Boost opt-in card">
         Try it
+      </message>
+      <message name="IDS_ASH_MAHI_MENU_TITLE" desc="Title text of the Mahi menu.">
+        Help me read
+      </message>
+      <message name="IDS_ASH_MAHI_CONDENSED_MENU_BUTTON_LABEL" desc="The label that appears on the condensed Mahi menu button">
+        Help me read this page
       </message>
 
       <!-- Multitask Menu -->

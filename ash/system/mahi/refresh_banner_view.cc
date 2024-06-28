@@ -209,8 +209,8 @@ std::unique_ptr<IconButton> RefreshBannerView::CreateRefreshButton() {
               base::Unretained(ui_controller_)))
           .SetVectorIcon(&vector_icons::kReloadChromeRefreshIcon)
           .SetType(IconButton::Type::kSmallProminentFloating)
-          // TODO(b/347134443): Replace the a11y string.
-          .SetAccessibleName(u"Refresh contents")
+          .SetAccessibleName(l10n_util::GetStringUTF16(
+              IDS_ASH_MAHI_REFRESH_BANNER_BUTTON_ACCESSIBLE_NAME))
           .Build();
   icon_button->SetIconColor(cros_tokens::kCrosSysSystemOnPrimaryContainer);
   views::FocusRing::Get(icon_button.get())

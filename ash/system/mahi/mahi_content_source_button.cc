@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ash/system/mahi/mahi_constants.h"
@@ -18,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -70,9 +72,9 @@ void MahiContentSourceButton::RefreshContentSourceInfo() {
           mahi_manager->GetContentIcon(), mahi_constants::kContentIconSize)));
   SetText(mahi_manager->GetContentTitle());
 
-  // TODO(b/331127382): Determine an appropriate a11y string.
   if (GetViewAccessibility().GetCachedName().empty()) {
-    GetViewAccessibility().SetName(u"Content source info");
+    GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+        IDS_ASH_MAHI_CONTENT_SOURCE_BUTTON_ACCESSIBLE_NAME));
   }
 }
 
