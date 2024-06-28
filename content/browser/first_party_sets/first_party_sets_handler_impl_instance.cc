@@ -510,7 +510,7 @@ void FirstPartySetsHandlerImplInstance::ComputeFirstPartySetMetadataInternal(
   CHECK(global_sets_.has_value());
 
   base::UmaHistogramTimes(
-      "Cookie.FirstPartySets.EnqueueingDelay.ComputeMetadata2",
+      "Cookie.FirstPartySets.EnqueueingDelay.ComputeMetadata3",
       timer.Elapsed());
 
   std::move(callback).Run(global_sets_->ComputeMetadata(

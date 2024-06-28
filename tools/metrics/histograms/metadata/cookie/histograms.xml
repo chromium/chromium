@@ -500,8 +500,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.FirstPartySets.EnqueueingDelay.{QueryType}2" units="ms"
-    expires_after="2024-08-04">
+<histogram name="Cookie.FirstPartySets.EnqueueingDelay.{QueryType}" units="ms"
+    expires_after="2025-08-04">
   <owner>cfredric@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -513,9 +513,8 @@ chromium-metrics-reviews@google.com.
     low-resolution clocks.
   </summary>
   <token key="QueryType">
-    <variant name="ComputeMetadata"/>
-    <variant name="ContextConfig"/>
-    <variant name="FindOwners"/>
+    <variant name="ComputeMetadata3"/>
+    <variant name="ContextConfig2"/>
   </token>
 </histogram>
 
