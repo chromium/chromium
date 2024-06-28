@@ -282,6 +282,8 @@ class MockNigoriStorage : public NigoriStorage {
 class NigoriSyncBridgeImplTest : public testing::Test {
  protected:
   NigoriSyncBridgeImplTest() {
+    Nigori::SetUseScryptCostParameterForTesting(true);
+
     ON_CALL(processor_, IsTrackingMetadata).WillByDefault(Return(true));
     ON_CALL(processor_, GetMetadata()).WillByDefault([&] {
       return CreateFakeNigoriMetadataBatch(
@@ -290,7 +292,10 @@ class NigoriSyncBridgeImplTest : public testing::Test {
     InitializeBridge();
   }
 
-  ~NigoriSyncBridgeImplTest() override { bridge_->RemoveObserver(&observer_); }
+  ~NigoriSyncBridgeImplTest() override {
+    bridge_->RemoveObserver(&observer_);
+    Nigori::SetUseScryptCostParameterForTesting(false);
+  }
 
   void SetUp() override { OSCryptMocker::SetUp(); }
   void TearDown() override { OSCryptMocker::TearDown(); }
