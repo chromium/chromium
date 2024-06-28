@@ -404,8 +404,7 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
         {
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
-                       reservation.id, reservation.generation,
-                       WGPUTextureUsage_TextureBinding, 0u,
+                       reservation.id, reservation.generation, UINT64_MAX, 0u,
                        webgpu::WEBGPU_MAILBOX_NONE, 0u, 0u, packed_data.data());
           EXPECT_EQ(error::kOutOfBounds,
                     ExecuteImmediateCmd(decoder, cmd.cmd, 0u));
@@ -415,8 +414,7 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
         {
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
-                       reservation.id, reservation.generation,
-                       WGPUTextureUsage_TextureBinding, 0u,
+                       reservation.id, reservation.generation, UINT64_MAX, 0u,
                        webgpu::WEBGPU_MAILBOX_NONE, view_format_count,
                        ComputeNumEntries(sizeof(mailbox.name)) - 1u,
                        packed_data.data());

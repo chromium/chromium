@@ -51,7 +51,7 @@ TEST_F(WebGPUFormatTest, AssociateMailboxImmediate) {
       sizeof(cmd) + kNumElements * sizeof(GLuint) * 1;
   void* next_cmd = cmd.Set(&cmd, static_cast<GLuint>(1), static_cast<GLuint>(2),
                            static_cast<GLuint>(3), static_cast<GLuint>(4),
-                           static_cast<GLuint>(5), static_cast<GLuint>(6),
+                           static_cast<uint64_t>(5), static_cast<uint64_t>(6),
                            static_cast<MailboxFlags>(7), static_cast<GLuint>(8),
                            static_cast<GLuint>(9), data);
   EXPECT_EQ(static_cast<uint32_t>(cmds::AssociateMailboxImmediate::kCmdId),
@@ -61,8 +61,8 @@ TEST_F(WebGPUFormatTest, AssociateMailboxImmediate) {
   EXPECT_EQ(static_cast<GLuint>(2), cmd.device_generation);
   EXPECT_EQ(static_cast<GLuint>(3), cmd.id);
   EXPECT_EQ(static_cast<GLuint>(4), cmd.generation);
-  EXPECT_EQ(static_cast<GLuint>(5), cmd.usage);
-  EXPECT_EQ(static_cast<GLuint>(6), cmd.internal_usage);
+  EXPECT_EQ(static_cast<uint64_t>(5), cmd.usage);
+  EXPECT_EQ(static_cast<uint64_t>(6), cmd.internal_usage);
   EXPECT_EQ(static_cast<MailboxFlags>(7), cmd.flags);
   EXPECT_EQ(static_cast<GLuint>(8), cmd.view_format_count);
   EXPECT_EQ(static_cast<GLuint>(9), cmd.count);

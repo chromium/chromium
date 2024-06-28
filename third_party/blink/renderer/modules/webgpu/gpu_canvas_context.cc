@@ -798,7 +798,7 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
       wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::RenderAttachment;
   webgpu->AssociateMailbox(reservation.deviceId, reservation.deviceGeneration,
                            reservation.id, reservation.generation,
-                           static_cast<GLuint>(usage), dst_mailbox);
+                           static_cast<uint64_t>(usage), dst_mailbox);
   wgpu::ImageCopyTexture source = {
       .texture = texture,
       .aspect = wgpu::TextureAspect::All,

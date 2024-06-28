@@ -235,8 +235,8 @@ WebGPUMailboxTexture::WebGPUMailboxTexture(
   // representation.
   webgpu->AssociateMailbox(
       wire_device_id_, wire_device_generation_, wire_texture_id_,
-      wire_texture_generation_, static_cast<GLuint>(desc.usage),
-      static_cast<GLuint>(internal_usage),
+      wire_texture_generation_, static_cast<uint64_t>(desc.usage),
+      static_cast<uint64_t>(internal_usage),
       reinterpret_cast<const WGPUTextureFormat*>(desc.viewFormats),
       base::checked_cast<GLuint>(desc.viewFormatCount), mailbox_flags, mailbox);
 }
