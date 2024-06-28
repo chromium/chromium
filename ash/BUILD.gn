@@ -4310,6 +4310,8 @@ test("ash_unittests") {
     "wm/splitview/split_view_highlight_view_unittest.cc",
     "wm/splitview/split_view_metrics_controller_unittest.cc",
     "wm/splitview/split_view_multi_display_unittest.cc",
+    "wm/splitview/split_view_test_util.cc",
+    "wm/splitview/split_view_test_util.h",
     "wm/system_gesture_event_filter_unittest.cc",
     "wm/system_modal_container_layout_manager_unittest.cc",
     "wm/tablet_mode/accelerometer_test_data_literals.cc",
