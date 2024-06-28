@@ -150,7 +150,7 @@ void ReadingListWebStateObserver::StartCheckingLoading() {
       FROM_HERE, kDelayUntilLoadingProgressIsChecked,
       base::BindRepeating(
           &ReadingListWebStateObserver::VerifyIfReadingListEntryStartedLoading,
-          base::Unretained(this)));
+          weak_factory_.GetWeakPtr()));
 }
 
 void ReadingListWebStateObserver::PageLoaded(

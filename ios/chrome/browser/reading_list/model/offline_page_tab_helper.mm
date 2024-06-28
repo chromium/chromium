@@ -414,7 +414,7 @@ void OfflinePageTabHelper::StartCheckingLoadingProgress(const GURL& url) {
   timer_.reset(new base::RepeatingTimer());
   timer_->Start(FROM_HERE, base::Milliseconds(1500),
                 base::BindRepeating(&OfflinePageTabHelper::CheckLoadingProgress,
-                                    base::Unretained(this), url));
+                                    weak_factory_.GetWeakPtr(), url));
 }
 
 void OfflinePageTabHelper::StopCheckingLoadingProgress() {

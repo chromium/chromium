@@ -57,7 +57,7 @@ class DistillerViewerTest : public dom_distiller::DistillerViewerInterface {
     if (!mime_type.empty()) {
       delegate->DistilledPageHasMimeType(url, mime_type);
     }
-    std::move(callback).Run(url, html, images, "title");
+    std::move(callback).Run(url, html, images, "title", GetCspNonce());
   }
 
   void OnArticleReady(
