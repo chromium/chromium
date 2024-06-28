@@ -458,18 +458,10 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
     finished_state_ = State::kDisplayingInvokeAnimation;
   }
 
-  void SetFinishedStateToDisplayingCancelAnimation() {
-    finished_state_ = State::kDisplayingCancelAnimation;
-  }
-
   void SetFinishedStateToInProgress() { finished_state_ = State::kStarted; }
 
-  void SetFinishedStateToWaitingForNewFrame() {
-    finished_state_ = State::kWaitingForNewRendererToDraw;
-  }
-
-  void SetFinishedStateToDisplayingCrossFadeAnimation() {
-    finished_state_ = State::kDisplayingCrossFadeAnimation;
+  void SetFinishedStateToAnimationAborted() {
+    finished_state_ = State::kAnimationAborted;
   }
 
   void set_intercept_render_frame_metadata_changed(bool intercept) {
@@ -523,7 +515,7 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
   const std::vector<scoped_refptr<cc::slim::Layer>>&
   GetChildrenLayersOfWebContentsView() const {
     return static_cast<WebContentsViewAndroid*>(
-               static_cast<WebContentsImpl*>(web_contents())->GetView())
+               wcva_->web_contents()->GetView())
         ->GetNativeView()
         ->GetLayer()
         ->children();
@@ -1091,7 +1083,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop destroyed;
-  GetAnimatorForTesting()->SetFinishedStateToInProgress();
+  GetAnimatorForTesting()->SetFinishedStateToAnimationAborted();
   GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
   ASSERT_TRUE(NavigateToURL(web_contents(), BlueURL()));
   destroyed.Run();
@@ -1109,7 +1101,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop destroyed;
-  GetAnimatorForTesting()->SetFinishedStateToDisplayingCancelAnimation();
+  GetAnimatorForTesting()->SetFinishedStateToAnimationAborted();
   GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
   GetAnimatorForTesting()->PauseAnimationAtDisplayingCancelAnimation();
   GetAnimationManager(web_contents())->OnGestureCancelled();
@@ -1134,7 +1126,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   GetAnimatorForTesting()->set_on_invoke_animation_displayed(
       invoke_played.QuitClosure());
   base::RunLoop destroyed;
-  GetAnimatorForTesting()->SetFinishedStateToWaitingForNewFrame();
+  GetAnimatorForTesting()->SetFinishedStateToAnimationAborted();
   GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
 
   TestNavigationManager back_nav_to_red(web_contents(), RedURL());
@@ -1520,7 +1512,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop destroyed;
-  GetAnimatorForTesting()->SetFinishedStateToDisplayingInvokeAnimation();
+  GetAnimatorForTesting()->SetFinishedStateToAnimationAborted();
   GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
   base::RunLoop did_finish_nav;
   GetAnimatorForTesting()->set_did_finish_navigation_callback(
@@ -1556,7 +1548,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop destroyed;
-  GetAnimatorForTesting()->SetFinishedStateToWaitingForNewFrame();
+  GetAnimatorForTesting()->SetFinishedStateToAnimationAborted();
   GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
   base::RunLoop did_finish_nav;
   GetAnimatorForTesting()->set_did_finish_navigation_callback(
@@ -2010,9 +2002,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
 
   dialog_observer.WaitForDialog();
   GetAnimatorForTesting()->ExpectDisplayingCancelAnimation();
-  // Expectation the animator will be destroyed while playin the cancel
+  // Expectation the animator will be destroyed while playing the cancel
   // animation.
-  GetAnimatorForTesting()->SetFinishedStateToDisplayingCancelAnimation();
+  GetAnimatorForTesting()->SetFinishedStateToAnimationAborted();
   dialog_observer.RespondToDialogue(/*proceed=*/false);
   GetAnimatorForTesting()->UnpauseAnimation();
 
@@ -2127,7 +2119,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   TestNavigationManager nav_to_blue(web_contents(), BlueURL());
 
   GetAnimatorForTesting()->PauseAnimationAtDisplayingCrossFadeAnimation();
-  GetAnimatorForTesting()->SetFinishedStateToDisplayingCrossFadeAnimation();
+  GetAnimatorForTesting()->SetFinishedStateToAnimationAborted();
 
   auto* animation_manager = GetAnimationManager(web_contents());
   animation_manager->OnGestureInvoked();
@@ -2259,22 +2251,37 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
 
+  // Start a navigation and wait until the request has been sent
+  TestNavigationManager nav_to_blue(web_contents(), BlueURL());
+  web_contents()->GetController().LoadURL(
+      BlueURL(), Referrer{},
+      ui::PageTransitionFromInt(
+          ui::PageTransition::PAGE_TRANSITION_FROM_ADDRESS_BAR |
+          ui::PageTransition::PAGE_TRANSITION_TYPED),
+      std::string{});
+  ASSERT_TRUE(nav_to_blue.WaitForRequestStart());
+
+  // Start a swipe gesture
   std::vector<GestureType> expected;
   expected.push_back(GestureType::kStart);
   expected.push_back(GestureType::k30ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
-  GetAnimatorForTesting()->SetFinishedStateToInProgress();
+  // When the navigation above commits the animator should be destroyed with an
+  // abort
+  GetAnimatorForTesting()->SetFinishedStateToAnimationAborted();
+  base::RunLoop destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
+  ASSERT_TRUE(nav_to_blue.WaitForNavigationFinished());
+  destroyed.Run();
 
-  // Destroy the animator.
   auto* manager = static_cast<BackForwardTransitionAnimationManagerAndroid*>(
       web_contents()->GetBackForwardTransitionAnimationManager());
-  manager->SynchronouslyDestroyAnimator();
 
-  TestNavigationManager back_to_red(web_contents(), RedURL());
-  // Invoke the gesture and start the navigation.
+  TestNavigationManager back_nav_to_red(web_contents(), RedURL());
   manager->OnGestureInvoked();
-  ASSERT_TRUE(back_to_red.WaitForNavigationFinished());
+  ASSERT_TRUE(back_nav_to_red.WaitForNavigationFinished());
+  ASSERT_TRUE(back_nav_to_red.was_committed());
 }
 
 // Regression test for https://crbug.com/344761329: If the
@@ -2525,7 +2532,7 @@ IN_PROC_BROWSER_TEST_P(
 
   TestNavigationManager redirect_nav(web_contents(), redirect);
 
-  GetAnimatorForTesting()->SetFinishedStateToDisplayingInvokeAnimation();
+  GetAnimatorForTesting()->SetFinishedStateToAnimationAborted();
   GetAnimationManager(web_contents())->OnGestureInvoked();
 
   ASSERT_TRUE(redirect_nav.WaitForNavigationFinished());

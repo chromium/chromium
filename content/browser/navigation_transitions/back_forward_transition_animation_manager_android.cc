@@ -95,6 +95,18 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
   animator_ = animator_factory_->Create(
       web_contents_view_android_.get(), navigation_controller_.get(), gesture,
       navigation_direction, destination_entry, this);
+
+  // Become a WCO as soon as this class is created, because we want to
+  // observe all navigations while this class is controlling the UI. This
+  // allows us to ensure the visuals displayed align with the active page
+  // and URL in the URL bar.
+  WebContentsObserver::Observe(
+      this->web_contents_view_android()->web_contents());
+  auto* window = web_contents_view_android()->GetTopLevelNativeWindow();
+  CHECK(window);
+  window->AddObserver(this);
+  web_contents_view_android()->GetNativeView()->AddObserver(this);
+
   OnAnimationStageChanged();
 }
 
@@ -109,6 +121,7 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureCancelled() {
   CHECK_NE(destination_entry_index_, -1);
   if (animator_) {
     animator_->OnGestureCancelled();
+    MaybeDestroyAnimator();
   }
   destination_entry_index_ = -1;
 }
@@ -117,6 +130,7 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureInvoked() {
   CHECK_NE(destination_entry_index_, -1);
   if (animator_) {
     animator_->OnGestureInvoked();
+    MaybeDestroyAnimator();
   } else {
     navigation_controller_->GoToIndex(destination_entry_index_);
   }
@@ -127,6 +141,7 @@ void BackForwardTransitionAnimationManagerAndroid::
     OnContentForNavigationEntryShown() {
   if (animator_) {
     animator_->OnContentForNavigationEntryShown();
+    MaybeDestroyAnimator();
   }
 }
 
@@ -141,11 +156,10 @@ void BackForwardTransitionAnimationManagerAndroid::
         NavigationRequest* navigation_request,
         RenderFrameHostImpl* old_host,
         RenderFrameHostImpl* new_host) {
-  if (animator_
-      && !animator_->OnDidNavigatePrimaryMainFramePreCommit(navigation_request,
-                                                            old_host,
-                                                            new_host)) {
-    SynchronouslyDestroyAnimator();
+  if (animator_) {
+    animator_->OnDidNavigatePrimaryMainFramePreCommit(navigation_request,
+                                                      old_host, new_host);
+    MaybeDestroyAnimator();
   }
 }
 
@@ -153,12 +167,17 @@ void BackForwardTransitionAnimationManagerAndroid::
     OnNavigationCancelledBeforeStart(NavigationHandle* navigation_handle) {
   if (animator_) {
     animator_->OnNavigationCancelledBeforeStart(navigation_handle);
+    MaybeDestroyAnimator();
   }
 }
 
-void BackForwardTransitionAnimationManagerAndroid::
-    SynchronouslyDestroyAnimator() {
+void BackForwardTransitionAnimationManagerAndroid::DestroyAnimator() {
   CHECK(animator_);
+  WebContentsObserver::Observe(nullptr);
+  auto* window = web_contents_view_android()->GetTopLevelNativeWindow();
+  CHECK(window);
+  window->RemoveObserver(this);
+  web_contents_view_android()->GetNativeView()->RemoveObserver(this);
   animator_.reset();
   OnAnimationStageChanged();
 }
@@ -168,6 +187,70 @@ void BackForwardTransitionAnimationManagerAndroid::OnAnimationStageChanged() {
       ->web_contents()
       ->GetDelegate()
       ->DidBackForwardTransitionAnimationChange();
+}
+
+void BackForwardTransitionAnimationManagerAndroid::OnDetachedFromWindow() {
+  // The WebContentsViewAndroid's native view is detached from the top level
+  // window. We must abort the transition.
+  CHECK(animator_);
+  DestroyAnimator();
+}
+
+void BackForwardTransitionAnimationManagerAndroid::
+    OnRootWindowVisibilityChanged(bool visible) {
+  CHECK(animator_);
+  if (!visible) {
+    DestroyAnimator();
+  }
+}
+
+void BackForwardTransitionAnimationManagerAndroid::OnDetachCompositor() {
+  CHECK(animator_);
+  DestroyAnimator();
+}
+
+void BackForwardTransitionAnimationManagerAndroid::RenderWidgetHostDestroyed(
+    RenderWidgetHost* widget_host) {
+  animator_->OnRenderWidgetHostDestroyed(widget_host);
+  MaybeDestroyAnimator();
+}
+
+void BackForwardTransitionAnimationManagerAndroid::
+    OnRenderFrameMetadataChangedAfterActivation(
+        base::TimeTicks activation_time) {
+  animator_->OnRenderFrameMetadataChangedAfterActivation(activation_time);
+  MaybeDestroyAnimator();
+}
+
+void BackForwardTransitionAnimationManagerAndroid::DidStartNavigation(
+    NavigationHandle* navigation_handle) {
+  animator_->DidStartNavigation(navigation_handle);
+  MaybeDestroyAnimator();
+}
+
+void BackForwardTransitionAnimationManagerAndroid::DidFinishNavigation(
+    NavigationHandle* navigation_handle) {
+  animator_->DidFinishNavigation(navigation_handle);
+  MaybeDestroyAnimator();
+}
+
+void BackForwardTransitionAnimationManagerAndroid::ReadyToCommitNavigation(
+    NavigationHandle* navigation_handle) {
+  animator_->ReadyToCommitNavigation(navigation_handle);
+  MaybeDestroyAnimator();
+}
+
+void BackForwardTransitionAnimationManagerAndroid::OnAnimate(
+    base::TimeTicks frame_begin_time) {
+  animator_->OnAnimate(frame_begin_time);
+  MaybeDestroyAnimator();
+}
+
+void BackForwardTransitionAnimationManagerAndroid::MaybeDestroyAnimator() {
+  CHECK(animator_);
+  if (animator_->IsTerminalState()) {
+    DestroyAnimator();
+  }
 }
 
 }  // namespace content

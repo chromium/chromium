@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "content/browser/navigation_transitions/back_forward_transition_animator.h"
 #include "content/public/browser/back_forward_transition_animation_manager.h"
+#include "ui/android/window_android.h"
 
 namespace ui {
 class BackGestureEvent;
@@ -31,7 +32,12 @@ class RenderFrameHostImpl;
 // TODO(crbug.com/40260440): We should always animate a gesture history
 // navigation.
 class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
-    : public BackForwardTransitionAnimationManager {
+    : public BackForwardTransitionAnimationManager,
+      public ui::ViewAndroidObserver,
+      public ui::WindowAndroidObserver,
+      public RenderWidgetHostObserver,
+      public RenderFrameMetadataProvider::Observer,
+      public WebContentsObserver {
  public:
   BackForwardTransitionAnimationManagerAndroid(
       WebContentsViewAndroid* web_contents_view_android,
@@ -51,6 +57,35 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   void OnGestureInvoked() override;
   void OnContentForNavigationEntryShown() override;
   AnimationStage GetCurrentAnimationStage() override;
+
+  // `ui::ViewAndroidObserver`:
+  void OnAttachedToWindow() override {}
+  void OnDetachedFromWindow() override;
+
+  // `ui::WindowAndroidObserver`:
+  void OnRootWindowVisibilityChanged(bool visible) override;
+  void OnAttachCompositor() override {}
+  void OnDetachCompositor() override;
+  void OnAnimate(base::TimeTicks frame_begin_time) override;
+  void OnActivityStopped() override {}
+  void OnActivityStarted() override {}
+
+  // `RenderWidgetHostObserver`:
+  void RenderWidgetHostDestroyed(RenderWidgetHost* widget_host) override;
+
+  // `RenderFrameMetadataProvider::Observer`:
+  void OnRenderFrameMetadataChangedBeforeActivation(
+      const cc::RenderFrameMetadata& metadata) override {}
+  void OnRenderFrameMetadataChangedAfterActivation(
+      base::TimeTicks activation_time) override;
+  void OnRenderFrameSubmission() override {}
+  void OnLocalSurfaceIdChanged(
+      const cc::RenderFrameMetadata& metadata) override {}
+
+  // `WebContentsObserver`:
+  void DidStartNavigation(NavigationHandle* navigation_handle) override;
+  void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
+  void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
   // This is called before the `old_host` is swapped out and before the
   // `new_host` is swapped in.
@@ -79,11 +114,6 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   // Notified when a unstarted navigation request is destroyed.
   void OnNavigationCancelledBeforeStart(NavigationHandle* navigation_handle);
 
-  // `animator_` invokes this callback to destroy itself, when all the animation
-  // has finished in the browser UI. Also use this to abort processing the
-  // gesture when an unrelated navigation occurs during the animation.
-  void SynchronouslyDestroyAnimator();
-
   // `animator_` invokes this callback to notify the state changes of the
   // current animation.
   void OnAnimationStageChanged();
@@ -100,10 +130,17 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
       std::unique_ptr<BackForwardTransitionAnimator::Factory> factory) {
     animator_factory_ = std::move(factory);
   }
-
  private:
   // The browser test needs to access the test-only `animator_`.
   friend class BackForwardTransitionAnimationManagerBrowserTest;
+
+  // If the animator state is terminal, this will synchronously destroy the
+  // animator. Terminal states are when all the animation has finished in the
+  // browser UI or when an unexpected navigation occurs during the animation.
+  void MaybeDestroyAnimator();
+
+  // Destroys the animator. Must only be called when there is a valid animator.
+  void DestroyAnimator();
 
   // The owning `WebContentsViewAndroid`. Guaranteed to outlive `this`.
   const raw_ptr<WebContentsViewAndroid> web_contents_view_android_;
@@ -128,7 +165,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   //
   // Only instantiated if the user gesture will trigger an animated session
   // history preview. Created when the eligible `OnGestureStarted()` arrives,
-  // and destroyed when `SynchronouslyDestroyAnimator()` is called (either when
+  // and destroyed when `DestroyAnimator()` is called (either when
   // the animations finished or animations have to aborted).
   //
   // `animator_` is only instantiated via `animator_factory_`. Tests can

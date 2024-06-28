@@ -153,15 +153,6 @@ BackForwardTransitionAnimator::Factory::Create(
 }
 
 BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
-  WebContentsObserver::Observe(nullptr);
-  auto* window = animation_manager_->web_contents_view_android()
-                     ->GetTopLevelNativeWindow();
-  CHECK(window);
-  window->RemoveObserver(this);
-  animation_manager_->web_contents_view_android()
-      ->GetNativeView()
-      ->RemoveObserver(this);
-
   ResetTransformForLayer(animation_manager_->web_contents_view_android()
                              ->parent_for_web_page_widgets());
 
@@ -199,9 +190,7 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
   // but another navigation or gesture started before the destination renderer
   // produced its first frame.
   if (new_render_widget_host_) {
-    CHECK(state_ == State::kDisplayingInvokeAnimation ||
-          state_ == State::kWaitingForNewRendererToDraw)
-        << ToString(state_);
+    CHECK_EQ(state_, State::kAnimationAborted) << ToString(state_);
     UnregisterNewFrameActivationObserver();
   }
 }
@@ -283,7 +272,7 @@ void BackForwardTransitionAnimator::OnGestureInvoked() {
   AdvanceAndProcessState(State::kDisplayingInvokeAnimation);
 }
 
-bool BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
+void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
     NavigationRequest* navigation_request,
     RenderFrameHostImpl* old_host,
     RenderFrameHostImpl* new_host) {
@@ -320,7 +309,7 @@ bool BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
             primary_main_frame_navigation_request_id_of_gesture_nav_.value()) {
           // A previously pending navigation has committed since we started
           // tracking our gesture navigation. Ignore this committed navigation.
-          return true;
+          return;
         }
 
         // Before we display the crossfade animation to show the new page, we
@@ -431,13 +420,16 @@ bool BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
              "navigation that's waiting for the renderer's BeforeUnload ack.";
       break;
     case State::kAnimationFinished:
+    case State::kAnimationAborted:
       NOTREACHED_IN_MIGRATION()
           << "No navigations can commit during the animator's destruction "
              "because the destruction is atomic.";
       break;
   }
 
-  return !skip_all_animations;
+  if (skip_all_animations) {
+    state_ = State::kAnimationAborted;
+  }
 }
 
 void BackForwardTransitionAnimator::OnNavigationCancelledBeforeStart(
@@ -478,11 +470,24 @@ void BackForwardTransitionAnimator::OnContentForNavigationEntryShown() {
   }
   // The embedder has finished cross-fading from the screenshot to the new
   // content. Unregister `this` from the `RenderWidgetHost` to stop the
-  // `RenderWidgetHostDestroyed()` notification.
+  // `OnRenderWidgetHostDestroyed()` notification.
   CHECK(new_render_widget_host_);
-  new_render_widget_host_->RemoveObserver(this);
+  new_render_widget_host_->RemoveObserver(animation_manager_);
   new_render_widget_host_ = nullptr;
   AdvanceAndProcessState(State::kAnimationFinished);
+}
+
+void BackForwardTransitionAnimator::OnRenderWidgetHostDestroyed(
+    RenderWidgetHost* widget_host) {
+  if (widget_host != new_render_widget_host_) {
+    return;
+  }
+  // The subscribed `RenderWidgetHost` is getting destroyed. We must cancel the
+  // transition and reset everything. This can happen for a client redirect,
+  // where Viz never activates a frame from the committed renderer.
+  CHECK_EQ(state_, State::kWaitingForNewRendererToDraw);
+  CHECK_EQ(navigation_state_, NavigationState::kCommitted);
+  state_ = State::kAnimationAborted;
 }
 
 AnimationStage BackForwardTransitionAnimator::GetCurrentAnimationStage() {
@@ -490,6 +495,7 @@ AnimationStage BackForwardTransitionAnimator::GetCurrentAnimationStage() {
     case State::kDisplayingInvokeAnimation:
       return AnimationStage::kInvokeAnimation;
     case State::kAnimationFinished:
+    case State::kAnimationAborted:
       return AnimationStage::kNone;
     default:
       return AnimationStage::kOther;
@@ -547,23 +553,6 @@ void BackForwardTransitionAnimator::OnRenderFrameMetadataChangedAfterActivation(
   }
 }
 
-void BackForwardTransitionAnimator::OnDetachedFromWindow() {
-  // The WebContentsViewAndroid's native view is detached from the top level
-  // window. We must abort the transition.
-  animation_manager_->SynchronouslyDestroyAnimator();
-}
-
-void BackForwardTransitionAnimator::OnRootWindowVisibilityChanged(
-    bool visible) {
-  if (!visible) {
-    animation_manager_->SynchronouslyDestroyAnimator();
-  }
-}
-
-void BackForwardTransitionAnimator::OnDetachCompositor() {
-  animation_manager_->SynchronouslyDestroyAnimator();
-}
-
 void BackForwardTransitionAnimator::OnAnimate(
     base::TimeTicks frame_begin_time) {
   bool animation_finished = false;
@@ -596,6 +585,7 @@ void BackForwardTransitionAnimator::OnAnimate(
     case State::kWaitingForNewRendererToDraw:
     case State::kWaitingForContentForNavigationEntryShown:
     case State::kAnimationFinished:
+    case State::kAnimationAborted:
       return;
   }
 
@@ -619,6 +609,7 @@ void BackForwardTransitionAnimator::OnAnimate(
       case State::kWaitingForNewRendererToDraw:
       case State::kWaitingForContentForNavigationEntryShown:
       case State::kAnimationFinished:
+      case State::kAnimationAborted:
         NOTREACHED_IN_MIGRATION();
         break;
     }
@@ -703,19 +694,6 @@ void BackForwardTransitionAnimator::DidFinishNavigation(
   AdvanceAndProcessState(State::kDisplayingCancelAnimation);
 }
 
-void BackForwardTransitionAnimator::RenderWidgetHostDestroyed(
-    RenderWidgetHost* widget_host) {
-  if (widget_host != new_render_widget_host_) {
-    return;
-  }
-  // The subscribed `RenderWidgetHost` is getting destroyed. We must cancel the
-  // transition and reset everything. This can happen for a client redirect,
-  // where Viz never activates a frame from the committed renderer.
-  CHECK_EQ(state_, State::kWaitingForNewRendererToDraw);
-  CHECK_EQ(navigation_state_, NavigationState::kCommitted);
-  animation_manager_->SynchronouslyDestroyAnimator();
-}
-
 void BackForwardTransitionAnimator::OnFloatAnimated(
     const float& value,
     int target_property_id,
@@ -783,23 +761,26 @@ bool BackForwardTransitionAnimator::CanAdvanceTo(State from, State to) {
   switch (from) {
     case State::kStarted:
       return to == State::kDisplayingCancelAnimation ||
-             to == State::kDisplayingInvokeAnimation;
+             to == State::kDisplayingInvokeAnimation ||
+             to == State::kAnimationAborted;
     case State::kWaitingForBeforeUnloadResponse:
       return to == State::kDisplayingInvokeAnimation ||
-             to == State::kAnimationFinished;
+             to == State::kAnimationFinished || to == State::kAnimationAborted;
     case State::kDisplayingInvokeAnimation:
       return to == State::kDisplayingCrossFadeAnimation ||
              to == State::kWaitingForNewRendererToDraw ||
              // A second navigation replaces the current one, or the user hits
              // the stop button.
              to == State::kDisplayingCancelAnimation ||
-             to == State::kWaitingForContentForNavigationEntryShown;
+             to == State::kWaitingForContentForNavigationEntryShown ||
+             to == State::kAnimationAborted;
     case State::kWaitingForNewRendererToDraw:
-      return to == State::kDisplayingCrossFadeAnimation;
+      return to == State::kDisplayingCrossFadeAnimation ||
+             to == State::kAnimationAborted;
     case State::kWaitingForContentForNavigationEntryShown:
-      return to == State::kAnimationFinished;
+      return to == State::kAnimationFinished || to == State::kAnimationAborted;
     case State::kDisplayingCrossFadeAnimation:
-      return to == State::kAnimationFinished;
+      return to == State::kAnimationFinished || to == State::kAnimationAborted;
     case State::kDisplayingCancelAnimation:
       return to == State::kAnimationFinished ||
              // The cancel animation has finished for a dispatched BeforeUnload
@@ -807,8 +788,10 @@ bool BackForwardTransitionAnimator::CanAdvanceTo(State from, State to) {
              to == State::kWaitingForBeforeUnloadResponse ||
              // The renderer acks the BeforeUnload message to proceed the
              // navigation, BEFORE the cancel animation finishes.
-             to == State::kDisplayingInvokeAnimation;
+             to == State::kDisplayingInvokeAnimation ||
+             to == State::kAnimationAborted;
     case State::kAnimationFinished:
+    case State::kAnimationAborted:
       NOTREACHED_NORETURN();
   }
 }
@@ -832,6 +815,8 @@ std::string BackForwardTransitionAnimator::ToString(State state) {
       return "kAnimationFinished";
     case State::kWaitingForBeforeUnloadResponse:
       return "kWaitingForBeforeUnloadResponse";
+    case State::kAnimationAborted:
+      return "kAnimationAborted";
   }
   NOTREACHED_NORETURN();
 }
@@ -894,20 +879,6 @@ void BackForwardTransitionAnimator::ProcessState() {
   switch (state_) {
     case State::kStarted: {
       SetupForScreenshotPreview();
-      // Become a WCO as soon as this class is created, because we want to
-      // observe all navigations while this class is controlling the UI. This
-      // allows us to ensure the visuals displayed align with the active page
-      // and URL in the URL bar.
-      WebContentsObserver::Observe(
-          animation_manager_->web_contents_view_android()->web_contents());
-      // Become `WindowAndroidObserver` and `ViewAndroidObserver` right away.
-      auto* window = animation_manager_->web_contents_view_android()
-                         ->GetTopLevelNativeWindow();
-      CHECK(window);
-      window->AddObserver(this);
-      animation_manager_->web_contents_view_android()
-          ->GetNativeView()
-          ->AddObserver(this);
       break;
       // `this` will be waiting for the `OnGestureProgressed` call.
     }
@@ -1000,12 +971,9 @@ void BackForwardTransitionAnimator::ProcessState() {
           ->SetNeedsAnimate();
       break;
     }
-    case State::kAnimationFinished: {
-      animation_manager_->SynchronouslyDestroyAnimator();
+    case State::kAnimationFinished:
+    case State::kAnimationAborted:
       break;
-      // DO NOT add code after this state. `OnAnimationsFinished` call will
-      // erase the current instance of `this` from `animation_manager_`.
-    }
   }
 }
 
@@ -1225,6 +1193,8 @@ void BackForwardTransitionAnimator::CloneOldSurfaceLayer(
   parent_for_web_widgets->parent()->AddChild(old_surface_clone_);
 }
 
+// TODO(baranerf): Refactor this function and
+// `OnRenderFrameMetadataChangedAfterActivation` to the manager
 void BackForwardTransitionAnimator::SubscribeToNewRenderWidgetHost(
     NavigationRequest* navigation_request) {
   CHECK(!new_render_widget_host_);
@@ -1232,14 +1202,14 @@ void BackForwardTransitionAnimator::SubscribeToNewRenderWidgetHost(
   if (!navigation_request->GetNavigationEntry()) {
     // Error case: The navigation entry is deleted when the navigation is ready
     // to commit. Abort the transition.
-    animation_manager_->SynchronouslyDestroyAnimator();
+    state_ = State::kAnimationAborted;
     return;
   }
 
   auto* new_host = navigation_request->GetRenderFrameHost();
   CHECK(new_host);
   new_render_widget_host_ = new_host->GetRenderWidgetHost();
-  new_render_widget_host_->AddObserver(this);
+  new_render_widget_host_->AddObserver(animation_manager_);
 
   CHECK_EQ(primary_main_frame_navigation_entry_item_sequence_number_,
            cc::RenderFrameMetadata::kInvalidItemSequenceNumber);
@@ -1252,7 +1222,8 @@ void BackForwardTransitionAnimator::SubscribeToNewRenderWidgetHost(
     return;
   }
 
-  new_render_widget_host_->render_frame_metadata_provider()->AddObserver(this);
+  new_render_widget_host_->render_frame_metadata_provider()->AddObserver(
+      animation_manager_);
   FrameNavigationEntry* frame_nav_entry =
       static_cast<NavigationEntryImpl*>(
           navigation_request->GetNavigationEntry())
@@ -1267,9 +1238,14 @@ void BackForwardTransitionAnimator::SubscribeToNewRenderWidgetHost(
 
 void BackForwardTransitionAnimator::UnregisterNewFrameActivationObserver() {
   new_render_widget_host_->render_frame_metadata_provider()->RemoveObserver(
-      this);
-  new_render_widget_host_->RemoveObserver(this);
+      animation_manager_);
+  new_render_widget_host_->RemoveObserver(animation_manager_);
   new_render_widget_host_ = nullptr;
+}
+
+bool BackForwardTransitionAnimator::IsTerminalState() {
+  return state_ == State::kAnimationFinished ||
+         state_ == State::kAnimationAborted;
 }
 
 }  // namespace content

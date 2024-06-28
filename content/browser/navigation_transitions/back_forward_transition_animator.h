@@ -37,12 +37,7 @@ class RenderFrameHostImpl;
 // updates the UI in response. It is 1:1 with a single gesture, i.e. each time
 // the user touches the screen to start a gesture a new instance is created.
 class CONTENT_EXPORT BackForwardTransitionAnimator
-    : public RenderFrameMetadataProvider::Observer,
-      public ui::ViewAndroidObserver,
-      public ui::WindowAndroidObserver,
-      public WebContentsObserver,
-      public RenderWidgetHostObserver,
-      public gfx::FloatAnimationCurve::Target {
+    : public gfx::FloatAnimationCurve::Target {
  public:
   // To create the `BackForwardTransitionAnimator`. Tests can override this
   // factory to supply a customized version of `BackForwardTransitionAnimator`.
@@ -69,19 +64,28 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   ~BackForwardTransitionAnimator() override;
 
   // Mirrors the APIs on `BackForwardTransitionAnimationManager`.
+  // Some of them are virtual for testing purposes.
+  virtual void OnAnimate(base::TimeTicks frame_begin_time);
+  virtual void OnRenderFrameMetadataChangedAfterActivation(
+      base::TimeTicks activation_time);
+  virtual void DidStartNavigation(NavigationHandle* navigation_handle);
+  virtual void ReadyToCommitNavigation(NavigationHandle* navigation_handle);
+  virtual void DidFinishNavigation(NavigationHandle* navigation_handle);
+
   void OnGestureProgressed(const ui::BackGestureEvent& gesture);
   void OnGestureCancelled();
   void OnGestureInvoked();
-  // Returns false if the navigation is unexpected and the animation should
-  // be aborted.
-  bool OnDidNavigatePrimaryMainFramePreCommit(
+  void OnDidNavigatePrimaryMainFramePreCommit(
       NavigationRequest* navigation_request,
       RenderFrameHostImpl* old_host,
       RenderFrameHostImpl* new_host);
   void OnNavigationCancelledBeforeStart(NavigationHandle* navigation_handle);
   void OnContentForNavigationEntryShown();
+  void OnRenderWidgetHostDestroyed(RenderWidgetHost* widget_host);
+
   BackForwardTransitionAnimationManager::AnimationStage
   GetCurrentAnimationStage();
+  [[nodiscard]] bool IsTerminalState();
 
  protected:
   BackForwardTransitionAnimator(
@@ -91,35 +95,6 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
       BackForwardTransitionAnimationManager::NavigationDirection nav_type,
       NavigationEntryImpl* destination_entry,
       BackForwardTransitionAnimationManagerAndroid* animation_manager);
-
-  // `RenderFrameMetadataProvider::Observer`:
-  void OnRenderFrameMetadataChangedBeforeActivation(
-      const cc::RenderFrameMetadata& metadata) override {}
-  void OnRenderFrameMetadataChangedAfterActivation(
-      base::TimeTicks activation_time) override;
-  void OnRenderFrameSubmission() override {}
-  void OnLocalSurfaceIdChanged(
-      const cc::RenderFrameMetadata& metadata) override {}
-
-  // `ui::ViewAndroidObserver`:
-  void OnAttachedToWindow() override {}
-  void OnDetachedFromWindow() override;
-
-  // `ui::WindowAndroidObserver`:
-  void OnRootWindowVisibilityChanged(bool visible) override;
-  void OnAttachCompositor() override {}
-  void OnDetachCompositor() override;
-  void OnAnimate(base::TimeTicks frame_begin_time) override;
-  void OnActivityStopped() override {}
-  void OnActivityStarted() override {}
-
-  // `WebContentsObserver`:
-  void DidStartNavigation(NavigationHandle* navigation_handle) override;
-  void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
-  void DidFinishNavigation(NavigationHandle* navigation_handle) override;
-
-  // `RenderWidgetHostObserver`:
-  void RenderWidgetHostDestroyed(RenderWidgetHost* widget_host) override;
 
   // `gfx::FloatAnimationCurve::Target`:
   void OnFloatAnimated(const float& value,
@@ -211,6 +186,11 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
     // all the animations are finished in the UI. The manager remains in this
     // state until it is destroyed.
     kAnimationFinished,
+
+    // Indicates that we have to abort the animated transition. This can
+    // happen, for example, when a secondary navigation commits mid-animation,
+    // or when Chrome is backgrounded during a transition.
+    kAnimationAborted,
   };
   State state() const { return state_; }
 
