@@ -1393,7 +1393,6 @@ mojom("mojom_core") {
     "//gpu/ipc/common:interfaces",
     "//mojo/public/mojom/base",
     "//services/network/public/mojom",
-    "//services/network/public/mojom:mojom_source_location",
     "//services/service_manager/public/mojom",
     "//services/viz/public/mojom",
     "//skia/public/mojom",
