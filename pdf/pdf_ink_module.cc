@@ -141,8 +141,8 @@ bool PdfInkModule::OnMessage(const base::Value::Dict& message) {
 
   static constexpr auto kMessageHandlers =
       base::MakeFixedFlatMap<std::string_view, MessageHandler>({
-          {"annotationRedo", &PdfInkModule::HandleAnnotationUndoMessage},
-          {"annotationUndo", &PdfInkModule::HandleAnnotationRedoMessage},
+          {"annotationRedo", &PdfInkModule::HandleAnnotationRedoMessage},
+          {"annotationUndo", &PdfInkModule::HandleAnnotationUndoMessage},
           {"setAnnotationBrush",
            &PdfInkModule::HandleSetAnnotationBrushMessage},
           {"setAnnotationMode", &PdfInkModule::HandleSetAnnotationModeMessage},
