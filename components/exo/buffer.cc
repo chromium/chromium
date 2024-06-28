@@ -68,6 +68,9 @@ const unsigned kDefaultQueryType = GL_COMMANDS_COMPLETED_CHROMIUM;
 const bool kDefaultUseZeroCopy = true;
 const bool kDefaultIsOverlayCandidate = false;
 const bool kDefaultYInvert = false;
+const gfx::BufferFormat kDefaultBufferFormat = gfx::BufferFormat::RGBA_8888;
+const gfx::Size kDefaultSize = gfx::Size(0, 0);
+const gfx::BufferUsage kDefaultBufferUsage = gfx::BufferUsage::GPU_READ;
 
 // Default usage in order to create a mappable shared image and get a
 // GpuMemoryBufferHandle from it.
@@ -580,15 +583,16 @@ Buffer::BufferRelease& Buffer::BufferRelease::operator=(BufferRelease&&) =
 ////////////////////////////////////////////////////////////////////////////////
 // Buffer, public:
 
-Buffer::Buffer(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer)
-    : Buffer(std::move(gpu_memory_buffer),
+Buffer::Buffer()
+    : Buffer(gfx::GpuMemoryBufferHandle(),
+             kDefaultBufferFormat,
+             kDefaultSize,
+             kDefaultBufferUsage,
              kDefaultQueryType,
              kDefaultUseZeroCopy,
              kDefaultIsOverlayCandidate,
              kDefaultYInvert) {}
 
-// Note that |gpu_memory_buffer_| is null when derived class
-// SolidColorBuffer is instantiated and this constructor is called.
 Buffer::Buffer(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
                unsigned query_type,
                bool use_zero_copy,
@@ -597,9 +601,8 @@ Buffer::Buffer(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
     : gpu_memory_buffer_(std::move(gpu_memory_buffer)),
       gpu_memory_buffer_handle_(gfx::GpuMemoryBufferHandle()),
       buffer_format_(gpu_memory_buffer_ ? gpu_memory_buffer_->GetFormat()
-                                        : gfx::BufferFormat::RGBA_8888),
-      size_(gpu_memory_buffer_ ? gpu_memory_buffer_->GetSize()
-                               : gfx::Size(0, 0)),
+                                        : kDefaultBufferFormat),
+      size_(gpu_memory_buffer_ ? gpu_memory_buffer_->GetSize() : kDefaultSize),
       query_type_(query_type),
       use_zero_copy_(use_zero_copy),
       is_overlay_candidate_(is_overlay_candidate),
@@ -1133,7 +1136,7 @@ base::WeakPtr<Buffer> Buffer::AsWeakPtr() {
 
 SolidColorBuffer::SolidColorBuffer(const SkColor4f& color,
                                    const gfx::Size& size)
-    : Buffer(nullptr), color_(color), size_(size) {
+    : color_(color), size_(size) {
   SkipLegacyRelease();
 }
 

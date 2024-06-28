@@ -126,7 +126,7 @@ class Buffer {
 
  protected:
   // Currently only derived class access this constructor.
-  explicit Buffer(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer);
+  Buffer();
 
  private:
   // TODO(vikassoni): Once MappableSI is fully landed, these clients do not need
