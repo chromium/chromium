@@ -2654,6 +2654,17 @@ deps = {
     'dep_type': 'cipd',
   },
 
+  'src/ash/webui/boca_ui/resources/prod': {
+    'packages': [
+      {
+        'package': 'chromeos_internal/apps/boca_app/app',
+        'version': '70P0dHOW231a4Hq875uaOmfDUhcmng6BavylwSsYdlYC',
+      },
+    ],
+    'condition': 'checkout_chromeos and checkout_src_internal',
+    'dep_type': 'cipd',
+  },
+
   'src/ash/webui/help_app_ui/resources/prod': {
     'packages': [
       {
