@@ -5,8 +5,6 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!-- TODO: b/348142430 - Verify if the color of the spinner and the lock icon
-should change with Chrome theme. -->
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -19,7 +17,7 @@ should change with Chrome theme. -->
         android:layout_height="@dimen/facilitated_payments_progress_bar_size"
         android:layout_gravity="center"
         android:indeterminate="true"
-        android:indeterminateTint="@color/baseline_primary_40" />
+        android:indeterminateTint="@macro/default_icon_color_accent1" />
 
     <ImageView
         android:layout_width="@dimen/facilitated_payments_progress_screen_lock_size"
