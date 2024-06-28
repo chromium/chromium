@@ -33,6 +33,14 @@ class MockSupervisedUserServicePlatformDelegate
   MOCK_METHOD(void, CloseIncognitoTabs, (), (override));
 };
 
+class MockSupervisedUserMetricsServiceExtensionDelegateImpl
+    : public SupervisedUserMetricsService::
+          SupervisedUserMetricsServiceExtensionDelegate {
+ private:
+  // SupervisedUserMetricsServiceExtensionDelegate implementation:
+  bool RecordExtensionsMetrics() override { return false; }
+};
+
 // Tests for family user metrics service.
 class SupervisedUserMetricsServiceTest : public testing::Test {
  public:
@@ -70,8 +78,10 @@ class SupervisedUserMetricsServiceTest : public testing::Test {
   // Creates the metrics service under test.
   void CreateMetricsService() {
     supervised_user_metrics_service_ =
-        std::make_unique<SupervisedUserMetricsService>(&pref_service_,
-                                                       GetURLFilter());
+        std::make_unique<SupervisedUserMetricsService>(
+            &pref_service_, GetURLFilter(),
+            std::make_unique<
+                MockSupervisedUserMetricsServiceExtensionDelegateImpl>());
   }
 
   SupervisedUserURLFilter* GetURLFilter() {
