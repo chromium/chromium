@@ -49,9 +49,8 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX)
+#include "base/nix/xdg_util.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/linux/display_server_utils.h"
-#include "ui/ozone/public/ozone_platform.h"
 #endif  // BUILDFLAG(IS_LINUX)
 
 ChromeBrowserFieldTrials::ChromeBrowserFieldTrials(PrefService* local_state)
@@ -166,12 +165,12 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
 // once ozone-platform-hint flag is dropped.
 void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
     base::FeatureList* feature_list) {
-  ui::SetOzonePlatformForLinuxIfNeeded(*base::CommandLine::ForCurrentProcess());
-  ui::OzonePlatform::PreEarlyInitialization();
+  auto env = base::Environment::Create();
+  std::string xdg_session_type;
+  const bool has_xdg_session_type =
+      env->GetVar(base::nix::kXdgSessionTypeEnvVar, &xdg_session_type);
 
-  if (!ui::OzonePlatform::GetInstance()
-           ->GetPlatformProperties()
-           .supports_color_picker_dialog) {
+  if (has_xdg_session_type && xdg_session_type == "wayland") {
     feature_list->RegisterExtraFeatureOverrides(
         {{features::kEyeDropper, base::FeatureList::OVERRIDE_DISABLE_FEATURE}});
   }

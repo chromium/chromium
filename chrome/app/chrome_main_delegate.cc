@@ -188,6 +188,7 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "base/nix/scoped_xdg_activation_token_injector.h"
+#include "ui/linux/display_server_utils.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -952,11 +953,13 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
           ->chrome_feature_list_creator();
   chrome_feature_list_creator->CreateFeatureList();
 
-  // Initialize OzonePlatform, if not done yet.
 #if BUILDFLAG(IS_OZONE)
-  if (!ui::OzonePlatform::IsInitialized()) {
-    ui::OzonePlatform::PreEarlyInitialization();
-  }
+  // Initialize Ozone platform and add required feature flags as per platform's
+  // properties.
+#if BUILDFLAG(IS_LINUX)
+  ui::SetOzonePlatformForLinuxIfNeeded(*base::CommandLine::ForCurrentProcess());
+#endif
+  ui::OzonePlatform::PreEarlyInitialization();
 #endif  // BUILDFLAG(IS_OZONE)
 
   content::InitializeMojoCore();
