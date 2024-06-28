@@ -11,11 +11,12 @@
   .content::before {
     content: open-quote "Trøndere gråter når " open-quote "Vinsjan på kaia" close-quote " blir deklamert" close-quote;
   }
+  .bottom::before {
+    quotes: "[" "]" "{" "}";
+  }
 </style>
 <div style="display:grid; height:100vh; grid-template-rows:4em auto 4em; margin:0 4em;">
   <div class="content"></div>
   <div></div>
-  <div>
-    [Trøndere gråter når {Vinsjan på kaia} blir deklamert]
-  </div>
+  <div class="content bottom"></div>
 </div>
