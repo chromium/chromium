@@ -305,6 +305,9 @@ class LensOverlayController : public LensSearchboxClient,
   // Send message to overlay notifying that the results side panel opened.
   void NotifyResultsPanelOpened();
 
+  // Send message to overlay to copy the currently selected text.
+  void TriggerCopyText();
+
   // Returns true if the overlay is open and covering the current active tab.
   bool IsOverlayShowing();
 
@@ -652,6 +655,7 @@ class LensOverlayController : public LensSearchboxClient,
                                       const std::string& content_language,
                                       int selection_start_index,
                                       int selection_end_index) override;
+  void CopyText(const std::string& text) override;
 
   // Performs shared logic for IssueTextSelectionRequest() and
   // IssueTranslateSelectionRequest().

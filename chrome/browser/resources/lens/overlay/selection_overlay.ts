@@ -236,6 +236,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
             this.isClosing = true;
             this.removeDragListeners();
           }),
+      BrowserProxyImpl.getInstance().callbackRouter.triggerCopyText.addListener(
+          () => {
+            this.handleCopy();
+          }),
     ];
     this.eventTracker_.add(
         document, 'shimmer-fade-out-complete', (e: CustomEvent<boolean>) => {
@@ -686,7 +690,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   }
 
   private async handleCopy() {
-    navigator.clipboard.writeText(this.highlightedText);
+    if (this.textSelectionStartIndex < 0 || this.textSelectionEndIndex < 0) {
+      return;
+    }
+    BrowserProxyImpl.getInstance().handler.copyText(this.highlightedText);
     recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.COPY_TEXT);
     this.dispatchEvent(new CustomEvent('text-copied', {
       bubbles: true,

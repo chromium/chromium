@@ -97,6 +97,14 @@ interface LensPageHandler {
   // user selects text or thumbnail on the WebUI overlay, the search bubble
   // must close.
   CloseSearchBubble();
+
+  // Copies the given text to the users clipboard using the browser process.
+  // This is different than using navigator.clipboard.writeText since
+  // navigator.clipboard.writeText requires explicet user activation on the web
+  // contents to work. Since the focus leaves the overlay web contents when the
+  // user opens side panel, we cannot guarantee the overlay webcontents will
+  // still have explicit user activation. Therefore, we use this method instead.
+  CopyText(string text);
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)
@@ -138,6 +146,10 @@ interface LensPage {
   // Clears any text or post region selection on the page. No-op if none
   // selected.
   ClearAllSelections();
+
+  // Copies the currently selected text to the users clipboard and displays the
+  // text copied chip.
+  TriggerCopyText();
 };
 
 // Browser-side handler for requests from Side PanelWebUI page.

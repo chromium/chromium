@@ -28,6 +28,7 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
       'issueLensRequest',
       'issueTextSelectionRequest',
       'issueTranslateSelectionRequest',
+      'copyText',
     ]);
   }
 
@@ -74,6 +75,10 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
 
   issueTranslateSelectionRequest(query: string) {
     this.methodCalled('issueTranslateSelectionRequest', query);
+  }
+
+  copyText(text: string) {
+    this.methodCalled('copyText', text);
   }
 }
 

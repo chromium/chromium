@@ -228,6 +228,8 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
     did_clear_text_selection_ = true;
   }
 
+  void TriggerCopyText() override { did_trigger_copy = true; }
+
   // The real side panel page that was opened by the lens overlay. Needed to
   // call real functions on the WebUI.
   mojo::Remote<lens::mojom::LensPage> overlay_page_;
@@ -242,6 +244,7 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
   std::pair<int, int> text_selection_indexes_;
   bool did_clear_region_selection_ = false;
   bool did_clear_text_selection_ = false;
+  bool did_trigger_copy = false;
 };
 
 // TODO(b/334147680): Since both our interactive UI tests and our browser tests
@@ -523,6 +526,25 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
                                 blink::WebMouseEvent::Button::kLeft, to);
     content::RunUntilInputProcessed(
         overlay_web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost());
+  }
+
+  // Unable to use `content::SimulateKeyPress()` helper function since it sets
+  // `event.skip_if_unhandled` to true which stops the propagation of the event
+  // to the delegate web view.
+  void SimulateCtrlCKeyPress(content::WebContents* web_content) {
+    // Create the escape key press event.
+    input::NativeWebKeyboardEvent event(blink::WebKeyboardEvent::Type::kChar,
+                                        blink::WebInputEvent::kControlKey,
+                                        base::TimeTicks::Now());
+    event.windows_key_code = ui::VKEY_C;
+    event.dom_key = ui::DomKey::FromCharacter('C');
+    event.dom_code = static_cast<int>(ui::DomCode::US_C);
+
+    // Send the event to the Web Contents.
+    web_content->GetPrimaryMainFrame()
+        ->GetRenderViewHost()
+        ->GetWidget()
+        ->ForwardKeyboardEvent(event);
   }
 
   // Lens overlay takes a screenshot of the tab. In order to take a screenshot
@@ -1058,10 +1080,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Verify that the side panel searchbox displays a thumbnail and that the
   // controller has a copy.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return true ==
-           content::EvalJs(
-               controller->GetSidePanelWebContentsForTesting(),
-               content::JsReplace(kCheckSidePanelThumbnailShownScript));
+    return true == content::EvalJs(
+                       controller->GetSidePanelWebContentsForTesting(),
+                       content::JsReplace(kCheckSidePanelThumbnailShownScript));
   }));
   EXPECT_FALSE(controller->get_selected_text_for_region().has_value());
   EXPECT_FALSE(controller->get_selected_region_for_testing().is_null());
@@ -2743,6 +2764,56 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, EnterprisePolicy) {
       lens::prefs::kLensOverlaySettings,
       static_cast<int>(lens::prefs::LensOverlaySettingsPolicyValue::kEnabled));
   EXPECT_TRUE(LensOverlayController::IsEnabled(browser()));
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, OverlayCopyShortcut) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the Overlay and wait for the WebUI to be ready.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Before showing the results panel, there should be no TriggerCopy sent to
+  // the overlay.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  EXPECT_FALSE(fake_controller->fake_overlay_page_.did_trigger_copy);
+
+  // Send CTRL+C to overlay
+  SimulateCtrlCKeyPress(GetOverlayWebContents());
+  fake_controller->FlushForTesting();
+
+  // Verify that TriggerCopyText was sent.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return fake_controller->fake_overlay_page_.did_trigger_copy; }));
+
+  // Reset did_trigger_copy.
+  fake_controller->fake_overlay_page_.did_trigger_copy = false;
+
+  // Open side panel.
+  controller->IssueTextSelectionRequestForTesting("test query",
+                                                  /*selection_start_index=*/0,
+                                                  /*selection_end_index=*/0);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+
+  // Send CTRL+C to side panel
+  SimulateCtrlCKeyPress(controller->GetSidePanelWebContentsForTesting());
+  fake_controller->FlushForTesting();
+
+  // Verify that TriggerCopyText was sent.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return fake_controller->fake_overlay_page_.did_trigger_copy; }));
 }
 
 // Test with --enable-pixel-output-in-tests enabled, required to actually grab
