@@ -24,6 +24,7 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 
 namespace {
 
@@ -384,6 +385,9 @@ HumanPresenceInternalsUI::HumanPresenceInternalsUI(content::WebUI* web_ui)
       content::WebUIDataSource::CreateAndAdd(
           Profile::FromWebUI(web_ui),
           chrome::kChromeUIHumanPresenceInternalsHost);
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources/ chrome://webui-test 'self';");
 
   html_source->UseStringsJs();
 

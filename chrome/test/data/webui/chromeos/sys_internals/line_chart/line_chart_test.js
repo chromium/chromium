@@ -5,6 +5,7 @@
 import {SAMPLE_RATE, UnitLabelAlign} from 'chrome://sys-internals/line_chart/constants.js';
 import {DataSeries} from 'chrome://sys-internals/line_chart/data_series.js';
 import {LineChart} from 'chrome://sys-internals/line_chart/line_chart.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {assertCloseTo} from '../test_util.js';
 

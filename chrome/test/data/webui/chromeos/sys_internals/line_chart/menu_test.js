@@ -4,6 +4,7 @@
 
 import {DataSeries} from 'chrome://sys-internals/line_chart/data_series.js';
 import {Menu} from 'chrome://sys-internals/line_chart/menu.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('LineChart_Menu', function() {
   test('Menu integration test', function() {

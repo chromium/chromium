@@ -338,7 +338,7 @@ class MockWebUIDataSource : public content::URLDataSource {
   std::string GetContentSecurityPolicy(
       const network::mojom::CSPDirectiveName directive) override {
     if (directive == network::mojom::CSPDirectiveName::ScriptSrc) {
-      return "script-src chrome://resources 'self';";
+      return "script-src chrome://resources chrome://webui-test 'self';";
     } else if (directive ==
                    network::mojom::CSPDirectiveName::RequireTrustedTypesFor ||
                directive == network::mojom::CSPDirectiveName::TrustedTypes) {

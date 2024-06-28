@@ -110,6 +110,12 @@ ts_library("test_build_ts") {
     "//ash/webui/help_app_ui/resources/js/help_app.d.ts",
     "//ash/webui/help_app_ui/test/test_api.d.ts",
   ]
-  deps = [ ":build_ts" ]
+  deps = [
+    ":build_ts",
+    "//chrome/test/data/webui:build_ts",
+  ]
+  path_mappings = [ "//webui-test/*|" +
+                    rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                                target_gen_dir) ]
   extra_deps = [ "//ash/webui/help_app_ui/test:stage_for_test_tsc" ]
 }

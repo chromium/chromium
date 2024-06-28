@@ -60,6 +60,9 @@ EcheAppUI::EcheAppUI(content::WebUI* web_ui, EcheAppManager* manager)
   std::string csp = std::string("frame-src ") + kChromeUIEcheAppGuestURL + ";";
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, csp);
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources chrome://webui-test 'self';");
 
   // Add ability to request chrome-untrusted: URLs.
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);

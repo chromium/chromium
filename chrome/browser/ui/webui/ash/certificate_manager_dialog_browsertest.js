@@ -18,6 +18,8 @@ CertificateManagerDialogWebUITest.prototype = {
    * Browse to the certification manager dialog page.
    */
   browsePreload: 'chrome://certificate-manager/',
+
+  isAsync: true,
 };
 
 // crbug.com/682497
@@ -27,6 +29,8 @@ GEN('#else');
 GEN('#define MAYBE_Basic Basic');
 GEN('#endif');
 // Sanity test of the WebUI could be opened with no errors.
-TEST_F('CertificateManagerDialogWebUITest', 'MAYBE_Basic', function() {
+TEST_F('CertificateManagerDialogWebUITest', 'MAYBE_Basic', async function() {
+  const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
   assertEquals(this.browsePreload, document.location.href);
+  testDone();
 });

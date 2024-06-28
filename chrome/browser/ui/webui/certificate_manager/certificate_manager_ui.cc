@@ -78,6 +78,7 @@ CertificateManagerUI::CertificateManagerUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUICertificateManagerHost);
   webui::EnableTrustedTypesCSP(source);
+  webui::SetJSModuleDefaults(source);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!base::FeatureList::IsEnabled(features::kEnableCertManagementUIV2)) {
@@ -104,7 +105,6 @@ CertificateManagerUI::CertificateManagerUI(content::WebUI* web_ui)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(features::kEnableCertManagementUIV2)) {
-    webui::SetJSModuleDefaults(source);
     source->AddResourcePath("", IDR_CERT_MANAGER_DIALOG_V2_HTML);
     AddCertificateManagerV2Strings(source);
   }

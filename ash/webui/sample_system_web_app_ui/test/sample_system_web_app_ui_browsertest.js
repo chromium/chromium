@@ -36,13 +36,15 @@ GEN('#define MAYBE_HasChromeSchemeURL DISABLED_HasChromeSchemeURL');
 GEN('#else');
 GEN('#define MAYBE_HasChromeSchemeURL HasChromeSchemeURL');
 GEN('#endif');
-TEST_F('SampleSystemWebAppUIBrowserTest', 'MAYBE_HasChromeSchemeURL', () => {
-  const header = document.querySelector('header');
+TEST_F(
+    'SampleSystemWebAppUIBrowserTest', 'MAYBE_HasChromeSchemeURL', async () => {
+      const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
+      const header = document.querySelector('header');
 
-  assertEquals(header.innerText, 'Sample System Web App');
-  assertEquals(document.location.origin, HOST_ORIGIN);
-  testDone();
-});
+      assertEquals(header.innerText, 'Sample System Web App');
+      assertEquals(document.location.origin, HOST_ORIGIN);
+      testDone();
+    });
 
 // Test the ability to get information from the page handler.
 // TODO(b/280457934): Skip as shared workers crash for JS coverage builds.
@@ -53,6 +55,8 @@ GEN('#define MAYBE_FetchPreferences FetchPreferences');
 GEN('#endif');
 TEST_F(
     'SampleSystemWebAppUIBrowserTest', 'MAYBE_FetchPreferences', async () => {
+      const {assertDeepEquals} =
+          await import('chrome://webui-test/chai_assert.js');
       const {preferences} = await window.pageHandler.getPreferences();
       assertDeepEquals(
           {background: '#ffffff', foreground: '#000000'}, preferences);
@@ -67,6 +71,7 @@ GEN('#else');
 GEN('#define MAYBE_DoSomething DoSomething');
 GEN('#endif');
 TEST_F('SampleSystemWebAppUIBrowserTest', 'MAYBE_DoSomething', async () => {
+  const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
   const pageHandler = window.pageHandler;
   const callbackRouter = window.callbackRouter;
 
