@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -82,6 +83,7 @@
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -891,11 +893,17 @@ bool AwContentBrowserClient::HandleExternalProtocol(
 
   // We don't need to care for |security_options| as the factories constructed
   // below are used only for navigation.
+  // We also don't care about retrieving cookies in this case because these will
+  // be schemes unrelated to the regular network stack so it doesn't make sense
+  // to look for cookies. Providing a nullopt for the cookie manager lets
+  // the AwProxyingURLLoaderFactory know to skip that work.
   if (content::BrowserThread::CurrentlyOn(content::BrowserThread::IO)) {
     // Manages its own lifetime.
     new android_webview::AwProxyingURLLoaderFactory(
-        frame_tree_node_id, std::move(receiver), mojo::NullRemote(),
-        true /* intercept_only */, std::nullopt /* security_options */,
+        std::nullopt /* cookie_manager */, nullptr /* cookie_access_policy */,
+        std::nullopt /* isolation_info*/, frame_tree_node_id,
+        std::move(receiver), mojo::NullRemote(), true /* intercept_only */,
+        std::nullopt /* security_options */,
         nullptr /* xrw_allowlist_matcher */, std::move(browser_context_handle),
         std::nullopt /* navigation_id */);
   } else {
@@ -908,7 +916,10 @@ bool AwContentBrowserClient::HandleExternalProtocol(
                    browser_context_handle) {
               // Manages its own lifetime.
               new android_webview::AwProxyingURLLoaderFactory(
-                  frame_tree_node_id, std::move(receiver), mojo::NullRemote(),
+                  std::nullopt /* cookie_manager */,
+                  nullptr /* cookie_access_policy */,
+                  std::nullopt /* isolation_info*/, frame_tree_node_id,
+                  std::move(receiver), mojo::NullRemote(),
                   true /* intercept_only */,
                   std::nullopt /* security_options */,
                   nullptr /* xrw_allowlist_matcher */,
@@ -1046,6 +1057,17 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
   scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle =
       base::MakeRefCounted<AwBrowserContextIoThreadHandle>(
           static_cast<AwBrowserContext*>(browser_context));
+
+  mojo::PendingRemote<network::mojom::CookieManager> cookie_manager;
+  browser_context->GetDefaultStoragePartition()
+      ->GetNetworkContext()
+      ->GetCookieManager(cookie_manager.InitWithNewPipeAndPassReceiver());
+
+  AwBrowserContext* aw_browser_context =
+      static_cast<AwBrowserContext*>(browser_context);
+  AwCookieAccessPolicy* cookie_access_policy =
+      aw_browser_context->GetCookieManager()->cookie_access_policy();
+
   if (frame) {
     auto security_options =
         std::make_optional<AwProxyingURLLoaderFactory::SecurityOptions>();
@@ -1075,21 +1097,21 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
 
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&AwProxyingURLLoaderFactory::CreateProxy,
-                       frame->GetFrameTreeNodeId(), std::move(proxied_receiver),
-                       std::move(target_factory_remote), security_options,
-                       std::move(xrw_allowlist_matcher),
-                       std::move(browser_context_handle), navigation_id));
+        base::BindOnce(
+            &AwProxyingURLLoaderFactory::CreateProxy, std::move(cookie_manager),
+            cookie_access_policy, isolation_info, frame->GetFrameTreeNodeId(),
+            std::move(proxied_receiver), std::move(target_factory_remote),
+            security_options, std::move(xrw_allowlist_matcher),
+            std::move(browser_context_handle), navigation_id));
   } else {
     // A service worker and worker subresources set nullptr to |frame|, and
     // work without seeing the AllowUniversalAccessFromFileURLs setting. So,
     // we don't pass a valid |security_options| here.
-    AwBrowserContext* aw_browser_context =
-        static_cast<AwBrowserContext*>(browser_context);
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(
-            &AwProxyingURLLoaderFactory::CreateProxy,
+            &AwProxyingURLLoaderFactory::CreateProxy, std::move(cookie_manager),
+            cookie_access_policy, isolation_info,
             content::RenderFrameHost::kNoFrameTreeNodeId,
             std::move(proxied_receiver), std::move(target_factory_remote),
             std::nullopt /* security_options */,

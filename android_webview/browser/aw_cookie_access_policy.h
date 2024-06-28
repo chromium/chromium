@@ -53,14 +53,14 @@ class AwCookieAccessPolicy {
           global_frame_token,
       bool has_storage_access);
 
- private:
-  friend class AwCookieAccessPolicyTest;
-
   net::NetworkDelegate::PrivacySetting CanAccessCookies(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       bool accept_third_party_cookies,
       bool has_storage_access);
+
+ private:
+  friend class AwCookieAccessPolicyTest;
 
   bool accept_cookies_ = true;
   base::Lock lock_;

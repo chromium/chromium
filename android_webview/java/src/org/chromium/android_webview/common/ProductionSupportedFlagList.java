@@ -1048,7 +1048,10 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.DEFER_SPECULATIVE_RFH_CREATION,
                 "Enables deferring the speculative render frame host creation when the"
                         + "navigation starts"),
-
+        Flag.commandLine(
+                AwSwitches.WEBVIEW_INTERCEPTED_COOKIE_HEADER,
+                "When enabled, the cookie header will be included in the request headers"
+                        + " for shouldInterceptRequest"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

@@ -5,6 +5,7 @@
 #include "components/embedder_support/android/util/android_stream_reader_url_loader.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -30,6 +31,7 @@
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace embedder_support {
 
@@ -143,7 +145,8 @@ AndroidStreamReaderURLLoader::AndroidStreamReaderURLLoader(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     std::unique_ptr<ResponseDelegate> response_delegate,
-    std::optional<SecurityOptions> security_options)
+    std::optional<SecurityOptions> security_options,
+    std::optional<SetCookieHeader> set_cookie_header)
     : resource_request_(CopyResourceRequest(resource_request)),
       response_head_(network::mojom::URLResponseHead::New()),
       reject_cors_request_(false),
@@ -153,7 +156,8 @@ AndroidStreamReaderURLLoader::AndroidStreamReaderURLLoader(
       writable_handle_watcher_(FROM_HERE,
                                mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                                base::SequencedTaskRunner::GetCurrentDefault()),
-      start_time_(base::Time::Now()) {
+      start_time_(base::Time::Now()),
+      set_cookie_header_(set_cookie_header) {
   DCHECK(response_delegate_);
   // If there is a client error, clean up the request.
   client_.set_disconnect_handler(
@@ -366,9 +370,35 @@ void AndroidStreamReaderURLLoader::SendBody() {
   ReadMore();
 }
 
+void AndroidStreamReaderURLLoader::SetCookies() {
+  if (!set_cookie_header_.has_value()) {
+    return;
+  }
+
+  const std::string_view kSetCookieHeader("Set-Cookie");
+
+  if (response_head_->headers->HasHeader(kSetCookieHeader)) {
+    base::Time response_date;
+    std::optional<base::Time> server_time = std::nullopt;
+    if (response_head_->headers->GetDateValue(&response_date)) {
+      server_time = std::make_optional(response_date);
+    }
+
+    std::string cookie_string;
+    size_t iter = 0;
+
+    while (response_head_->headers->EnumerateHeader(&iter, kSetCookieHeader,
+                                                    &cookie_string)) {
+      std::move(set_cookie_header_)
+          ->Run(resource_request_, cookie_string, server_time);
+    }
+  }
+}
+
 void AndroidStreamReaderURLLoader::SendResponseToClient() {
   DCHECK(consumer_handle_.is_valid());
   DCHECK(client_.is_bound());
+  SetCookies();
   cache_response_ =
       response_delegate_->ShouldCacheResponse(response_head_.get());
   client_->OnReceiveResponse(std::move(response_head_),

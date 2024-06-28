@@ -85,12 +85,18 @@ class AndroidStreamReaderURLLoader : public network::mojom::URLLoader {
     bool allow_cors_to_same_scheme = false;
   };
 
+  using SetCookieHeader = base::RepeatingCallback<void(
+      const network::ResourceRequest& request,
+      const std::string& value,
+      const std::optional<base::Time>& server_time)>;
+
   AndroidStreamReaderURLLoader(
       const network::ResourceRequest& resource_request,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       std::unique_ptr<ResponseDelegate> response_delegate,
-      std::optional<SecurityOptions> security_options);
+      std::optional<SecurityOptions> security_options,
+      std::optional<SetCookieHeader> set_cookie_header = std::nullopt);
 
   AndroidStreamReaderURLLoader(const AndroidStreamReaderURLLoader&) = delete;
   AndroidStreamReaderURLLoader& operator=(const AndroidStreamReaderURLLoader&) =
@@ -134,6 +140,11 @@ class AndroidStreamReaderURLLoader : public network::mojom::URLLoader {
   // Reads some bytes from the stream. Calls |DidRead| after each read (also, in
   // the case where it fails to read due to an error).
   void ReadMore();
+  // The Set-Cookie header can't be sent over IPC. Because this stream reader
+  // bypasses the network stack, the Set-Cookie is ignored entirely.
+  // This is called before sending the response to give the embedder
+  // an opportunity to save headers.
+  void SetCookies();
   // Send response headers and the data pipe consumer handle (for the body) to
   // the URLLoaderClient. Requires |consumer_handle_| to be valid, and will make
   // |consumer_handle_| invalid after running.
@@ -160,6 +171,7 @@ class AndroidStreamReaderURLLoader : public network::mojom::URLLoader {
   scoped_refptr<network::NetToMojoPendingBuffer> pending_buffer_;
   mojo::SimpleWatcher writable_handle_watcher_;
   base::Time start_time_;
+  std::optional<SetCookieHeader> set_cookie_header_;
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<AndroidStreamReaderURLLoader> weak_factory_{this};

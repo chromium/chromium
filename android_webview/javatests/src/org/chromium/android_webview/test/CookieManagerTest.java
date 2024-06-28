@@ -1262,7 +1262,11 @@ public class CookieManagerTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "Privacy"})
+    @CommandLineFlags.Add("webview-intercepted-cookie-header")
     public void testPartitionedNetCookies() throws Throwable {
+        TestAwContentsClient.ShouldInterceptRequestHelper shouldInterceptRequestHelper =
+                mContentsClient.getShouldInterceptRequestHelper();
+
         TestWebServer webServer = TestWebServer.startSsl();
 
         // This test suite relies on an image to force a network request that has cookies attached.
@@ -1298,28 +1302,53 @@ public class CookieManagerTest extends AwParameterizedTest {
 
             allowFirstPartyCookies();
             allowThirdPartyCookies(mAwContents);
+
+            String expectedCookies = "partitioned_cookie=foo; unpartitioned_cookie=bar";
+            String failureMessage = "All cookies should be returned when 3PCs are enabled";
             mActivityTestRule.loadUrlSync(
                     mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
             Assert.assertEquals(
-                    "All cookies should be returned when 3PCs are enabled",
-                    "partitioned_cookie=foo; unpartitioned_cookie=bar",
+                    failureMessage,
+                    expectedCookies,
                     webServer.getLastRequest("/path_to_intercept").headerValue("Cookie"));
 
+            var interceptedRequest =
+                    shouldInterceptRequestHelper.getRequestsForUrl(iframeUrl + "path_to_intercept");
+            Assert.assertEquals(
+                    failureMessage,
+                    expectedCookies,
+                    interceptedRequest.requestHeaders.get("Cookie"));
+
+            expectedCookies = "partitioned_cookie=foo";
+            failureMessage = "Partitioned cookies should be returned when 3PCs are disabled";
             blockThirdPartyCookies(mAwContents);
             mActivityTestRule.loadUrlSync(
                     mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
             Assert.assertEquals(
-                    "Partitioned cookies should be returned when 3PCs are disabled",
-                    "partitioned_cookie=foo",
+                    failureMessage,
+                    expectedCookies,
                     webServer.getLastRequest("/path_to_intercept").headerValue("Cookie"));
 
+            interceptedRequest =
+                    shouldInterceptRequestHelper.getRequestsForUrl(iframeUrl + "path_to_intercept");
+            Assert.assertEquals(
+                    failureMessage,
+                    expectedCookies,
+                    interceptedRequest.requestHeaders.get("Cookie"));
+
+            failureMessage = "No cookies should be returned when all cookies are disabled";
             blockAllCookies();
             mActivityTestRule.loadUrlSync(
                     mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
             Assert.assertEquals(
-                    "No cookies should be returned when all cookies are disabled",
+                    failureMessage,
                     "",
                     webServer.getLastRequest("/path_to_intercept").headerValue("Cookie"));
+
+            interceptedRequest =
+                    shouldInterceptRequestHelper.getRequestsForUrl(iframeUrl + "path_to_intercept");
+            Assert.assertEquals(
+                    failureMessage, false, interceptedRequest.requestHeaders.containsKey("Cookie"));
 
         } finally {
             webServer.shutdown();
