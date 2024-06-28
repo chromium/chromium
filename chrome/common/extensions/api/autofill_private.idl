@@ -318,8 +318,11 @@ namespace autofillPrivate {
     static void saveAddress(AddressEntry address);
 
     // Gets the list of all countries.
+    // |forAccountAddressProfile|: whether the address profile opened in the
+    // editor originates in the user's profile.
     // |callback|: Callback which will be called with the countries.
     static void getCountryList(
+        boolean forAccountAddressProfile,
         GetCountryListCallback callback);
 
     // Gets the address components for a given country code.

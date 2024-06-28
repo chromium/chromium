@@ -243,6 +243,9 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
 // AutofillPrivateGetCountryListFunction
 
 ExtensionFunction::ResponseAction AutofillPrivateGetCountryListFunction::Run() {
+  std::optional<api::autofill_private::GetCountryList::Params> parameters =
+      api::autofill_private::GetCountryList::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
   autofill::ContentAutofillClient* client =
       autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
   if (!client) {
@@ -261,7 +264,8 @@ ExtensionFunction::ResponseAction AutofillPrivateGetCountryListFunction::Run() {
   }
 
   autofill_util::CountryEntryList country_list =
-      autofill_util::GenerateCountryList(*personal_data);
+      autofill_util::GenerateCountryList(
+          *personal_data, parameters->for_account_address_profile);
 
   return RespondNow(ArgumentList(
       api::autofill_private::GetCountryList::Results::Create(country_list)));

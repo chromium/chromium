@@ -199,7 +199,8 @@ declare global {
 
       export function getAccountInfo(): Promise<AccountInfo|undefined>;
       export function saveAddress(address: AddressEntry): void;
-      export function getCountryList(): Promise<CountryEntry[]>;
+      export function getCountryList(forAccountAddressProfile: boolean):
+          Promise<CountryEntry[]>;
       export function getAddressComponents(
           countryCode: string): Promise<AddressComponents>;
       export function getAddressList(): Promise<AddressEntry[]>;

@@ -100,20 +100,6 @@ autofill_private::AddressEntry ProfileToAddressEntry(
   return address;
 }
 
-autofill_private::CountryEntry CountryToCountryEntry(
-    autofill::AutofillCountry* country) {
-  autofill_private::CountryEntry entry;
-
-  // A null |country| means "insert a space here", so we add a country w/o a
-  // |name| or |country_code| to the list and let the UI handle it.
-  if (country) {
-    entry.name = base::UTF16ToUTF8(country->name());
-    entry.country_code = country->country_code();
-  }
-
-  return entry;
-}
-
 std::string CardNetworkToIconResourceIdString(const std::string& network) {
   bool metadata_icon = base::FeatureList::IsEnabled(
       autofill::features::kAutofillEnableNewCardArtAndNetworkImages);
@@ -214,7 +200,8 @@ AddressEntryList GenerateAddressList(
 }
 
 CountryEntryList GenerateCountryList(
-    const autofill::PersonalDataManager& personal_data) {
+    const autofill::PersonalDataManager& personal_data,
+    bool for_account_address_profile) {
   autofill::CountryComboboxModel model;
   model.SetCountries(personal_data,
                      base::RepeatingCallback<bool(const std::string&)>(),
@@ -224,8 +211,21 @@ CountryEntryList GenerateCountryList(
 
   CountryEntryList list;
 
-  for (const auto& country : countries)
-    list.push_back(CountryToCountryEntry(country.get()));
+  for (const auto& country : countries) {
+    // A null |country| means "insert a space here", so we add a country w/o a
+    // |name| or |country_code| to the list and let the UI handle it.
+    if (!country) {
+      list.emplace_back();
+      continue;
+    }
+    if (!for_account_address_profile ||
+        personal_data.address_data_manager().IsCountryEligibleForAccountStorage(
+            country->country_code())) {
+      api::autofill_private::CountryEntry& entry = list.emplace_back();
+      entry.name = base::UTF16ToUTF8(country->name());
+      entry.country_code = country->country_code();
+    }
+  }
 
   return list;
 }

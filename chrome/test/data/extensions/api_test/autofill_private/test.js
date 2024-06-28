@@ -198,7 +198,8 @@ var availableTests = [
       chrome.test.succeed();
     };
 
-    chrome.autofillPrivate.getCountryList(handler);
+    chrome.autofillPrivate.getCountryList(
+        /*forAccountAddressProfile=*/ false, handler);
   },
 
   function getAddressComponents() {
