@@ -254,11 +254,11 @@ void LayerTreeImpl::DidUpdateScrollOffset(ElementId id) {
         scroll_tree.current_scroll_offset(id)) {
       transform_node->scroll_offset = scroll_tree.current_scroll_offset(id);
       transform_node->needs_local_transform_update = true;
+      transform_node->transform_changed = true;
       transform_tree.set_needs_update(true);
+      property_trees()->set_changed(true);
+      set_needs_update_draw_properties();
     }
-    transform_node->transform_changed = true;
-    property_trees()->set_changed(true);
-    set_needs_update_draw_properties();
   } else if (can_realize_on_pending_tree) {
     host_impl_->RequestImplSideInvalidationForRasterInducingScroll(id);
   }
