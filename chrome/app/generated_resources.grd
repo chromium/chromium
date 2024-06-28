@@ -16520,6 +16520,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_MANAGE_PASSWORDS_AND_PASSKEYS" desc="The label of a button in a passkey saved confirmation bubble that leads to password manager. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
         Manage passwords and passkeys
       </message>
+      <message name="IDS_WEBAUTHN_SHOW_PIN" desc="The tooltip of a button that is used to show the PIN.">
+        Show PIN
+      </message>
+      <message name="IDS_WEBAUTHN_HIDE_PIN" desc="The tooltip of a button that is used to hide the PIN.">
+        Hide PIN
+      </message>
 
       <!-- Web-modal dialog shown during Digital Credential request -->
       <message name="IDS_WEB_DIGITAL_CREDENTIALS_QR_TITLE" translateable="false">

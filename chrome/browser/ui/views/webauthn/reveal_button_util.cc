@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/webauthn/reveal_button_util.h"
 
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/vector_icons.h"
@@ -22,8 +24,9 @@ std::unique_ptr<views::ToggleImageButton> CreateRevealButton(
           .SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER)
           .SetCallback(std::move(callback))
           .SetBorder(views::CreateEmptyBorder(kEyePaddingWidth))
-          .SetTooltipText(u"Tooltip (UNTRANSLATED)")
-          .SetToggledTooltipText(u"Toggled tooltip (UNTRANSLATED)")
+          .SetTooltipText(l10n_util::GetStringUTF16(IDS_WEBAUTHN_SHOW_PIN))
+          .SetToggledTooltipText(
+              l10n_util::GetStringUTF16(IDS_WEBAUTHN_HIDE_PIN))
           .Build();
   SetImageFromVectorIconWithColorId(button.get(), views::kEyeIcon,
                                     ui::kColorIcon, ui::kColorIconDisabled);
