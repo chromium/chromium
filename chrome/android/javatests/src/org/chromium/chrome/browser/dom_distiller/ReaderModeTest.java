@@ -288,6 +288,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Consistently failing, crbug.com/349966200")
     @EnableFeatures(ChromeFeatureList.READER_MODE_IN_CCT)
     public void testPreferenceInCCT() throws TimeoutException {
         Tab originalTab = mDownloadTestRule.getActivity().getActivityTab();
