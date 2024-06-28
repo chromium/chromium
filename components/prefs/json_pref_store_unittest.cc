@@ -74,7 +74,7 @@ class InterceptingPrefFilter : public PrefFilter {
   // PrefFilter implementation:
   void FilterOnLoad(PostFilterOnLoadCallback post_filter_on_load_callback,
                     base::Value::Dict pref_store_contents) override;
-  void FilterUpdate(const std::string& path) override {}
+  void FilterUpdate(std::string_view path) override {}
   OnWriteCallbackPair FilterSerializeData(
       base::Value::Dict& pref_store_contents) override {
     return std::move(on_write_callback_pair_);

@@ -7,10 +7,12 @@
 
 #include <stddef.h>
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <optional>
 #include <set>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -33,10 +35,8 @@ namespace base {
 class Time;
 }  // namespace base
 
-namespace prefs {
-namespace mojom {
+namespace prefs::mojom {
 class TrackedPreferenceValidationDelegate;
-}
 }
 
 namespace user_prefs {
@@ -94,7 +94,7 @@ class PrefHashFilter final : public InterceptablePrefFilter {
   void Initialize(base::Value::Dict& pref_store_contents);
 
   // PrefFilter remaining implementation.
-  void FilterUpdate(const std::string& path) override;
+  void FilterUpdate(std::string_view path) override;
   OnWriteCallbackPair FilterSerializeData(
       base::Value::Dict& pref_store_contents) override;
 
@@ -138,8 +138,14 @@ class PrefHashFilter final : public InterceptablePrefFilter {
 
   // A map of paths to TrackedPreferences; this map owns this individual
   // TrackedPreference objects.
+  struct StringViewHasher : public std::hash<std::string_view> {
+    using is_transparent = void;
+  };
   using TrackedPreferencesMap =
-      std::unordered_map<std::string, std::unique_ptr<TrackedPreference>>;
+      std::unordered_map<std::string,
+                         std::unique_ptr<TrackedPreference>,
+                         StringViewHasher,
+                         std::equal_to<>>;
 
   // A map from changed paths to their corresponding TrackedPreferences (which
   // aren't owned by this map).

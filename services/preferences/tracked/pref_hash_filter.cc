@@ -173,7 +173,7 @@ void PrefHashFilter::Initialize(base::Value::Dict& pref_store_contents) {
 
 // Marks |path| has having changed if it is part of |tracked_paths_|. A new hash
 // will be stored for it the next time FilterSerializeData() is invoked.
-void PrefHashFilter::FilterUpdate(const std::string& path) {
+void PrefHashFilter::FilterUpdate(std::string_view path) {
   auto it = tracked_paths_.find(path);
   if (it != tracked_paths_.end())
     changed_paths_.insert(std::make_pair(path, it->second.get()));

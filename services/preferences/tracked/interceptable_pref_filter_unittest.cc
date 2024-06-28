@@ -16,7 +16,7 @@ namespace {
 
 class TestInterceptablePrefFilter final : public InterceptablePrefFilter {
  public:
-  void FilterUpdate(const std::string& path) override {}
+  void FilterUpdate(std::string_view path) override {}
 
   OnWriteCallbackPair FilterSerializeData(
       base::Value::Dict& pref_store_contents) override {
