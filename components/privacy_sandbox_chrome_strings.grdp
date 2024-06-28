@@ -24,7 +24,7 @@
     More about ad topics
   </message>
   <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_4" desc="We inform the user that regardless of their choice in this moment, they can always change their mind in Chrome settings—in this case by finding the 'Ad topics' setting and changing the toggle. **** CONTEXT PRIVACY SANDBOX **** Chrome’s Privacy Sandbox initiative 1) deprecates third-party cookies in Chrome, 2) supports free and open content on the web (by finding better ways to support ads online), 3) while providing stronger privacy protections for users. You can see a high-level description of this public project at www.privacysanbox.com. **** CONTEXT EEA CONSENT **** 1) This screen is a Consent moment for Chrome users in the European Economic Area (EEA). It follows guidelines established by the GDPR. 2) This screen is 1 of 2 screens. This first screen describes the “Ad topics” setting. The second screen describes 2 other settings: “Site-suggested ads” and “Ad measurement”. " formatter_data="android_java">
-    You can change your mind any time in Chrome settings
+    You can change your mind any time in Chrome settings.
   </message>
   <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DECLINE_BUTTON" desc="A button label that enables a user to refuse turning on the Ad topics setting. **** CONTEXT PRIVACY SANDBOX **** Chrome’s Privacy Sandbox initiative 1) deprecates third-party cookies in Chrome, 2) supports free and open content on the web (by finding better ways to support ads online), 3) while providing stronger privacy protections for users. You can see a high-level description of this public project at www.privacysanbox.com. **** CONTEXT EEA CONSENT **** 1) This screen is a Consent moment for Chrome users in the European Economic Area (EEA). It follows guidelines established by the GDPR. 2) This screen is 1 of 2 screens. This first screen describes the “Ad topics” setting. The second screen describes 2 other settings: “Site-suggested ads” and “Ad measurement”. " formatter_data="android_java">
     No thanks
@@ -67,7 +67,7 @@
     More about site-suggested ads and ad measurement
   </message>
   <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_DESCRIPTION_2" desc="We inform the user that they can always change these new settings in Chrome settings. This is the second of two screens that comprise this Consent/Notice moment. On the first screen, for the Ad topics settings, we must ask the user for their consent to turn on the setting. On this page, we only need to provide notice to the user that we're launching two new settings. By default, these new settings will be on. This string reminds the user that they can find and change the state of these settings in Chrome settings.  **** CONTEXT PRIVACY SANDBOX **** Chrome’s Privacy Sandbox initiative 1) deprecates third-party cookies in Chrome, 2) supports free and open content on the web (by finding better ways to support ads online), 3) while providing stronger privacy protections for users. You can see a high-level description of this public project at www.privacysanbox.com. **** CONTEXT EEA NOTICE **** 1) This screen provides notice to Chrome users in the European Economic Area (EEA). It follows guidelines established by the GDPR.  2) This screen is the second of 2 screens. This second screen describes 2 settings: “Site-suggested ads” and “Ad measurement”. The first screen describes the “Ad topics” setting. " formatter_data="android_java">
-    You can make changes in Chrome settings
+    You can make changes in Chrome settings.
   </message>
   <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_ACK_BUTTON" desc="Because this isn't a moment of Consent, the button label reflects acknowledgement of this setting, and not explicit consent with something like 'Yes, I'm in'. **** CONTEXT PRIVACY SANDBOX **** Chrome’s Privacy Sandbox initiative 1) deprecates third-party cookies in Chrome, 2) supports free and open content on the web (by finding better ways to support ads online), 3) while providing stronger privacy protections for users. You can see a high-level description of this public project at www.privacysanbox.com. **** CONTEXT EEA NOTICE **** 1) This screen provides notice to Chrome users in the European Economic Area (EEA). It follows guidelines established by the GDPR.  2) This screen is the second of 2 screens. This second screen describes 2 settings: “Site-suggested ads” and “Ad measurement”. The first screen describes the “Ad topics” setting. " formatter_data="android_java">
     Got it
@@ -133,7 +133,7 @@
     More about ads in Chrome
   </message>
   <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DESCRIPTION_4" desc="We inform the user that they can always change these new settings in Chrome settings. By default, these new settings will be on.  " formatter_data="android_java">
-    You can make changes in Chrome settings
+    You can make changes in Chrome settings.
   </message>
   <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_ACK_BUTTON" desc="Because this isn't a moment of Consent, the button label reflects acknowledgement of this setting, and not explicit consent with something like 'Yes, I'm in'. " formatter_data="android_java">
     Got it
