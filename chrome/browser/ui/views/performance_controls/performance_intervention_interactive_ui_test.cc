@@ -256,7 +256,8 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       // Flush the event queue to ensure that the screenshot happens
       // after the button is shown.
       FlushEvents(),
-      PressButton(kToolbarPerformanceInterventionButtonElementId),
+      PressButton(PerformanceInterventionBubble::
+                      kPerformanceInterventionDialogDismissButton),
       WaitForHide(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,

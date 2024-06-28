@@ -371,6 +371,9 @@
   E_CPONLY(kColorPaymentsRequestRowBackgroundHighlighted) \
   /* Permission Prompt colors. */ \
   E_CPONLY(kColorPermissionPromptRequestText) \
+   /* Performance Intervention colors. */ \
+  E_CPONLY(kColorPerformanceInterventionButtonIconActive) \
+  E_CPONLY(kColorPerformanceInterventionButtonIconInactive) \
   /* Picture-in-Picture window colors. */ \
   E_CPONLY(kColorPipWindowBackToTabButtonBackground) \
   E_CPONLY(kColorPipWindowBackground) \
