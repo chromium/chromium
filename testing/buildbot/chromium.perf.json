@@ -1208,7 +1208,8 @@
   },
   "linux-builder-perf": {
     "additional_compile_targets": [
-      "chromedriver"
+      "chromedriver_group",
+      "chrome/installer/linux"
     ],
     "isolated_scripts": [
       {

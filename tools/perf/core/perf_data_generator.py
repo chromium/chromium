@@ -423,7 +423,11 @@ BUILDERS = {
         'perf_trigger': False,
     },
     'linux-builder-perf': {
-        'additional_compile_targets': ['chromedriver'],
+        'additional_compile_targets': [
+            'chromedriver_group',
+            'chrome/installer/linux',
+        ],
+        'pinpoint_additional_compile_targets': [],
         'tests': [{
             'name': 'chrome_sizes',
             'isolate': 'chrome_sizes',
@@ -451,6 +455,7 @@ BUILDERS = {
     'linux-builder-perf-rel': {},
     'mac-builder-perf': {
         'additional_compile_targets': ['chromedriver'],
+        'pinpoint_additional_compile_targets': [],
         'tests': [{
             'name': 'chrome_sizes',
             'isolate': 'chrome_sizes',
@@ -477,6 +482,7 @@ BUILDERS = {
     },
     'mac-arm-builder-perf': {
         'additional_compile_targets': ['chromedriver'],
+        'pinpoint_additional_compile_targets': [],
         'tests': [{
             'name': 'chrome_sizes',
             'isolate': 'chrome_sizes',
@@ -503,6 +509,7 @@ BUILDERS = {
     },
     'win64-builder-perf': {
         'additional_compile_targets': ['chromedriver'],
+        'pinpoint_additional_compile_targets': [],
         'tests': [{
             'name': 'chrome_sizes',
             'isolate': 'chrome_sizes',
@@ -1432,9 +1439,12 @@ def _generate_pinpoint_builders_dict(builder):
   result = {}
   for key in builder:
     content = copy.deepcopy(builder[key])
-    additional_compile_targets = content.get('additional_compile_targets', [])
-    additional_compile_targets = list(
-        filter(lambda x: x not in ['chromedriver'], additional_compile_targets))
+    if 'pinpoint_additional_compile_targets' in content:
+      additional_compile_targets = content.pop(
+          'pinpoint_additional_compile_targets')
+    else:
+      additional_compile_targets = content.pop('additional_compile_targets',
+                                               None)
     if additional_compile_targets:
       content['additional_compile_targets'] = additional_compile_targets
     elif 'additional_compile_targets' in content:
