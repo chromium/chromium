@@ -10,9 +10,11 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 
 // The consent will appear up to a total of 6 times.
@@ -59,7 +61,7 @@ class QuickAnswersStateObserver : public base::CheckedObserver {
 //   Answers capabpility.
 // - Hmr feature: a feature called Hmr. It provides Mahi and Quick Answers
 //   capability.
-class QuickAnswersState {
+class QuickAnswersState : chromeos::MagicBoostState::Observer {
  public:
   enum class FeatureType {
     kHmr,
@@ -72,21 +74,28 @@ class QuickAnswersState {
 
   static QuickAnswersState* Get();
 
+  static FeatureType GetFeatureType();
+
   // Accessor methods. Those methods handle error cases (Error::kUninitialized,
   // etc) in a fail-safe way.
   static bool IsEligible();
   static bool IsEligibleAs(FeatureType feature_type);
+  static bool IsEnabled();
+  static bool IsEnabledAs(FeatureType feature_type);
 
   QuickAnswersState();
 
   QuickAnswersState(const QuickAnswersState&) = delete;
   QuickAnswersState& operator=(const QuickAnswersState&) = delete;
 
-  virtual ~QuickAnswersState();
+  ~QuickAnswersState() override;
 
   // Observers are notified only in the context of current feature type.
   void AddObserver(QuickAnswersStateObserver* observer);
   void RemoveObserver(QuickAnswersStateObserver* observer);
+
+  // chromeos::MagicBoostState::Observer:
+  void OnHMREnabledUpdated(bool enabled) override;
 
   // Write consent status and a respective enabled state to the pref. Note that
   // this method returns BEFORE a write is completed. Reading consent status
@@ -106,7 +115,6 @@ class QuickAnswersState {
 
   bool IsSupportedLanguage(const std::string& language) const;
 
-  bool settings_enabled() const { return settings_enabled_; }
   quick_answers::prefs::ConsentStatus consent_status() const {
     return consent_status_;
   }
@@ -141,15 +149,13 @@ class QuickAnswersState {
   // Notify eligibility change to observers in the current feature type if it
   // has changed.
   void MaybeNotifyEligibilityChanged();
+  void MaybeNotifyIsEnabledChanged();
 
   // Record the consent result with how many times the user has seen the consent
   // and impression duration.
   void RecordConsentResult(ConsentResultType type,
                            int nth_impression,
                            const base::TimeDelta duration);
-
-  // Whether the Quick Answers is enabled in system settings.
-  bool settings_enabled_ = false;
 
   // Status of the user's consent for the Quick Answers feature.
   quick_answers::prefs::ConsentStatus consent_status_ =
@@ -183,23 +189,36 @@ class QuickAnswersState {
   // Whether to use text annotator for testing.
   bool use_text_annotator_for_testing_ = false;
 
+  // Whether the Quick Answers is enabled in system settings.
+  base::expected<bool, Error> quick_answers_enabled_ =
+      base::unexpected(Error::kUninitialized);
+
   base::ObserverList<QuickAnswersStateObserver> observers_;
 
  private:
   // Use `base::expected` instead of `std::optional` to avoid implicit bool
   // conversion: https://abseil.io/tips/141.
   // TODO(b/340628526): Implement functions for:
-  // - IsEnabled
   // - GetConsentStatus
   // - IsIntentEnabled
   base::expected<bool, Error> IsEligibleExpected() const;
   base::expected<bool, Error> IsEligibleExpectedAs(
       FeatureType feature_type) const;
+  base::expected<bool, Error> IsEnabledExpected() const;
+  base::expected<bool, Error> IsEnabledExpectedAs(
+      FeatureType feature_type) const;
 
-  // Last notified value of whether the Quick Answers capability is eligible in
-  // the current feature type.
+  // Last notified values in the current feature type.
   base::expected<bool, Error> last_notified_is_eligible_ =
       base::unexpected(Error::kUninitialized);
+  base::expected<bool, Error> last_notified_is_enabled_ =
+      base::unexpected(Error::kUninitialized);
+
+  base::ScopedObservation<chromeos::MagicBoostState,
+                          chromeos::MagicBoostState::Observer>
+      magic_boost_state_observation_{this};
+
+  // Test overwrite values.
   std::optional<bool> is_eligible_for_testing_;
 };
 

@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
+#include "base/types/expected.h"
 
 namespace chromeos {
 
@@ -32,6 +33,10 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
    public:
     virtual void OnHMREnabledUpdated(bool enabled) {}
     virtual void OnHMRConsentStatusUpdated(HMRConsentStatus status) {}
+  };
+
+  enum class Error {
+    kUninitialized,
   };
 
   static MagicBoostState* Get();
@@ -69,7 +74,7 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
   // Marks Orca consent status as rejected and disable the feature.
   virtual void DisableOrcaFeature() = 0;
 
-  std::optional<bool> hmr_enabled() const { return hmr_enabled_; }
+  base::expected<bool, Error> hmr_enabled() const { return hmr_enabled_; }
 
   std::optional<HMRConsentStatus> hmr_consent_status() const {
     return hmr_consent_status_;
@@ -85,7 +90,10 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
   void UpdateHMRConsentWindowDismissCount(int32_t count);
 
  private:
-  std::optional<bool> hmr_enabled_;
+  // Use `base::expected` instead of `std::optional` to avoid implicit bool
+  // conversion: https://abseil.io/tips/141.
+  base::expected<bool, Error> hmr_enabled_ =
+      base::unexpected(Error::kUninitialized);
   std::optional<HMRConsentStatus> hmr_consent_status_ =
       HMRConsentStatus::kUnset;
   int32_t hmr_consent_window_dismiss_count_ = 0;

@@ -122,10 +122,10 @@ void QuickAnswersStateAsh::RegisterPrefChanges(PrefService* pref_service) {
     observer.OnPrefsInitialized();
   }
 
-  quick_answers::RecordFeatureEnabled(
-      pref_service->GetBoolean(kQuickAnswersEnabled));
+  quick_answers::RecordFeatureEnabled(IsEnabledAs(FeatureType::kQuickAnswers));
 
   MaybeNotifyEligibilityChanged();
+  MaybeNotifyIsEnabledChanged();
 }
 
 void QuickAnswersStateAsh::AsyncWriteConsentUiImpressionCount(int32_t count) {
@@ -146,7 +146,11 @@ void QuickAnswersStateAsh::AsyncWriteEnabled(bool enabled) {
 void QuickAnswersStateAsh::UpdateSettingsEnabled() {
   auto* prefs = pref_change_registrar_->prefs();
 
-  auto settings_enabled = prefs->GetBoolean(kQuickAnswersEnabled);
+  // TODO(b/340628526): modifying a state is error-prone. For example, if a
+  // state is read before a modification happens, a stale state will be read.
+  // Instead, each state (e.g., IsEnabled) should be calculated from other
+  // dependent states (e.g., IsKioskSession).
+  bool settings_enabled = prefs->GetBoolean(kQuickAnswersEnabled);
 
   // Quick answers should be disabled for kiosk session.
   if (chromeos::IsKioskSession() && settings_enabled) {
@@ -164,20 +168,25 @@ void QuickAnswersStateAsh::UpdateSettingsEnabled() {
     prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kRejected);
   }
 
-  if (settings_enabled_ == settings_enabled) {
-    return;
-  }
-  settings_enabled_ = settings_enabled;
+  bool turned_on = quick_answers_enabled_.has_value() &&
+                   !quick_answers_enabled_.value() && settings_enabled;
 
   // If the user turn on the Quick Answers in settings, set the consented status
   // to true.
-  if (settings_enabled_) {
+  // TODO(b/340628526): move this logic to `QuickAnswersState`.
+  // `QuickAnswersStateAsh` should only have logic unique to ash. Plan is to
+  // make `quick_answers_enabled_` as private and add void
+  // SetQuickAnswersEnabled(bool) as a protected method.
+  if (turned_on) {
+    CHECK(quick_answers_enabled_.has_value());
+    CHECK(!quick_answers_enabled_.value());
+    CHECK(settings_enabled);
+
     prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kAccepted);
   }
 
-  for (auto& observer : observers_) {
-    observer.OnSettingsEnabled(settings_enabled_);
-  }
+  quick_answers_enabled_ = settings_enabled;
+  MaybeNotifyIsEnabledChanged();
 }
 
 void QuickAnswersStateAsh::UpdateConsentStatus() {
