@@ -117,7 +117,7 @@ UILabel* CreateLabel() {
   self = [super initWithType:type];
   if (self) {
     self.cellClass = [EnhancedSafeBrowsingInlinePromoCell class];
-    self.accessibilityTraits |= UIAccessibilityTraitButton;
+    self.accessibilityTraits |= UIAccessibilityTraitNone;
   }
   return self;
 }
