@@ -30,7 +30,7 @@ namespace {
 // The maximum idle time before the model executor is unloaded from memory.
 constexpr base::TimeDelta kMaxExecutorIdleSeconds = base::Seconds(60);
 // Constants for TFlite model validation.
-constexpr std::string kTestPrefix = "face";
+constexpr std::string kTestPrefix = "google m";
 constexpr std::string_view kModelValidationSwitchName =
     "omnibox-on-device-tail-model-validation";
 
@@ -56,7 +56,7 @@ void InitializeTailModelExecutor(
   LOCAL_HISTOGRAM_BOOLEAN("Omnibox.OnDeviceTailModel.InitExecutor",
                           init_success);
   if (init_success) {
-    OnDeviceTailModelExecutor::ModelInput input(kTestPrefix, "", 5, 20, 0.05);
+    OnDeviceTailModelExecutor::ModelInput input(kTestPrefix, "", 5);
     std::vector<OnDeviceTailModelExecutor::Prediction> predictions =
         executor->GenerateSuggestionsForPrefix(input);
     LOCAL_HISTOGRAM_BOOLEAN("Omnibox.OnDeviceTailModel.HasResultForTestPrefix",

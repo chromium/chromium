@@ -22,6 +22,8 @@ namespace {
 constexpr int kNumLayer = 1;
 constexpr int kStateSize = 512;
 constexpr int kEmbeddingDim = 64;
+constexpr int kMaxNumSteps = 20;
+constexpr float kProbabilityThreshold = 0.05;
 
 base::FilePath GetTestFilePath(const std::string& filename) {
   base::FilePath file_path;
@@ -106,6 +108,9 @@ class OnDeviceTailModelExecutorTest : public ::testing::Test {
     metadata.mutable_lstm_model_params()->set_state_size(kStateSize);
     metadata.mutable_lstm_model_params()->set_embedding_dimension(
         kEmbeddingDim);
+    metadata.mutable_lstm_model_params()->set_max_num_steps(kMaxNumSteps);
+    metadata.mutable_lstm_model_params()->set_probability_threshold(
+        kProbabilityThreshold);
 
     base::flat_set<base::FilePath> additional_files;
     additional_files.insert(GetTestFilePath("vocab_test.txt"));
@@ -364,7 +369,7 @@ TEST_F(OnDeviceTailModelExecutorTest, TestGenerateSuggestionsForPrefix) {
   std::vector<OnDeviceTailModelExecutor::Prediction> predictions;
 
   {
-    OnDeviceTailModelExecutor::ModelInput input("faceb", "", 5, 20, 0.05);
+    OnDeviceTailModelExecutor::ModelInput input("faceb", "", 5);
     predictions = executor_->GenerateSuggestionsForPrefix(input);
     EXPECT_FALSE(predictions.empty());
     EXPECT_TRUE(base::StartsWith(predictions[0].suggestion, "facebook",
@@ -372,14 +377,13 @@ TEST_F(OnDeviceTailModelExecutorTest, TestGenerateSuggestionsForPrefix) {
   }
 
   {
-    OnDeviceTailModelExecutor::ModelInput input("", "snapchat", 5, 20, 0.05);
+    OnDeviceTailModelExecutor::ModelInput input("", "snapchat", 5);
     predictions = executor_->GenerateSuggestionsForPrefix(input);
     EXPECT_TRUE(predictions.empty());
   }
 
   {
-    OnDeviceTailModelExecutor::ModelInput input("faceb", "snapchat", 5, 20,
-                                                0.05);
+    OnDeviceTailModelExecutor::ModelInput input("faceb", "snapchat", 5);
     predictions = executor_->GenerateSuggestionsForPrefix(input);
     EXPECT_FALSE(predictions.empty());
     EXPECT_TRUE(base::StartsWith(predictions[0].suggestion, "facebook",
@@ -394,7 +398,7 @@ TEST_F(OnDeviceTailModelExecutorTest,
   {
     // Make sure the test model can predict "login" for prefix "logi".
     InitExecutor(base::flat_set<std::string>());
-    OnDeviceTailModelExecutor::ModelInput input("logi", "", 5, 20, 0.05);
+    OnDeviceTailModelExecutor::ModelInput input("logi", "", 5);
     predictions = executor_->GenerateSuggestionsForPrefix(input);
     EXPECT_EQ(predictions.size(), 1U);
     EXPECT_TRUE(base::StartsWith(predictions[0].suggestion, "login",
@@ -405,7 +409,7 @@ TEST_F(OnDeviceTailModelExecutorTest,
     // The test badwords file contains hash for word "login", so |predictions|
     // should not contain results with word "login".
     InitExecutor(base::flat_set<std::string>({"badword_hashes_test.txt"}));
-    OnDeviceTailModelExecutor::ModelInput input("logi", "", 5, 20, 0.05);
+    OnDeviceTailModelExecutor::ModelInput input("logi", "", 5);
     predictions = executor_->GenerateSuggestionsForPrefix(input);
     for (auto& prediction : predictions) {
       auto words =
@@ -419,7 +423,7 @@ TEST_F(OnDeviceTailModelExecutorTest,
     // The denylist contains substrings "ogi" & "abc", so |prediction| should
     // not contain these strings neither.
     InitExecutor(base::flat_set<std::string>({"denylist_test.txt"}));
-    OnDeviceTailModelExecutor::ModelInput input("logi", "", 5, 20, 0.05);
+    OnDeviceTailModelExecutor::ModelInput input("logi", "", 5);
     predictions = executor_->GenerateSuggestionsForPrefix(input);
     for (auto& prediction : predictions) {
       EXPECT_FALSE(base::Contains(prediction.suggestion, "abc"));

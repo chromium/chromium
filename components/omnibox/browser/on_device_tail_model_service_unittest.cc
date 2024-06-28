@@ -26,6 +26,8 @@ static const char kVocabFilename[] = "vocab_test.txt";
 constexpr int kNumLayer = 1;
 constexpr int kStateSize = 512;
 constexpr int kEmbeddingDim = 64;
+constexpr int kMaxNumSteps = 20;
+constexpr float kProbabilityThreshold = 0.01;
 
 }  // namespace
 
@@ -53,6 +55,9 @@ class OnDeviceTailModelServiceTest : public ::testing::Test {
     metadata.mutable_lstm_model_params()->set_state_size(kStateSize);
     metadata.mutable_lstm_model_params()->set_embedding_dimension(
         kEmbeddingDim);
+    metadata.mutable_lstm_model_params()->set_max_num_steps(kMaxNumSteps);
+    metadata.mutable_lstm_model_params()->set_probability_threshold(
+        kProbabilityThreshold);
     metadata.SerializeToString(any_metadata.mutable_value());
 
     model_info_ =
@@ -95,7 +100,7 @@ TEST_F(OnDeviceTailModelServiceTest, OnModelUpdated) {
 TEST_F(OnDeviceTailModelServiceTest, GetPredictionsForInput) {
   std::vector<OnDeviceTailModelExecutor::Prediction> results;
 
-  OnDeviceTailModelExecutor::ModelInput input("faceb", "", 5, 20, 0.05);
+  OnDeviceTailModelExecutor::ModelInput input("faceb", "", 5);
   OnDeviceTailModelService::ResultCallback callback = base::BindOnce(
       [](std::vector<OnDeviceTailModelExecutor::Prediction>* results,
          std::vector<OnDeviceTailModelExecutor::Prediction> predictions) {

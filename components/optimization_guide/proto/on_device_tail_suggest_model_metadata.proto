@@ -15,6 +15,8 @@ message LstmModelParams {
   int32 state_size = 1;
   int32 num_layer = 2;
   int32 embedding_dimension = 3;
+  int32 max_num_steps = 4;
+  float probability_threshold = 5;
 }
 
 // The message contains a set of params to run a specific on device tail suggest
