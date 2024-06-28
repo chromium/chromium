@@ -300,7 +300,7 @@ std::optional<SavedTabGroup> TabGroupSyncServiceImpl::GetGroup(
 }
 
 std::optional<SavedTabGroup> TabGroupSyncServiceImpl::GetGroup(
-    LocalTabGroupID& local_id) {
+    const LocalTabGroupID& local_id) {
   const SavedTabGroup* tab_group = model_->Get(local_id);
   VLOG(2) << __func__;
   return tab_group ? std::make_optional<SavedTabGroup>(*tab_group)
