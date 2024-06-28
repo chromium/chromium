@@ -412,6 +412,11 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
     const int expected_count = annotation_mode_enabled ? 1 : 0;
     EXPECT_EQ(expected_count, client().stroke_finished_count());
   }
+
+  void SelectEraserTool() {
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateSetAnnotationBrushMessage("eraser", nullptr)));
+  }
 };
 
 TEST_F(PdfInkModuleStrokeTest, NoAnnotationIfNotEnabled) {
@@ -587,6 +592,168 @@ TEST_F(PdfInkModuleStrokeTest, StrokePageExitAndReentry) {
                           kTwoPageVerticalLayoutPageExitAndReentrySegment1),
                       ElementsAreArray(
                           kTwoPageVerticalLayoutPageExitAndReentrySegment2)))));
+}
+
+TEST_F(PdfInkModuleStrokeTest, EraseStroke) {
+  InitializeSimpleSinglePageBasicLayout();
+  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+
+  // Check that there are now some visible strokes.
+  EXPECT_THAT(
+      ink_module().GetVisibleStrokesInputPositionsForTesting(),
+      ElementsAre(Pair(0, ElementsAre(ElementsAre(kMouseDownLocation,
+                                                  kMouseMoveLocation)))));
+  EXPECT_EQ(1, client().stroke_finished_count());
+
+  // Stroke with the eraser tool.
+  SelectEraserTool();
+  ApplyStrokeWithMouseAtPoints(kMouseDownLocation,
+                               base::span_from_ref(kMouseDownLocation),
+                               kMouseDownLocation,
+                               /*expect_mouse_events_handled=*/true);
+
+  // Now there are no visible strokes left.
+  // TODO(crbug.com/339682315): Update the test expectations when the Ink
+  // library is no longer just a stub.
+  EXPECT_TRUE(ink_module().GetVisibleStrokesInputPositionsForTesting().empty());
+  // Erasing counts as another stroke action.
+  EXPECT_EQ(2, client().stroke_finished_count());
+
+  // Stroke again. The stroke that have already been erased should stay erased.
+  ApplyStrokeWithMouseAtPoints(kMouseDownLocation,
+                               base::span_from_ref(kMouseDownLocation),
+                               kMouseDownLocation,
+                               /*expect_mouse_events_handled=*/true);
+
+  // Still no visible strokes.
+  EXPECT_TRUE(ink_module().GetVisibleStrokesInputPositionsForTesting().empty());
+  // Nothing got erased, so the count stays at 2.
+  EXPECT_EQ(2, client().stroke_finished_count());
+}
+
+TEST_F(PdfInkModuleStrokeTest, EraseOnPageWithoutStrokes) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Verify there are no visible strokes to start with.
+  EXPECT_TRUE(ink_module().GetVisibleStrokesInputPositionsForTesting().empty());
+
+  // Stroke with the eraser tool when there are no strokes on the page.
+  SelectEraserTool();
+  ApplyStrokeWithMouseAtPoints(kMouseDownLocation,
+                               base::span_from_ref(kMouseDownLocation),
+                               kMouseDownLocation,
+                               /*expect_mouse_events_handled=*/true);
+
+  // Verify there are still no visible strokes and StrokeFinished() never got
+  // called.
+  EXPECT_TRUE(ink_module().GetVisibleStrokesInputPositionsForTesting().empty());
+  EXPECT_EQ(0, client().stroke_finished_count());
+}
+
+TEST_F(PdfInkModuleStrokeTest, EraseStrokeEntirelyOffPage) {
+  InitializeSimpleSinglePageBasicLayout();
+  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+
+  // Check that there are now some visible strokes.
+  EXPECT_THAT(
+      ink_module().GetVisibleStrokesInputPositionsForTesting(),
+      ElementsAre(Pair(0, ElementsAre(ElementsAre(kMouseDownLocation,
+                                                  kMouseMoveLocation)))));
+  EXPECT_EQ(1, client().stroke_finished_count());
+
+  // Stroke with the eraser tool outside of the page.
+  SelectEraserTool();
+  constexpr gfx::PointF kOffPageLocation(99.0f, 99.0f);
+  ApplyStrokeWithMouseAtPoints(
+      kOffPageLocation, base::span_from_ref(kOffPageLocation), kOffPageLocation,
+      /*expect_mouse_events_handled=*/false);
+
+  // Check that the visible strokes remain, and StrokeFinished() did not get
+  // called again.
+  EXPECT_THAT(
+      ink_module().GetVisibleStrokesInputPositionsForTesting(),
+      ElementsAre(Pair(0, ElementsAre(ElementsAre(kMouseDownLocation,
+                                                  kMouseMoveLocation)))));
+  EXPECT_EQ(1, client().stroke_finished_count());
+}
+
+TEST_F(PdfInkModuleStrokeTest, EraseStrokeErasesTwoStrokes) {
+  InitializeSimpleSinglePageBasicLayout();
+  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+
+  // Draw a second stroke.
+  static constexpr gfx::PointF kMouseDownLocation2 = gfx::PointF(10.0f, 30.0f);
+  static constexpr gfx::PointF kMouseUpLocation2 = gfx::PointF(30.0f, 30.0f);
+  ApplyStrokeWithMouseAtPoints(kMouseDownLocation2,
+                               base::span_from_ref(kMouseMoveLocation),
+                               kMouseUpLocation2,
+                               /*expect_mouse_events_handled=*/true);
+
+  // Check that there are now some visible strokes.
+  EXPECT_THAT(
+      ink_module().GetVisibleStrokesInputPositionsForTesting(),
+      ElementsAre(Pair(
+          0,
+          ElementsAre(ElementsAre(kMouseDownLocation, kMouseMoveLocation),
+                      ElementsAre(kMouseDownLocation2, kMouseMoveLocation)))));
+  EXPECT_EQ(2, client().stroke_finished_count());
+
+  // Stroke with the eraser tool at `kMouseMoveLocation`, where it will
+  // intersect with both strokes.
+  SelectEraserTool();
+  ApplyStrokeWithMouseAtPoints(kMouseMoveLocation,
+                               base::span_from_ref(kMouseMoveLocation),
+                               kMouseMoveLocation,
+                               /*expect_mouse_events_handled=*/true);
+
+  // Check that there are now no visible strokes.
+  EXPECT_TRUE(ink_module().GetVisibleStrokesInputPositionsForTesting().empty());
+  EXPECT_EQ(3, client().stroke_finished_count());
+}
+
+TEST_F(PdfInkModuleStrokeTest, EraseStrokePageExitAndReentry) {
+  EnableAnnotationMode();
+  InitializeVerticalTwoPageLayout();
+
+  // Start out without any strokes.
+  EXPECT_TRUE(ink_module().GetStrokesInputPositionsForTesting().empty());
+
+  ApplyStrokeWithMouseAtPoints(kTwoPageVerticalLayoutPoint1InsidePage0,
+                               kTwoPageVerticalLayoutPageExitAndReentryPoints,
+                               kTwoPageVerticalLayoutPoint3InsidePage0,
+                               /*expect_mouse_events_handled=*/true);
+
+  EXPECT_THAT(
+      ink_module().GetStrokesInputPositionsForTesting(),
+      ElementsAre(Pair(
+          0,
+          ElementsAre(ElementsAreArray(
+                          kTwoPageVerticalLayoutPageExitAndReentrySegment1),
+                      ElementsAreArray(
+                          kTwoPageVerticalLayoutPageExitAndReentrySegment2)))));
+  EXPECT_EQ(1, client().stroke_finished_count());
+
+  // Select the eraser tool and call ApplyStrokeWithMouseAtPoints() again with
+  // the same arguments.
+  SelectEraserTool();
+  ApplyStrokeWithMouseAtPoints(kTwoPageVerticalLayoutPoint1InsidePage0,
+                               kTwoPageVerticalLayoutPageExitAndReentryPoints,
+                               kTwoPageVerticalLayoutPoint3InsidePage0,
+                               /*expect_mouse_events_handled=*/true);
+
+  // The strokes are all still there, but none of them are visible.
+  EXPECT_THAT(
+      ink_module().GetStrokesInputPositionsForTesting(),
+      ElementsAre(Pair(
+          0,
+          ElementsAre(ElementsAreArray(
+                          kTwoPageVerticalLayoutPageExitAndReentrySegment1),
+                      ElementsAreArray(
+                          kTwoPageVerticalLayoutPageExitAndReentrySegment2)))));
+  EXPECT_TRUE(ink_module().GetVisibleStrokesInputPositionsForTesting().empty());
+  // Erasing counts as another stroke action.
+  EXPECT_EQ(2, client().stroke_finished_count());
 }
 
 }  // namespace

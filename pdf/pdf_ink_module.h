@@ -194,8 +194,10 @@ class PdfInkModule {
     size_t next_stroke_id_ = 0;
   };
 
-  // No state, so just use a placeholder enum type.
-  enum class EraserState { kIsEraser };
+  struct EraserState {
+    bool erasing = false;
+    bool did_erase_strokes = false;
+  };
 
   // Returns whether the event was handled or not.
   bool OnMouseDown(const blink::WebMouseEvent& event);
@@ -211,6 +213,10 @@ class PdfInkModule {
   bool StartEraseStroke(const gfx::PointF& position);
   bool ContinueEraseStroke(const gfx::PointF& position);
   bool FinishEraseStroke();
+
+  // Shared code for the Erase methods above. Returns if stroke(s) got erased or
+  // not.
+  bool EraseHelper(const gfx::PointF& position, int page_index);
 
   void HandleAnnotationRedoMessage(const base::Value::Dict& message);
   void HandleAnnotationUndoMessage(const base::Value::Dict& message);
@@ -228,6 +234,12 @@ class PdfInkModule {
   }
   DrawingStrokeState& drawing_stroke_state() {
     return absl::get<DrawingStrokeState>(current_tool_state_);
+  }
+  const EraserState& erasing_stroke_state() const {
+    return absl::get<EraserState>(current_tool_state_);
+  }
+  EraserState& erasing_stroke_state() {
+    return absl::get<EraserState>(current_tool_state_);
   }
 
   // Converts `current_tool_state_` into segments of `InkInProgressStroke`.

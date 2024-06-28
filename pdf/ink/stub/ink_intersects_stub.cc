@@ -9,7 +9,7 @@ namespace chrome_pdf {
 bool InkIntersectsRectWithShape(const InkRect& rect,
                                 const InkModeledShapeView& shape,
                                 const InkAffineTransform& transform) {
-  return false;
+  return true;
 }
 
 }  // namespace chrome_pdf

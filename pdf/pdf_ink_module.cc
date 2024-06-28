@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -19,8 +20,12 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "pdf/ink/ink_affine_transform.h"
 #include "pdf/ink/ink_brush.h"
 #include "pdf/ink/ink_in_progress_stroke.h"
+#include "pdf/ink/ink_intersects.h"
+#include "pdf/ink/ink_modeled_shape_view.h"
+#include "pdf/ink/ink_rect.h"
 #include "pdf/ink/ink_skia_renderer.h"
 #include "pdf/ink/ink_stroke.h"
 #include "pdf/ink/ink_stroke_input_batch.h"
@@ -34,6 +39,8 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace chrome_pdf {
 
@@ -62,6 +69,15 @@ std::unique_ptr<PdfInkBrush> CreateDefaultBrush() {
 void CheckColorIsWithinRange(int color) {
   CHECK_GE(color, 0);
   CHECK_LE(color, 255);
+}
+
+InkRect GetEraserRect(const gfx::PointF& center, int distance_to_center) {
+  return {
+      center.x() - distance_to_center,
+      center.y() - distance_to_center,
+      center.x() + distance_to_center,
+      center.y() + distance_to_center,
+  };
 }
 
 }  // namespace
@@ -342,35 +358,122 @@ bool PdfInkModule::FinishStroke() {
     }
   }
 
-  // Reset input fields.
+  client_->StrokeFinished();
+
+  // Reset `state` now that the stroke operation is done.
   state.inputs.clear();
   state.start_time = std::nullopt;
   state.page_index = -1;
   state.input_last_event_position.reset();
-
-  client_->StrokeFinished();
   return true;
 }
 
 bool PdfInkModule::StartEraseStroke(const gfx::PointF& position) {
+  int page_index = client_->VisiblePageIndexFromPoint(position);
+  if (page_index < 0) {
+    // Do not erase when not on a page.
+    return false;
+  }
+
   CHECK(is_erasing_stroke());
-  // TODO(crbug.com/335524381): Implement.
-  // TODO(crbug.com/335517471): Adjust `position` if needed.
-  return false;
+  EraserState& state = erasing_stroke_state();
+  CHECK(!state.erasing);
+  state.erasing = true;
+  state.did_erase_strokes = EraseHelper(position, page_index);
+  return true;
 }
 
 bool PdfInkModule::ContinueEraseStroke(const gfx::PointF& position) {
   CHECK(is_erasing_stroke());
-  // TODO(crbug.com/335524381): Implement.
-  // TODO(crbug.com/335517471): Adjust `position` if needed.
-  return false;
+  EraserState& state = erasing_stroke_state();
+  if (!state.erasing) {
+    return false;
+  }
+
+  int page_index = client_->VisiblePageIndexFromPoint(position);
+  if (page_index < 0) {
+    // Do nothing when the eraser tool is in use, but the event position is
+    // off-page. Treat the event as handled to be consistent with
+    // ContinueStroke(), and so that nothing else attempts to handle this event.
+    return true;
+  }
+
+  state.did_erase_strokes |= EraseHelper(position, page_index);
+  return true;
 }
 
 bool PdfInkModule::FinishEraseStroke() {
   CHECK(is_erasing_stroke());
-  // TODO(crbug.com/335524381): Implement.
-  // Call client_->InkStrokeFinished() on success.
-  return false;
+  EraserState& state = erasing_stroke_state();
+  if (!state.erasing) {
+    return false;
+  }
+
+  if (state.did_erase_strokes) {
+    client_->StrokeFinished();
+  }
+
+  // Reset `state` now that the erase operation is done.
+  state.erasing = false;
+  state.did_erase_strokes = false;
+  return true;
+}
+
+bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
+  CHECK_GE(page_index, 0);
+  auto it = strokes_.find(page_index);
+  if (it == strokes_.end()) {
+    // Nothing to erase on the page.
+    return false;
+  }
+
+  gfx::PointF canonical_position =
+      ConvertEventPositionToCanonicalPosition(position, page_index);
+  // TODO(crbug.com/349198718): Support multiple eraser sizes.
+  constexpr int kDistanceToCenter = 3;
+  const InkRect eraser_rect =
+      GetEraserRect(canonical_position, kDistanceToCenter);
+  std::optional<InkRect> invalidate_rect;
+  for (auto& stroke : it->second) {
+    if (!stroke.should_draw) {
+      // Already erased.
+      continue;
+    }
+
+    // No transform needed, as `eraser_rect` is already using transformed
+    // coordinates from `canonical_position`.
+    static constexpr InkAffineTransform kIdentityTransform = {1, 0, 0, 0, 1, 0};
+    const InkModeledShapeView& shape = stroke.stroke->GetShape();
+    if (!InkIntersectsRectWithShape(eraser_rect, shape, kIdentityTransform)) {
+      continue;
+    }
+
+    stroke.should_draw = false;
+
+    // Take a union of `shape_rect` and `invalidate_rect`.
+    InkRect shape_rect = shape.Bounds();
+    if (invalidate_rect.has_value()) {
+      auto& value = invalidate_rect.value();
+      value.x_min = std::min(value.x_min, shape_rect.x_min);
+      value.y_min = std::min(value.y_min, shape_rect.y_min);
+      value.x_max = std::max(value.x_max, shape_rect.x_max);
+      value.y_max = std::max(value.y_max, shape_rect.y_max);
+    } else {
+      invalidate_rect = shape_rect;
+    }
+  }
+
+  if (!invalidate_rect.has_value()) {
+    return false;
+  }
+
+  // If `invalidate_rect` has a value, then something got erased.
+  const float x = invalidate_rect.value().x_min;
+  const float y = invalidate_rect.value().y_min;
+  const float width = invalidate_rect.value().x_max - x;
+  const float height = invalidate_rect.value().y_max - y;
+  client_->Invalidate(gfx::ToEnclosingRect(gfx::RectF(x, y, width, height)));
+  return true;
 }
 
 void PdfInkModule::HandleAnnotationRedoMessage(
