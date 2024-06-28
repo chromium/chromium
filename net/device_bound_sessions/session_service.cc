@@ -37,6 +37,22 @@ class SessionServiceImpl : public SessionService {
   // in the service.
   void OnRegistrationComplete(std::optional<SessionParams> params) {}
 
+  std::optional<std::string> GetAnySessionRequiringDeferral(
+      URLRequest* request) override {
+    return std::nullopt;
+  }
+
+  // TODO(kristianm): Actually send the refresh request, for now continue
+  // with sending the request right away.
+  void DeferRequestForRefresh(
+      std::string session_id,
+      RefreshCompleteCallback restart_callback,
+      RefreshCompleteCallback continue_callback) override {
+    CHECK(restart_callback);
+    CHECK(continue_callback);
+    std::move(continue_callback).Run();
+  }
+
  private:
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   raw_ptr<const URLRequestContext> context_;

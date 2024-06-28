@@ -12,6 +12,7 @@
 
 namespace net {
 class IsolationInfo;
+class URLRequest;
 class URLRequestContext;
 }
 
@@ -21,6 +22,8 @@ namespace net::device_bound_sessions {
 // Full information can be found at https://github.com/WICG/dbsc
 class NET_EXPORT SessionService {
  public:
+  using RefreshCompleteCallback = base::OnceClosure;
+
   // Returns nullptr if unexportable key provider is not supported by the
   // platform or the device.
   static std::unique_ptr<SessionService> Create(
@@ -41,6 +44,27 @@ class NET_EXPORT SessionService {
   virtual void RegisterBoundSession(
       RegistrationFetcherParam registration_params,
       const IsolationInfo& isolation_info) = 0;
+
+  // Check if a request should be deferred due to the session cookie being
+  // missing. This should only be called once the request has the correct
+  // cookies added to the request.
+  // If multiple sessions needs to be refreshed for this request,
+  // any of them can be returned.
+  // Returns the session id if the request should be deferred, returns
+  // std::nullopt if the request does not need to be deferred.
+  virtual std::optional<std::string> GetAnySessionRequiringDeferral(
+      URLRequest* request) = 0;
+
+  // Defer a request while refreshing the session.
+  // session_id is the identifier of the session that is required to be
+  // refreshed.
+  // Provides two callbacks, will always call one of them:
+  // - The first will query for cookies for the requests again.
+  // - The second to send the request without query for cookies again.
+  virtual void DeferRequestForRefresh(
+      std::string session_id,
+      RefreshCompleteCallback restart_callback,
+      RefreshCompleteCallback continue_callback) = 0;
 
  protected:
   SessionService() = default;
