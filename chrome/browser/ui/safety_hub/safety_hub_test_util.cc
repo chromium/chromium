@@ -13,35 +13,25 @@
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
-#include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/crx_file/id_util.h"
+#include "services/network/test/test_shared_url_loader_factory.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
+#include "components/crx_file/id_util.h"  // nogncheck crbug.com/40147906
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
-#include "services/network/test/test_shared_url_loader_factory.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
 using extensions::mojom::ManifestLocation;
 
 const char kAllHostsPermission[] = "*://*/*";
-
-class TestObserver : public SafetyHubService::Observer {
- public:
-  void SetCallback(const base::RepeatingClosure& callback) {
-    callback_ = callback;
-  }
-
-  void OnResultAvailable(const SafetyHubService::Result* result) override {
-    callback_.Run();
-  }
-
- private:
-  base::RepeatingClosure callback_;
-};
 
 // These `cws_info` variables are used to test the various states that an
 // extension could be in. Is a trigger due to the malware violation.
@@ -85,41 +75,32 @@ static extensions::CWSInfoService::CWSInfo cws_info_no_trigger{
     false,
     false};
 
+#endif  // BUILDFLAG(IS_ANDROID)
+
+class TestObserver : public SafetyHubService::Observer {
+ public:
+  void SetCallback(const base::RepeatingClosure& callback) {
+    callback_ = callback;
+  }
+
+  void OnResultAvailable(const SafetyHubService::Result* result) override {
+    callback_.Run();
+  }
+
+ private:
+  base::RepeatingClosure callback_;
+};
+
 }  // namespace
 
 namespace safety_hub_test_util {
 
+#if !BUILDFLAG(IS_ANDROID)
 using password_manager::BulkLeakCheckService;
 
 MockCWSInfoService::MockCWSInfoService(Profile* profile)
     : extensions::CWSInfoService(profile) {}
 MockCWSInfoService::~MockCWSInfoService() = default;
-
-void UpdateSafetyHubServiceAsync(SafetyHubService* service) {
-  auto test_observer = std::make_shared<TestObserver>();
-  service->AddObserver(test_observer.get());
-  // We need to check if there is any update process currently active, and wait
-  // until all have completed before running another update.
-  while (service->IsUpdateRunning()) {
-    base::RunLoop ongoing_update_loop;
-    test_observer->SetCallback(ongoing_update_loop.QuitClosure());
-    ongoing_update_loop.Run();
-  }
-  base::RunLoop loop;
-  test_observer->SetCallback(loop.QuitClosure());
-  service->UpdateAsync();
-  loop.Run();
-  service->RemoveObserver(test_observer.get());
-}
-
-void UpdateUnusedSitePermissionsServiceAsync(
-    UnusedSitePermissionsService* service) {
-  // Run until the checks complete for unused site permission revocation.
-  UpdateSafetyHubServiceAsync(service);
-
-  // Run until the checks complete for abusive notification revocation.
-  base::RunLoop().RunUntilIdle();
-}
 
 void UpdatePasswordCheckServiceAsync(
     PasswordStatusCheckService* password_service) {
@@ -268,6 +249,33 @@ password_manager::PasswordForm MakeForm(std::u16string_view username,
             password_manager::TriggerBackendNotification(false)));
   }
   return form;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+void UpdateSafetyHubServiceAsync(SafetyHubService* service) {
+  auto test_observer = std::make_shared<TestObserver>();
+  service->AddObserver(test_observer.get());
+  // We need to check if there is any update process currently active, and wait
+  // until all have completed before running another update.
+  while (service->IsUpdateRunning()) {
+    base::RunLoop ongoing_update_loop;
+    test_observer->SetCallback(ongoing_update_loop.QuitClosure());
+    ongoing_update_loop.Run();
+  }
+  base::RunLoop loop;
+  test_observer->SetCallback(loop.QuitClosure());
+  service->UpdateAsync();
+  loop.Run();
+  service->RemoveObserver(test_observer.get());
+}
+
+void UpdateUnusedSitePermissionsServiceAsync(
+    UnusedSitePermissionsService* service) {
+  // Run until the checks complete for unused site permission revocation.
+  UpdateSafetyHubServiceAsync(service);
+
+  // Run until the checks complete for abusive notification revocation.
+  base::RunLoop().RunUntilIdle();
 }
 
 bool IsUrlInSettingsList(ContentSettingsForOneType content_settings, GURL url) {
