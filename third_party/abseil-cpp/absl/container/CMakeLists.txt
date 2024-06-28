@@ -292,7 +292,7 @@ absl_cc_library(
     absl::hash_container_defaults
     absl::raw_hash_map
     absl::algorithm_container
-    absl::memory
+    absl::type_traits
   PUBLIC
 )
 
@@ -333,6 +333,7 @@ absl_cc_library(
     absl::algorithm_container
     absl::core_headers
     absl::memory
+    absl::type_traits
   PUBLIC
 )
 
@@ -375,6 +376,7 @@ absl_cc_library(
     absl::raw_hash_map
     absl::algorithm_container
     absl::memory
+    absl::type_traits
   PUBLIC
 )
 
@@ -386,7 +388,8 @@ absl_cc_test(
   COPTS
     ${ABSL_TEST_COPTS}
   DEPS
-    absl::hash_generator_testing
+    absl::config
+    absl::hash_policy_testing
     absl::node_hash_map
     absl::tracked
     absl::unordered_map_constructor_test
@@ -411,6 +414,7 @@ absl_cc_library(
     absl::raw_hash_set
     absl::algorithm_container
     absl::memory
+    absl::type_traits
   PUBLIC
 )
 
@@ -424,7 +428,10 @@ absl_cc_test(
     "-DUNORDERED_SET_CXX17"
   DEPS
     absl::hash_generator_testing
+    absl::hash_policy_testing
+    absl::memory
     absl::node_hash_set
+    absl::type_traits
     absl::unordered_set_constructor_test
     absl::unordered_set_lookup_test
     absl::unordered_set_members_test

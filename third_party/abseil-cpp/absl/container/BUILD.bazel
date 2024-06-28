@@ -252,7 +252,7 @@ cc_library(
         ":raw_hash_map",
         "//absl/algorithm:container",
         "//absl/base:core_headers",
-        "//absl/memory",
+        "//absl/meta:type_traits",
     ],
 )
 
@@ -292,6 +292,7 @@ cc_library(
         "//absl/algorithm:container",
         "//absl/base:core_headers",
         "//absl/memory",
+        "//absl/meta:type_traits",
     ],
 )
 
@@ -332,6 +333,7 @@ cc_library(
         "//absl/algorithm:container",
         "//absl/base:core_headers",
         "//absl/memory",
+        "//absl/meta:type_traits",
     ],
 )
 
@@ -342,13 +344,14 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     tags = ["no_test_loonix"],
     deps = [
-        ":hash_generator_testing",
+        ":hash_policy_testing",
         ":node_hash_map",
         ":tracked",
         ":unordered_map_constructor_test",
         ":unordered_map_lookup_test",
         ":unordered_map_members_test",
         ":unordered_map_modifiers_test",
+        "//absl/base:config",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
@@ -367,6 +370,7 @@ cc_library(
         "//absl/algorithm:container",
         "//absl/base:core_headers",
         "//absl/memory",
+        "//absl/meta:type_traits",
     ],
 )
 
@@ -377,11 +381,15 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     tags = ["no_test_loonix"],
     deps = [
+        ":hash_generator_testing",
+        ":hash_policy_testing",
         ":node_hash_set",
         ":unordered_set_constructor_test",
         ":unordered_set_lookup_test",
         ":unordered_set_members_test",
         ":unordered_set_modifiers_test",
+        "//absl/base:config",
+        "//absl/memory",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],

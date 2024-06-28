@@ -49,6 +49,8 @@
 //
 // Another API difference is that btree iterators can be subtracted, and this
 // is faster than using std::distance.
+//
+// B-tree maps are not exception-safe.
 
 #ifndef ABSL_CONTAINER_BTREE_MAP_H_
 #define ABSL_CONTAINER_BTREE_MAP_H_

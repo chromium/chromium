@@ -1862,7 +1862,7 @@ inline void* SlotAddress(void* slot_array, size_t slot, size_t slot_size) {
 // Iterates over all full slots and calls `cb(const ctrl_t*, SlotType*)`.
 // If kAllowRemoveReentrance is false, no erasure from this table allowed during
 // Callback call. This mode is slightly faster.
-template <bool kAllowRemoveReentrance, class SlotType, class Callback>
+template <class SlotType, class Callback>
 ABSL_ATTRIBUTE_ALWAYS_INLINE inline void IterateOverFullSlots(
     const CommonFields& c, SlotType* slot, Callback cb) {
   const size_t cap = c.capacity();
@@ -1885,28 +1885,20 @@ ABSL_ATTRIBUTE_ALWAYS_INLINE inline void IterateOverFullSlots(
     --ctrl;
     --slot;
     for (uint32_t i : mask) {
-      if (!kAllowRemoveReentrance || ABSL_PREDICT_TRUE(IsFull(ctrl[i]))) {
-        cb(ctrl + i, slot + i);
-      }
+      cb(ctrl + i, slot + i);
     }
     return;
   }
   size_t remaining = c.size();
   while (remaining != 0) {
     for (uint32_t i : GroupFullEmptyOrDeleted(ctrl).MaskFull()) {
-      if (!kAllowRemoveReentrance || ABSL_PREDICT_TRUE(IsFull(ctrl[i]))) {
-        cb(ctrl + i, slot + i);
-      }
+      cb(ctrl + i, slot + i);
       --remaining;
     }
     ctrl += Group::kWidth;
-    if (kAllowRemoveReentrance && *(ctrl - 1) == ctrl_t::kSentinel) {
-      break;
-    } else {
-      assert((remaining == 0 || *(ctrl - 1) != ctrl_t::kSentinel) &&
-             "element was erased from hash table unexpectedly");
-    }
     slot += Group::kWidth;
+    assert((remaining == 0 || *(ctrl - 1) != ctrl_t::kSentinel) &&
+            "element was erased from hash table unexpectedly");
   }
 }
 
@@ -2750,7 +2742,7 @@ class raw_hash_set {
     size_t offset = cap;
     const size_t shift =
         is_single_group(cap) ? (PerTableSalt(control()) | 1) : 0;
-    IterateOverFullSlots</*kAllowRemoveReentrance=*/false>(
+    IterateOverFullSlots(
         that.common(), that.slot_array(),
         [&](const ctrl_t* that_ctrl,
             slot_type* that_slot) ABSL_ATTRIBUTE_ALWAYS_INLINE {
@@ -3537,7 +3529,7 @@ class raw_hash_set {
   inline void destroy_slots() {
     assert(!is_soo());
     if (PolicyTraits::template destroy_is_trivial<Alloc>()) return;
-    IterateOverFullSlots</*kAllowRemoveReentrance=*/false>(
+    IterateOverFullSlots(
         common(), slot_array(),
         [&](const ctrl_t*, slot_type* slot)
             ABSL_ATTRIBUTE_ALWAYS_INLINE { this->destroy(slot); });
@@ -3882,7 +3874,7 @@ class raw_hash_set {
     }
     // We only do validation for small tables so that it's constant time.
     if (capacity() > 16) return;
-    IterateOverFullSlots</*kAllowRemoveReentrance=*/false>(
+    IterateOverFullSlots(
         common(), slot_array(), assert_consistent);
 #endif
   }
@@ -4064,7 +4056,7 @@ struct HashtableFreeFunctionsAccess {
       return 1;
     }
     size_t num_deleted = 0;
-    IterateOverFullSlots</*kAllowRemoveReentrance=*/false>(
+    IterateOverFullSlots(
         c->common(), c->slot_array(), [&](const ctrl_t* ctrl, auto* slot) {
           if (pred(Set::PolicyTraits::element(slot))) {
             c->destroy(slot);
@@ -4075,6 +4067,23 @@ struct HashtableFreeFunctionsAccess {
         });
     return num_deleted;
   }
+
+  template <class Callback, typename Set>
+  static void ForEach(Callback& cb, Set* c) {
+    if (c->empty()) {
+      return;
+    }
+    if (c->is_soo()) {
+      cb(*c->soo_iterator());
+      return;
+    }
+    using ElementTypeWithConstness = decltype(*c->begin());
+    IterateOverFullSlots(
+        c->common(), c->slot_array(), [&cb](const ctrl_t*, auto* slot) {
+          ElementTypeWithConstness& element = Set::PolicyTraits::element(slot);
+          cb(element);
+        });
+  }
 };
 
 // Erases all elements that satisfy the predicate `pred` from the container `c`.
@@ -4082,6 +4091,16 @@ template <typename P, typename H, typename E, typename A, typename Predicate>
 typename raw_hash_set<P, H, E, A>::size_type EraseIf(
     Predicate& pred, raw_hash_set<P, H, E, A>* c) {
   return HashtableFreeFunctionsAccess::EraseIf(pred, c);
+}
+
+// Calls `cb` for all elements in the container `c`.
+template <typename P, typename H, typename E, typename A, typename Callback>
+void ForEach(Callback& cb, raw_hash_set<P, H, E, A>* c) {
+  return HashtableFreeFunctionsAccess::ForEach(cb, c);
+}
+template <typename P, typename H, typename E, typename A, typename Callback>
+void ForEach(Callback& cb, const raw_hash_set<P, H, E, A>* c) {
+  return HashtableFreeFunctionsAccess::ForEach(cb, c);
 }
 
 namespace hashtable_debug_internal {
