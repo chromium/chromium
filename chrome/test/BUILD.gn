@@ -8920,6 +8920,7 @@ test("unit_tests") {
       "//chrome/browser/ash/magic_boost:test_support",
       "//chrome/browser/ash/multidevice_setup",
       "//chrome/browser/ash/ownership",
+      "//chrome/browser/ash/release_notes",
       "//chrome/browser/ash/system_web_apps/apps/camera_app",
       "//chrome/browser/ash/system_web_apps/apps/media_app",
       "//chrome/browser/ash/system_web_apps/test_support",
