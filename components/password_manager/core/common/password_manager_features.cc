@@ -25,13 +25,6 @@ BASE_FEATURE(kForgotPasswordFormSupport,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_IOS)
-// Enables password bottom sheet to be displayed (on iOS) when a user is
-// signed-in and taps on a username or password field on a website that has at
-// least one credential saved in their password manager.
-BASE_FEATURE(kIOSPasswordBottomSheet,
-             "IOSPasswordBottomSheet",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables password bottom sheet to be triggered on autofocus events (on iOS).
 BASE_FEATURE(kIOSPasswordBottomSheetAutofocus,
              "kIOSPasswordBottomSheetAutofocus",

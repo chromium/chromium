@@ -206,10 +206,6 @@ void MakeSurePaymentMethodSuggestionsAreVisisble() {
   // Enable the Keyboard Accessory Upgrade feature.
   config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
 
-  // Enable the Password Suggestion Bottom Sheet.
-  config.features_enabled.push_back(
-      password_manager::features::kIOSPasswordBottomSheet);
-
   return config;
 }
 

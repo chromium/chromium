@@ -144,11 +144,8 @@ void AutofillBottomSheetTabHelper::ShowPaymentsBottomSheet(
 void AutofillBottomSheetTabHelper::AttachPasswordListeners(
     const std::vector<autofill::FieldRendererId>& renderer_ids,
     const std::string& frame_id) {
-  // Verify that the password bottom sheet feature is enabled and that it hasn't
-  // been dismissed too many times.
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kIOSPasswordBottomSheet) ||
-      HasReachedDismissLimit()) {
+  // Verify that the bottom sheet hasn't been dismissed too many times.
+  if (HasReachedDismissLimit()) {
     return;
   }
 
@@ -201,10 +198,7 @@ void AutofillBottomSheetTabHelper::AttachListeners(
 void AutofillBottomSheetTabHelper::DetachPasswordListeners(
     const std::string& frame_id,
     bool refocus) {
-  // Verify that the password bottom sheet feature is enabled.
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kIOSPasswordBottomSheet) ||
-      !web_state_) {
+  if (!web_state_) {
     return;
   }
 
@@ -218,12 +212,6 @@ void AutofillBottomSheetTabHelper::DetachPasswordListeners(
 }
 
 void AutofillBottomSheetTabHelper::DetachPasswordListenersForAllFrames() {
-  // Verify that the password bottom sheet feature is enabled.
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kIOSPasswordBottomSheet)) {
-    return;
-  }
-
   for (auto& registered_renderer_ids : registered_password_renderer_ids_) {
     DetachListenersForFrame(registered_renderer_ids.first,
                             registered_renderer_ids.second, /*refocus=*/true);

@@ -488,10 +488,6 @@ extern const char kIOSKeyboardAccessoryUpgradeDescription[];
 extern const char kIOSPasswordAuthOnEntryV2Name[];
 extern const char kIOSPasswordAuthOnEntryV2Description[];
 
-// Title and description for the flag to enable password bottom sheet on IOS.
-extern const char kIOSPasswordBottomSheetName[];
-extern const char kIOSPasswordBottomSheetDescription[];
-
 // Title and description for the flag to enable password bottom sheet triggering
 // on autofocus on IOS.
 extern const char kIOSPasswordBottomSheetAutofocusName[];

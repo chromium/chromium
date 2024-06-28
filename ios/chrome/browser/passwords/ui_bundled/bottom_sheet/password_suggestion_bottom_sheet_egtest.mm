@@ -134,8 +134,6 @@ void CheckPasswordDetailsVisitMetricCount(int count) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = NoForceRelaunchAndResetState;
-  config.features_enabled.push_back(
-      password_manager::features::kIOSPasswordBottomSheet);
 
   if ([self isRunningTest:@selector(testOpenPasswordBottomOnAutofocus)]) {
     config.features_enabled.push_back(

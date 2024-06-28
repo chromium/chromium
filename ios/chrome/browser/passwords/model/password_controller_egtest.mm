@@ -190,10 +190,7 @@ void LoginOnUff() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector(testUpdatePromptAppearsOnFormSubmission)]) {
-    config.features_enabled.push_back(
-        password_manager::features::kIOSPasswordBottomSheet);
-  } else if ([self isRunningTest:@selector(testStickySavePromptJourney)]) {
+  if ([self isRunningTest:@selector(testStickySavePromptJourney)]) {
     config.features_enabled.push_back(kAutofillStickyInfobarIos);
   } else if ([self isRunningTest:@selector
                    (testSaveCredentialWithAutofilledEmailInUFF)] ||
@@ -202,8 +199,6 @@ void LoginOnUff() {
                    (DISABLED_testUpdateTypedCredentialInUff)]) {
     config.features_enabled.push_back(
         password_manager::features::kIosDetectUsernameInUff);
-    config.features_enabled.push_back(
-        password_manager::features::kIOSPasswordBottomSheet);
   }
   return config;
 }
