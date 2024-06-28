@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/picker/metrics/picker_performance_metrics.h"
+#include "ash/picker/views/picker_emoji_bar_view.h"
 #include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -158,6 +159,25 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 
   sm_.ExpectSpeechPattern(l10n_util::GetStringUTF8(
       IDS_PICKER_SEARCH_FIELD_BACK_BUTTON_TOOLTIP_TEXT));
+  sm_.ExpectSpeechPattern("Button");
+  sm_.ExpectSpeechPattern("Press * to activate");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       FocusingGifsButtonAnnouncesLabel) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  auto* view =
+      widget->SetContentsView(std::make_unique<ash::PickerEmojiBarView>(
+          /*delegate=*/nullptr, /*picker_width=*/100));
+
+  sm_.Call([view]() { view->gifs_button_for_testing()->RequestFocus(); });
+
+  sm_.ExpectSpeechPattern(
+      l10n_util::GetStringUTF8(IDS_PICKER_GIFS_BUTTON_LABEL));
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("Press * to activate");
   sm_.Replay();

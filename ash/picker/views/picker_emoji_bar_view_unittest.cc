@@ -106,6 +106,13 @@ TEST_F(PickerEmojiBarViewTest, ClickingGifsButton) {
   LeftClickOn(*emoji_bar->gifs_button_for_testing());
 }
 
+TEST_F(PickerEmojiBarViewTest, GifsButtonHasNoTooltip) {
+  MockEmojiBarViewDelegate mock_delegate;
+  PickerEmojiBarView view(&mock_delegate, kPickerWidth);
+
+  EXPECT_EQ(view.gifs_button_for_testing()->GetTooltipText(), u"");
+}
+
 TEST_F(PickerEmojiBarViewTest, GetsTopItem) {
   MockEmojiBarViewDelegate mock_delegate;
   std::unique_ptr<views::Widget> widget =
