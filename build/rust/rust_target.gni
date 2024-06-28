@@ -5,9 +5,11 @@
 import("//build/config/rust.gni")
 import("//build/rust/rust_unit_test.gni")
 
-# The //build directory is re-used for non-Chromium products. We do not support
-# cxx bindings in such contexts, because //third_party may be missing.
-if (build_with_chromium) {
+# The //build directory is re-used for non-Chromium projects. Do not support
+# cxx bindings in such contexts by default, because //third_party may be
+# missing. Projects that wish to use cxx bindings must explicitly set the
+# enable_cxx GN arg to true.
+if (enable_cxx) {
   import("//third_party/rust/cxx/chromium_integration/rust_cxx.gni")
 }
 
