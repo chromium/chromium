@@ -539,6 +539,45 @@ TEST_F(AutofillControllerTest, ReadForm_WithChildFrames) {
                                ChildFrameMatcher(0), ChildFrameMatcher(2))))));
 }
 
+// Checks that when autofill across iframes is enabled the child frames are
+// carried over for their synthetic form.
+TEST_F(AutofillControllerTest, ReadForm_WithChildFrames_Synthetic) {
+  ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAutofillAcrossIframesIos);
+
+  // A syntethic form with iframes and inputs where some of the iframes have
+  // predecessors.
+  NSString* const test_page =
+      @"<html><body><div id='div'>"
+       "<iframe></iframe>"
+       "Name <input id='name' type='text' name='name' />"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "Address <input type='text' name='address'>"
+       "City <input type='text' name='city'>"
+       "<iframe></iframe>"
+       "State <input type='text' name='state'>"
+       "</div></html></body>";
+
+  ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(test_page,
+                                            /*expected_number_of_forms=*/1,
+                                            /*expected_number_of_calls=*/3));
+
+  // Verify that the child frames are present in the form data.
+  std::vector<FormData> form_data;
+  for (const auto& [_, form] :
+       autofill_manager_for_main_frame()->form_structures()) {
+    form_data.push_back(form->ToFormData());
+  }
+  EXPECT_THAT(
+      form_data,
+      ElementsAre(AllOf(
+          Property(&FormData::renderer_id, ::testing::IsFalse()),
+          Property(&FormData::child_frames,
+                   ElementsAre(ChildFrameMatcher(-1), ChildFrameMatcher(0),
+                               ChildFrameMatcher(0), ChildFrameMatcher(2))))));
+}
+
 // Checks that viewing an HTML page containing a form with an 'id' results in
 // the form being registered as a FormStructure by the BrowserAutofillManager,
 // and the name is correctly set.
@@ -585,8 +624,9 @@ TEST_F(AutofillControllerTest, ProfileImport) {
   });
   const std::vector<const AutofillProfile*>& profiles =
       personal_data_manager->address_data_manager().GetProfiles();
-  if (profiles.size() != 1)
+  if (profiles.size() != 1) {
     FAIL() << "Not exactly one profile found after attempted import";
+  }
   const AutofillProfile& profile = *profiles[0];
   EXPECT_EQ(u"Homer Simpson", profile.GetInfo(NAME_FULL, "en-US"));
   EXPECT_EQ(u"123 Main Street", profile.GetInfo(ADDRESS_HOME_LINE1, "en-US"));

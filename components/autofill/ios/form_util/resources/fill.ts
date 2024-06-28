@@ -670,7 +670,8 @@ gCrWeb.fill.getUnownedAutofillableFormFieldElements = function(
  */
 gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
     frame: Window, fieldsets: Element[],
-    controlElements: fillConstants.FormControlElement[], extractMask: number,
+    controlElements: fillConstants.FormControlElement[],
+    iframeElements: HTMLIFrameElement[], extractMask: number,
     restrictUnownedFieldsToFormlessCheckout: boolean,
     form: fillUtil.AutofillFormData): boolean {
   if (!frame) {
@@ -683,8 +684,9 @@ gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
   if (!restrictUnownedFieldsToFormlessCheckout) {
     // TODO(crbug.com/40266126): Pass iframe elements.
     return formOrFieldsetsToFormData(
-        /* formElement= */ null, /* formControlElement= */null , fieldsets,
-        controlElements, /* iframeElements= */[], extractMask, form);
+        /* formElement= */ null, /* formControlElement= */ null, fieldsets,
+        controlElements, /* iframeElements= */ iframeElements, extractMask,
+        form);
   }
 
 
@@ -702,8 +704,9 @@ gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
     if (title.includes(keyword) || path.includes(keyword)) {
       // TODO(crbug.com/40266126): Pass iframe elements.
       return formOrFieldsetsToFormData(
-           /* formElement= */null, /* formControlElement= */ null, fieldsets,
-          controlElements, /* iframeElements= */ [], extractMask, form);
+          /* formElement= */ null, /* formControlElement= */ null, fieldsets,
+          controlElements, /* iframeElements= */ iframeElements, extractMask,
+          form);
     }
   }
 
@@ -723,9 +726,9 @@ gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
   }
   // TODO(crbug.com/40266126): Pass iframe elements.
   return formOrFieldsetsToFormData(
-      /* formElement= */ null , /* formControlElement= */ null, fieldsets,
-      controlElementsWithAutocomplete, /* iframeElements= */ [], extractMask,
-      form);
+      /* formElement= */ null, /* formControlElement= */ null, fieldsets,
+      controlElementsWithAutocomplete, /* iframeElements= */ iframeElements,
+      extractMask, form);
 };
 
 

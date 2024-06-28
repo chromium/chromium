@@ -2003,6 +2003,50 @@ TEST_F(AutofillControllerJsTest,
                            verifying_javascript]));
 }
 
+// Test that, when xframes is enabled, child frames outside forms are still
+// extracted in a synthetic form because they may contain input fields and be
+// part of a xframes form.
+TEST_F(AutofillControllerJsTest,
+       ExtractSyntheticForm_NoInputFieldsButChildFrames_WhenXframeEnabled) {
+  NSString* html = @"<html><body>"
+                    "Name <input id='name' type='text' name='name' />"
+                    "<iframe></iframe>"
+                    "</body></html>";
+  web::test::LoadHtml(html, web_state());
+
+  autofill::FormUtilJavaScriptFeature::GetInstance()->SetAutofillAcrossIframes(
+      WaitForMainFrame(), /*enabled=*/true);
+
+  // Verify that the form with child frames was extracted.
+  NSString* verifying_javascript =
+      @"forms.length === 1 && forms[0].child_frames.length === 1;";
+  EXPECT_NSEQ(
+      @YES,
+      ExecuteJavaScript([NSString
+          stringWithFormat:@"var forms = "
+                            "__gCrWeb.autofill.extractNewForms(false); %@",
+                           verifying_javascript]));
+}
+
+// Test that, when xframes is diabled, child frames outside of forms are not
+// extracted.
+TEST_F(AutofillControllerJsTest,
+       ExtractSyntheticForm_NoInputFieldsButChildFrames_WhenXframeDisabled) {
+  NSString* html = @"<html><body>"
+                    "<iframe></iframe>"
+                    "</body></html>";
+  web::test::LoadHtml(html, web_state());
+
+  // Verify that the form with child frames was extracted.
+  NSString* verifying_javascript = @"forms.length === 0;";
+  EXPECT_NSEQ(
+      @YES,
+      ExecuteJavaScript([NSString
+          stringWithFormat:@"var forms = "
+                            "__gCrWeb.autofill.extractNewForms(false); %@",
+                           verifying_javascript]));
+}
+
 TEST_F(AutofillControllerJsTest, FillActiveFormField) {
   web::test::LoadHtml(kHTMLForTestingElements, web_state());
 

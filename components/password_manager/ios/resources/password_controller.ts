@@ -388,10 +388,9 @@ function getPasswordFormDataFromUnownedElements(): object|void {
     return;
   }
   const unownedForm = new gCrWeb['common'].JSONSafeObject();
-  const hasUnownedForm =
-      gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData(
-          window, fieldsets, unownedControlElements, extractMask, false,
-          unownedForm);
+  const hasUnownedForm = gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData(
+      window, fieldsets, unownedControlElements, /* iframeElements= */[],
+      extractMask, false, unownedForm);
   return hasUnownedForm ? unownedForm : null;
 }
 

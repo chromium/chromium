@@ -125,6 +125,17 @@ function countEditableElements_(elements) {
 }
 
 /**
+ * Returns the unowned iframes in the document. An unowned iframe doesn't have a
+ * <form> as a direct or indirect ancestor.
+ * @returns {Element[]} An array containing the unowned iframe elements. Is
+ *     empty if no match.
+ */
+function getUnownedIframes() {
+  return Array.from(gCrWeb.form.getIframeElements(document))
+      .filter(e => !e.closest('form'));
+}
+
+/**
  * Scans the page for fields not owned by a form, and returns a synthetic form
  * containing them, if any are found. Returns null otherwise.
  * @param {number} extractMask Bitmask use for filtering elements. See
@@ -142,12 +153,16 @@ function extractUnownedFields(
           document.all, fieldsets);
   const numEditableUnownedElements =
       countEditableElements_(unownedControlElements);
-  if (numEditableUnownedElements > 0) {
+  const iframeElements =
+      gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled() ?
+      getUnownedIframes() :
+      [];
+  if (numEditableUnownedElements > 0 || iframeElements.length > 0) {
     const unownedForm = new __gCrWeb['common'].JSONSafeObject();
     const hasUnownedForm =
         __gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData(
-            window, fieldsets, unownedControlElements, extractMask,
-            restrictUnownedFieldsToFormlessCheckout, unownedForm);
+            window, fieldsets, unownedControlElements, iframeElements,
+            extractMask, restrictUnownedFieldsToFormlessCheckout, unownedForm);
     if (hasUnownedForm) {
       return unownedForm;
     }

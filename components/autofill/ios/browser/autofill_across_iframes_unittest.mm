@@ -5,6 +5,7 @@
 #import <string>
 #import <vector>
 
+#import "base/strings/strcat.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -328,8 +329,13 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
 
   // Starts the test server and loads a page containing `main_frame_html_` in
   // the main frame.
-  void StartTestServerAndLoad() {
-    main_frame_html_ += "</form></body>";
+  void StartTestServerAndLoad(bool use_synthetic_form = false) {
+    if (use_synthetic_form) {
+      main_frame_html_ = base::StrCat({"<body>", main_frame_html_, "</body>"});
+    } else {
+      main_frame_html_ =
+          base::StrCat({"<body><form>", main_frame_html_, "</form></body>"});
+    }
     test_server_.RegisterRequestHandler(base::BindRepeating(
         &net::test_server::HandlePrefixedRequest, "/testpage",
         base::BindRepeating(&testing::HandlePageWithHtml, main_frame_html_)));
@@ -357,7 +363,7 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
   base::test::ScopedFeatureList feature_list_;
 
   net::EmbeddedTestServer test_server_;
-  std::string main_frame_html_ = "<body><form>";
+  std::string main_frame_html_;
 };
 
 // If a page has no child frames, the corresponding field in the saved form
@@ -472,6 +478,69 @@ TEST_F(AutofillAcrossIframesTest, WithChildFrames) {
           Property(&FormFieldData::host_form_id, form.renderer_id()),
           Property(&FormFieldData::origin, form_origin),
           Property(&FormFieldData::host_form_signature, form_signature))));
+}
+
+// Ensure that, for a synthetic form (an aggregate of standalone/unowned fields
+// not associated with a form), child frames are assigned a token during form
+// extraction. This doesn't test the full token registration flow which is
+// covered by other tests.
+TEST_F(AutofillAcrossIframesTest, WithChildFrames_SyntheticForm) {
+  AddIframe("cf1", "child frame 1");
+  AddInput("text", "name");
+  AddIframe("cf2", "child frame 2");
+  AddInput("text", "address");
+  StartTestServerAndLoad(/*use_synthetic_form=*/true);
+
+  // Wait for the 3 forms to be reported as seen to the main frame that hosts
+  // the browser form (which is the flattened representation of all forms in the
+  // tree structure that share a common parent).
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(3));
+  ASSERT_EQ(main_frame_manager().seen_forms().size(), 3u);
+
+  // Pick the last form that was seen which reflects the latest and most
+  // complete state of the browser form, which contains all fields in the forms
+  // tree (aka browser form).
+  const FormData& form = main_frame_manager().seen_forms().back();
+  ASSERT_EQ(form.child_frames().size(), 2u);
+
+  FrameTokenWithPredecessor remote_token1 = form.child_frames()[0];
+  FrameTokenWithPredecessor remote_token2 = form.child_frames()[1];
+
+  // Verify that tokens hold the right alternative, and the token objects are
+  // valid (the bool cast checks this).
+  EXPECT_THAT(remote_token1.token, VariantWith<RemoteFrameToken>(IsTrue()));
+  EXPECT_THAT(remote_token2.token, VariantWith<RemoteFrameToken>(IsTrue()));
+}
+
+// Ensure that, for a synthetic form that is only composed of child frames
+// without input elements, child frames are assigned a token during form
+// extraction. This doesn't test the full token registration flow which is
+// covered by other tests.
+TEST_F(AutofillAcrossIframesTest,
+       WithChildFrames_SyntheticForm_WithoutInputElements) {
+  AddIframe("cf1", "child frame 1");
+  AddIframe("cf2", "child frame 2");
+  StartTestServerAndLoad(/*use_synthetic_form=*/true);
+
+  // Wait for the 3 forms to be reported as seen to the main frame that hosts
+  // the browser form (which is the flattened representation of all forms in the
+  // tree structure that share a common parent).
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(3));
+  ASSERT_EQ(main_frame_manager().seen_forms().size(), 3u);
+
+  // Pick the last form that was seen which reflects the latest and most
+  // complete state of the browser form, which contains all fields in the forms
+  // tree (aka browser form).
+  const FormData& form = main_frame_manager().seen_forms().back();
+  ASSERT_EQ(form.child_frames().size(), 2u);
+
+  FrameTokenWithPredecessor remote_token1 = form.child_frames()[0];
+  FrameTokenWithPredecessor remote_token2 = form.child_frames()[1];
+
+  // Verify that tokens hold the right alternative, and the token objects are
+  // valid (the bool cast checks this).
+  EXPECT_THAT(remote_token1.token, VariantWith<RemoteFrameToken>(IsTrue()));
+  EXPECT_THAT(remote_token2.token, VariantWith<RemoteFrameToken>(IsTrue()));
 }
 
 // Largely repeats `WithChildFrames` above, but exercises the Resolve method on
