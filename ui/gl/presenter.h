@@ -152,6 +152,11 @@ class GL_EXPORT Presenter : public base::RefCounted<Presenter> {
   // Tells the presenter to rely on implicit sync when presenting buffers.
   virtual void SetRelyOnImplicitSync() {}
 
+  // Tells the presenter to send
+  // gfx::SwapResult::SWAP_NON_SIMPLE_OVERLAYS_FAILED if a non-simple overlay
+  // submission fails (see gfx::OverlayType).
+  virtual void SetNotifyNonSimpleOverlayFailure() {}
+
  protected:
   friend class base::RefCounted<Presenter>;
   virtual ~Presenter();

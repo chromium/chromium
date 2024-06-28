@@ -138,6 +138,10 @@ void GbmSurfaceless::SetRelyOnImplicitSync() {
   use_egl_fence_sync_ = false;
 }
 
+void GbmSurfaceless::SetNotifyNonSimpleOverlayFailure() {
+  notify_non_simple_overlay_failure_ = true;
+}
+
 GbmSurfaceless::~GbmSurfaceless() {
   surface_factory_->UnregisterSurface(window_->widget());
 }
@@ -158,10 +162,19 @@ void GbmSurfaceless::SubmitFrame() {
   DCHECK(!unsubmitted_frames_.empty());
 
   if (unsubmitted_frames_.front()->ready && !submitted_frame_) {
+    bool should_handle_non_simple_overlay_failure = false;
     for (auto& overlay : unsubmitted_frames_.front()->overlays) {
       if (overlay.z_order() == 0 && overlay.gpu_fence()) {
         submitted_frame_gpu_fence_ = std::make_unique<gfx::GpuFence>(
             overlay.gpu_fence()->GetGpuFenceHandle().Clone());
+      }
+
+      // At the moment, only fullscreen overlays are treated in a special way.
+      // if other types of overlays also need special handling, then also
+      // update the DrmOverlayManager, which handles that.
+      if (overlay.overlay_type() == gfx::OverlayType::kFullScreen &&
+          should_handle_non_simple_overlay_failure) {
+        should_handle_non_simple_overlay_failure = true;
         break;
       }
     }
@@ -172,17 +185,20 @@ void GbmSurfaceless::SubmitFrame() {
         submitted_frame_->ScheduleOverlayPlanes(widget_);
 
     if (!schedule_planes_succeeded) {
-      OnSubmission(gfx::SwapResult::SWAP_FAILED,
+      OnSubmission(should_handle_non_simple_overlay_failure,
+                   gfx::SwapResult::SWAP_FAILED,
                    /*release_fence=*/gfx::GpuFenceHandle());
       OnPresentation(gfx::PresentationFeedback::Failure());
       return;
     }
 
-    window_->SchedulePageFlip(std::move(planes_),
-                              base::BindOnce(&GbmSurfaceless::OnSubmission,
-                                             weak_factory_.GetWeakPtr()),
-                              base::BindOnce(&GbmSurfaceless::OnPresentation,
-                                             weak_factory_.GetWeakPtr()));
+    window_->SchedulePageFlip(
+        std::move(planes_),
+        base::BindOnce(&GbmSurfaceless::OnSubmission,
+                       weak_factory_.GetWeakPtr(),
+                       should_handle_non_simple_overlay_failure),
+        base::BindOnce(&GbmSurfaceless::OnPresentation,
+                       weak_factory_.GetWeakPtr()));
     planes_.clear();
   }
 }
@@ -211,8 +227,17 @@ void GbmSurfaceless::FenceRetired(PendingFrame* frame) {
   SubmitFrame();
 }
 
-void GbmSurfaceless::OnSubmission(gfx::SwapResult result,
+void GbmSurfaceless::OnSubmission(bool should_handle_fullscreen_overlay_failure,
+                                  gfx::SwapResult result,
                                   gfx::GpuFenceHandle release_fence) {
+  // Handling fullscreen overlays' failures means usage of the
+  // gfx::SwapResult::SWAP_NON_SIMPLE_OVERLAYS_FAILED. That way, viz is able to
+  // recover from the error. The gpu watchdog will reset as viz will either
+  // reschedule the same frame or it'll send a new one if it's already queued.
+  if (should_handle_fullscreen_overlay_failure &&
+      result == gfx::SwapResult::SWAP_FAILED) {
+    result = gfx::SwapResult::SWAP_NON_SIMPLE_OVERLAYS_FAILED;
+  }
   submitted_frame_->swap_result = result;
   if (!release_fence.is_null()) {
     std::move(submitted_frame_->completion_callback)
