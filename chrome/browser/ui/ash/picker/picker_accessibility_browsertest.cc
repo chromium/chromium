@@ -140,4 +140,27 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       FocusingSearchFieldBackButtonAnnouncesTooltip) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  ash::PickerKeyEventHandler key_event_handler;
+  ash::PickerPerformanceMetrics metrics;
+  auto* view =
+      widget->SetContentsView(std::make_unique<ash::PickerSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  view->SetPlaceholderText(u"placeholder");
+  view->SetBackButtonVisible(true);
+
+  sm_.Call([view]() { view->back_button_for_testing().RequestFocus(); });
+
+  sm_.ExpectSpeechPattern(l10n_util::GetStringUTF8(
+      IDS_PICKER_SEARCH_FIELD_BACK_BUTTON_TOOLTIP_TEXT));
+  sm_.ExpectSpeechPattern("Button");
+  sm_.ExpectSpeechPattern("Press * to activate");
+  sm_.Replay();
+}
+
 }  // namespace

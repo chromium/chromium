@@ -51,6 +51,17 @@ TEST_F(PickerSearchFieldViewTest, ClearButtonHasTooltip) {
                 IDS_PICKER_SEARCH_FIELD_CLEAR_BUTTON_TOOLTIP_TEXT));
 }
 
+TEST_F(PickerSearchFieldViewTest, BackButtonHasTooltip) {
+  PickerKeyEventHandler key_event_handler;
+  PickerPerformanceMetrics metrics;
+  PickerSearchFieldView view(base::DoNothing(), base::DoNothing(),
+                             &key_event_handler, &metrics);
+
+  EXPECT_EQ(view.back_button_for_testing().GetTooltipText(),
+            l10n_util::GetStringUTF16(
+                IDS_PICKER_SEARCH_FIELD_BACK_BUTTON_TOOLTIP_TEXT));
+}
+
 TEST_F(PickerSearchFieldViewTest, DoesNotTriggerSearchOnConstruction) {
   base::test::TestFuture<const std::u16string&> future;
   PickerKeyEventHandler key_event_handler;

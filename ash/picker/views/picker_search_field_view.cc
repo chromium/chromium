@@ -62,9 +62,8 @@ PickerSearchFieldView::PickerSearchFieldView(
           views::Builder<views::ImageButton>(
               views::ImageButton::CreateIconButton(
                   std::move(back_callback), vector_icons::kArrowBackIcon,
-                  // TODO(b/309706053): Replace this once the strings are
-                  // finalized.
-                  u"Placeholder",
+                  l10n_util::GetStringUTF16(
+                      IDS_PICKER_SEARCH_FIELD_BACK_BUTTON_TOOLTIP_TEXT),
                   views::ImageButton::MaterialIconStyle::kSmall))
               .CopyAddressTo(&back_button_)
               .SetProperty(views::kMarginsKey, kButtonHorizontalMargin)
