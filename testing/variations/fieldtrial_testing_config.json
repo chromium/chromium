@@ -6540,19 +6540,6 @@
                         "CrOSLateBootDiscardStaleAtModeratePressure",
                         "CrOSLateBootOverrideLmkdPsiDefaults"
                     ]
-                },
-                {
-                    "name": "EnabledAvailableAdjustmentPsiWithEarlyDiscardAndMlockChrome_20240605",
-                    "params": {
-                        "CompleteStallMs": "700",
-                        "PartialStallMs": "20"
-                    },
-                    "enable_features": [
-                        "CrOSLateBootDiscardStaleAtModeratePressure",
-                        "CrOSLateBootOverrideLmkdPsiDefaults",
-                        "CrOSLateBootPsiAdjustAvailable",
-                        "CrOSLockMainProgramText"
-                    ]
                 }
             ]
         }
