@@ -7,7 +7,6 @@
 #include <memory>
 
 #import "base/memory/raw_ptr.h"
-#import "base/test/ios/wait_util.h"
 #include "base/values.h"
 #import "components/translate/ios/browser/translate_java_script_feature.h"
 #include "ios/web/public/test/fakes/fake_browser_state.h"
@@ -18,9 +17,6 @@
 #include "net/http/http_status_code.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
-
-using base::test::ios::kWaitForActionTimeout;
-using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace translate {
 

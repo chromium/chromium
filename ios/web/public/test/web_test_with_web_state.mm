@@ -24,9 +24,6 @@
 #import "url/url_constants.h"
 
 using base::test::ios::WaitUntilConditionOrTimeout;
-using base::test::ios::kWaitForActionTimeout;
-using base::test::ios::kWaitForJSCompletionTimeout;
-using base::test::ios::kWaitForPageLoadTimeout;
 
 namespace web {
 
