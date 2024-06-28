@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.24...chromium-bidi-v0.6.0) (2024-06-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* default behavior changed from `ignore` to `dismiss`.
+
+### Features
+
+* body size for non-intercepted requests ([#2348](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2348)) ([ec07c7d](https://github.com/GoogleChromeLabs/chromium-bidi/commit/ec07c7df73ca75b30b54f6be9c4d7ae7f8c652a7))
+* respect `unhandledPromptBehavior` capability ([#2351](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2351)) ([08672b9](https://github.com/GoogleChromeLabs/chromium-bidi/commit/08672b97b6ac397818bffa898610e82170dcbdd6))
+
+
+### Bug Fixes
+
+* openerFrameId whenever possible ([#2329](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2329)) ([b3ab7ef](https://github.com/GoogleChromeLabs/chromium-bidi/commit/b3ab7ef444cddf0913ae026cf41fc69509e05f82))
+* provide `navigation` and `url` in events ([#2264](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2264)) ([9f058da](https://github.com/GoogleChromeLabs/chromium-bidi/commit/9f058dabe91e7b7baa397ec393e67fddb4971b0d))
+* provide type in `browsingContext.userPromptClosed` event ([#2349](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2349)) ([1326c16](https://github.com/GoogleChromeLabs/chromium-bidi/commit/1326c162726695f09b477839dca9da802d1719bb))
+* request body size ([#2339](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2339)) ([28dc58b](https://github.com/GoogleChromeLabs/chromium-bidi/commit/28dc58ba043efb465636dad54ccf94677c8e2d35))
+
 ## [0.5.24](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.23...chromium-bidi-v0.5.24) (2024-06-17)
 
 
