@@ -18,6 +18,7 @@
 #include "components/saved_tab_groups/empty_tab_group_store_delegate.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
+#include "components/saved_tab_groups/sync_data_type_configuration.h"
 #include "components/saved_tab_groups/tab_group_store.h"
 #include "components/saved_tab_groups/tab_group_store_delegate.h"
 #include "components/saved_tab_groups/tab_group_sync_coordinator.h"
@@ -41,9 +42,9 @@
 
 namespace tab_groups {
 namespace {
-std::unique_ptr<TabGroupSyncServiceImpl::SyncDataTypeConfiguration>
+std::unique_ptr<SyncDataTypeConfiguration>
 CreateSavedTabGroupDataTypeConfiguration(Profile* profile) {
-  return std::make_unique<TabGroupSyncServiceImpl::SyncDataTypeConfiguration>(
+  return std::make_unique<SyncDataTypeConfiguration>(
       std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
           syncer::SAVED_TAB_GROUP,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
@@ -51,14 +52,14 @@ CreateSavedTabGroupDataTypeConfiguration(Profile* profile) {
       ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
 }
 
-std::unique_ptr<TabGroupSyncServiceImpl::SyncDataTypeConfiguration>
+std::unique_ptr<SyncDataTypeConfiguration>
 MaybeCreateSharedTabGroupDataTypeConfiguration(Profile* profile) {
   if (!base::FeatureList::IsEnabled(
           data_sharing::features::kDataSharingFeature)) {
     return nullptr;
   }
 
-  return std::make_unique<TabGroupSyncServiceImpl::SyncDataTypeConfiguration>(
+  return std::make_unique<SyncDataTypeConfiguration>(
       std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
           syncer::SHARED_TAB_GROUP_DATA,
           base::BindRepeating(&syncer::ReportUnrecoverableError,

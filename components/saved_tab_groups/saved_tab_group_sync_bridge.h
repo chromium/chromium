@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/scoped_observation_traits.h"
 #include "components/saved_tab_groups/proto/saved_tab_group_data.pb.h"
@@ -41,12 +42,17 @@ class SavedTabGroupModel;
 class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
                                 public SavedTabGroupModelObserver {
  public:
+  using SavedTabGroupLoadCallback =
+      base::OnceCallback<void(std::vector<SavedTabGroup>,
+                              std::vector<SavedTabGroupTab>)>;
+
   explicit SavedTabGroupSyncBridge(
       SavedTabGroupModel* model,
       syncer::OnceModelTypeStoreFactory create_store_callback,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
       PrefService* pref_service,
-      std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids);
+      std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids,
+      SavedTabGroupLoadCallback on_load_callback);
 
   SavedTabGroupSyncBridge(const SavedTabGroupSyncBridge&) = delete;
   SavedTabGroupSyncBridge& operator=(const SavedTabGroupSyncBridge&) = delete;
@@ -162,12 +168,14 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
                   syncer::MetadataChangeList* metadata_change_list);
 
   // Loads the data already stored in the ModelTypeStore.
-  void OnStoreCreated(const std::optional<syncer::ModelError>& error,
+  void OnStoreCreated(SavedTabGroupLoadCallback on_load_callback,
+                      const std::optional<syncer::ModelError>& error,
                       std::unique_ptr<syncer::ModelTypeStore> store);
 
   // Loads all sync_pb::SavedTabGroupSpecifics stored in `entries` passing the
   // specifics into OnReadAllMetadata.
   void OnDatabaseLoad(
+      SavedTabGroupLoadCallback on_load_callback,
       const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::ModelTypeStore::RecordList> entries);
 
@@ -177,6 +185,7 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
   // Calls ModelReadyToSync if there are no errors to report and loads the
   // stored entries into `model_`.
   void OnReadAllMetadata(
+      SavedTabGroupLoadCallback on_load_callback,
       std::unique_ptr<syncer::ModelTypeStore::RecordList> entries,
       const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
@@ -187,15 +196,19 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
 
   // Called to migrate the SavedTabGroupSpecfics to SavedTabGroupData.
   void MigrateSpecificsToSavedTabGroupData(
+      SavedTabGroupLoadCallback on_load_callback,
       std::unique_ptr<syncer::ModelTypeStore::RecordList> entries);
   void OnSpecificsToDataMigrationComplete(
+      SavedTabGroupLoadCallback on_load_callback,
       const std::optional<syncer::ModelError>& error);
 
   // Called to migrate the Android local IDs from shared prefs to
   // SavedTabGroupData.
   void MigrateAndroidLocalIds(
+      SavedTabGroupLoadCallback on_load_callback,
       std::unique_ptr<syncer::ModelTypeStore::RecordList> entries);
   void OnAndroidLocalIdMigrationComplete(
+      SavedTabGroupLoadCallback on_load_callback,
       const std::optional<syncer::ModelError>& error);
 
   // Called to update the cache guid of groups and tabs with latest cache guid

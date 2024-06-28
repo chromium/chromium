@@ -27,8 +27,7 @@ source_set("core") {
     "tab_group_sync_service_impl.h",
   ]
   deps = [
-    ":saved_tab_group_bridge",
-    ":shared_tab_group_bridge",
+    ":tab_group_sync_bridge",
     "//base",
     "//components/keyed_service/core",
     "//components/sync",
@@ -196,9 +195,11 @@ source_set("unit_tests") {
   sources = [
     "saved_tab_group_model_unittest.cc",
     "saved_tab_group_proto_conversion_unittest.cc",
+    "saved_tab_group_sync_bridge_unittest.cc",
     "saved_tab_group_unittest.cc",
     "shared_tab_group_data_sync_bridge_unittest.cc",
     "tab_group_store_unittest.cc",
+    "tab_group_sync_bridge_mediator_unittest.cc",
     "tab_group_sync_coordinator_unittest.cc",
     "tab_group_sync_metrics_logger_unittest.cc",
     "tab_group_sync_service_unittest.cc",
@@ -206,9 +207,7 @@ source_set("unit_tests") {
   deps = [
     ":core",
     ":model",
-    ":saved_tab_group_bridge",
-    ":saved_tab_group_bridge_unittests",
-    ":shared_tab_group_bridge",
+    ":tab_group_sync_bridge",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -257,14 +256,16 @@ source_set("test_support") {
   ]
 }
 
-source_set("saved_tab_group_bridge") {
+source_set("tab_group_sync_bridge") {
   visibility = [
     ":*",
 
     # This is allowed until usage of SavedTabGroupKeyedService has been migrated
     # to TabGroupSyncService.
+    "//chrome/browser",
     "//chrome/browser/ui",
     "//chrome/test:sync_integration_tests",
+    "//ios/chrome/browser/saved_tab_groups/model",
   ]
 
   sources = [
@@ -272,6 +273,12 @@ source_set("saved_tab_group_bridge") {
     "saved_tab_group_proto_conversions.h",
     "saved_tab_group_sync_bridge.cc",
     "saved_tab_group_sync_bridge.h",
+    "shared_tab_group_data_sync_bridge.cc",
+    "shared_tab_group_data_sync_bridge.h",
+    "sync_data_type_configuration.cc",
+    "sync_data_type_configuration.h",
+    "tab_group_sync_bridge_mediator.cc",
+    "tab_group_sync_bridge_mediator.h",
   ]
 
   deps = [
@@ -279,47 +286,6 @@ source_set("saved_tab_group_bridge") {
     "//components/saved_tab_groups/proto",
     "//components/tab_groups:tab_groups",
   ]
-
-  public_deps = [
-    "//base",
-    "//components/sync/base",
-    "//components/sync/model",
-  ]
-}
-
-source_set("saved_tab_group_bridge_unittests") {
-  testonly = true
-
-  visibility = [ ":unit_tests" ]
-
-  sources = [ "saved_tab_group_sync_bridge_unittest.cc" ]
-
-  deps = [
-    ":model",
-    ":saved_tab_group_bridge",
-    ":test_support",
-    "//base",
-    "//base/test:test_support",
-    "//components/pref_registry:pref_registry",
-    "//components/prefs:test_support",
-    "//components/saved_tab_groups/proto",
-    "//components/sync",
-    "//components/sync:test_support",
-    "//components/tab_groups",
-    "//testing/gtest",
-    "//url",
-  ]
-}
-
-source_set("shared_tab_group_bridge") {
-  visibility = [ ":*" ]
-
-  sources = [
-    "shared_tab_group_data_sync_bridge.cc",
-    "shared_tab_group_data_sync_bridge.h",
-  ]
-
-  deps = [ ":model" ]
 
   public_deps = [
     "//base",

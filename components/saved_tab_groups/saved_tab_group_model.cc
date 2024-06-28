@@ -593,10 +593,8 @@ SavedTabGroupModel::UpdateLocalCacheGuid(
                           std::move(updated_tab_ids));
 }
 
-void SavedTabGroupModel::LoadStoredEntries(
-    std::vector<SavedTabGroup> groups,
-    std::vector<SavedTabGroupTab> tabs,
-    base::OnceCallback<void()> on_loaded_callback) {
+void SavedTabGroupModel::LoadStoredEntries(std::vector<SavedTabGroup> groups,
+                                           std::vector<SavedTabGroupTab> tabs) {
   // `entries` is not ordered such that groups are guaranteed to be
   // at the front of the vector. As such, we can run into the case where we
   // try to add a tab to a group that does not exist for us yet.
@@ -613,8 +611,6 @@ void SavedTabGroupModel::LoadStoredEntries(
   }
 
   is_loaded_ = true;
-
-  std::move(on_loaded_callback).Run();
 
   for (auto& observer : observers_) {
     observer.SavedTabGroupModelLoaded();

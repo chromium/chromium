@@ -10,6 +10,7 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/saved_tab_groups/empty_tab_group_store_delegate.h"
+#import "components/saved_tab_groups/sync_data_type_configuration.h"
 #import "components/saved_tab_groups/tab_group_sync_coordinator.h"
 #import "components/saved_tab_groups/tab_group_sync_service.h"
 #import "components/saved_tab_groups/tab_group_sync_service_impl.h"
@@ -30,9 +31,9 @@ namespace tab_groups {
 
 namespace {
 // Returns a configuration for the Saved Tab Group.
-std::unique_ptr<TabGroupSyncServiceImpl::SyncDataTypeConfiguration>
+std::unique_ptr<SyncDataTypeConfiguration>
 CreateSavedTabGroupDataTypeConfiguration(ChromeBrowserState* browser_state) {
-  return std::make_unique<TabGroupSyncServiceImpl::SyncDataTypeConfiguration>(
+  return std::make_unique<SyncDataTypeConfiguration>(
       std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
           syncer::SAVED_TAB_GROUP,
           base::BindRepeating(&syncer::ReportUnrecoverableError,

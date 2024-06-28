@@ -168,10 +168,8 @@ class SavedTabGroupModel {
 
   // Loads the model from the storage. `tabs` must have a corresponding group in
   // `groups`.
-  void LoadStoredEntries(
-      std::vector<SavedTabGroup> groups,
-      std::vector<SavedTabGroupTab> tabs,
-      base::OnceCallback<void()> on_loaded_callback = base::DoNothing());
+  void LoadStoredEntries(std::vector<SavedTabGroup> groups,
+                         std::vector<SavedTabGroupTab> tabs);
 
   // Functions that should be called when a SavedTabGroup's corresponding
   // TabGroup is closed or opened.

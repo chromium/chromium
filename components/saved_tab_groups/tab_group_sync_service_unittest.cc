@@ -15,6 +15,7 @@
 #include "components/saved_tab_groups/pref_names.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_test_utils.h"
+#include "components/saved_tab_groups/sync_data_type_configuration.h"
 #include "components/saved_tab_groups/tab_group_store.h"
 #include "components/saved_tab_groups/tab_group_store_id.h"
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
@@ -109,7 +110,7 @@ class TabGroupSyncServiceTest : public testing::Test {
 
     tab_group_sync_service_ = std::make_unique<TabGroupSyncServiceImpl>(
         std::move(model),
-        std::make_unique<TabGroupSyncServiceImpl::SyncDataTypeConfiguration>(
+        std::make_unique<SyncDataTypeConfiguration>(
             processor_.CreateForwardingProcessor(),
             syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
                 store_.get())),

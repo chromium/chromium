@@ -36,6 +36,7 @@
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/stats.h"
+#include "components/saved_tab_groups/sync_data_type_configuration.h"
 #include "components/saved_tab_groups/types.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
@@ -65,11 +66,14 @@ CreateChangeProcessor() {
 SavedTabGroupKeyedService::SavedTabGroupKeyedService(Profile* profile)
     : profile_(profile),
       listener_(this, profile),
-      bridge_(model(),
-              GetStoreFactory(),
-              CreateChangeProcessor(),
-              profile->GetPrefs(),
-              std::map<base::Uuid, LocalTabGroupID>()) {
+      sync_bridge_mediator_(
+          model(),
+          profile->GetPrefs(),
+          std::make_unique<SyncDataTypeConfiguration>(CreateChangeProcessor(),
+                                                      GetStoreFactory()),
+          /*shared_tab_group_configuration=*/nullptr,
+          /*migrated_android_local_ids=*/
+          std::map<base::Uuid, LocalTabGroupID>()) {
   model()->AddObserver(this);
 
   metrics_timer_.Start(
@@ -103,7 +107,7 @@ syncer::OnceModelTypeStoreFactory SavedTabGroupKeyedService::GetStoreFactory() {
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 SavedTabGroupKeyedService::GetSavedTabGroupControllerDelegate() {
-  return bridge_.change_processor()->GetControllerDelegate();
+  return sync_bridge_mediator_.GetSavedTabGroupControllerDelegate();
 }
 
 void SavedTabGroupKeyedService::ConnectRestoredGroupToSaveId(
@@ -143,13 +147,14 @@ void SavedTabGroupKeyedService::SaveRestoredGroup(
 void SavedTabGroupKeyedService::UpdateAttributions(
     const LocalTabGroupID& group_id,
     const std::optional<LocalTabID>& tab_id) {
-  model_.UpdateLastUpdaterCacheGuidForGroup(bridge_.GetLocalCacheGuid(),
-                                            group_id, tab_id);
+  model_.UpdateLastUpdaterCacheGuidForGroup(
+      sync_bridge_mediator_.GetLocalCacheGuidForSavedBridge(), group_id,
+      tab_id);
 }
 
 std::optional<std::string> SavedTabGroupKeyedService::GetLocalCacheGuid()
     const {
-  return bridge_.GetLocalCacheGuid();
+  return sync_bridge_mediator_.GetLocalCacheGuidForSavedBridge();
 }
 
 std::optional<tab_groups::TabGroupId>
@@ -250,9 +255,11 @@ base::Uuid SavedTabGroupKeyedService::SaveGroup(
 
   SavedTabGroup saved_tab_group(
       tab_group->visual_data()->title(), tab_group->visual_data()->color(), {},
-      std::nullopt, std::nullopt, tab_group->id(), bridge_.GetLocalCacheGuid(),
+      std::nullopt, std::nullopt, tab_group->id(),
+      sync_bridge_mediator_.GetLocalCacheGuidForSavedBridge(),
       /*last_updater_cache_guid=*/std::nullopt,
-      /*created_before_syncing_tab_groups=*/!bridge_.IsSyncing());
+      /*created_before_syncing_tab_groups=*/
+      !sync_bridge_mediator_.IsSavedBridgeSyncing());
   if (is_pinned) {
     saved_tab_group.SetPinned(true);
   }

@@ -12,6 +12,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
+#include "components/saved_tab_groups/tab_group_sync_bridge_mediator.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/gfx/range/range.h"
 
@@ -158,7 +159,7 @@ class SavedTabGroupKeyedService : public KeyedService,
   SavedTabGroupModelListener listener_;
 
   // Stores SavedTabGroup data to the disk and to sync if enabled.
-  SavedTabGroupSyncBridge bridge_;
+  TabGroupSyncBridgeMediator sync_bridge_mediator_;
 
   // Timer used to record periodic metrics about the state of the TabGroups
   // (saved and unsaved).

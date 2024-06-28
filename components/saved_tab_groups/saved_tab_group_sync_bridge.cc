@@ -73,7 +73,7 @@ base::Time TimeFromWindowsEpochMicros(int64_t time_windows_epoch_micros) {
 std::vector<proto::SavedTabGroupData> LoadStoredEntries(
     std::vector<proto::SavedTabGroupData> stored_entries,
     SavedTabGroupModel* model,
-    base::OnceCallback<void()> on_loaded_callback) {
+    SavedTabGroupSyncBridge::SavedTabGroupLoadCallback on_load_callback) {
   std::vector<SavedTabGroup> groups;
   std::unordered_set<std::string> group_guids;
 
@@ -101,8 +101,7 @@ std::vector<proto::SavedTabGroupData> LoadStoredEntries(
     tabs_missing_groups.push_back(std::move(proto));
   }
 
-  model->LoadStoredEntries(std::move(groups), std::move(tabs),
-                           std::move(on_loaded_callback));
+  std::move(on_load_callback).Run(std::move(groups), std::move(tabs));
   return tabs_missing_groups;
 }
 
@@ -113,16 +112,21 @@ SavedTabGroupSyncBridge::SavedTabGroupSyncBridge(
     syncer::OnceModelTypeStoreFactory create_store_callback,
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
     PrefService* pref_service,
-    std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids)
+    std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids,
+    base::OnceCallback<void(std::vector<SavedTabGroup>,
+                            std::vector<SavedTabGroupTab>)> on_load_callback)
     : syncer::ModelTypeSyncBridge(std::move(change_processor)),
       model_(model),
       pref_service_(pref_service),
       migrated_android_local_ids_(std::move(migrated_android_local_ids)) {
-  DCHECK(model_);
+  CHECK(model_);
+  CHECK(pref_service_);
+  CHECK(on_load_callback);
   std::move(create_store_callback)
       .Run(syncer::SAVED_TAB_GROUP,
            base::BindOnce(&SavedTabGroupSyncBridge::OnStoreCreated,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          weak_ptr_factory_.GetWeakPtr(),
+                          std::move(on_load_callback)));
 }
 
 SavedTabGroupSyncBridge::~SavedTabGroupSyncBridge() = default;
@@ -748,6 +752,7 @@ void SavedTabGroupSyncBridge::SendToSync(
 }
 
 void SavedTabGroupSyncBridge::OnStoreCreated(
+    SavedTabGroupLoadCallback on_load_callback,
     const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore> store) {
   if (error) {
@@ -759,10 +764,12 @@ void SavedTabGroupSyncBridge::OnStoreCreated(
   store_ = std::move(store);
   stats::RecordMigrationResult(stats::MigrationResult::kStoreLoadStarted);
   store_->ReadAllData(base::BindOnce(&SavedTabGroupSyncBridge::OnDatabaseLoad,
-                                     weak_ptr_factory_.GetWeakPtr()));
+                                     weak_ptr_factory_.GetWeakPtr(),
+                                     std::move(on_load_callback)));
 }
 
 void SavedTabGroupSyncBridge::OnDatabaseLoad(
+    SavedTabGroupLoadCallback on_load_callback,
     const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore::RecordList> entries) {
   // This function does a series of migrations and finally loads the metadata.
@@ -781,7 +788,8 @@ void SavedTabGroupSyncBridge::OnDatabaseLoad(
           prefs::kSavedTabGroupSpecificsToDataMigration)) {
     stats::RecordMigrationResult(
         stats::MigrationResult::kSpecificsToDataMigrationStarted);
-    MigrateSpecificsToSavedTabGroupData(std::move(entries));
+    MigrateSpecificsToSavedTabGroupData(std::move(on_load_callback),
+                                        std::move(entries));
     return;
   }
 
@@ -795,7 +803,7 @@ void SavedTabGroupSyncBridge::OnDatabaseLoad(
   if (!migrated_android_local_ids_.empty()) {
     stats::RecordMigrationResult(
         stats::MigrationResult::kSharedPrefMigrationStarted);
-    MigrateAndroidLocalIds(std::move(entries));
+    MigrateAndroidLocalIds(std::move(on_load_callback), std::move(entries));
     return;
   }
 
@@ -804,10 +812,12 @@ void SavedTabGroupSyncBridge::OnDatabaseLoad(
   stats::RecordMigrationResult(stats::MigrationResult::kStoreLoadCompleted);
   store_->ReadAllMetadata(
       base::BindOnce(&SavedTabGroupSyncBridge::OnReadAllMetadata,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(entries)));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(on_load_callback), std::move(entries)));
 }
 
 void SavedTabGroupSyncBridge::MigrateSpecificsToSavedTabGroupData(
+    SavedTabGroupLoadCallback on_load_callback,
     std::unique_ptr<syncer::ModelTypeStore::RecordList> entries) {
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
@@ -843,10 +853,11 @@ void SavedTabGroupSyncBridge::MigrateSpecificsToSavedTabGroupData(
       std::move(batch),
       base::BindOnce(
           &SavedTabGroupSyncBridge::OnSpecificsToDataMigrationComplete,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(), std::move(on_load_callback)));
 }
 
 void SavedTabGroupSyncBridge::OnSpecificsToDataMigrationComplete(
+    SavedTabGroupLoadCallback on_load_callback,
     const std::optional<syncer::ModelError>& error) {
   if (error) {
     stats::RecordMigrationResult(
@@ -862,10 +873,12 @@ void SavedTabGroupSyncBridge::OnSpecificsToDataMigrationComplete(
   stats::RecordMigrationResult(
       stats::MigrationResult::kSpecificsToDataMigrationSuccess);
   store_->ReadAllData(base::BindOnce(&SavedTabGroupSyncBridge::OnDatabaseLoad,
-                                     weak_ptr_factory_.GetWeakPtr()));
+                                     weak_ptr_factory_.GetWeakPtr(),
+                                     std::move(on_load_callback)));
 }
 
 void SavedTabGroupSyncBridge::MigrateAndroidLocalIds(
+    SavedTabGroupLoadCallback on_load_callback,
     std::unique_ptr<syncer::ModelTypeStore::RecordList> entries) {
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
@@ -906,10 +919,11 @@ void SavedTabGroupSyncBridge::MigrateAndroidLocalIds(
       std::move(batch),
       base::BindOnce(
           &SavedTabGroupSyncBridge::OnAndroidLocalIdMigrationComplete,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(), std::move(on_load_callback)));
 }
 
 void SavedTabGroupSyncBridge::OnAndroidLocalIdMigrationComplete(
+    SavedTabGroupLoadCallback on_load_callback,
     const std::optional<syncer::ModelError>& error) {
   if (error) {
     stats::RecordMigrationResult(
@@ -923,10 +937,12 @@ void SavedTabGroupSyncBridge::OnAndroidLocalIdMigrationComplete(
   stats::RecordMigrationResult(
       stats::MigrationResult::kSharedPrefMigrationSuccess);
   store_->ReadAllData(base::BindOnce(&SavedTabGroupSyncBridge::OnDatabaseLoad,
-                                     weak_ptr_factory_.GetWeakPtr()));
+                                     weak_ptr_factory_.GetWeakPtr(),
+                                     std::move(on_load_callback)));
 }
 
 void SavedTabGroupSyncBridge::OnReadAllMetadata(
+    SavedTabGroupLoadCallback on_load_callback,
     std::unique_ptr<syncer::ModelTypeStore::RecordList> entries,
     const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
@@ -939,7 +955,6 @@ void SavedTabGroupSyncBridge::OnReadAllMetadata(
   }
 
   stats::RecordMigrationResult(stats::MigrationResult::kReadAllMetadataSuccess);
-  change_processor()->ModelReadyToSync(std::move(metadata_batch));
 
   std::vector<proto::SavedTabGroupData> stored_entries;
   stored_entries.reserve(entries->size());
@@ -956,17 +971,13 @@ void SavedTabGroupSyncBridge::OnReadAllMetadata(
 
   // Update `model_` with any data stored in local storage except for orphaned
   // tabs. Orphaned tabs will be returned and added to `tabs_missing_groups_` in
-  // case their missing group ever arrives. Use `on_loaded_callback` to start
-  // observing the model immediately after loading the stored entries. This
-  // ensures the sync bridge is able to observe restored groups on startup.
-  tabs_missing_groups_ = LoadStoredEntries(
-      std::move(stored_entries), model_.get(),
-      base::BindOnce(&SavedTabGroupSyncBridge::StartObservingModel,
-                     base::Unretained(this)));
-}
-
-void SavedTabGroupSyncBridge::StartObservingModel() {
+  // case their missing group ever arrives.
+  tabs_missing_groups_ = LoadStoredEntries(std::move(stored_entries), model_,
+                                           std::move(on_load_callback));
   observation_.Observe(model_);
+
+  // change_process() will ignore the following call in case of error.
+  change_processor()->ModelReadyToSync(std::move(metadata_batch));
 }
 
 void SavedTabGroupSyncBridge::OnDatabaseSave(

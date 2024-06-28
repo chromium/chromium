@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -169,7 +170,7 @@ class SavedTabGroupSyncBridgeTest : public ::testing::Test {
         &saved_tab_group_model_,
         syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
         processor_.CreateForwardingProcessor(), &pref_service_,
-        std::map<base::Uuid, LocalTabGroupID>());
+        std::map<base::Uuid, LocalTabGroupID>(), base::DoNothing());
     task_environment_.RunUntilIdle();
   }
 
@@ -1144,7 +1145,9 @@ class SavedTabGroupSyncBridgeMigrationTest
     bridge_ = std::make_unique<SavedTabGroupSyncBridge>(
         &saved_tab_group_model_,
         syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
-        processor_.CreateForwardingProcessor(), &pref_service_, id_mappings_);
+        processor_.CreateForwardingProcessor(), &pref_service_, id_mappings_,
+        base::BindOnce(&SavedTabGroupModel::LoadStoredEntries,
+                       base::Unretained(&saved_tab_group_model_)));
     task_environment_.RunUntilIdle();
   }
 

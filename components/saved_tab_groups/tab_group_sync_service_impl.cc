@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -19,6 +21,7 @@
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/shared_tab_group_data_sync_bridge.h"
 #include "components/saved_tab_groups/stats.h"
+#include "components/saved_tab_groups/sync_data_type_configuration.h"
 #include "components/saved_tab_groups/tab_group_store.h"
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/types.h"
@@ -33,15 +36,6 @@ constexpr base::TimeDelta kDelayBeforeMetricsLogged = base::Seconds(10);
 
 }  // namespace
 
-TabGroupSyncServiceImpl::SyncDataTypeConfiguration::SyncDataTypeConfiguration(
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> processor,
-    syncer::OnceModelTypeStoreFactory store_factory)
-    : change_processor(std::move(processor)),
-      model_type_store_factory(std::move(store_factory)) {}
-
-TabGroupSyncServiceImpl::SyncDataTypeConfiguration::
-    ~SyncDataTypeConfiguration() = default;
-
 TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
     std::unique_ptr<SavedTabGroupModel> model,
     std::unique_ptr<SyncDataTypeConfiguration> saved_tab_group_configuration,
@@ -51,22 +45,14 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
     std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids,
     std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger)
     : model_(std::move(model)),
-      saved_bridge_(
-          model_.get(),
-          std::move(saved_tab_group_configuration->model_type_store_factory),
-          std::move(saved_tab_group_configuration->change_processor),
-          pref_service,
-          std::move(migrated_android_local_ids)),
+      sync_bridge_mediator_(model_.get(),
+                            pref_service,
+                            std::move(saved_tab_group_configuration),
+                            std::move(shared_tab_group_configuration),
+                            std::move(migrated_android_local_ids)),
       tab_group_store_(std::move(tab_group_store)),
       pref_service_(pref_service),
       metrics_logger_(std::move(metrics_logger)) {
-  if (shared_tab_group_configuration) {
-    shared_bridge_ = std::make_unique<SharedTabGroupDataSyncBridge>(
-        model_.get(),
-        std::move(shared_tab_group_configuration->model_type_store_factory),
-        std::move(shared_tab_group_configuration->change_processor),
-        pref_service);
-  }
   model_->AddObserver(this);
 }
 
@@ -102,24 +88,22 @@ void TabGroupSyncServiceImpl::Shutdown() {
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 TabGroupSyncServiceImpl::GetSavedTabGroupControllerDelegate() {
-  return saved_bridge_.change_processor()->GetControllerDelegate();
+  return sync_bridge_mediator_.GetSavedTabGroupControllerDelegate();
 }
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 TabGroupSyncServiceImpl::GetSharedTabGroupControllerDelegate() {
-  if (!shared_bridge_) {
-    return base::WeakPtr<syncer::ModelTypeControllerDelegate>();
-  }
-
-  return shared_bridge_->change_processor()->GetControllerDelegate();
+  return sync_bridge_mediator_.GetSharedTabGroupControllerDelegate();
 }
 
 void TabGroupSyncServiceImpl::AddGroup(SavedTabGroup group) {
   VLOG(2) << __func__;
   base::Uuid group_id = group.saved_guid();
   LocalTabGroupID local_group_id = group.local_group_id().value();
-  group.SetCreatedBeforeSyncingTabGroups(!saved_bridge_.IsSyncing());
-  group.SetCreatorCacheGuid(saved_bridge_.GetLocalCacheGuid());
+  group.SetCreatedBeforeSyncingTabGroups(
+      !sync_bridge_mediator_.IsSavedBridgeSyncing());
+  group.SetCreatorCacheGuid(
+      sync_bridge_mediator_.GetLocalCacheGuidForSavedBridge());
   model_->Add(std::move(group));
 
   LogEvent(TabGroupEvent::kTabGroupCreated, local_group_id);
@@ -179,7 +163,8 @@ void TabGroupSyncServiceImpl::AddTab(const LocalTabGroupID& group_id,
 
   SavedTabGroupTab new_tab(url, title, group->saved_guid(), position,
                            /*saved_tab_guid=*/std::nullopt, tab_id);
-  new_tab.SetCreatorCacheGuid(saved_bridge_.GetLocalCacheGuid());
+  new_tab.SetCreatorCacheGuid(
+      sync_bridge_mediator_.GetLocalCacheGuidForSavedBridge());
 
   UpdateAttributions(group_id);
   group->SetLastUserInteractionTime(base::Time::Now());
@@ -390,7 +375,7 @@ void TabGroupSyncServiceImpl::UpdateLocalTabId(
 bool TabGroupSyncServiceImpl::IsRemoteDevice(
     const std::optional<std::string>& cache_guid) const {
   std::optional<std::string> local_cache_guid =
-      saved_bridge_.GetLocalCacheGuid();
+      sync_bridge_mediator_.GetLocalCacheGuidForSavedBridge();
   if (!local_cache_guid || !cache_guid) {
     return false;
   }
@@ -616,8 +601,9 @@ void TabGroupSyncServiceImpl::OnReadTabGroupStore() {
 void TabGroupSyncServiceImpl::UpdateAttributions(
     const LocalTabGroupID& group_id,
     const std::optional<LocalTabID>& tab_id) {
-  model_->UpdateLastUpdaterCacheGuidForGroup(saved_bridge_.GetLocalCacheGuid(),
-                                             group_id, tab_id);
+  model_->UpdateLastUpdaterCacheGuidForGroup(
+      sync_bridge_mediator_.GetLocalCacheGuidForSavedBridge(), group_id,
+      tab_id);
 }
 
 void TabGroupSyncServiceImpl::RecordMetrics() {

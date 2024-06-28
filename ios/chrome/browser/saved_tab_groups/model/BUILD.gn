@@ -18,6 +18,7 @@ source_set("model") {
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/saved_tab_groups:core",
+    "//components/saved_tab_groups:tab_group_sync_bridge",
     "//components/sync/base",
     "//components/sync/model",
     "//components/sync_device_info",

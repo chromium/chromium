@@ -11,8 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
@@ -20,6 +18,7 @@
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/shared_tab_group_data_sync_bridge.h"
 #include "components/saved_tab_groups/tab_group_store.h"
+#include "components/saved_tab_groups/tab_group_sync_bridge_mediator.h"
 #include "components/saved_tab_groups/tab_group_sync_coordinator.h"
 #include "components/saved_tab_groups/tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
@@ -32,21 +31,12 @@ class PrefService;
 
 namespace tab_groups {
 
+struct SyncDataTypeConfiguration;
+
 // The internal implementation of the TabGroupSyncService.
 class TabGroupSyncServiceImpl : public TabGroupSyncService,
                                 public SavedTabGroupModelObserver {
  public:
-  // Configuration for a specific sync data type.
-  struct SyncDataTypeConfiguration {
-    SyncDataTypeConfiguration(
-        std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-        syncer::OnceModelTypeStoreFactory model_type_store_factory);
-    ~SyncDataTypeConfiguration();
-
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor;
-    syncer::OnceModelTypeStoreFactory model_type_store_factory;
-  };
-
   // `saved_tab_group_configuration` must not be `nullptr`.
   // `shared_tab_group_configuration` should be provided if feature is enabled.
   TabGroupSyncServiceImpl(
@@ -175,11 +165,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // The in-memory model representing the currently present saved tab groups.
   std::unique_ptr<SavedTabGroupModel> model_;
 
-  // Stores SavedTabGroup data to the disk and to sync if enabled.
-  SavedTabGroupSyncBridge saved_bridge_;
-
-  // Stores SharedTabGroupData to the disk and to sync if enabled.
-  std::unique_ptr<SharedTabGroupDataSyncBridge> shared_bridge_;
+  // Sync bridges and data storage for both saved and shared tab group data.
+  TabGroupSyncBridgeMediator sync_bridge_mediator_;
 
   // The UI coordinator to apply changes between local tab groups and the
   // TabGroupSyncService.
