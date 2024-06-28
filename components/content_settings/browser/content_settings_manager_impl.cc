@@ -217,7 +217,9 @@ ContentSettingsManagerImpl::ContentSettingsManagerImpl(
     scoped_refptr<CookieSettings> cookie_settings)
     : delegate_(std::move(delegate)),
       render_process_id_(render_process_id),
-      cookie_settings_(cookie_settings) {}
+      cookie_settings_(cookie_settings) {
+  CHECK(cookie_settings_);
+}
 
 ContentSettingsManagerImpl::ContentSettingsManagerImpl(
     const ContentSettingsManagerImpl& other)
