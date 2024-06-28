@@ -19,9 +19,15 @@ extern const char kHistogramGWSNavigationStartToFirstRequestStart[];
 extern const char kHistogramGWSNavigationStartToFirstResponseStart[];
 extern const char kHistogramGWSNavigationStartToFirstLoaderCallback[];
 
+extern const char kHistogramGWSAFTEnd[];
+extern const char kHistogramGWSAFTStart[];
+
 extern const char kHistogramGWSFirstContentfulPaint[];
 extern const char kHistogramGWSLargestContentfulPaint[];
 extern const char kHistogramGWSParseStart[];
+
+extern const char kGwsAFTStartMarkName[];
+extern const char kGwsAFTEndMarkName[];
 
 }  // namespace internal
 
@@ -56,6 +62,9 @@ class GWSPageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnComplete(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnCustomUserTimingMarkObserved(
+      const std::vector<page_load_metrics::mojom::CustomUserTimingMarkPtr>&
+          timings) override;
 
  private:
   void LogMetricsOnComplete();

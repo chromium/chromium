@@ -465,6 +465,9 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
                          subresource_load_metrics,
                      mojom::SoftNavigationMetricsPtr soft_navigation_metrics);
 
+  void AddCustomUserTimings(
+      std::vector<mojom::CustomUserTimingMarkPtr> custom_timings);
+
   // Sets RenderFrameHost for the main frame of the page this tracker instance
   // is bound. This is called on moving the tracker to the active / inactive
   // tracker list after the provisional load is committed.

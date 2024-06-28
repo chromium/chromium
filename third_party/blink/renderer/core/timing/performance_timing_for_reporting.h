@@ -158,6 +158,10 @@ class CORE_EXPORT PerformanceTimingForReporting final
   // available.
   std::optional<base::TimeDelta> UserTimingMarkInteractive() const;
 
+  // The name and startTime of the user timing mark.
+  std::optional<std::tuple<AtomicString, base::TimeDelta>>
+  CustomUserTimingMark() const;
+
   uint64_t ParseStart() const;
   uint64_t ParseStop() const;
   uint64_t ParseBlockedOnScriptLoadDuration() const;

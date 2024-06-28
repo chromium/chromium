@@ -81,6 +81,12 @@ class MojoPageTimingSender : public PageTimingSender {
         std::move(shared_memory));
   }
 
+  void SendCustomUserTiming(mojom::CustomUserTimingMarkPtr timing) override {
+    CHECK(timing);
+    CHECK(page_load_metrics_);
+    page_load_metrics_->AddCustomUserTiming(std::move(timing));
+  }
+
  private:
   // Indicates that this sender should not send timing updates or frame render
   // data updates.
@@ -509,6 +515,12 @@ void MetricsRenderFrameObserver::SendMetrics() {
       GetSoftNavigationMetrics());
   page_timing_metrics_sender_->Update(std::move(timing.relative_timing),
                                       timing.monotonic_timing);
+
+  mojom::CustomUserTimingMarkPtr user_timing = GetCustomUserTimingMark();
+  if (user_timing) {
+    page_timing_metrics_sender_->SendCustomUserTimingMark(
+        std::move(user_timing));
+  }
 }
 
 void MetricsRenderFrameObserver::OnMetricsSenderCreated() {
@@ -939,6 +951,23 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
   }
 
   return Timing(std::move(timing), monotonic_timing);
+}
+
+mojom::CustomUserTimingMarkPtr
+MetricsRenderFrameObserver::GetCustomUserTimingMark() const {
+  const blink::WebPerformanceMetricsForReporting& perf =
+      render_frame()->GetWebFrame()->PerformanceMetricsForReporting();
+  auto timing = perf.CustomUserTimingMark();
+  if (!timing.has_value()) {
+    return nullptr;
+  }
+  const auto [mark_name, start_time] = timing.value();
+  mojom::CustomUserTimingMarkPtr custom_user_timing_mark =
+      mojom::CustomUserTimingMark::New();
+  custom_user_timing_mark->mark_name = mark_name;
+  custom_user_timing_mark->start_time = start_time;
+
+  return custom_user_timing_mark;
 }
 
 std::unique_ptr<base::OneShotTimer> MetricsRenderFrameObserver::CreateTimer() {

@@ -252,6 +252,8 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
       const std::vector<MemoryUpdate>& memory_updates) override {}
   void OnSharedStorageWorkletHostCreated() override {}
   void OnSharedStorageSelectURLCalled() override {}
+  void OnCustomUserTimingMarkObserved(
+      const std::vector<mojom::CustomUserTimingMarkPtr>& timings) override {}
 
  private:
   raw_ptr<PageLoadMetricsObserverDelegate, DanglingUntriaged> delegate_ =

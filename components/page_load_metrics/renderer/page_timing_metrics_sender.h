@@ -118,6 +118,8 @@ class PageTimingMetricsSender {
   void UpdateSoftNavigationMetrics(
       mojom::SoftNavigationMetricsPtr soft_navigation_metrics);
 
+  void SendCustomUserTimingMark(mojom::CustomUserTimingMarkPtr custom_timing);
+
  protected:
   base::OneShotTimer* timer() const { return timer_.get(); }
 

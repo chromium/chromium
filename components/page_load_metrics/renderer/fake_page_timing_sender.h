@@ -170,6 +170,8 @@ class FakePageTimingSender : public PageTimingSender {
   void SetUpSmoothnessReporting(
       base::ReadOnlySharedMemoryRegion shared_memory) override;
 
+  void SendCustomUserTiming(mojom::CustomUserTimingMarkPtr timing) override;
+
  private:
   const raw_ptr<PageTimingValidator> validator_;
 };

@@ -360,6 +360,12 @@ void PageLoadMetricsObserverTester::SimulateStorageAccess(
       url, first_party_url, blocked_by_policy, storage_type);
 }
 
+void PageLoadMetricsObserverTester::SimulateCustomUserTimingUpdate(
+    mojom::CustomUserTimingMarkPtr custom_timing) {
+  metrics_web_contents_observer_->OnCustomUserTimingUpdated(
+      web_contents()->GetPrimaryMainFrame(), std::move(custom_timing));
+}
+
 const PageLoadMetricsObserverDelegate&
 PageLoadMetricsObserverTester::GetDelegateForCommittedLoad() const {
   return metrics_web_contents_observer_->GetDelegateForCommittedLoad();

@@ -969,6 +969,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.Clients.GoogleSearch.PaintTiming.{MileStone}"
+    units="ms" expires_after="2024-10-01">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the time from navigation start to the time {MileStone}, for Google
+    Search page loads. The actual value is recorded via `startTime` in
+    performance.mark()'s markOptions. If `startTime` is not set, this metric is
+    not recorded. This is recorded by emitting `perforamnce.mark()` in
+    JavaScript, which is done after the naivagation commit phase in Search. This
+    is onlly recorded in the outermost main frame.
+  </summary>
+  <token key="MileStone">
+    <variant name="AFTEnd" summary="AFT end event is sent"/>
+    <variant name="AFTStart" summary="AFT start event is sent"/>
+  </token>
+</histogram>
+
 <histogram
     name="PageLoad.Clients.GoogleSearch.ParseTiming.NavigationToParseStart"
     units="ms" expires_after="2024-10-01">

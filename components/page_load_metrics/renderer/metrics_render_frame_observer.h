@@ -167,6 +167,7 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
   void OnMetricsSenderCreated();
   virtual Timing GetTiming() const;
   virtual mojom::SoftNavigationMetricsPtr GetSoftNavigationMetrics() const;
+  virtual mojom::CustomUserTimingMarkPtr GetCustomUserTimingMark() const;
   virtual std::unique_ptr<base::OneShotTimer> CreateTimer();
   virtual std::unique_ptr<PageTimingSender> CreatePageTimingSender(
       bool limited_sending_mode);

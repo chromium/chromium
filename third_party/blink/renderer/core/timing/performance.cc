@@ -940,8 +940,8 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
                                   ("mark_interactive"));
   DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, mark_feature_usage,
                                   ("mark_feature_usage"));
-  if (mark_options &&
-      (mark_options->hasStartTime() || mark_options->hasDetail())) {
+  bool has_start_time = mark_options && mark_options->hasStartTime();
+  if (has_start_time || (mark_options && mark_options->hasDetail())) {
     UseCounter::Count(GetExecutionContext(), WebFeature::kUserTimingL3);
   }
   PerformanceMark* performance_mark = PerformanceMark::Create(
@@ -981,6 +981,18 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
     } else if (mark_name == mark_feature_usage && mark_options->hasDetail()) {
       if (RuntimeEnabledFeatures::PerformanceMarkFeatureUsageEnabled()) {
         ProcessUserFeatureMark(mark_options);
+      }
+    } else {
+      if (LocalDOMWindow* window = LocalDOMWindow::From(script_state)) {
+        if (window->GetFrame() && window->GetFrame()->IsOutermostMainFrame() &&
+            has_start_time) {
+          window->GetFrame()
+              ->Loader()
+              .GetDocumentLoader()
+              ->GetTiming()
+              .NotifyCustomUserTimingMarkAdded(
+                  mark_name, base::Milliseconds(performance_mark->startTime()));
+        }
       }
     }
     NotifyObserversOfEntry(*performance_mark);

@@ -1144,37 +1144,23 @@ void MetricsWebContentsObserver::OnTimingUpdated(
     const std::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
     mojom::SoftNavigationMetricsPtr soft_navigation_metrics) {
-  // Replacing this call by GetPageLoadTracker breaks some tests.
-  //
-  // Note that if a PLMO only observes events at outermost page, misusing
-  // primary page's PageLoadTracker for OnTimingUpdated is safe because
-  // PageLoadTracker::UpdateMetrics forwards events unconditionally and
-  // unmodified, and outermost page's MetricsUpdateDispatcher manages all
-  // subframe's timing update.
-  PageLoadTracker* tracker = GetPageLoadTrackerLegacy(render_frame_host);
-  // We may receive notifications from frames that have been navigated away
-  // from. In that case the PageLoadTracker is already destroyed in
-  // DidFinishNavigation (unless it's stored in bfcache). We simply ignore them.
-  if (!tracker && !render_frame_host->GetMainFrame()->IsActive()) {
-    RecordInternalError(ERR_IPC_FROM_WRONG_FRAME);
-    return;
-  }
-
-  const bool is_main_frame = (render_frame_host->GetParent() == nullptr);
-  if (is_main_frame) {
-    if (DoesTimingUpdateHaveError(tracker)) {
-      return;
-    }
-  } else if (!tracker) {
-    RecordInternalError(ERR_SUBFRAME_IPC_WITH_NO_RELEVANT_LOAD);
-  }
-
-  if (tracker) {
+  if (PageLoadTracker* tracker = GetPageLoadTrackerIfValid(render_frame_host)) {
     tracker->UpdateMetrics(
         render_frame_host, std::move(timing), std::move(metadata),
         std::move(new_features), resources, std::move(render_data),
         std::move(cpu_timing), std::move(input_timing_delta),
         subresource_load_metrics, std::move(soft_navigation_metrics));
+  }
+}
+
+void MetricsWebContentsObserver::OnCustomUserTimingUpdated(
+    content::RenderFrameHost* rfh,
+    mojom::CustomUserTimingMarkPtr custom_timing) {
+  // Buffer timing data before seinding to the tracker as the tracker may not
+  // exist in some cases, in that case the buffered timings are sent next time.
+  page_load_custom_timings_.push_back(std::move(custom_timing));
+  if (PageLoadTracker* tracker = GetPageLoadTrackerIfValid(rfh)) {
+    tracker->AddCustomUserTimings(std::move(page_load_custom_timings_));
   }
 }
 
@@ -1213,6 +1199,13 @@ void MetricsWebContentsObserver::UpdateTiming(
                   new_features, resources, std::move(render_data),
                   std::move(cpu_timing), std::move(input_timing_delta),
                   subresource_load_metrics, std::move(soft_navigation_metrics));
+}
+
+void MetricsWebContentsObserver::AddCustomUserTiming(
+    mojom::CustomUserTimingMarkPtr custom_timing) {
+  content::RenderFrameHost* render_frame_host =
+      page_load_metrics_receivers_.GetCurrentTargetFrame();
+  OnCustomUserTimingUpdated(render_frame_host, std::move(custom_timing));
 }
 
 void MetricsWebContentsObserver::SetUpSharedMemoryForSmoothness(
@@ -1432,6 +1425,36 @@ PageLoadTracker* MetricsWebContentsObserver::GetPageLoadTracker(
   }
 
   return nullptr;
+}
+
+PageLoadTracker* MetricsWebContentsObserver::GetPageLoadTrackerIfValid(
+    content::RenderFrameHost* render_frame_host) {
+  // Replacing this call by GetPageLoadTracker breaks some tests.
+  //
+  // Note that if a PLMO only observes events at outermost page, misusing
+  // primary page's PageLoadTracker for OnTimingUpdated is safe because
+  // PageLoadTracker::UpdateMetrics forwards events unconditionally and
+  // unmodified, and outermost page's MetricsUpdateDispatcher manages all
+  // subframe's timing update.
+  PageLoadTracker* tracker = GetPageLoadTrackerLegacy(render_frame_host);
+  // We may receive notifications from frames that have been navigated away
+  // from. In that case the PageLoadTracker is already destroyed in
+  // DidFinishNavigation (unless it's stored in bfcache). We simply ignore them.
+  if (!tracker && !render_frame_host->GetMainFrame()->IsActive()) {
+    RecordInternalError(ERR_IPC_FROM_WRONG_FRAME);
+    return nullptr;
+  }
+
+  const bool is_main_frame = (render_frame_host->GetParent() == nullptr);
+  if (is_main_frame) {
+    if (DoesTimingUpdateHaveError(tracker)) {
+      return nullptr;
+    }
+  } else if (!tracker) {
+    RecordInternalError(ERR_SUBFRAME_IPC_WITH_NO_RELEVANT_LOAD);
+  }
+
+  return tracker;
 }
 
 PageLoadTracker* MetricsWebContentsObserver::GetAncestralAlivePageLoadTracker(

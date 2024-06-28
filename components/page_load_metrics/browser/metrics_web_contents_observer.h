@@ -154,6 +154,9 @@ class MetricsWebContentsObserver
           subresource_load_metrics,
       mojom::SoftNavigationMetricsPtr);
 
+  void OnCustomUserTimingUpdated(content::RenderFrameHost* rfh,
+                                 mojom::CustomUserTimingMarkPtr custom_timing);
+
   // Informs the observers of the currently committed primary page load that
   // it's likely that prefetch will occur in this WebContents. This should
   // not be called within WebContentsObserver::DidFinishNavigation methods.
@@ -209,6 +212,9 @@ class MetricsWebContentsObserver
   PageLoadTracker* GetAncestralAlivePageLoadTracker(
       content::RenderFrameHost* rfh);
 
+  PageLoadTracker* GetPageLoadTrackerIfValid(
+      content::RenderFrameHost* render_frame_host);
+
   // Gets the memory tracker for the BrowserContext if it exists, or nullptr
   // otherwise. The tracker measures per-frame memory usage by V8.
   PageLoadMetricsMemoryTracker* GetMemoryTracker() const;
@@ -228,6 +234,8 @@ class MetricsWebContentsObserver
       const std::optional<blink::SubresourceLoadMetrics>&
           subresource_load_metrics,
       mojom::SoftNavigationMetricsPtr soft_navigation_metrics) override;
+  void AddCustomUserTiming(
+      mojom::CustomUserTimingMarkPtr custom_timing) override;
 
   void SetUpSharedMemoryForSmoothness(
       base::ReadOnlySharedMemoryRegion shared_memory) override;
@@ -359,6 +367,8 @@ class MetricsWebContentsObserver
   // the WebContents.
   base::flat_map<content::RenderFrameHost*, base::ReadOnlySharedMemoryRegion>
       ukm_smoothness_data_;
+
+  std::vector<mojom::CustomUserTimingMarkPtr> page_load_custom_timings_;
 
   // Has the MWCO observed at least one navigation?
   bool has_navigated_;

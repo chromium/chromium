@@ -37,12 +37,17 @@ const char kHistogramGWSNavigationStartToFirstResponseStart[] =
     HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFirstResponseStart";
 const char kHistogramGWSNavigationStartToFirstLoaderCallback[] =
     HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFirstLoaderCallback";
+const char kHistogramGWSAFTEnd[] = HISTOGRAM_PREFIX "PaintTiming.AFTEnd";
+const char kHistogramGWSAFTStart[] = HISTOGRAM_PREFIX "PaintTiming.AFTStart";
 const char kHistogramGWSFirstContentfulPaint[] =
     HISTOGRAM_PREFIX "PaintTiming.NavigationToFirstContentfulPaint";
 const char kHistogramGWSLargestContentfulPaint[] =
     HISTOGRAM_PREFIX "PaintTiming.NavigationToLargestContentfulPaint";
 const char kHistogramGWSParseStart[] =
     HISTOGRAM_PREFIX "ParseTiming.NavigationToParseStart";
+
+const char kGwsAFTStartMarkName[] = "SearchAFTStart";
+const char kGwsAFTEndMarkName[] = "trigger:SearchAFTEnd";
 
 }  // namespace internal
 
@@ -115,6 +120,18 @@ void GWSPageLoadMetricsObserver::OnParseStart(
 void GWSPageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   LogMetricsOnComplete();
+}
+
+void GWSPageLoadMetricsObserver::OnCustomUserTimingMarkObserved(
+    const std::vector<page_load_metrics::mojom::CustomUserTimingMarkPtr>&
+        timings) {
+  for (const auto& mark : timings) {
+    if (mark->mark_name == internal::kGwsAFTStartMarkName) {
+      PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSAFTStart, mark->start_time);
+    } else if (mark->mark_name == internal::kGwsAFTEndMarkName) {
+      PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSAFTEnd, mark->start_time);
+    }
+  }
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy

@@ -68,6 +68,12 @@ class CORE_EXPORT DocumentLoadTiming final {
   void SetUserTimingMarkFullyVisible(base::TimeDelta);
   void SetUserTimingMarkInteractive(base::TimeDelta);
 
+  // Sets `custom_user_timing_mark` and notifies timing changed immediately.
+  // Clear `custom_timing_mark` once it's notified to avoid duplicated mark
+  // entries are notified.
+  void NotifyCustomUserTimingMarkAdded(const AtomicString& mark_name,
+                                       const base::TimeDelta& start_time);
+
   void AddRedirect(const KURL& redirecting_url, const KURL& redirected_url);
   void SetRedirectStart(base::TimeTicks);
   void SetRedirectEnd(base::TimeTicks);
@@ -108,6 +114,10 @@ class CORE_EXPORT DocumentLoadTiming final {
   }
   std::optional<base::TimeDelta> UserTimingMarkInteractive() const {
     return user_timing_mark_interactive_;
+  }
+  std::optional<std::tuple<AtomicString, base::TimeDelta>>
+  CustomUserTimingMark() {
+    return custom_user_timing_mark_;
   }
   base::TimeTicks NavigationStart() const { return navigation_start_; }
   const WTF::Vector<base::TimeTicks>& BackForwardCacheRestoreNavigationStarts()
@@ -158,6 +168,8 @@ class CORE_EXPORT DocumentLoadTiming final {
   std::optional<base::TimeDelta> user_timing_mark_fully_loaded_;
   std::optional<base::TimeDelta> user_timing_mark_fully_visible_;
   std::optional<base::TimeDelta> user_timing_mark_interactive_;
+  std::optional<std::tuple<AtomicString, base::TimeDelta>>
+      custom_user_timing_mark_;
   base::TimeTicks navigation_start_;
   base::TimeTicks commit_navigation_end_;
   WTF::Vector<base::TimeTicks> bfcache_restore_navigation_starts_;

@@ -606,6 +606,13 @@ class PageLoadMetricsObserverInterface {
   // page tracked.
   virtual void OnSharedStorageSelectURLCalled() = 0;
 
+  // Called when `performance.mark()` is emitted in the main frame except for
+  // the standard UserTiming marks `mark_fully_loaded`, `mark_fully_visible`,
+  // and `mark_interactive` occur. Those are managed in PageLoadTiming
+  // separately and tracked in in a different timing.
+  virtual void OnCustomUserTimingMarkObserved(
+      const std::vector<mojom::CustomUserTimingMarkPtr>& timings) = 0;
+
  private:
   base::WeakPtrFactory<PageLoadMetricsObserverInterface> weak_factory_{this};
 };

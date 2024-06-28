@@ -453,6 +453,16 @@ PerformanceTimingForReporting::UserTimingMarkInteractive() const {
   return timing->UserTimingMarkInteractive();
 }
 
+std::optional<std::tuple<AtomicString, base::TimeDelta>>
+PerformanceTimingForReporting::CustomUserTimingMark() const {
+  DocumentLoadTiming* timing = GetDocumentLoadTiming();
+  if (!timing) {
+    return std::nullopt;
+  }
+
+  return timing->CustomUserTimingMark();
+}
+
 DocumentLoader* PerformanceTimingForReporting::GetDocumentLoader() const {
   return DomWindow() ? DomWindow()->GetFrame()->Loader().GetDocumentLoader()
                      : nullptr;
