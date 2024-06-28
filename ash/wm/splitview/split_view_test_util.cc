@@ -74,9 +74,13 @@ SplitViewOverviewSession* VerifySplitViewOverviewSession(
   EXPECT_FALSE(
       overview_controller->overview_session()->IsWindowInOverview(window));
 
+  auto* root_window = window->GetRootWindow();
+  EXPECT_TRUE(SplitViewController::Get(root_window)->InSplitViewMode());
+
   SplitViewOverviewSession* split_view_overview_session =
       RootWindowController::ForWindow(window)->split_view_overview_session();
   EXPECT_TRUE(split_view_overview_session);
+
   gfx::Rect expected_grid_bounds = GetWorkAreaBoundsForWindow(window);
   expected_grid_bounds.Subtract(window->GetBoundsInScreen());
 
@@ -99,7 +103,6 @@ SplitViewOverviewSession* VerifySplitViewOverviewSession(
         std::max(expected_grid_bounds.height(), min_length));
   }
 
-  auto* root_window = window->GetRootWindow();
   if (!Shell::Get()->IsInTabletMode()) {
     EXPECT_EQ(expected_grid_bounds, GetOverviewGridBounds(root_window));
   }

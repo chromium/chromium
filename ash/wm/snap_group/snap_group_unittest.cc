@@ -2291,6 +2291,35 @@ TEST_F(FasterSplitScreenTest, RecordWindowIndexAndCount) {
 }
 
 // -----------------------------------------------------------------------------
+// SnapGroupDisabledTest:
+
+class SnapGroupDisabledTest : public AshTestBase {
+ public:
+  SnapGroupDisabledTest() {
+    scoped_feature_list_.InitWithFeatures(/*enabled_features=*/
+                                          {},
+                                          /*disabled_features=*/{
+                                              features::kSnapGroup});
+  }
+  SnapGroupDisabledTest(const SnapGroupDisabledTest&) = delete;
+  SnapGroupDisabledTest& operator=(const SnapGroupDisabledTest&) = delete;
+  ~SnapGroupDisabledTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that faster splitscreen still works with `SnapGroup` disabled.
+TEST_F(SnapGroupDisabledTest, FasterSplitScreenSetup) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  VerifySplitViewOverviewSession(w1.get());
+}
+
+// -----------------------------------------------------------------------------
 // SnapGroupTest:
 
 // A test fixture to test the snap group feature.

@@ -1011,24 +1011,20 @@ float GetPhantomSnapRatio(aura::Window* to_be_snapped_window,
 bool ShouldConsiderWindowForFasterSplitView(
     aura::Window* window,
     WindowSnapActionSource snap_action_source) {
-  if (!IsSnapGroupEnabledInClamshellMode()) {
-    return false;
-  }
-
   if (!OverviewController::Get()->CanEnterOverview() ||
       IsPartialOverviewEmptyForActiveDesk(window)) {
     return false;
   }
 
-    if (PrefService* pref =
-            Shell::Get()->session_controller()->GetActivePrefService();
-        pref && !pref->GetBoolean(prefs::kSnapWindowSuggestions)) {
-      return false;
-    }
+  if (PrefService* pref =
+          Shell::Get()->session_controller()->GetActivePrefService();
+      pref && !pref->GetBoolean(prefs::kSnapWindowSuggestions)) {
+    return false;
+  }
 
-    if (!CanSnapActionSourceStartFasterSplitView(snap_action_source)) {
-      return false;
-    }
+  if (!CanSnapActionSourceStartFasterSplitView(snap_action_source)) {
+    return false;
+  }
 
   return !IsInOverviewSession();
 }

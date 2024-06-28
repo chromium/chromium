@@ -310,8 +310,8 @@ aura::Window* GetOppositeVisibleSnappedWindow(aura::Window* window);
 ASH_EXPORT float GetSnapRatioGap(aura::Window* to_be_snapped,
                                  aura::Window* opposite_snapped);
 
-// Given `window1` and the opposite snapped `window2`, returns true if the snap
-// ratio gap or overlap between them is within the snap ratio threshold for
+// Given the windows `to_be_snapped` and `opposite_snapped`, returns true if the
+// snap ratio gap or overlap between them is within the snap ratio threshold for
 // auto-group and snap-to-replace.
 bool IsSnapRatioGapWithinThreshold(aura::Window* to_be_snapped,
                                    aura::Window* opposite_snapped);
