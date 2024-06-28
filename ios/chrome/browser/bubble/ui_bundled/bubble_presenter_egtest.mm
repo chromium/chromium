@@ -140,11 +140,11 @@ void ReloadFromOmnibox() {
 // Tests that the pull-to-refresh IPH is attempted when user reloads the page
 // using context menu.
 - (void)testPullToRefreshIPHAfterReloadFromContextMenuAndDisappearsOnSwitchTab {
-  RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
-                         /*safari_switcher=*/YES);
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
   }
+  RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
+                         /*safari_switcher=*/YES);
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -213,6 +213,23 @@ void ReloadFromOmnibox() {
   ReloadFromOmnibox();
   AssertGestureIPHInvisible(
       @"Pull to refresh IPH still appeared despite loading fails.");
+}
+
+// Tests that the pull-to-refresh IPH is atttempted when user taps the omnibox
+// to reload the same page, and disappears after the user navigates away.
+- (void)testPullToRefreshIPHShouldNotShowOnRegularXRegular {
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPhone.");
+  }
+  RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
+                         /*safari_switcher=*/YES);
+  [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
+
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/pony.html")];
+  ReloadFromOmnibox();
+  AssertGestureIPHInvisible(
+      @"Pull to refresh IPH showed on regular x regular size class.");
 }
 
 // Tests that the swipe back/forward IPH is attempted on navigation, and

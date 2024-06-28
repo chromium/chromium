@@ -788,6 +788,13 @@ enum class ToolbarKind {
 
 #pragma mark - Private
 
+// Returns whether overscroll actions should be allowed. When screeen size is
+// not regular, they should be enabled.
+- (BOOL)shouldAllowOverscrollActions {
+  return !_toolbarAccessoryPresenter.presenting &&
+         !IsRegularXRegularSizeClass(self.viewController);
+}
+
 // Stops the password protection coordinator.
 - (void)stopPasswordProtectionCoordinator {
   [self.passwordProtectionCoordinator stop];
@@ -3407,18 +3414,24 @@ enum class ToolbarKind {
 #pragma mark - BubblePresenterDelegate
 
 - (BOOL)rootViewVisibleForBubblePresenter:(BubblePresenter*)bubblePresenter {
-  DCHECK(bubblePresenter == _bubblePresenter);
+  CHECK(bubblePresenter == _bubblePresenter);
   return self.viewController.viewVisible;
 }
 
 - (BOOL)isNTPActiveForBubblePresenter:(BubblePresenter*)bubblePresenter {
-  DCHECK(bubblePresenter == _bubblePresenter);
+  CHECK(bubblePresenter == _bubblePresenter);
   return self.NTPCoordinator.isNTPActiveForCurrentWebState;
 }
 
 - (BOOL)isNTPScrolledToTopForBubblePresenter:(BubblePresenter*)bubblePresenter {
-  DCHECK(bubblePresenter == _bubblePresenter);
+  CHECK(bubblePresenter == _bubblePresenter);
   return [self.NTPCoordinator isScrolledToTop];
+}
+
+- (BOOL)isOverscrollActionsSupportedForBubblePresenter:
+    (BubblePresenter*)bubblePresenter {
+  CHECK(bubblePresenter == _bubblePresenter);
+  return [self shouldAllowOverscrollActions];
 }
 
 - (void)bubblePresenterDidPerformPullToRefreshGesture:
@@ -3475,9 +3488,7 @@ enum class ToolbarKind {
 
 - (BOOL)shouldAllowOverscrollActionsForOverscrollActionsController:
     (OverscrollActionsController*)controller {
-  // When screeen size is not regular, overscroll actions should be enabled.
-  return !_toolbarAccessoryPresenter.presenting &&
-         !IsRegularXRegularSizeClass(self.viewController);
+  return [self shouldAllowOverscrollActions];
 }
 
 - (UIView*)headerViewForOverscrollActionsController:

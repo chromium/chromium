@@ -584,7 +584,9 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 }
 
 - (void)presentPullToRefreshGestureInProductHelp {
-  if (UIAccessibilityIsVoiceOverRunning() || (![self canPresentBubble])) {
+  if (UIAccessibilityIsVoiceOverRunning() ||
+      (![self.delegate isOverscrollActionsSupportedForBubblePresenter:self]) ||
+      (![self canPresentBubble])) {
     // TODO(crbug.com/41494458): Add voice over announcement once fixed.
     return;
   }

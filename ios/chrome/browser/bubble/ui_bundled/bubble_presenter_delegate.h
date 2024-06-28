@@ -19,6 +19,10 @@
 // Whether the NTP is scrolled to top.
 - (BOOL)isNTPScrolledToTopForBubblePresenter:(BubblePresenter*)bubblePresenter;
 
+// Whether overscroll actions are supported.
+- (BOOL)isOverscrollActionsSupportedForBubblePresenter:
+    (BubblePresenter*)bubblePresenter;
+
 // Notifies the delegate that the user has performed the pull-to-refresh gesture
 // as instructed by the in-product help.
 - (void)bubblePresenterDidPerformPullToRefreshGesture:
