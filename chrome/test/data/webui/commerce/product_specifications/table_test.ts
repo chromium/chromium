@@ -9,9 +9,9 @@ import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browse
 import type {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {$$, assertNotStyle, assertStyle} from './test_support.js';
 
@@ -316,30 +316,30 @@ suite('ProductSpecificationsTableTest', () => {
         ],
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await flushTasks();
     const columns = tableElement.shadowRoot!.querySelectorAll('.col');
     assertEquals(2, columns.length);
     const openTabButton1 =
         columns[0]!.querySelector<HTMLElement>('.open-tab-button');
-    assertTrue(!!openTabButton1);
     const openTabButton2 =
         columns[1]!.querySelector<HTMLElement>('.open-tab-button');
+    assertTrue(!!openTabButton1);
     assertTrue(!!openTabButton2);
-    assertStyle(openTabButton1, 'display', 'none');
-    assertStyle(openTabButton2, 'display', 'none');
+    assertFalse(isVisible(openTabButton1));
+    assertFalse(isVisible(openTabButton2));
 
     // Act/Assert
     columns[0]!.dispatchEvent(new PointerEvent('pointerenter'));
-    assertNotStyle(openTabButton1, 'display', 'none');
-    assertStyle(openTabButton2, 'display', 'none');
+    assertTrue(isVisible(openTabButton1));
+    assertFalse(isVisible(openTabButton2));
 
     columns[1]!.dispatchEvent(new PointerEvent('pointerenter'));
-    assertStyle(openTabButton1, 'display', 'none');
-    assertNotStyle(openTabButton2, 'display', 'none');
+    assertFalse(isVisible(openTabButton1));
+    assertTrue(isVisible(openTabButton2));
 
     tableElement.$.table.dispatchEvent(new PointerEvent('pointerleave'));
-    assertStyle(openTabButton1, 'display', 'none');
-    assertStyle(openTabButton2, 'display', 'none');
+    assertFalse(isVisible(openTabButton1));
+    assertFalse(isVisible(openTabButton2));
   });
 
   test('descriptions hidden if empty or N/A', async () => {
@@ -366,8 +366,8 @@ suite('ProductSpecificationsTableTest', () => {
     const descriptions =
         tableElement.shadowRoot!.querySelectorAll('.detail-description');
     assertEquals(2, descriptions.length);
-    assertStyle(descriptions[0]!, 'display', 'none');
-    assertStyle(descriptions[1]!, 'display', 'none');
+    assertFalse(isVisible((descriptions[0]!)));
+    assertFalse(isVisible((descriptions[1]!)));
   });
 
   test('summaries hidden if empty or N/A', async () => {
@@ -394,8 +394,8 @@ suite('ProductSpecificationsTableTest', () => {
     const summaries =
         tableElement.shadowRoot!.querySelectorAll('.detail-summary');
     assertEquals(2, summaries.length);
-    assertStyle(summaries[0]!, 'display', 'none');
-    assertStyle(summaries[1]!, 'display', 'none');
+    assertFalse(isVisible((summaries[0]!)));
+    assertFalse(isVisible((summaries[1]!)));
   });
 
   test('details hidden if no valid summaries or descriptions', async () => {
@@ -422,8 +422,8 @@ suite('ProductSpecificationsTableTest', () => {
     const details =
         tableElement.shadowRoot!.querySelectorAll('.detail-container');
     assertEquals(2, details.length);
-    assertStyle(details[0]!, 'display', 'none');
-    assertStyle(details[1]!, 'display', 'none');
+    assertFalse(isVisible((details[0]!)));
+    assertFalse(isVisible((details[1]!)));
   });
 
   test('`grid-row` populates correctly ', async () => {
