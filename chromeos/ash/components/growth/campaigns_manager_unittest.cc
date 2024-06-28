@@ -68,6 +68,41 @@ inline constexpr char kValidCampaignsFileTemplate[] = R"(
     }
 )";
 
+inline constexpr char kValidCampaignsFileWithGroupIdTemplate[] = R"(
+    {
+      "0": [
+        // List is an invalid targeting.
+        {
+          "id": 1,
+          "targetings": [
+            []
+          ],
+          "payload": {}
+        },
+        // String is an invalid campaign.
+        "Invalid campaign",
+        {
+          "id": 3,
+          "studyId":1,
+          "groupId": 1,
+          "targetings": [
+            {
+              %s
+            }
+          ],
+          "payload": {
+            "demoModeApp": {
+              "attractionLoop": {
+                "videoSrcLang1": "/asset/peripherals_lang1.mp4",
+                "videoSrcLang2": "/asset/peripherals_lang2.mp4"
+              }
+            }
+          }
+        }
+      ]
+    }
+)";
+
 inline constexpr char kValidCampaignsFileMultiTargetingsTemplate[] = R"(
     {
       "0": [
@@ -296,6 +331,40 @@ class CampaignsManagerTest : public testing::Test {
         .WillRepeatedly(testing::Return(std::string(country)));
   }
 
+  void MockFeatueEngagementCheckOnCaps(bool reach_impression_cap,
+                                       bool reach_dismissal_cap,
+                                       bool reach_group_impression_cap,
+                                       bool reach_group_dismissal_cap) {
+    ON_CALL(mock_client_, WouldTriggerHelpUI)
+        .WillByDefault([=](const std::map<std::string, std::string>& params) {
+          auto event_to_be_checked = params.at("event_to_be_checked");
+          if (event_to_be_checked ==
+              "name:ChromeOSAshGrowthCampaigns_Campaign3_Impression;comparator:"
+              "<6;window:3650;storage:3650") {
+            return !reach_impression_cap;
+          }
+
+          if (event_to_be_checked ==
+              "name:ChromeOSAshGrowthCampaigns_Campaign3_Dismissed;comparator:<"
+              "3;window:3650;storage:3650") {
+            return !reach_dismissal_cap;
+          }
+          if (event_to_be_checked ==
+              "name:ChromeOSAshGrowthCampaigns_Group1_Impression;comparator:<3;"
+              "window:3650;storage:3650") {
+            return !reach_group_impression_cap;
+          }
+
+          if (event_to_be_checked ==
+              "name:ChromeOSAshGrowthCampaigns_Group1_Dismissed;comparator:<2;"
+              "window:3650;storage:3650") {
+            return !reach_group_dismissal_cap;
+          }
+
+          return false;
+        });
+  }
+
   void InitilizeCampaignsExperimentTag(const base::Feature& feature,
                                        const std::string& exp_tag) {
     base::FieldTrialParams params;
@@ -413,36 +482,48 @@ class CampaignsManagerTest : public testing::Test {
   }
 
   void LoadComponentWithScheduling(const std::string& schedulings) {
-    auto session_targeting = base::StringPrintf(R"(
+    auto runtime_targeting = base::StringPrintf(R"(
             "runtime": {
               "schedulings": %s
             }
           )",
                                                 schedulings.c_str());
     LoadComponentAndVerifyLoadComplete(base::StringPrintf(
-        kValidCampaignsFileTemplate, session_targeting.c_str()));
+        kValidCampaignsFileTemplate, runtime_targeting.c_str()));
   }
 
   void LoadComponentWithTriggerTargeting(const std::string& triggers) {
-    auto session_targeting = base::StringPrintf(R"(
+    auto runtime_targeting = base::StringPrintf(R"(
             "runtime": {
               "triggerList": %s
             }
           )",
                                                 triggers.c_str());
     LoadComponentAndVerifyLoadComplete(base::StringPrintf(
-        kValidCampaignsFileTemplate, session_targeting.c_str()));
+        kValidCampaignsFileTemplate, runtime_targeting.c_str()));
   }
 
   void LoadComponentWithAppsOpenedTargeting(const std::string& apps_opened) {
-    auto session_targeting = base::StringPrintf(R"(
+    auto runtime_targeting = base::StringPrintf(R"(
             "runtime": {
               "appsOpened": %s
             }
           )",
                                                 apps_opened.c_str());
     LoadComponentAndVerifyLoadComplete(base::StringPrintf(
-        kValidCampaignsFileTemplate, session_targeting.c_str()));
+        kValidCampaignsFileTemplate, runtime_targeting.c_str()));
+  }
+
+  void LoadComponentWithRunTimeTargeting(const std::string& runtime_targeting,
+                                         bool has_group_id = false) {
+    auto targeting = base::StringPrintf(R"(
+            "runtime": %s
+          )",
+                                        runtime_targeting.c_str());
+    LoadComponentAndVerifyLoadComplete(
+        base::StringPrintf(has_group_id ? kValidCampaignsFileWithGroupIdTemplate
+                                        : kValidCampaignsFileTemplate,
+                           targeting.c_str()));
   }
 
   void LoadComponentWithMultiTargetings(const std::string& targetings) {
@@ -2168,6 +2249,154 @@ TEST_F(CampaignsManagerTest,
 
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignUnderCap) {
+  MockFeatueEngagementCheckOnCaps(
+      /*reach_impression_cap=*/false,
+      /*reach_dismissal_cap=*/false,
+      // For campaigns that don't specify group impression cap and dismissal.
+      // These params are no-ops.
+      /*reach_group_impression_cap=*/true,
+      /*reach_group_dismissal_cap=*/true);
+
+  LoadComponentWithRunTimeTargeting(
+      R"({
+        "events": {
+          "impressionCap": 6,
+          "dismissalCap": 3
+        }
+      })");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignUnderCapNoGroupId) {
+  MockFeatueEngagementCheckOnCaps(
+      /*reach_impression_cap=*/false,
+      /*reach_dismissal_cap=*/false,
+      // For campaigns that don't have group ID specified. Group impression cap
+      // and dismissal cap are no-op.
+      /*reach_group_impression_cap=*/true,
+      /*reach_group_dismissal_cap=*/true);
+
+  LoadComponentWithRunTimeTargeting(
+      R"({
+        "events": {
+          "impressionCap": 6,
+          "dismissalCap": 3,
+          "groupImpressionCap": 3,
+          "groupDismissalCap": 2
+        }
+      })");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignReachImpressionCap) {
+  MockFeatueEngagementCheckOnCaps(
+      /*reach_impression_cap=*/true,
+      /*reach_dismissal_cap=*/false,
+      // For campaigns that don't specify group impression cap and dismissal.
+      // These params are no-ops.
+      /*reach_group_impression_cap=*/true,
+      /*reach_group_dismissal_cap=*/true);
+
+  LoadComponentWithRunTimeTargeting(
+      R"({
+        "events": {
+          "impressionCap": 6,
+          "dismissalCap": 3
+        }
+      })");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignReachDismissalCap) {
+  MockFeatueEngagementCheckOnCaps(
+      /*reach_impression_cap=*/false,
+      /*reach_dismissal_cap=*/true,
+      // For campaigns that don't specify group impression cap and dismissal.
+      // These params are no-ops.
+      /*reach_group_impression_cap=*/true,
+      /*reach_group_dismissal_cap=*/true);
+
+  LoadComponentWithRunTimeTargeting(
+      R"({
+        "events": {
+          "impressionCap": 6,
+          "dismissalCap": 3
+        }
+      })");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignUnderGroupImpressionCap) {
+  MockFeatueEngagementCheckOnCaps(
+      /*reach_impression_cap=*/false,
+      /*reach_dismissal_cap=*/false,
+      /*reach_group_impression_cap=*/false,
+      /*reach_group_dismissal_cap=*/false);
+
+  LoadComponentWithRunTimeTargeting(
+      R"({
+        "events": {
+          "impressionCap": 6,
+          "dismissalCap": 3,
+          "groupImpressionCap": 3,
+          "groupDismissalCap": 2
+        }
+      })",
+      /*has_group_id=*/true);
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignReachGroupImpressionCap) {
+  MockFeatueEngagementCheckOnCaps(
+      /*reach_impression_cap=*/false,
+      /*reach_dismissal_cap=*/false,
+      /*reach_group_impression_cap=*/true,
+      /*reach_group_dismissal_cap=*/false);
+
+  LoadComponentWithRunTimeTargeting(
+      R"({
+        "events": {
+          "impressionCap": 6,
+          "dismissalCap": 3,
+          "groupImpressionCap": 3,
+          "groupDismissalCap": 2
+        }
+      })",
+      /*has_group_id=*/true);
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignReachGroupDismissalCap) {
+  MockFeatueEngagementCheckOnCaps(
+      /*reach_impression_cap=*/false,
+      /*reach_dismissal_cap=*/false,
+      /*reach_group_impression_cap=*/false,
+      /*reach_group_dismissal_cap=*/true);
+
+  LoadComponentWithRunTimeTargeting(
+      R"({
+        "events": {
+          "impressionCap": 6,
+          "dismissalCap": 3,
+          "groupImpressionCap": 3,
+          "groupDismissalCap": 2
+        }
+      })",
+      /*has_group_id=*/true);
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
 }  // namespace growth
