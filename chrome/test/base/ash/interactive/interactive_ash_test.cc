@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
 #include "chrome/test/base/chromeos/crosier/aura_window_title_observer.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -203,6 +204,44 @@ ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::NavigateQuickSettingsToBluetoothPage() {
   return NavigateQuickSettingsToPage(
       ash::kBluetoothFeatureTileDrillInArrowElementId);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::NavigateToInternetDetailsPage(
+    const ui::ElementIdentifier& element_id,
+    const ash::NetworkTypePattern network_pattern,
+    const std::string& network_name) {
+  WebContentsInteractionTestUtil::DeepQuery internet_summary_row;
+  WebContentsInteractionTestUtil::DeepQuery network_list;
+  WebContentsInteractionTestUtil::DeepQuery network_list_item_title;
+  std::string element_selector;
+
+  // TODO: Add other network types.
+  if (network_pattern.MatchesPattern(ash::NetworkTypePattern::Mobile())) {
+    internet_summary_row = ash::settings::cellular::CellularSummaryItem();
+    network_list = ash::settings::cellular::CellularNetworksList();
+    network_list_item_title = WebContentsInteractionTestUtil::DeepQuery({{
+        "network-list",
+        "network-list-item",
+        "div#divText",
+    }});
+  } else {
+    // Unsupported Network pattern.
+    NOTREACHED_NORETURN();
+  }
+
+  return Steps(
+      NavigateSettingsToInternetPage(element_id),
+      WaitForElementExists(element_id, internet_summary_row),
+      ScrollIntoView(element_id, internet_summary_row),
+      MoveMouseTo(element_id, internet_summary_row), ClickMouse(),
+      WaitForAnyElementTextContains(element_id, network_list,
+                                    network_list_item_title, network_name),
+      ClickAnyElementTextContains(element_id, network_list,
+                                  network_list_item_title, network_name),
+      WaitForElementTextContains(
+          element_id, ash::settings::cellular::CellularDetailsSubpageTitle(),
+          /*text=*/network_name.c_str()));
 }
 
 Profile* InteractiveAshTest::GetActiveUserProfile() {

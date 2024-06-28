@@ -15,6 +15,11 @@ WebContentsInteractionTestUtil::DeepQuery InternetPage() {
   }});
 }
 
+WebContentsInteractionTestUtil::DeepQuery NetworkMoreDetailsMenuButton() {
+  return InternetPage() + "settings-internet-detail-menu" +
+         "cr-icon-button#moreNetworkDetail";
+}
+
 namespace cellular {
 
 WebContentsInteractionTestUtil::DeepQuery CellularSummaryItem() {
@@ -73,6 +78,34 @@ WebContentsInteractionTestUtil::DeepQuery EsimNetworkList() {
 WebContentsInteractionTestUtil::DeepQuery MobileDataToggle() {
   return InternetPage() + "network-summary" + "network-summary-item#Cellular" +
          "cr-toggle#deviceEnabledButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery CellularNetworksList() {
+  return InternetPage() + "settings-internet-subpage" +
+         "cellular-networks-list";
+}
+
+WebContentsInteractionTestUtil::DeepQuery CellularDetailsSubpageTitle() {
+  return InternetPage() + "os-settings-subpage" + "h1#subpageTitle";
+}
+
+WebContentsInteractionTestUtil::DeepQuery CellularSubpageMenuRenameButton() {
+  return ash::settings::InternetPage() + "settings-internet-detail-menu" +
+         "button#renameBtn";
+}
+
+WebContentsInteractionTestUtil::DeepQuery CellularSubpageMenuRenameDialog() {
+  return ash::settings::InternetPage() + "esim-rename-dialog#esimRenameDialog";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+CellularSubpageMenuRenameDialogDoneButton() {
+  return CellularSubpageMenuRenameDialog() + "cr-button#done";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+CellularSubpageMenuRenameDialogInputField() {
+  return CellularSubpageMenuRenameDialog() + "cr-input#eSimprofileName";
 }
 
 }  // namespace cellular

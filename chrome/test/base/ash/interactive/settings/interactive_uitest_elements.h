@@ -12,6 +12,8 @@ namespace ash::settings {
 // Top-level internet page.
 WebContentsInteractionTestUtil::DeepQuery InternetPage();
 
+WebContentsInteractionTestUtil::DeepQuery NetworkMoreDetailsMenuButton();
+
 namespace cellular {
 
 // The cellular "row" on the top-level internet page.
@@ -55,6 +57,29 @@ WebContentsInteractionTestUtil::DeepQuery EsimNetworkList();
 
 // The Mobile data toggle on the top-level internet page.
 WebContentsInteractionTestUtil::DeepQuery MobileDataToggle();
+
+// The cellular networks list page.
+WebContentsInteractionTestUtil::DeepQuery CellularNetworksList();
+
+// The cellular network details subpage title.
+WebContentsInteractionTestUtil::DeepQuery CellularDetailsSubpageTitle();
+
+// The cellular networks subpage menu rename button.
+WebContentsInteractionTestUtil::DeepQuery CellularSubpageMenuRenameButton();
+
+// The cellular networks subpage rename dialog dialog.
+WebContentsInteractionTestUtil::DeepQuery CellularSubpageMenuRenameDialog();
+
+// The cellular networks subpage rename dialog dialog "done" button.
+WebContentsInteractionTestUtil::DeepQuery
+CellularSubpageMenuRenameDialogDoneButton();
+
+// The cellular networks subpage rename dialog dialog text "input" field.
+WebContentsInteractionTestUtil::DeepQuery
+CellularSubpageMenuRenameDialogInputField();
+
+// The cellular "row" on the top-level internet page.
+WebContentsInteractionTestUtil::DeepQuery CellularSummaryItem();
 
 }  // namespace cellular
 

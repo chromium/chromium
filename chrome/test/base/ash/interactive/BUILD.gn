@@ -46,5 +46,7 @@ source_set("test_support") {
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chrome/test/base/ash/interactive/bluetooth:test_support",
+    "//chrome/test/base/ash/interactive/cellular:test_support",
+    "//chrome/test/base/ash/interactive/settings:test_support",
   ]
 }

@@ -12,6 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/interaction_sequence.h"
 
@@ -62,14 +63,22 @@ class InteractiveAshTest
   void CloseSystemWebApp(ash::SystemWebAppType type);
 
   // Navigates the Settings app, which is expected to be associated with
-  // |element_id|, to the top-level internet page.
+  // `element_id`, to the top-level internet page.
   ui::test::internal::InteractiveTestPrivate::MultiStep
   NavigateSettingsToInternetPage(const ui::ElementIdentifier& element_id);
 
   // Navigates the Settings app, which is expected to be associated with
-  // |element_id|, to the top-level bluetooth page.
+  // `element_id`, to the top-level bluetooth page.
   ui::test::internal::InteractiveTestPrivate::MultiStep
   NavigateSettingsToBluetoothPage(const ui::ElementIdentifier& element_id);
+
+  //  Navigates the Settings app, which is expected to be associated with
+  // `element_id`, to the details page for the network named `network_name`
+  // with type `network_pattern`.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  NavigateToInternetDetailsPage(const ui::ElementIdentifier& element_id,
+                                const ash::NetworkTypePattern network_pattern,
+                                const std::string& network_name);
 
   // Opens the Quick Settings bubble.
   ui::test::internal::InteractiveTestPrivate::MultiStep OpenQuickSettings();
