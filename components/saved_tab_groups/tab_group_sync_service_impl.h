@@ -162,6 +162,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
                 LocalTabGroupID group_id,
                 const std::optional<LocalTabID>& tab_id = std::nullopt);
 
+  // Obsevers of the model.
+  base::ObserverList<TabGroupSyncService::Observer> observers_;
+
   // The in-memory model representing the currently present saved tab groups.
   std::unique_ptr<SavedTabGroupModel> model_;
 
@@ -196,9 +199,6 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // from sync. UI can't handle these groups, hence the service needs to wait
   // before notifying the observers.
   std::set<base::Uuid> empty_groups_;
-
-  // Obsevers of the model.
-  base::ObserverList<TabGroupSyncService::Observer> observers_;
 
   base::WeakPtrFactory<TabGroupSyncServiceImpl> weak_ptr_factory_{this};
 };
