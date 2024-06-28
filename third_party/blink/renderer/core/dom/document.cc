@@ -7516,8 +7516,9 @@ void Document::FinishedParsing() {
   // Parser should have picked up all preloads by now
   fetcher_->ClearPreloads(ResourceFetcher::kClearSpeculativeMarkupPreloads);
 
-  // Record histograms of ShapeText.
-  if (IsEligibleForRecordingShapeTextMetrics()) {
+  if (IsInOutermostMainFrame() && !IsInitialEmptyDocument() &&
+      Url().ProtocolIsInHTTPFamily()) {
+    // Record histograms of ShapeText.
     base::UmaHistogramMicrosecondsTimes(
         "Blink.Layout.InlineNode.ShapeText.TotalTime.InOutermostMainFrame3",
         data_->accumulated_shape_text_elapsed_time_);
@@ -7804,17 +7805,10 @@ FontMatchingMetrics* Document::GetFontMatchingMetrics() {
   return font_matching_metrics_.get();
 }
 
-bool Document::IsEligibleForRecordingShapeTextMetrics() const {
-  return IsInOutermostMainFrame() && !HasFinishedParsing() &&
-         !IsInitialEmptyDocument() && Url().ProtocolIsInHTTPFamily();
-}
-
 void Document::MaybeRecordShapeTextElapsedTime(base::TimeDelta elapsed_time) {
-  if (IsEligibleForRecordingShapeTextMetrics()) {
     data_->accumulated_shape_text_elapsed_time_ += elapsed_time;
     data_->max_shape_text_elapsed_time_ =
         std::max(data_->max_shape_text_elapsed_time_, elapsed_time);
-  }
 }
 
 bool Document::AllowInlineEventHandler(Node* node,
