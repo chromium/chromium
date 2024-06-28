@@ -2952,6 +2952,7 @@ static_library("ash") {
   ]
 
   allow_circular_includes_from = [
+    "//chrome/browser/apps/almanac_api_client",
     "//chrome/browser/apps/platform_apps/api",
     "//chrome/browser/ash/quick_pair",
     "//chrome/browser/ash/release_notes",
