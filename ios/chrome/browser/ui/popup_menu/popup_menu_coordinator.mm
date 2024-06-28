@@ -13,8 +13,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -294,12 +293,8 @@ using base::UserMetricsAction;
     mediator.navigationAgent =
         WebNavigationBrowserAgent::FromBrowser(self.browser);
     mediator.baseViewController = self.baseViewController;
-    mediator.localOrSyncableBookmarkModel =
-        ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
-    mediator.accountBookmarkModel =
-        ios::AccountBookmarkModelFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
+    mediator.bookmarkModel = ios::BookmarkModelFactory::GetForBrowserState(
+        self.browser->GetBrowserState());
     mediator.readingListModel =
         ReadingListModelFactory::GetInstance()->GetForBrowserState(
             self.browser->GetBrowserState());
@@ -413,9 +408,8 @@ using base::UserMetricsAction;
       ReadingListBrowserAgent::FromBrowser(self.browser);
   self.mediator.lensCommandsHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands);
-  self.mediator.bookmarkModel =
-      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+  self.mediator.bookmarkModel = ios::BookmarkModelFactory::GetForBrowserState(
+      self.browser->GetBrowserState());
   self.mediator.prefService = self.browser->GetBrowserState()->GetPrefs();
   self.mediator.templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(

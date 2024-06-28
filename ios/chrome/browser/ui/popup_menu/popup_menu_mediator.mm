@@ -13,6 +13,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -27,7 +28,6 @@
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/translate/core/browser/translate_prefs.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/find_in_page/model/abstract_find_tab_helper.h"
 #import "ios/chrome/browser/follow/model/follow_browser_agent.h"
@@ -504,7 +504,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   }
 }
 
-- (void)setBookmarkModel:(LegacyBookmarkModel*)bookmarkModel {
+- (void)setBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel {
   _bookmarkModel = bookmarkModel;
   _bookmarkModelBridge.reset();
   if (bookmarkModel) {

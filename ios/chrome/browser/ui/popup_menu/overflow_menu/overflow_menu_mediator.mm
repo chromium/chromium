@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -29,7 +30,6 @@
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/translate/core/browser/translate_prefs.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -145,18 +145,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                           handler:handler];
 }
 
-// Uses `IsBookmarked` to check whether `url` is bookmarked in any of the
-// provided bookmark models. `account_model` can be null.
-bool IsBookmarked(const GURL& url,
-                  LegacyBookmarkModel* local_model,
-                  LegacyBookmarkModel* account_model) {
-  CHECK(local_model);
-  if (local_model->IsBookmarked(url)) {
-    return true;
-  }
-  return account_model && account_model->IsBookmarked(url);
-}
-
 }  // namespace
 
 @interface OverflowMenuMediator () <BookmarkModelBridgeObserver,
@@ -175,8 +163,7 @@ bool IsBookmarked(const GURL& url,
   std::unique_ptr<OverlayPresenterObserver> _overlayPresenterObserver;
 
   // Bridge to register for bookmark changes.
-  std::unique_ptr<BookmarkModelBridge> _localOrSyncableBookmarkModelBridge;
-  std::unique_ptr<BookmarkModelBridge> _accountBookmarkModelBridge;
+  std::unique_ptr<BookmarkModelBridge> _bookmarkModelBridge;
 
   // Bridge to register for reading list model changes.
   std::unique_ptr<ReadingListModelBridge> _readingListModelBridge;
@@ -302,8 +289,7 @@ bool IsBookmarked(const GURL& url,
   self.webState = nullptr;
   self.webStateList = nullptr;
 
-  self.localOrSyncableBookmarkModel = nullptr;
-  self.accountBookmarkModel = nullptr;
+  self.bookmarkModel = nullptr;
   self.readingListModel = nullptr;
   self.browserStatePrefs = nullptr;
   self.localStatePrefs = nullptr;
@@ -393,28 +379,14 @@ bool IsBookmarked(const GURL& url,
   }
 }
 
-- (void)setLocalOrSyncableBookmarkModel:
-    (LegacyBookmarkModel*)localOrSyncableBookmarkModel {
-  _localOrSyncableBookmarkModelBridge.reset();
+- (void)setBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel {
+  _bookmarkModelBridge.reset();
 
-  _localOrSyncableBookmarkModel = localOrSyncableBookmarkModel;
+  _bookmarkModel = bookmarkModel;
 
-  if (localOrSyncableBookmarkModel) {
-    _localOrSyncableBookmarkModelBridge = std::make_unique<BookmarkModelBridge>(
-        self, localOrSyncableBookmarkModel);
-  }
-
-  [self updateModel];
-}
-
-- (void)setAccountBookmarkModel:(LegacyBookmarkModel*)accountBookmarkModel {
-  _accountBookmarkModelBridge.reset();
-
-  _accountBookmarkModel = accountBookmarkModel;
-
-  if (accountBookmarkModel) {
-    _accountBookmarkModelBridge =
-        std::make_unique<BookmarkModelBridge>(self, accountBookmarkModel);
+  if (bookmarkModel) {
+    _bookmarkModelBridge =
+        std::make_unique<BookmarkModelBridge>(self, bookmarkModel);
   }
 
   [self updateModel];
@@ -1925,11 +1897,9 @@ bool IsBookmarked(const GURL& url,
       return self.followAction;
     }
     case overflow_menu::ActionType::Bookmark: {
-      BOOL pageIsBookmarked = self.webState &&
-                              self.localOrSyncableBookmarkModel &&
-                              IsBookmarked(self.webState->GetVisibleURL(),
-                                           self.localOrSyncableBookmarkModel,
-                                           self.accountBookmarkModel);
+      BOOL pageIsBookmarked =
+          self.webState && self.bookmarkModel &&
+          self.bookmarkModel->IsBookmarked(self.webState->GetVisibleURL());
       return (pageIsBookmarked) ? self.editBookmarkAction
                                 : self.addBookmarkAction;
     }

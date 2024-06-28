@@ -12,6 +12,9 @@
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_action_provider.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 
+namespace bookmarks {
+class BookmarkModel;
+}
 namespace feature_engagement {
 class Tracker;
 }
@@ -31,7 +34,6 @@ class BrowserPolicyConnectorIOS;
 @protocol FindInPageCommands;
 class FollowBrowserAgent;
 @protocol HelpCommands;
-class LegacyBookmarkModel;
 @protocol OverflowMenuCustomizationCommands;
 @class OverflowMenuOrderer;
 class OverlayPresenter;
@@ -90,9 +92,8 @@ class WebStateList;
 // BaseViewController for presenting some UI.
 @property(nonatomic, weak) UIViewController* baseViewController;
 
-// Bookmarks models to know if the page is bookmarked.
-@property(nonatomic, assign) LegacyBookmarkModel* localOrSyncableBookmarkModel;
-@property(nonatomic, assign) LegacyBookmarkModel* accountBookmarkModel;
+// Bookmark model to know if the page is bookmarked.
+@property(nonatomic, assign) bookmarks::BookmarkModel* bookmarkModel;
 
 // Readinglist model to know if model has finished loading.
 @property(nonatomic, assign) ReadingListModel* readingListModel;
