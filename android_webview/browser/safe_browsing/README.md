@@ -110,8 +110,13 @@ $ adb shell am start -a "android.intent.action.VIEW" -d "market://details?id=com
 ```
 
 If Google Play Services is installed, the user must opt into Google Play
-Protect's "Verify Apps" setting: `Settings > Google > Security > Google Play
-Protect > Scan device for security threats`.
+Protect's "Verify Apps" setting. This is a single setting, however it can be
+accessed by your choice of two different routes:
+
+* In the Play Store app: `Launch the Play Store app > User icon > Play Protect >
+  Settings (gear icon) > Scan apps with Play Protect`, or
+* In the Android Settings app: `Launch the Settings app > Security & Privacy >
+  App Security > Google Play Protect > Gear icon > Scan apps with Play Protect`
 
 ### Application opt-in
 
