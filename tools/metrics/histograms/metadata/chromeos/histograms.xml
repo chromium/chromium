@@ -2512,6 +2512,24 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <token key="MachineStatistic" variants="MachineStatistics"/>
 </histogram>
 
+<histogram name="ChromeOS.MagicBoost.OptInCard.{OptInFeatures}"
+    enum="OptInCardAction" expires_after="2025-06-24">
+  <owner>leandre@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Tracks the actions in the magic boost opt in card, which is triggered by the
+    {OptInFeatures}. Recorded when the opt-in card is shown or any button in the
+    card is clicked.
+  </summary>
+  <token key="OptInFeatures">
+    <variant name="HmrOnly" summary="only HMR feature"/>
+    <variant name="OrcaAndHmr" summary="both Orca and HMR"/>
+    <variant name="OrcaOnly" summary="only Orca feature"/>
+    <variant name="Total"
+        summary="no filter is added, records the total number"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.Mahi.CacheStateOnAccess" enum="MahiCacheHit"
     expires_after="2025-06-01">
   <owner>thanhdng@chromium.org</owner>

@@ -11,6 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
 #include "chromeos/components/editor_menu/public/cpp/read_write_card_controller.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -63,6 +64,11 @@ class MagicBoostCardController : public ReadWriteCardController {
   // Shows/closes Magic Boost disclaimer widget.
   void ShowDisclaimerUi(int64_t display_id);
 
+  // The setter and getter of the features that trigger the magic boost opt in
+  // card.
+  void SetOptInFeature(const magic_boost::OptInFeatures& features);
+  const magic_boost::OptInFeatures& GetOptInFeatures() const;
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void BindMagicBoostControllerCrosapiForTesting(
       mojo::PendingRemote<crosapi::mojom::MagicBoostController> pending_remote);
@@ -91,6 +97,8 @@ class MagicBoostCardController : public ReadWriteCardController {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   mojo::Remote<crosapi::mojom::MagicBoostController> remote_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  magic_boost::OptInFeatures opt_in_features_;
 
   base::WeakPtrFactory<MagicBoostCardController> weak_factory_{this};
 };

@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/magic_boost/mock_magic_boost_state.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_metrics.h"
 #include "chrome/browser/ui/chromeos/magic_boost/test/mock_magic_boost_controller_crosapi.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
@@ -66,6 +68,8 @@ class MagicBoostOptInCardTest : public ChromeViewsTestBase {
     // the unit tests).
     mock_magic_boost_state_ = std::make_unique<ash::MockMagicBoostState>();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+    card_controller_.SetOptInFeature(magic_boost::OptInFeatures::kHmrOnly);
   }
 
   void TearDown() override {
@@ -82,6 +86,11 @@ class MagicBoostOptInCardTest : public ChromeViewsTestBase {
 };
 
 TEST_F(MagicBoostOptInCardTest, PrimaryButtonActions) {
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
+  std::string histogram_name = magic_boost::kMagicBoostOptInCardHistogram;
+  histogram_tester->ExpectTotalCount(histogram_name + "Total", 0);
+  histogram_tester->ExpectTotalCount(histogram_name + "HmrOnly", 0);
+
   // Show the opt-in UI card.
   EXPECT_CALL(crosapi_controller_, CloseDisclaimerUi);
   card_controller_.ShowOptInUi(/*anchor_view_bounds=*/gfx::Rect());
@@ -93,13 +102,40 @@ TEST_F(MagicBoostOptInCardTest, PrimaryButtonActions) {
   auto* primary_button = GetPrimaryButton(opt_in_widget);
   ASSERT_TRUE(primary_button);
 
+  // Records the `kShowCard` metrics.
+  histogram_tester->ExpectTotalCount(histogram_name + "Total", 1);
+  histogram_tester->ExpectTotalCount(histogram_name + "HmrOnly", 1);
+  histogram_tester->ExpectBucketCount(
+      histogram_name + "HmrOnly", magic_boost::OptInCardAction::kShowCard, 1);
+  histogram_tester->ExpectBucketCount(
+      histogram_name + "Total", magic_boost::OptInCardAction::kShowCard, 1);
+  histogram_tester->ExpectBucketCount(
+      histogram_name + "HmrOnly",
+      magic_boost::OptInCardAction::kAcceptButtonPressed, 0);
+
   EXPECT_CALL(crosapi_controller_, ShowDisclaimerUi);
 
   LeftClickOn(primary_button);
   EXPECT_FALSE(card_controller_.opt_in_widget_for_test());
+
+  // Records the `kAcceptButtonPressed` metrics.
+  histogram_tester->ExpectTotalCount(histogram_name + "Total", 2);
+  histogram_tester->ExpectBucketCount(
+      histogram_name + "HmrOnly", magic_boost::OptInCardAction::kShowCard, 1);
+  histogram_tester->ExpectBucketCount(
+      histogram_name + "HmrOnly",
+      magic_boost::OptInCardAction::kAcceptButtonPressed, 1);
+  histogram_tester->ExpectBucketCount(
+      histogram_name + "Total",
+      magic_boost::OptInCardAction::kAcceptButtonPressed, 1);
 }
 
 TEST_F(MagicBoostOptInCardTest, SecondaryButtonActions) {
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
+  std::string histogram_name = magic_boost::kMagicBoostOptInCardHistogram;
+  histogram_tester->ExpectTotalCount(histogram_name + "Total", 0);
+  histogram_tester->ExpectTotalCount(histogram_name + "HmrOnly", 0);
+
   ON_CALL(*mock_magic_boost_state_, ShouldIncludeOrcaInOptIn)
       .WillByDefault([](base::OnceCallback<void(bool)> callback) {
         std::move(callback).Run(false);
@@ -110,6 +146,17 @@ TEST_F(MagicBoostOptInCardTest, SecondaryButtonActions) {
   card_controller_.ShowOptInUi(/*anchor_view_bounds=*/gfx::Rect());
   auto* opt_in_widget = card_controller_.opt_in_widget_for_test();
   ASSERT_TRUE(opt_in_widget);
+
+  // Records the `kShowCard` metrics.
+  histogram_tester->ExpectTotalCount(histogram_name + "Total", 1);
+  histogram_tester->ExpectTotalCount(histogram_name + "HmrOnly", 1);
+  histogram_tester->ExpectBucketCount(
+      histogram_name + "HmrOnly", magic_boost::OptInCardAction::kShowCard, 1);
+  histogram_tester->ExpectBucketCount(
+      histogram_name + "Total", magic_boost::OptInCardAction::kShowCard, 1);
+  histogram_tester->ExpectBucketCount(
+      histogram_name + "HmrOnly",
+      magic_boost::OptInCardAction::kAcceptButtonPressed, 0);
 
   // Test that pressing the secondary button closes the card and sets the pref
   // using `MagicBoostState`. Orca functions shouldn't be called.
@@ -125,6 +172,17 @@ TEST_F(MagicBoostOptInCardTest, SecondaryButtonActions) {
   EXPECT_FALSE(mock_magic_boost_state_->hmr_enabled().value());
 
   EXPECT_FALSE(card_controller_.opt_in_widget_for_test());
+
+  // Records the `kDeclineButtonPressed` metrics.
+  histogram_tester->ExpectTotalCount(histogram_name + "Total", 2);
+  histogram_tester->ExpectBucketCount(
+      histogram_name + "HmrOnly", magic_boost::OptInCardAction::kShowCard, 1);
+  histogram_tester->ExpectBucketCount(
+      histogram_name + "HmrOnly",
+      magic_boost::OptInCardAction::kDeclineButtonPressed, 1);
+  histogram_tester->ExpectBucketCount(
+      histogram_name + "Total",
+      magic_boost::OptInCardAction::kDeclineButtonPressed, 1);
 }
 
 TEST_F(MagicBoostOptInCardTest, SecondaryButtonActionsIncludeOrca) {

@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_metrics.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_opt_in_card.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
@@ -105,6 +108,9 @@ void MagicBoostCardController::ShowOptInUi(
       },
       views::AsViewClass<MagicBoostOptInCard>(
           opt_in_widget_->GetContentsView())));
+
+  magic_boost::RecordOptInCardActionMetrics(
+      opt_in_features_, magic_boost::OptInCardAction::kShowCard);
 }
 
 void MagicBoostCardController::CloseOptInUi() {
@@ -119,6 +125,16 @@ void MagicBoostCardController::ShowDisclaimerUi(int64_t display_id) {
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
   GetMagicBoostControllerAsh().ShowDisclaimerUi(display_id, transition_action_);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+}
+
+void MagicBoostCardController::SetOptInFeature(
+    const magic_boost::OptInFeatures& features) {
+  opt_in_features_ = features;
+}
+
+const magic_boost::OptInFeatures& MagicBoostCardController::GetOptInFeatures()
+    const {
+  return opt_in_features_;
 }
 
 base::WeakPtr<MagicBoostCardController> MagicBoostCardController::GetWeakPtr() {

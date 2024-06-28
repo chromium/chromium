@@ -11,6 +11,8 @@ source_set("magic_boost") {
   sources = [
     "magic_boost_card_controller.cc",
     "magic_boost_card_controller.h",
+    "magic_boost_metrics.cc",
+    "magic_boost_metrics.h",
     "magic_boost_opt_in_card.cc",
     "magic_boost_opt_in_card.h",
   ]

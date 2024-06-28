@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chrome/browser/ash/magic_boost/mock_magic_boost_state.h"
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_metrics.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_opt_in_card.h"
 #include "chrome/browser/ui/chromeos/magic_boost/test/mock_magic_boost_controller_crosapi.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -45,6 +47,7 @@ class MagicBoostCardControllerTest : public ChromeViewsTestBase {
     card_controller_.SetMagicBoostControllerCrosapiForTesting(
         &crosapi_controller_);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    card_controller_.SetOptInFeature(magic_boost::OptInFeatures::kHmrOnly);
 
     magic_boost_state_ = std::make_unique<ash::MockMagicBoostState>();
   }
@@ -57,7 +60,7 @@ class MagicBoostCardControllerTest : public ChromeViewsTestBase {
  protected:
   std::unique_ptr<ash::MockMagicBoostState> magic_boost_state_;
   MagicBoostCardController card_controller_;
-  testing::StrictMock<MockMagicBoostControllerCrosapi> crosapi_controller_;
+  testing::NiceMock<MockMagicBoostControllerCrosapi> crosapi_controller_;
   mojo::Receiver<crosapi::mojom::MagicBoostController> receiver_{
       &crosapi_controller_};
 };
@@ -142,6 +145,38 @@ TEST_F(MagicBoostCardControllerTest, ShowOptInCardAgain) {
                                    /*selected_text=*/"",
                                    /*surrounding_text=*/"");
   ASSERT_TRUE(card_controller_.opt_in_widget_for_test());
+}
+
+TEST_F(MagicBoostCardControllerTest, ShowOptInCardMetrics) {
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
+  std::string histogram_name = magic_boost::kMagicBoostOptInCardHistogram;
+  histogram_tester->ExpectTotalCount(histogram_name + "Total", 0);
+  histogram_tester->ExpectTotalCount(histogram_name + "HmrOnly", 0);
+  histogram_tester->ExpectTotalCount(histogram_name + "OrcaAndHmr", 0);
+  histogram_tester->ExpectTotalCount(histogram_name + "OrcaOnly", 0);
+
+  // Shows the opt-in widget from hmr feature.
+  card_controller_.SetOptInFeature(magic_boost::OptInFeatures::kHmrOnly);
+  card_controller_.ShowOptInUi(/*anchor_bounds=*/gfx::Rect());
+  histogram_tester->ExpectTotalCount(histogram_name + "Total", 1);
+  histogram_tester->ExpectTotalCount(histogram_name + "HmrOnly", 1);
+  histogram_tester->ExpectBucketCount(
+      histogram_name + "HmrOnly", magic_boost::OptInCardAction::kShowCard, 1);
+  card_controller_.CloseOptInUi();
+
+  // Shows the opt-in widget from orca feature.
+  card_controller_.SetOptInFeature(magic_boost::OptInFeatures::kOrcaOnly);
+  card_controller_.ShowOptInUi(/*anchor_bounds=*/gfx::Rect());
+  histogram_tester->ExpectTotalCount(histogram_name + "Total", 2);
+  histogram_tester->ExpectTotalCount(histogram_name + "OrcaOnly", 1);
+  card_controller_.CloseOptInUi();
+
+  // Shows the opt-in widget from both hmr and orca feature.
+  card_controller_.SetOptInFeature(magic_boost::OptInFeatures::kOrcaAndHmr);
+  card_controller_.ShowOptInUi(/*anchor_bounds=*/gfx::Rect());
+  histogram_tester->ExpectTotalCount(histogram_name + "Total", 3);
+  histogram_tester->ExpectTotalCount(histogram_name + "OrcaAndHmr", 1);
+  card_controller_.CloseOptInUi();
 }
 
 }  // namespace chromeos

@@ -1419,6 +1419,12 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="11" label="Assistant"/>
 </enum>
 
+<enum name="OptInCardAction">
+  <int value="0" label="ShowCard"/>
+  <int value="1" label="AcceptButtonPressed"/>
+  <int value="2" label="DeclineButtonPressed"/>
+</enum>
+
 <enum name="OwnerKeyUmaEvent">
   <int value="0" label="DeviceSettingsServiceIsNull">
     DeviceSettingsService was null, owner key was not loaded.

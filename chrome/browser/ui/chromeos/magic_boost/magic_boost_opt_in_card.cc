@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_metrics.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
@@ -259,6 +260,10 @@ void MagicBoostOptInCard::SetIncludeOrca(bool include_orca) {
 }
 
 void MagicBoostOptInCard::OnPrimaryButtonPressed() {
+  magic_boost::RecordOptInCardActionMetrics(
+      controller_->GetOptInFeatures(),
+      magic_boost::OptInCardAction::kAcceptButtonPressed);
+
   controller_->CloseOptInUi();
 
   controller_->ShowDisclaimerUi(/*display_id=*/
@@ -269,6 +274,10 @@ void MagicBoostOptInCard::OnPrimaryButtonPressed() {
 }
 
 void MagicBoostOptInCard::OnSecondaryButtonPressed() {
+  magic_boost::RecordOptInCardActionMetrics(
+      controller_->GetOptInFeatures(),
+      magic_boost::OptInCardAction::kDeclineButtonPressed);
+
   controller_->CloseOptInUi();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
