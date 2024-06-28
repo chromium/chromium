@@ -410,7 +410,8 @@ void P2PSocketTcpBase::SetOption(P2PSocketOption option, int32_t value) {
       socket_->SetSendBufferSize(value);
       break;
     case P2P_SOCKET_OPT_DSCP:
-      return;  // For TCP sockets DSCP setting is not available.
+    case P2P_SOCKET_OPT_RECV_ECN:
+      return;  // For TCP sockets DSCP, ECN setting is not available.
     default:
       NOTREACHED_IN_MIGRATION();
       return;

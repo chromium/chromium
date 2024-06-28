@@ -53,6 +53,9 @@ bool JingleSocketOptionToP2PSocketOption(rtc::Socket::Option option,
     case rtc::Socket::OPT_DSCP:
       *ipc_option = network::P2P_SOCKET_OPT_DSCP;
       break;
+    case rtc::Socket::OPT_RECV_ECN:
+      *ipc_option = network::P2P_SOCKET_OPT_RECV_ECN;
+      break;
     case rtc::Socket::OPT_DONTFRAGMENT:
     case rtc::Socket::OPT_NODELAY:
     case rtc::Socket::OPT_IPV6_V6ONLY:

@@ -554,6 +554,9 @@ void P2PSocketUdp::SetOption(P2PSocketOption option, int32_t value) {
       SetSocketDiffServCodePointInternal(
           static_cast<net::DiffServCodePoint>(value));
       break;
+    case P2P_SOCKET_OPT_RECV_ECN:
+      socket_->SetRecvTos();
+      break;
     default:
       NOTREACHED_IN_MIGRATION();
   }

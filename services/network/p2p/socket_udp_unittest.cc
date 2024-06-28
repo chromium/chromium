@@ -155,7 +155,10 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
 
   int SetDoNotFragment() override { return net::OK; }
 
-  int SetRecvTos() override { return net::OK; }
+  int SetRecvTos() override {
+    is_recv_ecn_enabled_ = true;
+    return net::OK;
+  }
 
   void SetMsgConfirm(bool confirm) override {}
 
@@ -240,11 +243,15 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
   void DetachFromThread() override { NOTIMPLEMENTED(); }
 
   net::DscpAndEcn GetLastTos() const override {
-    NOTIMPLEMENTED();
-    return {net::DSCP_DEFAULT, net::ECN_DEFAULT};
+    if (!is_recv_ecn_enabled_) {
+      return {net::DSCP_DEFAULT, net::ECN_DEFAULT};
+    } else {
+      return {net::DSCP_DEFAULT, net::ECN_ECT1};
+    }
   }
 
  private:
+  bool is_recv_ecn_enabled_ = false;
   net::IPEndPoint address_;
   raw_ptr<base::circular_deque<UDPPacket>> sent_packets_;
   base::circular_deque<UDPPacket> incoming_packets_;
@@ -1189,6 +1196,49 @@ TEST_F(P2PSocketUdpWithInterceptorTest, ReceivePackets) {
   // Now we should be able to receive any data from |dest1_|.
   for (size_t i = 0; i < kNumPackets; i++) {
     socket_->ReceivePacket(dest1_, packets[i]);
+  }
+
+  AdvanceClock(base::Milliseconds(100));
+  EXPECT_EQ(kNumPackets + 1U, received_packets_.size());
+}
+
+// Verify that we can receive Explicit Congestion Notification (ECN) bits
+// from the socket after enabling the socket option, while assuming that
+// the sender is sending the ECN bits.
+TEST_F(P2PSocketUdpWithInterceptorTest, ReceivePacketsWithEcn) {
+  // Receive STUN request from |dest1_|.
+  std::vector<uint8_t> request_packet;
+  CreateStunRequest(&request_packet);
+
+  constexpr size_t kNumPackets = P2PSocketUdp::kUdpMaxBatchingRecvPackets;
+  std::vector<std::vector<uint8_t>> packets(kNumPackets);
+  for (size_t i = 0; i < kNumPackets; i++) {
+    CreateRandomPacket(&packets[i]);
+  }
+
+  InSequence s;
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
+  for (size_t i = 0; i < kNumPackets; i++) {
+    EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+    EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(packets[i]), _));
+  }
+
+  int desired_recv_ecn = 1;
+  socket_->ReceivePacket(dest1_, request_packet);
+
+  AdvanceClock(base::Milliseconds(100));
+  EXPECT_EQ(1U, received_packets_.size());
+  // Before setting the ECN receiving option on the socket,
+  // it will return the default ECN bits.
+  EXPECT_EQ(net::ECN_DEFAULT, socket_->GetLastTos().ecn);
+
+  // Setting the ECN bits receiving option for the socket.
+  socket_impl_->SetOption(P2P_SOCKET_OPT_RECV_ECN, desired_recv_ecn);
+  // Now we should be able to receive any data from |dest1_| with the ECN bits.
+  for (size_t i = 0; i < kNumPackets; i++) {
+    socket_->ReceivePacket(dest1_, packets[i]);
+    EXPECT_EQ(net::ECN_ECT1, socket_->GetLastTos().ecn);
   }
 
   AdvanceClock(base::Milliseconds(100));
