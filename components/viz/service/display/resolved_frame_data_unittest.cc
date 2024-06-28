@@ -37,6 +37,15 @@ SurfaceId MakeSurfaceId() {
                    LocalSurfaceId(1, 1, base::UnguessableToken::Create()));
 }
 
+OffsetTagDefinition MakeOffsetTagDefinition() {
+  OffsetTagDefinition tag_def;
+  tag_def.tag = OffsetTag::CreateRandom();
+  tag_def.provider = SurfaceRange(MakeSurfaceId());
+  tag_def.constraints = OffsetTagConstraints(-10.0f, 10.0f, -10.0f, 10.0f);
+
+  return tag_def;
+}
+
 CompositorFrame MakeSimpleFrame(const gfx::Rect& damage_rect = kOutputRect) {
   return CompositorFrameBuilder()
       .AddRenderPass(RenderPassBuilder(kOutputRect)
@@ -490,6 +499,44 @@ TEST_F(ResolvedFrameDataTest, OffsetTagValueIsClamped) {
       testing::ElementsAre(testing::AllOf(
           IsSolidColorQuad(SkColors::kBlack),
           HasTransform(gfx::Transform::MakeTranslation(clamped_offset)))));
+
+  resolved_frame.ResetAfterAggregation();
+}
+
+TEST_F(ResolvedFrameDataTest, OffsetTagWithCopyRequest) {
+  OffsetTagDefinition tag_def = MakeOffsetTagDefinition();
+
+  auto frame = CompositorFrameBuilder()
+                   .AddRenderPass(RenderPassBuilder(kOutputRect)
+                                      .AddSolidColorQuad(gfx::Rect(10, 10),
+                                                         SkColors::kBlack)
+                                      .SetQuadOffsetTag(tag_def.tag)
+                                      .AddStubCopyOutputRequest())
+                   .AddOffsetTagDefinition(tag_def)
+                   .Build();
+
+  Surface* surface = SubmitCompositorFrame(std::move(frame));
+  ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u,
+                                   AggregatedRenderPassId());
+
+  resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
+  EXPECT_TRUE(resolved_frame.is_valid());
+  ASSERT_THAT(resolved_frame.GetResolvedPasses(), testing::SizeIs(1));
+
+  resolved_frame.UpdateOffsetTags(
+      [](const OffsetTagDefinition&) { return gfx::Vector2dF(1, 1); });
+
+  // The original render pass that is held by the surface should still have a
+  // CopyOutputRequest but the copied render pass won't have it.
+  EXPECT_THAT(surface->GetActiveFrame().render_pass_list[0]->copy_requests,
+              testing::SizeIs(1));
+  EXPECT_THAT(resolved_frame.GetResolvedPasses()[0].render_pass().copy_requests,
+              testing::IsEmpty());
+
+  // Confirm that taking requests from surface still works.
+  Surface::CopyRequestsMap copy_request_map;
+  surface->TakeCopyOutputRequests(&copy_request_map);
+  EXPECT_THAT(copy_request_map, testing::SizeIs(1));
 
   resolved_frame.ResetAfterAggregation();
 }

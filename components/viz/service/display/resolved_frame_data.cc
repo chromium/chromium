@@ -294,13 +294,20 @@ void ResolvedFrameData::RebuildRenderPassesForOffsetTags() {
 
   // Create copies of the render passes and modify tagged quad positions by
   // adjusting `quad_to_target_transform` transform.
+  // TODO(kylechar): This only needs to make a copy of render passes that have
+  // tagged quads.
   offset_tag_render_passes.reserve(resolved_passes_.size());
   for (auto& resolved_pass : resolved_passes_) {
     CHECK(resolved_pass.fixed_.render_pass);
 
-    // TODO(kylechar): This only needs to make a copy of render passes that have
-    // tagged quads.
-    auto modified_pass = resolved_pass.fixed_.render_pass->DeepCopy();
+    // DeepCopy() can't copy CopyOutputRequests. Remove them from `source_pass`
+    // before copying and then add them back afterwards. The requests are
+    // copied to the AggregatedRenderPass by Surface::TakeCopyOutputRequests()
+    // which will look in the original render pass.
+    auto source_pass = resolved_pass.fixed_.render_pass;
+    auto copy_requests = std::move(source_pass->copy_requests);
+    auto modified_pass = source_pass->DeepCopy();
+    source_pass->copy_requests = std::move(copy_requests);
 
     for (auto* sqs : modified_pass->shared_quad_state_list) {
       if (sqs->offset_tag) {
