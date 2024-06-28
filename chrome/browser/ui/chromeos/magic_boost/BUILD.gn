@@ -57,8 +57,6 @@ source_set("test_support") {
   testonly = true
 
   sources = [
-    "test/mock_magic_boost_card_controller.cc",
-    "test/mock_magic_boost_card_controller.h",
     "test/mock_magic_boost_controller_crosapi.cc",
     "test/mock_magic_boost_controller_crosapi.h",
   ]
