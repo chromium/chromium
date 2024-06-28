@@ -990,10 +990,9 @@ suite('sea pen', () => {
         'test free text query', inputPrompt,
         'the free text prompt should match');
 
-    const queryParams = new URLSearchParams(window.location.search);
-    assertEquals(
-        'Query', queryParams.get('seaPenTemplateId'),
-        'routed to Freeform template results page');
+    assertTrue(
+        window.location.href.endsWith(SeaPenPaths.FREEFORM),
+        'routed to Freeform page');
 
     const seaPenImages = await waitUntil(
         () => seaPenRouter.shadowRoot?.querySelector<SeaPenImagesElement>(
