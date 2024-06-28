@@ -2468,7 +2468,6 @@ static_library("browser") {
     "//components/subresource_filter/core/common",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/browser:fetcher",
-    "//components/supervised_user/core/browser:list_family_members_service",
     "//components/supervised_user/core/common",
     "//components/supervised_user/core/common:buildflags",
     "//components/sync",

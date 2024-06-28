@@ -155,6 +155,12 @@ inline constexpr char kSupervisedUserLocallyParentApprovedExtensions[] =
     "profile.managed.locally_parent_approved_extensions";
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+// A string pref that stores the family member role of the primary account
+// as per kids_management::FamilyRole or
+// `supervised_user::kDefaultEmptyFamilyMemberRole` if not in a Family group.
+inline constexpr char kFamilyLinkUserMemberRole[] =
+    "profile.family_member_role";
+
 }  // namespace prefs
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_COMMON_PREF_NAMES_H_

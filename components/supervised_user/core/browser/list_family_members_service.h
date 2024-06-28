@@ -18,6 +18,8 @@
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
 
+class PrefService;
+
 namespace network {
 class SharedURLLoaderFactory;
 }
@@ -39,7 +41,8 @@ class ListFamilyMembersService : public KeyedService,
   ListFamilyMembersService() = delete;
   ListFamilyMembersService(
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      PrefService& user_prefs);
   ~ListFamilyMembersService() override;
 
   // Not copyable.
@@ -73,9 +76,14 @@ class ListFamilyMembersService : public KeyedService,
   void StartRepeatedFetch();
   void StopFetch();
 
+  // Updates prefs related to family account info.
+  void SetFamilyMemberPrefs(
+      const kidsmanagement::ListMembersResponse& list_members_response);
+
   // Dependencies.
   raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  const raw_ref<PrefService> user_prefs_;
 
   // Repeating consumers.
   base::RepeatingCallbackList<SuccessfulFetchCallback>

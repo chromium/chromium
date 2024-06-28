@@ -38,7 +38,10 @@ ListFamilyMembersServiceFactory::BuildServiceInstanceFor(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
 
+  PrefService* user_prefs = browser_state->GetPrefs();
+  CHECK(user_prefs);
+
   return std::make_unique<supervised_user::ListFamilyMembersService>(
       IdentityManagerFactory::GetForBrowserState(browser_state),
-      browser_state->GetSharedURLLoaderFactory());
+      browser_state->GetSharedURLLoaderFactory(), *user_prefs);
 }

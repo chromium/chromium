@@ -8574,7 +8574,7 @@ test("unit_tests") {
       "//components/session_proto_db:session_proto_db",
       "//components/signin/public/base:signin_buildflags",
       "//components/soda:constants",
-      "//components/supervised_user/core/browser:list_family_members_service",
+      "//components/supervised_user/core/browser",
       "//components/sync:test_support",
       "//components/user_education/common",
       "//components/user_education/test",

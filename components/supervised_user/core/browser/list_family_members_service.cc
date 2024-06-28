@@ -12,9 +12,12 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/common/pref_names.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace supervised_user {
@@ -36,9 +39,11 @@ base::TimeDelta NextUpdate(const ProtoFetcherStatus& status) {
 
 ListFamilyMembersService::ListFamilyMembersService(
     signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    PrefService& user_prefs)
     : identity_manager_(identity_manager),
-      url_loader_factory_(url_loader_factory) {}
+      url_loader_factory_(url_loader_factory),
+      user_prefs_(user_prefs) {}
 
 ListFamilyMembersService::~ListFamilyMembersService() = default;
 
@@ -74,6 +79,16 @@ void ListFamilyMembersService::StartRepeatedFetch() {
 }
 
 void ListFamilyMembersService::StopFetch() {
+  std::string empty_family_member_role;
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kFetchListFamilyMembersWithCapability)) {
+    // Record that the user is not in a family member role when using the
+    // `can_fetch_family_member_info` capability.
+    empty_family_member_role = supervised_user::kDefaultEmptyFamilyMemberRole;
+  }
+  user_prefs_->SetString(prefs::kFamilyLinkUserMemberRole,
+                         empty_family_member_role);
+
   if (!fetcher_) {
     return;
   }
@@ -145,6 +160,7 @@ void ListFamilyMembersService::OnResponse(
   }
 
   successful_fetch_repeating_consumers_.Notify(*response);
+  SetFamilyMemberPrefs(*response);
   ScheduleNextUpdate(NextUpdate(status));
 }
 
@@ -152,6 +168,27 @@ void ListFamilyMembersService::ScheduleNextUpdate(base::TimeDelta delay) {
   fetcher_.reset();
   timer_.Start(FROM_HERE, delay, this,
                &ListFamilyMembersService::StartRepeatedFetch);
+}
+
+void ListFamilyMembersService::SetFamilyMemberPrefs(
+    const kidsmanagement::ListMembersResponse& list_members_response) {
+  CoreAccountInfo account_info =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  // If the user has signed out since the fetch started do not record the family
+  // member role.
+  if (account_info.IsEmpty()) {
+    return;
+  }
+
+  for (const kidsmanagement::FamilyMember& member :
+       list_members_response.members()) {
+    if (member.user_id() == account_info.gaia) {
+      user_prefs_->SetString(
+          prefs::kFamilyLinkUserMemberRole,
+          supervised_user::FamilyRoleToString(member.role()));
+      return;
+    }
+  }
 }
 
 }  // namespace supervised_user

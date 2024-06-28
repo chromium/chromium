@@ -138,6 +138,8 @@ const char kSupervisedUserTopLevelURLFilteringResultHistogramName[] =
 const char kManagedByParentUiMoreInfoUrl[] =
     "https://familylink.google.com/setting/resource/94";
 
+const char kDefaultEmptyFamilyMemberRole[] = "not_in_family";
+
 // LINT.IfChange
 const char kFamilyMemberRoleFeedbackTag[] = "Family_Member_Role";
 // LINT.ThenChange(//chrome/browser/feedback/android/java/src/org/chromium/chrome/browser/feedback/FamilyInfoFeedbackSource.java)

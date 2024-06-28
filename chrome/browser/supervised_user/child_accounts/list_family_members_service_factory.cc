@@ -40,5 +40,5 @@ KeyedService* ListFamilyMembersServiceFactory::BuildServiceInstanceFor(
   Profile* profile = static_cast<Profile*>(context);
   return new supervised_user::ListFamilyMembersService(
       IdentityManagerFactory::GetForProfile(profile),
-      profile->GetURLLoaderFactory());
+      profile->GetURLLoaderFactory(), *profile->GetPrefs());
 }

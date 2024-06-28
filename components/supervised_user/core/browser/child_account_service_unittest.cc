@@ -96,7 +96,7 @@ class ChildAccountServiceTest : public ::testing::Test {
 
     list_family_members_service_ = std::make_unique<ListFamilyMembersService>(
         identity_test_environment_->identity_manager(),
-        weak_wrapped_subresource_loader_factory);
+        weak_wrapped_subresource_loader_factory, syncable_pref_service_);
 
     child_account_service_ = std::make_unique<ChildAccountService>(
         syncable_pref_service_, *supervised_user_service_.get(),

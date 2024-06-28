@@ -145,6 +145,9 @@ extern const char kSupervisedUserTopLevelURLFilteringResultHistogramName[];
 // The URL which the "Managed by your parent" UI links to.
 extern const char kManagedByParentUiMoreInfoUrl[];
 
+// The string used to denote an account that does not have a family member role.
+extern const char kDefaultEmptyFamilyMemberRole[];
+
 // Feedback source name for family member role in Family Link.
 extern const char kFamilyMemberRoleFeedbackTag[];
 
