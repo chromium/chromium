@@ -791,4 +791,28 @@ TEST_F(WebGPUSwapBufferProviderTest,
             kInternalUsage | wgpu::TextureUsage::RenderAttachment);
 }
 
+// Verifies that GetLastMailboxTexture() passes client-specified internal usages
+// to AssociateMailbox() and doesn't additionally add RenderAttachment (since
+// it does not instruct the decoder to do lazy clearing on this texture).
+TEST_F(WebGPUSwapBufferProviderTest,
+       GetLastMailboxTexturePassesClientSpecifiedInternalUsage) {
+  ASSERT_EQ(kInternalUsage & wgpu::TextureUsage::RenderAttachment, 0);
+
+  const gfx::Size kSize(10, 20);
+
+  EXPECT_EQ(webgpu_->internal_usage_from_most_recent_associate_mailbox_call,
+            wgpu::TextureUsage::None);
+
+  EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
+      .WillRepeatedly(Invoke(
+          [&](WGPUDevice device, const WGPUTextureDescriptor* desc) -> auto {
+            return ReserveTextureImpl(device, desc);
+          }));
+  provider_->GetNewTexture(kSize);
+
+  provider_->GetLastWebGPUMailboxTexture();
+  EXPECT_EQ(webgpu_->internal_usage_from_most_recent_associate_mailbox_call,
+            kInternalUsage);
+}
+
 }  // namespace blink
