@@ -57,7 +57,10 @@ void FrameSinkDesktopCapturer::Start(DesktopCapturer::Callback* callback) {
   // Disable auto-throttling so the capturer will always use the real resolution
   // of the display we're capturing.
   video_capturer_->SetAutoThrottlingEnabled(kAutoThrottle);
-  SelectSource(ash_->GetPrimaryDisplayId());
+  if (source_display_id_ == display::kInvalidDisplayId) {
+    source_display_id_ = ash_->GetPrimaryDisplayId();
+  }
+  SelectSource(source_display_id_);
   video_capturer_->Start(&video_consumer_,
                          viz::mojom::BufferFormatPreference::kDefault);
 }
@@ -103,6 +106,11 @@ bool FrameSinkDesktopCapturer::SelectSource(SourceId id) {
   }
 
   source_display_id_ = id;
+  if (!video_capturer_) {
+    // SelectSource() will be called again by Start() after creating the
+    // capturer.
+    return true;
+  }
 
   scoped_window_capture_request_ =
       ash_->MakeDisplayCapturable(source_display_id_);
