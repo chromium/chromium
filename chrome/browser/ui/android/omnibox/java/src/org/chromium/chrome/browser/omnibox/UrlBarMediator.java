@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.omnibox;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.View;
@@ -402,20 +401,5 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
         mIsHintTextFixedForStartOrNtp = true;
         final @ColorInt int hintTextColor = SemanticColorUtils.getDefaultTextColor(mContext);
         mModel.set(UrlBarProperties.HINT_TEXT_COLOR, hintTextColor);
-    }
-
-    /**
-     * Updates the typeface and style of the search text in the search box.
-     *
-     * @param useDefaultUrlBarTypeface Whether to use the default typeface for the search text in
-     *     the search box. If not we will use medium Google sans typeface for surface polish.
-     */
-    void updateUrlBarTypeface(boolean useDefaultUrlBarTypeface) {
-        // TODO(crbug.com/40283393): Use TextAppearance style instead.
-        Typeface typeface =
-                useDefaultUrlBarTypeface
-                        ? Typeface.defaultFromStyle(Typeface.NORMAL)
-                        : Typeface.create("google-sans-medium", Typeface.NORMAL);
-        mModel.set(UrlBarProperties.TYPEFACE, typeface);
     }
 }

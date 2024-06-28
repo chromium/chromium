@@ -334,11 +334,4 @@ public class UrlBarCoordinator
     public void setUrlBarHintTextColorForSurfacePolish() {
         mMediator.setUrlBarHintTextColorForSurfacePolish();
     }
-
-    /**
-     * @see UrlBarMediator#updateUrlBarTypeface(boolean)
-     */
-    public void updateUrlBarTypeface(boolean useDefaultUrlBarTypeface) {
-        mMediator.updateUrlBarTypeface(useDefaultUrlBarTypeface);
-    }
 }

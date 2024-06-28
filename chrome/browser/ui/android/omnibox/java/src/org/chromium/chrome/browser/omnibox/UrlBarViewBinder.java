@@ -76,8 +76,6 @@ class UrlBarViewBinder {
             view.setTextColor(model.get(UrlBarProperties.TEXT_COLOR));
         } else if (UrlBarProperties.HINT_TEXT_COLOR.equals(propertyKey)) {
             view.setHintTextColor(model.get(UrlBarProperties.HINT_TEXT_COLOR));
-        } else if (UrlBarProperties.TYPEFACE.equals(propertyKey)) {
-            view.setTypeface(model.get(UrlBarProperties.TYPEFACE));
         } else if (UrlBarProperties.INCOGNITO_COLORS_ENABLED.equals(propertyKey)) {
             final boolean incognitoColorsEnabled =
                     model.get(UrlBarProperties.INCOGNITO_COLORS_ENABLED);

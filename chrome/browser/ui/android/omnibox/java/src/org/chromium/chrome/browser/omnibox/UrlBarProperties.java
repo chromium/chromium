@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import android.graphics.Typeface;
 import android.view.ActionMode;
 import android.view.View;
 
@@ -148,10 +147,6 @@ class UrlBarProperties {
     public static final WritableObjectPropertyKey<View.OnKeyListener> KEY_DOWN_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    /** Specifies the typeface for url bar text. */
-    public static final WritableObjectPropertyKey<Typeface> TYPEFACE =
-            new WritableObjectPropertyKey<>();
-
     /** Specifies the color for url bar text. */
     public static final WritableIntPropertyKey TEXT_COLOR = new WritableIntPropertyKey();
 
@@ -190,7 +185,6 @@ class UrlBarProperties {
                 INCOGNITO_COLORS_ENABLED,
                 WINDOW_DELEGATE,
                 HAS_URL_SUGGESTIONS,
-                TYPEFACE,
                 TEXT_COLOR,
                 HINT_TEXT_COLOR
             };

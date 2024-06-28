@@ -1641,16 +1641,6 @@ class LocationBarMediator
     }
 
     /**
-     * Updates the typeface and style of the search text in the search box.
-     *
-     * @param useDefaultUrlBarTypeface Whether to use the default typeface for the search text in
-     *     the search box. If not we will use medium Google sans typeface for surface polish.
-     */
-    public void updateUrlBarTypeface(boolean useDefaultUrlBarTypeface) {
-        mUrlCoordinator.updateUrlBarTypeface(useDefaultUrlBarTypeface);
-    }
-
-    /**
      * Updates the value for the end margin of the url action container in the search box.
      *
      * @param useDefaultUrlActionContainerEndMargin Whether to use the default end margin for the

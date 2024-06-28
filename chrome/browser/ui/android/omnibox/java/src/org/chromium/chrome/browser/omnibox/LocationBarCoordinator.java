@@ -825,13 +825,6 @@ public class LocationBarCoordinator
     }
 
     /**
-     * @see LocationBarMediator#updateUrlBarTypeface(boolean)
-     */
-    public void updateUrlBarTypeface(boolean useDefaultUrlBarTypeface) {
-        mLocationBarMediator.updateUrlBarTypeface(useDefaultUrlBarTypeface);
-    }
-
-    /**
      * @see LocationBarMediator#updateUrlActionContainerEndMargin(boolean)
      */
     public void updateUrlActionContainerEndMargin(boolean useDefaultUrlActionContainerEndMargin) {

@@ -6,12 +6,10 @@ package org.chromium.chrome.browser.omnibox;
 
 import static org.chromium.chrome.browser.omnibox.UrlBarProperties.HINT_TEXT_COLOR;
 import static org.chromium.chrome.browser.omnibox.UrlBarProperties.TEXT_COLOR;
-import static org.chromium.chrome.browser.omnibox.UrlBarProperties.TYPEFACE;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Typeface;
 
 import androidx.test.filters.SmallTest;
 
@@ -74,18 +72,6 @@ public class UrlBarViewBinderUnitTest {
                         ContextUtils.getApplicationContext(), mModel, mFocusChangeCallback);
         mUrlBar = new UrlBarApi26(mActivity, null);
         PropertyModelChangeProcessor.create(mModel, mUrlBar, UrlBarViewBinder::bind);
-    }
-
-    @Test
-    @SmallTest
-    public void testSetTextTypeface() {
-        Typeface expectTypeFace = Typeface.create("google-sans-medium", Typeface.NORMAL);
-        mModel.set(TYPEFACE, expectTypeFace);
-        Assert.assertEquals(expectTypeFace, mUrlBar.getTypeface());
-        Typeface newExpectTypeFace = Typeface.defaultFromStyle(Typeface.NORMAL);
-        mModel.set(TYPEFACE, newExpectTypeFace);
-        Assert.assertEquals(newExpectTypeFace, mUrlBar.getTypeface());
-        Assert.assertNotEquals(newExpectTypeFace, expectTypeFace);
     }
 
     @Test
