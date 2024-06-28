@@ -183,7 +183,7 @@ void TestLookup(const char* name, KeyboardLayoutEngine* engine) {
   static const struct {
     DomCode input_dom_code;
     int input_flags;
-    DomKey::Base output_dom_key;
+    DomKey output_dom_key;
     KeyboardCode output_keycode;
     char16_t output_character;
   } kTestCases[] = {
