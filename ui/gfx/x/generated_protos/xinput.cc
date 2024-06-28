@@ -560,7 +560,7 @@ void ReadEvent<Input::DeviceChangedEvent>(Input::DeviceChangedEvent* event_,
       // data
       auto data_expr = type;
       if (CaseEq(data_expr, Input::DeviceClassType::Key)) {
-        data.key.emplace();
+        data.key.emplace(decltype(data.key)::value_type());
         uint16_t num_keys{};
         auto& keys = (*data.key).keys;
 
@@ -575,7 +575,7 @@ void ReadEvent<Input::DeviceChangedEvent>(Input::DeviceChangedEvent* event_,
         }
       }
       if (CaseEq(data_expr, Input::DeviceClassType::Button)) {
-        data.button.emplace();
+        data.button.emplace(decltype(data.button)::value_type());
         uint16_t num_buttons{};
         auto& state = (*data.button).state;
         auto& labels = (*data.button).labels;
@@ -598,7 +598,7 @@ void ReadEvent<Input::DeviceChangedEvent>(Input::DeviceChangedEvent* event_,
         }
       }
       if (CaseEq(data_expr, Input::DeviceClassType::Valuator)) {
-        data.valuator.emplace();
+        data.valuator.emplace(decltype(data.valuator)::value_type());
         auto& number = (*data.valuator).number;
         auto& label = (*data.valuator).label;
         auto& min = (*data.valuator).min;
@@ -661,7 +661,7 @@ void ReadEvent<Input::DeviceChangedEvent>(Input::DeviceChangedEvent* event_,
         Pad(&buf, 3);
       }
       if (CaseEq(data_expr, Input::DeviceClassType::Scroll)) {
-        data.scroll.emplace();
+        data.scroll.emplace(decltype(data.scroll)::value_type());
         auto& number = (*data.scroll).number;
         auto& scroll_type = (*data.scroll).scroll_type;
         auto& flags = (*data.scroll).flags;
@@ -696,7 +696,7 @@ void ReadEvent<Input::DeviceChangedEvent>(Input::DeviceChangedEvent* event_,
         }
       }
       if (CaseEq(data_expr, Input::DeviceClassType::Touch)) {
-        data.touch.emplace();
+        data.touch.emplace(decltype(data.touch)::value_type());
         auto& mode = (*data.touch).mode;
         auto& num_touches = (*data.touch).num_touches;
 
@@ -709,7 +709,7 @@ void ReadEvent<Input::DeviceChangedEvent>(Input::DeviceChangedEvent* event_,
         Read(&num_touches, &buf);
       }
       if (CaseEq(data_expr, Input::DeviceClassType::Gesture)) {
-        data.gesture.emplace();
+        data.gesture.emplace(decltype(data.gesture)::value_type());
         auto& num_touches = (*data.gesture).num_touches;
 
         // num_touches
@@ -2187,7 +2187,7 @@ std::unique_ptr<Input::ListInputDevicesReply> detail::ReadReply<
       // info
       auto info_expr = class_id;
       if (CaseEq(info_expr, Input::InputClass::Key)) {
-        info.key.emplace();
+        info.key.emplace(decltype(info.key)::value_type());
         auto& min_keycode = (*info.key).min_keycode;
         auto& max_keycode = (*info.key).max_keycode;
         auto& num_keys = (*info.key).num_keys;
@@ -2205,14 +2205,14 @@ std::unique_ptr<Input::ListInputDevicesReply> detail::ReadReply<
         Pad(&buf, 2);
       }
       if (CaseEq(info_expr, Input::InputClass::Button)) {
-        info.button.emplace();
+        info.button.emplace(decltype(info.button)::value_type());
         auto& num_buttons = (*info.button).num_buttons;
 
         // num_buttons
         Read(&num_buttons, &buf);
       }
       if (CaseEq(info_expr, Input::InputClass::Valuator)) {
-        info.valuator.emplace();
+        info.valuator.emplace(decltype(info.valuator)::value_type());
         uint8_t axes_len{};
         auto& mode = (*info.valuator).mode;
         auto& motion_size = (*info.valuator).motion_size;
@@ -3818,7 +3818,7 @@ std::unique_ptr<Input::GetFeedbackControlReply> detail::ReadReply<
       // data
       auto data_expr = class_id;
       if (CaseEq(data_expr, Input::FeedbackClass::Keyboard)) {
-        data.keyboard.emplace();
+        data.keyboard.emplace(decltype(data.keyboard)::value_type());
         auto& pitch = (*data.keyboard).pitch;
         auto& duration = (*data.keyboard).duration;
         auto& led_mask = (*data.keyboard).led_mask;
@@ -3859,7 +3859,7 @@ std::unique_ptr<Input::GetFeedbackControlReply> detail::ReadReply<
         }
       }
       if (CaseEq(data_expr, Input::FeedbackClass::Pointer)) {
-        data.pointer.emplace();
+        data.pointer.emplace(decltype(data.pointer)::value_type());
         auto& accel_num = (*data.pointer).accel_num;
         auto& accel_denom = (*data.pointer).accel_denom;
         auto& threshold = (*data.pointer).threshold;
@@ -3877,7 +3877,7 @@ std::unique_ptr<Input::GetFeedbackControlReply> detail::ReadReply<
         Read(&threshold, &buf);
       }
       if (CaseEq(data_expr, Input::FeedbackClass::String)) {
-        data.string.emplace();
+        data.string.emplace(decltype(data.string)::value_type());
         auto& max_symbols = (*data.string).max_symbols;
         uint16_t num_keysyms{};
         auto& keysyms = (*data.string).keysyms;
@@ -3896,7 +3896,7 @@ std::unique_ptr<Input::GetFeedbackControlReply> detail::ReadReply<
         }
       }
       if (CaseEq(data_expr, Input::FeedbackClass::Integer)) {
-        data.integer.emplace();
+        data.integer.emplace(decltype(data.integer)::value_type());
         auto& resolution = (*data.integer).resolution;
         auto& min_value = (*data.integer).min_value;
         auto& max_value = (*data.integer).max_value;
@@ -3911,7 +3911,7 @@ std::unique_ptr<Input::GetFeedbackControlReply> detail::ReadReply<
         Read(&max_value, &buf);
       }
       if (CaseEq(data_expr, Input::FeedbackClass::Led)) {
-        data.led.emplace();
+        data.led.emplace(decltype(data.led)::value_type());
         auto& led_mask = (*data.led).led_mask;
         auto& led_values = (*data.led).led_values;
 
@@ -3922,7 +3922,7 @@ std::unique_ptr<Input::GetFeedbackControlReply> detail::ReadReply<
         Read(&led_values, &buf);
       }
       if (CaseEq(data_expr, Input::FeedbackClass::Bell)) {
-        data.bell.emplace();
+        data.bell.emplace(decltype(data.bell)::value_type());
         auto& percent = (*data.bell).percent;
         auto& pitch = (*data.bell).pitch;
         auto& duration = (*data.bell).duration;
@@ -4735,7 +4735,7 @@ std::unique_ptr<Input::QueryDeviceStateReply> detail::ReadReply<
       // data
       auto data_expr = class_id;
       if (CaseEq(data_expr, Input::InputClass::Key)) {
-        data.key.emplace();
+        data.key.emplace(decltype(data.key)::value_type());
         auto& num_keys = (*data.key).num_keys;
         auto& keys = (*data.key).keys;
 
@@ -4752,7 +4752,7 @@ std::unique_ptr<Input::QueryDeviceStateReply> detail::ReadReply<
         }
       }
       if (CaseEq(data_expr, Input::InputClass::Button)) {
-        data.button.emplace();
+        data.button.emplace(decltype(data.button)::value_type());
         auto& num_buttons = (*data.button).num_buttons;
         auto& buttons = (*data.button).buttons;
 
@@ -4769,7 +4769,7 @@ std::unique_ptr<Input::QueryDeviceStateReply> detail::ReadReply<
         }
       }
       if (CaseEq(data_expr, Input::InputClass::Valuator)) {
-        data.valuator.emplace();
+        data.valuator.emplace(decltype(data.valuator)::value_type());
         uint8_t num_valuators{};
         auto& mode = (*data.valuator).mode;
         auto& valuators = (*data.valuator).valuators;
@@ -5039,7 +5039,7 @@ std::unique_ptr<Input::GetDeviceControlReply> detail::ReadReply<
     // data
     auto data_expr = control_id;
     if (CaseEq(data_expr, Input::DeviceControl::resolution)) {
-      data.resolution.emplace();
+      data.resolution.emplace(decltype(data.resolution)::value_type());
       uint32_t num_valuators{};
       auto& resolution_values = (*data.resolution).resolution_values;
       auto& resolution_min = (*data.resolution).resolution_min;
@@ -5070,7 +5070,7 @@ std::unique_ptr<Input::GetDeviceControlReply> detail::ReadReply<
       }
     }
     if (CaseEq(data_expr, Input::DeviceControl::abs_calib)) {
-      data.abs_calib.emplace();
+      data.abs_calib.emplace(decltype(data.abs_calib)::value_type());
       auto& min_x = (*data.abs_calib).min_x;
       auto& max_x = (*data.abs_calib).max_x;
       auto& min_y = (*data.abs_calib).min_y;
@@ -5105,7 +5105,7 @@ std::unique_ptr<Input::GetDeviceControlReply> detail::ReadReply<
       Read(&button_threshold, &buf);
     }
     if (CaseEq(data_expr, Input::DeviceControl::core)) {
-      data.core.emplace();
+      data.core.emplace(decltype(data.core)::value_type());
       auto& status = (*data.core).status;
       auto& iscore = (*data.core).iscore;
 
@@ -5119,7 +5119,7 @@ std::unique_ptr<Input::GetDeviceControlReply> detail::ReadReply<
       Pad(&buf, 2);
     }
     if (CaseEq(data_expr, Input::DeviceControl::enable)) {
-      data.enable.emplace();
+      data.enable.emplace(decltype(data.enable)::value_type());
       auto& enable = (*data.enable).enable;
 
       // enable
@@ -5129,7 +5129,7 @@ std::unique_ptr<Input::GetDeviceControlReply> detail::ReadReply<
       Pad(&buf, 3);
     }
     if (CaseEq(data_expr, Input::DeviceControl::abs_area)) {
-      data.abs_area.emplace();
+      data.abs_area.emplace(decltype(data.abs_area)::value_type());
       auto& offset_x = (*data.abs_area).offset_x;
       auto& offset_y = (*data.abs_area).offset_y;
       auto& width = (*data.abs_area).width;
@@ -5732,7 +5732,7 @@ std::unique_ptr<Input::GetDevicePropertyReply> detail::ReadReply<
   // items
   auto items_expr = format;
   if (CaseEq(items_expr, Input::PropertyFormat::c_8Bits)) {
-    items.data8.emplace();
+    items.data8.emplace(decltype(items.data8)::value_type());
     auto& data8 = *items.data8;
 
     // data8
@@ -5746,7 +5746,7 @@ std::unique_ptr<Input::GetDevicePropertyReply> detail::ReadReply<
     Align(&buf, 4);
   }
   if (CaseEq(items_expr, Input::PropertyFormat::c_16Bits)) {
-    items.data16.emplace();
+    items.data16.emplace(decltype(items.data16)::value_type());
     auto& data16 = *items.data16;
 
     // data16
@@ -5760,7 +5760,7 @@ std::unique_ptr<Input::GetDevicePropertyReply> detail::ReadReply<
     Align(&buf, 4);
   }
   if (CaseEq(items_expr, Input::PropertyFormat::c_32Bits)) {
-    items.data32.emplace();
+    items.data32.emplace(decltype(items.data32)::value_type());
     auto& data32 = *items.data32;
 
     // data32
@@ -6610,7 +6610,7 @@ std::unique_ptr<Input::XIQueryDeviceReply> detail::ReadReply<
           // data
           auto data_expr = type;
           if (CaseEq(data_expr, Input::DeviceClassType::Key)) {
-            data.key.emplace();
+            data.key.emplace(decltype(data.key)::value_type());
             uint16_t num_keys{};
             auto& keys = (*data.key).keys;
 
@@ -6625,7 +6625,7 @@ std::unique_ptr<Input::XIQueryDeviceReply> detail::ReadReply<
             }
           }
           if (CaseEq(data_expr, Input::DeviceClassType::Button)) {
-            data.button.emplace();
+            data.button.emplace(decltype(data.button)::value_type());
             uint16_t num_buttons{};
             auto& state = (*data.button).state;
             auto& labels = (*data.button).labels;
@@ -6648,7 +6648,7 @@ std::unique_ptr<Input::XIQueryDeviceReply> detail::ReadReply<
             }
           }
           if (CaseEq(data_expr, Input::DeviceClassType::Valuator)) {
-            data.valuator.emplace();
+            data.valuator.emplace(decltype(data.valuator)::value_type());
             auto& number = (*data.valuator).number;
             auto& label = (*data.valuator).label;
             auto& min = (*data.valuator).min;
@@ -6711,7 +6711,7 @@ std::unique_ptr<Input::XIQueryDeviceReply> detail::ReadReply<
             Pad(&buf, 3);
           }
           if (CaseEq(data_expr, Input::DeviceClassType::Scroll)) {
-            data.scroll.emplace();
+            data.scroll.emplace(decltype(data.scroll)::value_type());
             auto& number = (*data.scroll).number;
             auto& scroll_type = (*data.scroll).scroll_type;
             auto& flags = (*data.scroll).flags;
@@ -6746,7 +6746,7 @@ std::unique_ptr<Input::XIQueryDeviceReply> detail::ReadReply<
             }
           }
           if (CaseEq(data_expr, Input::DeviceClassType::Touch)) {
-            data.touch.emplace();
+            data.touch.emplace(decltype(data.touch)::value_type());
             auto& mode = (*data.touch).mode;
             auto& num_touches = (*data.touch).num_touches;
 
@@ -6759,7 +6759,7 @@ std::unique_ptr<Input::XIQueryDeviceReply> detail::ReadReply<
             Read(&num_touches, &buf);
           }
           if (CaseEq(data_expr, Input::DeviceClassType::Gesture)) {
-            data.gesture.emplace();
+            data.gesture.emplace(decltype(data.gesture)::value_type());
             auto& num_touches = (*data.gesture).num_touches;
 
             // num_touches
@@ -7713,7 +7713,7 @@ std::unique_ptr<Input::XIGetPropertyReply> detail::ReadReply<
   // items
   auto items_expr = format;
   if (CaseEq(items_expr, Input::PropertyFormat::c_8Bits)) {
-    items.data8.emplace();
+    items.data8.emplace(decltype(items.data8)::value_type());
     auto& data8 = *items.data8;
 
     // data8
@@ -7727,7 +7727,7 @@ std::unique_ptr<Input::XIGetPropertyReply> detail::ReadReply<
     Align(&buf, 4);
   }
   if (CaseEq(items_expr, Input::PropertyFormat::c_16Bits)) {
-    items.data16.emplace();
+    items.data16.emplace(decltype(items.data16)::value_type());
     auto& data16 = *items.data16;
 
     // data16
@@ -7741,7 +7741,7 @@ std::unique_ptr<Input::XIGetPropertyReply> detail::ReadReply<
     Align(&buf, 4);
   }
   if (CaseEq(items_expr, Input::PropertyFormat::c_32Bits)) {
-    items.data32.emplace();
+    items.data32.emplace(decltype(items.data32)::value_type());
     auto& data32 = *items.data32;
 
     // data32
