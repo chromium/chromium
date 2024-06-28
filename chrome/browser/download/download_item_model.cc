@@ -64,7 +64,6 @@
 #include "ui/color/color_id.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #endif
 
@@ -724,10 +723,6 @@ void DownloadItemModel::OpenUsingPlatformHandler() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::optional<DownloadCommands::Command>
 DownloadItemModel::MaybeGetMediaAppAction() const {
-  if (!base::FeatureList::IsEnabled(ash::features::kFileNotificationRevamp)) {
-    return std::nullopt;
-  }
-
   std::string mime_type = GetMimeType();
 
   if (mime_type == "application/pdf") {

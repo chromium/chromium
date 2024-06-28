@@ -92,9 +92,6 @@ base::FilePath TestCaptureModeDelegate::GetUserDefaultDownloadsFolder() const {
   return fake_downloads_dir_.GetPath();
 }
 
-void TestCaptureModeDelegate::ShowScreenCaptureItemInFolder(
-    const base::FilePath& file_path) {}
-
 void TestCaptureModeDelegate::OpenScreenCaptureItem(
     const base::FilePath& file_path) {}
 

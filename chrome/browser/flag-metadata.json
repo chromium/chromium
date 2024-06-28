@@ -4594,11 +4594,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "file-notification-revamp",
-    "owners": [ "timloh@chromium.org", "backlight-swe@google.com" ],
-    "expiry_milestone": 127
-  },
-  {
     "name": "file-system-access-locking-scheme",
     "owners": [ "memmott@chromium.org", "chrome-owp-storage@google.com" ],
     "expiry_milestone": 122

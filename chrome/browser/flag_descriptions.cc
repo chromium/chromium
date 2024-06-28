@@ -6744,10 +6744,6 @@ const char kExposeOutOfProcessVideoDecodingToLacrosDescription[] =
     "Accept media.stable.mojom.StableVideoDecoderFactory connection requests "
     "from LaCrOS and host said factories in utility processes.";
 
-const char kFileNotificationRevampName[] = "File notification revamp";
-const char kFileNotificationRevampDescription[] =
-    "Enable the new notifications for downloaded files and screen captures.";
-
 const char kFileTransferEnterpriseConnectorName[] =
     "Enable Files Transfer Enterprise Connector.";
 const char kFileTransferEnterpriseConnectorDescription[] =

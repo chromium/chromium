@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/uuid.h"
 #include "build/chromeos_buildflags.h"
@@ -44,7 +43,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
@@ -188,7 +186,6 @@ class DownloadItemNotificationTest : public testing::Test {
   }
 #endif
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
@@ -414,15 +411,9 @@ TEST_F(DownloadItemNotificationTest, DeepScanning) {
   download_item_notification_->Click(std::nullopt, std::nullopt);
 }
 
-// Test that EDIT_WITH_MEDIA_APP is added for pdf file if
-// kFileNotificationRevamp feature is enabled on CHROMEOS_ASH. It should not
-// be added for other build configs.
+// Test that EDIT_WITH_MEDIA_APP is added for pdf file on CHROMEOS_ASH.
+// It should not be added for other build configs.
 TEST_F(DownloadItemNotificationTest, NotificationActionsForPdf) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  scoped_feature_list_.InitAndEnableFeature(
-      ash::features::kFileNotificationRevamp);
-#endif
-
   ON_CALL(*download_item_, GetState)
       .WillByDefault(Return(download::DownloadItem::COMPLETE));
   ON_CALL(*download_item_, IsDone).WillByDefault(Return(true));
@@ -440,15 +431,9 @@ TEST_F(DownloadItemNotificationTest, NotificationActionsForPdf) {
 #endif
 }
 
-// Test that OPEN_WITH_MEDIA_APP is added for audio file if
-// kFileNotificationRevamp feature is enabled on CHROMEOS_ASH. It should not
-// be added for other build configs.
+// Test that OPEN_WITH_MEDIA_APP is added for audio file on CHROMEOS_ASH.
+// It should not be added for other build configs.
 TEST_F(DownloadItemNotificationTest, NotificationActionsForAudio) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  scoped_feature_list_.InitAndEnableFeature(
-      ash::features::kFileNotificationRevamp);
-#endif
-
   ON_CALL(*download_item_, GetState)
       .WillByDefault(Return(download::DownloadItem::COMPLETE));
   ON_CALL(*download_item_, IsDone).WillByDefault(Return(true));

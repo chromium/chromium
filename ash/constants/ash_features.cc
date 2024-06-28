@@ -1116,11 +1116,6 @@ BASE_FEATURE(kFederatedLauncherQueryAnalyticsVersion2Task,
              "FederatedLauncherQueryAnalyticsVersion2Task",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable the new notifications for downloaded files and screen captures.
-BASE_FEATURE(kFileNotificationRevamp,
-             "kFileNotificationRevamp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the files transfer conflict dialog in Files app.
 BASE_FEATURE(kFilesConflictDialog,
              "FilesConflictDialog",

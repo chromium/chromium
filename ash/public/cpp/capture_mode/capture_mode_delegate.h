@@ -80,10 +80,6 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // user. This function can only be called if the user is logged in.
   virtual base::FilePath GetUserDefaultDownloadsFolder() const = 0;
 
-  // Shows the screenshot or screen recording item in the screen capture folder.
-  virtual void ShowScreenCaptureItemInFolder(
-      const base::FilePath& file_path) = 0;
-
   // Opens the screenshot or screen recording item with the default handler.
   virtual void OpenScreenCaptureItem(const base::FilePath& file_path) = 0;
 

@@ -280,31 +280,29 @@ DisplayMetadata DisplayManager::CalculateDisplayMetadata(
                               CommandType::kOpenFile, full_path),
           /*icon=*/nullptr, /*text_id=*/-1, CommandType::kOpenFile);
 
-      if (base::FeatureList::IsEnabled(features::kFileNotificationRevamp)) {
-        std::optional<std::pair<CommandType, /*text_id=*/int>>
-            media_app_command_metadata;
+      std::optional<std::pair<CommandType, /*text_id=*/int>>
+          media_app_command_metadata;
 
-        if (mime_type == "application/pdf") {
-          media_app_command_metadata =
-              std::make_pair(CommandType::kEditWithMediaApp,
-                             IDS_DOWNLOAD_NOTIFICATION_LABEL_OPEN_AND_EDIT);
-        } else if (base::StartsWith(mime_type, "audio/",
-                                    base::CompareCase::SENSITIVE) ||
-                   base::StartsWith(mime_type, "video/",
-                                    base::CompareCase::SENSITIVE)) {
-          media_app_command_metadata =
-              std::make_pair(CommandType::kOpenWithMediaApp,
-                             IDS_DOWNLOAD_NOTIFICATION_LABEL_OPEN);
-        }
+      if (mime_type == "application/pdf") {
+        media_app_command_metadata =
+            std::make_pair(CommandType::kEditWithMediaApp,
+                           IDS_DOWNLOAD_NOTIFICATION_LABEL_OPEN_AND_EDIT);
+      } else if (base::StartsWith(mime_type, "audio/",
+                                  base::CompareCase::SENSITIVE) ||
+                 base::StartsWith(mime_type, "video/",
+                                  base::CompareCase::SENSITIVE)) {
+        media_app_command_metadata =
+            std::make_pair(CommandType::kOpenWithMediaApp,
+                           IDS_DOWNLOAD_NOTIFICATION_LABEL_OPEN);
+      }
 
-        if (media_app_command_metadata) {
-          command_infos.emplace_back(
-              base::BindRepeating(&DisplayManager::PerformCommand,
-                                  weak_ptr_factory_.GetWeakPtr(),
-                                  media_app_command_metadata->first, full_path),
-              /*icon=*/nullptr, media_app_command_metadata->second,
-              media_app_command_metadata->first);
-        }
+      if (media_app_command_metadata) {
+        command_infos.emplace_back(
+            base::BindRepeating(&DisplayManager::PerformCommand,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                media_app_command_metadata->first, full_path),
+            /*icon=*/nullptr, media_app_command_metadata->second,
+            media_app_command_metadata->first);
       }
 
       // NOTE: The `kShowInFolder` button does not have an icon.

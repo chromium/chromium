@@ -120,12 +120,6 @@ base::FilePath ChromeCaptureModeDelegate::GetUserDefaultDownloadsFolder()
   return download_prefs->GetDefaultDownloadDirectoryForProfile();
 }
 
-void ChromeCaptureModeDelegate::ShowScreenCaptureItemInFolder(
-    const base::FilePath& file_path) {
-  platform_util::ShowItemInFolder(ProfileManager::GetActiveUserProfile(),
-                                  file_path);
-}
-
 void ChromeCaptureModeDelegate::OpenScreenCaptureItem(
     const base::FilePath& file_path) {
   Profile* profile = ProfileManager::GetActiveUserProfile();

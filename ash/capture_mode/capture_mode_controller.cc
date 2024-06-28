@@ -1672,14 +1672,9 @@ void CaptureModeController::ShowPreviewNotification(
     const CaptureModeBehavior* behavior) {
   const bool for_video = type == CaptureModeType::kVideo;
   const int title_id = GetNotificationTitleIdForFile(screen_capture_path);
-  int message_id;
-  if (for_video && low_disk_space_threshold_reached_) {
-    message_id = IDS_ASH_SCREEN_CAPTURE_LOW_STORAGE_SPACE_MESSAGE;
-  } else {
-    message_id = base::FeatureList::IsEnabled(features::kFileNotificationRevamp)
-                     ? kNoMessage
-                     : IDS_ASH_SCREEN_CAPTURE_MESSAGE;
-  }
+  const int message_id = for_video && low_disk_space_threshold_reached_
+                             ? IDS_ASH_SCREEN_CAPTURE_LOW_STORAGE_SPACE_MESSAGE
+                             : kNoMessage;
 
   message_center::RichNotificationData optional_fields;
   optional_fields.buttons = behavior->GetNotificationButtonsInfo(for_video);
@@ -1704,15 +1699,9 @@ void CaptureModeController::HandleNotificationClicked(
     const BehaviorType behavior_type,
     std::optional<int> button_index) {
   if (!button_index.has_value()) {
-    if (base::FeatureList::IsEnabled(features::kFileNotificationRevamp)) {
-      // Open the item with the default handler.
-      delegate_->OpenScreenCaptureItem(screen_capture_path);
-      RecordScreenshotNotificationQuickAction(CaptureQuickAction::kOpenDefault);
-    } else {
-      // Show the item in the folder.
-      delegate_->ShowScreenCaptureItemInFolder(screen_capture_path);
-      RecordScreenshotNotificationQuickAction(CaptureQuickAction::kFiles);
-    }
+    // Open the item with the default handler.
+    delegate_->OpenScreenCaptureItem(screen_capture_path);
+    RecordScreenshotNotificationQuickAction(CaptureQuickAction::kOpenDefault);
   } else {
     const int button_index_value = button_index.value();
     if (type == CaptureModeType::kVideo) {
