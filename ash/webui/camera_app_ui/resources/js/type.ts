@@ -511,7 +511,14 @@ export class PortraitErrorNoFaceDetected extends Error {
  * Throws when the camera is suspended while camera effects are ongoing.
  */
 export class CameraSuspendError extends Error {
-  constructor(message = 'camera suspended') {
+  constructor(message = 'Camera suspended') {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}
+
+export class NoCameraError extends Error {
+  constructor(message = 'No available cameras') {
     super(message);
     this.name = this.constructor.name;
   }

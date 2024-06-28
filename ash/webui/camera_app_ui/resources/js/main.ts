@@ -507,7 +507,7 @@ async function main() {
   metrics.sendLaunchEvent({launchType});
 
   await cameraResourceInitialized.wait();
-  const cameraStartSuccessful = await cameraManager.requestResume();
+  const cameraStartSuccessful = await cameraManager.reconfigure();
 
   try {
     await filesystem.initialize();

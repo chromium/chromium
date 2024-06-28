@@ -14,10 +14,12 @@ import * as loadTimeData from '../models/load_time_data.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import * as state from '../state.js';
 import {
+  CameraSuspendError,
   ErrorLevel,
   ErrorType,
   Facing,
   Mode,
+  NoCameraError,
   Resolution,
 } from '../type.js';
 import * as util from '../util.js';
@@ -230,9 +232,9 @@ class Reconfigurer {
     state.set(state.State.ENABLE_PTZ, enablePTZ);
   }
 
-  async start(cameraInfo: CameraInfo): Promise<boolean> {
+  async start(cameraInfo: CameraInfo): Promise<void> {
     await this.stopStreams();
-    return this.startConfigure(cameraInfo);
+    await this.startConfigure(cameraInfo);
   }
 
   /**
@@ -243,12 +245,9 @@ class Reconfigurer {
     this.failedDevices.clear();
   }
 
-  /**
-   * @return If the configuration finished successfully.
-   */
-  async startConfigure(cameraInfo: CameraInfo): Promise<boolean> {
+  async startConfigure(cameraInfo: CameraInfo): Promise<void> {
     if (this.shouldSuspend) {
-      return false;
+      throw new CameraSuspendError();
     }
 
     const deviceOperator = DeviceOperator.getInstance();
@@ -256,7 +255,7 @@ class Reconfigurer {
 
     for await (const c of this.getConfigurationCandidates(cameraInfo)) {
       if (this.shouldSuspend) {
-        return false;
+        throw new CameraSuspendError();
       }
       if (this.failedDevices.has(c.deviceId)) {
         // Check if the devices is released from other apps. If not,
@@ -317,7 +316,7 @@ class Reconfigurer {
         this.capturePreferrer.onUpdateConfig(this.config);
         await this.listener.onUpdateConfig(this.config);
 
-        return true;
+        return;
       } catch (e) {
         await this.stopStreams();
 
@@ -367,7 +366,7 @@ class Reconfigurer {
             ErrorType.START_CAMERA_FAILURE, ErrorLevel.ERROR, errorToReport);
       }
     }
-    return false;
+    throw new NoCameraError();
   }
 
   /**
@@ -425,7 +424,7 @@ export class OperationScheduler {
 
   private ongoingOperationType: OperationType|null = null;
 
-  private pendingReconfigureWaiters: Array<CancelableEvent<boolean>> = [];
+  private pendingReconfigureWaiters: Array<CancelableEvent<void>> = [];
 
   private readonly togglePausedEventQueue = new AsyncJobQueue('drop');
 
@@ -476,17 +475,17 @@ export class OperationScheduler {
     }
   }
 
-  async reconfigure(): Promise<boolean> {
+  async reconfigure(): Promise<void> {
     // If |startReconfigure| is invoked before the first update of camera info,
     // it will hit the assertion in |startReconfigure| and cause CCA hang.
     await this.firstInfoUpdate.wait();
     if (this.ongoingOperationType !== null) {
-      const event = new CancelableEvent<boolean>();
+      const event = new CancelableEvent<void>();
       this.pendingReconfigureWaiters.push(event);
       await this.stopCapture();
-      return event.wait();
+      await event.wait();
     }
-    return this.startReconfigure();
+    await this.startReconfigure();
   }
 
   takeVideoSnapshot(): void {
@@ -510,7 +509,7 @@ export class OperationScheduler {
 
   private clearPendingReconfigureWaiters() {
     for (const waiter of this.pendingReconfigureWaiters) {
-      waiter.signal(false);
+      waiter.signal();
     }
     this.pendingReconfigureWaiters = [];
   }
@@ -524,9 +523,9 @@ export class OperationScheduler {
       this.pendingUpdateInfo = null;
     }
     if (this.pendingReconfigureWaiters.length !== 0) {
-      const succeed = this.startReconfigure();
+      const promise = this.startReconfigure();
       for (const waiter of this.pendingReconfigureWaiters) {
-        waiter.signalAs(succeed);
+        waiter.signalAs(promise);
       }
       this.pendingReconfigureWaiters = [];
     }
@@ -553,7 +552,7 @@ export class OperationScheduler {
     await this.capturer.stop();
   }
 
-  private startReconfigure(): Promise<boolean> {
+  private async startReconfigure(): Promise<void> {
     assert(this.ongoingOperationType === null);
     this.ongoingOperationType = OperationType.RECONFIGURE;
 
@@ -562,10 +561,7 @@ export class OperationScheduler {
     // This is for processing after the current reconfigure is done.
     void (async () => {
       try {
-        const succeed = await startPromise;
-        if (!succeed) {
-          this.clearPendingReconfigureWaiters();
-        }
+        await startPromise;
       } catch (e) {
         this.clearPendingReconfigureWaiters();
       } finally {
@@ -574,6 +570,6 @@ export class OperationScheduler {
     })();
     // Only returns the "start" part, so the returned promise is resolved
     // before all the waiters are resolved to keep the order correct.
-    return startPromise;
+    await startPromise;
   }
 }
