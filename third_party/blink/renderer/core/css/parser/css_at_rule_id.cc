@@ -148,6 +148,12 @@ CSSAtRuleID CssAtRuleID(StringView name) {
   if (EqualIgnoringASCIICase(name, "function")) {
     return CSSAtRuleID::kCSSAtRuleFunction;
   }
+  if (EqualIgnoringASCIICase(name, "mixin")) {
+    return CSSAtRuleID::kCSSAtRuleMixin;
+  }
+  if (EqualIgnoringASCIICase(name, "apply")) {
+    return CSSAtRuleID::kCSSAtRuleApplyMixin;
+  }
 
   return CSSAtRuleID::kCSSAtRuleInvalid;
 }
@@ -238,6 +244,10 @@ StringView CssAtRuleIDToString(CSSAtRuleID id) {
       return "@right-bottom";
     case CSSAtRuleID::kCSSAtRuleFunction:
       return "@function";
+    case CSSAtRuleID::kCSSAtRuleMixin:
+      return "@mixin";
+    case CSSAtRuleID::kCSSAtRuleApplyMixin:
+      return "@apply";
     case CSSAtRuleID::kCSSAtRuleInvalid:
       NOTREACHED_IN_MIGRATION();
       return "";
@@ -317,6 +327,9 @@ std::optional<WebFeature> AtRuleFeature(CSSAtRuleID rule_id) {
       return WebFeature::kCSSAtRuleWebkitKeyframes;
     case CSSAtRuleID::kCSSAtRuleFunction:
       return WebFeature::kCSSFunctions;
+    case CSSAtRuleID::kCSSAtRuleMixin:
+    case CSSAtRuleID::kCSSAtRuleApplyMixin:
+      return WebFeature::kCSSMixins;
     case CSSAtRuleID::kCSSAtRuleInvalid:
       NOTREACHED_IN_MIGRATION();
       return std::nullopt;

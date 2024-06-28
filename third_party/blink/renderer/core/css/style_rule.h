@@ -74,6 +74,8 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kStartingStyle,
     kViewTransition,
     kFunction,
+    kMixin,
+    kApplyMixin,
     kPositionTry,
   };
 
@@ -116,6 +118,8 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
            GetType() == kSupports || GetType() == kStartingStyle;
   }
   bool IsFunctionRule() const { return GetType() == kFunction; }
+  bool IsMixinRule() const { return GetType() == kMixin; }
+  bool IsApplyMixinRule() const { return GetType() == kApplyMixin; }
   bool IsPositionTryRule() const { return GetType() == kPositionTry; }
 
   StyleRuleBase* Copy() const;
@@ -729,6 +733,39 @@ class CORE_EXPORT StyleRuleFunction : public StyleRuleBase {
   Type return_type_;
 };
 
+// An @mixin rule, representing a CSS mixin. We store all of the rules
+// and declarations under a dummy rule that serves as the parent;
+// when @apply comes, we clone all the children below that rule and
+// reparent them into the point of @apply.
+class CORE_EXPORT StyleRuleMixin : public StyleRuleBase {
+ public:
+  StyleRuleMixin(AtomicString name, StyleRule* fake_parent_rule);
+  StyleRuleMixin(const StyleRuleMixin&) = delete;
+
+  const AtomicString& GetName() const { return name_; }
+  StyleRule& FakeParentRule() const { return *fake_parent_rule_; }
+
+  void TraceAfterDispatch(blink::Visitor*) const;
+
+ private:
+  AtomicString name_;
+  Member<StyleRule> fake_parent_rule_;
+};
+
+// An @apply rule, representing applying a mixin.
+class CORE_EXPORT StyleRuleApplyMixin : public StyleRuleBase {
+ public:
+  explicit StyleRuleApplyMixin(AtomicString name);
+  StyleRuleApplyMixin(const StyleRuleMixin&) = delete;
+
+  const AtomicString& GetName() const { return name_; }
+
+  void TraceAfterDispatch(blink::Visitor*) const;
+
+ private:
+  AtomicString name_;
+};
+
 template <>
 struct DowncastTraits<StyleRule> {
   static bool AllowFrom(const StyleRuleBase& rule) {
@@ -831,6 +868,20 @@ template <>
 struct DowncastTraits<StyleRuleFunction> {
   static bool AllowFrom(const StyleRuleBase& rule) {
     return rule.IsFunctionRule();
+  }
+};
+
+template <>
+struct DowncastTraits<StyleRuleMixin> {
+  static bool AllowFrom(const StyleRuleBase& rule) {
+    return rule.IsMixinRule();
+  }
+};
+
+template <>
+struct DowncastTraits<StyleRuleApplyMixin> {
+  static bool AllowFrom(const StyleRuleBase& rule) {
+    return rule.IsApplyMixinRule();
   }
 };
 

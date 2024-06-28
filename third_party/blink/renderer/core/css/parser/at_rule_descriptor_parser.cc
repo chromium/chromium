@@ -298,6 +298,8 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
     case StyleRule::kSupports:
     case StyleRule::kStartingStyle:
     case StyleRule::kFunction:
+    case StyleRule::kMixin:
+    case StyleRule::kApplyMixin:
     case StyleRule::kPositionTry:
       // TODO(andruud): Handle other descriptor types here.
       NOTREACHED_IN_MIGRATION();

@@ -654,6 +654,7 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(const T& rules) {
       case StyleRuleBase::kCharset:
       case StyleRuleBase::kImport:
       case StyleRuleBase::kNamespace:
+      case StyleRuleBase::kMixin:
         NOTREACHED_IN_MIGRATION();
         break;
       case StyleRuleBase::kPage:
@@ -669,6 +670,10 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(const T& rules) {
       case StyleRuleBase::kViewTransition:
       case StyleRuleBase::kFunction:
       case StyleRuleBase::kPositionTry:
+        break;
+      case StyleRuleBase::kApplyMixin:
+        // TODO(sesse): Should we go down into the rules here?
+        // Do we need to do a new name lookup then?
         break;
       case StyleRuleBase::kCounterStyle:
         if (To<StyleRuleCounterStyle>(rule)

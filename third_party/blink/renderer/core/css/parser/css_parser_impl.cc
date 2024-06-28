@@ -767,6 +767,7 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
         id != CSSAtRuleID::kCSSAtRuleScope &&      // [css-cascade-6]
         id != CSSAtRuleID::kCSSAtRuleStartingStyle &&
         id != CSSAtRuleID::kCSSAtRuleViewTransition &&
+        id != CSSAtRuleID::kCSSAtRuleApplyMixin &&
         (id < CSSAtRuleID::kCSSAtRuleTopLeftCorner ||
          id > CSSAtRuleID::kCSSAtRuleRightBottom)) {
       ConsumeErroneousAtRule(stream, id);
@@ -864,6 +865,10 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
         return ConsumeCounterStyleRule(stream);
       case CSSAtRuleID::kCSSAtRuleFunction:
         return ConsumeFunctionRule(stream);
+      case CSSAtRuleID::kCSSAtRuleMixin:
+        return ConsumeMixinRule(stream);
+      case CSSAtRuleID::kCSSAtRuleApplyMixin:
+        return ConsumeApplyMixinRule(stream);
       case CSSAtRuleID::kCSSAtRulePositionTry:
         return ConsumePositionTryRule(stream);
       case CSSAtRuleID::kCSSAtRuleInvalid:
@@ -2188,6 +2193,80 @@ StyleRuleFunction* CSSParserImpl::ConsumeFunctionRule(
   return MakeGarbageCollected<StyleRuleFunction>(
       name.Value().ToAtomicString(), std::move(*parameters), return_value,
       std::move(*return_type));
+}
+
+StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
+  if (!RuntimeEnabledFeatures::CSSMixinsEnabled()) {
+    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleFunction);
+    return nullptr;
+  }
+
+  // @mixin must be top-level, and as such, we need to clear the arena
+  // after we're done parsing it (like ConsumeStyleRule() does).
+  if (in_nested_style_rule_) {
+    return nullptr;
+  }
+  auto func_clear_arena = [&](HeapVector<CSSSelector>* arena) {
+    arena->resize(0);  // See class comment on CSSSelectorParser.
+  };
+  std::unique_ptr<HeapVector<CSSSelector>, decltype(func_clear_arena)>
+      scope_guard(&arena_, std::move(func_clear_arena));
+
+  CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
+  if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream)) {
+    return nullptr;
+  }
+  CSSParserTokenStream::BlockGuard guard(stream);
+
+  // Parse the prelude; first a function token (the name).
+  if (prelude.Peek().GetType() != kIdentToken) {
+    return nullptr;  // Parse error.
+  }
+  AtomicString name =
+      prelude.ConsumeIncludingWhitespace().Value().ToAtomicString();
+  if (!name.StartsWith("--")) {
+    return nullptr;
+  }
+  if (!prelude.AtEnd()) {
+    return nullptr;  // Junk after the mixin name.
+  }
+
+  // The destructor expects there to be at least one selector in the StyleRule.
+  CSSSelector dummy;
+  StyleRule* fake_parent_rule = StyleRule::Create(std::vector{dummy});
+  HeapVector<Member<StyleRuleBase>, 4> child_rules;
+  ConsumeRuleListOrNestedDeclarationList(stream,
+                                         /*is_nested_group_rule=*/true,
+                                         CSSNestingType::kNesting,
+                                         fake_parent_rule, &child_rules);
+  for (StyleRuleBase* child_rule : child_rules) {
+    fake_parent_rule->AddChildRule(child_rule);
+  }
+  return MakeGarbageCollected<StyleRuleMixin>(name, fake_parent_rule);
+}
+
+StyleRuleApplyMixin* CSSParserImpl::ConsumeApplyMixinRule(
+    CSSParserTokenStream& stream) {
+  if (!RuntimeEnabledFeatures::CSSMixinsEnabled()) {
+    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleFunction);
+    return nullptr;
+  }
+  CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
+  if (!ConsumeEndOfPreludeForAtRuleWithoutBlock(stream)) {
+    return nullptr;
+  }
+  if (prelude.Peek().GetType() != kIdentToken) {
+    return nullptr;  // Parse error.
+  }
+  AtomicString name =
+      prelude.ConsumeIncludingWhitespace().Value().ToAtomicString();
+  if (!name.StartsWith("--")) {
+    return nullptr;
+  }
+  if (!prelude.AtEnd()) {
+    return nullptr;  // Junk after the mixin name.
+  }
+  return MakeGarbageCollected<StyleRuleApplyMixin>(name);
 }
 
 // Parse the parameters of a CSS function: Zero or more comma-separated

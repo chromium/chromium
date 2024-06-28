@@ -11125,6 +11125,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5023" label="V8ML_CreateContext_Method"/>
   <int value="5024" label="V8MLContext_Compute_Method"/>
   <int value="5025" label="V8MLContext_Dispatch_Method"/>
+  <int value="5026" label="CSSMixins"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

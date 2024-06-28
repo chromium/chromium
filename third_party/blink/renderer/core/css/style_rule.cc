@@ -171,6 +171,12 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
     case kFunction:
       To<StyleRuleFunction>(this)->TraceAfterDispatch(visitor);
       return;
+    case kMixin:
+      To<StyleRuleMixin>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kApplyMixin:
+      To<StyleRuleApplyMixin>(this)->TraceAfterDispatch(visitor);
+      return;
     case kPositionTry:
       To<StyleRulePositionTry>(this)->TraceAfterDispatch(visitor);
       return;
@@ -249,6 +255,12 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
     case kFunction:
       To<StyleRuleFunction>(this)->~StyleRuleFunction();
       return;
+    case kMixin:
+      To<StyleRuleMixin>(this)->~StyleRuleMixin();
+      return;
+    case kApplyMixin:
+      To<StyleRuleApplyMixin>(this)->~StyleRuleApplyMixin();
+      return;
     case kPositionTry:
       To<StyleRulePositionTry>(this)->~StyleRulePositionTry();
       return;
@@ -295,6 +307,8 @@ StyleRuleBase* StyleRuleBase::Copy() const {
     case kCharset:
     case kKeyframe:
     case kFunction:
+    case kMixin:
+    case kApplyMixin:
       NOTREACHED_IN_MIGRATION();
       return nullptr;
     case kContainer:
@@ -404,6 +418,8 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
     case kCharset:
     case kPageMargin:
     case kFunction:
+    case kMixin:
+    case kApplyMixin:
       NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
@@ -600,6 +616,11 @@ void StyleRuleBase::Reparent(StyleRule* new_parent) {
            DynamicTo<StyleRulePage>(this)->ChildRules()) {
         child->Reparent(new_parent);
       }
+      break;
+    case kMixin:
+    case kApplyMixin:
+      // The parent pointers in mixins don't really matter;
+      // they are always replaced during application anyway.
       break;
     case kPageMargin:
     case kProperty:
@@ -950,6 +971,23 @@ StyleRuleFunction::StyleRuleFunction(
 
 void StyleRuleFunction::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(function_body_);
+  StyleRuleBase::TraceAfterDispatch(visitor);
+}
+
+StyleRuleMixin::StyleRuleMixin(AtomicString name, StyleRule* fake_parent_rule)
+    : StyleRuleBase(kMixin),
+      name_(std::move(name)),
+      fake_parent_rule_(fake_parent_rule) {}
+
+void StyleRuleMixin::TraceAfterDispatch(blink::Visitor* visitor) const {
+  StyleRuleBase::TraceAfterDispatch(visitor);
+  visitor->Trace(fake_parent_rule_);
+}
+
+StyleRuleApplyMixin::StyleRuleApplyMixin(AtomicString name)
+    : StyleRuleBase(kApplyMixin), name_(std::move(name)) {}
+
+void StyleRuleApplyMixin::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
 

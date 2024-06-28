@@ -40,7 +40,8 @@ static RuleSet* RuleSetFromSingleRule(Document& document, const String& text) {
   RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
   MediaQueryEvaluator* medium =
       MakeGarbageCollected<MediaQueryEvaluator>(document.GetFrame());
-  rule_set->AddStyleRule(style_rule, *medium, kRuleHasNoSpecialState);
+  rule_set->AddStyleRule(style_rule, /*parent_rule=*/nullptr, *medium,
+                         kRuleHasNoSpecialState, /*within_mixin=*/false);
   return rule_set;
 }
 
@@ -363,7 +364,8 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
     auto* rule = To<StyleRule>(CSSParser::ParseRule(
         sheet->ParserContext(), sheet, CSSNestingType::kNone,
         /*parent_rule_for_nesting=*/nullptr, selector + " { color: green }"));
-    rules.AddStyleRule(rule, *medium, kRuleHasNoSpecialState);
+    rules.AddStyleRule(rule, /*parent_rule=*/nullptr, *medium,
+                       kRuleHasNoSpecialState, /*within_mixin=*/false);
 
     MatchResult result;
     ElementResolveContext context{element};
@@ -600,7 +602,8 @@ TEST_F(ElementRuleCollectorSignalTest, NoSignal) {
   RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
   rule_set->AddStyleRule(
       DynamicTo<StyleRule>(ParseRule(GetDocument(), "body { color: green; }")),
-      *medium_, kRuleHasNoSpecialState);
+      /*parent_rule=*/nullptr, *medium_, kRuleHasNoSpecialState,
+      /*within_mixin=*/false);
   MatchResult result;
   CollectIntoMatchResult(body_, rule_set, result);
   ASSERT_EQ(1u, result.GetMatchedProperties().size());
@@ -614,7 +617,8 @@ TEST_F(ElementRuleCollectorSignalTest, SignalAloneInMatchResult) {
   rule_set->AddStyleRule(
       ParseSignalingRule(GetDocument(), "body { color: green; }",
                          CSSSelector::Signal::kBareDeclarationShift),
-      *medium_, kRuleHasNoSpecialState);
+      /*parent_rule=*/nullptr, *medium_, kRuleHasNoSpecialState,
+      /*within_mixin=*/false);
   MatchResult result;
   CollectIntoMatchResult(body_, rule_set, result);
   ASSERT_EQ(1u, result.GetMatchedProperties().size());
@@ -629,11 +633,13 @@ TEST_F(ElementRuleCollectorSignalTest, SignalInMatchResult) {
   RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
   rule_set->AddStyleRule(
       DynamicTo<StyleRule>(ParseRule(GetDocument(), "body { width: 10px; }")),
-      *medium_, kRuleHasNoSpecialState);
+      /*parent_rule=*/nullptr, *medium_, kRuleHasNoSpecialState,
+      /*within_mixin=*/false);
   rule_set->AddStyleRule(
       ParseSignalingRule(GetDocument(), "body { color: green; }",
                          CSSSelector::Signal::kBareDeclarationShift),
-      *medium_, kRuleHasNoSpecialState);
+      /*parent_rule=*/nullptr, *medium_, kRuleHasNoSpecialState,
+      /*within_mixin=*/false);
   MatchResult result;
   CollectIntoMatchResult(body_, rule_set, result);
   ASSERT_EQ(2u, result.GetMatchedProperties().size());
@@ -652,7 +658,8 @@ TEST_F(ElementRuleCollectorInvisibleTest, NoInvisibleRule) {
   RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
   rule_set->AddStyleRule(
       DynamicTo<StyleRule>(ParseRule(GetDocument(), "body { color: green; }")),
-      *medium_, kRuleHasNoSpecialState);
+      /*parent_rule=*/nullptr, *medium_, kRuleHasNoSpecialState,
+      /*within_mixin=*/false);
   MatchResult result;
   CollectIntoMatchResult(body_, rule_set, result);
   ASSERT_EQ(1u, result.GetMatchedProperties().size());
@@ -662,8 +669,9 @@ TEST_F(ElementRuleCollectorInvisibleTest, NoInvisibleRule) {
 TEST_F(ElementRuleCollectorInvisibleTest, InvisibleRulePresent) {
   RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
   rule_set->AddStyleRule(
-      ParseInvisibleRule(GetDocument(), "body { color: green; }"), *medium_,
-      kRuleHasNoSpecialState);
+      ParseInvisibleRule(GetDocument(), "body { color: green; }"),
+      /*parent_rule=*/nullptr, *medium_, kRuleHasNoSpecialState,
+      /*within_mixin=*/false);
   MatchResult result;
   CollectIntoMatchResult(body_, rule_set, result);
   ASSERT_EQ(1u, result.GetMatchedProperties().size());
@@ -674,10 +682,12 @@ TEST_F(ElementRuleCollectorInvisibleTest, InvisibleAndNonInvisible) {
   RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
   rule_set->AddStyleRule(
       DynamicTo<StyleRule>(ParseRule(GetDocument(), "body { width: 10px; }")),
-      *medium_, kRuleHasNoSpecialState);
+      /*parent_rule=*/nullptr, *medium_, kRuleHasNoSpecialState,
+      /*within_mixin=*/false);
   rule_set->AddStyleRule(
-      ParseInvisibleRule(GetDocument(), "body { color: green; }"), *medium_,
-      kRuleHasNoSpecialState);
+      ParseInvisibleRule(GetDocument(), "body { color: green; }"),
+      /*parent_rule=*/nullptr, *medium_, kRuleHasNoSpecialState,
+      /*within_mixin=*/false);
   MatchResult result;
   CollectIntoMatchResult(body_, rule_set, result);
   ASSERT_EQ(2u, result.GetMatchedProperties().size());

@@ -258,6 +258,8 @@ class CORE_EXPORT CSSParserImpl {
   StyleRuleFunction* ConsumeFunctionRule(CSSParserTokenStream& stream);
   std::optional<Vector<StyleRuleFunction::Parameter>> ConsumeFunctionParameters(
       CSSParserTokenRange& stream);
+  StyleRuleMixin* ConsumeMixinRule(CSSParserTokenStream& stream);
+  StyleRuleApplyMixin* ConsumeApplyMixinRule(CSSParserTokenStream& stream);
 
   StyleRuleKeyframe* ConsumeKeyframeStyleRule(CSSParserTokenRange prelude,
                                               const RangeOffset& prelude_offset,
