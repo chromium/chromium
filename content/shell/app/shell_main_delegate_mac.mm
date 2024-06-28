@@ -61,12 +61,6 @@ void EnsureCorrectResolutionSettings() {
   CHECK(execvp(argv[0], argv));
 }
 
-void OverrideBundleID() {
-  NSBundle* bundle = base::apple::OuterBundle();
-  base::apple::SetBaseBundleID(
-      base::SysNSStringToUTF8([bundle bundleIdentifier]).c_str());
-}
-
 void RegisterShellCrApp() {
   // Force the NSApplication subclass to be used.
   [ShellCrApplication sharedApplication];

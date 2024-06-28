@@ -856,6 +856,37 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
     DCHECK_NE(base::ThreadPoolInstance::Get(), nullptr);
   }
 
+#if !BUILDFLAG(IS_WIN)
+
+  [[maybe_unused]] base::GlobalDescriptors* g_fds =
+      base::GlobalDescriptors::GetInstance();
+
+// On Android, the shared descriptors are passed through the Java service,
+// which takes care of updating these mappings; otherwise, we need to update
+// the mappings explicitly.
+#if !BUILDFLAG(IS_ANDROID)
+  g_fds->Set(kMojoIPCChannel,
+             kMojoIPCChannel + base::GlobalDescriptors::kBaseDescriptor);
+  g_fds->Set(kFieldTrialDescriptor,
+             kFieldTrialDescriptor + base::GlobalDescriptors::kBaseDescriptor);
+  g_fds->Set(kHistogramSharedMemoryDescriptor,
+             kHistogramSharedMemoryDescriptor +
+                 base::GlobalDescriptors::kBaseDescriptor);
+  g_fds->Set(kTraceConfigSharedMemoryDescriptor,
+             kTraceConfigSharedMemoryDescriptor +
+                 base::GlobalDescriptors::kBaseDescriptor);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OPENBSD)
+  g_fds->Set(kCrashDumpSignal,
+             kCrashDumpSignal + base::GlobalDescriptors::kBaseDescriptor);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_OPENBSD)
+
+#endif  // !BUILDFLAG(IS_WIN)
+
+  is_initialized_ = true;
+
   // Enable startup tracing asap now that mojo's core is initialized, to avoid
   // early TRACE_EVENT calls being ignored.
   //
@@ -884,34 +915,6 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
     tracing::EnableStartupTracingIfNeeded();
   }
   TRACE_EVENT0("startup,benchmark,rail", "ContentMainRunnerImpl::Initialize");
-
-#if !BUILDFLAG(IS_WIN)
-
-  [[maybe_unused]] base::GlobalDescriptors* g_fds =
-      base::GlobalDescriptors::GetInstance();
-
-// On Android, the shared descriptors are passed through the Java service,
-// which takes care of updating these mappings; otherwise, we need to update
-// the mappings explicitly.
-#if !BUILDFLAG(IS_ANDROID)
-  g_fds->Set(kMojoIPCChannel,
-             kMojoIPCChannel + base::GlobalDescriptors::kBaseDescriptor);
-  g_fds->Set(kFieldTrialDescriptor,
-             kFieldTrialDescriptor + base::GlobalDescriptors::kBaseDescriptor);
-  g_fds->Set(kHistogramSharedMemoryDescriptor,
-             kHistogramSharedMemoryDescriptor +
-                 base::GlobalDescriptors::kBaseDescriptor);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OPENBSD)
-  g_fds->Set(kCrashDumpSignal,
-             kCrashDumpSignal + base::GlobalDescriptors::kBaseDescriptor);
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
-        // BUILDFLAG(IS_OPENBSD)
-
-#endif  // !BUILDFLAG(IS_WIN)
-
-  is_initialized_ = true;
 
 // The exit manager is in charge of calling the dtors of singleton objects.
 // On Android, AtExitManager is set up when library is loaded.

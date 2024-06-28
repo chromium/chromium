@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
@@ -138,7 +139,8 @@ class ChildProcessLauncherHelper
       mojo::OutgoingInvitation mojo_invitation,
       const mojo::ProcessErrorCallback& process_error_callback,
       std::unique_ptr<ChildProcessLauncherFileData> file_data,
-      base::UnsafeSharedMemoryRegion histogram_memory_region);
+      base::UnsafeSharedMemoryRegion histogram_memory_region,
+      base::ReadOnlySharedMemoryRegion tracing_config_memory_region);
 
   // The methods below are defined in the order they are called.
 
@@ -353,6 +355,9 @@ class ChildProcessLauncherHelper
 
   // Histogram shared memory region metadata.
   base::UnsafeSharedMemoryRegion histogram_memory_region_;
+
+  // Startup tracing config shared memory region.
+  base::ReadOnlySharedMemoryRegion tracing_config_memory_region_;
 };
 
 }  // namespace internal

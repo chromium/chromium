@@ -41,6 +41,7 @@
 namespace base {
 class CommandLine;
 class UnsafeSharedMemoryRegion;
+class ReadOnlySharedMemoryRegion;
 #if BUILDFLAG(IS_ANDROID)
 namespace android {
 enum class ChildBindingState;
@@ -226,6 +227,7 @@ class CONTENT_EXPORT ChildProcessLauncher {
       const mojo::ProcessErrorCallback& process_error_callback,
       std::unique_ptr<ChildProcessLauncherFileData> file_data,
       base::UnsafeSharedMemoryRegion = {},
+      base::ReadOnlySharedMemoryRegion = {},
       bool terminate_on_shutdown = true);
 
   ChildProcessLauncher(const ChildProcessLauncher&) = delete;

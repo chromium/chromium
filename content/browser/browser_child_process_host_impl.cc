@@ -228,12 +228,6 @@ void BrowserChildProcessHostImpl::TerminateAll() {
   }
 }
 
-// static
-void BrowserChildProcessHostImpl::CopyTraceStartupFlags(
-    base::CommandLine* cmd_line) {
-  tracing::PropagateTracingFlagsToChildProcessCmdLine(cmd_line);
-}
-
 void BrowserChildProcessHostImpl::Launch(
     std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
     std::unique_ptr<base::CommandLine> cmd_line,
@@ -351,6 +345,9 @@ void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
     child_process_host_->SetProfilingFile(OpenProfilingFile());
 #endif
 
+  auto tracing_config_memory_region =
+      tracing::CreateTracingConfigSharedMemory();
+
   child_process_launcher_ = std::make_unique<ChildProcessLauncher>(
       std::move(delegate), std::move(cmd_line), data_.id, this,
       std::move(*child_process_host_->GetMojoInvitation()),
@@ -358,7 +355,7 @@ void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
                           weak_factory_.GetWeakPtr(),
                           base::SingleThreadTaskRunner::GetCurrentDefault()),
       std::move(file_data), metrics_shared_region_.Duplicate(),
-      terminate_on_shutdown);
+      std::move(tracing_config_memory_region), terminate_on_shutdown);
   ShareMetricsAllocatorToProcess();
 
   if (!has_legacy_ipc_channel_)

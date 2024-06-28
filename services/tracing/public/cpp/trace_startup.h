@@ -6,13 +6,17 @@
 #define SERVICES_TRACING_PUBLIC_CPP_TRACE_STARTUP_H_
 
 #include "base/component_export.h"
+#include "base/memory/read_only_shared_memory_region.h"
+#include "base/process/launch.h"
+#include "build/build_config.h"
+#include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
+
+#if BUILDFLAG(IS_POSIX)
+#include "base/posix/global_descriptors.h"
+#endif
 
 namespace base {
 class CommandLine;
-
-namespace trace_event {
-class TraceConfig;
-}  // namespace trace_event
 }  // namespace base
 
 namespace tracing {
@@ -40,8 +44,7 @@ void COMPONENT_EXPORT(TRACING_CPP) EnableStartupTracingIfNeeded();
 // TODO(eseckler): Figure out what startup tracing APIs should look like with
 // the client lib.
 bool COMPONENT_EXPORT(TRACING_CPP)
-    EnableStartupTracingForProcess(const base::trace_event::TraceConfig&,
-                                   bool privacy_filtering_enabled);
+    EnableStartupTracingForProcess(const perfetto::TraceConfig&);
 
 // Initialize tracing components that require task runners. Will switch
 // IsTracingInitialized() to return true.
@@ -52,8 +55,23 @@ void COMPONENT_EXPORT(TRACING_CPP)
 
 // If tracing is enabled, grabs the current trace config & mode and tells the
 // child to begin tracing right away via startup tracing command line flags.
-void COMPONENT_EXPORT(TRACING_CPP)
-    PropagateTracingFlagsToChildProcessCmdLine(base::CommandLine* cmd_line);
+
+// If tracing is enabled, returns a read-only SMB containing the current tracing
+// config, to be forwarded at child processes creation.
+base::ReadOnlySharedMemoryRegion COMPONENT_EXPORT(TRACING_CPP)
+    CreateTracingConfigSharedMemory();
+
+// Tells the child process to begin tracing right away via command line
+// flags and launch options, given a SMB config obtained with
+// CreateTracingConfigSharedMemory().
+void COMPONENT_EXPORT(TRACING_CPP) AddTraceConfigToLaunchParameters(
+    base::ReadOnlySharedMemoryRegion,
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+    base::GlobalDescriptors::Key descriptor_key,
+    base::ScopedFD& out_descriptor_to_share,
+#endif
+    base::CommandLine* command_line,
+    base::LaunchOptions* launch_options);
 
 }  // namespace tracing
 

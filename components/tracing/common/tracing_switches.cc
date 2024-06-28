@@ -45,6 +45,11 @@ const char kTraceConfigFile[]               = "trace-config-file";
 const char kTraceStartup[] = "trace-startup";
 const char kEnableTracing[] = "enable-tracing";
 
+// Causes TRACE_EVENT flags to be recorded from startup, passing a SMB
+// handle containing the serialized perfetto config. This flag will be
+// ignored if --trace-startup or --trace-shutdown is provided.
+const char kTraceConfigHandle[] = "trace-config-handle";
+
 // Sets the time in seconds until startup tracing ends. If omitted:
 // - if --trace-startup is specified, a default of 5 seconds is used.
 // - if --enable-tracing is specified, tracing lasts until the browser is
@@ -98,11 +103,6 @@ const char kTraceStartupRecordMode[] = "trace-startup-record-mode";
 // tracing on a supported platform (currently only Android). Session is stopped
 // through the normal methods for stopping system traces.
 const char kTraceStartupOwner[] = "trace-startup-owner";
-
-// If the perfetto tracing backend is used, this enables privacy filtering in
-// the TraceEvent data sources for the startup tracing session.
-const char kTraceStartupEnablePrivacyFiltering[] =
-    "trace-startup-enable-privacy-filtering";
 
 // Repeat internable data for each TraceEvent in the perfetto proto format.
 const char kPerfettoDisableInterning[] = "perfetto-disable-interning";

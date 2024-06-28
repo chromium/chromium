@@ -30,6 +30,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/foundation_util.h"
+#include "content/shell/app/paths_mac.h"
 #endif
 
 // TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
@@ -105,6 +106,13 @@ void ContentBrowserTest::SetUp() {
       "Helper.app/Contents/MacOS/Content Shell Helper");
   command_line->AppendSwitchPath(switches::kBrowserSubprocessPath,
                                  subprocess_path);
+
+  // Needs to happen before ContentMain().
+  OverrideFrameworkBundlePath();
+  OverrideOuterBundlePath();
+  OverrideChildProcessPath();
+  OverrideSourceRootPath();
+  OverrideBundleID();
 #endif
 
 #if defined(USE_AURA) && defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CASTOS)

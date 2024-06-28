@@ -9,6 +9,7 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/shared_memory_switch.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_shared_memory.h"
 #include "base/no_destructor.h"
@@ -20,6 +21,7 @@
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
+#include "components/tracing/common/tracing_switches.h"
 #include "components/variations/active_field_trials.h"
 #include "content/browser/child_process_launcher.h"
 #include "content/public/browser/browser_thread.h"
@@ -30,6 +32,7 @@
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "mojo/core/configuration.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
+#include "services/tracing/public/cpp/trace_startup.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/android/launcher_thread.h"
@@ -154,6 +157,41 @@ void PassFieldTrialSharedMemoryHandle(
 #endif  // BUILDFLAG(USE_BLINK)
 }
 
+void PassStartupTracingConfigSharedMemoryHandle(
+    [[maybe_unused]] base::ReadOnlySharedMemoryRegion read_only_memory_region,
+    [[maybe_unused]] base::CommandLine* command_line,
+    [[maybe_unused]] base::LaunchOptions* launch_options,
+    [[maybe_unused]] FileMappedForLaunch* files_to_register) {
+  CHECK(command_line);
+  if (!read_only_memory_region.IsValid()) {
+    return;
+  }
+
+  CHECK(read_only_memory_region.IsValid());
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+  CHECK(files_to_register);
+  base::ScopedFD descriptor_to_transfer;
+#else
+  CHECK(launch_options);
+#endif
+
+#if BUILDFLAG(USE_BLINK)
+  tracing::AddTraceConfigToLaunchParameters(std::move(read_only_memory_region),
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+                                            kTraceConfigSharedMemoryDescriptor,
+                                            descriptor_to_transfer,
+#endif
+                                            command_line, launch_options);
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+  if (descriptor_to_transfer.is_valid()) {
+    files_to_register->Transfer(kTraceConfigSharedMemoryDescriptor,
+                                std::move(descriptor_to_transfer));
+  }
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+#endif  // BUILDFLAG(USE_BLINK)
+}
+
 }  // namespace
 
 ChildProcessLauncherHelper::Process::Process() = default;
@@ -189,7 +227,8 @@ ChildProcessLauncherHelper::ChildProcessLauncherHelper(
     mojo::OutgoingInvitation mojo_invitation,
     const mojo::ProcessErrorCallback& process_error_callback,
     std::unique_ptr<ChildProcessLauncherFileData> file_data,
-    base::UnsafeSharedMemoryRegion histogram_memory_region)
+    base::UnsafeSharedMemoryRegion histogram_memory_region,
+    base::ReadOnlySharedMemoryRegion tracing_config_memory_region)
     : child_process_id_(child_process_id),
       client_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       command_line_(std::move(command_line)),
@@ -202,7 +241,8 @@ ChildProcessLauncherHelper::ChildProcessLauncherHelper(
 #if BUILDFLAG(IS_ANDROID)
       can_use_warm_up_connection_(can_use_warm_up_connection),
 #endif
-      histogram_memory_region_(std::move(histogram_memory_region)) {
+      histogram_memory_region_(std::move(histogram_memory_region)),
+      tracing_config_memory_region_(std::move(tracing_config_memory_region)) {
   if (!mojo::core::GetConfiguration().is_broker_process &&
       !command_line_->HasSwitch(switches::kDisableMojoBroker)) {
     command_line_->AppendSwitch(switches::kDisableMojoBroker);
@@ -274,6 +314,9 @@ void ChildProcessLauncherHelper::LaunchOnLauncherThread() {
                                   files_to_register.get());
   PassFieldTrialSharedMemoryHandle(command_line(), options_ptr,
                                    files_to_register.get());
+  PassStartupTracingConfigSharedMemoryHandle(
+      std::move(tracing_config_memory_region_), command_line(), options_ptr,
+      files_to_register.get());
 
   // Transfer logging switches & handles if necessary.
   PassLoggingSwitches(options_ptr, command_line());

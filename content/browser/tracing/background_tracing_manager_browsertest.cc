@@ -70,6 +70,8 @@ namespace {
 
 using testing::_;
 
+constexpr char kDefaultCategories[] = "toplevel";
+
 class TestStartupPreferenceManagerImpl
     : public BackgroundStartupTracingObserver::PreferenceManager {
  public:
@@ -306,9 +308,7 @@ std::unique_ptr<BackgroundTracingConfig> CreatePreemptiveConfig() {
           base::Value::Dict()
               .Set("mode", "PREEMPTIVE_TRACING_MODE")
               .Set("custom_categories",
-                   base::StrCat(
-                       {tracing::TraceStartupConfig::kDefaultStartupCategories,
-                        ",log"}))
+                   base::StrCat({kDefaultCategories, ",log"}))
               .Set("configs",
                    base::Value::List().Append(
                        base::Value::Dict()
@@ -324,8 +324,7 @@ std::unique_ptr<BackgroundTracingConfig> CreateReactiveConfig() {
       BackgroundTracingConfigImpl::FromDict(
           base::Value::Dict()
               .Set("mode", "REACTIVE_TRACING_MODE")
-              .Set("custom_categories",
-                   tracing::TraceStartupConfig::kDefaultStartupCategories)
+              .Set("custom_categories", kDefaultCategories)
               .Set("configs",
                    base::Value::List().Append(
                        base::Value::Dict()
@@ -342,8 +341,7 @@ std::unique_ptr<BackgroundTracingConfig> CreateSystemConfig() {
       BackgroundTracingConfigImpl::FromDict(
           base::Value::Dict()
               .Set("mode", "SYSTEM_TRACING_MODE")
-              .Set("custom_categories",
-                   tracing::TraceStartupConfig::kDefaultStartupCategories)
+              .Set("custom_categories", kDefaultCategories)
               .Set("configs",
                    base::Value::List()
                        .Append(base::Value::Dict()
@@ -912,8 +910,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       BackgroundTracingConfigImpl::FromDict(
           base::Value::Dict()
               .Set("mode", "PREEMPTIVE_TRACING_MODE")
-              .Set("custom_categories",
-                   tracing::TraceStartupConfig::kDefaultStartupCategories)
+              .Set("custom_categories", kDefaultCategories)
               .Set("configs",
                    base::Value::List()
                        .Append(base::Value::Dict()
@@ -952,8 +949,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       BackgroundTracingConfigImpl::FromDict(
           base::Value::Dict()
               .Set("mode", "PREEMPTIVE_TRACING_MODE")
-              .Set("custom_categories",
-                   tracing::TraceStartupConfig::kDefaultStartupCategories)
+              .Set("custom_categories", kDefaultCategories)
               .Set("configs", base::Value::List().Append(
                                   base::Value::Dict()
                                       .Set("rule",
@@ -1062,8 +1058,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       BackgroundTracingConfigImpl::FromDict(
           base::Value::Dict()
               .Set("mode", "PREEMPTIVE_TRACING_MODE")
-              .Set("custom_categories",
-                   tracing::TraceStartupConfig::kDefaultStartupCategories)
+              .Set("custom_categories", kDefaultCategories)
               .Set("configs",
                    base::Value::List().Append(
                        base::Value::Dict()
@@ -1096,8 +1091,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       BackgroundTracingConfigImpl::FromDict(
           base::Value::Dict()
               .Set("mode", "REACTIVE_TRACING_MODE")
-              .Set("custom_categories",
-                   tracing::TraceStartupConfig::kDefaultStartupCategories)
+              .Set("custom_categories", kDefaultCategories)
               .Set("configs",
                    base::Value::List().Append(
                        base::Value::Dict()
@@ -1136,8 +1130,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       BackgroundTracingConfigImpl::FromDict(
           base::Value::Dict()
               .Set("mode", "PREEMPTIVE_TRACING_MODE")
-              .Set("custom_categories",
-                   tracing::TraceStartupConfig::kDefaultStartupCategories)
+              .Set("custom_categories", kDefaultCategories)
               .Set("configs", base::Value::List().Append(
                                   base::Value::Dict()
                                       .Set("rule",
@@ -1192,8 +1185,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       BackgroundTracingConfigImpl::FromDict(
           base::Value::Dict()
               .Set("mode", "PREEMPTIVE_TRACING_MODE")
-              .Set("custom_categories",
-                   tracing::TraceStartupConfig::kDefaultStartupCategories)
+              .Set("custom_categories", kDefaultCategories)
               .Set("trace_config", std::move(*base::JSONReader::Read(R"(
                    {
                      "included_categories": ["*"],
@@ -1345,8 +1337,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       BackgroundTracingConfigImpl::FromDict(
           base::Value::Dict()
               .Set("mode", "REACTIVE_TRACING_MODE")
-              .Set("custom_categories",
-                   tracing::TraceStartupConfig::kDefaultStartupCategories)
+              .Set("custom_categories", kDefaultCategories)
               .Set("configs", base::Value::List().Append(
                                   base::Value::Dict()
                                       .Set("rule",
@@ -1381,8 +1372,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       BackgroundTracingConfigImpl::FromDict(
           base::Value::Dict()
               .Set("mode", "PREEMPTIVE_TRACING_MODE")
-              .Set("custom_categories",
-                   tracing::TraceStartupConfig::kDefaultStartupCategories)
+              .Set("custom_categories", kDefaultCategories)
               .Set("configs", base::Value::List().Append(
                                   base::Value::Dict()
                                       .Set("rule",
@@ -1418,8 +1408,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       BackgroundTracingConfigImpl::FromDict(
           base::Value::Dict()
               .Set("mode", "PREEMPTIVE_TRACING_MODE")
-              .Set("custom_categories",
-                   tracing::TraceStartupConfig::kDefaultStartupCategories)
+              .Set("custom_categories", kDefaultCategories)
               .Set("configs", base::Value::List().Append(
                                   base::Value::Dict()
                                       .Set("rule",
@@ -1456,8 +1445,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       BackgroundTracingConfigImpl::FromDict(
           base::Value::Dict()
               .Set("mode", "PREEMPTIVE_TRACING_MODE")
-              .Set("custom_categories",
-                   tracing::TraceStartupConfig::kDefaultStartupCategories)
+              .Set("custom_categories", kDefaultCategories)
               .Set("configs", base::Value::List().Append(
                                   base::Value::Dict()
                                       .Set("rule",
@@ -1493,8 +1481,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       BackgroundTracingConfigImpl::FromDict(
           base::Value::Dict()
               .Set("mode", "PREEMPTIVE_TRACING_MODE")
-              .Set("custom_categories",
-                   tracing::TraceStartupConfig::kDefaultStartupCategories)
+              .Set("custom_categories", kDefaultCategories)
               .Set("configs", base::Value::List().Append(
                                   base::Value::Dict()
                                       .Set("rule",
@@ -1530,8 +1517,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       BackgroundTracingConfigImpl::FromDict(
           base::Value::Dict()
               .Set("mode", "PREEMPTIVE_TRACING_MODE")
-              .Set("custom_categories",
-                   tracing::TraceStartupConfig::kDefaultStartupCategories)
+              .Set("custom_categories", kDefaultCategories)
               .Set("configs", base::Value::List().Append(
                                   base::Value::Dict()
                                       .Set("rule",
@@ -1566,8 +1552,7 @@ IN_PROC_BROWSER_TEST_F(
       BackgroundTracingConfigImpl::FromDict(
           base::Value::Dict()
               .Set("mode", "PREEMPTIVE_TRACING_MODE")
-              .Set("custom_categories",
-                   tracing::TraceStartupConfig::kDefaultStartupCategories)
+              .Set("custom_categories", kDefaultCategories)
               .Set("configs",
                    base::Value::List().Append(
                        base::Value::Dict().Set("rule", "INVALID_RULE")))));
@@ -1662,8 +1647,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
                            .Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED")
                            .Set("trigger_name", "foo")
                            .Set("trigger_delay", 10)))
-              .Set("custom_categories",
-                   tracing::TraceStartupConfig::kDefaultStartupCategories)));
+              .Set("custom_categories", kDefaultCategories)));
 
   EXPECT_TRUE(BackgroundTracingManager::GetInstance().SetActiveScenario(
       std::move(config), BackgroundTracingManager::ANONYMIZE_DATA));

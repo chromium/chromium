@@ -417,16 +417,8 @@ void StartupTracingController::StartIfNeeded() {
           : BackgroundTracer::WriteMode::kAfterStopping;
 #endif
 
-  const auto& chrome_config =
-      tracing::TraceStartupConfig::GetInstance().GetTraceConfig();
-  perfetto::TraceConfig perfetto_config = tracing::GetDefaultPerfettoConfig(
-      chrome_config, /*privacy_filtering_enabled=*/false,
-      /*convert_to_legacy_json=*/output_format ==
-          tracing::TraceStartupConfig::OutputFormat::kLegacyJSON);
-
-  int duration_in_seconds =
-      tracing::TraceStartupConfig::GetInstance().GetStartupDuration();
-  perfetto_config.set_duration_ms(duration_in_seconds * 1000);
+  auto perfetto_config =
+      tracing::TraceStartupConfig::GetInstance().GetPerfettoConfig();
 
   background_tracer_ = base::SequenceBound<BackgroundTracer>(
       std::move(background_task_runner), write_mode, temp_file_policy_,

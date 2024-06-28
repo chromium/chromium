@@ -186,6 +186,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "services/tracing/public/cpp/trace_startup.h"
 #include "skia/ext/switches.h"
 #include "storage/browser/database/database_tracker.h"
 #include "storage/browser/quota/quota_manager.h"
@@ -1606,6 +1607,9 @@ bool RenderProcessHostImpl::Init() {
         std::make_unique<RendererSandboxedProcessLauncherDelegate>();
 #endif
 
+    auto tracing_config_memory_region =
+        tracing::CreateTracingConfigSharedMemory();
+
     auto file_data = std::make_unique<ChildProcessLauncherFileData>();
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
     file_data->files_to_preload = GetV8SnapshotFilesToPreload(*cmd_line);
@@ -1618,7 +1622,8 @@ bool RenderProcessHostImpl::Init() {
         std::move(sandbox_delegate), std::move(cmd_line), GetID(), this,
         std::move(mojo_invitation_),
         base::BindRepeating(&RenderProcessHostImpl::OnMojoError, id_),
-        std::move(file_data), metrics_memory_region_.Duplicate());
+        std::move(file_data), metrics_memory_region_.Duplicate(),
+        std::move(tracing_config_memory_region));
     channel_->Pause();
 
     // In single process mode, browser-side tracing and memory will cover the
@@ -3310,7 +3315,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     GaiaConfig::GetInstance()->SerializeContentsToCommandLineSwitch(
         renderer_cmd);
   }
-  BrowserChildProcessHostImpl::CopyTraceStartupFlags(renderer_cmd);
 
   // Disable databases in incognito mode.
   if (GetBrowserContext()->IsOffTheRecord() &&

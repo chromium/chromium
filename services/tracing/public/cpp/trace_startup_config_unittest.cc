@@ -10,9 +10,12 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
+#include "third_party/perfetto/protos/perfetto/config/data_source_config.gen.h"
 
 namespace tracing {
 
@@ -34,18 +37,21 @@ std::string GetTraceConfigFileContent(std::string trace_config,
                                       std::string startup_duration,
                                       std::string result_file) {
   std::string content = "{";
-  if (!trace_config.empty())
+  if (!trace_config.empty()) {
     content += "\"trace_config\":" + trace_config;
+  }
 
   if (!startup_duration.empty()) {
-    if (content != "{")
+    if (content != "{") {
       content += ",";
+    }
     content += "\"startup_duration\":" + startup_duration;
   }
 
   if (!result_file.empty()) {
-    if (content != "{")
+    if (content != "{") {
       content += ",";
+    }
     content += "\"result_file\":\"" + result_file + "\"";
   }
 
@@ -55,41 +61,52 @@ std::string GetTraceConfigFileContent(std::string trace_config,
 
 }  // namespace
 
-TEST(TraceStartupConfigTest, TraceStartupEnabled) {
-  base::ShadowingAtExitManager sem;
+class TraceStartupConfigTest : public ::testing::Test {
+ protected:
+  void Initialize() {
+    startup_config_ = base::WrapUnique(new TraceStartupConfig());
+  }
+
+  std::unique_ptr<TraceStartupConfig> startup_config_;
+};
+
+TEST_F(TraceStartupConfigTest, TraceStartupEnabled) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTraceStartup);
-
-  EXPECT_TRUE(TraceStartupConfig::GetInstance().IsEnabled());
+  Initialize();
+  EXPECT_TRUE(startup_config_->IsEnabled());
 }
 
-TEST(TraceStartupConfigTest, TraceStartupConfigNotEnabled) {
-  base::ShadowingAtExitManager sem;
-  EXPECT_FALSE(TraceStartupConfig::GetInstance().IsEnabled());
+TEST_F(TraceStartupConfigTest, TraceStartupConfigNotEnabled) {
+  Initialize();
+  EXPECT_FALSE(startup_config_->IsEnabled());
 }
 
-TEST(TraceStartupConfigTest, TraceStartupConfigEnabledWithoutPath) {
-  base::ShadowingAtExitManager sem;
+TEST_F(TraceStartupConfigTest, TraceStartupConfigEnabledWithoutPath) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kTraceConfigFile);
 
-  ASSERT_TRUE(TraceStartupConfig::GetInstance().IsEnabled());
-  EXPECT_EQ(base::trace_event::TraceConfig().ToString(),
-            TraceStartupConfig::GetInstance().GetTraceConfig().ToString());
-  EXPECT_EQ(5, TraceStartupConfig::GetInstance().GetStartupDuration());
-  EXPECT_TRUE(TraceStartupConfig::GetInstance().GetResultFile().empty());
+  Initialize();
+  ASSERT_TRUE(startup_config_->IsEnabled());
+  auto config = startup_config_->GetPerfettoConfig();
+  ASSERT_LE(2, config.data_sources_size());
+  EXPECT_EQ("track_event", config.data_sources()[0].config().name());
+  EXPECT_EQ(
+      base::trace_event::TraceConfig().ToPerfettoTrackEventConfigRaw(false),
+      config.data_sources()[0].config().track_event_config_raw());
+  EXPECT_EQ(5000U, config.duration_ms());
+  EXPECT_TRUE(startup_config_->GetResultFile().empty());
 }
 
-TEST(TraceStartupConfigTest, TraceStartupConfigEnabledWithInvalidPath) {
-  base::ShadowingAtExitManager sem;
+TEST_F(TraceStartupConfigTest, TraceStartupConfigEnabledWithInvalidPath) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kTraceConfigFile,
       base::FilePath(FILE_PATH_LITERAL("invalid-trace-config-file-path")));
 
-  EXPECT_FALSE(TraceStartupConfig::GetInstance().IsEnabled());
+  Initialize();
+  EXPECT_FALSE(startup_config_->IsEnabled());
 }
 
-TEST(TraceStartupConfigTest, ValidContent) {
-  base::ShadowingAtExitManager sem;
+TEST_F(TraceStartupConfigTest, ValidContent) {
   std::string content =
       GetTraceConfigFileContent(kTraceConfig, "10", "trace_result_file.log");
 
@@ -102,17 +119,21 @@ TEST(TraceStartupConfigTest, ValidContent) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kTraceConfigFile, trace_config_file);
 
-  ASSERT_TRUE(TraceStartupConfig::GetInstance().IsEnabled());
-  EXPECT_STREQ(
-      kTraceConfig,
-      TraceStartupConfig::GetInstance().GetTraceConfig().ToString().c_str());
-  EXPECT_EQ(10, TraceStartupConfig::GetInstance().GetStartupDuration());
+  Initialize();
+  ASSERT_TRUE(startup_config_->IsEnabled());
+
+  auto config = startup_config_->GetPerfettoConfig();
+  ASSERT_LE(2, config.data_sources_size());
+  EXPECT_EQ("track_event", config.data_sources()[0].config().name());
+  EXPECT_EQ(base::trace_event::TraceConfig(kTraceConfig)
+                .ToPerfettoTrackEventConfigRaw(false),
+            config.data_sources()[0].config().track_event_config_raw());
+  EXPECT_EQ(10000U, config.duration_ms());
   EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("trace_result_file.log")),
-            TraceStartupConfig::GetInstance().GetResultFile());
+            startup_config_->GetResultFile());
 }
 
-TEST(TraceStartupConfigTest, ValidContentWithOnlyTraceConfig) {
-  base::ShadowingAtExitManager sem;
+TEST_F(TraceStartupConfigTest, ValidContentWithOnlyTraceConfig) {
   std::string content = GetTraceConfigFileContent(kTraceConfig, "", "");
 
   base::FilePath trace_config_file;
@@ -124,16 +145,20 @@ TEST(TraceStartupConfigTest, ValidContentWithOnlyTraceConfig) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kTraceConfigFile, trace_config_file);
 
-  ASSERT_TRUE(TraceStartupConfig::GetInstance().IsEnabled());
-  EXPECT_STREQ(
-      kTraceConfig,
-      TraceStartupConfig::GetInstance().GetTraceConfig().ToString().c_str());
-  EXPECT_EQ(0, TraceStartupConfig::GetInstance().GetStartupDuration());
-  EXPECT_TRUE(TraceStartupConfig::GetInstance().GetResultFile().empty());
+  Initialize();
+  ASSERT_TRUE(startup_config_->IsEnabled());
+
+  auto config = startup_config_->GetPerfettoConfig();
+  ASSERT_LE(2, config.data_sources_size());
+  EXPECT_EQ("track_event", config.data_sources()[0].config().name());
+  EXPECT_EQ(base::trace_event::TraceConfig(kTraceConfig)
+                .ToPerfettoTrackEventConfigRaw(false),
+            config.data_sources()[0].config().track_event_config_raw());
+  EXPECT_FALSE(config.has_duration_ms());
+  EXPECT_TRUE(startup_config_->GetResultFile().empty());
 }
 
-TEST(TraceStartupConfigTest, ContentWithAbsoluteResultFilePath) {
-  base::ShadowingAtExitManager sem;
+TEST_F(TraceStartupConfigTest, ContentWithAbsoluteResultFilePath) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
@@ -157,13 +182,12 @@ TEST(TraceStartupConfigTest, ContentWithAbsoluteResultFilePath) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kTraceConfigFile, trace_config_file);
 
-  ASSERT_TRUE(TraceStartupConfig::GetInstance().IsEnabled());
-  EXPECT_EQ(result_file_path,
-            TraceStartupConfig::GetInstance().GetResultFile());
+  Initialize();
+  ASSERT_TRUE(startup_config_->IsEnabled());
+  EXPECT_EQ(result_file_path, startup_config_->GetResultFile());
 }
 
-TEST(TraceStartupConfigTest, ContentWithNegtiveDuration) {
-  base::ShadowingAtExitManager sem;
+TEST_F(TraceStartupConfigTest, ContentWithNegtiveDuration) {
   std::string content = GetTraceConfigFileContent(kTraceConfig, "-1", "");
 
   base::FilePath trace_config_file;
@@ -175,16 +199,20 @@ TEST(TraceStartupConfigTest, ContentWithNegtiveDuration) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kTraceConfigFile, trace_config_file);
 
-  ASSERT_TRUE(TraceStartupConfig::GetInstance().IsEnabled());
-  EXPECT_STREQ(
-      kTraceConfig,
-      TraceStartupConfig::GetInstance().GetTraceConfig().ToString().c_str());
-  EXPECT_EQ(0, TraceStartupConfig::GetInstance().GetStartupDuration());
-  EXPECT_TRUE(TraceStartupConfig::GetInstance().GetResultFile().empty());
+  Initialize();
+  ASSERT_TRUE(startup_config_->IsEnabled());
+
+  auto config = startup_config_->GetPerfettoConfig();
+  ASSERT_LE(2, config.data_sources_size());
+  EXPECT_EQ("track_event", config.data_sources()[0].config().name());
+  EXPECT_EQ(base::trace_event::TraceConfig(kTraceConfig)
+                .ToPerfettoTrackEventConfigRaw(false),
+            config.data_sources()[0].config().track_event_config_raw());
+  EXPECT_FALSE(config.has_duration_ms());
+  EXPECT_TRUE(startup_config_->GetResultFile().empty());
 }
 
-TEST(TraceStartupConfigTest, ContentWithoutTraceConfig) {
-  base::ShadowingAtExitManager sem;
+TEST_F(TraceStartupConfigTest, ContentWithoutTraceConfig) {
   std::string content =
       GetTraceConfigFileContent("", "10", "trace_result_file.log");
 
@@ -197,11 +225,11 @@ TEST(TraceStartupConfigTest, ContentWithoutTraceConfig) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kTraceConfigFile, trace_config_file);
 
-  EXPECT_FALSE(TraceStartupConfig::GetInstance().IsEnabled());
+  Initialize();
+  EXPECT_FALSE(startup_config_->IsEnabled());
 }
 
-TEST(TraceStartupConfigTest, InvalidContent) {
-  base::ShadowingAtExitManager sem;
+TEST_F(TraceStartupConfigTest, InvalidContent) {
   std::string content = "invalid trace config file content";
 
   base::FilePath trace_config_file;
@@ -213,11 +241,11 @@ TEST(TraceStartupConfigTest, InvalidContent) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kTraceConfigFile, trace_config_file);
 
-  EXPECT_FALSE(TraceStartupConfig::GetInstance().IsEnabled());
+  Initialize();
+  EXPECT_FALSE(startup_config_->IsEnabled());
 }
 
-TEST(TraceStartupConfigTest, EmptyContent) {
-  base::ShadowingAtExitManager sem;
+TEST_F(TraceStartupConfigTest, EmptyContent) {
   base::FilePath trace_config_file;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -226,27 +254,28 @@ TEST(TraceStartupConfigTest, EmptyContent) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kTraceConfigFile, trace_config_file);
 
-  EXPECT_FALSE(TraceStartupConfig::GetInstance().IsEnabled());
+  Initialize();
+  EXPECT_FALSE(startup_config_->IsEnabled());
 }
 
-TEST(TraceStartupConfigTest, TraceStartupDisabledSystemOwner) {
-  base::ShadowingAtExitManager sem;
+TEST_F(TraceStartupConfigTest, TraceStartupDisabledSystemOwner) {
   // Set the owner to 'system' is not sufficient to setup startup tracing.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kTraceStartupOwner, "system");
-  EXPECT_FALSE(TraceStartupConfig::GetInstance().IsEnabled());
+  Initialize();
+  EXPECT_FALSE(startup_config_->IsEnabled());
 }
 
-TEST(TraceStartupConfigTest, TraceStartupEnabledSystemOwner) {
-  base::ShadowingAtExitManager sem;
+TEST_F(TraceStartupConfigTest, TraceStartupEnabledSystemOwner) {
   // With owner and --trace-startup TraceStartupConfig should be enabled with
   // the owner being the system.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kTraceStartupOwner, "system");
   base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTraceStartup);
-  EXPECT_TRUE(TraceStartupConfig::GetInstance().IsEnabled());
+  Initialize();
+  EXPECT_TRUE(startup_config_->IsEnabled());
   EXPECT_EQ(TraceStartupConfig::SessionOwner::kSystemTracing,
-            TraceStartupConfig::GetInstance().GetSessionOwner());
+            startup_config_->GetSessionOwner());
 }
 
 }  // namespace tracing

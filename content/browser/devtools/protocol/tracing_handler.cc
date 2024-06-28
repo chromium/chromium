@@ -891,10 +891,8 @@ void TracingHandler::AttemptAdoptStartupSession(
   gzip_compression_ = gzip_compression;
   proto_format_ = proto_format;
 
-  base::trace_event::TraceConfig browser_config =
-      tracing::TraceStartupConfig::GetInstance().GetTraceConfig();
-  perfetto::TraceConfig perfetto_config = CreatePerfettoConfiguration(
-      browser_config, return_as_stream_, proto_format_);
+  perfetto::TraceConfig perfetto_config =
+      tracing::TraceStartupConfig::GetInstance().GetPerfettoConfig();
 
   session_ =
       std::make_unique<PerfettoTracingSession>(proto_format_, tracing_backend);

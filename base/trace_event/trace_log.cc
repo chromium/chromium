@@ -833,6 +833,12 @@ void TraceLog::SetEnabled(const TraceConfig& trace_config,
   SetEnabledImpl(trace_config, perfetto_config);
 }
 
+std::vector<TraceLog::TrackEventSession> TraceLog::GetTrackEventSessions()
+    const {
+  AutoLock lock(track_event_lock_);
+  return track_event_sessions_;
+}
+
 perfetto::DataSourceConfig TraceLog::GetCurrentTrackEventDataSourceConfig()
     const {
   AutoLock lock(track_event_lock_);

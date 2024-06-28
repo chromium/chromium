@@ -286,7 +286,7 @@ class ContentBrowserTestSanityTest : public ContentBrowserTest {
 
   void SetUp() override {
     ASSERT_FALSE(ran_);
-    BrowserTestBase::SetUp();
+    ContentBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override { ASSERT_FALSE(ran_); }
@@ -308,7 +308,7 @@ class ContentBrowserTestSanityTest : public ContentBrowserTest {
 
   void TearDown() override {
     ASSERT_TRUE(ran_);
-    BrowserTestBase::TearDown();
+    ContentBrowserTest::TearDown();
   }
 
  private:

@@ -233,7 +233,6 @@ bool PpapiPluginProcessHost::Init(const ContentPluginInfo& info) {
       std::make_unique<base::CommandLine>(exe_path);
   cmd_line->AppendSwitchASCII(switches::kProcessType,
                               switches::kPpapiPluginProcess);
-  BrowserChildProcessHostImpl::CopyTraceStartupFlags(cmd_line.get());
 
 #if BUILDFLAG(IS_WIN)
   cmd_line->AppendArgNative(

@@ -226,12 +226,7 @@ std::optional<int> ShellMainDelegate::BasicStartupComplete() {
 
 #if BUILDFLAG(IS_MAC)
   // Needs to happen before InitializeResourceBundle().
-  OverrideFrameworkBundlePath();
-  OverrideOuterBundlePath();
-  OverrideChildProcessPath();
-  OverrideSourceRootPath();
   EnsureCorrectResolutionSettings();
-  OverrideBundleID();
 #endif  // BUILDFLAG(IS_MAC)
 
   InitLogging(command_line);

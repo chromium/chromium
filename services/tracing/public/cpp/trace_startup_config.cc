@@ -13,6 +13,8 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/shared_memory_switch.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -20,6 +22,9 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/tracing/common/tracing_switches.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_config.h"
+#include "services/tracing/public/mojom/perfetto_service.mojom.h"
+#include "third_party/perfetto/protos/perfetto/config/track_event/track_event_config.gen.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/early_trace_event_binding.h"
@@ -46,19 +51,31 @@ const char kStartupDurationParam[] = "startup_duration";
 const char kResultFileParam[] = "result_file";
 const char kResultDirectoryParam[] = "result_directory";
 
-}  // namespace
-
-// static
-const char TraceStartupConfig::kDefaultStartupCategories[] =
+constexpr std::string_view kDefaultStartupCategories[] = {
+    "__metadata",
 #if BUILDFLAG(IS_ANDROID)
-    "startup,browser,toplevel,toplevel.flow,ipc,EarlyJava,cc,Java,navigation,"
-    "loading,gpu,ui,disabled-by-default-cpu_profiler,download_service,"
-    "disabled-by-default-histogram_samples,"
-    "disabled-by-default-user_action_samples,-*";
+    "startup",
+    "browser",
+    "toplevel",
+    "toplevel.flow",
+    "ipc",
+    "EarlyJava",
+    "cc",
+    "Java",
+    "navigation",
+    "loading",
+    "gpu",
+    "ui",
+    "download_service",
+    "disabled-by-default-histogram_samples",
+    "disabled-by-default-user_action_samples",
 #else
-    "benchmark,toplevel,startup,disabled-by-default-file,toplevel.flow,"
-    "download_service,-*";
+    "benchmark",     "toplevel",         "startup", "disabled-by-default-file",
+    "toplevel.flow", "download_service",
 #endif
+};
+
+}  // namespace
 
 // static
 TraceStartupConfig& TraceStartupConfig::GetInstance() {
@@ -67,10 +84,26 @@ TraceStartupConfig& TraceStartupConfig::GetInstance() {
 }
 
 // static
-base::trace_event::TraceConfig
-TraceStartupConfig::GetDefaultBrowserStartupConfig() {
-  return base::trace_event::TraceConfig(kDefaultStartupCategories,
-                                        base::trace_event::RECORD_UNTIL_FULL);
+perfetto::TraceConfig TraceStartupConfig::GetDefaultBackgroundStartupConfig() {
+  perfetto::TraceConfig config;
+  auto* track_event_data_source = config.add_data_sources()->mutable_config();
+  perfetto::protos::gen::TrackEventConfig track_event_config;
+  for (auto category : kDefaultStartupCategories) {
+    track_event_config.add_enabled_categories(std::string(category));
+  }
+  track_event_data_source->set_track_event_config_raw(
+      track_event_config.SerializeAsString());
+  track_event_data_source->set_name("track_event");
+  config.add_data_sources()->mutable_config()->set_name(
+      tracing::mojom::kMetaDataSourceName);
+
+#if BUILDFLAG(IS_ANDROID)
+  config.add_data_sources()->mutable_config()->set_name(
+      tracing::mojom::kSamplerProfilerSourceName);
+#endif
+  tracing::AdaptPerfettoConfigForChrome(
+      &config, true, true, perfetto::protos::gen::ChromeConfig::BACKGROUND);
+  return config;
 }
 
 TraceStartupConfig::TraceStartupConfig() {
@@ -85,11 +118,12 @@ TraceStartupConfig::TraceStartupConfig() {
 
   if (EnableFromCommandLine()) {
     DCHECK(IsEnabled());
+  } else if (EnableFromConfigHandle()) {
+    DCHECK(IsEnabled());
   } else if (EnableFromConfigFile()) {
     DCHECK(IsEnabled());
   } else if (EnableFromBackgroundTracing()) {
     DCHECK(IsEnabled());
-    DCHECK(!IsTracingStartupForDuration());
     DCHECK_EQ(SessionOwner::kBackgroundTracing, session_owner_);
     CHECK(GetResultFile().empty());
   }
@@ -105,19 +139,9 @@ void TraceStartupConfig::SetDisabled() {
   is_enabled_ = false;
 }
 
-bool TraceStartupConfig::IsTracingStartupForDuration() const {
-  return IsEnabled() && startup_duration_in_seconds_ > 0 &&
-         session_owner_ == SessionOwner::kTracingController;
-}
-
-base::trace_event::TraceConfig TraceStartupConfig::GetTraceConfig() const {
+perfetto::TraceConfig TraceStartupConfig::GetPerfettoConfig() const {
   DCHECK(IsEnabled());
-  return trace_config_;
-}
-
-int TraceStartupConfig::GetStartupDuration() const {
-  DCHECK(IsEnabled());
-  return startup_duration_in_seconds_;
+  return perfetto_config_;
 }
 
 TraceStartupConfig::OutputFormat TraceStartupConfig::GetOutputFormat() const {
@@ -157,21 +181,6 @@ bool TraceStartupConfig::EnableFromCommandLine() {
       command_line->HasSwitch(switches::kTraceStartup) ||
       command_line->HasSwitch(switches::kEnableTracing);
 
-  if (command_line->HasSwitch(switches::kTraceStartupDuration)) {
-    std::string startup_duration_str =
-        command_line->GetSwitchValueASCII(switches::kTraceStartupDuration);
-    if (!startup_duration_str.empty() &&
-        !base::StringToInt(startup_duration_str,
-                           &startup_duration_in_seconds_)) {
-      DLOG(WARNING) << "Could not parse --" << switches::kTraceStartupDuration
-                    << "=" << startup_duration_str << " defaulting to 5 (secs)";
-      startup_duration_in_seconds_ = kDefaultStartupDurationInSeconds;
-    }
-  } else if (command_line->HasSwitch(switches::kEnableTracing)) {
-    // For --enable-tracing, tracing should last until browser shutdown.
-    startup_duration_in_seconds_ = 0;
-  }
-
   if (command_line->HasSwitch(switches::kTraceStartupFormat)) {
     if (command_line->GetSwitchValueASCII(switches::kTraceStartupFormat) ==
         "json") {
@@ -193,6 +202,22 @@ bool TraceStartupConfig::EnableFromCommandLine() {
     return false;
   }
 
+  int startup_duration_in_seconds = 0;
+  if (command_line->HasSwitch(switches::kTraceStartupDuration)) {
+    std::string startup_duration_str =
+        command_line->GetSwitchValueASCII(switches::kTraceStartupDuration);
+    if (!startup_duration_str.empty() &&
+        !base::StringToInt(startup_duration_str,
+                           &startup_duration_in_seconds)) {
+      DLOG(WARNING) << "Could not parse --" << switches::kTraceStartupDuration
+                    << "=" << startup_duration_str << " defaulting to 5 (secs)";
+      startup_duration_in_seconds = kDefaultStartupDurationInSeconds;
+    }
+  } else if (command_line->HasSwitch(switches::kEnableTracing)) {
+    // For --enable-tracing, tracing should last until browser shutdown.
+    startup_duration_in_seconds = 0;
+  }
+
   std::string categories;
   if (command_line->HasSwitch(switches::kTraceStartup)) {
     categories = command_line->GetSwitchValueASCII(switches::kTraceStartup);
@@ -200,11 +225,11 @@ bool TraceStartupConfig::EnableFromCommandLine() {
     categories = command_line->GetSwitchValueASCII(switches::kEnableTracing);
   }
 
-  trace_config_ = base::trace_event::TraceConfig(
+  auto chrome_config = base::trace_event::TraceConfig(
       categories,
       command_line->GetSwitchValueASCII(switches::kTraceStartupRecordMode));
 
-  if (trace_config_.IsCategoryGroupEnabled(
+  if (chrome_config.IsCategoryGroupEnabled(
           base::trace_event::MemoryDumpManager::kTraceCategory)) {
     base::trace_event::TraceConfig::MemoryDumpConfig memory_config;
     memory_config.triggers.push_back(
@@ -212,11 +237,46 @@ bool TraceStartupConfig::EnableFromCommandLine() {
          base::trace_event::MemoryDumpType::kPeriodicInterval});
     memory_config.allowed_dump_modes.insert(
         base::trace_event::MemoryDumpLevelOfDetail::kDetailed);
-    trace_config_.ResetMemoryDumpConfig(memory_config);
+    chrome_config.ResetMemoryDumpConfig(memory_config);
   }
 
+  perfetto_config_ = tracing::GetDefaultPerfettoConfig(
+      chrome_config, false, output_format_ != OutputFormat::kProto,
+      perfetto::protos::gen::ChromeConfig::USER_INITIATED, "");
+
+  if (startup_duration_in_seconds > 0) {
+    perfetto_config_.set_duration_ms(startup_duration_in_seconds * 1000);
+  }
   result_file_ = command_line->GetSwitchValuePath(switches::kTraceStartupFile);
 
+  is_enabled_ = true;
+  return true;
+}
+
+bool TraceStartupConfig::EnableFromConfigHandle() {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(switches::kTraceConfigHandle)) {
+    return false;
+  }
+  auto shmem_region = base::shared_memory::ReadOnlySharedMemoryRegionFrom(
+      command_line->GetSwitchValueASCII(switches::kTraceConfigHandle));
+  CHECK(shmem_region.has_value() && shmem_region.value().IsValid())
+      << "Invald memory region passed on command line.";
+
+  base::ReadOnlySharedMemoryMapping mapping = shmem_region->Map();
+  if (!perfetto_config_.ParseFromArray(mapping.memory(), mapping.size())) {
+    DLOG(WARNING) << "Could not parse --" << switches::kTraceConfigHandle;
+    return false;
+  }
+
+  output_format_ = OutputFormat::kProto;
+  for (const auto& data_source : perfetto_config_.data_sources()) {
+    if (data_source.config().has_chrome_config() &&
+        data_source.config().chrome_config().convert_to_legacy_json()) {
+      output_format_ = OutputFormat::kLegacyJSON;
+      break;
+    }
+  }
   is_enabled_ = true;
   return true;
 }
@@ -236,6 +296,11 @@ bool TraceStartupConfig::EnableFromConfigFile() {
   if (trace_config_file.empty()) {
     is_enabled_ = true;
     DLOG(WARNING) << "Use default trace config.";
+    perfetto_config_ = tracing::GetDefaultPerfettoConfig(
+        base::trace_event::TraceConfig(), false,
+        output_format_ != OutputFormat::kProto,
+        perfetto::protos::gen::ChromeConfig::USER_INITIATED, "");
+    perfetto_config_.set_duration_ms(kDefaultStartupDurationInSeconds * 1000);
     return true;
   }
 
@@ -259,7 +324,7 @@ bool TraceStartupConfig::EnableFromConfigFile() {
 }
 
 bool TraceStartupConfig::EnableFromBackgroundTracing() {
-  bool enabled = enable_background_tracing_for_testing_;
+  bool enabled = false;
 #if BUILDFLAG(IS_ANDROID)
   // Tests can enable this value.
   enabled |= base::android::GetBackgroundStartupTracingFlag();
@@ -272,14 +337,10 @@ bool TraceStartupConfig::EnableFromBackgroundTracing() {
   }
 
   SetBackgroundStartupTracingEnabled(false);
-  trace_config_ = GetDefaultBrowserStartupConfig();
-  trace_config_.EnableArgumentFilter();
+  perfetto_config_ = GetDefaultBackgroundStartupConfig();
 
   is_enabled_ = true;
   session_owner_ = SessionOwner::kBackgroundTracing;
-  // Set startup duration to 0 since background tracing config will configure
-  // the durations later.
-  startup_duration_in_seconds_ = 0;
   return true;
 }
 
@@ -297,13 +358,16 @@ bool TraceStartupConfig::ParseTraceConfigFileContent(
     return false;
   }
 
-  trace_config_ = base::trace_event::TraceConfig(std::move(*trace_config_dict));
+  auto chrome_config =
+      base::trace_event::TraceConfig(std::move(*trace_config_dict));
+  perfetto_config_ = tracing::GetDefaultPerfettoConfig(
+      chrome_config, false, output_format_ != OutputFormat::kProto,
+      perfetto::protos::gen::ChromeConfig::USER_INITIATED, "");
 
-  startup_duration_in_seconds_ =
+  int startup_duration_in_seconds =
       dict.FindInt(kStartupDurationParam).value_or(0);
-
-  if (startup_duration_in_seconds_ < 0) {
-    startup_duration_in_seconds_ = 0;
+  if (startup_duration_in_seconds > 0) {
+    perfetto_config_.set_duration_ms(startup_duration_in_seconds * 1000);
   }
 
   if (auto* result_file = dict.FindString(kResultFileParam)) {

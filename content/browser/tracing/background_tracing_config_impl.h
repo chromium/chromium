@@ -99,10 +99,6 @@ class CONTENT_EXPORT BackgroundTracingConfigImpl
   constexpr static int kMaxBufferSizeKb = 25 * 1024;
 #endif
 
-  static base::trace_event::TraceConfig GetConfigForCategoryPreset(
-      BackgroundTracingConfigImpl::CategoryPreset,
-      base::trace_event::TraceRecordMode);
-
   BackgroundTracingRule* AddRule(const base::Value::Dict& dict);
   void SetBufferSizeLimits(const base::Value::Dict* dict);
   int GetMaximumTraceBufferSizeKb() const;

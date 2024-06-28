@@ -77,10 +77,6 @@ class BrowserChildProcessHostImpl
   // instance.
   static void TerminateAll();
 
-  // Appends kTraceStartup and kTraceRecordMode flags to the command line, if
-  // needed.
-  static void CopyTraceStartupFlags(base::CommandLine* cmd_line);
-
   // BrowserChildProcessHost implementation:
   bool Send(IPC::Message* message) override;
   void Launch(std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,

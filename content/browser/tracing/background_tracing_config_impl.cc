@@ -162,8 +162,6 @@ TraceConfig BackgroundTracingConfigImpl::GetTraceConfig() const {
     }
   } else if (category_preset() == CUSTOM_CATEGORY_PRESET) {
     chrome_config = TraceConfig(custom_categories_, record_mode);
-  } else {
-    chrome_config = GetConfigForCategoryPreset(category_preset(), record_mode);
   }
 
   chrome_config.SetTraceBufferSizeInKb(GetMaximumTraceBufferSizeKb());
@@ -338,27 +336,6 @@ BackgroundTracingConfigImpl::SystemFromDict(const base::Value::Dict& dict) {
     return nullptr;
 
   return config;
-}
-
-// static
-TraceConfig BackgroundTracingConfigImpl::GetConfigForCategoryPreset(
-    BackgroundTracingConfigImpl::CategoryPreset preset,
-    base::trace_event::TraceRecordMode record_mode) {
-  switch (preset) {
-    case BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_STARTUP: {
-      // This config should match exactly the one set in
-      // TraceStartupConfig::EnableFromBackgroundTracing, otherwise the
-      // startup session will not be adopted.
-      auto config =
-          tracing::TraceStartupConfig::GetDefaultBrowserStartupConfig();
-      config.EnableArgumentFilter();
-      config.SetTraceRecordMode(record_mode);
-      return config;
-    }
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return TraceConfig();
-  }
 }
 
 BackgroundTracingRule* BackgroundTracingConfigImpl::AddRule(

@@ -99,8 +99,7 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
 
     dict.Set("scenario_name", scenario_name);
     dict.Set("mode", "PREEMPTIVE_TRACING_MODE");
-    dict.Set("custom_categories",
-             tracing::TraceStartupConfig::kDefaultStartupCategories);
+    dict.Set("custom_categories", "toplevel");
 
     base::Value::List rules_list;
     {

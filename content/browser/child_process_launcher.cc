@@ -97,6 +97,7 @@ ChildProcessLauncher::ChildProcessLauncher(
     const mojo::ProcessErrorCallback& process_error_callback,
     std::unique_ptr<ChildProcessLauncherFileData> file_data,
     base::UnsafeSharedMemoryRegion histogram_memory_region,
+    base::ReadOnlySharedMemoryRegion tracing_config_memory_region,
     bool terminate_on_shutdown)
     : client_(client),
       starting_(true),
@@ -121,7 +122,8 @@ ChildProcessLauncher::ChildProcessLauncher(
       client_->CanUseWarmUpConnection(),
 #endif
       std::move(mojo_invitation), process_error_callback, std::move(file_data),
-      std::move(histogram_memory_region));
+      std::move(histogram_memory_region),
+      std::move(tracing_config_memory_region));
   helper_->StartLaunchOnClientThread();
 }
 

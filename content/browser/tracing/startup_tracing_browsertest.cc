@@ -16,7 +16,6 @@
 #include "build/build_config.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "content/browser/tracing/startup_tracing_controller.h"
-#include "content/browser/tracing/tracing_controller_impl.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -25,6 +24,7 @@
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
 #include "services/tracing/public/cpp/tracing_features.h"
+#include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
 namespace content {
 
@@ -98,36 +98,29 @@ class LargeTraceEventData : public base::trace_event::ConvertableToTraceFormat {
 IN_PROC_BROWSER_TEST_F(StartupTracingInProcessTest,
                        MAYBE_TestFilledStartupBuffer) {
   auto config = tracing::TraceStartupConfig::GetInstance()
-                    .GetDefaultBrowserStartupConfig();
-  config.SetTraceBufferSizeInEvents(0);
-  config.SetTraceBufferSizeInKb(0);
+                    .GetDefaultBackgroundStartupConfig();
 
-  CHECK(tracing::EnableStartupTracingForProcess(
-      config,
-      /*privacy_filtering_enabled=*/false));
+  CHECK(tracing::EnableStartupTracingForProcess(config));
 
   for (int i = 0; i < 1024; ++i) {
     auto data = std::make_unique<LargeTraceEventData>();
     TRACE_EVENT1("toplevel", "bar", "data", std::move(data));
   }
 
-  config.SetTraceBufferSizeInKb(32);
-
   base::RunLoop wait_for_tracing;
-  TracingControllerImpl::GetInstance()->StartTracing(
-      config, wait_for_tracing.QuitClosure());
+  auto session =
+      perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend);
+  session->Setup(config);
+  session->SetOnStartCallback(
+      [&wait_for_tracing]() { wait_for_tracing.Quit(); });
+  session->Start();
   wait_for_tracing.Run();
 
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
 
   base::RunLoop wait_for_stop;
-  TracingControllerImpl::GetInstance()->StopTracing(
-      TracingController::CreateStringEndpoint(base::BindOnce(
-          [](base::OnceClosure quit_callback,
-             std::unique_ptr<std::string> data) {
-            std::move(quit_callback).Run();
-          },
-          wait_for_stop.QuitClosure())));
+  session->SetOnStopCallback([&wait_for_stop]() { wait_for_stop.Quit(); });
+  session->Stop();
   wait_for_stop.Run();
 }
 

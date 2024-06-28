@@ -95,8 +95,7 @@ TEST(BackgroundStartupTracingObserverTest, IncludeStartupConfigIfNeeded) {
                    base::Value::Dict()
                        .Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED")
                        .Set("trigger_name", "test")))
-          .Set("custom_categories",
-               tracing::TraceStartupConfig::kDefaultStartupCategories));
+          .Set("custom_categories", "toplevel"));
   ASSERT_TRUE(config_impl);
 
   preferences->SetBackgroundStartupTracingEnabled(false);

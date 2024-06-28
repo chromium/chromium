@@ -5,10 +5,11 @@
 #ifndef SERVICES_TRACING_PUBLIC_CPP_TRACE_STARTUP_CONFIG_H_
 #define SERVICES_TRACING_PUBLIC_CPP_TRACE_STARTUP_CONFIG_H_
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/trace_event/trace_config.h"
 #include "build/build_config.h"
-#include "base/component_export.h"
+#include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
 
 namespace base {
 template <typename Type>
@@ -21,6 +22,7 @@ class BackgroundStartupTracingTest;
 }
 
 namespace tracing {
+class TraceStartupConfigTest;
 
 // TraceStartupConfig is a singleton that contains the configurations of startup
 // tracing. One can use --trace-startup flag or, for more complicated
@@ -98,16 +100,15 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceStartupConfig {
     kProto,
   };
 
-  // Exposed for testing.
-  static const char kDefaultStartupCategories[];
-
   static TraceStartupConfig& GetInstance();
+
+  ~TraceStartupConfig();
 
   TraceStartupConfig(const TraceStartupConfig&) = delete;
   TraceStartupConfig& operator=(const TraceStartupConfig&) = delete;
 
   // Default minimum startup trace config with enough events to debug issues.
-  static base::trace_event::TraceConfig GetDefaultBrowserStartupConfig();
+  static perfetto::TraceConfig GetDefaultBackgroundStartupConfig();
 
   // IsEnabled() returns true if
   // - valid trace config file or trace startup flags are specified,
@@ -121,12 +122,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceStartupConfig {
   // tracing is finished.
   void SetDisabled();
 
-  // Returns true while startup tracing is not finished, if startup duration is
-  // positive.
-  bool IsTracingStartupForDuration() const;
-
-  base::trace_event::TraceConfig GetTraceConfig() const;
-  int GetStartupDuration() const;
+  perfetto::TraceConfig GetPerfettoConfig() const;
 
   // Returns the name of the file to write the trace result into.
   base::FilePath GetResultFile() const;
@@ -149,22 +145,21 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceStartupConfig {
   friend class base::NoDestructor<TraceStartupConfig>;
   friend class content::CommandlineStartupTracingTest;
   friend class content::BackgroundStartupTracingTest;
+  friend class ::tracing::TraceStartupConfigTest;
 
   constexpr static int kDefaultStartupDurationInSeconds = 5;
 
   TraceStartupConfig();
-  ~TraceStartupConfig();
 
   bool EnableFromCommandLine();
   bool EnableFromConfigFile();
+  bool EnableFromConfigHandle();
   bool EnableFromBackgroundTracing();
 
   bool ParseTraceConfigFileContent(const std::string& content);
 
   bool is_enabled_ = false;
-  bool enable_background_tracing_for_testing_ = false;
-  base::trace_event::TraceConfig trace_config_;
-  int startup_duration_in_seconds_ = kDefaultStartupDurationInSeconds;
+  perfetto::TraceConfig perfetto_config_;
   base::FilePath result_file_;
   SessionOwner session_owner_ = SessionOwner::kTracingController;
   bool session_adopted_ = false;
