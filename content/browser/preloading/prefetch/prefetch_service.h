@@ -312,13 +312,16 @@ class CONTENT_EXPORT PrefetchService {
           when_prefetch_not_used_fallback_to_regular_navigation =
               FallbackToRegularNavigationWhenPrefetchNotUsable(true));
 
-  // Helper function for |GetPrefetchToServe| to wait for head of a
-  // potentially matching CL in order to decide if we can use it or not for
-  // the current navigation.
+  // Callback called from
+  // `PrefetchContainer::OnReceivedHead()/OnReceivedHeadFailed()`, to wait and
+  // determine a potentially matching prefetch is a matching prefetch.
+  // Corresponds 3.6 in
+  // https://wicg.github.io/nav-speculation/prefetch.html#wait-for-a-matching-prefetch-record
+  //
   // Once we make the decision to use a prefetch, call |PrepareToServe| and
   // |GetPrefetchToServe| again in order to enforce that prefetches that are
   // served are served from |prefetches_ready_to_serve_|.
-  void WaitOnPrefetchToServeHead(
+  void OnReceivedHead(
       const PrefetchContainer::Key& key,
       base::WeakPtr<PrefetchMatchResolver> prefetch_match_resolver,
       const GURL& prefetch_url,

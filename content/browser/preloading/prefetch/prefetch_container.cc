@@ -538,9 +538,7 @@ PrefetchContainer::~PrefetchContainer() {
     weak_method_factory_.InvalidateWeakPtrs();
 
     // If anything was blocked on head, it no longer is.
-    if (on_received_head_callback_) {
-      std::move(on_received_head_callback_).Run();
-    }
+    OnReceivedHeadFailed();
   }
 }
 
@@ -1045,6 +1043,21 @@ void PrefetchContainer::SetNoVarySearchData(RenderFrameHost* rfh) {
   no_vary_search_data_ = no_vary_search::ProcessHead(*GetHead(), GetURL(), rfh);
 }
 
+void PrefetchContainer::StartBlockUntilHead(
+    base::OnceClosure on_received_head_callback,
+    base::TimeDelta timeout) {
+  on_received_head_callback_ = std::move(on_received_head_callback);
+
+  if (timeout.is_positive()) {
+    // TODO(https://crbug.com/40274818): See the comment on
+    // `OnGetPrefetchToServe()`.
+    block_until_head_timer_ = std::make_unique<base::OneShotTimer>();
+    block_until_head_timer_->Start(
+        FROM_HERE, timeout,
+        base::BindOnce(&PrefetchContainer::OnReceivedHeadFailed, GetWeakPtr()));
+  }
+}
+
 void PrefetchContainer::OnReceivedHead() {
   // TODO(crbug.com/40946257): Current code doesn't support NVS for
   // browser-initated triggers.
@@ -1054,18 +1067,19 @@ void PrefetchContainer::OnReceivedHead() {
     SetNoVarySearchData(rfhi_can_be_null);
   }
 
+  block_until_head_timer_.reset();
+
   if (on_received_head_callback_) {
     std::move(on_received_head_callback_).Run();
   }
 }
 
-void PrefetchContainer::SetOnReceivedHeadCallback(
-    base::OnceClosure on_received_head_callback) {
-  on_received_head_callback_ = std::move(on_received_head_callback);
-}
+void PrefetchContainer::OnReceivedHeadFailed() {
+  block_until_head_timer_.reset();
 
-base::OnceClosure PrefetchContainer::ReleaseOnReceivedHeadCallback() {
-  return std::move(on_received_head_callback_);
+  if (on_received_head_callback_) {
+    std::move(on_received_head_callback_).Run();
+  }
 }
 
 void PrefetchContainer::StartTimeoutTimer(
@@ -1158,18 +1172,6 @@ void PrefetchContainer::UpdatePrefetchRequestMetrics(
   if (completion_status && head)
     fetch_duration_ =
         completion_status->completion_time - head->load_timing.request_start;
-}
-
-void PrefetchContainer::TakeBlockUntilHeadTimer(
-    std::unique_ptr<base::OneShotTimer> block_until_head_timer) {
-  block_until_head_timer_ = std::move(block_until_head_timer);
-}
-
-void PrefetchContainer::ResetBlockUntilHeadTimer() {
-  if (block_until_head_timer_) {
-    block_until_head_timer_->AbandonAndStop();
-  }
-  block_until_head_timer_.reset();
 }
 
 bool PrefetchContainer::HasPrefetchBeenConsideredToServe() const {

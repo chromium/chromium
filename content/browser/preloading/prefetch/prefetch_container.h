@@ -366,13 +366,6 @@ class CONTENT_EXPORT PrefetchContainer {
   void OnPrefetchComplete(
       const network::URLLoaderCompletionStatus& completion_status);
 
-  // Allows for a timer to be used to limit the maximum amount of time that a
-  // navigation can be blocked waiting for the head of this prefetch to be
-  // received.
-  void TakeBlockUntilHeadTimer(
-      std::unique_ptr<base::OneShotTimer> block_until_head_timer);
-  void ResetBlockUntilHeadTimer();
-
   enum class ServableState {
     // Not servable nor should block until head received.
     kNotServable,
@@ -390,12 +383,21 @@ class CONTENT_EXPORT PrefetchContainer {
   // `PrefetchResponseReader::CreateRequestHandler()`.
   ServableState GetServableState(base::TimeDelta cacheable_duration) const;
 
-  // Called once it is determined whether or not the prefetch is servable, i.e.
-  // either when non-redirect response head is received, or when determined not
-  // servable.
+  // Starts blocking `PrefetchMatchResolver` until receiving response header or
+  // timeout. `on_received_head_callback` will be called when
+  //
+  // - Non-redircet response header received.
+  // - Fetch failed.
+  // - The argument `timeout` is positive and timeouted.
+  // - `PrefetchContainer` dtor if `kPrefetchUnblockOnCancel` enabled.
+  void StartBlockUntilHead(base::OnceClosure on_received_head_callback,
+                           base::TimeDelta timeout);
+  // Note that `PrefetchStreamingURLLoader` calls `OnReceivedHead()` even for
+  // failure case.
+  //
+  // TODO: Merge these if possible.
   void OnReceivedHead();
-  void SetOnReceivedHeadCallback(base::OnceClosure on_received_head_callback);
-  base::OnceClosure ReleaseOnReceivedHeadCallback();
+  void OnReceivedHeadFailed();
 
   void StartTimeoutTimer(base::TimeDelta timeout,
                          base::OnceClosure on_timeout_callback);

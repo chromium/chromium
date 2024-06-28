@@ -263,27 +263,6 @@ void OnIsolatedCookieCopyComplete(PrefetchContainer::Reader reader) {
   }
 }
 
-void BlockUntilHeadTimeoutHelper(
-    base::WeakPtr<PrefetchContainer> prefetch_container,
-    base::WeakPtr<PrefetchMatchResolver> prefetch_match_resolver) {
-  if (!prefetch_match_resolver) {
-    // This means the navigation that was waiting for this prefetch_container
-    // has been aborted and we don't have to do anything.
-    return;
-  }
-
-  if (!prefetch_container) {
-    return;
-  }
-
-  // Takes the on_received_head_callback
-  base::OnceClosure on_received_head_callback =
-      prefetch_container->ReleaseOnReceivedHeadCallback();
-  if (on_received_head_callback) {
-    std::move(on_received_head_callback).Run();
-  }
-}
-
 bool IsReferrerPolicySufficientlyStrict(
     const network::mojom::ReferrerPolicy& referrer_policy) {
   // https://github.com/WICG/nav-speculation/blob/main/prefetch.bs#L606
@@ -1583,24 +1562,14 @@ PrefetchService::HandlePrefetchContainerToServe(
         return HandlePrefetchContainerResult::kWaitForHead;
       }
       prefetch_container.OnGetPrefetchToServe(/*blocked_until_head=*/true);
-      prefetch_container.SetOnReceivedHeadCallback(base::BindOnce(
-          &PrefetchService::WaitOnPrefetchToServeHead,
-          weak_method_factory_.GetWeakPtr(), key,
-          prefetch_match_resolver.GetWeakPtr(), prefetch_container.GetURL(),
-          prefetch_container.GetWeakPtr()));
-      base::TimeDelta block_until_head_timeout =
+      auto on_received_head = base::BindOnce(
+          &PrefetchService::OnReceivedHead, weak_method_factory_.GetWeakPtr(),
+          key, prefetch_match_resolver.GetWeakPtr(),
+          prefetch_container.GetURL(), prefetch_container.GetWeakPtr());
+      base::TimeDelta timeout =
           PrefetchBlockUntilHeadTimeout(prefetch_container.GetPrefetchType());
-      if (block_until_head_timeout.is_positive()) {
-        std::unique_ptr<base::OneShotTimer> block_until_head_timer =
-            std::make_unique<base::OneShotTimer>();
-        block_until_head_timer->Start(
-            FROM_HERE, block_until_head_timeout,
-            base::BindOnce(&BlockUntilHeadTimeoutHelper,
-                           prefetch_container.GetWeakPtr(),
-                           prefetch_match_resolver.GetWeakPtr()));
-        prefetch_container.TakeBlockUntilHeadTimer(
-            std::move(block_until_head_timer));
-      }
+      prefetch_container.StartBlockUntilHead(std::move(on_received_head),
+                                             std::move(timeout));
       prefetch_match_resolver.WaitForPrefetch(prefetch_container);
       return HandlePrefetchContainerResult::kWaitForHead;
     }
@@ -1654,13 +1623,13 @@ void PrefetchService::GetPrefetchToServe(
   ReturnPrefetchToServe({}, {}, prefetch_match_resolver);
 }
 
-void PrefetchService::WaitOnPrefetchToServeHead(
+void PrefetchService::OnReceivedHead(
     const PrefetchContainer::Key& key,
     base::WeakPtr<PrefetchMatchResolver> prefetch_match_resolver,
     const GURL& prefetch_url,
     base::WeakPtr<PrefetchContainer> prefetch_container) {
-  DVLOG(1) << "PrefetchService::WaitOnPrefetchToServeHead:"
-           << "prefetch_url = " << prefetch_url;
+  DVLOG(1) << "PrefetchService::OnReceivedHead:" << "prefetch_url = "
+           << prefetch_url;
   if (!prefetch_match_resolver) {
     // Since prefetch_match_resolver is a NavigationHandleUserData,
     // if it is null it means the navigation has finished so there is nothing to
@@ -1677,13 +1646,13 @@ void PrefetchService::WaitOnPrefetchToServeHead(
   CHECK(!prefetch_match_resolver->IsWaitingForPrefetch(prefetch_url));
 
   if (!prefetch_container) {
-    DVLOG(1) << "PrefetchService::WaitOnPrefetchToServeHead(" << key
+    DVLOG(1) << "PrefetchService::OnReceivedHead(" << key
              << "): deleted while waiting for head";
     ReturnPrefetchToServe(prefetch_url, {}, *prefetch_match_resolver);
     return;
   }
 
-  DVLOG(1) << "PrefetchService::WaitOnPrefetchToServeHead(" << key
+  DVLOG(1) << "PrefetchService::OnReceivedHead(" << key
            << "): PrefetchContainer head received for " << prefetch_url << "!";
   // This method is registered with the prefetch_container as the
   // ReceivedHeadCallback. We only call this method immediately after
@@ -1691,12 +1660,11 @@ void PrefetchService::WaitOnPrefetchToServeHead(
   // case it is alive) or during its destruction after invalidating weak
   // pointers (in which case we should have bailed just now).
   CHECK(prefetch_container);
-  prefetch_container->ResetBlockUntilHeadTimer();
 
   switch (prefetch_container->GetServableState(PrefetchCacheableDuration())) {
     case PrefetchContainer::ServableState::kNotServable:
     case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived: {
-      DVLOG(1) << "PrefetchService::WaitOnPrefetchToServeHead(" << key
+      DVLOG(1) << "PrefetchService::OnReceivedHead(" << key
                << "): " << *prefetch_container << " not servable!";
       prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
       ReturnPrefetchToServe(prefetch_url, {}, *prefetch_match_resolver);
@@ -1724,8 +1692,8 @@ void PrefetchService::WaitOnPrefetchToServeHead(
     ReturnPrefetchToServe(prefetch_url, {}, *prefetch_match_resolver);
     return;
   }
-  DVLOG(1) << "PrefetchService::WaitOnPrefetchToServeHead::" << "url = "
-           << nav_url << "::" << "matches by NVS header the prefetch "
+  DVLOG(1) << "PrefetchService::OnReceivedHead::" << "url = " << nav_url
+           << "::" << "matches by NVS header the prefetch "
            << prefetch_container->GetURL();
   if (auto attempt = prefetch_container->preloading_attempt()) {
     // Before No-Vary-Search hint, the decision to use a prefetched response
