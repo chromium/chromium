@@ -7585,3 +7585,6 @@ crbug.com/348486001 [ Win11-arm64 ] virtual/prerender2-fallback-prefetch-spec-ru
 
 # The overlapping navigation behavior is flaky.
 crbug.com/348101805 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/cross-document-traversal-cross-document-nav.html [ Failure Pass ]
+
+# Gardener 2024-06-28
+crbug.com/349938120 [ Linux ] wpt_internal/webmidi/requestmidiaccess-basic.https.html [ Failure Pass ]
