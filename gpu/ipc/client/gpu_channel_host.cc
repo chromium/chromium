@@ -49,7 +49,9 @@ GpuChannelHost::GpuChannelHost(
       image_decode_accelerator_proxy_(
           this,
           static_cast<int32_t>(
-              GpuChannelReservedRoutes::kImageDecodeAccelerator)) {
+              GpuChannelReservedRoutes::kImageDecodeAccelerator)),
+      sync_point_graph_validation_enabled_(
+          features::IsSyncPointGraphValidationEnabled()) {
   mojo::PendingAssociatedRemote<mojom::GpuChannel> channel;
   listener_->Initialize(std::move(handle),
                         channel.InitWithNewEndpointAndPassReceiver(),
@@ -131,6 +133,12 @@ void GpuChannelHost::VerifyFlush(uint32_t deferred_message_id) {
   AutoLock lock(context_lock_);
 
   InternalFlush(deferred_message_id);
+
+  if (sync_point_graph_validation_enabled_) {
+    // No need to do synchronous flush when graph validation of sync points is
+    // enabled.
+    return;
+  }
 
   bool ipc_needed = false;
   const bool skip_flush_if_possible =

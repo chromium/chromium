@@ -320,6 +320,8 @@ class GPU_EXPORT GpuChannelHost
   uint32_t enqueued_deferred_message_id_ GUARDED_BY(context_lock_) = 0;
   // Highest deferred message id sent to the channel.
   uint32_t flushed_deferred_message_id_ GUARDED_BY(context_lock_) = 0;
+
+  const bool sync_point_graph_validation_enabled_;
 };
 
 }  // namespace gpu

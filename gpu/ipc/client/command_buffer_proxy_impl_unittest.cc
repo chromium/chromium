@@ -8,12 +8,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/test/with_feature_override.h"
 #include "gpu/command_buffer/client/gpu_control_client.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -73,15 +74,30 @@ class MockGpuControlClient : public GpuControlClient {
   MOCK_METHOD1(OnGpuControlReturnData, void(base::span<const uint8_t>));
 };
 
-class CommandBufferProxyImplTest : public base::test::WithFeatureOverride,
-                                   public testing::Test {
+class CommandBufferProxyImplTest
+    : public testing::WithParamInterface<std::tuple<bool, bool>>,
+      public testing::Test {
  public:
-  CommandBufferProxyImplTest()
-      : base::test::WithFeatureOverride(
-            features::kConditionallySkipGpuChannelFlush),
-        skip_flush_if_possible_(base::FeatureList::IsEnabled(
-            features::kConditionallySkipGpuChannelFlush)),
-        channel_(base::MakeRefCounted<TestGpuChannelHost>(mock_gpu_channel_)) {}
+  CommandBufferProxyImplTest() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    (std::get<0>(GetParam()) ? enabled_features : disabled_features)
+        .push_back(features::kConditionallySkipGpuChannelFlush);
+
+    if (std::get<1>(GetParam())) {
+      enabled_features.push_back(features::kUseGpuSchedulerDfs);
+      enabled_features.push_back(features::kSyncPointGraphValidation);
+    } else {
+      disabled_features.push_back(features::kSyncPointGraphValidation);
+    }
+
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+
+    skip_flush_if_possible_ = base::FeatureList::IsEnabled(
+        features::kConditionallySkipGpuChannelFlush);
+    channel_ = base::MakeRefCounted<TestGpuChannelHost>(mock_gpu_channel_);
+  }
 
   ~CommandBufferProxyImplTest() override {
     // Release channel, and run any cleanup tasks it posts.
@@ -163,9 +179,10 @@ class CommandBufferProxyImplTest : public base::test::WithFeatureOverride,
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   MockGpuChannel mock_gpu_channel_;
-  const bool skip_flush_if_possible_;
+  bool skip_flush_if_possible_ = false;
   scoped_refptr<TestGpuChannelHost> channel_;
   std::vector<mojo::PendingAssociatedRemote<mojom::CommandBufferClient>>
       clients_;
@@ -196,8 +213,10 @@ TEST_P(CommandBufferProxyImplTest, OrderingBarriersAreCoalescedWithFlush) {
       .Times(2)
       .WillRepeatedly(Return(true));
 
-  // Each proxy sends a sync GpuControl flush on disconnect.
-  ExpectFlush(2);
+  if (!features::IsSyncPointGraphValidationEnabled()) {
+    // Each proxy sends a sync GpuControl flush on disconnect.
+    ExpectFlush(2);
+  }
 }
 
 TEST_P(CommandBufferProxyImplTest, FlushPendingWorkFlushesOrderingBarriers) {
@@ -224,8 +243,10 @@ TEST_P(CommandBufferProxyImplTest, FlushPendingWorkFlushesOrderingBarriers) {
       .Times(2)
       .WillRepeatedly(Return(true));
 
-  // Each proxy sends a sync GpuControl flush on disconnect.
-  ExpectFlush(2);
+  if (!features::IsSyncPointGraphValidationEnabled()) {
+    // Each proxy sends a sync GpuControl flush on disconnect.
+    ExpectFlush(2);
+  }
 }
 
 TEST_P(CommandBufferProxyImplTest, EnsureWorkVisibleFlushesOrderingBarriers) {
@@ -247,8 +268,10 @@ TEST_P(CommandBufferProxyImplTest, EnsureWorkVisibleFlushesOrderingBarriers) {
               ExpectOrderingBarrier(*requests[2], proxy1->route_id(), 30);
             }));
 
-    // Next we expect a full `Flush()`.
-    ExpectFlush(1);
+    if (!features::IsSyncPointGraphValidationEnabled()) {
+      // Next we expect a full `Flush()`.
+      ExpectFlush(1);
+    }
   }
 
   proxy1->OrderingBarrier(10);
@@ -262,8 +285,10 @@ TEST_P(CommandBufferProxyImplTest, EnsureWorkVisibleFlushesOrderingBarriers) {
       .Times(2)
       .WillRepeatedly(Return(true));
 
-  // Each proxy sends a sync GpuControl flush on disconnect.
-  ExpectFlush(2);
+  if (!features::IsSyncPointGraphValidationEnabled()) {
+    // Each proxy sends a sync GpuControl flush on disconnect.
+    ExpectFlush(2);
+  }
 }
 
 TEST_P(CommandBufferProxyImplTest,
@@ -303,8 +328,10 @@ TEST_P(CommandBufferProxyImplTest,
       .Times(1)
       .WillOnce(Return(true));
 
-  // The proxy sends a sync GpuControl flush on disconnect.
-  ExpectFlush(1);
+  if (!features::IsSyncPointGraphValidationEnabled()) {
+    // The proxy sends a sync GpuControl flush on disconnect.
+    ExpectFlush(1);
+  }
 }
 
 TEST_P(CommandBufferProxyImplTest, CreateTransferBufferOOM) {
@@ -357,10 +384,15 @@ TEST_P(CommandBufferProxyImplTest, CreateTransferBufferOOM) {
       .Times(1)
       .WillOnce(Return(true));
 
-  // The proxy sends a sync GpuControl flush on disconnect.
-  ExpectFlush(1);
+  if (!features::IsSyncPointGraphValidationEnabled()) {
+    // The proxy sends a sync GpuControl flush on disconnect.
+    ExpectFlush(1);
+  }
 }
 
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(CommandBufferProxyImplTest);
+INSTANTIATE_TEST_SUITE_P(All,
+                         CommandBufferProxyImplTest,
+                         testing::Combine(testing::Values(false, true),
+                                          testing::Values(false, true)));
 }  // namespace
 }  // namespace gpu
