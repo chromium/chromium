@@ -44,6 +44,11 @@ config("runtime_library") {
 
   defines += [ "CR_LIBCXX_REVISION=$libcxx_revision" ]
 
+  if (is_fuchsia) {
+    # TODO(crbug.com/349411322): Fuchsia's SDK uses std::vector<const char>.
+    defines += [ "_LIBCPP_ENABLE_REMOVED_ALLOCATOR_CONST" ]
+  }
+
   if (is_win) {
     # Intentionally not using libc++abi on Windows because libc++abi only
     # implements the Itanium C++ ABI, and not the Microsoft ABI which we use on
