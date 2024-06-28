@@ -7,8 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/bind.h"
-#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -132,18 +130,7 @@ class OutgoingPasswordSharingInvitationSyncBridgeTest : public testing::Test {
 
   std::unique_ptr<EntityData> GetDataFromBridge(
       const std::string& storage_key) {
-    base::RunLoop loop;
-    std::unique_ptr<DataBatch> batch;
-    bridge_->GetDataForCommit(
-        {storage_key},
-        base::BindOnce(
-            [](base::RunLoop* loop, std::unique_ptr<DataBatch>* out_batch,
-               std::unique_ptr<DataBatch> result_data) {
-              *out_batch = std::move(result_data);
-              loop->Quit();
-            },
-            &loop, &batch));
-    loop.Run();
+    std::unique_ptr<DataBatch> batch = bridge_->GetDataForCommit({storage_key});
 
     if (!batch || !batch->HasNext()) {
       return nullptr;

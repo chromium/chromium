@@ -101,24 +101,24 @@ IncomingPasswordSharingInvitationSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void IncomingPasswordSharingInvitationSyncBridge::GetDataForCommit(
-    StorageKeyList storage_keys,
-    DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+IncomingPasswordSharingInvitationSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   NOTREACHED_IN_MIGRATION()
       << "This data type does not store or commit any data to the server.";
+  return nullptr;
 }
 
-void IncomingPasswordSharingInvitationSyncBridge::GetAllDataForDebugging(
-    DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+IncomingPasswordSharingInvitationSyncBridge::GetAllDataForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // There is no data stored locally, return an empty result.
   // TODO(crbug.com/40268334): return at least sync metadata if available. This
   // requires a storage key list.
-  auto batch = std::make_unique<syncer::MutableDataBatch>();
-  std::move(callback).Run(std::move(batch));
+  return std::make_unique<syncer::MutableDataBatch>();
 }
 
 std::string IncomingPasswordSharingInvitationSyncBridge::GetClientTag(

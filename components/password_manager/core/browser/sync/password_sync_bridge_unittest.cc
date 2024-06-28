@@ -10,11 +10,9 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -474,12 +472,8 @@ class PasswordSyncBridgeTest : public testing::Test {
 
   std::optional<sync_pb::PasswordSpecifics> GetDataFromBridge(
       const std::string& storage_key) {
-    std::unique_ptr<syncer::DataBatch> batch;
-    bridge_->GetDataForCommit(
-        {storage_key}, base::BindLambdaForTesting(
-                           [&](std::unique_ptr<syncer::DataBatch> in_batch) {
-                             batch = std::move(in_batch);
-                           }));
+    std::unique_ptr<syncer::DataBatch> batch =
+        bridge_->GetDataForCommit({storage_key});
     EXPECT_THAT(batch, NotNull());
     if (!batch || !batch->HasNext()) {
       return std::nullopt;
@@ -1251,12 +1245,7 @@ TEST_F(PasswordSyncBridgeTest,
   fake_db()->AddLoginWithPrimaryKey(form1);
   fake_db()->AddLoginWithPrimaryKey(form2);
 
-  std::unique_ptr<syncer::DataBatch> batch;
-
-  bridge()->GetAllDataForDebugging(base::BindLambdaForTesting(
-      [&](std::unique_ptr<syncer::DataBatch> in_batch) {
-        batch = std::move(in_batch);
-      }));
+  std::unique_ptr<syncer::DataBatch> batch = bridge()->GetAllDataForDebugging();
 
   ASSERT_THAT(batch, NotNull());
   EXPECT_TRUE(batch->HasNext());

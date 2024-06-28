@@ -154,9 +154,9 @@ OutgoingPasswordSharingInvitationSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void OutgoingPasswordSharingInvitationSyncBridge::GetDataForCommit(
-    StorageKeyList storage_keys,
-    DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+OutgoingPasswordSharingInvitationSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
@@ -167,11 +167,11 @@ void OutgoingPasswordSharingInvitationSyncBridge::GetDataForCommit(
       batch->Put(storage_key, ConvertToEntityData(iter->second));
     }
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
-void OutgoingPasswordSharingInvitationSyncBridge::GetAllDataForDebugging(
-    DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+OutgoingPasswordSharingInvitationSyncBridge::GetAllDataForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
@@ -180,7 +180,7 @@ void OutgoingPasswordSharingInvitationSyncBridge::GetAllDataForDebugging(
     batch->Put(GetStorageKeyFromSpecifics(outgoing_invitation.specifics),
                ConvertToEntityData(outgoing_invitation));
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 std::string OutgoingPasswordSharingInvitationSyncBridge::GetClientTag(

@@ -920,8 +920,8 @@ PasswordSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void PasswordSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                          DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> PasswordSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   // This method is called only when there are uncommitted changes on startup.
   // There are more efficient implementations, but since this method is rarely
   // called, simplicity is preferred over efficiency.
@@ -930,7 +930,7 @@ void PasswordSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
       FormRetrievalResult::kSuccess) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load entries from the password store."});
-    return;
+    return nullptr;
   }
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
@@ -943,10 +943,11 @@ void PasswordSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
                      GetPossiblyTrimmedPasswordSpecificsData(storage_key)));
     }
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
-void PasswordSyncBridge::GetAllDataForDebugging(DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+PasswordSyncBridge::GetAllDataForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   PrimaryKeyToPasswordSpecificsDataMap key_to_specifics_map;
@@ -954,7 +955,7 @@ void PasswordSyncBridge::GetAllDataForDebugging(DataCallback callback) {
       FormRetrievalResult::kSuccess) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load entries from the password store."});
-    return;
+    return nullptr;
   }
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
@@ -972,7 +973,7 @@ void PasswordSyncBridge::GetAllDataForDebugging(DataCallback callback) {
         CreateEntityData(*specifics,
                          GetPossiblyTrimmedPasswordSpecificsData(storage_key)));
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 std::string PasswordSyncBridge::GetClientTag(
