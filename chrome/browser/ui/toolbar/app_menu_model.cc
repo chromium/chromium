@@ -230,16 +230,6 @@ std::u16string GetLacrosDataMigrationMenuItemName() {
 }
 #endif
 
-// ChromeOS does not support DIY app install, and uses the legacy shortcut
-// creation flow to create web apps.
-bool IsDiyAppInstallSupported() {
-#if BUILDFLAG(IS_CHROMEOS)
-  return false;
-#else
-  return base::FeatureList::IsEnabled(features::kWebAppUniversalInstall);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
 // Returns the appropriate menu label for the IDC_INSTALL_PWA command if
 // available.
 std::u16string GetInstallPWALabel(const Browser* browser) {
@@ -290,7 +280,7 @@ std::u16string GetInstallPWALabel(const Browser* browser) {
       return std::u16string();
     case webapps::InstallableWebAppCheckResult::kNo:
       // Returning an empty string prevents menu item creation.
-      if (IsDiyAppInstallSupported()) {
+      if (base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)) {
         return l10n_util::GetStringUTF16(IDS_INSTALL_DIY_TO_OS_LAUNCH_SURFACE);
       }
       return std::u16string();
