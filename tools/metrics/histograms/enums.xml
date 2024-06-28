@@ -19016,6 +19016,7 @@ from previous Chrome versions.
   <int value="-665688211" label="JourneysImages:enabled"/>
   <int value="-665514294" label="FontAccess:disabled"/>
   <int value="-665006585" label="Bento:enabled"/>
+  <int value="-663501230" label="HttpsFirstBalancedMode:disabled"/>
   <int value="-663476391" label="enable-pixel-canvas-recording:enabled"/>
   <int value="-662720891" label="PreviewsCoinFlipHoldback_UKMOnly:enabled"/>
   <int value="-662314979"
@@ -23471,6 +23472,7 @@ from previous Chrome versions.
   <int value="1249861983" label="WebViewUseMetricsUploadService:disabled"/>
   <int value="1250071868" label="disable-timezone-tracking-option"/>
   <int value="1250398558" label="NetworkServiceSandbox:enabled"/>
+  <int value="1250728565" label="HttpsFirstBalancedMode:enabled"/>
   <int value="1250776846" label="DnsProxyEnableDOH:enabled"/>
   <int value="1251097300"
       label="CCTResizableSideSheetDiscoverFeedSettings:enabled"/>

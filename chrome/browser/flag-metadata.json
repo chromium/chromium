@@ -4984,10 +4984,18 @@
     "expiry_milestone": 95
   },
   {
+    "name": "https-first-balanced-mode",
+    "owners": [
+      "jdeblasio@chromium.org",
+      "chrome-secure-web-and-net@chromium.org"
+    ],
+    "expiry_milestone": 133
+  },
+  {
     "name": "https-first-mode-for-typically-secure-users",
     "owners": [
       "meacer@chromium.org",
-      "trusty-transport@chromium.org"
+      "chrome-secure-web-and-net@chromium.org"
     ],
     "expiry_milestone": 130
   },
@@ -4995,7 +5003,7 @@
     "name": "https-first-mode-incognito",
     "owners": [
       "cthomp@chromium.org",
-      "trusty-transport@chromium.org"
+      "chrome-secure-web-and-net@chromium.org"
     ],
     "expiry_milestone": 130
   },
@@ -5003,7 +5011,7 @@
     "name": "https-first-mode-incognito-new-settings",
     "owners": [
       "cthomp@chromium.org",
-      "trusty-transport@chromium.org"
+      "chrome-secure-web-and-net@chromium.org"
     ],
     "expiry_milestone": 133
   },
@@ -5011,7 +5019,7 @@
     "name": "https-first-mode-v2",
     "owners": [
       "cthomp@chromium.org",
-      "trusty-transport@chromium.org"
+      "chrome-secure-web-and-net@chromium.org"
     ],
     "expiry_milestone": 118
   },
@@ -5019,7 +5027,7 @@
     "name": "https-first-mode-v2-for-engaged-sites",
     "owners": [
       "meacer@chromium.org",
-      "trusty-transport@chromium.org"
+      "chrome-secure-web-and-net@chromium.org"
     ],
     "expiry_milestone": 130
   },
@@ -5027,7 +5035,7 @@
     "name": "https-upgrades",
     "owners": [
       "cthomp@chromium.org",
-      "trusty-transport@chromium.org"
+      "chrome-secure-web-and-net@chromium.org"
     ],
     "expiry_milestone": 122
   },
@@ -5035,7 +5043,7 @@
     "name": "https-upgrades-ios",
     "owners": [
       "meacer@chromium.org",
-      "trusty-transport@chromium.org"
+      "chrome-secure-web-and-net@chromium.org"
     ],
     "expiry_milestone": 125
   },

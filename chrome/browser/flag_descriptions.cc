@@ -2065,6 +2065,10 @@ const char kStartSurfaceReturnTimeName[] = "Start surface return time";
 const char kStartSurfaceReturnTimeDescription[] =
     "Enable showing start surface at startup after specified time has elapsed";
 
+const char kHttpsFirstBalancedModeName[] = "HTTPS-First Balanced Mode";
+const char kHttpsFirstBalancedModeDescription[] =
+    "Use HTTPS-First Mode only when secure connections are likely possible.";
+
 const char kHttpsFirstModeIncognitoName[] = "HTTPS-First Mode in Incognito";
 const char kHttpsFirstModeIncognitoDescription[] =
     "Enable HTTPS-First Mode in Incognito as default setting.";

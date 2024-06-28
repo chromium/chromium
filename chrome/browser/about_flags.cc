@@ -9578,6 +9578,12 @@ const FeatureEntry kFeatureEntries[] = {
                                     "BorealisZinkGlDriver")},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+    {"https-first-balanced-mode",
+     flag_descriptions::kHttpsFirstBalancedModeName,
+     flag_descriptions::kHttpsFirstBalancedModeDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kHttpsFirstBalancedMode)},
+
     {"https-first-mode-v2-for-engaged-sites",
      flag_descriptions::kHttpsFirstModeV2ForEngagedSitesName,
      flag_descriptions::kHttpsFirstModeV2ForEngagedSitesDescription,

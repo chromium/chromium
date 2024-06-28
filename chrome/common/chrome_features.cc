@@ -723,6 +723,12 @@ BASE_FEATURE(kHideWebAppOriginText,
              "HideWebAppOriginText",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables HTTPS-First Mode in a balanced configuration that doesn't warn on
+// HTTP when HTTPS can't be reasonably expected.
+BASE_FEATURE(kHttpsFirstBalancedMode,
+             "HttpsFirstBalancedMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Kill switch for crbug.com/1414633.
 BASE_FEATURE(kHttpsFirstModeForAdvancedProtectionUsers,
              "HttpsOnlyModeForAdvancedProtectionUsers",
