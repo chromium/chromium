@@ -72,6 +72,10 @@ BASE_DECLARE_FEATURE(kIOSPasswordSignInUff);
 // Enable saving username in UFF on iOS.
 BASE_DECLARE_FEATURE(kIosDetectUsernameInUff);
 
+// Enables password generation bottom sheet to be displayed (on iOS) when a user
+// is signed-in and taps on a new password field.
+BASE_DECLARE_FEATURE(kIOSProactivePasswordGenerationBottomSheet);
+
 #endif
 
 // Enables saving enterprise password hashes to a local state preference.

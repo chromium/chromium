@@ -72,6 +72,9 @@ BASE_FEATURE(kIosDetectUsernameInUff,
              "IosSaveUsernameInUff",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSProactivePasswordGenerationBottomSheet,
+             "kIOSProactivePasswordGenerationBottomSheet",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // IS_IOS
 
 BASE_FEATURE(kLocalStateEnterprisePasswordHashes,
