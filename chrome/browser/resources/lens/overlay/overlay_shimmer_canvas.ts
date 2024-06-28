@@ -363,8 +363,10 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
     }, 100);
   }
 
-  /** Starts the invocation animation into the steady state. */
-  startInvocationAnimation() {
+
+  // Starts the initial animation into the steady state or into a post
+  // selection region if already focused.
+  startAnimation() {
     // Draw invocation state.
     this.context.globalAlpha = INVOCATION_OPACITY_PERCENT;
     this.shimmerState = ShimmerState.INVOCATION;
@@ -372,18 +374,19 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
     // Create a circle for each color rgb string defined. We do this when the
     // invocation animation is started to make sure we grab the latest set
     // overlay theme.
-    const centerXOffsetInt = STEADY_STATE_CENTER_X_PERCENT_OFFSET;
-    const centerYOffsetInt = STEADY_STATE_CENTER_Y_PERCENT_OFFSET;
     this.circles = this.shaderLayerRgbaColors.map((colorRgbaString: string) => {
       return {
         colorRgba: colorRgbaString,
         steadyStateCenter: {
-          x: 50 - centerXOffsetInt * (Math.random() * 2 - 1),
-          y: 50 - centerYOffsetInt * (Math.random() * 2 - 1),
+          x: 50 -
+              STEADY_STATE_CENTER_X_PERCENT_OFFSET * (Math.random() * 2 - 1),
+          y: 50 -
+              STEADY_STATE_CENTER_Y_PERCENT_OFFSET * (Math.random() * 2 - 1),
         },
         blur: STEADY_STATE_CIRCLE_BLUR,
         radius: INVOCATION_RADIUS_PERCENT,
-        center:
+        center: this.regionCenter ?
+            this.regionCenter :
             {x: INVOCATION_CENTER_X_PERCENT, y: INVOCATION_CENTER_Y_PERCENT},
         centerXAmpPercent: INVOCATION_CENTER_X_AMPLITUDE_PERCENT,
         centerYAmpPercent: INVOCATION_CENTER_Y_AMPLITUDE_PERCENT,
@@ -394,17 +397,22 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
       };
     });
 
+
     // Start the animation.
     requestAnimationFrame((timeMs: number) => {
       this.stepAnimation(timeMs);
+
+      // Transition to the post selection region if it has already been set.
+      if (this.regionCenter) {
+        this.setTransitionState(ShimmerState.TRANSITION_TO_REGION);
+        return;
+      }
       this.transitionToSteadyState();
     });
   }
 
-  /**
-   * Resets the canvas size and stores the physical size for setting on the
-   * next redraw.
-   */
+  // Resets the canvas size and stores the physical size for setting on the
+  // next redraw.
   setCanvasSizeTo(width: number, height: number) {
     this.canvasWidth = width;
     this.canvasHeight = height;
