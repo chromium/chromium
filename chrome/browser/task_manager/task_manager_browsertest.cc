@@ -46,6 +46,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -1876,8 +1877,16 @@ class FencedFrameTaskBrowserTest : public TaskManagerBrowserTest {
         browser, https_server()->GetURL(host, rel_url)));
   }
 
-  std::string GetFencedFrameTitle(std::string_view host) const {
-    return base::StrCat({"https://", host, "/"});
+  std::string GetFencedFrameTitle(const GURL& url) const {
+    GURL::Replacements replacements;
+    replacements.ClearPath();
+    replacements.ClearRef();
+    if (!content::SiteIsolationPolicy::
+            AreOriginKeyedProcessesEnabledByDefault()) {
+      // Only include the port for origin-isolated urls.
+      replacements.ClearPort();
+    }
+    return url.ReplaceComponents(replacements).spec();
   }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
@@ -1940,7 +1949,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTaskBrowserTestNoTestingConfig,
   ASSERT_NO_FATAL_FAILURE(
       WaitForTaskManagerRows(1, MatchTab("Title Of Awesomeness")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(
-      1, MatchFencedFrame(GetFencedFrameTitle("b.test"))));
+      1, MatchFencedFrame(GetFencedFrameTitle(cross_site_gurl))));
 
   // Close the task manager and re-open it, all tasks should be re-created.
   HideTaskManager();
@@ -1950,13 +1959,13 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTaskBrowserTestNoTestingConfig,
   ASSERT_NO_FATAL_FAILURE(
       WaitForTaskManagerRows(1, MatchTab("Title Of Awesomeness")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(
-      1, MatchFencedFrame(GetFencedFrameTitle("b.test"))));
+      1, MatchFencedFrame(GetFencedFrameTitle(cross_site_gurl))));
 
   // Terminate the fenced frame. The embedder frame remains intact.
   {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-    std::optional<size_t> fenced_frame_row =
-        FindResourceIndex(MatchFencedFrame(GetFencedFrameTitle("b.test")));
+    std::optional<size_t> fenced_frame_row = FindResourceIndex(
+        MatchFencedFrame(GetFencedFrameTitle(cross_site_gurl)));
     ASSERT_TRUE(fenced_frame_row.has_value());
     ASSERT_TRUE(model()->GetTabId(fenced_frame_row.value()).is_valid());
     model()->Kill(fenced_frame_row.value());
@@ -2017,7 +2026,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTaskBrowserTest, EmptyFencedFrameNotShown) {
   ASSERT_NO_FATAL_FAILURE(
       WaitForTaskManagerRows(1, MatchTab("Title Of Awesomeness")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(
-      1, MatchFencedFrame(GetFencedFrameTitle("b.test"))));
+      1, MatchFencedFrame(GetFencedFrameTitle(fenced_frame_gurl))));
 }
 
 // Tests that the task manager properly shows tasks in Incognito mode.
@@ -2044,7 +2053,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTaskBrowserTest, ShowsIncognitoTask) {
   ASSERT_NO_FATAL_FAILURE(
       WaitForTaskManagerRows(1, MatchIncognitoTab("Title Of Awesomeness")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(
-      1, MatchIncognitoFencedFrame(GetFencedFrameTitle("b.test"))));
+      1, MatchIncognitoFencedFrame(GetFencedFrameTitle(fenced_frame_gurl))));
 }
 
 // Test that clicking on the task manager fenced frame task row brings the focus
@@ -2071,7 +2080,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTaskBrowserTest, TaskActivationChangesFocus) {
   ASSERT_NO_FATAL_FAILURE(
       WaitForTaskManagerRows(1, MatchTab("Title Of Awesomeness")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(
-      1, MatchFencedFrame(GetFencedFrameTitle("b.test"))));
+      1, MatchFencedFrame(GetFencedFrameTitle(fenced_frame_gurl))));
 
   // Open a new tab of "about:blank". This appends an active WebContents at
   // index 1.
@@ -2083,8 +2092,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTaskBrowserTest, TaskActivationChangesFocus) {
   // The WebContents of "about:blank" is active.
   ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
 
-  const std::optional<size_t> fenced_frame_task_row =
-      FindResourceIndex(MatchFencedFrame(GetFencedFrameTitle("b.test")));
+  const std::optional<size_t> fenced_frame_task_row = FindResourceIndex(
+      MatchFencedFrame(GetFencedFrameTitle(fenced_frame_gurl)));
   ASSERT_TRUE(fenced_frame_task_row.has_value());
   model()->Activate(fenced_frame_task_row.value());
 
@@ -2116,7 +2125,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTaskBrowserTest,
   ASSERT_NO_FATAL_FAILURE(
       WaitForTaskManagerRows(1, MatchTab("Title Of Awesomeness")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(
-      1, MatchFencedFrame(GetFencedFrameTitle("b.test"))));
+      1, MatchFencedFrame(GetFencedFrameTitle(fenced_frame_gurl))));
 
   // Same-doc navigation of the fenced frame.
   const auto same_doc_navi_gurl = https_server()->GetURL(
@@ -2127,7 +2136,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTaskBrowserTest,
   ASSERT_NO_FATAL_FAILURE(
       WaitForTaskManagerRows(1, MatchTab("Title Of Awesomeness")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(
-      1, MatchFencedFrame(GetFencedFrameTitle("b.test"))));
+      1, MatchFencedFrame(GetFencedFrameTitle(fenced_frame_gurl))));
 }
 
 // Asserts that the task manager does not attempt to create any task for a RFH
