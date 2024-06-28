@@ -8,16 +8,16 @@
 #import "ios/chrome/app/spotlight/base_spotlight_manager.h"
 
 class ChromeBrowserState;
-class LegacyBookmarkModel;
 class PrefService;
 
 namespace favicon {
 class LargeIconService;
-}
+}  // namespace favicon
 
 namespace bookmarks {
+class BookmarkModel;
 class BookmarkNode;
-}
+}  // namespace bookmarks
 
 @class CSSearchableItem;
 @class TopSitesSpotlightManager;
@@ -29,13 +29,11 @@ class BookmarkNode;
 @interface BookmarksSpotlightManager : BaseSpotlightManager
 
 - (instancetype)
-        initWithLargeIconService:(favicon::LargeIconService*)largeIconService
-    localOrSyncableBookmarkModel:
-        (LegacyBookmarkModel*)localOrSyncableBookmarkModel
-            accountBookmarkModel:(LegacyBookmarkModel*)accountBookmarkModel
-              spotlightInterface:(SpotlightInterface*)spotlightInterface
-           searchableItemFactory:(SearchableItemFactory*)searchableItemFactory
-                     prefService:(PrefService*)prefService;
+    initWithLargeIconService:(favicon::LargeIconService*)largeIconService
+               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+          spotlightInterface:(SpotlightInterface*)spotlightInterface
+       searchableItemFactory:(SearchableItemFactory*)searchableItemFactory
+                 prefService:(PrefService*)prefService;
 
 /// Number of pending large icon tasks.
 @property(nonatomic, assign) NSUInteger pendingLargeIconTasksCount;

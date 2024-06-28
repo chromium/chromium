@@ -17,6 +17,15 @@ BookmarkModelBridge::BookmarkModelBridge(
     : observer_(observer) {
   DCHECK(observer_);
   DCHECK(model);
+  legacy_model_observation_.Observe(model);
+}
+
+BookmarkModelBridge::BookmarkModelBridge(
+    id<BookmarkModelBridgeObserver> observer,
+    bookmarks::BookmarkModel* model)
+    : observer_(observer) {
+  DCHECK(observer_);
+  DCHECK(model);
   model_observation_.Observe(model);
 }
 
@@ -28,6 +37,7 @@ void BookmarkModelBridge::BookmarkModelLoaded(bool ids_reassigned) {
 
 void BookmarkModelBridge::BookmarkModelBeingDeleted() {
   model_observation_.Reset();
+  legacy_model_observation_.Reset();
 
   SEL selector = @selector(bookmarkModelBeingDeleted);
   if ([observer_ respondsToSelector:selector]) {
