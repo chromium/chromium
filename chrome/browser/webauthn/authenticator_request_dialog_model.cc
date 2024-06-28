@@ -2395,64 +2395,81 @@ AuthenticatorRequestDialogController::IndexOfPriorityMechanism() {
   if (enclave_needs_reauth_ && !use_conditional_mediation_) {
     return std::nullopt;
   }
-  if (transport_availability_.request_type ==
-      device::FidoRequestType::kGetAssertion) {
-    // If there is a single mechanism, go to that.
-    if (model_->mechanisms.size() == 1) {
-      return 0;
-    }
 
-    if (transport_availability_.has_empty_allow_list) {
-      // The index and info of the credential that the UI should default to.
-      std::optional<std::pair<size_t, const Mechanism::CredentialInfo*>>
-          best_cred;
-      bool multiple_distinct_creds = false;
+  switch (transport_availability_.request_type) {
+    case device::FidoRequestType::kGetAssertion:
+      return IndexOfGetAssertionPriorityMechanism();
+    case device::FidoRequestType::kMakeCredential:
+      return IndexOfMakeCredentialPriorityMechanism();
+  }
+}
 
-      for (size_t i = 0; i < model_->mechanisms.size(); ++i) {
-        const auto& type = model_->mechanisms[i].type;
-        if (absl::holds_alternative<Mechanism::Credential>(type)) {
-          const Mechanism::CredentialInfo* cred_info =
-              &absl::get<Mechanism::Credential>(type).value();
+std::optional<size_t>
+AuthenticatorRequestDialogController::IndexOfGetAssertionPriorityMechanism() {
+  CHECK_EQ(transport_availability_.request_type,
+           device::FidoRequestType::kGetAssertion);
 
-          if (!best_cred.has_value()) {
+  // If there is a single mechanism, go to that.
+  if (model_->mechanisms.size() == 1) {
+    return 0;
+  }
+
+  if (transport_availability_.has_empty_allow_list) {
+    // The index and info of the credential that the UI should default to.
+    std::optional<std::pair<size_t, const Mechanism::CredentialInfo*>>
+        best_cred;
+    bool multiple_distinct_creds = false;
+
+    for (size_t i = 0; i < model_->mechanisms.size(); ++i) {
+      const auto& type = model_->mechanisms[i].type;
+      if (absl::holds_alternative<Mechanism::Credential>(type)) {
+        const Mechanism::CredentialInfo* cred_info =
+            &absl::get<Mechanism::Credential>(type).value();
+
+        if (!best_cred.has_value()) {
+          best_cred = std::make_pair(i, cred_info);
+        } else if (best_cred->second->user_id == cred_info->user_id) {
+          if (SourcePriority(cred_info->source) >
+              SourcePriority(best_cred->second->source)) {
             best_cred = std::make_pair(i, cred_info);
-          } else if (best_cred->second->user_id == cred_info->user_id) {
-            if (SourcePriority(cred_info->source) >
-                SourcePriority(best_cred->second->source)) {
-              best_cred = std::make_pair(i, cred_info);
-            }
-          } else {
-            multiple_distinct_creds = true;
           }
+        } else {
+          multiple_distinct_creds = true;
         }
       }
-      // If one of the passkeys is a valid default, go to that.
-      if (!multiple_distinct_creds && best_cred.has_value()) {
-        return best_cred->first;
-      }
     }
-
-    // If it's caBLEv1, or server-linked caBLEv2, jump to that.
-    if (model_->cable_ui_type) {
-      switch (*model_->cable_ui_type) {
-        case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_SERVER_LINK:
-        case AuthenticatorRequestDialogModel::CableUIType::CABLE_V1:
-          for (size_t i = 0; i < model_->mechanisms.size(); ++i) {
-            if (model_->mechanisms[i].type ==
-                Mechanism::Type(
-                    Mechanism::Transport(AuthenticatorTransport::kHybrid))) {
-              return i;
-            }
-          }
-          break;
-        case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_2ND_FACTOR:
-          break;
-      }
+    // If one of the passkeys is a valid default, go to that.
+    if (!multiple_distinct_creds && best_cred.has_value()) {
+      return best_cred->first;
     }
-
-    // For all other cases, go to the multi source passkey picker.
-    return std::nullopt;
   }
+
+  // If it's caBLEv1, or server-linked caBLEv2, jump to that.
+  if (model_->cable_ui_type) {
+    switch (*model_->cable_ui_type) {
+      case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_SERVER_LINK:
+      case AuthenticatorRequestDialogModel::CableUIType::CABLE_V1:
+        for (size_t i = 0; i < model_->mechanisms.size(); ++i) {
+          if (model_->mechanisms[i].type ==
+              Mechanism::Type(
+                  Mechanism::Transport(AuthenticatorTransport::kHybrid))) {
+            return i;
+          }
+        }
+        break;
+      case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_2ND_FACTOR:
+        break;
+    }
+  }
+
+  // For all other cases, go to the multi source passkey picker.
+  return std::nullopt;
+}
+
+std::optional<size_t>
+AuthenticatorRequestDialogController::IndexOfMakeCredentialPriorityMechanism() {
+  CHECK_EQ(transport_availability_.request_type,
+           device::FidoRequestType::kMakeCredential);
 
   if (model_->mechanisms.size() == 1) {
     return 0;
@@ -2462,9 +2479,6 @@ AuthenticatorRequestDialogController::IndexOfPriorityMechanism() {
 
   bool windows_handles_hybrid = WebAuthnApiSupportsHybrid();
   std::vector<Mechanism::Type> priority_list;
-
-  CHECK_EQ(transport_availability_.request_type,
-           device::FidoRequestType::kMakeCredential);
 
   // For non-cross-platform requests, we attempt to jump to the platform
   // authenticator and avoid showing the mechanism selection sheet.

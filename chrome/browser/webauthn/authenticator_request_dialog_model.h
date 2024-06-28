@@ -971,6 +971,9 @@ class AuthenticatorRequestDialogController
   // Mechanism that should be triggered immediately, if any.
   std::optional<size_t> IndexOfPriorityMechanism();
 
+  std::optional<size_t> IndexOfGetAssertionPriorityMechanism();
+  std::optional<size_t> IndexOfMakeCredentialPriorityMechanism();
+
   // Sets correct step for entering GPM pin based on `gpm_pin_is_arbitrary_`.
   void PromptForGPMPin();
 
