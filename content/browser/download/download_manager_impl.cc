@@ -998,6 +998,9 @@ void DownloadManagerImpl::InterceptNavigation(
   const std::string& method = resource_request->method;
   std::optional<url::Origin> request_initiator =
       resource_request->request_initiator;
+  std::string mime_type = response_head->mime_type;
+  ui::PageTransition transition_type =
+      static_cast<ui::PageTransition>(resource_request->transition_type);
 
   WebContents::Getter web_contents_getter =
       base::BindRepeating(WebContents::FromFrameTreeNodeId, frame_tree_node_id);
@@ -1013,7 +1016,7 @@ void DownloadManagerImpl::InterceptNavigation(
   delegate_->CheckDownloadAllowed(
       std::move(web_contents_getter), url, method, std::move(request_initiator),
       from_download_cross_origin_redirect, false /*content_initiated*/,
-      std::move(on_download_checks_done));
+      mime_type, transition_type, std::move(on_download_checks_done));
 }
 
 int DownloadManagerImpl::RemoveDownloadsByURLAndTime(
@@ -1551,6 +1554,8 @@ void DownloadManagerImpl::BeginDownloadInternal(
       delegate_->CheckDownloadAllowed(
           std::move(web_contents_getter), url, method, std::move(initiator),
           false /* from_download_cross_origin_redirect */, content_initiated,
+          /* mime_type= */ std::string(),
+          /* page_transition= */ std::nullopt,
           std::move(on_can_download_checks_done));
       return;
     }

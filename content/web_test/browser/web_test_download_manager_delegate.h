@@ -36,6 +36,8 @@ class WebTestDownloadManagerDelegate : public ShellDownloadManagerDelegate {
       std::optional<url::Origin> request_initiator,
       bool from_download_cross_origin_redirect,
       bool content_initiated,
+      const std::string& mime_type,
+      std::optional<ui::PageTransition> page_transition,
       content::CheckDownloadAllowedCallback check_download_allowed_cb) override;
 };
 

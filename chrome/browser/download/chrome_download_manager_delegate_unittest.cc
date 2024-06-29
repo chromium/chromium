@@ -1516,15 +1516,16 @@ TEST_F(ChromeDownloadManagerDelegateTest, DownloadBlockedForSyncedTab) {
   delegate()->CheckDownloadAllowed(
       base::BindRepeating(&RenderViewHostTestHarness::web_contents,
                           base::Unretained(this)),
-      download_url, "GET", std::nullopt, false, false,
-      base::BindOnce([](bool allowed) { EXPECT_TRUE(allowed); }));
+      download_url, "GET", std::nullopt, false, false, "application/pdf",
+      std::nullopt, base::BindOnce([](bool allowed) { EXPECT_TRUE(allowed); }));
   base::RunLoop().RunUntilIdle();
 
   TabGroupSyncTabState::CreateForWebContents(web_contents());
   delegate()->CheckDownloadAllowed(
       base::BindRepeating(&RenderViewHostTestHarness::web_contents,
                           base::Unretained(this)),
-      download_url, "GET", std::nullopt, false, false,
+      download_url, "GET", std::nullopt, false, false, "application/pdf",
+      std::nullopt,
       base::BindOnce([](bool allowed) { EXPECT_FALSE(allowed); }));
   base::RunLoop().RunUntilIdle();
 }

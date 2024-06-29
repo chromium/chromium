@@ -199,7 +199,8 @@ class CONTENT_EXPORT DownloadManagerDelegate {
   virtual std::string ApplicationClientIdForFileScanning();
 
   // Checks whether download is allowed to continue. |check_download_allowed_cb|
-  // is called with the decision on completion.
+  // is called with the decision on completion. For download that is triggered
+  // without navigation, `mime_type` and `page_transition` will be empty.
   virtual void CheckDownloadAllowed(
       const WebContents::Getter& web_contents_getter,
       const GURL& url,
@@ -207,6 +208,8 @@ class CONTENT_EXPORT DownloadManagerDelegate {
       std::optional<url::Origin> request_initiator,
       bool from_download_cross_origin_redirect,
       bool content_initiated,
+      const std::string& mime_type,
+      std::optional<ui::PageTransition> page_transition,
       CheckDownloadAllowedCallback check_download_allowed_cb);
 
   // Gets a callback which can connect the download manager to a Quarantine

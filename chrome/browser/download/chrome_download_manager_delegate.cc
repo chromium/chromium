@@ -1895,6 +1895,8 @@ void ChromeDownloadManagerDelegate::CheckDownloadAllowed(
     std::optional<url::Origin> request_initiator,
     bool from_download_cross_origin_redirect,
     bool content_initiated,
+    const std::string& mime_type,
+    std::optional<ui::PageTransition> page_transition,
     content::CheckDownloadAllowedCallback check_download_allowed_cb) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
@@ -1929,9 +1931,15 @@ void ChromeDownloadManagerDelegate::CheckDownloadAllowed(
       &ChromeDownloadManagerDelegate::OnCheckDownloadAllowedComplete,
       weak_ptr_factory_.GetWeakPtr(), std::move(check_download_allowed_cb));
 #if BUILDFLAG(IS_ANDROID)
-  if (ShouldOpenPdfInline()) {
-    // TODO(qinmin) Pass MIME type here so not all the download need to be
-    // observed. And move this to a separate method.
+  if (ShouldOpenPdfInline() && mime_type == pdf::kPDFMimeType) {
+    // If this is a forward/back navigation, the native page should trigger a
+    // download with default page transition type. Otherwise, we should cancel
+    // the download.
+    if (page_transition.has_value() &&
+        (page_transition.value() & ui::PAGE_TRANSITION_FORWARD_BACK)) {
+      OnCheckDownloadAllowedFailed(std::move(check_download_allowed_cb));
+      return;
+    }
     NewNavigationObserver::GetInstance()->StartObserving(web_contents);
   }
   DownloadControllerBase::Get()->AcquireFileAccessPermission(
