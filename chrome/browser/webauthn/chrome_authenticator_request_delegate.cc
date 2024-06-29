@@ -444,8 +444,7 @@ void ChromeWebAuthenticationDelegate::
     IsUserVerifyingPlatformAuthenticatorAvailableOverride(
         content::RenderFrameHost* render_frame_host,
         base::OnceCallback<void(std::optional<bool>)> callback) {
-  const bool is_google =
-      render_frame_host->GetLastCommittedOrigin().DomainIs("google.com");
+  // If the testing API is active, its override takes precedence.
   content::WebAuthenticationDelegate::
       IsUserVerifyingPlatformAuthenticatorAvailableOverride(
           render_frame_host,
@@ -453,14 +452,12 @@ void ChromeWebAuthenticationDelegate::
               [](base::WeakPtr<ChromeWebAuthenticationDelegate>
                      web_authentication_delegate,
                  base::WeakPtr<content::BrowserContext> browser_context,
-                 const bool is_google,
                  base::OnceCallback<void(std::optional<bool>)> callback,
                  std::optional<bool> testing_api_override) {
                 if (!browser_context || !web_authentication_delegate) {
                   return;
                 }
 
-                // If the testing API is active, its override takes precedence.
                 if (testing_api_override) {
                   std::move(callback).Run(*testing_api_override);
                   return;
@@ -476,29 +473,9 @@ void ChromeWebAuthenticationDelegate::
                   return;
                 }
 
-                // Without GPM PIN support the enclave authenticator depends on
-                // having an Android LSKF enrolled to the security domain. But
-                // we can't check that without querying the security domain
-                // service, which we don't want to do just because a site
-                // called IsUVPAA. Thus we conservatively ignore the
-                // possibility of using the enclave authenticator here.
-                if (!device::kWebAuthnGpmPin.Get()) {
-                  std::move(callback).Run(std::nullopt);
-                  return;
-                }
-
-                // The enclave won't allow credentials for an account to be
-                // stored in GPM _in_ that account. So we don't want to tell
-                // accounts.google.com that there is a platform authenticator
-                // if we're later going to reject a create() request for that
-                // reason. Thus we have to be conservative with IsUVPAA
-                // responses on google.com and ignore the possibility of using
-                // the enclave authenticator.
-                if (is_google) {
-                  std::move(callback).Run(std::nullopt);
-                  return;
-                }
-
+                // TODO(enclave): EnclaveAuthenticator availability should not
+                // always imply a UVPA, and should just invoke the callback with
+                // std::nullopt for now.
                 web_authentication_delegate->BrowserProvidedPasskeysAvailable(
                     browser_context.get(),
                     base::BindOnce(
@@ -514,7 +491,7 @@ void ChromeWebAuthenticationDelegate::
                         std::move(callback)));
               },
               weak_ptr_factory_.GetWeakPtr(),
-              render_frame_host->GetBrowserContext()->GetWeakPtr(), is_google,
+              render_frame_host->GetBrowserContext()->GetWeakPtr(),
               std::move(callback)));
 }
 
