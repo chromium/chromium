@@ -187,7 +187,6 @@ source_set("policy_specific_browser_tests") {
   sources = [
     "policy_network_browsertest.cc",
     "site_isolation_policy_browsertest.cc",
-    "test/automatic_fullscreen_policy_browsertest.cc",
     "test/back_forward_cache_policy_browsertest.cc",
     "test/certificate_transparency_policy_browsertest.cc",
     "test/css_custom_state_deprecated_syntax_policy_browsertest.cc",
@@ -245,6 +244,7 @@ source_set("policy_specific_browser_tests") {
   if (!is_android) {
     sources += [
       "test/autofill_policy_browsertest.cc",
+      "test/automatic_fullscreen_policy_browsertest.cc",
       "test/autoplay_policy_browsertest.cc",
       "test/bookmark_bar_enabled_browsertest.cc",
       "test/component_updater_policy_browsertest.cc",

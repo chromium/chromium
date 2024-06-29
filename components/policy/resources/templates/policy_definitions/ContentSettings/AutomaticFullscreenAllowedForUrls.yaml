@@ -35,6 +35,5 @@ schema:
 supported_on:
 - chrome.*:124-
 - chrome_os:124-
-- android:124-
 tags: []
 type: list

@@ -891,12 +891,14 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif  // #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
         // || BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_ANDROID)
   { key::kAutomaticFullscreenAllowedForUrls,
     prefs::kManagedAutomaticFullscreenAllowedForUrls,
     base::Value::Type::LIST },
   { key::kAutomaticFullscreenBlockedForUrls,
     prefs::kManagedAutomaticFullscreenBlockedForUrls,
     base::Value::Type::LIST },
+#endif  // !BUILDFLAG(IS_ANDROID)
   { key::kAuthSchemes,
     prefs::kAuthSchemes,
     base::Value::Type::STRING },
