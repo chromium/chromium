@@ -92,6 +92,7 @@
           ? NSWritingDirectionRightToLeft
           : NSWritingDirectionLeftToRight;
   paragraphStyle.baseWritingDirection = writingDirection;
+  paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
   attrs[NSParagraphStyleAttributeName] = paragraphStyle;
 
   if (item->has_text_direction_override) {
