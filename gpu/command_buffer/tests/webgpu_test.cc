@@ -6,7 +6,6 @@
 
 #include <dawn/dawn_proc.h>
 #include <dawn/dawn_thread_dispatch_proc.h>
-#include <dawn/webgpu.h>
 
 #include "base/command_line.h"
 #include "base/test/bind.h"
@@ -42,7 +41,7 @@ void CountCallback(int* count) {
 
 WebGPUTest::Options::Options() = default;
 
-std::map<std::pair<WGPUDevice, WGPUErrorType>, /* matched */ bool>
+std::map<std::pair<WGPUDevice, wgpu::ErrorType>, /* matched */ bool>
     WebGPUTest::s_expected_errors = {};
 
 WebGPUTest::WebGPUTest() = default;
@@ -233,6 +232,26 @@ wgpu::Device WebGPUTest::GetNewDevice() {
 
   DCHECK(adapter_);
   wgpu::DeviceDescriptor device_desc = {};
+  device_desc.SetDeviceLostCallback(
+      wgpu::CallbackMode::AllowSpontaneous,
+      [](const wgpu::Device&, wgpu::DeviceLostReason reason,
+         const char* message) {
+        if (reason == wgpu::DeviceLostReason::Destroyed) {
+          return;
+        }
+        GTEST_FAIL() << "Unexpected device lost (" << reason
+                     << "): " << message;
+      });
+  device_desc.SetUncapturedErrorCallback([](const wgpu::Device& device,
+                                            wgpu::ErrorType type,
+                                            const char* message) {
+    auto it = s_expected_errors.find(std::make_pair(device.Get(), type));
+    if (it != s_expected_errors.end() && !it->second) {
+      it->second = true;
+      return;
+    }
+    GTEST_FAIL() << "Unexpected error (" << type << "): " << message;
+  });
 
   adapter_.RequestDevice(
       &device_desc, wgpu::CallbackMode::AllowSpontaneous,
@@ -258,26 +277,6 @@ wgpu::Device WebGPUTest::GetNewDevice() {
   }
 
   EXPECT_NE(device, nullptr);
-  device.SetDeviceLostCallback(
-      [](WGPUDeviceLostReason reason, const char* message, void*) {
-        if (reason == WGPUDeviceLostReason_Destroyed) {
-          return;
-        }
-        GTEST_FAIL() << "Unexpected device lost (" << reason
-                     << "): " << message;
-      },
-      nullptr);
-  device.SetUncapturedErrorCallback(
-      [](WGPUErrorType type, const char* message, void* userdata) {
-        auto it = s_expected_errors.find(
-            std::make_pair(static_cast<WGPUDevice>(userdata), type));
-        if (it != s_expected_errors.end() && !it->second) {
-          it->second = true;
-          return;
-        }
-        GTEST_FAIL() << "Unexpected error (" << type << "): " << message;
-      },
-      device.Get());
   return device;
 }
 

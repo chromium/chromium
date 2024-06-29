@@ -531,7 +531,8 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmdBadMailboxMakesErrorTexture) {
   wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
 
   // Expect an error when creating a view since the texture is an error.
-  EXPECT_WEBGPU_ERROR(device_, WGPUErrorType_Validation, texture.CreateView());
+  EXPECT_WEBGPU_ERROR(device_, wgpu::ErrorType::Validation,
+                      texture.CreateView());
 }
 
 TEST_P(WebGPUMailboxTest, DissociateMailboxCmd) {

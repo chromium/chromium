@@ -272,29 +272,9 @@ class DawnSharedState : public base::RefCountedThreadSafe<DawnSharedState>,
     }
   }
 
-  // Provided to wgpu::Device as error callback.
-  static void LogError(WGPUErrorType type,
-                       char const* message,
-                       void* userdata) {
-    if (type != WGPUErrorType_NoError) {
-      static_cast<DawnSharedState*>(userdata)->OnError(type, message);
-    }
-  }
-
-  // Provided to wgpu::Device as device lost callback.
-  static void LogDeviceLost(WGPUDevice const* device,
-                            WGPUDeviceLostReason reason,
-                            char const* message,
-                            void* userdata) {
-    if (reason != WGPUDeviceLostReason_Destroyed) {
-      static_cast<DawnSharedState*>(userdata)->OnError(WGPUErrorType_DeviceLost,
-                                                       message);
-    }
-  }
-
   ~DawnSharedState() override;
 
-  void OnError(WGPUErrorType error_type, const char* message);
+  void OnError(wgpu::ErrorType error_type, const char* message);
 
   // base::trace_event::MemoryDumpProvider implementation:
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
@@ -323,9 +303,10 @@ DawnSharedState::~DawnSharedState() {
       base::trace_event::MemoryDumpManager::GetInstance()
           ->UnregisterDumpProvider(this);
     }
-    device_.SetUncapturedErrorCallback(nullptr, nullptr);
-    device_.SetDeviceLostCallback(nullptr, nullptr);
     device_.SetLoggingCallback(nullptr, nullptr);
+    // Destroy the device now so that the lost callback, which references this
+    // class, is fired now before we clean up the rest of this class.
+    device_.Destroy();
   }
   if (instance_) {
     instance_->DisconnectDawnPlatform();
@@ -403,12 +384,23 @@ bool DawnSharedState::Initialize(
   cache_desc.nextInChain = &toggles_desc;
 
   wgpu::DeviceDescriptor descriptor;
-  descriptor.uncapturedErrorCallbackInfo = {
-      .callback = &LogError, .userdata = static_cast<void*>(this)};
-  descriptor.deviceLostCallbackInfo = {
-      .mode = wgpu::CallbackMode::AllowSpontaneous,
-      .callback = &LogDeviceLost,
-      .userdata = static_cast<void*>(this)};
+  descriptor.SetUncapturedErrorCallback(
+      [](const wgpu::Device&, wgpu::ErrorType type, const char* message,
+         DawnSharedState* state) {
+        if (type != wgpu::ErrorType::NoError) {
+          state->OnError(type, message);
+        }
+      },
+      this);
+  descriptor.SetDeviceLostCallback(
+      wgpu::CallbackMode::AllowSpontaneous,
+      [](const wgpu::Device&, wgpu::DeviceLostReason reason,
+         const char* message, DawnSharedState* state) {
+        if (reason != wgpu::DeviceLostReason::Destroyed) {
+          state->OnError(wgpu::ErrorType::DeviceLost, message);
+        }
+      },
+      this);
   descriptor.nextInChain = &cache_desc;
 
   std::vector<wgpu::FeatureName> features = {
@@ -642,7 +634,7 @@ std::optional<error::ContextLostReason> DawnSharedState::GetResetStatus()
   return context_lost_reason_;
 }
 
-void DawnSharedState::OnError(WGPUErrorType error_type, const char* message) {
+void DawnSharedState::OnError(wgpu::ErrorType error_type, const char* message) {
   LOG(ERROR) << message;
   SetDawnErrorCrashKey(message);
 
@@ -670,12 +662,16 @@ void DawnSharedState::OnError(WGPUErrorType error_type, const char* message) {
     return;
   }
 
-  if (error_type == WGPUErrorType_OutOfMemory) {
-    context_lost_reason_ = error::kOutOfMemory;
-  } else if (error_type == WGPUErrorType_Validation) {
-    context_lost_reason_ = error::kGuilty;
-  } else {
-    context_lost_reason_ = error::kUnknown;
+  switch (error_type) {
+    case wgpu::ErrorType::OutOfMemory:
+      context_lost_reason_ = error::kOutOfMemory;
+      break;
+    case wgpu::ErrorType::Validation:
+      context_lost_reason_ = error::kGuilty;
+      break;
+    default:
+      context_lost_reason_ = error::kUnknown;
+      break;
   }
 }
 
