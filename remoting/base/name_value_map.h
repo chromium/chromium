@@ -23,9 +23,9 @@ struct NameMapElement {
 
 template <typename T, size_t N>
 const char* ValueToNameUnchecked(const NameMapElement<T> (&map)[N], T value) {
-  for (size_t i = 0; i < N; ++i) {
-    if (map[i].value == value) {
-      return map[i].name;
+  for (const auto& entry : map) {
+    if (entry.value == value) {
+      return entry.name;
     }
   }
   return nullptr;
@@ -42,9 +42,9 @@ template <typename T, size_t N>
 bool NameToValue(const NameMapElement<T> (&map)[N],
                  std::string_view name,
                  T* result) {
-  for (size_t i = 0; i < N; ++i) {
-    if (map[i].name == name) {
-      *result = map[i].value;
+  for (const auto& entry : map) {
+    if (entry.name == name) {
+      *result = entry.value;
       return true;
     }
   }
