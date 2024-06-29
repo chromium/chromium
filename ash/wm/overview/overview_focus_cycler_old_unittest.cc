@@ -43,7 +43,8 @@ class OverviewFocusCyclerOldTest : public OverviewTestBase,
  public:
   OverviewFocusCyclerOldTest() = default;
   OverviewFocusCyclerOldTest(const OverviewFocusCyclerOldTest&) = delete;
-  OverviewFocusCyclerOldTest& operator=(const OverviewFocusCyclerOldTest&) = delete;
+  OverviewFocusCyclerOldTest& operator=(const OverviewFocusCyclerOldTest&) =
+      delete;
   ~OverviewFocusCyclerOldTest() override = default;
 
   OverviewFocusCyclerOld* GetFocusCycler() {
@@ -58,6 +59,7 @@ class OverviewFocusCyclerOldTest : public OverviewTestBase,
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kDesksTemplates, AreDeskTemplatesEnabled()},
          {features::kOsSettingsRevampWayfinding, true},
+         {features::kForestFeature, false},
          {features::kOverviewNewFocus, false}});
     OverviewTestBase::SetUp();
     ScopedOverviewTransformWindow::SetImmediateCloseForTests(true);

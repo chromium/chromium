@@ -199,7 +199,7 @@ std::unique_ptr<views::Widget> BirchBarView::CreateBirchBarWidget(
 
   auto widget = std::make_unique<views::Widget>(std::move(params));
   widget->SetContentsView(std::make_unique<BirchBarView>(root_window));
-  widget->Show();
+  widget->ShowInactive();
   return widget;
 }
 
