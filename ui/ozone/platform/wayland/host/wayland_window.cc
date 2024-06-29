@@ -319,9 +319,8 @@ void WaylandWindow::OnPointerFocusChanged(bool focused) {
   // restored by the Wayland compositor.
 #if BUILDFLAG(IS_LINUX)
   if (focused && async_cursor_) {
-    async_cursor_->AddCursorLoadedCallback(
-        base::BindOnce(&WaylandWindow::OnCursorLoaded,
-                       weak_ptr_factory_.GetWeakPtr(), async_cursor_));
+    async_cursor_->AddCursorLoadedCallback(base::BindOnce(
+        &WaylandWindow::OnCursorLoaded, AsWeakPtr(), async_cursor_));
   }
 #else
   if (focused && cursor_) {
@@ -363,7 +362,7 @@ bool WaylandWindow::StartDrag(
   base::RunLoop drag_loop(base::RunLoop::Type::kNestableTasksAllowed);
   drag_loop_quit_closure_ = drag_loop.QuitClosure();
 
-  auto alive = weak_ptr_factory_.GetWeakPtr();
+  auto alive = AsWeakPtr();
   drag_loop.Run();
   if (!alive) {
     return false;
@@ -584,9 +583,8 @@ void WaylandWindow::SetCursor(scoped_refptr<PlatformCursor> platform_cursor) {
   }
 
   async_cursor_ = async_cursor;
-  async_cursor->AddCursorLoadedCallback(
-      base::BindOnce(&WaylandWindow::OnCursorLoaded,
-                     weak_ptr_factory_.GetWeakPtr(), async_cursor));
+  async_cursor->AddCursorLoadedCallback(base::BindOnce(
+      &WaylandWindow::OnCursorLoaded, AsWeakPtr(), async_cursor));
 #else
   if (cursor_ == platform_cursor) {
     return;

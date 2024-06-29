@@ -299,15 +299,15 @@ void WaylandToplevelWindow::Restore() {
   SetWindowState(PlatformWindowState::kNormal, display::kInvalidDisplayId);
 }
 
-std::optional<std::string> WaylandToplevelWindow::TakeActivationToken() const {
-  if (!connection()->xdg_activation() ||
-      // xdg-activation implementation in some compositors is still buggy and
-      // Mutter crashes were observed when windows are activated during window
-      // dragging sessions. See https://crbug.com/1366504.
-      connection()->IsDragInProgress()) {
-    return std::nullopt;
+void WaylandToplevelWindow::ActivateWithToken(std::string token) {
+  DCHECK(connection()->xdg_activation());
+  // xdg-activation implementation in some compositors is still buggy and
+  // Mutter crashes were observed when windows are activated during window
+  // dragging sessions. See https://crbug.com/1366504.
+  if (connection()->IsDragInProgress()) {
+    return;
   }
-  return base::nix::TakeXdgActivationToken();
+  connection()->xdg_activation()->Activate(root_surface()->surface(), token);
 }
 
 void WaylandToplevelWindow::Activate() {
@@ -323,8 +323,13 @@ void WaylandToplevelWindow::Activate() {
     shell_toplevel_->Activate();
   } else if (zaura_surface && zaura_surface->SupportsActivate()) {
     zaura_surface->Activate();
-  } else if (auto token = TakeActivationToken()) {
-    connection()->xdg_activation()->Activate(root_surface()->surface(), *token);
+  } else if (connection()->xdg_activation()) {
+    if (auto token = base::nix::TakeXdgActivationToken()) {
+      ActivateWithToken(token.value());
+    } else {
+      connection()->xdg_activation()->RequestNewToken(base::BindOnce(
+          &WaylandToplevelWindow::ActivateWithToken, base::AsWeakPtr(this)));
+    }
   } else if (gtk_surface1_) {
     gtk_surface1_->RequestFocus();
   }

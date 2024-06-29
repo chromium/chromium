@@ -72,7 +72,8 @@ class WaylandWindow : public PlatformWindow,
                       public WmDragHandler,
                       public WaylandExtension,
                       public EventTarget,
-                      public WaylandZAuraSurface::Delegate {
+                      public WaylandZAuraSurface::Delegate,
+                      public base::SupportsWeakPtr<WaylandWindow> {
  public:
   WaylandWindow(const WaylandWindow&) = delete;
   WaylandWindow& operator=(const WaylandWindow&) = delete;
@@ -406,10 +407,6 @@ class WaylandWindow : public PlatformWindow,
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner() {
     return ui_task_runner_;
-  }
-
-  base::WeakPtr<WaylandWindow> AsWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
   }
 
   // Clears the state of the |frame_manager_| when the GPU channel is
@@ -763,8 +760,6 @@ class WaylandWindow : public PlatformWindow,
       reentrant_requests_;
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
-
-  base::WeakPtrFactory<WaylandWindow> weak_ptr_factory_{this};
 };
 
 }  // namespace ui
