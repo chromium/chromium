@@ -2089,6 +2089,14 @@ class CONTENT_EXPORT WebContentsImpl
   std::unique_ptr<WebContentsAndroid> web_contents_android_;
 #endif
 
+  // Manages the embedder state for browser plugins, if this WebContents is an
+  // embedder; NULL otherwise.
+  std::unique_ptr<BrowserPluginEmbedder> browser_plugin_embedder_;
+
+  // Manages the guest state for browser plugin, if this WebContents is a guest;
+  // NULL otherwise.
+  std::unique_ptr<BrowserPluginGuest> browser_plugin_guest_;
+
   // Helper classes ------------------------------------------------------------
 
   // Contains information about the WebContents tree structure.
@@ -2243,13 +2251,6 @@ class CONTENT_EXPORT WebContentsImpl
   class ColorChooserHolder;
   std::unique_ptr<ColorChooserHolder> color_chooser_holder_;
 #endif
-
-  // Manages the embedder state for browser plugins, if this WebContents is an
-  // embedder; NULL otherwise.
-  std::unique_ptr<BrowserPluginEmbedder> browser_plugin_embedder_;
-  // Manages the guest state for browser plugin, if this WebContents is a guest;
-  // NULL otherwise.
-  std::unique_ptr<BrowserPluginGuest> browser_plugin_guest_;
 
   // All live RenderWidgetHostImpls that are created by this object and may
   // outlive it.

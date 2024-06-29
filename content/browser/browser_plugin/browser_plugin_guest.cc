@@ -96,7 +96,7 @@ WebContentsImpl* BrowserPluginGuest::GetWebContents() const {
 RenderFrameHostImpl* BrowserPluginGuest::GetProspectiveOuterDocument() {
   if (!delegate_) {
     // The guest delegate may only be null during some destruction scenarios.
-    CHECK(web_contents()->IsBeingDestroyed());
+    CHECK(!web_contents() || web_contents()->IsBeingDestroyed());
     return nullptr;
   }
   return static_cast<RenderFrameHostImpl*>(
