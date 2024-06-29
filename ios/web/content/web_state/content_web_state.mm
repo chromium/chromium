@@ -264,6 +264,10 @@ base::Time ContentWebState::GetCreationTime() const {
 }
 
 void ContentWebState::WasShown() {
+  if (IsVisible()) {
+    return;
+  }
+
   ForceRealized();
 
   // Update last active time when the ContentWebState transition to visible.
@@ -275,6 +279,10 @@ void ContentWebState::WasShown() {
 }
 
 void ContentWebState::WasHidden() {
+  if (!IsVisible()) {
+    return;
+  }
+
   ForceRealized();
   for (auto& observer : observers_) {
     observer.WasHidden(this);
