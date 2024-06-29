@@ -413,7 +413,6 @@ android_library("ui_no_recycler_view_java") {
     "java/src/org/chromium/ui/util/AccessibilityUtil.java",
     "java/src/org/chromium/ui/util/AttrUtils.java",
     "java/src/org/chromium/ui/util/ColorUtils.java",
-    "java/src/org/chromium/ui/util/StyleUtils.java",
     "java/src/org/chromium/ui/util/TokenHolder.java",
     "java/src/org/chromium/ui/util/ValueUtils.java",
     "java/src/org/chromium/ui/util/WindowInsetsUtils.java",
@@ -553,12 +552,10 @@ android_library("ui_java_test_support") {
 android_resources("ui_junit_resources") {
   testonly = true
   sources = [
-    "junit/res/font/custom_font.xml",
     "junit/res/layout/inflated_view.xml",
     "junit/res/layout/layout_view_builder_test.xml",
     "junit/res/layout/main_view.xml",
     "junit/res/values/strings.xml",
-    "junit/res/values/styles.xml",
   ]
   android_manifest = "junit/AndroidManifest.xml"
 }
@@ -605,7 +602,6 @@ robolectric_library("ui_android_junit_tests") {
     "junit/src/org/chromium/ui/shadows/ShadowAppCompatResourcesTest.java",
     "junit/src/org/chromium/ui/text/SpanApplierTest.java",
     "junit/src/org/chromium/ui/util/ColorUtilsTest.java",
-    "junit/src/org/chromium/ui/util/StyleUtilsTest.java",
     "junit/src/org/chromium/ui/util/TokenHolderTest.java",
     "junit/src/org/chromium/ui/util/WindowInsetsUtilsUnitTest.java",
     "junit/src/org/chromium/ui/widget/AnchoredPopupWindowTest.java",

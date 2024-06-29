@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
-import org.chromium.ui.util.StyleUtils;
 
 /** A factory that creates text and favicon bitmaps. */
 public class TitleBitmapFactory {
@@ -61,24 +60,21 @@ public class TitleBitmapFactory {
     public TitleBitmapFactory(Context context, boolean incognito) {
         Resources res = context.getResources();
         mIncognito = incognito;
+        int textColor =
+                AppCompatResources.getColorStateList(
+                                context,
+                                mIncognito
+                                        ? R.color.compositor_tab_title_bar_text_incognito
+                                        : R.color.compositor_tab_title_bar_text)
+                        .getDefaultColor();
+        float tabTextSize = res.getDimension(R.dimen.compositor_tab_title_text_size);
+        float groupTextSize = res.getDimension(R.dimen.compositor_group_title_text_size);
 
         boolean fakeBoldText = res.getBoolean(R.bool.compositor_tab_title_fake_bold_text);
 
         mTabTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-        if (mIncognito) {
-            int incognitoTabTextColor =
-                    AppCompatResources.getColorStateList(
-                                    context, R.color.compositor_tab_title_bar_text_incognito)
-                            .getDefaultColor();
-            mTabTextPaint.setColor(incognitoTabTextColor);
-        }
-        StyleUtils.applyTextAppearanceToTextPaint(
-                context,
-                mTabTextPaint,
-                R.style.TextAppearance_TextMedium_Primary,
-                /* applyFontFamily= */ true,
-                /* applyTextSize= */ true,
-                !mIncognito);
+        mTabTextPaint.setColor(textColor);
+        mTabTextPaint.setTextSize(tabTextSize);
         mTabTextPaint.setFakeBoldText(fakeBoldText);
         mTabTextPaint.density = res.getDisplayMetrics().density;
         FontMetrics tabTextFontMetrics = mTabTextPaint.getFontMetrics();
@@ -86,13 +82,7 @@ public class TitleBitmapFactory {
         mTabTextYOffset = -tabTextFontMetrics.top;
 
         mGroupTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-        StyleUtils.applyTextAppearanceToTextPaint(
-                context,
-                mGroupTextPaint,
-                R.style.TextAppearance_TextSmall,
-                /* applyFontFamily */ true,
-                /* applyTextSize= */ true,
-                /* applyTextColor= */ false);
+        mGroupTextPaint.setTextSize(groupTextSize);
         mGroupTextPaint.setFakeBoldText(fakeBoldText);
         mGroupTextPaint.density = res.getDisplayMetrics().density;
         FontMetrics groupTextFontMetrics = mGroupTextPaint.getFontMetrics();
@@ -151,7 +141,7 @@ public class TitleBitmapFactory {
      * @return The Bitmap with the title.
      */
     public Bitmap getTabTitleBitmap(String title) {
-        return getTitleBitmap(mTabTextPaint, mTabTextHeight, mTabTextYOffset, title);
+        return getTitleBitmap(mTabTextPaint, mViewHeight, mTabTextYOffset, title);
     }
 
     /**
@@ -182,7 +172,7 @@ public class TitleBitmapFactory {
      * @param title The title of the tab.
      * @return The Bitmap with the title.
      */
-    public Bitmap getTitleBitmap(TextPaint textPaint, float height, float yOffset, String title) {
+    public Bitmap getTitleBitmap(TextPaint textPaint, int height, float yOffset, String title) {
         try {
             final long startTime = SystemClock.elapsedRealtime();
             boolean drawText = !TextUtils.isEmpty(title);
@@ -193,7 +183,7 @@ public class TitleBitmapFactory {
             Bitmap b =
                     Bitmap.createBitmap(
                             Math.max(Math.min(mMaxWidth, textWidth), 1),
-                            mViewHeight,
+                            height,
                             Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(b);
             if (drawText) {
@@ -209,7 +199,7 @@ public class TitleBitmapFactory {
                         0,
                         Math.min(maxCharsToDraw, title.length()),
                         0,
-                        Math.round((mViewHeight - height) / 2.0f + yOffset),
+                        Math.round((height - mTabTextHeight) / 2.0f + yOffset),
                         textPaint);
             }
 
