@@ -24,9 +24,7 @@ namespace network {
 ThrottlingNetworkTransaction::ThrottlingNetworkTransaction(
     std::unique_ptr<net::HttpTransaction> network_transaction)
     : throttled_byte_count_(0),
-      network_transaction_(std::move(network_transaction)),
-      request_(nullptr),
-      failed_(false) {}
+      network_transaction_(std::move(network_transaction)) {}
 
 ThrottlingNetworkTransaction::~ThrottlingNetworkTransaction() {
   if (interceptor_ && !throttle_callback_.is_null())
@@ -90,7 +88,7 @@ void ThrottlingNetworkTransaction::ThrottleCallback(
 }
 
 void ThrottlingNetworkTransaction::Fail() {
-  DCHECK(request_);
+  DCHECK(started_);
   DCHECK(!failed_);
   failed_ = true;
   network_transaction_->SetBeforeNetworkStartCallback(
@@ -113,21 +111,21 @@ int ThrottlingNetworkTransaction::Start(const net::HttpRequestInfo* request,
                                         net::CompletionOnceCallback callback,
                                         const net::NetLogWithSource& net_log) {
   DCHECK(request);
-  request_ = request;
+  started_ = true;
 
   ThrottlingNetworkInterceptor* interceptor =
       ThrottlingController::GetInterceptor(net_log.source().id);
 
   if (interceptor) {
-    custom_request_ = std::make_unique<net::HttpRequestInfo>(*request_);
+    custom_request_ = std::make_unique<net::HttpRequestInfo>(*request);
 
-    if (request_->upload_data_stream) {
+    if (request->upload_data_stream) {
       custom_upload_data_stream_ = std::make_unique<ThrottlingUploadDataStream>(
-          request_->upload_data_stream);
+          request->upload_data_stream);
       custom_request_->upload_data_stream = custom_upload_data_stream_.get();
     }
 
-    request_ = custom_request_.get();
+    request = custom_request_.get();
 
     interceptor_ = interceptor->GetWeakPtr();
     if (custom_upload_data_stream_)
@@ -138,11 +136,11 @@ int ThrottlingNetworkTransaction::Start(const net::HttpRequestInfo* request,
     return net::ERR_INTERNET_DISCONNECTED;
 
   if (!interceptor_)
-    return network_transaction_->Start(request_, std::move(callback), net_log);
+    return network_transaction_->Start(request, std::move(callback), net_log);
 
   callback_ = std::move(callback);
   int result = network_transaction_->Start(
-      request_,
+      request,
       base::BindOnce(&ThrottlingNetworkTransaction::IOCallback,
                      base::Unretained(this), true),
       net_log);

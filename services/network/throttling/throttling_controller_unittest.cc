@@ -121,7 +121,7 @@ class ThrottlingControllerTestHelper {
     return interceptor->IsOffline();
   }
 
-  bool HasStarted() { return !!transaction_->request_; }
+  bool HasStarted() { return transaction_->started_; }
 
   bool HasFailed() { return transaction_->failed_; }
 
