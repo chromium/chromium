@@ -730,14 +730,7 @@ void BirchModel::RecordProviderHiddenHistograms() {
                             !prefs->GetBoolean(prefs::kBirchUseCalendar));
   base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.FileSuggest",
                             !prefs->GetBoolean(prefs::kBirchUseFileSuggest));
-  // TODO(b/349885612): Consolidate histograms for "Chrome Tabs".
-  base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.RecentTabs",
-                            !prefs->GetBoolean(prefs::kBirchUseChromeTabs));
-  base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.LastActive",
-                            !prefs->GetBoolean(prefs::kBirchUseChromeTabs));
-  base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.MostVisited",
-                            !prefs->GetBoolean(prefs::kBirchUseChromeTabs));
-  base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.SelfShare",
+  base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.ChromeTabs",
                             !prefs->GetBoolean(prefs::kBirchUseChromeTabs));
   base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.LostMedia",
                             !prefs->GetBoolean(prefs::kBirchUseLostMedia));

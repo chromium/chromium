@@ -1776,9 +1776,7 @@ TEST_F(BirchModelTest, RecordProviderHiddenHistograms) {
   // Histograms are recorded. All types are hidden.
   histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.Calendar", true, 1);
   histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.FileSuggest", true, 1);
-  histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.RecentTabs", true, 1);
-  histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.LastActive", true, 1);
-  histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.SelfShare", true, 1);
+  histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.ChromeTabs", true, 1);
   histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.Weather", true, 1);
   histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.ReleaseNotes", true,
                                1);

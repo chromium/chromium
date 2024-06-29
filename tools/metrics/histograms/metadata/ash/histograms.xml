@@ -930,13 +930,16 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Type">
     <variant name=".Calendar" summary="calendar"/>
+    <variant name=".ChromeTabs"
+        summary="recent tabs, last active tab, most visited tab, and
+                 self-share tabs"/>
     <variant name=".FileSuggest" summary="file suggest"/>
-    <variant name=".LastActive" summary="last active tab"/>
+    <variant name=".LastActive" summary="(obsolete) use ChromeTabs"/>
     <variant name=".LostMedia" summary="lost media tabs"/>
-    <variant name=".MostVisited" summary="most visited URLs"/>
-    <variant name=".RecentTabs" summary="recent tabs"/>
+    <variant name=".MostVisited" summary="(obsolete) use ChromeTabs"/>
+    <variant name=".RecentTabs" summary="(obsolete) use ChromeTabs"/>
     <variant name=".ReleaseNotes" summary="release notes"/>
-    <variant name=".SelfShare" summary="self share"/>
+    <variant name=".SelfShare" summary="(obsolete) use ChromeTabs"/>
     <variant name=".Weather" summary="weather"/>
   </token>
 </histogram>
