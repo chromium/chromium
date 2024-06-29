@@ -538,8 +538,7 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
           ToAuthenticatorMakeCredentialResponse(*credential_attestation)};
 }
 
-std::pair<CtapDeviceResponseCode,
-          std::optional<AuthenticatorGetAssertionResponse>>
+std::pair<GetAssertionStatus, std::optional<AuthenticatorGetAssertionResponse>>
 AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
                                   HWND h_wnd,
                                   GUID cancellation_id,
@@ -667,7 +666,7 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
     FIDO_LOG(DEBUG) << "WebAuthNAuthenticatorGetAssertion()="
                     << HresultToHex(hresult) << " ("
                     << webauthn_api->GetErrorName(hresult) << ")";
-    return {WinErrorNameToCtapDeviceResponseCode(
+    return {WinErrorNameToGetAssertionStatus(
                 base::as_u16cstr(webauthn_api->GetErrorName(hresult))),
             std::nullopt};
   }
@@ -681,8 +680,8 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
     // hmac_secret.
     response->hmac_secret_not_evaluated = true;
   }
-  return {response ? CtapDeviceResponseCode::kSuccess
-                   : CtapDeviceResponseCode::kCtap2ErrOther,
+  return {response ? GetAssertionStatus::kSuccess
+                   : GetAssertionStatus::kAuthenticatorResponseInvalid,
           std::move(response)};
 }
 

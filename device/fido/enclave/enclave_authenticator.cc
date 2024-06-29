@@ -22,7 +22,6 @@
 #include "device/fido/enclave/metrics.h"
 #include "device/fido/enclave/transact.h"
 #include "device/fido/enclave/types.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -58,6 +57,23 @@ enum {
   kPINOutdated = 5,
   kRecoveryKeyStoreDowngrade = 6,
 };
+
+GetAssertionStatus EnclaveErrorToGetAssertionStatus(int enclave_code) {
+  switch (enclave_code) {
+    case kIncorrectPIN:
+    case kPINLocked:
+      return GetAssertionStatus::kUserConsentDenied;
+    case kNoSupportedAlgorithm:
+      // Not valid for GetAssertion.
+    case kPINOutdated:
+      // This is a temporary error. Allow the request to fail.
+    case kDuplicate:
+    case kRecoveryKeyStoreDowngrade:
+      // These are not a valid error for a passkey request.
+    default:
+      return GetAssertionStatus::kEnclaveError;
+  }
+}
 
 CtapDeviceResponseCode EnclaveErrorToCtapResponseCode(int enclave_code) {
   switch (enclave_code) {
@@ -227,7 +243,7 @@ void EnclaveAuthenticator::DispatchGetAssertionWithNewUVKey(
     base::span<const uint8_t> uv_public_key) {
   if (uv_public_key.empty()) {
     FIDO_LOG(ERROR) << "Failed deferred UV key creation";
-    CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
+    CompleteRequestWithError(GetAssertionStatus::kEnclaveError);
     return;
   }
 
@@ -283,7 +299,7 @@ void EnclaveAuthenticator::ProcessMakeCredentialResponse(
 void EnclaveAuthenticator::ProcessGetAssertionResponse(
     std::optional<cbor::Value> response) {
   if (!response) {
-    CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOperationDenied);
+    CompleteRequestWithError(GetAssertionStatus::kEnclaveCancel);
     return;
   }
 
@@ -302,19 +318,21 @@ void EnclaveAuthenticator::ProcessGetAssertionResponse(
   std::vector<AuthenticatorGetAssertionResponse> responses;
   responses.emplace_back(
       std::move(absl::get<AuthenticatorGetAssertionResponse>(parse_result)));
-  CompleteGetAssertionRequest(CtapDeviceResponseCode::kSuccess,
+  CompleteGetAssertionRequest(GetAssertionStatus::kSuccess,
                               std::move(responses));
 }
 
 void EnclaveAuthenticator::CompleteRequestWithError(
-    CtapDeviceResponseCode error) {
-  if (pending_get_assertion_request_) {
-    CompleteGetAssertionRequest(error, {});
+    absl::variant<GetAssertionStatus, CtapDeviceResponseCode> error) {
+  if (absl::holds_alternative<GetAssertionStatus>(error)) {
+    CHECK(pending_get_assertion_request_);
+    CompleteGetAssertionRequest(absl::get<GetAssertionStatus>(error), {});
+    return;
   }
 
-  if (pending_make_credential_request_) {
-    CompleteMakeCredentialRequest(error, std::nullopt);
-  }
+  CHECK(pending_make_credential_request_);
+  CompleteMakeCredentialRequest(absl::get<CtapDeviceResponseCode>(error),
+                                std::nullopt);
 }
 
 void EnclaveAuthenticator::CompleteMakeCredentialRequest(
@@ -336,7 +354,7 @@ void EnclaveAuthenticator::CompleteMakeCredentialRequest(
 }
 
 void EnclaveAuthenticator::CompleteGetAssertionRequest(
-    CtapDeviceResponseCode status,
+    GetAssertionStatus status,
     std::vector<AuthenticatorGetAssertionResponse> responses) {
   // Using PostTask guards against any lifetime concerns for this class and
   // EnclaveWebSocketClient. It is safe to do cleanup after invoking the
@@ -344,7 +362,7 @@ void EnclaveAuthenticator::CompleteGetAssertionRequest(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](GetAssertionCallback callback, CtapDeviceResponseCode status,
+          [](GetAssertionCallback callback, GetAssertionStatus status,
              std::vector<AuthenticatorGetAssertionResponse> responses) {
             std::move(callback).Run(status, std::move(responses));
           },
@@ -366,22 +384,35 @@ void EnclaveAuthenticator::ProcessErrorResponse(const ErrorResponse& error) {
           << "Failed UV key submission. Error in registration response from "
              "server: "
           << *error.error_string;
-      CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
+      if (pending_get_assertion_request_) {
+        CompleteRequestWithError(GetAssertionStatus::kEnclaveError);
+      } else {
+        CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
+      }
     } else {
       CHECK(error.error_code.has_value());
       FIDO_LOG(DEBUG)
           << "Failed UV key submission. Received an error response from the "
              "enclave: "
           << *error.error_code;
-      CompleteRequestWithError(
-          EnclaveErrorToCtapResponseCode(*error.error_code));
+      if (pending_get_assertion_request_) {
+        CompleteRequestWithError(
+            EnclaveErrorToGetAssertionStatus(*error.error_code));
+      } else {
+        CompleteRequestWithError(
+            EnclaveErrorToCtapResponseCode(*error.error_code));
+      }
     }
     return;
   }
   if (error.error_string.has_value()) {
     FIDO_LOG(ERROR) << base::StrCat(
         {"Error in registration response from server: ", *error.error_string});
-    CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
+    if (pending_get_assertion_request_) {
+      CompleteRequestWithError(GetAssertionStatus::kEnclaveError);
+    } else {
+      CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
+    }
     return;
   }
 
@@ -396,7 +427,11 @@ void EnclaveAuthenticator::ProcessErrorResponse(const ErrorResponse& error) {
   FIDO_LOG(DEBUG) << base::StrCat(
       {"Received an error response from the enclave: ",
        base::NumberToString(code)});
-  CompleteRequestWithError(EnclaveErrorToCtapResponseCode(code));
+  if (pending_get_assertion_request_) {
+    CompleteRequestWithError(EnclaveErrorToGetAssertionStatus(code));
+  } else {
+    CompleteRequestWithError(EnclaveErrorToCtapResponseCode(code));
+  }
 }
 
 void EnclaveAuthenticator::Cancel() {}

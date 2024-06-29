@@ -37,13 +37,13 @@ using device::AuthenticatorSupportedOptions;
 using device::AuthenticatorType;
 using device::CoseAlgorithmIdentifier;
 using device::CredentialType;
-using device::CtapDeviceResponseCode;
 using device::CtapGetAssertionOptions;
 using device::CtapGetAssertionRequest;
 using device::CtapMakeCredentialRequest;
 using device::FidoAuthenticator;
 using device::FidoRequestHandlerBase;
 using device::FidoTransportProtocol;
+using device::GetAssertionStatus;
 using device::MakeCredentialOptions;
 using device::PublicKeyCredentialDescriptor;
 using device::PublicKeyCredentialUserEntity;
@@ -157,7 +157,8 @@ void PasskeyAuthenticator::FinishGetAssertion(CtapGetAssertionRequest request,
                                               GetAssertionCallback callback,
                                               bool user_verification_success) {
   if (!user_verification_success) {
-    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrNoCredentials, {});
+    std::move(callback).Run(
+        GetAssertionStatus::kUserConsentButCredentialNotRecognized, {});
     return;
   }
 
@@ -171,7 +172,8 @@ void PasskeyAuthenticator::FinishGetAssertion(CtapGetAssertionRequest request,
                                                credential_id_str);
   if (!credential_specifics) {
     FIDO_LOG(ERROR) << "Could not find a matching GPM credential.";
-    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrNoCredentials, {});
+    std::move(callback).Run(
+        GetAssertionStatus::kUserConsentButCredentialNotRecognized, {});
     return;
   }
 
@@ -179,7 +181,8 @@ void PasskeyAuthenticator::FinishGetAssertion(CtapGetAssertionRequest request,
       passkey_service_->GetCachedSecurityDomainSecret();
   if (!security_domain_secret) {
     FIDO_LOG(ERROR) << "Security domain secret unavailable.";
-    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrNoCredentials, {});
+    std::move(callback).Run(
+        GetAssertionStatus::kUserConsentButCredentialNotRecognized, {});
     return;
   }
 
@@ -193,7 +196,8 @@ void PasskeyAuthenticator::FinishGetAssertion(CtapGetAssertionRequest request,
           base::make_span(*security_domain_secret), *credential_specifics,
           &unsealed_credential_secrets)) {
     FIDO_LOG(ERROR) << "Decrypting WebauthnCredentialSpecifics failed.";
-    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrNoCredentials, {});
+    std::move(callback).Run(
+        GetAssertionStatus::kUserConsentButCredentialNotRecognized, {});
     return;
   }
 
@@ -209,7 +213,8 @@ void PasskeyAuthenticator::FinishGetAssertion(CtapGetAssertionRequest request,
       signed_over_data);
   if (!assertion_signature) {
     FIDO_LOG(ERROR) << "Generating assertion signature failed";
-    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrNoCredentials, {});
+    std::move(callback).Run(
+        GetAssertionStatus::kUserConsentButCredentialNotRecognized, {});
     return;
   }
 
@@ -223,8 +228,7 @@ void PasskeyAuthenticator::FinishGetAssertion(CtapGetAssertionRequest request,
                            credential_specifics->user_id().end()));
   std::vector<AuthenticatorGetAssertionResponse> responses;
   responses.emplace_back(std::move(assertion_response));
-  std::move(callback).Run(CtapDeviceResponseCode::kSuccess,
-                          std::move(responses));
+  std::move(callback).Run(GetAssertionStatus::kSuccess, std::move(responses));
 }
 
 void PasskeyAuthenticator::Cancel() {

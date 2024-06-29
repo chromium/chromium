@@ -225,7 +225,7 @@ TEST_F(iCloudKeychainTest, RequestAuthorization) {
                                          future.GetCallback());
           EXPECT_TRUE(future.Wait());
         } else {
-          base::test::TestFuture<CtapDeviceResponseCode,
+          base::test::TestFuture<GetAssertionStatus,
                                  std::vector<AuthenticatorGetAssertionResponse>>
               future;
           authenticator_->GetAssertion(get_assertion_request,
@@ -398,9 +398,9 @@ TEST_F(iCloudKeychainTest, GetAssertion) {
     CtapGetAssertionOptions options;
 
     auto get_assertion = [this, &request, &options]()
-        -> std::tuple<CtapDeviceResponseCode,
+        -> std::tuple<GetAssertionStatus,
                       std::vector<AuthenticatorGetAssertionResponse>> {
-      base::test::TestFuture<CtapDeviceResponseCode,
+      base::test::TestFuture<GetAssertionStatus,
                              std::vector<AuthenticatorGetAssertionResponse>>
           future;
       authenticator_->GetAssertion(request, options, future.GetCallback());
@@ -411,8 +411,7 @@ TEST_F(iCloudKeychainTest, GetAssertion) {
     {
       // Without `SetGetAssertionResult` being called, an error is returned.
       auto result = get_assertion();
-      EXPECT_EQ(std::get<0>(result),
-                CtapDeviceResponseCode::kCtap2ErrOperationDenied);
+      EXPECT_EQ(std::get<0>(result), GetAssertionStatus::kUserConsentDenied);
       EXPECT_TRUE(std::get<1>(result).empty());
     }
 
@@ -426,7 +425,7 @@ TEST_F(iCloudKeychainTest, GetAssertion) {
       EXPECT_EQ(fake_->cancel_count(), 1u);
       auto result = get_assertion();
       EXPECT_EQ(std::get<0>(result),
-                CtapDeviceResponseCode::kCtap2ErrKeepAliveCancel);
+                GetAssertionStatus::kAuthenticatorResponseInvalid);
       EXPECT_TRUE(std::get<1>(result).empty());
     }
 
@@ -435,7 +434,8 @@ TEST_F(iCloudKeychainTest, GetAssertion) {
       fake_->SetGetAssertionResult(kInvalidAuthenticatorData, kSignature,
                                    kUserID, kCredentialID);
       auto result = get_assertion();
-      EXPECT_EQ(std::get<0>(result), CtapDeviceResponseCode::kCtap2ErrOther);
+      EXPECT_EQ(std::get<0>(result),
+                GetAssertionStatus::kAuthenticatorResponseInvalid);
       EXPECT_TRUE(std::get<1>(result).empty());
     }
 
@@ -443,7 +443,7 @@ TEST_F(iCloudKeychainTest, GetAssertion) {
       fake_->SetGetAssertionResult(kAuthenticatorData, kSignature, kUserID,
                                    kCredentialID);
       auto result = get_assertion();
-      EXPECT_EQ(std::get<0>(result), CtapDeviceResponseCode::kSuccess);
+      EXPECT_EQ(std::get<0>(result), GetAssertionStatus::kSuccess);
       EXPECT_EQ(std::get<1>(result).size(), 1u);
 
       AuthenticatorGetAssertionResponse response =
@@ -460,7 +460,7 @@ TEST_F(iCloudKeychainTest, GetAssertion) {
                                   "... No credentials available for login ...");
       auto result = get_assertion();
       EXPECT_EQ(std::get<0>(result),
-                CtapDeviceResponseCode::kCtap2ErrNoCredentials);
+                GetAssertionStatus::kICloudKeychainNoCredentials);
     }
 
     {

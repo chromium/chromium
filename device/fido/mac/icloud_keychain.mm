@@ -361,7 +361,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
                               NSError* error) {
     if (cancelled_) {
       cancelled_ = false;
-      std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrKeepAliveCancel,
+      std::move(callback).Run(GetAssertionStatus::kAuthenticatorResponseInvalid,
                               {});
       return;
     }
@@ -376,15 +376,16 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
       // will cause this error to be returned if there are no credentials. We
       // have asked Apple that, if they change this error string, they should
       // please have macOS show its own error dialog.
-      CtapDeviceResponseCode response;
+      GetAssertionStatus response;
       if (error.code == 1001 &&
           base::Contains(description, "No credentials available for login")) {
-        response = CtapDeviceResponseCode::kCtap2ErrNoCredentials;
+        response = GetAssertionStatus::kICloudKeychainNoCredentials;
       } else {
-        // All other errors are currently mapped to `kCtap2ErrOperationDenied`
-        // because it's not obvious that we want to differentiate them:
+        // All other errors are currently mapped to
+        // `kUserConsentDenied` because it's not obvious that we
+        // want to differentiate them:
         // https://developer.apple.com/documentation/authenticationservices/asauthorizationerror?language=objc
-        response = CtapDeviceResponseCode::kCtap2ErrOperationDenied;
+        response = GetAssertionStatus::kUserConsentDenied;
       }
       std::move(callback).Run(response, {});
       return;
@@ -403,7 +404,8 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
             ToSpan(result.rawAuthenticatorData));
     if (!authenticator_data) {
       FIDO_LOG(ERROR) << "iCKC: invalid authData";
-      std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther, {});
+      std::move(callback).Run(GetAssertionStatus::kAuthenticatorResponseInvalid,
+                              {});
       return;
     }
 
@@ -426,8 +428,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
 
     std::vector<AuthenticatorGetAssertionResponse> responses;
     responses.emplace_back(std::move(response));
-    std::move(callback).Run(CtapDeviceResponseCode::kSuccess,
-                            std::move(responses));
+    std::move(callback).Run(GetAssertionStatus::kSuccess, std::move(responses));
   }
 
   NSWindow* __strong window_;

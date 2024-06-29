@@ -12,6 +12,7 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/features.h"
+#include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_types.h"
@@ -28,7 +29,7 @@ using GetInfoFuture =
     base::test::TestFuture<std::vector<DiscoverableCredentialMetadata>,
                            FidoRequestHandlerBase::RecognizedCredential>;
 using GetAssertionFuture =
-    base::test::TestFuture<CtapDeviceResponseCode,
+    base::test::TestFuture<GetAssertionStatus,
                            std::vector<AuthenticatorGetAssertionResponse>>;
 
 constexpr char kRp1[] = "one.com";
@@ -159,7 +160,7 @@ TEST_F(TouchIdAuthenticatorTest, GetAssertionEmpty) {
                                future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(std::get<0>(future.Get()),
-            CtapDeviceResponseCode::kCtap2ErrNoCredentials);
+            GetAssertionStatus::kUserConsentButCredentialNotRecognized);
 }
 
 }  // namespace

@@ -37,7 +37,7 @@ using MakeCredentialFuture =
                            std::optional<AuthenticatorMakeCredentialResponse>>;
 
 using GetAssertionFuture =
-    base::test::TestFuture<CtapDeviceResponseCode,
+    base::test::TestFuture<GetAssertionStatus,
                            std::vector<AuthenticatorGetAssertionResponse>>;
 
 using GetCredentialFuture =
@@ -438,7 +438,7 @@ TEST_F(WinAuthenticatorTest, GetAssertionLargeBlobNotSupported) {
     authenticator_->GetAssertion(std::move(request), std::move(options),
                                  future.GetCallback());
     EXPECT_TRUE(future.Wait());
-    EXPECT_EQ(std::get<0>(future.Get()), CtapDeviceResponseCode::kSuccess);
+    EXPECT_EQ(std::get<0>(future.Get()), GetAssertionStatus::kSuccess);
     EXPECT_FALSE(std::get<1>(future.Get()).at(0).large_blob.has_value());
   }
   {
@@ -450,7 +450,7 @@ TEST_F(WinAuthenticatorTest, GetAssertionLargeBlobNotSupported) {
     authenticator_->GetAssertion(std::move(request), std::move(options),
                                  future.GetCallback());
     EXPECT_TRUE(future.Wait());
-    EXPECT_EQ(std::get<0>(future.Get()), CtapDeviceResponseCode::kSuccess);
+    EXPECT_EQ(std::get<0>(future.Get()), GetAssertionStatus::kSuccess);
     EXPECT_FALSE(std::get<1>(future.Get()).at(0).large_blob_written);
   }
 }
@@ -472,7 +472,7 @@ TEST_F(WinAuthenticatorTest, GetAssertionLargeBlobError) {
     authenticator_->GetAssertion(std::move(request), std::move(options),
                                  future.GetCallback());
     EXPECT_TRUE(future.Wait());
-    EXPECT_EQ(std::get<0>(future.Get()), CtapDeviceResponseCode::kSuccess);
+    EXPECT_EQ(std::get<0>(future.Get()), GetAssertionStatus::kSuccess);
     EXPECT_FALSE(std::get<1>(future.Get()).at(0).large_blob.has_value());
   }
   {
@@ -484,7 +484,7 @@ TEST_F(WinAuthenticatorTest, GetAssertionLargeBlobError) {
     authenticator_->GetAssertion(std::move(request), std::move(options),
                                  future.GetCallback());
     EXPECT_TRUE(future.Wait());
-    EXPECT_EQ(std::get<0>(future.Get()), CtapDeviceResponseCode::kSuccess);
+    EXPECT_EQ(std::get<0>(future.Get()), GetAssertionStatus::kSuccess);
     EXPECT_FALSE(std::get<1>(future.Get()).at(0).large_blob_written);
   }
 }
@@ -504,7 +504,7 @@ TEST_F(WinAuthenticatorTest, GetAssertionLargeBlobSuccess) {
     authenticator_->GetAssertion(std::move(request), std::move(options),
                                  future.GetCallback());
     EXPECT_TRUE(future.Wait());
-    EXPECT_EQ(std::get<0>(future.Get()), CtapDeviceResponseCode::kSuccess);
+    EXPECT_EQ(std::get<0>(future.Get()), GetAssertionStatus::kSuccess);
     EXPECT_FALSE(std::get<1>(future.Get()).at(0).large_blob.has_value());
     EXPECT_FALSE(std::get<1>(future.Get()).at(0).large_blob_written);
   }
@@ -517,7 +517,7 @@ TEST_F(WinAuthenticatorTest, GetAssertionLargeBlobSuccess) {
     authenticator_->GetAssertion(std::move(request), std::move(options),
                                  future.GetCallback());
     EXPECT_TRUE(future.Wait());
-    EXPECT_EQ(std::get<0>(future.Get()), CtapDeviceResponseCode::kSuccess);
+    EXPECT_EQ(std::get<0>(future.Get()), GetAssertionStatus::kSuccess);
     EXPECT_FALSE(std::get<1>(future.Get()).at(0).large_blob.has_value());
     EXPECT_TRUE(std::get<1>(future.Get()).at(0).large_blob_written);
   }
@@ -530,7 +530,7 @@ TEST_F(WinAuthenticatorTest, GetAssertionLargeBlobSuccess) {
     authenticator_->GetAssertion(std::move(request), std::move(options),
                                  future.GetCallback());
     EXPECT_TRUE(future.Wait());
-    EXPECT_EQ(std::get<0>(future.Get()), CtapDeviceResponseCode::kSuccess);
+    EXPECT_EQ(std::get<0>(future.Get()), GetAssertionStatus::kSuccess);
     EXPECT_TRUE(std::get<1>(future.Get()).at(0).large_blob.has_value());
     EXPECT_EQ(*std::get<1>(future.Get()).at(0).large_blob, kLargeBlob);
     EXPECT_FALSE(std::get<1>(future.Get()).at(0).large_blob_written);

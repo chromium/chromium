@@ -332,27 +332,28 @@ MakeCredentialStatus WinCtapDeviceResponseCodeToMakeCredentialStatus(
   }
 }
 
-COMPONENT_EXPORT(DEVICE_FIDO)
-GetAssertionStatus WinCtapDeviceResponseCodeToGetAssertionStatus(
-    CtapDeviceResponseCode status) {
-  switch (status) {
-    case CtapDeviceResponseCode::kSuccess:
-      return GetAssertionStatus::kSuccess;
-    case CtapDeviceResponseCode::kCtap2ErrOperationDenied:
-      return GetAssertionStatus::kWinNotAllowedError;
-    case CtapDeviceResponseCode::kCtap2ErrCredentialExcluded:
-      // The API should never return InvalidStateError for GetAssertion.
-      FIDO_LOG(ERROR) << "Unexpected CtapDeviceResponseCode: "
-                      << static_cast<int>(status);
-      return GetAssertionStatus::kWinNotAllowedError;
-    default:
-      NOTREACHED_IN_MIGRATION()
-          << "Must only be called with a status returned from "
-             "WinErrorNameToCtapDeviceResponseCode().";
-      FIDO_LOG(ERROR) << "Unexpected CtapDeviceResponseCode: "
-                      << static_cast<int>(status);
-      return GetAssertionStatus::kWinNotAllowedError;
+GetAssertionStatus WinErrorNameToGetAssertionStatus(
+    std::u16string_view error_name) {
+  // See WebAuthNGetErrorName in <webauthn.h> for these string literals.
+  //
+  // "NotAllowedError" indicates the user cancelled, there was no matching
+  // credential, or a timeout. Other errors indicate that either the
+  // request was rejected or there was an error processing it.
+  constexpr auto kResponseCodeMap = base::MakeFixedFlatMap<std::u16string_view,
+                                                           GetAssertionStatus>({
+      {u"Success", GetAssertionStatus::kSuccess},
+      {u"InvalidStateError", GetAssertionStatus::kAuthenticatorResponseInvalid},
+      {u"ConstraintError", GetAssertionStatus ::kAuthenticatorResponseInvalid},
+      {u"NotSupportedError", GetAssertionStatus::kAuthenticatorResponseInvalid},
+      {u"NotAllowedError", GetAssertionStatus::kWinNotAllowedError},
+      {u"UnknownError", GetAssertionStatus::kAuthenticatorResponseInvalid},
+  });
+  const auto it = kResponseCodeMap.find(error_name);
+  if (it == kResponseCodeMap.end()) {
+    FIDO_LOG(ERROR) << "Unexpected error name: " << error_name;
+    return GetAssertionStatus::kAuthenticatorResponseInvalid;
   }
+  return it->second;
 }
 
 uint32_t ToWinAttestationConveyancePreference(

@@ -143,35 +143,38 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   using LargeBlobReadCallback = base::OnceCallback<void(
       CtapDeviceResponseCode,
       std::optional<std::vector<std::pair<LargeBlobKey, LargeBlob>>> callback)>;
+  using CtapGetAssertionCallback =
+      base::OnceCallback<void(CtapDeviceResponseCode,
+                              std::vector<AuthenticatorGetAssertionResponse>)>;
   void InitializeAuthenticatorDone(base::OnceClosure callback);
   void GetEphemeralKey(GetEphemeralKeyCallback callback);
   void DoGetAssertion(CtapGetAssertionRequest request,
                       CtapGetAssertionOptions options,
-                      GetAssertionCallback callback);
+                      CtapGetAssertionCallback callback);
   void OnHaveCompressedLargeBlobForGetAssertion(
       CtapGetAssertionRequest request,
       CtapGetAssertionOptions options,
-      GetAssertionCallback callback,
+      CtapGetAssertionCallback callback,
       size_t original_size,
       base::expected<mojo_base::BigBuffer, std::string> result);
   void MaybeGetEphemeralKeyForGetAssertion(CtapGetAssertionRequest request,
                                            CtapGetAssertionOptions options,
-                                           GetAssertionCallback callback);
+                                           CtapGetAssertionCallback callback);
   void OnHaveAssertion(
       CtapGetAssertionRequest request,
       CtapGetAssertionOptions options,
-      GetAssertionCallback callback,
+      CtapGetAssertionCallback callback,
       CtapDeviceResponseCode status,
       std::vector<AuthenticatorGetAssertionResponse> responses);
   void PerformGetAssertionLargeBlobOperation(
       CtapGetAssertionRequest request,
       CtapGetAssertionOptions options,
       std::vector<AuthenticatorGetAssertionResponse> responses,
-      GetAssertionCallback callback);
+      CtapGetAssertionCallback callback);
   void OnHaveEphemeralKeyForGetAssertion(
       CtapGetAssertionRequest request,
       CtapGetAssertionOptions options,
-      GetAssertionCallback callback,
+      CtapGetAssertionCallback callback,
       CtapDeviceResponseCode status,
       std::optional<pin::KeyAgreementResponse> key);
   void OnHaveEphemeralKeyForGetPINToken(
@@ -198,6 +201,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
       GetTokenCallback callback,
       CtapDeviceResponseCode status,
       std::optional<pin::KeyAgreementResponse> key);
+  void OnGetAssertionResponse(
+      GetAssertionCallback callback,
+      CtapDeviceResponseCode status,
+      std::vector<AuthenticatorGetAssertionResponse> responses);
 
   // Attempts to read large blobs from the credential encrypted with
   // |large_blob_keys|. Returns a map of keys to their blobs.
@@ -227,22 +234,22 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
       std::optional<LargeBlobsResponse> response);
   void OnWroteLargeBlobForGetAssertion(
       std::vector<AuthenticatorGetAssertionResponse> responses,
-      GetAssertionCallback callback,
+      CtapGetAssertionCallback callback,
       CtapDeviceResponseCode status);
   void OnReadLargeBlobForGetAssertion(
       std::vector<AuthenticatorGetAssertionResponse> responses,
-      GetAssertionCallback callback,
+      CtapGetAssertionCallback callback,
       CtapDeviceResponseCode status,
       std::optional<std::vector<std::pair<LargeBlobKey, LargeBlob>>> blobs);
   void OnBlobUncompressed(
       std::vector<AuthenticatorGetAssertionResponse> responses,
       std::vector<std::pair<LargeBlobKey, LargeBlob>> blobs,
       LargeBlobKey uncompressed_key,
-      GetAssertionCallback callback,
+      CtapGetAssertionCallback callback,
       base::expected<mojo_base::BigBuffer, std::string> result);
   void OnLargeBlobExtensionUncompressed(
       std::vector<AuthenticatorGetAssertionResponse> responses,
-      GetAssertionCallback callback,
+      CtapGetAssertionCallback callback,
       base::expected<mojo_base::BigBuffer, std::string> result);
   void OnCredentialsEnumeratedForGarbageCollect(
       const pin::TokenResponse& pin_uv_auth_token,

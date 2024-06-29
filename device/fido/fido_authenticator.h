@@ -41,6 +41,27 @@ struct EmptyResponse;
 class TokenResponse;
 }  // namespace pin
 
+enum class GetAssertionStatus {
+  kSuccess,
+  kAuthenticatorResponseInvalid,
+  kUserConsentButCredentialNotRecognized,
+  kUserConsentDenied,
+  kAuthenticatorRemovedDuringPINEntry,
+  kSoftPINBlock,
+  kHardPINBlock,
+  kAuthenticatorMissingResidentKeys,
+  // TODO(agl): kAuthenticatorMissingUserVerification can
+  // also be returned when the authenticator supports UV, but
+  // there's no UI support for collecting a PIN. This could
+  // be clearer.
+  kAuthenticatorMissingUserVerification,
+  kWinNotAllowedError,
+  kHybridTransportError,
+  kICloudKeychainNoCredentials,
+  kEnclaveError,
+  kEnclaveCancel,
+};
+
 // FidoAuthenticator is an authenticator from the WebAuthn Authenticator model
 // (https://www.w3.org/TR/webauthn/#sctn-authenticator-model). It may be a
 // physical device, or a built-in (platform) authenticator.
@@ -50,7 +71,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
       CtapDeviceResponseCode,
       std::optional<AuthenticatorMakeCredentialResponse>)>;
   using GetAssertionCallback =
-      base::OnceCallback<void(CtapDeviceResponseCode,
+      base::OnceCallback<void(GetAssertionStatus,
                               std::vector<AuthenticatorGetAssertionResponse>)>;
   using GetPlatformCredentialInfoForRequestCallback = base::OnceCallback<void(
       std::vector<DiscoverableCredentialMetadata> credentials,

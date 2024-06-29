@@ -15,6 +15,7 @@
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
+#include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_types.h"
 #include "third_party/microsoft_webauthn/webauthn.h"
@@ -76,13 +77,11 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 MakeCredentialStatus WinCtapDeviceResponseCodeToMakeCredentialStatus(
     CtapDeviceResponseCode status);
 
-// WinCtapDeviceResponseCodeToGetAssertionStatus returns the GetAssertionStatus
-// that corresponds to a synthetic CtapDeviceResponseCode obtained from
-// WinErrorNameToCtapDeviceResponseCode(). Return values are one of {kSuccess,
-// kWinNotAllowedError}.
+// WinErrorNameToGetAssertionStatus maps a string returned by
+// WebAuthNGetErrorName() to a GetAssertionStatus.
 COMPONENT_EXPORT(DEVICE_FIDO)
-GetAssertionStatus WinCtapDeviceResponseCodeToGetAssertionStatus(
-    CtapDeviceResponseCode status);
+GetAssertionStatus WinErrorNameToGetAssertionStatus(
+    std::u16string_view error_name);
 
 COMPONENT_EXPORT(DEVICE_FIDO)
 uint32_t ToWinAttestationConveyancePreference(

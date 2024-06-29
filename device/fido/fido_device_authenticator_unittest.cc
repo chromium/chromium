@@ -40,7 +40,7 @@ namespace device {
 namespace {
 
 using GetAssertionFuture =
-    base::test::TestFuture<CtapDeviceResponseCode,
+    base::test::TestFuture<GetAssertionStatus,
                            std::vector<AuthenticatorGetAssertionResponse>>;
 using PinFuture = base::test::TestFuture<CtapDeviceResponseCode,
                                          std::optional<pin::TokenResponse>>;
@@ -127,7 +127,7 @@ class FidoDeviceAuthenticatorTest : public testing::Test {
     authenticator_->GetAssertion(std::move(request), std::move(options),
                                  future.GetCallback());
     EXPECT_TRUE(future.Wait());
-    CHECK_EQ(std::get<0>(future.Get()), CtapDeviceResponseCode::kSuccess)
+    CHECK_EQ(std::get<0>(future.Get()), GetAssertionStatus::kSuccess)
         << " get assertion returned "
         << static_cast<unsigned>(std::get<0>(future.Get()));
     std::vector<AuthenticatorGetAssertionResponse> response =

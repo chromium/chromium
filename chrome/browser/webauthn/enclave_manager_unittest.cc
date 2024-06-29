@@ -54,6 +54,7 @@
 #include "device/fido/enclave/constants.h"
 #include "device/fido/enclave/enclave_authenticator.h"
 #include "device/fido/enclave/types.h"
+#include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/json_request.h"
@@ -366,8 +367,7 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
   }
 
   struct GetAssertionResponseExpectation {
-    device::CtapDeviceResponseCode result =
-        device::CtapDeviceResponseCode::kSuccess;
+    device::GetAssertionStatus result = device::GetAssertionStatus::kSuccess;
     uint32_t size = 1;
   };
 
@@ -410,13 +410,13 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
     })");
 
     auto quit_closure = task_env_.QuitClosure();
-    std::optional<device::CtapDeviceResponseCode> status;
+    std::optional<device::GetAssertionStatus> status;
     std::vector<device::AuthenticatorGetAssertionResponse> responses;
     authenticator.GetAssertion(
         std::move(ctap_request), std::move(ctap_options),
         base::BindLambdaForTesting(
             [&quit_closure, &status, &responses](
-                device::CtapDeviceResponseCode in_status,
+                device::GetAssertionStatus in_status,
                 std::vector<device::AuthenticatorGetAssertionResponse>
                     in_responses) {
               status = in_status;
@@ -1578,7 +1578,7 @@ TEST_F(EnclaveUVTest, UnregisterOnFailedDeferredUVKeyCreation) {
                          [&run_loop](bool) { run_loop.QuitWhenIdle(); }));
 
   GetAssertionResponseExpectation expected_response;
-  expected_response.result = device::CtapDeviceResponseCode::kCtap2ErrOther;
+  expected_response.result = device::GetAssertionStatus::kEnclaveError;
   expected_response.size = 0;
   DoAssertion(GetTestEntity(), /*claimed_pin=*/nullptr, expected_response,
               std::move(ui_request));

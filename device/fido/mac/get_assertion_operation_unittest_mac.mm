@@ -61,8 +61,7 @@ TEST(GetAssertionOperationTest, DISABLED_TestRun) {
   base::test::TaskEnvironment task_environment;
   ASSERT_TRUE(MakeCredential());
 
-  TestFuture<CtapDeviceResponseCode,
-             std::vector<AuthenticatorGetAssertionResponse>>
+  TestFuture<GetAssertionStatus, std::vector<AuthenticatorGetAssertionResponse>>
       future;
   auto request = MakeTestRequest();
   TouchIdCredentialStore credential_store(
@@ -72,8 +71,8 @@ TEST(GetAssertionOperationTest, DISABLED_TestRun) {
   op.Run();
   EXPECT_TRUE(future.Wait());
   auto result = future.Take();
-  CtapDeviceResponseCode error = std::get<0>(result);
-  EXPECT_EQ(CtapDeviceResponseCode::kSuccess, error);
+  GetAssertionStatus error = std::get<0>(result);
+  EXPECT_EQ(GetAssertionStatus::kSuccess, error);
   auto opt_responses = std::move(std::get<1>(result));
   ASSERT_EQ(opt_responses.size(), 1u);
   EXPECT_FALSE(opt_responses.at(0).credential->id.empty());
