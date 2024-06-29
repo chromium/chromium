@@ -146,6 +146,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   using CtapGetAssertionCallback =
       base::OnceCallback<void(CtapDeviceResponseCode,
                               std::vector<AuthenticatorGetAssertionResponse>)>;
+  using CtapMakeCredentialCallback = base::OnceCallback<void(
+      CtapDeviceResponseCode,
+      std::optional<AuthenticatorMakeCredentialResponse>)>;
   void InitializeAuthenticatorDone(base::OnceClosure callback);
   void GetEphemeralKey(GetEphemeralKeyCallback callback);
   void DoGetAssertion(CtapGetAssertionRequest request,
@@ -205,6 +208,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
       GetAssertionCallback callback,
       CtapDeviceResponseCode status,
       std::vector<AuthenticatorGetAssertionResponse> responses);
+  void MakeCredentialInternal(CtapMakeCredentialRequest request,
+                              MakeCredentialOptions request_options,
+                              CtapMakeCredentialCallback callback);
+  void OnMakeCredentialResponse(
+      MakeCredentialCallback callback,
+      CtapDeviceResponseCode status,
+      std::optional<AuthenticatorMakeCredentialResponse> response);
 
   // Attempts to read large blobs from the credential encrypted with
   // |large_blob_keys|. Returns a map of keys to their blobs.

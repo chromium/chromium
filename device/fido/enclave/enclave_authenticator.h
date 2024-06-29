@@ -97,12 +97,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
       base::span<const uint8_t> uv_public_key);
   void ProcessMakeCredentialResponse(std::optional<cbor::Value> response);
   void ProcessGetAssertionResponse(std::optional<cbor::Value> response);
-  // TODO(kenrb): CtapDeviceResponseCode becomes MakeCredentialStatus when
-  // the next part of the refactor is complete.
   void CompleteRequestWithError(
-      absl::variant<GetAssertionStatus, CtapDeviceResponseCode> error);
+      absl::variant<GetAssertionStatus, MakeCredentialStatus> error);
   void CompleteMakeCredentialRequest(
-      CtapDeviceResponseCode status,
+      MakeCredentialStatus status,
       std::optional<AuthenticatorMakeCredentialResponse> response);
   void CompleteGetAssertionRequest(
       GetAssertionStatus status,

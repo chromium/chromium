@@ -21,6 +21,7 @@
 #include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/bio/enroller.h"
 #include "device/fido/ctap_make_credential_request.h"
+#include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -33,36 +34,11 @@ class ElapsedTimer;
 
 namespace device {
 
-class FidoAuthenticator;
 class FidoDiscoveryFactory;
 
 namespace pin {
 class TokenResponse;
 }  // namespace pin
-
-enum class MakeCredentialStatus {
-  kSuccess,
-  kAuthenticatorResponseInvalid,
-  kUserConsentButCredentialExcluded,
-  kUserConsentDenied,
-  kAuthenticatorRemovedDuringPINEntry,
-  kSoftPINBlock,
-  kHardPINBlock,
-  kAuthenticatorMissingResidentKeys,
-  // TODO(agl): kAuthenticatorMissingUserVerification can
-  // also be returned when the authenticator supports UV, but
-  // there's no UI support for collecting a PIN. This could
-  // be clearer.
-  kAuthenticatorMissingUserVerification,
-  kAuthenticatorMissingLargeBlob,
-  kNoCommonAlgorithms,
-  kStorageFull,
-  kWinInvalidStateError,
-  kWinNotAllowedError,
-  kHybridTransportError,
-  kEnclaveError,
-  kEnclaveCancel,
-};
 
 class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
     : public FidoRequestHandlerBase,
@@ -137,7 +113,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
       FidoAuthenticator* authenticator,
       std::unique_ptr<CtapMakeCredentialRequest> request,
       base::ElapsedTimer request_timer,
-      CtapDeviceResponseCode response_code,
+      MakeCredentialStatus response_code,
       std::optional<AuthenticatorMakeCredentialResponse> response);
   void HandleExcludedAuthenticator(FidoAuthenticator* authenticator);
   void HandleInapplicableAuthenticator(FidoAuthenticator* authenticator,

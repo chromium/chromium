@@ -49,8 +49,8 @@ void MakeCredentialOperation::Run() {
           static_cast<int>(CoseAlgorithmIdentifier::kEs256),
           &PublicKeyCredentialParams::CredentialInfo::algorithm)) {
     FIDO_LOG(ERROR) << "No supported algorithm found";
-    std::move(callback_).Run(
-        CtapDeviceResponseCode::kCtap2ErrUnsupportedAlgorithm, std::nullopt);
+    std::move(callback_).Run(MakeCredentialStatus::kNoCommonAlgorithms,
+                             std::nullopt);
     return;
   }
 
@@ -70,7 +70,7 @@ void MakeCredentialOperation::Run() {
 
 void MakeCredentialOperation::PromptTouchIdDone(bool success) {
   if (!success) {
-    std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOperationDenied,
+    std::move(callback_).Run(MakeCredentialStatus::kUserConsentDenied,
                              std::nullopt);
     return;
   }
@@ -91,13 +91,14 @@ void MakeCredentialOperation::CreateCredential(bool has_uv) {
             request_.rp.id, request_.exclude_list);
     if (!credentials) {
       FIDO_LOG(ERROR) << "Failed to check for excluded credentials";
-      std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                               std::nullopt);
+      std::move(callback_).Run(
+          MakeCredentialStatus::kAuthenticatorResponseInvalid, std::nullopt);
       return;
     }
     if (!credentials->empty()) {
       std::move(callback_).Run(
-          CtapDeviceResponseCode::kCtap2ErrCredentialExcluded, std::nullopt);
+          MakeCredentialStatus::kUserConsentButCredentialExcluded,
+          std::nullopt);
       return;
     }
   }
@@ -106,8 +107,8 @@ void MakeCredentialOperation::CreateCredential(bool has_uv) {
   if (!credential_store_->DeleteCredentialsForUserId(request_.rp.id,
                                                      request_.user.id)) {
     FIDO_LOG(ERROR) << "DeleteCredentialsForUserId() failed";
-    std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                             std::nullopt);
+    std::move(callback_).Run(
+        MakeCredentialStatus::kAuthenticatorResponseInvalid, std::nullopt);
     return;
   }
 
@@ -120,8 +121,8 @@ void MakeCredentialOperation::CreateCredential(bool has_uv) {
           request_.rp.id, request_.user, TouchIdCredentialStore::kDiscoverable);
   if (!credential_result) {
     FIDO_LOG(ERROR) << "CreateCredential() failed";
-    std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                             std::nullopt);
+    std::move(callback_).Run(
+        MakeCredentialStatus::kAuthenticatorResponseInvalid, std::nullopt);
     return;
   }
   auto [credential, sec_key_ref] = std::move(*credential_result);
@@ -133,8 +134,8 @@ void MakeCredentialOperation::CreateCredential(bool has_uv) {
                                  SecKeyRefToECPublicKey(sec_key_ref.get()));
   if (!attested_credential_data) {
     FIDO_LOG(ERROR) << "MakeAttestedCredentialData failed";
-    std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                             std::nullopt);
+    std::move(callback_).Run(
+        MakeCredentialStatus::kAuthenticatorResponseInvalid, std::nullopt);
     return;
   }
   AuthenticatorData authenticator_data = MakeAuthenticatorData(
@@ -145,8 +146,8 @@ void MakeCredentialOperation::CreateCredential(bool has_uv) {
                         credential.private_key.get());
   if (!signature) {
     FIDO_LOG(ERROR) << "MakeSignature failed";
-    std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                             std::nullopt);
+    std::move(callback_).Run(
+        MakeCredentialStatus::kAuthenticatorResponseInvalid, std::nullopt);
     return;
   }
   AuthenticatorMakeCredentialResponse response(
@@ -160,8 +161,7 @@ void MakeCredentialOperation::CreateCredential(bool has_uv) {
   response.is_resident_key = true;
   response.transports.emplace();
   response.transports->insert(FidoTransportProtocol::kInternal);
-  std::move(callback_).Run(CtapDeviceResponseCode::kSuccess,
-                           std::move(response));
+  std::move(callback_).Run(MakeCredentialStatus::kSuccess, std::move(response));
 }
 
 }  // namespace device::fido::mac

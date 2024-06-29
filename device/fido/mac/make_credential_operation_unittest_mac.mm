@@ -47,7 +47,7 @@ CtapMakeCredentialRequest MakeTestRequest() {
 // keychain-access-group entitlement.
 TEST(MakeCredentialOperationTest, DISABLED_TestRun) {
   base::test::TaskEnvironment task_environment;
-  TestFuture<CtapDeviceResponseCode,
+  TestFuture<MakeCredentialStatus,
              std::optional<AuthenticatorMakeCredentialResponse>>
       future;
   auto request = MakeTestRequest();
@@ -57,7 +57,7 @@ TEST(MakeCredentialOperationTest, DISABLED_TestRun) {
 
   op.Run();
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(CtapDeviceResponseCode::kSuccess, std::get<0>(future.Get()));
+  EXPECT_EQ(MakeCredentialStatus::kSuccess, std::get<0>(future.Get()));
   ASSERT_TRUE(std::get<1>(future.Get()));
 }
 

@@ -319,7 +319,7 @@ bool WinWebAuthnApi::SupportsHybrid() {
   return IsAvailable() && Version() >= WEBAUTHN_API_VERSION_6;
 }
 
-std::pair<CtapDeviceResponseCode,
+std::pair<MakeCredentialStatus,
           std::optional<AuthenticatorMakeCredentialResponse>>
 AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
                                     HWND h_wnd,
@@ -392,7 +392,7 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
     // enforced=true if webauthn.dll does not support credProtect.
     if (request.cred_protect_enforce && api_version < WEBAUTHN_API_VERSION_2) {
       NOTREACHED_IN_MIGRATION();
-      return {CtapDeviceResponseCode::kCtap2ErrNotAllowed, std::nullopt};
+      return {MakeCredentialStatus::kWinNotAllowedError, std::nullopt};
     }
     // Windows doesn't support the concept of
     // CredProtectRequest::kUVOrCredIDRequiredOrBetter. So an authenticators
@@ -528,13 +528,13 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
     FIDO_LOG(DEBUG) << "WebAuthNAuthenticatorMakeCredential()="
                     << HresultToHex(hresult) << " ("
                     << webauthn_api->GetErrorName(hresult) << ")";
-    return {WinErrorNameToCtapDeviceResponseCode(
+    return {WinErrorNameToMakeCredentialStatus(
                 base::as_u16cstr(webauthn_api->GetErrorName(hresult))),
             std::nullopt};
   }
   FIDO_LOG(DEBUG) << "WebAuthNAuthenticatorMakeCredential()="
                   << *credential_attestation;
-  return {CtapDeviceResponseCode::kSuccess,
+  return {MakeCredentialStatus::kSuccess,
           ToAuthenticatorMakeCredentialResponse(*credential_attestation)};
 }
 

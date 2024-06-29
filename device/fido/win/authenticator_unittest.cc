@@ -33,7 +33,7 @@ namespace device {
 namespace {
 
 using MakeCredentialFuture =
-    base::test::TestFuture<CtapDeviceResponseCode,
+    base::test::TestFuture<MakeCredentialStatus,
                            std::optional<AuthenticatorMakeCredentialResponse>>;
 
 using GetAssertionFuture =
@@ -391,7 +391,7 @@ TEST_F(WinAuthenticatorTest, MakeCredentialLargeBlob) {
     authenticator_->MakeCredential(std::move(request), options,
                                    future.GetCallback());
     EXPECT_TRUE(future.Wait());
-    ASSERT_EQ(std::get<0>(future.Get()), CtapDeviceResponseCode::kSuccess);
+    ASSERT_EQ(std::get<0>(future.Get()), MakeCredentialStatus::kSuccess);
     EXPECT_EQ(std::get<1>(future.Get())->large_blob_type.has_value(),
               test_case.result);
   }
@@ -417,7 +417,7 @@ TEST_F(WinAuthenticatorTest, MakeCredentialLargeBlobAttachmentUndefined) {
   authenticator_->MakeCredential(std::move(request), options,
                                  future.GetCallback());
   EXPECT_TRUE(future.Wait());
-  ASSERT_EQ(std::get<0>(future.Get()), CtapDeviceResponseCode::kSuccess);
+  ASSERT_EQ(std::get<0>(future.Get()), MakeCredentialStatus::kSuccess);
   EXPECT_TRUE(std::get<1>(future.Get())->large_blob_type.has_value());
   EXPECT_NE(std::get<1>(future.Get())->transport_used,
             FidoTransportProtocol::kInternal);

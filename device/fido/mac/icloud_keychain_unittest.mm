@@ -217,7 +217,7 @@ TEST_F(iCloudKeychainTest, RequestAuthorization) {
 
         if (is_make_credential) {
           base::test::TestFuture<
-              CtapDeviceResponseCode,
+              MakeCredentialStatus,
               std::optional<AuthenticatorMakeCredentialResponse>>
               future;
           authenticator_->MakeCredential(make_credential_request,
@@ -255,9 +255,9 @@ TEST_F(iCloudKeychainTest, MakeCredential) {
     MakeCredentialOptions options;
 
     auto make_credential = [this, &request, &options]()
-        -> std::tuple<CtapDeviceResponseCode,
+        -> std::tuple<MakeCredentialStatus,
                       std::optional<AuthenticatorMakeCredentialResponse>> {
-      base::test::TestFuture<CtapDeviceResponseCode,
+      base::test::TestFuture<MakeCredentialStatus,
                              std::optional<AuthenticatorMakeCredentialResponse>>
           future;
       authenticator_->MakeCredential(request, options, future.GetCallback());
@@ -268,8 +268,7 @@ TEST_F(iCloudKeychainTest, MakeCredential) {
     {
       // Without `SetMakeCredentialResult` being called, an error is returned.
       auto result = make_credential();
-      EXPECT_EQ(std::get<0>(result),
-                CtapDeviceResponseCode::kCtap2ErrOperationDenied);
+      EXPECT_EQ(std::get<0>(result), MakeCredentialStatus::kUserConsentDenied);
       EXPECT_FALSE(std::get<1>(result).has_value());
     }
 
@@ -277,7 +276,7 @@ TEST_F(iCloudKeychainTest, MakeCredential) {
       fake_->SetMakeCredentialError(8 /* exclude list match */);
       auto result = make_credential();
       EXPECT_EQ(std::get<0>(result),
-                CtapDeviceResponseCode::kCtap2ErrCredentialExcluded);
+                MakeCredentialStatus::kUserConsentButCredentialExcluded);
       EXPECT_FALSE(std::get<1>(result).has_value());
     }
 
@@ -291,7 +290,7 @@ TEST_F(iCloudKeychainTest, MakeCredential) {
       EXPECT_EQ(fake_->cancel_count(), 1u);
       auto result = make_credential();
       EXPECT_EQ(std::get<0>(result),
-                CtapDeviceResponseCode::kCtap2ErrKeepAliveCancel);
+                MakeCredentialStatus::kAuthenticatorResponseInvalid);
       EXPECT_FALSE(std::get<1>(result).has_value());
     }
 
@@ -300,7 +299,8 @@ TEST_F(iCloudKeychainTest, MakeCredential) {
       fake_->SetMakeCredentialResult(kAttestationObjectBytes,
                                      kWrongCredentialID);
       auto result = make_credential();
-      EXPECT_EQ(std::get<0>(result), CtapDeviceResponseCode::kCtap2ErrOther);
+      EXPECT_EQ(std::get<0>(result),
+                MakeCredentialStatus::kAuthenticatorResponseInvalid);
       ASSERT_FALSE(std::get<1>(result).has_value());
     }
 
@@ -308,7 +308,8 @@ TEST_F(iCloudKeychainTest, MakeCredential) {
       static const uint8_t kInvalidCBOR[] = {1, 2, 3, 4};
       fake_->SetMakeCredentialResult(kInvalidCBOR, kCredentialID);
       auto result = make_credential();
-      EXPECT_EQ(std::get<0>(result), CtapDeviceResponseCode::kCtap2ErrOther);
+      EXPECT_EQ(std::get<0>(result),
+                MakeCredentialStatus::kAuthenticatorResponseInvalid);
       ASSERT_FALSE(std::get<1>(result).has_value());
     }
 
@@ -319,14 +320,15 @@ TEST_F(iCloudKeychainTest, MakeCredential) {
       fake_->SetMakeCredentialResult(kInvalidAttestationStatement,
                                      kCredentialID);
       auto result = make_credential();
-      EXPECT_EQ(std::get<0>(result), CtapDeviceResponseCode::kCtap2ErrOther);
+      EXPECT_EQ(std::get<0>(result),
+                MakeCredentialStatus::kAuthenticatorResponseInvalid);
       ASSERT_FALSE(std::get<1>(result).has_value());
     }
 
     {
       fake_->SetMakeCredentialResult(kAttestationObjectBytes, kCredentialID);
       auto result = make_credential();
-      EXPECT_EQ(std::get<0>(result), CtapDeviceResponseCode::kSuccess);
+      EXPECT_EQ(std::get<0>(result), MakeCredentialStatus::kSuccess);
       ASSERT_TRUE(std::get<1>(result).has_value());
       const AuthenticatorMakeCredentialResponse response =
           std::move(*std::get<1>(result));

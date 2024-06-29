@@ -35,7 +35,7 @@ CtapGetAssertionRequest MakeTestRequest() {
 }
 
 bool MakeCredential() {
-  TestFuture<CtapDeviceResponseCode,
+  TestFuture<MakeCredentialStatus,
              std::optional<AuthenticatorMakeCredentialResponse>>
       future;
   auto request = CtapMakeCredentialRequest(
@@ -50,8 +50,8 @@ bool MakeCredential() {
 
   op.Run();
   EXPECT_TRUE(future.Wait());
-  CtapDeviceResponseCode error = std::get<0>(future.Get());
-  return error == CtapDeviceResponseCode::kSuccess && std::get<1>(future.Get());
+  MakeCredentialStatus error = std::get<0>(future.Get());
+  return error == MakeCredentialStatus::kSuccess && std::get<1>(future.Get());
 }
 
 // For demo purposes only. This test does a Touch ID user prompt. It will fail

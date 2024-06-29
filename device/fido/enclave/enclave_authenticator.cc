@@ -75,14 +75,13 @@ GetAssertionStatus EnclaveErrorToGetAssertionStatus(int enclave_code) {
   }
 }
 
-CtapDeviceResponseCode EnclaveErrorToCtapResponseCode(int enclave_code) {
+MakeCredentialStatus EnclaveErrorToMakeCredentialStatus(int enclave_code) {
   switch (enclave_code) {
     case kNoSupportedAlgorithm:
-      return CtapDeviceResponseCode::kCtap2ErrUnsupportedAlgorithm;
+      return MakeCredentialStatus::kNoCommonAlgorithms;
     case kIncorrectPIN:
-      return CtapDeviceResponseCode::kCtap2ErrPinInvalid;
     case kPINLocked:
-      return CtapDeviceResponseCode::kCtap2ErrPinBlocked;
+      return MakeCredentialStatus::kUserConsentDenied;
     case kPINOutdated:
       // This is a temporary error. Allow the request to fail.
     case kDuplicate:
@@ -90,7 +89,7 @@ CtapDeviceResponseCode EnclaveErrorToCtapResponseCode(int enclave_code) {
       // These are not a valid error for a passkey request, deliberate
       // fallthrough.
     default:
-      return CtapDeviceResponseCode::kCtap2ErrOther;
+      return MakeCredentialStatus::kEnclaveError;
   }
 }
 
@@ -145,8 +144,8 @@ void EnclaveAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
                                       return existing_cred_id == excluded.id;
                                     });
       })) {
-    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrCredentialExcluded,
-                            std::nullopt);
+    std::move(callback).Run(
+        MakeCredentialStatus::kUserConsentButCredentialExcluded, std::nullopt);
     return;
   }
 
@@ -182,7 +181,7 @@ void EnclaveAuthenticator::DispatchMakeCredentialWithNewUVKey(
     base::span<const uint8_t> uv_public_key) {
   if (uv_public_key.empty()) {
     FIDO_LOG(ERROR) << "Failed deferred UV key creation";
-    CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
+    CompleteRequestWithError(MakeCredentialStatus::kEnclaveError);
     return;
   }
 
@@ -268,7 +267,7 @@ void EnclaveAuthenticator::DispatchGetAssertionWithNewUVKey(
 void EnclaveAuthenticator::ProcessMakeCredentialResponse(
     std::optional<cbor::Value> response) {
   if (!response) {
-    CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOperationDenied);
+    CompleteRequestWithError(MakeCredentialStatus::kEnclaveCancel);
     return;
   }
   std::optional<AuthenticatorMakeCredentialResponse> opt_response;
@@ -292,7 +291,7 @@ void EnclaveAuthenticator::ProcessMakeCredentialResponse(
                           sync_pb::WebauthnCredentialSpecifics>>(parse_result);
   std::move(ui_request_->save_passkey_callback)
       .Run(std::move(success_result.second));
-  CompleteMakeCredentialRequest(CtapDeviceResponseCode::kSuccess,
+  CompleteMakeCredentialRequest(MakeCredentialStatus::kSuccess,
                                 std::move(success_result.first));
 }
 
@@ -323,7 +322,7 @@ void EnclaveAuthenticator::ProcessGetAssertionResponse(
 }
 
 void EnclaveAuthenticator::CompleteRequestWithError(
-    absl::variant<GetAssertionStatus, CtapDeviceResponseCode> error) {
+    absl::variant<GetAssertionStatus, MakeCredentialStatus> error) {
   if (absl::holds_alternative<GetAssertionStatus>(error)) {
     CHECK(pending_get_assertion_request_);
     CompleteGetAssertionRequest(absl::get<GetAssertionStatus>(error), {});
@@ -331,12 +330,12 @@ void EnclaveAuthenticator::CompleteRequestWithError(
   }
 
   CHECK(pending_make_credential_request_);
-  CompleteMakeCredentialRequest(absl::get<CtapDeviceResponseCode>(error),
+  CompleteMakeCredentialRequest(absl::get<MakeCredentialStatus>(error),
                                 std::nullopt);
 }
 
 void EnclaveAuthenticator::CompleteMakeCredentialRequest(
-    CtapDeviceResponseCode status,
+    MakeCredentialStatus status,
     std::optional<AuthenticatorMakeCredentialResponse> response) {
   // Using PostTask guards against any lifetime concerns for this class and
   // EnclaveWebSocketClient. It is safe to do cleanup after invoking the
@@ -344,7 +343,7 @@ void EnclaveAuthenticator::CompleteMakeCredentialRequest(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](MakeCredentialCallback callback, CtapDeviceResponseCode status,
+          [](MakeCredentialCallback callback, MakeCredentialStatus status,
              std::optional<AuthenticatorMakeCredentialResponse> response) {
             std::move(callback).Run(status, std::move(response));
           },
@@ -387,7 +386,7 @@ void EnclaveAuthenticator::ProcessErrorResponse(const ErrorResponse& error) {
       if (pending_get_assertion_request_) {
         CompleteRequestWithError(GetAssertionStatus::kEnclaveError);
       } else {
-        CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
+        CompleteRequestWithError(MakeCredentialStatus::kEnclaveError);
       }
     } else {
       CHECK(error.error_code.has_value());
@@ -400,7 +399,7 @@ void EnclaveAuthenticator::ProcessErrorResponse(const ErrorResponse& error) {
             EnclaveErrorToGetAssertionStatus(*error.error_code));
       } else {
         CompleteRequestWithError(
-            EnclaveErrorToCtapResponseCode(*error.error_code));
+            EnclaveErrorToMakeCredentialStatus(*error.error_code));
       }
     }
     return;
@@ -411,7 +410,7 @@ void EnclaveAuthenticator::ProcessErrorResponse(const ErrorResponse& error) {
     if (pending_get_assertion_request_) {
       CompleteRequestWithError(GetAssertionStatus::kEnclaveError);
     } else {
-      CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
+      CompleteRequestWithError(MakeCredentialStatus::kEnclaveError);
     }
     return;
   }
@@ -430,7 +429,7 @@ void EnclaveAuthenticator::ProcessErrorResponse(const ErrorResponse& error) {
   if (pending_get_assertion_request_) {
     CompleteRequestWithError(EnclaveErrorToGetAssertionStatus(code));
   } else {
-    CompleteRequestWithError(EnclaveErrorToCtapResponseCode(code));
+    CompleteRequestWithError(EnclaveErrorToMakeCredentialStatus(code));
   }
 }
 

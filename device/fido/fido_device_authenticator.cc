@@ -71,7 +71,7 @@ CredentialManagementRequest::Version GetCredentialManagementRequestVersion(
              : CredentialManagementRequest::kPreview;
 }
 
-GetAssertionStatus ConvertDeviceResponseCode(
+GetAssertionStatus ConvertDeviceResponseCodeToGetAssertionStatus(
     CtapDeviceResponseCode device_response_code) {
   switch (device_response_code) {
     case CtapDeviceResponseCode::kSuccess:
@@ -110,6 +110,40 @@ GetAssertionStatus ConvertDeviceResponseCode(
     // authenticators may continue.
     default:
       return GetAssertionStatus::kAuthenticatorResponseInvalid;
+  }
+}
+
+MakeCredentialStatus ConvertDeviceResponseCodeToMakeCredentialStatus(
+    CtapDeviceResponseCode device_response_code) {
+  switch (device_response_code) {
+    case CtapDeviceResponseCode::kSuccess:
+      return MakeCredentialStatus::kSuccess;
+
+    // Only returned after the user interacted with the authenticator.
+    case CtapDeviceResponseCode::kCtap2ErrCredentialExcluded:
+      return MakeCredentialStatus::kUserConsentButCredentialExcluded;
+
+    // The user explicitly denied the operation. External authenticators may
+    // return it e.g. after the user fails fingerprint verification.
+    case CtapDeviceResponseCode::kCtap2ErrOperationDenied:
+      return MakeCredentialStatus::kUserConsentDenied;
+
+    // External authenticators may return this error if internal user
+    // verification fails for a make credential request or if the pin token is
+    // not valid.
+    case CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid:
+      return MakeCredentialStatus::kUserConsentDenied;
+
+    case CtapDeviceResponseCode::kCtap2ErrKeyStoreFull:
+      return MakeCredentialStatus::kStorageFull;
+
+    case CtapDeviceResponseCode::kCtap2ErrUnsupportedAlgorithm:
+      return MakeCredentialStatus::kNoCommonAlgorithms;
+
+    // For all other errors, the authenticator may be dropped, and other
+    // authenticators may continue.
+    default:
+      return MakeCredentialStatus::kAuthenticatorResponseInvalid;
   }
 }
 
@@ -192,6 +226,17 @@ void FidoDeviceAuthenticator::MakeCredential(
     CtapMakeCredentialRequest request,
     MakeCredentialOptions request_options,
     MakeCredentialCallback callback) {
+  CtapMakeCredentialCallback ctap_callback =
+      base::BindOnce(&FidoDeviceAuthenticator::OnMakeCredentialResponse,
+                     weak_factory_.GetWeakPtr(), std::move(callback));
+  MakeCredentialInternal(std::move(request), std::move(request_options),
+                         std::move(ctap_callback));
+}
+
+void FidoDeviceAuthenticator::MakeCredentialInternal(
+    CtapMakeCredentialRequest request,
+    MakeCredentialOptions request_options,
+    CtapMakeCredentialCallback callback) {
   // If the authenticator has UV configured then UV will be required in
   // order to create a credential (as specified by CTAP 2.0), even if
   // user-verification is "discouraged".
@@ -452,7 +497,7 @@ void FidoDeviceAuthenticator::GetTouch(base::OnceClosure callback) {
         base::BindOnce(&pin::EmptyResponse::Parse));
     return;
   }
-  MakeCredential(
+  MakeCredentialInternal(
       MakeCredentialTask::GetTouchRequest(device()), MakeCredentialOptions(),
       base::BindOnce(
           [](std::string authenticator_id, base::OnceCallback<void()> callback,
@@ -1406,8 +1451,21 @@ void FidoDeviceAuthenticator::OnGetAssertionResponse(
     FIDO_LOG(ERROR) << "CTAP error response code " << static_cast<int>(status)
                     << " received from " << GetDisplayName();
   }
-  std::move(callback).Run(ConvertDeviceResponseCode(status),
+  std::move(callback).Run(ConvertDeviceResponseCodeToGetAssertionStatus(status),
                           std::move(responses));
+}
+
+void FidoDeviceAuthenticator::OnMakeCredentialResponse(
+    MakeCredentialCallback callback,
+    CtapDeviceResponseCode status,
+    std::optional<AuthenticatorMakeCredentialResponse> response) {
+  if (status != CtapDeviceResponseCode::kSuccess) {
+    FIDO_LOG(ERROR) << "CTAP error response code " << static_cast<int>(status)
+                    << " received from " << GetDisplayName();
+  }
+  std::move(callback).Run(
+      ConvertDeviceResponseCodeToMakeCredentialStatus(status),
+      std::move(response));
 }
 
 std::optional<base::span<const int32_t>>

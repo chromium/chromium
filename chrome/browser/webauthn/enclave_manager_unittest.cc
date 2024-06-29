@@ -331,7 +331,7 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
       })");
 
     auto quit_closure = task_env_.QuitClosure();
-    std::optional<device::CtapDeviceResponseCode> status;
+    std::optional<device::MakeCredentialStatus> status;
     std::optional<device::AuthenticatorMakeCredentialResponse> response;
     authenticator.MakeCredential(
         /*request=*/{R"({"foo": "bar"})",
@@ -342,7 +342,7 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
         std::move(ctap_options),
         base::BindLambdaForTesting(
             [&quit_closure, &status, &response](
-                device::CtapDeviceResponseCode in_status,
+                device::MakeCredentialStatus in_status,
                 std::optional<device::AuthenticatorMakeCredentialResponse>
                     in_responses) {
               status = in_status;
@@ -352,7 +352,7 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
     task_env_.RunUntilQuit();
 
     ASSERT_TRUE(status.has_value());
-    ASSERT_EQ(status, device::CtapDeviceResponseCode::kSuccess);
+    ASSERT_EQ(status, device::MakeCredentialStatus::kSuccess);
     ASSERT_TRUE(response.has_value());
     ASSERT_TRUE(specifics);
     EXPECT_EQ(specifics->rp_id(), "rpid");
@@ -1012,7 +1012,7 @@ TEST_F(EnclaveManagerTest, SigningFails) {
       })");
 
   auto quit_closure = task_env_.QuitClosure();
-  std::optional<device::CtapDeviceResponseCode> status;
+  std::optional<device::MakeCredentialStatus> status;
   std::optional<device::AuthenticatorMakeCredentialResponse> response;
   authenticator.MakeCredential(
       /*request=*/{R"({"foo": "bar"})",
@@ -1023,7 +1023,7 @@ TEST_F(EnclaveManagerTest, SigningFails) {
       std::move(ctap_options),
       base::BindLambdaForTesting(
           [&quit_closure, &status, &response](
-              device::CtapDeviceResponseCode in_status,
+              device::MakeCredentialStatus in_status,
               std::optional<device::AuthenticatorMakeCredentialResponse>
                   in_responses) {
             status = in_status;
@@ -1033,7 +1033,7 @@ TEST_F(EnclaveManagerTest, SigningFails) {
   task_env_.RunUntilQuit();
 
   ASSERT_TRUE(status.has_value());
-  ASSERT_EQ(status, device::CtapDeviceResponseCode::kCtap2ErrOperationDenied);
+  ASSERT_EQ(status, device::MakeCredentialStatus::kEnclaveCancel);
   ASSERT_FALSE(response.has_value());
 }
 

@@ -281,8 +281,8 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
                                 NSError* error) {
     if (cancelled_) {
       cancelled_ = false;
-      std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrKeepAliveCancel,
-                              {});
+      std::move(callback).Run(
+          MakeCredentialStatus::kAuthenticatorResponseInvalid, {});
       return;
     }
 
@@ -293,14 +293,15 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
                       << " msg: " << error.localizedDescription.UTF8String;
       if (domain == "WKErrorDomain" && error.code == 8) {
         std::move(callback).Run(
-            CtapDeviceResponseCode::kCtap2ErrCredentialExcluded, std::nullopt);
+            MakeCredentialStatus::kUserConsentButCredentialExcluded,
+            std::nullopt);
       } else {
-        // All other errors are currently mapped to `kCtap2ErrOperationDenied`
+        // All other errors are currently mapped to `kUserConsentDenied`
         // because it's not obvious that we want to differentiate them:
         // https://developer.apple.com/documentation/authenticationservices/asauthorizationerror?language=objc
         //
-        std::move(callback).Run(
-            CtapDeviceResponseCode::kCtap2ErrOperationDenied, std::nullopt);
+        std::move(callback).Run(MakeCredentialStatus::kUserConsentDenied,
+                                std::nullopt);
       }
       return;
     }
@@ -317,8 +318,8 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
         cbor::Reader::Read(ToSpan(result.rawAttestationObject));
     if (!attestation_object_value || !attestation_object_value->is_map()) {
       FIDO_LOG(ERROR) << "iCKC: failed to parse attestation CBOR";
-      std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                              std::nullopt);
+      std::move(callback).Run(
+          MakeCredentialStatus::kAuthenticatorResponseInvalid, std::nullopt);
       return;
     }
 
@@ -326,8 +327,8 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
         AttestationObject::Parse(*attestation_object_value);
     if (!attestation_object) {
       FIDO_LOG(ERROR) << "iCKC: failed to parse attestation object";
-      std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                              std::nullopt);
+      std::move(callback).Run(
+          MakeCredentialStatus::kAuthenticatorResponseInvalid, std::nullopt);
       return;
     }
 
@@ -341,8 +342,8 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
       FIDO_LOG(ERROR) << "iCKC: credential ID mismatch: "
                       << base::HexEncode(credential_id_from_auth_data) << " vs "
                       << base::HexEncode(credential_id);
-      std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                              std::nullopt);
+      std::move(callback).Run(
+          MakeCredentialStatus::kAuthenticatorResponseInvalid, std::nullopt);
       return;
     }
 
@@ -352,7 +353,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
     response.transports->insert(FidoTransportProtocol::kInternal);
     response.transport_used = FidoTransportProtocol::kInternal;
 
-    std::move(callback).Run(CtapDeviceResponseCode::kSuccess,
+    std::move(callback).Run(MakeCredentialStatus::kSuccess,
                             std::move(response));
   }
 

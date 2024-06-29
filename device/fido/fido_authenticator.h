@@ -26,7 +26,6 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/large_blob.h"
-#include "device/fido/make_credential_request_handler.h"
 
 namespace device {
 
@@ -62,13 +61,37 @@ enum class GetAssertionStatus {
   kEnclaveCancel,
 };
 
+enum class MakeCredentialStatus {
+  kSuccess,
+  kAuthenticatorResponseInvalid,
+  kUserConsentButCredentialExcluded,
+  kUserConsentDenied,
+  kAuthenticatorRemovedDuringPINEntry,
+  kSoftPINBlock,
+  kHardPINBlock,
+  kAuthenticatorMissingResidentKeys,
+  // TODO(agl): kAuthenticatorMissingUserVerification can
+  // also be returned when the authenticator supports UV, but
+  // there's no UI support for collecting a PIN. This could
+  // be clearer.
+  kAuthenticatorMissingUserVerification,
+  kAuthenticatorMissingLargeBlob,
+  kNoCommonAlgorithms,
+  kStorageFull,
+  kWinInvalidStateError,
+  kWinNotAllowedError,
+  kHybridTransportError,
+  kEnclaveError,
+  kEnclaveCancel,
+};
+
 // FidoAuthenticator is an authenticator from the WebAuthn Authenticator model
 // (https://www.w3.org/TR/webauthn/#sctn-authenticator-model). It may be a
 // physical device, or a built-in (platform) authenticator.
 class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
  public:
   using MakeCredentialCallback = base::OnceCallback<void(
-      CtapDeviceResponseCode,
+      MakeCredentialStatus,
       std::optional<AuthenticatorMakeCredentialResponse>)>;
   using GetAssertionCallback =
       base::OnceCallback<void(GetAssertionStatus,

@@ -111,7 +111,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApi {
   WinWebAuthnApi();
 };
 
-std::pair<CtapDeviceResponseCode,
+std::pair<MakeCredentialStatus,
           std::optional<AuthenticatorMakeCredentialResponse>>
 AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
                                     HWND h_wnd,

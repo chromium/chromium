@@ -132,14 +132,14 @@ class BrowsingDataDeletionTest : public testing::Test {
   bool MakeCredential() { return MakeCredential(authenticator_.get()); }
 
   bool MakeCredential(TouchIdAuthenticator* authenticator) {
-    TestFuture<CtapDeviceResponseCode,
+    TestFuture<MakeCredentialStatus,
                std::optional<AuthenticatorMakeCredentialResponse>>
         future;
     authenticator->MakeCredential(MakeRequest(), MakeCredentialOptions(),
                                   future.GetCallback());
     EXPECT_TRUE(future.Wait());
     auto result = future.Take();
-    return std::get<0>(result) == CtapDeviceResponseCode::kSuccess;
+    return std::get<0>(result) == MakeCredentialStatus::kSuccess;
   }
 
   bool DeleteCredentials() { return DeleteCredentials(kMetadataSecret); }
