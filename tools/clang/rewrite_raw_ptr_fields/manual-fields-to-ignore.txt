@@ -177,11 +177,9 @@ sql::recover::LeafPageDecoder::db_reader_
 blink::ShapeResultView::(anonymous struct)::alignment
 
 # Populated manually - these pointers crash, because a base class ctor accesses
-# child class ptr fields before they're initialized.
+# child class ptr fields before they're initialized (see crbug.com/349213429).
 blink::CacheEntry::next_
 blink::CacheEntry::prev_
-WTF::LruCache::MappedListNodeWithKey::next_
-WTF::LruCache::MappedListNodeWithKey::prev_
 
 #######
 # End of BackupRefPtr-specific sections

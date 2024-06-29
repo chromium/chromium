@@ -33,6 +33,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/synchronization/lock.h"
 #include "cc/paint/paint_image_generator.h"
 #include "third_party/blink/renderer/platform/graphics/image_frame_generator.h"
@@ -113,8 +114,11 @@ class CacheEntry : public DoublyLinkedListNode<CacheEntry> {
   int use_count_;
 
  private:
-  CacheEntry* prev_;
-  CacheEntry* next_;
+  // RAW_PTR_EXCLUSION: Rewriting causes a crash, because a base class ctor
+  // accesses child class ptr fields before they're initialized (see
+  // crbug.com/349213429).
+  RAW_PTR_EXCLUSION CacheEntry* prev_;
+  RAW_PTR_EXCLUSION CacheEntry* next_;
 };
 
 class DecoderCacheEntry final : public CacheEntry {
