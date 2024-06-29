@@ -27,6 +27,7 @@ shim_headers("base_shim") {
   headers = [
     "call_once.h",
     "casts.h",
+    "dynamic_annotations.h",
   ]
 }
 
