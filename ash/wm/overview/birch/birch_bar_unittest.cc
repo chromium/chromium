@@ -774,8 +774,8 @@ TEST_P(BirchBarMenuTest, ShowHideBar) {
   // Hiding the suggestions by clicking to the switch button.
   auto* hide_suggestions_item =
       model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(0);
-  Switch* switch_button =
-      AsViewClass<Switch>(hide_suggestions_item->children()[0]);
+  auto switch_container = hide_suggestions_item->children()[0];
+  Switch* switch_button = AsViewClass<Switch>(switch_container->children()[2]);
   EXPECT_TRUE(!!switch_button);
   EXPECT_TRUE(switch_button->GetIsOn());
 
@@ -813,7 +813,8 @@ TEST_P(BirchBarMenuTest, ShowHideBar) {
   // Showing the suggestions by clicking to the switch button.
   hide_suggestions_item =
       model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(0);
-  switch_button = AsViewClass<Switch>(hide_suggestions_item->children()[0]);
+  switch_container = hide_suggestions_item->children()[0];
+  switch_button = AsViewClass<Switch>(switch_container->children()[2]);
   EXPECT_FALSE(switch_button->GetIsOn());
 
   // Toggle the switch button to show the suggestions.
@@ -1148,8 +1149,8 @@ TEST_P(BirchBarMenuTest, NoCrashHideSuggestionsByChipSubmenu) {
   EXPECT_EQ(sub_show_suggestions_item->GetCommand(),
             base::to_underlying(
                 BirchBarContextMenuModel::CommandId::kShowSuggestions));
-  auto* switch_button =
-      AsViewClass<Switch>(sub_show_suggestions_item->children()[0]);
+  auto switch_container = sub_show_suggestions_item->children()[0];
+  auto* switch_button = AsViewClass<Switch>(switch_container->children()[2]);
   LeftClickOn(switch_button);
   EXPECT_FALSE(grid_test_api.birch_bar_view());
 }

@@ -33,6 +33,7 @@ OptionButtonBase::OptionButtonBase(int button_width,
   StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
                                    /*highlight_on_hover=*/false,
                                    /*highlight_on_focus=*/false);
+  SetImageLabelSpacing(image_label_spacing_);
   views::InstallRectHighlightPathGenerator(this);
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetOutsetFocusRingDisabled(true);
@@ -103,7 +104,7 @@ void OptionButtonBase::Layout(PassKey) {
       0, (local_content_bounds.height() - label_size.height()) / 2);
 
   if (IsIconOnTheLeftSide()) {
-    label_origin.Offset(kIconSize + kImageLabelSpacingDP, 0);
+    label_origin.Offset(kIconSize + image_label_spacing_, 0);
   } else {
     image_origin.Offset(local_content_bounds.width() - kIconSize, 0);
   }
@@ -153,6 +154,10 @@ SkColor OptionButtonBase::GetIconImageColor() const {
 void OptionButtonBase::UpdateTextColor() {
   SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurface);
   SetTextColorId(ButtonState::STATE_DISABLED, KColorAshTextDisabledColor);
+}
+
+void OptionButtonBase::SetLabelFontList(const gfx::FontList& font_list) {
+  label()->SetFontList(font_list);
 }
 
 BEGIN_METADATA(OptionButtonBase)
