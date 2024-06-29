@@ -49,7 +49,7 @@
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "base/containers/contains.h"
 #include "services/screen_ai/public/cpp/metrics.h"
-#include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
+#include "ui/strings/grit/auto_image_annotation_strings.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace pdf {

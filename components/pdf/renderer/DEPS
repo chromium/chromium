@@ -20,5 +20,6 @@ include_rules = [
   "+ui/accessibility",
   "+ui/base",
   "+ui/display",
+  "+ui/strings/grit/auto_image_annotation_strings.h",
   "+v8/include",
 ]

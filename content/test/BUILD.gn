@@ -525,10 +525,10 @@ static_library("test_support") {
     "//third_party/blink/public:blink",
     "//third_party/blink/public:test_support",
     "//third_party/blink/public/common:headers",
-    "//third_party/blink/public/strings:accessibility_strings",
     "//third_party/blink/public/strings:strings_grit",
     "//ui/accessibility:ax_base",
     "//ui/gl:test_support",
+    "//ui/strings:auto_image_annotation_strings",
   ]
 
   deps = [
@@ -609,7 +609,6 @@ static_library("test_support") {
     "//storage/common",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/blink/public/strings:accessibility_strings",
     "//third_party/blink/public/strings:strings_grit",
     "//third_party/webrtc_overrides:webrtc_component",
     "//tools/v8_context_snapshot:buildflags",
@@ -632,6 +631,7 @@ static_library("test_support") {
     "//ui/native_theme",
     "//ui/resources",
     "//ui/shell_dialogs:shell_dialogs",
+    "//ui/strings:auto_image_annotation_strings",
     "//ui/surface",
     "//url",
     "//url/mojom:url_mojom_gurl",
@@ -2010,10 +2010,9 @@ test("content_browsertests") {
       "//sandbox",
       "//third_party/blink/public:resources",
       "//third_party/blink/public/strings",
-      "//third_party/blink/public/strings:accessibility_strings",
-      "//third_party/blink/public/strings:accessibility_strings",
       "//third_party/iaccessible2",
       "//third_party/isimpledom",
+      "//ui/strings:auto_image_annotation_strings",
     ]
 
     data_deps += [ "//services/test/echo:echo_preload_library" ]

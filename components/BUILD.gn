@@ -1057,6 +1057,7 @@ if (use_blink) {
         "//components/pdf/renderer",
         "//pdf:accessibility",
         "//pdf:features",
+        "//ui/strings:auto_image_annotation_strings",
       ]
     }
 

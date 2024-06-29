@@ -1257,9 +1257,6 @@
     "includes": [8000],
     "structures": [8020],
   },
-  "third_party/blink/public/strings/blink_accessibility_strings.grd": {
-    "messages": [8040],
-  },
   "third_party/blink/public/strings/blink_strings.grd": {
     "messages": [8060],
   },
@@ -1295,6 +1292,9 @@
   },
   "ui/strings/app_locale_settings.grd": {
     "messages": [8260],
+  },
+  "ui/strings/auto_image_annotation_strings.grd": {
+    "messages": [8270],
   },
   "ui/strings/ax_strings.grd": {
     "messages": [8280],

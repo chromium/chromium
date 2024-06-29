@@ -31,6 +31,7 @@ include_rules = [
   "+third_party/webrtc_overrides",
   "+third_party/blink/public/common",
   "+third_party/blink/public/mojom",
+  "+ui/strings/grit/auto_image_annotation_strings.h",
   "+v8/include",
   "+v8/src/third_party/vtune",
 ]
