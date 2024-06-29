@@ -65,28 +65,31 @@ enum SharedImageUsage : uint32_t {
   // Windows only: image will be backed by a DComp surface. A swap chain is
   // preferred when an image is opaque and expected to update frequently and
   // independently of other overlays. This flag is incompatible with
-  // DISPLAY_READ.
+  // DISPLAY_READ and SCANOUT_DXGI_SWAP_CHAIN.
   SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE = 1 << 16,
+  // Windows only: image will be backed by a DXGI swap chain. This flag is
+  // incompatible with SCANOUT_DCOMP_SURFACE.
+  SHARED_IMAGE_USAGE_SCANOUT_DXGI_SWAP_CHAIN = 1 << 17,
 
   // Image will be used as a WebGPU storage texture.
-  SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE = 1 << 17,
+  SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE = 1 << 18,
 
   // Image will be written via GLES2Interface
-  SHARED_IMAGE_USAGE_GLES2_WRITE = 1 << 18,
+  SHARED_IMAGE_USAGE_GLES2_WRITE = 1 << 19,
 
   // Image will be written via RasterInterface
-  SHARED_IMAGE_USAGE_RASTER_WRITE = 1 << 19,
+  SHARED_IMAGE_USAGE_RASTER_WRITE = 1 << 20,
 
   // Image will be written by Dawn (for WebGPU)
-  SHARED_IMAGE_USAGE_WEBGPU_WRITE = 1 << 20,
+  SHARED_IMAGE_USAGE_WEBGPU_WRITE = 1 << 21,
 
   // The image will be used by GLES2 only for raster over the GLES2 interface.
   // Specified in conjunction with GLES2_READ and/or GLES2_WRITE.
-  SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY = 1 << 21,
+  SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY = 1 << 22,
 
   // The image will be used by raster only over the GLES2 interface.
   // Specified in conjunction with RASTER_READ and/or RASTER_WRITE.
-  SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY = 1 << 22,
+  SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY = 1 << 23,
 
   // Image will contain protected content to be scanned out. Note that this type
   // of image
@@ -95,7 +98,7 @@ enum SharedImageUsage : uint32_t {
   // to by a preprocessing step that converts the image's pixel format into
   // something the
   // display controller understands.
-  SHARED_IMAGE_USAGE_PROTECTED_VIDEO = 1 << 23,
+  SHARED_IMAGE_USAGE_PROTECTED_VIDEO = 1 << 24,
 
   // Start service side only usage flags after this entry. They must be larger
   // than `LAST_CLIENT_USAGE`.
@@ -104,7 +107,7 @@ enum SharedImageUsage : uint32_t {
   // Image will have pixels uploaded from CPU. The backing must implement
   // `UploadFromMemory()` if it supports this usage. Clients should specify
   // SHARED_IMAGE_USAGE_CPU_WRITE if they need to write pixels to the image.
-  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 24,
+  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 25,
 
   LAST_SHARED_IMAGE_USAGE = SHARED_IMAGE_USAGE_CPU_UPLOAD
 };

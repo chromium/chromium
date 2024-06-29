@@ -3666,6 +3666,8 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
 
       // DComp surfaces are write-only, viz cannot sample them.
       usage &= ~gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+    } else {
+      usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT_DXGI_SWAP_CHAIN;
     }
 #else
     DCHECK(!requirements.scanout_dcomp_surface);

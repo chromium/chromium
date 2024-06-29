@@ -47,12 +47,14 @@ std::string CreateLabelForSharedImageUsage(uint32_t usage) {
       {SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU, "HighPerformanceGpu"},
       {SHARED_IMAGE_USAGE_CPU_UPLOAD, "CpuUpload"},
       {SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE, "ScanoutDCompSurface"},
+      {SHARED_IMAGE_USAGE_SCANOUT_DXGI_SWAP_CHAIN, "ScanoutDxgiSwapChain"},
       {SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE, "WebgpuStorageTexture"},
       {SHARED_IMAGE_USAGE_GLES2_WRITE, "Gles2Write"},
       {SHARED_IMAGE_USAGE_RASTER_WRITE, "RasterWrite"},
       {SHARED_IMAGE_USAGE_WEBGPU_WRITE, "WebgpuWrite"},
       {SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY, "GLES2ForRasterOnly"},
       {SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY, "RasterOverGLES2Only"},
+      {SHARED_IMAGE_USAGE_PROTECTED_VIDEO, "ProtectedVideo"},
   };
 
   std::string label;
