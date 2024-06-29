@@ -29,6 +29,35 @@ gfx::GenericSharedMemoryId GetNextSharedMemoryId() {
   return GetNextGpuMemoryBufferId();
 }
 
+// IsValidSize() performs size validity checks similar to those in
+// VideoFrame::IsValidConfigInternal().
+bool IsValidSize(const gfx::Size& coded_size,
+                 const gfx::Rect& visible_rect,
+                 const gfx::Size& natural_size) {
+  // Checks maximum limits
+  if (!VideoFrame::IsValidSize(coded_size, visible_rect, natural_size)) {
+    DLOGF(ERROR) << " Invalid size. coded_size:" << coded_size.ToString()
+                 << " visible_rect:" << visible_rect.ToString()
+                 << " natural_size:" << natural_size.ToString();
+    return false;
+  }
+
+  // Check that buffer sizes are not empty.
+  if (coded_size.IsEmpty()) {
+    DLOGF(ERROR) << " Invalid size. coded_size must not be empty";
+    return false;
+  }
+  if (visible_rect.IsEmpty()) {
+    DLOGF(ERROR) << " Invalid size. visible_rect must not be empty";
+    return false;
+  }
+  if (natural_size.IsEmpty()) {
+    DLOGF(ERROR) << " Invalid size. natural_size must not be empty";
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
@@ -38,6 +67,9 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
     const gfx::Size& natural_size,
     base::TimeDelta timestamp,
     gfx::BufferUsage buffer_usage) {
+  if (!IsValidSize(coded_size, visible_rect, natural_size)) {
+    return nullptr;
+  }
   // This uses the platform frame utils to allocate a GpuMemoryBufferHandle. The
   // allocated |gmb_handle.native_pixmap_handle| will be moved to the
   // constructed NativePixmapFrameResource.
@@ -73,12 +105,7 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
     return nullptr;
   }
 
-  if (!VideoFrame::IsValidSize(layout.coded_size(), visible_rect,
-                               natural_size)) {
-    DLOGF(ERROR) << " Invalid size. coded_size:"
-                 << layout.coded_size().ToString()
-                 << " visible_rect:" << visible_rect.ToString()
-                 << " natural_size:" << natural_size.ToString();
+  if (!IsValidSize(layout.coded_size(), visible_rect, natural_size)) {
     return nullptr;
   }
 
@@ -130,12 +157,7 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
 
   // This performs some validations and builds a VideoFrameLayout from |pixmap|
   // to be passed to the NativePixmapFrameResource constructor.
-  if (!VideoFrame::IsValidSize(pixmap->GetBufferSize(), visible_rect,
-                               natural_size)) {
-    DLOGF(ERROR) << " Invalid size. coded_size:"
-                 << pixmap->GetBufferSize().ToString()
-                 << " visible_rect:" << visible_rect.ToString()
-                 << " natural_size:" << natural_size.ToString();
+  if (!IsValidSize(pixmap->GetBufferSize(), visible_rect, natural_size)) {
     return nullptr;
   }
 
@@ -398,10 +420,7 @@ void NativePixmapFrameResource::AddDestructionObserver(
 scoped_refptr<FrameResource> NativePixmapFrameResource::CreateWrappingFrame(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size) {
-  if (!VideoFrame::IsValidSize(coded_size(), visible_rect, natural_size)) {
-    DLOGF(ERROR) << " Invalid size. coded_size:" << coded_size().ToString()
-                 << " visible_rect:" << visible_rect.ToString()
-                 << " natural_size:" << natural_size.ToString();
+  if (!IsValidSize(coded_size(), visible_rect, natural_size)) {
     return nullptr;
   }
 
