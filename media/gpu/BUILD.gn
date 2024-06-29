@@ -249,6 +249,8 @@ component("gpu") {
       "windows/d3d_video_decoder_wrapper.h",
       "windows/format_utils.cc",
       "windows/format_utils.h",
+      "windows/h264_video_rate_control_wrapper.cc",
+      "windows/h264_video_rate_control_wrapper.h",
       "windows/init_guid.cc",
       "windows/media_foundation_video_encode_accelerator_win.cc",
       "windows/media_foundation_video_encode_accelerator_win.h",
@@ -332,6 +334,8 @@ source_set("common") {
     "h264_rate_control_util.h",
     "h264_rate_controller.cc",
     "h264_rate_controller.h",
+    "h264_ratectrl_rtc.cc",
+    "h264_ratectrl_rtc.h",
     "hrd_buffer.cc",
     "hrd_buffer.h",
     "macros.h",
@@ -614,6 +618,7 @@ source_set("unit_tests") {
     "h264_decoder_unittest.cc",
     "h264_rate_control_util_unittest.cc",
     "h264_rate_controller_unittest.cc",
+    "h264_ratectrl_rtc_unittest.cc",
     "hrd_buffer_unittest.cc",
   ]
   if (enable_hevc_parser_and_hw_decoder) {

@@ -60,7 +60,7 @@ class H264RateControllerTest : public testing::Test {
     rate_controller_settings_.layer_settings[0].frame_rate = kCommonFps;
 
     // Copy operation test
-    H264RateController::ControllerSettings rate_controller_settings_copy =
+    H264RateControllerSettings rate_controller_settings_copy =
         rate_controller_settings_;
     rate_controller_settings_ = rate_controller_settings_copy;
   }
@@ -162,7 +162,7 @@ class H264RateControllerTest : public testing::Test {
   }
 
   std::unique_ptr<H264RateController> rate_controller_;
-  H264RateController::ControllerSettings rate_controller_settings_;
+  H264RateControllerSettings rate_controller_settings_;
 };
 
 // Test Cases

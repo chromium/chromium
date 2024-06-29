@@ -32,9 +32,6 @@ constexpr float kInitQPSize = 100000.0f;
 // over a set of frames with a common complexity level.
 constexpr float kIntraFrameMAD = 768.0f;
 
-// The maximum number of temporal layers in the stream.
-constexpr size_t kMaxNumTemporalLayers = 2u;
-
 // Arbitrarily chosen value for the minimum QP of the first encoded intra frame.
 constexpr uint32_t kMinFirstFrameQP = 34u;
 
@@ -103,7 +100,41 @@ float MaxQP2Fps(int max_qp) {
 }
 }  // namespace
 
-H264RateController::Layer::Layer(LayerSettings settings,
+H264RateControllerSettings::H264RateControllerSettings() = default;
+H264RateControllerSettings::~H264RateControllerSettings() = default;
+H264RateControllerSettings::H264RateControllerSettings(
+    const H264RateControllerSettings&) = default;
+H264RateControllerSettings& H264RateControllerSettings::operator=(
+    const H264RateControllerSettings&) = default;
+
+std::partial_ordering H264RateControllerSettings::operator<=>(
+    const H264RateControllerSettings& other) const {
+  if (auto res = frame_size.width() <=> other.frame_size.width(); res != 0) {
+    return res;
+  }
+  if (auto res = frame_size.height() <=> other.frame_size.height(); res != 0) {
+    return res;
+  }
+  if (auto res = fixed_delta_qp <=> other.fixed_delta_qp; res != 0) {
+    return res;
+  }
+  if (auto res = frame_rate_max <=> other.frame_rate_max; res != 0) {
+    return res;
+  }
+  if (auto res = num_temporal_layers <=> other.num_temporal_layers; res != 0) {
+    return res;
+  }
+  if (auto res = gop_max_duration.InMilliseconds() <=>
+                 other.gop_max_duration.InMilliseconds();
+      res != 0) {
+    return res;
+  }
+  return std::lexicographical_compare_three_way(
+      layer_settings.begin(), layer_settings.end(),
+      other.layer_settings.begin(), other.layer_settings.end());
+}
+
+H264RateController::Layer::Layer(H264RateControllerLayerSettings settings,
                                  float expected_fps,
                                  base::TimeDelta short_term_window_size,
                                  base::TimeDelta long_term_window_size)
@@ -219,22 +250,14 @@ void H264RateController::Layer::UpdateFrameSizeEstimator(
 }
 
 float H264RateController::Layer::GetInitialSizeCorrection(
-    LayerSettings settings) const {
+    H264RateControllerLayerSettings settings) const {
   // The initial size correction is set to 0.3 x frame budget. The multiplier is
   // chosen arbitrarily.
   float bytes_per_frame_avg = settings.avg_bitrate / (8 * settings.frame_rate);
   return 0.3f * bytes_per_frame_avg;
 }
 
-H264RateController::ControllerSettings::ControllerSettings() = default;
-H264RateController::ControllerSettings::~ControllerSettings() = default;
-H264RateController::ControllerSettings::ControllerSettings(
-    const ControllerSettings&) = default;
-H264RateController::ControllerSettings&
-H264RateController::ControllerSettings::operator=(const ControllerSettings&) =
-    default;
-
-H264RateController::H264RateController(ControllerSettings settings)
+H264RateController::H264RateController(H264RateControllerSettings settings)
     : target_fps_(GetTargetFps(settings)),
       frame_rate_max_(settings.frame_rate_max),
       frame_size_(settings.frame_size),
@@ -243,7 +266,8 @@ H264RateController::H264RateController(ControllerSettings settings)
       gop_max_duration_(settings.gop_max_duration),
       content_type_(settings.content_type) {
   DCHECK_GT(settings.num_temporal_layers, 0u);
-  DCHECK_LE(settings.num_temporal_layers, kMaxNumTemporalLayers);
+  DCHECK_LE(settings.num_temporal_layers,
+            h264_rate_control_util::kMaxNumTemporalLayers);
   DCHECK_GT(target_fps_, 1.0f);
   DCHECK_GT(frame_rate_max_, 1.0f);
   // Short-term window is 5 x frame duration with the lowest value limited at
@@ -594,7 +618,8 @@ size_t H264RateController::GetTargetBytesForInterFrame(
   // the bitrate ratio between layers is fixed.
   uint32_t curr_layer_bitrate;
   if (fixed_delta_qp_ && num_temporal_layers_ > 1) {
-    DCHECK_EQ(num_temporal_layers_, kMaxNumTemporalLayers);
+    DCHECK_EQ(num_temporal_layers_,
+              h264_rate_control_util::kMaxNumTemporalLayers);
     curr_layer_bitrate = static_cast<uint32_t>(
         temporal_layers_[kBaseLayerIndex + 1]->average_bitrate() *
         kLayerRateRatio);
@@ -869,7 +894,8 @@ uint32_t H264RateController::ClipInterFrameQP(uint32_t curr_qp,
   return std::clamp(curr_qp, min_qp, max_qp);
 }
 
-float H264RateController::GetTargetFps(ControllerSettings settings) const {
+float H264RateController::GetTargetFps(
+    H264RateControllerSettings settings) const {
   DCHECK_EQ(settings.layer_settings.size(), settings.num_temporal_layers);
   return settings.layer_settings[settings.num_temporal_layers - 1].frame_rate;
 }

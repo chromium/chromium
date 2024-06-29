@@ -10,6 +10,9 @@
 
 // Utility methods used by H.264 Rate Controller and dependent classes.
 namespace media::h264_rate_control_util {
+// The maximum number of temporal layers in the stream.
+inline constexpr size_t kMaxNumTemporalLayers = 2u;
+
 // The upper and the lower bounds of QP value.
 inline constexpr uint32_t kQPMax = 51u;
 inline constexpr uint32_t kQPMin = 1u;
