@@ -38,6 +38,7 @@
 
   #startTime {
     display: inline-block;
+    flex-shrink: 0;
     width: 56px;
   }
 
@@ -64,10 +65,10 @@
 
   .cr-icon {
     --cr-icon-color: var(--color-new-tab-page-secondary-foreground);
-    --cr-icon-size: 14px;
-    height: 16px;
+    --cr-icon-size: 18px;
+    height: 20px;
     margin: 0;
-    width: 16px;
+    width: 20px;
   }
 
   #expandedInfo {
@@ -91,6 +92,7 @@
     line-height: var(--ntp-module-secondary-line-height);
     margin: 0;
     overflow: hidden;
+    padding: 2px 0;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -102,13 +104,14 @@
 
   #attachment-icon {
     --cr-icon-image: url(modules/v2/calendar/icons/attachment.svg);
+    padding: 2px 0;
   }
 
   #attachments cr-chip {
     --cr-chip-color: var(--color-new-tab-page-link);
     --cr-chip-border-radius: 100px;
     --cr-chip-font-size: var(--ntp-module-secondary-text-size);
-    --cr-chip-height: 20px;
+    --cr-chip-height: 24px;
   }
 
   #attachments img {
@@ -118,7 +121,7 @@
 
   #fade {
     background: linear-gradient(to right, transparent,
-        var(--color-new-tab-page-module-calendar-event-expanded-background));
+        var(--color-new-tab-page-module-item-background));
     height: 100%;
     position: absolute;
     inset-inline-end: -12px;
