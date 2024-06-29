@@ -122,24 +122,6 @@
     border-radius: var(--personalization-app-grid-item-border-radius);
   }
 
-  @keyframes fade-in {
-    0% {
-      opacity: 0;
-    }
-
-    25% {
-      opacity: 0;
-    }
-
-    75% {
-      opacity: 1;
-    }
-
-    100% {
-      opacity: 1;
-    }
-  }
-
   .sea-pen-image[aria-selected='true']::part(ironIcon) {
     --iron-icon-height: 24px;
     --iron-icon-width: 24px;
@@ -181,7 +163,7 @@
             </sparkle-placeholder>
           </div>
           <wallpaper-grid-item
-              class="sea-pen-image"
+              class="sea-pen-image fade-in-900ms"
               hidden$="[[!isTileVisible_(item, thumbnailsLoading_)]]"
               disabled="[[isThumbnailPendingSelected_(item, pendingSelected_)]]"
               index="[[index]]"

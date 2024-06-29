@@ -103,11 +103,28 @@ iron-icon[icon^='personalization-shared-illo:'] {
   white-space: pre-line;
 }
 
-.error-container,
-wallpaper-grid-item[data-sea-pen-image] {
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in-900ms {
   animation-direction: normal;
   animation-duration: 900ms;
   animation-iteration-count: 1;
   animation-name: fade-in;
   animation-timing-function: ease-in-out;
+}
+
+.fade-in-200ms {
+  animation-direction: normal;
+  animation-duration: 200ms;
+  animation-iteration-count: 1;
+  animation-name: fade-in;
+  animation-timing-function: linear;
 }

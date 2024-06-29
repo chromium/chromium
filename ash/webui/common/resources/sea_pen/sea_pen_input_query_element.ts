@@ -11,6 +11,7 @@ import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 import 'chrome://resources/ash/common/personalization/personalization_shared_icons.html.js';
 import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 import 'chrome://resources/ash/common/personalization/common.css.js';
+import 'chrome://resources/ash/common/sea_pen/sea_pen.css.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_icons.html.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_suggestions_element.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
@@ -21,6 +22,7 @@ import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {beforeNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {QUERY} from './constants.js';
 import {isSeaPenTextInputEnabled} from './load_time_booleans.js';
@@ -35,6 +37,7 @@ import {isSelectionEvent} from './sea_pen_utils.js';
 
 export interface SeaPenInputQueryElement {
   $: {
+    container: HTMLDivElement,
     queryInput: CrInputElement,
     searchButton: HTMLElement,
   };
@@ -101,6 +104,8 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   private searchButtonText_: string|null;
   private searchButtonIcon_: string;
   private shouldShowSuggestions_: boolean;
+  private containerOriginalHeight_: number;
+  private resizeObserver_: ResizeObserver;
 
   override connectedCallback() {
     assert(isSeaPenTextInputEnabled(), 'sea pen text input must be enabled');
@@ -114,6 +119,39 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     this.updateFromStore();
 
     this.$.queryInput.focusInput();
+
+    this.resizeObserver_ =
+        new ResizeObserver(() => this.animateContainerHeight());
+
+    beforeNextRender(this, () => {
+      this.containerOriginalHeight_ = this.$.container.scrollHeight;
+      this.$.container.style.height = `${this.containerOriginalHeight_}px`;
+    });
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.resizeObserver_.disconnect();
+  }
+
+  // Called when there is a custom dom-change event dispatched from
+  // `sea-pen-suggestions` element.
+  private onSeaPenSuggestionsDomChanged_() {
+    const suggestionsContainer =
+        this.shadowRoot!.querySelector('sea-pen-suggestions');
+    if (suggestionsContainer) {
+      this.resizeObserver_.observe(suggestionsContainer);
+    }
+  }
+
+  // Updates main container's height and applies transition style.
+  private animateContainerHeight() {
+    const suggestionsContainer =
+        this.shadowRoot!.querySelector('sea-pen-suggestions');
+    const suggestionsContainerHeight =
+        suggestionsContainer ? suggestionsContainer.scrollHeight : 0;
+    this.$.container.style.height =
+        `${this.containerOriginalHeight_ + suggestionsContainerHeight}px`;
   }
 
   private onSeaPenQueryChanged_(seaPenQuery: SeaPenQuery|null) {

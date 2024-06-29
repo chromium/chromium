@@ -1,4 +1,4 @@
-<style include="common cros-button-style">
+<style include="common cros-button-style sea-pen">
   #container {
     display: flex;
     flex-direction: column;
@@ -7,24 +7,6 @@
     margin-block-start: 32px;
     padding-inline: 40px;
     transition: height 300ms cubic-bezier(0, 0, 0, 1);
-  }
-
-  @keyframes fade-in {
-    from {
-      opacity: 0;
-    }
-
-    to {
-      opacity: 1;
-    }
-  }
-
-  sea-pen-options {
-    animation-direction: normal;
-    animation-duration: 200ms;
-    animation-iteration-count: 1;
-    animation-name: fade-in;
-    animation-timing-function: linear;
   }
 
   #placeholder {
@@ -139,6 +121,7 @@
   <template is="dom-if" if="[[shouldShowOptions_(options_)]]"
       on-dom-change="onSeaPenOptionsDomChanged_">
     <sea-pen-options
+        class="fade-in-200ms"
         options="[[options_]]"
         selected-chip="[[selectedChip_]]"
         selected-options="{{selectedOptions_}}"

@@ -1,10 +1,11 @@
-<style include="wallpaper common cros-button-style">
+<style include="wallpaper common cros-button-style sea-pen">
   #container {
     align-items: center;
     display: flex;
     flex-direction: column;
     height: auto;
     justify-content: center;
+    transition: height 300ms cubic-bezier(0, 0, 0, 1);
   }
 
   #queryInput {
@@ -58,8 +59,10 @@
       type="text"
       value="{{textValue_}}">
   </cr-input>
-  <template is="dom-if" if="[[shouldShowSuggestions_]]">
-    <sea-pen-suggestions on-sea-pen-suggestion-selected="onSuggestionSelected_">
+  <template is="dom-if" if="[[shouldShowSuggestions_]]"
+      on-dom-change="onSeaPenSuggestionsDomChanged_">
+    <sea-pen-suggestions class="fade-in-200ms"
+        on-sea-pen-suggestion-selected="onSuggestionSelected_">
     </sea-pen-suggestions>
   </template>
   <div id="searchButtons">
