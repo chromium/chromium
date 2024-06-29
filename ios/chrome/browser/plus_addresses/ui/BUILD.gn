@@ -45,6 +45,7 @@ source_set("eg2_tests") {
   deps = [
     ":constants",
     "//components/plus_addresses",
+    "//components/plus_addresses:test_support",
     "//components/plus_addresses/metrics",
     "//components/strings:components_strings_grit",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",

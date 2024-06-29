@@ -5,13 +5,16 @@
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
 
 NSString* const kPlusAddressSheetDescriptionAccessibilityIdentifier =
-    @"plusAddressSheetDescriptionAXID";
+    @"PlusAddressSheetDescriptionAXID";
 
 NSString* const kPlusAddressSheetErrorMessageAccessibilityIdentifier =
-    @"plusAddressSheetErrorMessageAXID";
+    @"PlusAddressSheetErrorMessageAXID";
 
 NSString* const kPlusAddressSheetNoticeMessageAccessibilityIdentifier =
-    @"plusAddressSheetNoticeMessageAXID";
+    @"PlusAddressSheetNoticeMessageAXID";
+
+NSString* const kPlusAddressLabelAccessibilityIdentifier =
+    @"PlusAddressLabelAccessibilityIdentifierAXID";
 
 const CGFloat kPlusAddressSheetPrimaryAddressBottomMargin = 20;
 

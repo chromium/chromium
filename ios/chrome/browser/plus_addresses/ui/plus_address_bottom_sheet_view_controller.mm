@@ -343,6 +343,8 @@ UIImageView* BrandingImageView() {
                    withTintColor:[UIColor colorNamed:kBlueColor]];
   }
   cell.textLabel.text = _reservedPlusAddress;
+  cell.textLabel.accessibilityIdentifier =
+      kPlusAddressLabelAccessibilityIdentifier;
   cell.delegate = self;
 
   return cell;

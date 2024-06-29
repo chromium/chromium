@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/plus_addresses/features.h"
 #import "components/plus_addresses/metrics/plus_address_metrics.h"
+#import "components/plus_addresses/plus_address_test_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
@@ -25,6 +26,7 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
 #import "net/test/embedded_test_server/default_handlers.h"
+#import "net/test/embedded_test_server/request_handler_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -75,9 +77,19 @@ void ExpectModalTimeSample(
 - (void)setUp {
   [super setUp];
   net::test_server::RegisterDefaultHandlers(self.testServer);
+  self.testServer->RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, "/v1/profiles",
+      base::BindRepeating(
+          &plus_addresses::test::HandleRequestToPlusAddressWithSuccess)));
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+
+  if ([self isRunningTest:@selector(testReservePlusAddressBottomSheet)]) {
+    [self relaunchAppAndSetConfiguration];
+  }
+
   GREYAssertNil([MetricsAppInterface setupHistogramTester],
                 @"Failed to set up histogram tester.");
+
   // Ensure a fake identity is available, as this is required by the
   // plus_addresses feature.
   _fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -90,6 +102,21 @@ void ExpectModalTimeSample(
   [super tearDown];
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Cannot reset histogram tester.");
+}
+
+- (void)relaunchAppAndSetConfiguration {
+  AppLaunchConfiguration config = self.appConfigurationForTestCase;
+
+  config.features_enabled_and_params.clear();
+  config.features_enabled_and_params.push_back(
+      {plus_addresses::features::kPlusAddressesEnabled,
+       {{{"server-url", {self.testServer->base_url().spec()}},
+         {"oauth-scope", {plus_addresses::test::kFakeOauthScope}},
+         {"manage-url", {plus_addresses::test::kFakeManagementUrl}},
+         {"error-report-url", {plus_addresses::test::kFakeErrorReportUrl}}}}});
+
+  // Relaunch the app to take the configuration into account.
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -144,10 +171,58 @@ id<GREYMatcher> GetMatcherForEmailDescription(NSString* email) {
       nil);
 }
 
+// Returns a matcher for the plus address field.
+id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
+  return grey_allOf(
+      // The link is within
+      // kPlusAddressLabelAccessibilityIdentifier.
+      grey_accessibilityID(kPlusAddressLabelAccessibilityIdentifier),
+      grey_text(labelText),
+      grey_accessibilityTrait(UIAccessibilityTraitStaticText), nil);
+}
+
 #pragma mark - Tests
 
-// A basic test that simply opens and dismisses the bottom sheet.
-- (void)testShowPlusAddressBottomSheet {
+// A basic test that simply opens, shows the reserved plus address and dismisses
+// the bottom sheet.
+- (void)testReservePlusAddressBottomSheet {
+  // Tap an element that is eligible for plus_address autofilling.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kEmailFieldId)];
+  id<GREYMatcher> user_chip =
+      grey_text(base::SysUTF8ToNSString(kFakeSuggestionLabel));
+
+  // Ensure the plus_address suggestion appears.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:user_chip];
+
+  // Tapping it will trigger the UI.
+  [[EarlGrey selectElementWithMatcher:user_chip] performAction:grey_tap()];
+
+  id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
+      base::SysUTF8ToNSString(plus_addresses::test::kFakePlusAddress));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:plusAddressLabelMatcher];
+
+  // Ensure the cancel button is shown.
+  id<GREYMatcher> cancelButton =
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_CANCEL_TEXT_IOS);
+
+  // Click the cancel button, dismissing the bottom sheet.
+  [[EarlGrey selectElementWithMatcher:cancelButton] performAction:grey_tap()];
+
+  ExpectModalHistogram(
+      plus_addresses::metrics::PlusAddressModalEvent::kModalShown, 1);
+  ExpectModalHistogram(
+      plus_addresses::metrics::PlusAddressModalEvent::kModalCanceled, 1);
+
+  ExpectModalTimeSample(
+      plus_addresses::metrics::PlusAddressModalCompletionStatus::kModalCanceled,
+      1);
+}
+
+// A basic test that simply opens the bottom sheet with an error and then
+// dismisses the bottom sheet.
+- (void)testShowPlusAddressBottomSheetWithError {
   // Tap an element that is eligible for plus_address autofilling.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kEmailFieldId)];
