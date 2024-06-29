@@ -8294,10 +8294,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SplitView.{EngagementTime}.{DeviceUIMode}" units="ms"
-    expires_after="2024-08-04">
+    expires_after="2025-08-04">
   <owner>xdai@chromium.org</owner>
   <owner>zxdan@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
   <summary>
     Emitted at the end of split view mode or the point of switching between
