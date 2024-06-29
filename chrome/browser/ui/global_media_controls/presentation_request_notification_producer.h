@@ -107,6 +107,11 @@ class PresentationRequestNotificationProducer final
   // Show or hide |item_| if the visibility changed.
   void ShowOrHideItem();
 
+  mojo::Remote<global_media_controls::mojom::DevicePickerProvider> provider_;
+
+  mojo::Receiver<global_media_controls::mojom::DevicePickerObserver>
+      observer_receiver_;
+
   // An observer for the WebContents associated with |item_| that closes the
   // dialog when the WebContents is destroyed or navigated.
   std::unique_ptr<PresentationRequestWebContentsObserver>
@@ -141,11 +146,6 @@ class PresentationRequestNotificationProducer final
   // The MediaSession source ID for the current BrowserContext. This is passed
   // to `provider_` to distinguish `this` from other possible clients.
   const base::UnguessableToken source_id_;
-
-  mojo::Remote<global_media_controls::mojom::DevicePickerProvider> provider_;
-
-  mojo::Receiver<global_media_controls::mojom::DevicePickerObserver>
-      observer_receiver_;
 
   base::WeakPtrFactory<PresentationRequestNotificationProducer> weak_factory_{
       this};
