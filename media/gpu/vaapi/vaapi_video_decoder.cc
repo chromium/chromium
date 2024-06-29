@@ -31,7 +31,6 @@
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/chromeos/native_pixmap_frame_resource.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
-#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/av1_vaapi_video_decoder_delegate.h"
@@ -800,12 +799,11 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
   // sure this assumption is never violated.
   // TODO(b/203240043): Create a GMB directly instead of allocating a
   // FrameResource.
-  scoped_refptr<FrameResource> dummy_frame =
-      VideoFrameResource::Create(CreateGpuMemoryBufferVideoFrame(
-          *format, decoder_pic_size, decoder_visible_rect, decoder_natural_size,
-          /*timestamp=*/base::TimeDelta(),
-          cdm_context_ref_ ? gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE
-                           : gfx::BufferUsage::SCANOUT_VDA_WRITE));
+  scoped_refptr<FrameResource> dummy_frame = NativePixmapFrameResource::Create(
+      *format, decoder_pic_size, decoder_visible_rect, decoder_natural_size,
+      /*timestamp=*/base::TimeDelta(),
+      cdm_context_ref_ ? gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE
+                       : gfx::BufferUsage::SCANOUT_VDA_WRITE);
   if (!dummy_frame) {
     SetErrorState("failed to allocate a dummy buffer");
     return;
