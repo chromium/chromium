@@ -188,40 +188,40 @@ BASE_FEATURE(kAutofillEnableManualFallbackIPH,
 // TODO(crbug.com/40266693) Remove once launched.
 BASE_FEATURE(kAutofillEnableSupportForBetweenStreets,
              "AutofillEnableSupportForBetweenStreets",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls if Chrome supports filling and importing administrative area
 // level 2. A sub-division of a state, e.g. a Municipio in Brazil or Mexico.
 // TODO(crbug.com/40266693) Remove once launched.
 BASE_FEATURE(kAutofillEnableSupportForAdminLevel2,
              "AutofillEnableSupportForAdminLevel2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls if Chrome support filling and importing address overflow fields.
 // TODO(crbug.com/40266693) Remove once launched.
 BASE_FEATURE(kAutofillEnableSupportForAddressOverflow,
              "AutofillEnableSupportForAddressOverflow",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls if Chrome support filling and importing address overflow and
 // landmark fields.
 // TODO(crbug.com/40266693) Remove once launched.
 BASE_FEATURE(kAutofillEnableSupportForAddressOverflowAndLandmark,
              "AutofillEnableSupportForAddressOverflowAndLandmark",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls if Chrome support filling and importing address overflow and
 // landmark fields.
 // TODO(crbug.com/40266693) Remove once launched.
 BASE_FEATURE(kAutofillEnableSupportForBetweenStreetsOrLandmark,
              "AutofillEnableSupportForBetweenStreetsOrLandmark",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls if Chrome support filling and importing landmarks.
 // TODO(crbug.com/40266693) Remove once launched.
 BASE_FEATURE(kAutofillEnableSupportForLandmark,
              "AutofillEnableSupportForLandmark",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls if Chrome parses fields at street locations. This field type is
 // generally supported in the legacy hierarchy but there is a risk of confusing
@@ -230,12 +230,12 @@ BASE_FEATURE(kAutofillEnableSupportForLandmark,
 // TODO(crbug.com/40266693) Remove once launched.
 BASE_FEATURE(kAutofillEnableParsingOfStreetLocation,
              "AutofillEnableParsingOfStreetLocation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls if special rationalization rules for mexico are enabled.
 BASE_FEATURE(kAutofillEnableRationalizationEngineForMX,
              "AutofillEnableRationalizationEngineForMX",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls if the heuristic field parsing utilizes shared labels.
 // TODO(crbug.com/40741721): Remove once shared labels are launched.
@@ -260,13 +260,13 @@ const base::FeatureParam<bool> kAutofillEnableEmailHeuristicAutocompleteEmail{
 // TODO(crbug.com/40734406): Remove once launched.
 BASE_FEATURE(kAutofillEnableSupportForApartmentNumbers,
              "AutofillEnableSupportForApartmentNumbers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls if Autofill parses ADDRESS_HOME_DEPENDENT_LOCALITY.
 // TODO(crbug.com/40160818): Remove once launched.
 BASE_FEATURE(kAutofillEnableDependentLocalityParsing,
              "AutofillEnableDependentLocalityParsing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables a couple of improvements to credit card expiration date handling:
 // - The autocomplete attribute values are rationalized with format strings
@@ -422,7 +422,7 @@ BASE_FEATURE(kAutofillReplaceCachedWebElementsByRendererIds,
 // - Using newer i18n address parsing rules.
 BASE_FEATURE(kAutofillUseI18nAddressModel,
              "AutofillUseI18nAddressModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables using the a custom address model for Australia, overriding the legacy
 // one.
@@ -432,7 +432,7 @@ BASE_FEATURE(kAutofillUseAUAddressModel,
 // Enables using a custom address model for Brazil, overriding the legacy one.
 BASE_FEATURE(kAutofillUseBRAddressModel,
              "AutofillUseBRAddressModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables using a custom address model for Canada, overriding the legacy one.
 BASE_FEATURE(kAutofillUseCAAddressModel,
@@ -457,7 +457,7 @@ BASE_FEATURE(kAutofillUseITAddressModel,
 // Enables using a custom address model for Mexico, overriding the legacy one.
 BASE_FEATURE(kAutofillUseMXAddressModel,
              "AutofillUseMXAddressModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables using a custom address model for Poland, overriding the legacy one.
 BASE_FEATURE(kAutofillUsePLAddressModel,
@@ -475,7 +475,7 @@ BASE_FEATURE(kAutofillUploadVotesForFieldsWithEmail,
 // overall type.
 BASE_FEATURE(kAutofillLocalHeuristicsOverrides,
              "AutofillLocalHeuristicsOverrides",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, all behaviours related to the on-device machine learning
 // model for field type predictions will be guarded.
@@ -493,7 +493,7 @@ const base::FeatureParam<bool> kAutofillModelPredictionsAreActive{
 // attributes when classifying address fields in Mexico.
 BASE_FEATURE(kAutofillPreferLabelsInSomeCountries,
              "AutofillPreferLabelsInSomeCountries",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, a pre-filled field will only be overwritten if it's not
 // classified as meaningfully pre-filled based on server predictions. If also

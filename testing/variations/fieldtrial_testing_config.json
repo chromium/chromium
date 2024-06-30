@@ -2532,42 +2532,6 @@
             ]
         }
     ],
-    "AutofillUseI18nAddressModelV2": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableDependentLocalityParsing",
-                        "AutofillEnableParsingOfStreetLocation",
-                        "AutofillEnableRationalizationEngineForMX",
-                        "AutofillEnableSupportForAddressOverflow",
-                        "AutofillEnableSupportForAddressOverflowAndLandmark",
-                        "AutofillEnableSupportForAdminLevel2",
-                        "AutofillEnableSupportForApartmentNumbers",
-                        "AutofillEnableSupportForBetweenStreets",
-                        "AutofillEnableSupportForBetweenStreetsOrLandmark",
-                        "AutofillEnableSupportForLandmark",
-                        "AutofillLocalHeuristicsOverrides",
-                        "AutofillPreferLabelsInSomeCountries",
-                        "AutofillUseBRAddressModel",
-                        "AutofillUseI18nAddressModel",
-                        "AutofillUseMXAddressModel"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutomaticLazyFrameLoading": [
         {
             "platforms": [
