@@ -157,7 +157,7 @@ BASE_FEATURE(kRemoveSignedInAccountsDialog,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 BASE_FEATURE(kPreconnectAccountCapabilitiesPostSignin,
              "PreconnectAccountCapabilitiesPostSignin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

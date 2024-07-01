@@ -24270,8 +24270,7 @@
                 {
                     "name": "WaitForCapabilitiesWithPreconnect_20240503",
                     "enable_features": [
-                        "CustomWebSignInInterceptForSupervisedUsers",
-                        "PreconnectAccountCapabilitiesPostSignin"
+                        "CustomWebSignInInterceptForSupervisedUsers"
                     ]
                 }
             ]
