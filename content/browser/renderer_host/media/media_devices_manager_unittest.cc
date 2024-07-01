@@ -9,14 +9,19 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/system/system_monitor.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_timeouts.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_devices_permission_checker.h"
 #include "content/browser/renderer_host/media/mock_video_capture_provider.h"
@@ -49,7 +54,9 @@ using blink::mojom::MediaDeviceType;
 using media::mojom::DeviceEnumerationResult;
 using media::mojom::SubCaptureTargetType;
 using ::testing::_;
+using ::testing::AtLeast;
 using ::testing::Invoke;
+using ::testing::NiceMock;
 using ::testing::SaveArg;
 
 namespace content {
@@ -100,9 +107,7 @@ class MockAudioManager : public media::FakeAudioManager {
  public:
   MockAudioManager()
       : FakeAudioManager(std::make_unique<media::TestAudioThread>(),
-                         &fake_audio_log_factory_),
-        num_output_devices_(2),
-        num_input_devices_(kNumAudioInputDevices) {}
+                         &fake_audio_log_factory_) {}
 
   MockAudioManager(const MockAudioManager&) = delete;
   MockAudioManager& operator=(const MockAudioManager&) = delete;
@@ -146,6 +151,9 @@ class MockAudioManager : public media::FakeAudioManager {
       --num_devices_to_create;
     }
     MockGetAudioInputDeviceNames(device_names);
+    if (bogus_invalidation_closure_) {
+      bogus_invalidation_closure_.Run();
+    }
   }
 
   void GetAudioOutputDeviceNames(
@@ -197,13 +205,18 @@ class MockAudioManager : public media::FakeAudioManager {
     communications_device_id_ = device_id;
   }
 
+  void SetBogusInvalidationClosure(base::RepeatingClosure closure) {
+    bogus_invalidation_closure_ = std::move(closure);
+  }
+
  private:
   media::FakeAudioLogFactory fake_audio_log_factory_;
-  size_t num_output_devices_;
-  size_t num_input_devices_;
+  size_t num_output_devices_ = 2;
+  size_t num_input_devices_ = kNumAudioInputDevices;
   std::string default_device_id_;
   std::string communications_device_id_;
   std::set<std::string> removed_input_audio_device_ids_;
+  base::RepeatingClosure bogus_invalidation_closure_;
 };
 
 // This class mocks the video capture device factory and overrides some methods
@@ -211,8 +224,8 @@ class MockAudioManager : public media::FakeAudioManager {
 class MockVideoCaptureDeviceFactory
     : public media::FakeVideoCaptureDeviceFactory {
  public:
-  MockVideoCaptureDeviceFactory() {}
-  ~MockVideoCaptureDeviceFactory() override {}
+  MockVideoCaptureDeviceFactory() = default;
+  ~MockVideoCaptureDeviceFactory() override = default;
 
   MOCK_METHOD0(MockGetDevicesInfo, void());
   void GetDevicesInfo(GetDevicesInfoCallback callback) override {
@@ -223,7 +236,7 @@ class MockVideoCaptureDeviceFactory
 
 class MockMediaDevicesListener : public blink::mojom::MediaDevicesListener {
  public:
-  MockMediaDevicesListener() {}
+  MockMediaDevicesListener() = default;
 
   MOCK_METHOD2(OnDevicesChanged,
                void(MediaDeviceType, const blink::WebMediaDeviceInfoArray&));
@@ -320,8 +333,7 @@ class MockBrowserClient : public ContentBrowserClient {
 
 class MediaDevicesManagerTest : public ::testing::Test {
  public:
-  MediaDevicesManagerTest()
-      : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP) {}
+  MediaDevicesManagerTest() = default;
 
   MediaDevicesManagerTest(const MediaDevicesManagerTest&) = delete;
   MediaDevicesManagerTest& operator=(const MediaDevicesManagerTest&) = delete;
@@ -414,7 +426,7 @@ class MediaDevicesManagerTest : public ::testing::Test {
         std::move(video_capture_device_factory));
 
     auto mock_video_capture_provider =
-        std::make_unique<MockVideoCaptureProvider>();
+        std::make_unique<NiceMock<MockVideoCaptureProvider>>();
     mock_video_capture_provider_ = mock_video_capture_provider.get();
     // By default, forward calls to the real video_capture_system.
     ON_CALL(*mock_video_capture_provider_, GetDeviceInfosAsync(_))
@@ -439,9 +451,13 @@ class MediaDevicesManagerTest : public ::testing::Test {
         base::BindRepeating(&GetSaltAndOrigin));
     media_devices_manager_->SetPermissionChecker(
         std::make_unique<MediaDevicesPermissionChecker>(true));
+    media_devices_manager_->StartMonitoring();
   }
 
-  void TearDown() override { video_capture_device_factory_ = nullptr; }
+  void TearDown() override {
+    video_capture_device_factory_ = nullptr;
+    media_devices_manager_ = nullptr;
+  }
 
   void EnableCache(MediaDeviceType type) {
     media_devices_manager_->SetCachePolicy(
@@ -469,7 +485,9 @@ class MediaDevicesManagerTest : public ::testing::Test {
 
   // Must outlive MediaDevicesManager as ~MediaDevicesManager() verifies it's
   // running on the IO thread.
-  BrowserTaskEnvironment task_environment_;
+  BrowserTaskEnvironment task_environment_{
+      BrowserTaskEnvironment::IO_MAINLOOP,
+      BrowserTaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<MediaDevicesManager> media_devices_manager_;
   scoped_refptr<VideoCaptureManager> video_capture_manager_;
@@ -480,7 +498,8 @@ class MediaDevicesManagerTest : public ::testing::Test {
   testing::StrictMock<MockMediaDevicesManagerClient>
       media_devices_manager_client_;
   std::set<std::string> removed_device_ids_;
-  raw_ptr<MockVideoCaptureProvider> mock_video_capture_provider_ = nullptr;
+  raw_ptr<NiceMock<MockVideoCaptureProvider>> mock_video_capture_provider_ =
+      nullptr;
   std::unique_ptr<media::VideoCaptureSystemImpl> video_capture_system_;
   HistogramTester histogram_tester_;
   RenderViewHostTestEnabler rvh_test_enabler_;
@@ -1609,6 +1628,129 @@ TEST_F(MediaDevicesManagerTest, DevicePropertyChanges) {
   media_devices_manager_->OnDevicesChanged(
       base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(MediaDevicesManagerTest, BogusInvalidationsDoNotHangEnumerateDevices) {
+  // The expected number of  calls to GetDevicesInfo() is the initial
+  // enumeration to populate the cache plus kMaxBogusInvalidations enumerations
+  // caused by the bogus invalidations fired by ON_CALL, at which point
+  // MediaDevicesManager will stop issuing GetDevicesInfo() calls.
+  EXPECT_CALL(*video_capture_device_factory_, MockGetDevicesInfo())
+      .Times(MediaDevicesManager::kMaxSpuriousInvalidations + 1);
+  EXPECT_CALL(*this, MockCallback(_)).Times(kNumCalls);
+  EXPECT_CALL(media_devices_manager_client_, InputDevicesChangedUI(_, _));
+  // Fire invalidations after every GetDevicesInfo call. This behavior may occur
+  // in some rare cases. See https://crbug.com/325590346
+  ON_CALL(*video_capture_device_factory_, MockGetDevicesInfo())
+      .WillByDefault(Invoke([&]() {
+        media_devices_manager_->OnDevicesChanged(
+            base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+      }));
+
+  // The calls below are expected to succeed using the cache once
+  // MediaDevicesManager starts to ignore bogus cache invalidtions.
+  MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
+  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)] =
+      true;
+  EnableCache(MediaDeviceType::kMediaVideoInput);
+  for (int i = 0; i < kNumCalls; i++) {
+    base::RunLoop run_loop;
+    media_devices_manager_->EnumerateDevices(
+        devices_to_enumerate,
+        base::BindOnce(&MediaDevicesManagerTest::EnumerateCallback,
+                       base::Unretained(this), &run_loop));
+    run_loop.Run();
+  }
+}
+
+TEST_F(MediaDevicesManagerTest,
+       BogusInvalidationsForMultipleDeviceClassesDoNotHangEnumerateDevices) {
+  // The expected number of  calls to GetDevicesInfo is the initial enumeration
+  // to populate the cache plus kMaxBogusInvalidations enumerations caused by
+  // the bogus invalidations fired by ON_CALL, at which point
+  // MediaDevicesManager will stop issuing GetDevicesInfo calls.
+  EXPECT_CALL(*video_capture_device_factory_, MockGetDevicesInfo())
+      .Times(MediaDevicesManager::kMaxSpuriousInvalidations + 1);
+  EXPECT_CALL(*audio_manager_, MockGetAudioInputDeviceNames(_))
+      .Times(MediaDevicesManager::kMaxSpuriousInvalidations + 1);
+  EXPECT_CALL(*audio_manager_, MockGetAudioOutputDeviceNames(_))
+      .Times(MediaDevicesManager::kMaxSpuriousInvalidations + 1);
+  EXPECT_CALL(*this, MockCallback(_)).Times(kNumCalls);
+  EXPECT_CALL(media_devices_manager_client_,
+              InputDevicesChangedUI(MediaDeviceType::kMediaVideoInput, _));
+  EXPECT_CALL(media_devices_manager_client_,
+              InputDevicesChangedUI(MediaDeviceType::kMediaAudioInput, _));
+  ON_CALL(*video_capture_device_factory_, MockGetDevicesInfo())
+      .WillByDefault(Invoke([&]() {
+        media_devices_manager_->OnDevicesChanged(
+            base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+      }));
+  ON_CALL(*audio_manager_, MockGetAudioInputDeviceNames(_))
+      .WillByDefault(Invoke([&]() {
+        media_devices_manager_->OnDevicesChanged(
+            base::SystemMonitor::DEVTYPE_AUDIO);
+      }));
+
+  // The calls below are expected to succeed using the cache once
+  // MediaDevicesManager starts to ignore bogus cache invalidtions.
+  MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
+  devices_to_enumerate.fill(true);
+  EnableCache(MediaDeviceType::kMediaVideoInput);
+  EnableCache(MediaDeviceType::kMediaAudioInput);
+  EnableCache(MediaDeviceType::kMediaAudioOuput);
+  for (int i = 0; i < kNumCalls; i++) {
+    base::RunLoop run_loop;
+    media_devices_manager_->EnumerateDevices(
+        devices_to_enumerate,
+        base::BindOnce(&MediaDevicesManagerTest::EnumerateCallback,
+                       base::Unretained(this), &run_loop));
+    run_loop.Run();
+  }
+}
+
+TEST_F(MediaDevicesManagerTest,
+       RecentInvalidationsAreIgnoredAfterTooManyBogusInvalidations) {
+  int num_get_devices_info_calls = 0;
+  base::RunLoop loop;
+
+  EXPECT_CALL(media_devices_manager_client_, InputDevicesChangedUI(_, _));
+
+  // The expected number of  calls to GetDevicesInfo is the initial enumeration
+  // to populate the cach plus kMaxBogusInvalidations enumerations caused by the
+  // bogus invalidations fired by ON_CALL, at which point MediaDevicesManager
+  // will stop issuing GetDevicesInfo calls.
+  EXPECT_CALL(*video_capture_device_factory_, MockGetDevicesInfo())
+      .Times(MediaDevicesManager::kMaxSpuriousInvalidations + 1);
+  ON_CALL(*video_capture_device_factory_, MockGetDevicesInfo())
+      .WillByDefault(Invoke([&]() {
+        media_devices_manager_->OnDevicesChanged(
+            base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+        if (++num_get_devices_info_calls >=
+            MediaDevicesManager::kMaxSpuriousInvalidations + 1) {
+          loop.Quit();
+        }
+      }));
+
+  EnableCache(MediaDeviceType::kMediaVideoInput);
+  loop.Run();
+
+  task_environment_.FastForwardBy(
+      MediaDevicesManager::kExpireTimeInRelaxedMode - base::Milliseconds(1));
+  // This invalidation should not cause a call to GetDevicesInfo() because it is
+  // too recent and the system has entered "bad" mode due to previous bogus
+  // invalidations.
+  EXPECT_CALL(*video_capture_device_factory_, MockGetDevicesInfo()).Times(0);
+  media_devices_manager_->OnDevicesChanged(
+      base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(*video_capture_device_factory_, MockGetDevicesInfo()).Times(1);
+  // This invalidation should cause a new call to GetDevicesInfo() because
+  // enough time has passed since the last GetDevicesInfo() call.
+  task_environment_.FastForwardBy(base::Milliseconds(2));
+  media_devices_manager_->OnDevicesChanged(
+      base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace content
