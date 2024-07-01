@@ -48,7 +48,6 @@
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/browser_command/browser_command_handler.h"
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
-#include "chrome/browser/ui/webui/customize_themes/chrome_customize_themes_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
@@ -711,7 +710,6 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
       content::WebContentsObserver(web_ui->GetWebContents()),
       page_factory_receiver_(this),
-      customize_themes_factory_receiver_(this),
       most_visited_page_factory_receiver_(this),
       browser_command_factory_receiver_(this),
       profile_(Profile::FromWebUI(web_ui)),
@@ -906,16 +904,6 @@ void NewTabPageUI::BindInterface(
 }
 
 void NewTabPageUI::BindInterface(
-    mojo::PendingReceiver<
-        customize_themes::mojom::CustomizeThemesHandlerFactory>
-        pending_receiver) {
-  if (customize_themes_factory_receiver_.is_bound()) {
-    customize_themes_factory_receiver_.reset();
-  }
-  customize_themes_factory_receiver_.Bind(std::move(pending_receiver));
-}
-
-void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<most_visited::mojom::MostVisitedPageHandlerFactory>
         pending_receiver) {
   if (most_visited_page_factory_receiver_.is_bound()) {
@@ -1038,16 +1026,6 @@ void NewTabPageUI::CreatePageHandler(
       LogoServiceFactory::GetForProfile(profile_), web_contents(),
       std::make_unique<NewTabPageFeaturePromoHelper>(), navigation_start_time_,
       &module_id_names_, customize_chrome_side_panel_coordinator);
-}
-
-void NewTabPageUI::CreateCustomizeThemesHandler(
-    mojo::PendingRemote<customize_themes::mojom::CustomizeThemesClient>
-        pending_client,
-    mojo::PendingReceiver<customize_themes::mojom::CustomizeThemesHandler>
-        pending_handler) {
-  customize_themes_handler_ = std::make_unique<ChromeCustomizeThemesHandler>(
-      std::move(pending_client), std::move(pending_handler), web_contents(),
-      profile_);
 }
 
 void NewTabPageUI::CreateBrowserCommandHandler(

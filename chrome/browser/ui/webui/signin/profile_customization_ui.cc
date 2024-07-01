@@ -14,7 +14,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler.h"
-#include "chrome/browser/ui/webui/customize_themes/chrome_customize_themes_handler.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -35,8 +34,7 @@
 #include "ui/resources/grit/webui_resources.h"
 
 ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
-      customize_themes_factory_receiver_(this) {
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIProfileCustomizationHost);
@@ -136,15 +134,6 @@ void ProfileCustomizationUI::Initialize(
 
 void ProfileCustomizationUI::BindInterface(
     mojo::PendingReceiver<
-        customize_themes::mojom::CustomizeThemesHandlerFactory>
-        pending_receiver) {
-  if (customize_themes_factory_receiver_.is_bound())
-    customize_themes_factory_receiver_.reset();
-  customize_themes_factory_receiver_.Bind(std::move(pending_receiver));
-}
-
-void ProfileCustomizationUI::BindInterface(
-    mojo::PendingReceiver<
         theme_color_picker::mojom::ThemeColorPickerHandlerFactory>
         pending_receiver) {
   if (theme_color_picker_handler_factory_receiver_.is_bound()) {
@@ -157,16 +146,6 @@ void ProfileCustomizationUI::BindInterface(
 ProfileCustomizationHandler*
 ProfileCustomizationUI::GetProfileCustomizationHandlerForTesting() {
   return profile_customization_handler_;
-}
-
-void ProfileCustomizationUI::CreateCustomizeThemesHandler(
-    mojo::PendingRemote<customize_themes::mojom::CustomizeThemesClient>
-        pending_client,
-    mojo::PendingReceiver<customize_themes::mojom::CustomizeThemesHandler>
-        pending_handler) {
-  customize_themes_handler_ = std::make_unique<ChromeCustomizeThemesHandler>(
-      std::move(pending_client), std::move(pending_handler),
-      web_ui()->GetWebContents(), Profile::FromWebUI(web_ui()));
 }
 
 void ProfileCustomizationUI::CreateThemeColorPickerHandler(

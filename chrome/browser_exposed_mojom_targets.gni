@@ -329,7 +329,6 @@ browser_exposed_mojom_targets = [
   "//ui/webui/resources/cr_components/color_change_listener:mojom",
   "//ui/webui/resources/cr_components/commerce:mojo_bindings",
   "//ui/webui/resources/cr_components/customize_color_scheme_mode:mojom",
-  "//ui/webui/resources/cr_components/customize_themes:mojom",
   "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
   "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
   "//ui/webui/resources/cr_components/history_embeddings:mojo_bindings",

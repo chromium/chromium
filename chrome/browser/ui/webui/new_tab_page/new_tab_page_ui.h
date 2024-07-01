@@ -48,7 +48,6 @@
 #include "ui/native_theme/native_theme_observer.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
-#include "ui/webui/resources/cr_components/customize_themes/customize_themes.mojom.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
 #include "ui/webui/resources/cr_components/searchbox/searchbox.mojom-forward.h"
 #include "ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom.h"
@@ -76,7 +75,6 @@ class ColorChangeHandler;
 
 class BrowserCommandHandler;
 class CartHandler;
-class ChromeCustomizeThemesHandler;
 class FileSuggestionHandler;
 #if !defined(OFFICIAL_BUILD)
 class FooHandler;
@@ -99,7 +97,6 @@ class TabResumptionPageHandler;
 class NewTabPageUI
     : public ui::MojoWebUIController,
       public new_tab_page::mojom::PageHandlerFactory,
-      public customize_themes::mojom::CustomizeThemesHandlerFactory,
       public most_visited::mojom::MostVisitedPageHandlerFactory,
       public browser_command::mojom::CommandHandlerFactory,
       public help_bubble::mojom::HelpBubbleHandlerFactory,
@@ -150,13 +147,6 @@ class NewTabPageUI
   void BindInterface(
       mojo::PendingReceiver<browser_command::mojom::CommandHandlerFactory>
           pending_receiver);
-
-  // Instantiates the implementor of the
-  // customize_themes::mojom::CustomizeThemesHandlerFactory mojo interface
-  // passing the pending receiver that will be internally bound.
-  void BindInterface(mojo::PendingReceiver<
-                     customize_themes::mojom::CustomizeThemesHandlerFactory>
-                         pending_receiver);
 
   // Instantiates the implementor of the
   // most_visited::mojom::MostVisitedPageHandlerFactory mojo interface passing
@@ -247,13 +237,6 @@ class NewTabPageUI
       mojo::PendingReceiver<new_tab_page::mojom::PageHandler>
           pending_page_handler) override;
 
-  // customize_themes::mojom::CustomizeThemesHandlerFactory:
-  void CreateCustomizeThemesHandler(
-      mojo::PendingRemote<customize_themes::mojom::CustomizeThemesClient>
-          pending_client,
-      mojo::PendingReceiver<customize_themes::mojom::CustomizeThemesHandler>
-          pending_handler) override;
-
   // browser_command::mojom::CommandHandlerFactory
   void CreateBrowserCommandHandler(
       mojo::PendingReceiver<browser_command::mojom::CommandHandler>
@@ -297,10 +280,7 @@ class NewTabPageUI
   std::unique_ptr<NewTabPageHandler> page_handler_;
   mojo::Receiver<new_tab_page::mojom::PageHandlerFactory>
       page_factory_receiver_;
-  std::unique_ptr<ChromeCustomizeThemesHandler> customize_themes_handler_;
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
-  mojo::Receiver<customize_themes::mojom::CustomizeThemesHandlerFactory>
-      customize_themes_factory_receiver_;
   std::unique_ptr<MostVisitedHandler> most_visited_page_handler_;
   mojo::Receiver<most_visited::mojom::MostVisitedPageHandlerFactory>
       most_visited_page_factory_receiver_;

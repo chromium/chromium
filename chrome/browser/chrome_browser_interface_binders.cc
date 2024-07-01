@@ -217,7 +217,6 @@
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"  // nogncheck crbug.com/1125897
 #include "ui/webui/resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom.h"
-#include "ui/webui/resources/cr_components/customize_themes/customize_themes.mojom.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
 #include "ui/webui/resources/cr_components/history_embeddings/history_embeddings.mojom.h"
@@ -252,7 +251,6 @@
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
-#include "ui/webui/resources/cr_components/customize_themes/customize_themes.mojom.h"
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1276,14 +1274,6 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       theme_color_picker::mojom::ThemeColorPickerHandlerFactory,
       CustomizeChromeUI
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-      ,
-      ProfileCustomizationUI, settings::SettingsUI
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-      >(map);
-
-  RegisterWebUIControllerInterfaceBinder<
-      customize_themes::mojom::CustomizeThemesHandlerFactory, NewTabPageUI
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
       ,
       ProfileCustomizationUI, settings::SettingsUI

@@ -67,11 +67,6 @@ IN_PROC_BROWSER_TEST_F(CrComponentsTest, CustomizeColorSchemeMode) {
   RunTest("cr_components/customize_color_scheme_mode_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(CrComponentsTest, CustomizeThemes) {
-  set_test_loader_host(chrome::kChromeUINewTabPageHost);
-  RunTest("cr_components/customize_themes_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(CrComponentsTest, HelpBubbleMixin) {
   set_test_loader_host(chrome::kChromeUINewTabPageHost);
   RunTest("cr_components/help_bubble_mixin_test.js", "mocha.run()");

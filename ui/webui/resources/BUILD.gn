@@ -54,7 +54,6 @@ generate_grd("build_grd") {
     public_deps += [
       "cr_components/app_management:build_grdp",
       "cr_components/customize_color_scheme_mode:build_grdp",
-      "cr_components/customize_themes:build_grdp",
       "cr_components/help_bubble:build_grdp",
       "cr_components/localized_link:build_grdp",
       "cr_components/managed_dialog:build_grdp",
@@ -72,7 +71,6 @@ generate_grd("build_grd") {
       "$target_gen_dir/cr_components/app_management/resources.grdp",
       "$target_gen_dir/cr_components/theme_color_picker/resources.grdp",
       "$target_gen_dir/cr_components/customize_color_scheme_mode/resources.grdp",
-      "$target_gen_dir/cr_components/customize_themes/resources.grdp",
       "$target_gen_dir/cr_components/help_bubble/resources.grdp",
       "$target_gen_dir/cr_components/localized_link/resources.grdp",
       "$target_gen_dir/cr_components/managed_dialog/resources.grdp",

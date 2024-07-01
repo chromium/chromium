@@ -1698,8 +1698,6 @@ static_library("ui") {
       "webui/cr_components/most_visited/most_visited_handler.h",
       "webui/cr_components/theme_color_picker/theme_color_picker_handler.cc",
       "webui/cr_components/theme_color_picker/theme_color_picker_handler.h",
-      "webui/customize_themes/chrome_customize_themes_handler.cc",
-      "webui/customize_themes/chrome_customize_themes_handler.h",
       "webui/data_sharing/data_sharing_page_handler.cc",
       "webui/data_sharing/data_sharing_page_handler.h",
       "webui/data_sharing/data_sharing_ui.cc",
