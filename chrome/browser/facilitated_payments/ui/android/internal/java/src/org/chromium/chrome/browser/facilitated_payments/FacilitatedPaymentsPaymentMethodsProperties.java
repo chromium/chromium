@@ -12,7 +12,6 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -21,14 +20,16 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
  * component.
  */
 class FacilitatedPaymentsPaymentMethodsProperties {
-    static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey("visible");
+    static final WritableIntPropertyKey VISIBLE_STATE = new WritableIntPropertyKey("visible_state");
     static final WritableIntPropertyKey SCREEN = new WritableIntPropertyKey("screen");
     static final WritableObjectPropertyKey<PropertyModel> SCREEN_VIEW_MODEL =
             new WritableObjectPropertyKey("screen_view_model");
     static final ReadableObjectPropertyKey<Callback<Integer>> DISMISS_HANDLER =
             new ReadableObjectPropertyKey<>("dismiss_handler");
 
-    static final PropertyKey[] ALL_KEYS = {VISIBLE, SCREEN, SCREEN_VIEW_MODEL, DISMISS_HANDLER};
+    static final PropertyKey[] ALL_KEYS = {
+        VISIBLE_STATE, SCREEN, SCREEN_VIEW_MODEL, DISMISS_HANDLER
+    };
 
     // TODO: b/348595414 - Rename to FopSelectorItemType and move to a separate directory.
     @interface ItemType {
@@ -47,6 +48,19 @@ class FacilitatedPaymentsPaymentMethodsProperties {
 
         // A footer section containing additional actions.
         int FOOTER = 3;
+    }
+
+    // The visible state of the Facilitated Payments bottom sheet.
+    @interface VisibleState {
+        // The bottom sheet is not open. This is the default state.
+        int HIDDEN = 0;
+        // The bottom sheet is open and showing a screen.
+        int SHOWN = 1;
+        // The bottom sheet is in a temporary transition state before showing a new screen. The
+        // bottom sheet can come to this temporary state from either of other 2 states, but will
+        // always transition to the {@link SHOWN} state from here. Before showing a new screen, the
+        // controller has to set this state.
+        int SWAPPING_SCREEN = 2;
     }
 
     // The type of user visible screens that can be shown in the Facilitated Payments bottom sheet.

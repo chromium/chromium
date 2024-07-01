@@ -20,7 +20,10 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PROGRESS_SCREEN;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE_STATE;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.HIDDEN;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.SHOWN;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.SWAPPING_SCREEN;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -70,6 +73,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
             return false;
         }
 
+        mModel.set(VISIBLE_STATE, SWAPPING_SCREEN);
         mModel.set(SCREEN, FOP_SELECTOR);
         ModelList screenItems = mModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
         screenItems.clear();
@@ -85,20 +89,28 @@ class FacilitatedPaymentsPaymentMethodsMediator {
 
         screenItems.add(0, buildHeader());
 
-        mModel.set(VISIBLE, true);
+        mModel.set(VISIBLE_STATE, SHOWN);
         mInputProtector.markShowTime();
 
         return true;
     }
 
     void showProgressScreen() {
+        // The {@link VISIBILITY_STATE} of {@link SHOWN} has 2 functions. If the bottom sheet is not
+        // open, i.e. {@code VISIBILITY_STATE = HIDDEN}, setting {@code VISIBILITY_STATE = SHOWN}
+        // opens and shows a new screen. If the bottom sheet is already open and showing a screen,
+        // i.e. {@code VISIBILITY_STATE = SHOWN}, setting it again to {@code VISIBILITY_STATE =
+        // SHOWN} swaps the existing screen to show a new screen. Since a property can't be assigned
+        // to the value it already has, a placeholder state {@link SWAPPING_SCREEN} is introduced to
+        // facilitate setting {@code VISIBILITY_STATE = SHOWN} again.
+        mModel.set(VISIBLE_STATE, SWAPPING_SCREEN);
         mModel.set(SCREEN, PROGRESS_SCREEN);
-        mModel.set(VISIBLE, true);
+        mModel.set(VISIBLE_STATE, SHOWN);
     }
 
     public void onDismissed(@StateChangeReason int reason) {
-        if (!mModel.get(VISIBLE)) return; // Dismiss only if not dismissed yet.
-        mModel.set(VISIBLE, false);
+        if (mModel.get(VISIBLE_STATE) == HIDDEN) return; // Dismiss only if not dismissed yet.
+        mModel.set(VISIBLE_STATE, HIDDEN);
         mDelegate.onDismissed();
     }
 

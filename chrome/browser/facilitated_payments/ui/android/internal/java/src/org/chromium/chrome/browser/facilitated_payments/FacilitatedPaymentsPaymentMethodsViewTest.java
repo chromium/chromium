@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.facilitated_payments;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
 
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FopSelectorProperties.SCREEN_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
@@ -15,7 +16,10 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PROGRESS_SCREEN;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE_STATE;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.HIDDEN;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.SHOWN;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.SWAPPING_SCREEN;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import android.view.View;
@@ -105,7 +109,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                     mModel =
                             new PropertyModel.Builder(
                                             FacilitatedPaymentsPaymentMethodsProperties.ALL_KEYS)
-                                    .with(VISIBLE, false)
+                                    .with(VISIBLE_STATE, HIDDEN)
                                     .build();
                     mView =
                             new FacilitatedPaymentsPaymentMethodsView(
@@ -130,7 +134,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                                     new ListItem(
                                             BANK_ACCOUNT, createBankAccountModel(BANK_ACCOUNT_1)));
                 });
-        runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        runOnUiThreadBlocking(() -> mModel.set(VISIBLE_STATE, SHOWN));
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         assertThat(mView.getContentView().isShown(), is(true));
     }
@@ -151,7 +155,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                             .add(
                                     new ListItem(
                                             BANK_ACCOUNT, createBankAccountModel(BANK_ACCOUNT_2)));
-                    mModel.set(VISIBLE, true);
+                    mModel.set(VISIBLE_STATE, SHOWN);
                 });
 
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -176,7 +180,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                     mModel.get(SCREEN_VIEW_MODEL)
                             .get(SCREEN_ITEMS)
                             .add(FacilitatedPaymentsPaymentMethodsMediator.buildAdditionalInfo());
-                    mModel.set(VISIBLE, true);
+                    mModel.set(VISIBLE_STATE, SHOWN);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -199,7 +203,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                     mModel.get(SCREEN_VIEW_MODEL)
                             .get(SCREEN_ITEMS)
                             .add(new ListItem(CONTINUE_BUTTON, bankAccountModel));
-                    mModel.set(VISIBLE, true);
+                    mModel.set(VISIBLE_STATE, SHOWN);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -213,11 +217,45 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         runOnUiThreadBlocking(
                 () -> {
                     mModel.set(SCREEN, PROGRESS_SCREEN);
-                    mModel.set(VISIBLE, true);
+                    mModel.set(VISIBLE_STATE, SHOWN);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         // Verify that the {@link ProgressBar} is shown.
+        assertThat(
+                viewElementExists((ViewGroup) mView.getContentView(), ProgressBar.class), is(true));
+    }
+
+    @Test
+    @MediumTest
+    public void testFopSelectorToProgressScreenSwapUpdatesView() {
+        // Show the FOP selector.
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            BANK_ACCOUNT, createBankAccountModel(BANK_ACCOUNT_1)));
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // Confirm the FOP selector is shown.
+        assertThat(mView.getContentView().isShown(), is(true));
+        assertNotNull(mView.getContentView().findViewById(R.id.sheet_item_list));
+
+        // Show the progress screen.
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE_STATE, SWAPPING_SCREEN);
+                    mModel.set(SCREEN, PROGRESS_SCREEN);
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+
+        // Verify that the progress screen is shown.
+        assertThat(mView.getContentView().isShown(), is(true));
         assertThat(
                 viewElementExists((ViewGroup) mView.getContentView(), ProgressBar.class), is(true));
     }

@@ -10,6 +10,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.times;
@@ -26,8 +27,11 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PROGRESS_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.UNINITIALIZED;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE_STATE;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.HIDDEN;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.SHOWN;
 
 import android.app.Activity;
 import android.content.Context;
@@ -126,7 +130,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testCreatesValidDefaultPropertyModel() {
-        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE), is(false));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(HIDDEN));
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN), is(UNINITIALIZED));
         assertNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
         assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(DISMISS_HANDLER));
@@ -137,11 +141,14 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         mCoordinator.showSheet(List.of(BANK_ACCOUNT_1));
 
         // Verify that the bottom sheet model is updated to show the FOP selector.
-        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE), is(true));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN), is(FOP_SELECTOR));
         assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
-        assertNotNull(
-                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS));
+        // Verify the FOP selector screen model contains the required properties.
+        assertTrue(
+                mFacilitatedPaymentsPaymentMethodsModel
+                        .get(SCREEN_VIEW_MODEL)
+                        .containsKey(SCREEN_ITEMS));
     }
 
     @Test
@@ -175,13 +182,13 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     @Test
     public void testOnDismissedIsCalled() {
         mCoordinator.showSheet(List.of(BANK_ACCOUNT_1, BANK_ACCOUNT_2));
-        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE), is(true));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
 
         mFacilitatedPaymentsPaymentMethodsModel
                 .get(DISMISS_HANDLER)
                 .onResult(StateChangeReason.SWIPE);
 
-        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE), is(false));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(HIDDEN));
         verify(mDelegateMock).onDismissed();
     }
 
@@ -218,7 +225,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     @Test
     public void testCallbackIsCalledWhenBankAccountIsSelected() {
         mCoordinator.showSheet(List.of(BANK_ACCOUNT_1));
-        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE), is(true));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
 
         Optional<PropertyModel> bankAccountModel =
                 getBankAccountModelByBankName(
@@ -236,7 +243,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     @Test
     public void testNoCallbackForSelectedBankAccountBeforeInputTime() {
         mCoordinator.showSheet(List.of(BANK_ACCOUNT_1));
-        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE), is(true));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
 
         Optional<PropertyModel> bankAccountModel =
                 getBankAccountModelByBankName(
@@ -256,6 +263,50 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         mClock.advanceCurrentTimeMillis(200);
         bankAccountModel.get().get(ON_BANK_ACCOUNT_CLICK_ACTION).run();
         verify(mDelegateMock, times(1)).onBankAccountSelected(BANK_ACCOUNT_1.getInstrumentId());
+    }
+
+    @Test
+    public void testCreatesModelForProgressScreen() {
+        mCoordinator.showProgressScreen();
+
+        // Verify that the bottom sheet model is updated to show the progress screen.
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN), is(PROGRESS_SCREEN));
+        assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
+        // Progress screen doesn't have any view properties.
+        assertEquals(
+                mFacilitatedPaymentsPaymentMethodsModel
+                        .get(SCREEN_VIEW_MODEL)
+                        .getAllProperties()
+                        .size(),
+                0);
+    }
+
+    @Test
+    public void testFopSelectorToProgressScreenSwapUpdatesModel() {
+        // Show the FOP selector.
+        mCoordinator.showSheet(List.of(BANK_ACCOUNT_1));
+
+        // Confirm the FOP selector is shown.
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN), is(FOP_SELECTOR));
+
+        // The bottom sheet is now open.
+        Mockito.when(mBottomSheetController.isSheetOpen()).thenReturn(true);
+        // Show the progress screen. The FOP selector is still being shown.
+        mCoordinator.showProgressScreen();
+
+        // Verify that the bottom sheet model is updated to show the progress screen.
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN), is(PROGRESS_SCREEN));
+        assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
+        // Progress screen doesn't have any view properties.
+        assertEquals(
+                mFacilitatedPaymentsPaymentMethodsModel
+                        .get(SCREEN_VIEW_MODEL)
+                        .getAllProperties()
+                        .size(),
+                0);
     }
 
     private static List<PropertyModel> getModelsOfType(ModelList items, int type) {

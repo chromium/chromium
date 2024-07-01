@@ -19,7 +19,10 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PROGRESS_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.UNINITIALIZED;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE_STATE;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.HIDDEN;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.SHOWN;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.SWAPPING_SCREEN;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,8 +51,17 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
             PropertyModel model,
             FacilitatedPaymentsPaymentMethodsView view,
             PropertyKey propertyKey) {
-        if (propertyKey == VISIBLE) {
-            view.setVisible(model.get(VISIBLE));
+        if (propertyKey == VISIBLE_STATE) {
+            switch (model.get(VISIBLE_STATE)) {
+                case HIDDEN:
+                    view.setVisible(false);
+                    break;
+                case SHOWN:
+                    view.setVisible(true);
+                    break;
+                default:
+                    assert model.get(VISIBLE_STATE) == SWAPPING_SCREEN : "Undefined visible state";
+            }
         } else if (propertyKey == SCREEN) {
             switch (model.get(SCREEN)) {
                 case FOP_SELECTOR:
