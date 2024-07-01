@@ -4,6 +4,7 @@
 
 source_set("ui") {
   sources = [
+    "contextual_sheet_display_controller.h",
     "contextual_sheet_view_controller.h",
     "contextual_sheet_view_controller.mm",
     "panel_content_consumer.h",

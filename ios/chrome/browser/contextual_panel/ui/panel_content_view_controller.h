@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/contextual_panel/ui/panel_content_consumer.h"
 
 @protocol ContextualSheetCommands;
+@protocol ContextualSheetDisplayController;
 @class PanelBlockData;
 
 // A view controller to display the contents of the Contextual Panel.
@@ -18,6 +19,9 @@
 // The handler for ContextualSheetCommands.
 @property(nonatomic, weak) id<ContextualSheetCommands>
     contextualSheetCommandHandler;
+
+@property(nonatomic, weak) id<ContextualSheetDisplayController>
+    sheetDisplayController;
 
 // Updates the current block data.
 - (void)setPanelBlocks:(NSArray<PanelBlockData*>*)panelBlocks;

@@ -7,10 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/contextual_panel/ui/contextual_sheet_display_controller.h"
+
 @protocol ContextualSheetCommands;
 
 // View controller for a custom sheet for the Contextual Panel.
-@interface ContextualSheetViewController : UIViewController
+@interface ContextualSheetViewController
+    : UIViewController <ContextualSheetDisplayController>
 
 // Command handler.
 @property(nonatomic, weak) id<ContextualSheetCommands> contextualSheetHandler;

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/contextual_panel/ui/panel_content_view_controller.h"
 
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/contextual_panel/ui/contextual_sheet_display_controller.h"
 #import "ios/chrome/browser/contextual_panel/ui/panel_block_data.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -150,6 +151,10 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
       subview.backgroundColor = UIColor.clearColor;
     }
   }
+
+  [self.view layoutIfNeeded];
+  [self.sheetDisplayController
+      setContentHeight:[self preferredHeightForContent]];
 }
 
 #pragma mark - Public methods
@@ -196,6 +201,16 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
       dequeueConfiguredReusableCellWithRegistration:registration
                                        forIndexPath:indexPath
                                                item:itemIdentifier];
+}
+
+- (CGFloat)preferredHeightForContent {
+  // The collection view takes up the entire view, so find the preferred size
+  // of the collection view.
+  CGFloat height = _collectionView.contentSize.height +
+                   _collectionView.contentInset.top +
+                   _collectionView.contentInset.bottom;
+
+  return height;
 }
 
 #pragma mark - View Initialization
@@ -304,6 +319,8 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
     UIEdgeInsets insets = _collectionView.contentInset;
     insets.bottom = height;
     _collectionView.contentInset = insets;
+    [self.sheetDisplayController
+        setContentHeight:[self preferredHeightForContent]];
   }
 }
 

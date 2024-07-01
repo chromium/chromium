@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/sample/coordinator/sample_block_modulator.h"
+#import "ios/chrome/browser/contextual_panel/ui/contextual_sheet_display_controller.h"
 #import "ios/chrome/browser/contextual_panel/ui/panel_content_view_controller.h"
 #import "ios/chrome/browser/price_insights/coordinator/price_insights_modulator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -71,6 +72,12 @@
   _viewController.contextualSheetCommandHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ContextualSheetCommands);
   [_viewController setPanelBlocks:panelBlocks];
+  if ([self.baseViewController
+          conformsToProtocol:@protocol(ContextualSheetDisplayController)]) {
+    _viewController.sheetDisplayController =
+        static_cast<id<ContextualSheetDisplayController>>(
+            self.baseViewController);
+  }
 
   [self.baseViewController addChildViewController:_viewController];
   [self.baseViewController.view addSubview:_viewController.view];

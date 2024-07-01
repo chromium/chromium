@@ -10,8 +10,8 @@
 
 namespace {
 
-// Height for the resting place of a medium detent sheet.
-const int kMediumDetentHeight = 450;
+// Height for the default resting place of a medium detent sheet.
+const int kDefaultMediumDetentHeight = 450;
 
 // Top margin for the resting place of a large detent sheet.
 const int kLargeDetentTopMargin = 50;
@@ -19,9 +19,6 @@ const int kLargeDetentTopMargin = 50;
 // Threshold for where ending a swipe gesture opens the sheet to the large
 // detent.
 const int kLargeDetentTopThreshold = 150;
-
-// Threshold for where ending a swipe gesture closes the sheet.
-const int kCloseBottomThreshold = 250;
 
 // Duration for the animation of the sheet's height.
 const CGFloat kHeightAnimationDuration = 0.2;
@@ -39,6 +36,9 @@ const CGFloat kHeightAnimationDuration = 0.2;
   // Stores the initial value of the heightConstraint when the pan gesture
   // starts for use in calculation.
   CGFloat _initialHeightConstraintConstant;
+
+  // The height of the sheet's content.
+  CGFloat _contentHeight;
 }
 
 - (void)viewDidLoad {
@@ -61,9 +61,44 @@ const CGFloat kHeightAnimationDuration = 0.2;
       self.view.superview, self.view,
       LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
 
-  _heightConstraint =
-      [self.view.heightAnchor constraintEqualToConstant:kMediumDetentHeight];
+  _heightConstraint = [self.view.heightAnchor
+      constraintEqualToConstant:[self mediumDetentHeight]];
   _heightConstraint.active = YES;
+}
+
+// Returns the calculated detent of the medium height sheet. If the content
+// height is less than the default medium detent, use that instead of the
+// default.
+- (CGFloat)mediumDetentHeight {
+  if (_contentHeight <= 0) {
+    return kDefaultMediumDetentHeight;
+  }
+  return MIN(_contentHeight, kDefaultMediumDetentHeight);
+}
+
+// If the sheet is short because the medium detent's size is lower than default,
+// then don't allow expansion to large detent.
+- (BOOL)shouldAllowLargeDetent {
+  return [self mediumDetentHeight] == kDefaultMediumDetentHeight;
+}
+
+// Returns the height the sheet should rest at if released at the current
+// position. Returns 0 to indicate the sheet should be closed.
+- (CGFloat)restingHeight {
+  CGFloat superviewHeight = self.view.superview.frame.size.height;
+
+  // TODO(crbug.com/349856760): Use half the medium detent as the threshold for
+  // now.
+  CGFloat closeThreshold = [self mediumDetentHeight] / 2;
+
+  if ([self shouldAllowLargeDetent] &&
+      superviewHeight - _heightConstraint.constant < kLargeDetentTopThreshold) {
+    return superviewHeight - kLargeDetentTopMargin;
+  } else if (_heightConstraint.constant < closeThreshold) {
+    return 0;
+  } else {
+    return [self mediumDetentHeight];
+  }
 }
 
 - (void)handlePanGesture:(UIPanGestureRecognizer*)sender {
@@ -75,17 +110,12 @@ const CGFloat kHeightAnimationDuration = 0.2;
 
   _heightConstraint.constant = _initialHeightConstraintConstant - translation;
 
-  CGFloat superviewHeight = self.view.superview.frame.size.height;
-
   if (sender.state == UIGestureRecognizerStateEnded) {
-    if (superviewHeight - _heightConstraint.constant <
-        kLargeDetentTopThreshold) {
-      [self animateHeightConstraintToConstant:superviewHeight -
-                                              kLargeDetentTopMargin];
-    } else if (_heightConstraint.constant < kCloseBottomThreshold) {
+    CGFloat newHeight = [self restingHeight];
+    if (newHeight == 0) {
       [self.contextualSheetHandler closeContextualSheet];
     } else {
-      [self animateHeightConstraintToConstant:kMediumDetentHeight];
+      [self animateHeightConstraintToConstant:newHeight];
     }
   }
 }
@@ -95,7 +125,7 @@ const CGFloat kHeightAnimationDuration = 0.2;
   // Make sure the view is laid out offscreen to prepare for the animation in.
   [self.view.superview layoutIfNeeded];
 
-  [self animateHeightConstraintToConstant:kMediumDetentHeight];
+  [self animateHeightConstraintToConstant:[self mediumDetentHeight]];
 }
 
 - (void)animateHeightConstraintToConstant:(CGFloat)constant {
@@ -113,6 +143,19 @@ const CGFloat kHeightAnimationDuration = 0.2;
 - (void)blockForAnimatingHeightConstraintToConstant:(CGFloat)constant {
   _heightConstraint.constant = constant;
   [self.view.superview layoutIfNeeded];
+}
+
+#pragma mark - ContextualSheetDisplayController
+
+- (void)setContentHeight:(CGFloat)height {
+  _contentHeight = height;
+
+  CGFloat newHeight = [self restingHeight];
+  // This should not close the sheet if the current height is short and the new
+  // contentHeight is tall.
+  if (newHeight > 0) {
+    _heightConstraint.constant = newHeight;
+  }
 }
 
 @end
