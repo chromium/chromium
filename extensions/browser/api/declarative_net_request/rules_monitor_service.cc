@@ -479,6 +479,7 @@ void RulesMonitorService::OnExtensionLoaded(
   LoadRequestData load_data(extension->id(), extension->version());
   int expected_ruleset_checksum;
 
+  PrefsHelper helper(*prefs_);
   // Static rulesets.
   {
     std::vector<FileBackedRulesetSource> sources =
@@ -500,8 +501,8 @@ void RulesMonitorService::OnExtensionLoaded(
       if (!enabled || ignored)
         continue;
 
-      if (!prefs_->GetDNRStaticRulesetChecksum(extension->id(), source.id(),
-                                               &expected_ruleset_checksum)) {
+      if (!helper.GetStaticRulesetChecksum(extension->id(), source.id(),
+                                           expected_ruleset_checksum)) {
         // This might happen on prefs corruption.
         LogLoadRulesetResult(LoadRulesetResult::kErrorChecksumNotFound);
         ruleset_failed_to_load = true;
@@ -520,8 +521,8 @@ void RulesMonitorService::OnExtensionLoaded(
   }
 
   // Dynamic ruleset
-  if (prefs_->GetDNRDynamicRulesetChecksum(extension->id(),
-                                           &expected_ruleset_checksum)) {
+  if (helper.GetDynamicRulesetChecksum(extension->id(),
+                                       expected_ruleset_checksum)) {
     RulesetInfo dynamic_ruleset(FileBackedRulesetSource::CreateDynamic(
         browser_context, extension->id()));
     dynamic_ruleset.set_expected_checksum(expected_ruleset_checksum);
@@ -591,9 +592,9 @@ void RulesMonitorService::OnExtensionUninstalled(
   global_rules_tracker_.ClearExtensionAllocation(extension->id());
 
   // Skip if the extension doesn't have a dynamic ruleset.
+  PrefsHelper helper(*prefs_);
   int dynamic_checksum;
-  if (!prefs_->GetDNRDynamicRulesetChecksum(extension->id(),
-                                            &dynamic_checksum)) {
+  if (!helper.GetDynamicRulesetChecksum(extension->id(), dynamic_checksum)) {
     return;
   }
 
@@ -742,6 +743,7 @@ void RulesMonitorService::UpdateEnabledStaticRulesetsInternal(
 
   LoadRequestData load_data(extension_id, extension->version());
   int expected_ruleset_checksum = -1;
+  PrefsHelper helper(*prefs_);
   for (const RulesetID& id_to_enable : ids_to_enable) {
     const DNRManifestData::RulesetInfo& info =
         DNRManifestData::GetRuleset(*extension, id_to_enable);
@@ -750,8 +752,8 @@ void RulesMonitorService::UpdateEnabledStaticRulesetsInternal(
 
     // Take note of the expected checksum if this ruleset has been indexed in
     // the past.
-    if (prefs_->GetDNRStaticRulesetChecksum(extension_id, id_to_enable,
-                                            &expected_ruleset_checksum)) {
+    if (helper.GetStaticRulesetChecksum(extension_id, id_to_enable,
+                                        expected_ruleset_checksum)) {
       static_ruleset.set_expected_checksum(expected_ruleset_checksum);
     }
 
@@ -1152,17 +1154,18 @@ void RulesMonitorService::LogMetricsAndUpdateChecksumsIfNeeded(
   // Note: We also do this for a non-enabled extension. The ruleset on the disk
   // has already been modified at this point. So we do want to update the
   // checksum for it to be in sync with what's on disk.
+  PrefsHelper helper(*prefs_);
   for (const RulesetInfo& ruleset : load_data.rulesets) {
     if (!ruleset.new_checksum())
       continue;
 
     if (ruleset.source().is_dynamic_ruleset()) {
-      prefs_->SetDNRDynamicRulesetChecksum(load_data.extension_id,
-                                           *(ruleset.new_checksum()));
+      helper.SetDynamicRulesetChecksum(load_data.extension_id,
+                                       *ruleset.new_checksum());
     } else {
-      prefs_->SetDNRStaticRulesetChecksum(load_data.extension_id,
-                                          ruleset.source().id(),
-                                          *(ruleset.new_checksum()));
+      helper.SetStaticRulesetChecksum(load_data.extension_id,
+                                      ruleset.source().id(),
+                                      *ruleset.new_checksum());
     }
   }
 }

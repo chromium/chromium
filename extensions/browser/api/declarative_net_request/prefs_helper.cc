@@ -19,10 +19,27 @@ namespace {
 
 // Additional preferences keys, which are not needed by external clients.
 
+// Key corresponding to which we store a ruleset's checksum for the Declarative
+// Net Request API.
+constexpr char kDNRChecksumKey[] = "checksum";
+
 // Key corresponding to which we store a ruleset's disabled rule ids for the
 // Declarative Net Request API.
-constexpr const char kDNRDisabledStaticRuleIds[] =
-    "dnr_disabled_static_rule_ids";
+constexpr char kDNRDisabledStaticRuleIds[] = "dnr_disabled_static_rule_ids";
+
+// Stores preferences corresponding to dynamic indexed ruleset for the
+// Declarative Net Request API. Note: we use a separate preference key for
+// dynamic rulesets instead of using the |kDNRStaticRulesetPref| dictionary.
+// This is because the |kDNRStaticRulesetPref| dictionary is re-populated on
+// each packed extension update and also on reloads of unpacked extensions.
+// However for both of these cases, we want the dynamic ruleset preferences to
+// stay unchanged. Also, this helps provide flexibility to have the dynamic
+// ruleset preference schema diverge from the static one.
+constexpr char kDNRDynamicRulesetPref[] = "dnr_dynamic_ruleset";
+
+// Stores preferences corresponding to static indexed rulesets for the
+// Declarative Net Request API.
+constexpr char kDNRStaticRulesetPref[] = "dnr_static_ruleset";
 
 base::flat_set<int> GetDisabledStaticRuleIdsFromDict(
     const base::Value::Dict* disabled_rule_ids_dict,
@@ -199,6 +216,40 @@ PrefsHelper::UpdateDisabledStaticRules(
   SetDisabledStaticRuleIds(extension_id, ruleset_id,
                            result.disabled_rule_ids_after_update);
   return result;
+}
+
+bool PrefsHelper::GetStaticRulesetChecksum(
+    const ExtensionId& extension_id,
+    declarative_net_request::RulesetID ruleset_id,
+    int& checksum) const {
+  std::string pref = ExtensionPrefs::JoinPrefs(
+      {kDNRStaticRulesetPref, base::NumberToString(ruleset_id.value()),
+       kDNRChecksumKey});
+  return prefs_->ReadPrefAsInteger(extension_id, pref, &checksum);
+}
+
+void PrefsHelper::SetStaticRulesetChecksum(
+    const ExtensionId& extension_id,
+    declarative_net_request::RulesetID ruleset_id,
+    int checksum) {
+  std::string pref = ExtensionPrefs::JoinPrefs(
+      {kDNRStaticRulesetPref, base::NumberToString(ruleset_id.value()),
+       kDNRChecksumKey});
+  prefs_->UpdateExtensionPref(extension_id, pref, base::Value(checksum));
+}
+
+bool PrefsHelper::GetDynamicRulesetChecksum(const ExtensionId& extension_id,
+                                            int& checksum) const {
+  std::string pref =
+      ExtensionPrefs::JoinPrefs({kDNRDynamicRulesetPref, kDNRChecksumKey});
+  return prefs_->ReadPrefAsInteger(extension_id, pref, &checksum);
+}
+
+void PrefsHelper::SetDynamicRulesetChecksum(const ExtensionId& extension_id,
+                                            int checksum) {
+  std::string pref =
+      ExtensionPrefs::JoinPrefs({kDNRDynamicRulesetPref, kDNRChecksumKey});
+  prefs_->UpdateExtensionPref(extension_id, pref, base::Value(checksum));
 }
 
 }  // namespace extensions::declarative_net_request

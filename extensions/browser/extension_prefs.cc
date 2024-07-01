@@ -237,16 +237,6 @@ constexpr const char kPrefDoNotSync[] = "do_not_sync";
 // that need to be synced. Default value is false.
 constexpr const char kPrefNeedsSync[] = "needs_sync";
 
-// Stores preferences corresponding to dynamic indexed ruleset for the
-// Declarative Net Request API. Note: we use a separate preference key for
-// dynamic rulesets instead of using the |kDNRStaticRulesetPref| dictionary.
-// This is because the |kDNRStaticRulesetPref| dictionary is re-populated on
-// each packed extension update and also on reloads of unpacked extensions.
-// However for both of these cases, we want the dynamic ruleset preferences to
-// stay unchanged. Also, this helps provide flexibility to have the dynamic
-// ruleset preference schema diverge from the static one.
-constexpr const char kDNRDynamicRulesetPref[] = "dnr_dynamic_ruleset";
-
 // Key corresponding to which we store a ruleset's checksum for the Declarative
 // Net Request API.
 constexpr const char kDNRChecksumKey[] = "checksum";
@@ -2059,40 +2049,6 @@ void ExtensionPrefs::SetNeedsSync(const ExtensionId& extension_id,
     value = base::Value(true);
   }
   UpdateExtensionPref(extension_id, kPrefNeedsSync, std::move(value));
-}
-
-bool ExtensionPrefs::GetDNRStaticRulesetChecksum(
-    const ExtensionId& extension_id,
-    declarative_net_request::RulesetID ruleset_id,
-    int* checksum) const {
-  std::string pref =
-      JoinPrefs({kDNRStaticRulesetPref,
-                 base::NumberToString(ruleset_id.value()), kDNRChecksumKey});
-  return ReadPrefAsInteger(extension_id, pref, checksum);
-}
-
-void ExtensionPrefs::SetDNRStaticRulesetChecksum(
-    const ExtensionId& extension_id,
-    declarative_net_request::RulesetID ruleset_id,
-    int checksum) {
-  std::string pref =
-      JoinPrefs({kDNRStaticRulesetPref,
-                 base::NumberToString(ruleset_id.value()), kDNRChecksumKey});
-  UpdateExtensionPref(extension_id, pref, base::Value(checksum));
-}
-
-bool ExtensionPrefs::GetDNRDynamicRulesetChecksum(
-    const ExtensionId& extension_id,
-    int* checksum) const {
-  std::string pref = JoinPrefs({kDNRDynamicRulesetPref, kDNRChecksumKey});
-  return ReadPrefAsInteger(extension_id, pref, checksum);
-}
-
-void ExtensionPrefs::SetDNRDynamicRulesetChecksum(
-    const ExtensionId& extension_id,
-    int checksum) {
-  std::string pref = JoinPrefs({kDNRDynamicRulesetPref, kDNRChecksumKey});
-  UpdateExtensionPref(extension_id, pref, base::Value(checksum));
 }
 
 std::optional<std::set<declarative_net_request::RulesetID>>

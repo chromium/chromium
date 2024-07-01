@@ -18,6 +18,7 @@
 #include "components/version_info/channel.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
+#include "extensions/browser/api/declarative_net_request/prefs_helper.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 #include "extensions/browser/api/declarative_net_request/test_utils.h"
@@ -97,10 +98,9 @@ class RulesetManagerTest : public DNRTestBase {
     ASSERT_EQ(1u, sources.size());
 
     int expected_checksum;
-    EXPECT_TRUE(ExtensionPrefs::Get(browser_context())
-                    ->GetDNRStaticRulesetChecksum(last_loaded_extension_->id(),
-                                                  sources[0].id(),
-                                                  &expected_checksum));
+    PrefsHelper helper(*ExtensionPrefs::Get(browser_context()));
+    EXPECT_TRUE(helper.GetStaticRulesetChecksum(
+        last_loaded_extension_->id(), sources[0].id(), expected_checksum));
 
     std::vector<std::unique_ptr<RulesetMatcher>> matchers(1);
     EXPECT_EQ(

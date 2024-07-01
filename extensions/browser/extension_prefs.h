@@ -697,25 +697,6 @@ class ExtensionPrefs : public KeyedService {
   bool NeedsSync(const ExtensionId& extension_id) const;
   void SetNeedsSync(const ExtensionId& extension_id, bool needs_sync);
 
-  // Returns false if there is no ruleset checksum corresponding to the given
-  // |extension_id| and |ruleset_id|. On success, returns true and populates the
-  // checksum.
-  bool GetDNRStaticRulesetChecksum(
-      const ExtensionId& extension_id,
-      declarative_net_request::RulesetID ruleset_id,
-      int* checksum) const;
-  void SetDNRStaticRulesetChecksum(
-      const ExtensionId& extension_id,
-      declarative_net_request::RulesetID ruleset_id,
-      int checksum);
-
-  // Returns false if there is no dynamic ruleset corresponding to
-  // |extension_id|. On success, returns true and populates the checksum.
-  bool GetDNRDynamicRulesetChecksum(const ExtensionId& extension_id,
-                                    int* checksum) const;
-  void SetDNRDynamicRulesetChecksum(const ExtensionId& extension_id,
-                                    int checksum);
-
   // Returns the set of enabled static ruleset IDs or std::nullopt if the
   // extension hasn't updated the set of enabled static rulesets.
   std::optional<std::set<declarative_net_request::RulesetID>>

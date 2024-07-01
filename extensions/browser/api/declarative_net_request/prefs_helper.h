@@ -81,6 +81,23 @@ class PrefsHelper {
       RulesetID ruleset_id,
       const RuleIdsToUpdate& rule_ids_to_update);
 
+  // Returns false if there is no ruleset checksum corresponding to the given
+  // |extension_id| and |ruleset_id|. On success, returns true and populates the
+  // checksum.
+  bool GetStaticRulesetChecksum(const ExtensionId& extension_id,
+                                RulesetID ruleset_id,
+                                int& checksum) const;
+
+  void SetStaticRulesetChecksum(const ExtensionId& extension_id,
+                                RulesetID ruleset_id,
+                                int checksum);
+
+  // Returns false if there is no dynamic ruleset corresponding to
+  // |extension_id|. On success, returns true and populates the checksum.
+  bool GetDynamicRulesetChecksum(const ExtensionId& extension_id,
+                                 int& checksum) const;
+  void SetDynamicRulesetChecksum(const ExtensionId& extension_id, int checksum);
+
  private:
   const base::Value::Dict* GetDisabledRuleIdsDict(const ExtensionId&) const;
   void SetDisabledStaticRuleIds(const ExtensionId& extension_id,

@@ -91,6 +91,7 @@
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/declarative_net_request_api.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
+#include "extensions/browser/api/declarative_net_request/prefs_helper.h"
 #include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_manager.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
@@ -2844,9 +2845,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   std::vector<int> corrupted_ruleset_indices = {0, 2, 3};
   std::vector<int> non_corrupted_ruleset_indices = {1};
 
+  PrefsHelper helper(*ExtensionPrefs::Get(profile()));
   for (int index : corrupted_ruleset_indices) {
-    ExtensionPrefs::Get(profile())->SetDNRStaticRulesetChecksum(
-        extension_id, sources[index].id(), kInvalidRulesetChecksum);
+    helper.SetStaticRulesetChecksum(extension_id, sources[index].id(),
+                                    kInvalidRulesetChecksum);
   }
 
   DisableExtension(extension_id);
@@ -2954,7 +2956,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
                                   LoadRulesetResult::kSuccess /*sample*/));
 
   // Ensure that the new checksum was correctly persisted in prefs.
-  const ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   const Extension* extension = last_loaded_extension();
   std::vector<FileBackedRulesetSource> static_sources =
       FileBackedRulesetSource::CreateStatic(
@@ -2962,16 +2964,18 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   ASSERT_EQ(static_cast<size_t>(kNumStaticRulesets), static_sources.size());
 
   int checksum = kTestChecksum + 1;
+
+  PrefsHelper helper(*prefs);
   for (const FileBackedRulesetSource& source : static_sources) {
-    EXPECT_TRUE(prefs->GetDNRStaticRulesetChecksum(extension_id, source.id(),
-                                                   &checksum));
+    EXPECT_TRUE(
+        helper.GetStaticRulesetChecksum(extension_id, source.id(), checksum));
     EXPECT_EQ(kTestChecksum, checksum);
 
     // Reset checksum for the next test.
     checksum = kTestChecksum + 1;
   }
 
-  EXPECT_TRUE(prefs->GetDNRDynamicRulesetChecksum(extension_id, &checksum));
+  EXPECT_TRUE(helper.GetDynamicRulesetChecksum(extension_id, checksum));
   EXPECT_EQ(kTestChecksum, checksum);
 }
 
@@ -2993,10 +2997,11 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   DisableExtension(extension_id);
   WaitForExtensionsWithRulesetsCount(0);
 
-  const ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  PrefsHelper helper(*prefs);
   int checksum = -1;
-  EXPECT_TRUE(prefs->GetDNRStaticRulesetChecksum(
-      extension_id, static_sources[0].id(), &checksum));
+  EXPECT_TRUE(helper.GetStaticRulesetChecksum(
+      extension_id, static_sources[0].id(), checksum));
 
   // Now change the current indexed ruleset format version. This should cause a
   // version mismatch when the extension is loaded again, but re-indexing should
@@ -3028,8 +3033,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
       true /*sample*/, 1 /*count*/);
 
   // Verify that the prefs for the static ruleset were deleted successfully.
-  EXPECT_FALSE(prefs->GetDNRStaticRulesetChecksum(
-      extension_id, static_sources[0].id(), &checksum));
+  EXPECT_FALSE(helper.GetStaticRulesetChecksum(
+      extension_id, static_sources[0].id(), checksum));
 }
 
 // Tests that redirecting requests using the declarativeNetRequest API works
@@ -4975,14 +4980,13 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   // first enabled. The second ruleset has not been enabled yet, so it shouldn't
   // have been indexed yet either.
   int checksum = -1;
-  EXPECT_TRUE(prefs->GetDNRStaticRulesetChecksum(
-      extension_id, kMinValidStaticRulesetID, &checksum));
-  EXPECT_FALSE(prefs->GetDNRStaticRulesetChecksum(
-      extension_id, RulesetID(kMinValidStaticRulesetID.value() + 1),
-      &checksum));
-  EXPECT_TRUE(prefs->GetDNRStaticRulesetChecksum(
-      extension_id, RulesetID(kMinValidStaticRulesetID.value() + 2),
-      &checksum));
+  PrefsHelper helper(*prefs);
+  EXPECT_TRUE(helper.GetStaticRulesetChecksum(
+      extension_id, kMinValidStaticRulesetID, checksum));
+  EXPECT_FALSE(helper.GetStaticRulesetChecksum(
+      extension_id, RulesetID(kMinValidStaticRulesetID.value() + 1), checksum));
+  EXPECT_TRUE(helper.GetStaticRulesetChecksum(
+      extension_id, RulesetID(kMinValidStaticRulesetID.value() + 2), checksum));
 
   // Also add a dynamic rule.
   ASSERT_NO_FATAL_FAILURE(
@@ -5002,19 +5006,16 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   // the second static ruleset now should have been indexed since it has now
   // been enabled.
   int dynamic_checksum_1 = -1;
-  EXPECT_TRUE(prefs->GetDNRStaticRulesetChecksum(
-      extension_id, kMinValidStaticRulesetID, &checksum));
-  EXPECT_TRUE(prefs->GetDNRStaticRulesetChecksum(
-      extension_id, RulesetID(kMinValidStaticRulesetID.value() + 1),
-      &checksum));
-  EXPECT_TRUE(prefs->GetDNRStaticRulesetChecksum(
-      extension_id, RulesetID(kMinValidStaticRulesetID.value() + 2),
-      &checksum));
-  EXPECT_FALSE(prefs->GetDNRStaticRulesetChecksum(
-      extension_id, RulesetID(kMinValidStaticRulesetID.value() + 3),
-      &checksum));
+  EXPECT_TRUE(helper.GetStaticRulesetChecksum(
+      extension_id, kMinValidStaticRulesetID, checksum));
+  EXPECT_TRUE(helper.GetStaticRulesetChecksum(
+      extension_id, RulesetID(kMinValidStaticRulesetID.value() + 1), checksum));
+  EXPECT_TRUE(helper.GetStaticRulesetChecksum(
+      extension_id, RulesetID(kMinValidStaticRulesetID.value() + 2), checksum));
+  EXPECT_FALSE(helper.GetStaticRulesetChecksum(
+      extension_id, RulesetID(kMinValidStaticRulesetID.value() + 3), checksum));
   EXPECT_TRUE(
-      prefs->GetDNRDynamicRulesetChecksum(extension_id, &dynamic_checksum_1));
+      helper.GetDynamicRulesetChecksum(extension_id, dynamic_checksum_1));
   std::optional<std::set<RulesetID>> enabled_static_rulesets =
       prefs->GetDNREnabledStaticRulesets(extension_id);
   ASSERT_TRUE(enabled_static_rulesets);
@@ -5041,16 +5042,14 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
               UnorderedElementsAre("id1", dnr_api::DYNAMIC_RULESET_ID));
 
   int dynamic_checksum_2;
-  EXPECT_TRUE(prefs->GetDNRStaticRulesetChecksum(
-      extension_id, kMinValidStaticRulesetID, &checksum));
-  EXPECT_FALSE(prefs->GetDNRStaticRulesetChecksum(
-      extension_id, RulesetID(kMinValidStaticRulesetID.value() + 1),
-      &checksum));
-  EXPECT_FALSE(prefs->GetDNRStaticRulesetChecksum(
-      extension_id, RulesetID(kMinValidStaticRulesetID.value() + 2),
-      &checksum));
+  EXPECT_TRUE(helper.GetStaticRulesetChecksum(
+      extension_id, kMinValidStaticRulesetID, checksum));
+  EXPECT_FALSE(helper.GetStaticRulesetChecksum(
+      extension_id, RulesetID(kMinValidStaticRulesetID.value() + 1), checksum));
+  EXPECT_FALSE(helper.GetStaticRulesetChecksum(
+      extension_id, RulesetID(kMinValidStaticRulesetID.value() + 2), checksum));
   EXPECT_TRUE(
-      prefs->GetDNRDynamicRulesetChecksum(extension_id, &dynamic_checksum_2));
+      helper.GetDynamicRulesetChecksum(extension_id, dynamic_checksum_2));
   EXPECT_EQ(dynamic_checksum_2, dynamic_checksum_1);
 
   // Ensure the preference for enabled static rulesets is cleared on extension
@@ -5089,13 +5088,13 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   // Also sanity check the extension prefs entry for the rulesets.
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   ASSERT_TRUE(prefs);
+  PrefsHelper helper(*prefs);
   int checksum = -1;
-  EXPECT_TRUE(prefs->GetDNRStaticRulesetChecksum(
-      extension_id, kMinValidStaticRulesetID, &checksum));
-  EXPECT_TRUE(prefs->GetDNRStaticRulesetChecksum(
-      extension_id, RulesetID(kMinValidStaticRulesetID.value() + 1),
-      &checksum));
-  EXPECT_FALSE(prefs->GetDNRDynamicRulesetChecksum(extension_id, &checksum));
+  EXPECT_TRUE(helper.GetStaticRulesetChecksum(
+      extension_id, kMinValidStaticRulesetID, checksum));
+  EXPECT_TRUE(helper.GetStaticRulesetChecksum(
+      extension_id, RulesetID(kMinValidStaticRulesetID.value() + 1), checksum));
+  EXPECT_FALSE(helper.GetDynamicRulesetChecksum(extension_id, checksum));
 
   const char* kDirectory2 = "dir2";
   ASSERT_NO_FATAL_FAILURE(UpdateLastLoadedExtension(
@@ -5108,12 +5107,11 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   EXPECT_FALSE(composite_matcher);
 
   // Ensure the prefs entry are cleared appropriately.
-  EXPECT_FALSE(prefs->GetDNRStaticRulesetChecksum(
-      extension_id, kMinValidStaticRulesetID, &checksum));
-  EXPECT_FALSE(prefs->GetDNRStaticRulesetChecksum(
-      extension_id, RulesetID(kMinValidStaticRulesetID.value() + 1),
-      &checksum));
-  EXPECT_FALSE(prefs->GetDNRDynamicRulesetChecksum(extension_id, &checksum));
+  EXPECT_FALSE(helper.GetStaticRulesetChecksum(
+      extension_id, kMinValidStaticRulesetID, checksum));
+  EXPECT_FALSE(helper.GetStaticRulesetChecksum(
+      extension_id, RulesetID(kMinValidStaticRulesetID.value() + 1), checksum));
+  EXPECT_FALSE(helper.GetDynamicRulesetChecksum(extension_id, checksum));
 }
 
 // Tests that persisted disabled static rule ids are no longer kept after an
@@ -5175,12 +5173,12 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
                        RemoveStalePrefsOnDelayedUpdate) {
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
                    ConfigFlag::kConfig_ListenForOnUpdateAvailable);
-  const ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
-
-  auto is_checksum_in_prefs = [this, prefs](const RulesetID& ruleset_id) {
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  PrefsHelper helper(*prefs);
+  auto is_checksum_in_prefs = [this, &helper](const RulesetID& ruleset_id) {
     int checksum;
-    return prefs->GetDNRStaticRulesetChecksum(last_loaded_extension_id(),
-                                              ruleset_id, &checksum);
+    return helper.GetStaticRulesetChecksum(last_loaded_extension_id(),
+                                           ruleset_id, checksum);
   };
 
   // Load one extension with one ruleset that is disabled by default.
