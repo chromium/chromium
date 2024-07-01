@@ -23,6 +23,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
@@ -422,15 +423,55 @@ TEST_F(PasswordStoreTest, RemoveLoginsCreatedBetweenCallbackIsCalled) {
   store->AddObserver(&mock_observer);
 
   EXPECT_CALL(mock_observer, OnLoginsChanged(_, testing::SizeIs(1u)));
-  base::RunLoop run_loop;
-  store->RemoveLoginsCreatedBetween(
-      FROM_HERE, base::Time::FromSecondsSinceUnixEpoch(0),
-      base::Time::FromSecondsSinceUnixEpoch(2),
-      base::BindLambdaForTesting([&run_loop](bool) { run_loop.Quit(); }));
-  run_loop.Run();
+  base::test::TestFuture<bool> completion_future;
+
+  store->RemoveLoginsCreatedBetween(FROM_HERE,
+                                    base::Time::FromSecondsSinceUnixEpoch(0),
+                                    base::Time::FromSecondsSinceUnixEpoch(2),
+                                    completion_future.GetCallback());
+  EXPECT_TRUE(completion_future.Take());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   store->RemoveObserver(&mock_observer);
+  store->ShutdownOnUIThread();
+}
+
+TEST_F(PasswordStoreTest,
+       RemoveLoginsCreatedBetweenCompletedSuccessfullyWithEmtpyListOfChanges) {
+  auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
+  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+
+  base::test::TestFuture<bool> completion_future;
+  EXPECT_CALL(*mock_backend, RemoveLoginsCreatedBetweenAsync)
+      .WillOnce(WithArg<3>(Invoke([](PasswordChangesOrErrorReply reply) {
+        std::move(reply).Run(PasswordStoreChangeList());
+      })));
+  store->RemoveLoginsCreatedBetween(FROM_HERE,
+                                    base::Time::FromSecondsSinceUnixEpoch(0),
+                                    base::Time::FromSecondsSinceUnixEpoch(2),
+                                    completion_future.GetCallback());
+  EXPECT_TRUE(completion_future.Take());
+
+  store->ShutdownOnUIThread();
+}
+
+TEST_F(PasswordStoreTest,
+       RemoveLoginsCreatedBetweenCompletionFailedWithBackendError) {
+  auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
+  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+
+  base::test::TestFuture<bool> completion_future;
+  EXPECT_CALL(*mock_backend, RemoveLoginsCreatedBetweenAsync)
+      .WillOnce(
+          WithArg<3>(Invoke([](PasswordChangesOrErrorReply reply) -> void {
+            std::move(reply).Run(kBackendError);
+          })));
+  store->RemoveLoginsCreatedBetween(FROM_HERE,
+                                    base::Time::FromSecondsSinceUnixEpoch(0),
+                                    base::Time::FromSecondsSinceUnixEpoch(2),
+                                    completion_future.GetCallback());
+  EXPECT_FALSE(completion_future.Take());
+
   store->ShutdownOnUIThread();
 }
 

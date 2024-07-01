@@ -30,6 +30,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
@@ -43,25 +44,20 @@ namespace password_manager {
 
 namespace {
 
-// Helper function which invokes |notifying_callback| and |completion_callback|
-// when changes are received.
+// Helper function which invokes |notifying_callback| with potential changes
+// and |completion_callback| with success indication.
 void InvokeCallbacksForSuspectedChanges(
     base::OnceCallback<void(PasswordChanges)> notifying_callback,
     base::OnceCallback<void(bool)> completion_callback,
-    PasswordChanges changes) {
+    PasswordChangesOrError changes_or_error) {
   DCHECK(notifying_callback);
-  // Two cases *presumably* have changes that need to be reported:
-  // 1. `changes` contains a non-empty PasswordStoreChangeList.
-  // 2. `changes` contains nullopt PasswordStoreChangeList because the
-  //    backend can't compute it. A full list will be requested instead.
-  // Only if `changes` contains an empty PasswordStoreChangeList, Chrome knows
-  // for certain that no changes have happened:
-  bool completed = !changes.has_value() || !changes->empty();
+  bool success =
+      !absl::holds_alternative<PasswordStoreBackendError>(changes_or_error);
 
-  // In any case, we want to indicate the completed operation:
-  std::move(notifying_callback).Run(std::move(changes));
+  std::move(notifying_callback)
+      .Run(GetPasswordChangesOrNulloptOnFailure(std::move(changes_or_error)));
   if (completion_callback) {
-    std::move(completion_callback).Run(completed);
+    std::move(completion_callback).Run(success);
   }
 }
 
@@ -239,9 +235,8 @@ void PasswordStore::RemoveLoginsCreatedBetween(
                      LoginsChangedTrigger::BatchDeletion);
   backend_->RemoveLoginsCreatedBetweenAsync(
       location, delete_begin, delete_end,
-      base::BindOnce(&GetPasswordChangesOrNulloptOnFailure)
-          .Then(base::BindOnce(&InvokeCallbacksForSuspectedChanges,
-                               std::move(callback), std::move(completion))));
+      base::BindOnce(&InvokeCallbacksForSuspectedChanges, std::move(callback),
+                     std::move(completion)));
 }
 
 void PasswordStore::DisableAutoSignInForOrigins(
