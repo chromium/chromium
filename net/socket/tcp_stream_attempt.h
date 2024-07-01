@@ -41,6 +41,8 @@ class NET_EXPORT_PRIVATE TcpStreamAttempt final : public StreamAttempt {
 
   int StartInternal() override;
 
+  void HandleCompletion();
+
   void OnIOComplete(int rv);
 
   void OnTimeout();

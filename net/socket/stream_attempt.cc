@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -59,7 +58,6 @@ StreamAttempt::~StreamAttempt() {
 }
 
 int StreamAttempt::Start(CompletionOnceCallback callback) {
-  start_time_ = base::TimeTicks::Now();
   net_log().BeginEvent(net_log_attempt_event_type_);
 
   int rv = StartInternal();
@@ -88,7 +86,6 @@ void StreamAttempt::NotifyOfCompletion(int rv) {
 }
 
 void StreamAttempt::LogCompletion(int rv) {
-  end_time_ = base::TimeTicks::Now();
   net_log().EndEventWithNetErrorCode(net_log_attempt_event_type_, rv);
 }
 

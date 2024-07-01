@@ -90,6 +90,11 @@ int TlsStreamAttempt::DoTcpAttempt() {
 }
 
 int TlsStreamAttempt::DoTcpAttemptComplete(int rv) {
+  const LoadTimingInfo::ConnectTiming& nested_timing =
+      nested_attempt_->connect_timing();
+  mutable_connect_timing().connect_start = nested_timing.connect_start;
+  mutable_connect_timing().connect_end = nested_timing.connect_end;
+
   if (rv != OK) {
     return rv;
   }
@@ -111,6 +116,7 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
   nested_attempt_.reset();
 
   tls_handshake_started_ = true;
+  mutable_connect_timing().ssl_start = base::TimeTicks::Now();
   tls_handshake_timeout_timer_.Start(
       FROM_HERE, kTlsHandshakeTimeout,
       base::BindOnce(&TlsStreamAttempt::OnTlsHandshakeTimeout,
@@ -127,6 +133,7 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
 int TlsStreamAttempt::DoTlsAttemptComplete(int rv) {
   CHECK(ssl_socket_);
 
+  mutable_connect_timing().ssl_end = base::TimeTicks::Now();
   tls_handshake_timeout_timer_.Stop();
 
   // TODO(crbug.com/346835898): Record some histograms as SSLConnectJob does.

@@ -168,6 +168,10 @@ TEST_F(TlsStreamAttemptTest, SuccessSync) {
       helper.attempt()->ReleaseStreamSocket();
   ASSERT_TRUE(stream_socket);
   ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_IDLE);
+  ASSERT_FALSE(helper.attempt()->connect_timing().connect_start.is_null());
+  ASSERT_FALSE(helper.attempt()->connect_timing().connect_end.is_null());
+  ASSERT_FALSE(helper.attempt()->connect_timing().ssl_start.is_null());
+  ASSERT_FALSE(helper.attempt()->connect_timing().ssl_end.is_null());
 }
 
 TEST_F(TlsStreamAttemptTest, SuccessAsync) {
@@ -188,6 +192,10 @@ TEST_F(TlsStreamAttemptTest, SuccessAsync) {
       helper.attempt()->ReleaseStreamSocket();
   ASSERT_TRUE(stream_socket);
   ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_IDLE);
+  ASSERT_FALSE(helper.attempt()->connect_timing().connect_start.is_null());
+  ASSERT_FALSE(helper.attempt()->connect_timing().connect_end.is_null());
+  ASSERT_FALSE(helper.attempt()->connect_timing().ssl_start.is_null());
+  ASSERT_FALSE(helper.attempt()->connect_timing().ssl_end.is_null());
 }
 
 TEST_F(TlsStreamAttemptTest, SSLConfigDelayed) {
@@ -226,6 +234,10 @@ TEST_F(TlsStreamAttemptTest, TcpFail) {
   ASSERT_FALSE(stream_socket);
 
   ASSERT_FALSE(helper.attempt()->IsTlsHandshakeStarted());
+  ASSERT_FALSE(helper.attempt()->connect_timing().connect_start.is_null());
+  ASSERT_FALSE(helper.attempt()->connect_timing().connect_end.is_null());
+  ASSERT_TRUE(helper.attempt()->connect_timing().ssl_start.is_null());
+  ASSERT_TRUE(helper.attempt()->connect_timing().ssl_end.is_null());
 }
 
 TEST_F(TlsStreamAttemptTest, TcpTimeout) {
@@ -268,6 +280,10 @@ TEST_F(TlsStreamAttemptTest, TlsTimeout) {
       helper.attempt()->ReleaseStreamSocket();
   ASSERT_FALSE(stream_socket);
   ASSERT_TRUE(helper.attempt()->IsTlsHandshakeStarted());
+  ASSERT_FALSE(helper.attempt()->connect_timing().connect_start.is_null());
+  ASSERT_FALSE(helper.attempt()->connect_timing().connect_end.is_null());
+  ASSERT_FALSE(helper.attempt()->connect_timing().ssl_start.is_null());
+  ASSERT_FALSE(helper.attempt()->connect_timing().ssl_end.is_null());
 }
 
 TEST_F(TlsStreamAttemptTest, CertError) {

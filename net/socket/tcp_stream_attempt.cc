@@ -38,6 +38,8 @@ LoadState TcpStreamAttempt::GetLoadState() const {
 }
 
 int TcpStreamAttempt::StartInternal() {
+  next_state_ = State::kConnecting;
+
   std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher;
   if (params().socket_performance_watcher_factory) {
     socket_performance_watcher =
@@ -56,6 +58,7 @@ int TcpStreamAttempt::StartInternal() {
   TransportClientSocket* socket_ptr = stream_socket.get();
   SetStreamSocket(std::move(stream_socket));
 
+  mutable_connect_timing().connect_start = base::TimeTicks::Now();
   CHECK(!timeout_timer_.IsRunning());
   timeout_timer_.Start(
       FROM_HERE, kTcpHandshakeTimeout,
@@ -63,16 +66,21 @@ int TcpStreamAttempt::StartInternal() {
 
   int rv = socket_ptr->Connect(
       base::BindOnce(&TcpStreamAttempt::OnIOComplete, base::Unretained(this)));
-  if (rv == ERR_IO_PENDING) {
-    next_state_ = State::kConnecting;
+  if (rv != ERR_IO_PENDING) {
+    HandleCompletion();
   }
   return rv;
 }
 
-void TcpStreamAttempt::OnIOComplete(int rv) {
-  CHECK_NE(rv, ERR_IO_PENDING);
+void TcpStreamAttempt::HandleCompletion() {
   next_state_ = State::kNone;
   timeout_timer_.Stop();
+  mutable_connect_timing().connect_end = base::TimeTicks::Now();
+}
+
+void TcpStreamAttempt::OnIOComplete(int rv) {
+  CHECK_NE(rv, ERR_IO_PENDING);
+  HandleCompletion();
   NotifyOfCompletion(rv);
 }
 

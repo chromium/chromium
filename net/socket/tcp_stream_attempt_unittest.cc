@@ -156,8 +156,8 @@ TEST_F(TcpStreamAttemptTest, SuccessSync) {
   std::unique_ptr<StreamSocket> stream_socket =
       helper.attempt()->ReleaseStreamSocket();
   ASSERT_TRUE(stream_socket);
-  ASSERT_FALSE(helper.attempt()->start_time().is_null());
-  ASSERT_FALSE(helper.attempt()->end_time().is_null());
+  ASSERT_FALSE(helper.attempt()->connect_timing().connect_start.is_null());
+  ASSERT_FALSE(helper.attempt()->connect_timing().connect_end.is_null());
   ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_IDLE);
 }
 
@@ -175,8 +175,8 @@ TEST_F(TcpStreamAttemptTest, SuccessAsync) {
   std::unique_ptr<StreamSocket> stream_socket =
       helper.attempt()->ReleaseStreamSocket();
   ASSERT_TRUE(stream_socket);
-  ASSERT_FALSE(helper.attempt()->start_time().is_null());
-  ASSERT_FALSE(helper.attempt()->end_time().is_null());
+  ASSERT_FALSE(helper.attempt()->connect_timing().connect_start.is_null());
+  ASSERT_FALSE(helper.attempt()->connect_timing().connect_end.is_null());
   ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_IDLE);
 }
 
@@ -246,8 +246,8 @@ TEST_F(TcpStreamAttemptTest, SocketPerformanceWatcher) {
   std::unique_ptr<StreamSocket> stream_socket =
       helper.attempt()->ReleaseStreamSocket();
   ASSERT_TRUE(stream_socket);
-  ASSERT_FALSE(helper.attempt()->start_time().is_null());
-  ASSERT_FALSE(helper.attempt()->end_time().is_null());
+  ASSERT_FALSE(helper.attempt()->connect_timing().connect_start.is_null());
+  ASSERT_FALSE(helper.attempt()->connect_timing().connect_end.is_null());
   ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_IDLE);
 }
 

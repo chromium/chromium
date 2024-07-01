@@ -8,10 +8,10 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_states.h"
+#include "net/base/load_timing_info.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
@@ -74,13 +74,11 @@ class NET_EXPORT_PRIVATE StreamAttempt {
 
   const NetLogWithSource& net_log() const { return net_log_; }
 
-  // Returns the start time of this attempt. Should only be accessed after the
-  // attempt started.
-  base::TimeTicks start_time() const { return start_time_; }
-
-  // Returns the end time of this attempt. Should only be accessed after the
-  // attempt completed.
-  base::TimeTicks end_time() const { return end_time_; }
+  // Returns the connect timing information of this attempt. Should only be
+  // accessed after the attempt completed. DNS related fields are never set.
+  const LoadTimingInfo::ConnectTiming& connect_timing() const {
+    return connect_timing_;
+  }
 
  protected:
   virtual int StartInternal() = 0;
@@ -92,6 +90,10 @@ class NET_EXPORT_PRIVATE StreamAttempt {
   // Called by subclasses to notify the completion of this attempt. `this` may
   // be deleted after calling this method.
   void NotifyOfCompletion(int rv);
+
+  LoadTimingInfo::ConnectTiming& mutable_connect_timing() {
+    return connect_timing_;
+  }
 
  private:
   void LogCompletion(int rv);
@@ -107,8 +109,7 @@ class NET_EXPORT_PRIVATE StreamAttempt {
 
   std::unique_ptr<StreamSocket> stream_socket_;
 
-  base::TimeTicks start_time_;
-  base::TimeTicks end_time_;
+  LoadTimingInfo::ConnectTiming connect_timing_;
 };
 
 }  // namespace net
