@@ -852,6 +852,7 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="NetworkBandwidth"/>
   <int value="19" label="SensitiveSensor"/>
   <int value="20" label="CameraFrameAnalysis"/>
+  <int value="21" label="BatteryDischarge"/>
 </enum>
 
 <enum name="CrosHealthdTelemetryResult">
