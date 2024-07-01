@@ -539,17 +539,17 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
           [](base::RunLoop* run_loop,
              const std::vector<BatchAnnotationResult>& results) {
             ASSERT_EQ(results.size(), 1U);
-            EXPECT_EQ(results[0].input(), "this is a test");
+            EXPECT_EQ(results[0].input(), "google maps");
             EXPECT_EQ(results[0].type(), AnnotationType::kContentVisibility);
 
             ASSERT_TRUE(results[0].visibility_score());
-            EXPECT_NEAR(*results[0].visibility_score(), 0.11328125,
+            EXPECT_NEAR(*results[0].visibility_score(), 0.996094,
                         kMaxScoreErrorBetweenPlatforms);
 
             run_loop->Quit();
           },
           &run_loop),
-      std::vector<std::string>{"this is a test"},
+      std::vector<std::string>{"google maps"},
       AnnotationType::kContentVisibility);
 
   run_loop.Run();
