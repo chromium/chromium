@@ -289,6 +289,10 @@ void TypingCommand::ForwardDeleteKeyPressed(Document& document,
             LastTypingCommandIfStillOpenForTyping(frame)) {
       UpdateSelectionIfDifferentFromCurrentSelection(last_typing_command,
                                                      frame);
+      // Reset the 'input_type_' to default value. The actual 'input_type_' will
+      // be determined later in TypingCommand::GetInputType() based on the
+      // 'command_type_'
+      last_typing_command->input_type_ = InputEvent::InputType::kNone;
       last_typing_command->ForwardDeleteKeyPressed(
           granularity, options & kKillRing, editing_state);
       return;
