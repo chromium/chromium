@@ -94,13 +94,6 @@ using base::android::ScopedJavaLocalRef;
 using metrics::OmniboxEventProto;
 
 namespace {
-// The delay between the Omnibox being opened and a spare renderer being
-// started. Starting a spare renderer is a very expensive operation, so this
-// value must always be great enough for the Omnibox to be fully rendered and
-// otherwise not doing anything important but not so great that the user
-// navigates before it occurs. Experimentation between 1s, 2s, 3s found that 1s
-// was the most ideal.
-static constexpr int OMNIBOX_SPARE_RENDERER_DELAY_MS = 1000;
 
 void RecordClipboardMetrics(AutocompleteMatchType::Type match_type) {
   if (match_type != AutocompleteMatchType::CLIPBOARD_URL &&
@@ -284,11 +277,12 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
   if (!profile_->IsOffTheRecord() &&
       page_class != OmniboxEventProto::ANDROID_SEARCH_WIDGET &&
       !omnibox::IsNTPPage(page_class)) {
+    int spare_renderer_delay_ms = omnibox::kOmniboxSpareRendererDelayMs.Get();
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&AutocompleteControllerAndroid::WarmUpRenderProcess,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::Milliseconds(OMNIBOX_SPARE_RENDERER_DELAY_MS));
+        base::Milliseconds(spare_renderer_delay_ms));
   }
 
   input_ = AutocompleteInput(omnibox_text, page_class,

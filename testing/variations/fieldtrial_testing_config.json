@@ -15291,6 +15291,24 @@
             ]
         }
     ],
+    "OverrideAndroidOmniboxSpareRendererDelay": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_500ms",
+                    "params": {
+                        "omnibox_spare_renderer_delay_ms": "500"
+                    },
+                    "enable_features": [
+                        "OverrideAndroidOmniboxSpareRendererDelay"
+                    ]
+                }
+            ]
+        }
+    ],
     "PMProcessPriorityPolicy": [
         {
             "platforms": [

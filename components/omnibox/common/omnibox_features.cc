@@ -406,6 +406,12 @@ BASE_FEATURE(kDefaultTypedNavigationsToHttps,
              "OmniboxDefaultTypedNavigationsToHttps",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Override the delay to create a spare renderer when the omnibox is focused
+// on Android.
+BASE_FEATURE(kOverrideAndroidOmniboxSpareRendererDelay,
+             "OverrideAndroidOmniboxSpareRendererDelay",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Parameter name used to look up the delay before falling back to the HTTP URL
 // while trying an HTTPS URL. The parameter is treated as a TimeDelta, so the
 // unit must be included in the value as well (e.g. 3s for 3 seconds).
