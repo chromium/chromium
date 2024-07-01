@@ -62,8 +62,9 @@ TEST_F(DataSharingServiceFactoryTest,
   InitService(/*enable_feature=*/true);
   raw_ptr<ChromeBrowserState> otr_browser_state =
       browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories(
-          {{DataSharingServiceFactory::GetInstance(),
-            DataSharingServiceFactory::GetDefaultFactory()}});
+          {TestChromeBrowserState::TestingFactory{
+              DataSharingServiceFactory::GetInstance(),
+              DataSharingServiceFactory::GetDefaultFactory()}});
   DataSharingService* service =
       DataSharingServiceFactory::GetForBrowserState(otr_browser_state);
   EXPECT_TRUE(service->IsEmptyService());

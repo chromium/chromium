@@ -43,8 +43,8 @@ class TestChromeBrowserState final : public ChromeBrowserState {
                    RefcountedBrowserStateKeyedServiceFactory::TestingFactory
                        testing_factory);
 
-    TestingFactory(const TestingFactory&);
-    TestingFactory& operator=(const TestingFactory&);
+    TestingFactory(TestingFactory&&);
+    TestingFactory& operator=(TestingFactory&&);
 
     ~TestingFactory();
 
@@ -56,8 +56,35 @@ class TestChromeBrowserState final : public ChromeBrowserState {
         service_factory_and_testing_factory;
   };
 
-  // List of TestingFactory.
-  using TestingFactories = std::vector<TestingFactory>;
+  // Wrapper around std::vector to simplify the migration to OnceCallback
+  // for *BrowserStateKeyedServiceFactory::TestingFactory.
+  class TestingFactories {
+   public:
+    TestingFactories();
+
+    template <typename... Ts>
+      requires(... && std::same_as<Ts, TestingFactory>)
+    TestingFactories(Ts&&... ts) {
+      (..., factories_.push_back(std::move(ts)));
+    }
+
+    TestingFactories(TestingFactories&&);
+    TestingFactories& operator=(TestingFactories&&);
+
+    ~TestingFactories();
+
+    template <typename... Args>
+    void emplace_back(Args&&... args) {
+      factories_.emplace_back(std::forward<Args>(args)...);
+    }
+
+    using iterator = std::vector<TestingFactory>::iterator;
+    iterator begin() { return factories_.begin(); }
+    iterator end() { return factories_.end(); }
+
+   private:
+    std::vector<TestingFactory> factories_;
+  };
 
   TestChromeBrowserState(const TestChromeBrowserState&) = delete;
   TestChromeBrowserState& operator=(const TestChromeBrowserState&) = delete;
@@ -135,8 +162,14 @@ class TestChromeBrowserState final : public ChromeBrowserState {
     // Example use:
     //
     // AddTestingFactories(
-    //     {{RegularServiceFactory::GetInstance(), test_factory},
-    //      {RefcountedServiceFactory::GetInstance(), test_factory2}});
+    //     {TestChromeBrowserState::TestingFactory{
+    //          RegularServiceFactory::GetInstance(),
+    //          RegularServiceFactory::GetDefaultFactory(),
+    //      },
+    //      TestChromeBrowserState::TestingFactory{
+    //          RefcountedServiceFactory::GetInstance(),
+    //          RefcountedServiceFactory::GetDefaultFactory(),
+    //      }});
     Builder& AddTestingFactories(TestingFactories testing_factories);
 
     // Sets the path to the directory to be used to hold ChromeBrowserState

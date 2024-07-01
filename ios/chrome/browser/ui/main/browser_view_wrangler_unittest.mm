@@ -84,10 +84,11 @@ class BrowserViewWranglerTest : public PlatformTest {
         TestSessionRestorationService::GetTestingFactory());
 
     chrome_browser_state_ = test_cbs_builder.Build();
-    chrome_browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories({{
-        SessionRestorationServiceFactory::GetInstance(),
-        TestSessionRestorationService::GetTestingFactory(),
-    }});
+    chrome_browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories(
+        {TestChromeBrowserState::TestingFactory{
+            SessionRestorationServiceFactory::GetInstance(),
+            TestSessionRestorationService::GetTestingFactory(),
+        }});
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         chrome_browser_state_.get(),
@@ -110,10 +111,11 @@ class BrowserViewWranglerTest : public PlatformTest {
             chrome_browser_state_->GetOffTheRecordChromeBrowserState()));
 
     chrome_browser_state_->DestroyOffTheRecordChromeBrowserState();
-    chrome_browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories({{
-        SessionRestorationServiceFactory::GetInstance(),
-        TestSessionRestorationService::GetTestingFactory(),
-    }});
+    chrome_browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories(
+        {TestChromeBrowserState::TestingFactory{
+            SessionRestorationServiceFactory::GetInstance(),
+            TestSessionRestorationService::GetTestingFactory(),
+        }});
 
     scoped_session_restoration_observation_.AddObservation(
         SessionRestorationServiceFactory::GetForBrowserState(

@@ -33,6 +33,23 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "net/url_request/url_request_test_util.h"
 
+namespace {
+
+// Assigns `testing_factories` to `browser_state`.
+void AssignTestingFactories(
+    TestChromeBrowserState* browser_state,
+    TestChromeBrowserState::TestingFactories testing_factories) {
+  for (auto& item : testing_factories) {
+    absl::visit(
+        [browser_state](auto& p) {
+          p.first->SetTestingFactory(browser_state, std::move(p.second));
+        },
+        item.service_factory_and_testing_factory);
+  }
+}
+
+}  // namespace
+
 TestChromeBrowserState::TestingFactory::TestingFactory(
     BrowserStateKeyedServiceFactory* service_factory,
     BrowserStateKeyedServiceFactory::TestingFactory testing_factory)
@@ -45,14 +62,24 @@ TestChromeBrowserState::TestingFactory::TestingFactory(
     : service_factory_and_testing_factory(
           std::make_pair(service_factory, testing_factory)) {}
 
-TestChromeBrowserState::TestingFactory::TestingFactory(const TestingFactory&) =
+TestChromeBrowserState::TestingFactory::TestingFactory(TestingFactory&&) =
     default;
 
 TestChromeBrowserState::TestingFactory&
-TestChromeBrowserState::TestingFactory::operator=(const TestingFactory&) =
-    default;
+TestChromeBrowserState::TestingFactory::operator=(TestingFactory&&) = default;
 
 TestChromeBrowserState::TestingFactory::~TestingFactory() = default;
+
+TestChromeBrowserState::TestingFactories::TestingFactories() = default;
+
+TestChromeBrowserState::TestingFactories::TestingFactories(TestingFactories&&) =
+    default;
+
+TestChromeBrowserState::TestingFactories&
+TestChromeBrowserState::TestingFactories::operator=(TestingFactories&&) =
+    default;
+
+TestChromeBrowserState::TestingFactories::~TestingFactories() = default;
 
 TestChromeBrowserState::TestChromeBrowserState(
     const base::FilePath& state_path,
@@ -62,18 +89,15 @@ TestChromeBrowserState::TestChromeBrowserState(
       testing_prefs_(nullptr),
       otr_browser_state_(nullptr),
       original_browser_state_(original_browser_state) {
+  DCHECK(original_browser_state_);
+
+  AssignTestingFactories(this, std::move(testing_factories));
+  profile_metrics::SetBrowserProfileType(
+      this, profile_metrics::BrowserProfileType::kIncognito);
+
   // Not calling Init() here as the bi-directional link between original and
   // off-the-record TestChromeBrowserState must be established before this
   // method can be called.
-  DCHECK(original_browser_state_);
-
-  for (auto& item : testing_factories) {
-    absl::visit([this](auto& p) { p.first->SetTestingFactory(this, p.second); },
-                item.service_factory_and_testing_factory);
-  }
-
-  profile_metrics::SetBrowserProfileType(
-      this, profile_metrics::BrowserProfileType::kIncognito);
 }
 
 TestChromeBrowserState::TestChromeBrowserState(
@@ -92,11 +116,7 @@ TestChromeBrowserState::TestChromeBrowserState(
       policy_connector_(std::move(policy_connector)),
       otr_browser_state_(nullptr),
       original_browser_state_(nullptr) {
-  for (auto& item : testing_factories) {
-    absl::visit([this](auto& p) { p.first->SetTestingFactory(this, p.second); },
-                item.service_factory_and_testing_factory);
-  }
-
+  AssignTestingFactories(this, std::move(testing_factories));
   profile_metrics::SetBrowserProfileType(
       this, profile_metrics::BrowserProfileType::kRegular);
 

@@ -151,8 +151,9 @@ class PredictionManagerTestBase : public PlatformTest {
   void CreateOffTheRecordBrowserState() {
     ChromeBrowserState* otr_browser_state =
         browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories(
-            {{OptimizationGuideServiceFactory::GetInstance(),
-              OptimizationGuideServiceFactory::GetDefaultFactory()}});
+            {TestChromeBrowserState::TestingFactory{
+                OptimizationGuideServiceFactory::GetInstance(),
+                OptimizationGuideServiceFactory::GetDefaultFactory()}});
     OptimizationGuideServiceFactory::GetForBrowserState(otr_browser_state)
         ->DoFinalInit();
   }
