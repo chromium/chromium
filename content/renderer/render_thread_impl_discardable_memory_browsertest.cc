@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/render_thread_impl.h"
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -19,6 +17,7 @@
 #include "base/memory/madv_free_discardable_memory_allocator_posix.h"
 #include "base/memory/madv_free_discardable_memory_posix.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/time/time.h"
@@ -32,6 +31,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "content/renderer/discardable_memory_utils.h"
+#include "content/renderer/render_thread_impl.h"
 #include "content/shell/browser/shell.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -90,7 +90,7 @@ class RenderThreadImplDiscardableMemoryBrowserTest : public ContentBrowserTest {
         RenderThreadImpl::current()->GetDiscardableMemoryAllocatorForTest();
   }
 
-  base::DiscardableMemoryAllocator* discardable_memory_allocator_;
+  raw_ptr<base::DiscardableMemoryAllocator> discardable_memory_allocator_;
 };
 
 IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
