@@ -158,6 +158,7 @@ source_set("unit_tests") {
     "named_guide_unittest.mm",
     "optional_property_animator_unittest.mm",
     "pasteboard_util_unittest.mm",
+    "rtl_geometry_unittest.mm",
     "terms_util_unittest.mm",
     "uikit_ui_util_unittest.mm",
     "uiview_window_coordinates_unittest.mm",

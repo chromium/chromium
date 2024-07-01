@@ -290,3 +290,17 @@ NSTextAlignment DetermineBestAlignmentForText(NSString* text) {
   }
   return NSTextAlignmentLeft;
 }
+
+void ScrollToSemanticLeading(UIScrollView* scrollview, BOOL animated) {
+  BOOL isRTL = [UIView userInterfaceLayoutDirectionForSemanticContentAttribute:
+                           scrollview.semanticContentAttribute] ==
+               UIUserInterfaceLayoutDirectionRightToLeft;
+
+  CGFloat contentStartX = 0;
+
+  if (isRTL) {
+    contentStartX = MAX(scrollview.contentSize.width - 1, 0);
+  }
+
+  [scrollview setContentOffset:CGPointMake(contentStartX, 0) animated:animated];
+}
