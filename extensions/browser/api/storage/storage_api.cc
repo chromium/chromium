@@ -58,15 +58,6 @@ std::vector<std::string> GetKeysFromDict(const base::Value::Dict& dict) {
   return keys;
 }
 
-// Converts a map to a Value::Dict.
-base::Value::Dict MapAsValueDict(
-    const std::map<std::string, const base::Value*>& values) {
-  base::Value::Dict dict;
-  for (const auto& value : values)
-    dict.Set(value.first, value.second->Clone());
-  return dict;
-}
-
 // Creates quota heuristics for settings modification.
 void GetModificationQuotaLimitHeuristics(QuotaLimitHeuristics* heuristics) {
   // See storage.json for the current value of these limits.
@@ -256,83 +247,80 @@ bool SettingsFunction::IsAccessToStorageAllowed() {
   return true;
 }
 
-ExtensionFunction::ResponseValue StorageStorageAreaGetFunction::RunWithStorage(
-    ValueStore* storage) {
-  TRACE_EVENT1("browser", "StorageStorageAreaGetFunction::RunWithStorage",
-               "extension_id", extension_id());
-  if (args().empty())
-    return BadMessage();
-  const base::Value& input = args()[0];
+ExtensionFunction::ResponseAction StorageStorageAreaGetFunction::Run() {
+  if (args().empty()) {
+    return RespondNow(BadMessage());
+  }
+
+  base::Value input = std::move(mutable_args()[0]);
+  mutable_args().erase(args().begin());
+
+  std::optional<std::vector<std::string>> keys;
+  std::optional<base::Value::Dict> defaults;
 
   switch (input.type()) {
     case base::Value::Type::NONE:
-      return UseReadResult(storage->Get());
+      keys = std::nullopt;
+      break;
 
     case base::Value::Type::STRING:
-      return UseReadResult(storage->Get(input.GetString()));
+      keys = std::optional(std::vector<std::string>(1, input.GetString()));
+      break;
 
     case base::Value::Type::LIST:
-      return UseReadResult(storage->Get(GetKeysFromList(input.GetList())));
+      keys = std::optional(GetKeysFromList(input.GetList()));
+      break;
 
     case base::Value::Type::DICT: {
-      ValueStore::ReadResult result =
-          storage->Get(GetKeysFromDict(input.GetDict()));
-      if (!result.status().ok()) {
-        return UseReadResult(std::move(result));
-      }
-      base::Value::Dict with_default_values = input.GetDict().Clone();
-      with_default_values.Merge(result.PassSettings());
-      return UseReadResult(ValueStore::ReadResult(
-          std::move(with_default_values), result.PassStatus()));
+      keys = std::optional(GetKeysFromDict(input.GetDict()));
+
+      // When the input holds a dictionary, the values are default values for
+      // any keys not present in storage. This is only the case for this
+      // parameter type.
+      defaults = std::move(input).TakeDict();
+      break;
     }
 
     default:
-      return BadMessage();
+      return RespondNow(BadMessage());
   }
+
+  StorageFrontend* frontend = StorageFrontend::Get(browser_context());
+  frontend->GetValues(
+      extension(), storage_area(), std::move(keys),
+      base::BindOnce(&StorageStorageAreaGetFunction::OnGetOperationFinished,
+                     this, std::move(defaults)));
+
+  return RespondLater();
 }
 
-ExtensionFunction::ResponseValue StorageStorageAreaGetFunction::RunInSession() {
-  if (args().empty())
-    return BadMessage();
-  base::Value& input = mutable_args()[0];
-
-  base::Value::Dict value_dict;
-  SessionStorageManager* session_manager =
-      SessionStorageManager::GetForBrowserContext(browser_context());
-
-  switch (input.type()) {
-    case base::Value::Type::NONE:
-      value_dict = MapAsValueDict(session_manager->GetAll(extension_id()));
-      break;
-
-    case base::Value::Type::STRING:
-      value_dict = MapAsValueDict(session_manager->Get(
-          extension_id(), std::vector<std::string>(1, input.GetString())));
-      break;
-
-    case base::Value::Type::LIST:
-      value_dict = MapAsValueDict(session_manager->Get(
-          extension_id(), GetKeysFromList(input.GetList())));
-      break;
-
-    case base::Value::Type::DICT: {
-      std::map<std::string, const base::Value*> values = session_manager->Get(
-          extension_id(), GetKeysFromDict(input.GetDict()));
-
-      for (auto default_value : input.GetDict()) {
-        auto value_it = values.find(default_value.first);
-        value_dict.Set(default_value.first,
-                       value_it != values.end()
-                           ? value_it->second->Clone()
-                           : std::move(default_value.second));
-      }
-      break;
-    }
-    default:
-      return BadMessage();
+void StorageStorageAreaGetFunction::OnGetOperationFinished(
+    std::optional<base::Value::Dict> defaults,
+    StorageFrontend::GetResult result) {
+  // Since the storage access happens asynchronously, the browser context can
+  // be torn down in the interim. If this happens, early-out.
+  if (!browser_context()) {
+    return;
   }
 
-  return WithArguments(std::move(value_dict));
+  StorageFrontend::ResultStatus status = result.status;
+
+  if (!status.success) {
+    CHECK(status.error.has_value());
+    Respond(Error(*status.error));
+    return;
+  }
+
+  CHECK(result.data.has_value());
+
+  base::Value::Dict values =
+      defaults ? std::move(*defaults) : base::Value::Dict();
+
+  // It's important that we merge the values into the defaults, and not the
+  // other way around, to avoid the defaults overwriting any existing values.
+  values.Merge(std::move(*result.data));
+
+  Respond(WithArguments(std::move(values)));
 }
 
 ExtensionFunction::ResponseAction

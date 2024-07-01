@@ -81,8 +81,13 @@ class StorageStorageAreaGetFunction : public SettingsFunction {
   ~StorageStorageAreaGetFunction() override {}
 
   // SettingsFunction:
-  ResponseValue RunWithStorage(value_store::ValueStore* storage) override;
-  ResponseValue RunInSession() override;
+  ResponseAction Run() override;
+
+  // Called after getting data from storage. If `defaults` is provided, merges
+  // the data from `result` into the dictionary. This allows developers to
+  // provide a fallback for data not present in storage.
+  void OnGetOperationFinished(std::optional<base::Value::Dict> defaults,
+                              StorageFrontend::GetResult result);
 };
 
 class StorageStorageAreaSetFunction : public SettingsFunction {

@@ -44,6 +44,16 @@ class StorageFrontend : public BrowserContextKeyedAPI {
     std::optional<std::string> error;
   };
 
+  struct GetResult {
+    GetResult();
+    GetResult(const GetResult&) = delete;
+    GetResult(GetResult&& other);
+    ~GetResult();
+
+    ResultStatus status;
+    std::optional<base::Value::Dict> data;
+  };
+
   // Returns the current instance for |context|.
   static StorageFrontend* Get(content::BrowserContext* context);
 
@@ -75,6 +85,15 @@ class StorageFrontend : public BrowserContextKeyedAPI {
   // |done_callback| once the settings are deleted.
   void DeleteStorageSoon(const ExtensionId& extension_id,
                          base::OnceClosure done_callback);
+
+  // For a given `extension` and `storage_area`, retrieves a map of key value
+  // pairs from storage and fires `callback` with the result. If `keys` is
+  // specified, only the specified keys are retrieved. Otherwise, all data is
+  // returned.
+  void GetValues(scoped_refptr<const Extension> extension,
+                 StorageAreaNamespace storage_area,
+                 std::optional<std::vector<std::string>> keys,
+                 base::OnceCallback<void(GetResult)> callback);
 
   // For a given `extension` and `storage_area`, determines the number of bytes
   // in use and fires `callback` with the result. If `keys` is specified, the
@@ -133,6 +152,14 @@ class StorageFrontend : public BrowserContextKeyedAPI {
                   content::BrowserContext* context);
 
   void Init(scoped_refptr<value_store::ValueStoreFactory> storage_factory);
+
+  // Should be called on the UI thread after a read has been performed in
+  // `storage_area`. Fires `callback` with the `result` from the read
+  // operation.
+  void OnReadFinished(const ExtensionId& extension_id,
+                      StorageAreaNamespace storage_area,
+                      base::OnceCallback<void(GetResult)> callback,
+                      value_store::ValueStore::ReadResult result);
 
   // Should be called on the UI thread after a write has been performed in
   // `storage_area`. Fires events if any values were changed and then runs
