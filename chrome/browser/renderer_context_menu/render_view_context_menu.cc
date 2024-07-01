@@ -2040,6 +2040,13 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
     menu_model_.AddItemWithStringIdAndIcon(
         search_for_image_idc, IDS_CONTENT_CONTEXT_LENS_OVERLAY,
         ui::ImageModel::FromVectorIcon(icon));
+
+    // TODO(b/344600237): Remove when image search using Lens overlay is not new
+    // anymore.
+    menu_model_.SetIsNewFeatureAt(
+        menu_model_.GetItemCount() - 1,
+        UserEducationService::MaybeShowNewBadge(GetBrowserContext(),
+                                                lens::features::kLensOverlay));
   } else {
     menu_model_.AddItem(
         search_for_image_idc,
@@ -2127,6 +2134,13 @@ void RenderViewContextMenu::AppendVideoItems() {
       menu_model_.AddItemWithStringIdAndIcon(
           search_for_video_frame_idc, IDS_CONTENT_CONTEXT_LENS_OVERLAY,
           ui::ImageModel::FromVectorIcon(icon));
+
+      // TODO(b/344600237): Remove when video frame search using Lens
+      // overlay is not new anymore.
+      menu_model_.SetIsNewFeatureAt(
+          menu_model_.GetItemCount() - 1,
+          UserEducationService::MaybeShowNewBadge(
+              GetBrowserContext(), lens::features::kLensOverlay));
     } else {
       const auto* provider = GetImageSearchProvider();
       if (!provider) {
