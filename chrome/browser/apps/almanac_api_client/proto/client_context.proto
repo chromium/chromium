@@ -44,14 +44,19 @@ message ClientDeviceContext {
 
   // Version info about the OS, Browser and other platforms.
   message Versions {
-    // Required. Chrome OS operating system itself.
+    // No longer used. Need to figure out to properly deprecate this without
+    // causing issues with one platform.
     optional string chrome_os_platform = 1;
+    optional string chrome_lacros = 3;
 
     // Required. Chrome version for Ash on the device.
     optional string chrome_ash = 2;
 
-    // Optional. Chrome version for Lacros on the device if present.
-    optional string chrome_lacros = 3;
+    // Optional. Arc SDK version if enabled and present. Otherwise, 0 or unset.
+    optional int32 arc_sdk = 4;
+
+    // Optional. Steam client version if present.
+    optional string steam_client = 5;
   }
 
   // The board identifier for the device sending the request.
@@ -80,7 +85,7 @@ message ClientUserContext {
   // The type of the User account making this request.
   enum UserType {
     // Default for deserialization when an unexpected value is encountered.
-    // Indicates to the client that the server has a new platform and needs
+    // Indicates to the client that the server has a new user type and needs
     // the proto file updated.
     USERTYPE_UNKNOWN = 0;
 

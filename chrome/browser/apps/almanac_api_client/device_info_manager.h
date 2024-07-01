@@ -21,6 +21,11 @@ class Profile;
 namespace apps {
 
 struct VersionInfo {
+  VersionInfo();
+  VersionInfo(const VersionInfo& other);
+  VersionInfo& operator=(const VersionInfo& other);
+  ~VersionInfo();
+
   // The ash Chrome browser version of the device. e.g. "107.0.5296.0"
   std::string ash_chrome;
   // The ChromeOS platform version of the device. e.g. "15088.0.0"
@@ -28,6 +33,10 @@ struct VersionInfo {
   std::string platform;
   // The channel of the build.
   version_info::Channel channel = version_info::Channel::UNKNOWN;
+  // ARC SDK version set to non-zero if ARC is enabled.
+  int arc_sdk = 0;
+  // 'TRUE' if steam is enabled.
+  std::string steam_client;
 };
 
 struct DeviceInfo {
