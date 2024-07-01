@@ -130,13 +130,13 @@ def _CheckModificationOfLegacyRegexPatterns(input_api, output_api):
 def _CheckModificationOfFormAutofillUtil(input_api, output_api):
   """Reminds to keep form_autofill_util.cc and the iOS counterpart in sync."""
 
-  if (IsComponentsAutofillFileAffected(input_api, "fill.js") !=
+  if (IsComponentsAutofillFileAffected(input_api, "fill.ts") !=
       IsComponentsAutofillFileAffected(input_api, "form_autofill_util.cc")):
     return [
         output_api.PresubmitPromptWarning(
             'Form extraction/label inference has a separate iOS ' +
             'implementation in components/autofill/ios/form_util/resources/' +
-            'fill.js. Try to keep it in sync with form_autofill_util.cc.')
+            'fill.ts. Try to keep it in sync with form_autofill_util.cc.')
     ]
 
   return []

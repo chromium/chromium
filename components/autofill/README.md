@@ -132,8 +132,8 @@ corresponds to a [`Profile`](https://www.chromium.org/developers/design-document
     - [`autofill_agent.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/ios/browser/autofill_agent.h)
     - [`autofill_driver_ios.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/ios/browser/autofill_driver_ios.h)
   - [`form_util/`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/ios/form_util)
-    - [`form.js`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/ios/form_util/resources/form.js)
-    - [`fill.js`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/ios/form_util/resources/fill.js)
+    - [`form.ts`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/ios/form_util/resources/form.ts)
+    - [`fill.ts`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/ios/form_util/resources/fill.ts)
 
 # Related directories
 

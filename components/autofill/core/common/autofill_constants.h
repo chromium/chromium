@@ -35,7 +35,7 @@ inline constexpr size_t kAutofillManagerMaxFormCacheSize = 100;
 // not relevant to Autofill: (1) the Netflix queue; (2) the Amazon wishlist;
 // (3) router configuration pages; and (4) other configuration pages, e.g. for
 // Google code project settings.
-// Copied to components/autofill/ios/form_util/resources/fill.js.
+// Copied to components/autofill/ios/form_util/resources/fill.ts.
 inline constexpr size_t kMaxExtractableFields = 200;
 
 // The maximum number of form fields we are willing to extract, due to

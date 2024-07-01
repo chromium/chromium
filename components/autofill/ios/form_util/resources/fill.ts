@@ -14,7 +14,7 @@ import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 // This file provides methods used to fill forms in JavaScript.
 
-// Requires functions from form.js.
+// Requires functions from form.ts.
 
 declare global {
   // Defines an additional property, `__gcrweb`, on the Window object.

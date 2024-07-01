@@ -8,7 +8,7 @@
  * Autofill keyboard accessory.
  */
 
-// Requires functions from fill.js, form.js, and autofill_form_features.js.
+// Requires functions from fill.ts, form.ts, and autofill_form_features.ts.
 
 import {processChildFrameMessage} from '//components/autofill/ios/form_util/resources/child_frame_registration_lib.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
