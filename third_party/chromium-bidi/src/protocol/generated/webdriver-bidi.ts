@@ -176,13 +176,6 @@ export namespace Session {
   } & Extensible;
 }
 export namespace Session {
-  export const enum UserPromptHandlerType {
-    Accept = 'accept',
-    Dismiss = 'dismiss',
-    Ignore = 'ignore',
-  }
-}
-export namespace Session {
   export type UserPromptHandler = {
     alert?: Session.UserPromptHandlerType;
     beforeUnload?: Session.UserPromptHandlerType;
@@ -190,6 +183,13 @@ export namespace Session {
     default?: Session.UserPromptHandlerType;
     prompt?: Session.UserPromptHandlerType;
   };
+}
+export namespace Session {
+  export const enum UserPromptHandlerType {
+    Accept = 'accept',
+    Dismiss = 'dismiss',
+    Ignore = 'ignore',
+  }
 }
 export namespace Session {
   export type SubscriptionRequest = {
@@ -807,7 +807,7 @@ export namespace BrowsingContext {
 export namespace BrowsingContext {
   export type UserPromptOpenedParameters = {
     context: BrowsingContext.BrowsingContext;
-    handler: 'accept' | 'dismiss' | 'ignore';
+    handler: Session.UserPromptHandlerType;
     message: string;
     type: BrowsingContext.UserPromptType;
     defaultValue?: string;

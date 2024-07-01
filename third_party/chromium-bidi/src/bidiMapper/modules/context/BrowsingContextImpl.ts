@@ -25,7 +25,7 @@ import {
   NoSuchElementException,
   NoSuchHistoryEntryException,
   Script,
-  type Session,
+  Session,
   UnableToCaptureScreenException,
   UnknownErrorException,
   UnsupportedOperationException,
@@ -638,13 +638,13 @@ export class BrowsingContextImpl {
       switch (promptHandler) {
         // Based on `unhandledPromptBehavior`, check if the prompt should be handled
         // automatically (`accept`, `dismiss`) or wait for the user to do it.
-        case 'accept':
+        case Session.UserPromptHandlerType.Accept:
           void this.handleUserPrompt(true);
           break;
-        case 'dismiss':
+        case Session.UserPromptHandlerType.Dismiss:
           void this.handleUserPrompt(false);
           break;
-        case 'ignore':
+        case Session.UserPromptHandlerType.Ignore:
           break;
       }
     });
@@ -667,8 +667,8 @@ export class BrowsingContextImpl {
 
   #getPromptHandler(
     promptType: BrowsingContext.UserPromptType
-  ): 'accept' | 'dismiss' | 'ignore' {
-    const defaultPromptHandler = 'dismiss';
+  ): Session.UserPromptHandlerType {
+    const defaultPromptHandler = Session.UserPromptHandlerType.Dismiss;
     switch (promptType) {
       case BrowsingContext.UserPromptType.Alert:
         return (

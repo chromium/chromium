@@ -246,11 +246,6 @@ export namespace Session {
   );
 }
 export namespace Session {
-  export const UserPromptHandlerTypeSchema = z.lazy(() =>
-    z.enum(['accept', 'dismiss', 'ignore'])
-  );
-}
-export namespace Session {
   export const UserPromptHandlerSchema = z.lazy(() =>
     z.object({
       alert: Session.UserPromptHandlerTypeSchema.optional(),
@@ -259,6 +254,11 @@ export namespace Session {
       default: Session.UserPromptHandlerTypeSchema.optional(),
       prompt: Session.UserPromptHandlerTypeSchema.optional(),
     })
+  );
+}
+export namespace Session {
+  export const UserPromptHandlerTypeSchema = z.lazy(() =>
+    z.enum(['accept', 'dismiss', 'ignore'])
   );
 }
 export namespace Session {
@@ -983,7 +983,7 @@ export namespace BrowsingContext {
   export const UserPromptOpenedParametersSchema = z.lazy(() =>
     z.object({
       context: BrowsingContext.BrowsingContextSchema,
-      handler: z.enum(['accept', 'dismiss', 'ignore']),
+      handler: Session.UserPromptHandlerTypeSchema,
       message: z.string(),
       type: BrowsingContext.UserPromptTypeSchema,
       defaultValue: z.string().optional(),
