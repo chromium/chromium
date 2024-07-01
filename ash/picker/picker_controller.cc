@@ -262,7 +262,7 @@ std::u16string TransformText(std::u16string_view text,
 void OpenLink(const GURL& url) {
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-      ash::NewWindowDelegate::Disposition::kNewWindow);
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void OpenFile(const base::FilePath& path) {
