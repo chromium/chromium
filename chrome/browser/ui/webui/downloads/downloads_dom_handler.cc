@@ -110,6 +110,10 @@ void CountDownloadsDOMEvents(DownloadsDOMEvent event) {
                             DOWNLOADS_DOM_EVENT_MAX);
 }
 
+bool CanLogWarningMetrics(download::DownloadItem* file) {
+  return file && file->IsDangerous() && !file->IsDone();
+}
+
 void PromptForScanningInBubble(content::WebContents* web_contents,
                                download::DownloadItem* download) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
@@ -324,7 +328,7 @@ void DownloadsDOMHandler::SaveSuspiciousRequiringGesture(
 void DownloadsDOMHandler::RecordOpenBypassWarningPrompt(const std::string& id) {
   CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_OPEN_BYPASS_WARNING_PROMPT);
   download::DownloadItem* file = GetDownloadByStringId(id);
-  if (!file || !file->IsDangerous() || file->IsDone()) {
+  if (!CanLogWarningMetrics(file)) {
     return;
   }
 
@@ -344,7 +348,7 @@ void DownloadsDOMHandler::SaveDangerousFromPromptRequiringGesture(
 
   CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_SAVE_DANGEROUS_FROM_PROMPT);
   download::DownloadItem* file = GetDownloadByStringId(id);
-  if (!file || !file->IsDangerous() || file->IsDone()) {
+  if (!CanLogWarningMetrics(file)) {
     return;
   }
 
@@ -367,7 +371,7 @@ void DownloadsDOMHandler::RecordCancelBypassWarningPrompt(
     const std::string& id) {
   CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_CANCEL_BYPASS_WARNING_PROMPT);
   download::DownloadItem* file = GetDownloadByStringId(id);
-  if (!file || !file->IsDangerous() || file->IsDone()) {
+  if (!CanLogWarningMetrics(file)) {
     return;
   }
 
