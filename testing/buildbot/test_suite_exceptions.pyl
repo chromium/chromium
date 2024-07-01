@@ -625,7 +625,19 @@
       },
       'win11-arm64-blink-rel': {
         'swarming': {
+          'dimensions': {
+            # TODO(crbug.com/349968686): Workaround missing dll on win11-23h2.
+            'os': 'Windows-11-22621',
+          },
           'hard_timeout': 2400,
+        },
+      },
+      'win11-arm64-rel-tests': {
+        'swarming': {
+          'dimensions': {
+            # TODO(crbug.com/349968686): Workaround missing dll on win11-23h2.
+            'os': 'Windows-11-22621',
+          },
         },
       },
       'win11-blink-rel': {

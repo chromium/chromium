@@ -928,7 +928,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11-22621"
           },
           "hard_timeout": 2400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",

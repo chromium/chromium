@@ -10840,7 +10840,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11",
+            "os": "Windows-11-22621",
             "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
