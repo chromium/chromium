@@ -182,6 +182,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentNotifications.Notification.Action"
+    enum="ContentNotificationActionType" expires_after="2024-12-26">
+  <owner>guiperez@google.com</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <summary>
+    Reports what actions has the user taken on a notification. This metric
+    matches NAUs sent.
+  </summary>
+</histogram>
+
 <histogram name="ContentNotifications.NotificationActionUpload.Success"
     enum="Boolean" expires_after="2024-10-13">
   <owner>guiperez@google.com</owner>

@@ -41,6 +41,13 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Profile"/>
 </enum>
 
+<enum name="ContentNotificationActionType">
+  <int value="0" label="Notification Received and Displayed by the OS."/>
+  <int value="1" label="Notification opened."/>
+  <int value="2" label="Notification Dismissed."/>
+  <int value="3" label="Send Feedback clicked."/>
+</enum>
+
 <enum name="ContentNotificationEligibilityType">
   <int value="0" label="Content Notification Top of Feed Promo is enabled."/>
   <int value="1" label="Content Notification Provisional is enabled."/>
