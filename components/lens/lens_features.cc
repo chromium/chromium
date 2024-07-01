@@ -172,6 +172,10 @@ constexpr base::FeatureParam<int> kLensOverlaySignificantRegionMinArea{
 constexpr base::FeatureParam<int> kLensOverlayMaxSignificantRegions{
     &kLensOverlay, "max-significant-regions", 100};
 
+constexpr base::FeatureParam<double>
+    kLensOverlayPostSelectionComparisonThreshold{
+        &kLensOverlay, "post-selection-comparison-threshold", 0.005};
+
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
 
@@ -490,6 +494,10 @@ int GetLensOverlaySignificantRegionMinArea() {
 
 int GetLensOverlayMaxSignificantRegions() {
   return kLensOverlayMaxSignificantRegions.Get();
+}
+
+double GetLensOverlayPostSelectionComparisonThreshold() {
+  return kLensOverlayPostSelectionComparisonThreshold.Get();
 }
 
 }  // namespace lens::features

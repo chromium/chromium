@@ -434,6 +434,11 @@ extern int GetLensOverlaySignificantRegionMinArea();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayMaxSignificantRegions();
 
+// Threshold for comparing equality of object bounding box and previously
+// selected bounding box. Unit is proportion of the image dimensions.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern double GetLensOverlayPostSelectionComparisonThreshold();
+
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

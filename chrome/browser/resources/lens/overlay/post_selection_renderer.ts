@@ -133,6 +133,7 @@ export class PostSelectionRendererElement extends PolymerElement {
     this.width = 0;
     this.dispatchEvent(new CustomEvent(
         'hide-detected-text-context-menu', {bubbles: true, composed: true}));
+    this.notifyPostSelectionUpdated();
   }
 
   handleDownGesture(event: GestureEvent): boolean {
@@ -285,6 +286,8 @@ export class PostSelectionRendererElement extends PolymerElement {
     focusShimmerOnRegion(
         this, this.top, this.left, this.width, this.height,
         ShimmerControlRequester.POST_SELECTION);
+
+    this.notifyPostSelectionUpdated();
   }
 
   private triggerNewBoxAnimation() {
@@ -308,6 +311,19 @@ export class PostSelectionRendererElement extends PolymerElement {
           duration: 450,
           easing: 'cubic-bezier(0.2, 0.0, 0, 1.0)',
         });
+  }
+
+  private notifyPostSelectionUpdated() {
+    this.dispatchEvent(new CustomEvent('post-selection-updated', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        top: this.top,
+        left: this.left,
+        width: this.width,
+        height: this.height,
+      },
+    }));
   }
 
   // Returns if the current bounds are being updated.

@@ -508,8 +508,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
                    this.currentGesture)) {
       this.draggingRespondent = DragFeature.POST_SELECTION;
     }
-
-    this.$.objectSelectionLayer.clearSelectedObject();
   }
 
   private onPointerUp(event: PointerEvent) {
