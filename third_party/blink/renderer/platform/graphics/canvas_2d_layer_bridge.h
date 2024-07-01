@@ -118,12 +118,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
   std::unique_ptr<Logger> logger_;
   bool hibernation_scheduled_ = false;
 
-  enum SnapshotState {
-    kInitialSnapshotState,
-    kDidAcquireSnapshot,
-  };
-  mutable SnapshotState snapshot_state_;
-
   raw_ptr<CanvasResourceHost> resource_host_;
 
   base::WeakPtrFactory<Canvas2DLayerBridge> weak_ptr_factory_{this};

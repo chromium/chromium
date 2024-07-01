@@ -66,7 +66,6 @@ gpu::ContextSupport* GetContextSupport() {
 
 Canvas2DLayerBridge::Canvas2DLayerBridge()
     : logger_(std::make_unique<Logger>()),
-      snapshot_state_(kInitialSnapshotState),
       resource_host_(nullptr) {
   // Used by browser tests to detect the use of a Canvas2DLayerBridge.
   TRACE_EVENT_INSTANT0("test_gpu", "Canvas2DLayerBridgeCreation",
@@ -426,8 +425,6 @@ void Canvas2DLayerBridge::FinalizeFrame(FlushReason reason) {
 scoped_refptr<StaticBitmapImage> Canvas2DLayerBridge::NewImageSnapshot(
     FlushReason reason) {
   CHECK(resource_host_);
-  if (snapshot_state_ == kInitialSnapshotState)
-    snapshot_state_ = kDidAcquireSnapshot;
   if (IsHibernating()) {
     return UnacceleratedStaticBitmapImage::Create(
         hibernation_handler_.GetImage());
