@@ -10,18 +10,6 @@
 
 #define FPL FILE_PATH_LITERAL
 
-#if BUILDFLAG(IS_MAC)
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define PRODUCT_STRING "Google Chrome"
-#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
-#define PRODUCT_STRING "Google Chrome for Testing"
-#elif BUILDFLAG(CHROMIUM_BRANDING)
-#define PRODUCT_STRING "Chromium"
-#else
-#error Unknown branding
-#endif
-#endif  // BUILDFLAG(IS_MAC)
-
 namespace chrome {
 
 const char kChromeVersion[] = CHROME_VERSION_STRING;
@@ -50,9 +38,9 @@ const base::FilePath::CharType kHelperProcessExecutableName[] =
     FPL("chrome.exe");
 #elif BUILDFLAG(IS_MAC)
 const base::FilePath::CharType kBrowserProcessExecutableName[] =
-    FPL(PRODUCT_STRING);
+    FPL(PRODUCT_FULLNAME_STRING);
 const base::FilePath::CharType kHelperProcessExecutableName[] =
-    FPL(PRODUCT_STRING " Helper");
+    FPL(PRODUCT_FULLNAME_STRING " Helper");
 #elif BUILDFLAG(IS_ANDROID)
 // NOTE: Keep it synced with the process names defined in AndroidManifest.xml.
 const base::FilePath::CharType kBrowserProcessExecutableName[] = FPL("chrome");
@@ -72,7 +60,7 @@ const base::FilePath::CharType kHelperProcessExecutablePath[] =
     FPL("chrome.exe");
 #elif BUILDFLAG(IS_MAC)
 const base::FilePath::CharType kBrowserProcessExecutablePath[] =
-    FPL(PRODUCT_STRING ".app/Contents/MacOS/" PRODUCT_STRING);
+    FPL(PRODUCT_FULLNAME_STRING ".app/Contents/MacOS/" PRODUCT_FULLNAME_STRING);
 const base::FilePath::CharType
     kGoogleChromeForTestingBrowserProcessExecutablePath[] =
         FPL("Google Chrome for Testing.app/Contents/MacOS/Google Chrome for "
@@ -82,7 +70,8 @@ const base::FilePath::CharType kGoogleChromeBrowserProcessExecutablePath[] =
 const base::FilePath::CharType kChromiumBrowserProcessExecutablePath[] =
     FPL("Chromium.app/Contents/MacOS/Chromium");
 const base::FilePath::CharType kHelperProcessExecutablePath[] =
-    FPL(PRODUCT_STRING " Helper.app/Contents/MacOS/" PRODUCT_STRING " Helper");
+    FPL(PRODUCT_FULLNAME_STRING
+        " Helper.app/Contents/MacOS/" PRODUCT_FULLNAME_STRING " Helper");
 #elif BUILDFLAG(IS_ANDROID)
 const base::FilePath::CharType kBrowserProcessExecutablePath[] = FPL("chrome");
 const base::FilePath::CharType kHelperProcessExecutablePath[] = FPL("chrome");
@@ -93,9 +82,9 @@ const base::FilePath::CharType kHelperProcessExecutablePath[] = FPL("chrome");
 
 #if BUILDFLAG(IS_MAC)
 const base::FilePath::CharType kFrameworkName[] =
-    FPL(PRODUCT_STRING " Framework.framework");
+    FPL(PRODUCT_FULLNAME_STRING " Framework.framework");
 const base::FilePath::CharType kFrameworkExecutableName[] =
-    FPL(PRODUCT_STRING " Framework");
+    FPL(PRODUCT_FULLNAME_STRING " Framework");
 const char kMacHelperSuffixAlerts[] = " (Alerts)";
 #endif  // BUILDFLAG(IS_MAC)
 
