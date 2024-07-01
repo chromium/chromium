@@ -103,6 +103,9 @@ export class RecordingTitle extends ReactiveLitElement {
     const {textTokens} = await this.recordingDataManager.getTranscription(
       this.recordingMetadata.id,
     );
+    if (textTokens === null) {
+      return null;
+    }
     const text = concatTextTokens(textTokens);
     const model = await this.platformHandler.loadModel(
       ModelId.GEMINI_XXS_IT_BASE,

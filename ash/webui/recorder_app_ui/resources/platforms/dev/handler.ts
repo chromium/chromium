@@ -132,6 +132,10 @@ class SodaSessionDev implements SodaSession {
   // TODO(pihsun): Simulate partial result being changed/corrected.
   private emitSodaNextWord(finishLine = false): void {
     this.fakeTimeMs += WORD_INTERVAL_MS;
+    // Don't emit any word for the first two seconds, to simulate waiting state.
+    if (this.fakeTimeMs <= 2000) {
+      return;
+    }
     const currentLine = assertExists(TRANSCRIPTION_LINES[this.currentLineIdx]);
     const timingEvent = {
       audioStartTime: timeDelta(

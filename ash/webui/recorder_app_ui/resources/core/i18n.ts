@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {join} from 'chrome://resources/mwc/lit/index.js';
+
 import {usePlatformHandler} from './lit/context.js';
 import {forceCast, upcast} from './utils/type_utils.js';
 
@@ -42,7 +44,15 @@ const noArgStrings = [
   'recordExitDialogDescription',
   'recordExitDialogHeader',
   'recordExitDialogSaveAndExitButton',
+  'recordMenuDeleteOption',
+  'recordMenuToggleTranscriptionOption',
   'recordStopButton',
+  'recordTranscriptionEntryPointDescription',
+  'recordTranscriptionEntryPointDisableButton',
+  'recordTranscriptionEntryPointEnableButton',
+  'recordTranscriptionEntryPointHeader',
+  'recordTranscriptionOffDescription',
+  'recordTranscriptionOffHeader',
   'recordingListHeader',
   'recordingListSortByDateOption',
   'recordingListSortByNameOption',
@@ -62,6 +72,8 @@ const noArgStrings = [
   'titleGenerationHeader',
   'titleRenameTooltip',
   'transcriptionAutoscrollButton',
+  'transcriptionNoSpeechText',
+  'transcriptionWaitingSpeechText',
 ] as const;
 
 type NoArgStrings = (typeof noArgStrings)[number];
@@ -112,3 +124,32 @@ export const i18n = forceCast<I18nType>(
     },
   ),
 );
+
+/**
+ * Replaces `placeholder` in a string with the given lit template.
+ *
+ * Note that this shouldn't be used when `html` is a simple string. In that
+ * case, use the standard $0, $1 as an argument and `withArgsStrings` above.
+ *
+ * @param s The translated string.
+ * @param placeholder The placeholder string to be replaced.
+ * @param html The lit template to replace `placeholder` with.
+ * @return The result template.
+ */
+export function replacePlaceholderWithHtml(
+  s: string,
+  placeholder: string,
+  html: RenderResult,
+): RenderResult {
+  const parts = s.split(placeholder);
+  if (parts.length <= 1) {
+    // The placeholder should still exist after translation, so this is likely
+    // an error in translation.
+    console.error(
+      `Translated string doesn't contain expected placeholder`,
+      s,
+      placeholder,
+    );
+  }
+  return join(parts, () => html);
+}

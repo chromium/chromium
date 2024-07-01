@@ -10,7 +10,8 @@ import {
 import {PlatformHandler, SodaSession} from './platform_handler.js';
 import {computed, signal} from './reactive/signal.js';
 import {SodaEventTransformer, TextToken} from './soda/soda.js';
-import {assertExhaustive} from './utils/assert.js';
+import {assertExhaustive, assertExists} from './utils/assert.js';
+import {AsyncJobInfo, AsyncJobQueue} from './utils/async_job_queue.js';
 import {Unsubscribe} from './utils/observer_list.js';
 import {clamp} from './utils/utils.js';
 
@@ -32,8 +33,9 @@ interface RecordingProgress {
   // JSON and since this is used for visualization only, the value will be
   // integer in range [0, 255], scaled from the original value of [0, 1].
   powers: number[];
-  // This is used by the ongoing transcription view.
-  textTokens: TextToken[];
+  // Transcription of the ongoing recording. null if transcription is never
+  // enabled throughout the recording.
+  textTokens: TextToken[]|null;
 }
 
 /**
@@ -77,6 +79,12 @@ async function getAudioContext(): Promise<AudioContext> {
   return audioCtxGlobal;
 }
 
+interface SodaSessionInfo {
+  session: SodaSession;
+  startOffsetMs: number;
+  unsubscribe: Unsubscribe;
+}
+
 /**
  * A recording session to retrieve audio input and produce an audio blob output.
  */
@@ -85,11 +93,15 @@ export class RecordingSession {
 
   private readonly sodaEventTransformer = new SodaEventTransformer();
 
-  private readonly sodaSessionUnsubscribe: Unsubscribe;
+  private currentSodaSession: SodaSessionInfo|null = null;
+
+  private readonly sodaEnableQueue = new AsyncJobQueue('keepLatest');
 
   private readonly powers = signal<number[]>([]);
 
-  private readonly textTokens = signal<TextToken[]>([]);
+  private readonly textTokens = signal<TextToken[]|null>(null);
+
+  private processedSamples = 0;
 
   readonly progress = computed<RecordingProgress>(() => {
     const powers = this.powers.value;
@@ -101,11 +113,11 @@ export class RecordingSession {
     };
   });
 
-  constructor(
+  private constructor(
+    private readonly platformHandler: PlatformHandler,
     private readonly stream: MediaStream,
     private readonly mediaRecorder: MediaRecorder,
     private readonly audioProcessor: AudioWorkletNode,
-    private readonly sodaSession: SodaSession,
   ) {
     this.mediaRecorder.addEventListener('dataavailable', (e) => {
       this.onDataAvailable(e);
@@ -113,7 +125,6 @@ export class RecordingSession {
     this.mediaRecorder.addEventListener('error', (e) => {
       this.onError(e);
     });
-    this.mediaRecorder.start(TIME_SLICE_MS);
 
     this.audioProcessor.port.addEventListener(
       'message',
@@ -131,28 +142,74 @@ export class RecordingSession {
         this.powers.mutate((d) => {
           d.push(scaledPower);
         });
-        this.sodaSession.addAudio(samples);
+        this.currentSodaSession?.session.addAudio(samples);
+        this.processedSamples += samples.length;
       },
     );
-    this.audioProcessor.port.start();
-    this.sodaSessionUnsubscribe = this.sodaSession.subscribeEvent((ev) => {
-      this.sodaEventTransformer.addEvent(ev);
-      this.textTokens.value = this.sodaEventTransformer.getTokens();
-    });
   }
 
-  onDataAvailable(event: BlobEvent): void {
+  private onDataAvailable(event: BlobEvent): void {
     // TODO(shik): Save the data to file system while recording.
     this.dataChunks.push(event.data);
   }
 
-  onError(event: Event): void {
+  private onError(event: Event): void {
     // TODO(shik): Proper error handling.
     console.error(event);
   }
 
-  async start(): Promise<void> {
-    await this.sodaSession.start();
+  startNewSodaSession(): AsyncJobInfo {
+    return this.sodaEnableQueue.push(async () => {
+      if (this.currentSodaSession !== null) {
+        return;
+      }
+      if (this.textTokens.value === null) {
+        this.textTokens.value = [];
+      }
+      const session = await this.platformHandler.newSodaSession();
+      const unsubscribe = session.subscribeEvent((ev) => {
+        this.sodaEventTransformer.addEvent(
+          ev,
+          assertExists(this.currentSodaSession).startOffsetMs,
+        );
+        this.textTokens.value = this.sodaEventTransformer.getTokens();
+      });
+      this.currentSodaSession = {
+        session,
+        unsubscribe,
+        startOffsetMs: (this.processedSamples / SAMPLE_RATE) * 1000,
+      };
+      await session.start();
+    });
+  }
+
+  stopSodaSession(): AsyncJobInfo {
+    return this.sodaEnableQueue.push(async () => {
+      if (this.currentSodaSession === null) {
+        return;
+      }
+      await this.currentSodaSession.session.stop();
+      this.currentSodaSession.unsubscribe();
+      this.currentSodaSession = null;
+    });
+  }
+
+  /**
+   * Starts the recording session.
+   *
+   * Note that each recording session is intended to only be started once.
+   * TODO(pihsun): Have function for pause/resume the recording.
+   */
+  async start(transcriptionEnabled: boolean): Promise<void> {
+    if (transcriptionEnabled) {
+      // If the transcription is enabled from the beginning, await for the soda
+      // session to start to avoid having start of audio not transcribed.
+      // TODO(pihsun): Should this be happened asynchronously and have the
+      // audio buffered?
+      await this.startNewSodaSession().result;
+    }
+    this.audioProcessor.port.start();
+    this.mediaRecorder.start(TIME_SLICE_MS);
   }
 
   async finish(): Promise<Blob> {
@@ -161,8 +218,7 @@ export class RecordingSession {
     });
     this.mediaRecorder.stop();
     this.audioProcessor.port.close();
-    await this.sodaSession.stop();
-    this.sodaSessionUnsubscribe();
+    await this.stopSodaSession().result;
     await stopped;
 
     for (const track of this.stream.getTracks()) {
@@ -175,8 +231,6 @@ export class RecordingSession {
   static async create(
     config: RecordingSessionConfig,
   ): Promise<RecordingSession> {
-    const sodaSession = await config.platformHandler.newSodaSession();
-
     const stream = await getStreamFromAudioSource(config.source);
     const mediaRecorder = new MediaRecorder(stream, {
       mimeType: AUDIO_MIME_TYPE,
@@ -186,6 +240,11 @@ export class RecordingSession {
     const processor = new AudioWorkletNode(audioCtx, 'audio-processor');
     source.connect(processor);
 
-    return new RecordingSession(stream, mediaRecorder, processor, sodaSession);
+    return new RecordingSession(
+      config.platformHandler,
+      stream,
+      mediaRecorder,
+      processor,
+    );
   }
 }

@@ -6,30 +6,41 @@ import '../components/audio-waveform.js';
 import '../components/cra/cra-button.js';
 import '../components/cra/cra-dialog.js';
 import '../components/cra/cra-icon-button.js';
+import '../components/cra/cra-image.js';
+import '../components/cra/cra-menu.js';
+import '../components/cra/cra-menu-item.js';
 import '../components/recording-file-list.js';
 import '../components/secondary-button.js';
 import '../components/transcription-view.js';
 
 import {
   classMap,
+  createRef,
   css,
   html,
   nothing,
   PropertyDeclarations,
+  ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {CraDialog} from '../components/cra/cra-dialog.js';
-import {i18n} from '../core/i18n.js';
+import {CraMenu} from '../components/cra/cra-menu.js';
+import {i18n, replacePlaceholderWithHtml} from '../core/i18n.js';
 import {
   usePlatformHandler,
   useRecordingDataManager,
 } from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
-import {signal} from '../core/reactive/signal.js';
+import {computed, Dispose, effect, signal} from '../core/reactive/signal.js';
 import {RecordingCreateParams} from '../core/recording_data_manager.js';
 import {AudioSource, RecordingSession} from '../core/recording_session.js';
 import {navigateTo} from '../core/state/route.js';
-import {assertInstanceof, checkEnumVariant} from '../core/utils/assert.js';
+import {settings, TranscriptionEnableState} from '../core/state/settings.js';
+import {
+  assertExhaustive,
+  assertInstanceof,
+  checkEnumVariant,
+} from '../core/utils/assert.js';
 import {formatDuration} from '../core/utils/datetime.js';
 
 function getDefaultTitle(): string {
@@ -111,18 +122,56 @@ export class RecordPage extends ReactiveLitElement {
     }
 
     #transcription-container {
+      align-items: center;
       display: none;
+      justify-content: center;
     }
 
     .show-transcription {
       #transcription-container {
-        display: block;
+        display: flex;
       }
 
       @container style(--small-viewport: 1) {
         #audio-waveform-container {
           display: none;
         }
+      }
+    }
+
+    #transcription-waiting {
+      font: var(--cros-display-6-font);
+    }
+
+    #transcription-consent {
+      align-items: center;
+      display: flex;
+      flex-flow: column;
+      text-align: center;
+      width: 352px;
+
+      & > .header {
+        font: var(--cros-headline-1-font);
+        margin-top: 16px;
+      }
+
+      & > .description {
+        font: var(--cros-body-2-font);
+        margin-top: 8px;
+
+        & > cra-icon {
+          display: inline-block;
+          height: 20px;
+          vertical-align: middle;
+          width: 20px;
+        }
+      }
+
+      & > .actions {
+        display: flex;
+        flex-flow: row;
+        gap: 8px;
+        margin-top: 16px;
       }
     }
 
@@ -257,15 +306,26 @@ export class RecordPage extends ReactiveLitElement {
   private readonly platformHandler = usePlatformHandler();
 
   // TODO: b/336963138 - Handle when transcription isn't available.
-  private readonly showTranscription = signal(false);
+  private readonly transcriptionShown = signal(false);
+
+  private readonly transcriptionEnabled = computed(
+    () =>
+      settings.value.transcriptionEnabled === TranscriptionEnableState.ENABLED,
+  );
+
+  private transcriptionEnableDispose: Dispose|null = null;
+
+  private readonly menu = createRef<CraMenu>();
 
   private async startRecording() {
     if (this.recordingSession.value !== null) {
       return;
     }
 
+    let session: RecordingSession;
+
     try {
-      this.recordingSession.value = await RecordingSession.create({
+      session = await RecordingSession.create({
         platformHandler: this.platformHandler,
         source: checkEnumVariant(AudioSource, this.audioSource) ??
           AudioSource.USER_MEDIA,
@@ -282,7 +342,22 @@ export class RecordPage extends ReactiveLitElement {
       }
       return;
     }
-    await this.recordingSession.value.start();
+    await session.start(this.transcriptionEnabled.value);
+    this.transcriptionEnableDispose = effect(() => {
+      // TODO(pihsun): This is a bit fragile now since this relies on the
+      // startNewSodaSession and stopSodaSession both calls AsyncJobQueue,
+      // which always run things async so signal won't be tracked as
+      // dependency. Since we only want the transcriptionEnabled as dependency
+      // here, add either watch() to manually specify dependencies for effect,
+      // or add untrack() to specify region that dependencies shouldn't be
+      // tracked.
+      if (this.transcriptionEnabled.value) {
+        session.startNewSodaSession();
+      } else {
+        session.stopSodaSession();
+      }
+    });
+    this.recordingSession.value = session;
   }
 
   private async cancelRecording() {
@@ -290,6 +365,8 @@ export class RecordPage extends ReactiveLitElement {
       return;
     }
     await this.recordingSession.value.finish();
+    this.transcriptionEnableDispose?.();
+    this.transcriptionEnableDispose = null;
     this.recordingSession.value = null;
   }
 
@@ -316,6 +393,8 @@ export class RecordPage extends ReactiveLitElement {
       audioData,
     );
 
+    this.transcriptionEnableDispose?.();
+    this.transcriptionEnableDispose = null;
     this.recordingSession.value = null;
     return id;
   }
@@ -344,8 +423,33 @@ export class RecordPage extends ReactiveLitElement {
     await this.cancelRecording();
   }
 
-  private toggleTranscription() {
-    this.showTranscription.update((s) => !s);
+  private toggleTranscriptionShown() {
+    this.transcriptionShown.update((s) => !s);
+  }
+
+  private toggleTranscriptionEnabled() {
+    switch (settings.value.transcriptionEnabled) {
+      case TranscriptionEnableState.ENABLED:
+        settings.mutate((s) => {
+          s.transcriptionEnabled = TranscriptionEnableState.DISABLED;
+        });
+        return;
+      case TranscriptionEnableState.DISABLED:
+        settings.mutate((s) => {
+          s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
+        });
+        return;
+      case TranscriptionEnableState.UNKNOWN:
+      case TranscriptionEnableState.DISABLED_FIRST:
+        // TODO: b/344784638 - This should show the same dialog as in the
+        // onboarding dialog instead of directly enabling the setting.
+        settings.mutate((s) => {
+          s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
+        });
+        return;
+      default:
+        assertExhaustive(settings.value.transcriptionEnabled);
+    }
   }
 
   private get deleteDialog(): CraDialog|null {
@@ -393,11 +497,80 @@ export class RecordPage extends ReactiveLitElement {
     if (this.recordingSession.value === null) {
       return nothing;
     }
+    // TODO: b/344789835 - Query backend for transcription availability.
+    // TODO: b/344789835 - Add state when transcription is disabled.
     // TODO: b/336963138 - Animation while opening/closing the panel.
     const session = this.recordingSession.value;
-    return html`<transcription-view
-      .textTokens=${session.progress.value.textTokens}
-    ></transcription-view>`;
+    const {textTokens} = session.progress.value;
+    if (textTokens !== null && textTokens.length > 0) {
+      // If there are existing transcription, it is always shown even if the
+      // transcription is disabled afterwards.
+      return html`<transcription-view .textTokens=${textTokens}>
+      </transcription-view>`;
+    }
+
+    // Note that the image transcript.svg is currently placeholders and don't
+    // use dynamic color tokens yet.
+    // TODO: b/344785475 - Change to final illustration when ready.
+    switch (settings.value.transcriptionEnabled) {
+      case TranscriptionEnableState.ENABLED:
+        return html`<div id="transcription-waiting">
+          ${i18n.transcriptionWaitingSpeechText}
+        </div>`;
+      case TranscriptionEnableState.DISABLED:
+      case TranscriptionEnableState.DISABLED_FIRST: {
+        const description = replacePlaceholderWithHtml(
+          i18n.recordTranscriptionOffDescription,
+          '[3dot]',
+          html`<cra-icon name="more_vertical"></cra-icon>`,
+        );
+        return html`
+          <div id="transcription-consent">
+            <cra-image name="transcript"></cra-image>
+            <div class="header">${i18n.recordTranscriptionOffHeader}</div>
+            <div class="description">${description}</div>
+          </div>
+        `;
+      }
+      case TranscriptionEnableState.UNKNOWN: {
+        function disableTranscription() {
+          settings.mutate((s) => {
+            s.transcriptionEnabled = TranscriptionEnableState.DISABLED_FIRST;
+          });
+        }
+        function enableTranscription() {
+          // TODO: b/344784638 - This should show the same dialog as in the
+          // onboarding dialog instead of directly enabling the setting.
+          settings.mutate((s) => {
+            s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
+          });
+        }
+        return html`
+          <div id="transcription-consent">
+            <cra-image name="transcript"></cra-image>
+            <div class="header">
+              ${i18n.recordTranscriptionEntryPointHeader}
+            </div>
+            <div class="description">
+              ${i18n.recordTranscriptionEntryPointDescription}
+            </div>
+            <div class="actions">
+              <cra-button
+                .label=${i18n.recordTranscriptionEntryPointDisableButton}
+                button-style="secondary"
+                @click=${disableTranscription}
+              ></cra-button>
+              <cra-button
+                .label=${i18n.recordTranscriptionEntryPointEnableButton}
+                @click=${enableTranscription}
+              ></cra-button>
+            </div>
+          </div>
+        `;
+      }
+      default:
+        assertExhaustive(settings.value.transcriptionEnabled);
+    }
   }
 
   private renderTimer() {
@@ -487,30 +660,62 @@ export class RecordPage extends ReactiveLitElement {
     </cra-dialog>`;
   }
 
+  private renderMenu() {
+    return html`
+      <cra-menu ${ref(this.menu)} anchor="show-menu">
+        <cra-menu-item
+          headline=${i18n.recordMenuDeleteOption}
+          @cros-menu-item-triggered=${this.onDeleteButtonClick}
+        >
+        </cra-menu-item>
+        <cra-menu-item
+          headline=${i18n.recordMenuToggleTranscriptionOption}
+          itemEnd="switch"
+          .switchSelected=${this.transcriptionEnabled.value}
+          @cros-menu-item-triggered=${this.toggleTranscriptionEnabled}
+        >
+        </cra-menu-item>
+      </cra-menu>
+    `;
+  }
+
+  private renderHeader() {
+    const showMenu = () => {
+      this.menu.value?.show();
+    };
+    return html`
+      <div id="header" class="sheet">
+        <cra-icon-button buttonstyle="floating" @click=${this.onBackClick}>
+          <cra-icon slot="icon" name="arrow_back"></cra-icon>
+        </cra-icon-button>
+        <span id="title">${this.recordingTitle}</span>
+        <cra-icon-button
+          buttonstyle="toggle"
+          @click=${this.toggleTranscriptionShown}
+        >
+          <cra-icon slot="icon" name="notes"></cra-icon>
+          <cra-icon slot="selectedIcon" name="notes"></cra-icon>
+        </cra-icon-button>
+        <cra-icon-button
+          buttonstyle="floating"
+          @click=${showMenu}
+          id="show-menu"
+        >
+          <cra-icon slot="icon" name="more_vertical"></cra-icon>
+        </cra-icon-button>
+      </div>
+      ${this.renderMenu()}
+    `;
+  }
+
   override render(): RenderResult {
     const mainSectionClasses = {
-      'show-transcription': this.showTranscription.value,
+      'show-transcription': this.transcriptionShown.value,
     };
 
     return html`
       <div id="main-area">
-        <div id="header" class="sheet">
-          <cra-icon-button buttonstyle="floating" @click=${this.onBackClick}>
-            <cra-icon slot="icon" name="arrow_back"></cra-icon>
-          </cra-icon-button>
-          <span id="title">${this.recordingTitle}</span>
-          <cra-icon-button
-            buttonstyle="toggle"
-            @click=${this.toggleTranscription}
-          >
-            <cra-icon slot="icon" name="notes"></cra-icon>
-            <cra-icon slot="selectedIcon" name="notes"></cra-icon>
-          </cra-icon-button>
-          <cra-icon-button buttonstyle="floating">
-            <!-- TODO: b/336963138 - Implements more menu -->
-            <cra-icon slot="icon" name="more_vertical"></cra-icon>
-          </cra-icon-button>
-        </div>
+        ${this.renderHeader()}
         <div id="middle" class=${classMap(mainSectionClasses)}>
           <div id="audio-waveform-container" class="sheet">
             ${this.renderAudioWaveform()}

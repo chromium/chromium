@@ -105,7 +105,8 @@ export class AsyncJobQueue {
    */
   push(job: () => Awaitable<void>): AsyncJobInfo {
     if (this.runningPromise === null) {
-      const result = Promise.resolve(job());
+      // We always run the job asynchronously.
+      const result = Promise.resolve().then(() => job());
       this.runningPromise = result
                               .catch(
                                 () => {

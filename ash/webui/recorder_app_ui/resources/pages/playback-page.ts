@@ -6,6 +6,7 @@ import 'chrome://resources/cros_components/slider/slider.js';
 import 'chrome://resources/mwc/@material/web/icon/icon.js';
 import 'chrome://resources/mwc/@material/web/iconbutton/icon-button.js';
 import '../components/audio-waveform.js';
+import '../components/cra/cra-image.js';
 import '../components/recording-title.js';
 import '../components/recording-file-list.js';
 import '../components/secondary-button.js';
@@ -23,6 +24,7 @@ import {
   PropertyDeclarations,
 } from 'chrome://resources/mwc/lit/index.js';
 
+import {i18n} from '../core/i18n.js';
 import {
   AnimationFrameController,
 } from '../core/lit/animation_frame_controller.js';
@@ -112,6 +114,17 @@ export class PlaybackPage extends ReactiveLitElement {
           display: none;
         }
       }
+    }
+
+    #transcription-empty {
+      align-items: center;
+      display: flex;
+      flex-flow: column;
+      font: var(--cros-headline-1-font);
+      gap: 16px;
+      height: 100%;
+      justify-content: center;
+      width: 100%;
     }
 
     audio-waveform,
@@ -387,6 +400,15 @@ export class PlaybackPage extends ReactiveLitElement {
     if (textTokens === null) {
       return nothing;
     }
+    if (textTokens.length === 0) {
+      // Note that the image is currently placeholders and don't use dynamic
+      // color tokens yet.
+      // TODO: b/344785475 - Change to final illustration when ready.
+      return html`<div id="transcription-empty">
+        <cra-image name="transcription_no_speech"></cra-image>
+        ${i18n.transcriptionNoSpeechText}
+      </div>`;
+    }
     // TODO: b/336963138 - Animation while opening/closing the panel.
     return html`<transcription-view
       .textTokens=${textTokens}
@@ -459,6 +481,17 @@ export class PlaybackPage extends ReactiveLitElement {
     const mainSectionClasses = {
       'show-transcription': this.showTranscription.value,
     };
+
+    const transcriptionToggleButton =
+      this.textTokens.value === null ? nothing : html`
+            <cra-icon-button
+              buttonstyle="toggle"
+              @click=${this.toggleTranscription}
+            >
+              <cra-icon slot="icon" name="notes"></cra-icon>
+              <cra-icon slot="selectedIcon" name="notes"></cra-icon>
+            </cra-icon-button>
+          `;
     // TODO(pihsun): Custom playback controls.
     return html`
       <div id="main-area">
@@ -476,13 +509,7 @@ export class PlaybackPage extends ReactiveLitElement {
           </cra-icon-button>
           <recording-title .recordingMetadata=${this.recordingMetadata.value}>
           </recording-title>
-          <cra-icon-button
-            buttonstyle="toggle"
-            @click=${this.toggleTranscription}
-          >
-            <cra-icon slot="icon" name="notes"></cra-icon>
-            <cra-icon slot="selectedIcon" name="notes"></cra-icon>
-          </cra-icon-button>
+          ${transcriptionToggleButton}
           <cra-icon-button buttonstyle="floating">
             <!-- TODO: b/336963138 - Implements more menu -->
             <cra-icon slot="icon" name="more_vertical"></cra-icon>

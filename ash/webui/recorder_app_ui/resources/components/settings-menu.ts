@@ -8,10 +8,15 @@ import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
 import './settings-row.js';
 
+import {
+  Switch as CrosSwitch,
+} from 'chrome://resources/cros_components/switch/switch.js';
 import {css, html} from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
+import {settings, TranscriptionEnableState} from '../core/state/settings.js';
+import {assertInstanceof} from '../core/utils/assert.js';
 
 import {CraDialog} from './cra/cra-dialog.js';
 
@@ -104,7 +109,19 @@ export class SettingsMenu extends ReactiveLitElement {
     this.dialog?.close();
   }
 
+  private onTranscriptionToggle(ev: Event) {
+    // TODO: b/344784638 - Query backend for download status / progress.
+    const target = assertInstanceof(ev.target, CrosSwitch);
+    settings.mutate((s) => {
+      s.transcriptionEnabled = target.selected ?
+        TranscriptionEnableState.ENABLED :
+        TranscriptionEnableState.DISABLED;
+    });
+  }
+
   override render(): RenderResult {
+    const transcriptionEnabled =
+      settings.value.transcriptionEnabled === TranscriptionEnableState.ENABLED;
     // TODO: b/336963138 - Implement actual functionality of all settings.
     return html`<cra-dialog>
       <div slot="content">
@@ -153,10 +170,15 @@ export class SettingsMenu extends ReactiveLitElement {
                 <cros-switch slot="action"></cros-switch>
               </settings-row>
               <settings-row>
-                <span slot="label"
-                  >${i18n.settingsOptionsTranscriptionLabel}</span
+                <span slot="label">
+                  ${i18n.settingsOptionsTranscriptionLabel}
+                </span>
+                <cros-switch
+                  slot="action"
+                  .selected=${transcriptionEnabled}
+                  @change=${this.onTranscriptionToggle}
                 >
-                <cros-switch slot="action"></cros-switch>
+                </cros-switch>
               </settings-row>
               <!--
                 TODO: b/336963138 - Add transcription language and summary.

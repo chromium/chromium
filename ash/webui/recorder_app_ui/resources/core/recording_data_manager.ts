@@ -68,7 +68,14 @@ type AudioPower = Infer<typeof audioPowerSchema>;
 
 const transcriptionSchema = z.object({
   // Transcriptions in form of text tokens.
-  textTokens: z.array(textTokenSchema),
+  //
+  // Since transcription can be enabled / disabled during the recording, the
+  // `textTokens` might only contain part of the transcription when
+  // transcription is enabled.
+  //
+  // If the transcription is never enabled while recording, `textTokens` will
+  // be null (to show a different state in playback view).
+  textTokens: z.nullable(z.array(textTokenSchema)),
 });
 
 type Transcription = Infer<typeof transcriptionSchema>;
@@ -97,7 +104,10 @@ function audioName(id: string) {
   return `${id}.webm`;
 }
 
-function calculateDescription(textTokens: TextToken[]): string {
+function calculateDescription(textTokens: TextToken[]|null): string {
+  if (textTokens === null) {
+    return '';
+  }
   const transcription = concatTextTokens(textTokens);
   if (transcription.length <= MAX_DESCRIPTION_LENGTH - 3) {
     return transcription;

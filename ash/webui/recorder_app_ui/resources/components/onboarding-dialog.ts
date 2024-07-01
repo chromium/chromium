@@ -16,6 +16,7 @@ import {
 import {i18n} from '../core/i18n.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
+import {settings, TranscriptionEnableState} from '../core/state/settings.js';
 import {assertExhaustive, assertInstanceof} from '../core/utils/assert.js';
 
 /**
@@ -167,7 +168,14 @@ export class OnboardingDialog extends ReactiveLitElement {
       }
       case 1: {
         // TODO: b/344785475 - Implement transcription enable/disable logic.
-        const nextStep = () => {
+        const enableTranscription = () => {
+          settings.mutate((s) => {
+            s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
+          });
+          // TODO(pihsun): Really call backend to start downloading SODA model.
+          this.step.value = 2;
+        };
+        const cancelTranscription = () => {
           this.step.value = 2;
         };
         return this.renderDialog(
@@ -178,11 +186,11 @@ export class OnboardingDialog extends ReactiveLitElement {
             <cra-button
               .label=${i18n.onboardingDialogTranscriptionCancelButton}
               button-style="secondary"
-              @click=${nextStep}
+              @click=${cancelTranscription}
             ></cra-button>
             <cra-button
               .label=${i18n.onboardingDialogTranscriptionTurnOnButton}
-              @click=${nextStep}
+              @click=${enableTranscription}
             ></cra-button>
           `,
         );

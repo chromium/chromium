@@ -5,13 +5,7 @@
 import {assertExists} from '../utils/assert.js';
 import {Infer, z} from '../utils/schema.js';
 
-import {
-  FinalResult,
-  PartialResult,
-  SodaEvent,
-  TimeDelta,
-  TimingInfo,
-} from './types.js';
+import {FinalResult, SodaEvent, TimeDelta, TimingInfo} from './types.js';
 
 // A time range in milliseconds.
 export const timeRangeSchema = z.object({
@@ -49,19 +43,25 @@ function toMs(timeDelta: TimeDelta|null): number|null {
   return Number(timeDelta.microseconds) / 1e3;
 }
 
-function parseTimingInfo(timingInfo: TimingInfo|null): TimeRange|null {
+function parseTimingInfo(
+  timingInfo: TimingInfo|null,
+  offsetMs: number,
+): TimeRange|null {
   if (timingInfo === null) {
     return null;
   }
   const {audioStartTime, eventEndTime} = timingInfo;
-  return {startMs: toMs(audioStartTime), endMs: toMs(eventEndTime)};
+  return {
+    startMs: toMs(audioStartTime) + offsetMs,
+    endMs: toMs(eventEndTime) + offsetMs,
+  };
 }
 
-function flattenEvent(ev: FinalResult): TextPart[] {
+function flattenEvent(ev: FinalResult, offsetMs: number): TextPart[] {
   const {hypothesisPart, timingEvent} = ev;
 
   const result: TextPart[] = [];
-  const eventTimeRange = parseTimingInfo(timingEvent);
+  const eventTimeRange = parseTimingInfo(timingEvent, offsetMs);
   if (eventTimeRange === null) {
     // TODO(pihsun): Check if this can actually happen.
     console.error('soda event has no timestamp', ev);
@@ -105,53 +105,53 @@ function flattenEvent(ev: FinalResult): TextPart[] {
 export class SodaEventTransformer {
   private readonly tokens: TextToken[] = [];
 
-  // The last PartialResult in SodaEvent with partial result.
-  private partialResult: PartialResult|null = null;
+  // The last token from the PartialResult in SodaEvent with partial result.
+  private partialResultToken: TextToken|null = null;
 
   getTokens(): TextToken[] {
     // TODO(pihsun): This happens to always return a new array each time it's
     // called, which triggers lit update. We should have some "computed" values
     // that is only updated when needed.
     const ret = [...this.tokens];
-    if (this.partialResult !== null) {
+    if (this.partialResultToken !== null) {
       if (ret.length > 0) {
         ret.push(textSeparator);
       }
-      ret.push({
-        kind: 'textPart',
-        text: assertExists(this.partialResult.partialText[0]),
-        timeRange: parseTimingInfo(this.partialResult.timingEvent),
-        leadingSpace: true,
-      });
+      ret.push(this.partialResultToken);
     }
     return ret;
   }
 
-  addEvent(event: SodaEvent): void {
+  /**
+   * Adds a SODA event.
+   * An offset can be passed to shift the timestamp in the event, since the
+   * transcription can be stopped and started while recording.
+   *
+   * @param event The SODA event.
+   * @param offsetMs Offset of the start of the SODA session in microseconds.
+   */
+  addEvent(event: SodaEvent, offsetMs: number): void {
     if ('partialResult' in event) {
-      this.partialResult = event.partialResult;
+      this.partialResultToken = {
+        kind: 'textPart',
+        text: assertExists(event.partialResult.partialText[0]),
+        timeRange: parseTimingInfo(event.partialResult.timingEvent, offsetMs),
+        leadingSpace: true,
+      };
       // Don't update tokens since it'll be added in getTokens.
       return;
     }
     if ('finalResult' in event) {
       // New final result, remove the partial result event.
-      this.partialResult = null;
+      this.partialResultToken = null;
       const {finalResult} = event;
       if (this.tokens.length > 0) {
         this.tokens.push(textSeparator);
       }
-      this.tokens.push(...flattenEvent(finalResult));
+      this.tokens.push(...flattenEvent(finalResult, offsetMs));
     } else {
       console.error('unknown event type', event);
     }
-  }
-
-  static transformEvents(events: SodaEvent[]): TextToken[] {
-    const transformer = new SodaEventTransformer();
-    for (const event of events) {
-      transformer.addEvent(event);
-    }
-    return transformer.getTokens();
   }
 }
 

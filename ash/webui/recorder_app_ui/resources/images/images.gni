@@ -40,6 +40,8 @@ images = [
   "onboarding_speaker_id.svg",
   "onboarding_transcription.svg",
   "onboarding_welcome.svg",
+  "transcript.svg",
+  "transcription_no_speech.svg",
 ]
 
 foreach(icon, icons) {

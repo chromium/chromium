@@ -23,7 +23,7 @@
 You can turn this off at anytime in Settings.
   </message>
   <message desc="Button to not enable speaker ID and go next step in the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_DISALLOW_BUTTON">
-    Don't allow
+    Don’t allow
   </message>
   <message desc="Header of the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_HEADER">
     Allow Recorder to identify speakers?
@@ -91,8 +91,32 @@ You can turn this off at anytime in Settings.
   <message desc="Button to save and exit in the exit recording dialog." name="IDS_RECORDER_RECORD_EXIT_DIALOG_SAVE_AND_EXIT_BUTTON">
     Save and exit
   </message>
+  <message desc="Label of the menu item to delete the ongoing recording." name="IDS_RECORDER_RECORD_MENU_DELETE_OPTION">
+    Delete
+  </message>
+  <message desc="Label of the menu item to toggle whether transcription is enabled while recording." name="IDS_RECORDER_RECORD_MENU_TOGGLE_TRANSCRIPTION_OPTION">
+    Transcription feature
+  </message>
   <message desc="Button to stop recording." name="IDS_RECORDER_RECORD_STOP_BUTTON">
     Stop recording
+  </message>
+  <message desc="Description of the entry point of the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_ENTRY_POINT_DESCRIPTION">
+    With this feature enabled, live transcripts will also be shown as you’re recording.
+  </message>
+  <message desc="Button to disable transcription on the entry point of the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_ENTRY_POINT_DISABLE_BUTTON">
+    Don’t show again
+  </message>
+  <message desc="Button to enable transcription on the entry point of the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_ENTRY_POINT_ENABLE_BUTTON">
+    Enable
+  </message>
+  <message desc="Header of the entry point of the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_ENTRY_POINT_HEADER">
+    Get a transcription for your recording
+  </message>
+  <message desc="Description when transcription is off in the transcription view while recording. The [3dot] will be replaced by an icon of the 3 dots menu." name="IDS_RECORDER_RECORD_TRANSCRIPTION_OFF_DESCRIPTION">
+    You can adjust this in Settings or in the <ph name="THREE_DOTS_MENU_ICON">[3dot]</ph> menu
+  </message>
+  <message desc="Header when transcription is off in the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_OFF_HEADER">
+    Transcript is off
   </message>
   <message desc="Header of the settings." name="IDS_RECORDER_SETTINGS_HEADER">
     Recorder settings
@@ -132,5 +156,11 @@ You can turn this off at anytime in Settings.
   </message>
   <message desc="Button to enable autoscroll for transcription." name="IDS_RECORDER_TRANSCRIPTION_AUTOSCROLL_BUTTON">
     Autoscroll
+  </message>
+  <message desc="Message when there’s no speech in the recording on playback." name="IDS_RECORDER_TRANSCRIPTION_NO_SPEECH_TEXT">
+    No speech detected
+  </message>
+  <message desc="Message when there’s not yet any speech detected when recording." name="IDS_RECORDER_TRANSCRIPTION_WAITING_SPEECH_TEXT">
+    Listening for speech...
   </message>
 </grit-part>
