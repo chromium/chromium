@@ -26,6 +26,7 @@
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
 #include "chrome/browser/ui/safety_hub/mock_safe_browsing_database_manager.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
@@ -180,7 +181,7 @@ class UnusedSitePermissionsServiceTest
       SetUpSafeBrowsingService();
     }
     prefs()->SetBoolean(
-        permissions::prefs::kUnusedSitePermissionsRevocationEnabled, true);
+        safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled, true);
     callback_count_ = 0;
 
     // The following lines also serve to first access and thus create the two
@@ -1315,8 +1316,8 @@ TEST_P(UnusedSitePermissionsServiceTest, AutoRevocationSetting) {
   // Disable auto-revocation by setting kUnusedSitePermissionsRevocationEnabled
   // pref to false and turning off safe browsing. This should stop the repeated
   // timer.
-  prefs()->SetBoolean(
-      permissions::prefs::kUnusedSitePermissionsRevocationEnabled, false);
+  prefs()->SetBoolean(safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled,
+                      false);
   prefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
   EXPECT_FALSE(service()->IsTimerRunningForTesting());
 
@@ -1332,7 +1333,7 @@ TEST_P(UnusedSitePermissionsServiceTest, AutoRevocationSetting) {
   }
   if (ShouldSetupUnusedSites()) {
     prefs()->SetBoolean(
-        permissions::prefs::kUnusedSitePermissionsRevocationEnabled, true);
+        safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled, true);
   }
   if (ShouldSetupAbusiveNotificationSites() || ShouldSetupUnusedSites()) {
     EXPECT_TRUE(service()->IsTimerRunningForTesting());
@@ -1611,7 +1612,7 @@ TEST_F(UnusedSitePermissionsServiceStartUpTest,
   // Expect migration completion to be false at the beginning of the test before
   // starting the service.
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
-      permissions::prefs::kUnusedSitePermissionsRevocationMigrationCompleted));
+      safety_hub_prefs::kUnusedSitePermissionsRevocationMigrationCompleted));
 
   // When we start up a new service instance, the latest result (i.e. the list
   // of revoked permissions) should be be updated to strings.
@@ -1621,7 +1622,7 @@ TEST_F(UnusedSitePermissionsServiceStartUpTest,
   // Verify the migration is completed on after the service has started and pref
   // is set accordingly.
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
-      permissions::prefs::kUnusedSitePermissionsRevocationMigrationCompleted));
+      safety_hub_prefs::kUnusedSitePermissionsRevocationMigrationCompleted));
   EXPECT_EQ(permissions_list_string, GetRevokedUnusedPermissions(hcsm())[0]
                                          .setting_value.GetDict()
                                          .Find(permissions::kRevokedKey)
@@ -1655,7 +1656,7 @@ TEST_F(UnusedSitePermissionsServiceStartUpTest,
   // Expect migration completion to be false at the beginning of the test before
   // starting the service.
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
-      permissions::prefs::kUnusedSitePermissionsRevocationMigrationCompleted));
+      safety_hub_prefs::kUnusedSitePermissionsRevocationMigrationCompleted));
 
   // When we start up a new service instance, the latest result (i.e. the list
   // of revoked permissions) should be be updated to strings.
@@ -1665,7 +1666,7 @@ TEST_F(UnusedSitePermissionsServiceStartUpTest,
   // Verify the migration is completed on after the service has started and pref
   // is set accordingly.
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
-      permissions::prefs::kUnusedSitePermissionsRevocationMigrationCompleted));
+      safety_hub_prefs::kUnusedSitePermissionsRevocationMigrationCompleted));
   auto expected_permissions_list_url1 = base::Value::List().Append(
       UnusedSitePermissionsService::ConvertContentSettingsTypeToKey(
           mediastream_type));

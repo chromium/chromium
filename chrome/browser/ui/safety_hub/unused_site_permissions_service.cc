@@ -28,6 +28,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "chrome/common/chrome_features.h"
@@ -326,7 +327,7 @@ UnusedSitePermissionsService::UnusedSitePermissionsService(
 
   if (base::FeatureList::IsEnabled(features::kSafetyHub)) {
     pref_change_registrar_->Add(
-        permissions::prefs::kUnusedSitePermissionsRevocationEnabled,
+        safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled,
         base::BindRepeating(&UnusedSitePermissionsService::
                                 OnPermissionsAutorevocationControlChanged,
                             base::Unretained(this)));
@@ -349,7 +350,7 @@ UnusedSitePermissionsService::UnusedSitePermissionsService(
   }
 
   bool migration_completed = pref_change_registrar_->prefs()->GetBoolean(
-      permissions::prefs::kUnusedSitePermissionsRevocationMigrationCompleted);
+      safety_hub_prefs::kUnusedSitePermissionsRevocationMigrationCompleted);
   if (!migration_completed) {
     // Convert all integer permission values to string, if there is any
     // permission represented by integer stored in disk.
@@ -992,7 +993,7 @@ bool UnusedSitePermissionsService::IsUnusedSiteAutoRevocationEnabled() {
         content_settings::features::kSafetyCheckUnusedSitePermissions);
   }
   return pref_change_registrar_->prefs()->GetBoolean(
-      permissions::prefs::kUnusedSitePermissionsRevocationEnabled);
+      safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled);
 }
 
 bool UnusedSitePermissionsService::
@@ -1061,6 +1062,6 @@ void UnusedSitePermissionsService::UpdateIntegerValuesToGroupName() {
   }
 
   pref_change_registrar_->prefs()->SetBoolean(
-      permissions::prefs::kUnusedSitePermissionsRevocationMigrationCompleted,
+      safety_hub_prefs::kUnusedSitePermissionsRevocationMigrationCompleted,
       true);
 }

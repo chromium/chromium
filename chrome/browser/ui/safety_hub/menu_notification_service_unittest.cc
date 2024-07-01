@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -52,7 +53,7 @@ class SafetyHubMenuNotificationServiceTest
          safe_browsing::kSafetyHubAbusiveNotificationRevocation},
         {});
     prefs()->SetBoolean(
-        permissions::prefs::kUnusedSitePermissionsRevocationEnabled, true);
+        safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled, true);
   }
 
   void TearDown() override {
@@ -378,7 +379,7 @@ class
     ChromeRenderViewHostTestHarness::SetUp();
     feature_list_.InitWithFeatures({features::kSafetyHub}, {});
     prefs()->SetBoolean(
-        permissions::prefs::kUnusedSitePermissionsRevocationEnabled, true);
+        safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled, true);
   }
 
  private:
