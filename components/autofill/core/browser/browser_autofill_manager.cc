@@ -1423,10 +1423,18 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     }
   }
 
+  if (!suggestions.empty()) {
+    // Show the list of `suggestions` if not empty. These may include address or
+    // credit card suggestions. Additionally, warnings about mixed content might
+    // be present.
+    std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions));
+    return;
+  }
+
   // TODO(crbug.com/340494671): Move ShouldOfferSingleFieldFormFill out of
   // OnAskForValuesToFillImpl.
   auto ShouldOfferSingleFieldFormFill = [&] {
-    if (!suggestions.empty() || !should_offer_other_suggestions) {
+    if (!should_offer_other_suggestions) {
       return false;
     }
 
@@ -1511,10 +1519,11 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
 
   single_field_form_fill_router_->CancelPendingQueries();
 
-  // Show the list of `suggestions`. These may include address, credit card or
-  // plus address suggestions. Additionally, suggestions related to Compose or
-  // warnings about mixed content might be present.
-  std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions));
+  // TODO(crbug.com/324557560): Remove call once plus address and single field
+  // form filler suggestions are merged.
+  // Make sure that the callback is resolved by calling it with an empty list of
+  // suggestions.
+  std::move(callback).Run(/*show_suggestions=*/true, {});
 }
 
 void BrowserAutofillManager::OnGenerateSuggestionsComplete(
