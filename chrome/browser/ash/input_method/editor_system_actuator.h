@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_SYSTEM_ACTUATOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -30,6 +32,9 @@ class EditorSystemActuator : public orca::mojom::SystemActuator {
     virtual void ProcessConsentAction(ConsentAction consent_action) = 0;
     virtual void ShowUI() = 0;
     virtual void CloseUI() = 0;
+    virtual void HandleTrigger(
+        std::optional<std::string_view> preset_query_id,
+        std::optional<std::string_view> freeform_text) = 0;
     virtual EditorMetricsRecorder* GetMetricsRecorder() = 0;
     virtual size_t GetSelectedTextLength() = 0;
   };

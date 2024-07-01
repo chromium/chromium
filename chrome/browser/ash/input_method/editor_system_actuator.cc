@@ -73,10 +73,13 @@ void EditorSystemActuator::InsertText(const std::string& text) {
 
 void EditorSystemActuator::ApproveConsent() {
   system_->ProcessConsentAction(ConsentAction::kApprove);
+  system_->HandleTrigger(/*preset_query_id=*/std::nullopt,
+                         /*freeform_text=*/std::nullopt);
 }
 
 void EditorSystemActuator::DeclineConsent() {
   system_->ProcessConsentAction(ConsentAction::kDecline);
+  system_->CloseUI();
 }
 
 void EditorSystemActuator::OpenUrlInNewWindow(const GURL& url) {

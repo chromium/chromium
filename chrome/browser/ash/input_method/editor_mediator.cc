@@ -184,8 +184,6 @@ void EditorMediator::Announce(const std::u16string& message) {
 
 void EditorMediator::ProcessConsentAction(ConsentAction consent_action) {
   consent_store_->ProcessConsentAction(consent_action);
-  HandleTrigger(/*preset_query_id=*/std::nullopt,
-                /*freeform_text=*/std::nullopt);
 }
 
 void EditorMediator::ShowUI() {
