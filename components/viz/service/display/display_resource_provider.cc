@@ -165,12 +165,6 @@ const gfx::Size DisplayResourceProvider::GetResourceBackedSize(
   return GetResource(id)->transferable.size;
 }
 
-gfx::BufferFormat DisplayResourceProvider::GetBufferFormat(
-    ResourceId id) const {
-  const ChildResource* resource = GetResource(id);
-  return gpu::ToBufferFormat(resource->transferable.format);
-}
-
 SharedImageFormat DisplayResourceProvider::GetSharedImageFormat(
     ResourceId id) const {
   const ChildResource* resource = GetResource(id);

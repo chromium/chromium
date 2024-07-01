@@ -587,8 +587,8 @@ void DebugDrawFrame(
       if (quad->resources.ids[0] != kInvalidResourceId) {
         DBG_DRAW_TEXT_OPT(
             "frame.render_pass.buf_format", DBG_OPT_BLUE, display_rect.origin(),
-            base::NumberToString(static_cast<int>(
-                resource_provider->GetBufferFormat(quad->resources.ids[0]))));
+            resource_provider->GetSharedImageFormat(quad->resources.ids[0])
+                .ToString());
         DBG_DRAW_TEXT_OPT(
             "frame.render_pass.buf_color_space", DBG_OPT_GREEN,
             display_rect.origin(),

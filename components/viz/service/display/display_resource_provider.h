@@ -88,9 +88,6 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   const gfx::Size GetResourceBackedSize(ResourceId id) const;
 
   bool IsResourceSoftwareBacked(ResourceId id) const;
-  // Return the BufferFormat of the underlying buffer that can be used for
-  // scanout.
-  gfx::BufferFormat GetBufferFormat(ResourceId id) const;
   // Return the SharedImageFormat of the underlying buffer that can be used for
   // scanout.
   SharedImageFormat GetSharedImageFormat(ResourceId id) const;
