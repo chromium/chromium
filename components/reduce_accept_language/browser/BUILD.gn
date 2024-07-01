@@ -17,6 +17,18 @@ source_set("browser") {
   ]
 }
 
+source_set("in_memory") {
+  sources = [
+    "in_memory_reduce_accept_language_service.cc",
+    "in_memory_reduce_accept_language_service.h",
+  ]
+  deps = [
+    "//base",
+    "//content/public/browser",
+    "//url",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [
@@ -30,6 +42,18 @@ source_set("test_support") {
     "//components/content_settings/core/common",
     "//components/prefs",
     "//testing/gmock",
+    "//testing/gtest",
+    "//url:url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "in_memory_reduce_accept_language_service_unittest.cc" ]
+
+  deps = [
+    ":in_memory",
+    "//base/test:test_support",
     "//testing/gtest",
     "//url:url",
   ]

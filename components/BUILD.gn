@@ -490,6 +490,7 @@ test("components_unittests") {
       "//components/performance_manager:unit_tests",
       "//components/policy/content:unit_tests",
       "//components/query_tiles:unit_tests",
+      "//components/reduce_accept_language/browser:unit_tests",
       "//components/reporting/resources:unit_tests",
       "//components/services/heap_profiling:unit_tests",
       "//components/services/paint_preview_compositor:unit_tests",

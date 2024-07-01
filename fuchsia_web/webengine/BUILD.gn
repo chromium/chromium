@@ -210,6 +210,7 @@ component("web_engine_core") {
     "//components/permissions",
     "//components/policy/content:safe_sites_navigation_throttle",
     "//components/profile_metrics",
+    "//components/reduce_accept_language/browser:in_memory",
     "//components/site_isolation",
     "//components/strings:components_locale_settings",
     "//components/url_rewrite/browser",
