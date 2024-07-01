@@ -25,6 +25,10 @@
     overflow: hidden;
   }
 
+  product-selector {
+    width: var(--column-width);
+  }
+
   .img-container {
     height: 123px;
     margin-bottom: 16px;
@@ -64,6 +68,7 @@
     flex-direction: column;
     gap: var(--table-gap);
     margin-bottom: 24px;
+    width: var(--column-width);
   }
 
   .detail-title {
@@ -76,6 +81,11 @@
 
   .col:not(:first-child) .detail-title span {
     visibility: hidden;
+  }
+
+  .detail-description,
+  .detail-summary {
+    margin-inline-end: 24px;
   }
 </style>
 
