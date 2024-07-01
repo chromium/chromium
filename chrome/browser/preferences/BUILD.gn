@@ -38,6 +38,7 @@ android_library("java") {
 java_cpp_strings("java_pref_names_srcjar") {
   sources = [
     "//chrome/browser/enterprise/reporting/prefs.cc",
+    "//chrome/browser/ui/safety_hub/safety_hub_prefs.h",
     "//chrome/common/pref_names.h",
     "//components/autofill/core/common/autofill_prefs.h",
     "//components/commerce/core/pref_names.h",
