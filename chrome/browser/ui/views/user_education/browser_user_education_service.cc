@@ -54,6 +54,7 @@
 #include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/user_education/common/feature_promo_handle.h"
 #include "components/user_education/common/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo_specification.h"
@@ -817,8 +818,36 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleIcon(&views::kEyeCrossedIcon)
           .SetCustomActionIsDefault(false)
           .SetMetadata(
-              120, "boujane@chromium.org",
+              120, "boujane@google.com",
               "Privacy standbox tracking protection onboarding notice.")));
+
+  // kIPHTrackingProtectionFullOnboardingFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHTrackingProtectionFullOnboardingFeature,
+          kLocationIconElementId,
+          IDS_TRACKING_PROTECTION_FULL_ONBOARDING_NOTICE_BODY,
+          IDS_TRACKING_PROTECTION_FULL_ONBOARDING_NOTICE_SETTINGS_BUTTON_LABEL,
+          base::BindRepeating(
+              [](ui::ElementContext ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
+                if (!browser) {
+                  return;
+                }
+                chrome::ShowSettingsSubPage(browser,
+                                            chrome::kCookieSettingsSubPage);
+              }))
+          .SetBubbleTitleText(
+              IDS_TRACKING_PROTECTION_FULL_ONBOARDING_NOTICE_TITLE)
+          .SetPromoSubtype(
+              FeaturePromoSpecification::PromoSubtype::kLegalNotice)
+          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+          .SetBubbleIcon(&views::kEyeCrossedIcon)
+          .SetCustomActionIsDefault(false)
+          .SetMetadata(
+              120, "boujane@google.com",
+              "Privacy standbox tracking protection full onboarding notice.")));
 
   // kIPHTrackingProtectionReminderFeature:
   registry.RegisterFeature(std::move(std::move(
@@ -829,7 +858,7 @@ void MaybeRegisterChromeFeaturePromos(
           FeaturePromoSpecification::AcceleratorInfo())
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetMetadata(
-              120, "boujane@chromium.org",
+              120, "boujane@google.com",
               "Privacy standbox tracking protection reminder notice."))));
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)

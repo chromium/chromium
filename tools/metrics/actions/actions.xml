@@ -43883,6 +43883,8 @@ should be able to be added at any place in this file.
   <suffix name="TabPinnedFeature" label="For tab pinned overflow hint."/>
   <suffix name="TabSearch" label="For the tab search feature."/>
   <suffix name="TabSwitcherButton" label="For tab switcher button."/>
+  <suffix name="TrackingProtectionFullOnboarding"
+      label="for tracking protection full onboarding notice"/>
   <suffix name="TrackingProtectionOffboarding"
       label="for tracking protection offboarding notice (obsolete)"/>
   <suffix name="TrackingProtectionOnboarding"

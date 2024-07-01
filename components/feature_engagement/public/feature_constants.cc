@@ -179,6 +179,9 @@ BASE_FEATURE(kIPHTabSearchFeature,
 BASE_FEATURE(kIPHTrackingProtectionOnboardingFeature,
              "IPH_TrackingProtectionOnboarding",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHTrackingProtectionFullOnboardingFeature,
+             "IPH_TrackingProtectionFullOnboarding",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHTrackingProtectionReminderFeature,
              "IPH_TrackingProtectionReminder",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -359,6 +359,8 @@ DEFINE_VARIATION_PARAM(kIPHTabOrganizationSuccessFeature,
 DEFINE_VARIATION_PARAM(kIPHTabSearchFeature, "IPH_TabSearch");
 DEFINE_VARIATION_PARAM(kIPHTrackingProtectionOnboardingFeature,
                        "IPH_TrackingProtectionOnboarding");
+DEFINE_VARIATION_PARAM(kIPHTrackingProtectionFullOnboardingFeature,
+                       "IPH_TrackingProtectionFullOnboarding");
 DEFINE_VARIATION_PARAM(kIPHTrackingProtectionReminderFeature,
                        "IPH_TrackingProtectionReminder");
 DEFINE_VARIATION_PARAM(kIPHWebUITabStripFeature, "IPH_WebUITabStrip");
@@ -669,6 +671,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHTabSearchFeature),
         VARIATION_ENTRY(kIPHTabOrganizationSuccessFeature),
         VARIATION_ENTRY(kIPHTrackingProtectionOnboardingFeature),
+        VARIATION_ENTRY(kIPHTrackingProtectionFullOnboardingFeature),
         VARIATION_ENTRY(kIPHTrackingProtectionReminderFeature),
         VARIATION_ENTRY(kIPHWebUITabStripFeature),
         VARIATION_ENTRY(kIPHDesktopPwaInstallFeature),
