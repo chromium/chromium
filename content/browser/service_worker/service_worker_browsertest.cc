@@ -21,6 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -4653,6 +4654,7 @@ class ServiceWorkerWarmUpBrowserTestBase : public ServiceWorkerBrowserTest {
       document.body.appendChild(a);
     )";
     EXPECT_TRUE(ExecJs(GetPrimaryMainFrame(), JsReplace(script, id, url)));
+    base::RunLoop().RunUntilIdle();
   }
 };
 
@@ -4722,6 +4724,10 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWarmUpByVisibilityBrowserTest,
     // Wait until version1 or version2 is warmed up.
     while (!(version1->IsWarmedUp() || version2->IsWarmedUp())) {
       run_loop.RunUntilIdle();
+      EXPECT_NE(blink::EmbeddedWorkerStatus::kRunning,
+                version1->running_status());
+      EXPECT_NE(blink::EmbeddedWorkerStatus::kRunning,
+                version2->running_status());
     }
     // Make sure that only one version is warmed up.
     EXPECT_FALSE(version1->IsWarmedUp() && version2->IsWarmedUp());
@@ -4729,9 +4735,13 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWarmUpByVisibilityBrowserTest,
     // Wait until version1 and version2 are warmed up.
     while (!(version1->IsWarmedUp() && version2->IsWarmedUp())) {
       run_loop.RunUntilIdle();
+      EXPECT_NE(blink::EmbeddedWorkerStatus::kRunning,
+                version1->running_status());
+      EXPECT_NE(blink::EmbeddedWorkerStatus::kRunning,
+                version2->running_status());
     }
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED_NORETURN();
   }
 }
 
@@ -4873,6 +4883,13 @@ class ServiceWorkerWarmUpByPointerBrowserTest
                               blink::WebMouseEvent::Button::kLeft, point);
   }
 
+  void WaitForWarmedUp(const ServiceWorkerVersion& version) {
+    base::RunLoop run_loop;
+    while (!version.IsWarmedUp()) {
+      run_loop.RunUntilIdle();
+    }
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -4903,7 +4920,6 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWarmUpByPointerBrowserTest,
   const GURL in_scope_url(
       embedded_test_server()->GetURL("/service_worker/empty.html"));
   const GURL out_scope_url(embedded_test_server()->GetURL("/empty.html"));
-  base::RunLoop run_loop;
 
   scoped_refptr<ServiceWorkerVersion> version =
       RegisterServiceWorker(in_scope_url, in_scope_url);
@@ -4913,8 +4929,6 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWarmUpByPointerBrowserTest,
   EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   AddAnchor("in_scope_url", in_scope_url);
-
-  run_loop.RunUntilIdle();
 
   // To ensure that the pointerover event is triggered, move the pointer away
   // from the anchor area.
@@ -4928,9 +4942,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWarmUpByPointerBrowserTest,
     SimulateMouseDownWithElementIdAndWait("in_scope_url");
   }
 
-  while (!version->IsWarmedUp()) {
-    run_loop.RunUntilIdle();
-  }
+  WaitForWarmedUp(*version);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
