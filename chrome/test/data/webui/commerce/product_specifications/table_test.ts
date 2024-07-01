@@ -325,6 +325,7 @@ suite('ProductSpecificationsTableTest', () => {
         columns[1]!.querySelector<HTMLElement>('.open-tab-button');
     assertTrue(!!openTabButton1);
     assertTrue(!!openTabButton2);
+    tableElement.$.table.dispatchEvent(new PointerEvent('pointerleave'));
     assertFalse(isVisible(openTabButton1));
     assertFalse(isVisible(openTabButton2));
 

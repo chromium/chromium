@@ -35,12 +35,12 @@ export class TableElement extends PolymerElement {
   static get properties() {
     return {
       columns: Array,
-      hoveredColumnIndex_: {type: Number, value: -1},
+      hoveredColumnIndex_: Number,
     };
   }
 
   columns: TableColumn[];
-  private hoveredColumnIndex_: number;
+  private hoveredColumnIndex_: number|null = null;
 
   private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
 
@@ -58,7 +58,7 @@ export class TableElement extends PolymerElement {
   }
 
   private onHideOpenTabButton_() {
-    this.hoveredColumnIndex_ = -1;
+    this.hoveredColumnIndex_ = null;
   }
 
   private onShowOpenTabButton_(e: DomRepeatEvent<TableColumn>&
@@ -67,7 +67,8 @@ export class TableElement extends PolymerElement {
   }
 
   private showOpenTabButton_(columnIndex: number): boolean {
-    return columnIndex === this.hoveredColumnIndex_;
+    return this.hoveredColumnIndex_ !== null &&
+        this.hoveredColumnIndex_ === columnIndex;
   }
 
   private onOpenTabButtonClick_(e: DomRepeatEvent<TableColumn>&
