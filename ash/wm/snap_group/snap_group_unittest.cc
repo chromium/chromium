@@ -373,7 +373,7 @@ TEST_F(FasterSplitScreenTest, OldPartialOverview) {
   EXPECT_TRUE(GetSplitViewController()->InSplitViewMode());
   // Select the other window in overview, test we end overview and split view.
   ClickOverviewItem(event_generator, w2.get());
-  VerifyNotSplitViewOverviewSession(w1.get());
+  VerifyNotSplitViewOrOverviewSession(w1.get());
   MaximizeToClearTheSession(w1.get());
 
   // Enter overview, then drag `w1` to snap, then drag the other `w2` to snap.
@@ -391,7 +391,7 @@ TEST_F(FasterSplitScreenTest, OldPartialOverview) {
                        /*drop=*/true);
   EXPECT_EQ(WindowStateType::kSecondarySnapped,
             WindowState::Get(w2.get())->GetStateType());
-  VerifyNotSplitViewOverviewSession(w1.get());
+  VerifyNotSplitViewOrOverviewSession(w1.get());
   MaximizeToClearTheSession(w1.get());
   // We need to maximize both windows so that overview isn't started upon
   // conversion to tablet mode.
@@ -423,7 +423,7 @@ TEST_F(FasterSplitScreenTest, DisableSnapWindowSuggestionsPref) {
   SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
                     chromeos::kDefaultSnapRatio,
                     WindowSnapActionSource::kSnapByWindowLayoutMenu);
-  VerifyNotSplitViewOverviewSession(w1.get());
+  VerifyNotSplitViewOrOverviewSession(w1.get());
 
   // Turn on the pref. Test we start overview.
   pref->SetBoolean(prefs::kSnapWindowSuggestions, true);
@@ -1914,7 +1914,7 @@ TEST_F(FasterSplitScreenTest, SnapUnresizableWindow) {
   SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
                     chromeos::kDefaultSnapRatio,
                     WindowSnapActionSource::kDragWindowToEdgeToSnap);
-  VerifyNotSplitViewOverviewSession(w1.get());
+  VerifyNotSplitViewOrOverviewSession(w1.get());
 }
 
 // Tests if both the `kResizeBehaviorKey` and `kUnresizableSnappedSizeKey` are
@@ -2078,10 +2078,10 @@ TEST_F(FasterSplitScreenTest, KeyMetricsIntegrationTest_DragToSnap) {
   resizer->Drag(gfx::PointF(0, 400), /*event_flags=*/0);
   resizer->CompleteDrag();
   resizer.reset();
-  SplitViewOverviewSession* split_view_overview_session =
-      VerifySplitViewOverviewSession(w1.get());
-  EXPECT_EQ(split_view_overview_session->snap_action_source_for_testing(),
-            WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  VerifySplitViewOverviewSession(w1.get());
+  EXPECT_EQ(
+      GetSplitViewOverviewSession(w1.get())->snap_action_source_for_testing(),
+      WindowSnapActionSource::kDragWindowToEdgeToSnap);
   auto* event_generator = GetEventGenerator();
   ClickOverviewItem(event_generator, w2.get());
   histogram_tester_.ExpectBucketCount(
@@ -2099,9 +2099,10 @@ TEST_F(FasterSplitScreenTest, KeyMetricsIntegrationTest_DragToSnap) {
   resizer->Drag(gfx::PointF(800, 0), /*event_flags=*/0);
   resizer->CompleteDrag();
   resizer.reset();
-  split_view_overview_session = VerifySplitViewOverviewSession(w1.get());
-  EXPECT_EQ(split_view_overview_session->snap_action_source_for_testing(),
-            WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  VerifySplitViewOverviewSession(w1.get());
+  EXPECT_EQ(
+      GetSplitViewOverviewSession(w1.get())->snap_action_source_for_testing(),
+      WindowSnapActionSource::kDragWindowToEdgeToSnap);
 
   auto* item2 = GetOverviewItemForWindow(w2.get());
   gfx::Point outside_point =
@@ -2147,11 +2148,10 @@ TEST_F(FasterSplitScreenTest, KeyMetricsIntegrationTest_WindowSizeButton) {
       chromeos::SnapController::Get()->CommitSnap(
           w1.get(), chromeos::SnapDirection::kSecondary,
           chromeos::kDefaultSnapRatio, test_case.request_source);
-      SplitViewOverviewSession* split_view_overview_session =
           VerifySplitViewOverviewSession(w1.get());
-      EXPECT_TRUE(split_view_overview_session);
-      EXPECT_EQ(split_view_overview_session->snap_action_source_for_testing(),
-                test_case.snap_action_source);
+          EXPECT_EQ(GetSplitViewOverviewSession(w1.get())
+                        ->snap_action_source_for_testing(),
+                    test_case.snap_action_source);
     };
 
     commit_snap();
@@ -2483,7 +2483,7 @@ TEST_F(SnapGroupTest, DisableSnapWindowSuggestionsPref) {
   SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
                     chromeos::kDefaultSnapRatio,
                     WindowSnapActionSource::kSnapByWindowLayoutMenu);
-  VerifyNotSplitViewOverviewSession(w1.get());
+  VerifyNotSplitViewOrOverviewSession(w1.get());
 
   // Turn on the pref. Test we start overview.
   pref->SetBoolean(prefs::kSnapWindowSuggestions, true);
@@ -3294,7 +3294,7 @@ TEST_F(SnapGroupTest, OldPartialOverview) {
   // Select the other window in overview, test we end overview and split view
   // but create a snap group.
   ClickOverviewItem(event_generator, w2.get());
-  VerifyNotSplitViewOverviewSession(w1.get());
+  VerifyNotSplitViewOrOverviewSession(w1.get());
   EXPECT_TRUE(
       SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
   MaximizeToClearTheSession(w1.get());
@@ -3314,7 +3314,7 @@ TEST_F(SnapGroupTest, OldPartialOverview) {
                        /*drop=*/true);
   EXPECT_EQ(WindowStateType::kSecondarySnapped,
             WindowState::Get(w2.get())->GetStateType());
-  VerifyNotSplitViewOverviewSession(w1.get());
+  VerifyNotSplitViewOrOverviewSession(w1.get());
   EXPECT_TRUE(
       SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
   MaximizeToClearTheSession(w1.get());
@@ -3366,7 +3366,7 @@ TEST_F(SnapGroupTest, RecallSnapGroupWontStartPartialOverview) {
   SnapOneTestWindow(w4.get(),
                     /*state_type=*/chromeos::WindowStateType::kPrimarySnapped,
                     chromeos::kDefaultSnapRatio);
-  VerifyNotSplitViewOverviewSession(w4.get());
+  VerifyNotSplitViewOrOverviewSession(w4.get());
 
   // Test the window gets snapped to replace.
   EXPECT_FALSE(
@@ -3430,7 +3430,7 @@ TEST_F(SnapGroupTest, UnresizableWindowWontFormSnapGroup) {
   SnapOneTestWindow(unresizable.get(), WindowStateType::kPrimarySnapped,
                     chromeos::kDefaultSnapRatio,
                     WindowSnapActionSource::kDragWindowToEdgeToSnap);
-  VerifyNotSplitViewOverviewSession(unresizable.get());
+  VerifyNotSplitViewOrOverviewSession(unresizable.get());
   SnapOneTestWindow(normal.get(), WindowStateType::kSecondarySnapped,
                     chromeos::kDefaultSnapRatio,
                     WindowSnapActionSource::kDragWindowToEdgeToSnap);
@@ -4864,7 +4864,7 @@ TEST_F(SnapGroupOverviewTest, ReSnapSnappedWindowInOverview) {
   auto* event_generator = GetEventGenerator();
   DragItemToPoint(overview_item1, gfx::Point(0, 200), event_generator);
   DragItemToPoint(overview_item2, gfx::Point(800, 200), event_generator);
-  VerifyNotSplitViewOverviewSession(w1.get());
+  VerifyNotSplitViewOrOverviewSession(w1.get());
   EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
   UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
 }
@@ -7447,7 +7447,7 @@ TEST_F(SnapGroupMultipleSnapGroupsTest,
   EXPECT_EQ(WindowStateType::kPrimarySnapped,
             WindowState::Get(w1.get())->GetStateType());
   ASSERT_FALSE(IsInOverviewSession());
-  VerifyNotSplitViewOverviewSession(w1.get());
+  VerifyNotSplitViewOrOverviewSession(w1.get());
 
   SnapGroupController* snap_group_controller = SnapGroupController::Get();
 
@@ -7495,7 +7495,7 @@ TEST_F(SnapGroupMultipleSnapGroupsTest,
   EXPECT_EQ(WindowStateType::kSecondarySnapped,
             WindowState::Get(w1.get())->GetStateType());
   ASSERT_FALSE(IsInOverviewSession());
-  VerifyNotSplitViewOverviewSession(w2.get());
+  VerifyNotSplitViewOrOverviewSession(w2.get());
 
   // A new Snap Group comprising windows `w2` and `w1` will be created.
   EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w2.get(), w1.get()));
@@ -7561,7 +7561,7 @@ TEST_F(SnapGroupMultipleSnapGroupsTest,
   EXPECT_EQ(WindowStateType::kSecondarySnapped,
             WindowState::Get(w2.get())->GetStateType());
   ASSERT_FALSE(IsInOverviewSession());
-  VerifyNotSplitViewOverviewSession(w3.get());
+  VerifyNotSplitViewOrOverviewSession(w3.get());
 
   // A new Snap Group comprising windows `w3` and `w2` will be created.
   SnapGroupController* snap_group_controller = SnapGroupController::Get();
@@ -7609,7 +7609,7 @@ TEST_F(SnapGroupMultipleSnapGroupsTest,
   EXPECT_EQ(WindowStateType::kPrimarySnapped,
             WindowState::Get(w2.get())->GetStateType());
   ASSERT_FALSE(IsInOverviewSession());
-  VerifyNotSplitViewOverviewSession(w1.get());
+  VerifyNotSplitViewOrOverviewSession(w1.get());
 
   // A new Snap Group comprising windows `w2` and `w1` will be created.
   EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w2.get(), w1.get()));
@@ -8118,7 +8118,7 @@ TEST_F(SnapGroupAutoSnapGroupTest, SkipPartialAndFormSnapGroup) {
                     WindowSnapActionSource::kSnapByWindowLayoutMenu);
   VerifySplitViewOverviewSession(w1.get());
   PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
-  VerifyNotSplitViewOverviewSession(w1.get());
+  VerifyNotSplitViewOrOverviewSession(w1.get());
 
   // Drag to snap `w2` to the opposite side. Test we form a group.
   wm::ActivateWindow(w2.get());
@@ -9237,7 +9237,7 @@ TEST_F(SnapGroupMultiDisplayTest, GroupItemCrossDisplayDragInteractivity) {
       gfx::ToRoundedPoint(overview_group_item->target_bounds().CenterPoint()) +
       gfx::Vector2d(10, 0));
   event_generator->ClickLeftButton();
-  VerifyNotSplitViewOverviewSession(w1.get());
+  VerifyNotSplitViewOrOverviewSession(w1.get());
 
   display::Screen* screen = display::Screen::GetScreen();
   EXPECT_EQ(displays[0].id(), screen->GetDisplayNearestWindow(w1.get()).id());
@@ -9544,9 +9544,9 @@ TEST_F(SnapGroupMetricsTest, SnapActionSourcePipeline) {
   resizer->Drag(gfx::PointF(0, 400), /*event_flags=*/0);
   resizer->CompleteDrag();
   resizer.reset();
-  SplitViewOverviewSession* split_view_overview_session =
-      VerifySplitViewOverviewSession(window1.get());
-  EXPECT_EQ(split_view_overview_session->snap_action_source_for_testing(),
+  VerifySplitViewOverviewSession(window1.get());
+  EXPECT_EQ(GetSplitViewOverviewSession(window1.get())
+                ->snap_action_source_for_testing(),
             WindowSnapActionSource::kDragWindowToEdgeToSnap);
   MaximizeToClearTheSession(window1.get());
 
@@ -9555,9 +9555,9 @@ TEST_F(SnapGroupMetricsTest, SnapActionSourcePipeline) {
       window1.get(), chromeos::SnapDirection::kSecondary,
       chromeos::kDefaultSnapRatio,
       chromeos::SnapController::SnapRequestSource::kWindowLayoutMenu);
-  split_view_overview_session = VerifySplitViewOverviewSession(window1.get());
-  EXPECT_TRUE(split_view_overview_session);
-  EXPECT_EQ(split_view_overview_session->snap_action_source_for_testing(),
+  VerifySplitViewOverviewSession(window1.get());
+  EXPECT_EQ(GetSplitViewOverviewSession(window1.get())
+                ->snap_action_source_for_testing(),
             WindowSnapActionSource::kSnapByWindowLayoutMenu);
   MaximizeToClearTheSession(window1.get());
 
@@ -9566,9 +9566,9 @@ TEST_F(SnapGroupMetricsTest, SnapActionSourcePipeline) {
       window1.get(), chromeos::SnapDirection::kPrimary,
       chromeos::kDefaultSnapRatio,
       chromeos::SnapController::SnapRequestSource::kSnapButton);
-  split_view_overview_session = VerifySplitViewOverviewSession(window1.get());
-  EXPECT_TRUE(split_view_overview_session);
-  EXPECT_EQ(split_view_overview_session->snap_action_source_for_testing(),
+  VerifySplitViewOverviewSession(window1.get());
+  EXPECT_EQ(GetSplitViewOverviewSession(window1.get())
+                ->snap_action_source_for_testing(),
             WindowSnapActionSource::kLongPressCaptionButtonToSnap);
   MaximizeToClearTheSession(window1.get());
 }
@@ -9925,7 +9925,7 @@ TEST_F(SnapGroupMetricsTest, SkipFormSnapGroupAfterSnapping) {
   SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
                     chromeos::kDefaultSnapRatio,
                     WindowSnapActionSource::kSnapByWindowStateRestore);
-  VerifyNotSplitViewOverviewSession(w1.get());
+  VerifyNotSplitViewOrOverviewSession(w1.get());
   EXPECT_EQ(user_action_tester_.GetActionCount(
                 "SnapGroups_SkipFormSnapGroupAfterSnapping"),
             0);
@@ -9935,7 +9935,7 @@ TEST_F(SnapGroupMetricsTest, SkipFormSnapGroupAfterSnapping) {
                     chromeos::kDefaultSnapRatio);
   VerifySplitViewOverviewSession(w1.get());
   PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
-  VerifyNotSplitViewOverviewSession(w1.get());
+  VerifyNotSplitViewOrOverviewSession(w1.get());
   EXPECT_EQ(user_action_tester_.GetActionCount(
                 "SnapGroups_SkipFormSnapGroupAfterSnapping"),
             0);

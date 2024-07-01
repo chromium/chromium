@@ -66,25 +66,25 @@ void SnapOneTestWindow(aura::Window* window,
   EXPECT_EQ(state_type, window_state->GetStateType());
 }
 
-SplitViewOverviewSession* VerifySplitViewOverviewSession(
-    aura::Window* window,
-    bool faster_split_screen_setup) {
+void VerifySplitViewOverviewSession(aura::Window* window,
+                                    bool faster_split_screen_setup) {
   auto* overview_controller = OverviewController::Get();
-  EXPECT_TRUE(overview_controller->InOverviewSession());
+  ASSERT_TRUE(overview_controller->InOverviewSession());
   EXPECT_FALSE(
       overview_controller->overview_session()->IsWindowInOverview(window));
 
   auto* root_window = window->GetRootWindow();
-  EXPECT_TRUE(SplitViewController::Get(root_window)->InSplitViewMode());
+  auto* split_view_controller = SplitViewController::Get(root_window);
+  EXPECT_TRUE(split_view_controller->InSplitViewMode());
+  EXPECT_TRUE(split_view_controller->IsWindowInSplitView(window));
 
-  SplitViewOverviewSession* split_view_overview_session =
-      RootWindowController::ForWindow(window)->split_view_overview_session();
-  EXPECT_TRUE(split_view_overview_session);
+  EXPECT_TRUE(GetSplitViewOverviewSession(window));
 
   gfx::Rect expected_grid_bounds = GetWorkAreaBoundsForWindow(window);
   expected_grid_bounds.Subtract(window->GetBoundsInScreen());
 
-  if (GetSplitViewDivider() && GetSplitViewDivider()->divider_widget()) {
+  if (auto* divider = GetSplitViewDivider();
+      divider && divider->divider_widget()) {
     expected_grid_bounds.Subtract(GetSplitViewDividerBoundsInScreen());
   }
 
@@ -117,11 +117,9 @@ SplitViewOverviewSession* VerifySplitViewOverviewSession(
     EXPECT_FALSE(overview_grid->GetSaveDeskButtonContainer());
     EXPECT_FALSE(overview_grid->desks_bar_view());
   }
-
-  return split_view_overview_session;
 }
 
-void VerifyNotSplitViewOverviewSession(aura::Window* window) {
+void VerifyNotSplitViewOrOverviewSession(aura::Window* window) {
   EXPECT_FALSE(IsInOverviewSession());
   EXPECT_FALSE(
       SplitViewController::Get(window->GetRootWindow())->InSplitViewMode());

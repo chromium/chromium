@@ -11169,7 +11169,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   std::unique_ptr<aura::Window> w1(CreateAppWindow(gfx::Rect(0, 0, 200, 200)));
   SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped,
                     chromeos::kDefaultSnapRatio);
-  VerifyNotSplitViewOverviewSession(w1.get());
+  VerifyNotSplitViewOrOverviewSession(w1.get());
 
   // Test overview -> drag to snap setup with 1 window: Overview will end so no
   // widget.
@@ -11179,7 +11179,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   auto* window_state = WindowState::Get(w1.get());
   ASSERT_EQ(chromeos::WindowStateType::kPrimarySnapped,
             window_state->GetStateType());
-  VerifyNotSplitViewOverviewSession(w1.get());
+  VerifyNotSplitViewOrOverviewSession(w1.get());
 
   // Create 2 windows on the first display, then snap to start partial overview.
   std::unique_ptr<aura::Window> w2(CreateAppWindow(gfx::Rect(0, 0, 200, 200)));
@@ -11195,7 +11195,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 
   // Exit partial overview and enter full overview.
   ToggleOverview();
-  VerifyNotSplitViewOverviewSession(w1.get());
+  VerifyNotSplitViewOrOverviewSession(w1.get());
   ToggleOverview();
   ASSERT_TRUE(IsInOverviewSession());
 

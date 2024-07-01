@@ -28,6 +28,8 @@ class Layer;
 
 namespace ash {
 
+class SplitViewOverviewSession;
+
 // Enum of the different splitview mode animations. Sorted by property
 // (opacity/transform) and then alphabetically.
 enum SplitviewAnimationType {
@@ -127,6 +129,10 @@ void DoSplitviewClipRectAnimation(
     SplitviewAnimationType type,
     const gfx::Rect& target_clip_rect,
     std::unique_ptr<ui::ImplicitAnimationObserver> animation_observer);
+
+// Returns the `SplitViewOverviewSession` for the root window of `window`.
+ASH_EXPORT SplitViewOverviewSession* GetSplitViewOverviewSession(
+    aura::Window* window);
 
 // Returns true if `window` is currently snapped.
 bool IsSnapped(aura::Window* window);

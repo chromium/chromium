@@ -406,6 +406,10 @@ SnapPosition ToSnapPosition(chromeos::WindowStateType type) {
   }
 }
 
+SplitViewOverviewSession* GetSplitViewOverviewSession(aura::Window* window) {
+  return RootWindowController::ForWindow(window)->split_view_overview_session();
+}
+
 bool IsSnapped(aura::Window* window) {
   return window && WindowState::Get(window)->IsSnapped();
 }
