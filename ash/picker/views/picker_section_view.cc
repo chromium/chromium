@@ -36,6 +36,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/box_layout.h"
@@ -337,6 +338,7 @@ void PickerSectionView::AddTitleLabel(const std::u16string& title_text) {
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetProperty(views::kMarginsKey, kSectionTitleMargins)
           .Build());
+  title_label_->GetViewAccessibility().SetRole(ax::mojom::Role::kHeading);
   title_container_->SetFlexForView(title_label_, 1);
 }
 

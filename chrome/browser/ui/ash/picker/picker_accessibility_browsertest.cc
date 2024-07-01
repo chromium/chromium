@@ -6,6 +6,9 @@
 #include "ash/picker/views/picker_emoji_bar_view.h"
 #include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/picker/views/picker_search_field_view.h"
+#include "ash/picker/views/picker_section_list_view.h"
+#include "ash/picker/views/picker_section_view.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/test_widget_builder.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -16,6 +19,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view.h"
@@ -180,6 +184,40 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
       l10n_util::GetStringUTF8(IDS_PICKER_GIFS_BUTTON_LABEL));
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("Press * to activate");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       SectionsAnnouncesHeadings) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  auto* view =
+      widget->SetContentsView(std::make_unique<ash::PickerSectionListView>(
+          /*section_width=*/100, /*asset_fetcher=*/nullptr,
+          /*submenu_controller=*/nullptr));
+  view->AddSection()->AddTitleLabel(u"Section1");
+  view->AddSection()->AddTitleLabel(u"Section2");
+  ui::test::EventGenerator event_generator(
+      ash::Shell::Get()->GetPrimaryRootWindow());
+
+  sm_.Call([view, &event_generator]() {
+    view->RequestFocus();
+    event_generator.PressAndReleaseKeyAndModifierKeys(ui::KeyboardCode::VKEY_H,
+                                                      ui::EF_COMMAND_DOWN);
+  });
+
+  sm_.ExpectSpeechPattern("Section1");
+  sm_.ExpectSpeechPattern("Heading");
+
+  sm_.Call([&event_generator]() {
+    event_generator.PressAndReleaseKeyAndModifierKeys(ui::KeyboardCode::VKEY_H,
+                                                      ui::EF_COMMAND_DOWN);
+  });
+
+  sm_.ExpectSpeechPattern("Section2");
+  sm_.ExpectSpeechPattern("Heading");
   sm_.Replay();
 }
 

@@ -61,6 +61,17 @@ TEST_F(PickerSectionViewTest, CreatesTitleLabel) {
               Property(&views::Label::GetText, kSectionTitleText));
 }
 
+TEST_F(PickerSectionViewTest, TitleHasHeadingRole) {
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSubmenuController submenu_controller;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                 &submenu_controller);
+  section_view.AddTitleLabel(u"Section");
+
+  EXPECT_THAT(section_view.title_label_for_testing()->GetAccessibleRole(),
+              ax::mojom::Role::kHeading);
+}
+
 TEST_F(PickerSectionViewTest, AddsListItem) {
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
