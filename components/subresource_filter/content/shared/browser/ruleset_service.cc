@@ -355,14 +355,10 @@ bool RulesetService::IndexRuleset(
     const RulesetConfig& config,
     UnindexedRulesetStreamGenerator* unindexed_ruleset_stream_generator,
     RulesetIndexer* indexer) {
-  // TODO(crbug.com/336333963): Re-implement these macros as functions so
-  // metrics may be collected for different filters. Until then, only record
-  // metrics for Safe Browsing. This is a stopgap and will be removed.
-  if (config.uma_tag == "SubresourceFilter") {
-    SCOPED_UMA_HISTOGRAM_TIMER("SubresourceFilter.IndexRuleset.WallDuration");
-    SCOPED_UMA_HISTOGRAM_THREAD_TIMER(
-        "SubresourceFilter.IndexRuleset.CPUDuration");
-  }
+  base::ScopedUmaHistogramTimer scoped_timer(
+      base::StrCat({config.uma_tag, ".IndexRuleset.WallDuration"}));
+  ScopedUmaHistogramThreadTimer scoped_thread_timer(
+      base::StrCat({config.uma_tag, ".IndexRuleset.CPUDuration"}));
 
   int64_t unindexed_ruleset_size =
       unindexed_ruleset_stream_generator->ruleset_size();
