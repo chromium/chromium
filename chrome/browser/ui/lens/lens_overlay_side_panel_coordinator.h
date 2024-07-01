@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_SIDE_PANEL_COORDINATOR_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
@@ -35,8 +36,10 @@ namespace lens {
 //   avoids re-entrancy into the code that is in turn calling (2).
 //   (2b) Clearing local state associated with `side_panel_web_view_` must be
 //   done synchronously.
-class LensOverlaySidePanelCoordinator : public SidePanelEntryObserver,
-                                        public content::WebContentsObserver {
+class LensOverlaySidePanelCoordinator
+    : public SidePanelEntryObserver,
+      public content::WebContentsObserver,
+      public ChromeWebModalDialogManagerDelegate {
  public:
   explicit LensOverlaySidePanelCoordinator(
       LensOverlayController* lens_overlay_controller);
@@ -80,6 +83,10 @@ class LensOverlaySidePanelCoordinator : public SidePanelEntryObserver,
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
+
+  // ChromeWebModalDialogManagerDelegate:
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
+      override;
 
   // Opens the provided url params in the main browser as a new tab.
   void OpenURLInBrowser(const content::OpenURLParams& params);

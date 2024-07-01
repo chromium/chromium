@@ -53,6 +53,10 @@ class LensOverlaySidePanelWebView
                          const content::ContextMenuParams& params) override;
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
+  void RequestMediaAccessPermission(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override;
 
  private:
   // Indirectly owns this.
