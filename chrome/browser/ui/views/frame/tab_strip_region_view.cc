@@ -507,7 +507,7 @@ void TabStripRegionView::UpdateTabStripMargin() {
   std::optional<int> tab_strip_left_margin;
   if (tab_search_container_ && render_tab_search_before_tab_strip_) {
     // The `tab_search_container_` is being laid out manually.
-    tab_search_container_->GetProperty(views::kViewIgnoredByLayoutKey);
+    CHECK(tab_search_container_->GetProperty(views::kViewIgnoredByLayoutKey));
 
     // When tab search container shows before tab strip, add a margin to the
     // tab_strip_container_ to leave the correct amount of space for UI
