@@ -80,7 +80,6 @@
       "ui/strings/auto_image_annotation_strings.grd",
       "ui/strings/ax_strings.grd",
       "ui/strings/ui_strings.grd",
-      "ui/strings/.grd",
     ],
   },
   # The policy_templates are translated only into a subset of the languages.
