@@ -51,6 +51,14 @@ struct SVGResourceTarget;
 // document. The load cycle of the complete content document can differ from
 // that of the underlying resource if the content document itself has (data
 // URL) subresources.
+//
+// Calling SVGResourceDocumentContent::Fetch() - the expected way of creating an
+// SVGResourceDocumentContent - will return an instance that has its lifetime
+// managed by the SVGResourceDocumentCache. The cache is responsible for
+// disposing the instance when it is unused. The criteria for "is unused" is
+// that no observers are registered with the SVGResourceDocumentContent
+// instance. _If_ an instance is created directly, Dispose() _must_ be called
+// before dropping the reference to the instance.
 class CORE_EXPORT SVGResourceDocumentContent final
     : public GarbageCollected<SVGResourceDocumentContent> {
  public:
