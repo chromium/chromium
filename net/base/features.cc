@@ -549,6 +549,18 @@ BASE_FEATURE(kSpdySessionForProxyAdditionalChecks,
              "SpdySessionForProxyAdditionalChecks",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCompressionDictionaryTransportOverHttp1,
+             "CompressionDictionaryTransportOverHttp1",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCompressionDictionaryTransportOverHttp2,
+             "CompressionDictionaryTransportOverHttp2",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCompressionDictionaryTransportRequireKnownRootCert,
+             "CompressionDictionaryTransportRequireKnownRootCert",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kReportingApiEnableEnterpriseCookieIssues,
              "ReportingApiEnableEnterpriseCookieIssues",
              base::FEATURE_DISABLED_BY_DEFAULT);

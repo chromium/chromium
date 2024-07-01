@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
 #include "crypto/secure_hash.h"
+#include "net/base/features.h"
 #include "net/base/hash_value.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
@@ -539,7 +540,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
        RequireKnownRootCertCheckFailure) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      network::features::kCompressionDictionaryTransportRequireKnownRootCert);
+      net::features::kCompressionDictionaryTransportRequireKnownRootCert);
   DummySharedDictionaryManager manager(
       base::MakeRefCounted<DummySharedDictionaryStorage>(
           std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
@@ -577,7 +578,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
        RequireKnownRootCertCheckSuccess) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      network::features::kCompressionDictionaryTransportRequireKnownRootCert);
+      net::features::kCompressionDictionaryTransportRequireKnownRootCert);
   DummySharedDictionaryManager manager(
       base::MakeRefCounted<DummySharedDictionaryStorage>(
           std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
@@ -613,7 +614,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
        RequireKnownRootCertCheckSuccessForLocalhost) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      network::features::kCompressionDictionaryTransportRequireKnownRootCert);
+      net::features::kCompressionDictionaryTransportRequireKnownRootCert);
   DummySharedDictionaryManager manager(
       base::MakeRefCounted<DummySharedDictionaryStorage>(
           std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
@@ -1281,17 +1282,17 @@ class SharedDictionaryNetworkTransactionProtocolCheckTest
     std::vector<base::test::FeatureRef> disabled_features;
     if (AllowHttp1()) {
       enabled_features.push_back(
-          network::features::kCompressionDictionaryTransportOverHttp1);
+          net::features::kCompressionDictionaryTransportOverHttp1);
     } else {
       disabled_features.push_back(
-          network::features::kCompressionDictionaryTransportOverHttp1);
+          net::features::kCompressionDictionaryTransportOverHttp1);
     }
     if (AllowHttp2()) {
       enabled_features.push_back(
-          network::features::kCompressionDictionaryTransportOverHttp2);
+          net::features::kCompressionDictionaryTransportOverHttp2);
     } else {
       disabled_features.push_back(
-          network::features::kCompressionDictionaryTransportOverHttp2);
+          net::features::kCompressionDictionaryTransportOverHttp2);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }

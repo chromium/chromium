@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/features.h"
 #include "net/base/hash_value.h"
 #include "net/base/io_buffer.h"
 #include "net/base/load_flags.h"
@@ -216,22 +217,21 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
 
   if (!net::IsLocalhost(request_url)) {
     if (!base::FeatureList::IsEnabled(
-            network::features::kCompressionDictionaryTransportOverHttp1) &&
+            net::features::kCompressionDictionaryTransportOverHttp1) &&
         negotiated_protocol_ != net::kProtoHTTP2 &&
         negotiated_protocol_ != net::kProtoQUIC) {
       shared_dictionary_.reset();
       return;
     }
     if (!base::FeatureList::IsEnabled(
-            network::features::kCompressionDictionaryTransportOverHttp2) &&
+            net::features::kCompressionDictionaryTransportOverHttp2) &&
         negotiated_protocol_ == net::kProtoHTTP2) {
       shared_dictionary_.reset();
       return;
     }
   }
   if (base::FeatureList::IsEnabled(
-          network::features::
-              kCompressionDictionaryTransportRequireKnownRootCert) &&
+          net::features::kCompressionDictionaryTransportRequireKnownRootCert) &&
       !cert_is_issued_by_known_root_ && !net::IsLocalhost(request_url)) {
     shared_dictionary_.reset();
     return;
