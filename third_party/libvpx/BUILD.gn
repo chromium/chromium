@@ -7,6 +7,7 @@ import("//build/config/arm.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 import("//third_party/libvpx/libvpx_srcs.gni")
+import("//third_party/libvpx/libvpx_test_srcs.gni")
 import("//third_party/nasm/nasm_assemble.gni")
 
 # Sets the architecture name for building libvpx.
@@ -73,6 +74,13 @@ libvpx_include_dirs = [
 # Private configuration used in building libvpx.
 config("libvpx_config") {
   include_dirs = libvpx_include_dirs
+  defines = [
+    "CHROMIUM",
+
+    # Maximum allowed for a direct mapping,
+    # see partition_alloc::internal::MaxDirectMapped()
+    "VPX_MAX_ALLOCABLE_MEMORY=((1ULL << 31) - (1 << 21))",
+  ]
 
   # gn orders flags on a target before flags from configs. The default config
   # adds -Wall, and these flags have to be after -Wall -- so they need to come
@@ -104,14 +112,40 @@ config("libvpx_public_config") {
   ]
 }
 
+source_set("libvpx_test_generic_headers") {
+  deps = [ ":libvpx_generic_headers" ]
+  sources = libvpx_test_srcs_generic_headers
+}
+
+config("gtest_config") {
+  include_dirs = [
+    "source/libvpx/third_party/googletest/src/include/",
+    "source/libvpx/third_party/googletest/src/",
+  ]
+}
+
+source_set("gtest") {
+  sources = [ "source/libvpx/third_party/googletest/src/src/gtest-all.cc" ]
+
+  include_dirs = [ "source/libvpx/third_party/googletest/src/" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":gtest_config" ]
+
+  if (is_fuchsia) {
+    deps = [
+      "//third_party/fuchsia-sdk/sdk/pkg/fdio",
+      "//third_party/fuchsia-sdk/sdk/pkg/zx",
+    ]
+  }
+}
+
 executable("decode_encode_profile_test") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
-  include_dirs = libvpx_include_dirs + [
-                   "source/libvpx/third_party/libwebm/",
-                   "source/libvpx/third_party/googletest/src/include/",
-                   "source/libvpx/third_party/googletest/src/",
-                 ]
+  include_dirs = libvpx_include_dirs + [ "source/libvpx/third_party/libwebm/" ]
 
   testonly = true
   sources = [
@@ -121,7 +155,6 @@ executable("decode_encode_profile_test") {
     "source/libvpx/test/test_libvpx.cc",
     "source/libvpx/test/test_vectors.cc",
     "source/libvpx/test/test_vectors.h",
-    "source/libvpx/third_party/googletest/src/src/gtest-all.cc",
     "source/libvpx/third_party/libwebm/mkvparser/mkvparser.cc",
     "source/libvpx/third_party/libwebm/mkvparser/mkvreader.cc",
     "source/libvpx/tools_common.h",
@@ -129,15 +162,11 @@ executable("decode_encode_profile_test") {
     "source/libvpx/y4minput.c",
     "tests/pgo/decode_encode_profile_test.cc",
   ]
-  deps = [ ":libvpx" ]
-
-  # gtest-death-test dependency on fdio for fuchsia builds
-  if (is_fuchsia) {
-    deps += [
-      "//third_party/fuchsia-sdk/sdk/pkg/fdio",
-      "//third_party/fuchsia-sdk/sdk/pkg/zx",
-    ]
-  }
+  deps = [
+    ":gtest",
+    ":libvpx",
+    ":libvpx_test_generic_headers",
+  ]
 }
 
 if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
@@ -650,5 +679,36 @@ test("vp9_encoder_fuzz_test") {
   deps = [
     ":libvpx",
     "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+}
+
+test("test_libvpx") {
+  sources = libvpx_test_srcs_generic
+  sources += libvpx_test_srcs_generic_cc
+
+  include_dirs = libvpx_include_dirs + [ "source/libvpx/third_party/libwebm/" ]
+
+  deps = [
+    ":gtest",
+    ":libvpx",
+    ":libvpx_test_generic_headers",
+  ]
+
+  if (is_android) {
+    use_raw_android_executable = true
+    defines = [ "LIBVPX_TEST_DATA_PATH=/data/local/tmp/chromium_tests_root/third_party/libvpx/testdata" ]
+    data = [ "testdata/" ]
+  } else {
+    defines = [ string_join("",
+                            [
+                              "LIBVPX_TEST_DATA_PATH=",
+                              rebase_path("testdata", root_build_dir),
+                            ]) ]
+  }
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":libvpx_config",
   ]
 }
