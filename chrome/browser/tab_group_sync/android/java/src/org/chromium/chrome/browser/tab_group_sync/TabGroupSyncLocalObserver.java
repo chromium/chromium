@@ -19,6 +19,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -37,6 +38,7 @@ public final class TabGroupSyncLocalObserver {
     private final TabGroupModelFilterObserver mTabGroupModelFilterObserver;
     private final NavigationTracker mNavigationTracker;
     private final NavigationObserver mNavigationObserver;
+    private final HashSet<Integer> mTabIdsSelectedInSession = new HashSet<>();
     private boolean mIsObserving;
 
     /**
@@ -126,6 +128,18 @@ public final class TabGroupSyncLocalObserver {
                     RecordUserAction.record("TabGroups.Sync.SelectedTabInRemotelyCreatedGroup");
                 } else {
                     RecordUserAction.record("TabGroups.Sync.SelectedTabInLocallyCreatedGroup");
+                }
+
+                // TODO(shaktisahu): implement this.
+                boolean tabWasLastUsedRemotely = false;
+                if (tabWasLastUsedRemotely) {
+                    int tabId = tab.getId();
+                    boolean wasAdded = mTabIdsSelectedInSession.add(tabId);
+                    if (wasAdded) {
+                        RecordUserAction.record("MobileCrossDeviceTabJourney");
+                        RecordUserAction.record(
+                                "TabGroups.Sync.SelectedRemotelyUpdatedTabInSession");
+                    }
                 }
             }
         };

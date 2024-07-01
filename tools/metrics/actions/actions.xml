@@ -21379,7 +21379,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileCrossDeviceTabJourney">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <description>
+    Recorded when a user intentionally opens a tab from another device, sends a
+    tab to another device, or selects an automatically opened tab from another
+    device (once per-tab per-activity instance). Android only.
+
+    This includes: recent tabs page, restore tabs promo, send tab to self, tab
+    group sync, and cross device tab resumption.
+  </description>
+</action>
+
 <action name="MobileCrossDeviceTabOpenedOrSent">
+  <obsolete>
+    Deprecated June 2024 replaced by the more inclusive
+    MobileCrossDeviceTabJourney.
+  </obsolete>
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <description>
@@ -40251,6 +40268,15 @@ should be able to be added at any place in this file.
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <description>Local version of a synced tab group was hidden.</description>
+</action>
+
+<action name="TabGroups.Sync.SelectedRemotelyUpdatedTabInSession">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Records when a tab is selected if that tab was last accessed remotely up to
+    once per-tab per-activity instance.
+  </description>
 </action>
 
 <action name="TabGroups.Sync.SelectedTabInLocallyCreatedGroup">

@@ -260,7 +260,7 @@ public class RecentTabsManager
             ForeignSession session, ForeignSessionTab tab, int windowDisposition) {
         if (mIsDestroyed) return;
         RecordUserAction.record("MobileRecentTabManagerTabFromOtherDeviceOpened");
-        RecordUserAction.record("MobileCrossDeviceTabOpenedOrSent");
+        RecordUserAction.record("MobileCrossDeviceTabJourney");
         mForeignSessionHelper.openForeignSessionTab(mActiveTab, session, tab, windowDisposition);
     }
 

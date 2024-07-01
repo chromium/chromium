@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.TabResumptionDataProviderFactory;
@@ -49,6 +50,9 @@ public class TabResumptionModuleCoordinator implements ModuleProvider {
                     if (entry.isLocalTab()) {
                         mModuleDelegate.onTabClicked(entry.localTabId, getModuleType());
                     } else {
+                        if (entry.type == SuggestionEntryType.FOREIGN_TAB) {
+                            RecordUserAction.record("MobileCrossDeviceTabJourney");
+                        }
                         mModuleDelegate.onUrlClicked(entry.url, getModuleType());
                     }
                 };
