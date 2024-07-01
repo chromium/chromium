@@ -66,6 +66,7 @@ const INITIAL_BACKSPACE_DELAY_MS = 500;
 const PIN_INPUT_ALLOWED_NON_NUMBER_KEY_CODES = new Set([
   8,   // backspace
   9,   // tab
+  27,  // escape
   37,  // left
   39,  // right
   // We don't allow back or forward.
