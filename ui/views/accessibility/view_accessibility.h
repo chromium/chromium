@@ -242,6 +242,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void SetIsHovered(bool is_hovered);
   bool GetIsHovered() const;
 
+  void SetPopupForId(ui::AXPlatformNodeId popup_for_id);
+
   // Hides this view from the accessibility APIs. Keep in mind that this is not
   // the sole determinant of whether the ignored state is set. See
   // `UpdateIgnoredState`.

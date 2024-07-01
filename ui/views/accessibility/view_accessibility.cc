@@ -1007,4 +1007,8 @@ bool ViewAccessibility::GetIsHovered() const {
   return data_.HasState(ax::mojom::State::kHovered);
 }
 
+void ViewAccessibility::SetPopupForId(ui::AXPlatformNodeId popup_for_id) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kPopupForId, popup_for_id);
+}
+
 }  // namespace views
