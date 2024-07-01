@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.browser.readaloud.player.expanded.ExpandedPlayerCoordinator;
@@ -68,7 +69,8 @@ public class PlayerCoordinator implements Player {
                         model,
                         delegate.getBottomControlsStacker(),
                         delegate.getLayoutManager(),
-                        this);
+                        this,
+                        delegate.getUserEducationHelper());
         mExpandedPlayer = new ExpandedPlayerCoordinator(contextForInflation, delegate, model);
         mMediator = new PlayerMediator(/* coordinator= */ this, delegate, model);
         mDelegate = delegate;
@@ -144,6 +146,10 @@ public class PlayerCoordinator implements Player {
 
     /** Show expanded player. */
     void expand() {
+        if (mDelegate.getProfile() != null) {
+            TrackerFactory.getTrackerForProfile(mDelegate.getProfile())
+                    .notifyEvent("read_aloud_expanded_player_shown");
+        }
         mExpandedPlayer.show();
         mMiniPlayer.dismiss(/* animate= */ false);
     }

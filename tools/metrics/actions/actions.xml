@@ -43741,6 +43741,8 @@ should be able to be added at any place in this file.
   <suffix name="QuietNotificationPrompts"
       label="For the quiet notification prompts feature."/>
   <suffix name="ReadAloudAppMenuFeature" label="For ReadAloudAppMenu feature."/>
+  <suffix name="ReadAloudExpandedPlayerFeature"
+      label="For ReadAloud expanded player feature."/>
   <suffix name="ReadingListDiscovery"
       label="For ReadingListDiscoveryFeature feature."/>
   <suffix name="ReadingListEntryPoint"

@@ -1577,6 +1577,24 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHReadAloudExpandedPlayerFeature.name == feature->name) {
+    // Show tooltip at most 3 times, once a day, but stop if user saw
+    // expanded player.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->used = EventConfig("read_aloud_expanded_player_shown",
+                               Comparator(EQUAL, 0), 360, 360);
+    config->trigger =
+        EventConfig("read_aloud_expanded_player_shown_iph_trigger",
+                    Comparator(EQUAL, 0), 1, 1);
+    config->event_configs.insert(
+        EventConfig("read_aloud_expanded_player_shown_iph_trigger",
+                    Comparator(LESS_THAN, 3), 360, 360));
+    return config;
+  }
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

@@ -10,6 +10,8 @@ import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.STOPP
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.LruCache;
 
 import androidx.annotation.IntDef;
@@ -44,6 +46,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslationObserver;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
@@ -98,6 +101,7 @@ public class ReadAloudController
     @Nullable private Player mPlayerCoordinator;
     private final ObservableSupplier<LayoutManager> mLayoutManagerSupplier;
     private final TapToSeekHandler mTapToSeekHandler;
+    private final UserEducationHelper mUserEducationHelper;
 
     private TabModelTabObserver mTabObserver;
     private TabModelTabObserver mIncognitoTabObserver;
@@ -472,6 +476,9 @@ public class ReadAloudController
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
         mTapToSeekHandler = new TapToSeekHandler(mTabModel.getCurrentTabSupplier());
+        mUserEducationHelper =
+                new UserEducationHelper(
+                        activity, mProfileSupplier, new Handler(Looper.getMainLooper()));
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -1343,6 +1350,17 @@ public class ReadAloudController
     @Override
     public void onMiniPlayerShown() {
         mRestoringPlayer = false;
+    }
+
+    @Override
+    @Nullable
+    public Profile getProfile() {
+        return mProfileSupplier.get();
+    }
+
+    @Override
+    public UserEducationHelper getUserEducationHelper() {
+        return mUserEducationHelper;
     }
 
     // InsetObserver.WindowInsetObserver

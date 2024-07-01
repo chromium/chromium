@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.readaloud.player.mini;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -170,10 +171,13 @@ public class MiniPlayerMediator implements BottomControlsLayer {
     }
 
     // (3) Done.
-    void onFullOpacityReached() {
+    /**
+     * @param containerForNonErrorView not null if full opacity reached for non-error view
+     */
+    void onFullOpacityReached(@Nullable View containerForNonErrorView) {
         // show() is finished!
         onTransitionFinished(VisibilityState.VISIBLE);
-        mCoordinator.onShown();
+        mCoordinator.onShown(containerForNonErrorView);
     }
 
     /// Dismiss

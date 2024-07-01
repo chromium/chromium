@@ -297,6 +297,9 @@
       <message name="IDS_READALOUD_VOICE_DESCRIPTION" desc="List of descriptive words shown with a voice in the 'Listen to this page' voice selection menu.">
         <ph name="PITCH">%1$s<ex>Mid-pitch</ex></ph>, <ph name="TONE">%2$s<ex>Calm</ex></ph>
       </message>
+       <message name="IDS_READALOUD_EXPANDED_PLAYER_IPH" desc="Text shown on in-product-help bubble to inform a user that tapping on the mini player will expand it, allowing to access more options.">
+          Tap to expand the player for more options.
+      </message>
     </messages>
   </release>
 </grit>

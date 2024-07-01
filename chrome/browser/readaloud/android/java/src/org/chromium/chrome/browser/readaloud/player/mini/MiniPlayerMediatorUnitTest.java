@@ -42,6 +42,7 @@ public class MiniPlayerMediatorUnitTest {
     @Mock private BottomControlsStacker mBottomControlsStacker;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private MiniPlayerCoordinator mCoordinator;
+    @Mock private View mView;
 
     @Captor
     private ArgumentCaptor<BrowserControlsStateProvider.Observer> mBrowserControlsObserverCaptor;
@@ -104,7 +105,7 @@ public class MiniPlayerMediatorUnitTest {
         assertTrue(mModel.get(Properties.CONTENTS_OPAQUE));
 
         // Simulate the layout calling back after setting opacity.
-        mMediator.onFullOpacityReached();
+        mMediator.onFullOpacityReached(null);
         // Transition is complete.
         assertEquals(VisibilityState.VISIBLE, mMediator.getVisibility());
     }
@@ -142,7 +143,7 @@ public class MiniPlayerMediatorUnitTest {
         assertTrue(mModel.get(Properties.CONTENTS_OPAQUE));
 
         // Simulate the layout calling back after fading in.
-        mMediator.onFullOpacityReached();
+        mMediator.onFullOpacityReached(null);
         // Transition is complete.
         assertEquals(VisibilityState.VISIBLE, mMediator.getVisibility());
     }
@@ -189,7 +190,7 @@ public class MiniPlayerMediatorUnitTest {
         assertTrue(mModel.get(Properties.CONTENTS_OPAQUE));
 
         // Simulate the layout calling back after fading in.
-        mMediator.onFullOpacityReached();
+        mMediator.onFullOpacityReached(null);
         // Transition is complete.
         assertEquals(VisibilityState.VISIBLE, mMediator.getVisibility());
     }
@@ -230,7 +231,7 @@ public class MiniPlayerMediatorUnitTest {
         mMediator.show(/* animate= */ true);
         mMediator.onHeightKnown(HEIGHT_PX);
         onControlsOffsetChanged(0, HEIGHT_PX, true);
-        mMediator.onFullOpacityReached();
+        mMediator.onFullOpacityReached(null);
         assertEquals(VisibilityState.VISIBLE, mMediator.getVisibility());
 
         reset(mBrowserControlsStateProvider);
@@ -264,7 +265,7 @@ public class MiniPlayerMediatorUnitTest {
         mMediator.show(/* animate= */ true);
         mMediator.onHeightKnown(HEIGHT_PX);
         onControlsOffsetChanged(0, HEIGHT_PX, true);
-        mMediator.onFullOpacityReached();
+        mMediator.onFullOpacityReached(null);
         assertEquals(VisibilityState.VISIBLE, mMediator.getVisibility());
 
         reset(mBrowserControlsStateProvider);
@@ -299,7 +300,7 @@ public class MiniPlayerMediatorUnitTest {
         mMediator.show(/* animate= */ true);
         mMediator.onHeightKnown(HEIGHT_PX);
         onControlsOffsetChanged(0, HEIGHT_PX, true);
-        mMediator.onFullOpacityReached();
+        mMediator.onFullOpacityReached(null);
         assertEquals(VisibilityState.VISIBLE, mMediator.getVisibility());
 
         reset(mBrowserControlsStateProvider);
@@ -345,7 +346,7 @@ public class MiniPlayerMediatorUnitTest {
         mMediator.show(/* animate= */ true);
         mMediator.onHeightKnown(HEIGHT_PX);
         onControlsOffsetChanged(0, HEIGHT_PX, true);
-        mMediator.onFullOpacityReached();
+        mMediator.onFullOpacityReached(null);
         assertEquals(VisibilityState.VISIBLE, mMediator.getVisibility());
 
         reset(mBrowserControlsStateProvider);
@@ -432,7 +433,7 @@ public class MiniPlayerMediatorUnitTest {
         mMediator.show(/* animate= */ true);
         mMediator.onHeightKnown(HEIGHT_PX);
         onControlsOffsetChanged(0, totalHeight, true);
-        mMediator.onFullOpacityReached();
+        mMediator.onFullOpacityReached(null);
         assertEquals(VisibilityState.VISIBLE, mMediator.getVisibility());
 
         reset(mBrowserControlsStateProvider);
@@ -483,8 +484,8 @@ public class MiniPlayerMediatorUnitTest {
         mMediator.show(/* animate= */ true);
         mMediator.onHeightKnown(HEIGHT_PX);
         onControlsOffsetChanged(0, HEIGHT_PX, false);
-        mMediator.onFullOpacityReached();
-        verify(mCoordinator).onShown();
+        mMediator.onFullOpacityReached(mView);
+        verify(mCoordinator).onShown(mView);
     }
 
     // TODO hide during show, show during hide

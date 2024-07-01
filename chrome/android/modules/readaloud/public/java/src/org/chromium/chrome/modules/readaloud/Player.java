@@ -6,12 +6,16 @@ package org.chromium.chrome.modules.readaloud;
 
 import android.app.Activity;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -79,6 +83,13 @@ public interface Player {
          * change updates.
          */
         ActivityLifecycleDispatcher getActivityLifecycleDispatcher();
+
+        /** Return the current {@link Profile}. */
+        @Nullable
+        Profile getProfile();
+
+        /** Return {@link UserEducationHelper} for requesting in-product-help. */
+        UserEducationHelper getUserEducationHelper();
     }
 
     /** Observer interface to provide updates about player UI. */

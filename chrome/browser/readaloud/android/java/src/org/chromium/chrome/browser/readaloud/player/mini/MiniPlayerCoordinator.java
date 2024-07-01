@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.readaloud.player.mini;
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewStub;
 
 import androidx.annotation.Nullable;
@@ -18,6 +19,9 @@ import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayer;
 import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
+import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -36,6 +40,9 @@ public class MiniPlayerCoordinator {
     // resizing.
     private final ReadAloudMiniPlayerSceneLayer mSceneLayer;
     private final PlayerCoordinator mPlayerCoordinator;
+    private final UserEducationHelper mUserEducationHelper;
+    /*  View-inflation-capable Context for read_aloud_playback isolated split */
+    private final Context mContext;
 
     /**
      * @param activity App activity containing a placeholder FrameLayout with ID
@@ -52,14 +59,17 @@ public class MiniPlayerCoordinator {
             PropertyModel sharedModel,
             BottomControlsStacker bottomControlsStacker,
             @Nullable LayoutManager layoutManager,
-            PlayerCoordinator playerCoordinator) {
+            PlayerCoordinator playerCoordinator,
+            UserEducationHelper userEducationHelper) {
         this(
+                context,
                 sharedModel,
                 new MiniPlayerMediator(bottomControlsStacker),
                 inflateLayout(activity, context),
                 new ReadAloudMiniPlayerSceneLayer(bottomControlsStacker.getBrowserControls()),
                 layoutManager,
-                playerCoordinator);
+                playerCoordinator,
+                userEducationHelper);
     }
 
     private static MiniPlayerLayout inflateLayout(Activity activity, Context context) {
@@ -75,12 +85,15 @@ public class MiniPlayerCoordinator {
 
     @VisibleForTesting
     MiniPlayerCoordinator(
+            Context context,
             PropertyModel sharedModel,
             MiniPlayerMediator mediator,
             MiniPlayerLayout layout,
             ReadAloudMiniPlayerSceneLayer sceneLayer,
             @Nullable LayoutManager layoutManager,
-            PlayerCoordinator playerCoordinator) {
+            PlayerCoordinator playerCoordinator,
+            UserEducationHelper userEducationHelper) {
+        mContext = context;
         mMediator = mediator;
         mMediator.setCoordinator(this);
         mLayout = layout;
@@ -91,7 +104,7 @@ public class MiniPlayerCoordinator {
             layoutManager.addSceneOverlay(sceneLayer);
         }
         mPlayerCoordinator = playerCoordinator;
-
+        mUserEducationHelper = userEducationHelper;
         mPlayerModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         sharedModel, mLayout, MiniPlayerViewBinder::bindPlayerProperties);
@@ -132,7 +145,19 @@ public class MiniPlayerCoordinator {
         mMediator.dismiss(animate);
     }
 
-    void onShown() {
+    void onShown(@Nullable View iphAnchorView) {
+        if (iphAnchorView != null) {
+
+            mUserEducationHelper.requestShowIPH(
+                    new IPHCommandBuilder(
+                                    mContext.getResources(),
+                                    FeatureConstants.READ_ALOUD_EXPANDED_PLAYER_FEATURE,
+                                    /* stringId= */ R.string.readaloud_expanded_player_iph,
+                                    /* accessibilityStringId= */ R.string
+                                            .readaloud_expanded_player_iph)
+                            .setAnchorView(iphAnchorView)
+                            .build());
+        }
         mPlayerCoordinator.onMiniPlayerShown();
     }
 

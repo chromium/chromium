@@ -126,6 +126,8 @@ DEFINE_VARIATION_PARAM(kIPHQuietNotificationPromptsFeature,
                        "IPH_QuietNotificationPrompts");
 DEFINE_VARIATION_PARAM(kIPHReadAloudAppMenuFeature,
                        "IPH_ReadAloudAppMenuFeature");
+DEFINE_VARIATION_PARAM(kIPHReadAloudExpandedPlayerFeature,
+                       "IPH_ReadAloudExpandedPlayerFeature");
 DEFINE_VARIATION_PARAM(kIPHReadLaterContextMenuFeature,
                        "IPH_ReadLaterContextMenu");
 DEFINE_VARIATION_PARAM(kIPHReadLaterAppMenuBookmarkThisPageFeature,
@@ -545,6 +547,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHPriceDropNTPFeature),
         VARIATION_ENTRY(kIPHQuietNotificationPromptsFeature),
         VARIATION_ENTRY(kIPHReadAloudAppMenuFeature),
+        VARIATION_ENTRY(kIPHReadAloudExpandedPlayerFeature),
         VARIATION_ENTRY(kIPHReadLaterContextMenuFeature),
         VARIATION_ENTRY(kIPHReadLaterAppMenuBookmarkThisPageFeature),
         VARIATION_ENTRY(kIPHReadLaterAppMenuBookmarksFeature),
