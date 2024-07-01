@@ -36,6 +36,22 @@
         # can't run on GCE images. GCE VM -> CrOS VM -> Android VM proves to be
         # too many layers of virtualization for the tests.
       },
+      'chromeos-betty-cfi-thin-lto-chrome': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'os_type': 'chromeos',
+        'cros_board': 'betty',
+      },
+      'chromeos-betty-cfi-thin-lto-chrome-tests': {
+        'test_suites': {
+          'skylab_tests': 'chromeos_vmlab_tests_no_gtests',
+        },
+        'os_type': 'chromeos',
+        'cros_board': 'betty',
+        'cros_dut_pool': 'vmlab',
+        'run_cft': True,
+      },
       'chromeos-betty-chrome': {
         'additional_compile_targets': [
           'chromiumos_preflight',
@@ -45,7 +61,7 @@
       },
       'chromeos-betty-chrome-tests': {
         'test_suites': {
-          'skylab_tests': 'chromeos_betty_vmlab_tests',
+          'skylab_tests': 'chromeos_vmlab_tests',
         },
         'os_type': 'chromeos',
         'cros_board': 'betty',
@@ -117,7 +133,7 @@
           'chromiumos_preflight',
         ],
         'test_suites': {
-          'skylab_tests': 'chromeos_reven_vmlab_tests_no_gtests',
+          'skylab_tests': 'chromeos_vmlab_tests_no_gtests',
         },
         'os_type': 'chromeos',
         'cros_board': 'reven-vmtest',
@@ -6707,7 +6723,19 @@
           'betty-arc-t',
         ],
         'test_suites': {
-          'skylab_tests': 'chromeos_betty_vmlab_tests',
+          'skylab_tests': 'chromeos_vmlab_tests',
+        },
+        'os_type': 'chromeos',
+        'cros_board': 'betty',
+        'cros_dut_pool': 'vmlab',
+        'run_cft': True,
+      },
+      'chromeos-betty-chrome-dchecks': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'test_suites': {
+          'skylab_tests': 'chromeos_vmlab_tests',
         },
         'os_type': 'chromeos',
         'cros_board': 'betty',

@@ -16,6 +16,65 @@
       "chromiumos_preflight"
     ]
   },
+  "chromeos-betty-cfi-thin-lto-chrome": {
+    "additional_compile_targets": [
+      "chromiumos_preflight"
+    ]
+  },
+  "chromeos-betty-cfi-thin-lto-chrome-tests": {
+    "skylab_tests": [
+      {
+        "autotest_name": "tast.chrome-from-gcs",
+        "cros_board": "betty",
+        "dut_pool": "vmlab",
+        "name": "chrome_all_tast_tests RELEASE_LKGM",
+        "run_cft": true,
+        "shard_level_retries_on_ctp": 1,
+        "shards": 15,
+        "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
+        "test": "chrome_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
+        "test_level_retries": 1,
+        "timeout_sec": 14400,
+        "use_lkgm": true,
+        "variant_id": "RELEASE_LKGM"
+      },
+      {
+        "autotest_name": "tast.chrome-from-gcs",
+        "ci_only": true,
+        "cros_board": "betty",
+        "dut_pool": "vmlab",
+        "experiment_percentage": 100,
+        "name": "chrome_criticalstaging_tast_tests RELEASE_LKGM",
+        "run_cft": true,
+        "shards": 3,
+        "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
+        "test": "chrome_criticalstaging_tast_tests",
+        "test_id_prefix": "ninja://chromeos:chrome_criticalstaging_tast_tests/",
+        "test_level_retries": 2,
+        "timeout_sec": 14400,
+        "use_lkgm": true,
+        "variant_id": "RELEASE_LKGM"
+      },
+      {
+        "autotest_name": "tast.chrome-from-gcs",
+        "ci_only": true,
+        "cros_board": "betty",
+        "dut_pool": "vmlab",
+        "experiment_percentage": 100,
+        "name": "chrome_disabled_tast_tests RELEASE_LKGM",
+        "run_cft": true,
+        "shards": 2,
+        "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
+        "test": "chrome_disabled_tast_tests",
+        "test_id_prefix": "ninja://chromeos:chrome_disabled_tast_tests/",
+        "test_level_retries": 1,
+        "timeout_sec": 14400,
+        "use_lkgm": true,
+        "variant_id": "RELEASE_LKGM"
+      }
+    ]
+  },
   "chromeos-betty-chrome": {
     "additional_compile_targets": [
       "chromiumos_preflight"

@@ -6674,50 +6674,6 @@
       },
     },
 
-    'chromeos_betty_vmlab_tests': {
-      'chromeos_chrome_all_tast_tests': {
-        'variants': [
-          'CROS_RELEASE_LKGM',
-        ],
-      },
-      'chromeos_chrome_criticalstaging_tast_tests': {
-        'variants': [
-          'CROS_RELEASE_LKGM',
-        ],
-      },
-      'chromeos_chrome_disabled_tast_tests': {
-        'variants': [
-          'CROS_RELEASE_LKGM',
-        ],
-      },
-      'chromeos_integration_tests_suite': {
-        'variants': [
-          'CROS_RELEASE_LKGM',
-        ],
-      },
-      'chromeos_system_friendly_gtests_fails_vmlab': {
-        'mixins': [
-          'experiments',
-        ],
-        'variants': [
-          'CROS_RELEASE_LKGM',
-        ],
-      },
-      'chromeos_system_friendly_gtests_vmlab': {
-        'variants': [
-          'CROS_RELEASE_LKGM',
-        ],
-      },
-      'chromeos_vaapi_gtests': {
-        'mixins': [
-          'experiments',
-        ],
-        'variants': [
-          'CROS_RELEASE_LKGM',
-        ],
-      },
-    },
-
     'chromeos_brya_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
         'variants': [
@@ -6905,24 +6861,6 @@
       },
     },
 
-    'chromeos_reven_vmlab_tests_no_gtests': {
-      'chromeos_chrome_all_tast_tests': {
-        'variants': [
-          'CROS_RELEASE_LKGM',
-        ],
-      },
-      'chromeos_chrome_criticalstaging_tast_tests': {
-        'variants': [
-          'CROS_RELEASE_LKGM',
-        ],
-      },
-      'chromeos_chrome_disabled_tast_tests': {
-        'variants': [
-          'CROS_RELEASE_LKGM',
-        ],
-      },
-    },
-
     'chromeos_trogdor_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
         'mixins': [
@@ -6945,6 +6883,68 @@
         'mixins': [
           'skylab-cft',
         ],
+        'variants': [
+          'CROS_RELEASE_LKGM',
+        ],
+      },
+    },
+
+    'chromeos_vmlab_tests': {
+      'chromeos_chrome_all_tast_tests': {
+        'variants': [
+          'CROS_RELEASE_LKGM',
+        ],
+      },
+      'chromeos_chrome_criticalstaging_tast_tests': {
+        'variants': [
+          'CROS_RELEASE_LKGM',
+        ],
+      },
+      'chromeos_chrome_disabled_tast_tests': {
+        'variants': [
+          'CROS_RELEASE_LKGM',
+        ],
+      },
+      'chromeos_integration_tests_suite': {
+        'variants': [
+          'CROS_RELEASE_LKGM',
+        ],
+      },
+      'chromeos_system_friendly_gtests_fails_vmlab': {
+        'mixins': [
+          'experiments',
+        ],
+        'variants': [
+          'CROS_RELEASE_LKGM',
+        ],
+      },
+      'chromeos_system_friendly_gtests_vmlab': {
+        'variants': [
+          'CROS_RELEASE_LKGM',
+        ],
+      },
+      'chromeos_vaapi_gtests': {
+        'mixins': [
+          'experiments',
+        ],
+        'variants': [
+          'CROS_RELEASE_LKGM',
+        ],
+      },
+    },
+
+    'chromeos_vmlab_tests_no_gtests': {
+      'chromeos_chrome_all_tast_tests': {
+        'variants': [
+          'CROS_RELEASE_LKGM',
+        ],
+      },
+      'chromeos_chrome_criticalstaging_tast_tests': {
+        'variants': [
+          'CROS_RELEASE_LKGM',
+        ],
+      },
+      'chromeos_chrome_disabled_tast_tests': {
         'variants': [
           'CROS_RELEASE_LKGM',
         ],

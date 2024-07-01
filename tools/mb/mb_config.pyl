@@ -30,6 +30,7 @@
       'chromeos-arm-generic-cfi-thin-lto-chrome': 'chromeos_arm-generic_cfi_thin_lto_official_reclient',
       'chromeos-arm64-generic-cfi-thin-lto-chrome': 'chromeos_arm64-generic_cfi_thin_lto_official_reclient',
       'chromeos-betty-arc-r-chrome': 'chromeos_betty-arc-r_include_unwind_tables_official_use_fake_dbus_clients_reclient',
+      'chromeos-betty-cfi-thin-lto-chrome': 'chromeos_betty_cfi_thin_lto_official_reclient',
       'chromeos-betty-chrome': 'chromeos_betty_include_unwind_tables_official_reclient',
       'chromeos-betty-pi-arc-cfi-thin-lto-chrome': 'chromeos_betty-pi-arc_cfi_thin_lto_official_reclient',
       'chromeos-betty-pi-arc-chrome': 'chromeos_betty-pi-arc_dchecks_reclient',
@@ -217,6 +218,7 @@
 
     'internal.chromeos.fyi': {
       'chromeos-betty-arc-t-chrome-fyi': 'chromeos_betty-arc-t_include_unwind_tables_official_reclient',
+      'chromeos-betty-chrome-dchecks': 'chromeos_betty_include_unwind_tables_official_dcheck_reclient',
       'chromeos-betty-pi-arc-chrome-accessibility-fyi': 'chromeos_betty-pi-arc_dchecks_reclient',
       'chromeos-betty-pi-arc-chrome-dchecks': 'chromeos_betty-pi-arc_dchecks_reclient',
       'chromeos-betty-pi-arc-finch-smoke-chrome': 'chromeos_betty-pi-arc_dchecks_reclient',
@@ -477,6 +479,17 @@
       'chromeos_device_reclient', 'betty-pi-arc', 'include_unwind_tables', 'official',
       'use_fake_dbus_clients', 'dcheck_always_on',
       'also_build_lacros_chrome_for_architecture_amd64', 'ozone_headless'
+    ],
+
+    'chromeos_betty_cfi_thin_lto_official_reclient': [
+      'chromeos_device_reclient', 'betty', 'official', 'is_skylab',
+      'also_build_lacros_chrome_for_architecture_amd64', 'ozone_headless',
+      'cfi_full', 'thin_lto', 'minimal_symbols',
+    ],
+
+    'chromeos_betty_include_unwind_tables_official_dcheck_reclient': [
+      'chromeos_device_reclient', 'betty', 'include_unwind_tables', 'official', 'is_skylab',
+      'also_build_lacros_chrome_for_architecture_amd64', 'ozone_headless', 'dcheck_always_on',
     ],
 
     'chromeos_betty_include_unwind_tables_official_reclient': [

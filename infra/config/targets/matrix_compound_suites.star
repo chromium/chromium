@@ -201,7 +201,7 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "chromeos_betty_vmlab_tests",
+    name = "chromeos_vmlab_tests",
     basic_suites = {
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             variants = [
@@ -250,7 +250,7 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "chromeos_reven_vmlab_tests_no_gtests",
+    name = "chromeos_vmlab_tests_no_gtests",
     basic_suites = {
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             variants = [
