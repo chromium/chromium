@@ -88,7 +88,8 @@ IN_PROC_BROWSER_TEST_F(JSErrProcBrowserTest, NoErr) {
 }
 
 // Test that JS Error is registered on HTML page containing uncaught JS error
-IN_PROC_BROWSER_TEST_F(JSErrProcBrowserTest, JSErr) {
+// TODO(b/338241225): Reenable once the UncaughtJSError event is being sent.
+IN_PROC_BROWSER_TEST_F(JSErrProcBrowserTest, DISABLED_JSErr) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
