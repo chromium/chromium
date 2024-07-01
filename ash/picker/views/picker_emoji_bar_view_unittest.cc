@@ -14,12 +14,14 @@
 #include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -88,6 +90,15 @@ TEST_F(PickerEmojiBarViewTest, ClickingMoreEmojisButton) {
 
   ViewDrawnWaiter().Wait(emoji_bar->more_emojis_button_for_testing());
   LeftClickOn(*emoji_bar->more_emojis_button_for_testing());
+}
+
+TEST_F(PickerEmojiBarViewTest, MoreEmojisButtonHasTooltip) {
+  MockEmojiBarViewDelegate mock_delegate;
+  PickerEmojiBarView view(&mock_delegate, kPickerWidth);
+
+  EXPECT_EQ(
+      view.more_emojis_button_for_testing()->GetTooltipText(),
+      l10n_util::GetStringUTF16(IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME));
 }
 
 TEST_F(PickerEmojiBarViewTest, ClickingGifsButton) {

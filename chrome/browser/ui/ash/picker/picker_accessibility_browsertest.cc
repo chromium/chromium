@@ -10,6 +10,7 @@
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/icon_button.h"
 #include "ash/test/test_widget_builder.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
@@ -182,6 +183,26 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 
   sm_.ExpectSpeechPattern(
       l10n_util::GetStringUTF8(IDS_PICKER_GIFS_BUTTON_LABEL));
+  sm_.ExpectSpeechPattern("Button");
+  sm_.ExpectSpeechPattern("Press * to activate");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       FocusingMoreEmojisAnnouncesTooltip) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  auto* view =
+      widget->SetContentsView(std::make_unique<ash::PickerEmojiBarView>(
+          /*delegate=*/nullptr, /*picker_width=*/100));
+
+  sm_.Call(
+      [view]() { view->more_emojis_button_for_testing()->RequestFocus(); });
+
+  sm_.ExpectSpeechPattern(
+      l10n_util::GetStringUTF8(IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME));
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("Press * to activate");
   sm_.Replay();
