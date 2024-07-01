@@ -213,6 +213,26 @@ void ChromeComposeClient::BindComposeDialog(
     debug_session_->Bind(std::move(handler), std::move(dialog));
     return;
   }
+
+  std::optional<FieldIdentifier> target_field;
+  if (skip_show_dialog_for_test_) {
+    target_field = active_compose_ids_;
+  } else if (compose_dialog_controller_) {
+    target_field = compose_dialog_controller_->GetFieldIds();
+  }
+  if (!target_field.has_value()) {
+    DLOG(WARNING)
+        << "Unable to bind dialog because no controller is available.";
+    compose_dialog_controller_.reset();
+    return;
+  }
+  if (!HasSession(target_field->first)) {
+    DLOG(WARNING) << "Unable to bind dialog because there is no session for "
+                     "the underlying field.";
+    compose_dialog_controller_.reset();
+    return;
+  }
+  active_compose_ids_ = target_field;
   sessions_.at(active_compose_ids_.value().first)
       ->Bind(std::move(handler), std::move(dialog));
 }
@@ -232,8 +252,9 @@ void ChromeComposeClient::ShowComposeDialog(
         GetWebContents().GetContainerBounds().OffsetFromOrigin());
 
     show_dialog_start_ = base::TimeTicks::Now();
-    compose_dialog_controller_ =
-        chrome::ShowComposeDialog(GetWebContents(), bounds_in_screen);
+    DCHECK(active_compose_ids_.has_value());
+    compose_dialog_controller_ = chrome::ShowComposeDialog(
+        GetWebContents(), bounds_in_screen, active_compose_ids_.value());
   }
 }
 
@@ -353,8 +374,7 @@ void ChromeComposeClient::CreateOrUpdateSession(
     EntryPoint ui_entry_point,
     const autofill::FormFieldData& trigger_field,
     ComposeCallback callback) {
-  active_compose_ids_ = std::make_optional<
-      std::pair<autofill::FieldGlobalId, autofill::FormGlobalId>>(
+  active_compose_ids_ = std::make_optional<FieldIdentifier>(
       trigger_field.global_id(), trigger_field.renderer_form_id());
   // The selected text received from Autofill is a UTF-16 string truncated using
   // substr, which will result in a rendered invalid character in the Compose
@@ -579,8 +599,7 @@ bool ChromeComposeClient::ShouldTriggerPopup(
   // Saved state notification needs the active field set earlier here at nudge
   // triggering, rather than later when the compose dialog is shown so that we
   // can know if the user focused on a different field.
-  active_compose_ids_ = std::make_optional<
-      std::pair<autofill::FieldGlobalId, autofill::FormGlobalId>>(
+  active_compose_ids_ = std::make_optional<FieldIdentifier>(
       form_field_data.global_id(), form_field_data.renderer_form_id());
 
   bool ongoing_session = HasSession(form_field_data.global_id());

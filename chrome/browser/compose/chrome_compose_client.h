@@ -54,7 +54,6 @@ class ChromeComposeClient
       public InnerTextProvider {
  public:
   using EntryPoint = autofill::AutofillComposeDelegate::UiEntryPoint;
-
   class FieldChangeObserver : public autofill::AutofillManager::Observer {
    public:
     explicit FieldChangeObserver(content::WebContents* web_contents);
@@ -278,8 +277,7 @@ class ChromeComposeClient
 
   // The unique renderer and form IDs of the last field the user selected
   // compose on.
-  std::optional<std::pair<autofill::FieldGlobalId, autofill::FormGlobalId>>
-      active_compose_ids_;
+  std::optional<FieldIdentifier> active_compose_ids_;
 
   std::optional<InnerTextProvider*> inner_text_provider_for_test_;
 

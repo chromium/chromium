@@ -15,7 +15,9 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/buildflags.h"
+#include "components/compose/core/browser/compose_client.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -140,7 +142,8 @@ std::unique_ptr<ui::DialogModel> CreateWindowNamePromptDialogModelForTesting(
 #if BUILDFLAG(ENABLE_COMPOSE)
 std::unique_ptr<compose::ComposeDialogController> ShowComposeDialog(
     content::WebContents& web_contents,
-    const gfx::RectF& element_bounds_in_screen);
+    const gfx::RectF& element_bounds_in_screen,
+    compose::ComposeClient::FieldIdentifier field_ids);
 #endif
 
 // Shows the 'Create Shortcut' dialog to create fire and forget entities on the

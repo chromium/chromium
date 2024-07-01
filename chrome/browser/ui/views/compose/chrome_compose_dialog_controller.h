@@ -11,6 +11,8 @@
 #include "chrome/browser/ui/views/compose/compose_dialog_view.h"
 #include "chrome/browser/ui/webui/compose/compose_untrusted_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
+#include "components/autofill/core/common/unique_ids.h"
+#include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_dialog_controller.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -27,7 +29,10 @@ class RectF;
 class ChromeComposeDialogController : public compose::ComposeDialogController,
                                       views::WidgetObserver {
  public:
-  explicit ChromeComposeDialogController(content::WebContents* contents);
+  using ComposeClient = compose::ComposeClient;
+
+  ChromeComposeDialogController(content::WebContents* contents,
+                                ComposeClient::FieldIdentifier field_ids);
   ~ChromeComposeDialogController() override;
 
   // Create and show the dialog view.
@@ -53,6 +58,10 @@ class ChromeComposeDialogController : public compose::ComposeDialogController,
   // The destroying event occurs immediately before the widget is destroyed.
   void OnWidgetDestroying(views::Widget* widget) override;
 
+  // Returns an identifier for the field that this dialog is acting upon.  This
+  // can be used to connect to the correct session.
+  const ComposeClient::FieldIdentifier& GetFieldIds() override;
+
  private:
   friend class ChromeComposeDialogControllerTest;
 
@@ -61,6 +70,9 @@ class ChromeComposeDialogController : public compose::ComposeDialogController,
 
   base::WeakPtr<ComposeDialogView> bubble_;
   base::WeakPtr<content::WebContents> web_contents_;
+
+  // Identifies the field that this dialog is acting upon.
+  ComposeClient::FieldIdentifier field_ids_;
 
   // Called when focus is lost on the compose dialog. This is not called in any
   // action that deletes a compose session, such as clicking the close button.

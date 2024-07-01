@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/config.h"
@@ -21,14 +22,15 @@ namespace chrome {
 
 std::unique_ptr<compose::ComposeDialogController> ShowComposeDialog(
     content::WebContents& web_contents,
-    const gfx::RectF& element_bounds_in_screen) {
+    const gfx::RectF& element_bounds_in_screen,
+    compose::ComposeClient::FieldIdentifier field_ids) {
   // The Compose dialog is not anchored to any particular View. Pass the
   // BrowserView so that it still knows about the Browser window, which is
   // needed to access the correct ColorProvider for theming.
   views::View* anchor_view = BrowserView::GetBrowserViewForBrowser(
       chrome::FindBrowserWithTab(&web_contents));
   auto controller =
-      std::make_unique<ChromeComposeDialogController>(&web_contents);
+      std::make_unique<ChromeComposeDialogController>(&web_contents, field_ids);
   controller->ShowComposeDialog(anchor_view, element_bounds_in_screen);
   return controller;
 }
@@ -137,6 +139,11 @@ void ChromeComposeDialogController::OnWidgetDestroying(views::Widget* widget) {
   widget_observation_.Reset();
 }
 
+const compose::ComposeClient::FieldIdentifier&
+ChromeComposeDialogController::GetFieldIds() {
+  return field_ids_;
+}
+
 void ChromeComposeDialogController::OnAfterWidgetDestroyed() {
   if (focus_lost_callback_) {
     std::move(focus_lost_callback_).Run();
@@ -144,5 +151,6 @@ void ChromeComposeDialogController::OnAfterWidgetDestroyed() {
 }
 
 ChromeComposeDialogController::ChromeComposeDialogController(
-    content::WebContents* web_contents)
-    : web_contents_(web_contents->GetWeakPtr()) {}
+    content::WebContents* web_contents,
+    compose::ComposeClient::FieldIdentifier field_ids)
+    : web_contents_(web_contents->GetWeakPtr()), field_ids_(field_ids) {}
