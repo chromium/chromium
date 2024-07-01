@@ -262,8 +262,8 @@ WifiConfigurationBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void WifiConfigurationBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                               DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> WifiConfigurationBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
 
   for (const std::string& id : storage_keys) {
@@ -273,15 +273,16 @@ void WifiConfigurationBridge::GetDataForCommit(StorageKeyList storage_keys,
     }
     batch->Put(id, GenerateWifiEntityData(it->second));
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
-void WifiConfigurationBridge::GetAllDataForDebugging(DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+WifiConfigurationBridge::GetAllDataForDebugging() {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const auto& [storage_key, specifics] : entries_) {
     batch->Put(storage_key, GenerateWifiEntityData(specifics));
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 std::string WifiConfigurationBridge::GetClientTag(

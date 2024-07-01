@@ -253,24 +253,24 @@ ProfileAuthServersSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void ProfileAuthServersSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                                    DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+ProfileAuthServersSyncBridge::GetDataForCommit(StorageKeyList storage_keys) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const std::string& key : storage_keys) {
     if (base::Contains(servers_uris_, key)) {
       batch->Put(key, ToEntityDataPtr(key));
     }
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
-void ProfileAuthServersSyncBridge::GetAllDataForDebugging(
-    DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+ProfileAuthServersSyncBridge::GetAllDataForDebugging() {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const auto& uri : servers_uris_) {
     batch->Put(uri, ToEntityDataPtr(uri));
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 std::string ProfileAuthServersSyncBridge::GetClientTag(

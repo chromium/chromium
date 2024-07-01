@@ -239,8 +239,8 @@ std::optional<syncer::ModelError> DeskSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void DeskSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                      DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> DeskSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
 
   for (const std::string& uuid : storage_keys) {
@@ -254,10 +254,10 @@ void DeskSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
                          entry, apps::AppRegistryCacheWrapper::Get()
                                     .GetAppRegistryCache(account_id_))));
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
-void DeskSyncBridge::GetAllDataForDebugging(DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> DeskSyncBridge::GetAllDataForDebugging() {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const auto& it : desk_template_entries_) {
     batch->Put(it.first.AsLowercaseString(),
@@ -266,7 +266,7 @@ void DeskSyncBridge::GetAllDataForDebugging(DataCallback callback) {
                    apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(
                        account_id_))));
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 std::string DeskSyncBridge::GetClientTag(

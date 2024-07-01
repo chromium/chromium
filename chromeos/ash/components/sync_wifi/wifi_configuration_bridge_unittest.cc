@@ -216,13 +216,7 @@ class WifiConfigurationBridgeTest : public testing::Test {
 
   std::vector<sync_pb::WifiConfigurationSpecifics> GetAllSyncedData() {
     std::vector<WifiConfigurationSpecifics> data;
-    base::RunLoop loop;
-    bridge()->GetAllDataForDebugging(base::BindLambdaForTesting(
-        [&loop, &data](std::unique_ptr<syncer::DataBatch> batch) {
-          ExtractProtosFromDataBatch(std::move(batch), &data);
-          loop.Quit();
-        }));
-    loop.Run();
+    ExtractProtosFromDataBatch(bridge()->GetAllDataForDebugging(), &data);
     return data;
   }
 

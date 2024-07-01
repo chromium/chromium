@@ -22,7 +22,7 @@ namespace ash::floating_sso {
 
 class FloatingSsoSyncBridge : public syncer::ModelTypeSyncBridge {
  public:
-  FloatingSsoSyncBridge(
+  explicit FloatingSsoSyncBridge(
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
   ~FloatingSsoSyncBridge() override;
 
@@ -37,9 +37,9 @@ class FloatingSsoSyncBridge : public syncer::ModelTypeSyncBridge {
       syncer::EntityChangeList entity_changes) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
-  void GetDataForCommit(StorageKeyList storage_keys,
-                        DataCallback callback) override;
-  void GetAllDataForDebugging(DataCallback callback) override;
+  std::unique_ptr<syncer::DataBatch> GetDataForCommit(
+      StorageKeyList storage_keys) override;
+  std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
 };
 
 }  // namespace ash::floating_sso

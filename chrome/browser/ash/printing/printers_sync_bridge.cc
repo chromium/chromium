@@ -284,8 +284,8 @@ PrintersSyncBridge::ApplyIncrementalSyncChanges(
   return {};
 }
 
-void PrintersSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                          DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> PrintersSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   {
     base::AutoLock lock(data_lock_);
@@ -296,10 +296,11 @@ void PrintersSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
       }
     }
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
-void PrintersSyncBridge::GetAllDataForDebugging(DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+PrintersSyncBridge::GetAllDataForDebugging() {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   {
     base::AutoLock lock(data_lock_);
@@ -307,7 +308,7 @@ void PrintersSyncBridge::GetAllDataForDebugging(DataCallback callback) {
       batch->Put(entry.first, CopyToEntityData(*entry.second));
     }
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 std::string PrintersSyncBridge::GetClientTag(const EntityData& entity_data) {

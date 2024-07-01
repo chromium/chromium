@@ -61,15 +61,18 @@ std::string FloatingSsoSyncBridge::GetClientTag(
   return "";
 }
 
-void FloatingSsoSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                             DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> FloatingSsoSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   // TODO: b/346354248 - implement.
   NOTIMPLEMENTED();
+  return nullptr;
 }
 
-void FloatingSsoSyncBridge::GetAllDataForDebugging(DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+FloatingSsoSyncBridge::GetAllDataForDebugging() {
   // TODO: b/346354358 - implement.
   NOTIMPLEMENTED();
+  return nullptr;
 }
 
 }  // namespace ash::floating_sso

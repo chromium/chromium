@@ -98,14 +98,8 @@ class PrintingOAuth2ProfileAuthServersSyncBridgeTest : public testing::Test {
   }
 
   std::vector<std::string> GetAllData() {
-    std::unique_ptr<syncer::DataBatch> output;
-    base::RunLoop loop;
-    auto callback = [&output, &loop](std::unique_ptr<syncer::DataBatch> data) {
-      output = std::move(data);
-      loop.Quit();
-    };
-    bridge_->GetAllDataForDebugging(base::BindLambdaForTesting(callback));
-    loop.Run();
+    std::unique_ptr<syncer::DataBatch> output =
+        bridge_->GetAllDataForDebugging();
 
     std::vector<std::string> uris;
     while (output->HasNext()) {
@@ -237,11 +231,8 @@ TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest, GetDataForCommit) {
                                                   std::set<GURL>{}));
   DoInitialMerge({uri_1_, uri_2_});
 
-  std::unique_ptr<syncer::DataBatch> output;
-  base::MockOnceCallback<void(std::unique_ptr<syncer::DataBatch> data_batch)>
-      callback;
-  EXPECT_CALL(callback, Run).WillOnce(MoveArg(&output));
-  bridge_->GetDataForCommit({uri_1_, uri_3_}, callback.Get());
+  std::unique_ptr<syncer::DataBatch> output =
+      bridge_->GetDataForCommit({uri_1_, uri_3_});
 
   ASSERT_TRUE(output);
   std::vector<syncer::KeyAndData> data;
