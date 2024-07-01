@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "ios/chrome/app/spotlight/spotlight_logger.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 @interface SpotlightInterface ()
 
@@ -16,11 +17,16 @@
 @end
 
 @implementation SpotlightInterface
+@synthesize searchableIndex = _searchableIndex;
 
 + (SpotlightInterface*)defaultInterface {
   static SpotlightInterface* const kDefaultSpotlightInterface =
       [[SpotlightInterface alloc]
-          initWithSearchableIndex:[CSSearchableIndex defaultSearchableIndex]
+          initWithSearchableIndex:(base::FeatureList::IsEnabled(
+                                       kSpotlightNeverRetainIndex)
+                                       ? nil
+                                       : [CSSearchableIndex
+                                             defaultSearchableIndex])
                       maxAttempts:spotlight::kMaxAttempts - 1];
   return kDefaultSpotlightInterface;
 }
@@ -56,6 +62,13 @@
     _maxAttempts = maxAttempts;
   }
   return self;
+}
+
+- (CSSearchableIndex*)searchableIndex {
+  if (_searchableIndex) {
+    return _searchableIndex;
+  }
+  return [CSSearchableIndex defaultSearchableIndex];
 }
 
 - (void)indexSearchableItems:(NSArray<CSSearchableItem*>*)items {

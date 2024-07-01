@@ -910,6 +910,11 @@ extern const char kShowAutofillTypePredictionsDescription[];
 extern const char kSpotlightOpenTabsSourceName[];
 extern const char kSpotlightOpenTabsSourceDescription[];
 
+// Title and description for the flag to not store a strong reference to the
+// default spotlight index.
+extern const char kSpotlightNeverRetainIndexName[];
+extern const char kSpotlightNeverRetainIndexDescription[];
+
 // Title and description for th eflag to index Reading List items in Spotlight.
 extern const char kSpotlightReadingListSourceName[];
 extern const char kSpotlightReadingListSourceDescription[];

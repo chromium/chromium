@@ -657,4 +657,8 @@ bool IsPrefetchingSystemCapabilitiesOnFirstRun();
 // Feature flag for caching the ios module ranker.
 BASE_DECLARE_FEATURE(kSegmentationPlatformIosModuleRankerCaching);
 
+// Flag to not keep a strong reference to the spotlight index, as a tentative
+// memory improvement measure.
+BASE_DECLARE_FEATURE(kSpotlightNeverRetainIndex);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

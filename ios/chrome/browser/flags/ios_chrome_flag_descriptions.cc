@@ -1029,6 +1029,11 @@ const char kSpotlightOpenTabsSourceName[] = "Show Open local tabs in Spotlight";
 const char kSpotlightOpenTabsSourceDescription[] =
     "Donate local open tabs items to iOS Search Engine Spotlight";
 
+const char kSpotlightNeverRetainIndexName[] = "Don't retain spotlight index";
+const char kSpotlightNeverRetainIndexDescription[] =
+    "Tentative spotlight memory improvement by not storing a strong pointer to "
+    "the spotlight default index";
+
 const char kSpotlightReadingListSourceName[] = "Show Reading List in Spotlight";
 const char kSpotlightReadingListSourceDescription[] =
     "Donate Reading List items to iOS Search Engine Spotlight";
