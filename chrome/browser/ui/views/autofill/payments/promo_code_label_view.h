@@ -17,7 +17,6 @@ class PromoCodeLabelView : public views::FlexLayoutView {
 
  public:
   PromoCodeLabelView(
-      gfx::Size& preferred_size,
       const std::u16string& promo_code_text,
       views::Button::PressedCallback copy_button_pressed_callback);
   ~PromoCodeLabelView() override;
@@ -26,6 +25,8 @@ class PromoCodeLabelView : public views::FlexLayoutView {
 
   // views::View
   void OnThemeChanged() override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   raw_ptr<views::LabelButton> GetCopyButtonForTesting();
   const std::u16string& GetPromoCodeLabelTextForTesting() const;

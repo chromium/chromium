@@ -18,6 +18,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/layout_types.h"
 
 namespace autofill {
 const int kContentCopyIconSizePx = 20;
@@ -27,10 +28,8 @@ const int kPromoCodeLabelLeftMarginPx = 10;
 const int kPromoCodeLabelRightMarginPx = 16;
 
 PromoCodeLabelView::PromoCodeLabelView(
-    gfx::Size& preferred_size,
     const std::u16string& promo_code_text,
     views::Button::PressedCallback copy_button_pressed_callback) {
-  SetPreferredSize(preferred_size);
   SetInteriorMargin(gfx::Insets::TLBR(kInteriorMarginPx, kInteriorMarginPx,
                                       kInteriorMarginPx, kInteriorMarginPx));
 
@@ -81,6 +80,20 @@ void PromoCodeLabelView::OnThemeChanged() {
       color_provider->GetColor(ui::kColorSysNeutralContainer),
       ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
           views::Emphasis::kHigh)));
+}
+
+gfx::Size PromoCodeLabelView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  const int dialog_inset = views::LayoutProvider::Get()
+                               ->GetInsetsMetric(views::INSETS_DIALOG)
+                               .left();
+  const int dialog_width = views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+  const int preferred_width = dialog_width - dialog_inset * 2;
+
+  return gfx::Size(
+      preferred_width,
+      GetLayoutManager()->GetPreferredHeightForWidth(this, preferred_width));
 }
 
 raw_ptr<views::LabelButton> PromoCodeLabelView::GetCopyButtonForTesting() {

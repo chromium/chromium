@@ -186,25 +186,15 @@ OfferNotificationBubbleViews::CreateFreeListingCouponOfferMainPageContent(
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
 
-  std::u16string promo_code_value_prop_string;
-
-  const int dialog_inset = views::LayoutProvider::Get()
-                               ->GetInsetsMetric(views::INSETS_DIALOG)
-                               .left();
-  const int dialog_width = views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
-  auto promo_code_label_view_preferred_size =
-      gfx::Size(dialog_width - dialog_inset * 2, 0);
   promo_code_label_view_ =
       main_page_view->AddChildView(std::make_unique<PromoCodeLabelView>(
-          promo_code_label_view_preferred_size,
           base::ASCIIToUTF16(offer.GetPromoCode()),
           base::BindRepeating(
               &OfferNotificationBubbleViews::OnPromoCodeButtonClicked,
               base::Unretained(this))));
-  promo_code_value_prop_string = l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_PROMO_CODE_OFFERS_USE_THIS_CODE_TEXT);
 
+  auto promo_code_value_prop_string = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_PROMO_CODE_OFFERS_USE_THIS_CODE_TEXT);
   auto expiration_date_text = l10n_util::GetStringFUTF16(
       IDS_DISCOUNT_EXPIRATION_DATE, TimeFormatShortDate(offer.GetExpiry()));
   if (promo_code_value_prop_string.empty()) {
