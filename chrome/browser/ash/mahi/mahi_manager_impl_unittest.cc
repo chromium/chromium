@@ -19,10 +19,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chrome/browser/ash/mahi/fake_mahi_browser_delegate_ash.h"
 #include "chrome/browser/ash/mahi/mahi_cache_manager.h"
-#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
@@ -93,8 +91,6 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
   // NoSessionAshTestBase::
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
-
-    magic_boost_state_ = std::make_unique<MagicBoostStateAsh>();
     mahi_manager_impl_ = std::make_unique<MahiManagerImpl>();
     mahi_manager_impl_->mahi_provider_ = CreateMahiProvider();
 
@@ -108,8 +104,6 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
 
   void TearDown() override {
     mahi_manager_impl_.reset();
-    magic_boost_state_.reset();
-    fake_mahi_browser_delegate_ash_.reset();
     NoSessionAshTestBase::TearDown();
   }
 
@@ -157,7 +151,7 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
             &test_url_loader_factory_),
         identity_test_env_.identity_manager());
   }
-  std::unique_ptr<MagicBoostStateAsh> magic_boost_state_;
+
   std::unique_ptr<MahiManagerImpl> mahi_manager_impl_;
 
  private:
@@ -278,19 +272,16 @@ class MahiManagerImplFeatureKeyTest : public NoSessionAshTestBase {
   // NoSessionAshTestBase::
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
-    magic_boost_state_ = std::make_unique<MagicBoostStateAsh>();
     mahi_manager_impl_ = std::make_unique<MahiManagerImpl>();
     CreateUserSessions(1);
   }
 
   void TearDown() override {
-    magic_boost_state_.reset();
     mahi_manager_impl_.reset();
     NoSessionAshTestBase::TearDown();
   }
 
  protected:
-  std::unique_ptr<MagicBoostStateAsh> magic_boost_state_;
   std::unique_ptr<MahiManagerImpl> mahi_manager_impl_;
 
  private:

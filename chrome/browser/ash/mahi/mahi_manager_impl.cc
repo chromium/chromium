@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
 #include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
@@ -112,7 +111,12 @@ namespace ash {
 MahiManagerImpl::MahiManagerImpl()
     : cache_manager_(std::make_unique<MahiCacheManager>()),
       mahi_nudge_controller_(std::make_unique<MahiNudgeController>()) {
-  magic_boost_state_observation_.Observe(chromeos::MagicBoostState::Get());
+  session_observation_.Observe(Shell::Get()->session_controller());
+  PrefService* last_active_user_pref_service =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  if (last_active_user_pref_service) {
+    OnActiveUserPrefServiceChanged(last_active_user_pref_service);
+  }
 }
 
 MahiManagerImpl::~MahiManagerImpl() {
@@ -364,7 +368,8 @@ void MahiManagerImpl::OpenFeedbackDialog() {
 
 bool MahiManagerImpl::IsEnabled() {
   return IsSupportedWithCorrectFeatureKey() &&
-         chromeos::MagicBoostState::Get()->hmr_enabled().value_or(false);
+         Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+             ash::prefs::kHmrEnabled);
 }
 
 void MahiManagerImpl::SetMediaAppPDFFocused() {
@@ -439,12 +444,29 @@ void MahiManagerImpl::NotifyRefreshAvailability(bool available) {
   }
 }
 
-void MahiManagerImpl::OnHMREnabledUpdated(bool enabled) {
-  if (enabled) {
-    return;
+void MahiManagerImpl::OnActiveUserPrefServiceChanged(
+    PrefService* pref_service) {
+  CHECK(pref_service);
+  // Subscribes again to pref changes.
+  // TODO(b/347771885): Use `MagicBoostState::Observer` instead of directly
+  // subscribe.
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(pref_service);
+  pref_change_registrar_->Add(
+      ash::prefs::kHmrEnabled,
+      base::BindRepeating(&MahiManagerImpl::OnMahiPrefChanged,
+                          weak_ptr_factory_for_pref_.GetWeakPtr()));
+
+  OnMahiPrefChanged();
+}
+
+void MahiManagerImpl::OnMahiPrefChanged() {
+  CHECK(pref_change_registrar_);
+  CHECK(pref_change_registrar_->prefs());
+  if (!pref_change_registrar_->prefs()->GetBoolean(ash::prefs::kHmrEnabled)) {
+    ui_controller_.CloseMahiPanel();
+    cache_manager_->ClearCache();
   }
-  ui_controller_.CloseMahiPanel();
-  cache_manager_->ClearCache();
 }
 
 bool MahiManagerImpl::MaybeInitializeAndDiscardPendingRequests() {

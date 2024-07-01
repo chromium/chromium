@@ -31,9 +31,10 @@ MagicBoostStateAsh::MagicBoostStateAsh() {
 
 MagicBoostStateAsh::~MagicBoostStateAsh() = default;
 
-void MagicBoostStateAsh::OnActiveUserPrefServiceChanged(
-    PrefService* pref_service) {
-  RegisterPrefChanges(pref_service);
+void MagicBoostStateAsh::OnFirstSessionStarted() {
+  PrefService* prefs =
+      ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  RegisterPrefChanges(prefs);
 }
 
 int32_t MagicBoostStateAsh::AsyncIncrementHMRConsentWindowDismissCount() {
