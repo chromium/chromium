@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_helpers.h"
 
+#include "chrome/common/chrome_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -60,8 +61,16 @@ TEST(WebAppHelpers, GenerateManifestIdFromStartUrlOnly) {
 
 TEST(WebAppHelpers, IsValidWebAppUrl) {
   // TODO(crbug.com/40793595): Remove chrome-extension scheme.
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(IsValidWebAppUrl(
       GURL("chrome-extension://oafaagfgbdpldilgjjfjocjglfbolmac")));
+#else
+  // With ShortcutsNotApps enabled, chrome-extension:// URLs can only be
+  // shortcuts rather than web apps.
+  EXPECT_NE(IsValidWebAppUrl(
+                GURL("chrome-extension://oafaagfgbdpldilgjjfjocjglfbolmac")),
+            base::FeatureList::IsEnabled(features::kShortcutsNotApps));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   EXPECT_TRUE(IsValidWebAppUrl(GURL("https://chromium.org")));
   EXPECT_TRUE(IsValidWebAppUrl(GURL("https://www.chromium.org")));

@@ -20788,40 +20788,6 @@
             ]
         }
     ],
-    "ShortcutsNotApps": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "ShortcutsNotApps",
-                    "enable_features": [
-                        "ShortcutsNotApps"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ShortcutsNotAppsRevealDesktop": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "ShortcutsNotAppsRevealDesktop",
-                    "enable_features": [
-                        "ShortcutsNotAppsRevealDesktop"
-                    ]
-                }
-            ]
-        }
-    ],
     "ShowWebauthnSuggestionsOnAutofocus": [
         {
             "platforms": [

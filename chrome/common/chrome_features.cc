@@ -332,7 +332,7 @@ BASE_FEATURE(kChromeAppsDeprecation,
 // PWAs.
 BASE_FEATURE(kShortcutsNotApps,
              "ShortcutsNotApps",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the opening of the desktop and highlighting of the shortcut created
 // as part of the new Create Shortcut flow. Requires kShortcutsNotApps to be
