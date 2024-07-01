@@ -13,7 +13,7 @@
 #import "components/plus_addresses/metrics/plus_address_metrics.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "components/plus_addresses/plus_address_types.h"
-#import "components/plus_addresses/settings/plus_address_setting_service.h"
+#import "components/plus_addresses/settings/plus_address_setting_service_impl.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -31,10 +31,10 @@ namespace {
 using plus_addresses::FakePlusAddressService;
 
 class TestPlusAddressSettingService
-    : public plus_addresses::PlusAddressSettingService {
+    : public plus_addresses::PlusAddressSettingServiceImpl {
  public:
   TestPlusAddressSettingService()
-      : PlusAddressSettingService(base::DoNothing()) {}
+      : PlusAddressSettingServiceImpl(base::DoNothing()) {}
 
   MOCK_METHOD(void, SetHasAcceptedNotice, (), (override));
 };

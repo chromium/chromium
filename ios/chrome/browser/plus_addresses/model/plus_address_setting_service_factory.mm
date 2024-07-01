@@ -8,7 +8,7 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "components/plus_addresses/settings/plus_address_setting_service.h"
+#import "components/plus_addresses/settings/plus_address_setting_service_impl.h"
 #import "components/sync/model/model_type_store_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -31,7 +31,7 @@ PlusAddressSettingServiceFactory::GetForBrowserState(
 
 PlusAddressSettingServiceFactory::PlusAddressSettingServiceFactory()
     : BrowserStateKeyedServiceFactory(
-          "PlusAddressSettingService",
+          "PlusAddressSettingServiceImpl",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
 }
@@ -41,7 +41,7 @@ PlusAddressSettingServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<plus_addresses::PlusAddressSettingService>(
+  return std::make_unique<plus_addresses::PlusAddressSettingServiceImpl>(
       ModelTypeStoreServiceFactory::GetForBrowserState(browser_state)
           ->GetStoreFactory());
 }

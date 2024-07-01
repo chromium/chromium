@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/settings/plus_address_setting_service.h"
+#include "components/plus_addresses/settings/plus_address_setting_service_impl.h"
 
 #include <vector>
 
@@ -20,9 +20,9 @@ namespace plus_addresses {
 
 namespace {
 
-class PlusAddressSettingServiceTest : public testing::Test {
+class PlusAddressSettingServiceImplTest : public testing::Test {
  public:
-  PlusAddressSettingServiceTest()
+  PlusAddressSettingServiceImplTest()
       : store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
     RecreateServiceWithSpecifics({});
   }
@@ -40,7 +40,7 @@ class PlusAddressSettingServiceTest : public testing::Test {
       batch->WriteData(specific.name(), specific.SerializeAsString());
     }
     store_->CommitWriteBatch(std::move(batch), base::DoNothing());
-    service_ = std::make_unique<PlusAddressSettingService>(
+    service_ = std::make_unique<PlusAddressSettingServiceImpl>(
         syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
             store_.get()));
     // Wait for the `service_`'s initialisation to finish.
@@ -54,7 +54,7 @@ class PlusAddressSettingServiceTest : public testing::Test {
   std::unique_ptr<PlusAddressSettingService> service_;
 };
 
-TEST_F(PlusAddressSettingServiceTest, GetValue) {
+TEST_F(PlusAddressSettingServiceImplTest, GetValue) {
   RecreateServiceWithSpecifics(
       {CreateSettingSpecifics("plus_address.is_enabled", true),
        CreateSettingSpecifics("plus_address.has_accepted_notice", false)});
