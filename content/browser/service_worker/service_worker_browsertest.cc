@@ -466,7 +466,6 @@ class ServiceWorkerBrowserTest : public ContentBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   scoped_refptr<ServiceWorkerContextWrapper> wrapper_;
   MockClientHintsControllerDelegate client_hints_controller_delegate_{
       content::GetShellUserAgentMetadata()};
