@@ -107,8 +107,10 @@ PinnedNotificationView::PinnedNotificationView(
       views::Builder<views::ImageView>()
           .SetID(VIEW_ID_PINNED_NOTIFICATION_ICON)
           .SetImage(ui::ImageModel::FromVectorIcon(
-              notification.vector_small_image(), cros_tokens::kCrosSysOnSurface,
-              kIconSize))
+              notification.vector_small_image().is_empty()
+                  ? message_center::kProductIcon
+                  : notification.vector_small_image(),
+              cros_tokens::kCrosSysOnSurface, kIconSize))
           .Build());
 
   auto* label_container = icon_and_label_container->AddChildView(
