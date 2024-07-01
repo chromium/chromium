@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewPr
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.components.omnibox.AnswerDataProto.AnswerData;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString;
+import org.chromium.components.omnibox.AnswerDataProto.Image;
 import org.chromium.components.omnibox.AnswerTextStyle;
 import org.chromium.components.omnibox.AnswerTextType;
 import org.chromium.components.omnibox.AnswerType;
@@ -207,20 +208,18 @@ public class AnswerSuggestionProcessorUnitTest {
     }
 
     SuggestionTestHelper createRichAnswerSuggestion(
-            @AnswerType int type, String line1Text, String line2Text, int numberOfActions) {
+            @AnswerType int type, int numberOfActions, boolean includeImage) {
+        AnswerData.Builder answerDataBuilder =
+                AnswerData.newBuilder()
+                        .setHeadline(FormattedString.newBuilder().setText("").build())
+                        .setSubhead(FormattedString.newBuilder().setText(""));
+        if (includeImage) {
+            answerDataBuilder.setImage(
+                    Image.newBuilder().setUrl("https://imageserver.com/icon.png"));
+        }
+
         RichAnswerTemplate answer =
-                RichAnswerTemplate.newBuilder()
-                        .addAnswers(
-                                AnswerData.newBuilder()
-                                        .setHeadline(
-                                                FormattedString.newBuilder()
-                                                        .setText(line1Text)
-                                                        .build())
-                                        .setSubhead(
-                                                FormattedString.newBuilder()
-                                                        .setText(line2Text)
-                                                        .build()))
-                        .build();
+                RichAnswerTemplate.newBuilder().addAnswers(answerDataBuilder).build();
         List<OmniboxAction> actions = new ArrayList<>();
         for (int i = 0; i < numberOfActions; i++) {
             actions.add(
@@ -345,7 +344,7 @@ public class AnswerSuggestionProcessorUnitTest {
     @Test
     public void answerImage_fallbackIcons_richAnswerTemplate() {
         for (@AnswerType int type : ANSWER_TYPES) {
-            SuggestionTestHelper suggHelper = createRichAnswerSuggestion(type, "", "", 0);
+            SuggestionTestHelper suggHelper = createRichAnswerSuggestion(type, 0, false);
             // Note: model is re-created on every iteration.
             Assert.assertNotNull("No icon associated with type: " + type, suggHelper.getIcon());
         }
@@ -356,23 +355,27 @@ public class AnswerSuggestionProcessorUnitTest {
     public void richAnswerCard() {
         OmniboxFeatures.sAnswerActionsShowRichCard.setForTesting(true);
         SuggestionTestHelper suggHelper =
-                createRichAnswerSuggestion(AnswerType.DICTIONARY, "", "", 1);
+                createRichAnswerSuggestion(AnswerType.DICTIONARY, 1, true);
         Assert.assertEquals(
                 suggHelper.mModel.get(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING),
                 mContext.getResources()
                         .getDimensionPixelSize(
                                 org.chromium.chrome.browser.omnibox.R.dimen
-                                        .omnibox_simple_card_action_chip_leadin));
-        Assert.assertEquals(
-                suggHelper.mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION), true);
+                                        .omnibox_simple_card_leadin));
+        Assert.assertTrue(suggHelper.mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION));
+        Assert.assertTrue(suggHelper.mModel.get(BaseSuggestionViewProperties.SHOW_DECORATION));
+
+        suggHelper = createRichAnswerSuggestion(AnswerType.DICTIONARY, 1, false);
+        Assert.assertFalse(suggHelper.mModel.get(BaseSuggestionViewProperties.SHOW_DECORATION));
 
         // A rich answer with no actions shouldn't get the card treatment.
-        suggHelper = createRichAnswerSuggestion(AnswerType.DICTIONARY, "", "", 0);
+        suggHelper = createRichAnswerSuggestion(AnswerType.DICTIONARY, 0, true);
         Assert.assertEquals(
                 suggHelper.mModel.get(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING),
                 OmniboxResourceProvider.getSuggestionDecorationIconSizeWidth(mContext));
-        Assert.assertEquals(
-                suggHelper.mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION), false);
+        Assert.assertFalse(
+                suggHelper.mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION));
+        Assert.assertTrue(suggHelper.mModel.get(BaseSuggestionViewProperties.SHOW_DECORATION));
     }
 
     @Test

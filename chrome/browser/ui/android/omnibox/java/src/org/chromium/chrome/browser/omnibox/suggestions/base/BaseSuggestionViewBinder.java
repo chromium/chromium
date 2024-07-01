@@ -146,6 +146,8 @@ public final class BaseSuggestionViewBinder<T extends View>
                             return false;
                         });
             }
+        } else if (BaseSuggestionViewProperties.SHOW_DECORATION == propertyKey) {
+            view.setShowDecorationIcon(model.get(BaseSuggestionViewProperties.SHOW_DECORATION));
         } else if (BaseSuggestionViewProperties.USE_LARGE_DECORATION == propertyKey) {
             view.setUseLargeDecorationIcon(
                     model.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION));

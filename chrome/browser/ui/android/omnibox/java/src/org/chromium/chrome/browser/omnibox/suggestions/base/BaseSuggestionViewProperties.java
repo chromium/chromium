@@ -128,6 +128,9 @@ public @interface BaseSuggestionViewProperties {
     public static final WritableObjectPropertyKey<Runnable> ON_TOUCH_DOWN_EVENT =
             new WritableObjectPropertyKey<>();
 
+    /** {@see BaseSuggestionView#setShowDecorationIcon(boolean} */
+    WritableBooleanPropertyKey SHOW_DECORATION = new WritableBooleanPropertyKey();
+
     /** {@see BaseSuggestionView#setUseLargeDecorationIcon(boolean)} */
     WritableBooleanPropertyKey USE_LARGE_DECORATION = new WritableBooleanPropertyKey();
 
@@ -141,6 +144,7 @@ public @interface BaseSuggestionViewProperties {
                 ON_CLICK,
                 ON_LONG_CLICK,
                 ON_TOUCH_DOWN_EVENT,
+                SHOW_DECORATION,
                 USE_LARGE_DECORATION
             };
 

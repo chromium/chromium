@@ -86,7 +86,7 @@ found in the LICENSE file.
     <dimen name="omnibox_query_tiles_carousel_horizontal_space">8dp</dimen>
     <dimen name="omnibox_action_chips_container_height">48dp</dimen>
     <dimen name="omnibox_action_chip_spacing">8dp</dimen>
-    <dimen name="omnibox_simple_card_action_chip_leadin">16dp</dimen>
+    <dimen name="omnibox_simple_card_leadin">16dp</dimen>
     <dimen name="omnibox_pedal_suggestion_icon_size">18dp</dimen>
     <dimen name="omnibox_pedal_suggestion_text_vertical_padding">6dp</dimen>
     <dimen name="omnibox_small_icon_rounding_radius">4dp</dimen>

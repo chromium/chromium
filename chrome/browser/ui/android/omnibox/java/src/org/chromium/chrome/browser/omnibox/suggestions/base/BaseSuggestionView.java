@@ -195,4 +195,9 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
                     LayoutParams.forViewType(LayoutParams.SuggestionViewType.DECORATION));
         }
     }
+
+    /** Control whether the decoration icon should be visible. */
+    public void setShowDecorationIcon(boolean shouldShow) {
+        decorationIcon.setVisibility(shouldShow ? VISIBLE : GONE);
+    }
 }

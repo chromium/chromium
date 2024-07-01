@@ -77,8 +77,9 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
                         : suggestion.getAnswer().getType();
         boolean suggestionTextColorReversal = checkColorReversalRequired(answerType);
         AnswerText[] details;
+        boolean shouldShowCardUi = false;
         if (suggestion.getAnswerTemplate() != null) {
-            boolean useLargeDecoration =
+            shouldShowCardUi =
                     OmniboxFeatures.shouldShowRichAnswerCard()
                             && suggestion.getActions().size() > 0;
             details =
@@ -87,15 +88,14 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
                             suggestion.getAnswerTemplate(),
                             answerType,
                             suggestionTextColorReversal,
-                            useLargeDecoration);
+                            shouldShowCardUi);
 
-            model.set(BaseSuggestionViewProperties.USE_LARGE_DECORATION, useLargeDecoration);
-            if (useLargeDecoration) {
+            model.set(BaseSuggestionViewProperties.USE_LARGE_DECORATION, shouldShowCardUi);
+            if (shouldShowCardUi) {
                 model.set(
                         BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING,
                         mContext.getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.omnibox_simple_card_action_chip_leadin));
+                                .getDimensionPixelSize(R.dimen.omnibox_simple_card_leadin));
             }
         } else {
             details =
@@ -122,11 +122,26 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
         setTabSwitchOrRefineAction(model, suggestion, position);
         if (suggestion.hasAnswer() && suggestion.getAnswer().getSecondLine().hasImage()) {
             fetchImage(model, new GURL(suggestion.getAnswer().getSecondLine().getImage()));
-        } else if (suggestion.getAnswerTemplate() != null
-                && suggestion.getAnswerTemplate().getAnswers(0).hasImage()) {
-            fetchImage(
-                    model,
-                    new GURL(suggestion.getAnswerTemplate().getAnswers(0).getImage().getUrl()));
+        } else if (suggestion.getAnswerTemplate() != null) {
+            GURL imageUrl =
+                    suggestion.getAnswerTemplate().getAnswers(0).hasImage()
+                            ? new GURL(
+                                    suggestion
+                                            .getAnswerTemplate()
+                                            .getAnswers(0)
+                                            .getImage()
+                                            .getUrl())
+                            : new GURL("");
+            if (imageUrl.isValid()) {
+                fetchImage(
+                        model,
+                        new GURL(suggestion.getAnswerTemplate().getAnswers(0).getImage().getUrl()));
+            } else if (shouldShowCardUi) {
+                // The card ui should not show fallback images; if there is not an answer-specific
+                // image, there should be no decoration at all.
+                model.set(BaseSuggestionViewProperties.SHOW_DECORATION, false);
+                setOmniboxDrawableState(model, null);
+            }
         }
     }
 

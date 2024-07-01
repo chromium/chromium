@@ -610,11 +610,10 @@ public class BaseSuggestionViewTest {
         final int paddingStart = 11;
 
         mView.setPaddingRelative(paddingStart, 0, 0, 0);
-        View decorationView = mView.getChildAt(0);
-        decorationView.setLayoutParams(SuggestionLayout.LayoutParams.forLargeDecorationIcon());
+        mView.setUseLargeDecorationIcon(true);
         executeLayoutTest(giveSuggestionWidth, giveContentHeight, View.LAYOUT_DIRECTION_LTR);
         verifyViewLayout(
-                decorationView,
+                mView.getChildAt(0),
                 paddingStart + mLargeDecorationIconWidthPx / 2,
                 mSemicompactSuggestionViewHeight / 2,
                 paddingStart + mLargeDecorationIconWidthPx / 2,
