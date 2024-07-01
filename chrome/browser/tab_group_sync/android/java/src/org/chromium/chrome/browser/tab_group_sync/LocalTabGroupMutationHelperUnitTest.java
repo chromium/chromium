@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -24,6 +25,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -41,9 +44,13 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncController.TabCreationDelegate;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.tab_group_sync.ClosingSource;
+import org.chromium.components.tab_group_sync.EventDetails;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
+import org.chromium.components.tab_group_sync.TabGroupEvent;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.url.GURL;
 
@@ -78,6 +85,7 @@ public class LocalTabGroupMutationHelperUnitTest {
 
     private Tab mTab1;
     private Tab mTab2;
+    private @Captor ArgumentCaptor<EventDetails> mEventDetailsCaptor;
 
     @Before
     public void setUp() {
@@ -95,6 +103,10 @@ public class LocalTabGroupMutationHelperUnitTest {
         when(mTabGroupModelFilter.getRootIdFromStableId(any())).thenReturn(Tab.INVALID_TAB_ID);
         when(mTabGroupModelFilter.getRootIdFromStableId(eq(TOKEN_1))).thenReturn(ROOT_ID_1);
         when(mTabGroupModelFilter.getStableIdFromRootId(eq(ROOT_ID_1))).thenReturn(TOKEN_1);
+
+        Mockito.doNothing()
+                .when(mTabGroupSyncService)
+                .recordTabGroupEvent(mEventDetailsCaptor.capture());
 
         mTab1 = prepareTab(TAB_ID_1, ROOT_ID_1);
         mTab2 = prepareTab(TAB_ID_2, ROOT_ID_2);
@@ -138,7 +150,7 @@ public class LocalTabGroupMutationHelperUnitTest {
     @Test
     public void testCreateNewTabGroup() {
         SavedTabGroup savedTabGroup = createOneSavedTabGroup(null, new Integer[] {null, null});
-        mLocalMutationHelper.createNewTabGroup(savedTabGroup);
+        mLocalMutationHelper.createNewTabGroup(savedTabGroup, OpeningSource.AUTO_OPENED_FROM_SYNC);
 
         // Verify calls to create local tab group, and update ID mappings for group and tabs.
         verify(mTabGroupModelFilter).mergeListOfTabsToGroup(anyList(), any(), eq(false));
@@ -147,12 +159,18 @@ public class LocalTabGroupMutationHelperUnitTest {
         verify(mTabGroupModelFilter).setTabGroupCollapsed(anyInt(), eq(true));
         verify(mTabGroupSyncService).updateLocalTabGroupMapping(any(), any());
         verify(mTabGroupSyncService, times(2)).updateLocalTabId(any(), any(), anyInt());
+
+        // Verify metrics.
+        EventDetails eventDetails = mEventDetailsCaptor.getValue();
+        assertEquals(TabGroupEvent.TAB_GROUP_OPENED, eventDetails.eventType);
+        assertEquals(LOCAL_TAB_GROUP_ID_1, eventDetails.localGroupId);
+        assertEquals(OpeningSource.AUTO_OPENED_FROM_SYNC, eventDetails.openingSource);
     }
 
     @Test
     public void testCreateNewTabGroup_SingleTab() {
         SavedTabGroup savedTabGroup = createOneSavedTabGroup(null, new Integer[] {null});
-        mLocalMutationHelper.createNewTabGroup(savedTabGroup);
+        mLocalMutationHelper.createNewTabGroup(savedTabGroup, OpeningSource.OPENED_FROM_REVISIT_UI);
 
         // Verify calls to create local tab group, and update ID mappings for group and tabs.
         verify(mTabGroupModelFilter).createSingleTabGroup(any(), eq(false));
@@ -310,9 +328,14 @@ public class LocalTabGroupMutationHelperUnitTest {
     @Test
     public void testCloseTabGroup() {
         mTabModel.addTab(TAB_ID_1);
-        mLocalMutationHelper.closeTabGroup(LOCAL_TAB_GROUP_ID_1);
+        mLocalMutationHelper.closeTabGroup(LOCAL_TAB_GROUP_ID_1, ClosingSource.CLOSED_BY_USER);
         verify(mTabModel).closeMultipleTabs(anyList(), eq(false));
         verify(mTabGroupSyncService).removeLocalTabGroupMapping(eq(LOCAL_TAB_GROUP_ID_1));
+
+        EventDetails eventDetails = mEventDetailsCaptor.getValue();
+        assertEquals(TabGroupEvent.TAB_GROUP_CLOSED, eventDetails.eventType);
+        assertEquals(LOCAL_TAB_GROUP_ID_1, eventDetails.localGroupId);
+        assertEquals(ClosingSource.CLOSED_BY_USER, eventDetails.closingSource);
     }
 
     private class TestTabCreationDelegate implements TabCreationDelegate {

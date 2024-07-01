@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab_group_sync;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -38,7 +39,9 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncController.TabCrea
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TriggerSource;
@@ -116,7 +119,8 @@ public class TabGroupSyncRemoteObserverUnitTest {
     public void testTabGroupAdded() {
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
         mRemoteObserver.onTabGroupAdded(savedTabGroup, TriggerSource.REMOTE);
-        verify(mLocalMutationHelper).createNewTabGroup(any());
+        verify(mLocalMutationHelper)
+                .createNewTabGroup(any(), eq(OpeningSource.AUTO_OPENED_FROM_SYNC));
     }
 
     @Test
@@ -125,7 +129,7 @@ public class TabGroupSyncRemoteObserverUnitTest {
         when(mIsActiveWindowSupplier.get()).thenReturn(false);
 
         mRemoteObserver.onTabGroupAdded(savedTabGroup, TriggerSource.REMOTE);
-        verify(mLocalMutationHelper, never()).createNewTabGroup(any());
+        verify(mLocalMutationHelper, never()).createNewTabGroup(any(), anyInt());
     }
 
     @Test
@@ -134,7 +138,7 @@ public class TabGroupSyncRemoteObserverUnitTest {
 
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
         mRemoteObserver.onTabGroupAdded(savedTabGroup, TriggerSource.REMOTE);
-        verify(mLocalMutationHelper, never()).createNewTabGroup(any());
+        verify(mLocalMutationHelper, never()).createNewTabGroup(any(), anyInt());
     }
 
     @Test
@@ -142,7 +146,7 @@ public class TabGroupSyncRemoteObserverUnitTest {
     public void testAutoOpenKillSwitch() {
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
         mRemoteObserver.onTabGroupAdded(savedTabGroup, TriggerSource.REMOTE);
-        verify(mLocalMutationHelper, never()).createNewTabGroup(any());
+        verify(mLocalMutationHelper, never()).createNewTabGroup(any(), anyInt());
     }
 
     @Test
@@ -167,25 +171,25 @@ public class TabGroupSyncRemoteObserverUnitTest {
     public void testTabGroupRemoved() {
         addOneTab();
         mRemoteObserver.onTabGroupRemoved(LOCAL_TAB_GROUP_ID_1, TriggerSource.REMOTE);
-        verify(mLocalMutationHelper).closeTabGroup(any());
+        verify(mLocalMutationHelper).closeTabGroup(any(), eq(ClosingSource.DELETED_FROM_SYNC));
     }
 
     @Test
     public void testTabGroupRemovedForDifferentWindow() {
         addOneTab();
         mRemoteObserver.onTabGroupRemoved(LOCAL_TAB_GROUP_ID_2, TriggerSource.REMOTE);
-        verify(mLocalMutationHelper, never()).closeTabGroup(any());
+        verify(mLocalMutationHelper, never()).closeTabGroup(any(), anyInt());
     }
 
     @Test
     public void testFilterOutUpdatesForLocal() {
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
         mRemoteObserver.onTabGroupAdded(savedTabGroup, TriggerSource.LOCAL);
-        verify(mLocalMutationHelper, never()).createNewTabGroup(any());
+        verify(mLocalMutationHelper, never()).createNewTabGroup(any(), anyInt());
         mRemoteObserver.onTabGroupUpdated(savedTabGroup, TriggerSource.LOCAL);
         verify(mLocalMutationHelper, never()).updateTabGroup(any());
         mRemoteObserver.onTabGroupRemoved(LOCAL_TAB_GROUP_ID_1, TriggerSource.LOCAL);
-        verify(mLocalMutationHelper, never()).closeTabGroup(any());
+        verify(mLocalMutationHelper, never()).closeTabGroup(any(), anyInt());
     }
 
     private class TestTabCreationDelegate implements TabCreationDelegate {

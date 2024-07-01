@@ -14,8 +14,11 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.tab_group_sync.ClosingSource;
+import org.chromium.components.tab_group_sync.EventDetails;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupEvent;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
@@ -101,7 +104,29 @@ public final class TabGroupSyncUtils {
 
             if (!isInCurrentWindow(filter, savedTabGroup.localId)) {
                 tabGroupSyncService.removeLocalTabGroupMapping(savedTabGroup.localId);
+                recordTabGroupOpenCloseMetrics(
+                        tabGroupSyncService,
+                        /* open= */ false,
+                        ClosingSource.CLEANED_UP_ON_LAST_INSTANCE_CLOSURE,
+                        savedTabGroup.localId);
             }
         }
+    }
+
+    /** Helper method to record open close metrics. */
+    public static void recordTabGroupOpenCloseMetrics(
+            TabGroupSyncService tabGroupSyncService,
+            boolean open,
+            int source,
+            LocalTabGroupId localTabGroupId) {
+        int eventType = open ? TabGroupEvent.TAB_GROUP_OPENED : TabGroupEvent.TAB_GROUP_CLOSED;
+        EventDetails eventDetails = new EventDetails(eventType);
+        eventDetails.localGroupId = localTabGroupId;
+        if (open) {
+            eventDetails.openingSource = source;
+        } else {
+            eventDetails.closingSource = source;
+        }
+        tabGroupSyncService.recordTabGroupEvent(eventDetails);
     }
 }

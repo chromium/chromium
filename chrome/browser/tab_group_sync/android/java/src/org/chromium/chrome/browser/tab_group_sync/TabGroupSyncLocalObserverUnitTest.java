@@ -42,8 +42,11 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.tab_group_sync.ClosingSource;
+import org.chromium.components.tab_group_sync.EventDetails;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupEvent;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.url.GURL;
@@ -79,6 +82,7 @@ public class TabGroupSyncLocalObserverUnitTest {
 
     private @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     private @Captor ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
+    private @Captor ArgumentCaptor<EventDetails> mEventDetailsCaptor;
 
     private Tab mTab1;
     private Tab mTab2;
@@ -116,6 +120,9 @@ public class TabGroupSyncLocalObserverUnitTest {
         Mockito.doNothing()
                 .when(mTabGroupModelFilter)
                 .addTabGroupObserver(mTabGroupModelFilterObserverCaptor.capture());
+        Mockito.doNothing()
+                .when(mTabGroupSyncService)
+                .recordTabGroupEvent(mEventDetailsCaptor.capture());
         mNavigationTracker = new NavigationTracker();
         mRemoteMutationHelper =
                 new RemoteTabGroupMutationHelper(mTabGroupModelFilter, mTabGroupSyncService);
@@ -139,8 +146,7 @@ public class TabGroupSyncLocalObserverUnitTest {
     public void testDidSelectTabRemote() {
         // Stub the bare minimum.
         SavedTabGroup savedGroup = new SavedTabGroup();
-        // TODO(shaktisahu): Fix these tests.
-        // savedGroup.isRemoteGroup = true;
+        savedGroup.creatorCacheGuid = "remote_device";
         when(mTabGroupSyncService.getGroup(LOCAL_TAB_GROUP_ID_1)).thenReturn(savedGroup);
 
         String action = "TabGroups.Sync.SelectedTabInRemotelyCreatedGroup";
@@ -148,14 +154,15 @@ public class TabGroupSyncLocalObserverUnitTest {
         mTabModelObserverCaptor
                 .getValue()
                 .didSelectTab(mTab1, TabSelectionType.FROM_USER, Tab.INVALID_TAB_ID);
-        // assertEquals(1, mActionTester.getActionCount(action));
+        verify(mTabGroupSyncService).onTabSelected(eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1));
+        assertEquals(1, mActionTester.getActionCount(action));
     }
 
     @Test
     public void testDidSelectTabLocal() {
         // Stub the bare minimum.
         SavedTabGroup savedGroup = new SavedTabGroup();
-        // savedGroup.isRemoteGroup = false;
+        savedGroup.creatorCacheGuid = TestTabGroupSyncService.LOCAL_DEVICE_CACHE_GUID;
         when(mTabGroupSyncService.getGroup(LOCAL_TAB_GROUP_ID_1)).thenReturn(savedGroup);
 
         String action = "TabGroups.Sync.SelectedTabInLocallyCreatedGroup";
@@ -163,7 +170,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         mTabModelObserverCaptor
                 .getValue()
                 .didSelectTab(mTab1, TabSelectionType.FROM_USER, Tab.INVALID_TAB_ID);
-        // assertEquals(1, mActionTester.getActionCount(action));
+        assertEquals(1, mActionTester.getActionCount(action));
     }
 
     @Test
@@ -209,6 +216,12 @@ public class TabGroupSyncLocalObserverUnitTest {
                 .getValue()
                 .committedTabGroupClosure(TOKEN_1, /* wasHiding= */ true);
         verify(mTabGroupSyncService).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1);
+
+        // Verify metrics.
+        EventDetails eventDetails = mEventDetailsCaptor.getValue();
+        assertEquals(TabGroupEvent.TAB_GROUP_CLOSED, eventDetails.eventType);
+        assertEquals(LOCAL_TAB_GROUP_ID_1, eventDetails.localGroupId);
+        assertEquals(ClosingSource.CLOSED_BY_USER, eventDetails.closingSource);
     }
 
     @Test
@@ -218,6 +231,12 @@ public class TabGroupSyncLocalObserverUnitTest {
                 .committedTabGroupClosure(TOKEN_1, /* wasHiding= */ false);
         verify(mTabGroupSyncService).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1);
         verify(mTabGroupSyncService).removeGroup(LOCAL_TAB_GROUP_ID_1);
+
+        // Verify metrics.
+        EventDetails eventDetails = mEventDetailsCaptor.getValue();
+        assertEquals(TabGroupEvent.TAB_GROUP_CLOSED, eventDetails.eventType);
+        assertEquals(LOCAL_TAB_GROUP_ID_1, eventDetails.localGroupId);
+        assertEquals(ClosingSource.DELETED_BY_USER, eventDetails.closingSource);
     }
 
     @Test
