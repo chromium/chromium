@@ -24,6 +24,7 @@ class GraphImplCrOS final : public WebNNGraphImpl {
   static void CreateAndBuild(
       ContextImplCrOS* context_impl,
       mojom::GraphInfoPtr graph_info,
+      ComputeResourceInfo compute_resource_info,
       WebNNContextImpl::CreateGraphImplCallback callback);
 
   GraphImplCrOS(const GraphImplCrOS&) = delete;

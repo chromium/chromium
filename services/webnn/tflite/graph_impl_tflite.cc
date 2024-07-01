@@ -209,6 +209,7 @@ class GraphImplTflite::ComputeResources {
 // static
 base::expected<std::unique_ptr<GraphImplTflite>, mojom::ErrorPtr>
 GraphImplTflite::CreateAndBuild(mojom::GraphInfoPtr graph_info,
+                                ComputeResourceInfo compute_resource_info,
                                 ContextImplTflite* context) {
   ASSIGN_OR_RETURN(scoped_refptr<GraphResources> graph_resources,
                    GraphResources::Create(*graph_info));
@@ -217,7 +218,7 @@ GraphImplTflite::CreateAndBuild(mojom::GraphInfoPtr graph_info,
                    ComputeResources::Create(graph_resources, context));
 
   return base::WrapUnique(new GraphImplTflite(
-      ComputeResourceInfo(*graph_info), std::move(graph_resources),
+      std::move(compute_resource_info), std::move(graph_resources),
       std::move(compute_resources), context));
 }
 

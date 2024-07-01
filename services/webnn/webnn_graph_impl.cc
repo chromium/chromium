@@ -15,6 +15,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
+#include "base/types/pass_key.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
@@ -2090,7 +2091,8 @@ bool ValidateWebNNBuffersUsage(
 }  // namespace
 
 WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
-    const mojom::GraphInfo& graph_info) {
+    const mojom::GraphInfo& graph_info,
+    base::PassKey<WebNNGraphImpl> pass_key) {
   input_names_to_descriptors = GetOperandNamesAndDescriptorsFromIds(
       graph_info.input_operands, graph_info.id_to_operand_map);
   output_names_to_descriptors = GetOperandNamesAndDescriptorsFromIds(
@@ -2116,13 +2118,13 @@ WebNNGraphImpl::WebNNGraphImpl(WebNNContextImpl* context,
 
 WebNNGraphImpl::~WebNNGraphImpl() = default;
 
-bool WebNNGraphImpl::ValidateGraph(
-    const ContextProperties& context_properties,
-    const mojom::GraphInfo& graph_info) {
+std::optional<WebNNGraphImpl::ComputeResourceInfo>
+WebNNGraphImpl::ValidateGraph(const ContextProperties& context_properties,
+                              const mojom::GraphInfo& graph_info) {
   // The input operands of graph can be empty.
   if (graph_info.id_to_operand_map.empty() || graph_info.operations.empty() ||
       graph_info.output_operands.empty()) {
-    return false;
+    return std::nullopt;
   }
 
   // Keeps track of operands as they are visited in order to assert that they
@@ -2150,7 +2152,7 @@ bool WebNNGraphImpl::ValidateGraph(
       case mojom::Operand::Kind::kInput: {
         if (!name || name.value().empty()) {
           // The name of input is empty.
-          return false;
+          return std::nullopt;
         }
         input_names.push_back(name.value());
         graph_inputs.push_back(id);
@@ -2163,7 +2165,7 @@ bool WebNNGraphImpl::ValidateGraph(
         if (name) {
           if (name.value().empty()) {
             // The name of output is empty.
-            return false;
+            return std::nullopt;
           }
           output_names.push_back(name.value());
           graph_outputs.push_back(id);
@@ -2176,7 +2178,7 @@ bool WebNNGraphImpl::ValidateGraph(
       case mojom::Operand::Kind::kConstant: {
         if (name) {
           // Constant operand should not have a name.
-          return false;
+          return std::nullopt;
         }
         constant_id_to_byte_length_map[id] =
             operand->descriptor.PackedByteLength();
@@ -2192,17 +2194,17 @@ bool WebNNGraphImpl::ValidateGraph(
   // in blink side.
   if (graph_info.input_operands != graph_inputs ||
       graph_info.output_operands != graph_outputs) {
-    return false;
+    return std::nullopt;
   }
 
   // Validate that input and output names are unique.
   base::ranges::sort(input_names);
   if (base::ranges::adjacent_find(input_names) != input_names.end()) {
-    return false;
+    return std::nullopt;
   }
   base::ranges::sort(output_names);
   if (base::ranges::adjacent_find(output_names) != output_names.end()) {
-    return false;
+    return std::nullopt;
   }
 
   // Validate the constant weight data are valid.
@@ -2214,18 +2216,25 @@ bool WebNNGraphImpl::ValidateGraph(
                              return iter_a.first == iter_b.first &&
                                     iter_a.second.size() == iter_b.second;
                            })) {
-    return false;
+    return std::nullopt;
   }
 
   // Validate the operations which are sorted in the topological order.
   for (auto& operation : graph_info.operations) {
     if (!ValidateOperation(context_properties, graph_info.id_to_operand_map,
                            *operation, processed_operands)) {
-      return false;
+      return std::nullopt;
     }
   }
 
-  return true;
+  return ComputeResourceInfo(graph_info, base::PassKey<WebNNGraphImpl>());
+}
+
+// static
+bool WebNNGraphImpl::IsValidForTesting(
+    const ContextProperties& context_properties,
+    const mojom::GraphInfo& graph_info) {
+  return ValidateGraph(context_properties, graph_info).has_value();
 }
 
 void WebNNGraphImpl::Compute(

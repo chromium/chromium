@@ -9,6 +9,7 @@
 #include "gpu/config/gpu_feature_info.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom-forward.h"
 #include "services/webnn/webnn_context_impl.h"
+#include "services/webnn/webnn_graph_impl.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/d3d12.h"
 
 namespace webnn::dml {
@@ -43,8 +44,10 @@ class ContextImplDml final : public WebNNContextImpl {
   void WriteBuffer(BufferImplDml* dst_buffer, mojo_base::BigBuffer src_buffer);
 
  private:
-  void CreateGraphImpl(mojom::GraphInfoPtr graph_info,
-                       CreateGraphImplCallback callback) override;
+  void CreateGraphImpl(
+      mojom::GraphInfoPtr graph_info,
+      WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+      CreateGraphImplCallback callback) override;
 
   std::unique_ptr<WebNNBufferImpl> CreateBufferImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,

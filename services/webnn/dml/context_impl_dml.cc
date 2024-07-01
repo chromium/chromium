@@ -70,11 +70,13 @@ base::WeakPtr<WebNNContextImpl> ContextImplDml::AsWeakPtr() {
 
 void ContextImplDml::CreateGraphImpl(
     mojom::GraphInfoPtr graph_info,
+    WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     WebNNContextImpl::CreateGraphImplCallback callback) {
-  GraphImplDml::CreateAndBuild(adapter_, weak_factory_.GetWeakPtr(),
-                            std::move(graph_info), std::move(callback),
-                            gpu_feature_info_->IsWorkaroundEnabled(
-                                gpu::DML_EXECUTION_DISABLE_META_COMMANDS));
+  GraphImplDml::CreateAndBuild(
+      adapter_, weak_factory_.GetWeakPtr(), std::move(graph_info),
+      std::move(compute_resource_info), std::move(callback),
+      gpu_feature_info_->IsWorkaroundEnabled(
+          gpu::DML_EXECUTION_DISABLE_META_COMMANDS));
 }
 
 std::unique_ptr<WebNNBufferImpl> ContextImplDml::CreateBufferImpl(

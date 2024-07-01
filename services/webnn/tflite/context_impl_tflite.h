@@ -7,6 +7,7 @@
 
 #include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
 #include "services/webnn/webnn_context_impl.h"
+#include "services/webnn/webnn_graph_impl.h"
 
 namespace webnn::tflite {
 
@@ -29,8 +30,10 @@ class ContextImplTflite final : public WebNNContextImpl {
   const mojom::CreateContextOptions& options() const { return *options_; }
 
  private:
-  void CreateGraphImpl(mojom::GraphInfoPtr graph_info,
-                       CreateGraphImplCallback callback) override;
+  void CreateGraphImpl(
+      mojom::GraphInfoPtr graph_info,
+      WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+      CreateGraphImplCallback callback) override;
 
   std::unique_ptr<WebNNBufferImpl> CreateBufferImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,

@@ -5,10 +5,11 @@
 #ifndef SERVICES_WEBNN_WEBNN_GRAPH_IMPL_H_
 #define SERVICES_WEBNN_WEBNN_GRAPH_IMPL_H_
 
-#include <string>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/types/pass_key.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
@@ -27,7 +28,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
   // match graph's expectation, the output name and byte length are used to
   // create the result of computation.
   struct COMPONENT_EXPORT(WEBNN_SERVICE) ComputeResourceInfo {
-    explicit ComputeResourceInfo(const mojom::GraphInfo& graph_info);
+    ComputeResourceInfo(const mojom::GraphInfo& graph_info,
+                        base::PassKey<WebNNGraphImpl> pass_key);
     ~ComputeResourceInfo();
 
     ComputeResourceInfo(const ComputeResourceInfo&) = delete;
@@ -49,9 +51,16 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
   WebNNGraphImpl& operator=(const WebNNGraphImpl&) = delete;
   ~WebNNGraphImpl() override;
 
-  // Return false if the graph is invalid.
-  static bool ValidateGraph(const ContextProperties& context_properties,
-                            const mojom::GraphInfo& graph_info);
+  // Return `ComputeResourceInfo` which describe graph constraints if it is
+  // valid; otherwise null.
+  [[nodiscard]] static std::optional<ComputeResourceInfo> ValidateGraph(
+      const ContextProperties& context_properties,
+      const mojom::GraphInfo& graph_info);
+
+  // Same as above, but just return true/false.
+  [[nodiscard]] static bool IsValidForTesting(
+      const ContextProperties& context_properties,
+      const mojom::GraphInfo& graph_info);
 
   const ComputeResourceInfo& compute_resource_info() const {
     return compute_resource_info_;

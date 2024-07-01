@@ -22,13 +22,13 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
+#include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_object_impl.h"
 
 namespace webnn {
 
 class WebNNBufferImpl;
 class WebNNContextProviderImpl;
-class WebNNGraphImpl;
 
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
     : public mojom::WebNNContext {
@@ -87,8 +87,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // This method will be called by `CreateGraph()` after the graph info is
   // validated. A backend subclass should implement this method to build and
   // compile a platform specific graph asynchronously.
-  virtual void CreateGraphImpl(mojom::GraphInfoPtr graph_info,
-                               CreateGraphImplCallback callback) = 0;
+  virtual void CreateGraphImpl(
+      mojom::GraphInfoPtr graph_info,
+      WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+      CreateGraphImplCallback callback) = 0;
 
   void DidCreateWebNNGraphImpl(
       CreateGraphCallback callback,

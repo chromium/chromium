@@ -50,12 +50,14 @@ void WebNNContextImpl::CreateGraph(
     mojom::WebNNContext::CreateGraphCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!WebNNGraphImpl::ValidateGraph(properties_, *graph_info)) {
+  auto compute_resource_info =
+      WebNNGraphImpl::ValidateGraph(properties_, *graph_info);
+  if (!compute_resource_info.has_value()) {
     receiver_.ReportBadMessage(kBadMessageInvalidGraph);
     return;
   }
-  // Call CreateGraphImpl() implemented by a backend.
-  CreateGraphImpl(std::move(graph_info),
+
+  CreateGraphImpl(std::move(graph_info), *std::move(compute_resource_info),
                   base::BindOnce(&WebNNContextImpl::DidCreateWebNNGraphImpl,
                                  AsWeakPtr(), std::move(callback)));
 }

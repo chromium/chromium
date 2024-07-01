@@ -22,6 +22,7 @@ namespace webnn::tflite {
 void GraphImplCrOS::CreateAndBuild(
     ContextImplCrOS* context_impl,
     mojom::GraphInfoPtr graph_info,
+    ComputeResourceInfo compute_resource_info,
     WebNNContextImpl::CreateGraphImplCallback callback) {
   base::expected<flatbuffers::DetachedBuffer, std::string> conversion_result =
       GraphBuilderTflite::CreateAndBuild(*graph_info);
@@ -54,7 +55,7 @@ void GraphImplCrOS::CreateAndBuild(
                 static_cast<ContextImplCrOS*>(context.get()),
                 std::move(compute_resource_info), std::move(pending_remote))));
           },
-          context_impl->AsWeakPtr(), ComputeResourceInfo(*graph_info),
+          context_impl->AsWeakPtr(), std::move(compute_resource_info),
           std::move(callback)));
 }
 

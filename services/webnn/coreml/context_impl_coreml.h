@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "services/webnn/webnn_context_impl.h"
+#include "services/webnn/webnn_graph_impl.h"
 
 namespace webnn::coreml {
 
@@ -34,8 +35,10 @@ class API_AVAILABLE(macos(14.0)) ContextImplCoreml final
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
 
  private:
-  void CreateGraphImpl(mojom::GraphInfoPtr graph_info,
-                       CreateGraphImplCallback callback) override;
+  void CreateGraphImpl(
+      mojom::GraphInfoPtr graph_info,
+      WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+      CreateGraphImplCallback callback) override;
 
   std::unique_ptr<WebNNBufferImpl> CreateBufferImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,

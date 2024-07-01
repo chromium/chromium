@@ -10,6 +10,7 @@
 #include "components/ml/mojom/web_platform_model.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/webnn_context_impl.h"
+#include "services/webnn/webnn_graph_impl.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 
 namespace webnn::tflite {
@@ -35,8 +36,10 @@ class ContextImplCrOS final : public WebNNContextImpl {
                  ml::model_loader::mojom::ModelLoader::LoadCallback callback);
 
  private:
-  void CreateGraphImpl(mojom::GraphInfoPtr graph_info,
-                       CreateGraphImplCallback callback) override;
+  void CreateGraphImpl(
+      mojom::GraphInfoPtr graph_info,
+      WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+      CreateGraphImplCallback callback) override;
 
   std::unique_ptr<WebNNBufferImpl> CreateBufferImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,

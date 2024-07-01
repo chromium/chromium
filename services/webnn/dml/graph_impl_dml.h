@@ -54,6 +54,7 @@ class GraphImplDml final : public WebNNGraphImpl {
   static void CreateAndBuild(scoped_refptr<Adapter> adapter,
                              base::WeakPtr<ContextImplDml> context,
                              mojom::GraphInfoPtr graph_info,
+                             ComputeResourceInfo compute_resource_info,
                              WebNNContextImpl::CreateGraphImplCallback callback,
                              bool pass_dml_execution_disable_meta_commands);
 

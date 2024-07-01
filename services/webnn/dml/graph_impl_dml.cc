@@ -5466,6 +5466,7 @@ void GraphImplDml::CreateAndBuild(
     scoped_refptr<Adapter> adapter,
     base::WeakPtr<ContextImplDml> context,
     mojom::GraphInfoPtr graph_info,
+    ComputeResourceInfo compute_resource_info,
     WebNNContextImpl::CreateGraphImplCallback callback,
     const bool pass_dml_execution_disable_meta_commands) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::CreateAndBuild");
@@ -5900,7 +5901,7 @@ void GraphImplDml::CreateAndBuild(
                      std::move(graph_info->constant_id_to_buffer_map),
                      std::move(constant_id_to_input_index_map),
                      std::move(graph_buffer_binding_info),
-                     ComputeResourceInfo(*graph_info)));
+                     std::move(compute_resource_info)));
 }
 
 void GraphImplDml::HandleComputationFailure(

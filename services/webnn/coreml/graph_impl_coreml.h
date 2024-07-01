@@ -41,6 +41,7 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
   static void CreateAndBuild(
       ContextImplCoreml* context,
       mojom::GraphInfoPtr graph_info,
+      ComputeResourceInfo compute_resource_info,
       mojom::CreateContextOptionsPtr context_options,
       ContextProperties context_properties,
       WebNNContextImpl::CreateGraphImplCallback callback);
@@ -99,6 +100,7 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
   // Compile the CoreML model to a temporary .modelc file.
   static void CreateAndBuildOnBackgroundThread(
       mojom::GraphInfoPtr graph_info,
+      ComputeResourceInfo compute_resource_info,
       mojom::CreateContextOptionsPtr context_options,
       ContextProperties context_properties,
       base::OnceCallback<void(

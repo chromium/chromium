@@ -32,10 +32,12 @@ base::WeakPtr<WebNNContextImpl> ContextImplTflite::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void ContextImplTflite::CreateGraphImpl(mojom::GraphInfoPtr graph_info,
-                                        CreateGraphImplCallback callback) {
-  std::move(callback).Run(
-      GraphImplTflite::CreateAndBuild(std::move(graph_info), this));
+void ContextImplTflite::CreateGraphImpl(
+    mojom::GraphInfoPtr graph_info,
+    WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+    CreateGraphImplCallback callback) {
+  std::move(callback).Run(GraphImplTflite::CreateAndBuild(
+      std::move(graph_info), std::move(compute_resource_info), this));
 }
 
 std::unique_ptr<WebNNBufferImpl> ContextImplTflite::CreateBufferImpl(

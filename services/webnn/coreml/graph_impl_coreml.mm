@@ -197,6 +197,7 @@ mojo_base::BigBuffer ExtractMaybeNonContiguousOutput(
 void GraphImplCoreml::CreateAndBuild(
     ContextImplCoreml* context,
     mojom::GraphInfoPtr graph_info,
+    ComputeResourceInfo compute_resource_info,
     mojom::CreateContextOptionsPtr context_options,
     ContextProperties context_properties,
     WebNNContextImpl::CreateGraphImplCallback callback) {
@@ -209,14 +210,15 @@ void GraphImplCoreml::CreateAndBuild(
       {base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
       base::BindOnce(&GraphImplCoreml::CreateAndBuildOnBackgroundThread,
-                     std::move(graph_info), std::move(context_options),
-                     std::move(context_properties),
+                     std::move(graph_info), std::move(compute_resource_info),
+                     std::move(context_options), std::move(context_properties),
                      std::move(wrapped_callback)));
 }
 
 // static
 void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
     mojom::GraphInfoPtr graph_info,
+    ComputeResourceInfo compute_resource_info,
     mojom::CreateContextOptionsPtr context_options,
     ContextProperties context_properties,
     base::OnceCallback<void(
@@ -244,7 +246,6 @@ void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
 
   // Collect information about model inputs that are required
   // later for model evaluation.
-  ComputeResourceInfo compute_resource_info(*graph_info);
   std::vector<std::pair<std::string, CoreMLFeatureInfo>>
       input_feature_info_vector;
   input_feature_info_vector.reserve(
