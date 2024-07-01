@@ -8,12 +8,15 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new.mojom.h"
+#include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_version.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -23,8 +26,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-
-using testing::_;
 
 class MockPage : public whats_new::mojom::Page {
  public:
@@ -41,29 +42,23 @@ class MockPage : public whats_new::mojom::Page {
   mojo::Receiver<whats_new::mojom::Page> receiver_{this};
 };
 
-std::unique_ptr<TestingProfile> MakeTestingProfile() {
-  TestingProfile::Builder profile_builder;
-  auto profile = profile_builder.Build();
-  return profile;
-}
-
 }  // namespace
 
 class WhatsNewHandlerTest : public testing::Test {
  public:
   WhatsNewHandlerTest()
-      : profile_(MakeTestingProfile()),
-        web_contents_(factory_.CreateWebContents(profile_.get())) {
-    mock_hats_service_ = static_cast<MockHatsService*>(
-        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            profile_.get(), base::BindRepeating(&BuildMockHatsService)));
-    EXPECT_CALL(*mock_hats_service(), CanShowAnySurvey(_))
-        .WillRepeatedly(testing::Return(true));
-  }
-
+      : local_state_(TestingBrowserProcess::GetGlobal()),
+        profile_(std::make_unique<TestingProfile>()),
+        web_contents_(factory_.CreateWebContents(profile_.get())) {}
   ~WhatsNewHandlerTest() override = default;
 
   void SetUp() override {
+    mock_hats_service_ = static_cast<MockHatsService*>(
+        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            profile_.get(), base::BindRepeating(&BuildMockHatsService)));
+    EXPECT_CALL(*mock_hats_service(), CanShowAnySurvey)
+        .WillRepeatedly(testing::Return(true));
+
     handler_ = std::make_unique<WhatsNewHandler>(
         mojo::PendingReceiver<whats_new::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(), profile_.get(), web_contents_,
@@ -73,19 +68,20 @@ class WhatsNewHandlerTest : public testing::Test {
   }
 
  protected:
-  testing::NiceMock<MockPage> mock_page_;
-  // NOTE: The initialization order of these members matters.
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
   MockHatsService* mock_hats_service() { return mock_hats_service_; }
-  content::TestWebContentsFactory factory_;
-  raw_ptr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
-  std::unique_ptr<WhatsNewHandler> handler_;
+
+  content::BrowserTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
 
- private:
+  // NOTE: The initialization order of these members matters.
+  ScopedTestingLocalState local_state_;
+  std::unique_ptr<TestingProfile> profile_;
   raw_ptr<MockHatsService> mock_hats_service_;
+  content::TestWebContentsFactory factory_;
+  raw_ptr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
+  testing::NiceMock<MockPage> mock_page_;
+  std::unique_ptr<WhatsNewHandler> handler_;
 };
 
 TEST_F(WhatsNewHandlerTest, GetServerUrl) {
@@ -95,28 +91,10 @@ TEST_F(WhatsNewHandlerTest, GetServerUrl) {
       "https://www.google.com/chrome/whats-new/?version=%d&internal=true",
       CHROME_VERSION_MAJOR));
 
-  EXPECT_CALL(callback, Run(testing::_))
+  EXPECT_CALL(callback, Run)
       .Times(1)
       .WillOnce(testing::Invoke(
           [&](GURL actual_url) { EXPECT_EQ(actual_url, expected_url); }));
-
-  handler_->GetServerUrl(callback.Get());
-  mock_page_.FlushForTesting();
-}
-
-TEST_F(WhatsNewHandlerTest, SurveyIsTriggered) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeaturesAndParameters(
-      {base::test::FeatureRefAndParams(
-          features::kHappinessTrackingSurveysForDesktopWhatsNew,
-          {{"whats-new-time", "20"}})},
-      {});
-
-  base::MockCallback<WhatsNewHandler::GetServerUrlCallback> callback;
-  EXPECT_CALL(callback, Run(testing::_)).Times(1);
-  EXPECT_CALL(*mock_hats_service(),
-              LaunchDelayedSurveyForWebContents(_, _, _, _, _, _, _, _, _, _))
-      .Times(1);
 
   handler_->GetServerUrl(callback.Get());
   mock_page_.FlushForTesting();
@@ -155,3 +133,61 @@ TEST_F(WhatsNewHandlerTest, HistogramsAreEmitted) {
   EXPECT_EQ(1, user_action_tester_.GetActionCount(
                    "UserEducation.WhatsNew.ModuleLinkClicked.AnotherFeature"));
 }
+
+class WhatsNewHandlerTestWithCountry
+    : public WhatsNewHandlerTest,
+      public testing::WithParamInterface<absl::string_view> {
+ public:
+  WhatsNewHandlerTestWithCountry() = default;
+  ~WhatsNewHandlerTestWithCountry() override = default;
+
+  bool IsActiveCountry(std::string_view country) {
+    return std::find(active_countries_.begin(), active_countries_.end(),
+                     country) != active_countries_.end();
+  }
+
+ private:
+  std::vector<std::string_view> active_countries_ = {"us", "de", "jp"};
+};
+
+TEST_P(WhatsNewHandlerTestWithCountry, SurveyIsTriggeredInActiveCountries) {
+  auto country = GetParam();
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {base::test::FeatureRefAndParams(
+          features::kHappinessTrackingSurveysForDesktopWhatsNew,
+          {{"whats-new-time", "20s"}})},
+      {});
+
+  handler_->set_override_latest_country_for_testing(country);
+
+  // Set activation threshold to trigger for
+  local_state_.Get()->SetInteger(prefs::kWhatsNewHatsActivationThreshold, 0);
+  base::MockCallback<WhatsNewHandler::GetServerUrlCallback> callback;
+  EXPECT_CALL(callback, Run).Times(1);
+
+  if (IsActiveCountry(country)) {
+    EXPECT_CALL(*mock_hats_service(), LaunchDelayedSurveyForWebContents)
+        .Times(1);
+  } else {
+    // Any threshold value will fail when the country is not set or not
+    // active.
+    EXPECT_CALL(*mock_hats_service(), LaunchDelayedSurveyForWebContents)
+        .Times(0);
+  }
+
+  handler_->GetServerUrl(callback.Get());
+  mock_page_.FlushForTesting();
+}
+
+constexpr std::string_view test_countries[] = {"", "fr", "us", "de", "jp"};
+INSTANTIATE_TEST_SUITE_P(All,
+                         WhatsNewHandlerTestWithCountry,
+                         testing::ValuesIn(test_countries),
+                         [&](const testing::TestParamInfo<std::string_view>&
+                                 country) -> std::string {
+                           if (country.param == "") {
+                             return "NoCountry";
+                           }
+                           return std::string(country.param);
+                         });

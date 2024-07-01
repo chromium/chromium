@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/rand_util.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,6 +27,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_education/common/user_education_features.h"
+#include "components/variations/service/variations_service.h"
 #include "url/gurl.h"
 
 WhatsNewHandler::WhatsNewHandler(
@@ -98,6 +100,55 @@ void WhatsNewHandler::GetServerUrl(GetServerUrlCallback callback) {
   TryShowHatsSurveyWithTimeout();
 }
 
+std::string WhatsNewHandler::GetLatestCountry() {
+  if (override_latest_country_for_testing_.has_value()) {
+    return override_latest_country_for_testing_.value();
+  }
+  if (const auto* variations_service =
+          g_browser_process->variations_service()) {
+    return variations_service->GetLatestCountry();
+  }
+  return "";
+}
+
+bool WhatsNewHandler::IsHaTSActivated() {
+  // Calculate a threshold value < 100 and persist to local state.
+  PrefService* const prefs = g_browser_process->local_state();
+  int threshold;
+  if (prefs->HasPrefPath(prefs::kWhatsNewHatsActivationThreshold)) {
+    threshold = prefs->GetInteger(prefs::kWhatsNewHatsActivationThreshold);
+  } else {
+    threshold = base::RandInt(0, 99);
+    prefs->SetInteger(prefs::kWhatsNewHatsActivationThreshold, threshold);
+  }
+
+  // What's New content is dependent on the user's current country. Use
+  // the latest country to determine whether to show the survey.
+  // Currently the survey is only deployed in the US (us), Germany (de),
+  // and Japan (jp), which each have their own activation percentages.
+  int activation_percentage = 0;
+  const std::string latest_country = GetLatestCountry();
+  if (latest_country == "us") {
+    activation_percentage =
+        features::
+            kHappinessTrackingSurveysForDesktopWhatsNewEnActivationPercentage
+                .Get();
+  } else if (latest_country == "de") {
+    activation_percentage =
+        features::
+            kHappinessTrackingSurveysForDesktopWhatsNewDeActivationPercentage
+                .Get();
+  } else if (latest_country == "jp") {
+    activation_percentage =
+        features::
+            kHappinessTrackingSurveysForDesktopWhatsNewJpActivationPercentage
+                .Get();
+  }
+  // If the user-specific threshold is less than the activation
+  // percentage for the country, the HaTS will be activated.
+  return threshold < activation_percentage;
+}
+
 void WhatsNewHandler::TryShowHatsSurveyWithTimeout() {
   HatsService* hats_service =
       HatsServiceFactory::GetForProfile(profile_,
@@ -106,11 +157,13 @@ void WhatsNewHandler::TryShowHatsSurveyWithTimeout() {
     return;
   }
 
-  hats_service->LaunchDelayedSurveyForWebContents(
-      kHatsSurveyTriggerWhatsNew, web_contents_,
-      features::kHappinessTrackingSurveysForDesktopWhatsNewTime.Get()
-          .InMilliseconds(),
-      /*product_specific_bits_data=*/{},
-      /*product_specific_string_data=*/{},
-      /*navigation_behaviour=*/HatsService::REQUIRE_SAME_ORIGIN);
+  if (IsHaTSActivated()) {
+    hats_service->LaunchDelayedSurveyForWebContents(
+        kHatsSurveyTriggerWhatsNew, web_contents_,
+        features::kHappinessTrackingSurveysForDesktopWhatsNewTime.Get()
+            .InMilliseconds(),
+        /*product_specific_bits_data=*/{},
+        /*product_specific_string_data=*/{},
+        /*navigation_behaviour=*/HatsService::REQUIRE_SAME_ORIGIN);
+  }
 }
