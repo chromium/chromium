@@ -68,6 +68,12 @@ MV2ExperimentStage GetExperimentStageForTest(std::string_view test_name) {
        MV2ExperimentStage::kDisableWithReEnable},
       {"ExtensionsAreReEnabledIfPolicyChangesOnStartup",
        MV2ExperimentStage::kDisableWithReEnable},
+      {"PRE_PRE_ExtensionsAreReEnabledIfExperimentDisabled",
+       MV2ExperimentStage::kWarning},
+      {"PRE_ExtensionsAreReEnabledIfExperimentDisabled",
+       MV2ExperimentStage::kDisableWithReEnable},
+      {"ExtensionsAreReEnabledIfExperimentDisabled",
+       MV2ExperimentStage::kWarning},
   };
 
   for (const auto& test_stage : test_stages) {
@@ -480,6 +486,51 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
                        ExtensionsAreReEnabledIfPolicyChangesOnStartup) {
   EXPECT_EQ(MV2ExperimentStage::kDisableWithReEnable,
             GetActiveExperimentStage());
+
+  WaitForExtensionSystemReady();
+
+  const Extension* extension = GetExtensionByName(
+      "Test MV2 Extension", extension_registry()->enabled_extensions());
+  ASSERT_TRUE(extension);
+  const ExtensionId extension_id = extension->id();
+
+  EXPECT_EQ(0, extension_prefs()->GetDisableReasons(extension_id));
+  // The user didn't re-enable the extension, so it shouldn't be marked as such.
+  EXPECT_FALSE(WasExtensionReEnabledByUser(extension_id));
+}
+
+// Tests that if a user moves from a later experiment stage (disable with
+// re-enable) to an earlier one (warning), any disabled extensions will be
+// automatically re-enabled.
+// First stage: install an MV2 extension.
+IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
+                       PRE_PRE_ExtensionsAreReEnabledIfExperimentDisabled) {
+  EXPECT_EQ(MV2ExperimentStage::kWarning, GetActiveExperimentStage());
+
+  const Extension* extension = AddMV2Extension("Test MV2 Extension");
+  ASSERT_TRUE(extension);
+}
+// Second stage: MV2 deprecation experiment takes effect; extension is disabled.
+IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
+                       PRE_ExtensionsAreReEnabledIfExperimentDisabled) {
+  EXPECT_EQ(MV2ExperimentStage::kDisableWithReEnable,
+            GetActiveExperimentStage());
+
+  WaitForExtensionSystemReady();
+
+  const Extension* extension = GetExtensionByName(
+      "Test MV2 Extension", extension_registry()->disabled_extensions());
+  ASSERT_TRUE(extension);
+  const ExtensionId extension_id = extension->id();
+  EXPECT_EQ(
+      static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
+      extension_prefs()->GetDisableReasons(extension_id));
+}
+// Third stage: Move the user back to the warning stage. The extension should be
+// re-enabled.
+IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
+                       ExtensionsAreReEnabledIfExperimentDisabled) {
+  EXPECT_EQ(MV2ExperimentStage::kWarning, GetActiveExperimentStage());
 
   WaitForExtensionSystemReady();
 

@@ -137,6 +137,19 @@ PrefMap GetExtensionAcknowledgedPrefFor(MV2ExperimentStage experiment_stage) {
   }
 }
 
+// Returns true if extensions should be disabled if the user is in the given
+// `stage` of the MV2 experiments. Extracted into this method to make it easier
+// to update as we add more stages.
+bool ShouldDisableExtensionsForExperimentStage(MV2ExperimentStage stage) {
+  switch (stage) {
+    case MV2ExperimentStage::kNone:
+    case MV2ExperimentStage::kWarning:
+      return false;
+    case MV2ExperimentStage::kDisableWithReEnable:
+      return true;
+  }
+}
+
 }  // namespace
 
 ManifestV2ExperimentManager::ManifestV2ExperimentManager(
@@ -199,7 +212,7 @@ bool ManifestV2ExperimentManager::ShouldBlockExtensionInstallation(
     mojom::ManifestLocation manifest_location,
     const HashedExtensionId& hashed_id) {
   // Only block extension installation during the disablement phase.
-  if (experiment_stage_ != MV2ExperimentStage::kDisableWithReEnable) {
+  if (!ShouldDisableExtensionsForExperimentStage(experiment_stage_)) {
     return false;
   }
 
@@ -258,18 +271,18 @@ ExtensionPrefs* ManifestV2ExperimentManager::extension_prefs() {
 }
 
 void ManifestV2ExperimentManager::OnExtensionSystemReady() {
-  if (GetCurrentExperimentStage() != MV2ExperimentStage::kDisableWithReEnable) {
-    return;
-  }
-
   CheckDisabledExtensions();
+  DisableAffectedExtensions();
 
   // TODO(https://crbug.com/339061151): Add metrics for disabled extension
   // counts.
-  DisableAffectedExtensions();
 }
 
 void ManifestV2ExperimentManager::DisableAffectedExtensions() {
+  if (!ShouldDisableExtensionsForExperimentStage(experiment_stage_)) {
+    return;
+  }
+
   ExtensionRegistry* extension_registry =
       ExtensionRegistry::Get(browser_context_);
   std::set<scoped_refptr<const Extension>> extensions_to_disable;
@@ -316,10 +329,16 @@ void ManifestV2ExperimentManager::MaybeReEnableExtension(
   if (!extension_prefs()->HasDisableReason(
           extension.id(),
           disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION)) {
+    // We only care about extensions that were disabled for this reason.
     return;
   }
 
-  if (impact_checker_.IsExtensionAffected(extension)) {
+  // Check if the extension is still affected *and* whether the experiment
+  // stage is still one in which extensions should be disabled. It's possible
+  // the user moved from a later experiment stage to an earlier one, in which
+  // case extensions should be re-enabled.
+  if (impact_checker_.IsExtensionAffected(extension) &&
+      ShouldDisableExtensionsForExperimentStage(experiment_stage_)) {
     return;
   }
 
@@ -376,11 +395,6 @@ void ManifestV2ExperimentManager::OnManagementPolicyChanged() {
   // check if any should be re-enabled, and go through all enabled extensions
   // to see if any should be disabled (if the experiment is active).
   CheckDisabledExtensions();
-
-  if (GetCurrentExperimentStage() != MV2ExperimentStage::kDisableWithReEnable) {
-    return;
-  }
-
   DisableAffectedExtensions();
 }
 
