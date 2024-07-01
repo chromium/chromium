@@ -27,7 +27,6 @@
 
 #include "third_party/blink/renderer/core/svg/graphics/isolated_svg_document_host.h"
 
-#include "base/location.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
@@ -119,7 +118,7 @@ IsolatedSVGDocumentHost::IsolatedSVGDocumentHost(
     frame = MakeGarbageCollected<LocalFrame>(
         frame_client_, *page, nullptr, nullptr, nullptr,
         FrameInsertType::kInsertInConstructor, LocalFrameToken(), nullptr,
-        nullptr, FROM_HERE);
+        nullptr);
     frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame));
     frame->Init(/*opener=*/nullptr, DocumentToken(),
                 /*policy_container=*/nullptr, StorageKey(),

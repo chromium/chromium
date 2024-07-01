@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -155,7 +154,7 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
   auto* frame = MakeGarbageCollected<LocalFrame>(
       MakeGarbageCollected<EmptyLocalFrameClient>(), *page_, nullptr, nullptr,
       nullptr, FrameInsertType::kInsertInConstructor, LocalFrameToken(),
-      nullptr, nullptr, FROM_HERE);
+      nullptr, nullptr);
   frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame, view_size));
   frame->Init(/*opener=*/nullptr, DocumentToken(), /*policy_container=*/nullptr,
               StorageKey(), /*document_ukm_source_id=*/ukm::kInvalidSourceId,

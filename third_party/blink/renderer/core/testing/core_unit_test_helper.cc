@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
-#include "base/location.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -33,7 +32,7 @@ LocalFrame* SingleChildLocalFrameClient::CreateFrame(
   LocalFrame* child = MakeGarbageCollected<LocalFrame>(
       child_client, *parent_frame->GetPage(), owner_element, parent_frame,
       nullptr, FrameInsertType::kInsertInConstructor, LocalFrameToken(),
-      &parent_frame->window_agent_factory(), nullptr, FROM_HERE);
+      &parent_frame->window_agent_factory(), nullptr);
   child->CreateView(gfx::Size(500, 500), Color::kTransparent);
 
   // The initial empty document's policy container is inherited from its parent.

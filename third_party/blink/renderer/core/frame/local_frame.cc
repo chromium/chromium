@@ -43,7 +43,6 @@
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/crash/core/common/crash_key.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/network/public/cpp/features.h"
@@ -490,12 +489,7 @@ LocalFrame::~LocalFrame() {
   // Before this destructor runs, `DetachImpl()` must have shutdown
   // `PerformanceMonitor`, if that was needed.
   // TODO(crbug.com/337200890): Remove when investigation is complete.
-  if (must_shutdown_performance_monitor_) {
-    static crash_reporter::CrashKeyString<1024> key(
-        "localframe-creation-location");
-    key.Set(creation_location_.ToString());
-    CHECK(!must_shutdown_performance_monitor_);
-  }
+  CHECK(!must_shutdown_performance_monitor_);
 }
 
 void LocalFrame::Trace(Visitor* visitor) const {
@@ -1839,7 +1833,6 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
                        const LocalFrameToken& frame_token,
                        WindowAgentFactory* inheriting_agent_factory,
                        InterfaceRegistry* interface_registry,
-                       base::Location location,
                        const base::TickClock* clock)
     : Frame(client,
             page,
@@ -1872,7 +1865,6 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
       text_zoom_factor_(ParentTextZoomFactor(this)),
       inspector_task_runner_(InspectorTaskRunner::Create(
           GetTaskRunner(TaskType::kInternalInspector))),
-      creation_location_(location),
       interface_registry_(interface_registry
                               ? interface_registry
                               : InterfaceRegistry::GetEmptyInterfaceRegistry()),

@@ -94,7 +94,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/location.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -2284,7 +2283,7 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
   SetCoreFrame(MakeGarbageCollected<LocalFrame>(
       local_frame_client_.Get(), page, owner, parent_frame,
       previous_sibling_frame, insert_type, GetLocalFrameToken(),
-      window_agent_factory, interface_registry_, FROM_HERE));
+      window_agent_factory, interface_registry_));
   frame_->Tree().SetName(name);
 
   // See sandbox inheritance: content/browser/renderer_host/sandbox_flags.md

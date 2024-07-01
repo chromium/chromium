@@ -32,7 +32,6 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/location.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -213,7 +212,6 @@ class CORE_EXPORT LocalFrame final
       const LocalFrameToken& frame_token,
       WindowAgentFactory* inheriting_agent_factory,
       InterfaceRegistry*,
-      base::Location location,
       const base::TickClock* clock = base::DefaultTickClock::GetInstance());
 
   // Initialize the LocalFrame, creating and initializing its LocalDOMWindow. It
@@ -1108,13 +1106,6 @@ class CORE_EXPORT LocalFrame final
   //
   // TODO(crbug.com/337200890): Remove when investigation is complete.
   bool must_shutdown_performance_monitor_ = false;
-
-  // The location from where this object was created. Used in conjunction with
-  // `must_shutdown_performance_monitor_` to figure out which frames are not
-  // being detached.
-  //
-  // TODO(crbug.com/337200890): Remove when investigation is complete.
-  base::Location creation_location_;
 
   Member<AdTracker> ad_tracker_;
   Member<IdlenessDetector> idleness_detector_;

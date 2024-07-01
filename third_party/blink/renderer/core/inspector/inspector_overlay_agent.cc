@@ -32,7 +32,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/location.h"
 #include "build/build_config.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/picture_layer.h"
@@ -1371,7 +1370,7 @@ void InspectorOverlayAgent::LoadOverlayPageResource() {
   auto* frame = MakeGarbageCollected<LocalFrame>(
       dummy_local_frame_client, *overlay_page_, nullptr, nullptr, nullptr,
       FrameInsertType::kInsertInConstructor, LocalFrameToken(), nullptr,
-      nullptr, FROM_HERE);
+      nullptr);
   frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame));
   frame->Init(/*opener=*/nullptr, DocumentToken(), /*policy_container=*/nullptr,
               StorageKey(), /*document_ukm_source_id=*/ukm::kInvalidSourceId,
