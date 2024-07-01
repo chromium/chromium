@@ -1080,12 +1080,11 @@ void PartitionRoot::Init(PartitionOptions opts) {
              (internal::SystemPageSize() == (size_t{1} << 14)));
 #elif PA_BUILDFLAG(IS_LINUX) && PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
     // Check runtime pagesize. Though the code is currently the same, it is
-    // not merged with the IS_APPLE case above as a 1 << 16 case needs to be
-    // added here in the future, to allow 64 kiB pagesize. That is only
-    // supported on Linux on arm64, not on IS_APPLE, but not yet present here
-    // as the rest of the PartitionAlloc does not currently support it.
+    // not merged with the IS_APPLE case above as a 1 << 16 case is only
+    // supported on Linux on AArch64.
     PA_CHECK((internal::SystemPageSize() == (size_t{1} << 12)) ||
-             (internal::SystemPageSize() == (size_t{1} << 14)));
+             (internal::SystemPageSize() == (size_t{1} << 14)) ||
+             (internal::SystemPageSize() == (size_t{1} << 16)));
 #endif
 
     ::partition_alloc::internal::ScopedGuard guard{lock_};

@@ -1178,6 +1178,10 @@ TEST_P(PartitionAllocTest, AllocSizes) {
     allocator.root()->Free(ptr2);
   }
 
+  // TODO(casey.smalley@arm.com): test expects a single slot-span for each
+  // allocation, but under 64k pages the requested size is 1MiB which
+  // instead is served by a direct map.
+#if !(PA_BUILDFLAG(IS_LINUX) && PA_BUILDFLAG(PA_ARCH_CPU_ARM64))
   {
     // Single-slot slot span size.
     const size_t size =
@@ -1222,6 +1226,7 @@ TEST_P(PartitionAllocTest, AllocSizes) {
               *(static_cast<unsigned char*>(new_ptr_1) + (size - 1)));
 #endif
   }
+#endif  // !(PA_BUILDFLAG(IS_LINUX) && PA_BUILDFLAG(PA_ARCH_CPU_ARM64))
 
   // Can we allocate a massive (128MB) size?
   // Add +1, to test for cookie writing alignment issues.

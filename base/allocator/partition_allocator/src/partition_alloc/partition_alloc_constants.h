@@ -455,7 +455,14 @@ PA_ALWAYS_INLINE constexpr size_t MaxDirectMapped() {
 // Max alignment supported by AlignedAlloc().
 // kSuperPageSize alignment can't be easily supported, because each super page
 // starts with guard pages & metadata.
+// TODO(casey.smalley@arm.com): under 64k pages we can end up in a situation
+// where a normal slot span will be large enough to contain multiple items,
+// but the address will go over the final partition page after being aligned.
+#if PA_BUILDFLAG(IS_LINUX) && PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
+constexpr size_t kMaxSupportedAlignment = kSuperPageSize / 4;
+#else
 constexpr size_t kMaxSupportedAlignment = kSuperPageSize / 2;
+#endif
 
 constexpr size_t kBitsPerSizeT = sizeof(void*) * CHAR_BIT;
 

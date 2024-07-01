@@ -135,7 +135,14 @@ struct PartitionBucket {
   // Returns a slot number starting from the beginning of the slot span.
   PA_ALWAYS_INLINE size_t GetSlotNumber(size_t offset_in_slot_span) const {
     // See the static assertion for `kReciprocalShift` above.
-    PA_DCHECK(offset_in_slot_span <= kMaxBucketed);
+    // TODO(casey.smalley@arm.com): triggers on Aarch64/Linux
+    // systems with 64k system pages. Constants need to be
+    // adjusted to prevent different parts of the allocator
+    // from overlapping. For now this will allow 64k pages
+    // to function on Aarch64/Linux systems, albeit not
+    // very efficiently.
+    PA_DCHECK(internal::SystemPageSize() == (size_t{1} << 16) ||
+              offset_in_slot_span <= kMaxBucketed);
     PA_DCHECK(slot_size <= kMaxBucketed);
 
     const size_t offset_in_slot =

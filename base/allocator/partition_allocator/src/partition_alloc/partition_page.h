@@ -86,27 +86,25 @@ struct SlotSpanMetadata {
 
   // CHECK()ed in AllocNewSlotSpan().
   // The maximum number of bits needed to cover all currently supported OSes.
-  static constexpr size_t kMaxSlotsPerSlotSpanBits = 13;
+  static constexpr size_t kMaxSlotsPerSlotSpanBits = 15;
   static_assert(kMaxSlotsPerSlotSpan < (1 << kMaxSlotsPerSlotSpanBits), "");
 
-  // |marked_full| isn't equivalent to being full. Slot span is marked as full
-  // iff it isn't on the active slot span list (or any other list).
-  uint32_t marked_full : 1;
   // |num_allocated_slots| is 0 for empty or decommitted slot spans, which can
   // be further differentiated by checking existence of the freelist.
   uint32_t num_allocated_slots : kMaxSlotsPerSlotSpanBits;
   uint32_t num_unprovisioned_slots : kMaxSlotsPerSlotSpanBits;
 
+  // |marked_full| isn't equivalent to being full. Slot span is marked as full
+  // iff it isn't on the active slot span list (or any other list).
+  uint32_t marked_full : 1;
+
  private:
   const uint32_t can_store_raw_size_ : 1;
-  uint32_t freelist_is_sorted_ : 1;
-  uint32_t unused1_ : (32 - 1 - 2 * kMaxSlotsPerSlotSpanBits - 1 - 1);
+  uint16_t freelist_is_sorted_ : 1;
   // If |in_empty_cache_|==1, |empty_cache_index| is undefined and mustn't be
   // used.
   uint16_t in_empty_cache_ : 1;
-  uint16_t empty_cache_index_
-      : kMaxEmptyCacheIndexBits;  // < kMaxFreeableSpans.
-  uint16_t unused2_ : (16 - 1 - kMaxEmptyCacheIndexBits);
+  uint16_t empty_cache_index_ : kMaxEmptyCacheIndexBits;  // < kMaxFreeableSpans.
   // Can use only 48 bits (6B) in this bitfield, as this structure is embedded
   // in PartitionPage which has 2B worth of fields and must fit in 32B.
 
@@ -253,18 +251,13 @@ static_assert(sizeof(SlotSpanMetadata) <= kPageMetadataSize,
               "SlotSpanMetadata must fit into a Page Metadata slot.");
 
 inline constexpr SlotSpanMetadata::SlotSpanMetadata() noexcept
-    : marked_full(0),
-      num_allocated_slots(0),
+    : num_allocated_slots(0),
       num_unprovisioned_slots(0),
+      marked_full(0),
       can_store_raw_size_(false),
       freelist_is_sorted_(true),
-      unused1_(0),
       in_empty_cache_(0),
-      empty_cache_index_(0),
-      unused2_(0) {
-  (void)unused1_;
-  (void)unused2_;
-}
+      empty_cache_index_(0) {}
 
 inline SlotSpanMetadata::SlotSpanMetadata(const SlotSpanMetadata&) = default;
 
@@ -767,7 +760,7 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::Reset() {
 
   size_t num_slots_per_span = bucket->get_slots_per_span();
   PA_DCHECK(num_slots_per_span <= kMaxSlotsPerSlotSpan);
-  num_unprovisioned_slots = static_cast<uint32_t>(num_slots_per_span);
+  num_unprovisioned_slots = static_cast<uint16_t>(num_slots_per_span);
   PA_DCHECK(num_unprovisioned_slots);
 
   ToSuperPageExtent()->IncrementNumberOfNonemptySlotSpans();
