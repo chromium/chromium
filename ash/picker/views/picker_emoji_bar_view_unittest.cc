@@ -77,7 +77,7 @@ TEST_F(PickerEmojiBarViewTest, ClearsSearchResults) {
 TEST_F(PickerEmojiBarViewTest, ClickingMoreEmojisButton) {
   MockEmojiBarViewDelegate mock_delegate;
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetFullscreen(true);
   auto* emoji_bar = widget->SetContentsView(
       std::make_unique<PickerEmojiBarView>(&mock_delegate, kPickerWidth));

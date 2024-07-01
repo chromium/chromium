@@ -24,8 +24,7 @@ using ::testing::_;
 using PickerPasteRequestTest = views::ViewsTestBase;
 
 TEST_F(PickerPasteRequestTest, DoesNotPasteWithoutNewFocus) {
-  auto widget =
-      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->Show();
   views::test::WidgetVisibleWaiter(widget.get()).Wait();
   MockClipboardHistoryController clipboard_history_controller;
@@ -42,7 +41,7 @@ TEST_F(PickerPasteRequestTest, DoesNotPasteWithoutNewFocus) {
 
 TEST_F(PickerPasteRequestTest, PastesOnNewFocus) {
   auto old_widget =
-      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   old_widget->Show();
   views::test::WidgetVisibleWaiter(old_widget.get()).Wait();
   MockClipboardHistoryController clipboard_history_controller;
@@ -60,14 +59,14 @@ TEST_F(PickerPasteRequestTest, PastesOnNewFocus) {
       aura::client::GetFocusClient(old_widget->GetNativeView()), item_id);
   old_widget->CloseNow();
   auto new_widget =
-      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   new_widget->Show();
   views::test::WidgetVisibleWaiter(new_widget.get()).Wait();
 }
 
 TEST_F(PickerPasteRequestTest, DoesNotPasteAfterDestruction) {
   auto old_widget =
-      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   old_widget->Show();
   views::test::WidgetVisibleWaiter(old_widget.get()).Wait();
   MockClipboardHistoryController clipboard_history_controller;
@@ -83,7 +82,7 @@ TEST_F(PickerPasteRequestTest, DoesNotPasteAfterDestruction) {
     old_widget->CloseNow();
   }
   auto new_widget =
-      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   new_widget->Show();
   views::test::WidgetVisibleWaiter(new_widget.get()).Wait();
 }
