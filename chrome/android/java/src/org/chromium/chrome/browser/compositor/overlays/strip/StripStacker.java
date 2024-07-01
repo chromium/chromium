@@ -47,13 +47,13 @@ public abstract class StripStacker {
      * Computes and sets the draw X, draw Y, visibility and content offset for each view.
      *
      * @param indexOrderedViews A list of tabs ordered by index.
-     * @param tabCreating Whether a tab is being created.
+     * @param tabClosing Whether a tab is being closed.
      * @param groupTitleSlidingAnimRunning Whether a group title is sliding for reorder.
      * @param cachedTabWidth Whether The ideal tab width.
      */
     public abstract void setViewOffsets(
             StripLayoutView[] indexOrderedViews,
-            boolean tabCreating,
+            boolean tabClosing,
             boolean groupTitleSlidingAnimRunning,
             float cachedTabWidth);
 
