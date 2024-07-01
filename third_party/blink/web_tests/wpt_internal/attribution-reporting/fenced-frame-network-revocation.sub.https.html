@@ -8,6 +8,7 @@
 <meta name=variant content="?fencedframe=trigger&type=aggregate&cutoff=after&expect=true">
 <meta name=variant content="?fencedframe=source&type=aggregate&cutoff=before&expect=false">
 <meta name=variant content="?fencedframe=trigger&type=aggregate&cutoff=before&expect=false">
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
@@ -85,9 +86,7 @@ attribution_reporting_promise_test(async t => {
     };
   }
 
-  const fencedframe = await attachFencedFrameContext({
-    generator_api: 'fledge',
-  });
+  const ready_key = token();
 
   // If the fenced frame is registering the trigger, register the source in the
   // main frame beforehand.
@@ -101,39 +100,17 @@ attribution_reporting_promise_test(async t => {
     ]));
   }
 
-  await fencedframe.execute(async (reportingOrigin, param_fencedframe,
-                                   param_cutoff, source, trigger) => {
-    if (param_cutoff == "before") {
-      await window.fence.disableUntrustedNetwork();
-    }
-    if (param_fencedframe == "source") {
-      registerAttributionSrcByImg(createRedirectChain([
-        {
-          cookie: 'foo=bar;Secure;HttpOnly;Path=/',
-          reportingOrigin,
-          source: source
-        },
-      ]));
-    } else {
-      registerAttributionSrcByImg(createRedirectChain([
-        {
-          cookie: 'foo=bar;Secure;HttpOnly;Path=/',
-          reportingOrigin,
-          trigger: trigger
-        },
-      ]));
-    }
-  }, [reportingOrigin, param_fencedframe,
-                                   param_cutoff, source, trigger]);
+  const urn = await generateURNFromFledge(
+      "resources/fenced-frame-network-revocation-inner.https.html",
+      [ready_key, param_fencedframe, param_cutoff,
+      JSON.stringify(source).replaceAll(',', '&#44;'),
+      JSON.stringify(trigger).replaceAll(',', '&#44;')]);
+  const fencedframe = attachFencedFrame(urn);
 
-  if (param_cutoff == "after") {
-    await fencedframe.execute(() => {
-      window.fence.disableUntrustedNetwork();
-    });
-  }
   // If the fenced frame is registering the source, register the trigger in the
   // main frame afterwards.
   if (param_fencedframe == "source") {
+    await nextValueFromServer(ready_key);
     registerAttributionSrcByImg(createRedirectChain([
       {
         cookie: 'foo=bar;Secure;HttpOnly;Path=/',
