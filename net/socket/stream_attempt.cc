@@ -10,18 +10,30 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_network_session.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/stream_socket.h"
 
 namespace net {
 
+// static
+StreamAttemptParams StreamAttemptParams::FromHttpNetworkSession(
+    HttpNetworkSession* session) {
+  return StreamAttemptParams(
+      session->context().client_socket_factory, session->ssl_client_context(),
+      session->context().socket_performance_watcher_factory,
+      session->context().network_quality_estimator, session->net_log());
+}
+
 StreamAttemptParams::StreamAttemptParams(
     ClientSocketFactory* client_socket_factory,
+    SSLClientContext* ssl_client_context,
     SocketPerformanceWatcherFactory* socket_performance_watcher_factory,
     NetworkQualityEstimator* network_quality_estimator,
     NetLog* net_log)
     : client_socket_factory(client_socket_factory),
+      ssl_client_context(ssl_client_context),
       socket_performance_watcher_factory(socket_performance_watcher_factory),
       network_quality_estimator(network_quality_estimator),
       net_log(net_log) {}
@@ -30,7 +42,7 @@ StreamAttempt::StreamAttempt(const StreamAttemptParams* params,
                              IPEndPoint ip_endpoint,
                              NetLogSourceType net_log_source_type,
                              NetLogEventType net_log_attempt_event_type,
-                             NetLogWithSource* net_log)
+                             const NetLogWithSource* net_log)
     : params_(params),
       ip_endpoint_(ip_endpoint),
       net_log_(net_log ? *net_log

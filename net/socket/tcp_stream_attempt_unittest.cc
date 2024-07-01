@@ -125,6 +125,7 @@ class TcpStreamAttemptTest : public TestWithTaskEnvironment {
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         socket_factory_(NetLog::Get()),
         params_(&socket_factory_,
+                /*ssl_client_context=*/nullptr,
                 /*socket_performance_watcher_factory=*/nullptr,
                 /*network_quality_estimator=*/nullptr,
                 /*net_log=*/NetLog::Get()) {}

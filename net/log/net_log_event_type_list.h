@@ -965,6 +965,14 @@ EVENT_TYPE(SOCKET_POOL_CLOSING_SOCKET)
 //   }
 EVENT_TYPE(TCP_STREAM_ATTEMPT_ALIVE)
 
+// Marks the creation/destruction of a TlsStreamAttempt.
+// For the END phase, if there was an error, the following parameters are
+// attached:
+//   {
+//      "net_error": <Net error code of the failure>,
+//   }
+EVENT_TYPE(TLS_STREAM_ATTEMPT_ALIVE)
+
 // ------------------------------------------------------------------------
 // URLRequest
 // ------------------------------------------------------------------------

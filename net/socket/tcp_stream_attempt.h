@@ -13,6 +13,8 @@
 
 namespace net {
 
+class NetLogWithSource;
+
 // Represents a single TCP connection attempt.
 class NET_EXPORT_PRIVATE TcpStreamAttempt final : public StreamAttempt {
  public:
@@ -20,7 +22,9 @@ class NET_EXPORT_PRIVATE TcpStreamAttempt final : public StreamAttempt {
   // because a TcpStreamAttempt only attempts a single TCP connection.
   static constexpr base::TimeDelta kTcpHandshakeTimeout = base::Seconds(60);
 
-  TcpStreamAttempt(const StreamAttemptParams* params, IPEndPoint ip_endpoint);
+  TcpStreamAttempt(const StreamAttemptParams* params,
+                   IPEndPoint ip_endpoint,
+                   const NetLogWithSource* = nullptr);
 
   TcpStreamAttempt(const TcpStreamAttempt&) = delete;
   TcpStreamAttempt& operator=(const TcpStreamAttempt&) = delete;

@@ -18,20 +18,27 @@
 namespace net {
 
 class ClientSocketFactory;
+class HttpNetworkSession;
 class SocketPerformanceWatcherFactory;
+class SSLClientContext;
 class StreamSocket;
 class NetworkQualityEstimator;
 class NetLog;
 
 // Common parameters for StreamAttempt classes.
 struct NET_EXPORT_PRIVATE StreamAttemptParams {
+  static StreamAttemptParams FromHttpNetworkSession(
+      HttpNetworkSession* session);
+
   StreamAttemptParams(
       ClientSocketFactory* client_socket_factory,
+      SSLClientContext* ssl_client_context,
       SocketPerformanceWatcherFactory* socket_performance_watcher_factory,
       NetworkQualityEstimator* network_quality_estimator,
       NetLog* net_log);
 
   raw_ptr<ClientSocketFactory> client_socket_factory;
+  raw_ptr<SSLClientContext> ssl_client_context;
   raw_ptr<SocketPerformanceWatcherFactory> socket_performance_watcher_factory;
   raw_ptr<NetworkQualityEstimator> network_quality_estimator;
   raw_ptr<NetLog> net_log;
@@ -45,7 +52,7 @@ class NET_EXPORT_PRIVATE StreamAttempt {
                 IPEndPoint ip_endpoint,
                 NetLogSourceType net_log_source_type,
                 NetLogEventType net_log_attempt_event_type,
-                NetLogWithSource* net_log = nullptr);
+                const NetLogWithSource* net_log = nullptr);
 
   StreamAttempt(const StreamAttempt&) = delete;
   StreamAttempt& operator=(const StreamAttempt&) = delete;

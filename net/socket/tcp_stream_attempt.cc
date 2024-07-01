@@ -18,11 +18,13 @@
 namespace net {
 
 TcpStreamAttempt::TcpStreamAttempt(const StreamAttemptParams* params,
-                                   IPEndPoint ip_endpoint)
+                                   IPEndPoint ip_endpoint,
+                                   const NetLogWithSource* net_log)
     : StreamAttempt(params,
                     ip_endpoint,
                     NetLogSourceType::TCP_STREAM_ATTEMPT,
-                    NetLogEventType::TCP_STREAM_ATTEMPT_ALIVE) {}
+                    NetLogEventType::TCP_STREAM_ATTEMPT_ALIVE,
+                    net_log) {}
 
 TcpStreamAttempt::~TcpStreamAttempt() = default;
 
