@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -60,7 +61,7 @@ class TabContentsDataImpl : public TabContentsData {
 };
 
 std::unique_ptr<TabContentsData> CreateTabContentsDataImpl() {
-  if (base::FeatureList::IsEnabled(features::kTabStripCollectionStorage)) {
+  if (base::FeatureList::IsEnabled(tabs::kTabStripCollectionStorage)) {
     return std::make_unique<tabs::TabStripCollection>();
   } else {
     return std::make_unique<TabContentsDataImpl>();

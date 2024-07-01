@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -95,13 +96,13 @@ void TabModel::OnRemovedFromModel() {
 
 TabCollection* TabModel::GetParentCollection(
     base::PassKey<TabCollection>) const {
-  CHECK(base::FeatureList::IsEnabled(features::kTabStripCollectionStorage));
+  CHECK(base::FeatureList::IsEnabled(tabs::kTabStripCollectionStorage));
   return parent_collection_;
 }
 
 void TabModel::OnReparented(TabCollection* parent,
                             base::PassKey<TabCollection>) {
-  CHECK(base::FeatureList::IsEnabled(features::kTabStripCollectionStorage));
+  CHECK(base::FeatureList::IsEnabled(tabs::kTabStripCollectionStorage));
   parent_collection_ = parent;
 }
 

@@ -27,6 +27,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -384,7 +385,7 @@ class TabStripModelTest : public testing::Test,
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/GetParam()
             ? std::vector<
-                  base::test::FeatureRef>{features::kTabStripCollectionStorage}
+                  base::test::FeatureRef>{tabs::kTabStripCollectionStorage}
             : std::vector<base::test::FeatureRef>{},
         /*disabled_features=*/std::vector<base::test::FeatureRef>{});
   }

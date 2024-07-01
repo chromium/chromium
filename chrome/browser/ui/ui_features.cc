@@ -288,12 +288,6 @@ BASE_FEATURE(kScrollableTabStripOverflow,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const char kScrollableTabStripOverflowModeName[] = "tabScrollOverflow";
 
-// Stores the tabs as a tree based data structure instead of a
-// vector in the tabstrip model. b/323937237
-BASE_FEATURE(kTabStripCollectionStorage,
-             "TabStripCollectionStorage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables tabs to be frozen when collapsed.
 // https://crbug.com/1110108
 BASE_FEATURE(kTabGroupsCollapseFreezing,

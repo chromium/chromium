@@ -6782,13 +6782,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(tabs::kScrollableTabStripWithDragging,
                                     kTabScrollingWithDraggingVariations,
                                     "TabScrollingWithDragging")},
-#endif
 
     {flag_descriptions::kTabStripCollectionStorageFlagId,
      flag_descriptions::kTabStripCollectionStorageName,
      flag_descriptions::kTabStripCollectionStorageDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabStripCollectionStorage)},
-
+     FEATURE_VALUE_TYPE(tabs::kTabStripCollectionStorage)},
+#endif
     {flag_descriptions::kScrollableTabStripOverflowFlagId,
      flag_descriptions::kScrollableTabStripOverflowName,
      flag_descriptions::kScrollableTabStripOverflowDescription, kOsDesktop,

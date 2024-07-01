@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/pinned_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_collection_storage.h"
 #include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
@@ -25,8 +26,8 @@
 class TabCollectionBaseTest : public ::testing::Test {
  public:
   TabCollectionBaseTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kTabStripCollectionStorage}, {});
+    scoped_feature_list_.InitWithFeatures({tabs::kTabStripCollectionStorage},
+                                          {});
     testing_profile_ = std::make_unique<TestingProfile>();
     tab_strip_model_delegate_ = std::make_unique<TestTabStripModelDelegate>();
     tab_strip_model_ = std::make_unique<TabStripModel>(
