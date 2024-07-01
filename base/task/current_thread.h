@@ -24,7 +24,7 @@
 #include "build/build_config.h"
 
 namespace autofill {
-class NextIdleTimeTicks;
+class NextIdleBarrier;
 }
 
 namespace content {
@@ -149,9 +149,9 @@ class BASE_EXPORT CurrentThread {
   // to run.
   class RegisterOnNextIdleCallbackPasskey {
    private:
-    RegisterOnNextIdleCallbackPasskey() {}
+    RegisterOnNextIdleCallbackPasskey() = default;
 
-    friend autofill::NextIdleTimeTicks;
+    friend autofill::NextIdleBarrier;
     friend content::BrowserMainLoop;
     friend bool test::RunUntil(FunctionRef<bool(void)>);
     friend void test::TestPredicateOrRegisterOnNextIdleCallback(

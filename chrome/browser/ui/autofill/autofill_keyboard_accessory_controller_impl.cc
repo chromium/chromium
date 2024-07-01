@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_view.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
+#include "chrome/browser/ui/autofill/next_idle_barrier.h"
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
@@ -245,7 +246,7 @@ void AutofillKeyboardAccessoryControllerImpl::OnSuggestionsChanged() {
 void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
   // Ignore clicks immediately after the popup was shown. This is to prevent
   // users accidentally accepting suggestions (crbug.com/1279268).
-  if (time_view_shown_.value().is_null() && !disable_threshold_for_testing_) {
+  if (!barrier_for_accepting_.value() && !disable_threshold_for_testing_) {
     return;
   }
 
@@ -469,7 +470,7 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
     }
   }
 
-  time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicksWithDelay(
+  barrier_for_accepting_ = NextIdleBarrier::CreateNextIdleBarrierWithDelay(
       kIgnoreEarlyClicksOnSuggestionsDuration);
   delegate_->OnSuggestionsShown();
 }
@@ -598,7 +599,7 @@ void AutofillKeyboardAccessoryControllerImpl::
 void AutofillKeyboardAccessoryControllerImpl::SetViewForTesting(
     std::unique_ptr<AutofillKeyboardAccessoryView> view) {
   view_ = std::move(view);
-  time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicksWithDelay(
+  barrier_for_accepting_ = NextIdleBarrier::CreateNextIdleBarrierWithDelay(
       kIgnoreEarlyClicksOnSuggestionsDuration);
 }
 

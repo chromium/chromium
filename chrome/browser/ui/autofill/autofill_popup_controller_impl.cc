@@ -26,7 +26,7 @@
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
-#include "chrome/browser/ui/autofill/next_idle_time_ticks.h"
+#include "chrome/browser/ui/autofill/next_idle_barrier.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/filling_product.h"
@@ -230,7 +230,7 @@ void AutofillPopupControllerImpl::Show(
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillPopupMeasureTimeAfterPaint)) {
-    time_view_shown_.reset();
+    barrier_for_accepting_.reset();
   }
 
   if (view_) {
@@ -268,7 +268,7 @@ void AutofillPopupControllerImpl::Show(
 
   if (!base::FeatureList::IsEnabled(
           features::kAutofillPopupMeasureTimeAfterPaint)) {
-    time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicksWithDelay(
+    barrier_for_accepting_ = NextIdleBarrier::CreateNextIdleBarrierWithDelay(
         kIgnoreEarlyClicksOnSuggestionsDuration);
   }
 
@@ -389,7 +389,7 @@ void AutofillPopupControllerImpl::OnSuggestionsChanged() {
 void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   // Ignore clicks immediately after the popup was shown. This is to prevent
   // users accidentally accepting suggestions (crbug.com/1279268).
-  if ((!time_view_shown_ || time_view_shown_->value().is_null()) &&
+  if ((!barrier_for_accepting_ || !barrier_for_accepting_->value()) &&
       !disable_threshold_for_testing_) {
     return;
   }
@@ -836,8 +836,8 @@ bool AutofillPopupControllerImpl::HandleKeyPressEvent(
 void AutofillPopupControllerImpl::OnPopupPainted() {
   CHECK(base::FeatureList::IsEnabled(
       features::kAutofillPopupMeasureTimeAfterPaint));
-  if (!time_view_shown_) {
-    time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicksWithDelay(
+  if (!barrier_for_accepting_) {
+    barrier_for_accepting_ = NextIdleBarrier::CreateNextIdleBarrierWithDelay(
         kIgnoreEarlyClicksOnSuggestionsDuration);
   }
 }
@@ -850,7 +850,7 @@ bool AutofillPopupControllerImpl::HasFilteredOutSuggestions() const {
 void AutofillPopupControllerImpl::SetViewForTesting(
     base::WeakPtr<AutofillPopupView> view) {
   view_ = std::move(view);
-  time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicksWithDelay(
+  barrier_for_accepting_ = NextIdleBarrier::CreateNextIdleBarrierWithDelay(
       kIgnoreEarlyClicksOnSuggestionsDuration);
 }
 

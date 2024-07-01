@@ -15,7 +15,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
-#include "chrome/browser/ui/autofill/next_idle_time_ticks.h"
+#include "chrome/browser/ui/autofill/next_idle_barrier.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "components/autofill/core/browser/ui/popup_interaction.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
@@ -187,10 +187,11 @@ class AutofillPopupControllerImpl
     content::RenderWidgetHost::KeyPressEventCallback handler_;
   } key_press_observer_{this};
 
-  // The time the view was shown the last time. It is used to safeguard against
-  // accepting suggestions too quickly after a the popup view was shown (see the
-  // `show_threshold` parameter of `AcceptSuggestion`).
-  std::optional<NextIdleTimeTicks> time_view_shown_;
+  // Whether a sufficient amount of time has passed since showing or updating
+  // suggestions. It is used to safeguard against accepting suggestions too
+  // quickly after a the popup view was shown (see the `show_threshold`
+  // parameter of `AcceptSuggestion`).
+  std::optional<NextIdleBarrier> barrier_for_accepting_;
 
   // The time of the latest successful (the view is created and shown) `Show()`
   // call.
