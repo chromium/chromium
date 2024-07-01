@@ -21,6 +21,7 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;
+using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -28,6 +29,7 @@ namespace tab_groups {
 namespace {
 
 const char kTabGroupSyncServiceBridgeKey[] = "tab_group_sync_service_bridge";
+const int kInvalidTabId = -1;
 
 }  // namespace
 
@@ -214,6 +216,17 @@ void TabGroupSyncServiceAndroid::MoveTab(
   tab_group_sync_service_->MoveTab(group_id, tab_id, j_new_index_in_group);
 }
 
+void TabGroupSyncServiceAndroid::OnTabSelected(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_caller,
+    const JavaParamRef<jobject>& j_group_id,
+    jint j_tab_id) {
+  auto group_id =
+      TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_group_id);
+  auto tab_id = FromJavaTabId(j_tab_id);
+  tab_group_sync_service_->OnTabSelected(group_id, tab_id);
+}
+
 ScopedJavaLocalRef<jobjectArray> TabGroupSyncServiceAndroid::GetAllGroupIds(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_caller) {
@@ -300,6 +313,42 @@ void TabGroupSyncServiceAndroid::UpdateLocalTabId(
   auto local_tab_id = FromJavaTabId(j_local_tab_id);
   tab_group_sync_service_->UpdateLocalTabId(local_group_id, sync_tab_id,
                                             local_tab_id);
+}
+
+bool TabGroupSyncServiceAndroid::IsRemoteDevice(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_caller,
+    const JavaParamRef<jstring>& j_sync_cache_guid) {
+  auto sync_cache_guid = ConvertJavaStringToUTF8(env, j_sync_cache_guid);
+  return tab_group_sync_service_->IsRemoteDevice(sync_cache_guid);
+}
+
+void TabGroupSyncServiceAndroid::RecordTabGroupEvent(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_caller,
+    jint j_event_type,
+    const JavaParamRef<jobject>& j_local_group_id,
+    jint j_local_tab_id,
+    jint j_opening_source,
+    jint j_closing_source) {
+  EventDetails event_details(static_cast<TabGroupEvent>(j_event_type));
+  event_details.local_tab_group_id =
+      TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_local_group_id);
+  if (j_local_tab_id != kInvalidTabId) {
+    event_details.local_tab_id = FromJavaTabId(j_local_tab_id);
+  }
+
+  auto opening_source = static_cast<OpeningSource>(j_opening_source);
+  if (opening_source != OpeningSource::kUnknown) {
+    event_details.opening_source = opening_source;
+  }
+
+  auto closing_source = static_cast<ClosingSource>(j_closing_source);
+  if (closing_source != ClosingSource::kUnknown) {
+    event_details.closing_source = closing_source;
+  }
+
+  tab_group_sync_service_->RecordTabGroupEvent(event_details);
 }
 
 }  // namespace tab_groups

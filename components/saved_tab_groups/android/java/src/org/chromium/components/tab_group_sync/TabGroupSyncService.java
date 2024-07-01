@@ -155,6 +155,14 @@ public interface TabGroupSyncService {
     void moveTab(LocalTabGroupId tabGroupId, int tabId, int newIndexInGroup);
 
     /**
+     * Called to notify the backend that a tab was selected in the UI. Metrics purposes only.
+     *
+     * @param tabGroupId The local group ID of the corresponding tab group.
+     * @param tabId The local ID of the corresponding tab.
+     */
+    void onTabSelected(LocalTabGroupId tabGroupId, int tabId);
+
+    /**
      * Called to return all the remote tab group IDs currently existing in the system.
      *
      * @return An array of IDs of the currently known tab groups.
@@ -209,4 +217,20 @@ public interface TabGroupSyncService {
      * @param localTabId The local ID of the corresponding tab.
      */
     void updateLocalTabId(LocalTabGroupId localGroupId, String syncTabId, int localTabId);
+
+    /**
+     * Helper method to identify whether a given sync cache guid corresponds to a remote device.
+     *
+     * @param syncCacheGuid A sync cache guid. Typically obtained from a tab group or tab
+     *     attribution metadata.
+     */
+    boolean isRemoteDevice(String syncCacheGuid);
+
+    /**
+     * Called to explicitly record a tab group event. See native for full documentation.
+     *
+     * @param eventDetails The details about the event such as event type, source, and the
+     *     associated tab group info.
+     */
+    void recordTabGroupEvent(EventDetails eventDetails);
 }

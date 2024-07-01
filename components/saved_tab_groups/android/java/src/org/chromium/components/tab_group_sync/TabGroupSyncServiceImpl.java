@@ -108,6 +108,13 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     }
 
     @Override
+    public void onTabSelected(LocalTabGroupId groupId, int tabId) {
+        if (mNativePtr == 0) return;
+        assert groupId != null;
+        TabGroupSyncServiceImplJni.get().onTabSelected(mNativePtr, this, groupId, tabId);
+    }
+
+    @Override
     public String[] getAllGroupIds() {
         if (mNativePtr == 0) return new String[0];
         return TabGroupSyncServiceImplJni.get().getAllGroupIds(mNativePtr, this);
@@ -160,6 +167,28 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
         assert localGroupId != null;
         TabGroupSyncServiceImplJni.get()
                 .updateLocalTabId(mNativePtr, this, localGroupId, syncTabId, localTabId);
+    }
+
+    @Override
+    public boolean isRemoteDevice(String syncCacheGuid) {
+        if (mNativePtr == 0) return false;
+        return TabGroupSyncServiceImplJni.get()
+                .isRemoteDevice(
+                        mNativePtr, this, syncCacheGuid == null ? new String() : syncCacheGuid);
+    }
+
+    @Override
+    public void recordTabGroupEvent(EventDetails eventDetails) {
+        if (mNativePtr == 0) return;
+        TabGroupSyncServiceImplJni.get()
+                .recordTabGroupEvent(
+                        mNativePtr,
+                        this,
+                        eventDetails.eventType,
+                        eventDetails.localGroupId,
+                        eventDetails.localTabId,
+                        eventDetails.openingSource,
+                        eventDetails.closingSource);
     }
 
     @CalledByNative
@@ -259,6 +288,12 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
                 int tabId,
                 int newIndexInGroup);
 
+        void onTabSelected(
+                long nativeTabGroupSyncServiceAndroid,
+                TabGroupSyncServiceImpl caller,
+                LocalTabGroupId groupId,
+                int tabId);
+
         String[] getAllGroupIds(
                 long nativeTabGroupSyncServiceAndroid, TabGroupSyncServiceImpl caller);
 
@@ -292,5 +327,19 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
                 LocalTabGroupId localGroupId,
                 String syncTabId,
                 int localTabId);
+
+        boolean isRemoteDevice(
+                long nativeTabGroupSyncServiceAndroid,
+                TabGroupSyncServiceImpl caller,
+                String syncCacheGuid);
+
+        void recordTabGroupEvent(
+                long nativeTabGroupSyncServiceAndroid,
+                TabGroupSyncServiceImpl caller,
+                int eventType,
+                LocalTabGroupId localGroupId,
+                int localTabId,
+                int openingSource,
+                int closingSource);
     }
 }
