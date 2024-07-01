@@ -18,6 +18,7 @@
     "use_clang_coverage": true,
     "use_jacoco_coverage": true,
     "use_remoteexec": true,
-    "use_siso": true
+    "use_siso": true,
+    "webview_instrumentation_tests_process_mode": "multiple"
   }
 }

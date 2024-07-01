@@ -16,6 +16,7 @@
     "target_cpu": "arm64",
     "target_os": "android",
     "use_clang_coverage": true,
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "webview_instrumentation_tests_process_mode": "multiple"
   }
 }

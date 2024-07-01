@@ -1353,6 +1353,13 @@ gn_args.config(
     },
 )
 
+gn_args.config(
+    name = "webview_instrumentation_tests_multi_process_only",
+    args = {
+        "webview_instrumentation_tests_process_mode": "multiple",
+    },
+)
+
 # For Android N-P, only userdebug/eng
 gn_args.config(
     name = "webview_monochrome",
