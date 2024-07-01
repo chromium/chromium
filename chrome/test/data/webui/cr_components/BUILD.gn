@@ -42,6 +42,8 @@ build_webui_tests("build") {
 
   if (chrome_root_store_cert_management_ui) {
     files += [
+      "certificate_entry_v2_test.ts",
+      "certificate_list_v2_test.ts",
       "certificate_manager_v2_focus_test.ts",
       "certificate_manager_v2_test.ts",
       "certificate_manager_v2_test_support.ts",

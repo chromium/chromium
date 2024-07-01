@@ -48,6 +48,14 @@ IN_PROC_BROWSER_TEST_F(CrComponentsCertManagerV2Test, CertificateManagerV2) {
   RunTest("cr_components/certificate_manager_v2_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsCertManagerV2Test, CertificateListV2) {
+  RunTest("cr_components/certificate_list_v2_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrComponentsCertManagerV2Test, CertificateEntryV2) {
+  RunTest("cr_components/certificate_entry_v2_test.js", "mocha.run()");
+}
+
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 IN_PROC_BROWSER_TEST_F(CrComponentsTest, ColorChangeListener) {

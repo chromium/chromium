@@ -1,0 +1,119 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://resources/cr_components/certificate_manager/certificate_list_v2.js';
+import 'chrome://certificate-manager/strings.m.js';
+
+import type {CertificateListV2Element} from 'chrome://resources/cr_components/certificate_manager/certificate_list_v2.js';
+import {CertificateSource} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
+import {CertificatesV2BrowserProxy} from 'chrome://resources/cr_components/certificate_manager/certificates_v2_browser_proxy.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {TestCertificateManagerProxy} from './certificate_manager_v2_test_support.js';
+
+suite('CertificateListV2Test', () => {
+  let certList: CertificateListV2Element;
+  let testProxy: TestCertificateManagerProxy;
+
+  setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testProxy = new TestCertificateManagerProxy();
+    CertificatesV2BrowserProxy.setInstance(testProxy);
+  });
+
+  function initializeElement() {
+    certList = document.createElement('certificate-list-v2');
+    certList.certSource = CertificateSource.kChromeRootStore;
+    document.body.appendChild(certList);
+  }
+
+  test('element check', async () => {
+    testProxy.handler.setCertificatesCallback((_: CertificateSource) => {
+      return {
+        certs: [
+          {
+            sha256hashHex: 'deadbeef1',
+            displayName: 'cert1',
+          },
+          {
+            sha256hashHex: 'deadbeef2',
+            displayName: 'cert2',
+          },
+        ],
+      };
+    });
+
+    initializeElement();
+
+    assertEquals(
+        CertificateSource.kChromeRootStore,
+        await testProxy.handler.whenCalled('getCertificates'),
+        'getCertificates called with wrong source');
+    await microtasksFinished();
+
+    const entries = certList.$.certs.querySelectorAll('certificate-entry-v2');
+    assertEquals(2, entries.length, 'no certs displayed');
+    assertEquals('cert1', entries[0]!.displayName);
+    assertEquals('deadbeef1', entries[0]!.sha256hashHex);
+    assertEquals('cert2', entries[1]!.displayName);
+    assertEquals('deadbeef2', entries[1]!.sha256hashHex);
+
+    assertFalse(isVisible(certList.$.noCertsRow));
+  });
+
+  test('export', async () => {
+    testProxy.handler.setCertificatesCallback((_: CertificateSource) => {
+      return {
+        certs: [
+          {
+            sha256hashHex: 'deadbeef1',
+            displayName: 'cert1',
+          },
+          {
+            sha256hashHex: 'deadbeef2',
+            displayName: 'cert2',
+          },
+        ],
+      };
+    });
+    initializeElement();
+
+    await testProxy.handler.whenCalled('getCertificates');
+    await microtasksFinished();
+
+    assertTrue(isVisible(certList.$.exportCerts));
+
+    certList.$.exportCerts.click();
+
+    assertEquals(
+        CertificateSource.kChromeRootStore,
+        await testProxy.handler.whenCalled('exportCertificates'),
+        'export click provided wrong source');
+  });
+
+  test('export hidden', async () => {
+    certList = document.createElement('certificate-list-v2');
+    certList.certSource = CertificateSource.kChromeRootStore;
+    certList.hideExport = true;
+    document.body.appendChild(certList);
+
+    await testProxy.handler.whenCalled('getCertificates');
+    await microtasksFinished();
+
+    assertFalse(isVisible(certList.$.exportCerts));
+  });
+
+  test('no certs', async () => {
+    certList = document.createElement('certificate-list-v2');
+    certList.certSource = CertificateSource.kChromeRootStore;
+    document.body.appendChild(certList);
+
+    await testProxy.handler.whenCalled('getCertificates');
+    await microtasksFinished();
+
+    assertFalse(isVisible(certList.$.exportCerts));
+    assertTrue(isVisible(certList.$.noCertsRow));
+  });
+});
