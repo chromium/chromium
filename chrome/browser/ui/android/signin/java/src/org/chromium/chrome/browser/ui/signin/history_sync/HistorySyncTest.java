@@ -503,7 +503,7 @@ public class HistorySyncTest {
                                     null);
                     mActivityTestRule
                             .getActivity()
-                            .setContentView(mHistorySyncCoordinator.getView());
+                            .setContentView(mHistorySyncCoordinator.maybeRecreateView());
                 });
         ViewUtils.waitForVisibleView(allOf(withId(R.id.history_sync_title), isDisplayed()));
     }
