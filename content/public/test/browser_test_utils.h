@@ -340,6 +340,9 @@ void SimulateUnresponsiveRenderer(WebContents* web_contents,
 // RenderWidgetHostInputEventRouter and thus can target OOPIFs. If an OOPIF is
 // the intended target, ensure that its hit test data is available for routing,
 // using `WaitForHitTestData`, first.
+// Note: For simulating clicks inside a fenced frame tree, this function does
+// not work. Use `SimulateClickInFencedFrameTree` in
+// `content/public/test/fenced_frame_test_util.cc`
 void SimulateMouseClick(WebContents* web_contents,
                         int modifiers,
                         blink::WebMouseEvent::Button button);
@@ -349,6 +352,9 @@ void SimulateMouseClick(WebContents* web_contents,
 // through RenderWidgetHostInputEventRouter and thus can target OOPIFs. If an
 // OOPIF is the intended target, ensure that its hit test data is available for
 // routing, using `WaitForHitTestData`, first.
+// Note: For simulating clicks inside a fenced frame tree, this function does
+// not work. Use `SimulateClickInFencedFrameTree` in
+// `content/public/test/fenced_frame_test_util.cc`
 void SimulateMouseClickAt(WebContents* web_contents,
                           int modifiers,
                           blink::WebMouseEvent::Button button,

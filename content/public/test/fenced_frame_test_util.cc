@@ -4,6 +4,7 @@
 
 #include "content/public/test/fenced_frame_test_util.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/ranges/algorithm.h"
@@ -18,6 +19,9 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/common/input/web_pointer_properties.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -303,6 +307,46 @@ void ExemptUrlsFromFencedFrameNetworkRevocation(RenderFrameHost* rfh,
     static_cast<RenderFrameHostImpl*>(rfh)
         ->ExemptUrlFromNetworkRevocationForTesting(url, base::DoNothing());
   });
+}
+
+void SimulateClickInFencedFrameTree(const ToRenderFrameHost& adapter,
+                                    blink::WebMouseEvent::Button button,
+                                    const gfx::PointF& point) {
+  blink::WebMouseEvent mouse_event(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_event.button = button;
+  mouse_event.SetPositionInWidget(point);
+  mouse_event.click_count = 1;
+  adapter.render_frame_host()->GetRenderWidgetHost()->ForwardMouseEvent(
+      mouse_event);
+  mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
+  adapter.render_frame_host()->GetRenderWidgetHost()->ForwardMouseEvent(
+      mouse_event);
+}
+
+gfx::PointF GetTopLeftCoordinatesOfElementWithId(
+    const ToRenderFrameHost& adapter,
+    std::string_view id) {
+  double x = EvalJs(adapter, content::JsReplace(R"(
+                                  const bounds =
+                                    document.getElementById($1).
+                                    getBoundingClientRect();
+                                  Math.floor(bounds.left)
+                                )",
+                                                id))
+                 .ExtractDouble();
+  double y = EvalJs(adapter, content::JsReplace(R"(
+                                  const bounds =
+                                    document.getElementById($1).
+                                    getBoundingClientRect();
+                                  Math.floor(bounds.top)
+                                )",
+                                                id))
+                 .ExtractDouble();
+
+  return gfx::PointF(x, y);
 }
 
 }  // namespace test

@@ -2122,45 +2122,6 @@ class ContextMenuFencedFrameTest : public ContextMenuBrowserTestBase {
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
-  void SimulateClickAt(const content::ToRenderFrameHost& adapter,
-                       blink::WebMouseEvent::Button button,
-                       const gfx::PointF& point) {
-    blink::WebMouseEvent mouse_event(
-        blink::WebInputEvent::Type::kMouseDown,
-        blink::WebInputEvent::kNoModifiers,
-        blink::WebInputEvent::GetStaticTimeStampForTests());
-    mouse_event.button = button;
-    mouse_event.SetPositionInWidget(point);
-    mouse_event.click_count = 1;
-    adapter.render_frame_host()->GetRenderWidgetHost()->ForwardMouseEvent(
-        mouse_event);
-    mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-    adapter.render_frame_host()->GetRenderWidgetHost()->ForwardMouseEvent(
-        mouse_event);
-  }
-
-  gfx::PointF GetTopLeftCoordinatesOfElementWithId(
-      const content::ToRenderFrameHost& adapter,
-      std::string_view id) {
-    double x = EvalJs(adapter, content::JsReplace(R"(
-                                  const bounds =
-                                    document.getElementById($1).
-                                    getBoundingClientRect();
-                                  Math.floor(bounds.left)
-                                )",
-                                                  id))
-                   .ExtractDouble();
-    double y = EvalJs(adapter, content::JsReplace(R"(
-                                  const bounds =
-                                    document.getElementById($1).
-                                    getBoundingClientRect();
-                                  Math.floor(bounds.top)
-                                )",
-                                                  id))
-                   .ExtractDouble();
-    return gfx::PointF(x, y);
-  }
-
  private:
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
   net::EmbeddedTestServer https_server_;
@@ -2253,8 +2214,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
 
   // Open a context menu by right clicking on the anchor element.
   ContextMenuWaiter menu_observer;
-  SimulateClickAt(fenced_frame_rfh, blink::WebMouseEvent::Button::kRight,
-                  anchor_element);
+  content::test::SimulateClickInFencedFrameTree(
+      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
 
   // Wait for context menu to be visible.
   menu_observer.WaitForMenuOpenAndClose();
@@ -2274,8 +2235,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
 
   // Open the context menu again.
   ContextMenuWaiter menu_observer_after_network_cutoff;
-  SimulateClickAt(fenced_frame_rfh, blink::WebMouseEvent::Button::kRight,
-                  anchor_element);
+  content::test::SimulateClickInFencedFrameTree(
+      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
 
   // Wait for context menu to be visible.
   menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
@@ -2330,13 +2291,14 @@ IN_PROC_BROWSER_TEST_F(
   // fenced frame, the anchor element needs to be offset by the top left
   // coordinates of the nested iframe relative to the fenced frame.
   const gfx::PointF iframe_offset =
-      GetTopLeftCoordinatesOfElementWithId(fenced_frame_rfh, "child-0");
+      content::test::GetTopLeftCoordinatesOfElementWithId(fenced_frame_rfh,
+                                                          "child-0");
   anchor_element.Offset(iframe_offset.x(), iframe_offset.y());
 
   // Open a context menu by right clicking on the anchor element.
   ContextMenuWaiter menu_observer;
-  SimulateClickAt(nested_iframe_rfh, blink::WebMouseEvent::Button::kRight,
-                  anchor_element);
+  content::test::SimulateClickInFencedFrameTree(
+      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
 
   // Wait for context menu to be visible.
   menu_observer.WaitForMenuOpenAndClose();
@@ -2356,8 +2318,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Open the context menu again.
   ContextMenuWaiter menu_observer_after_network_cutoff;
-  SimulateClickAt(nested_iframe_rfh, blink::WebMouseEvent::Button::kRight,
-                  anchor_element);
+  content::test::SimulateClickInFencedFrameTree(
+      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
 
   // Wait for context menu to be visible.
   menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
@@ -2402,8 +2364,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
 
   // Open a context menu by right clicking on the audio element.
   ContextMenuWaiter menu_observer;
-  SimulateClickAt(fenced_frame_rfh, blink::WebMouseEvent::Button::kRight,
-                  audio_element);
+  content::test::SimulateClickInFencedFrameTree(
+      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, audio_element);
 
   // Wait for context menu to be visible.
   menu_observer.WaitForMenuOpenAndClose();
@@ -2423,8 +2385,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
 
   // Open the context menu again.
   ContextMenuWaiter menu_observer_after_network_cutoff;
-  SimulateClickAt(fenced_frame_rfh, blink::WebMouseEvent::Button::kRight,
-                  audio_element);
+  content::test::SimulateClickInFencedFrameTree(
+      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, audio_element);
 
   // Wait for context menu to be visible.
   menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
@@ -2478,13 +2440,14 @@ IN_PROC_BROWSER_TEST_F(
   // fenced frame, the click point needs to be offset by the top left
   // coordinates of the nested iframe relative to the fenced frame.
   const gfx::PointF iframe_offset =
-      GetTopLeftCoordinatesOfElementWithId(fenced_frame_rfh, "child-0");
+      content::test::GetTopLeftCoordinatesOfElementWithId(fenced_frame_rfh,
+                                                          "child-0");
   audio_element.Offset(iframe_offset.x(), iframe_offset.y());
 
   // Open a context menu by right clicking on the audio element.
   ContextMenuWaiter menu_observer;
-  SimulateClickAt(nested_iframe_rfh, blink::WebMouseEvent::Button::kRight,
-                  audio_element);
+  content::test::SimulateClickInFencedFrameTree(
+      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, audio_element);
 
   // Wait for context menu to be visible.
   menu_observer.WaitForMenuOpenAndClose();
@@ -2504,8 +2467,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Open the context menu again.
   ContextMenuWaiter menu_observer_after_network_cutoff;
-  SimulateClickAt(nested_iframe_rfh, blink::WebMouseEvent::Button::kRight,
-                  audio_element);
+  content::test::SimulateClickInFencedFrameTree(
+      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, audio_element);
 
   // Wait for context menu to be visible.
   menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
@@ -2552,8 +2515,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
 
   // Open a context menu by right clicking on the video element.
   ContextMenuWaiter menu_observer;
-  SimulateClickAt(fenced_frame_rfh, blink::WebMouseEvent::Button::kRight,
-                  click_point);
+  content::test::SimulateClickInFencedFrameTree(
+      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, click_point);
 
   // Wait for context menu to be visible.
   menu_observer.WaitForMenuOpenAndClose();
@@ -2576,8 +2539,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
 
   // Open the context menu again.
   ContextMenuWaiter menu_observer_after_network_cutoff;
-  SimulateClickAt(fenced_frame_rfh, blink::WebMouseEvent::Button::kRight,
-                  click_point);
+  content::test::SimulateClickInFencedFrameTree(
+      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, click_point);
 
   // Wait for context menu to be visible.
   menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
@@ -2635,13 +2598,14 @@ IN_PROC_BROWSER_TEST_F(
   // fenced frame, the click point needs to be offset by the top left
   // coordinates of the nested iframe relative to the fenced frame.
   const gfx::PointF iframe_offset =
-      GetTopLeftCoordinatesOfElementWithId(fenced_frame_rfh, "child-0");
+      content::test::GetTopLeftCoordinatesOfElementWithId(fenced_frame_rfh,
+                                                          "child-0");
   click_point.Offset(iframe_offset.x(), iframe_offset.y());
 
   // Open a context menu by right clicking on the video element.
   ContextMenuWaiter menu_observer;
-  SimulateClickAt(nested_iframe_rfh, blink::WebMouseEvent::Button::kRight,
-                  click_point);
+  content::test::SimulateClickInFencedFrameTree(
+      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, click_point);
 
   // Wait for context menu to be visible.
   menu_observer.WaitForMenuOpenAndClose();
@@ -2664,8 +2628,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Open the context menu again.
   ContextMenuWaiter menu_observer_after_network_cutoff;
-  SimulateClickAt(nested_iframe_rfh, blink::WebMouseEvent::Button::kRight,
-                  click_point);
+  content::test::SimulateClickInFencedFrameTree(
+      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, click_point);
 
   // Wait for context menu to be visible.
   menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
@@ -2713,8 +2677,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
 
   // Open a context menu by right clicking on the image.
   ContextMenuWaiter menu_observer;
-  SimulateClickAt(fenced_frame_rfh, blink::WebMouseEvent::Button::kRight,
-                  click_point);
+  content::test::SimulateClickInFencedFrameTree(
+      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, click_point);
 
   // Wait for context menu to be visible.
   menu_observer.WaitForMenuOpenAndClose();
@@ -2732,8 +2696,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
 
   // Open the context menu again.
   ContextMenuWaiter menu_observer_after_network_cutoff;
-  SimulateClickAt(fenced_frame_rfh, blink::WebMouseEvent::Button::kRight,
-                  click_point);
+  content::test::SimulateClickInFencedFrameTree(
+      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, click_point);
 
   // Wait for context menu to be visible.
   menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
@@ -2786,13 +2750,14 @@ IN_PROC_BROWSER_TEST_F(
   // fenced frame, the click point needs to be offset by the top left
   // coordinates of the nested iframe relative to the fenced frame.
   const gfx::PointF iframe_offset =
-      GetTopLeftCoordinatesOfElementWithId(fenced_frame_rfh, "child-0");
+      content::test::GetTopLeftCoordinatesOfElementWithId(fenced_frame_rfh,
+                                                          "child-0");
   click_point.Offset(iframe_offset.x(), iframe_offset.y());
 
   // Open a context menu by right clicking on the image.
   ContextMenuWaiter menu_observer;
-  SimulateClickAt(fenced_frame_rfh, blink::WebMouseEvent::Button::kRight,
-                  click_point);
+  content::test::SimulateClickInFencedFrameTree(
+      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, click_point);
 
   // Wait for context menu to be visible.
   menu_observer.WaitForMenuOpenAndClose();
@@ -2812,8 +2777,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Open the context menu again.
   ContextMenuWaiter menu_observer_after_network_cutoff;
-  SimulateClickAt(fenced_frame_rfh, blink::WebMouseEvent::Button::kRight,
-                  click_point);
+  content::test::SimulateClickInFencedFrameTree(
+      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, click_point);
 
   // Wait for context menu to be visible.
   menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
