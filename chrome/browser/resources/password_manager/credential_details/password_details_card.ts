@@ -101,8 +101,8 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
         type: Boolean,
         value: false,
         // <if expr="_google_chrome">
-        computed: 'computeShowShareButton_(enableSendPasswords_, ' +
-            'isOptedInForAccountStorage, isSyncingPasswords)',
+        computed: 'computeShowShareButton_(isOptedInForAccountStorage, ' +
+            'isSyncingPasswords)',
         // </if>
       },
 
@@ -116,13 +116,6 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
       showShareFlow_: {
         type: Boolean,
         value: false,
-      },
-
-      enableSendPasswords_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableSendPasswords');
-        },
       },
 
       enableButterOnDesktopFollowup_: {
@@ -145,7 +138,6 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   private showDeletePasswordDialog_: boolean;
   private showShareFlow_: boolean;
   private showShareButton_: boolean;
-  private enableSendPasswords_: boolean;
   private showMovePasswordDialog_: boolean;
   private enableButterOnDesktopFollowup_: boolean;
 
@@ -261,7 +253,7 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   }
 
   private computeShowShareButton_(): boolean {
-    return this.enableSendPasswords_ && !this.isFederated_() &&
+    return !this.isFederated_() &&
         (this.isSyncingPasswords || this.isOptedInForAccountStorage);
   }
 

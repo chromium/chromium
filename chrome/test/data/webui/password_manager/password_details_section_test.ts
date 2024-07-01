@@ -413,7 +413,6 @@ suite('PasswordDetailsSectionTest', function() {
 
   // <if expr="_google_chrome">
   test('Register password sharing IPH for password card', async function() {
-    loadTimeData.overrideValues({enableSendPasswords: true});
     passwordManager.data.isOptedInAccountStorage = true;
 
     const group = createCredentialGroup({
@@ -443,7 +442,6 @@ suite('PasswordDetailsSectionTest', function() {
   test(
       'Password sharing IPH is not registered with passkey card present',
       async function() {
-        loadTimeData.overrideValues({enableSendPasswords: true});
         passwordManager.data.isOptedInAccountStorage = true;
 
         const group = createCredentialGroup({

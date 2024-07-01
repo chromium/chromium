@@ -19,7 +19,6 @@
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/service/sync_service.h"
@@ -628,9 +627,8 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   return password_manager::sync_util::GetAccountForSaving(_prefService,
-                                                          _syncService) &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::kSendPasswords);
+                                                          _syncService)
+      .has_value();
 }
 
 @end

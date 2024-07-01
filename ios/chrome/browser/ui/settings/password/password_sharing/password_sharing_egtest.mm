@@ -136,16 +136,8 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
       std::string("-") + password_manager::kEnableShareButtonUnbranded);
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  if ([self isRunningTest:@selector
-            (testShareButtonVisibilityWithSharingDisabled)]) {
-    config.features_disabled.push_back(
-        password_manager::features::kSendPasswords);
-  } else {
-    config.features_enabled.push_back(
-        password_manager::features::kSendPasswords);
     config.features_enabled.push_back(
         password_manager::features::kPasswordManagerEnableSenderService);
-  }
 
   if ([self isRunningTest:@selector
             (testFirstRunExperienceViewDismissedForAuthentication)] ||
@@ -188,16 +180,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   [super tearDown];
 }
 
-- (void)testShareButtonVisibilityWithSharingDisabled {
-  DISABLE_ON_IPAD_WITH_IOS_17
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [self saveExamplePasswordToProfileStoreAndOpenDetails];
-
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
-}
-
-- (void)testShareButtonVisibilityWithSharingEnabled {
+- (void)testShareButtonVisibility {
   DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];

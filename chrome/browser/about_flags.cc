@@ -5255,10 +5255,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCastEnableStreamingWithHiDPIName,
      flag_descriptions::kCastEnableStreamingWithHiDPIDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(mirroring::features::kCastEnableStreamingWithHiDPI)},
-
-    {"password-sharing", flag_descriptions::kEnablePasswordSharingName,
-     flag_descriptions::kEnablePasswordSharingDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(password_manager::features::kSendPasswords)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     {"enable-search-engine-choice",

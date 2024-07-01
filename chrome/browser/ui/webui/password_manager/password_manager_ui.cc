@@ -488,10 +488,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
 #endif
 
   source->AddBoolean(
-      "enableSendPasswords",
-      base::FeatureList::IsEnabled(password_manager::features::kSendPasswords));
-
-  source->AddBoolean(
       "enableWebAuthnGpmPin",
       base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
           device::kWebAuthnGpmPin.Get());

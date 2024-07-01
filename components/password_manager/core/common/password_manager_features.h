@@ -24,7 +24,6 @@ BASE_DECLARE_FEATURE(kForgotPasswordFormSupport);
 BASE_DECLARE_FEATURE(kIOSPasswordBottomSheetAutofocus);
 #endif  // IS_IOS
 BASE_DECLARE_FEATURE(kPasswordIssuesInSpecificsMetadata);
-BASE_DECLARE_FEATURE(kSendPasswords);
 BASE_DECLARE_FEATURE(kShadowDomSupport);
 BASE_DECLARE_FEATURE(kPasswordChangeWellKnown);
 BASE_DECLARE_FEATURE(kPasswordReuseDetectionEnabled);
