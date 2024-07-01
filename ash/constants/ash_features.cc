@@ -1161,6 +1161,12 @@ BASE_FEATURE(kFlexAutoEnrollment,
              "FlexAutoEnrollment",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls Floating SSO feature which can move cookies between ChromeOS
+// enterprise devices. The feature is also guarded by an enterprise policy, this
+// flag controls if we are even allowed to launch the service observing that
+// policy.
+BASE_FEATURE(kFloatingSso, "FloatingSso", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables Floating Workspace feature on ChromeOS
 BASE_FEATURE(kFloatingWorkspace,
              "FloatingWorkspace",
@@ -3649,6 +3655,10 @@ bool IsFirmwareUpdateUIV2Enabled() {
 bool IsFlexAutoEnrollmentEnabled() {
   return switches::IsRevenBranding() &&
          base::FeatureList::IsEnabled(kFlexAutoEnrollment);
+}
+
+bool IsFloatingSsoAllowed() {
+  return base::FeatureList::IsEnabled(kFloatingSso);
 }
 
 bool IsFloatingWorkspaceEnabled() {

@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/dependency_graph.h"
 #include "components/keyed_service/core/keyed_service_base_factory.h"
@@ -26,7 +26,7 @@ namespace ash::floating_sso {
 class FloatingSsoTest : public policy::PolicyTest {
  public:
   FloatingSsoTest() {
-    feature_list_.InitAndEnableFeature(chromeos::features::kFloatingSso);
+    feature_list_.InitAndEnableFeature(ash::features::kFloatingSso);
   }
   ~FloatingSsoTest() override = default;
 

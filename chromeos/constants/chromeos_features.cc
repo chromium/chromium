@@ -159,12 +159,6 @@ BASE_FEATURE(kJelly, "Jelly", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kJellyroll, "Jellyroll", base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Controls Floating SSO feature which can move cookies between ChromeOS
-// enterprise devices. The feature is also guarded by an enterprise policy, this
-// flag controls if we are even allowed to launch the service observing that
-// policy.
-BASE_FEATURE(kFloatingSso, "FloatingSso", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables Kiosk Heartbeats to be sent via Encrypted Reporting Pipeline
 BASE_FEATURE(kKioskHeartbeatsViaERP,
              "KioskHeartbeatsViaERP",
@@ -418,12 +412,6 @@ bool IsFileSystemProviderContentCacheEnabled() {
   return base::FeatureList::IsEnabled(kFileSystemProviderContentCache);
 #endif
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-bool IsFloatingSsoAllowed() {
-  return base::FeatureList::IsEnabled(kFloatingSso);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool IsJellyEnabled() {
   return base::FeatureList::IsEnabled(kJelly);

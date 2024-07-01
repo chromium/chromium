@@ -868,7 +868,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   FirstRunServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::features::IsFloatingSsoAllowed()) {
+  if (ash::features::IsFloatingSsoAllowed()) {
     ash::floating_sso::FloatingSsoServiceFactory::GetInstance();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
