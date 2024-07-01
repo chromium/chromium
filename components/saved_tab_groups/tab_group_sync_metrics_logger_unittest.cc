@@ -37,6 +37,18 @@ class TabGroupSyncMetricsLoggerTest : public testing::Test {
     device_info_tracker_ = std::make_unique<syncer::FakeDeviceInfoTracker>();
     metrics_logger_ =
         std::make_unique<TabGroupSyncMetricsLogger>(device_info_tracker_.get());
+    SetUpDeviceInfo();
+  }
+
+  void SetUpDeviceInfo() {
+    device_info1_ = test::CreateDeviceInfo(
+        kDeviceGuid1, syncer::DeviceInfo::OsType::kAndroid,
+        syncer::DeviceInfo::FormFactor::kPhone);
+    device_info2_ = test::CreateDeviceInfo(
+        kDeviceGuid2, syncer::DeviceInfo::OsType::kWindows,
+        syncer::DeviceInfo::FormFactor::kDesktop);
+    device_info_tracker_->Add(device_info1_.get());
+    device_info_tracker_->Add(device_info2_.get());
   }
 
   DeviceType GetDeviceType(syncer::DeviceInfo::OsType os_type,
@@ -48,80 +60,207 @@ class TabGroupSyncMetricsLoggerTest : public testing::Test {
  protected:
   std::unique_ptr<syncer::FakeDeviceInfoTracker> device_info_tracker_;
   std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger_;
+  std::unique_ptr<syncer::DeviceInfo> device_info1_;
+  std::unique_ptr<syncer::DeviceInfo> device_info2_;
 };
 
 TEST_F(TabGroupSyncMetricsLoggerTest, HistogramsAreEmittedForLogEvents) {
-  base::HistogramTester histogram_tester;
-  auto device_info1 =
-      test::CreateDeviceInfo(kDeviceGuid1, syncer::DeviceInfo::OsType::kAndroid,
-                             syncer::DeviceInfo::FormFactor::kPhone);
-  auto device_info2 =
-      test::CreateDeviceInfo(kDeviceGuid2, syncer::DeviceInfo::OsType::kWindows,
-                             syncer::DeviceInfo::FormFactor::kDesktop);
-  device_info_tracker_->Add(device_info1.get());
-  device_info_tracker_->Add(device_info2.get());
+  SavedTabGroup group = test::CreateTestSavedTabGroupWithNoTabs();
+  group.SetLocalGroupId(test::GenerateRandomTabGroupID());
+  group.SetCreatorCacheGuid(kDeviceGuid1);
+
+  SavedTabGroupTab tab =
+      test::CreateSavedTabGroupTab("url", u"title", group.saved_guid());
+  tab.SetLocalTabID(test::GenerateRandomTabID());
+  tab.SetCreatorCacheGuid(kDeviceGuid2);
 
   // Group events.
-  metrics_logger_->LogEvent(TabGroupEvent::kTabGroupCreated, kDeviceGuid1,
-                            std::nullopt);
-  histogram_tester.ExpectUniqueSample(
-      "TabGroups.Sync.TabGroup.Created.GroupCreateOrigin",
-      DeviceType::kAndroidPhone, 1u);
+  // Note, group open and close events are tested in separate tests.
+  {
+    base::HistogramTester histogram_tester;
+    metrics_logger_->LogEvent(EventDetails(TabGroupEvent::kTabGroupCreated),
+                              &group, &tab);
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.Sync.TabGroup.Created.GroupCreateOrigin",
+        DeviceType::kAndroidPhone, 1u);
+  }
 
-  metrics_logger_->LogEvent(TabGroupEvent::kTabGroupRemoved, kDeviceGuid1,
-                            std::nullopt);
-  histogram_tester.ExpectUniqueSample(
-      "TabGroups.Sync.TabGroup.Removed.GroupCreateOrigin",
-      DeviceType::kAndroidPhone, 1u);
+  {
+    base::HistogramTester histogram_tester;
+    metrics_logger_->LogEvent(EventDetails(TabGroupEvent::kTabGroupRemoved),
+                              &group, &tab);
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.Sync.TabGroup.Removed.GroupCreateOrigin",
+        DeviceType::kAndroidPhone, 1u);
+  }
 
-  metrics_logger_->LogEvent(TabGroupEvent::kTabGroupOpened, kDeviceGuid1,
-                            std::nullopt);
+  {
+    base::HistogramTester histogram_tester;
+
+    metrics_logger_->LogEvent(
+        EventDetails(TabGroupEvent::kTabGroupVisualsChanged), &group, &tab);
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.Sync.TabGroup.VisualsChanged.GroupCreateOrigin",
+        DeviceType::kAndroidPhone, 1u);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+
+    metrics_logger_->LogEvent(
+        EventDetails(TabGroupEvent::kTabGroupTabsReordered), &group, &tab);
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.Sync.TabGroup.TabsReordered.GroupCreateOrigin",
+        DeviceType::kAndroidPhone, 1u);
+  }
+
+  // Tab events.
+  {
+    base::HistogramTester histogram_tester;
+    metrics_logger_->LogEvent(EventDetails(TabGroupEvent::kTabAdded), &group,
+                              &tab);
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.Sync.TabGroup.TabAdded.GroupCreateOrigin",
+        DeviceType::kAndroidPhone, 1u);
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.Sync.TabGroup.UserInteracted.GroupCreateOrigin",
+        DeviceType::kAndroidPhone, 1u);
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.Sync.TabGroup.UserInteracted.HasTitle", true, 1u);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    metrics_logger_->LogEvent(EventDetails(TabGroupEvent::kTabRemoved), &group,
+                              &tab);
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.Sync.TabGroup.TabRemoved.GroupCreateOrigin",
+        DeviceType::kAndroidPhone, 1u);
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.Sync.TabGroup.TabRemoved.TabCreateOrigin",
+        DeviceType::kWindows, 1u);
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.Sync.TabGroup.UserInteracted.GroupCreateOrigin",
+        DeviceType::kAndroidPhone, 1u);
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.Sync.TabGroup.UserInteracted.HasTitle", true, 1u);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    metrics_logger_->LogEvent(EventDetails(TabGroupEvent::kTabNavigated),
+                              &group, &tab);
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.Sync.TabGroup.TabNavigated.GroupCreateOrigin",
+        DeviceType::kAndroidPhone, 1u);
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.Sync.TabGroup.TabNavigated.TabCreateOrigin",
+        DeviceType::kWindows, 1u);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    metrics_logger_->LogEvent(EventDetails(TabGroupEvent::kTabSelected), &group,
+                              &tab);
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.Sync.TabGroup.TabSelected.GroupCreateOrigin",
+        DeviceType::kAndroidPhone, 1u);
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.Sync.TabGroup.TabSelected.TabCreateOrigin",
+        DeviceType::kWindows, 1u);
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.Sync.TabGroup.UserInteracted.GroupCreateOrigin",
+        DeviceType::kAndroidPhone, 1u);
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.Sync.TabGroup.UserInteracted.HasTitle", true, 1u);
+  }
+}
+
+TEST_F(TabGroupSyncMetricsLoggerTest, TabGroupOpenedFromRevisitUi) {
+  base::HistogramTester histogram_tester;
+
+  SavedTabGroup group = test::CreateTestSavedTabGroupWithNoTabs();
+  group.SetLocalGroupId(test::GenerateRandomTabGroupID());
+  group.SetCreatorCacheGuid(kDeviceGuid1);
+
+  EventDetails details(TabGroupEvent::kTabGroupOpened);
+  details.local_tab_group_id = group.local_group_id();
+  details.opening_source = OpeningSource::kOpenedFromRevisitUi;
+
+  metrics_logger_->LogEvent(details, &group, nullptr);
   histogram_tester.ExpectUniqueSample(
       "TabGroups.Sync.TabGroup.Opened.GroupCreateOrigin",
       DeviceType::kAndroidPhone, 1u);
 
-  metrics_logger_->LogEvent(TabGroupEvent::kTabGroupClosed, kDeviceGuid1,
-                            std::nullopt);
+  histogram_tester.ExpectUniqueSample("TabGroups.Sync.TabGroup.Opened.Reason",
+                                      OpeningSource::kOpenedFromRevisitUi, 1u);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Sync.GroupOpenedByUser.HasTitle", true, 1u);
+}
+
+TEST_F(TabGroupSyncMetricsLoggerTest, TabGroupOpenedFromSync) {
+  base::HistogramTester histogram_tester;
+
+  SavedTabGroup group = test::CreateTestSavedTabGroupWithNoTabs();
+  group.SetLocalGroupId(test::GenerateRandomTabGroupID());
+  group.SetCreatorCacheGuid(kDeviceGuid1);
+
+  EventDetails details(TabGroupEvent::kTabGroupOpened);
+  details.local_tab_group_id = group.local_group_id();
+  details.opening_source = OpeningSource::kAutoOpenedFromSync;
+
+  metrics_logger_->LogEvent(details, &group, nullptr);
+  histogram_tester.ExpectUniqueSample("TabGroups.Sync.TabGroup.Opened.Reason",
+                                      OpeningSource::kAutoOpenedFromSync, 1u);
+  // These histograms aren't recorded for events from sync.
+  histogram_tester.ExpectTotalCount(
+      "TabGroups.Sync.TabGroup.Opened.GroupCreateOrigin", 0u);
+  histogram_tester.ExpectTotalCount("TabGroups.Sync.GroupOpenedByUser.HasTitle",
+                                    0u);
+}
+
+TEST_F(TabGroupSyncMetricsLoggerTest, TabGroupClosedByUser) {
+  base::HistogramTester histogram_tester;
+
+  SavedTabGroup group = test::CreateTestSavedTabGroupWithNoTabs();
+  group.SetLocalGroupId(test::GenerateRandomTabGroupID());
+  group.SetCreatorCacheGuid(kDeviceGuid1);
+
+  EventDetails details(TabGroupEvent::kTabGroupClosed);
+  details.local_tab_group_id = group.local_group_id();
+  details.closing_source = ClosingSource::kClosedByUser;
+
+  metrics_logger_->LogEvent(details, &group, nullptr);
   histogram_tester.ExpectUniqueSample(
       "TabGroups.Sync.TabGroup.Closed.GroupCreateOrigin",
       DeviceType::kAndroidPhone, 1u);
 
-  metrics_logger_->LogEvent(TabGroupEvent::kTabGroupVisualsChanged,
-                            kDeviceGuid1, std::nullopt);
+  histogram_tester.ExpectUniqueSample("TabGroups.Sync.TabGroup.Closed.Reason",
+                                      ClosingSource::kClosedByUser, 1u);
   histogram_tester.ExpectUniqueSample(
-      "TabGroups.Sync.TabGroup.VisualsChanged.GroupCreateOrigin",
-      DeviceType::kAndroidPhone, 1u);
+      "TabGroups.Sync.GroupClosedByUser.HasTitle", true, 1u);
+}
 
-  metrics_logger_->LogEvent(TabGroupEvent::kTabGroupTabsReordered, kDeviceGuid1,
-                            std::nullopt);
-  histogram_tester.ExpectUniqueSample(
-      "TabGroups.Sync.TabGroup.TabsReordered.GroupCreateOrigin",
-      DeviceType::kAndroidPhone, 1u);
+TEST_F(TabGroupSyncMetricsLoggerTest, SyncGroupDeletionIsIgnoredByMetrics) {
+  base::HistogramTester histogram_tester;
 
-  // Tab events.
-  metrics_logger_->LogEvent(TabGroupEvent::kTabAdded, kDeviceGuid1,
-                            std::nullopt);
-  histogram_tester.ExpectUniqueSample(
-      "TabGroups.Sync.TabGroup.TabAdded.GroupCreateOrigin",
-      DeviceType::kAndroidPhone, 1u);
+  SavedTabGroup group = test::CreateTestSavedTabGroupWithNoTabs();
+  group.SetLocalGroupId(test::GenerateRandomTabGroupID());
+  group.SetCreatorCacheGuid(kDeviceGuid1);
 
-  metrics_logger_->LogEvent(TabGroupEvent::kTabRemoved, kDeviceGuid1,
-                            kDeviceGuid2);
-  histogram_tester.ExpectUniqueSample(
-      "TabGroups.Sync.TabGroup.TabRemoved.GroupCreateOrigin",
-      DeviceType::kAndroidPhone, 1u);
-  histogram_tester.ExpectUniqueSample(
-      "TabGroups.Sync.TabGroup.TabRemoved.TabCreateOrigin",
-      DeviceType::kWindows, 1u);
+  EventDetails details(TabGroupEvent::kTabGroupClosed);
+  details.local_tab_group_id = group.local_group_id();
+  details.closing_source = ClosingSource::kDeletedFromSync;
 
-  metrics_logger_->LogEvent(TabGroupEvent::kTabNavigated, kDeviceGuid1,
-                            kDeviceGuid2);
-  histogram_tester.ExpectUniqueSample(
-      "TabGroups.Sync.TabGroup.TabNavigated.GroupCreateOrigin",
-      DeviceType::kAndroidPhone, 1u);
-  histogram_tester.ExpectUniqueSample(
-      "TabGroups.Sync.TabGroup.TabNavigated.TabCreateOrigin",
-      DeviceType::kWindows, 1u);
+  metrics_logger_->LogEvent(details, &group, nullptr);
+  histogram_tester.ExpectUniqueSample("TabGroups.Sync.TabGroup.Closed.Reason",
+                                      ClosingSource::kDeletedFromSync, 1u);
+
+  // These histograms aren't recorded for events from sync.
+  histogram_tester.ExpectTotalCount(
+      "TabGroups.Sync.TabGroup.Closed.GroupCreateOrigin", 0u);
+  histogram_tester.ExpectTotalCount("TabGroups.Sync.GroupClosedByUser.HasTitle",
+                                    0u);
 }
 
 TEST_F(TabGroupSyncMetricsLoggerTest, DeviceTypeConversion) {

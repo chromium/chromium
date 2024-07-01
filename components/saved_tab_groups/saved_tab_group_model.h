@@ -55,6 +55,13 @@ class SavedTabGroupModel {
   const SavedTabGroup* Get(const LocalTabGroupID local_group_id) const;
   const SavedTabGroup* Get(const base::Uuid& id) const;
 
+  // Non-const getters to get a SavedTabGroup. This is safe since
+  // SavedTabGroupModel is internal only to //components/saved_tab_group. The
+  // external callers will go through TabGroupSyncService which will never
+  // expose a non-const SavedTabGroup.
+  SavedTabGroup* Get(const LocalTabGroupID local_group_id);
+  SavedTabGroup* Get(const base::Uuid& id);
+
   // Methods for checking if a group is in the SavedTabGroupModel.
   bool Contains(const LocalTabGroupID& local_group_id) const {
     return GetIndexOf(local_group_id).has_value();

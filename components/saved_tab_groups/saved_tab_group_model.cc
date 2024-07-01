@@ -117,6 +117,24 @@ const SavedTabGroup* SavedTabGroupModel::Get(
   return &saved_tab_groups_[index.value()];
 }
 
+SavedTabGroup* SavedTabGroupModel::Get(const base::Uuid& id) {
+  std::optional<int> index = GetIndexOf(id);
+  if (!index.has_value()) {
+    return nullptr;
+  }
+
+  return &saved_tab_groups_[index.value()];
+}
+
+SavedTabGroup* SavedTabGroupModel::Get(const LocalTabGroupID local_group_id) {
+  std::optional<int> index = GetIndexOf(local_group_id);
+  if (!index.has_value()) {
+    return nullptr;
+  }
+
+  return &saved_tab_groups_[index.value()];
+}
+
 void SavedTabGroupModel::Add(SavedTabGroup saved_group) {
   base::Uuid group_guid = saved_group.saved_guid();
   CHECK(!Contains(group_guid));
