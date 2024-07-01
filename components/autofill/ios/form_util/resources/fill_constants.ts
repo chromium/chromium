@@ -46,17 +46,6 @@ const EXTRACT_MASK_VALUE = 1 << 0;
 
 /**
  * A bit field mask to extract data from WebFormControlElement for
- * extracting option text from WebFormSelectElement. Only valid when
- * EXTRACT_MASK_VALUE is set. This is used for form submission where human
- * readable value is captured.
- *
- * This variable is from enum ExtractMask in
- * chromium/src/components/autofill/content/renderer/form_autofill_util.h
- */
-const EXTRACT_MASK_OPTION_TEXT = 1 << 1;
-
-/**
- * A bit field mask to extract data from WebFormControlElement for
  * extracting options from WebFormControlElement.
  *
  * This variable is from enum ExtractMask in
@@ -88,7 +77,6 @@ export {
   MAX_STRING_LENGTH,
   MAX_EXTRACTABLE_FIELDS,
   EXTRACT_MASK_VALUE,
-  EXTRACT_MASK_OPTION_TEXT,
   EXTRACT_MASK_OPTIONS,
   ROLE_ATTRIBUTE_PRESENTATION,
   RENDERER_ID_NOT_SET,

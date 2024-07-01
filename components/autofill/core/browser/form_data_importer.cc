@@ -484,8 +484,14 @@ FormDataImporter::GetAddressObservedFieldValues(
 
   // Go through each |form| field and attempt to constitute a valid profile.
   for (const AutofillField* const field : section_fields) {
-    std::u16string value;
-    base::TrimWhitespace(field->value(), base::TRIM_ALL, &value);
+    // If `field` has a selected option, we give precedence to the option's text
+    // over its value because the user-visible text is likely more meaningful.
+    // Currently, only <select> elements may have a selected option.
+    base::optional_ref<const SelectOption> selected_option =
+        field->selected_option();
+    std::u16string value =
+        selected_option.has_value() ? selected_option->text : field->value();
+    base::TrimWhitespace(value, base::TRIM_ALL, &value);
 
     // If we don't know the type of the field, or the user hasn't entered any
     // information into the field, then skip it.
@@ -972,16 +978,26 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
   // of `result.card` to the `field`'s value.
   auto extract_if_credit_card_field = [&result, &app_locale = app_locale_](
                                           const AutofillField& field) {
-    // The value of interest is `field->value` or `field->user_input`.
-    std::u16string_view value_view =
-        base::TrimWhitespace(field.value(), base::TRIM_ALL);
-    std::u16string_view user_input_view =
-        base::TrimWhitespace(field.user_input(), base::TRIM_ALL);
-    if (!user_input_view.empty() &&
-        field.Type().GetStorableType() == FieldType::CREDIT_CARD_NUMBER) {
-      value_view = user_input_view;
-    }
-    std::u16string value(value_view);
+    std::u16string value = [&field] {
+      if (field.Type().GetStorableType() == FieldType::CREDIT_CARD_NUMBER) {
+        // Credit card numbers are sometimes obfuscated on form submission.
+        // Therefore, we give preference to the user input over the field value.
+        std::u16string user_input = field.user_input();
+        base::TrimWhitespace(user_input, base::TRIM_ALL);
+        if (!user_input.empty()) {
+          return user_input;
+        }
+      }
+      // If `field` has a selected option, we give precedence to the option's
+      // text over its value because the user-visible text is likely more
+      // meaningful. Currently,
+      // only <select> elements may have a selected option.
+      base::optional_ref<const SelectOption> selected_option =
+          field.selected_option();
+      return selected_option.has_value() ? selected_option->text
+                                         : field.value();
+    }();
+    base::TrimWhitespace(value, base::TRIM_ALL);
 
     // If we don't know the type of the field, or the user hasn't entered any
     // information into the field, then skip it.

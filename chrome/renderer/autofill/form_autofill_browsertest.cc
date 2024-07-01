@@ -2179,8 +2179,9 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelect) {
 
   WebFormControlElement element = GetFormControlElementById("element");
   FormFieldData result1;
-  WebFormControlElementToFormFieldForTesting(WebFormElement(), element, nullptr,
-                                             {ExtractOption::kValue}, &result1);
+  WebFormControlElementToFormFieldForTesting(
+      WebFormElement(), element, nullptr,
+      {ExtractOption::kValue, ExtractOption::kOptions}, &result1);
 
   FormFieldData expected;
   expected.set_id_attribute(u"element");
@@ -2190,25 +2191,20 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelect) {
 
   expected.set_value(u"CA");
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result1);
+  EXPECT_THAT(result1.selected_option().CopyAsOptional(),
+              Optional(Field(&SelectOption::text, u"California")));
 
   FormFieldData result2;
   WebFormControlElementToFormFieldForTesting(
-      WebFormElement(), element, nullptr,
-      {ExtractOption::kValue, ExtractOption::kOptionText}, &result2);
-  expected.set_value(u"California");
+      WebFormElement(), element, nullptr, {ExtractOption::kOptions}, &result2);
+  expected.set_value({});
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result2);
 
-  FormFieldData result3;
-  WebFormControlElementToFormFieldForTesting(
-      WebFormElement(), element, nullptr, {ExtractOption::kOptions}, &result3);
-  expected.set_value({});
-  EXPECT_FORM_FIELD_DATA_EQUALS(expected, result3);
-
-  ASSERT_EQ(2U, result3.options().size());
-  EXPECT_EQ(u"CA", result3.options()[0].value);
-  EXPECT_EQ(u"California", result3.options()[0].text);
-  EXPECT_EQ(u"TX", result3.options()[1].value);
-  EXPECT_EQ(u"Texas", result3.options()[1].text);
+  ASSERT_EQ(2U, result2.options().size());
+  EXPECT_EQ(u"CA", result2.options()[0].value);
+  EXPECT_EQ(u"California", result2.options()[0].text);
+  EXPECT_EQ(u"TX", result2.options()[1].value);
+  EXPECT_EQ(u"Texas", result2.options()[1].text);
 }
 
 // We copy extra attributes for the select field.
@@ -4969,11 +4965,10 @@ TEST_F(FormAutofillTest, SelectOneAsText) {
   WebVector<WebFormElement> forms = frame->GetDocument().GetTopLevelForms();
   ASSERT_EQ(1U, forms.size());
 
-  // Extract the country select-one value as text.
   FormData form =
       *ExtractFormData(forms[0].GetDocument(), forms[0],
                        *base::MakeRefCounted<FieldDataManager>(),
-                       {ExtractOption::kValue, ExtractOption::kOptionText});
+                       {ExtractOption::kValue, ExtractOption::kOptions});
   EXPECT_EQ(u"TestForm", form.name());
   EXPECT_EQ(GURL("http://cnn.com"), form.action());
 
@@ -5000,45 +4995,13 @@ TEST_F(FormAutofillTest, SelectOneAsText) {
 
   expected.set_id_attribute(u"country");
   expected.set_name(expected.id_attribute());
-  expected.set_value(u"Albania");
-  expected.set_label({});
-  expected.set_form_control_type(FormControlType::kSelectOne);
-  expected.set_max_length(0);
-  EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[2]);
-
-  form.set_fields({});
-  // Extract the country select-one value as value.
-  form = *ExtractFormData(forms[0].GetDocument(), forms[0],
-                          *base::MakeRefCounted<FieldDataManager>(),
-                          {ExtractOption::kValue});
-  EXPECT_EQ(u"TestForm", form.name());
-  EXPECT_EQ(GURL("http://cnn.com"), form.action());
-
-  ASSERT_EQ(3U, fields.size());
-
-  expected.set_id_attribute(u"firstname");
-  expected.set_name(expected.id_attribute());
-  expected.set_value(u"John");
-  expected.set_label(u"John");
-  expected.set_form_control_type(FormControlType::kInputText);
-  expected.set_max_length(FormFieldData::kDefaultMaxLength);
-  EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[0]);
-
-  expected.set_id_attribute(u"lastname");
-  expected.set_name(expected.id_attribute());
-  expected.set_value(u"Smith");
-  expected.set_label(u"Smith");
-  expected.set_form_control_type(FormControlType::kInputText);
-  expected.set_max_length(FormFieldData::kDefaultMaxLength);
-  EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[1]);
-
-  expected.set_id_attribute(u"country");
-  expected.set_name(expected.id_attribute());
   expected.set_value(u"AL");
   expected.set_label({});
   expected.set_form_control_type(FormControlType::kSelectOne);
   expected.set_max_length(0);
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[2]);
+  EXPECT_THAT(fields[2].selected_option().CopyAsOptional(),
+              Optional(Field(&SelectOption::text, u"Albania")));
 }
 
 TEST_F(FormAutofillTest, UnownedFormElementsToFormDataWithoutForm) {

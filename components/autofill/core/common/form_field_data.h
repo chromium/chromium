@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/i18n/rtl.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/html_field_types.h"
@@ -71,13 +72,21 @@ enum class AssignedLabelSource {
 // values.
 using FieldPropertiesMask = std::underlying_type_t<FieldPropertiesFlags>;
 
-// For the HTML snippet |<option value="US">United States</option>|, the
-// value is "US" and the contents is "United States".
+// HTML                                      | value  | text
+// ------------------------------------------+--------+------
+// <option value=Foo label=Bar>Baz</option>  | "Foo"  | "Bar"
+// <option value=Foo>Bar</option>            | "Foo"  | "Bar"
+// <option label=Bar>Foo</option>            | "Foo"  | "Bar"
+// <option>Foo</option>                      | "Foo"  | "Foo"
+// <option value=Foo></option>               | "Foo"  | ""
+// <option label=Bar></option>               | ""     | "Bar"
 struct SelectOption {
   friend bool operator==(const SelectOption& lhs,
                          const SelectOption& rhs) = default;
 
+  // The option's "value" attribute, or, if not present, its text content.
   std::u16string value;
+  // The option's "label" attribute, or, if not present, its text content.
   std::u16string text;
 };
 
@@ -288,12 +297,28 @@ class FormFieldData {
   const std::u16string& label() const { return label_; }
   void set_label(std::u16string label) { label_ = std::move(label); }
 
-  // The form control element's value or the contenteditable's text content,
-  // depending on the `form_control_type`.
+  // The form control element's value (i.e., the value of their IDL attribute
+  // "value") or the contenteditable's text content, depending on the
+  // FormFieldData::form_control_type().
+  //
+  // FormFieldData::value() may not be the ideal human-readable representation:
+  // <select> elements usually (but not necessarily!) have one selected option
+  // with a human-visible "text", which is usually the better string to display
+  // to the user (e.g., during form import). See SelectOption and
+  // FormFieldData::selected_value() for details.
+  //
   // Truncated at `kMaxStringLength`.
   // TODO(crbug.com/40941640): Extract the value of contenteditables on iOS.
   const std::u16string& value() const { return value_; }
   void set_value(std::u16string value) { value_ = std::move(value); }
+
+  // Returns the (first) selected option. Returns std::nullopt if none is found.
+  // The only field types that come with options are FormControlType::kSelect*
+  // and FormControlType::kInput* with a datalist. But even their `value()` may
+  // mismatch all `options()`, e.g., when JavaScript set the value to a
+  // different value or when the number or string length of the options exceeded
+  // limits during extraction.
+  base::optional_ref<const SelectOption> selected_option() const;
 
   // The selected text, or the empty string if no text is selected.
   // Truncated at `50 * kMaxStringLength`.

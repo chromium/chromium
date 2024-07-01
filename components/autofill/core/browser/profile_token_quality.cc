@@ -167,11 +167,19 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
       // An observation for the `stored_type` and `hash` was already collected.
       continue;
     }
+
+    // If the field has a selected option, we give precedence to the option's
+    // text over its value because the user-visible text is likely more
+    // meaningful. Currently, only <select> elements may have a selected option.
+    base::optional_ref<const SelectOption> selected_option =
+        form_data.fields()[i].selected_option();
+    std::u16string value = selected_option.has_value()
+                               ? selected_option->text
+                               : form_data.fields()[i].value();
     possible_observations.emplace_back(
         stored_type,
         Observation{.type = base::to_underlying(GetObservationTypeFromField(
-                        field, form_data.fields()[i].value(), other_profiles,
-                        pdm.app_locale())),
+                        field, value, other_profiles, pdm.app_locale())),
                     .form_hash = hash});
   }
   return AddSubsetOfObservations(std::move(possible_observations)) > 0;

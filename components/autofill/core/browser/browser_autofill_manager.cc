@@ -3006,10 +3006,17 @@ void BrowserAutofillManager::PreProcessStateMatchingTypes(
         continue;
       }
 
+      // If `field` has a selected option (currently, only <select> fields may
+      // have a selected option), we give precedence to the option's text over
+      // its value because the user-visible text is likely more meaningful.
+      base::optional_ref<const SelectOption> selected_option =
+          field->selected_option();
+      const std::u16string& value =
+          selected_option.has_value() ? selected_option->text : field->value();
       std::optional<AlternativeStateNameMap::CanonicalStateName>
           canonical_state_name_from_text =
               AlternativeStateNameMap::GetCanonicalStateName(
-                  base::UTF16ToUTF8(country_code), field->value());
+                  base::UTF16ToUTF8(country_code), value);
 
       if (canonical_state_name_from_text &&
           canonical_state_name_from_text.value() ==

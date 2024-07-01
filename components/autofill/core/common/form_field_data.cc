@@ -355,6 +355,15 @@ FormFieldData& FormFieldData::operator=(FormFieldData&&) = default;
 
 FormFieldData::~FormFieldData() = default;
 
+base::optional_ref<const SelectOption> FormFieldData::selected_option() const {
+  for (const SelectOption& option : options()) {
+    if (option.value == value()) {
+      return option;
+    }
+  }
+  return std::nullopt;
+}
+
 bool FormFieldData::SameFieldAs(const FormFieldData& field) const {
   auto equality_tuple = [](const FormFieldData& f) {
     return std::tuple_cat(

@@ -69,9 +69,6 @@ using ButtonTitlesCache = base::flat_map<FormRendererId, ButtonTitleList>;
 // Copied to components/autofill/ios/browser/resources/autofill_controller.js.
 enum class ExtractOption {
   kValue,       // Extract value from WebFormControlElement.
-  kOptionText,  // Extract option text from WebFormSelectElement. Only
-                // valid when kValue is set. This is used for form submission
-                // where human readable value is captured.
   kOptions,     // Extract options from WebFormControlElement.
   kBounds,      // Extract bounds from WebFormControlElement, could
                 // trigger layout if needed.
@@ -89,7 +86,6 @@ std::optional<FormData> ExtractFormData(
     const blink::WebFormElement& form_element,
     const FieldDataManager& field_data_manager,
     DenseSet<ExtractOption> extract_options = {ExtractOption::kValue,
-                                               ExtractOption::kOptionText,
                                                ExtractOption::kOptions});
 
 // Helper function to assist in getting the canonical form of the action and

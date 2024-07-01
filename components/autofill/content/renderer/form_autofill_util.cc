@@ -1909,26 +1909,7 @@ void WebFormControlElementToFormField(
     return;
   }
 
-  std::u16string value = element.Value().Utf16();
-
-  if (IsSelectOrSelectListElement(element) &&
-      extract_options.contains(ExtractOption::kOptionText)) {
-    // Convert the |element| value to text if requested.
-    WebVector<WebElement> list_items =
-        GetListItemsForSelectOrSelectList(element);
-    for (const auto& list_item : list_items) {
-      if (HasTagName<kOption>(list_item)) {
-        const WebOptionElement option_element =
-            list_item.To<WebOptionElement>();
-        if (option_element.Value().Utf16() == value) {
-          value = option_element.GetText().Utf16();
-          break;
-        }
-      }
-    }
-  }
-
-  field->set_value(std::move(value).substr(0, kMaxStringLength));
+  field->set_value(element.Value().Utf16().substr(0, kMaxStringLength));
   field->set_selected_text(
       element.SelectedText().Utf16().substr(0, kMaxSelectedTextLength));
   field->set_allows_writing_suggestions(element.WritingSuggestions());

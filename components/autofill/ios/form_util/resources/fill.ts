@@ -458,8 +458,8 @@ gCrWeb.fill.webFormElementToFormData = function(
  *
  * @param element The element to be processed.
  * @param extractMask A bit field mask to extract data from |element|.
- *     See the documentation on variable EXTRACT_MASK_VALUE,
- *     EXTRACT_MASK_OPTION_TEXT and EXTRACT_MASK_OPTIONS.
+ *     See the documentation on variable EXTRACT_MASK_VALUE and
+ *     EXTRACT_MASK_OPTIONS.
  * @param field Field to fill in the element
  *     information.
  */
@@ -546,18 +546,6 @@ gCrWeb.fill.webFormControlElementToFormField = function(
   }
 
   let value = gCrWeb.fill.value(element);
-
-  if (gCrWeb.fill.isSelectElement(element) &&
-      (extractMask & fillConstants.EXTRACT_MASK_OPTION_TEXT)) {
-    // Convert the |select_element| value to text if requested.
-    const options = (element as HTMLSelectElement).options;
-    for (const optionElement of options) {
-      if (gCrWeb.fill.value(optionElement) === value) {
-        value = optionElement!.text;
-        break;
-      }
-    }
-  }
 
   // There is a constraint on the maximum data length in method
   // WebFormControlElementToFormField() in form_autofill_util.h in order to

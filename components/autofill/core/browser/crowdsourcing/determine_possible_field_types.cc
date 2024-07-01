@@ -135,10 +135,15 @@ void FindAndSetPossibleFieldTypesForField(
     return;
   }
   FieldTypeSet matching_types;
-  std::u16string value;
-  // Note: in case of a <select><option value="A">B</option></select>, the
-  // `field.value` stores "B".
-  base::TrimWhitespace(field.value(), base::TRIM_ALL, &value);
+
+  // If `field` has a selected option, we give precedence to the option's text
+  // over its value because the user-visible text is likely more meaningful.
+  // Currently, only <select> elements may have a selected option.
+  base::optional_ref<const SelectOption> selected_option =
+      field.selected_option();
+  std::u16string value =
+      selected_option.has_value() ? selected_option->text : field.value();
+  base::TrimWhitespace(value, base::TRIM_ALL, &value);
 
   for (const AutofillProfile& profile : profiles) {
     profile.GetMatchingTypes(value, app_locale, &matching_types);
