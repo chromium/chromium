@@ -10,7 +10,10 @@ import androidx.annotation.ColorInt;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -32,7 +35,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * <li>Shrink the bottom controls and move the scene layer down along with the changing bottom
  *     controls min height.
  */
-public class MiniPlayerMediator {
+public class MiniPlayerMediator implements BottomControlsLayer {
     private final PropertyModel mModel;
     private final BottomControlsStacker mBottomControlsStacker;
     private MiniPlayerCoordinator mCoordinator;
@@ -94,6 +97,7 @@ public class MiniPlayerMediator {
                         .build();
         mBottomControlsStacker = bottomControlsStacker;
         mBottomControlsStacker.getBrowserControls().addObserver(mBrowserControlsStateObserver);
+        mBottomControlsStacker.addLayer(this);
     }
 
     void setCoordinator(MiniPlayerCoordinator coordinator) {
@@ -102,6 +106,7 @@ public class MiniPlayerMediator {
 
     void destroy() {
         getBrowserControls().removeObserver(mBrowserControlsStateObserver);
+        mBottomControlsStacker.removeLayer(this);
     }
 
     @VisibilityState
@@ -192,7 +197,7 @@ public class MiniPlayerMediator {
      *
      * @param newState New visibility.
      */
-    public void onTransitionFinished(@VisibilityState int newState) {
+    private void onTransitionFinished(@VisibilityState int newState) {
         mModel.set(Properties.VISIBILITY, newState);
     }
 
@@ -217,16 +222,34 @@ public class MiniPlayerMediator {
     private void setBottomControlsHeight(int height, int minHeight) {
         mIsAnimationStarted = false;
         boolean animate = mModel.get(Properties.ANIMATE_VISIBILITY_CHANGES);
-        if (animate) {
-            mBottomControlsStacker.setAnimateBrowserControlsHeightChanges(true);
-        }
-        mBottomControlsStacker.setBottomControlsHeight(height, minHeight);
-        if (animate) {
-            mBottomControlsStacker.setAnimateBrowserControlsHeightChanges(false);
-        }
+        mBottomControlsStacker.setBottomControlsHeight(height, minHeight, animate);
     }
 
     private BrowserControlsStateProvider getBrowserControls() {
         return mBottomControlsStacker.getBrowserControls();
+    }
+
+    // Implements BottomControlsStacker.BottomControlsLayer
+
+    @Override
+    public int getType() {
+        return LayerType.READ_ALOUD_PLAYER;
+    }
+
+    @Override
+    public int getHeight() {
+        return mLayoutHeightPx;
+    }
+
+    @Override
+    public @LayerScrollBehavior int getScrollBehavior() {
+        return LayerScrollBehavior.NO_SCROLL_OFF;
+    }
+
+    @Override
+    public boolean isVisible() {
+        // Consider layer visible even it's during transition.
+        return mModel.get(Properties.VISIBILITY) == VisibilityState.VISIBLE
+                || mModel.get(Properties.VISIBILITY) == VisibilityState.SHOWING;
     }
 }

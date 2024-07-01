@@ -44,6 +44,7 @@ BASE_DECLARE_FEATURE(kBackGestureRefactorAndroid);
 BASE_DECLARE_FEATURE(kBackToHomeAnimation);
 BASE_DECLARE_FEATURE(kBackgroundThreadPool);
 BASE_DECLARE_FEATURE(kBlockIntentsWhileLocked);
+BASE_DECLARE_FEATURE(kBottomBrowserControlsRefactor);
 BASE_DECLARE_FEATURE(kBrowserControlsEarlyResize);
 BASE_DECLARE_FEATURE(kCacheActivityTaskID);
 BASE_DECLARE_FEATURE(kCastDeviceFilter);
