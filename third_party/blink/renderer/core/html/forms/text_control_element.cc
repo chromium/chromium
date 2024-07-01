@@ -816,8 +816,14 @@ void TextControlElement::ScheduleSelectEvent() {
 
 void TextControlElement::ScheduleSelectionchangeEvent() {
   if (RuntimeEnabledFeatures::DispatchSelectionchangeEventPerElementEnabled()) {
-    EnqueueEvent(*Event::CreateBubble(event_type_names::kSelectionchange),
-                 TaskType::kMiscPlatformAPI);
+    if (!IsInShadowTree()) {
+      EnqueueEvent(*Event::CreateBubble(event_type_names::kSelectionchange),
+                   TaskType::kMiscPlatformAPI);
+    } else {
+      GetDocument().EnqueueEvent(
+          *Event::CreateBubble(event_type_names::kSelectionchange),
+          TaskType::kMiscPlatformAPI);
+    }
   }
 }
 
