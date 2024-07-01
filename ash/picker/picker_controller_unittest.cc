@@ -669,7 +669,14 @@ TEST_F(PickerControllerTest,
               Not(Contains(PickerCategory::kEditorWrite)));
 }
 
-TEST_F(PickerControllerTest, GetsRecentEmoji) {
+TEST_F(PickerControllerTest, SuggestedEmojiReturnsDefaultEmojisWhenEmpty) {
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+
+  EXPECT_THAT(controller.GetSuggestedEmoji(), ElementsAre("😀", "😃", "😄"));
+}
+
+TEST_F(PickerControllerTest, SuggestedEmojiReturnsRecentEmoji) {
   PickerController controller;
   NiceMock<TestPickerClient> client(&controller);
   base::Value::List history_value;
@@ -678,10 +685,7 @@ TEST_F(PickerControllerTest, GetsRecentEmoji) {
   ScopedDictPrefUpdate update(client.GetPrefs(), prefs::kEmojiPickerHistory);
   update->Set("emoji", std::move(history_value));
 
-  EXPECT_THAT(controller.GetRecentEmoji(ui::EmojiPickerCategory::kEmojis),
-              ElementsAre("abc", "xyz"));
-  EXPECT_THAT(controller.GetRecentEmoji(ui::EmojiPickerCategory::kEmoticons),
-              IsEmpty());
+  EXPECT_THAT(controller.GetSuggestedEmoji(), ElementsAre("abc", "xyz"));
 }
 
 TEST_F(PickerControllerTest, AddsNewRecentEmoji) {
@@ -696,35 +700,32 @@ TEST_F(PickerControllerTest, AddsNewRecentEmoji) {
   controller.ToggleWidget();
   controller.InsertResultOnNextFocus(PickerSearchResult::Emoji(u"def"));
 
-  EXPECT_THAT(controller.GetRecentEmoji(ui::EmojiPickerCategory::kEmojis),
-              ElementsAre("def", "abc", "xyz"));
+  EXPECT_THAT(controller.GetSuggestedEmoji(), ElementsAre("def", "abc", "xyz"));
 }
 
-TEST_F(PickerControllerTest, AddsExistingRecentEmoticon) {
+TEST_F(PickerControllerTest, AddsExistingRecentEmoji) {
   PickerController controller;
   NiceMock<TestPickerClient> client(&controller);
   base::Value::List history_value;
   history_value.Append(base::Value::Dict().Set("text", "abc"));
   history_value.Append(base::Value::Dict().Set("text", "xyz"));
   ScopedDictPrefUpdate update(client.GetPrefs(), prefs::kEmojiPickerHistory);
-  update->Set("emoticon", std::move(history_value));
+  update->Set("emoji", std::move(history_value));
 
   controller.ToggleWidget();
-  controller.InsertResultOnNextFocus(PickerSearchResult::Emoticon(u"xyz"));
+  controller.InsertResultOnNextFocus(PickerSearchResult::Emoji(u"xyz"));
 
-  EXPECT_THAT(controller.GetRecentEmoji(ui::EmojiPickerCategory::kEmoticons),
-              ElementsAre("xyz", "abc"));
+  EXPECT_THAT(controller.GetSuggestedEmoji(), ElementsAre("xyz", "abc"));
 }
 
-TEST_F(PickerControllerTest, AddsRecentSymbolToEmptyHistory) {
+TEST_F(PickerControllerTest, AddsRecentEmojiEmptyHistory) {
   PickerController controller;
   NiceMock<TestPickerClient> client(&controller);
 
   controller.ToggleWidget();
-  controller.InsertResultOnNextFocus(PickerSearchResult::Symbol(u"abc"));
+  controller.InsertResultOnNextFocus(PickerSearchResult::Emoji(u"abc"));
 
-  EXPECT_THAT(controller.GetRecentEmoji(ui::EmojiPickerCategory::kSymbols),
-              ElementsAre("abc"));
+  EXPECT_THAT(controller.GetSuggestedEmoji(), ElementsAre("abc"));
 }
 
 struct ActionTestCase {

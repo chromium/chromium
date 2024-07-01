@@ -101,9 +101,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   PickerSessionMetrics& GetSessionMetrics() override;
   PickerActionType GetActionForResult(
       const PickerSearchResult& result) override;
-  std::vector<std::string> GetRecentEmoji(
-      ui::EmojiPickerCategory category) override;
-  std::vector<std::string> GetPlaceholderEmojis() override;
+  std::vector<std::string> GetSuggestedEmoji() override;
 
   // views:WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
@@ -124,6 +122,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   void UpdateRecentEmoji(ui::EmojiPickerCategory category,
                          std::u16string_view text);
   void OnFeatureTourCompleted();
+  std::vector<std::string> GetRecentEmoji(ui::EmojiPickerCategory category);
 
   PickerFeatureTour feature_tour_;
   raw_ptr<PickerClient> client_ = nullptr;

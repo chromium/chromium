@@ -616,22 +616,11 @@ void PickerView::ResetEmojiBarToZeroState() {
   }
 
   std::vector<PickerSearchResult> emoji_bar_results;
-  std::vector<std::string> recent_emojis =
-      delegate_->GetRecentEmoji(ui::EmojiPickerCategory::kEmojis);
-  if (recent_emojis.empty()) {
-    std::vector<std::string> placeholder_emojis =
-        delegate_->GetPlaceholderEmojis();
-    emoji_bar_results.reserve(placeholder_emojis.size());
-    for (const std::string& emoji : placeholder_emojis) {
-      emoji_bar_results.push_back(
-          PickerSearchResult::Emoji(base::UTF8ToUTF16(emoji)));
-    }
-  } else {
-    emoji_bar_results.reserve(recent_emojis.size());
-    for (const std::string& emoji : recent_emojis) {
-      emoji_bar_results.push_back(
-          PickerSearchResult::Emoji(base::UTF8ToUTF16(emoji)));
-    }
+  std::vector<std::string> suggested_emojis = delegate_->GetSuggestedEmoji();
+  emoji_bar_results.reserve(suggested_emojis.size());
+  for (const std::string& emoji : suggested_emojis) {
+    emoji_bar_results.push_back(
+        PickerSearchResult::Emoji(base::UTF8ToUTF16(emoji)));
   }
 
   emoji_bar_view_->SetSearchResults(std::move(emoji_bar_results));

@@ -620,35 +620,14 @@ PickerActionType PickerController::GetActionForResult(
       result.data());
 }
 
-std::vector<std::string> PickerController::GetRecentEmoji(
-    ui::EmojiPickerCategory category) {
-  if (client_ == nullptr || client_->GetPrefs() == nullptr) {
-    return {};
+std::vector<std::string> PickerController::GetSuggestedEmoji() {
+  std::vector<std::string> recent_emojis =
+      GetRecentEmoji(ui::EmojiPickerCategory::kEmojis);
+  if (recent_emojis.empty()) {
+    // Fall back to a default set of suggested emojis.
+    return {"😀", "😃", "😄"};
   }
-
-  const base::Value::List* history = client_->GetPrefs()
-                                         ->GetDict(prefs::kEmojiPickerHistory)
-                                         .FindList(ConvertToString(category));
-  if (history == nullptr) {
-    return {};
-  }
-  std::vector<std::string> results;
-  for (const auto& it : *history) {
-    const base::Value::Dict* value_dict = it.GetIfDict();
-    if (value_dict == nullptr) {
-      continue;
-    }
-    const std::string* text =
-        value_dict->FindString(kEmojiHistoryValueFieldName);
-    if (text != nullptr) {
-      results.push_back(*text);
-    }
-  }
-  return results;
-}
-
-std::vector<std::string> PickerController::GetPlaceholderEmojis() {
-  return {"😀", "😃", "😄"};
+  return recent_emojis;
 }
 
 void PickerController::OnWidgetDestroying(views::Widget* widget) {
@@ -731,6 +710,33 @@ void PickerController::UpdateRecentEmoji(ui::EmojiPickerCategory category,
 
 void PickerController::OnFeatureTourCompleted() {
   ShowWidget(base::TimeTicks::Now());
+}
+
+std::vector<std::string> PickerController::GetRecentEmoji(
+    ui::EmojiPickerCategory category) {
+  if (client_ == nullptr || client_->GetPrefs() == nullptr) {
+    return {};
+  }
+
+  const base::Value::List* history = client_->GetPrefs()
+                                         ->GetDict(prefs::kEmojiPickerHistory)
+                                         .FindList(ConvertToString(category));
+  if (history == nullptr) {
+    return {};
+  }
+  std::vector<std::string> results;
+  for (const auto& it : *history) {
+    const base::Value::Dict* value_dict = it.GetIfDict();
+    if (value_dict == nullptr) {
+      continue;
+    }
+    const std::string* text =
+        value_dict->FindString(kEmojiHistoryValueFieldName);
+    if (text != nullptr) {
+      results.push_back(*text);
+    }
+  }
+  return results;
 }
 
 }  // namespace ash

@@ -125,8 +125,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     FakeSearchFunction search_function;
     PickerActionType action_type = PickerActionType::kInsert;
     std::vector<PickerSearchResult> emoji_results;
-    std::vector<std::string> recent_emojis;
-    std::vector<std::string> placeholder_emojis;
+    std::vector<std::string> suggested_emojis;
   };
 
   FakePickerViewDelegate() = default;
@@ -192,13 +191,8 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     return options_.action_type;
   }
 
-  std::vector<std::string> GetRecentEmoji(
-      ui::EmojiPickerCategory category) override {
-    return options_.recent_emojis;
-  }
-
-  std::vector<std::string> GetPlaceholderEmojis() override {
-    return options_.placeholder_emojis;
+  std::vector<std::string> GetSuggestedEmoji() override {
+    return options_.suggested_emojis;
   }
 
   std::optional<PickerSearchResult> last_inserted_result() const {
@@ -769,10 +763,10 @@ TEST_F(PickerViewTest, SearchingShowsExpressionResultsInEmojiBar) {
                           Truly(&views::IsViewClass<PickerSymbolItemView>)));
 }
 
-TEST_F(PickerViewTest, InitiallyShowsRecentEmojis) {
+TEST_F(PickerViewTest, InitiallyShowsSuggestedEmojis) {
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kExpressions},
-      .recent_emojis = {"😊", "👍"},
+      .suggested_emojis = {"😊", "👍"},
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -788,25 +782,6 @@ TEST_F(PickerViewTest, InitiallyShowsRecentEmojis) {
                       Property(&PickerEmojiItemView::GetTextForTesting, u"😊")),
                   AsView<PickerEmojiItemView>(Property(
                       &PickerEmojiItemView::GetTextForTesting, u"👍"))));
-}
-
-TEST_F(PickerViewTest, InitiallyShowsPlaceholderEmojisIfNoRecentEmojis) {
-  FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kExpressions},
-      .recent_emojis = {},
-      .placeholder_emojis = {"😃"},
-  });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
-  widget->Show();
-
-  PickerView* picker_view = GetPickerViewFromWidget(*widget);
-  ASSERT_NE(picker_view->emoji_bar_view_for_testing(), nullptr);
-  EXPECT_TRUE(picker_view->emoji_bar_view_for_testing()->GetVisible());
-  EXPECT_THAT(picker_view->emoji_bar_view_for_testing()
-                  ->item_row_for_testing()
-                  ->children(),
-              ElementsAre(AsView<PickerEmojiItemView>(
-                  Property(&PickerEmojiItemView::GetTextForTesting, u"😃"))));
 }
 
 TEST_F(PickerViewTest, NoEmojiBarIfExpressionsCategoryNotAvailable) {
