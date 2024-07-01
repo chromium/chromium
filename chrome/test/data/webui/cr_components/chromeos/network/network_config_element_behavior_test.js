@@ -5,6 +5,7 @@
 import {NetworkConfigElementBehavior} from 'chrome://resources/ash/common/network/network_config_element_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {flush, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('CrComponentsNetworkConfigElementBehaviorTest', function() {
   /** @type {!NetworkConfigElementBehavior} */

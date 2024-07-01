@@ -6,6 +6,7 @@ import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/ash/common/network/network_proxy.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('NetworkProxyTest', function() {
   /** @type {!NetworkProxy|undefined} */

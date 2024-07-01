@@ -162,12 +162,19 @@ ts_library("test_build_ts") {
   testonly = true
   in_files = media_app_test_ts
   definitions = media_app_definitions_staged + media_app_test_definitions_staged
-  deps = [ ":build_ts" ]
+  deps = [
+    ":build_ts",
+    "//chrome/test/data/webui:build_ts",
+  ]
   extra_deps = [
     "//ash/webui/media_app_ui/resources/js:generate_definitions",
     "//ash/webui/media_app_ui/resources/js:stage_for_tsc",
     "//ash/webui/media_app_ui/test:stage_for_test_tsc",
   ]
+
+  path_mappings = [ "chrome://webui-test/*|" +
+                    rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                                target_gen_dir) ]
 }
 
 # Used to turn off tests that only work with our CIPD package e.g. loading ink.

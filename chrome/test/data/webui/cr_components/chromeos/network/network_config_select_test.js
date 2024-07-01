@@ -7,6 +7,7 @@ import 'chrome://resources/ash/common/network/network_config_select.js';
 
 import {SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('NetworkConfigSelectTest', function() {
   /** @type {!NetworkConfigSelect|undefined} */

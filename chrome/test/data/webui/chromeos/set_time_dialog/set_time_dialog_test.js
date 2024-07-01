@@ -8,6 +8,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SetTimeBrowserProxyImpl} from 'chrome://set-time/set_time_browser_proxy.js';
+import {assertEquals, assertGT, assertLE, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestSetTimeBrowserProxy} from './test_set_time_browser_proxy.js';
 

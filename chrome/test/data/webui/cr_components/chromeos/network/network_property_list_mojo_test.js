@@ -7,6 +7,7 @@ import 'chrome://resources/ash/common/network/network_property_list_mojo.js';
 
 import {FAKE_CREDENTIAL} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('NetworkPropertyListMojoTest', function() {
   /** @type {!NetworkPropertyListMojo|undefined} */

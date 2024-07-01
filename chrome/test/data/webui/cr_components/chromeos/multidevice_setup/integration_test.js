@@ -8,6 +8,7 @@ import 'chrome://resources/ash/common/multidevice_setup/multidevice_setup.js';
 import {FakeMojoService} from 'chrome://resources/ash/common/multidevice_setup/fake_mojo_service.js';
 import {BrowserProxyImpl} from 'chrome://resources/ash/common/multidevice_setup/multidevice_setup_browser_proxy.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {FakeQuickUnlockPrivate} from '../../../chromeos/settings/fake_quick_unlock_private.js';

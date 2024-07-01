@@ -7,6 +7,7 @@ import 'chrome://resources/ash/common/network/network_choose_mobile.js';
 
 import {ConnectionStateType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('NetworkChooseMobileTest', function() {
   /** @type {!NetworkChooseMobile|undefined} */

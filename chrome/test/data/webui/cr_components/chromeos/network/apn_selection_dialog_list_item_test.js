@@ -6,7 +6,7 @@ import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/ash/common/network/apn_selection_dialog_list_item.js';
 
 import {ApnSelectionDialogListItem} from 'chrome://resources/ash/common/network/apn_selection_dialog_list_item.js';
-import {assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('ApnSelectionDialogListItem', () => {

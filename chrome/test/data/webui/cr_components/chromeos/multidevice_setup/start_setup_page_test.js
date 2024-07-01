@@ -6,6 +6,7 @@ import 'chrome://multidevice-setup/strings.m.js';
 import 'chrome://resources/ash/common/multidevice_setup/start_setup_page.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 /**
  * In the testing framework, a click on a select option does not cause a

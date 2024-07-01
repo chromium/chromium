@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {getDiffAndUpdateCounter, getDiffPerSecAndUpdateCounter, getValueWithUnit, toPercentageString} from 'chrome://sys-internals/index.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {assertCloseTo, MEMORY_UNITS} from './test_util.js';
 
