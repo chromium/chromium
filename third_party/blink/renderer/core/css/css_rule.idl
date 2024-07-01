@@ -29,8 +29,7 @@
     const unsigned short MEDIA_RULE = 4;
     const unsigned short FONT_FACE_RULE = 5;
     const unsigned short PAGE_RULE = 6;
-    // TODO(foolip): Implement CSSMarginRule.
-    // const unsigned short MARGIN_RULE = 9;
+    [RuntimeEnabled=PageMarginBoxes] const unsigned short MARGIN_RULE = 9;
     const unsigned short NAMESPACE_RULE = 10;
     readonly attribute unsigned short type;
     attribute DOMString cssText;

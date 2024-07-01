@@ -1092,6 +1092,7 @@ interface CSSRule
     attribute IMPORT_RULE
     attribute KEYFRAMES_RULE
     attribute KEYFRAME_RULE
+    attribute MARGIN_RULE
     attribute MEDIA_RULE
     attribute NAMESPACE_RULE
     attribute PAGE_RULE
