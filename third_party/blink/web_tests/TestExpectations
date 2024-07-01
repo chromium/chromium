@@ -7527,7 +7527,4 @@ crbug.com/349938120 [ Linux ] wpt_internal/webmidi/requestmidiaccess-basic.https
 # Gardener 2024-07-01
 crbug.com/40199822 [ Win11-arm64 ] svg/dynamic-updates/SVGFEComponentTransferElement-dom-tableValues-attr.html [ Failure Pass ]
 crbug.com/40199822 [ Win11-arm64 ] svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-tableValues-prop.html [ Failure Pass ]
-crbug.com/349883135 [ Win ] external/wpt/css/css-transforms/animation/transform-interpolation-007.html [ Failure Pass ]
-crbug.com/349883135 [ Mac ] external/wpt/css/css-transforms/animation/transform-interpolation-007.html [ Failure Pass ]
-crbug.com/349883135 [ Win ] external/wpt/css/css-transforms/animation/transform-non-invertible-no-transition.html [ Failure Pass ]
-crbug.com/349883135 [ Mac ] external/wpt/css/css-transforms/animation/transform-non-invertible-no-transition.html [ Failure Pass ]
+crbug.com/349883135 external/wpt/css/css-transforms/animation/transform-non-invertible-no-transition.html [ Failure Pass ]
