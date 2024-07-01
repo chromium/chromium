@@ -10,7 +10,7 @@ include_rules = [
   "+ios/chrome/browser/ui/omnibox",
   "+ios/chrome/browser/favicon/ui_bundled",
   "+ios/chrome/browser/ui/toolbar/buttons",
-  "+ios/chrome/browser/ui/start_surface",
+  "+ios/chrome/browser/start_surface/ui_bundled",
   "+ios/chrome/browser/ui/lens",
   "+ios/chrome/browser/ui/toolbar/public",
   "+ios/chrome/browser/ui/sharing",

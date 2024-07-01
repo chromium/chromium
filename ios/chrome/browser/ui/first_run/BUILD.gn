@@ -16,7 +16,7 @@ source_set("field_trial") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/ui/start_surface:feature_flags",
+    "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
     "//ios/chrome/common",
   ]
 }

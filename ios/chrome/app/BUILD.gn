@@ -386,7 +386,7 @@ source_set("docking_promo_app_agent") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/ui/start_surface",
+    "//ios/chrome/browser/start_surface/ui_bundled",
   ]
 }
 

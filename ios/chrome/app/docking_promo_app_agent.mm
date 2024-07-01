@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
+#import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
 
 @interface DockingPromoAppAgent () <AppStateObserver>
 @end

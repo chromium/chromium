@@ -27,9 +27,9 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/start_surface/ui_bundled",
     "//ios/chrome/browser/ui/first_run:screen_delegate",
     "//ios/chrome/browser/ui/promos_manager:promos",
-    "//ios/chrome/browser/ui/start_surface",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ui/base",
   ]

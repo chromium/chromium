@@ -15,7 +15,7 @@ source_set("utils") {
     "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
-    "//ios/chrome/browser/ui/start_surface",
+    "//ios/chrome/browser/start_surface/ui_bundled",
   ]
   frameworks = [ "UIKit.framework" ]
 }

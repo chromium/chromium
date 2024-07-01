@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
-#import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
+#import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
 
 BOOL IsDockingPromoForcedForDisplay() {
   NSString* forced_promo_name = experimental_flags::GetForcedPromoToDisplay();
