@@ -121,20 +121,18 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
 
   // Log if any of the suggestions had benefit available.
   if (!has_logged_suggestion_shown_for_benefits_) {
-    Log(metadata_logging_context_
-                .instrument_ids_to_issuer_ids_with_benefits_available.empty()
-            ? FORM_EVENT_SUGGESTION_FOR_CARD_WITHOUT_BENEFIT_AVAILABLE_SHOWN_ONCE
-            : FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
+    Log(metadata_logging_context_.DidShowCardWithBenefitAvailable()
+            ? FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE
+            : FORM_EVENT_SUGGESTION_FOR_CARD_WITHOUT_BENEFIT_AVAILABLE_SHOWN_ONCE,
         form);
     LogCardWithBenefitFormEventMetric(
         autofill_metrics::CardMetadataLoggingEvent::kShown,
         metadata_logging_context_);
     has_logged_suggestion_shown_for_benefits_ = true;
   }
-  Log(metadata_logging_context_
-              .instrument_ids_to_issuer_ids_with_benefits_available.empty()
-          ? FORM_EVENT_SUGGESTION_FOR_CARD_WITHOUT_BENEFIT_AVAILABLE_SHOWN
-          : FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN,
+  Log(metadata_logging_context_.DidShowCardWithBenefitAvailable()
+          ? FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN
+          : FORM_EVENT_SUGGESTION_FOR_CARD_WITHOUT_BENEFIT_AVAILABLE_SHOWN,
       form);
 }
 
@@ -196,29 +194,22 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
         }
 
         // Log masked server card selected once events for benefits.
-        if (metadata_logging_context_.HasBenefitForInstrumentId(
-                credit_card.instrument_id())) {
-          Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED_ONCE,
+        Log(metadata_logging_context_.SelectedCardHasBenefitAvailable()
+                ? FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED_ONCE
+                : FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SELECTED_ONCE,
+            form);
+        // Log when a masked server card was selected after benefits were shown.
+        if (metadata_logging_context_.DidShowCardWithBenefitAvailable()) {
+          Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SELECTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
               form);
           LogCardWithBenefitFormEventMetric(
               autofill_metrics::CardMetadataLoggingEvent::kSelected,
               metadata_logging_context_);
-        } else {
-          Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SELECTED_ONCE,
-              form);
-        }
-        // Log when a masked server card was selected after benefits were shown.
-        if (!metadata_logging_context_
-                 .instrument_ids_to_issuer_ids_with_benefits_available
-                 .empty()) {
-          Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SELECTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
-              form);
         }
       }
 
       // Log masked server card selected events for benefits.
-      Log(metadata_logging_context_.HasBenefitForInstrumentId(
-              credit_card.instrument_id())
+      Log(metadata_logging_context_.SelectedCardHasBenefitAvailable()
               ? FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED
               : FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SELECTED,
           form);
@@ -261,12 +252,12 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
   }
 
   // Log if the selected suggestion had metadata.
-  Log(metadata_logging_context_.selected_card_has_metadata_available
+  Log(metadata_logging_context_.SelectedCardHasMetadataAvailable()
           ? FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SELECTED
           : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SELECTED,
       form);
   if (!has_logged_suggestion_with_metadata_selected_) {
-    Log(metadata_logging_context_.selected_card_has_metadata_available
+    Log(metadata_logging_context_.SelectedCardHasMetadataAvailable()
             ? FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SELECTED_ONCE
             : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SELECTED_ONCE,
         form);
@@ -375,7 +366,7 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
   }
 
   // Log if the filled suggestion had metadata.
-  Log(metadata_logging_context_.selected_card_has_metadata_available
+  Log(metadata_logging_context_.SelectedCardHasMetadataAvailable()
           ? FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_FILLED
           : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_FILLED,
       form);
@@ -388,31 +379,24 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
 
   // Log masked server card filled events for benefits.
   if (latest_filled_card_was_masked_server_card_) {
-    latest_filled_card_was_card_with_benefit_available_ =
-        metadata_logging_context_.HasBenefitForInstrumentId(
-            credit_card.instrument_id());
-
-    Log(latest_filled_card_was_card_with_benefit_available_
+    Log(metadata_logging_context_.SelectedCardHasBenefitAvailable()
             ? FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED
             : FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_FILLED,
         form);
 
     if (!has_logged_masked_server_card_suggestion_filled_) {
       has_logged_masked_server_card_suggestion_filled_ = true;
-      Log(latest_filled_card_was_card_with_benefit_available_
+      Log(metadata_logging_context_.SelectedCardHasBenefitAvailable()
               ? FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED_ONCE
               : FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_FILLED_ONCE,
           form);
-      if (latest_filled_card_was_card_with_benefit_available_) {
+      // Log when a masked server card was filled after benefits were shown.
+      if (metadata_logging_context_.DidShowCardWithBenefitAvailable()) {
+        Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_FILLED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
+            form);
         LogCardWithBenefitFormEventMetric(
             autofill_metrics::CardMetadataLoggingEvent::kFilled,
             metadata_logging_context_);
-      }
-      // Log when a masked server card was filled after benefits were shown.
-      if (!metadata_logging_context_
-               .instrument_ids_to_issuer_ids_with_benefits_available.empty()) {
-        Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_FILLED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
-            form);
       }
     }
   }
@@ -455,7 +439,7 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
         break;
     }
     // Log if filled suggestions had metadata. Logged once per page load.
-    Log(metadata_logging_context_.selected_card_has_metadata_available
+    Log(metadata_logging_context_.SelectedCardHasMetadataAvailable()
             ? FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_FILLED_ONCE
             : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_FILLED_ONCE,
         form);
@@ -566,7 +550,7 @@ void CreditCardFormEventLogger::LogWillSubmitForm(const FormStructure& form) {
         metadata_logging_context_, HasBeenLogged(false));
     // If a card suggestion was filled before submission, log it for metadata.
     // This event can only be triggered once per page load.
-    Log(metadata_logging_context_.selected_card_has_metadata_available
+    Log(metadata_logging_context_.SelectedCardHasMetadataAvailable()
             ? FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_WILL_SUBMIT_ONCE
             : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_WILL_SUBMIT_ONCE,
         form);
@@ -628,7 +612,7 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
         metadata_logging_context_, HasBeenLogged(false));
     // If a card suggestion was filled before submission, log it for metadata.
     // This event can only be triggered once per page load.
-    Log(metadata_logging_context_.selected_card_has_metadata_available
+    Log(metadata_logging_context_.SelectedCardHasMetadataAvailable()
             ? FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SUBMITTED_ONCE
             : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SUBMITTED_ONCE,
         form);
@@ -636,22 +620,19 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
 
   // Log masked server card submitted events for benefits.
   if (latest_filled_card_was_masked_server_card_) {
-    Log(latest_filled_card_was_card_with_benefit_available_
+    Log(metadata_logging_context_.SelectedCardHasBenefitAvailable()
             ? FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SUBMITTED_ONCE
             : FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SUBMITTED_ONCE,
         form);
-    if (latest_filled_card_was_card_with_benefit_available_) {
-      LogCardWithBenefitFormEventMetric(
-          autofill_metrics::CardMetadataLoggingEvent::kSubmitted,
-          metadata_logging_context_);
-    }
     // Log when a form is submitted after a suggestion for a card with benefits
     // was shown. The user may have selected a card other than the card with
     // benefits.
-    if (!metadata_logging_context_
-             .instrument_ids_to_issuer_ids_with_benefits_available.empty()) {
+    if (metadata_logging_context_.DidShowCardWithBenefitAvailable()) {
       Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SUBMITTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
           form);
+      LogCardWithBenefitFormEventMetric(
+          autofill_metrics::CardMetadataLoggingEvent::kSubmitted,
+          metadata_logging_context_);
     }
   }
 }
