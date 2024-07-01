@@ -355,7 +355,7 @@
 
       <!-- Tracking Protection WebUI -->
       <!-- General -->
-      <message name="IDS_SETTINGS_TRACKING_PROTECTION_PAGE_DEFAULT_HEADER" desc="Header for text describing the default Tracking Protection settings state." translateable="false">
+      <message name="IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_HEADER" desc="Header for text describing the default Tracking Protection settings state." translateable="false">
         Default
       </message>
       <message name="IDS_SETTINGS_TRACKING_PROTECTION_TPCD_BULLET_TWO_DESCRIPTION" desc="Description of the second bullet for Tracking Protection settings. Explains that you can temporarily give a site access to third-party cookies if the site isn't working." translateable="false">
@@ -363,6 +363,15 @@
       </message>
       <message name="IDS_SETTINGS_TRACKING_PROTECTION_ADDITIONAL_PROTECTIONS_HEADER" desc="Header for a section on the Tracking Protection settings page that contains settings for additional tracking tracking protections." translateable="false">
         Additional protections
+      </message>
+      <message name="IDS_SETTINGS_TRACKING_PROTECTION_ADDITIONAL_PROTECTIONS_DESCRIPTION" desc="Text linking out to a help center article that details additional Tracking Protection settings." translateable="false">
+        Learn more about <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2" aria-description="$3"&gt;</ph>how these settings can help limit tracking<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_TRACKING_PROTECTION_ADDITIONAL_PROTECTIONS_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the help center article link in the Tracking Protection additional protections description." translateable="false">
+        Learn how these additional protection settings can help limit tracking
+      </message>
+      <message name="IDS_SETTINGS_TRACKING_PROTECTION_BLOCK_ALL_3PCS_SUB_LABEL" desc="Sub-label for the block all third-party cookies toggle. Explains that features on some sites may not work when the toggle is on and all third-party cookies are blocked." translateable="false">
+        Features on some sites may not work
       </message>
       <message name="IDS_SETTINGS_TRACKING_PROTECTION_EXCEPTIONS_LIST_TITLE" desc="Title of the section on the Tracking Protection settings page that lets users manage which sites have Tracking Protection turned off." translateable="false">
         Sites with Tracking Protection turned off
@@ -393,16 +402,28 @@
           <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_SUB_LABEL" desc="Sub-label for the IP protection toggle. Explains that the feature only works for signed-in users and that some traffic may be sent through privacy servers when the feature is on. Provides a link to a help center article.">
               When you're signed in to Chrome, this setting helps keep your IP address private. If Chrome suspects a site may be tracking you, some of your traffic may be sent through privacy servers. Learn more about <ph name="LINK_BEGIN">&lt;a href="#" aria-label="$1" aria-description="$2" target="_blank"&gt;</ph>how IP protection works<ph name="LINK_END">&lt;/a&gt;</ph>
           </message>
-          <message name="IDS_SETTINGS_TRACKING_PROTECTION_PAGE_DEFAULT_DESCRIPTION" desc="Text describing the default Tracking Protection settings state. Contains a learn more link to a help center article." translateable="false">
-              Chrome limits the type of information sites can use to track you as you browse. Learn more about <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2" aria-description="$3"&gt;</ph>Tracking Protection on Chrome<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
+          <message name="IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_DESCRIPTION" desc="Text describing the default Tracking Protection settings state. Contains a learn more link to a help center article." translateable="false">
+              Chrome limits the type of information sites can use to track you as you browse.<ph name="BR">&lt;br&gt;</ph>Learn more about <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2" aria-description="$3"&gt;</ph>Tracking Protection on Chrome<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
+          </message>
+          <message name="IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the help center article link in the Tracking Protection default description." translateable="false">
+              Learn about Tracking Protection on Chrome
+          </message>
+          <message name="IDS_SETTINGS_TRACKING_PROTECTION_TPCD_BULLET_ONE" desc="The first bullet on the Tracking Protection settings page. Informs users that Chrome limits third-party cookies by default." translateable="false">
+              Chrome automatically limits third-party cookies
           </message>
         </then>
         <else>
           <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_SUB_LABEL" desc="Sub-label for the IP protection toggle. Explains that the feature only works for signed-in users and that some traffic may be sent through privacy servers when the feature is on. Provides a link to a help center article.">
               When you're signed in to Chromium, this setting helps keep your IP address private. If Chromium suspects a site may be tracking you, some of your traffic may be sent through privacy servers. Learn more about <ph name="LINK_BEGIN">&lt;a href="#" aria-label="$1" aria-description="$2" target="_blank"&gt;</ph>how IP protection works<ph name="LINK_END">&lt;/a&gt;</ph>
           </message>
-          <message name="IDS_SETTINGS_TRACKING_PROTECTION_PAGE_DEFAULT_DESCRIPTION" desc="Text describing the default Tracking Protection settings state. Contains a learn more link to a help center article." translateable="false">
-              Chromium limits the type of information sites can use to track you as you browse. Learn more about <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2" aria-description="$3"&gt;</ph>Tracking Protection on Chromium<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
+          <message name="IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_DESCRIPTION" desc="Text describing the default Tracking Protection settings state. Contains a learn more link to a help center article." translateable="false">
+              Chromium limits the type of information sites can use to track you as you browse.<ph name="BR">&lt;br&gt;</ph>Learn more about <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2" aria-description="$3"&gt;</ph>Tracking Protection on Chromium<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
+          </message>
+          <message name="IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the help center article link in the Tracking Protection default description." translateable="false">
+              Learn about Tracking Protection on Chromium
+          </message>
+          <message name="IDS_SETTINGS_TRACKING_PROTECTION_TPCD_BULLET_ONE" desc="The first bullet on the Tracking Protection settings page. Informs users that Chromium limits third-party cookies by default." translateable="false">
+              Chromium automatically limits third-party cookies
           </message>
         </else>
       </if>

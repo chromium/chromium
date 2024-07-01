@@ -185,6 +185,15 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     }
   }
 
+  private getTrackingProtectionDefaultDescription_(): TrustedHTML {
+    if (this.enableTrackingProtectionRolloutUx_) {
+      return this.i18nAdvanced(
+          'trackingProtectionDefaultDescription',
+          {attrs: ['href', 'aria-label', 'aria-description']});
+    }
+    return this.i18nAdvanced('trackingProtectionPageDescription');
+  }
+
   private getTrackingProtectionBulletTwo_(): TrustedHTML {
     if (this.enableTrackingProtectionRolloutUx_) {
       return this.i18nAdvanced('trackingProtectionTpcdBulletTwoDescription');
@@ -235,7 +244,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     }
   }
 
-  private onFingerprintingProtectionChanged_() {
+  private onFpProtectionChanged_() {
     this.metricsBrowserProxy_.recordSettingsPageHistogram(
         PrivacyElementInteractions.FINGERPRINTING_PROTECTION);
   }

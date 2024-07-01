@@ -9,13 +9,22 @@
         padding: 0 var(--cr-section-padding);
       }
 
-      #default {
+      #default,
+      #additionalProtections {
         padding: 16px var(--cr-section-padding) 8px var(--cr-section-padding);
       }
 
       #defaultHeader {
         padding-top: 0;
-        padding-bottom: 8px;
+        padding-bottom: 6px;
+      }
+
+      #additionalProtectionsHeader {
+        padding: 0;
+      }
+
+      #additionalProtectionsDescription {
+        padding-top: 6px;
       }
 
       #exceptionHeader3pcd,
@@ -31,12 +40,6 @@
 
       #blockThirdPartyToggle {
         padding: 0 var(--cr-section-padding);
-      }
-
-      #additionalProtectionsHeader {
-        padding-top: 16px;
-        padding-bottom: 8px;
-        padding-left: var(--cr-section-padding);
       }
 
       #picture {
@@ -202,10 +205,10 @@
     <template is="dom-if" if="[[is3pcdRedesignEnabled_]]">
       <div id="default">
         <h2 id="defaultHeader" hidden="[[!enableTrackingProtectionRolloutUx_]]">
-          $i18n{trackingProtectionPageDefaultHeader}
+          $i18n{trackingProtectionDefaultHeader}
         </h2>
-        <div class="secondary">
-          $i18n{trackingProtectionPageDescription}
+        <div class="secondary"
+            inner-h-t-m-l="[[getTrackingProtectionDefaultDescription_()]]">
         </div>
       </div>
       <div>
@@ -231,44 +234,65 @@
         </div>
       </div>
     </template>
-    <h2 id="additionalProtectionsHeader">
-      [[getTrackingProtectionAdditionalProtectionsHeader_()]]
-    </h2>
-    <settings-toggle-button
-        id="blockThirdPartyToggle"
-        pref="{{prefs.tracking_protection.block_all_3pc_toggle_enabled}}"
-        label="$i18n{trackingProtectionThirdPartyCookiesToggleLabel}"
-        sub-label="
-          $i18n{trackingProtectionThirdPartyCookiesToggleSubLabel}"
-        learn-more-url="
-          $i18n{trackingProtectionThirdPartyCookiesLearnMoreUrl}"
-        learn-more-aria-label="
-          $i18n{trackingProtectionThirdPartyCookiesLearnMoreAriaLabel}"
-        on-settings-boolean-control-change="onBlockAll3pcToggleChanged_"
-        hidden="[[!is3pcdRedesignEnabled_]]"
-        icon="settings:visibility-off">
-    </settings-toggle-button>
-    <settings-toggle-button
-        id="ipProtectionToggle"
-        pref="{{prefs.tracking_protection.ip_protection_enabled}}"
-        label="$i18n{trackingProtectionIpProtectionToggleLabel}"
-        sub-label-with-link="
-          $i18n{trackingProtectionIpProtectionToggleSubLabel}"
-        on-sub-label-link-clicked="onIpProtectionLearnMoreClicked_"
-        on-settings-boolean-control-change="onIpProtectionChanged_"
-        hidden="[[!isIpProtectionAvailable_]]"
-        icon="settings:location-disabled">
-    </settings-toggle-button>
-    <settings-toggle-button
-        id="fingerprintingProtectionToggle"
-        pref="{{prefs.tracking_protection.fingerprinting_protection_enabled}}"
-        label="$i18n{trackingProtectionFingerprintingProtectionToggleLabel}"
-        sub-label="
-          $i18n{trackingProtectionFingerprintingProtectionToggleSubLabel}"
-        on-settings-boolean-control-change="onFingerprintingProtectionChanged_"
-        hidden="[[!isFingerprintingProtectionAvailable_]]"
-        icon="settings:fingerprint-off">
-    </settings-toggle-button>
+    <div id="additionalProtections">
+      <h2 id="additionalProtectionsHeader">
+        [[getTrackingProtectionAdditionalProtectionsHeader_()]]
+      </h2>
+      <div class="secondary" id="additionalProtectionsDescription"
+          hidden="[[!enableTrackingProtectionRolloutUx_]]">
+        $i18nRaw{trackingProtectionAdditionalProtectionsDescription}
+      </div>
+    </div>
+    <template is="dom-if" if="[[!enableTrackingProtectionRolloutUx_]]">
+      <settings-toggle-button
+          id="blockThirdPartyToggle"
+          pref="{{prefs.tracking_protection.block_all_3pc_toggle_enabled}}"
+          label="$i18n{trackingProtectionThirdPartyCookiesToggleLabel}"
+          sub-label="
+            $i18n{trackingProtectionThirdPartyCookiesToggleSubLabel}"
+          learn-more-url="
+            $i18n{trackingProtectionThirdPartyCookiesLearnMoreUrl}"
+          learn-more-aria-label="
+            $i18n{trackingProtectionThirdPartyCookiesLearnMoreAriaLabel}"
+          on-settings-boolean-control-change="onBlockAll3pcToggleChanged_"
+          hidden="[[!is3pcdRedesignEnabled_]]"
+          icon="settings:visibility-off">
+      </settings-toggle-button>
+    </template>
+    <template is="dom-if" if="[[enableTrackingProtectionRolloutUx_]]">
+      <settings-toggle-button
+          id="blockThirdPartyToggle"
+          pref="{{prefs.tracking_protection.block_all_3pc_toggle_enabled}}"
+          label="$i18n{trackingProtectionThirdPartyCookiesToggleLabel}"
+          sub-label="$i18n{trackingProtectionBlockAll3pcsSubLabel}"
+          on-settings-boolean-control-change="onBlockAll3pcToggleChanged_"
+          hidden="[[!is3pcdRedesignEnabled_]]"
+          icon="settings:visibility-off">
+      </settings-toggle-button>
+    </template>
+    <template is="dom-if" if="[[isIpProtectionAvailable_]]">
+      <settings-toggle-button
+          id="ipProtectionToggle"
+          pref="{{prefs.tracking_protection.ip_protection_enabled}}"
+          label="$i18n{trackingProtectionIpProtectionToggleLabel}"
+          sub-label-with-link="
+            $i18n{trackingProtectionIpProtectionToggleSubLabel}"
+          on-sub-label-link-clicked="onIpProtectionLearnMoreClicked_"
+          on-settings-boolean-control-change="onIpProtectionChanged_"
+          icon="settings:location-disabled">
+      </settings-toggle-button>
+    </template>
+    <template is="dom-if" if="[[isFingerprintingProtectionAvailable_]]">
+      <settings-toggle-button
+          id="fingerprintingProtectionToggle"
+          pref="{{prefs.tracking_protection.fingerprinting_protection_enabled}}"
+          label="$i18n{trackingProtectionFingerprintingProtectionToggleLabel}"
+          sub-label="
+            $i18n{trackingProtectionFingerprintingProtectionToggleSubLabel}"
+          on-settings-boolean-control-change="onFpProtectionChanged_"
+          icon="settings:fingerprint-off">
+      </settings-toggle-button>
+    </template>
     <settings-do-not-track-toggle id="doNotTrack" prefs="{{prefs}}">
     </settings-do-not-track-toggle>
     <cr-link-row id="site-data-trigger" class="hr"

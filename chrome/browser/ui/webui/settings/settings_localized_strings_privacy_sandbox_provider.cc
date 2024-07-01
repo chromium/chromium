@@ -223,12 +223,16 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET1},
       {"privacyGuideAdTopicsThingsToConsiderBullet2",
        IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET2},
-      {"trackingProtectionPageDefaultHeader",
-       IDS_SETTINGS_TRACKING_PROTECTION_PAGE_DEFAULT_HEADER},
+      {"trackingProtectionDefaultHeader",
+       IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_HEADER},
+      {"trackingProtectionTpcdBulletOne",
+       IDS_SETTINGS_TRACKING_PROTECTION_TPCD_BULLET_ONE},
       {"trackingProtectionTpcdBulletTwoDescription",
        IDS_SETTINGS_TRACKING_PROTECTION_TPCD_BULLET_TWO_DESCRIPTION},
       {"trackingProtectionAdditionalProtectionsHeader",
        IDS_SETTINGS_TRACKING_PROTECTION_ADDITIONAL_PROTECTIONS_HEADER},
+      {"trackingProtectionBlockAll3pcsSubLabel",
+       IDS_SETTINGS_TRACKING_PROTECTION_BLOCK_ALL_3PCS_SUB_LABEL},
       {"trackingProtectionExceptionsListTitle",
        IDS_SETTINGS_TRACKING_PROTECTION_EXCEPTIONS_LIST_TITLE},
       {"trackingProtectionExceptionsListDescription",
@@ -242,6 +246,26 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
                              GURL(chrome::kAdPrivacyLearnMoreURL),
                              g_browser_process->GetApplicationLocale())
                              .spec());
+
+  // Tracking Protection strings containing HC links
+  html_source->AddString(
+      "trackingProtectionDefaultDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_DESCRIPTION,
+          // TODO(https://b/350525567): Update with finalized URL
+          chrome::kUserBypassHelpCenterURL,
+          l10n_util::GetStringUTF16(
+              IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_LEARN_MORE_ARIA_LABEL),
+          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
+  html_source->AddString(
+      "trackingProtectionAdditionalProtectionsDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_TRACKING_PROTECTION_ADDITIONAL_PROTECTIONS_DESCRIPTION,
+          // TODO(https://b/350525567): Update with finalized URL
+          chrome::kUserBypassHelpCenterURL,
+          l10n_util::GetStringUTF16(
+              IDS_SETTINGS_TRACKING_PROTECTION_ADDITIONAL_PROTECTIONS_LEARN_MORE_ARIA_LABEL),
+          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
 
   // Topics and fledge link to help center articles in their learn more dialog.
   html_source->AddString(
