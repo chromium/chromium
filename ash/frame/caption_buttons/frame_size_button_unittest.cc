@@ -11,9 +11,11 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
+#include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
+#include "ash/wm/splitview/split_view_test_util.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -1370,6 +1372,44 @@ TEST_F(SnapGroupFrameSizeButtonTest, ReSnapViaWindowLayoutMenu) {
       window, opposite.get()));
   EXPECT_TRUE(window_util::IsStackedBelow(occlude.get(), window));
   EXPECT_TRUE(window_util::IsStackedBelow(occlude.get(), opposite.get()));
+}
+
+// Tests that re-snapping to the opposite side via the window layout menu starts
+// partial overview. Regression test for http://b/349892870.
+TEST_F(SnapGroupFrameSizeButtonTest, ReSnapToOppositeSide) {
+  UpdateDisplay("800x600");
+
+  // Create a snap group with `window`, whose frame contains the multitask menu,
+  // and `window2`.
+  aura::Window* window = window_state()->window();
+  SnapOneTestWindow(window, chromeos::WindowStateType::kPrimarySnapped,
+                    chromeos::kTwoThirdSnapRatio);
+  std::unique_ptr<aura::Window> window2(CreateAppWindow());
+  SnapOneTestWindow(window2.get(), chromeos::WindowStateType::kSecondarySnapped,
+                    chromeos::kOneThirdSnapRatio);
+  auto* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(
+      snap_group_controller->AreWindowsInSnapGroup(window, window2.get()));
+
+  // Snap `window` to the right via the layout menu.
+  ShowMultitaskMenu();
+  views::Button* right_half_button =
+      MultitaskMenuViewTestApi(GetMultitaskMenu()->multitask_menu_view())
+          .GetHalfButton()
+          ->GetRightBottomButton();
+  LeftClickOn(right_half_button);
+  VerifySplitViewOverviewSession(window);
+  EXPECT_TRUE(GetOverviewSession()->IsWindowInOverview(window2.get()));
+
+  // Snap `window` to the left via the layout menu.
+  ShowMultitaskMenu();
+  views::Button* left_half_button =
+      MultitaskMenuViewTestApi(GetMultitaskMenu()->multitask_menu_view())
+          .GetHalfButton()
+          ->GetLeftTopButton();
+  LeftClickOn(left_half_button);
+  VerifySplitViewOverviewSession(window);
+  EXPECT_TRUE(GetOverviewSession()->IsWindowInOverview(window2.get()));
 }
 
 }  // namespace ash

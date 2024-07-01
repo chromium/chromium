@@ -107,6 +107,12 @@ void SplitViewOverviewSession::HandleClickOrTap(const ui::LocatedEvent& event) {
   }
 
   aura::Window* target = static_cast<aura::Window*>(event.target());
+  if (target != window_) {
+    // The target might be in the window layout menu, not `window_` itself, in
+    // which case we don't need to handle it and end overview.
+    return;
+  }
+
   const int client_component =
       window_util::GetNonClientComponent(target, event.location());
   if (client_component != HTCLIENT && client_component != HTCAPTION) {
