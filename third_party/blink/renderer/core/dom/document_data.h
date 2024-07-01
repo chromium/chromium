@@ -81,6 +81,10 @@ class DocumentData final : public GarbageCollected<DocumentData> {
   base::TimeDelta accumulated_shape_text_elapsed_time_;
   base::TimeDelta max_shape_text_elapsed_time_;
 
+  // Measures SVGImage performance per document.
+  int svg_image_processed_count_ = 0;
+  base::TimeDelta accumulated_svg_image_elapsed_time_;
+
   friend class Document;
 };
 

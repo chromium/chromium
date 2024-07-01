@@ -7525,6 +7525,15 @@ void Document::FinishedParsing() {
     base::UmaHistogramMicrosecondsTimes(
         "Blink.Layout.InlineNode.ShapeText.MaxTime.InOutermostMainFrame3",
         data_->max_shape_text_elapsed_time_);
+
+    // Record histograms of SVGImage.
+    base::UmaHistogramCounts100(
+        "Blink.Layout.SVGImage.Count.InOutermostMainFrame",
+        data_->svg_image_processed_count_);
+    base::UmaHistogramMicrosecondsTimes(
+        "Blink.Layout.SVGImage.TotalTime.InOutermostMainFrame",
+        data_->accumulated_svg_image_elapsed_time_);
+
     // UKM data is sampled at a frequency of `kUkmSamplingRate`.
     if (base::RandDouble() < kUkmSamplingRate) {
       ukm::builders::Blink_ShapeText(UkmSourceID())
@@ -7809,6 +7818,13 @@ void Document::MaybeRecordShapeTextElapsedTime(base::TimeDelta elapsed_time) {
     data_->accumulated_shape_text_elapsed_time_ += elapsed_time;
     data_->max_shape_text_elapsed_time_ =
         std::max(data_->max_shape_text_elapsed_time_, elapsed_time);
+}
+
+void Document::MaybeRecordSvgImageProcessingTime(
+    int data_change_count,
+    base::TimeDelta data_change_elapsed_time) const {
+  data_->svg_image_processed_count_ += data_change_count;
+  data_->accumulated_svg_image_elapsed_time_ += data_change_elapsed_time;
 }
 
 bool Document::AllowInlineEventHandler(Node* node,

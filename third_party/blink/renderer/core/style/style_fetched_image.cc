@@ -241,6 +241,7 @@ void StyleFetchedImage::ImageNotifyFinished(ImageResourceContent*) {
       // assumption reliably.
       svg_image->CheckLoaded();
       svg_image->UpdateUseCounters(*document_);
+      svg_image->MaybeRecordSvgImageProcessingTime(*document_);
     }
     image_->RecordDecodedImageType(document_->GetExecutionContext());
   }

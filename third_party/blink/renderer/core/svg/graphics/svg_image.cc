@@ -628,6 +628,15 @@ void SVGImage::UpdateUseCounters(const Document& document) const {
   }
 }
 
+void SVGImage::MaybeRecordSvgImageProcessingTime(const Document& document) {
+  if (data_change_count_ > 0) {
+    document.MaybeRecordSvgImageProcessingTime(data_change_count_,
+                                               data_change_elapsed_time_);
+    data_change_count_ = 0;
+    data_change_elapsed_time_ = base::TimeDelta();
+  }
+}
+
 Element* SVGImage::GetResourceElement(const AtomicString& id) const {
   if (!document_host_) {
     return nullptr;
@@ -651,6 +660,7 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
     return document_host_ ? kSizeAvailable : kSizeUnavailable;
 
   SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES("Blink.SVGImage.DataChanged");
+  base::ElapsedTimer elapsed_timer;
 
   // Because an SVGImage has no relation to a normal Page, it can't get default
   // font settings from the embedder. Copy settings for fonts and other things
@@ -688,6 +698,9 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
         sizing_info, gfx::SizeF(LayoutReplaced::kDefaultWidth,
                                 LayoutReplaced::kDefaultHeight)));
   }
+
+  ++data_change_count_;
+  data_change_elapsed_time_ += elapsed_timer.Elapsed();
 
   if (!document_host_->IsLoaded()) {
     return kSizeAvailableAndLoadingAsynchronously;

@@ -1796,6 +1796,9 @@ class CORE_EXPORT Document : public ContainerNode,
   FontMatchingMetrics* GetFontMatchingMetrics();
 
   void MaybeRecordShapeTextElapsedTime(base::TimeDelta elapsed_time);
+  void MaybeRecordSvgImageProcessingTime(
+      int data_change_count,
+      base::TimeDelta data_change_elapsed_time) const;
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType);
 

@@ -121,6 +121,8 @@ class CORE_EXPORT SVGImage final : public Image {
 
   void UpdateUseCounters(const Document&) const;
 
+  void MaybeRecordSvgImageProcessingTime(const Document&);
+
   PaintImage PaintImageForCurrentFrame() override;
 
   void SetPreferredColorScheme(
@@ -259,6 +261,9 @@ class CORE_EXPORT SVGImage final : public Image {
   // the "concrete object size". For more, see: SVGImageForContainer.h
   PhysicalSize intrinsic_size_;
   bool has_pending_timeline_rewind_;
+
+  int data_change_count_ = 0;
+  base::TimeDelta data_change_elapsed_time_;
 
   base::WeakPtrFactory<SVGImage> weak_ptr_factory_{this};
   FRIEND_TEST_ALL_PREFIXES(ElementFragmentAnchorTest,

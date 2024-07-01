@@ -2842,6 +2842,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Layout.SVGImage.Count.InOutermostMainFrame"
+    units="count" expires_after="2024-09-25">
+  <owner>chikamune@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Measures the call count of SVGImage::DataChanged() while loading the
+    outermost main frame document until finishing parsing. Logged on each
+    loading of the outermost main frame document. This doesn't include
+    asynchronous loading time.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Layout.SVGImage.TotalTime.InOutermostMainFrame"
+    units="microseconds" expires_after="2024-09-25">
+  <owner>chikamune@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Measures the total elapsed time it takes to run SVGImage::DataChanged()
+    while loading the outermost main frame document until finishing parsing.
+    Logged on each loading of the outermost main frame document. This doesn't
+    include asynchronous loading time.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Layout.UpdateLayerPositionsAfterLayout"
     units="microseconds" expires_after="2024-05-05">
   <owner>pdr@chromium.org</owner>

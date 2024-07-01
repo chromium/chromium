@@ -770,6 +770,7 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
       // assumption reliably.
       svg_image->CheckLoaded();
       svg_image->UpdateUseCounters(GetElement()->GetDocument());
+      svg_image->MaybeRecordSvgImageProcessingTime(GetElement()->GetDocument());
     }
   }
 
