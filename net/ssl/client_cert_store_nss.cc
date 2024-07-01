@@ -12,6 +12,14 @@
 #include <utility>
 #include <vector>
 
+// TMP
+#include "base/base64.h"
+#include "base/debug/stack_trace.h"
+#include "base/debug/task_trace.h"
+#include "base/logging.h"
+#define HERE() LOG(ERROR) << " === QCERT " << __FUNCTION__ << " "
+// #define HERE() LAZY_STREAM(LOG_STREAM(ERROR), /*is_on=*/false)
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -77,6 +85,7 @@ ClientCertStoreNSS::~ClientCertStoreNSS() = default;
 void ClientCertStoreNSS::GetClientCerts(
     scoped_refptr<const SSLCertRequestInfo> request,
     ClientCertListCallback callback) {
+  HERE() << "ok";
   scoped_refptr<crypto::CryptoModuleBlockingPasswordDelegate> password_delegate;
   if (!password_delegate_factory_.is_null()) {
     password_delegate = password_delegate_factory_.Run(request->host_and_port);
@@ -100,6 +109,7 @@ void ClientCertStoreNSS::OnClientCertsResponse(
 void ClientCertStoreNSS::FilterCertsOnWorkerThread(
     ClientCertIdentityList* identities,
     const SSLCertRequestInfo& request) {
+  HERE() << "ok";
   size_t num_raw = 0;
 
   auto keep_iter = identities->begin();
@@ -114,12 +124,14 @@ void ClientCertStoreNSS::FilterCertsOnWorkerThread(
 
     // Only offer unexpired certificates.
     if (now < cert->valid_start() || now > cert->valid_expiry()) {
+      HERE() << "ok FILTER OUT 1";
       continue;
     }
 
     ScopedCERTCertificateList nss_intermediates;
     if (!MatchClientCertificateIssuers(cert, request.cert_authorities,
                                        &nss_intermediates)) {
+      HERE() << "ok FILTER OUT 2";
       continue;
     }
 
@@ -143,8 +155,11 @@ void ClientCertStoreNSS::FilterCertsOnWorkerThread(
   identities->erase(keep_iter, identities->end());
 
   DVLOG(2) << "num_raw:" << num_raw << " num_filtered:" << identities->size();
+  HERE() << "ok " << "num_raw:" << num_raw
+         << " num_filtered:" << identities->size();
 
   std::sort(identities->begin(), identities->end(), ClientCertIdentitySorter());
+  HERE() << "ok";
 }
 
 // static
@@ -152,6 +167,7 @@ ClientCertIdentityList ClientCertStoreNSS::GetAndFilterCertsOnWorkerThread(
     scoped_refptr<crypto::CryptoModuleBlockingPasswordDelegate>
         password_delegate,
     scoped_refptr<const SSLCertRequestInfo> request) {
+  HERE() << "ok";
   // This method may acquire the NSS lock or reenter this code via extension
   // hooks (such as smart card UI). To ensure threads are not starved or
   // deadlocked, the base::ScopedBlockingCall below increments the thread pool
@@ -162,6 +178,7 @@ ClientCertIdentityList ClientCertStoreNSS::GetAndFilterCertsOnWorkerThread(
   GetPlatformCertsOnWorkerThread(std::move(password_delegate), CertFilter(),
                                  &selected_identities);
   FilterCertsOnWorkerThread(&selected_identities, *request);
+  HERE() << "ok end";
   return selected_identities;
 }
 
@@ -171,19 +188,27 @@ void ClientCertStoreNSS::GetPlatformCertsOnWorkerThread(
         password_delegate,
     const CertFilter& cert_filter,
     ClientCertIdentityList* identities) {
+  HERE() << "ok start";
   crypto::EnsureNSSInit();
+  HERE() << "ok";
 
   crypto::ScopedCERTCertList found_certs(CERT_FindUserCertsByUsage(
       CERT_GetDefaultCertDB(), certUsageSSLClient, PR_FALSE, PR_FALSE,
       password_delegate ? password_delegate->wincx() : nullptr));
+  HERE() << "ok";
   if (!found_certs) {
     DVLOG(2) << "No client certs found.";
     return;
   }
+  HERE() << "ok";
   for (CERTCertListNode* node = CERT_LIST_HEAD(found_certs);
        !CERT_LIST_END(node, found_certs); node = CERT_LIST_NEXT(node)) {
-    if (!cert_filter.is_null() && !cert_filter.Run(node->cert))
+    HERE() << "ok";
+    if (!cert_filter.is_null() && !cert_filter.Run(node->cert)) {
+      HERE() << "ok FILTER OUT CERT";
       continue;
+    }
+    HERE() << "ok";
     // Allow UTF-8 inside PrintableStrings in client certificates. See
     // crbug.com/770323.
     X509Certificate::UnsafeCreateOptions options;
@@ -191,13 +216,17 @@ void ClientCertStoreNSS::GetPlatformCertsOnWorkerThread(
     scoped_refptr<X509Certificate> cert =
         x509_util::CreateX509CertificateFromCERTCertificate(node->cert, {},
                                                             options);
+    HERE() << "ok " << cert->issuer().GetDisplayName();
     if (!cert) {
       DVLOG(2) << "x509_util::CreateX509CertificateFromCERTCertificate failed";
       continue;
     }
+
     identities->push_back(std::make_unique<ClientCertIdentityNSS>(
         cert, x509_util::DupCERTCertificate(node->cert), password_delegate));
+    HERE() << "ok";
   }
+  HERE() << "ok end TOTAL IDENTITIES " << identities->size();
 }
 
 }  // namespace net

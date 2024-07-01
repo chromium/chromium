@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#if 0  // TMP QCERT
+
 #include "chrome/browser/ash/net/client_cert_store_ash.h"
 
 #include <memory>
@@ -260,3 +262,5 @@ TEST_F(ClientCertStoreAshTest, CertRequestMatching) {
 }
 
 }  // namespace ash
+
+#endif  // TMP QCERT

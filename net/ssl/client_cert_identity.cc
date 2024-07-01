@@ -6,6 +6,14 @@
 
 #include <utility>
 
+// TMP
+#include "base/base64.h"
+#include "base/debug/stack_trace.h"
+#include "base/debug/task_trace.h"
+#include "base/logging.h"
+#define HERE() LOG(ERROR) << " === QCERT " << __FUNCTION__ << " "
+// #define HERE() LAZY_STREAM(LOG_STREAM(ERROR), /*is_on=*/false)
+
 #include "base/functional/bind.h"
 #include "net/cert/x509_util.h"
 #include "net/ssl/ssl_private_key.h"
@@ -32,11 +40,13 @@ void ClientCertIdentity::SelfOwningAcquirePrivateKey(
     std::unique_ptr<ClientCertIdentity> self,
     base::OnceCallback<void(scoped_refptr<SSLPrivateKey>)>
         private_key_callback) {
+  HERE() << "ok";
   ClientCertIdentity* self_ptr = self.get();
   auto wrapped_private_key_callback =
       base::BindOnce(&IdentityOwningPrivateKeyCallback, std::move(self),
                      std::move(private_key_callback));
   self_ptr->AcquirePrivateKey(std::move(wrapped_private_key_callback));
+  HERE() << "ok";
 }
 
 void ClientCertIdentity::SetIntermediates(
@@ -51,6 +61,7 @@ ClientCertIdentitySorter::ClientCertIdentitySorter()
 bool ClientCertIdentitySorter::operator()(
     const std::unique_ptr<ClientCertIdentity>& a_identity,
     const std::unique_ptr<ClientCertIdentity>& b_identity) const {
+  HERE() << "ok";
   X509Certificate* a = a_identity->certificate();
   X509Certificate* b = b_identity->certificate();
   DCHECK(a);

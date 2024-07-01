@@ -6,6 +6,14 @@
 
 #include <utility>
 
+// TMP
+#include "base/base64.h"
+#include "base/debug/stack_trace.h"
+#include "base/debug/task_trace.h"
+#include "base/logging.h"
+#define HERE() LOG(ERROR) << " === QCERT " << __FUNCTION__ << " "
+// #define HERE() LAZY_STREAM(LOG_STREAM(ERROR), /*is_on=*/false)
+
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -61,7 +69,9 @@ SSLClientAuthHandler::SSLClientAuthHandler(
       web_contents_(web_contents),
       cert_request_info_(cert_request_info),
       client_cert_store_(std::move(client_cert_store)),
-      delegate_(delegate) {
+      delegate_(delegate),
+      start_time_(base::Time::Now()) {
+  HERE() << " " << this << " created";
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (web_contents_) {
     CHECK_EQ(web_contents_->GetBrowserContext(), browser_context_.get());
@@ -69,6 +79,8 @@ SSLClientAuthHandler::SSLClientAuthHandler(
 }
 
 SSLClientAuthHandler::~SSLClientAuthHandler() {
+  HERE() << "ok " << this << " at "
+         << (base::Time::Now() - start_time_).InSeconds();
   // Invalidate our WeakPtrs in case invoking the cancellation callback would
   // cause |this| to be destructed again.
   weak_factory_.InvalidateWeakPtrs();
@@ -78,6 +90,8 @@ SSLClientAuthHandler::~SSLClientAuthHandler() {
 }
 
 void SSLClientAuthHandler::SelectCertificate() {
+  HERE() << "ok " << this << " at "
+         << (base::Time::Now() - start_time_).InSeconds();
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (client_cert_store_) {
@@ -92,6 +106,8 @@ void SSLClientAuthHandler::SelectCertificate() {
 
 void SSLClientAuthHandler::DidGetClientCerts(
     net::ClientCertIdentityList client_certs) {
+  HERE() << "ok " << this << " at "
+         << (base::Time::Now() - start_time_).InSeconds();
   // Run this on a PostTask to avoid reentrancy problems.
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -105,8 +121,12 @@ void SSLClientAuthHandler::DidGetClientCertsOnPostTask(
 
   if (!browser_context_) {
     delegate_->CancelCertificateSelection();
+    HERE() << "ok " << this << " canceled at "
+           << (base::Time::Now() - start_time_).InSeconds();
     return;
   }
+  HERE() << "ok " << this << " got certs at "
+         << (base::Time::Now() - start_time_).InSeconds();
 
   // SelectClientCertificate() may call back into |delegate_| synchronously and
   // destroy this object, so guard the cancellation callback logic by a WeakPtr.

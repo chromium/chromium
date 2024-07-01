@@ -7,6 +7,14 @@
 #include <memory>
 #include <utility>
 
+// TMP
+#include "base/base64.h"
+#include "base/debug/stack_trace.h"
+#include "base/debug/task_trace.h"
+#include "base/logging.h"
+#define HERE() LOG(ERROR) << " === QCERT " << __FUNCTION__ << " "
+// #define HERE() LAZY_STREAM(LOG_STREAM(ERROR), /*is_on=*/false)
+
 #include "base/callback_list.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -81,6 +89,7 @@ void DidGetTPMInfoForUserOnUIThread(
     std::unique_ptr<ash::TPMTokenInfoGetter> getter,
     const std::string& username_hash,
     std::optional<user_data_auth::TpmTokenInfo> token_info) {
+  HERE() << "ok";
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (token_info.has_value() && token_info->slot() != -1) {
     DVLOG(1) << "Got TPM slot for " << username_hash << ": "
@@ -95,6 +104,7 @@ void DidGetTPMInfoForUserOnUIThread(
 
 void GetTPMInfoForUserOnUIThread(const AccountId& account_id,
                                  const std::string& username_hash) {
+  HERE() << "ok";
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DVLOG(1) << "Getting TPM info from cryptohome for "
            << " " << account_id.Serialize() << " " << username_hash;
@@ -114,6 +124,7 @@ void GetTPMInfoForUserOnUIThread(const AccountId& account_id,
 void StartTPMSlotInitializationOnIOThread(const AccountId& account_id,
                                           const std::string& username_hash,
                                           bool is_tpm_token_enabled) {
+  HERE() << "ok";
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   if (!is_tpm_token_enabled) {
@@ -130,6 +141,7 @@ void StartNSSInitOnIOThread(const AccountId& account_id,
                             const std::string& username_hash,
                             const base::FilePath& path,
                             bool is_kiosk) {
+  HERE() << "ok";
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DVLOG(1) << "Starting NSS init for " << account_id.Serialize()
            << "  hash:" << username_hash;
@@ -202,8 +214,10 @@ class NssService::NSSCertDatabaseChromeOSManager
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
     if (nss_cert_database_) {
+      HERE() << "ok ready";
       return nss_cert_database_.get();
     }
+    HERE() << "ok NOT ready";
 
     ready_callback_list_.AddUnsafe(std::move(callback));
 
@@ -235,6 +249,7 @@ class NssService::NSSCertDatabaseChromeOSManager
 
  private:
   void StartDatabaseCreation() {
+    HERE() << "ok";
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
     crypto::ScopedPK11Slot private_slot(crypto::GetPrivateSlotForChromeOSUser(
@@ -246,6 +261,7 @@ class NssService::NSSCertDatabaseChromeOSManager
   }
 
   void DidGetPrivateSlot(crypto::ScopedPK11Slot private_slot) {
+    HERE() << "ok";
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
     if (!enable_system_slot_) {
@@ -261,6 +277,7 @@ class NssService::NSSCertDatabaseChromeOSManager
 
   void CreateDatabase(crypto::ScopedPK11Slot private_slot,
                       crypto::ScopedPK11Slot system_slot) {
+    HERE() << "ok";
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
     auto public_slot = crypto::GetPublicSlotForChromeOSUser(username_hash_);
@@ -291,6 +308,7 @@ class NssService::NSSCertDatabaseChromeOSManager
     nss_cert_database_->AddObserver(this);
 
     ready_callback_list_.Notify(nss_cert_database_.get());
+    HERE() << "ok";
   }
 
   const std::string username_hash_;

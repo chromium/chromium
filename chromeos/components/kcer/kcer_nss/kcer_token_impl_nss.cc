@@ -16,6 +16,14 @@
 #include <string_view>
 #include <vector>
 
+// TMP
+#include "base/base64.h"
+#include "base/debug/stack_trace.h"
+#include "base/debug/task_trace.h"
+#include "base/logging.h"
+#define HERE() LOG(ERROR) << " === QCERT " << __FUNCTION__ << " "
+// #define HERE() LAZY_STREAM(LOG_STREAM(ERROR), /*is_on=*/false)
+
 #include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
@@ -499,14 +507,18 @@ void SignOnWorkerThread(crypto::ScopedPK11Slot slot,
                         SigningScheme kcer_signing_scheme,
                         DataToSign data_to_sign,
                         Kcer::SignCallback callback) {
+  HERE() << "ok";
   base::expected<crypto::ScopedSECKEYPrivateKey, Error> private_key =
       GetSECKEYPrivateKey(slot, key);
   if (!private_key.has_value()) {
+    HERE() << "FAIL";
     return std::move(callback).Run(base::unexpected(private_key.error()));
   }
 
   const crypto::ScopedSECKEYPrivateKey& sec_private_key = private_key.value();
+  HERE() << "ok " << sec_private_key->pkcs11ID;
   if (!DoesKeySupportSigningScheme(kcer_signing_scheme, sec_private_key)) {
+    HERE() << "FAIL";
     return std::move(callback).Run(
         base::unexpected(Error::kKeyDoesNotSupportSigningScheme));
   }
@@ -519,6 +531,7 @@ void SignOnWorkerThread(crypto::ScopedPK11Slot slot,
   if (!digest_method ||
       !EVP_Digest(data_to_sign->data(), data_to_sign->size(), digest,
                   &digest_len, digest_method, nullptr)) {
+    HERE() << "FAIL";
     return std::move(callback).Run(
         base::unexpected(Error::kFailedToSignFailedToDigest));
   }
@@ -531,16 +544,20 @@ void SignOnWorkerThread(crypto::ScopedPK11Slot slot,
   CK_RSA_PKCS_PSS_PARAMS pss_params;
   bssl::UniquePtr<uint8_t> free_digest_info;
   if (SSL_is_signature_algorithm_rsa_pss(ssl_algorithm)) {
+    HERE() << "ok rsa pss";
     switch (EVP_MD_type(digest_method)) {
       case NID_sha256:
+        HERE() << "ok";
         pss_params.hashAlg = CKM_SHA256;
         pss_params.mgf = CKG_MGF1_SHA256;
         break;
       case NID_sha384:
+        HERE() << "ok";
         pss_params.hashAlg = CKM_SHA384;
         pss_params.mgf = CKG_MGF1_SHA384;
         break;
       case NID_sha512:
+        HERE() << "ok";
         pss_params.hashAlg = CKM_SHA512;
         pss_params.mgf = CKG_MGF1_SHA512;
         break;
@@ -555,6 +572,7 @@ void SignOnWorkerThread(crypto::ScopedPK11Slot slot,
     param.len = sizeof(pss_params);
   } else if (SSL_get_signature_algorithm_key_type(ssl_algorithm) ==
              EVP_PKEY_RSA) {
+    HERE() << "ok rsa normal";
     // PK11_SignWithMechanism expects the caller to prepend the DigestInfo for
     // PKCS #1.
     int hash_nid =
@@ -563,11 +581,13 @@ void SignOnWorkerThread(crypto::ScopedPK11Slot slot,
     size_t prefix_len;
     if (!RSA_add_pkcs1_prefix(&digest_item.data, &prefix_len, &is_alloced,
                               hash_nid, digest_item.data, digest_item.len)) {
+      HERE() << "ok";
       return std::move(callback).Run(
           base::unexpected(Error::kFailedToSignFailedToAddPrefix));
     }
     digest_item.len = prefix_len;
     if (is_alloced) {
+      HERE() << "ok";
       free_digest_info.reset(digest_item.data);
     }
   }
@@ -577,6 +597,7 @@ void SignOnWorkerThread(crypto::ScopedPK11Slot slot,
   {
     const int len = PK11_SignatureLen(sec_private_key.get());
     if (len <= 0) {
+      HERE() << "ok";
       return std::move(callback).Run(
           base::unexpected(Error::kFailedToSignFailedToGetSignatureLength));
     }
@@ -590,6 +611,7 @@ void SignOnWorkerThread(crypto::ScopedPK11Slot slot,
         PK11_SignWithMechanism(sec_private_key.get(), mechanism, &param,
                                &signature_item, &digest_item);
     if (rv != SECSuccess) {
+      HERE() << "ok";
       return std::move(callback).Run(base::unexpected(Error::kFailedToSign));
     }
     signature.resize(signature_item.len);
@@ -598,7 +620,9 @@ void SignOnWorkerThread(crypto::ScopedPK11Slot slot,
   // NSS emits raw ECDSA signatures, but BoringSSL expects a DER-encoded
   // ECDSA-Sig-Value.
   if (SSL_get_signature_algorithm_key_type(ssl_algorithm) == EVP_PKEY_EC) {
+    HERE() << "ok ecc";
     if (signature.size() % 2 != 0) {
+      HERE() << "ok";
       return std::move(callback).Run(
           base::unexpected(Error::kFailedToSignBadSignatureLength));
     }
@@ -608,6 +632,7 @@ void SignOnWorkerThread(crypto::ScopedPK11Slot slot,
     bssl::UniquePtr<ECDSA_SIG> sig(ECDSA_SIG_new());
     if (!sig || !BN_bin2bn(signature.data(), order_len, sig->r) ||
         !BN_bin2bn(signature.data() + order_len, order_len, sig->s)) {
+      HERE() << "ok";
       return std::move(callback).Run(
           base::unexpected(Error::kFailedToDerEncode));
     }
@@ -615,6 +640,7 @@ void SignOnWorkerThread(crypto::ScopedPK11Slot slot,
     {
       const int len = i2d_ECDSA_SIG(sig.get(), nullptr);
       if (len <= 0) {
+        HERE() << "ok";
         return std::move(callback).Run(
             base::unexpected(Error::kFailedToSignBadSignatureLength));
       }
@@ -625,6 +651,7 @@ void SignOnWorkerThread(crypto::ScopedPK11Slot slot,
       uint8_t* ptr = signature.data();
       const int len = i2d_ECDSA_SIG(sig.get(), &ptr);
       if (len <= 0) {
+        HERE() << "ok";
         return std::move(callback).Run(
             base::unexpected(Error::kFailedToDerEncode));
       }
@@ -632,6 +659,7 @@ void SignOnWorkerThread(crypto::ScopedPK11Slot slot,
     }
   }
 
+  HERE() << "ok " << base::Base64Encode(signature);
   return std::move(callback).Run(Signature(std::move(signature)));
 }
 
@@ -826,12 +854,15 @@ void GetKeyInfoOnWorkerThread(crypto::ScopedPK11Slot slot,
 
   switch (SECKEY_GetPrivateKeyType(sec_private_key.get())) {
     case rsaKey:
+      HERE() << "ok rsa";
       key_info.key_type = KeyType::kRsa;
       break;
     case ecKey:
+      HERE() << "ok ecc";
       key_info.key_type = KeyType::kEcc;
       break;
     default:
+      HERE() << "FAIL";
       return std::move(callback).Run(base::unexpected(Error::kUnknownKeyType));
   }
 
@@ -1558,6 +1589,7 @@ void KcerTokenImplNss::UnblockQueueProcessNextTask() {
 }
 
 void KcerTokenImplNss::UpdateCache() {
+  HERE() << "ok START UPDATING CACHE";
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   // Block task queue, create callback for the current sequence.
@@ -1605,6 +1637,7 @@ void KcerTokenImplNss::UpdateCacheWithCerts(
   // Rebuilding the cache implicitly removes all the certs that are not in the
   // permanent storage anymore. The certs themself will be fully destroyed
   // when the last ref-counting reference to them is destroyed.
+  HERE() << "ok CACHE UPDATED";
   cert_cache_ = CertCache(new_cache);
   state_ = State::kCacheUpToDate;
 }

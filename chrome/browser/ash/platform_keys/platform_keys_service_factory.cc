@@ -29,6 +29,10 @@
 #include "content/public/browser/resource_context.h"
 #include "net/cert/nss_cert_database.h"
 
+// TMP QCERT
+#include "chrome/browser/ash/kcer/kcer_factory_ash.h"
+#include "chromeos/components/kcer/extra_instances.h"
+
 namespace ash {
 namespace platform_keys {
 
@@ -71,8 +75,9 @@ class DelegateForUser : public PlatformKeysServiceImplDelegate {
   }
 
   std::unique_ptr<net::ClientCertStore> CreateClientCertStore() override {
-    const user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(
-        Profile::FromBrowserContext(browser_context_));
+    Profile* profile = Profile::FromBrowserContext(browser_context_);
+    const user_manager::User* user =
+        ProfileHelper::Get()->GetUserByProfile(profile);
 
     // Use the device-wide system key slot only if the user is affiliated on the
     // device.
@@ -80,6 +85,7 @@ class DelegateForUser : public PlatformKeysServiceImplDelegate {
     return std::make_unique<ClientCertStoreAsh>(
         nullptr,  // no additional provider
         use_system_key_slot, user->username_hash(),
+        kcer::KcerFactoryAsh::GetKcer(profile),
         ClientCertStoreAsh::PasswordDelegateFactory());
   }
 
@@ -104,6 +110,7 @@ class DelegateForDevice : public PlatformKeysServiceImplDelegate,
     return std::make_unique<ClientCertStoreAsh>(
         nullptr,  // no additional provider
         /*use_system_key_slot=*/true, /*username_hash=*/std::string(),
+        kcer::ExtraInstances::GetDeviceKcer(),
         ClientCertStoreAsh::PasswordDelegateFactory());
   }
 

@@ -10,6 +10,14 @@
 #include <utility>
 #include <vector>
 
+// TMP
+#include "base/base64.h"
+#include "base/debug/stack_trace.h"
+#include "base/debug/task_trace.h"
+#include "base/logging.h"
+#define HERE() LOG(ERROR) << " === QCERT " << __FUNCTION__ << " "
+// #define HERE() LAZY_STREAM(LOG_STREAM(ERROR), /*is_on=*/false)
+
 #include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
@@ -384,6 +392,7 @@ KcerTokenImpl::KcerTokenImpl(Token token, HighLevelChapsClient* chaps_client)
       chaps_client_(chaps_client),
       kcer_utils_(token, chaps_client) {
   CHECK(chaps_client_);
+  HERE() << "ok NO NSS";
 }
 KcerTokenImpl::~KcerTokenImpl() {
   net::CertDatabase::GetInstance()->RemoveObserver(this);

@@ -96,6 +96,8 @@ class SSLClientAuthHandler {
   // The delegate to call back with the result.
   raw_ptr<Delegate> delegate_;
 
+  const base::Time start_time_;
+
   base::WeakPtrFactory<SSLClientAuthHandler> weak_factory_{this};
 };
 

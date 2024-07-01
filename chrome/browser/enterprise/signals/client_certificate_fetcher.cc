@@ -7,6 +7,14 @@
 #include <memory>
 #include <utility>
 
+// TMP
+#include "base/base64.h"
+#include "base/debug/stack_trace.h"
+#include "base/debug/task_trace.h"
+#include "base/logging.h"
+#define HERE() LOG(ERROR) << " === QCERT " << __FUNCTION__ << " "
+// #define HERE() LAZY_STREAM(LOG_STREAM(ERROR), /*is_on=*/false)
+
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
@@ -86,6 +94,7 @@ void ClientCertificateFetcher::FetchAutoSelectedCertificateForUrl(
 
   fetch_callback_ = std::move(callback);
   cert_request_info_ = base::MakeRefCounted<net::SSLCertRequestInfo>();
+  HERE() << "ok";
   client_cert_store_->GetClientCerts(
       cert_request_info_,
       base::BindOnce(&ClientCertificateFetcher::OnGetClientCertsComplete,

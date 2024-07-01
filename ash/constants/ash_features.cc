@@ -1837,6 +1837,11 @@ BASE_FEATURE(kLicensePackagedOobeFlow,
              "LicensePackagedOobeFlow",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables client cert caching in ClientCertStoreAsh.
+BASE_FEATURE(kCacheClientCertQueries,
+             "CacheClientCertQueries",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables cross device supported reports within the feedback tool.
 // (This feature is only available for dogfooders)
 BASE_FEATURE(kLinkCrossDeviceDogfoodFeedback,
@@ -4723,6 +4728,10 @@ bool UseMixedFileLauncherContinueSection() {
           base::GetFieldTrialParamByFeatureAsBool(
               features::kLauncherContinueSectionWithRecentsRollout,
               "mix_local_and_drive", false));
+}
+
+bool CacheClientCertQueries() {
+  return base::FeatureList::IsEnabled(kCacheClientCertQueries);
 }
 
 }  // namespace ash::features

@@ -15,11 +15,40 @@
 #include "chrome/browser/ash/net/client_cert_filter.h"
 #include "net/ssl/client_cert_store_nss.h"
 
+// TMP QCERT
+#include "chrome/browser/ash/net/ssl_private_key_kcer.h"
+#include "chromeos/components/kcer/kcer.h"
+#include "net/ssl/client_cert_identity.h"
+#include "net/ssl/ssl_private_key.h"
+
 namespace chromeos {
 class CertificateProvider;
 }
 
 namespace ash {
+
+class ClientCertIdentityKcer : public net::ClientCertIdentity {
+ public:
+  ClientCertIdentityKcer(base::WeakPtr<kcer::Kcer> kcer,
+                         scoped_refptr<const kcer::Cert> kcer_cert);
+  ~ClientCertIdentityKcer() override;
+
+  // Implements net::ClientCertIdentity.
+  void AcquirePrivateKey(
+      base::OnceCallback<void(scoped_refptr<net::SSLPrivateKey>)>
+          private_key_callback) override;
+
+ private:
+  void OnGotKeyInfo(base::OnceCallback<void(scoped_refptr<net::SSLPrivateKey>)>
+                        private_key_callback,
+                    base::expected<kcer::KeyInfo, kcer::Error> key_info);
+
+  static int KcerKeyTypeToEvp(kcer::KeyType key_type);
+
+  base::WeakPtr<kcer::Kcer> kcer_;
+  scoped_refptr<const kcer::Cert> kcer_cert_;
+  base::WeakPtrFactory<ClientCertIdentityKcer> weak_factory_{this};
+};
 
 class ClientCertStoreAsh : public net::ClientCertStore {
  public:
@@ -35,6 +64,7 @@ class ClientCertStoreAsh : public net::ClientCertStore {
       std::unique_ptr<chromeos::CertificateProvider> cert_provider,
       bool use_system_slot,
       const std::string& username_hash,
+      base::WeakPtr<kcer::Kcer> kcer,
       const PasswordDelegateFactory& password_delegate_factory);
 
   ClientCertStoreAsh(const ClientCertStoreAsh&) = delete;
@@ -48,6 +78,15 @@ class ClientCertStoreAsh : public net::ClientCertStore {
       ClientCertListCallback callback) override;
 
  private:
+  void GotKcerTokens(scoped_refptr<const net::SSLCertRequestInfo> request,
+                     ClientCertListCallback callback,
+                     net::ClientCertIdentityList additional_certs,
+                     base::flat_set<kcer::Token> tokens);
+  void GotKcerCerts(scoped_refptr<const net::SSLCertRequestInfo> request,
+                    ClientCertListCallback callback,
+                    net::ClientCertIdentityList additional_certs,
+                    std::vector<scoped_refptr<const kcer::Cert>> kcer_certs,
+                    base::flat_map<kcer::Token, kcer::Error> kcer_errors);
   void GotAdditionalCerts(scoped_refptr<const net::SSLCertRequestInfo> request,
                           ClientCertListCallback callback,
                           net::ClientCertIdentityList additional_certs);
@@ -66,6 +105,8 @@ class ClientCertStoreAsh : public net::ClientCertStore {
 
   std::unique_ptr<chromeos::CertificateProvider> cert_provider_;
   scoped_refptr<ClientCertFilter> cert_filter_;
+  const bool use_system_token_;
+  base::WeakPtr<kcer::Kcer> kcer_;
 
   // The factory for creating the delegate for requesting a password to a
   // PKCS#11 token. May be null.

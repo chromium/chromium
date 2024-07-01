@@ -13,6 +13,14 @@
 #include <memory>
 #include <utility>
 
+// TMP
+#include "base/base64.h"
+#include "base/debug/stack_trace.h"
+#include "base/debug/task_trace.h"
+#include "base/logging.h"
+#define HERE() LOG(ERROR) << " === QCERT " << __FUNCTION__ << " "
+// #define HERE() LAZY_STREAM(LOG_STREAM(ERROR), /*is_on=*/false)
+
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -76,11 +84,13 @@ class SSLPlatformKeyNSS : public ThreadedSSLPrivateKey::Delegate {
   Error Sign(uint16_t algorithm,
              base::span<const uint8_t> input,
              std::vector<uint8_t>* signature) override {
+    HERE() << "ok start";
     const EVP_MD* md = SSL_get_signature_algorithm_digest(algorithm);
     uint8_t digest[EVP_MAX_MD_SIZE];
     unsigned digest_len;
     if (!md || !EVP_Digest(input.data(), input.size(), digest, &digest_len, md,
                            nullptr)) {
+      HERE() << "fail end";
       return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
     }
     SECItem digest_item;
@@ -92,21 +102,27 @@ class SSLPlatformKeyNSS : public ThreadedSSLPrivateKey::Delegate {
     CK_RSA_PKCS_PSS_PARAMS pss_params;
     bssl::UniquePtr<uint8_t> free_digest_info;
     if (SSL_is_signature_algorithm_rsa_pss(algorithm)) {
+      HERE() << "ok";
       switch (EVP_MD_type(md)) {
         case NID_sha256:
+          HERE() << "ok";
           pss_params.hashAlg = CKM_SHA256;
           pss_params.mgf = CKG_MGF1_SHA256;
           break;
         case NID_sha384:
+          HERE() << "ok";
           pss_params.hashAlg = CKM_SHA384;
           pss_params.mgf = CKG_MGF1_SHA384;
           break;
         case NID_sha512:
+          HERE() << "ok";
           pss_params.hashAlg = CKM_SHA512;
           pss_params.mgf = CKG_MGF1_SHA512;
           break;
         default:
+          HERE() << "ok";
           LOG(ERROR) << "Unexpected hash algorithm";
+          HERE() << "fail end";
           return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
       }
       // Use the hash length for the salt length.
@@ -116,6 +132,7 @@ class SSLPlatformKeyNSS : public ThreadedSSLPrivateKey::Delegate {
       param.len = sizeof(pss_params);
     } else if (SSL_get_signature_algorithm_key_type(algorithm) ==
                EVP_PKEY_RSA) {
+      HERE() << "ok";
       // PK11_SignWithMechanism expects the caller to prepend the DigestInfo for
       // PKCS #1.
       int hash_nid = EVP_MD_type(SSL_get_signature_algorithm_digest(algorithm));
@@ -123,17 +140,21 @@ class SSLPlatformKeyNSS : public ThreadedSSLPrivateKey::Delegate {
       size_t prefix_len;
       if (!RSA_add_pkcs1_prefix(&digest_item.data, &prefix_len, &is_alloced,
                                 hash_nid, digest_item.data, digest_item.len)) {
+        HERE() << "fail end";
         return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
       }
       digest_item.len = prefix_len;
-      if (is_alloced)
+      if (is_alloced) {
+        HERE() << "ok";
         free_digest_info.reset(digest_item.data);
+      }
     }
 
     {
       const int len = PK11_SignatureLen(key_.get());
       if (len <= 0) {
         LogPRError("PK11_SignatureLen failed");
+        HERE() << "fail end";
         return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
       }
       signature->resize(len);
@@ -145,6 +166,7 @@ class SSLPlatformKeyNSS : public ThreadedSSLPrivateKey::Delegate {
                                             &signature_item, &digest_item);
       if (rv != SECSuccess) {
         LogPRError("PK11_SignWithMechanism failed");
+        HERE() << "fail end";
         return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
       }
       signature->resize(signature_item.len);
@@ -153,8 +175,10 @@ class SSLPlatformKeyNSS : public ThreadedSSLPrivateKey::Delegate {
     // NSS emits raw ECDSA signatures, but BoringSSL expects a DER-encoded
     // ECDSA-Sig-Value.
     if (SSL_get_signature_algorithm_key_type(algorithm) == EVP_PKEY_EC) {
+      HERE() << "ok";
       if (signature->size() % 2 != 0) {
         LOG(ERROR) << "Bad signature length";
+        HERE() << "fail end";
         return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
       }
       size_t order_len = signature->size() / 2;
@@ -163,25 +187,31 @@ class SSLPlatformKeyNSS : public ThreadedSSLPrivateKey::Delegate {
       bssl::UniquePtr<ECDSA_SIG> sig(ECDSA_SIG_new());
       if (!sig || !BN_bin2bn(signature->data(), order_len, sig->r) ||
           !BN_bin2bn(signature->data() + order_len, order_len, sig->s)) {
+        HERE() << "fail end";
         return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
       }
 
       {
         const int len = i2d_ECDSA_SIG(sig.get(), nullptr);
-        if (len <= 0)
+        if (len <= 0) {
+          HERE() << "fail end";
           return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
+        }
         signature->resize(len);
       }
 
       {
         uint8_t* ptr = signature->data();
         const int len = i2d_ECDSA_SIG(sig.get(), &ptr);
-        if (len <= 0)
+        if (len <= 0) {
+          HERE() << "fail end";
           return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
+        }
         signature->resize(len);
       }
     }
 
+    HERE() << "ok end";
     return OK;
   }
 

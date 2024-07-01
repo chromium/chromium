@@ -18,6 +18,14 @@
 #include <string_view>
 #include <utility>
 
+// TMP
+#include "base/base64.h"
+#include "base/debug/stack_trace.h"
+#include "base/debug/task_trace.h"
+#include "base/logging.h"
+#define HERE() LOG(ERROR) << " === QCERT " << __FUNCTION__ << " "
+// #define HERE() LAZY_STREAM(LOG_STREAM(ERROR), /*is_on=*/false)
+
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -2199,6 +2207,7 @@ void PlatformKeysServiceImpl::SignWithSymKey(std::optional<TokenId> token_id,
 void PlatformKeysServiceImpl::SelectClientCertificates(
     std::vector<std::string> certificate_authorities,
     SelectCertificatesCallback callback) {
+  HERE() << "ok";
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto cert_request_info = base::MakeRefCounted<net::SSLCertRequestInfo>();

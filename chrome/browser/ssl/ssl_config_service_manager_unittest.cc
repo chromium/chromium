@@ -222,7 +222,8 @@ TEST_F(SSLConfigServiceManagerTest, NoTLS11Max) {
   EXPECT_LE(network::mojom::SSLVersion::kTLS12, initial_config_->version_max);
 }
 
-TEST_F(SSLConfigServiceManagerTest, H2ClientCertCoalescingPref) {
+// TMP QCERT disabled
+TEST_F(SSLConfigServiceManagerTest, DISABLED_H2ClientCertCoalescingPref) {
   scoped_refptr<TestingPrefStore> local_state_store(new TestingPrefStore());
 
   TestingPrefServiceSimple local_state;

@@ -109,6 +109,10 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+
+// TMP QCERT
+#include "chrome/browser/chromeos/kcer/kcer_factory.h"
+#include "chromeos/components/kcer/kcer.h"
 #endif
 
 #if BUILDFLAG(USE_NSS_CERTS)
@@ -902,6 +906,7 @@ ProfileNetworkContextService::CreateClientCertStore() {
 
   return std::make_unique<ash::ClientCertStoreAsh>(
       std::move(certificate_provider), use_system_key_slot, username_hash,
+      kcer::KcerFactory::GetKcer(profile_),
       base::BindRepeating(&CreateCryptoModuleBlockingPasswordDelegate,
                           kCryptoModulePasswordClientAuth));
 #elif BUILDFLAG(USE_NSS_CERTS)
