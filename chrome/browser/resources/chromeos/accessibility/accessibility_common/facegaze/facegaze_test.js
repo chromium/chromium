@@ -1076,7 +1076,8 @@ AX_TEST_F('FaceGazeTest', 'DISABLED_ClosesCameraStream', async function() {
   assertFalse(!!win);
 });
 
-AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeGesturesShort', async function() {
+// TODO(crbug.com/348603598): Test is flaky.
+AX_TEST_F('FaceGazeTest', 'DISABLED_ToggleFaceGazeGesturesShort', async function() {
   const gestureToMacroName =
       new Map()
           .set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_FACEGAZE)
