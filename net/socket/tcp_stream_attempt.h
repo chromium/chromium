@@ -31,13 +31,21 @@ class NET_EXPORT_PRIVATE TcpStreamAttempt final : public StreamAttempt {
 
   ~TcpStreamAttempt() override;
 
+  LoadState GetLoadState() const override;
+
  private:
+  enum class State {
+    kNone,
+    kConnecting,
+  };
+
   int StartInternal() override;
 
   void OnIOComplete(int rv);
 
   void OnTimeout();
 
+  State next_state_ = State::kNone;
   base::OneShotTimer timeout_timer_;
 };
 

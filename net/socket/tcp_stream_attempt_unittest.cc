@@ -158,6 +158,7 @@ TEST_F(TcpStreamAttemptTest, SuccessSync) {
   ASSERT_TRUE(stream_socket);
   ASSERT_FALSE(helper.attempt()->start_time().is_null());
   ASSERT_FALSE(helper.attempt()->end_time().is_null());
+  ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_IDLE);
 }
 
 TEST_F(TcpStreamAttemptTest, SuccessAsync) {
@@ -166,6 +167,7 @@ TEST_F(TcpStreamAttemptTest, SuccessAsync) {
   StreamAttemptHelper helper(params(), MakeIPEndPoint("192.0.2.1"));
   int rv = helper.Start();
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_CONNECTING);
 
   rv = helper.WaitForCompletion();
   EXPECT_THAT(rv, IsOk());
@@ -175,6 +177,7 @@ TEST_F(TcpStreamAttemptTest, SuccessAsync) {
   ASSERT_TRUE(stream_socket);
   ASSERT_FALSE(helper.attempt()->start_time().is_null());
   ASSERT_FALSE(helper.attempt()->end_time().is_null());
+  ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_IDLE);
 }
 
 TEST_F(TcpStreamAttemptTest, FailureSync) {
@@ -183,6 +186,7 @@ TEST_F(TcpStreamAttemptTest, FailureSync) {
   StreamAttemptHelper helper(params(), MakeIPEndPoint("192.0.2.1"));
   int rv = helper.Start();
   EXPECT_THAT(rv, IsError(ERR_CONNECTION_FAILED));
+  ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_IDLE);
 }
 
 TEST_F(TcpStreamAttemptTest, FailureAsync) {
@@ -194,6 +198,7 @@ TEST_F(TcpStreamAttemptTest, FailureAsync) {
 
   rv = helper.WaitForCompletion();
   EXPECT_THAT(rv, IsError(ERR_CONNECTION_FAILED));
+  ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_IDLE);
 }
 
 TEST_F(TcpStreamAttemptTest, Timeout) {
@@ -207,6 +212,7 @@ TEST_F(TcpStreamAttemptTest, Timeout) {
   rv = helper.WaitForCompletion();
   EXPECT_THAT(rv, IsError(ERR_CONNECTION_TIMED_OUT));
   ASSERT_FALSE(helper.attempt()->ReleaseStreamSocket());
+  ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_IDLE);
 }
 
 TEST_F(TcpStreamAttemptTest, Abort) {
@@ -242,6 +248,7 @@ TEST_F(TcpStreamAttemptTest, SocketPerformanceWatcher) {
   ASSERT_TRUE(stream_socket);
   ASSERT_FALSE(helper.attempt()->start_time().is_null());
   ASSERT_FALSE(helper.attempt()->end_time().is_null());
+  ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_IDLE);
 }
 
 }  // namespace net

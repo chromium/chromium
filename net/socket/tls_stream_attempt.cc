@@ -26,6 +26,20 @@ TlsStreamAttempt::TlsStreamAttempt(const StreamAttemptParams* params,
 
 TlsStreamAttempt::~TlsStreamAttempt() = default;
 
+LoadState TlsStreamAttempt::GetLoadState() const {
+  switch (next_state_) {
+    case State::kNone:
+      return LOAD_STATE_IDLE;
+    case State::kTcpAttempt:
+    case State::kTcpAttemptComplete:
+      CHECK(nested_attempt_);
+      return nested_attempt_->GetLoadState();
+    case State::kTlsAttempt:
+    case State::kTlsAttemptComplete:
+      return LOAD_STATE_SSL_HANDSHAKE;
+  }
+}
+
 int TlsStreamAttempt::StartInternal() {
   CHECK_EQ(next_state_, State::kNone);
   next_state_ = State::kTcpAttempt;
@@ -96,6 +110,7 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
 
   nested_attempt_.reset();
 
+  tls_handshake_started_ = true;
   ssl_socket_ = params().client_socket_factory->CreateSSLClientSocket(
       params().ssl_client_context, std::move(nested_socket), host_port_pair_,
       ssl_config);

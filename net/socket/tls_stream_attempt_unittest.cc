@@ -166,6 +166,7 @@ TEST_F(TlsStreamAttemptTest, SuccessSync) {
   std::unique_ptr<StreamSocket> stream_socket =
       helper.attempt()->ReleaseStreamSocket();
   ASSERT_TRUE(stream_socket);
+  ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_IDLE);
 }
 
 TEST_F(TlsStreamAttemptTest, SuccessAsync) {
@@ -181,6 +182,11 @@ TEST_F(TlsStreamAttemptTest, SuccessAsync) {
 
   rv = helper.WaitForCompletion();
   EXPECT_THAT(rv, IsOk());
+
+  std::unique_ptr<StreamSocket> stream_socket =
+      helper.attempt()->ReleaseStreamSocket();
+  ASSERT_TRUE(stream_socket);
+  ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_IDLE);
 }
 
 TEST_F(TlsStreamAttemptTest, SSLConfigDelayed) {
@@ -193,10 +199,12 @@ TEST_F(TlsStreamAttemptTest, SSLConfigDelayed) {
   TlsStreamAttemptHelper helper(params(), /*ssl_config=*/std::nullopt);
   int rv = helper.Start();
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_CONNECTING);
 
   // We don't provide SSLConfig yet so the attempt should not complete.
   RunUntilIdle();
   ASSERT_FALSE(helper.result().has_value());
+  ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_SSL_HANDSHAKE);
 
   helper.SetSSLConfig(SSLConfig());
   rv = helper.WaitForCompletion();
@@ -216,9 +224,7 @@ TEST_F(TlsStreamAttemptTest, TcpFail) {
       helper.attempt()->ReleaseStreamSocket();
   ASSERT_FALSE(stream_socket);
 
-  // TODO(crbug.com/346835898): Check attempt state to make sure the failure
-  // happened at the TCP layer, not the TLS layer. Add a getter to StreamAttempt
-  // for that purpose.
+  ASSERT_FALSE(helper.attempt()->IsTlsHandshakeStarted());
 }
 
 TEST_F(TlsStreamAttemptTest, CertError) {
@@ -236,10 +242,7 @@ TEST_F(TlsStreamAttemptTest, CertError) {
   std::unique_ptr<StreamSocket> stream_socket =
       helper.attempt()->ReleaseStreamSocket();
   ASSERT_TRUE(stream_socket);
-
-  // TODO(crbug.com/346835898): Check attempt state to make sure the failure
-  // happened at the TLS layer, not the TCP layer. Add a getter to StreamAttempt
-  // for that purpose.
+  ASSERT_TRUE(helper.attempt()->IsTlsHandshakeStarted());
 }
 
 TEST_F(TlsStreamAttemptTest, IgnoreCertError) {
@@ -274,6 +277,7 @@ TEST_F(TlsStreamAttemptTest, HandshakeError) {
   std::unique_ptr<StreamSocket> stream_socket =
       helper.attempt()->ReleaseStreamSocket();
   ASSERT_FALSE(stream_socket);
+  ASSERT_TRUE(helper.attempt()->IsTlsHandshakeStarted());
 }
 
 TEST_F(TlsStreamAttemptTest, NegotiatedHttp2) {

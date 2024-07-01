@@ -28,6 +28,15 @@ TcpStreamAttempt::TcpStreamAttempt(const StreamAttemptParams* params,
 
 TcpStreamAttempt::~TcpStreamAttempt() = default;
 
+LoadState TcpStreamAttempt::GetLoadState() const {
+  switch (next_state_) {
+    case State::kNone:
+      return LOAD_STATE_IDLE;
+    case State::kConnecting:
+      return LOAD_STATE_CONNECTING;
+  }
+}
+
 int TcpStreamAttempt::StartInternal() {
   std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher;
   if (params().socket_performance_watcher_factory) {
@@ -52,18 +61,23 @@ int TcpStreamAttempt::StartInternal() {
       FROM_HERE, kTcpHandshakeTimeout,
       base::BindOnce(&TcpStreamAttempt::OnTimeout, base::Unretained(this)));
 
-  return socket_ptr->Connect(
+  int rv = socket_ptr->Connect(
       base::BindOnce(&TcpStreamAttempt::OnIOComplete, base::Unretained(this)));
+  if (rv == ERR_IO_PENDING) {
+    next_state_ = State::kConnecting;
+  }
+  return rv;
 }
 
 void TcpStreamAttempt::OnIOComplete(int rv) {
   CHECK_NE(rv, ERR_IO_PENDING);
+  next_state_ = State::kNone;
   NotifyOfCompletion(rv);
 }
 
 void TcpStreamAttempt::OnTimeout() {
   SetStreamSocket(nullptr);
-  NotifyOfCompletion(ERR_CONNECTION_TIMED_OUT);
+  OnIOComplete(ERR_CONNECTION_TIMED_OUT);
 }
 
 }  // namespace net

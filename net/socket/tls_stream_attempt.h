@@ -52,6 +52,10 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
 
   ~TlsStreamAttempt() override;
 
+  LoadState GetLoadState() const override;
+
+  bool IsTlsHandshakeStarted() { return tls_handshake_started_; }
+
  private:
   enum class State {
     kNone,
@@ -77,6 +81,7 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
 
   std::unique_ptr<TcpStreamAttempt> nested_attempt_;
 
+  bool tls_handshake_started_ = false;
   std::unique_ptr<SSLClientSocket> ssl_socket_;
 };
 

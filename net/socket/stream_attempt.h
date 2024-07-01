@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/load_states.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
@@ -44,7 +45,7 @@ struct NET_EXPORT_PRIVATE StreamAttemptParams {
   raw_ptr<NetLog> net_log;
 };
 
-// Represents a connection attempt to a single IP endpoint.
+// Represents a TCP or TLS connection attempt to a single IP endpoint.
 class NET_EXPORT_PRIVATE StreamAttempt {
  public:
   // `params` must outlive `this`.
@@ -63,6 +64,9 @@ class NET_EXPORT_PRIVATE StreamAttempt {
   // attempt completed synchronously and `callback` is never invoked. Otherwise,
   // `callback` is invoked when the attempt completes.
   int Start(CompletionOnceCallback callback);
+
+  // Returns the load state of this attempt.
+  virtual LoadState GetLoadState() const = 0;
 
   std::unique_ptr<StreamSocket> ReleaseStreamSocket();
 
