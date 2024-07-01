@@ -178,6 +178,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
                            base::OnceClosure complete);
 
   void InterceptWithCookieHeader(
+      std::optional<bool> xrw_enabled,
       AwContentsIoThreadClient::ShouldInterceptRequestResponseCallback callback,
       std::string cookie);
 
@@ -214,6 +215,8 @@ class InterceptedRequest : public network::mojom::URLLoader,
   // Posts the error callback to the UI thread, ensuring that at most we send
   // only one.
   void SendErrorCallback(int error_code, bool safebrowsing_hit);
+
+  void SendNoIntercept(std::optional<bool> xrw_enabled);
 
   OptionalGetCookie get_cookie_header_;
   OptionalSetCookie set_cookie_header_;
@@ -485,6 +488,7 @@ void OnShouldInterceptRequestAsyncResult(
 }  // namespace
 
 void InterceptedRequest::InterceptWithCookieHeader(
+    std::optional<bool> xrw_enabled,
     AwContentsIoThreadClient::ShouldInterceptRequestResponseCallback callback,
     std::string cookie) {
   if (cookie != "") {
@@ -494,11 +498,15 @@ void InterceptedRequest::InterceptWithCookieHeader(
   std::unique_ptr<AwContentsIoThreadClient> io_thread_client =
       GetIoThreadClient();
 
-  // TODO: verify the case when WebContents::RenderFrameDeleted is called
-  // before network request is intercepted (i.e. if that's possible and
-  // whether it can result in any issues).
-  io_thread_client->ShouldInterceptRequestAsync(AwWebResourceRequest(request_),
-                                                std::move(callback));
+  if (io_thread_client != nullptr) {
+    // TODO: verify the case when WebContents::RenderFrameDeleted is called
+    // before network request is intercepted (i.e. if that's possible and
+    // whether it can result in any issues).
+    io_thread_client->ShouldInterceptRequestAsync(
+        AwWebResourceRequest(request_), std::move(callback));
+  } else {
+    SendNoIntercept(xrw_enabled);
+  }
 }
 
 void InterceptedRequest::Restart(std::optional<bool> xrw_enabled) {
@@ -522,18 +530,7 @@ void InterceptedRequest::Restart(std::optional<bool> xrw_enabled) {
       UpdateLoadFlags(request_.load_flags, io_thread_client.get());
 
   if (!io_thread_client || ShouldNotInterceptRequest()) {
-    // equivalent to no interception
-    std::unique_ptr<InterceptResponseReceivedArgs>
-        intercept_response_received_args =
-            std::make_unique<InterceptResponseReceivedArgs>();
-
-    CheckXrwOriginTrialAsync(
-        xrw_enabled, request_.url, frame_tree_node_id_,
-        static_cast<blink::mojom::ResourceType>(request_.resource_type),
-        intercept_response_received_args.get(),
-        base::BindOnce(&InterceptedRequest::InterceptResponseReceived,
-                       weak_factory_.GetWeakPtr(),
-                       std::move(intercept_response_received_args)));
+    SendNoIntercept(xrw_enabled);
   } else {
     if (request_.referrer.is_valid()) {
       // intentionally override if referrer header already exists
@@ -562,6 +559,7 @@ void InterceptedRequest::Restart(std::optional<bool> xrw_enabled) {
 
     auto done = base::BindOnce(
         &InterceptedRequest::InterceptWithCookieHeader, base::Unretained(this),
+        xrw_enabled,
         base::BindOnce(&OnShouldInterceptRequestAsyncResult,
                        base::Unretained(intercept_response_received_args),
                        arg_ready_closure));
@@ -997,6 +995,21 @@ void InterceptedRequest::SendErrorCallback(int error_code,
       FROM_HERE, base::BindOnce(&OnReceivedErrorOnUiThread, frame_tree_node_id_,
                                 AwWebResourceRequest(request_), error_code,
                                 safebrowsing_hit));
+}
+
+void InterceptedRequest::SendNoIntercept(std::optional<bool> xrw_enabled) {
+  // equivalent to no interception
+  std::unique_ptr<InterceptResponseReceivedArgs>
+      intercept_response_received_args =
+          std::make_unique<InterceptResponseReceivedArgs>();
+
+  CheckXrwOriginTrialAsync(
+      xrw_enabled, request_.url, frame_tree_node_id_,
+      static_cast<blink::mojom::ResourceType>(request_.resource_type),
+      intercept_response_received_args.get(),
+      base::BindOnce(&InterceptedRequest::InterceptResponseReceived,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(intercept_response_received_args)));
 }
 
 }  // namespace
