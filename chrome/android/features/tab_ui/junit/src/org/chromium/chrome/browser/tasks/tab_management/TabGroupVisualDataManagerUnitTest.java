@@ -328,16 +328,6 @@ public class TabGroupVisualDataManagerUnitTest {
     }
 
     @Test
-    public void tabMergeIntoGroup_CollapsedDeleted() {
-        List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        createTabGroup(group1, TAB1_ID, GROUP_1_ID);
-        List<Tab> group2 = new ArrayList<>(Arrays.asList(mTab3, mTab4));
-        createTabGroup(group2, TAB3_ID, GROUP_2_ID);
-        mTabGroupModelFilterObserverCaptor.getValue().willMergeTabToGroup(mTab1, TAB3_ID);
-        verify(mTabGroupModelFilter).deleteTabGroupCollapsed(TAB3_ID);
-    }
-
-    @Test
     @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE)
     public void tabMergeIntoGroup_CollapsedWithoutFeature() {
         List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab1, mTab2));

@@ -214,7 +214,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
                 @Override
                 public void didMergeTabToGroup(Tab movedTab, int selectedTabIdInGroup) {
-                    updateGroupAccessibilityDescription(movedTab.getRootId());
+                    int rootId = movedTab.getRootId();
+                    updateGroupAccessibilityDescription(rootId);
                     // Removing the tab at the end of a group through the GTS will result in the
                     // width of a group changing without a tab moving. This means a rebuild won't
                     // occur, and we'll need to manually update the bottom indicator here.
@@ -222,6 +223,14 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                         finishAnimations();
                         computeAndUpdateTabOrders(false, false);
                         mRenderHost.requestRender();
+                    }
+
+                    // Tab merging should not automatically expand a collapsed tab group. If the
+                    // target group is collapsed, the tab being merged should also be collapsed.
+                    StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
+                    if (groupTitle != null) {
+                        updateTabCollapsed(
+                                findTabById(movedTab.getId()), groupTitle.isCollapsed(), false);
                     }
                 }
 
@@ -2708,6 +2717,22 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                     mTabCreator.launchNtp();
                 }
             }
+        }
+    }
+
+    /**
+     * Handles edge cases such as merging a selected tab into a collapsed tab group through GTS,
+     * followed by exiting GTS with a back gesture. The tab group containing the selected tab should
+     * be expanded.
+     */
+    protected void expandGroupOnGtsExit() {
+        StripLayoutTab selectedTab = getSelectedStripTab();
+        if (selectedTab == null) {
+            return;
+        }
+        Tab tab = getTabById(selectedTab.getId());
+        if (tab != null && mTabGroupModelFilter.getTabGroupCollapsed(tab.getRootId())) {
+            mTabGroupModelFilter.deleteTabGroupCollapsed(tab.getRootId());
         }
     }
 

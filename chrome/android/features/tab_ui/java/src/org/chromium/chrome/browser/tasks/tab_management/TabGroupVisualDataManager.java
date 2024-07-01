@@ -114,11 +114,6 @@ public class TabGroupVisualDataManager {
                                         TabGroupColorUtils.getNextSuggestedColorId(filter));
                             }
                         }
-
-                        // The act of merging should expand the destination group.
-                        if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
-                            filter.deleteTabGroupCollapsed(newRootId);
-                        }
                     }
 
                     @Override

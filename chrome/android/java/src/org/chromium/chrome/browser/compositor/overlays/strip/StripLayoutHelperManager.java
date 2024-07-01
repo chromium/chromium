@@ -367,6 +367,10 @@ public class StripLayoutHelperManager
         public void onStartedHiding(@LayoutType int layoutType) {
             if (layoutType != LayoutType.TAB_SWITCHER) return;
             mTabStripObscured = false;
+
+            // Expand tab group on GTS exit.
+            mNormalHelper.expandGroupOnGtsExit();
+            mIncognitoHelper.expandGroupOnGtsExit();
         }
     }
 
