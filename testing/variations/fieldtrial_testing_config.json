@@ -15310,6 +15310,22 @@
             ]
         }
     ],
+    "OzonePlatformAuto": [
+        {
+            "platforms": [
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Dogfood",
+                    "enable_features": [
+                        "AllowWindowDragUsingSystemDragDrop",
+                        "OverrideDefaultOzonePlatformHintToAuto"
+                    ]
+                }
+            ]
+        }
+    ],
     "PMProcessPriorityPolicy": [
         {
             "platforms": [
