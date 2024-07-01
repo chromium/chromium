@@ -84,11 +84,12 @@ declare_args() {
   # Disabled in iOS cronet builds since build step cronet_static_complete
   # wants to build a .a file consumable by external clients, and they won't
   # have the same LLVM revisions as us, making bitcode useless to them.
-  use_thin_lto = is_cfi || (is_clang && is_official_build &&
-                            (is_linux || is_win || is_mac ||
-                             (is_ios && use_lld && !is_cronet_build) ||
-                             (is_android && target_os != "chromeos") ||
-                             (is_chromeos && is_chromeos_device)))
+  use_thin_lto =
+      is_cfi || (is_clang && is_official_build && chrome_pgo_phase != 1 &&
+                 (is_linux || is_win || is_mac ||
+                  (is_ios && use_lld && !is_cronet_build) ||
+                  (is_android && target_os != "chromeos") ||
+                  (is_chromeos && is_chromeos_device)))
 
   # Whether we're using a sample profile collected on an architecture different
   # than the one we're compiling for.
