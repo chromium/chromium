@@ -64,6 +64,8 @@ void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
                                           bool is_directory,
                                           bool contents_valid,
                                           ArchiveAnalyzerResults* results) {
+  results->encryption_info.is_encrypted |= is_encrypted;
+
   scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor(
       new BinaryFeatureExtractor());
   bool current_entry_is_executable;

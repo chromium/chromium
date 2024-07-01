@@ -34,7 +34,6 @@ bool RarAnalyzer::ResumeExtraction() {
   while (reader_.ExtractNextEntry()) {
     const third_party_unrar::RarReader::EntryInfo& entry =
         reader_.current_entry();
-    results()->encryption_info.is_encrypted |= entry.is_encrypted;
     if (entry.is_encrypted && !entry.contents_valid) {
       results()->encryption_info.password_status =
           EncryptionInfo::kKnownIncorrect;
