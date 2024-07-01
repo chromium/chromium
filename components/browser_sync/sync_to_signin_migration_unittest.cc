@@ -202,8 +202,7 @@ TEST_F(SyncToSigninMigrationTest, SyncTransport) {
 TEST_F(SyncToSigninMigrationTest, SyncDisabledByPolicy) {
   // The user is signed in and opted in to Sync, but Sync is disabled via
   // enterprise policy.
-  sync_service_.SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
+  sync_service_.SetAllowedByEnterprisePolicy(false);
   ASSERT_EQ(sync_service_.GetTransportState(),
             syncer::SyncService::TransportState::DISABLED);
   ASSERT_TRUE(sync_service_.HasSyncConsent());

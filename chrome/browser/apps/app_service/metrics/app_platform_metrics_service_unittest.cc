@@ -828,15 +828,6 @@ class AppPlatformMetricsServiceTest
     ASSERT_EQ(1, count);
   }
 
-  void DisableSyncServiceByPolicy() {
-    sync_service()->SetDisableReasons(
-        {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
-  }
-
-  void AllowSyncService() {
-    sync_service()->SetDisableReasons(syncer::SyncService::DisableReasonSet());
-  }
-
   std::map<std::string, TestApp>& pre_installed_apps() {
     return pre_installed_apps_;
   }
@@ -1360,15 +1351,13 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkm) {
   ModifyInstance(app_constants::kChromeAppId,
                  browser->window()->GetNativeWindow(), kActiveInstanceState);
 
-  DisableSyncServiceByPolicy();
+  sync_service()->SetAllowedByEnterprisePolicy(false);
 
   // Fast forward by 2 hours and verify no usage data is reported to UKM.
   task_environment_.FastForwardBy(base::Hours(2));
   VerifyNoAppUsageTimeUkm();
 
-  AllowSyncService();
-  sync_service()->SetTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
+  sync_service()->SetAllowedByEnterprisePolicy(true);
 
   static constexpr base::TimeDelta kAppUsageDuration = base::Hours(1);
   task_environment_.FastForwardBy(kAppUsageDuration);
@@ -2185,7 +2174,7 @@ TEST_P(AppPlatformMetricsServiceTest,
                                 usage_time.ConvertToDict());
   }
 
-  DisableSyncServiceByPolicy();
+  sync_service()->SetAllowedByEnterprisePolicy(false);
 
   // Fast forward by two hours and verify usage info is cleared from the pref
   // store.
@@ -2257,7 +2246,7 @@ TEST_P(AppPlatformMetricsServiceTest,
 }
 
 TEST_P(AppPlatformMetricsServiceTest, ShouldNotPersistUsageDataIfSyncDisabled) {
-  DisableSyncServiceByPolicy();
+  sync_service()->SetAllowedByEnterprisePolicy(false);
 
   // Create a new window for the app.
   auto window = std::make_unique<aura::Window>(nullptr);
@@ -2818,7 +2807,7 @@ class AppPlatformMetricsObserverTest : public AppPlatformMetricsServiceTest {
 
 TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppInstalled) {
   // Observers should be notified even when app sync is disabled.
-  DisableSyncServiceByPolicy();
+  sync_service()->SetAllowedByEnterprisePolicy(false);
 
   const std::string app_id(borealis::FakeAppId("borealis-fake"));
   EXPECT_CALL(
@@ -2833,7 +2822,7 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppInstalled) {
 
 TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppLaunch) {
   // Observers should be notified even when app sync is disabled.
-  DisableSyncServiceByPolicy();
+  sync_service()->SetAllowedByEnterprisePolicy(false);
 
   // Launch a pre-installed app and verify the observer is notified.
   EXPECT_CALL(observer_, OnAppLaunched(kAndroidAppId, AppType::kArc,
@@ -2850,7 +2839,7 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppLaunch) {
 
 TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppUninstall) {
   // Observers should be notified even when app sync is disabled.
-  DisableSyncServiceByPolicy();
+  sync_service()->SetAllowedByEnterprisePolicy(false);
 
   // Uninstall a pre-installed app and verify the observer is notified.
   EXPECT_CALL(observer_, OnAppUninstalled(kAndroidAppId, AppType::kArc,
@@ -2866,7 +2855,7 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppUninstall) {
 
 TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppUsage) {
   // Observers should be notified even when app sync is disabled.
-  DisableSyncServiceByPolicy();
+  sync_service()->SetAllowedByEnterprisePolicy(false);
 
   // Create a new window for the app.
   auto window = std::make_unique<aura::Window>(nullptr);
@@ -3501,7 +3490,8 @@ class ManagedGuestSessionBaseTest {
     app_platform_metrics_test.set_user_segment(
         UserTypeByDeviceTypeMetricsProvider::UserSegment::kManagedGuestSession);
     // Sync is disabled for MGS, but AppKM should still be enabled.
-    app_platform_metrics_test.DisableSyncServiceByPolicy();
+    app_platform_metrics_test.sync_service()->SetAllowedByEnterprisePolicy(
+        false);
   }
 
   void SimulateMgsShutdown(

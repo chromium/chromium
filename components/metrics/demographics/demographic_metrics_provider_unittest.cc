@@ -66,8 +66,7 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
         sync_service_ = std::make_unique<syncer::TestSyncService>();
         // Set an arbitrary disable reason to mimic sync feature being unable to
         // start.
-        sync_service_->SetDisableReasons(
-            {syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR});
+        sync_service_->SetHasUnrecoverableError(true);
         break;
 
       case SYNC_FEATURE_ENABLED:

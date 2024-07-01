@@ -108,8 +108,7 @@ TEST_F(SyncUtilsTest, IsHistorySyncEnabled) {
   // The sync machinery is disabled for some reason (e.g. via enterprise
   // policy).
   ASSERT_TRUE(SyncUtils::IsHistorySyncEnabled(&sync_service));
-  sync_service.SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
+  sync_service.SetAllowedByEnterprisePolicy(false);
   EXPECT_FALSE(SyncUtils::IsHistorySyncEnabled(&sync_service));
 }
 

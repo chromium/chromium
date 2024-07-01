@@ -562,8 +562,7 @@ TEST_F(PeopleHandlerTest, AcquireSyncBlockerWhenLoadingSyncSettingsSubpage) {
 TEST_F(PeopleHandlerTest, UnrecoverableErrorInitializingSync) {
   SigninUserAndTurnSyncFeatureOn();
   CreatePeopleHandler();
-  sync_service_->SetDisableReasons(syncer::SyncService::DisableReasonSet(
-      {syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR}));
+  sync_service_->SetHasUnrecoverableError(true);
   sync_user_settings()->ClearInitialSyncFeatureSetupComplete();
   sync_service_->SetTransportState(
       syncer::SyncService::TransportState::DISABLED);
@@ -577,11 +576,7 @@ TEST_F(PeopleHandlerTest, UnrecoverableErrorInitializingSync) {
 TEST_F(PeopleHandlerTest, GaiaErrorInitializingSync) {
   SigninUserAndTurnSyncFeatureOn();
   CreatePeopleHandler();
-  sync_service_->SetDisableReasons(syncer::SyncService::DisableReasonSet(
-      {syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN}));
-  sync_user_settings()->ClearInitialSyncFeatureSetupComplete();
-  sync_service_->SetTransportState(
-      syncer::SyncService::TransportState::DISABLED);
+  sync_service_->SetSignedOut();
 
   // Open the web UI.
   handler_->HandleShowSyncSetupUI(base::Value::List());

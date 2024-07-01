@@ -58,8 +58,7 @@ const base::Value* FindStatWithName(const base::Value::Dict& strings,
 
 TEST(SyncUIUtilTestAbout, ConstructAboutInformationWithUnrecoverableErrorTest) {
   TestSyncService service;
-  service.SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR});
+  service.SetHasUnrecoverableError(true);
 
   const base::Value::Dict strings = ConstructAboutInformation(
       IncludeSensitiveData(true), &service, std::string());

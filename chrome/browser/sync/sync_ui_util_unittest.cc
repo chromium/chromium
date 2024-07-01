@@ -91,8 +91,7 @@ SyncStatusLabels SetUpDistinctCase(
     }
     case STATUS_CASE_SETUP_ERROR: {
       service->SetInitialSyncFeatureSetupComplete(false);
-      service->SetDisableReasons(
-          {syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR});
+      service->SetHasUnrecoverableError(true);
       return {
         SyncStatusMessageType::kSyncError,
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -147,8 +146,7 @@ SyncStatusLabels SetUpDistinctCase(
               IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
     }
     case STATUS_CASE_SYNC_DISABLED_BY_POLICY: {
-      service->SetDisableReasons(
-          {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
+      service->SetAllowedByEnterprisePolicy(false);
       service->SetTransportState(syncer::SyncService::TransportState::DISABLED);
       return {SyncStatusMessageType::kSynced,
               IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY,
@@ -199,8 +197,7 @@ TEST(SyncUIUtilTest, UnrecoverableErrorWithActionableProtocolError) {
 
   environment.SetPrimaryAccount(kTestUser, signin::ConsentLevel::kSync);
   service.SetInitialSyncFeatureSetupComplete(true);
-  service.SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR});
+  service.SetHasUnrecoverableError(true);
 
   // First time action is not set. We should get unrecoverable error.
   service.SetDetailedSyncStatus(true, syncer::SyncStatus());
@@ -240,8 +237,7 @@ TEST(SyncUIUtilTest, ActionableProtocolErrorWithPassiveMessage) {
 
   environment.SetPrimaryAccount(kTestUser, signin::ConsentLevel::kSync);
   service.SetInitialSyncFeatureSetupComplete(true);
-  service.SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR});
+  service.SetHasUnrecoverableError(true);
 
   // Set action to SyncStatusActionType::kUpgradeClient.
   syncer::SyncStatus status;

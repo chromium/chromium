@@ -424,8 +424,7 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
   }
 
   void SimulateDisableSyncByPolicyWithError() {
-    GetTestSyncService()->SetDisableReasons(
-        {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
+    GetTestSyncService()->SetAllowedByEnterprisePolicy(false);
     // Disabling sync by policy resets the sync setup.
     GetTestSyncService()->SetInitialSyncFeatureSetupComplete(false);
     GetTestSyncService()->FireStateChanged();

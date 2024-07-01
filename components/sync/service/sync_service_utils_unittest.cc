@@ -16,8 +16,7 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfSyncNotAllowed) {
 
   // If sync is not allowed, uploading should never be enabled, even if all the
   // data types are enabled.
-  service.SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
+  service.SetAllowedByEnterprisePolicy(false);
   service.SetTransportState(syncer::SyncService::TransportState::DISABLED);
 
   service.GetUserSettings()->SetSelectedTypes(
@@ -29,7 +28,7 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfSyncNotAllowed) {
 
   // Once sync gets allowed (e.g. policy is updated), uploading should not be
   // disabled anymore (though not necessarily active yet).
-  service.SetDisableReasons(SyncService::DisableReasonSet());
+  service.SetAllowedByEnterprisePolicy(true);
   service.SetTransportState(
       syncer::SyncService::TransportState::START_DEFERRED);
 
@@ -40,7 +39,6 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfSyncNotAllowed) {
 TEST(SyncServiceUtilsTest,
      UploadToGoogleInitializingUntilConfiguredAndActiveAndSyncCycleComplete) {
   TestSyncService service;
-  service.SetDisableReasons(SyncService::DisableReasonSet());
   service.SetTransportState(
       syncer::SyncService::TransportState::START_DEFERRED);
   service.GetUserSettings()->SetSelectedTypes(
@@ -65,7 +63,6 @@ TEST(SyncServiceUtilsTest,
 
 TEST(SyncServiceUtilsTest, UploadToGoogleDisabledForModelType) {
   TestSyncService service;
-  service.SetDisableReasons(SyncService::DisableReasonSet());
   service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   service.SetNonEmptyLastCycleSnapshot();
 
@@ -89,7 +86,6 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledForModelType) {
 TEST(SyncServiceUtilsTest,
      UploadToGoogleDisabledForModelTypeThatFailedToStart) {
   TestSyncService service;
-  service.SetDisableReasons(SyncService::DisableReasonSet());
   service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   service.SetNonEmptyLastCycleSnapshot();
 
@@ -113,7 +109,6 @@ TEST(SyncServiceUtilsTest,
 
 TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfLocalSyncEnabled) {
   TestSyncService service;
-  service.SetDisableReasons(SyncService::DisableReasonSet());
   service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true,
       /*types=*/UserSelectableTypeSet::All());
@@ -134,7 +129,6 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfLocalSyncEnabled) {
 
 TEST(SyncServiceUtilsTest, UploadToGoogleDisabledOnPersistentAuthError) {
   TestSyncService service;
-  service.SetDisableReasons(SyncService::DisableReasonSet());
   service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true,
       /*types=*/UserSelectableTypeSet::All());
@@ -163,7 +157,6 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledOnPersistentAuthError) {
 
 TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfCustomPassphraseInUse) {
   TestSyncService service;
-  service.SetDisableReasons(SyncService::DisableReasonSet());
   service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true,
       /*types=*/UserSelectableTypeSet::All());
@@ -194,7 +187,6 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfCustomPassphraseInUse) {
 
 TEST(SyncServiceUtilsTest, UploadToGoogleEnabledInTransportMode) {
   TestSyncService service;
-  service.SetDisableReasons(SyncService::DisableReasonSet());
   service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true,
       /*types=*/UserSelectableTypeSet::All());
@@ -218,7 +210,6 @@ TEST(SyncServiceUtilsTest, UploadToGoogleEnabledInTransportMode) {
 
 TEST(SyncServiceUtilsTest, UploadToGoogleEnabledDespiteInitialSetupIncomplete) {
   TestSyncService service;
-  service.SetDisableReasons(SyncService::DisableReasonSet());
   service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true,
       /*types=*/UserSelectableTypeSet::All());

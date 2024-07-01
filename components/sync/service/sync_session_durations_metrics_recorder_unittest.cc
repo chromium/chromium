@@ -167,8 +167,7 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, OptedInToSync_SyncActive) {
 TEST_F(SyncSessionDurationsMetricsRecorderTest,
        OptedInToSync_SyncDisabledByEnterprisePolicy) {
   SignIn(signin::ConsentLevel::kSync);
-  sync_service_.SetDisableReasons(
-      {SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
+  sync_service_.SetAllowedByEnterprisePolicy(false);
 
   base::HistogramTester ht;
   StartAndEndSession(kSessionTime);

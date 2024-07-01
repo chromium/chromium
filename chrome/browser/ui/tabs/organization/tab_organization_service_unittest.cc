@@ -309,10 +309,9 @@ TEST_F(TabOrganizationServiceTest, CreateSessionForBrowserOnTab) {
 
 TEST_F(TabOrganizationServiceTest, CanStartRequest) {
   // // Not Synced
-  sync_service()->SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN});
+  sync_service()->SetSignedOut();
   EXPECT_FALSE(service()->CanStartRequest());
-  sync_service()->SetDisableReasons({});
+  sync_service()->SetSignedInWithSyncFeatureOn();
 
   // Sync Paused
   sync_service()->SetPersistentAuthError();
@@ -336,8 +335,7 @@ TEST_F(TabOrganizationServiceTest, CanStartRequest) {
 
 TEST_F(TabOrganizationServiceTest, EnterpriseDisabledPolicy) {
   EXPECT_TRUE(service()->CanStartRequest());
-  sync_service()->SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
+  sync_service()->SetAllowedByEnterprisePolicy(false);
   EXPECT_FALSE(service()->CanStartRequest());
 }
 

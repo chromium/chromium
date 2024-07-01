@@ -20,7 +20,6 @@ namespace {
 class SyncStartupTrackerTest : public testing::Test {
  public:
   void SetupNonInitializedSyncService() {
-    sync_service_.SetDisableReasons(syncer::SyncService::DisableReasonSet());
     sync_service_.SetTransportState(
         syncer::SyncService::TransportState::INITIALIZING);
   }
@@ -34,7 +33,6 @@ class SyncStartupTrackerTest : public testing::Test {
 };
 
 TEST_F(SyncStartupTrackerTest, SyncAlreadyInitialized) {
-  sync_service_.SetDisableReasons(syncer::SyncService::DisableReasonSet());
   sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   EXPECT_CALL(callback_,
               Run(SyncStartupTracker::ServiceStartupState::kComplete));
@@ -44,10 +42,7 @@ TEST_F(SyncStartupTrackerTest, SyncAlreadyInitialized) {
 TEST_F(SyncStartupTrackerTest, SyncNotSignedIn) {
   // Make sure that we get a SyncStartupFailed() callback if sync is not logged
   // in.
-  sync_service_.SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN});
-  sync_service_.SetTransportState(
-      syncer::SyncService::TransportState::DISABLED);
+  sync_service_.SetSignedOut();
   EXPECT_CALL(callback_, Run(SyncStartupTracker::ServiceStartupState::kError));
   SyncStartupTracker tracker(&sync_service_, callback_.Get());
 }
@@ -55,7 +50,6 @@ TEST_F(SyncStartupTrackerTest, SyncNotSignedIn) {
 TEST_F(SyncStartupTrackerTest, SyncAuthError) {
   // Make sure that we get a SyncStartupFailed() callback if sync gets an auth
   // error.
-  sync_service_.SetDisableReasons(syncer::SyncService::DisableReasonSet());
   sync_service_.SetPersistentAuthError();
   EXPECT_CALL(callback_, Run(SyncStartupTracker::ServiceStartupState::kError));
   SyncStartupTracker tracker(&sync_service_, callback_.Get());
@@ -83,7 +77,6 @@ TEST_F(SyncStartupTrackerTest, SyncDelayedAuthError) {
   Mock::VerifyAndClearExpectations(&sync_service_);
 
   // Now, mark the Sync Service as having an auth error.
-  sync_service_.SetDisableReasons(syncer::SyncService::DisableReasonSet());
   sync_service_.SetPersistentAuthError();
   EXPECT_CALL(callback_, Run(SyncStartupTracker::ServiceStartupState::kError));
   tracker.OnStateChanged(&sync_service_);
@@ -98,8 +91,7 @@ TEST_F(SyncStartupTrackerTest, SyncDelayedUnrecoverableError) {
   Mock::VerifyAndClearExpectations(&sync_service_);
 
   // Now, mark the Sync Service as having an unrecoverable error.
-  sync_service_.SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR});
+  sync_service_.SetHasUnrecoverableError(true);
   sync_service_.SetTransportState(
       syncer::SyncService::TransportState::DISABLED);
   EXPECT_CALL(callback_, Run(SyncStartupTracker::ServiceStartupState::kError));

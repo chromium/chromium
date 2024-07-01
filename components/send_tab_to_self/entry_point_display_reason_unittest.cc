@@ -80,9 +80,7 @@ TEST_F(EntryPointDisplayReasonTest, ShouldShowPromoIfSignedOut) {
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_F(EntryPointDisplayReasonTest, ShouldHidePromoIfSyncDisabledByPolicy) {
-  sync_service()->SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN,
-       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
+  sync_service()->SetAllowedByEnterprisePolicy(false);
 
   EXPECT_FALSE(GetEntryPointDisplayReason(GURL(kHttpsUrl), sync_service(),
                                           send_tab_to_self_model(),

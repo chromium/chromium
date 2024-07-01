@@ -57,8 +57,8 @@ void TestSyncService::SetSignedInWithoutSyncFeature(
     const CoreAccountInfo& account_info) {
   has_sync_consent_ = false;
   user_settings_.ClearInitialSyncFeatureSetupComplete();
-  SetTransportState(TransportState::ACTIVE);
-  SetDisableReasons({});
+  transport_state_ = TransportState::ACTIVE;
+  disable_reasons_ = {};
   account_info_ = account_info;
 }
 
@@ -77,7 +77,8 @@ void TestSyncService::SetSignedOut() {
   has_sync_consent_ = false;
   user_settings_.ClearInitialSyncFeatureSetupComplete();
   account_info_ = CoreAccountInfo();
-  SetDisableReasons({DISABLE_REASON_NOT_SIGNED_IN});
+  transport_state_ = TransportState::DISABLED;
+  disable_reasons_ = {DISABLE_REASON_NOT_SIGNED_IN};
   CHECK_EQ(GetTransportState(), TransportState::DISABLED);
 }
 
@@ -91,12 +92,20 @@ void TestSyncService::MimicDashboardClear() {
   StopAndClear();
 }
 
-void TestSyncService::SetDisableReasons(DisableReasonSet disable_reasons) {
-  disable_reasons_ = disable_reasons;
-  if (!disable_reasons_.empty()) {
-    transport_state_ = TransportState::DISABLED;
-  } else if (transport_state_ == TransportState::DISABLED) {
-    transport_state_ = TransportState::ACTIVE;
+void TestSyncService::SetAllowedByEnterprisePolicy(bool allowed) {
+  if (allowed) {
+    RemoveDisableReasonAndUpdateTransportMode(DISABLE_REASON_ENTERPRISE_POLICY);
+  } else {
+    AddDisableReasonAndUpdateTransportMode(DISABLE_REASON_ENTERPRISE_POLICY);
+  }
+}
+
+void TestSyncService::SetHasUnrecoverableError(bool has_error) {
+  if (has_error) {
+    AddDisableReasonAndUpdateTransportMode(DISABLE_REASON_UNRECOVERABLE_ERROR);
+  } else {
+    RemoveDisableReasonAndUpdateTransportMode(
+        DISABLE_REASON_UNRECOVERABLE_ERROR);
   }
 }
 
@@ -445,6 +454,33 @@ void TestSyncService::SetTriggerRefreshCallback(
 
 void TestSyncService::OnSetupInProgressHandleDestroyed() {
   outstanding_setup_in_progress_handles_--;
+}
+
+void TestSyncService::AddDisableReasonAndUpdateTransportMode(
+    DisableReason reason) {
+  disable_reasons_.Put(reason);
+  // See comment in RemoveDisableReasonAndUpdateTransportMode() regarding the
+  // PAUSED state.
+  transport_state_ = TransportState::DISABLED;
+}
+
+void TestSyncService::RemoveDisableReasonAndUpdateTransportMode(
+    DisableReason reason) {
+  disable_reasons_.Remove(reason);
+  // The current code only flips to ACTIVE if `transport_state_` was DISABLED.
+  // This looks like an attempt to honor other states, particularly the PAUSED
+  // state set by SetPersistentAuthError(). This is actually broken, as the
+  // same isn't true when adding disable reasons. E.g. this call sequence...
+  // - SetPersistentAuthError()
+  // - SetAllowedByEnterprisePolicy(false)
+  // - SetAllowedByEnterprisePolicy(true)
+  // ...ends up in ACTIVE, not PAUSED. The correct approach is probably to
+  // have SetPersistentAuthError() set a dedicated bool and compute
+  // TransportState from it instead of setting the state directly.
+  if (disable_reasons_.empty() &&
+      transport_state_ == TransportState::DISABLED) {
+    transport_state_ = TransportState::ACTIVE;
+  }
 }
 
 }  // namespace syncer

@@ -46,9 +46,6 @@ class PrivacyMetricsServiceTest : public testing::Test {
 
   void ActivateSync() {
     SetPrimaryAccountConsentLevel(signin::ConsentLevel::kSync);
-    sync_service()->SetTransportState(
-        syncer::SyncService::TransportState::ACTIVE);
-    sync_service()->SetDisableReasons({});
     sync_service()->FireStateChanged();
   }
 
@@ -56,16 +53,12 @@ class PrivacyMetricsServiceTest : public testing::Test {
     SetPrimaryAccountConsentLevel(signin::ConsentLevel::kSync);
     sync_service()->SetTransportState(
         syncer::SyncService::TransportState::PAUSED);
-    sync_service()->SetDisableReasons({});
     sync_service()->FireStateChanged();
   }
 
   void DisableSync() {
-    SetPrimaryAccountConsentLevel(signin::ConsentLevel::kSignin);
-    sync_service()->SetTransportState(
-        syncer::SyncService::TransportState::DISABLED);
-    sync_service()->SetDisableReasons(
-        {syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN});
+    identity_test_env_.ClearPrimaryAccount();
+    sync_service()->SetSignedOut();
     sync_service()->FireStateChanged();
   }
 
@@ -82,9 +75,18 @@ class PrivacyMetricsServiceTest : public testing::Test {
       return;
     }
 
-    if (!identity_test_env()->identity_manager()->HasPrimaryAccount(
-            consent_level)) {
-      identity_test_env()->SetPrimaryAccount("test@test.com", consent_level);
+    CoreAccountInfo account_info =
+        identity_test_env()->identity_manager()->GetPrimaryAccountInfo(
+            consent_level);
+    if (account_info.IsEmpty()) {
+      account_info = identity_test_env()->SetPrimaryAccount("test@test.com",
+                                                            consent_level);
+    }
+
+    if (consent_level == signin::ConsentLevel::kSync) {
+      sync_service_.SetSignedInWithSyncFeatureOn(account_info);
+    } else {
+      sync_service_.SetSignedInWithoutSyncFeature(account_info);
     }
   }
 
@@ -216,8 +218,8 @@ TEST_F(PrivacyMetricsServiceTest, AccountChangeNoSyncIssues) {
   // Check that if the profile is shutting down with sync & COE enabled, but
   // didn't start paused, and the account consent changed, the correct event
   // is recorded.
-  base::HistogramTester histogram_tester;
   CreateService(/*clear_on_exit_enabled=*/true, signin::ConsentLevel::kSignin);
+  base::HistogramTester histogram_tester;
 
   ActivateSync();
   privacy_metrics_service()->Shutdown();
@@ -232,7 +234,6 @@ TEST_F(PrivacyMetricsServiceTest, StartupNoSync) {
   // Check if the user has COE enabled, but not sync, the appropriate event is
   // recorded.
   base::HistogramTester histogram_tester;
-  DisableSync();
   CreateService(/*clear_on_exit_enabled=*/true, signin::ConsentLevel::kSignin);
   histogram_tester.ExpectUniqueSample(
       kClearOnExitSyncEventHistogram,

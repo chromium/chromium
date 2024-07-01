@@ -599,8 +599,7 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
 IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
                        SyncDisabled) {
   SignIn(kEnterpriseEmail);
-  sync_service()->SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
+  sync_service()->SetAllowedByEnterprisePolicy(false);
   ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
   content::TestNavigationObserver profile_customization_observer(
       kProfileCustomizationUrl);

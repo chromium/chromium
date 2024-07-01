@@ -3208,8 +3208,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosManagedFirstRunBrowserTest,
 
   // Unblock the sync service and simulate the server-side
   // being disabled.
-  sync_service()->SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
+  sync_service()->SetAllowedByEnterprisePolicy(false);
   sync_service()->SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   sync_service()->FireStateChanged();

@@ -816,14 +816,13 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
       FloatingWorkspaceService::GetForProfile(profile());
-  test_sync_service()->SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
+  test_sync_service()->SetAllowedByEnterprisePolicy(false);
   ASSERT_FALSE(test_sync_service()->IsSyncFeatureEnabled());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service());
   test_sync_service()->FireStateChanged();
   EXPECT_TRUE(HasNotificationFor(kNotificationForNoNetworkConnection));
-  test_sync_service()->SetDisableReasons({});
+  test_sync_service()->SetAllowedByEnterprisePolicy(true);
   ASSERT_TRUE(test_sync_service()->IsSyncFeatureEnabled());
   test_sync_service()->FireStateChanged();
   EXPECT_FALSE(HasNotificationFor(kNotificationForNoNetworkConnection));

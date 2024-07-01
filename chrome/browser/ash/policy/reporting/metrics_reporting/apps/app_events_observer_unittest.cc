@@ -97,8 +97,7 @@ class AppEventsObserverTest : public ::apps::AppPlatformMetricsServiceTestBase,
 
     // Disable sync so we disable UKM reporting and eliminate noise for testing
     // purposes.
-    sync_service()->SetDisableReasons(
-        {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
+    sync_service()->SetAllowedByEnterprisePolicy(false);
 
     // Set up `AppEventsObserver` with relevant test params.
     auto mock_app_platform_metrics_retriever =

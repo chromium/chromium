@@ -162,8 +162,7 @@ TEST_F(ProfileCustomizationBubbleSyncControllerTest,
   base::MockCallback<base::OnceCallback<void(Outcome)>> show_bubble;
   EXPECT_CALL(show_bubble, Run(Outcome::kShowBubble));
 
-  test_sync_service_.SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
+  test_sync_service_.SetAllowedByEnterprisePolicy(false);
   ApplyColorAndShowBubbleWhenNoValueSynced(show_bubble.Get());
 }
 

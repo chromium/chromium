@@ -40,7 +40,11 @@ class TestSyncService : public SyncService {
 
   ~TestSyncService() override;
 
-  // High-level setters that configure common scenarios.
+  // High-level setters that configure common scenarios. These will override
+  // any previous call to SetTransportState(), SetAllowedByEnterprisePolicy()
+  // and SetHasUnrecoverableError().
+  // TODO(crbug.com/348605115): This currently resets the above but not things
+  // like SetPassphraseRequired(). It should override all or none.
   void SetSignedInWithoutSyncFeature();
   void SetSignedInWithoutSyncFeature(const CoreAccountInfo& account_info);
   void SetSignedInWithSyncFeatureOn();
@@ -52,7 +56,8 @@ class TestSyncService : public SyncService {
   void MimicDashboardClear();
 
   // Lower-level setters.
-  void SetDisableReasons(DisableReasonSet disable_reasons);
+  void SetAllowedByEnterprisePolicy(bool allowed);
+  void SetHasUnrecoverableError(bool has_error);
   void SetTransportState(TransportState transport_state);
   void SetLocalSyncEnabled(bool local_sync_enabled);
 
@@ -168,6 +173,8 @@ class TestSyncService : public SyncService {
 
  private:
   void OnSetupInProgressHandleDestroyed();
+  void AddDisableReasonAndUpdateTransportMode(DisableReason reason);
+  void RemoveDisableReasonAndUpdateTransportMode(DisableReason reason);
 
   TestSyncUserSettings user_settings_;
   DisableReasonSet disable_reasons_;
