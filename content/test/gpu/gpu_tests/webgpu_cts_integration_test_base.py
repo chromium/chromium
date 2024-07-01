@@ -6,6 +6,7 @@ import collections
 import enum
 import fnmatch
 import json
+import logging
 import os
 import re
 import time
@@ -64,7 +65,7 @@ MESSAGE_TYPE_TEST_STATUS = 'TEST_STATUS'
 MESSAGE_TYPE_TEST_LOG = 'TEST_LOG'
 MESSAGE_TYPE_TEST_FINISHED = 'TEST_FINISHED'
 
-TEST_NAME_REGEX = re.compile(r'([^:]+:[^:]+:[^:]+:).+')
+TEST_NAME_REGEX = re.compile(r'([^:]+:[^:]+:[^:]+:).*')
 
 # This can be switched to a StrEnum once Python 3.11+ is used.
 class WorkerType(enum.Enum):
@@ -382,13 +383,20 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       result = self.HandleMessageLoop(first_load)
 
       log_str = ''.join(result.log_pieces)
-      status = result.status
-      if status == 'skip':
-        self.skipTest('WebGPU CTS JavaScript reported test skip with logs ' +
-                      log_str)
-      elif status == 'fail':
-        self.fail(
-            TEST_NAME_REGEX.match(self._query).group(1) + ' failed\n' + log_str)
+
+      if result.status in ['skip', 'fail']:
+        log_summary, *log_rest = log_str.split('\n', maxsplit=1)
+        if len(log_rest):
+          log_details = log_rest[0]
+          logging.log(logging.ERROR, log_details)
+
+        if result.status == 'skip':
+          self.skipTest('WebGPU CTS JavaScript reported test skip\n' +
+                        log_summary)
+        elif result.status == 'fail':
+          self.fail(
+              TEST_NAME_REGEX.match(self._query).group(1) + ' failed\n' +
+              log_summary)
     except wss.ClientClosedConnectionError as e:
       raise RuntimeError(
           'Detected closed websocket - likely caused by renderer crash') from e
