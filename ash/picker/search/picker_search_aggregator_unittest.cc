@@ -59,50 +59,59 @@ class PickerSearchAggregatorTest : public testing::TestWithParam<TestCase> {
 
 // Gifs are tested separately since they have a special dependency on Drive
 // results.
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    PickerSearchAggregatorTest,
-    testing::Values(
-        TestCase{
-            .source = PickerSearchSource::kOmnibox,
-            .section_type = PickerSectionType::kLinks,
-        },
-        TestCase{
-            .source = PickerSearchSource::kEmoji,
-            .section_type = PickerSectionType::kExpressions,
-        },
-        TestCase{
-            .source = PickerSearchSource::kDate,
-            .section_type = PickerSectionType::kSuggestions,
-        },
-        TestCase{
-            .source = PickerSearchSource::kCategory,
-            .section_type = PickerSectionType::kCategories,
-        },
-        TestCase{
-            .source = PickerSearchSource::kLocalFile,
-            .section_type = PickerSectionType::kFiles,
-        },
-        TestCase{
-            .source = PickerSearchSource::kDrive,
-            .section_type = PickerSectionType::kDriveFiles,
-        },
-        TestCase{
-            .source = PickerSearchSource::kMath,
-            .section_type = PickerSectionType::kSuggestions,
-        },
-        TestCase{
-            .source = PickerSearchSource::kClipboard,
-            .section_type = PickerSectionType::kSuggestions,
-        },
-        TestCase{
-            .source = PickerSearchSource::kEditorWrite,
-            .section_type = PickerSectionType::kEditorWrite,
-        },
-        TestCase{
-            .source = PickerSearchSource::kEditorRewrite,
-            .section_type = PickerSectionType::kEditorRewrite,
-        }));
+const TestCase kNonSuggestionTestCases[] = {
+    TestCase{
+        .source = PickerSearchSource::kOmnibox,
+        .section_type = PickerSectionType::kLinks,
+    },
+    TestCase{
+        .source = PickerSearchSource::kEmoji,
+        .section_type = PickerSectionType::kExpressions,
+    },
+    TestCase{
+        .source = PickerSearchSource::kCategory,
+        .section_type = PickerSectionType::kCategories,
+    },
+    TestCase{
+        .source = PickerSearchSource::kLocalFile,
+        .section_type = PickerSectionType::kFiles,
+    },
+    TestCase{
+        .source = PickerSearchSource::kDrive,
+        .section_type = PickerSectionType::kDriveFiles,
+    },
+    TestCase{
+        .source = PickerSearchSource::kEditorWrite,
+        .section_type = PickerSectionType::kEditorWrite,
+    },
+    TestCase{
+        .source = PickerSearchSource::kEditorRewrite,
+        .section_type = PickerSectionType::kEditorRewrite,
+    },
+};
+
+const TestCase kSuggestionTestCases[] = {
+    TestCase{
+        .source = PickerSearchSource::kDate,
+        .section_type = PickerSectionType::kSuggestions,
+    },
+    TestCase{
+        .source = PickerSearchSource::kMath,
+        .section_type = PickerSectionType::kSuggestions,
+    },
+    TestCase{
+        .source = PickerSearchSource::kClipboard,
+        .section_type = PickerSectionType::kSuggestions,
+    },
+};
+
+INSTANTIATE_TEST_SUITE_P(NonSuggestions,
+                         PickerSearchAggregatorTest,
+                         testing::ValuesIn(kNonSuggestionTestCases));
+
+INSTANTIATE_TEST_SUITE_P(Suggestions,
+                         PickerSearchAggregatorTest,
+                         testing::ValuesIn(kSuggestionTestCases));
 
 TEST_P(PickerSearchAggregatorTest, DoesNotPublishResultsDuringBurnIn) {
   MockSearchResultsCallback search_results_callback;
