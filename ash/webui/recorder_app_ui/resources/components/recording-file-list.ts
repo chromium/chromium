@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cros_components/card/card.js';
-import 'chrome://resources/cros_components/menu/menu.js';
 import 'chrome://resources/cros_components/menu/menu_item.js';
 import 'chrome://resources/mwc/@material/web/divider/divider.js';
 import 'chrome://resources/mwc/@material/web/icon/icon.js';
@@ -12,6 +11,7 @@ import 'chrome://resources/mwc/@material/web/list/list.js';
 import 'chrome://resources/mwc/@material/web/list/list-item.js';
 import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
+import './cra/cra-menu.js';
 
 import {Menu} from 'chrome://resources/cros_components/menu/menu.js';
 import {
@@ -195,7 +195,7 @@ export class RecordingFileList extends ReactiveLitElement {
   }
 
   private renderSortMenu() {
-    return html`<cros-menu
+    return html`<cra-menu
       id="sort-recording-menu"
       anchor="sort-recording-button"
       ${ref(this.sortMenuRef)}
@@ -216,7 +216,7 @@ export class RecordingFileList extends ReactiveLitElement {
     }}
       >
       </cros-menu-item>
-    </cros-menu>`;
+    </cra-menu>`;
   }
 
   private renderHeader() {

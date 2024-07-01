@@ -9,6 +9,7 @@ component_files = [
   "cra/cra-icon-button.ts",
   "cra/cra-icon.ts",
   "cra/cra-image.ts",
+  "cra/cra-menu.ts",
   "cra/cra-pagination.ts",
   "cra/cra-tooltip.ts",
   "genai-placeholder.ts",
