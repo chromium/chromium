@@ -30,7 +30,7 @@ void EchoAITextSession::DoMockExecution(const std::string& input,
   }
 
   responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kOngoing,
-                        "Model not available in Chomrium\n" + input);
+                        "Model not available in Chromium\n" + input);
   responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kComplete,
                         std::nullopt);
 }
