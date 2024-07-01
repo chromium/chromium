@@ -5211,6 +5211,8 @@ crbug.com/1284572 virtual/threaded/http/tests/devtools/isolated-code-cache/same-
 # Incomplete support for mouse wheel in test_driver.
 crbug.com/1285411 external/wpt/css/css-scroll-snap/input/mouse-wheel.html [ Timeout ]
 
+crbug.com/349005297 virtual/threaded-no-composited-antialiasing/animations/composited-animations-timing-function.html [ Failure Pass ]
+
 # Temporarily disable tests to land https://crrev.com/c/5131512
 crbug.com/1509336 http/tests/devtools/har-importer.js [ Failure Pass ]
 crbug.com/1509336 http/tests/devtools/network/json-preview.js [ Failure Pass ]
