@@ -41,7 +41,8 @@ TEST_F(PickerPerformanceMetricsTest,
   PickerPerformanceMetrics metrics(base::TimeTicks::Now());
   metrics.MarkInputFocus();
   metrics.MarkContentsChanged();
-  metrics.MarkSearchResultsUpdated();
+  metrics.MarkSearchResultsUpdated(
+      PickerPerformanceMetrics::SearchResultsUpdate::kReplace);
 
   EXPECT_THAT(histogram.GetTotalCountsForPrefix("Ash.Picker.Session"),
               IsEmpty());
@@ -103,7 +104,8 @@ TEST_F(PickerPerformanceMetricsTest, RecordsPresentationLatencyForResults) {
 
   PickerPerformanceMetrics metrics(base::TimeTicks::Now());
   metrics.StartRecording(*widget);
-  metrics.MarkSearchResultsUpdated();
+  metrics.MarkSearchResultsUpdated(
+      PickerPerformanceMetrics::SearchResultsUpdate::kReplace);
   WaitUntilNextFramePresented(widget->GetCompositor());
 
   histogram.ExpectTotalCount(
@@ -119,7 +121,8 @@ TEST_F(PickerPerformanceMetricsTest, RecordsSearchLatencyOnSearchFinished) {
   metrics.StartRecording(*widget);
   metrics.MarkContentsChanged();
   task_environment()->FastForwardBy(base::Seconds(1));
-  metrics.MarkSearchResultsUpdated();
+  metrics.MarkSearchResultsUpdated(
+      PickerPerformanceMetrics::SearchResultsUpdate::kReplace);
 
   histogram.ExpectUniqueTimeSample("Ash.Picker.Session.SearchLatency",
                                    base::Seconds(1), 1);
@@ -137,7 +140,8 @@ TEST_F(PickerPerformanceMetricsTest,
   task_environment()->FastForwardBy(base::Seconds(1));
   metrics.MarkContentsChanged();
   task_environment()->FastForwardBy(base::Seconds(2));
-  metrics.MarkSearchResultsUpdated();
+  metrics.MarkSearchResultsUpdated(
+      PickerPerformanceMetrics::SearchResultsUpdate::kReplace);
 
   histogram.ExpectUniqueTimeSample("Ash.Picker.Session.SearchLatency",
                                    base::Seconds(2), 1);

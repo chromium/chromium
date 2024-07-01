@@ -59,7 +59,9 @@ void PickerPerformanceMetrics::MarkContentsChanged() {
   search_start_timestamp_ = base::TimeTicks::Now();
 }
 
-void PickerPerformanceMetrics::MarkSearchResultsUpdated() {
+// TODO: b/349913604 - Handle the different types of `update`.
+void PickerPerformanceMetrics::MarkSearchResultsUpdated(
+    SearchResultsUpdate update) {
   if (!is_recording_) {
     return;
   }

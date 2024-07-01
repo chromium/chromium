@@ -23,6 +23,15 @@ namespace ash {
 // Records performance metrics for a session of using Picker, such as latency.
 class ASH_EXPORT PickerPerformanceMetrics {
  public:
+  enum class SearchResultsUpdate {
+    // Stale search results were cleared to an empty list of results.
+    kClear,
+    // Stale search results were replaced with a new non-empty list of results.
+    kReplace,
+    // New results were appended to the (possibly empty) list of results.
+    kAppend,
+  };
+
   // `trigger_event_timestamp` is the timestamp of the event that triggered the
   // session. By default, this uses the time PickerPerformanceMetrics is
   // created. Call `StartRecording` to start recording metrics for the session.
@@ -47,7 +56,7 @@ class ASH_EXPORT PickerPerformanceMetrics {
   void MarkContentsChanged();
 
   // Marks that the search results were updated.
-  void MarkSearchResultsUpdated();
+  void MarkSearchResultsUpdated(SearchResultsUpdate update);
 
  private:
   bool is_recording_ = false;

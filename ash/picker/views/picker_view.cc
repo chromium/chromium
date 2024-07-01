@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_element_identifiers.h"
+#include "ash/picker/metrics/picker_performance_metrics.h"
 #include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/model/picker_search_results_section.h"
@@ -404,13 +405,15 @@ void PickerView::PublishEmojiResults(std::vector<PickerSearchResult> results) {
 
 void PickerView::OnClearResultsTimerFired() {
   search_results_view_->ClearSearchResults();
-  performance_metrics_.MarkSearchResultsUpdated();
+  performance_metrics_.MarkSearchResultsUpdated(
+      PickerPerformanceMetrics::SearchResultsUpdate::kClear);
 }
 
 void PickerView::PublishSearchResults(
     bool show_no_results_found,
     std::vector<PickerSearchResultsSection> results) {
-  if (clear_results_timer_.IsRunning()) {
+  bool clear_stale_results = clear_results_timer_.IsRunning();
+  if (clear_stale_results) {
     clear_results_timer_.Stop();
     search_results_view_->ClearSearchResults();
   }
@@ -423,15 +426,33 @@ void PickerView::PublishSearchResults(
     return;
   }
 
+  bool appended_results = false;
   for (PickerSearchResultsSection& result : results) {
     // Do not show GIFs.
     if (result.type() == PickerSectionType::kGifs) {
       continue;
     } else {
       search_results_view_->AppendSearchResults(std::move(result));
+      appended_results = true;
     }
   }
-  performance_metrics_.MarkSearchResultsUpdated();
+
+  PickerPerformanceMetrics::SearchResultsUpdate update;
+  if (clear_stale_results) {
+    if (appended_results) {
+      update = PickerPerformanceMetrics::SearchResultsUpdate::kReplace;
+    } else {
+      update = PickerPerformanceMetrics::SearchResultsUpdate::kClear;
+    }
+  } else {
+    if (appended_results) {
+      update = PickerPerformanceMetrics::SearchResultsUpdate::kAppend;
+    } else {
+      // Nothing happened.
+      return;
+    }
+  }
+  performance_metrics_.MarkSearchResultsUpdated(update);
 }
 
 void PickerView::SelectCategory(PickerCategory category) {
