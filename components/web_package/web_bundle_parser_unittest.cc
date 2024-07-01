@@ -235,22 +235,11 @@ SignedWebBundleAndKeys SignBundle(
 }
 
 void CheckIfSignatureStackEntryIsValid(
-    mojom::BundleIntegrityBlockSignatureStackEntryPtr& entry,
+    const mojom::BundleIntegrityBlockSignatureStackEntryPtr& entry,
     const Ed25519PublicKey& public_key) {
   ASSERT_TRUE(entry->signature_info->is_ed25519());
   EXPECT_EQ(entry->signature_info->get_ed25519()->public_key, public_key);
 
-  // The signature should also be present at the very end of
-  // `complete_entry_cbor`.
-  auto signature_bytes = entry->signature_info->get_ed25519()->signature;
-  EXPECT_TRUE(std::equal(
-      signature_bytes.bytes().begin(), signature_bytes.bytes().end(),
-      entry->complete_entry_cbor.end() - signature_bytes.bytes().size()));
-
-  // The attributes should also be part of `complete_entry_cbor`.
-  EXPECT_NE(
-      base::ranges::search(entry->complete_entry_cbor, entry->attributes_cbor),
-      entry->complete_entry_cbor.end());
   // The attributes should contain the public key.
   EXPECT_NE(base::ranges::search(entry->attributes_cbor, public_key.bytes()),
             entry->attributes_cbor.end());

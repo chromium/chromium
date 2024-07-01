@@ -11,6 +11,7 @@
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/ed25519_signature.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,16 +43,12 @@ constexpr std::array<uint8_t, 64> kEd25519Signature2 = {
     0, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-constexpr uint8_t kCompleteEntryCbor1[] = {'e', 1, 1, 1};
-constexpr uint8_t kCompleteEntryCbor2[] = {'e', 2, 2, 2};
-
 constexpr uint8_t kAttributesCbor1[] = {'a', 1, 1, 1};
 constexpr uint8_t kAttributesCbor2[] = {'a', 2, 2, 2};
 
 mojom::BundleIntegrityBlockSignatureStackEntryPtr MakeSignatureStackEntry(
     base::span<const uint8_t, 32> public_key,
     base::span<const uint8_t, 64> signature,
-    base::span<const uint8_t> complete_entry_cbor,
     base::span<const uint8_t> attributes_cbor) {
   auto raw_signature_stack_entry =
       mojom::BundleIntegrityBlockSignatureStackEntry::New();
@@ -62,8 +59,6 @@ mojom::BundleIntegrityBlockSignatureStackEntryPtr MakeSignatureStackEntry(
 
   raw_signature_stack_entry->signature_info =
       mojom::SignatureInfo::NewEd25519(std::move(signature_info));
-  raw_signature_stack_entry->complete_entry_cbor = std::vector(
-      std::begin(complete_entry_cbor), std::end(complete_entry_cbor));
   raw_signature_stack_entry->attributes_cbor =
       std::vector(std::begin(attributes_cbor), std::end(attributes_cbor));
   return raw_signature_stack_entry;
@@ -97,9 +92,8 @@ TEST(SignedWebBundleIntegrityBlockTest, EmptySignatureStack) {
 TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithOneSignature) {
   std::vector<mojom::BundleIntegrityBlockSignatureStackEntryPtr>
       raw_signature_stack;
-  raw_signature_stack.push_back(
-      MakeSignatureStackEntry(kEd25519PublicKey1, kEd25519Signature1,
-                              kCompleteEntryCbor1, kAttributesCbor1));
+  raw_signature_stack.push_back(MakeSignatureStackEntry(
+      kEd25519PublicKey1, kEd25519Signature1, kAttributesCbor1));
 
   auto raw_integrity_block = mojom::BundleIntegrityBlock::New();
   raw_integrity_block->size = 42;
@@ -121,8 +115,6 @@ TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithOneSignature) {
 
   EXPECT_EQ(ed25519_signature_info->public_key().bytes(), kEd25519PublicKey1);
   EXPECT_EQ(ed25519_signature_info->signature().bytes(), kEd25519Signature1);
-  EXPECT_THAT(signature_stack.entries()[0].complete_entry_cbor(),
-              ElementsAreArray(kCompleteEntryCbor1));
   EXPECT_THAT(signature_stack.entries()[0].attributes_cbor(),
               ElementsAreArray(kAttributesCbor1));
   EXPECT_EQ(integrity_block.web_bundle_id(),
@@ -132,12 +124,10 @@ TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithOneSignature) {
 TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithTwoSignatures) {
   std::vector<mojom::BundleIntegrityBlockSignatureStackEntryPtr>
       raw_signature_stack;
-  raw_signature_stack.push_back(
-      MakeSignatureStackEntry(kEd25519PublicKey1, kEd25519Signature1,
-                              kCompleteEntryCbor1, kAttributesCbor1));
-  raw_signature_stack.push_back(
-      MakeSignatureStackEntry(kEd25519PublicKey2, kEd25519Signature2,
-                              kCompleteEntryCbor2, kAttributesCbor2));
+  raw_signature_stack.push_back(MakeSignatureStackEntry(
+      kEd25519PublicKey1, kEd25519Signature1, kAttributesCbor1));
+  raw_signature_stack.push_back(MakeSignatureStackEntry(
+      kEd25519PublicKey2, kEd25519Signature2, kAttributesCbor2));
 
   auto raw_integrity_block = mojom::BundleIntegrityBlock::New();
   raw_integrity_block->size = 42;
@@ -157,8 +147,6 @@ TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithTwoSignatures) {
   ASSERT_TRUE(ed25519_signature_info1);
   EXPECT_EQ(ed25519_signature_info1->public_key().bytes(), kEd25519PublicKey1);
   EXPECT_EQ(ed25519_signature_info1->signature().bytes(), kEd25519Signature1);
-  EXPECT_THAT(signature_stack.entries()[0].complete_entry_cbor(),
-              ElementsAreArray(kCompleteEntryCbor1));
   EXPECT_THAT(signature_stack.entries()[0].attributes_cbor(),
               ElementsAreArray(kAttributesCbor1));
 
@@ -168,17 +156,15 @@ TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithTwoSignatures) {
   ASSERT_TRUE(ed25519_signature_info2);
   EXPECT_EQ(ed25519_signature_info2->public_key().bytes(), kEd25519PublicKey2);
   EXPECT_EQ(ed25519_signature_info2->signature().bytes(), kEd25519Signature2);
-  EXPECT_THAT(signature_stack.entries()[1].complete_entry_cbor(),
-              ElementsAreArray(kCompleteEntryCbor2));
   EXPECT_THAT(signature_stack.entries()[1].attributes_cbor(),
               ElementsAreArray(kAttributesCbor2));
 }
 
 TEST(SignedWebBundleIntegrityBlockTest, Comparators) {
   auto entry1 = MakeSignatureStackEntry(kEd25519PublicKey1, kEd25519Signature1,
-                                        kCompleteEntryCbor1, kAttributesCbor1);
+                                        kAttributesCbor1);
   auto entry2 = MakeSignatureStackEntry(kEd25519PublicKey2, kEd25519Signature2,
-                                        kCompleteEntryCbor2, kAttributesCbor2);
+                                        kAttributesCbor2);
 
   std::vector<mojom::BundleIntegrityBlockSignatureStackEntryPtr>
       raw_signature_stack1;

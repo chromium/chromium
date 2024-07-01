@@ -73,7 +73,6 @@ using SignedWebBundleSignatureInfo =
 class SignedWebBundleSignatureStackEntry {
  public:
   SignedWebBundleSignatureStackEntry(
-      const std::vector<uint8_t>& complete_entry_cbor,
       const std::vector<uint8_t>& attributes_cbor,
       SignedWebBundleSignatureInfo signature_info);
 
@@ -86,9 +85,6 @@ class SignedWebBundleSignatureStackEntry {
   bool operator==(const SignedWebBundleSignatureStackEntry& other) const;
   bool operator!=(const SignedWebBundleSignatureStackEntry& other) const;
 
-  const std::vector<uint8_t>& complete_entry_cbor() const {
-    return complete_entry_cbor_;
-  }
   const std::vector<uint8_t>& attributes_cbor() const {
     return attributes_cbor_;
   }
@@ -97,7 +93,6 @@ class SignedWebBundleSignatureStackEntry {
   }
 
  private:
-  std::vector<uint8_t> complete_entry_cbor_;
   std::vector<uint8_t> attributes_cbor_;
   SignedWebBundleSignatureInfo signature_info_;
 };

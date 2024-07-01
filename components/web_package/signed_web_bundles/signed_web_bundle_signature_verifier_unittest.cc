@@ -73,29 +73,6 @@ constexpr uint8_t kAttributesCbor[] = {
     0x7d, 0xbd, 0x00, 0x43, 0x61, 0x10, 0x1a, 0x92, 0xd4, 0x02, 0x72, 0xfe,
     0x2b, 0xce, 0x81, 0xbb, 0x3b, 0x71, 0x3f, 0x2d};
 
-constexpr uint8_t kCompleteEntryCbor[] = {
-    0x82, 0xa1,
-
-    0x70,
-    // attribute key
-    'e', 'd', '2', '5', '5', '1', '9', 'P', 'u', 'b', 'l', 'i', 'c', 'K', 'e',
-    'y',
-
-    0x58, 0x20,
-    // attribute value (public key)
-    0xe4, 0xd5, 0x16, 0xc9, 0x85, 0x9a, 0xf8, 0x63, 0x56, 0xa3, 0x51, 0x66,
-    0x7d, 0xbd, 0x00, 0x43, 0x61, 0x10, 0x1a, 0x92, 0xd4, 0x02, 0x72, 0xfe,
-    0x2b, 0xce, 0x81, 0xbb, 0x3b, 0x71, 0x3f, 0x2d,
-
-    0x58, 0x40,
-    // signature
-    0x64, 0xc1, 0xb6, 0xee, 0x74, 0xbf, 0x8d, 0x01, 0x92, 0xc8, 0xcd, 0xe7,
-    0x47, 0x13, 0xda, 0x2c, 0xed, 0x4f, 0x7f, 0x9e, 0xe3, 0x8f, 0x70, 0x27,
-    0xbf, 0x79, 0x4a, 0x64, 0x0e, 0xf9, 0xbd, 0xcc, 0xeb, 0x66, 0x39, 0x50,
-    0xf8, 0x92, 0x67, 0x1a, 0x71, 0xe9, 0xce, 0x15, 0xf5, 0xa4, 0xf6, 0x22,
-    0xc5, 0xcf, 0x04, 0x15, 0xdb, 0x63, 0x59, 0xb2, 0xff, 0xee, 0x13, 0x93,
-    0x2c, 0x99, 0x68, 0x0d};
-
 using PublicKey = absl::variant<Ed25519PublicKey, EcdsaP256PublicKey>;
 
 mojom::SignatureInfoPtr CreateSignatureInfo(
@@ -122,13 +99,10 @@ mojom::SignatureInfoPtr CreateSignatureInfo(
 mojom::BundleIntegrityBlockSignatureStackEntryPtr MakeSignatureStackEntry(
     const PublicKey& public_key,
     base::span<const uint8_t> signature,
-    base::span<const uint8_t> complete_entry_cbor,
     base::span<const uint8_t> attributes_cbor) {
   auto raw_signature_stack_entry =
       mojom::BundleIntegrityBlockSignatureStackEntry::New();
 
-  raw_signature_stack_entry->complete_entry_cbor = std::vector(
-      std::begin(complete_entry_cbor), std::end(complete_entry_cbor));
   raw_signature_stack_entry->attributes_cbor =
       std::vector(std::begin(attributes_cbor), std::end(attributes_cbor));
   raw_signature_stack_entry->signature_info =
@@ -181,7 +155,7 @@ TEST_P(SignedWebBundleSignatureVerifierGoToolTest, VerifySimpleWebBundle) {
       raw_signature_stack;
   raw_signature_stack.push_back(MakeSignatureStackEntry(
       Ed25519PublicKey::Create(base::span(kEd25519PublicKey)),
-      kEd25519Signature, kCompleteEntryCbor, kAttributesCbor));
+      kEd25519Signature, kAttributesCbor));
 
   auto raw_integrity_block = mojom::BundleIntegrityBlock::New();
   raw_integrity_block->size = 135;
@@ -299,7 +273,6 @@ class SignedWebBundleSignatureVerifierTest
       const auto& signature_stack_entry = signature_stack[idx];
       const auto& key_pair = key_pairs[idx];
 
-      auto complete_entry_cbor = *cbor::Writer::Write(signature_stack_entry);
       const auto& attributes = signature_stack_entry.GetArray()[0];
       auto attributes_cbor = *cbor::Writer::Write(attributes);
 
@@ -330,8 +303,8 @@ class SignedWebBundleSignatureVerifierTest
               }},
           key_pair);
 
-      raw_signature_stack.push_back(MakeSignatureStackEntry(
-          public_key, signature, complete_entry_cbor, attributes_cbor));
+      raw_signature_stack.push_back(
+          MakeSignatureStackEntry(public_key, signature, attributes_cbor));
     }
 
     const auto& attributes = integrity_block.GetArray()[2].GetMap();

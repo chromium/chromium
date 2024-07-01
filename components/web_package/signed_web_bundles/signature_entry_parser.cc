@@ -91,8 +91,6 @@ void SignatureStackEntryParser::ReadSignatureStructure(
   signature_stack_entry_ =
       mojom::BundleIntegrityBlockSignatureStackEntry::New();
 
-  base::Extend(signature_stack_entry_->complete_entry_cbor,
-               base::span(*data).first(input.CurrentOffset()));
   offset_in_stream_ += input.CurrentOffset();
 
   attribute_map_parser_ = std::make_unique<AttributeMapParser>(
@@ -125,9 +123,7 @@ void SignatureStackEntryParser::ReadAttributesMapBytes(
     return;
   }
 
-  // Keep track of the raw CBOR bytes of both the complete signature stack entry
-  // and its attributes.
-  base::Extend(signature_stack_entry_->complete_entry_cbor, *data);
+  // Keep track of the raw CBOR bytes of the signature attributes.
   base::Extend(signature_stack_entry_->attributes_cbor, *data);
 
   offset_in_stream_ += num_bytes;
@@ -155,10 +151,6 @@ void SignatureStackEntryParser::ReadSignatureHeader(
     return;
   }
 
-  // Keep track of the raw CBOR bytes of the complete signature stack entry.
-  base::Extend(signature_stack_entry_->complete_entry_cbor,
-               base::span(*data).first(input.CurrentOffset()));
-
   offset_in_stream_ += input.CurrentOffset();
   data_source_->Read(
       offset_in_stream_, *signature_length,
@@ -172,10 +164,7 @@ void SignatureStackEntryParser::ReadSignatureValue(
     RunErrorCallback("Error reading signature-stack entry signature.");
     return;
   }
-
-  base::Extend(signature_stack_entry_->complete_entry_cbor, *data);
   offset_in_stream_ += data->size();
-
   EvaluateSignatureEntry(*data);
 }
 

@@ -7,17 +7,14 @@
 namespace web_package {
 
 SignedWebBundleSignatureStackEntry::SignedWebBundleSignatureStackEntry(
-    const std::vector<uint8_t>& complete_entry_cbor,
     const std::vector<uint8_t>& attributes_cbor,
     SignedWebBundleSignatureInfo signature_info)
-    : complete_entry_cbor_(complete_entry_cbor),
-      attributes_cbor_(attributes_cbor),
+    : attributes_cbor_(attributes_cbor),
       signature_info_(std::move(signature_info)) {}
 
 bool SignedWebBundleSignatureStackEntry::operator==(
     const SignedWebBundleSignatureStackEntry& other) const {
-  return complete_entry_cbor_ == other.complete_entry_cbor_ &&
-         attributes_cbor_ == other.attributes_cbor_ &&
+  return attributes_cbor_ == other.attributes_cbor_ &&
          signature_info_ == other.signature_info_;
 }
 
