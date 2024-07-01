@@ -517,8 +517,7 @@ void SearchSection::UpdateQuickAnswersSearchTags() {
   updater.AddSearchTags(GetQuickAnswersSearchConcepts());
 
   if (chromeos::features::IsQuickAnswersV2SettingsSubToggleEnabled() &&
-      QuickAnswersState::IsEnabledAs(
-          QuickAnswersState::FeatureType::kQuickAnswers)) {
+      QuickAnswersState::Get()->settings_enabled()) {
     updater.AddSearchTags(GetQuickAnswersOnSearchConcepts());
   }
 }

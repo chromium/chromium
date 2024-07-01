@@ -15,8 +15,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/types/expected.h"
-#include "chromeos/components/kiosk/kiosk_utils.h"
-#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/icu/source/common/unicode/locid.h"
@@ -30,20 +28,10 @@ QuickAnswersState* g_quick_answers_state = nullptr;
 constexpr auto kSupportedLanguages =
     base::MakeFixedFlatSet<std::string>({"en", "es", "it", "fr", "pt", "de"});
 
-// TODO(b/340628526): extract Error and ConsentStatus enums to a shared place.
-QuickAnswersState::Error ToQuickAnswersStateError(
-    chromeos::MagicBoostState::Error error) {
-  switch (error) {
-    case chromeos::MagicBoostState::Error::kUninitialized:
-      return QuickAnswersState::Error::kUninitialized;
-  }
-
-  CHECK(false) << "Unknown MagicBoostState::Error enum class value provided.";
-}
-
-base::expected<bool, QuickAnswersState::Error> ToQuickAnswersStateIsEnabled(
-    base::expected<bool, chromeos::MagicBoostState::Error> is_enabled) {
-  return is_enabled.transform_error(&ToQuickAnswersStateError);
+QuickAnswersState::FeatureType GetFeatureType() {
+  return chromeos::features::IsMagicBoostEnabled()
+             ? QuickAnswersState::FeatureType::kHmr
+             : QuickAnswersState::FeatureType::kQuickAnswers;
 }
 
 }  // namespace
@@ -51,13 +39,6 @@ base::expected<bool, QuickAnswersState::Error> ToQuickAnswersStateIsEnabled(
 // static
 QuickAnswersState* QuickAnswersState::Get() {
   return g_quick_answers_state;
-}
-
-// static
-QuickAnswersState::FeatureType QuickAnswersState::GetFeatureType() {
-  return chromeos::features::IsMagicBoostEnabled()
-             ? QuickAnswersState::FeatureType::kHmr
-             : QuickAnswersState::FeatureType::kQuickAnswers;
 }
 
 // static
@@ -77,31 +58,9 @@ bool QuickAnswersState::IsEligibleAs(
       .value_or(false);
 }
 
-// static
-bool QuickAnswersState::IsEnabled() {
-  return IsEnabledAs(GetFeatureType());
-}
-
-// static
-bool QuickAnswersState::IsEnabledAs(FeatureType feature_type) {
-  QuickAnswersState* quick_answers_state = Get();
-  if (!quick_answers_state) {
-    return false;
-  }
-
-  return quick_answers_state->IsEnabledExpectedAs(feature_type).value_or(false);
-}
-
 QuickAnswersState::QuickAnswersState() {
   CHECK(!g_quick_answers_state);
   g_quick_answers_state = this;
-
-  if (GetFeatureType() == FeatureType::kHmr) {
-    chromeos::MagicBoostState* magic_boost_state =
-        chromeos::MagicBoostState::Get();
-    CHECK(magic_boost_state) << "QuickAnswersState depends on MagicBoostState.";
-    magic_boost_state_observation_.Observe(magic_boost_state);
-  }
 }
 
 QuickAnswersState::~QuickAnswersState() {
@@ -116,10 +75,6 @@ void QuickAnswersState::AddObserver(QuickAnswersStateObserver* observer) {
 
 void QuickAnswersState::RemoveObserver(QuickAnswersStateObserver* observer) {
   observers_.RemoveObserver(observer);
-}
-
-void QuickAnswersState::OnHMREnabledUpdated(bool enabled) {
-  MaybeNotifyIsEnabledChanged();
 }
 
 void QuickAnswersState::AsyncSetConsentStatus(
@@ -184,38 +139,6 @@ QuickAnswersState::IsEligibleExpectedAs(
       l10n_util::GetLanguage(resolved_application_locale_));
 }
 
-base::expected<bool, QuickAnswersState::Error>
-QuickAnswersState::IsEnabledExpected() const {
-  return IsEnabledExpectedAs(GetFeatureType());
-}
-
-base::expected<bool, QuickAnswersState::Error>
-QuickAnswersState::IsEnabledExpectedAs(
-    QuickAnswersState::FeatureType feature_type) const {
-  if (!IsEligibleAs(feature_type)) {
-    return false;
-  }
-
-  switch (feature_type) {
-    case QuickAnswersState::FeatureType::kHmr: {
-      chromeos::MagicBoostState* magic_boost_state =
-          chromeos::MagicBoostState::Get();
-      if (!magic_boost_state) {
-        return base::unexpected(QuickAnswersState::Error::kUninitialized);
-      }
-
-      return ToQuickAnswersStateIsEnabled(magic_boost_state->hmr_enabled());
-    }
-    case QuickAnswersState::FeatureType::kQuickAnswers: {
-      if (chromeos::IsKioskSession()) {
-        return false;
-      }
-
-      return quick_answers_enabled_;
-    }
-  }
-}
-
 void QuickAnswersState::SetEligibilityForTesting(bool is_eligible) {
   CHECK_IS_TEST();
   is_eligible_for_testing_ = is_eligible;
@@ -226,15 +149,10 @@ void QuickAnswersState::InitializeObserver(
     QuickAnswersStateObserver* observer) {
   if (prefs_initialized_) {
     observer->OnPrefsInitialized();
+    observer->OnSettingsEnabled(settings_enabled_);
     observer->OnConsentStatusUpdated(consent_status_);
     observer->OnApplicationLocaleReady(resolved_application_locale_);
     observer->OnPreferredLanguagesChanged(preferred_languages_);
-  }
-
-  base::expected<bool, QuickAnswersState::Error> maybe_is_enabled =
-      IsEnabledExpected();
-  if (maybe_is_enabled.has_value()) {
-    observer->OnSettingsEnabled(maybe_is_enabled.value());
   }
 
   base::expected<bool, QuickAnswersState::Error> maybe_is_eligible =
@@ -260,28 +178,5 @@ void QuickAnswersState::MaybeNotifyEligibilityChanged() {
 
   for (auto& observer : observers_) {
     observer.OnEligibilityChanged(last_notified_is_eligible_.value());
-  }
-
-  // `IsEnabled` depends on `IsEligible`. Maybe notify if eligibility has
-  // changed.
-  MaybeNotifyIsEnabledChanged();
-}
-
-void QuickAnswersState::MaybeNotifyIsEnabledChanged() {
-  base::expected<bool, QuickAnswersState::Error> is_enabled =
-      IsEnabledExpected();
-
-  if (last_notified_is_enabled_ == is_enabled) {
-    return;
-  }
-
-  last_notified_is_enabled_ = is_enabled;
-
-  if (!last_notified_is_enabled_.has_value()) {
-    return;
-  }
-
-  for (auto& observer : observers_) {
-    observer.OnSettingsEnabled(last_notified_is_enabled_.value());
   }
 }

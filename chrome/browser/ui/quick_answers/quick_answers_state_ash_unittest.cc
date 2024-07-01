@@ -104,7 +104,7 @@ class QuickAnswersStateAshTest : public ChromeQuickAnswersTestBase {
 };
 
 TEST_F(QuickAnswersStateAshTest, InitObserver) {
-  EXPECT_FALSE(QuickAnswersState::IsEnabled());
+  EXPECT_FALSE(QuickAnswersState::Get()->settings_enabled());
   EXPECT_EQ(QuickAnswersState::Get()->consent_status(),
             ConsentStatus::kUnknown);
   EXPECT_EQ(QuickAnswersState::Get()->application_locale(), std::string());
@@ -115,7 +115,7 @@ TEST_F(QuickAnswersStateAshTest, InitObserver) {
   const std::string application_locale = "en-US";
   prefs()->SetString(language::prefs::kApplicationLocale, application_locale);
 
-  EXPECT_TRUE(QuickAnswersState::IsEnabled());
+  EXPECT_TRUE(QuickAnswersState::Get()->settings_enabled());
   EXPECT_EQ(QuickAnswersState::Get()->consent_status(),
             ConsentStatus::kAccepted);
   EXPECT_EQ(QuickAnswersState::Get()->application_locale(), application_locale);
@@ -134,17 +134,14 @@ TEST_F(QuickAnswersStateAshTest, InitObserver) {
 TEST_F(QuickAnswersStateAshTest, NotifySettingsEnabled) {
   QuickAnswersState::Get()->AddObserver(observer());
 
-  const std::string application_locale = "en-US";
-  prefs()->SetString(language::prefs::kApplicationLocale, application_locale);
-
-  EXPECT_FALSE(QuickAnswersState::IsEnabled());
+  EXPECT_FALSE(QuickAnswersState::Get()->settings_enabled());
   EXPECT_FALSE(observer()->settings_enabled());
   EXPECT_EQ(QuickAnswersState::Get()->consent_status(),
             quick_answers::prefs::ConsentStatus::kUnknown);
 
   // The observer class should get an notification when the pref value changes.
   prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersEnabled, true);
-  EXPECT_TRUE(QuickAnswersState::IsEnabled());
+  EXPECT_TRUE(QuickAnswersState::Get()->settings_enabled());
   EXPECT_TRUE(observer()->settings_enabled());
 
   // Consent status should also be set to accepted since the feature is

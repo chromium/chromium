@@ -4,7 +4,6 @@
 
 #include "chromeos/components/quick_answers/test/fake_quick_answers_state.h"
 
-#include "base/observer_list.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 
 FakeQuickAnswersState::FakeQuickAnswersState() = default;
@@ -48,7 +47,6 @@ void FakeQuickAnswersState::OnPrefsInitialized() {
   }
 
   MaybeNotifyEligibilityChanged();
-  MaybeNotifyIsEnabledChanged();
 }
 
 void FakeQuickAnswersState::AsyncWriteConsentUiImpressionCount(int32_t count) {
@@ -69,7 +67,12 @@ void FakeQuickAnswersState::AsyncWriteConsentStatus(
 }
 
 void FakeQuickAnswersState::AsyncWriteEnabled(bool enabled) {
-  quick_answers_enabled_ = enabled;
+  if (settings_enabled_ == enabled) {
+    return;
+  }
+  settings_enabled_ = enabled;
 
-  MaybeNotifyIsEnabledChanged();
+  for (auto& observer : observers_) {
+    observer.OnSettingsEnabled(settings_enabled_);
+  }
 }

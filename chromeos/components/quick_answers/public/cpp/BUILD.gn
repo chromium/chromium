@@ -17,8 +17,6 @@ source_set("cpp") {
 
   deps = [
     "//base",
-    "//chromeos/components/kiosk",
-    "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/components/quick_answers/public/mojom",
     "//chromeos/constants:constants",

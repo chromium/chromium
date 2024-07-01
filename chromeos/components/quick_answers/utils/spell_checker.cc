@@ -73,7 +73,8 @@ void SpellChecker::CheckEligibilityAndUpdateLanguages(
       QuickAnswersState::Get()->consent_status() ==
       prefs::ConsentStatus::kUnknown;
   if (!QuickAnswersState::IsEligible() ||
-      (!QuickAnswersState::IsEnabled() && !should_enable_to_show_consent)) {
+      (!QuickAnswersState::Get()->settings_enabled() &&
+       !should_enable_to_show_consent)) {
     spellcheck_languages_.clear();
     languages_list_version_++;
     return;

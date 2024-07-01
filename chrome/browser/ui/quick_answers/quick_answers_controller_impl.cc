@@ -100,7 +100,7 @@ bool ShouldShowQuickAnswers() {
     return false;
   }
 
-  bool settings_enabled = QuickAnswersState::IsEnabled();
+  bool settings_enabled = QuickAnswersState::Get()->settings_enabled();
 
   bool should_show_consent = QuickAnswersState::Get()->consent_status() ==
                              quick_answers::prefs::ConsentStatus::kUnknown;
@@ -146,8 +146,7 @@ class PerformOnConsentAccepted : public QuickAnswersStateObserver {
     QuickAnswersState* quick_answers_state = QuickAnswersState::Get();
     CHECK(quick_answers_state->prefs_initialized());
 
-    bool settings_enabled = QuickAnswersState::IsEnabledAs(
-        QuickAnswersState::FeatureType::kQuickAnswers);
+    bool settings_enabled = quick_answers_state->settings_enabled();
     quick_answers::prefs::ConsentStatus consent_status =
         quick_answers_state->consent_status();
 
@@ -312,39 +311,27 @@ void QuickAnswersControllerImpl::DismissQuickAnswers(
 
 void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
     const quick_answers::QuickAnswersRequest& request) {
-  switch (QuickAnswersState::Get()->consent_status()) {
-    case quick_answers::prefs::ConsentStatus::kRejected:
-      CHECK(false) << "No request should be made if kRejected.";
-      return;
-    case quick_answers::prefs::ConsentStatus::kUnknown:
-      switch (QuickAnswersState::GetFeatureType()) {
-        case QuickAnswersState::FeatureType::kQuickAnswers:
-          ShowUserConsent(
-              IntentTypeToString(
-                  request.preprocessed_output.intent_info.intent_type),
-              base::UTF8ToUTF16(
-                  request.preprocessed_output.intent_info.intent_text));
-          return;
-        case QuickAnswersState::FeatureType::kHmr:
-          // QA consent is handled by MagicBoost.
-          return;
-      }
-    case quick_answers::prefs::ConsentStatus::kAccepted:
-      visibility_ = QuickAnswersVisibility::kQuickAnswersVisible;
-      // TODO(b/327501381): Use `ReadWriteCardsUiController` for this view.
-      quick_answers_ui_controller_->CreateQuickAnswersView(
-          profile_, title_, query_,
-          request.context.device_properties.is_internal);
+  CHECK(QuickAnswersState::Get()->consent_status() !=
+        quick_answers::prefs::ConsentStatus::kRejected);
 
-      if (IsProcessedRequest(request)) {
-        quick_answers_client_->FetchQuickAnswers(request);
-      } else {
-        quick_answers_client_->SendRequest(request);
-      }
-      return;
+  if (QuickAnswersState::Get()->consent_status() ==
+      quick_answers::prefs::ConsentStatus::kUnknown) {
+    ShowUserConsent(
+        IntentTypeToString(request.preprocessed_output.intent_info.intent_type),
+        base::UTF8ToUTF16(request.preprocessed_output.intent_info.intent_text));
+  } else {
+    visibility_ = QuickAnswersVisibility::kQuickAnswersVisible;
+    // TODO(b/327501381): Use `ReadWriteCardsUiController` for this view.
+    quick_answers_ui_controller_->CreateQuickAnswersView(
+        profile_, title_, query_,
+        request.context.device_properties.is_internal);
+
+    if (IsProcessedRequest(request)) {
+      quick_answers_client_->FetchQuickAnswers(request);
+    } else {
+      quick_answers_client_->SendRequest(request);
+    }
   }
-
-  CHECK(false) << "Invalid ConsentStatus enum value provided.";
 }
 
 quick_answers::QuickAnswersDelegate*
@@ -460,11 +447,7 @@ void QuickAnswersControllerImpl::OnUserConsent(
   }
 
   switch (consent_result_type) {
-    case ConsentResultType::kAllow: {
-      CHECK_EQ(QuickAnswersState::GetFeatureType(),
-               QuickAnswersState::FeatureType::kQuickAnswers)
-          << "User consent is handled by Magic Boost if not kQuickAnswers";
-
+    case ConsentResultType::kAllow:
       visibility_ = QuickAnswersVisibility::kPending;
       quick_answers_state->AsyncSetConsentStatus(
           quick_answers::prefs::ConsentStatus::kAccepted);
@@ -473,22 +456,20 @@ void QuickAnswersControllerImpl::OnUserConsent(
       // change and then display quick answer for the cached query. There should
       // be no need to reset `perform_on_consent_accepted_` as there is no case
       // a user accepts a consent twice on a device. Toggling from OS settings
-      // will set value directly to `kAccepted`.
+      // will set value directly to `kAccepted` or `kRejected`.
       CHECK(!perform_on_consent_accepted_)
-          << "There is already a pending action. A user should not accept "
-             "a consent twice or more.";
+          << "There is already a pending action. A user should not accept a "
+             "consent twice or more.";
       perform_on_consent_accepted_ =
           std::make_unique<PerformOnConsentAccepted>(base::BindOnce(
               &QuickAnswersControllerImpl::OnTextAvailable, GetWeakPtr(),
               anchor_bounds_, title_, context_.surrounding_text));
       break;
-    }
-    case ConsentResultType::kNoThanks: {
+    case ConsentResultType::kNoThanks:
       visibility_ = QuickAnswersVisibility::kClosed;
       quick_answers_state->AsyncSetConsentStatus(
           quick_answers::prefs::ConsentStatus::kRejected);
       break;
-    }
     case ConsentResultType::kDismiss:
       visibility_ = QuickAnswersVisibility::kClosed;
       if (reached_impression_cap) {
