@@ -809,7 +809,7 @@ void AutofillAgent::BatchDataListOptionChange(FieldRendererId element_id) {
     return;
   }
 
-  OnProvisionallySaveForm(element.Form(), element,
+  OnProvisionallySaveForm(form_util::GetOwningForm(element), element,
                           SaveFormReason::kTextFieldChanged);
 }
 
