@@ -291,7 +291,7 @@ GURL GetUrlForNewWindow(PickerSearchResult::NewWindowData::Type type) {
     case PickerSearchResult::NewWindowData::Type::kSlide:
       return GURL("https://slides.new");
     case PickerSearchResult::NewWindowData::Type::kChrome:
-      return GURL("chrome://new-tab");
+      return GURL("chrome://newtab");
   }
 }
 
