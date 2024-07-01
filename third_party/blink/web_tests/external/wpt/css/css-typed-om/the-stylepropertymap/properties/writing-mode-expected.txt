@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Can set 'writing-mode' to the 'sideways-rl' keyword: sideways-rl
-  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-[FAIL] Can set 'writing-mode' to the 'sideways-lr' keyword: sideways-lr
-  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-Harness: the test ran to completion.
-
