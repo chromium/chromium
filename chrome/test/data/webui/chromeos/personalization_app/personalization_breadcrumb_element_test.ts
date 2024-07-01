@@ -467,6 +467,21 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     assertDeepEquals({}, queryParams);
   });
 
+  test('show breadcrumbs for SeaPen freeform', async () => {
+    breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
+      'path': Paths.SEA_PEN_FREEFORM,
+    });
+
+    const breadcrumbContainer =
+        breadcrumbElement.shadowRoot!.getElementById('selector');
+    assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
+    // TODO(b/345856242): Update final string for freeform label.
+    assertBreadcrumbs(breadcrumbContainer, [
+      breadcrumbElement.i18n('wallpaperLabel'),
+      'AI Prompting',
+    ]);
+  });
+
   test('hide dropdown icon for sea pen templates', async () => {
     loadTimeData.overrideValues({isSeaPenEnabled: true});
     breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {

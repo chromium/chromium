@@ -4,11 +4,13 @@
 
 import 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 
+import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {WallpaperGridItemElement} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
 import {getSeaPenTemplates} from 'chrome://resources/ash/common/sea_pen/constants.js';
 import {SeaPenPaths, SeaPenRouterElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_router_element.js';
 import {SeaPenTemplateQueryElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_template_query_element.js';
 import {setTransitionsEnabled} from 'chrome://resources/ash/common/sea_pen/transition.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {VcBackgroundApp} from 'chrome://vc-background/js/vc_background_app.js';
 import {VcBackgroundBreadcrumbElement} from 'chrome://vc-background/js/vc_background_breadcrumb_element.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -121,42 +123,76 @@ suite('VcBackgroundUITest', () => {
     ]);
   });
 
-  test('verifies breadcrumbs when create button clicked', async () => {
+  test(
+      'verifies breadcrumbs when create button clicked in a template page',
+      async () => {
+        const seaPenRouter = getSeaPenRouter();
+        seaPenRouter.goToRoute(SeaPenPaths.TEMPLATES);
+        await waitAfterNextRender(seaPenRouter);
+
+        const seaPenTemplateElements = getSeaPenTemplateElements();
+        await waitAfterNextRender(seaPenRouter);
+
+        // Click the 'Classic art' template.
+        seaPenTemplateElements
+            .find(template => {
+              const p = template.shadowRoot?.querySelector('p.primary-text');
+              return p?.textContent?.trim() === 'Classic art';
+            })!.click();
+        await waitAfterNextRender(seaPenRouter);
+
+        const seaPenTemplateQuery = getSeaPenTemplateQuery();
+        assertTrue(!!seaPenTemplateQuery, 'sea-pen-template-query exists');
+
+        // Click on the 'Create' button.
+        const createButton = seaPenTemplateQuery.shadowRoot?.querySelector(
+                                 'cr-button#searchButton')! as HTMLElement;
+        createButton.click();
+
+        await waitAfterNextRender(seaPenTemplateQuery);
+
+        assertEquals(
+            'chrome://vc-background/results?seaPenTemplateId=104',
+            window.location.href,
+            'App is on /results and Classic art template id is added to url');
+
+        // Breadcrumbs should show 'Classic art'.
+        assertArrayEquals(getVcBackgroundBreadcrumbsText(), [
+          getVcBackgroundBreadcrumbs().i18n('vcBackgroundLabel'),
+          'Classic art',
+        ]);
+      });
+
+  test('verifies breadcrumbs when routing to Freeform subpages', async () => {
+    loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
     const seaPenRouter = getSeaPenRouter();
-    seaPenRouter.goToRoute(SeaPenPaths.TEMPLATES);
+    seaPenRouter.goToRoute(SeaPenPaths.FREEFORM);
     await waitAfterNextRender(seaPenRouter);
-
-    const seaPenTemplateElements = getSeaPenTemplateElements();
-    await waitAfterNextRender(seaPenRouter);
-
-    // Click the 'Classic art' template.
-    seaPenTemplateElements
-        .find(template => {
-          const p = template.shadowRoot?.querySelector('p.primary-text');
-          return p?.textContent?.trim() === 'Classic art';
-        })!.click();
-    await waitAfterNextRender(seaPenRouter);
-
-    const seaPenTemplateQuery = getSeaPenTemplateQuery();
-    assertTrue(!!seaPenTemplateQuery, 'sea-pen-template-query exists');
-
-    // Click on the 'Create' button.
-    const createButton = seaPenTemplateQuery.shadowRoot?.querySelector(
-                             'cr-button#searchButton')! as HTMLElement;
-    createButton.click();
-
-    await waitAfterNextRender(seaPenTemplateQuery);
 
     assertEquals(
-        'chrome://vc-background/results?seaPenTemplateId=104',
-        window.location.href,
-        'App is on /results and Classic art template id is added to url');
+        'chrome://vc-background/freeform', window.location.href,
+        'routed to Freeform page');
+    assertTrue(!!getVcBackgroundBreadcrumbs(), 'breadcrumb should display');
+    assertArrayEquals(getVcBackgroundBreadcrumbsText(), ['AI Prompting']);
 
-    // Breadcrumbs should show 'Classic art'.
-    assertArrayEquals(getVcBackgroundBreadcrumbsText(), [
-      getVcBackgroundBreadcrumbs().i18n('vcBackgroundLabel'),
-      'Classic art',
-    ]);
+    // Search for a freeform query.
+    const seaPenInputQuery =
+        seaPenRouter.shadowRoot?.querySelector<HTMLElement>(
+            'sea-pen-input-query');
+    assertTrue(!!seaPenInputQuery, 'input query element exists');
+    const inputElement =
+        seaPenInputQuery.shadowRoot?.querySelector<CrInputElement>(
+            '#queryInput');
+    assertTrue(!!inputElement, 'freeform input displays');
+    inputElement!.value = 'a cool castle';
+    seaPenInputQuery.shadowRoot?.getElementById('searchButton')!.click();
+
+    assertEquals(
+        'chrome://vc-background/freeform', window.location.href,
+        'should stay in the same Freeform page');
+
+    // Breadcrumbs remain the same for Freeform page.
+    assertArrayEquals(getVcBackgroundBreadcrumbsText(), ['AI Prompting']);
   });
 
   test('allows changing templates via breadcrumbs dropdown menu', async () => {

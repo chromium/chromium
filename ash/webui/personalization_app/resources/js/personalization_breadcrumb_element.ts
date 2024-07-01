@@ -259,6 +259,11 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
           }
         }
         break;
+      case Paths.SEA_PEN_FREEFORM:
+        breadcrumbs.push(this.i18n('wallpaperLabel'));
+        // TODO(b/345856242): update the final string.
+        breadcrumbs.push('AI Prompting');
+        break;
       case Paths.USER:
         breadcrumbs.push(this.i18n('avatarLabel'));
         break;

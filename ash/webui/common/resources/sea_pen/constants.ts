@@ -5,7 +5,6 @@
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getVcBackgroundTemplates, getWallpaperTemplates} from './constants_generated.js';
-import {isSeaPenTextInputEnabled} from './load_time_booleans.js';
 import {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from './sea_pen_generated.mojom-webui.js';
 
 export type Query = 'Query';
@@ -39,19 +38,6 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
   const templates = window.location.origin === 'chrome://personalization' ?
       getWallpaperTemplates() :
       getVcBackgroundTemplates();
-
-  if (isSeaPenTextInputEnabled()) {
-    templates.push({
-      preview: [{
-        url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_tile.jpg',
-      }],
-      title: 'Freeform',
-      text: 'Freeform',
-      id: QUERY,
-      options: new Map(),
-    });
-  }
   return templates;
 }
 

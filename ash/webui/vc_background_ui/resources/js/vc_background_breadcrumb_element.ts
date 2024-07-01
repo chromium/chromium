@@ -166,10 +166,17 @@ export class VcBackgroundBreadcrumbElement extends
   }
 
   private computeBreadcrumbs_(): string[] {
-    const breadcrumbs = [this.i18n('vcBackgroundLabel')];
+    const breadcrumbs = [];
+    // Normalize the relative path for vc background matched with wallpaper as
+    // 'chrome://vc-background/' has an extra single slash at the end.
+    const relativePath = this.path === '/' ? '' : this.path;
 
-    switch (this.path) {
+    switch (relativePath) {
+      case SeaPenPaths.TEMPLATES:
+        breadcrumbs.push(this.i18n('vcBackgroundLabel'));
+        break;
       case SeaPenPaths.RESULTS:
+        breadcrumbs.push(this.i18n('vcBackgroundLabel'));
         if (this.seaPenTemplateId && isNonEmptyArray(this.seaPenTemplates_)) {
           const template = this.seaPenTemplates_.find(
               template => template.id.toString() === this.seaPenTemplateId);
@@ -177,6 +184,10 @@ export class VcBackgroundBreadcrumbElement extends
             breadcrumbs.push(template.title);
           }
         }
+        break;
+      case SeaPenPaths.FREEFORM:
+        // TODO(b/345856242): update the final string.
+        breadcrumbs.push('AI Prompting');
         break;
     }
     return breadcrumbs;
