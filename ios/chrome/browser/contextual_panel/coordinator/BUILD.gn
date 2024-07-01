@@ -9,6 +9,8 @@ source_set("coordinator") {
     "contextual_sheet_presenter.h",
     "panel_content_coordinator.h",
     "panel_content_coordinator.mm",
+    "panel_content_mediator.h",
+    "panel_content_mediator.mm",
   ]
   deps = [
     ":public",
@@ -21,6 +23,8 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/ui/broadcaster",
+    "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/common/ui/util",
   ]
   frameworks = [ "UIKit.framework" ]

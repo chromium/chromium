@@ -60,6 +60,9 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
 
   // The blocks currently being displayed.
   NSArray<PanelBlockData*>* _panelBlocks;
+
+  // The stored height of the expanded bottom toolbar.
+  CGFloat _bottomToolbarHeight;
 }
 
 #pragma mark - UIViewController
@@ -228,7 +231,10 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
                          collectionViewLayout:[self createLayout]];
   _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
   _collectionView.backgroundColor = UIColor.clearColor;
-  _collectionView.contentInset = UIEdgeInsetsMake(kHeaderHeight, 0, 0, 0);
+  _collectionView.contentInset =
+      UIEdgeInsetsMake(kHeaderHeight, 0, _bottomToolbarHeight, 0);
+  _collectionView.contentInsetAdjustmentBehavior =
+      UIScrollViewContentInsetAdjustmentNever;
 
   __weak __typeof(self) weakSelf = self;
   auto cellProvider =
@@ -288,6 +294,17 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
   scrim.backgroundColor = [UIColor.blackColor colorWithAlphaComponent:0.03];
   [_backgroundVisualEffectView.contentView addSubview:scrim];
   AddSameConstraints(_backgroundVisualEffectView.contentView, scrim);
+}
+
+#pragma mark - PanelContentConsumer
+
+- (void)updateBottomToolbarHeight:(CGFloat)height {
+  _bottomToolbarHeight = height;
+  if (_collectionView) {
+    UIEdgeInsets insets = _collectionView.contentInset;
+    insets.bottom = height;
+    _collectionView.contentInset = insets;
+  }
 }
 
 @end

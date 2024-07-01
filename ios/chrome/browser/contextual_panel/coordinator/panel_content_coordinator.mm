@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/contextual_panel/coordinator/panel_content_coordinator.h"
 
 #import "ios/chrome/browser/contextual_panel/coordinator/panel_block_modulator.h"
+#import "ios/chrome/browser/contextual_panel/coordinator/panel_content_mediator.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
@@ -15,11 +16,15 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 @implementation PanelContentCoordinator {
   // The view controller managed by this coordinator.
   PanelContentViewController* _viewController;
+
+  // The mediator managed by this coordinator.
+  PanelContentMediator* _mediator;
 
   // The child modulators owned by this coordinator.
   NSMutableArray<PanelBlockModulator*>* _modulators;
@@ -27,6 +32,13 @@
 
 - (void)start {
   _viewController = [[PanelContentViewController alloc] init];
+
+  ChromeBroadcaster* broadcaster =
+      FullscreenController::FromBrowser(self.browser)->broadcaster();
+
+  _mediator = [[PanelContentMediator alloc] initWithBroadcaster:broadcaster];
+  _mediator.consumer = _viewController;
+
   _modulators = [[NSMutableArray alloc] init];
 
   web::WebState* activeWebState =

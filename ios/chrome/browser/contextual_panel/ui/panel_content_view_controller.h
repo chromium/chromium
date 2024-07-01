@@ -7,11 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/contextual_panel/ui/panel_content_consumer.h"
+
 @protocol ContextualSheetCommands;
 @class PanelBlockData;
 
 // A view controller to display the contents of the Contextual Panel.
-@interface PanelContentViewController : UIViewController
+@interface PanelContentViewController : UIViewController <PanelContentConsumer>
 
 // The handler for ContextualSheetCommands.
 @property(nonatomic, weak) id<ContextualSheetCommands>
