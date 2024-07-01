@@ -39,6 +39,7 @@ std::optional<syncer::ModelError> FloatingSsoSyncBridge::MergeFullSyncData(
   NOTIMPLEMENTED();
   return std::nullopt;
 }
+
 std::optional<syncer::ModelError>
 FloatingSsoSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
@@ -50,15 +51,12 @@ FloatingSsoSyncBridge::ApplyIncrementalSyncChanges(
 
 std::string FloatingSsoSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) {
-  // TODO: b/346354877 - implement.
-  NOTIMPLEMENTED();
-  return "";
+  return GetClientTag(entity_data);
 }
+
 std::string FloatingSsoSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) {
-  // TODO: b/346354877 - implement.
-  NOTIMPLEMENTED();
-  return "";
+  return entity_data.specifics.cookie().unique_key();
 }
 
 std::unique_ptr<syncer::DataBatch> FloatingSsoSyncBridge::GetDataForCommit(

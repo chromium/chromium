@@ -4999,6 +4999,7 @@ source_set("unit_tests") {
     "fileapi/test/fake_recent_source.cc",
     "fileapi/test/recent_file_matcher.h",
     "floating_sso/cookie_sync_conversions_unittest.cc",
+    "floating_sso/floating_sso_sync_bridge_unittest.cc",
     "floating_workspace/floating_workspace_service_unittest.cc",
     "fusebox/fusebox_errno_unittest.cc",
     "fusebox/fusebox_moniker_unittest.cc",
