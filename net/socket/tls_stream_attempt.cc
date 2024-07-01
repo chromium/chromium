@@ -111,6 +111,11 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
   nested_attempt_.reset();
 
   tls_handshake_started_ = true;
+  tls_handshake_timeout_timer_.Start(
+      FROM_HERE, kTlsHandshakeTimeout,
+      base::BindOnce(&TlsStreamAttempt::OnTlsHandshakeTimeout,
+                     base::Unretained(this)));
+
   ssl_socket_ = params().client_socket_factory->CreateSSLClientSocket(
       params().ssl_client_context, std::move(nested_socket), host_port_pair_,
       ssl_config);
@@ -121,6 +126,9 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
 
 int TlsStreamAttempt::DoTlsAttemptComplete(int rv) {
   CHECK(ssl_socket_);
+
+  tls_handshake_timeout_timer_.Stop();
+
   // TODO(crbug.com/346835898): Record some histograms as SSLConnectJob does.
 
   // TODO(crbug.com/346835898): Handle following errors as SSLConnectJob does.
@@ -132,6 +140,10 @@ int TlsStreamAttempt::DoTlsAttemptComplete(int rv) {
   }
 
   return rv;
+}
+
+void TlsStreamAttempt::OnTlsHandshakeTimeout() {
+  OnIOComplete(ERR_CONNECTION_TIMED_OUT);
 }
 
 }  // namespace net

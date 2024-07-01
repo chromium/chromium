@@ -72,6 +72,7 @@ int TcpStreamAttempt::StartInternal() {
 void TcpStreamAttempt::OnIOComplete(int rv) {
   CHECK_NE(rv, ERR_IO_PENDING);
   next_state_ = State::kNone;
+  timeout_timer_.Stop();
   NotifyOfCompletion(rv);
 }
 

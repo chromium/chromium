@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
@@ -22,6 +23,9 @@ class SSLClientSocket;
 // Represents a single TLS connection attempt.
 class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
  public:
+  // Timeout for the TLS handshake. The timeout is the same as SSLConnectJob.
+  static constexpr base::TimeDelta kTlsHandshakeTimeout = base::Seconds(30);
+
   // An interface that provides a SSLConfig to TlsStreamAttempt lazily.
   class NET_EXPORT_PRIVATE SSLConfigProvider {
    public:
@@ -75,6 +79,8 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
   int DoTlsAttempt(int rv);
   int DoTlsAttemptComplete(int rv);
 
+  void OnTlsHandshakeTimeout();
+
   State next_state_ = State::kNone;
   const HostPortPair host_port_pair_;
   const raw_ptr<SSLConfigProvider> ssl_config_provider_;
@@ -82,6 +88,7 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
   std::unique_ptr<TcpStreamAttempt> nested_attempt_;
 
   bool tls_handshake_started_ = false;
+  base::OneShotTimer tls_handshake_timeout_timer_;
   std::unique_ptr<SSLClientSocket> ssl_socket_;
 };
 

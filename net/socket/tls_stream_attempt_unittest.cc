@@ -21,6 +21,7 @@
 #include "net/quic/quic_context.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/socket_test_util.h"
+#include "net/socket/tcp_stream_attempt.h"
 #include "net/ssl/ssl_config.h"
 #include "net/ssl/test_ssl_config_service.h"
 #include "net/test/gtest_util.h"
@@ -225,6 +226,48 @@ TEST_F(TlsStreamAttemptTest, TcpFail) {
   ASSERT_FALSE(stream_socket);
 
   ASSERT_FALSE(helper.attempt()->IsTlsHandshakeStarted());
+}
+
+TEST_F(TlsStreamAttemptTest, TcpTimeout) {
+  StaticSocketDataProvider data;
+  data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory().AddSocketDataProvider(&data);
+
+  TlsStreamAttemptHelper helper(params());
+  int rv = helper.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_CONNECTING);
+
+  FastForwardBy(TcpStreamAttempt::kTcpHandshakeTimeout);
+
+  rv = helper.WaitForCompletion();
+  EXPECT_THAT(rv, IsError(ERR_CONNECTION_TIMED_OUT));
+  std::unique_ptr<StreamSocket> stream_socket =
+      helper.attempt()->ReleaseStreamSocket();
+  ASSERT_FALSE(stream_socket);
+  ASSERT_FALSE(helper.attempt()->IsTlsHandshakeStarted());
+}
+
+TEST_F(TlsStreamAttemptTest, TlsTimeout) {
+  StaticSocketDataProvider data;
+  data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory().AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_factory().AddSSLSocketDataProvider(&ssl);
+
+  TlsStreamAttemptHelper helper(params());
+  int rv = helper.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_SSL_HANDSHAKE);
+
+  FastForwardBy(TlsStreamAttempt::kTlsHandshakeTimeout);
+
+  rv = helper.WaitForCompletion();
+  EXPECT_THAT(rv, IsError(ERR_CONNECTION_TIMED_OUT));
+  std::unique_ptr<StreamSocket> stream_socket =
+      helper.attempt()->ReleaseStreamSocket();
+  ASSERT_FALSE(stream_socket);
+  ASSERT_TRUE(helper.attempt()->IsTlsHandshakeStarted());
 }
 
 TEST_F(TlsStreamAttemptTest, CertError) {
