@@ -574,6 +574,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.FileDescriptors.Count" units="count"
+    expires_after="2025-06-26">
+  <owner>keiichiw@google.com</owner>
+  <owner>uekawa@google.com</owner>
+  <summary>
+    The total number of allocated file descriptors. This value is obtained from
+    /proc/sys/fs/file-nr and reported once per day.
+  </summary>
+</histogram>
+
 <histogram name="Platform.FileSystem.{Partition}.fsckResult" enum="FsckResult"
     expires_after="2024-12-08">
   <owner>gwendal@google.com</owner>
