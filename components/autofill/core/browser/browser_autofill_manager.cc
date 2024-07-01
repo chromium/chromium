@@ -2160,14 +2160,6 @@ void BrowserAutofillManager::OnGetSingleFieldSuggestionsCallback(
     const std::vector<Suggestion>& suggestions) {
   MaybeLogAutocompleteSuppressionByPlusAddresses(client(), suggestions,
                                                  focused_field_type_group);
-  // TODO(crbug.com/309163415): Replace parameter of FormFieldData in
-  // `TryToShowTouchToFill` by FieldGlobalId.
-  if (const FormFieldData& field =
-          CHECK_DEREF(form.FindFieldByGlobalId(field_id));
-      form_element_was_clicked && touch_to_fill_delegate_ &&
-      touch_to_fill_delegate_->TryToShowTouchToFill(form, field)) {
-    return;
-  }
   external_delegate_->OnSuggestionsReturned(field_id, suggestions);
 }
 
