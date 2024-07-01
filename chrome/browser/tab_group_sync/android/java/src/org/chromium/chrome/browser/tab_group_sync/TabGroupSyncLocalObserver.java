@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.HashSet;
@@ -132,8 +133,11 @@ public final class TabGroupSyncLocalObserver {
                     RecordUserAction.record("TabGroups.Sync.SelectedTabInLocallyCreatedGroup");
                 }
 
-                // TODO(shaktisahu): implement this.
-                boolean tabWasLastUsedRemotely = false;
+                SavedTabGroupTab savedTab = getSavedTab(savedGroup, tab.getId());
+                boolean tabWasLastUsedRemotely =
+                        savedTab != null
+                                && mTabGroupSyncService.isRemoteDevice(
+                                        savedGroup.lastUpdaterCacheGuid);
                 if (tabWasLastUsedRemotely) {
                     int tabId = tab.getId();
                     boolean wasAdded = mTabIdsSelectedInSession.add(tabId);
@@ -272,5 +276,12 @@ public final class TabGroupSyncLocalObserver {
 
     private TabModel getTabModel() {
         return mTabGroupModelFilter.getTabModel();
+    }
+
+    private SavedTabGroupTab getSavedTab(SavedTabGroup savedGroup, int tabId) {
+        for (SavedTabGroupTab savedTab : savedGroup.savedTabs) {
+            if (savedTab.localId == tabId) return savedTab;
+        }
+        return null;
     }
 }

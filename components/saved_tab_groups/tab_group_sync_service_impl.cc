@@ -161,13 +161,13 @@ void TabGroupSyncServiceImpl::AddTab(const LocalTabGroupID& group_id,
   VLOG(2) << __func__;
   auto* group = model_->Get(group_id);
   if (!group) {
-    VLOG(2) << __func__ << " Called for a group that doesn't exist";
+    LOG(WARNING) << __func__ << " Called for a group that doesn't exist";
     return;
   }
 
   const auto* tab = group->GetTab(tab_id);
   if (tab) {
-    VLOG(2) << __func__ << " Called for a tab that already exists";
+    LOG(WARNING) << __func__ << " Called for a tab that already exists";
     return;
   }
 
@@ -189,13 +189,13 @@ void TabGroupSyncServiceImpl::UpdateTab(const LocalTabGroupID& group_id,
   VLOG(2) << __func__;
   auto* group = model_->Get(group_id);
   if (!group) {
-    VLOG(2) << __func__ << " Called for a group that doesn't exist";
+    LOG(WARNING) << __func__ << " Called for a group that doesn't exist";
     return;
   }
 
   const auto* tab = group->GetTab(tab_id);
   if (!tab) {
-    VLOG(2) << __func__ << " Called for a tab that doesn't exist";
+    LOG(WARNING) << __func__ << " Called for a tab that doesn't exist";
     return;
   }
 
@@ -221,11 +221,13 @@ void TabGroupSyncServiceImpl::RemoveTab(const LocalTabGroupID& group_id,
   VLOG(2) << __func__;
   auto* group = model_->Get(group_id);
   if (!group) {
+    LOG(WARNING) << __func__ << " Called for a group that doesn't exist";
     return;
   }
 
   auto* tab = group->GetTab(tab_id);
   if (!tab) {
+    LOG(WARNING) << __func__ << " Called for a tab that doesn't exist";
     return;
   }
 
@@ -246,13 +248,16 @@ void TabGroupSyncServiceImpl::RemoveTab(const LocalTabGroupID& group_id,
 void TabGroupSyncServiceImpl::MoveTab(const LocalTabGroupID& group_id,
                                       const LocalTabID& tab_id,
                                       int new_group_index) {
+  VLOG(2) << __func__;
   auto* group = model_->Get(group_id);
   if (!group) {
+    LOG(WARNING) << __func__ << " Called for a group that doesn't exist";
     return;
   }
 
   auto* tab = group->GetTab(tab_id);
   if (!tab) {
+    LOG(WARNING) << __func__ << " Called for a tab that doesn't exist";
     return;
   }
 
@@ -267,13 +272,13 @@ void TabGroupSyncServiceImpl::OnTabSelected(const LocalTabGroupID& group_id,
   VLOG(2) << __func__;
   auto* group = model_->Get(group_id);
   if (!group) {
-    VLOG(2) << __func__ << " Called for a group that doesn't exist";
+    LOG(WARNING) << __func__ << " Called for a group that doesn't exist";
     return;
   }
 
   const auto* tab = group->GetTab(tab_id);
-  if (tab) {
-    VLOG(2) << __func__ << " Called for a tab that already exists";
+  if (!tab) {
+    LOG(WARNING) << __func__ << " Called for a tab that doesn't exist";
     return;
   }
 
@@ -316,6 +321,7 @@ std::vector<LocalTabGroupID> TabGroupSyncServiceImpl::GetDeletedGroupIds() {
     return GetDeletedGroupIdsFromPref();
   }
 
+  LOG(ERROR) << __func__ << " TabGroupStore is already deprecated";
   std::vector<LocalTabGroupID> deleted_ids;
 
   // Deleted groups are groups that have been deleted from sync, but we haven't
@@ -395,6 +401,7 @@ void TabGroupSyncServiceImpl::RecordTabGroupEvent(
   }
 
   if (!group) {
+    LOG(WARNING) << __func__ << " Called for a group that doesn't exist";
     return;
   }
 
@@ -623,11 +630,13 @@ void TabGroupSyncServiceImpl::LogEvent(
     LocalTabGroupID group_id,
     const std::optional<LocalTabID>& tab_id) {
   if (!metrics_logger_) {
+    LOG(WARNING) << __func__ << " Metrics logger doesn't exist";
     return;
   }
 
   const auto* group = model_->Get(group_id);
   if (!group) {
+    LOG(WARNING) << __func__ << " Called for a group that doesn't exist";
     return;
   }
 

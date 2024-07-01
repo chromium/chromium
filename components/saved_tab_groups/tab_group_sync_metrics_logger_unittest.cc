@@ -22,8 +22,12 @@ using testing::Return;
 namespace tab_groups {
 namespace {
 
+// Remote device guids.
 const char kDeviceGuid1[] = "device1";
 const char kDeviceGuid2[] = "device2";
+
+// Local device guid.
+const char kDeviceGuid3[] = "device3";
 
 }  // namespace
 
@@ -47,8 +51,13 @@ class TabGroupSyncMetricsLoggerTest : public testing::Test {
     device_info2_ = test::CreateDeviceInfo(
         kDeviceGuid2, syncer::DeviceInfo::OsType::kWindows,
         syncer::DeviceInfo::FormFactor::kDesktop);
+    device_info3_ = test::CreateDeviceInfo(
+        kDeviceGuid3, syncer::DeviceInfo::OsType::kAndroid,
+        syncer::DeviceInfo::FormFactor::kTablet);
     device_info_tracker_->Add(device_info1_.get());
     device_info_tracker_->Add(device_info2_.get());
+    device_info_tracker_->Add(device_info3_.get());
+    device_info_tracker_->SetLocalCacheGuid(kDeviceGuid3);
   }
 
   DeviceType GetDeviceType(syncer::DeviceInfo::OsType os_type,
@@ -62,6 +71,7 @@ class TabGroupSyncMetricsLoggerTest : public testing::Test {
   std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger_;
   std::unique_ptr<syncer::DeviceInfo> device_info1_;
   std::unique_ptr<syncer::DeviceInfo> device_info2_;
+  std::unique_ptr<syncer::DeviceInfo> device_info3_;
 };
 
 TEST_F(TabGroupSyncMetricsLoggerTest, HistogramsAreEmittedForLogEvents) {
@@ -173,6 +183,45 @@ TEST_F(TabGroupSyncMetricsLoggerTest, HistogramsAreEmittedForLogEvents) {
         DeviceType::kAndroidPhone, 1u);
     histogram_tester.ExpectUniqueSample(
         "TabGroups.Sync.TabGroup.UserInteracted.HasTitle", true, 1u);
+  }
+}
+
+TEST_F(TabGroupSyncMetricsLoggerTest, SomeEventsForLocalDeviceOrigin) {
+  SavedTabGroup group = test::CreateTestSavedTabGroupWithNoTabs();
+  group.SetLocalGroupId(test::GenerateRandomTabGroupID());
+  group.SetCreatorCacheGuid(kDeviceGuid3);
+
+  SavedTabGroupTab tab =
+      test::CreateSavedTabGroupTab("url", u"title", group.saved_guid());
+  tab.SetLocalTabID(test::GenerateRandomTabID());
+  tab.SetCreatorCacheGuid(kDeviceGuid2);
+
+  {
+    base::HistogramTester histogram_tester;
+    group.SetCreatorCacheGuid(kDeviceGuid3);
+    tab.SetCreatorCacheGuid(kDeviceGuid2);
+    metrics_logger_->LogEvent(EventDetails(TabGroupEvent::kTabNavigated),
+                              &group, &tab);
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.Sync.TabGroup.TabNavigated.GroupCreateOrigin",
+        DeviceType::kLocal, 1u);
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.Sync.TabGroup.TabNavigated.TabCreateOrigin",
+        DeviceType::kWindows, 1u);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    group.SetCreatorCacheGuid(kDeviceGuid2);
+    tab.SetCreatorCacheGuid(kDeviceGuid3);
+    metrics_logger_->LogEvent(EventDetails(TabGroupEvent::kTabNavigated),
+                              &group, &tab);
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.Sync.TabGroup.TabNavigated.GroupCreateOrigin",
+        DeviceType::kWindows, 1u);
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.Sync.TabGroup.TabNavigated.TabCreateOrigin",
+        DeviceType::kLocal, 1u);
   }
 }
 
@@ -335,6 +384,67 @@ TEST_F(TabGroupSyncMetricsLoggerTest, DeviceTypeConversion) {
   EXPECT_EQ(DeviceType::kChromeOS,
             GetDeviceType(syncer::DeviceInfo::OsType::kChromeOsLacros,
                           syncer::DeviceInfo::FormFactor::kTablet));
+}
+
+TEST_F(TabGroupSyncMetricsLoggerTest, RecordMetricsOnStartup) {
+  std::vector<SavedTabGroup> saved_tab_groups;
+  std::vector<bool> is_remote;
+
+  // Group 1: 1 tab, open, local, active 0 day ago.
+  // Group 2: 2 tabs, closed, remote, active 15 days ago.
+  SavedTabGroup group1 = test::CreateTestSavedTabGroupWithNoTabs();
+  group1.SetLocalGroupId(test::GenerateRandomTabGroupID());
+  SavedTabGroupTab tab1 =
+      test::CreateSavedTabGroupTab("url", u"title", group1.saved_guid());
+  tab1.SetLocalTabID(test::GenerateRandomTabID());
+  group1.AddTabLocally(tab1);
+  group1.SetLastUserInteractionTime(base::Time::Now() - base::Hours(2));
+  saved_tab_groups.emplace_back(group1);
+  is_remote.emplace_back(false);
+
+  SavedTabGroup group2 = test::CreateTestSavedTabGroupWithNoTabs();
+  SavedTabGroupTab tab2 =
+      test::CreateSavedTabGroupTab("url", u"title", group2.saved_guid());
+  SavedTabGroupTab tab3 =
+      test::CreateSavedTabGroupTab("url", u"title", group2.saved_guid());
+  group2.AddTabLocally(tab2);
+  group2.AddTabLocally(tab3);
+  group2.SetLastUserInteractionTime(base::Time::Now() - base::Days(15));
+  saved_tab_groups.emplace_back(group2);
+  is_remote.emplace_back(true);
+
+  base::HistogramTester histogram_tester;
+  metrics_logger_->RecordMetricsOnStartup(saved_tab_groups, is_remote);
+
+  // Group counts.
+  histogram_tester.ExpectUniqueSample("TabGroups.Sync.TotalTabGroupCount", 2,
+                                      1u);
+  histogram_tester.ExpectUniqueSample("TabGroups.Sync.OpenTabGroupCount", 1,
+                                      1u);
+  histogram_tester.ExpectUniqueSample("TabGroups.Sync.ClosedTabGroupCount", 1,
+                                      1u);
+  histogram_tester.ExpectUniqueSample("TabGroups.Sync.RemoteTabGroupCount", 1,
+                                      1u);
+
+  // Active tab group counts.
+  histogram_tester.ExpectUniqueSample("TabGroups.Sync.ActiveTabGroupCount.1Day",
+                                      1, 1u);
+  histogram_tester.ExpectUniqueSample("TabGroups.Sync.ActiveTabGroupCount.7Day",
+                                      1, 1u);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Sync.ActiveTabGroupCount.28Day", 2, 1u);
+
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Sync.RemoteActiveTabGroupCount.1Day", 0, 1u);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Sync.RemoteActiveTabGroupCount.7Day", 0, 1u);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Sync.RemoteActiveTabGroupCount.28Day", 1, 1u);
+
+  // Tab metrics.
+  EXPECT_EQ(
+      3u, histogram_tester.GetTotalSum("TabGroups.Sync.SavedTabGroupTabCount"));
+  histogram_tester.ExpectUniqueSample("TabGroups.Sync.SavedTabGroupAge", 0, 2u);
 }
 
 }  // namespace tab_groups
