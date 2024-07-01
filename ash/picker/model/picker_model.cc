@@ -9,6 +9,7 @@
 #include "base/check_deref.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/range/range.h"
 
 namespace ash {
@@ -42,7 +43,9 @@ ui::TextInputType GetTextInputType(ui::TextInputClient* client) {
 PickerModel::PickerModel(ui::TextInputClient* focused_client,
                          input_method::ImeKeyboard* ime_keyboard,
                          EditorStatus editor_status)
-    : has_focus_(focused_client != nullptr),
+    : has_focus_(focused_client != nullptr &&
+                 focused_client->GetTextInputType() !=
+                     ui::TextInputType::TEXT_INPUT_TYPE_NONE),
       selected_text_(GetSelectedText(focused_client)),
       selection_range_(GetSelectionRange(focused_client)),
       is_caps_lock_enabled_(CHECK_DEREF(ime_keyboard).IsCapsLockEnabled()),

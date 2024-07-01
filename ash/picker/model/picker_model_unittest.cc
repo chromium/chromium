@@ -124,6 +124,15 @@ TEST(PickerModel, GetModeForUnfocusedState) {
   EXPECT_EQ(model.GetMode(), PickerModeType::kUnfocused);
 }
 
+TEST(PickerModel, GetModeForInputTypeNone) {
+  ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_NONE});
+  input_method::FakeImeKeyboard fake_ime_keyboard;
+  PickerModel model(&client, &fake_ime_keyboard,
+                    PickerModel::EditorStatus::kEnabled);
+
+  EXPECT_EQ(model.GetMode(), PickerModeType::kUnfocused);
+}
+
 TEST(PickerModel, GetModeForNoSelectionState) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
