@@ -197,59 +197,6 @@ static bool AreValidPixelFormatsForWrap(VideoPixelFormat source_format,
           target_format == PIXEL_FORMAT_XBGR);
 }
 
-// If it is required to allocate aligned to multiple-of-two size overall for the
-// frame of pixel |format|.
-static bool RequiresEvenSizeAllocation(VideoPixelFormat format) {
-  switch (format) {
-    case PIXEL_FORMAT_ARGB:
-    case PIXEL_FORMAT_XRGB:
-    case PIXEL_FORMAT_RGB24:
-    case PIXEL_FORMAT_Y16:
-    case PIXEL_FORMAT_ABGR:
-    case PIXEL_FORMAT_XBGR:
-    case PIXEL_FORMAT_XR30:
-    case PIXEL_FORMAT_XB30:
-    case PIXEL_FORMAT_BGRA:
-    case PIXEL_FORMAT_RGBAF16:
-      return false;
-    case PIXEL_FORMAT_NV12:
-    case PIXEL_FORMAT_NV12A:
-    case PIXEL_FORMAT_NV16:
-    case PIXEL_FORMAT_NV21:
-    case PIXEL_FORMAT_NV24:
-    case PIXEL_FORMAT_I420:
-    case PIXEL_FORMAT_MJPEG:
-    case PIXEL_FORMAT_YUY2:
-    case PIXEL_FORMAT_YV12:
-    case PIXEL_FORMAT_I422:
-    case PIXEL_FORMAT_I444:
-    case PIXEL_FORMAT_YUV420P9:
-    case PIXEL_FORMAT_YUV422P9:
-    case PIXEL_FORMAT_YUV444P9:
-    case PIXEL_FORMAT_YUV420P10:
-    case PIXEL_FORMAT_YUV422P10:
-    case PIXEL_FORMAT_YUV444P10:
-    case PIXEL_FORMAT_YUV420P12:
-    case PIXEL_FORMAT_YUV422P12:
-    case PIXEL_FORMAT_YUV444P12:
-    case PIXEL_FORMAT_I420A:
-    case PIXEL_FORMAT_UYVY:
-    case PIXEL_FORMAT_P010LE:
-    case PIXEL_FORMAT_P210LE:
-    case PIXEL_FORMAT_P410LE:
-    case PIXEL_FORMAT_I422A:
-    case PIXEL_FORMAT_I444A:
-    case PIXEL_FORMAT_YUV420AP10:
-    case PIXEL_FORMAT_YUV422AP10:
-    case PIXEL_FORMAT_YUV444AP10:
-      return true;
-    case PIXEL_FORMAT_UNKNOWN:
-      break;
-  }
-  NOTREACHED_IN_MIGRATION() << "Unsupported video frame format: " << format;
-  return false;
-}
-
 // Creates VideoFrameLayout for tightly packed frame.
 static std::optional<VideoFrameLayout> GetDefaultLayout(
     VideoPixelFormat format,
@@ -1170,21 +1117,13 @@ gfx::Size VideoFrame::PlaneSizeInSamples(VideoPixelFormat format,
                                          size_t plane,
                                          const gfx::Size& coded_size) {
   DCHECK(IsValidPlane(format, plane));
-
-  int width = coded_size.width();
-  int height = coded_size.height();
-  if (RequiresEvenSizeAllocation(format)) {
-    // Align to multiple-of-two size overall. This ensures that non-subsampled
-    // planes can be addressed by pixel with the same scaling as the subsampled
-    // planes.
-    width = base::bits::AlignUpDeprecatedDoNotUse(width, 2);
-    height = base::bits::AlignUpDeprecatedDoNotUse(height, 2);
-  }
-
-  const gfx::Size subsample = SampleSize(format, plane);
-  DCHECK(width % subsample.width() == 0);
-  DCHECK(height % subsample.height() == 0);
-  return gfx::Size(width / subsample.width(), height / subsample.height());
+  const gfx::Size subsample_size = SampleSize(format, plane);
+  return gfx::Size(base::bits::AlignUpDeprecatedDoNotUse(
+                       coded_size.width(), subsample_size.width()) /
+                       subsample_size.width(),
+                   base::bits::AlignUpDeprecatedDoNotUse(
+                       coded_size.height(), subsample_size.height()) /
+                       subsample_size.height());
 }
 
 // static

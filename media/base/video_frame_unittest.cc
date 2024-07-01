@@ -730,63 +730,68 @@ TEST(VideoFrame, AllocationSize_OddSize) {
   for (unsigned int i = 1u; i <= PIXEL_FORMAT_MAX; ++i) {
     const VideoPixelFormat format = static_cast<VideoPixelFormat>(i);
     switch (format) {
-      case PIXEL_FORMAT_YUV444AP10:
-        EXPECT_EQ(192u, VideoFrame::AllocationSize(format, size))
-            << VideoPixelFormatToString(format);
-        break;
       case PIXEL_FORMAT_YUV444P9:
       case PIXEL_FORMAT_YUV444P10:
       case PIXEL_FORMAT_YUV444P12:
-      case PIXEL_FORMAT_YUV422AP10:
       case PIXEL_FORMAT_P410LE:
-        EXPECT_EQ(144u, VideoFrame::AllocationSize(format, size))
+        EXPECT_EQ(90u, VideoFrame::AllocationSize(format, size))
+            << VideoPixelFormatToString(format);
+        break;
+      case PIXEL_FORMAT_YUV422AP10:
+        EXPECT_EQ(100u, VideoFrame::AllocationSize(format, size))
             << VideoPixelFormatToString(format);
         break;
       case PIXEL_FORMAT_RGBAF16:
-      case PIXEL_FORMAT_YUV420AP10:
+      case PIXEL_FORMAT_YUV444AP10:
         EXPECT_EQ(120u, VideoFrame::AllocationSize(format, size))
+            << VideoPixelFormatToString(format);
+        break;
+      case PIXEL_FORMAT_YUV420AP10:
+        EXPECT_EQ(84u, VideoFrame::AllocationSize(format, size))
             << VideoPixelFormatToString(format);
         break;
       case PIXEL_FORMAT_YUV422P9:
       case PIXEL_FORMAT_YUV422P10:
       case PIXEL_FORMAT_YUV422P12:
-      case PIXEL_FORMAT_I444A:
       case PIXEL_FORMAT_P210LE:
-        EXPECT_EQ(96u, VideoFrame::AllocationSize(format, size))
+        EXPECT_EQ(70u, VideoFrame::AllocationSize(format, size))
             << VideoPixelFormatToString(format);
         break;
       case PIXEL_FORMAT_I444:
+      case PIXEL_FORMAT_NV24:
+      case PIXEL_FORMAT_RGB24:
+        EXPECT_EQ(45u, VideoFrame::AllocationSize(format, size))
+            << VideoPixelFormatToString(format);
+        break;
       case PIXEL_FORMAT_YUV420P9:
       case PIXEL_FORMAT_YUV420P10:
       case PIXEL_FORMAT_YUV420P12:
       case PIXEL_FORMAT_P010LE:
-      case PIXEL_FORMAT_I422A:
-      case PIXEL_FORMAT_NV24:
-        EXPECT_EQ(72u, VideoFrame::AllocationSize(format, size))
+        EXPECT_EQ(54u, VideoFrame::AllocationSize(format, size))
             << VideoPixelFormatToString(format);
         break;
-      case PIXEL_FORMAT_NV12A:
-        EXPECT_EQ(60u, VideoFrame::AllocationSize(format, size))
-            << VideoPixelFormatToString(format);
-        break;
+      case PIXEL_FORMAT_Y16:
       case PIXEL_FORMAT_UYVY:
       case PIXEL_FORMAT_YUY2:
-      case PIXEL_FORMAT_I422:
+        EXPECT_EQ(30u, VideoFrame::AllocationSize(format, size))
+            << VideoPixelFormatToString(format);
+        break;
       case PIXEL_FORMAT_NV16:
-        EXPECT_EQ(48u, VideoFrame::AllocationSize(format, size))
+      case PIXEL_FORMAT_I422:
+        EXPECT_EQ(35u, VideoFrame::AllocationSize(format, size))
             << VideoPixelFormatToString(format);
         break;
       case PIXEL_FORMAT_YV12:
       case PIXEL_FORMAT_I420:
       case PIXEL_FORMAT_NV12:
       case PIXEL_FORMAT_NV21:
-        EXPECT_EQ(36u, VideoFrame::AllocationSize(format, size))
+        EXPECT_EQ(27u, VideoFrame::AllocationSize(format, size))
             << VideoPixelFormatToString(format);
         break;
+      case PIXEL_FORMAT_I444A:
       case PIXEL_FORMAT_ARGB:
       case PIXEL_FORMAT_BGRA:
       case PIXEL_FORMAT_XRGB:
-      case PIXEL_FORMAT_I420A:
       case PIXEL_FORMAT_ABGR:
       case PIXEL_FORMAT_XBGR:
       case PIXEL_FORMAT_XR30:
@@ -794,12 +799,13 @@ TEST(VideoFrame, AllocationSize_OddSize) {
         EXPECT_EQ(60u, VideoFrame::AllocationSize(format, size))
             << VideoPixelFormatToString(format);
         break;
-      case PIXEL_FORMAT_RGB24:
-        EXPECT_EQ(45u, VideoFrame::AllocationSize(format, size))
+      case PIXEL_FORMAT_NV12A:
+      case PIXEL_FORMAT_I420A:
+        EXPECT_EQ(42u, VideoFrame::AllocationSize(format, size))
             << VideoPixelFormatToString(format);
         break;
-      case PIXEL_FORMAT_Y16:
-        EXPECT_EQ(30u, VideoFrame::AllocationSize(format, size))
+      case PIXEL_FORMAT_I422A:
+        EXPECT_EQ(50u, VideoFrame::AllocationSize(format, size))
             << VideoPixelFormatToString(format);
         break;
       case PIXEL_FORMAT_MJPEG:

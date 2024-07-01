@@ -806,12 +806,9 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
       yuv_color_space = kRec601_SkYUVColorSpace;
     }
 
-    // We use the Y plane size because it may get rounded up to an even size.
-    // Our implementation of GetYUVAPlanes expects this.
-    auto y_size = VideoFrame::PlaneSizeInSamples(
-        frame_->format(), VideoFrame::Plane::kY, frame_->visible_rect().size());
-    auto yuva_info = SkYUVAInfo({y_size.width(), y_size.height()}, plane_config,
-                                subsampling, yuv_color_space);
+    auto yuva_info = SkYUVAInfo(
+        {frame_->visible_rect().width(), frame_->visible_rect().height()},
+        plane_config, subsampling, yuv_color_space);
     *info = SkYUVAPixmapInfo(yuva_info, SkYUVAPixmapInfo::DataType::kUnorm8,
                              /*rowBytes=*/nullptr);
     return true;
