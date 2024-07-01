@@ -694,8 +694,9 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   SavedTabGroupTab navigated_tab = *saved_group->GetTab(saved_tab_id);
   navigated_tab.SetURL(url);
   navigated_tab.SetTitle(u"Example Page");
+  auto* tester = content::WebContentsTester::For(tabstrip->GetWebContentsAt(0));
   service()->model()->MergeRemoteTab(navigated_tab);
-
+  tester->CommitPendingNavigation();
   // The local tab should have navigated too.
   EXPECT_EQ(tabstrip->GetWebContentsAt(0)->GetURL(), url);
 
