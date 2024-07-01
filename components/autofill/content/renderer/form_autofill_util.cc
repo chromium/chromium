@@ -2131,25 +2131,6 @@ bool HasFormAncestor(WebNode node) {
   return false;
 }
 
-// Returns the unowned form control elements of `document`. Note that if
-// `blink::features::kAutofillIncludeShadowDomInUnassociatedListedElements` is
-// enabled, unassociated elements need not be unowned: A form control element
-// may be unassociated inside its Shadow DOM, but owned (in the Autofill sense)
-// by a <form> containing the shadow host.
-std::vector<WebFormControlElement> GetUnownedFormControlElements(
-    const WebDocument& document) {
-  std::vector<WebFormControlElement> form_control_elements =
-      document.UnassociatedFormControls().ReleaseVector();
-  if (base::FeatureList::IsEnabled(
-          blink::features::
-              kAutofillIncludeShadowDomInUnassociatedListedElements)) {
-    std::erase_if(form_control_elements, [](const WebFormControlElement& e) {
-      return e.OwnerShadowHost() && HasFormAncestor(e);
-    });
-  }
-  return form_control_elements;
-}
-
 }  // namespace
 
 InferredLabel::InferredLabel(std::u16string label, LabelSource source)
@@ -2345,8 +2326,21 @@ base::i18n::TextDirection GetTextDirectionForElement(
 std::vector<WebFormControlElement> GetOwnedFormControls(
     const WebDocument& document,
     const WebFormElement& form_element) {
-  return form_element ? form_element.GetFormControlElements().ReleaseVector()
-                      : GetUnownedFormControlElements(document);
+  if (form_element) {
+    return form_element.GetFormControlElements().ReleaseVector();  // nocheck
+  }
+  std::vector<WebFormControlElement> unowned_form_controls =
+      document.UnassociatedFormControls().ReleaseVector();  // nocheck
+  if (base::FeatureList::IsEnabled(
+          blink::features::
+              kAutofillIncludeShadowDomInUnassociatedListedElements)) {
+    // A form control element may be unassociated inside its Shadow DOM, but
+    // owned (in the Autofill sense) by a <form> containing the shadow host.
+    std::erase_if(unowned_form_controls, [](const WebFormControlElement& e) {
+      return e.OwnerShadowHost() && HasFormAncestor(e);
+    });
+  }
+  return unowned_form_controls;
 }
 
 std::vector<WebFormControlElement> GetOwnedAutofillableFormControls(
@@ -2452,8 +2446,9 @@ FindFormAndFieldForFormControlElement(
                               element.TagName().Utf8());
     SCOPED_CRASH_KEY_STRING64("Autofill", "elem_id",
                               element.GetIdAttribute().Utf8());
-    SCOPED_CRASH_KEY_NUMBER("Autofill", "elem_form_control_type",
-                            base::to_underlying(element.FormControlType()));
+    SCOPED_CRASH_KEY_NUMBER(
+        "Autofill", "elem_form_control_type",
+        base::to_underlying(element.FormControlType()));  // nocheck
     SCOPED_CRASH_KEY_BOOL("Autofill", "elem_autofillable",
                           IsAutofillableElement(element));
     SCOPED_CRASH_KEY_BOOL("Autofill", "elem_document", !document.IsNull());
@@ -2784,11 +2779,11 @@ void TraverseDomForFourDigitCombinations(
            blink::features::kAutofillIncludeFormElementsInShadowDom)
            ? document.GetTopLevelForms()
            : document.Forms()) {
-    base::ranges::move(form.GetFormControlElements().ReleaseVector(),
+    base::ranges::move(GetOwnedFormControls(document, form),
                        std::back_inserter(form_control_elements));
   }
 
-  base::ranges::move(GetUnownedFormControlElements(document),
+  base::ranges::move(GetOwnedFormControls(document, WebFormElement()),
                      std::back_inserter(form_control_elements));
 
   auto extract_four_digit_combinations = [&](WebNode node) {

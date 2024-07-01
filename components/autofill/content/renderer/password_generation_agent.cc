@@ -440,7 +440,8 @@ void PasswordGenerationAgent::TriggeredGeneratePassword(
     // clear-text field.
     // |IsPasswordFieldForAutofill()| is deliberately not used.
     bool is_generation_element_password_type =
-        current_generation_item_->generation_element_.IsPasswordField();
+        current_generation_item_->generation_element_
+            .IsPasswordField();  // nocheck
     password_generation::PasswordGenerationUIData password_generation_ui_data(
         gfx::RectF(render_frame()->ConvertViewportToWindow(
             current_generation_item_->generation_element_.BoundsInWidget())),
@@ -672,7 +673,8 @@ void PasswordGenerationAgent::AutomaticGenerationAvailable() {
   // clear-text field.
   // |IsPasswordFieldForAutofill()| is deliberately not used.
   bool is_generation_element_password_type =
-      current_generation_item_->generation_element_.IsPasswordField();
+      current_generation_item_->generation_element_
+          .IsPasswordField();  // nocheck
   password_generation::PasswordGenerationUIData password_generation_ui_data(
       gfx::RectF(render_frame()->ConvertViewportToWindow(
           current_generation_item_->generation_element_.BoundsInWidget())),
