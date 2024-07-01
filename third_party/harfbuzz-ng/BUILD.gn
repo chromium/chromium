@@ -45,7 +45,6 @@ if (use_system_harfbuzz) {
       "src/src/hb-deprecated.h",
       "src/src/hb-face.h",
       "src/src/hb-font.h",
-      "src/src/hb-ft.h",
       "src/src/hb-icu.h",
       "src/src/hb-map.h",
       "src/src/hb-ot-font.h",
@@ -133,7 +132,6 @@ if (use_system_harfbuzz) {
       "src/src/hb-face.hh",
       "src/src/hb-font.cc",
       "src/src/hb-font.hh",
-      "src/src/hb-ft.cc",
       "src/src/hb-icu.cc",
       "src/src/hb-iter.hh",
       "src/src/hb-kern.hh",
@@ -308,6 +306,8 @@ if (use_system_harfbuzz) {
       "src/src/hb-directwrite.h",
       "src/src/hb-fallback-shape.cc",
       "src/src/hb-ft-colr.hh",
+      "src/src/hb-ft.cc",
+      "src/src/hb-ft.h",
       "src/src/hb-gdi.cc",
       "src/src/hb-gdi.h",
       "src/src/hb-gobject-structs.cc",
@@ -340,7 +340,6 @@ if (use_system_harfbuzz) {
 
     defines = [
       "HAVE_OT",
-      "HAVE_FREETYPE",
       "HAVE_ICU",
       "HAVE_ICU_BUILTIN",
       "HB_NO_MMAP",
