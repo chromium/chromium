@@ -70,6 +70,14 @@ void PickerPerformanceMetrics::MarkSearchResultsUpdated(
     results_presentation_time_recorder_->RequestNext();
   }
 
+  // The below metrics were written before "no results found" called this
+  // method.
+  // TODO: b/349913604 - Replace this metric with new ones which record when
+  // "no search results found" is shown.
+  if (update == SearchResultsUpdate::kNoResultsFound) {
+    return;
+  }
+
   if (search_start_timestamp_.has_value()) {
     base::UmaHistogramCustomTimes(
         "Ash.Picker.Session.SearchLatency",

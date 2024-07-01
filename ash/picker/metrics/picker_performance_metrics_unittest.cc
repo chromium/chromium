@@ -112,6 +112,22 @@ TEST_F(PickerPerformanceMetricsTest, RecordsPresentationLatencyForResults) {
       "Ash.Picker.Session.PresentationLatency.SearchResults", 1);
 }
 
+TEST_F(PickerPerformanceMetricsTest,
+       RecordsPresentationLatencyForResultsShowingNoResultsFound) {
+  base::HistogramTester histogram;
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+
+  PickerPerformanceMetrics metrics(base::TimeTicks::Now());
+  metrics.StartRecording(*widget);
+  metrics.MarkSearchResultsUpdated(
+      PickerPerformanceMetrics::SearchResultsUpdate::kNoResultsFound);
+  WaitUntilNextFramePresented(widget->GetCompositor());
+
+  histogram.ExpectTotalCount(
+      "Ash.Picker.Session.PresentationLatency.SearchResults", 1);
+}
+
 TEST_F(PickerPerformanceMetricsTest, RecordsSearchLatencyOnSearchFinished) {
   base::HistogramTester histogram;
   std::unique_ptr<views::Widget> widget =
@@ -126,6 +142,23 @@ TEST_F(PickerPerformanceMetricsTest, RecordsSearchLatencyOnSearchFinished) {
 
   histogram.ExpectUniqueTimeSample("Ash.Picker.Session.SearchLatency",
                                    base::Seconds(1), 1);
+}
+
+// TODO: b/349913604 - Replace this metric with a new one which records search
+// latency on showing "no results found".
+TEST_F(PickerPerformanceMetricsTest,
+       DoesNotRecordSearchLatencyOnShowingNoResultsFound) {
+  base::HistogramTester histogram;
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+
+  PickerPerformanceMetrics metrics;
+  metrics.StartRecording(*widget);
+  metrics.MarkContentsChanged();
+  metrics.MarkSearchResultsUpdated(
+      PickerPerformanceMetrics::SearchResultsUpdate::kNoResultsFound);
+
+  histogram.ExpectTotalCount("Ash.Picker.Session.SearchLatency", 0);
 }
 
 TEST_F(PickerPerformanceMetricsTest,

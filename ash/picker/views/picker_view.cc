@@ -423,6 +423,8 @@ void PickerView::PublishSearchResults(
   // results.
   if (show_no_results_found && results.empty()) {
     search_results_view_->ShowNoResultsFound();
+    performance_metrics_.MarkSearchResultsUpdated(
+        PickerPerformanceMetrics::SearchResultsUpdate::kNoResultsFound);
     return;
   }
 

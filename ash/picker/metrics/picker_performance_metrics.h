@@ -28,6 +28,8 @@ class ASH_EXPORT PickerPerformanceMetrics {
     kClear,
     // Stale search results were replaced with a new non-empty list of results.
     kReplace,
+    // The "no results found" message was shown.
+    kNoResultsFound,
     // New results were appended to the (possibly empty) list of results.
     kAppend,
   };
