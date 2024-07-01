@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/support_tool/signin_data_collector.h"
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/about_signin_internals_factory.h"
 #include "components/feedback/redaction_tool/pii_types.h"
+#include "components/signin/core/browser/about_signin_internals.h"
 
 namespace {
 
@@ -43,9 +45,8 @@ bool WriteFile(std::string json, base::FilePath target_directory) {
 
 }  // namespace
 
-SigninDataCollector::SigninDataCollector(Profile* profile) {
-  about_signin_internals_ = AboutSigninInternalsFactory::GetForProfile(profile);
-}
+SigninDataCollector::SigninDataCollector(Profile* profile)
+    : profile_(profile) {}
 
 SigninDataCollector::~SigninDataCollector() = default;
 
@@ -69,8 +70,23 @@ void SigninDataCollector::CollectDataAndDetectPII(
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // `profile_` can't be null because `SigninDataCollector` will be created
+  // after profile is created. Check `SupportToolHandler` and
+  // chrome/browser/support_tool/support_tool_util.h for more details.
+  CHECK(profile_);
+
+  if (profile_->IsIncognitoProfile()) {
+    SupportToolError error = {
+        SupportToolErrorCode::kDataCollectorError,
+        "SigninDataCollector can't work without profile or in incognito mode."};
+    std::move(on_data_collected_callback).Run(error);
+    return;
+  }
+
+  AboutSigninInternals* about_signin_internals =
+      AboutSigninInternalsFactory::GetForProfile(profile_);
   // See AboutSigninInternals::SigninStatus::ToValue.
-  base::Value::Dict status = about_signin_internals_->GetSigninStatus();
+  base::Value::Dict status = about_signin_internals->GetSigninStatus();
   base::JSONWriter::WriteWithOptions(
       status, base::JSONWriter::OPTIONS_PRETTY_PRINT, &signin_status_);
 
@@ -97,6 +113,14 @@ void SigninDataCollector::ExportCollectedDataWithPII(
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
     DataCollectorDoneCallback on_exported_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (signin_status_.empty()) {
+    SupportToolError error = {
+        SupportToolErrorCode::kDataCollectorError,
+        "SigninDataCollector: Status is empty. Can't export empty status."};
+    std::move(on_exported_callback).Run(error);
+    return;
+  }
 
   task_runner_for_redaction_tool->PostTaskAndReplyWithResult(
       FROM_HERE,

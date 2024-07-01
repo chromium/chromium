@@ -139,3 +139,43 @@ IN_PROC_BROWSER_TEST_F(SigninDataCollectorBrowserTestAsh, CollectSigninStatus) {
   ASSERT_NO_FATAL_FAILURE(ReadExportedFile(&json_result, output_file));
   EXPECT_FALSE(json_result.empty());
 }
+
+IN_PROC_BROWSER_TEST_F(SigninDataCollectorBrowserTestAsh, FailInIncognitoMode) {
+  // Create incognito browser for testing.
+  Browser* incognito_browser = Browser::Create(Browser::CreateParams(
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+      true));
+
+  // `SigninDataCollector` for testing.
+  SigninDataCollector data_collector(incognito_browser->profile());
+
+  // Attempt to collect sign-in data and verify that an error is returned.
+  base::test::TestFuture<std::optional<SupportToolError>>
+      test_future_collect_data;
+  data_collector.CollectDataAndDetectPII(test_future_collect_data.GetCallback(),
+                                         task_runner_for_redaction_tool_,
+                                         redaction_tool_container_);
+  std::optional<SupportToolError> error = test_future_collect_data.Get();
+  ASSERT_TRUE(error.has_value());
+  EXPECT_EQ(
+      error->error_message,
+      "SigninDataCollector can't work without profile or in incognito mode.");
+  EXPECT_EQ(error->error_code, SupportToolErrorCode::kDataCollectorError);
+
+  // Attempt to export the collected data and verify that error is returned.
+  base::FilePath output_path = temp_dir_.GetPath();
+  auto output_file = output_path.Append(FILE_PATH_LITERAL("signin.json"));
+
+  base::test::TestFuture<std::optional<SupportToolError>>
+      test_future_export_data;
+  data_collector.ExportCollectedDataWithPII(
+      /*pii_types_to_keep=*/{}, output_path,
+      /*task_runner_for_redaction_tool=*/task_runner_for_redaction_tool_,
+      /*redaction_tool_container=*/redaction_tool_container_,
+      test_future_export_data.GetCallback());
+  error = test_future_export_data.Get();
+  ASSERT_TRUE(error.has_value());
+  EXPECT_EQ(error->error_message,
+            "SigninDataCollector: Status is empty. Can't export empty status.");
+  EXPECT_EQ(error->error_code, SupportToolErrorCode::kDataCollectorError);
+}
