@@ -32,6 +32,7 @@
 #include "ui/views/drag_controller.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_targeter.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/root_view_targeter.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -137,10 +138,18 @@ class AnnounceTextView : public View {
     node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic, true);
     node_data->AddStringAttribute(ax::mojom::StringAttribute::kLiveStatus,
                                   "polite");
+    if (base::FeatureList::IsEnabled(
+            features::kAnnounceTextAdditionalAttributes)) {
+      node_data->AddStringAttribute(
+          ax::mojom::StringAttribute::kContainerLiveStatus, "polite");
+      node_data->AddStringAttribute(ax::mojom::StringAttribute::kLiveRelevant,
+                                    "additions text");
+      node_data->AddStringAttribute(
+          ax::mojom::StringAttribute::kContainerLiveRelevant, "additions text");
+    }
 
     !announce_text_.empty() ? node_data->SetNameChecked(announce_text_)
                             : node_data->SetNameExplicitlyEmpty();
-    node_data->SetNameChecked(announce_text_);
     node_data->AddState(ax::mojom::State::kInvisible);
   }
 
