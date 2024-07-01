@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.app;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.view.DragEvent;
@@ -221,6 +222,7 @@ public class ContextMenuDragTest {
                 View containerView,
                 Bitmap shadowImage,
                 DropDataAndroid dropData,
+                Context context,
                 int cursorOffsetX,
                 int cursorOffsetY,
                 int dragObjRectWidth,

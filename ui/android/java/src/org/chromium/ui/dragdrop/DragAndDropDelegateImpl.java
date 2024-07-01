@@ -45,9 +45,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Drag and drop helper class in charge of building the clip data, wrapping calls to
- * {@link android.view.View#startDragAndDrop}. Also used for mocking out real function calls to
- * Android.
+ * Drag and drop helper class in charge of building the clip data, wrapping calls to {@link
+ * android.view.View#startDragAndDrop}. Also used for mocking out real function calls to Android.
  */
 public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTracker {
     /**
@@ -111,6 +110,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
             @NonNull View containerView,
             @NonNull Bitmap shadowImage,
             @NonNull DropDataAndroid dropData,
+            @NonNull Context context,
             int cursorOffsetX,
             int cursorOffsetY,
             int dragObjRectWidth,
@@ -121,6 +121,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         View.DragShadowBuilder dragShadowBuilder =
                 createDragShadowBuilder(
                         containerView,
+                        context,
                         shadowImage,
                         dropData.hasImage(),
                         windowWidth,
@@ -307,6 +308,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
 
     protected View.DragShadowBuilder createDragShadowBuilder(
             View containerView,
+            Context context,
             Bitmap shadowImage,
             boolean isImage,
             int windowWidth,
@@ -315,7 +317,6 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
             int cursorOffsetY,
             int dragObjRectWidth,
             int dragObjRectHeight) {
-        Context context = containerView.getContext();
         ImageView imageView = new ImageView(context);
         if (isImage) {
             // If drag shadow image is an 1*1 image, it is not considered as a valid drag shadow.
@@ -356,6 +357,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
                                     dragShadowSpec);
                     return new AnimatedImageDragShadowBuilder(
                             containerView,
+                            context,
                             shadowImage,
                             cursorOffset.x,
                             cursorOffset.y,

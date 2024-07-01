@@ -25,15 +25,15 @@ import org.chromium.ui.R;
 
 /**
  * A {@link View.DragShadowBuilder} that animate the drag shadow from the original image in the web
- * to the center of the touch point.
- * See go/animated-image-drag-shadow-corner-cases for known edge cases.
+ * to the center of the touch point. See go/animated-image-drag-shadow-corner-cases for known edge
+ * cases.
  */
 class AnimatedImageDragShadowBuilder extends View.DragShadowBuilder {
     /**
-     * Animatable progress for the drag shadow. When the progress is 0, the drag shadow is full
-     * size and the touch point of the original view matches the touch point in the shadow. As
-     * the progress animates to 1, the drag shadow shrinks and translates to have the users
-     * finger in the center of the drag shadow.
+     * Animatable progress for the drag shadow. When the progress is 0, the drag shadow is full size
+     * and the touch point of the original view matches the touch point in the shadow. As the
+     * progress animates to 1, the drag shadow shrinks and translates to have the users finger in
+     * the center of the drag shadow.
      */
     private final FloatProperty<AnimatedImageDragShadowBuilder> mProgressProperty =
             new FloatProperty<AnimatedImageDragShadowBuilder>("progress") {
@@ -83,6 +83,7 @@ class AnimatedImageDragShadowBuilder extends View.DragShadowBuilder {
      */
     public AnimatedImageDragShadowBuilder(
             View containerView,
+            Context context,
             Bitmap bitmap,
             float startX,
             float startY,
@@ -95,8 +96,7 @@ class AnimatedImageDragShadowBuilder extends View.DragShadowBuilder {
                         dragShadowSpec.startHeight,
                         ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
         float resizeRatio = (float) dragShadowSpec.targetWidth / dragShadowSpec.startWidth;
-        Resources res = containerView.getResources();
-        Context context = containerView.getContext();
+        Resources res = context.getResources();
         mProgress = 0f;
 
         mStartBounds.set(0, 0, dragShadowSpec.startWidth, dragShadowSpec.startHeight);

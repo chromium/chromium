@@ -165,8 +165,9 @@ public class ViewAndroidDelegate {
     }
 
     /**
-     * Transfer existing anchor views from the old to the new container view. Called by
-     * {@link setContainerView} only.
+     * Transfer existing anchor views from the old to the new container view. Called by {@link
+     * setContainerView} only.
+     *
      * @param oldContainerView Old container view just replaced by a new one.
      */
     public void updateAnchorViews(ViewGroup oldContainerView) {}
@@ -243,6 +244,7 @@ public class ViewAndroidDelegate {
      *
      * @param shadowImage The shadow image for the dragged object.
      * @param dropData The drop data presenting the drag target.
+     * @param windowAndroid The WindowAndroid used to retrieve a relevant Context.
      * @param cursorOffsetX The x offset of the cursor w.r.t. to top-left corner of the drag-image.
      * @param cursorOffsetY The y offset of the cursor w.r.t. to top-left corner of the drag-image.
      * @param dragObjRectWidth The width of the drag object.
@@ -252,18 +254,20 @@ public class ViewAndroidDelegate {
     private boolean startDragAndDrop(
             Bitmap shadowImage,
             DropDataAndroid dropData,
+            WindowAndroid windowAndroid,
             int cursorOffsetX,
             int cursorOffsetY,
             int dragObjRectWidth,
             int dragObjRectHeight) {
         ViewGroup containerView = getContainerViewGroup();
-        if (containerView == null) return false;
+        if (containerView == null || windowAndroid == null) return false;
 
         return getDragAndDropDelegate()
                 .startDragAndDrop(
                         containerView,
                         shadowImage,
                         dropData,
+                        windowAndroid.getContext().get(),
                         cursorOffsetX,
                         cursorOffsetY,
                         dragObjRectWidth,

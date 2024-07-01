@@ -398,10 +398,13 @@ bool ViewAndroid::StartDragAndDrop(const JavaRef<jobject>& jshadow_image,
   ScopedJavaLocalRef<jobject> delegate(GetViewAndroidDelegate());
   if (delegate.is_null())
     return false;
+  WindowAndroid* window_android = GetWindowAndroid();
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_ViewAndroidDelegate_startDragAndDrop(
-      env, delegate, jshadow_image, jdrop_data, cursor_offset_x,
-      cursor_offset_y, drag_obj_rect_width, drag_obj_rect_height);
+      env, delegate, jshadow_image, jdrop_data,
+      window_android ? window_android->GetJavaObject() : nullptr,
+      cursor_offset_x, cursor_offset_y, drag_obj_rect_width,
+      drag_obj_rect_height);
 }
 
 void ViewAndroid::OnCursorChanged(const Cursor& cursor) {
