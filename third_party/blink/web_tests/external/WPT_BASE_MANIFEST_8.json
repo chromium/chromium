@@ -310480,6 +310480,10 @@
        "b6e8dc603849e6691dc509b6c7085ea7a23d46b6",
        []
       ],
+      "idlharness-expected.txt": [
+       "51a27d9dc2ce7c7c3047c864fae22e69feaf8255",
+       []
+      ],
       "inline-size-bfc-floats-ref.html": [
        "ecd72b7516c41c83b6e8d320c9b0b87f9c231781",
        []
@@ -347988,7 +347992,7 @@
       []
      ],
      "idlharness-expected.txt": [
-      "8d58390f8d01c8aa5149f068815994d18bb579af",
+      "053c1d1fd9c7cff23f57b8a8bcd5d59bd2576963",
       []
      ],
      "insertRule-from-script-ref.html": [
@@ -367424,7 +367428,7 @@
       []
      ],
      "idlharness.https_include=(Document_Window)-expected.txt": [
-      "a8abddc1a64ebb6f388bfcad4c705d646caf2828",
+      "a59b20d054bd2e80a3751d8e005a9ad1a183b7f4",
       []
      ],
      "idlharness.https_include=HTML._-expected.txt": [
@@ -380328,12 +380332,12 @@
      "6f5c6dfc096cbe04e30bb2fb38e7119fc45dc870",
      []
     ],
-    "css-conditional.idl": [
-     "d87f305fddf9e7c3f0151d51a595ae7140dce908",
+    "css-conditional-5.idl": [
+     "b1919213ebcf4b4b65483ef878370de7ce817c65",
      []
     ],
-    "css-contain-3.idl": [
-     "0ecf3804954813ccae0065c91af93712ed31b5d4",
+    "css-conditional.idl": [
+     "d87f305fddf9e7c3f0151d51a595ae7140dce908",
      []
     ],
     "css-contain.idl": [
@@ -380501,7 +380505,7 @@
      []
     ],
     "fenced-frame.idl": [
-     "a3ec8d731bbcd65491ff533322994f45c5641fab",
+     "e15cbf11da271b8593d04e421a621560c25cc53e",
      []
     ],
     "fetch.idl": [
@@ -380549,7 +380553,7 @@
      []
     ],
     "geolocation.idl": [
-     "8c0acfc6cc1c37220d282f42edd84bab4e02505c",
+     "062a38bebc571ae6783123d87d44d15bf6790316",
      []
     ],
     "geometry.idl": [
@@ -380573,7 +380577,7 @@
      []
     ],
     "html.idl": [
-     "b5bf357357946ba8255dc3b309409602997147f4",
+     "4d6c0229bc13925a91aa9a4aa6342943aecdf9c8",
      []
     ],
     "idle-detection.idl": [
@@ -380805,7 +380809,7 @@
      []
     ],
     "pointerlock.idl": [
-     "0204bf53424826b04be7bce2c34e429332a527a9",
+     "afe19cc9ee69c518bc59bf56b17f245f800bf1d0",
      []
     ],
     "portals.idl": [
@@ -380985,11 +380989,11 @@
      []
     ],
     "trusted-types.idl": [
-     "a0f88e4e6c38cab683a236f3e8fa211b7e4e2107",
+     "b6008e187250fbce3ec0c0481b9de5b63a9c0cd1",
      []
     ],
     "turtledove.idl": [
-     "d4cc8c6bc5d5b106dc3f495058a2108ed6792c6f",
+     "b7a1775a2ce974eb5d90e6588a44078c98effea2",
      []
     ],
     "ua-client-hints.idl": [
@@ -381133,7 +381137,7 @@
      []
     ],
     "webgpu.idl": [
-     "4a1b339a002661035a8b5f366d6ce166b8bfe37c",
+     "8fba61233412cc9374262e932de6930f3870c9db",
      []
     ],
     "webhid.idl": [
@@ -381149,7 +381153,7 @@
      []
     ],
     "webnn.idl": [
-     "29c88122adc760aa49d431057f7c26d5b426440f",
+     "fc36d282816cd24f1ea5f499a550ef15c56ba716",
      []
     ],
     "webrtc-encoded-transform.idl": [
@@ -381177,7 +381181,7 @@
      []
     ],
     "webrtc.idl": [
-     "de6ba1420cec4bb53b1651cea69ac030db6f4a78",
+     "6bfbdb898c5e87b4a095a14a117e6f0d831d7ee8",
      []
     ],
     "websockets.idl": [
@@ -381221,7 +381225,7 @@
      []
     ],
     "webxr-hit-test.idl": [
-     "fa4fb71c9decd64054669249353a16b3476aae56",
+     "d01bffe27037fe82157f05bec9689e5ca417bbee",
      []
     ],
     "webxr-lighting-estimation.idl": [
@@ -386615,6 +386619,10 @@
     "WEB_FEATURES.yml": [
      "61ab30b26b601cd836a9ec579e0b8d014ceb430f",
      []
+    ],
+    "idlharness.window-expected.txt": [
+     "638dac0de21476758ddafef587d7df16696aa32a",
+     []
     ]
    },
    "preload": {
@@ -389386,7 +389394,7 @@
       []
      ],
      "mock-pressure-service.js": [
-      "016c6d97e73ddfa33eb9398f15fdde0b62c37496",
+      "8e205d31cb71c11711afc3b5ac379738880c9efa",
       []
      ],
      "mock-pressure-service.js.headers": [
@@ -601514,7 +601522,7 @@
      ]
     ],
     "input-events-typing.html": [
-     "cff32a44d153145a02c0914ef22d2fefea0edd97",
+     "8a083dc9669dfc30fd7caa300515b5a04bc42073",
      [
       null,
       {

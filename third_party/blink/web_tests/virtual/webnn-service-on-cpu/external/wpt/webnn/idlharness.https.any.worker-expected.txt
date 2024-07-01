@@ -1,8 +1,6 @@
 This is a testharness.js-based test.
-Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] MLGraphBuilder interface: operation clamp(MLOperand, optional MLClampOptions)
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] MLGraphBuilder interface: operation clamp(optional MLClampOptions)
-  assert_equals: property has wrong .length expected 0 but got 1
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] MLGraphBuilder interface: operation softmax(MLOperand, unsigned long)
+  assert_equals: property has wrong .length expected 2 but got 1
 Harness: the test ran to completion.
 

@@ -1,7 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
 // Content was automatically extracted by Reffy into webref
 // (https://github.com/w3c/webref)
-// Source: CSS Containment Module Level 3 (https://drafts.csswg.org/css-contain-3/)
+// Source: CSS Conditional Rules Module Level 5 (https://drafts.csswg.org/css-conditional-5/)
 
 [Exposed=Window]
 interface CSSContainerRule : CSSConditionRule {

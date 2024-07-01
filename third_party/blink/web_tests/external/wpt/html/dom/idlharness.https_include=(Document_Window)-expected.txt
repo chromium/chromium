@@ -14,7 +14,7 @@ Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: expected property "oncut" missing
 [FAIL] Window interface: window must inherit property "onpaste" with the proper type
   assert_own_property: expected property "onpaste" missing
-[FAIL] Document interface: calling parseHTMLUnsafe(HTMLString) on iframe.contentDocument with too few arguments must throw TypeError
+[FAIL] Document interface: calling parseHTMLUnsafe((TrustedHTML or DOMString)) on iframe.contentDocument with too few arguments must throw TypeError
   assert_own_property: interface object must have static operation as own property expected property "parseHTMLUnsafe" missing
 Harness: the test ran to completion.
 
