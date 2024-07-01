@@ -2,7 +2,6 @@
 # Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Rebase DumpAccessibilityTree Tests.
 
 This script is intended to be run when you make a change that could affect the
@@ -43,6 +42,7 @@ NORMAL_COLOR = '\033[0m'
 # bother to update the same file twice.
 completed_files = set()
 
+
 def Fix(line):
   if line[:3] == '@@@':
     result = re.search('[^@]@([^@]*)@@@', line)
@@ -50,8 +50,7 @@ def Fix(line):
       line = result.group(1)
   # For Android tests:
   if line[:2] == 'I ' or line[:2] == 'E ':
-    result = re.search('[I|E].*run_tests_on_device\([^\)]+\)\s+(.*)',
-                       line)
+    result = re.search('[I|E].*run_tests_on_device\([^\)]+\)\s+(.*)', line)
     if result:
       line = result.group(1)
   # For Android content_shell_test_apk tests:
@@ -61,6 +60,7 @@ def Fix(line):
     if result:
       line = result.group(1)
   return line
+
 
 def ParseLog(logdata):
   '''Parse the log file for failing tests and overwrite the expected
@@ -90,7 +90,7 @@ def ParseLog(logdata):
 
       if line[:3] != '---':
         start = start + 1  # Skip separator line of hyphens
-      actual = [Fix(line) for line in lines[start : i] if line]
+      actual = [Fix(line) for line in lines[start:i] if line]
 
       actual_text = '\n'.join(actual)
       # Make sure the text ends with a newline.
@@ -106,12 +106,13 @@ def ParseLog(logdata):
       test_file = None
       expected_file = None
 
+
 def Run():
   '''Main. Get the issue number and parse the code review page.'''
   if len(sys.argv) == 2:
     patchSetArg = '--patchset=%s' % sys.argv[1]
   else:
-    patchSetArg = '';
+    patchSetArg = ''
 
   try:
     (fd, tmppath) = tempfile.mkstemp()
@@ -165,6 +166,7 @@ def Run():
       if not output:
         print('No content_browsertests (with patch) step found')
         continue
+
 
 if __name__ == '__main__':
   sys.exit(Run())

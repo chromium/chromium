@@ -2,7 +2,6 @@
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Semi-automated tests of Chrome with NVDA.
 
 This file performs (semi) automated tests of Chrome with NVDA
@@ -35,23 +34,16 @@ import time
 import unittest
 
 CHROME_PROFILES_PATH = os.path.join(os.getcwd(), 'chrome_profiles')
-CHROME_PATH = os.path.join(os.environ['USERPROFILE'],
-                           'AppData',
-                           'Local',
-                           'Google',
-                           'Chrome SxS',
-                           'Application',
-                           'chrome.exe')
-NVDA_PATH = os.path.join(os.getcwd(),
-                         'nvdaPortable',
-                         'nvda_noUIAccess.exe')
-NVDA_PROCTEST_PATH = os.path.join(os.getcwd(),
-                                  'nvda-proctest')
-NVDA_LOGPATH = os.path.join(os.getcwd(),
-                            'nvda_log.txt')
+CHROME_PATH = os.path.join(os.environ['USERPROFILE'], 'AppData', 'Local',
+                           'Google', 'Chrome SxS', 'Application', 'chrome.exe')
+NVDA_PATH = os.path.join(os.getcwd(), 'nvdaPortable', 'nvda_noUIAccess.exe')
+NVDA_PROCTEST_PATH = os.path.join(os.getcwd(), 'nvda-proctest')
+NVDA_LOGPATH = os.path.join(os.getcwd(), 'nvda_log.txt')
 WAIT_FOR_SPEECH_TIMEOUT_SECS = 3.0
 
+
 class NvdaChromeTest(unittest.TestCase):
+
   @classmethod
   def setUpClass(cls):
     print('user data: %s' % CHROME_PROFILES_PATH)
@@ -78,14 +70,15 @@ class NvdaChromeTest(unittest.TestCase):
       print('Test interrupted, attempting to kill subprocesses.')
       self.tearDown()
       sys.exit()
+
     signal.signal(signal.SIGINT, handler)
 
   def setUp(self):
-    user_data_dir = tempfile.mkdtemp(dir = CHROME_PROFILES_PATH)
-    args = [CHROME_PATH,
-            '--user-data-dir=%s' % user_data_dir,
-            '--no-first-run',
-            'about:blank']
+    user_data_dir = tempfile.mkdtemp(dir=CHROME_PROFILES_PATH)
+    args = [
+        CHROME_PATH,
+        '--user-data-dir=%s' % user_data_dir, '--no-first-run', 'about:blank'
+    ]
     print()
     print(' '.join(args))
     self._chrome_proc = subprocess.Popen(args)
@@ -99,12 +92,7 @@ class NvdaChromeTest(unittest.TestCase):
 
     os.environ['NVDA_SPECIFIC_PROCESS'] = str(self._chrome_proc.pid)
 
-    args = [NVDA_PATH,
-            '-m',
-            '-c',
-            NVDA_PROCTEST_PATH,
-            '-f',
-            NVDA_LOGPATH]
+    args = [NVDA_PATH, '-m', '-c', NVDA_PROCTEST_PATH, '-f', NVDA_LOGPATH]
     self._nvda_proc = subprocess.Popen(args)
     self._nvda_proc.poll()
     if self._nvda_proc.returncode is None:
@@ -115,9 +103,9 @@ class NvdaChromeTest(unittest.TestCase):
     print('NVDA pid: %d' % self._nvda_proc.pid)
 
     app = pywinauto.application.Application()
-    app.connect(process = self._chrome_proc.pid)
+    app.connect(process=self._chrome_proc.pid)
     self._pywinauto_window = app.top_window()
-    self.last_nvda_log_line = 0;
+    self.last_nvda_log_line = 0
 
   def tearDown(self):
     print()
@@ -161,11 +149,11 @@ class NvdaChromeTest(unittest.TestCase):
     return result
 
   def _ArrayInArray(self, lines, expected):
-    positions = len(lines) - len(expected) + 1;
+    positions = len(lines) - len(expected) + 1
     if (positions >= 0):
       # loop through the number of positions that the subset can hold
       for index in range(positions):
-        if (lines[index : index + len(expected)] == expected):
+        if (lines[index:index + len(expected)] == expected):
           return True
     return False
 
@@ -190,8 +178,7 @@ class NvdaChromeTest(unittest.TestCase):
 
       if time.time() - start_time >= WAIT_FOR_SPEECH_TIMEOUT_SECS:
         self.fail("Test for expected speech failed.\n\nExpected:\n" +
-          str(expected) +
-          ".\n\nActual:\n" + str(lines));
+                  str(expected) + ".\n\nActual:\n" + str(lines))
         return False
       time.sleep(0.1)
 
@@ -202,11 +189,11 @@ class NvdaChromeTest(unittest.TestCase):
   def testTypingInOmnibox(self):
     # Ctrl+A: Select all.
     self._pywinauto_window.TypeKeys('^l')
-    self._TestForSpeech(["main tool bar"]);
+    self._TestForSpeech(["main tool bar"])
 
     self._pywinauto_window.TypeKeys('xyz')
     self._pywinauto_window.TypeKeys('^a')
-    self._TestForSpeech(["selected about:blank"]);
+    self._TestForSpeech(["selected about:blank"])
 
   def testFocusToolbarButton(self):
     # Alt+Shift+T.
@@ -225,9 +212,8 @@ class NvdaChromeTest(unittest.TestCase):
     self._pywinauto_window.TypeKeys('data:text/html,Hello<p>World.')
     self._pywinauto_window.TypeKeys('{ENTER}')
 
-    self._TestForSpeech(
-        ['Hello',
-         'World.'])
+    self._TestForSpeech(['Hello', 'World.'])
+
 
 if __name__ == '__main__':
   unittest.main()
