@@ -31,8 +31,6 @@
 
 #include <windows.h>  // For GetACP()
 
-#include <freetype/freetype.h>
-#include <ft2build.h>
 #include <unicode/uscript.h>
 
 #include <memory>

@@ -12,11 +12,6 @@
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/font_unique_name_lookup/font_unique_name_lookup.mojom.h"
 
-#include <ft2build.h>
-#include FT_SYSTEM_H
-#include FT_TRUETYPE_TABLES_H
-#include FT_SFNT_NAMES_H
-
 #include <string>
 
 namespace content {

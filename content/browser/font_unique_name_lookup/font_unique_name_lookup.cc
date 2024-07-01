@@ -4,6 +4,9 @@
 
 #include "content/browser/font_unique_name_lookup/font_unique_name_lookup.h"
 
+#include <set>
+#include <vector>
+
 #include "base/android/build_info.h"
 #include "base/check.h"
 #include "base/files/file.h"
@@ -20,12 +23,15 @@
 #include "third_party/blink/public/common/font_unique_name_lookup/font_table_persistence.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/font_unique_name_table.pb.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/icu_fold_case_util.h"
-
-#include <set>
-#include <vector>
 #include "third_party/icu/source/common/unicode/unistr.h"
 
+// clang-format off
+#include <ft2build.h>
+#include FT_SYSTEM_H
+#include FT_TRUETYPE_TABLES_H
+#include FT_SFNT_NAMES_H
 #include FT_TRUETYPE_IDS_H
+// clang-format on
 
 namespace {
 
