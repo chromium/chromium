@@ -168,6 +168,7 @@
     text-align: center;
     top: 32px;
     transform: translate(-50%, 0);
+    z-index: 1;
   }
 
   @keyframes gradient-animation {
@@ -200,11 +201,12 @@
             </wallpaper-grid-item>
           </template>
           <template is="dom-if" if="[[isSeaPenPromptingTile_(item)]]" restamp>
+            <div id="freeformTileTag" class="tile-tag">[[getSeaPenTileTagLabel_(item)]]</div>
             <!-- TODO(345856242) update the real string for primary-text -->
             <wallpaper-grid-item
                 data-sea-pen-freeform
                 data-is-promoted-tile
-                aria-describedby="freeformTileTag"
+                aria-description$="[[getSeaPenTileAriaDescription_(item)]]"
                 aria-posinset$="[[getAriaIndex_(index)]]"
                 disabled="[[!isSelectableTile_(item)]]"
                 index="[[index]]"
@@ -226,13 +228,13 @@
                 </div>
               </template>
             </wallpaper-grid-item>
-            <div id="freeformTileTag" class="tile-tag">[[getSeaPenTileTagLabel_(item)]]</div>
           </template>
           <template is="dom-if" if="[[isSeaPenTemplatesTile_(item)]]" restamp>
+            <div id="templatesTileTag" class="tile-tag">[[getSeaPenTileTagLabel_(item)]]</div>
             <wallpaper-grid-item
                 data-sea-pen
                 data-is-promoted-tile
-                aria-describedby="templatesTileTag"
+                aria-description$="[[getSeaPenTileAriaDescription_(item)]]"
                 aria-posinset$="[[getAriaIndex_(index)]]"
                 disabled="[[!isSelectableTile_(item)]]"
                 index="[[index]]"
@@ -254,7 +256,6 @@
                 </div>
               </template>
             </wallpaper-grid-item>
-            <div id="templatesTileTag" class="tile-tag">[[getSeaPenTileTagLabel_(item)]]</div>
           </template>
           <template is="dom-if" if="[[isOnlineTile_(item)]]">
             <wallpaper-grid-item aria-posinset$="[[getAriaIndex_(index)]]"

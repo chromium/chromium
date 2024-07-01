@@ -810,6 +810,13 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
                                           this.i18n('seaPenUnavailableLabel');
   }
 
+  private getSeaPenTileAriaDescription_(item: Tile|null): string|null {
+    // Do not set the aria-description for Sea Pen tile if the tile is
+    // unavailable.
+    return this.isSelectableTile_(item) ? this.getSeaPenTileTagLabel_(item) :
+                                          null;
+  }
+
   private getSeaPenTemplatesTileLabel_(): string {
     // TODO(b/345856242): update the final string.
     return isSeaPenTextInputEnabled() ? 'AI Templates' :
