@@ -1551,7 +1551,14 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       base::trace_event::kStartupTracingTriggerName));
 }
 
-IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest, RunStartupTracing) {
+// TODO(crbug.com/40267734): Re-enable this test once fixed
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RunStartupTracing DISABLED_RunStartupTracing
+#else
+#define MAYBE_RunStartupTracing RunStartupTracing
+#endif
+IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
+                       MAYBE_RunStartupTracing) {
   TestBackgroundTracingHelper background_tracing_helper;
 
   std::unique_ptr<TestStartupPreferenceManagerImpl> preferences_moved(
