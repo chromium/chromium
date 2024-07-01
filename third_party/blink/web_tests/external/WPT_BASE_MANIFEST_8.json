@@ -207617,6 +207617,19 @@
         {}
        ]
       ],
+      "transform-non-invertible-discrete-interpolation.html": [
+       "fae924d9849e9c904f5bf562b233e22bc38d1f44",
+       [
+        null,
+        [
+         [
+          "/css/css-transforms/animation/transform-non-invertible-discrete-interpolation-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "transform-percent-with-width-and-height-separate.html": [
        "d03ba24f9366d71424c50a5db0fbda8c67612457",
        [
@@ -340113,12 +340126,24 @@
         []
        ]
       },
+      "transform-interpolation-007-expected.txt": [
+       "d3af18d08085d8877818f9009362952d43c51fd4",
+       []
+      ],
       "transform-interpolation-animated-ref.html": [
        "0930a7469a87fc8f6515e9f6ff442b6f7988ed4c",
        []
       ],
       "transform-interpolation-ref.html": [
        "2fee6f7c1fc46593f450fac606a651a12403ff72",
+       []
+      ],
+      "transform-non-invertible-discrete-interpolation-ref.html": [
+       "8267b01d01fab8b92069aebb816f2b2847e776ac",
+       []
+      ],
+      "transform-non-invertible-no-transition-expected.txt": [
+       "68cf993f6969aeba9332777c78e89cdf6e9927eb",
        []
       ],
       "transform-percent-with-width-and-height-ref.html": [
@@ -472952,6 +472977,13 @@
         {}
        ]
       ],
+      "transform-interpolation-007.html": [
+       "61ee76185706f0360e66f310c5f052bf47e1166c",
+       [
+        null,
+        {}
+       ]
+      ],
       "transform-interpolation-computed-value.html": [
        "4a836f3ca1cf4ba584c3e583dea962691f0c3a5b",
        [
@@ -472975,6 +473007,13 @@
       ],
       "transform-matrix-composition.html": [
        "2586ff3d4a577b9c4b43a2841884c6f490d7ccf3",
+       [
+        null,
+        {}
+       ]
+      ],
+      "transform-non-invertible-no-transition.html": [
+       "7c26c7e2a9cbf9227074744491ce394d9e754f90",
        [
         null,
         {}
@@ -473425,6 +473464,13 @@
      ],
      "CSSTransition-finished.tentative.html": [
       "23750e7a98eaf7675386850c711b5b7738fccc01",
+      [
+       null,
+       {}
+      ]
+     ],
+     "CSSTransition-not-canceling.tentative.html": [
+      "4198e665a30df5281b96e8314d988d7df27dcdba",
       [
        null,
        {}
