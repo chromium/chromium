@@ -4,10 +4,14 @@
 
 #include "ash/picker/metrics/picker_performance_metrics.h"
 #include "ash/picker/views/picker_emoji_bar_view.h"
+#include "ash/picker/views/picker_emoji_item_view.h"
+#include "ash/picker/views/picker_emoticon_item_view.h"
 #include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_section_list_view.h"
 #include "ash/picker/views/picker_section_view.h"
+#include "ash/picker/views/picker_symbol_item_view.h"
+#include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
@@ -239,6 +243,70 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 
   sm_.ExpectSpeechPattern("Section2");
   sm_.ExpectSpeechPattern("Heading");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       FocusingEmojiResultButtonAnnouncesNameOfEmoji) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  auto* view =
+      widget->SetContentsView(std::make_unique<ash::PickerEmojiBarView>(
+          /*delegate=*/nullptr, /*picker_width=*/1000));
+  view->SetSearchResults({ash::PickerSearchResult::Emoji(u"😊", u"happy")});
+
+  sm_.Call([view]() {
+    view->item_row_for_testing()->children().front()->RequestFocus();
+  });
+
+  sm_.ExpectSpeechPattern("happy");
+  sm_.ExpectSpeechPattern("Button");
+  sm_.ExpectSpeechPattern("Press * to activate");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       FocusingSymbolResultButtonAnnouncesNameOfSymbol) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  auto* view =
+      widget->SetContentsView(std::make_unique<ash::PickerEmojiBarView>(
+          /*delegate=*/nullptr, /*picker_width=*/1000));
+  view->SetSearchResults({ash::PickerSearchResult::Symbol(u"♬", u"music")});
+
+  sm_.Call([view]() {
+    view->item_row_for_testing()->children().front()->RequestFocus();
+  });
+
+  sm_.ExpectSpeechPattern("music");
+  sm_.ExpectSpeechPattern("Button");
+  sm_.ExpectSpeechPattern("Press * to activate");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       FocusingEmoticonResultButtonAnnouncesNameOfEmoticon) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  auto* view =
+      widget->SetContentsView(std::make_unique<ash::PickerEmojiBarView>(
+          /*delegate=*/nullptr, /*picker_width=*/1000));
+  view->SetSearchResults(
+      {ash::PickerSearchResult::Emoticon(u"(°□°)", u"surprise")});
+
+  sm_.Call([view]() {
+    view->item_row_for_testing()->children().front()->RequestFocus();
+  });
+
+  sm_.ExpectSpeechPattern("surprise");
+  sm_.ExpectSpeechPattern("Button");
+  sm_.ExpectSpeechPattern("Press * to activate");
   sm_.Replay();
 }
 

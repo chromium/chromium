@@ -100,18 +100,21 @@ void PickerSearchController::StartEmojiSearch(
         emoji_string = *variant_string;
       }
     }
-    emoji_results.push_back(
-        PickerSearchResult::Emoji(base::UTF8ToUTF16(emoji_string)));
+    emoji_results.push_back(PickerSearchResult::Emoji(
+        base::UTF8ToUTF16(emoji_string),
+        base::UTF8ToUTF16(emoji_search_.GetEmojiName(emoji_string))));
   }
   for (const emoji::EmojiSearchEntry& result :
        FirstNOrLessElements(results.symbols, kMaxSymbolResults)) {
-    emoji_results.push_back(
-        PickerSearchResult::Symbol(base::UTF8ToUTF16(result.emoji_string)));
+    emoji_results.push_back(PickerSearchResult::Symbol(
+        base::UTF8ToUTF16(result.emoji_string),
+        base::UTF8ToUTF16(emoji_search_.GetEmojiName(result.emoji_string))));
   }
   for (const emoji::EmojiSearchEntry& result :
        FirstNOrLessElements(results.emoticons, kMaxEmoticonResults)) {
-    emoji_results.push_back(
-        PickerSearchResult::Emoticon(base::UTF8ToUTF16(result.emoji_string)));
+    emoji_results.push_back(PickerSearchResult::Emoticon(
+        base::UTF8ToUTF16(result.emoji_string),
+        base::UTF8ToUTF16(emoji_search_.GetEmojiName(result.emoji_string))));
   }
 
   std::move(callback).Run(std::move(emoji_results));

@@ -40,12 +40,18 @@ class EmojiSearch {
 
   bool SetEmojiLanguage(std::string_view language_code);
 
+  // Returns an empty string if the emoji has no name.
+  std::string GetEmojiName(std::string_view emoji) const;
+
   std::vector<std::string> AllResultsForTesting(const std::string& query);
 
  private:
   std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>> emojis_;
   std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>> emoticons_;
   std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>> symbols_;
+
+  // A mapping of emojis, emoticons, and symbols to their names in English.
+  std::map<std::string, std::string, std::less<>> names_;
 
   std::optional<std::string> curr_language_code_;
 };

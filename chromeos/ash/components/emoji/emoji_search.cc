@@ -125,7 +125,8 @@ std::map<std::string, double, std::less<>> CombineSearchTerms(
 // position in keyword / name.
 void AddDataFromFileToMap(
     const int file_id_in_resources,
-    std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>>& map) {
+    std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>>& map,
+    std::map<std::string, std::string, std::less<>>* names = nullptr) {
   std::string json_string =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           file_id_in_resources);
@@ -168,6 +169,10 @@ void AddDataFromFileToMap(
               // Name has full weighting (1.0)
               EmojiSearchEntry{.weighting = 1 * search_term.second,
                                .emoji_string = *emoji_string});
+        }
+
+        if (names != nullptr) {
+          names->emplace(*emoji_string, *name);
         }
       }
     }
@@ -252,11 +257,13 @@ EmojiSearchResult::~EmojiSearchResult() = default;
 EmojiSearch::EmojiSearch() {
   // Adds default "en" emoji data on startup.
   AddDataFromFileToMap(IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
-                       emojis_);
-  AddDataFromFileToMap(IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_START,
-                       emojis_);
-  AddDataFromFileToMap(IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON, symbols_);
-  AddDataFromFileToMap(IDR_EMOJI_PICKER_EMOTICON_ORDERING_JSON, emoticons_);
+                       emojis_, &names_);
+  AddDataFromFileToMap(IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_START, emojis_,
+                       &names_);
+  AddDataFromFileToMap(IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON, symbols_,
+                       &names_);
+  AddDataFromFileToMap(IDR_EMOJI_PICKER_EMOTICON_ORDERING_JSON, emoticons_,
+                       &names_);
 }
 
 EmojiSearch::~EmojiSearch() = default;
@@ -283,6 +290,13 @@ bool EmojiSearch::SetEmojiLanguage(std::string_view language_code) {
   }
 
   return !emojis_.empty();
+}
+
+std::string EmojiSearch::GetEmojiName(std::string_view emoji) const {
+  if (const auto it = names_.find(emoji); it != names_.end()) {
+    return it->second;
+  }
+  return "";
 }
 
 std::vector<std::string> EmojiSearch::AllResultsForTesting(

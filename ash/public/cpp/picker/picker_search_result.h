@@ -63,18 +63,21 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
 
   struct EmojiData {
     std::u16string emoji;
+    std::u16string name;
 
     bool operator==(const EmojiData&) const;
   };
 
   struct SymbolData {
     std::u16string symbol;
+    std::u16string name;
 
     bool operator==(const SymbolData&) const;
   };
 
   struct EmoticonData {
     std::u16string emoticon;
+    std::u16string name;
 
     bool operator==(const EmoticonData&) const;
   };
@@ -277,9 +280,12 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
       TextData::Source source = TextData::Source::kUnknown);
   static PickerSearchResult SearchRequest(std::u16string_view text,
                                           ui::ImageModel icon);
-  static PickerSearchResult Emoji(std::u16string_view emoji);
-  static PickerSearchResult Symbol(std::u16string_view symbol);
-  static PickerSearchResult Emoticon(std::u16string_view emoticon);
+  static PickerSearchResult Emoji(std::u16string_view emoji,
+                                  std::u16string name = u"");
+  static PickerSearchResult Symbol(std::u16string_view symbol,
+                                   std::u16string name = u"");
+  static PickerSearchResult Emoticon(std::u16string_view emoticon,
+                                     std::u16string name = u"");
   static PickerSearchResult Clipboard(
       base::UnguessableToken item_id,
       ClipboardData::DisplayFormat display_format,

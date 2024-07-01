@@ -206,16 +206,22 @@ PickerSearchResult PickerSearchResult::SearchRequest(std::u16string_view text,
       SearchRequestData{.text = std::u16string(text), .icon = std::move(icon)});
 }
 
-PickerSearchResult PickerSearchResult::Emoji(std::u16string_view emoji) {
-  return PickerSearchResult(EmojiData{.emoji = std::u16string(emoji)});
+PickerSearchResult PickerSearchResult::Emoji(std::u16string_view emoji,
+                                             std::u16string name) {
+  return PickerSearchResult(
+      EmojiData{.emoji = std::u16string(emoji), .name = std::move(name)});
 }
 
-PickerSearchResult PickerSearchResult::Symbol(std::u16string_view symbol) {
-  return PickerSearchResult(SymbolData{.symbol = std::u16string(symbol)});
+PickerSearchResult PickerSearchResult::Symbol(std::u16string_view symbol,
+                                              std::u16string name) {
+  return PickerSearchResult(
+      SymbolData{.symbol = std::u16string(symbol), .name = std::move(name)});
 }
 
-PickerSearchResult PickerSearchResult::Emoticon(std::u16string_view emoticon) {
-  return PickerSearchResult(EmoticonData{.emoticon = std::u16string(emoticon)});
+PickerSearchResult PickerSearchResult::Emoticon(std::u16string_view emoticon,
+                                                std::u16string name) {
+  return PickerSearchResult(EmoticonData{.emoticon = std::u16string(emoticon),
+                                         .name = std::move(name)});
 }
 
 PickerSearchResult PickerSearchResult::Clipboard(

@@ -33,10 +33,20 @@ namespace {
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::Pointee;
+using ::testing::Property;
 using ::testing::SizeIs;
 using ::testing::Truly;
 
 constexpr int kPickerWidth = 320;
+
+template <class V, class Matcher>
+auto AsView(Matcher matcher) {
+  return ResultOf(
+      "AsViewClass",
+      [](views::View* view) { return views::AsViewClass<V>(view); },
+      Pointee(matcher));
+}
 
 class MockEmojiBarViewDelegate : public PickerEmojiBarViewDelegate {
  public:
@@ -63,6 +73,75 @@ TEST_F(PickerEmojiBarViewTest, CreatesSearchResultItems) {
   EXPECT_THAT(emoji_bar.item_row_for_testing()->children(),
               ElementsAre(Truly(&views::IsViewClass<PickerEmojiItemView>),
                           Truly(&views::IsViewClass<PickerSymbolItemView>)));
+}
+
+TEST_F(PickerEmojiBarViewTest, SearchResultsWithNamesHaveTooltips) {
+  MockEmojiBarViewDelegate mock_delegate;
+  PickerEmojiBarView emoji_bar(&mock_delegate, kPickerWidth);
+
+  emoji_bar.SetSearchResults(
+      {PickerSearchResult::Emoji(u"😊", u"happy"),
+       PickerSearchResult::Symbol(u"♬", u"music"),
+       PickerSearchResult::Emoticon(u"(°□°)", u"surprise")});
+
+  EXPECT_THAT(emoji_bar.item_row_for_testing()->children(),
+              ElementsAre(AsView<views::Button>(Property(
+                              &views::Button::GetTooltipText, u"happy")),
+                          AsView<views::Button>(Property(
+                              &views::Button::GetTooltipText, u"music")),
+                          AsView<views::Button>(Property(
+                              &views::Button::GetTooltipText, u"surprise"))));
+}
+
+TEST_F(PickerEmojiBarViewTest, SearchResultsWithNamesHaveAccessibleNames) {
+  MockEmojiBarViewDelegate mock_delegate;
+  PickerEmojiBarView emoji_bar(&mock_delegate, kPickerWidth);
+
+  emoji_bar.SetSearchResults(
+      {PickerSearchResult::Emoji(u"😊", u"happy"),
+       PickerSearchResult::Symbol(u"♬", u"music"),
+       PickerSearchResult::Emoticon(u"(°□°)", u"surprise")});
+
+  EXPECT_THAT(
+      emoji_bar.item_row_for_testing()->children(),
+      ElementsAre(
+          Pointee(Property(&views::View::GetAccessibleName, u"happy")),
+          Pointee(Property(&views::View::GetAccessibleName, u"music")),
+          Pointee(Property(&views::View::GetAccessibleName, u"surprise"))));
+}
+
+TEST_F(PickerEmojiBarViewTest, SearchResultsWithNoNameHaveNoTooltips) {
+  MockEmojiBarViewDelegate mock_delegate;
+  PickerEmojiBarView emoji_bar(&mock_delegate, kPickerWidth);
+
+  emoji_bar.SetSearchResults({PickerSearchResult::Emoji(u"😊"),
+                              PickerSearchResult::Symbol(u"♬"),
+                              PickerSearchResult::Emoticon(u"(°□°)")});
+
+  EXPECT_THAT(
+      emoji_bar.item_row_for_testing()->children(),
+      ElementsAre(
+          AsView<views::Button>(Property(&views::Button::GetTooltipText, u"")),
+          AsView<views::Button>(Property(&views::Button::GetTooltipText, u"")),
+          AsView<views::Button>(
+              Property(&views::Button::GetTooltipText, u""))));
+}
+
+TEST_F(PickerEmojiBarViewTest,
+       SearchResultsWithNoNamesUseLabelAsAccessibleName) {
+  MockEmojiBarViewDelegate mock_delegate;
+  PickerEmojiBarView emoji_bar(&mock_delegate, kPickerWidth);
+
+  emoji_bar.SetSearchResults({PickerSearchResult::Emoji(u"😊"),
+                              PickerSearchResult::Symbol(u"♬"),
+                              PickerSearchResult::Emoticon(u"(°□°)")});
+
+  EXPECT_THAT(
+      emoji_bar.item_row_for_testing()->children(),
+      ElementsAre(
+          Pointee(Property(&views::View::GetAccessibleName, u"😊")),
+          Pointee(Property(&views::View::GetAccessibleName, u"♬")),
+          Pointee(Property(&views::View::GetAccessibleName, u"(°□°)"))));
 }
 
 TEST_F(PickerEmojiBarViewTest, ClearsSearchResults) {
