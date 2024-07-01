@@ -77,7 +77,7 @@ class EncodedPoolOffset {
     if (!ptr) {
       return kEncodeedNullptr;
     }
-    uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
+    uintptr_t address = SlotStartPtr2Addr(ptr);
     PoolInfo pool_info = PartitionAddressSpace::GetPoolInfo(address);
     // Save a MTE tag as well as an offset.
     uintptr_t tagged_offset = address & (kPtrTagMask | ~pool_info.base_mask);
@@ -252,7 +252,7 @@ class PoolOffsetFreelistEntry {
       return nullptr;
     }
 
-    PoolInfo pool_info = GetPoolInfo(reinterpret_cast<uintptr_t>(this));
+    PoolInfo pool_info = GetPoolInfo(SlotStartPtr2Addr(this));
     // We verify that `(next_ & pool_info.base_mask) == 0` in `IsWellFormed()`,
     // which is meant to prevent from breaking out of the pool in face of
     // a corruption (see PoolOffsetFreelistEntry class-level comment).
