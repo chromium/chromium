@@ -32,19 +32,6 @@ config("raw_ptr_check") {
       "-Xclang",
       "disable-check-raw-ptr-to-stack-allocated-error",
 
-      # TODO(https://crbug.com/40064499): Remove when clang plugin rolls with
-      # updated RawPtrManualPathsToIgnore.h and we confirm that these
-      # directories are fully rewritten.
-      "-Xclang",
-      "-plugin-arg-raw-ptr-plugin",
-      "-Xclang",
-      "raw-ptr-exclude-path=/renderer/",
-      "-Xclang",
-      "-plugin-arg-raw-ptr-plugin",
-      "-Xclang",
-      "raw-ptr-exclude-path=" +
-          rebase_path("//third_party/blink/public/web/", root_build_dir),
-
       # TODO(crbug.com/40944547): Remove when raw_ptr check has been
       # enabled for the dawn repo.
       "-Xclang",
