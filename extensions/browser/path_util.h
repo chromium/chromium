@@ -5,6 +5,9 @@
 #ifndef EXTENSIONS_BROWSER_PATH_UTIL_H_
 #define EXTENSIONS_BROWSER_PATH_UTIL_H_
 
+#include <cstdint>
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 
