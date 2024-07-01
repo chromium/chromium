@@ -3812,7 +3812,7 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
-<histogram name="IOS.Snapshots.CacheSize" units="KB" expires_after="2024-08-04">
+<histogram name="IOS.Snapshots.CacheSize" units="KB" expires_after="2025-08-04">
   <owner>ajuma@chromium.org</owner>
   <owner>edchin@chromium.org</owner>
   <summary>
