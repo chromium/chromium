@@ -316,7 +316,10 @@ std::string GetEventStatusString(blink::ServiceWorkerStatusCode status_code) {
     case blink::ServiceWorkerStatusCode::kErrorTimeout:
       return "timeout";
     default:
-      DUMP_WILL_BE_NOTREACHED();
+      SCOPED_CRASH_KEY_NUMBER("BGSM", "status_code",
+                              static_cast<int>(status_code));
+      DUMP_WILL_BE_NOTREACHED()
+          << "status_code " << static_cast<int>(status_code);
       return "unknown error";
   }
 }
