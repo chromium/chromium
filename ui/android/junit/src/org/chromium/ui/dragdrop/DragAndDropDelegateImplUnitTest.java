@@ -101,8 +101,7 @@ public class DragAndDropDelegateImplUnitTest {
     @After
     public void tearDown() {
         mDropDataProviderImpl.onDragEnd(false);
-        AccessibilityState.setIsTouchExplorationEnabledForTesting(false);
-        AccessibilityState.setIsPerformGesturesEnabledForTesting(false);
+        AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false);
     }
 
     @Test
@@ -291,23 +290,9 @@ public class DragAndDropDelegateImplUnitTest {
                         /* dragObjRectWidth= */ 100,
                         /* dragObjRectHeight= */ 200));
 
-        AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
+        AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
         Assert.assertFalse(
-                "Drag and drop should not start when isTouchExplorationEnabled=true.",
-                mDragAndDropDelegateImpl.startDragAndDrop(
-                        mContainerView,
-                        shadowImage,
-                        dropData,
-                        mContainerView.getContext(),
-                        /* cursorOffsetX= */ 0,
-                        /* cursorOffsetY= */ 0,
-                        /* dragObjRectWidth= */ 100,
-                        /* dragObjRectHeight= */ 200));
-
-        AccessibilityState.setIsTouchExplorationEnabledForTesting(false);
-        AccessibilityState.setIsPerformGesturesEnabledForTesting(true);
-        Assert.assertFalse(
-                "Drag and drop should not start when isPerformGesturesEnabled=true.",
+                "Drag and drop should not start when isAnyAccessibilityServiceEnabled=true.",
                 mDragAndDropDelegateImpl.startDragAndDrop(
                         mContainerView,
                         shadowImage,
