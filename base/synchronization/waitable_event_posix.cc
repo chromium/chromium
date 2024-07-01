@@ -77,7 +77,7 @@ void WaitableEvent::SignalImpl() {
   }
 }
 
-bool WaitableEvent::IsSignaled() {
+bool WaitableEvent::IsSignaled() const {
   base::AutoLock locked(kernel_->lock_);
 
   const bool result = kernel_->signaled_;

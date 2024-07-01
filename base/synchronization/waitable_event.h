@@ -87,7 +87,7 @@ class BASE_EXPORT WaitableEvent {
 
   // Returns true if the event is in the signaled state, else false.  If this
   // is not a manual reset event, then this test will cause a reset.
-  bool IsSignaled();
+  bool IsSignaled() const;
 
   // Wait indefinitely for the event to be signaled. Wait's return "happens
   // after" |Signal| has completed. This means that it's safe for a

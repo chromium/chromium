@@ -62,7 +62,7 @@ void WaitableEvent::SignalImpl() {
   SetEvent(handle_.get());
 }
 
-bool WaitableEvent::IsSignaled() {
+bool WaitableEvent::IsSignaled() const {
   DWORD result = WaitForSingleObject(handle_.get(), 0);
   if (result != WAIT_OBJECT_0 && result != WAIT_TIMEOUT) {
     ReportInvalidWaitableEventResult(result);
