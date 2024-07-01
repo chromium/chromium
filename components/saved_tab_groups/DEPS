@@ -4,7 +4,9 @@ include_rules = [
   "+components/prefs",
   "+components/pref_registry",
   "+components/tab_groups",
+  "+components/strings",
   "+components/sync",
   "+components/sync_device_info",
-  "+ui/gfx"
+  "+ui/base/l10n",
+  "+ui/gfx",
 ]

@@ -322,6 +322,7 @@
       <part file="privacy_sandbox_chrome_strings.grdp" />
       <part file="protocol_handler_strings.grdp" />
       <part file="reset_password_strings.grdp" />
+      <part file="saved_tab_groups_strings.grdp" />
       <part file="search_engine_choice_strings.grdp" />
       <part file="security_interstitials_strings.grdp" />
       <part file="send_tab_to_self_strings.grdp" />

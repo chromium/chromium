@@ -90,6 +90,17 @@ source_set("model") {
   public_deps = []
 }
 
+source_set("string_utils") {
+  sources = [
+    "string_utils.cc",
+    "string_utils.h",
+  ]
+  deps = [
+    "//components/strings",
+    "//ui/base",
+  ]
+}
+
 if (is_android) {
   android_library("java") {
     sources = [
@@ -198,6 +209,7 @@ source_set("unit_tests") {
     "saved_tab_group_sync_bridge_unittest.cc",
     "saved_tab_group_unittest.cc",
     "shared_tab_group_data_sync_bridge_unittest.cc",
+    "string_utils_unittest.cc",
     "tab_group_store_unittest.cc",
     "tab_group_sync_bridge_mediator_unittest.cc",
     "tab_group_sync_coordinator_unittest.cc",
@@ -207,6 +219,7 @@ source_set("unit_tests") {
   deps = [
     ":core",
     ":model",
+    ":string_utils",
     ":tab_group_sync_bridge",
     ":test_support",
     "//base",
