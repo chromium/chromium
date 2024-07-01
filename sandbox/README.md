@@ -12,7 +12,7 @@ to implement the privilege reduction. At a high-level:
 - `mac/` uses the Seatbelt sandbox. See the [detailed
     design](mac/seatbelt_sandbox_design.md) for more.
 - `linux/` uses namespaces and Seccomp-BPF. See the [detailed
-    design](../docs/linux/sandboxing.md) for more.
+    design](../docs/linux/suid_sandbox_development.md) for more.
 - `win/` uses a combination of restricted tokens, distinct job objects,
     alternate desktops, and integrity levels. See the [detailed
     design](../docs/design/sandbox.md) for more.
