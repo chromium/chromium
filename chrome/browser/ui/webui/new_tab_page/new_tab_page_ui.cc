@@ -727,12 +727,6 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
           NewTabPageUI::IsDriveModuleEnabledForProfile(profile_),
           NewTabPageUI::IsManagedProfile(profile_))) {
   auto* source = CreateAndAddNewTabPageUiHtmlSource(profile_);
-  source->AddBoolean(
-      "customBackgroundDisabledByPolicy",
-      ntp_custom_background_service_->IsCustomBackgroundDisabledByPolicy());
-  source->AddBoolean(
-      "modulesVisibleManagedByPolicy",
-      profile_->GetPrefs()->IsManagedPreference(prefs::kNtpModulesVisible));
   bool wallpaper_search_button_enabled =
       base::FeatureList::IsEnabled(ntp_features::kNtpWallpaperSearchButton) &&
       customize_chrome::IsWallpaperSearchEnabledForProfile(profile_);

@@ -78,11 +78,6 @@ suite('NewTabPageAppTest', () => {
   });
 
   suite('Misc', () => {
-    test('customize dialog closed on start', () => {
-      // Assert.
-      assertFalse(!!app.shadowRoot!.querySelector('ntp-customize-dialog'));
-    });
-
     test('logs height', async () => {
       // Assert.
       assertEquals(1, metrics.count('NewTabPage.Height'));

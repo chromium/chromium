@@ -9,11 +9,6 @@ build_webui_tests("build") {
   files = [
             "app_test.ts",
             "background_manager_test.ts",
-            "customize_backgrounds_test.ts",
-            "customize_dialog_focus_test.ts",
-            "customize_dialog_test.ts",
-            "customize_modules_test.ts",
-            "customize_shortcuts_test.ts",
             "doodle_share_dialog_focus_test.ts",
             "doodle_share_dialog_test.ts",
             "image_processor_test.ts",
@@ -43,7 +38,6 @@ build_webui_tests("build") {
   ts_deps = [
     "//chrome/browser/resources/new_tab_page:build_ts",
     "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources/cr_components/customize_themes:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_components/history_clusters:build_ts",
     "//ui/webui/resources/cr_components/most_visited:build_ts",

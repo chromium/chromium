@@ -23,10 +23,6 @@ all_non_web_component_files = [
 # Files holding a Polymer element definition and have an equivalent .html file.
 all_web_component_files = [
                             "app.ts",
-                            "customize_backgrounds.ts",
-                            "customize_dialog.ts",
-                            "customize_modules.ts",
-                            "customize_shortcuts.ts",
                             "doodle_share_dialog.ts",
                             "iframe.ts",
                             "lens_form.ts",

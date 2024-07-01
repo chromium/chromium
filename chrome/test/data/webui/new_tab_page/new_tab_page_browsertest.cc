@@ -19,28 +19,12 @@ class NewTabPageBrowserTest : public WebUIMochaBrowserTest {
 
 using NewTabPageTest = NewTabPageBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, CustomizeDialog) {
-  RunTest("new_tab_page/customize_dialog_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, Utils) {
   RunTest("new_tab_page/utils_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, MetricsUtils) {
   RunTest("new_tab_page/metrics_utils_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, CustomizeShortcuts) {
-  RunTest("new_tab_page/customize_shortcuts_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, CustomizeModules) {
-  RunTest("new_tab_page/customize_modules_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, CustomizeBackgrounds) {
-  RunTest("new_tab_page/customize_backgrounds_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, VoiceSearchOverlay) {

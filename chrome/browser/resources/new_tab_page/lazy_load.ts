@@ -10,17 +10,12 @@
  * elements (either not visible by default or not as performance critical).
  */
 
-import './customize_dialog.js';
 import './middle_slot_promo.js';
 import './voice_search_overlay.js';
 import './modules/module_descriptors.js';
 import 'chrome://resources/cr_components/most_visited/most_visited.js';
 
 export {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
-export {CustomizeBackgroundsElement} from './customize_backgrounds.js';
-export {CustomizeDialogElement} from './customize_dialog.js';
-export {CustomizeModulesElement} from './customize_modules.js';
-export {CustomizeShortcutsElement} from './customize_shortcuts.js';
 export {LensErrorType, LensFormElement, LensSubmitType} from './lens_form.js';
 export {LensUploadDialogAction, LensUploadDialogElement, LensUploadDialogError} from './lens_upload_dialog.js';
 export {MiddleSlotPromoElement, PromoDismissAction} from './middle_slot_promo.js';

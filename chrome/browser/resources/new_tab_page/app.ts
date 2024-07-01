@@ -23,7 +23,6 @@ import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.j
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getTrustedScriptURL} from 'chrome://resources/js/static_types.js';
 import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
-import type {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
@@ -66,7 +65,7 @@ export enum NtpElement {
   MODULE = 7,
   CUSTOMIZE = 8,  // Obsolete
   CUSTOMIZE_BUTTON = 9,
-  CUSTOMIZE_DIALOG = 10,
+  CUSTOMIZE_DIALOG = 10,  // Obsolete
   WALLPAPER_SEARCH_BUTTON = 11,
   MAX_VALUE = WALLPAPER_SEARCH_BUTTON,
 }
@@ -118,7 +117,6 @@ const AppElementBase = HelpBubbleMixin(PolymerElement) as
 
 export interface AppElement {
   $: {
-    customizeDialogIf: DomIf,
     oneGoogleBarClipPath: HTMLElement,
     logo: LogoElement,
   };
@@ -969,9 +967,6 @@ export class AppElement extends AppElementBase {
           return;
         case $$(this, '#customizeButton'):
           recordClick(NtpElement.CUSTOMIZE_BUTTON);
-          return;
-        case $$(this, 'ntp-customize-dialog'):
-          recordClick(NtpElement.CUSTOMIZE_DIALOG);
           return;
         case $$(this, '#wallpaperSearchButton'):
           recordClick(NtpElement.WALLPAPER_SEARCH_BUTTON);

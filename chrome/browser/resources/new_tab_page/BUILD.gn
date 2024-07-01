@@ -106,7 +106,6 @@ build_webui("build") {
   ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
-    "//ui/webui/resources/cr_components/customize_themes:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_components/history_clusters:build_ts",
     "//ui/webui/resources/cr_components/most_visited:build_ts",
@@ -127,7 +126,6 @@ build_webui("build") {
     ]
     optimize_webui_excludes = [
                                 "chrome://resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js",
-                                "chrome://resources/cr_components/customize_themes/customize_themes.mojom-webui.js",
                                 "chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js",
                                 "chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js",
                                 "chrome://resources/cr_components/searchbox/searchbox.mojom-webui.js",
