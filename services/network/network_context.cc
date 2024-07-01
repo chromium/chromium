@@ -136,7 +136,6 @@
 #include "services/network/session_cleanup_cookie_store.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
-#include "services/network/shared_dictionary/shared_dictionary_network_transaction_factory.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 #include "services/network/ssl_config_service_mojo.h"
 #include "services/network/throttling/network_conditions.h"
@@ -2707,24 +2706,16 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   builder.set_quic_context(std::move(quic_context));
 
   if (params_->shared_dictionary_enabled) {
-    CHECK(GetSharedDictionaryManager());
-    builder.SetCreateHttpTransactionFactoryCallback(base::BindOnce(
-        [](base::WeakPtr<NetworkContext> context,
-           net::HttpNetworkSession* session)
-            -> std::unique_ptr<net::HttpTransactionFactory> {
-          CHECK(context);
-          return std::make_unique<SharedDictionaryNetworkTransactionFactory>(
-              *context->GetSharedDictionaryManager(),
-              std::make_unique<ThrottlingNetworkTransactionFactory>(session));
-        },
-        weak_factory_.GetWeakPtr()));
-  } else {
-    builder.SetCreateHttpTransactionFactoryCallback(
-        base::BindOnce([](net::HttpNetworkSession* session)
-                           -> std::unique_ptr<net::HttpTransactionFactory> {
-          return std::make_unique<ThrottlingNetworkTransactionFactory>(session);
-        }));
+    builder.set_enable_shared_dictionary(true);
+    builder.set_enable_shared_zstd(
+        base::FeatureList::IsEnabled(network::features::kSharedZstd));
   }
+
+  builder.SetCreateHttpTransactionFactoryCallback(
+      base::BindOnce([](net::HttpNetworkSession* session)
+                         -> std::unique_ptr<net::HttpTransactionFactory> {
+        return std::make_unique<ThrottlingNetworkTransactionFactory>(session);
+      }));
 
   builder.set_host_mapping_rules(
       command_line->GetSwitchValueASCII(switches::kHostResolverRules));

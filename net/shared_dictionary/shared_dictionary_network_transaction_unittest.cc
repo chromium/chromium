@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/shared_dictionary/shared_dictionary_network_transaction.h"
+#include "net/shared_dictionary/shared_dictionary_network_transaction.h"
 
 #include <memory>
 #include <optional>
@@ -25,16 +25,10 @@
 #include "net/ssl/ssl_private_key.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
-#include "services/network/public/cpp/features.h"
-#include "services/network/public/mojom/shared_dictionary_error.mojom.h"
-#include "services/network/shared_dictionary/shared_dictionary_manager.h"
-#include "services/network/shared_dictionary/shared_dictionary_storage.h"
-#include "services/network/shared_dictionary/shared_dictionary_writer.h"
-#include "services/network/shared_dictionary/simple_url_pattern_matcher.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace network {
+namespace net {
 
 namespace {
 
@@ -89,7 +83,7 @@ const std::string kZstdEncodedDataString =
 
 const size_t kDefaultBufferSize = 1023;
 
-class DummySyncDictionary : public net::SharedDictionary {
+class DummySyncDictionary : public SharedDictionary {
  public:
   explicit DummySyncDictionary(const std::string& data_string,
                                const std::string& id = "")
@@ -103,7 +97,7 @@ class DummySyncDictionary : public net::SharedDictionary {
   }
   ~DummySyncDictionary() override = default;
 
-  // net::SharedDictionary
+  // SharedDictionary
   int ReadAll(base::OnceCallback<void(int)> callback) override {
     return net::OK;
   }
@@ -125,7 +119,7 @@ class DummyAsyncDictionary : public DummySyncDictionary {
       : DummySyncDictionary(data_string) {}
   ~DummyAsyncDictionary() override = default;
 
-  // net::SharedDictionary
+  // SharedDictionary
   int ReadAll(base::OnceCallback<void(int)> callback) override {
     read_all_callback_ = std::move(callback);
     return net::ERR_IO_PENDING;
@@ -136,103 +130,6 @@ class DummyAsyncDictionary : public DummySyncDictionary {
 
  private:
   base::OnceCallback<void(int)> read_all_callback_;
-};
-
-class DummySharedDictionaryStorage : public SharedDictionaryStorage {
- public:
-  explicit DummySharedDictionaryStorage(
-      std::unique_ptr<net::SharedDictionary> dictionary)
-      : dictionary_(std::move(dictionary)) {}
-
-  // SharedDictionaryStorage
-  std::unique_ptr<net::SharedDictionary> GetDictionarySync(
-      const GURL& url,
-      mojom::RequestDestination destination) override {
-    return std::move(dictionary_);
-  }
-  void GetDictionary(
-      const GURL& url,
-      mojom::RequestDestination destination,
-      base::OnceCallback<void(std::unique_ptr<net::SharedDictionary>)> callback)
-      override {}
-  base::expected<scoped_refptr<SharedDictionaryWriter>,
-                 mojom::SharedDictionaryError>
-  CreateWriter(const GURL& url,
-               base::Time last_fetch_time,
-               base::Time response_time,
-               base::TimeDelta expiration,
-               const std::string& match,
-               const std::set<mojom::RequestDestination>& match_dest,
-               const std::string& id,
-               std::unique_ptr<SimpleUrlPatternMatcher> matcher) override {
-    NOTREACHED_NORETURN();
-  }
-  bool UpdateLastFetchTimeIfAlreadyRegistered(
-      const GURL& url,
-      base::Time response_time,
-      base::TimeDelta expiration,
-      const std::string& match,
-      const std::set<mojom::RequestDestination>& match_dest,
-      const std::string& id,
-      base::Time last_fetch_time) override {
-    return false;
-  }
-
-  void set_on_deleted_closure_runner(base::ScopedClosureRunner closure_runner) {
-    on_deleted_closure_runner_ = std::move(closure_runner);
-  }
-
- private:
-  ~DummySharedDictionaryStorage() override = default;
-
-  std::unique_ptr<net::SharedDictionary> dictionary_;
-  base::ScopedClosureRunner on_deleted_closure_runner_;
-};
-
-class DummySharedDictionaryManager : public SharedDictionaryManager {
- public:
-  explicit DummySharedDictionaryManager(
-      scoped_refptr<DummySharedDictionaryStorage> storage)
-      : storage_(std::move(storage)) {}
-  ~DummySharedDictionaryManager() override = default;
-
-  scoped_refptr<SharedDictionaryStorage> CreateStorage(
-      const net::SharedDictionaryIsolationKey& isolation_key) override {
-    create_storage_called_ = true;
-    if (storage_) {
-      storage_->set_on_deleted_closure_runner(base::ScopedClosureRunner(
-          base::BindOnce(&SharedDictionaryManager::OnStorageDeleted,
-                         GetWeakPtr(), isolation_key)));
-    }
-    return storage_;
-  }
-  void SetCacheMaxSize(uint64_t cache_max_size) override {}
-  void ClearData(base::Time start_time,
-                 base::Time end_time,
-                 base::RepeatingCallback<bool(const GURL&)> url_matcher,
-                 base::OnceClosure callback) override {}
-  void ClearDataForIsolationKey(
-      const net::SharedDictionaryIsolationKey& isolation_key,
-      base::OnceClosure callback) override {}
-  void GetUsageInfo(base::OnceCallback<
-                    void(const std::vector<net::SharedDictionaryUsageInfo>&)>
-                        callback) override {}
-  void GetSharedDictionaryInfo(
-      const net::SharedDictionaryIsolationKey& isolation_key,
-      base::OnceCallback<
-          void(std::vector<network::mojom::SharedDictionaryInfoPtr>)> callback)
-      override {}
-  void GetOriginsBetween(
-      base::Time start_time,
-      base::Time end_time,
-      base::OnceCallback<void(const std::vector<url::Origin>&)> callback)
-      override {}
-
-  bool create_storage_called() const { return create_storage_called_; }
-
- private:
-  scoped_refptr<DummySharedDictionaryStorage> storage_;
-  bool create_storage_called_ = false;
 };
 
 net::TransportInfo TestSpdyTransportInfo() {
@@ -249,7 +146,7 @@ static void BrotliTestTransactionHandler(const net::HttpRequestInfo* request,
                                          std::string* response_data) {
   std::string header_value;
   EXPECT_TRUE(request->extra_headers.GetHeader(
-      net::shared_dictionary::kAvailableDictionaryHeaderName, &header_value));
+      shared_dictionary::kAvailableDictionaryHeaderName, &header_value));
   EXPECT_EQ(kTestDictionarySha256Base64, header_value);
   *response_data = kBrotliEncodedDataString;
 }
@@ -260,7 +157,7 @@ static void ZstdTestTransactionHandler(const net::HttpRequestInfo* request,
                                        std::string* response_data) {
   std::string header_value;
   EXPECT_TRUE(request->extra_headers.GetHeader(
-      net::shared_dictionary::kAvailableDictionaryHeaderName, &header_value));
+      shared_dictionary::kAvailableDictionaryHeaderName, &header_value));
   EXPECT_EQ(kTestDictionarySha256Base64, header_value);
   *response_data = kZstdEncodedDataString;
 }
@@ -271,7 +168,7 @@ static const auto kTestTransactionHandlerWithoutAvailableDictionary =
                            std::string* response_headers,
                            std::string* response_data) {
       EXPECT_FALSE(request->extra_headers.HasHeader(
-          net::shared_dictionary::kAvailableDictionaryHeaderName));
+          shared_dictionary::kAvailableDictionaryHeaderName));
       *response_data = kTestData;
     });
 
@@ -358,13 +255,14 @@ class SharedDictionaryNetworkTransactionTest : public ::testing::Test {
 };
 
 TEST_F(SharedDictionaryNetworkTransactionTest, SyncDictionary) {
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
-
   net::MockHttpRequest request(*scoped_mock_transaction_);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  request.dictionary_getter = base::BindRepeating(
+      [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        return std::make_unique<DummySyncDictionary>(kTestDictionaryData);
+      });
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
@@ -386,18 +284,20 @@ TEST_F(SharedDictionaryNetworkTransactionTest, SyncDictionary) {
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, NotAllowedToUseDictionary) {
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
-
   // Change MockTransaction to check that there is no available-dictionary
   // header.
   scoped_mock_transaction_->handler =
       kTestTransactionHandlerWithoutAvailableDictionary;
 
   net::MockHttpRequest request(*scoped_mock_transaction_);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  request.dictionary_getter = base::BindRepeating(
+      [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        return std::make_unique<DummySyncDictionary>(kTestDictionaryData);
+      });
+
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return false; }));
 
@@ -419,11 +319,6 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NotAllowedToUseDictionary) {
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, DictionaryId) {
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::make_unique<DummySyncDictionary>(kTestDictionaryData,
-                                                "test-id")));
-
   // Change MockTransaction to check the dictionary-id header
   scoped_mock_transaction_->handler = base::BindRepeating(
       [](const net::HttpRequestInfo* request, std::string* response_status,
@@ -436,8 +331,14 @@ TEST_F(SharedDictionaryNetworkTransactionTest, DictionaryId) {
       });
 
   net::MockHttpRequest request(*scoped_mock_transaction_);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  request.dictionary_getter = base::BindRepeating(
+      [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        return std::make_unique<DummySyncDictionary>(kTestDictionaryData,
+                                                     "test-id");
+      });
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
@@ -460,11 +361,6 @@ TEST_F(SharedDictionaryNetworkTransactionTest, DictionaryId) {
 
 TEST_F(SharedDictionaryNetworkTransactionTest,
        DictionaryIdWithBackSlashAndDquote) {
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::make_unique<DummySyncDictionary>(kTestDictionaryData,
-                                                "test\\dictionary\"id")));
-
   // Change MockTransaction to check the dictionary-id header
   scoped_mock_transaction_->handler = base::BindRepeating(
       [](const net::HttpRequestInfo* request, std::string* response_status,
@@ -477,8 +373,14 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
       });
 
   net::MockHttpRequest request(*scoped_mock_transaction_);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  request.dictionary_getter = base::BindRepeating(
+      [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        return std::make_unique<DummySyncDictionary>(kTestDictionaryData,
+                                                     "test\\dictionary\"id");
+      });
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
@@ -500,10 +402,6 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, EmptyDictionaryId) {
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::make_unique<DummySyncDictionary>(kTestDictionaryData, "")));
-
   // Change MockTransaction to check the dictionary-id header
   scoped_mock_transaction_->handler = base::BindRepeating(
       [](const net::HttpRequestInfo* request, std::string* response_status,
@@ -513,8 +411,13 @@ TEST_F(SharedDictionaryNetworkTransactionTest, EmptyDictionaryId) {
       });
 
   net::MockHttpRequest request(*scoped_mock_transaction_);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  request.dictionary_getter = base::BindRepeating(
+      [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        return std::make_unique<DummySyncDictionary>(kTestDictionaryData, "");
+      });
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
@@ -539,11 +442,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
        RequireKnownRootCertCheckFailure) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      net::features::kCompressionDictionaryTransportRequireKnownRootCert);
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
-
+      features::kCompressionDictionaryTransportRequireKnownRootCert);
   // Change MockTransaction to check that there is no available-dictionary
   // header.
   scoped_mock_transaction_->handler =
@@ -551,8 +450,13 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
   scoped_mock_transaction_->transport_info.cert_is_issued_by_known_root = false;
 
   net::MockHttpRequest request(*scoped_mock_transaction_);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  request.dictionary_getter = base::BindRepeating(
+      [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        return std::make_unique<DummySyncDictionary>(kTestDictionaryData);
+      });
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
@@ -577,18 +481,19 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
        RequireKnownRootCertCheckSuccess) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      net::features::kCompressionDictionaryTransportRequireKnownRootCert);
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
-
+      features::kCompressionDictionaryTransportRequireKnownRootCert);
   // The BrotliTestTransactionHandler `scoped_mock_transaction_->handler` will
   // check that the there is a correct available-dictionary request header.
   scoped_mock_transaction_->transport_info.cert_is_issued_by_known_root = true;
 
   net::MockHttpRequest request(*scoped_mock_transaction_);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  request.dictionary_getter = base::BindRepeating(
+      [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        return std::make_unique<DummySyncDictionary>(kTestDictionaryData);
+      });
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
@@ -613,11 +518,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
        RequireKnownRootCertCheckSuccessForLocalhost) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      net::features::kCompressionDictionaryTransportRequireKnownRootCert);
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
-
+      features::kCompressionDictionaryTransportRequireKnownRootCert);
   // The BrotliTestTransactionHandler `new_mock_transaction.handler` will check
   // that the there is a correct available-dictionary request header.
   net::ScopedMockTransaction scoped_mock_transaction(
@@ -625,8 +526,13 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
   scoped_mock_transaction.transport_info.cert_is_issued_by_known_root = false;
 
   net::MockHttpRequest request(scoped_mock_transaction);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  request.dictionary_getter = base::BindRepeating(
+      [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        return std::make_unique<DummySyncDictionary>(kTestDictionaryData);
+      });
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
@@ -648,17 +554,19 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, NoMatchingDictionary) {
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(nullptr));
-
   // Change MockTransaction to check that there is no available-dictionary
   // header.
   scoped_mock_transaction_->handler =
       kTestTransactionHandlerWithoutAvailableDictionary;
 
   net::MockHttpRequest request(*scoped_mock_transaction_);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  request.dictionary_getter = base::BindRepeating(
+      [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        return nullptr;
+      });
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
@@ -680,19 +588,22 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoMatchingDictionary) {
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, OpaqueFrameOrigin) {
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
-
   // Change MockTransaction to check that there is no available-dictionary
   // header.
   scoped_mock_transaction_->handler =
       kTestTransactionHandlerWithoutAvailableDictionary;
 
   net::MockHttpRequest request(*scoped_mock_transaction_);
+  request.dictionary_getter = base::BindRepeating(
+      [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        // dictionary_getter must be called with a nullopt isolation_key.
+        CHECK(!isolation_key);
+        return nullptr;
+      });
   request.frame_origin = url::Origin();
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
@@ -714,16 +625,23 @@ TEST_F(SharedDictionaryNetworkTransactionTest, OpaqueFrameOrigin) {
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, WithoutValidLoadFlag) {
-  DummySharedDictionaryManager manager(/*storage=*/nullptr);
-
   // Change MockTransaction to check that there is no available-dictionary
   // header.
   scoped_mock_transaction_->handler =
       kTestTransactionHandlerWithoutAvailableDictionary;
 
   net::MockHttpRequest request(*scoped_mock_transaction_);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  bool getter_called = false;
+  request.dictionary_getter = base::BindRepeating(
+      [](bool* getter_called,
+         const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        *getter_called = true;
+        return nullptr;
+      },
+      base::Unretained(&getter_called));
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
 
   CHECK_EQ(net::LOAD_CAN_USE_SHARED_DICTIONARY, request.load_flags);
   // Change load_flags not to trigger the shared dictionary logic.
@@ -745,22 +663,23 @@ TEST_F(SharedDictionaryNetworkTransactionTest, WithoutValidLoadFlag) {
   EXPECT_THAT(read_result, kTestData.size());
   EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
 
-  // SharedDictionaryManager::CreateStorage() must not be called when
+  // SharedDictionaryGetter must not be called when
   // LOAD_CAN_USE_SHARED_DICTIONARY is not set.
-  EXPECT_FALSE(manager.create_storage_called());
+  EXPECT_FALSE(getter_called);
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, NoSbrContentEncoding) {
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
-
   // Change MockTransaction to remove `content-encoding: dcb`.
   scoped_mock_transaction_->response_headers = "";
 
   net::MockHttpRequest request(*scoped_mock_transaction_);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  request.dictionary_getter = base::BindRepeating(
+      [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        return std::make_unique<DummySyncDictionary>(kTestDictionaryData);
+      });
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
@@ -785,10 +704,6 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoSbrContentEncoding) {
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, WrongContentDictionaryHeader) {
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
-
   scoped_mock_transaction_->handler = base::BindRepeating(
       [](const net::HttpRequestInfo* request, std::string* response_status,
          std::string* response_headers, std::string* response_data) {
@@ -800,8 +715,13 @@ TEST_F(SharedDictionaryNetworkTransactionTest, WrongContentDictionaryHeader) {
       });
 
   net::MockHttpRequest request(*scoped_mock_transaction_);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  request.dictionary_getter = base::BindRepeating(
+      [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        return std::make_unique<DummySyncDictionary>(kTestDictionaryData);
+      });
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
@@ -819,17 +739,18 @@ TEST_F(SharedDictionaryNetworkTransactionTest, WrongContentDictionaryHeader) {
       net::test::IsError(net::ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER));
 }
 TEST_F(SharedDictionaryNetworkTransactionTest, MultipleContentEncodingWithSbr) {
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
-
   // Change MockTransaction to set `content-encoding: dcb, deflate`.
   scoped_mock_transaction_->response_headers =
       "content-encoding: dcb, deflate\n";
 
   net::MockHttpRequest request(*scoped_mock_transaction_);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  request.dictionary_getter = base::BindRepeating(
+      [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        return std::make_unique<DummySyncDictionary>(kTestDictionaryData);
+      });
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
@@ -858,13 +779,18 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
   std::unique_ptr<DummyAsyncDictionary> dictionary =
       std::make_unique<DummyAsyncDictionary>(kTestDictionaryData);
   DummyAsyncDictionary* dictionary_ptr = dictionary.get();
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::move(dictionary)));
 
   net::MockHttpRequest request(kBrotliDictionaryTestTransaction);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  request.dictionary_getter = base::BindRepeating(
+      [](std::unique_ptr<DummyAsyncDictionary>* dictionary,
+         const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        CHECK(*dictionary);
+        return std::move(*dictionary);
+      },
+      base::Unretained(&dictionary));
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
@@ -895,13 +821,18 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
   std::unique_ptr<DummyAsyncDictionary> dictionary =
       std::make_unique<DummyAsyncDictionary>(kTestDictionaryData);
   DummyAsyncDictionary* dictionary_ptr = dictionary.get();
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::move(dictionary)));
 
   net::MockHttpRequest request(kBrotliDictionaryTestTransaction);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  request.dictionary_getter = base::BindRepeating(
+      [](std::unique_ptr<DummyAsyncDictionary>* dictionary,
+         const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        CHECK(*dictionary);
+        return std::move(*dictionary);
+      },
+      base::Unretained(&dictionary));
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
@@ -936,14 +867,19 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
   std::unique_ptr<DummyAsyncDictionary> dictionary =
       std::make_unique<DummyAsyncDictionary>(kTestDictionaryData);
   DummyAsyncDictionary* dictionary_ptr = dictionary.get();
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::move(dictionary)));
 
   net::MockHttpRequest request(kBrotliDictionaryTestTransaction);
+  request.dictionary_getter = base::BindRepeating(
+      [](std::unique_ptr<DummyAsyncDictionary>* dictionary,
+         const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        CHECK(*dictionary);
+        return std::move(*dictionary);
+      },
+      base::Unretained(&dictionary));
   std::unique_ptr<SharedDictionaryNetworkTransaction> transaction =
       std::make_unique<SharedDictionaryNetworkTransaction>(
-          manager, CreateNetworkTransaction());
+          CreateNetworkTransaction(), /*enable_shared_zstd=*/false);
   transaction->SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
@@ -978,13 +914,18 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
   std::unique_ptr<DummyAsyncDictionary> dictionary =
       std::make_unique<DummyAsyncDictionary>(kTestDictionaryData);
   DummyAsyncDictionary* dictionary_ptr = dictionary.get();
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::move(dictionary)));
 
   net::MockHttpRequest request(kBrotliDictionaryTestTransaction);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  request.dictionary_getter = base::BindRepeating(
+      [](std::unique_ptr<DummyAsyncDictionary>* dictionary,
+         const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        CHECK(*dictionary);
+        return std::move(*dictionary);
+      },
+      base::Unretained(&dictionary));
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
@@ -1012,13 +953,18 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
   std::unique_ptr<DummyAsyncDictionary> dictionary =
       std::make_unique<DummyAsyncDictionary>(kTestDictionaryData);
   DummyAsyncDictionary* dictionary_ptr = dictionary.get();
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::move(dictionary)));
 
   net::MockHttpRequest request(kBrotliDictionaryTestTransaction);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  request.dictionary_getter = base::BindRepeating(
+      [](std::unique_ptr<DummyAsyncDictionary>* dictionary,
+         const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        CHECK(*dictionary);
+        return std::move(*dictionary);
+      },
+      base::Unretained(&dictionary));
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
@@ -1047,14 +993,16 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, Restart) {
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(nullptr));
-
   net::ScopedMockTransaction mock_transaction(net::kSimpleGET_Transaction);
   mock_transaction.start_return_code = net::ERR_FAILED;
   net::MockHttpRequest request(mock_transaction);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  request.dictionary_getter = base::BindRepeating(
+      [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        return nullptr;
+      });
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
 
   net::TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
@@ -1087,35 +1035,32 @@ TEST_F(SharedDictionaryNetworkTransactionTest, Restart) {
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, StopCaching) {
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(nullptr));
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
   EXPECT_FALSE(network_layer().stop_caching_called());
   transaction.StopCaching();
   EXPECT_TRUE(network_layer().stop_caching_called());
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, DoneReading) {
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(nullptr));
-
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
   EXPECT_FALSE(network_layer().done_reading_called());
   transaction.DoneReading();
   EXPECT_TRUE(network_layer().done_reading_called());
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, GetLoadState) {
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(nullptr));
-
   net::ScopedMockTransaction scoped_mock_transaction(
       net::kSimpleGET_Transaction);
   net::MockHttpRequest request(scoped_mock_transaction);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  request.dictionary_getter = base::BindRepeating(
+      [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        return nullptr;
+      });
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
 
   net::TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
@@ -1138,21 +1083,19 @@ TEST_F(SharedDictionaryNetworkTransactionTest, GetLoadState) {
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, SharedZstd) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(network::features::kSharedZstd);
-
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
-
   // Override MockTransaction to use `content-encoding: dcz`.
   scoped_mock_transaction_.reset();
   net::ScopedMockTransaction new_mock_transaction(
       kZstdDictionaryTestTransaction);
 
   net::MockHttpRequest request(new_mock_transaction);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  request.dictionary_getter = base::BindRepeating(
+      [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        return std::make_unique<DummySyncDictionary>(kTestDictionaryData);
+      });
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/true);
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
@@ -1165,22 +1108,21 @@ TEST_F(SharedDictionaryNetworkTransactionTest, SharedZstd) {
   scoped_refptr<net::IOBufferWithSize> buf =
       base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
   net::TestCompletionCallback read_callback;
+#if defined(NET_DISABLE_ZSTD)
+  ASSERT_THAT(
+      transaction.Read(buf.get(), buf->size(), read_callback.callback()),
+      net::test::IsError(net::ERR_CONTENT_DECODING_FAILED));
+#else   // defined(NET_DISABLE_ZSTD)
   ASSERT_THAT(
       transaction.Read(buf.get(), buf->size(), read_callback.callback()),
       net::test::IsError(net::ERR_IO_PENDING));
   int read_result = read_callback.WaitForResult();
   EXPECT_THAT(read_result, kTestData.size());
   EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
+#endif  // defined(NET_DISABLE_ZSTD)
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, NoZstdDContentEncoding) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(network::features::kSharedZstd);
-
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
-
   // Change MockTransaction to remove `content-encoding: dcz`.
   scoped_mock_transaction_.reset();
   net::ScopedMockTransaction scoped_mock_transaction(
@@ -1188,8 +1130,13 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoZstdDContentEncoding) {
   scoped_mock_transaction.response_headers = "";
 
   net::MockHttpRequest request(scoped_mock_transaction);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  request.dictionary_getter = base::BindRepeating(
+      [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        return std::make_unique<DummySyncDictionary>(kTestDictionaryData);
+      });
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/true);
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
@@ -1281,17 +1228,17 @@ class SharedDictionaryNetworkTransactionProtocolCheckTest
     std::vector<base::test::FeatureRef> disabled_features;
     if (AllowHttp1()) {
       enabled_features.push_back(
-          net::features::kCompressionDictionaryTransportOverHttp1);
+          features::kCompressionDictionaryTransportOverHttp1);
     } else {
       disabled_features.push_back(
-          net::features::kCompressionDictionaryTransportOverHttp1);
+          features::kCompressionDictionaryTransportOverHttp1);
     }
     if (AllowHttp2()) {
       enabled_features.push_back(
-          net::features::kCompressionDictionaryTransportOverHttp2);
+          features::kCompressionDictionaryTransportOverHttp2);
     } else {
       disabled_features.push_back(
-          net::features::kCompressionDictionaryTransportOverHttp2);
+          features::kCompressionDictionaryTransportOverHttp2);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
@@ -1386,17 +1333,18 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 TEST_P(SharedDictionaryNetworkTransactionProtocolCheckTest, Basic) {
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
-
   // Reset `scoped_mock_transaction_` to use the custom ScopedMockTransaction.
   scoped_mock_transaction_.reset();
   net::ScopedMockTransaction new_mock_transaction(CreateMockTransaction());
 
   net::MockHttpRequest request(new_mock_transaction);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
+  request.dictionary_getter = base::BindRepeating(
+      [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+        return std::make_unique<DummySyncDictionary>(kTestDictionaryData);
+      });
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
@@ -1419,4 +1367,4 @@ TEST_P(SharedDictionaryNetworkTransactionProtocolCheckTest, Basic) {
 
 }  // namespace
 
-}  // namespace network
+}  // namespace net

@@ -177,6 +177,8 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   void DoneReadingRedirectResponse() override;
   void DoneReadingRetryResponse() override;
   bool NeedsRetryWithStorageAccess() override;
+  void SetSharedDictionaryGetter(
+      SharedDictionaryGetter shared_dictionary_getter) override;
 
   IPEndPoint GetResponseRemoteEndpoint() const override;
   void NotifyURLRequestDestroyed() override;

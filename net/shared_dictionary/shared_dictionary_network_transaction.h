@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_NETWORK_TRANSACTION_H_
-#define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_NETWORK_TRANSACTION_H_
+#ifndef NET_SHARED_DICTIONARY_SHARED_DICTIONARY_NETWORK_TRANSACTION_H_
+#define NET_SHARED_DICTIONARY_SHARED_DICTIONARY_NETWORK_TRANSACTION_H_
 
 #include <vector>
 
-#include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -15,7 +14,9 @@
 #include "base/types/expected.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
+#include "net/base/net_export.h"
 #include "net/http/http_transaction.h"
+#include "net/shared_dictionary/shared_dictionary_getter.h"
 #include "net/socket/next_proto.h"
 
 class GURL;
@@ -24,12 +25,6 @@ namespace net {
 class SharedDictionary;
 class SourceStream;
 struct TransportInfo;
-}  // namespace net
-
-namespace network {
-
-class SharedDictionaryManager;
-class SharedDictionaryStorage;
 
 // A `HttpTransaction` that decodes shared dictionary compression.
 // If the `LOAD_CAN_USE_SHARED_DICTIONARY` flag is not set in the `request`'s
@@ -42,12 +37,12 @@ class SharedDictionaryStorage;
 // "content-encoding" header of the response from the server is "dcb" or "dcz",
 // this class will decode the response body using a `BrotliSourceStream` or
 // `ZstdSourceStream` with the dictionary.
-class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryNetworkTransaction
+class NET_EXPORT SharedDictionaryNetworkTransaction
     : public net::HttpTransaction {
  public:
-  explicit SharedDictionaryNetworkTransaction(
-      SharedDictionaryManager& shared_dictionary_manager,
-      std::unique_ptr<net::HttpTransaction> network_transaction);
+  SharedDictionaryNetworkTransaction(
+      std::unique_ptr<net::HttpTransaction> network_transaction,
+      bool enable_shared_zstd);
 
   SharedDictionaryNetworkTransaction(
       const SharedDictionaryNetworkTransaction&) = delete;
@@ -150,9 +145,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryNetworkTransaction
   int OnConnected(const net::TransportInfo& info,
                   net::CompletionOnceCallback callback);
 
-  raw_ref<SharedDictionaryManager> shared_dictionary_manager_;
-  scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage_;
-  std::unique_ptr<net::SharedDictionary> shared_dictionary_;
+  const bool enable_shared_zstd_;
+
+  std::unique_ptr<SharedDictionary> shared_dictionary_;
   // The Structured Field sf-binary hash of sha256 of dictionary calculated when
   // sending a HTTP request.
   std::string dictionary_hash_base64_;
@@ -179,9 +174,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryNetworkTransaction
   bool cert_is_issued_by_known_root_ = false;
   net::NextProto negotiated_protocol_ = net::kProtoUnknown;
 
+  base::RepeatingCallback<std::unique_ptr<SharedDictionary>()>
+      shared_dictionary_getter_;
+
   base::WeakPtrFactory<SharedDictionaryNetworkTransaction> weak_factory_{this};
 };
 
-}  // namespace network
+}  // namespace net
 
-#endif  // SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_NETWORK_TRANSACTION_H_
+#endif  // NET_SHARED_DICTIONARY_SHARED_DICTIONARY_NETWORK_TRANSACTION_H_

@@ -650,6 +650,7 @@ struct URLLoaderOptions {
         std::move(sync_url_loader_client), traffic_annotation, request_id,
         keepalive_request_size, std::move(keepalive_statistics_recorder),
         std::move(trust_token_helper_factory),
+        std::move(shared_dictionary_manager),
         std::move(shared_dictionary_checker), std::move(cookie_observer),
         std::move(trust_token_observer), std::move(url_loader_network_observer),
         std::move(devtools_observer), std::move(accept_ch_frame_observer),
@@ -665,6 +666,7 @@ struct URLLoaderOptions {
   int keepalive_request_size = 0;
   base::WeakPtr<KeepaliveStatisticsRecorder> keepalive_statistics_recorder;
   std::unique_ptr<TrustTokenRequestHelperFactory> trust_token_helper_factory;
+  raw_ptr<SharedDictionaryManager> shared_dictionary_manager;
   std::unique_ptr<SharedDictionaryAccessChecker> shared_dictionary_checker;
   std::unique_ptr<AttributionRequestHelper> attribution_request_helper;
   mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer =

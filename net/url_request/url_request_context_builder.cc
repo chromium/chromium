@@ -45,6 +45,7 @@
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/quic/quic_context.h"
 #include "net/quic/quic_session_pool.h"
+#include "net/shared_dictionary/shared_dictionary_network_transaction_factory.h"
 #include "net/socket/network_binding_client_socket_factory.h"
 #include "net/ssl/ssl_config_service_defaults.h"
 #include "net/url_request/static_http_user_agent_settings.h"
@@ -537,6 +538,12 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
   } else {
     http_transaction_factory =
         std::make_unique<HttpNetworkLayer>(context->http_network_session());
+  }
+
+  if (enable_shared_dictionary_) {
+    http_transaction_factory =
+        std::make_unique<SharedDictionaryNetworkTransactionFactory>(
+            std::move(http_transaction_factory), enable_shared_zstd_);
   }
 
   if (http_cache_enabled_) {

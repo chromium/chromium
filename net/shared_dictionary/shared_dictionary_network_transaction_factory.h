@@ -1,26 +1,23 @@
+
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_NETWORK_TRANSACTION_FACTORY_H_
-#define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_NETWORK_TRANSACTION_FACTORY_H_
+#ifndef NET_SHARED_DICTIONARY_SHARED_DICTIONARY_NETWORK_TRANSACTION_FACTORY_H_
+#define NET_SHARED_DICTIONARY_SHARED_DICTIONARY_NETWORK_TRANSACTION_FACTORY_H_
 
-#include "base/component_export.h"
-#include "base/memory/raw_ref.h"
+#include "net/base/net_export.h"
 #include "net/http/http_transaction_factory.h"
 
-namespace network {
-
-class SharedDictionaryManager;
+namespace net {
 
 // A HttpTransactionFactory to create SharedDictionaryNetworkTransactions.
-class COMPONENT_EXPORT(NETWORK_SERVICE)
-    SharedDictionaryNetworkTransactionFactory
+class NET_EXPORT SharedDictionaryNetworkTransactionFactory
     : public net::HttpTransactionFactory {
  public:
   SharedDictionaryNetworkTransactionFactory(
-      SharedDictionaryManager& shared_dictionary_manager,
-      std::unique_ptr<net::HttpTransactionFactory> network_layer);
+      std::unique_ptr<net::HttpTransactionFactory> network_layer,
+      bool enable_shared_zstd);
 
   SharedDictionaryNetworkTransactionFactory(
       const SharedDictionaryNetworkTransactionFactory&) = delete;
@@ -36,10 +33,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE)
   net::HttpNetworkSession* GetSession() override;
 
  private:
-  raw_ref<SharedDictionaryManager> shared_dictionary_manager_;
   std::unique_ptr<net::HttpTransactionFactory> network_layer_;
+  const bool enable_shared_zstd_;
 };
 
-}  // namespace network
+}  // namespace net
 
-#endif  // SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_NETWORK_TRANSACTION_FACTORY_H_
+#endif  // NET_SHARED_DICTIONARY_SHARED_DICTIONARY_NETWORK_TRANSACTION_FACTORY_H_

@@ -1540,6 +1540,12 @@ bool URLRequestHttpJob::NeedsRetryWithStorageAccess() {
   return headers && headers->HasStorageAccessRetryHeader();
 }
 
+void URLRequestHttpJob::SetSharedDictionaryGetter(
+    SharedDictionaryGetter dictionary_getter) {
+  CHECK(!request_info_.dictionary_getter);
+  request_info_.dictionary_getter = std::move(dictionary_getter);
+}
+
 std::unique_ptr<AuthChallengeInfo> URLRequestHttpJob::GetAuthChallengeInfo() {
   DCHECK(transaction_.get());
   DCHECK(response_info_);

@@ -371,6 +371,7 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
       static_cast<net::NetworkTrafficAnnotationTag>(traffic_annotation),
       request_id, keepalive_request_size,
       std::move(keepalive_statistics_recorder), std::move(trust_token_factory),
+      context_->GetSharedDictionaryManager(),
       std::move(shared_dictionary_checker), std::move(cookie_observer),
       std::move(trust_token_observer), std::move(url_loader_network_observer),
       std::move(devtools_observer), std::move(accept_ch_frame_observer),

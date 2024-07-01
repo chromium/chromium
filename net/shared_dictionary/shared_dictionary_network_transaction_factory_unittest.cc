@@ -2,48 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/shared_dictionary/shared_dictionary_network_transaction_factory.h"
+#include "net/shared_dictionary/shared_dictionary_network_transaction_factory.h"
 
 #include "net/base/net_errors.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/http/http_transaction_test_util.h"
-#include "services/network/shared_dictionary/shared_dictionary_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace network {
+namespace net {
 namespace {
-
-class DummySharedDictionaryManager : public SharedDictionaryManager {
- public:
-  DummySharedDictionaryManager() = default;
-  ~DummySharedDictionaryManager() override = default;
-
-  scoped_refptr<SharedDictionaryStorage> CreateStorage(
-      const net::SharedDictionaryIsolationKey& isolation_key) override {
-    return nullptr;
-  }
-  void SetCacheMaxSize(uint64_t cache_max_size) override {}
-  void ClearData(base::Time start_time,
-                 base::Time end_time,
-                 base::RepeatingCallback<bool(const GURL&)> url_matcher,
-                 base::OnceClosure callback) override {}
-  void ClearDataForIsolationKey(
-      const net::SharedDictionaryIsolationKey& isolation_key,
-      base::OnceClosure callback) override {}
-  void GetUsageInfo(base::OnceCallback<
-                    void(const std::vector<net::SharedDictionaryUsageInfo>&)>
-                        callback) override {}
-  void GetSharedDictionaryInfo(
-      const net::SharedDictionaryIsolationKey& isolation_key,
-      base::OnceCallback<
-          void(std::vector<network::mojom::SharedDictionaryInfoPtr>)> callback)
-      override {}
-  void GetOriginsBetween(
-      base::Time start_time,
-      base::Time end_time,
-      base::OnceCallback<void(const std::vector<url::Origin>&)> callback)
-      override {}
-};
 
 class DummyHttpTransactionFactory : public net::HttpTransactionFactory {
  public:
@@ -88,12 +55,11 @@ class DummyHttpTransactionFactory : public net::HttpTransactionFactory {
 };
 
 TEST(SharedDictionaryNetworkTransactionFactoryTest, CreateTransaction) {
-  DummySharedDictionaryManager dummy_manager;
   auto dummy_factory = std::make_unique<DummyHttpTransactionFactory>();
   DummyHttpTransactionFactory* dummy_factory_ptr = dummy_factory.get();
   SharedDictionaryNetworkTransactionFactory factory =
-      SharedDictionaryNetworkTransactionFactory(dummy_manager,
-                                                std::move(dummy_factory));
+      SharedDictionaryNetworkTransactionFactory(std::move(dummy_factory),
+                                                /*enable_shared_zstd=*/true);
   std::unique_ptr<net::HttpTransaction> transaction;
   EXPECT_FALSE(dummy_factory_ptr->create_transaction_called());
   EXPECT_EQ(net::OK,
@@ -103,12 +69,11 @@ TEST(SharedDictionaryNetworkTransactionFactoryTest, CreateTransaction) {
 }
 
 TEST(SharedDictionaryNetworkTransactionFactoryTest, CreateTransactionFailure) {
-  DummySharedDictionaryManager dummy_manager;
   auto dummy_factory = std::make_unique<DummyHttpTransactionFactory>();
   DummyHttpTransactionFactory* dummy_factory_ptr = dummy_factory.get();
   SharedDictionaryNetworkTransactionFactory factory =
-      SharedDictionaryNetworkTransactionFactory(dummy_manager,
-                                                std::move(dummy_factory));
+      SharedDictionaryNetworkTransactionFactory(std::move(dummy_factory),
+                                                /*enable_shared_zstd=*/true);
   dummy_factory_ptr->set_is_broken();
   std::unique_ptr<net::HttpTransaction> transaction;
   EXPECT_EQ(net::ERR_FAILED,
@@ -117,28 +82,26 @@ TEST(SharedDictionaryNetworkTransactionFactoryTest, CreateTransactionFailure) {
 }
 
 TEST(SharedDictionaryNetworkTransactionFactoryTest, GetCache) {
-  DummySharedDictionaryManager dummy_manager;
   auto dummy_factory = std::make_unique<DummyHttpTransactionFactory>();
   DummyHttpTransactionFactory* dummy_factory_ptr = dummy_factory.get();
   SharedDictionaryNetworkTransactionFactory factory =
-      SharedDictionaryNetworkTransactionFactory(dummy_manager,
-                                                std::move(dummy_factory));
+      SharedDictionaryNetworkTransactionFactory(std::move(dummy_factory),
+                                                /*enable_shared_zstd=*/true);
   EXPECT_FALSE(dummy_factory_ptr->get_cache_called());
   factory.GetCache();
   EXPECT_TRUE(dummy_factory_ptr->get_cache_called());
 }
 
 TEST(SharedDictionaryNetworkTransactionFactoryTest, GetSession) {
-  DummySharedDictionaryManager dummy_manager;
   auto dummy_factory = std::make_unique<DummyHttpTransactionFactory>();
   DummyHttpTransactionFactory* dummy_factory_ptr = dummy_factory.get();
   SharedDictionaryNetworkTransactionFactory factory =
-      SharedDictionaryNetworkTransactionFactory(dummy_manager,
-                                                std::move(dummy_factory));
+      SharedDictionaryNetworkTransactionFactory(std::move(dummy_factory),
+                                                /*enable_shared_zstd=*/true);
   EXPECT_FALSE(dummy_factory_ptr->get_session_called());
   factory.GetSession();
   EXPECT_TRUE(dummy_factory_ptr->get_session_called());
 }
 
 }  // namespace
-}  // namespace network
+}  // namespace net

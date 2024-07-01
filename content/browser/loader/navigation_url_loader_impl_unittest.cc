@@ -122,6 +122,7 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
         /*keepalive_request_size=*/0,
         /*keepalive_statistics_recorder=*/nullptr,
         /*trust_token_helper=*/nullptr,
+        /*shared_dictionary_manager=*/nullptr,
         /*shared_dictionary_checker=*/nullptr,
         /*cookie_observer=*/mojo::NullRemote(),
         /*trust_token_observer=*/mojo::NullRemote(),

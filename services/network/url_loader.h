@@ -83,6 +83,7 @@ constexpr size_t kMaxFileUploadRequestsPerBatch = 64;
 class KeepaliveStatisticsRecorder;
 class NetToMojoPendingBuffer;
 class ScopedThrottlingToken;
+class SharedDictionaryManager;
 class SlopBucket;
 
 class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
@@ -168,6 +169,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       base::WeakPtr<KeepaliveStatisticsRecorder> keepalive_statistics_recorder,
       std::unique_ptr<TrustTokenRequestHelperFactory>
           trust_token_helper_factory,
+      SharedDictionaryManager* shared_dictionary_manager,
       std::unique_ptr<SharedDictionaryAccessChecker> shared_dictionary_checker,
       mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
       mojo::PendingRemote<mojom::TrustTokenAccessObserver> trust_token_observer,

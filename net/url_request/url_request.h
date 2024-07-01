@@ -50,6 +50,8 @@
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_with_source.h"
 #include "net/net_buildflags.h"
+#include "net/shared_dictionary/shared_dictionary.h"
+#include "net/shared_dictionary/shared_dictionary_getter.h"
 #include "net/socket/connection_attempts.h"
 #include "net/socket/socket_tag.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -846,6 +848,11 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   void SetIdempotency(Idempotency idempotency) { idempotency_ = idempotency; }
   Idempotency GetIdempotency() const { return idempotency_; }
 
+  // Set a SharedDictionaryGetter which will be used to get a shared dictionary
+  // for this request. This must not be called after
+  void SetSharedDictionaryGetter(
+      SharedDictionaryGetter shared_dictionary_getter);
+
   void set_has_storage_access(bool has_storage_access) {
     DCHECK(!is_pending_);
     DCHECK(!has_notified_completion_);
@@ -1131,6 +1138,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   // Idempotency of the request.
   Idempotency idempotency_ = DEFAULT_IDEMPOTENCY;
+
+  SharedDictionaryGetter shared_dictionary_getter_;
 
   THREAD_CHECKER(thread_checker_);
 

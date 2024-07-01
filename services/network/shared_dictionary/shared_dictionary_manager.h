@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
+#include "net/shared_dictionary/shared_dictionary_getter.h"
 #include "net/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -31,7 +32,10 @@ class BackendFileOperationsFactory;
 namespace network {
 namespace cors {
 class CorsURLLoaderSharedDictionaryTest;
-}
+}  // namespace cors
+namespace mojom {
+enum class RequestDestination;
+}  // namespace mojom
 
 class SharedDictionaryStorage;
 
@@ -91,6 +95,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
       base::Time start_time,
       base::Time end_time,
       base::OnceCallback<void(const std::vector<url::Origin>&)> callback) = 0;
+
+  net::SharedDictionaryGetter MaybeCreateSharedDictionaryGetter(
+      int request_load_flags,
+      mojom::RequestDestination request_destination);
 
  protected:
   SharedDictionaryManager();

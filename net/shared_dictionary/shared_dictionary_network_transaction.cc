@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/shared_dictionary/shared_dictionary_network_transaction.h"
+#include "net/shared_dictionary/shared_dictionary_network_transaction.h"
 
 #include <optional>
 #include <string>
@@ -34,19 +34,12 @@
 #include "net/filter/zstd_source_stream.h"
 #include "net/http/http_request_info.h"
 #include "net/http/structured_headers.h"
-#include "net/shared_dictionary/shared_dictionary.h"
 #include "net/shared_dictionary/shared_dictionary_constants.h"
 #include "net/shared_dictionary/shared_dictionary_header_checker_source_stream.h"
 #include "net/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/ssl/ssl_private_key.h"
-#include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/request_destination.h"
-#include "services/network/public/mojom/fetch_api.mojom-shared.h"
-#include "services/network/shared_dictionary/shared_dictionary_constants.h"
-#include "services/network/shared_dictionary/shared_dictionary_manager.h"
-#include "services/network/shared_dictionary/shared_dictionary_storage.h"
 
-namespace network {
+namespace net {
 
 namespace {
 
@@ -100,9 +93,9 @@ SharedDictionaryNetworkTransaction::PendingReadTask::~PendingReadTask() =
     default;
 
 SharedDictionaryNetworkTransaction::SharedDictionaryNetworkTransaction(
-    SharedDictionaryManager& shared_dictionary_manager,
-    std::unique_ptr<net::HttpTransaction> network_transaction)
-    : shared_dictionary_manager_(shared_dictionary_manager),
+    std::unique_ptr<net::HttpTransaction> network_transaction,
+    bool enable_shared_zstd)
+    : enable_shared_zstd_(enable_shared_zstd),
       network_transaction_(std::move(network_transaction)) {
   network_transaction_->SetConnectedCallback(
       base::BindRepeating(&SharedDictionaryNetworkTransaction::OnConnected,
@@ -116,18 +109,16 @@ int SharedDictionaryNetworkTransaction::Start(
     const net::HttpRequestInfo* request,
     net::CompletionOnceCallback callback,
     const net::NetLogWithSource& net_log) {
-  if (!(request->load_flags & net::LOAD_CAN_USE_SHARED_DICTIONARY)) {
+  if (!(request->load_flags & net::LOAD_CAN_USE_SHARED_DICTIONARY) ||
+      !request->dictionary_getter) {
     return network_transaction_->Start(request, std::move(callback), net_log);
   }
-  std::optional<net::SharedDictionaryIsolationKey> isolation_key =
-      net::SharedDictionaryIsolationKey::MaybeCreate(
-          request->network_isolation_key, request->frame_origin);
-  if (!isolation_key) {
-    return network_transaction_->Start(request, std::move(callback), net_log);
-  }
+  std::optional<SharedDictionaryIsolationKey> isolation_key =
+      SharedDictionaryIsolationKey::MaybeCreate(request->network_isolation_key,
+                                                request->frame_origin);
+  shared_dictionary_getter_ = base::BindRepeating(request->dictionary_getter,
+                                                   isolation_key, request->url);
 
-  shared_dictionary_storage_ =
-      shared_dictionary_manager_->GetStorage(*isolation_key);
   // Safe to bind unretained `this` because the callback is owned by
   // `network_transaction_` which is owned by `this`.
   network_transaction_->SetModifyRequestHeadersCallback(base::BindRepeating(
@@ -147,11 +138,11 @@ SharedDictionaryNetworkTransaction::ParseSharedDictionaryEncodingType(
   if (!headers.GetNormalizedHeader("Content-Encoding", &content_encoding)) {
     return SharedDictionaryEncodingType::kNotUsed;
   } else if (content_encoding ==
-             net::shared_dictionary::kSharedBrotliContentEncodingName) {
+             shared_dictionary::kSharedBrotliContentEncodingName) {
     return SharedDictionaryEncodingType::kSharedBrotli;
-  } else if (base::FeatureList::IsEnabled(network::features::kSharedZstd) &&
+  } else if (enable_shared_zstd_ &&
              content_encoding ==
-                 net::shared_dictionary::kSharedZstdContentEncodingName) {
+                 shared_dictionary::kSharedZstdContentEncodingName) {
     return SharedDictionaryEncodingType::kSharedZstd;
   }
   return SharedDictionaryEncodingType::kNotUsed;
@@ -192,26 +183,10 @@ void SharedDictionaryNetworkTransaction::OnStartCompleted(
 void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
     const GURL& request_url,
     net::HttpRequestHeaders* request_headers) {
-  DCHECK(shared_dictionary_storage_);
   // `shared_dictionary_` may have been already set if this transaction was
   // restarted
   if (!shared_dictionary_) {
-    // This method is called via net/ layer where we can't get
-    // mojom::RequestDestination from the request. So retrieves the destination
-    // from the request headers.
-    std::optional<mojom::RequestDestination> destination;
-    std::string destination_string;
-    if (request_headers->GetHeader("sec-fetch-dest", &destination_string)) {
-      destination = RequestDestinationFromString(
-          destination_string,
-          EmptyRequestDestinationOption::kUseFiveCharEmptyString);
-    }
-    if (destination) {
-      shared_dictionary_ = shared_dictionary_storage_->GetDictionarySync(
-          request_url, *destination);
-    } else {
-      shared_dictionary_.reset();
-    }
+    shared_dictionary_ = shared_dictionary_getter_.Run();
   }
   if (!shared_dictionary_) {
     return;
@@ -250,18 +225,16 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
   }
   dictionary_hash_base64_ = base::StrCat(
       {":", base::Base64Encode(shared_dictionary_->hash().data), ":"});
-  request_headers->SetHeader(
-      net::shared_dictionary::kAvailableDictionaryHeaderName,
-      dictionary_hash_base64_);
-  if (base::FeatureList::IsEnabled(network::features::kSharedZstd)) {
+  request_headers->SetHeader(shared_dictionary::kAvailableDictionaryHeaderName,
+                             dictionary_hash_base64_);
+  if (enable_shared_zstd_) {
     AddAcceptEncoding(
         request_headers,
-        base::StrCat({net::shared_dictionary::kSharedBrotliContentEncodingName,
-                      ", ",
-                      net::shared_dictionary::kSharedZstdContentEncodingName}));
+        base::StrCat({shared_dictionary::kSharedBrotliContentEncodingName, ", ",
+                      shared_dictionary::kSharedZstdContentEncodingName}));
   } else {
     AddAcceptEncoding(request_headers,
-                      net::shared_dictionary::kSharedBrotliContentEncodingName);
+                      shared_dictionary::kSharedBrotliContentEncodingName);
   }
 
   if (!shared_dictionary_->id().empty()) {
@@ -378,14 +351,14 @@ int SharedDictionaryNetworkTransaction::Read(
         // SharedDictionaryHeaderCheckerSourceStream to check the header
         // of Dictionary-Compressed stream.
         std::unique_ptr<net::SourceStream> header_checker_source_stream =
-            std::make_unique<net::SharedDictionaryHeaderCheckerSourceStream>(
+            std::make_unique<SharedDictionaryHeaderCheckerSourceStream>(
                 std::make_unique<ProxyingSourceStream>(
                     network_transaction_.get()),
                 shared_dictionary_encoding_type_ ==
                         SharedDictionaryEncodingType::kSharedBrotli
-                    ? net::SharedDictionaryHeaderCheckerSourceStream::Type::
+                    ? SharedDictionaryHeaderCheckerSourceStream::Type::
                           kDictionaryCompressedBrotli
-                    : net::SharedDictionaryHeaderCheckerSourceStream::Type::
+                    : SharedDictionaryHeaderCheckerSourceStream::Type::
                           kDictionaryCompressedZstd,
                 shared_dictionary_->hash());
         if (shared_dictionary_encoding_type_ ==
@@ -409,6 +382,11 @@ int SharedDictionaryNetworkTransaction::Read(
 
         UMA_HISTOGRAM_ENUMERATION("Network.SharedDictionary.EncodingType",
                                   shared_dictionary_encoding_type_);
+      }
+      // When NET_DISABLE_ZSTD or NET_DISABLE_ZSTD is set,
+      // `shared_compression_stream_` can be null.
+      if (!shared_compression_stream_) {
+        return net::ERR_CONTENT_DECODING_FAILED;
       }
       return shared_compression_stream_->Read(buf, buf_len,
                                               std::move(callback));
@@ -546,4 +524,4 @@ int SharedDictionaryNetworkTransaction::OnConnected(
   return net::OK;
 }
 
-}  // namespace network
+}  // namespace net

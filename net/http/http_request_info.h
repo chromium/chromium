@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "net/base/idempotency.h"
 #include "net/base/net_export.h"
@@ -17,6 +18,8 @@
 #include "net/base/request_priority.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_request_headers.h"
+#include "net/shared_dictionary/shared_dictionary.h"
+#include "net/shared_dictionary/shared_dictionary_getter.h"
 #include "net/socket/socket_tag.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
@@ -119,6 +122,10 @@ struct NET_EXPORT HttpRequestInfo {
   // Use as ID to mark the cache entry when persisting. Should be a positive
   // number once set.
   std::optional<int64_t> browser_run_id;
+
+  // Used to get a shared dictionary for the request. This may be null if the
+  // request does not use a shared dictionary.
+  SharedDictionaryGetter dictionary_getter;
 };
 
 }  // namespace net

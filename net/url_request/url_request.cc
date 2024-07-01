@@ -675,6 +675,9 @@ void URLRequest::StartJob(std::unique_ptr<URLRequestJob> job) {
         is_shared_dictionary_read_allowed_callback_);
   }
   job_->SetResponseHeadersCallback(response_headers_callback_);
+  if (shared_dictionary_getter_) {
+    job_->SetSharedDictionaryGetter(shared_dictionary_getter_);
+  }
 
   if (upload_data_stream_.get())
     job_->SetUpload(upload_data_stream_.get());
@@ -1319,6 +1322,13 @@ bool URLRequest::ShouldSetLoadWithStorageAccess() const {
   // untrusted anyway.
   return base::FeatureList::IsEnabled(features::kStorageAccessHeaders) &&
          response_headers() && response_headers()->HasStorageAccessLoadHeader();
+}
+
+void URLRequest::SetSharedDictionaryGetter(
+    SharedDictionaryGetter shared_dictionary_getter) {
+  CHECK(!job_.get());
+  CHECK(shared_dictionary_getter_.is_null());
+  shared_dictionary_getter_ = std::move(shared_dictionary_getter);
 }
 
 base::WeakPtr<URLRequest> URLRequest::GetWeakPtr() {

@@ -268,6 +268,11 @@ class NET_EXPORT URLRequestJob {
   // Access.
   virtual bool NeedsRetryWithStorageAccess();
 
+  // Set a SharedDictionaryGetter which will be used to get a shared
+  // dictionary for this request.
+  virtual void SetSharedDictionaryGetter(
+      SharedDictionaryGetter dictionary_getter) {}
+
   // Given |policy|, |original_referrer|, and |destination|, returns the
   // referrer URL mandated by |request|'s referrer policy.
   //

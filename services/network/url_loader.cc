@@ -21,6 +21,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -99,6 +100,8 @@
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/sec_header_helpers.h"
 #include "services/network/shared_dictionary/shared_dictionary_access_checker.h"
+#include "services/network/shared_dictionary/shared_dictionary_manager.h"
+#include "services/network/shared_dictionary/shared_dictionary_storage.h"
 #include "services/network/shared_storage/shared_storage_request_helper.h"
 #include "services/network/slop_bucket.h"
 #include "services/network/throttling/scoped_throttling_token.h"
@@ -523,6 +526,7 @@ URLLoader::URLLoader(
     int keepalive_request_size,
     base::WeakPtr<KeepaliveStatisticsRecorder> keepalive_statistics_recorder,
     std::unique_ptr<TrustTokenRequestHelperFactory> trust_token_helper_factory,
+    SharedDictionaryManager* shared_dictionary_manager,
     std::unique_ptr<SharedDictionaryAccessChecker> shared_dictionary_checker,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
     mojo::PendingRemote<mojom::TrustTokenAccessObserver> trust_token_observer,
@@ -790,6 +794,12 @@ URLLoader::URLLoader(
       net::CookieSettingOverride::kStorageAccessGrantEligible));
   CHECK(!url_request_->cookie_setting_overrides().Has(
       net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader));
+
+  if (shared_dictionary_manager) {
+    url_request_->SetSharedDictionaryGetter(
+        shared_dictionary_manager->MaybeCreateSharedDictionaryGetter(
+            request_load_flags, request_destination_));
+  }
 
   // Resolve elements from request_body and prepare upload data.
   if (request.request_body.get()) {
