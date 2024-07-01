@@ -62,7 +62,7 @@ interface PageHandler {
 
   // Sends a quality log using the history embeddings service to log if a user
   // clicked on some of the embeddings suggestions.
-  SendQualityLog(array<uint32> selected_indices);
+  SendQualityLog(array<uint32> selected_indices, uint32 num_entered_chars);
 
   // Records the results from an embeddings query: whether the UI received
   // non-empty embeddings results, and if the user clicked one of the results.

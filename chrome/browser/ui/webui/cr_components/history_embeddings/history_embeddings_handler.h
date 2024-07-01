@@ -46,7 +46,8 @@ class HistoryEmbeddingsHandler : public history_embeddings::mojom::PageHandler {
   void SetUserFeedback(
       history_embeddings::mojom::UserFeedback user_feedback) override;
   void MaybeShowFeaturePromo() override;
-  void SendQualityLog(const std::vector<uint32_t>& selected_indices) override;
+  void SendQualityLog(const std::vector<uint32_t>& selected_indices,
+                      uint32_t num_chars_for_query) override;
 
   // Callback for querying `HistoryEmbeddingsService::Search()`.
   void OnReceivedSearchResult(SearchCallback callback,
@@ -60,6 +61,7 @@ class HistoryEmbeddingsHandler : public history_embeddings::mojom::PageHandler {
   const base::WeakPtr<Profile> profile_;
 
   raw_ptr<content::WebUI> web_ui_;
+
   history_embeddings::SearchResult last_result_;
   optimization_guide::proto::UserFeedback user_feedback_;
 

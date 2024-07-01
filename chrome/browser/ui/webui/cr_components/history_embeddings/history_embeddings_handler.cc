@@ -102,14 +102,14 @@ void HistoryEmbeddingsHandler::OnReceivedSearchResult(
 }
 
 void HistoryEmbeddingsHandler::SendQualityLog(
-    const std::vector<uint32_t>& selected_indices) {
+    const std::vector<uint32_t>& selected_indices,
+    uint32_t num_chars_for_query) {
   history_embeddings::HistoryEmbeddingsService* service =
       HistoryEmbeddingsServiceFactory::GetForProfile(profile_.get());
   std::set<size_t> indices_set(selected_indices.begin(),
                                selected_indices.end());
-  // TODO(crbug.com/339880431): Send accurate number of entered characters.
   service->SendQualityLog(last_result_, user_feedback_, indices_set,
-                          last_result_.query.size(), false);
+                          num_chars_for_query, false);
 }
 
 void HistoryEmbeddingsHandler::RecordSearchResultsMetrics(

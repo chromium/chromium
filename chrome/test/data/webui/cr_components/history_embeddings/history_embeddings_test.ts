@@ -51,6 +51,7 @@ suite('cr-history-embeddings', () => {
     element = document.createElement('cr-history-embeddings');
     document.body.appendChild(element);
 
+    element.numCharsForQuery = 21;
     element.searchQuery = 'some query';
     await handler.whenCalled('search');
     element.overrideQueryResultMinAgeForTesting(0);
@@ -220,34 +221,54 @@ suite('cr-history-embeddings', () => {
     // Perform a new search, which should log the previous result.
     element.searchQuery = 'some new query';
     await handler.whenCalled('search');
-    const clickedIndices = await handler.whenCalled('sendQualityLog');
+    let [clickedIndices, numChars] = await handler.whenCalled('sendQualityLog');
     assertDeepEquals([1], clickedIndices);
+    assertEquals(21, numChars);
     handler.resetResolver('sendQualityLog');
 
     // Override the minimum result age and ensure transient results are not
     // logged. Only after the 100ms passes and another search is performed
     // should the quality log be sent.
     element.overrideQueryResultMinAgeForTesting(100);
+    element.numCharsForQuery = 25;
     element.searchQuery = 'some newer que';
     await handler.whenCalled('search');
+
+    // Perform another query immediately and then wait 100ms. This will ensure
+    // that this is the result set that the quality log is sent for.
+    element.numCharsForQuery = 30;
     element.searchQuery = 'some newer query';
     await handler.whenCalled('search');
     await new Promise(resolve => setTimeout(resolve, 100));
+
+    // A new query should now send quality log for the last result.
+    element.numCharsForQuery = 50;
     element.searchQuery = 'some even newer query';
     await handler.whenCalled('search');
     assertEquals(1, handler.getCallCount('sendQualityLog'));
+
+    // Updating the numCharsForQuery property should have no impact.
+    element.numCharsForQuery = 90;
+
+    [clickedIndices, numChars] = await handler.whenCalled('sendQualityLog');
+    assertDeepEquals([], clickedIndices);
+    assertEquals(30, numChars);
   });
 
   test('SendsQualityLogOnDisconnect', async () => {
     element.remove();
-    const clickedIndices = await handler.whenCalled('sendQualityLog');
+    const [clickedIndices, numChars] =
+        await handler.whenCalled('sendQualityLog');
     assertDeepEquals([], clickedIndices);
+    assertEquals(21, numChars);
   });
 
   test('SendsQualityLogOnBeforeUnload', async () => {
     window.dispatchEvent(new Event('beforeunload'));
-    const clickedIndices = await handler.whenCalled('sendQualityLog');
+    const [clickedIndices, numChars] =
+        await handler.whenCalled('sendQualityLog');
     assertDeepEquals([], clickedIndices);
+    assertEquals(21, numChars);
   });
 
   test('ForceFlushesQualityLogOnBeforeUnload', async () => {
@@ -275,8 +296,10 @@ suite('cr-history-embeddings', () => {
     window.dispatchEvent(new Event('beforeunload'));
     element.remove();
 
-    const clickedIndices = await handler.whenCalled('sendQualityLog');
+    const [clickedIndices, numChars] =
+        await handler.whenCalled('sendQualityLog');
     assertDeepEquals([0, 1], clickedIndices);
+    assertEquals(21, numChars);
     assertEquals(1, handler.getCallCount('sendQualityLog'));
   });
 });

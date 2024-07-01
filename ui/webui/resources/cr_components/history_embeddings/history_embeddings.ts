@@ -111,6 +111,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   private eventTracker_: EventTracker = new EventTracker();
   isEmpty: boolean;
   numCharsForQuery: number = 0;
+  private numCharsForLastResultQuery_: number = 0;
   searchQuery: string;
   timeRangeStart?: Date;
 
@@ -207,6 +208,11 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     this.flushDebouncedUserMetrics_();
     this.clickedIndices_.clear();
 
+    // Cache the amount of characters that the user typed for this query so
+    // that it can be sent with the quality log since `numCharsForQuery` will
+    // immediately change when a new query is performed.
+    this.numCharsForLastResultQuery_ = this.numCharsForQuery;
+
     this.loading_ = true;
     const query: SearchQuery = {
       query: this.searchQuery,
@@ -255,7 +261,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
 
     if (canLog) {
       this.browserProxy_.sendQualityLog(
-          /*selectedIndices=*/ Array.from(this.clickedIndices_));
+          Array.from(this.clickedIndices_), this.numCharsForLastResultQuery_);
     }
 
     // Clear this regardless if it was recorded or not, because we don't want
