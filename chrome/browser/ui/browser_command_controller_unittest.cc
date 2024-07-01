@@ -533,8 +533,9 @@ class BrowserCommandControllerWithBookmarksTest
 
   // BrowserWithTestWindowTest overrides:
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{BookmarkModelFactory::GetInstance(),
-             BookmarkModelFactory::GetDefaultFactory()}};
+    return {TestingProfile::TestingFactory{
+        BookmarkModelFactory::GetInstance(),
+        BookmarkModelFactory::GetDefaultFactory()}};
   }
 
   void AddTab() {

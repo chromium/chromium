@@ -1303,13 +1303,15 @@ class UsesSplitStoresAndUPMForLocalTest : public ::testing::Test {
     builder.AddTestingFactories(IdentityTestEnvironmentProfileAdaptor::
                                     GetIdentityTestEnvironmentFactories());
     builder.AddTestingFactories(
-        {{TrustedVaultServiceFactory::GetInstance(),
-          TrustedVaultServiceFactory::GetDefaultFactory()},
+        {TestingProfile::TestingFactory{
+             TrustedVaultServiceFactory::GetInstance(),
+             TrustedVaultServiceFactory::GetDefaultFactory()},
          // Unretained() is safe because `this` outlives `profile_`.
-         {SyncServiceFactory::GetInstance(),
-          base::BindRepeating(
-              &UsesSplitStoresAndUPMForLocalTest::BuildSyncService,
-              base::Unretained(this))}});
+         TestingProfile::TestingFactory{
+             SyncServiceFactory::GetInstance(),
+             base::BindRepeating(
+                 &UsesSplitStoresAndUPMForLocalTest::BuildSyncService,
+                 base::Unretained(this))}});
     profile_ = builder.Build();
 
     SetUpPasswordStores(profile_.get());

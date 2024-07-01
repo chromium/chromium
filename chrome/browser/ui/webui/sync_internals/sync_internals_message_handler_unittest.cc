@@ -92,8 +92,9 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
-    return {{SyncServiceFactory::GetInstance(),
-             base::BindRepeating(&BuildMockSyncService)}};
+    return {TestingProfile::TestingFactory{
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildMockSyncService)}};
   }
 
   // Returns copies of the same constant dictionary, |about_information_|.

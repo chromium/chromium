@@ -111,8 +111,10 @@ class OmniboxProviderTest : public testing::Test {
     // The profile needs a template URL service for history Omnibox results.
     profile_ = profile_manager_->CreateTestingProfile(
         chrome::kInitialProfile,
-        {{TemplateURLServiceFactory::GetInstance(),
-          base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)}});
+        {TestingProfile::TestingFactory{
+            TemplateURLServiceFactory::GetInstance(),
+            base::BindRepeating(
+                &TemplateURLServiceFactory::BuildInstanceFor)}});
 
     // Create client of our provider.
     search_controller_ = std::make_unique<TestSearchController>();

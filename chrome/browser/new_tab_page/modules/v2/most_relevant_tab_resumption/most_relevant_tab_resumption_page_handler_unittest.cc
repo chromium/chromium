@@ -75,12 +75,13 @@ class MostRelevantTabResumptionPageHandlerTest
   // BrowserWithTestWindowTest:
   TestingProfile::TestingFactories GetTestingFactories() override {
     return {
-        {VisitedURLRankingServiceFactory::GetInstance(),
-         base::BindRepeating([](content::BrowserContext* context)
-                                 -> std::unique_ptr<KeyedService> {
-           return std::make_unique<
-               visited_url_ranking::MockVisitedURLRankingService>();
-         })},
+        TestingProfile::TestingFactory{
+            VisitedURLRankingServiceFactory::GetInstance(),
+            base::BindRepeating([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+              return std::make_unique<
+                  visited_url_ranking::MockVisitedURLRankingService>();
+            })},
     };
   }
 

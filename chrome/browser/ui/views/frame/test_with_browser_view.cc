@@ -138,7 +138,8 @@ std::unique_ptr<BrowserWindow> TestWithBrowserView::CreateBrowserWindow() {
 }
 
 TestingProfile::TestingFactories TestWithBrowserView::GetTestingFactories() {
-  return {{ChromeSigninClientFactory::GetInstance(),
-           base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
-                               test_url_loader_factory())}};
+  return {TestingProfile::TestingFactory{
+      ChromeSigninClientFactory::GetInstance(),
+      base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                          test_url_loader_factory())}};
 }

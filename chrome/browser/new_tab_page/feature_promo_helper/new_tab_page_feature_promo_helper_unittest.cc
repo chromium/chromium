@@ -53,11 +53,10 @@ class NewTabPageFeaturePromoHelperTest : public BrowserWithTestWindowTest {
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    TestingProfile::TestingFactories factories = {
-        {feature_engagement::TrackerFactory::GetInstance(),
-         base::BindRepeating(
-             NewTabPageFeaturePromoHelperTest::MakeTestTracker)}};
-    return factories;
+    return {TestingProfile::TestingFactory{
+        feature_engagement::TrackerFactory::GetInstance(),
+        base::BindRepeating(
+            NewTabPageFeaturePromoHelperTest::MakeTestTracker)}};
   }
 
   content::WebContents* tab() { return tab_; }

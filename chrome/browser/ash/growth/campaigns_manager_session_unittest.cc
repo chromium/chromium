@@ -106,10 +106,11 @@ class CampaignsManagerSessionTest : public testing::Test {
 
     TestingProfile* profile = profile_manager_->CreateTestingProfile(
         account_id.GetUserEmail(),
-        {{ash::OwnerSettingsServiceAshFactory::GetInstance(),
-          base::BindRepeating(
-              &CampaignsManagerSessionTest::CreateOwnerSettingsServiceAsh,
-              base::Unretained(this))}});
+        {TestingProfile::TestingFactory{
+            ash::OwnerSettingsServiceAshFactory::GetInstance(),
+            base::BindRepeating(
+                &CampaignsManagerSessionTest::CreateOwnerSettingsServiceAsh,
+                base::Unretained(this))}});
 
     owner_settings_service_ash_ =
         ash::OwnerSettingsServiceAshFactory::GetInstance()

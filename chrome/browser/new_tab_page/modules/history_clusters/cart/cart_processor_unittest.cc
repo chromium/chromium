@@ -81,14 +81,16 @@ class CartProcessorTest : public BrowserWithTestWindowTest {
  private:
   // BrowserWithTestWindowTest:
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{HistoryServiceFactory::GetInstance(),
-             HistoryServiceFactory::GetDefaultFactory()},
-            {CartServiceFactory::GetInstance(),
-             base::BindRepeating([](content::BrowserContext* context)
-                                     -> std::unique_ptr<KeyedService> {
-               return std::make_unique<MockCartService>(
-                   Profile::FromBrowserContext(context));
-             })}};
+    return {TestingProfile::TestingFactory{
+                HistoryServiceFactory::GetInstance(),
+                HistoryServiceFactory::GetDefaultFactory()},
+            TestingProfile::TestingFactory{
+                CartServiceFactory::GetInstance(),
+                base::BindRepeating([](content::BrowserContext* context)
+                                        -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<MockCartService>(
+                      Profile::FromBrowserContext(context));
+                })}};
   }
 
   raw_ptr<MockCartService, DanglingUntriaged> mock_cart_service_;

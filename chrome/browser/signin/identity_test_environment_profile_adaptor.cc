@@ -66,8 +66,9 @@ void IdentityTestEnvironmentProfileAdaptor::
 // static
 TestingProfile::TestingFactories
 IdentityTestEnvironmentProfileAdaptor::GetIdentityTestEnvironmentFactories() {
-  return {{IdentityManagerFactory::GetInstance(),
-           base::BindRepeating(&BuildIdentityManagerForTests)}};
+  return {TestingProfile::TestingFactory{
+      IdentityManagerFactory::GetInstance(),
+      base::BindRepeating(&BuildIdentityManagerForTests)}};
 }
 
 // static

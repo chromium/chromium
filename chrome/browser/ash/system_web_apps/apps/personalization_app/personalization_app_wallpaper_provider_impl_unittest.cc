@@ -218,9 +218,10 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile(
         kFakeTestEmail,
-        {{ash::personalization_app::PersonalizationAppManagerFactory::
-              GetInstance(),
-          base::BindRepeating(&MakeMockPersonalizationAppManager)}});
+        {TestingProfile::TestingFactory{
+            ash::personalization_app::PersonalizationAppManagerFactory::
+                GetInstance(),
+            base::BindRepeating(&MakeMockPersonalizationAppManager)}});
 
     AddAndLoginUser(GetTestAccountId());
     test_wallpaper_controller()->SetCurrentUser(GetTestAccountId());

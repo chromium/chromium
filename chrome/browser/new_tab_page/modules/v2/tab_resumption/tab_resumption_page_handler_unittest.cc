@@ -165,16 +165,18 @@ class TabResumptionPageHandlerTest : public BrowserWithTestWindowTest {
  private:
   // BrowserWithTestWindowTest:
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{SessionSyncServiceFactory::GetInstance(),
-             base::BindRepeating([](content::BrowserContext* context)
-                                     -> std::unique_ptr<KeyedService> {
-               return std::make_unique<MockSessionSyncService>();
-             })},
-            {HistoryServiceFactory::GetInstance(),
-             base::BindRepeating([](content::BrowserContext* context)
-                                     -> std::unique_ptr<KeyedService> {
-               return std::make_unique<MockHistoryService>();
-             })}};
+    return {TestingProfile::TestingFactory{
+                SessionSyncServiceFactory::GetInstance(),
+                base::BindRepeating([](content::BrowserContext* context)
+                                        -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<MockSessionSyncService>();
+                })},
+            TestingProfile::TestingFactory{
+                HistoryServiceFactory::GetInstance(),
+                base::BindRepeating([](content::BrowserContext* context)
+                                        -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<MockHistoryService>();
+                })}};
   }
   raw_ptr<MockHistoryService> mock_history_service_;
   raw_ptr<MockSessionSyncService> mock_session_sync_service_;

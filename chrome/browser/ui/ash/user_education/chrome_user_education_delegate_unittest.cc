@@ -268,30 +268,31 @@ class ChromeUserEducationDelegateNewUserTest
  private:
   // ChromeUserEducationDelegateTest:
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{app_list::AppListSyncableServiceFactory::GetInstance(),
-             base::BindLambdaForTesting([&](content::BrowserContext* context)
-                                            -> std::unique_ptr<KeyedService> {
-               auto app_list_syncable_service =
-                   std::make_unique<NiceMock<MockAppListSyncableService>>(
-                       Profile::FromBrowserContext(context));
+    return {TestingProfile::TestingFactory{
+        app_list::AppListSyncableServiceFactory::GetInstance(),
+        base::BindLambdaForTesting([&](content::BrowserContext* context)
+                                       -> std::unique_ptr<KeyedService> {
+          auto app_list_syncable_service =
+              std::make_unique<NiceMock<MockAppListSyncableService>>(
+                  Profile::FromBrowserContext(context));
 
-               // Mock `app_list::AppListSyncableService::OnFirstSync()` so that
-               // it runs callbacks to inform them if the first app list sync in
-               // the session was the first sync ever across all ChromeOS
-               // devices and sessions for the given user, based on test
-               // parameterization. Callbacks should only run once signaled that
-               // the first app list sync in the session has been completed.
-               ON_CALL(*app_list_syncable_service, OnFirstSync)
-                   .WillByDefault(Invoke(
-                       [&](base::OnceCallback<void(bool was_first_sync_ever)>
-                               callback) {
-                         on_first_sync_.Post(
-                             FROM_HERE, base::BindOnce(std::move(callback),
+          // Mock `app_list::AppListSyncableService::OnFirstSync()` so that
+          // it runs callbacks to inform them if the first app list sync in
+          // the session was the first sync ever across all ChromeOS
+          // devices and sessions for the given user, based on test
+          // parameterization. Callbacks should only run once signaled that
+          // the first app list sync in the session has been completed.
+          ON_CALL(*app_list_syncable_service, OnFirstSync)
+              .WillByDefault(
+                  Invoke([&](base::OnceCallback<void(bool was_first_sync_ever)>
+                                 callback) {
+                    on_first_sync_.Post(FROM_HERE,
+                                        base::BindOnce(std::move(callback),
                                                        was_first_sync_ever()));
-                       }));
+                  }));
 
-               return app_list_syncable_service;
-             })}};
+          return app_list_syncable_service;
+        })}};
   }
 
   // The event to signal when the first app list sync in the session has been

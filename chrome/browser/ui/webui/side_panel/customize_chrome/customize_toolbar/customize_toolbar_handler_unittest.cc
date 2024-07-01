@@ -76,13 +76,14 @@ class CustomizeToolbarHandlerTest : public BrowserWithTestWindowTest {
   CustomizeToolbarHandlerTest() = default;
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{PinnedToolbarActionsModelFactory::GetInstance(),
-             base::BindRepeating([](content::BrowserContext* context)
-                                     -> std::unique_ptr<KeyedService> {
-               return std::make_unique<
-                   testing::NiceMock<MockPinnedToolbarActionsModel>>(
-                   Profile::FromBrowserContext(context));
-             })}};
+    return {TestingProfile::TestingFactory{
+        PinnedToolbarActionsModelFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          return std::make_unique<
+              testing::NiceMock<MockPinnedToolbarActionsModel>>(
+              Profile::FromBrowserContext(context));
+        })}};
   }
 
   void SetUp() override {

@@ -184,8 +184,9 @@ class SuggestionServiceLacrosTest : public BrowserWithTestWindowTest {
 
   TestingProfile::TestingFactories GetTestingFactories() override {
     return {
-        {SessionSyncServiceFactory::GetInstance(),
-         base::BindRepeating(&BuildMockSessionSyncService)},
+        TestingProfile::TestingFactory{
+            SessionSyncServiceFactory::GetInstance(),
+            base::BindRepeating(&BuildMockSessionSyncService)},
     };
   }
 

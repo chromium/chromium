@@ -123,12 +123,15 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {
-        {SyncServiceFactory::GetInstance(),
-         base::BindRepeating(&BuildTestSyncService)},
-        {WebHistoryServiceFactory::GetInstance(),
-         base::BindRepeating(&BuildFakeWebHistoryService)},
-        {BookmarkModelFactory::GetInstance(),
-         BookmarkModelFactory::GetDefaultFactory()},
+        TestingProfile::TestingFactory{
+            SyncServiceFactory::GetInstance(),
+            base::BindRepeating(&BuildTestSyncService)},
+        TestingProfile::TestingFactory{
+            WebHistoryServiceFactory::GetInstance(),
+            base::BindRepeating(&BuildFakeWebHistoryService)},
+        TestingProfile::TestingFactory{
+            BookmarkModelFactory::GetInstance(),
+            BookmarkModelFactory::GetDefaultFactory()},
     };
   }
 

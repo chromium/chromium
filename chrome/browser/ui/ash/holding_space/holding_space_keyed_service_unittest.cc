@@ -589,14 +589,18 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{arc::ArcFileSystemBridge::GetFactory(),
-             base::BindRepeating(&BuildArcFileSystemBridge)},
-            {file_manager::VolumeManagerFactory::GetInstance(),
-             base::BindRepeating(&BuildVolumeManager)},
-            {FileSuggestKeyedServiceFactory::GetInstance(),
-             base::BindRepeating(
-                 &MockFileSuggestKeyedService::BuildMockFileSuggestKeyedService,
-                 temp_dir_.GetPath())}};
+    return {
+        TestingProfile::TestingFactory{
+            arc::ArcFileSystemBridge::GetFactory(),
+            base::BindRepeating(&BuildArcFileSystemBridge)},
+        TestingProfile::TestingFactory{
+            file_manager::VolumeManagerFactory::GetInstance(),
+            base::BindRepeating(&BuildVolumeManager)},
+        TestingProfile::TestingFactory{
+            FileSuggestKeyedServiceFactory::GetInstance(),
+            base::BindRepeating(
+                &MockFileSuggestKeyedService::BuildMockFileSuggestKeyedService,
+                temp_dir_.GetPath())}};
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {
@@ -805,10 +809,12 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
     guest_profile_builder.SetGuestSession();
     guest_profile_builder.SetProfileName(profile_name);
     guest_profile_builder.AddTestingFactories(
-        {{arc::ArcFileSystemBridge::GetFactory(),
-          base::BindRepeating(&BuildArcFileSystemBridge)},
-         {file_manager::VolumeManagerFactory::GetInstance(),
-          base::BindRepeating(&BuildVolumeManager)}});
+        {TestingProfile::TestingFactory{
+             arc::ArcFileSystemBridge::GetFactory(),
+             base::BindRepeating(&BuildArcFileSystemBridge)},
+         TestingProfile::TestingFactory{
+             file_manager::VolumeManagerFactory::GetInstance(),
+             base::BindRepeating(&BuildVolumeManager)}});
     profile_ = guest_profile_builder.Build();
     OnUserProfileCreated(profile_name, profile_.get());
     return profile_.get();

@@ -271,8 +271,9 @@ class QuickUnlockPrivateUnitTest
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{ash::SmartLockServiceFactory::GetInstance(),
-             base::BindRepeating(&CreateSmartLockServiceForTest)}};
+    return {TestingProfile::TestingFactory{
+        ash::SmartLockServiceFactory::GetInstance(),
+        base::BindRepeating(&CreateSmartLockServiceForTest)}};
   }
 
   // If a mode change event is raised, fail the test.

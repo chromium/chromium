@@ -382,8 +382,9 @@ class DownloadTargetDeterminerTest : public ChromeRenderViewHostTestHarness {
  protected:
   // ChromeRenderViewHostTestHarness overrides.
   TestingProfile::TestingFactories GetTestingFactories() const override {
-    return {{HistoryServiceFactory::GetInstance(),
-             HistoryServiceFactory::GetDefaultFactory()}};
+    return {TestingProfile::TestingFactory{
+        HistoryServiceFactory::GetInstance(),
+        HistoryServiceFactory::GetDefaultFactory()}};
   }
 
  private:

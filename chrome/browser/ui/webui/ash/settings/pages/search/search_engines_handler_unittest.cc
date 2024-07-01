@@ -44,8 +44,10 @@ class SearchEnginesHandlerAshTest : public testing::Test {
     ASSERT_TRUE(profile_manager_->SetUp());
     Profile* profile = profile_manager_->CreateTestingProfile(
         chrome::kInitialProfile,
-        {{TemplateURLServiceFactory::GetInstance(),
-          base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)}});
+        {TestingProfile::TestingFactory{
+            TemplateURLServiceFactory::GetInstance(),
+            base::BindRepeating(
+                &TemplateURLServiceFactory::BuildInstanceFor)}});
 
     // Initialize handler and webui.
     auto handler = std::make_unique<::settings::SearchEnginesHandler>(profile);

@@ -126,10 +126,11 @@ class FileSuggestKeyedServiceRemoveTest : public FileSuggestKeyedServiceTest {
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{FileSuggestKeyedServiceFactory::GetInstance(),
-             base::BindRepeating(
-                 &MockFileSuggestKeyedService::BuildMockFileSuggestKeyedService,
-                 temp_dir_.GetPath().Append("proto"))}};
+    return {TestingProfile::TestingFactory{
+        FileSuggestKeyedServiceFactory::GetInstance(),
+        base::BindRepeating(
+            &MockFileSuggestKeyedService::BuildMockFileSuggestKeyedService,
+            temp_dir_.GetPath().Append("proto"))}};
   }
 
   std::optional<std::vector<FileSuggestData>> GetSuggestionsForType(

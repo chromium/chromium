@@ -49,10 +49,11 @@ class RemovedResultsRankerTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     profile_ = testing_profile_manager_->CreateTestingProfile(
         "primary_profile@test",
-        {{ash::FileSuggestKeyedServiceFactory::GetInstance(),
-          base::BindRepeating(&ash::MockFileSuggestKeyedService::
-                                  BuildMockFileSuggestKeyedService,
-                              temp_dir_.GetPath().Append("proto"))}});
+        {TestingProfile::TestingFactory{
+            ash::FileSuggestKeyedServiceFactory::GetInstance(),
+            base::BindRepeating(&ash::MockFileSuggestKeyedService::
+                                    BuildMockFileSuggestKeyedService,
+                                temp_dir_.GetPath().Append("proto"))}});
     ranker_ = std::make_unique<RemovedResultsRanker>(profile_);
   }
 

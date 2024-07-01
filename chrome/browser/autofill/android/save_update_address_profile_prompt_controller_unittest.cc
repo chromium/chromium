@@ -72,8 +72,9 @@ class SaveUpdateAddressProfilePromptControllerTest
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
-    return {{SyncServiceFactory::GetInstance(),
-             base::BindRepeating(&CreateTestSyncService)}};
+    return {TestingProfile::TestingFactory{
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating(&CreateTestSyncService)}};
   }
 
   void TearDown() override { ChromeRenderViewHostTestHarness::TearDown(); }

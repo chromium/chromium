@@ -130,34 +130,41 @@ class HistoryClustersPageHandlerV2Test : public BrowserWithTestWindowTest {
  private:
   // BrowserWithTestWindowTest:
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{HistoryClustersModuleServiceFactory::GetInstance(),
-             base::BindRepeating([](content::BrowserContext* context)
-                                     -> std::unique_ptr<KeyedService> {
-               return std::make_unique<MockHistoryClustersModuleService>();
-             })},
-            {HistoryServiceFactory::GetInstance(),
-             base::BindRepeating([](content::BrowserContext* context)
-                                     -> std::unique_ptr<KeyedService> {
-               return std::make_unique<MockHistoryService>();
-             })},
-            {TemplateURLServiceFactory::GetInstance(),
-             base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)},
-            {CartServiceFactory::GetInstance(),
-             base::BindRepeating([](content::BrowserContext* context)
-                                     -> std::unique_ptr<KeyedService> {
-               return std::make_unique<MockCartService>(
-                   Profile::FromBrowserContext(context));
-             })},
-            {commerce::ShoppingServiceFactory::GetInstance(),
-             base::BindRepeating([](content::BrowserContext* context) {
-               return commerce::MockShoppingService::Build();
-             })},
-            {segmentation_platform::SegmentationPlatformServiceFactory::
-                 GetInstance(),
-             base::BindRepeating([](content::BrowserContext* context)
-                                     -> std::unique_ptr<KeyedService> {
-               return std::make_unique<MockSegmentationPlatformService>();
-             })}};
+    return {
+        TestingProfile::TestingFactory{
+            HistoryClustersModuleServiceFactory::GetInstance(),
+            base::BindRepeating([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+              return std::make_unique<MockHistoryClustersModuleService>();
+            })},
+        TestingProfile::TestingFactory{
+            HistoryServiceFactory::GetInstance(),
+            base::BindRepeating([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+              return std::make_unique<MockHistoryService>();
+            })},
+        TestingProfile::TestingFactory{
+            TemplateURLServiceFactory::GetInstance(),
+            base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)},
+        TestingProfile::TestingFactory{
+            CartServiceFactory::GetInstance(),
+            base::BindRepeating([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+              return std::make_unique<MockCartService>(
+                  Profile::FromBrowserContext(context));
+            })},
+        TestingProfile::TestingFactory{
+            commerce::ShoppingServiceFactory::GetInstance(),
+            base::BindRepeating([](content::BrowserContext* context) {
+              return commerce::MockShoppingService::Build();
+            })},
+        TestingProfile::TestingFactory{
+            segmentation_platform::SegmentationPlatformServiceFactory::
+                GetInstance(),
+            base::BindRepeating([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+              return std::make_unique<MockSegmentationPlatformService>();
+            })}};
   }
 
   // TODO(crbug.com/40279899): Clean up the dangling pointers here.

@@ -354,9 +354,9 @@ TemplateURLServiceTestBase::TemplateURLServiceTestBase(
 
 void TemplateURLServiceTestBase::SetUp() {
   test_util_ = std::make_unique<TemplateURLServiceTestUtil>(
-      TestingProfile::TestingFactories{
-          {HistoryServiceFactory::GetInstance(),
-           HistoryServiceFactory::GetDefaultFactory()}});
+      TestingProfile::TestingFactories{TestingProfile::TestingFactory{
+          HistoryServiceFactory::GetInstance(),
+          HistoryServiceFactory::GetDefaultFactory()}});
 }
 
 void TemplateURLServiceTestBase::TearDown() {

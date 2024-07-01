@@ -38,15 +38,15 @@ class MockTailoredSecurityService : public TailoredSecurityService {
 class TailoredSecurityUrlObserverTest : public ChromeRenderViewHostTestHarness {
  protected:
   TestingProfile::TestingFactories GetTestingFactories() const override {
-    return {{SyncServiceFactory::GetInstance(),
-             base::BindRepeating(
-                 [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
-                   auto sync_service =
-                       std::make_unique<syncer::TestSyncService>();
-                   sync_service->GetUserSettings()->SetSelectedType(
-                       syncer::UserSelectableType::kHistory, false);
-                   return sync_service;
-                 })}};
+    return {TestingProfile::TestingFactory{
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+              auto sync_service = std::make_unique<syncer::TestSyncService>();
+              sync_service->GetUserSettings()->SetSelectedType(
+                  syncer::UserSelectableType::kHistory, false);
+              return sync_service;
+            })}};
   }
 };
 

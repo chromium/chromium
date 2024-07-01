@@ -219,11 +219,12 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{SyncServiceFactory::GetInstance(),
-             base::BindRepeating(
-                 [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
-                   return std::make_unique<syncer::TestSyncService>();
-                 })}};
+    return {TestingProfile::TestingFactory{
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<syncer::TestSyncService>();
+            })}};
   }
 
  private:

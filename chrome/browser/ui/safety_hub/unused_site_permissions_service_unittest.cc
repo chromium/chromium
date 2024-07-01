@@ -201,13 +201,16 @@ class UnusedSitePermissionsServiceTest
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
-    return {{HostContentSettingsMapFactory::GetInstance(),
-             base::BindRepeating(&BuildTestHostContentSettingsMap)},
+    return {TestingProfile::TestingFactory{
+                HostContentSettingsMapFactory::GetInstance(),
+                base::BindRepeating(&BuildTestHostContentSettingsMap)},
             // Needed for background UKM reporting.
-            {HistoryServiceFactory::GetInstance(),
-             base::BindRepeating(&BuildTestHistoryService)},
-            {UnusedSitePermissionsServiceFactory::GetInstance(),
-             base::BindRepeating(&BuildUnusedSitePermissionsService)}};
+            TestingProfile::TestingFactory{
+                HistoryServiceFactory::GetInstance(),
+                base::BindRepeating(&BuildTestHistoryService)},
+            TestingProfile::TestingFactory{
+                UnusedSitePermissionsServiceFactory::GetInstance(),
+                base::BindRepeating(&BuildUnusedSitePermissionsService)}};
   }
 
   bool ShouldSetupAbusiveNotificationSites() { return get<0>(GetParam()); }

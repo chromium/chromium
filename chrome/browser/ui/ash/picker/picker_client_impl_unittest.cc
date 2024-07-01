@@ -202,22 +202,28 @@ class PickerClientImplTest : public BrowserWithTestWindowTest {
 
   TestingProfile::TestingFactories GetTestingFactories() override {
     return {
-        {HistoryServiceFactory::GetInstance(),
-         base::BindRepeating(&BuildTestHistoryService, temp_dir_.GetPath())},
-        {BookmarkModelFactory::GetInstance(),
-         BookmarkModelFactory::GetDefaultFactory()},
-        {TemplateURLServiceFactory::GetInstance(),
-         base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)},
-        {ash::RecentModelFactory::GetInstance(),
-         base::BindRepeating(&BuildTestRecentModelFactory,
-                             std::vector<Volume>{})},
-        {drive::DriveIntegrationServiceFactory::GetInstance(),
-         base::BindRepeating(&BuildTestDriveIntegrationService,
-                             temp_dir_.GetPath(),
-                             std::ref(fake_drivefs_helper_))},
-        {ash::input_method::EditorMediatorFactory::GetInstance(),
-         base::BindRepeating(
-             &ash::input_method::EditorMediatorFactory::BuildInstanceFor)}};
+        TestingProfile::TestingFactory{
+            HistoryServiceFactory::GetInstance(),
+            base::BindRepeating(&BuildTestHistoryService, temp_dir_.GetPath())},
+        TestingProfile::TestingFactory{
+            BookmarkModelFactory::GetInstance(),
+            BookmarkModelFactory::GetDefaultFactory()},
+        TestingProfile::TestingFactory{
+            TemplateURLServiceFactory::GetInstance(),
+            base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)},
+        TestingProfile::TestingFactory{
+            ash::RecentModelFactory::GetInstance(),
+            base::BindRepeating(&BuildTestRecentModelFactory,
+                                std::vector<Volume>{})},
+        TestingProfile::TestingFactory{
+            drive::DriveIntegrationServiceFactory::GetInstance(),
+            base::BindRepeating(&BuildTestDriveIntegrationService,
+                                temp_dir_.GetPath(),
+                                std::ref(fake_drivefs_helper_))},
+        TestingProfile::TestingFactory{
+            ash::input_method::EditorMediatorFactory::GetInstance(),
+            base::BindRepeating(
+                &ash::input_method::EditorMediatorFactory::BuildInstanceFor)}};
   }
 
   void LogIn(const std::string& email) override {

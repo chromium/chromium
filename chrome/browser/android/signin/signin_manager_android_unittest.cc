@@ -81,18 +81,21 @@ class SigninManagerAndroidTest : public ::testing::Test {
   void SetUp() override {
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactories(
-        {{BookmarkModelFactory::GetInstance(),
-          BookmarkModelFactory::GetDefaultFactory()},
-         {ProfilePasswordStoreFactory::GetInstance(),
-          base::BindRepeating(&password_manager::BuildPasswordStore<
-                              content::BrowserContext,
-                              password_manager::TestPasswordStore>)},
-         {AccountPasswordStoreFactory::GetInstance(),
-          base::BindRepeating(
-              &password_manager::BuildPasswordStoreWithArgs<
-                  content::BrowserContext, password_manager::TestPasswordStore,
-                  password_manager::IsAccountStore>,
-              password_manager::IsAccountStore(true))}});
+        {TestingProfile::TestingFactory{
+             BookmarkModelFactory::GetInstance(),
+             BookmarkModelFactory::GetDefaultFactory()},
+         TestingProfile::TestingFactory{
+             ProfilePasswordStoreFactory::GetInstance(),
+             base::BindRepeating(&password_manager::BuildPasswordStore<
+                                 content::BrowserContext,
+                                 password_manager::TestPasswordStore>)},
+         TestingProfile::TestingFactory{
+             AccountPasswordStoreFactory::GetInstance(),
+             base::BindRepeating(&password_manager::BuildPasswordStoreWithArgs<
+                                     content::BrowserContext,
+                                     password_manager::TestPasswordStore,
+                                     password_manager::IsAccountStore>,
+                                 password_manager::IsAccountStore(true))}});
     profile_ = profile_builder.Build();
 
     background_tracing_manager_ =

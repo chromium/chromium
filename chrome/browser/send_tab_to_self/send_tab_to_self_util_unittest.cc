@@ -47,8 +47,9 @@ class SendTabToSelfUtilTest : public BrowserWithTestWindowTest {
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{SendTabToSelfSyncServiceFactory::GetInstance(),
-             base::BindRepeating(&BuildFakeSendTabToSelfSyncService)}};
+    return {TestingProfile::TestingFactory{
+        SendTabToSelfSyncServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeSendTabToSelfSyncService)}};
   }
 
   content::WebContents* web_contents() {

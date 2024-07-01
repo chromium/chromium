@@ -82,10 +82,11 @@ class DeviceNameStoreImplTest : public ::testing::Test {
 
     TestingProfile* mock_profile = mock_profile_manager_.CreateTestingProfile(
         test_account_id.GetUserEmail(),
-        {{OwnerSettingsServiceAshFactory::GetInstance(),
-          base::BindRepeating(
-              &DeviceNameStoreImplTest::CreateOwnerSettingsServiceAsh,
-              base::Unretained(this))}});
+        {TestingProfile::TestingFactory{
+            OwnerSettingsServiceAshFactory::GetInstance(),
+            base::BindRepeating(
+                &DeviceNameStoreImplTest::CreateOwnerSettingsServiceAsh,
+                base::Unretained(this))}});
     owner_settings_service_ash_ =
         OwnerSettingsServiceAshFactory::GetInstance()->GetForBrowserContext(
             mock_profile);

@@ -110,10 +110,11 @@ class ClipboardHistoryUrlTitleFetcherTest : public BrowserWithTestWindowTest {
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{HistoryServiceFactory::GetInstance(),
-             base::BindRepeating(
-                 &ClipboardHistoryUrlTitleFetcherTest::BuildHistoryService,
-                 base::Unretained(this))}};
+    return {TestingProfile::TestingFactory{
+        HistoryServiceFactory::GetInstance(),
+        base::BindRepeating(
+            &ClipboardHistoryUrlTitleFetcherTest::BuildHistoryService,
+            base::Unretained(this))}};
   }
 
   std::unique_ptr<KeyedService> BuildHistoryService(

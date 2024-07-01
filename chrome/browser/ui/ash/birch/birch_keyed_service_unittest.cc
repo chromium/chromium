@@ -498,18 +498,23 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
 
   TestingProfile::TestingFactories GetTestingFactories() override {
     return {
-        {SyncServiceFactory::GetInstance(),
-         base::BindRepeating(&BuildTestSyncService)},
-        {FileSuggestKeyedServiceFactory::GetInstance(),
-         base::BindRepeating(
-             &MockFileSuggestKeyedService::BuildMockFileSuggestKeyedService,
-             temp_dir_.GetPath())},
-        {SessionSyncServiceFactory::GetInstance(),
-         base::BindRepeating(&BuildMockSessionSyncService)},
-        {SendTabToSelfSyncServiceFactory::GetInstance(),
-         base::BindRepeating(&BuildTestSendTabToSelfSyncService)},
-        {FaviconServiceFactory::GetInstance(),
-         base::BindRepeating(&BuildFaviconServiceMock)},
+        TestingProfile::TestingFactory{
+            SyncServiceFactory::GetInstance(),
+            base::BindRepeating(&BuildTestSyncService)},
+        TestingProfile::TestingFactory{
+            FileSuggestKeyedServiceFactory::GetInstance(),
+            base::BindRepeating(
+                &MockFileSuggestKeyedService::BuildMockFileSuggestKeyedService,
+                temp_dir_.GetPath())},
+        TestingProfile::TestingFactory{
+            SessionSyncServiceFactory::GetInstance(),
+            base::BindRepeating(&BuildMockSessionSyncService)},
+        TestingProfile::TestingFactory{
+            SendTabToSelfSyncServiceFactory::GetInstance(),
+            base::BindRepeating(&BuildTestSendTabToSelfSyncService)},
+        TestingProfile::TestingFactory{
+            FaviconServiceFactory::GetInstance(),
+            base::BindRepeating(&BuildFaviconServiceMock)},
     };
   }
 

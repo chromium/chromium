@@ -60,10 +60,12 @@ class SupervisedUserGoogleAuthNavigationThrottleTest
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
-    return {{SyncServiceFactory::GetInstance(),
-             base::BindRepeating(&CreateMockSyncService)},
-            {ChromeSigninClientFactory::GetInstance(),
-             base::BindRepeating(&BuildTestSigninClient)}};
+    return {TestingProfile::TestingFactory{
+                SyncServiceFactory::GetInstance(),
+                base::BindRepeating(&CreateMockSyncService)},
+            TestingProfile::TestingFactory{
+                ChromeSigninClientFactory::GetInstance(),
+                base::BindRepeating(&BuildTestSigninClient)}};
   }
 
   std::unique_ptr<SupervisedUserGoogleAuthNavigationThrottle>

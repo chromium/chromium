@@ -186,18 +186,20 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
   TestingProfile::TestingFactories GetTestingFactories() override {
     return {
-        {segmentation_platform::SegmentationPlatformServiceFactory::
-             GetInstance(),
-         base::BindRepeating([](content::BrowserContext* context)
-                                 -> std::unique_ptr<KeyedService> {
-           return std::make_unique<MockSegmentationPlatformService>();
-         })},
-        {OptimizationGuideKeyedServiceFactory::GetInstance(),
-         base::BindRepeating([](content::BrowserContext* context)
-                                 -> std::unique_ptr<KeyedService> {
-           return std::make_unique<
-               testing::NiceMock<MockOptimizationGuideKeyedService>>();
-         })},
+        TestingProfile::TestingFactory{
+            segmentation_platform::SegmentationPlatformServiceFactory::
+                GetInstance(),
+            base::BindRepeating([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+              return std::make_unique<MockSegmentationPlatformService>();
+            })},
+        TestingProfile::TestingFactory{
+            OptimizationGuideKeyedServiceFactory::GetInstance(),
+            base::BindRepeating([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+              return std::make_unique<
+                  testing::NiceMock<MockOptimizationGuideKeyedService>>();
+            })},
     };
   }
 

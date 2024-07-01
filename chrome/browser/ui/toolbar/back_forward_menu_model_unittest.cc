@@ -77,10 +77,12 @@ class TestBackForwardMenuDelegate : public ui::MenuModelDelegate {
 class BackFwdMenuModelTest : public ChromeRenderViewHostTestHarness {
  public:
   TestingProfile::TestingFactories GetTestingFactories() const override {
-    return {{HistoryServiceFactory::GetInstance(),
-             HistoryServiceFactory::GetDefaultFactory()},
-            {FaviconServiceFactory::GetInstance(),
-             FaviconServiceFactory::GetDefaultFactory()}};
+    return {TestingProfile::TestingFactory{
+                HistoryServiceFactory::GetInstance(),
+                HistoryServiceFactory::GetDefaultFactory()},
+            TestingProfile::TestingFactory{
+                FaviconServiceFactory::GetInstance(),
+                FaviconServiceFactory::GetDefaultFactory()}};
   }
 
   void ValidateModel(BackForwardMenuModel* model,

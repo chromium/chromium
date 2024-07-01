@@ -95,16 +95,20 @@ TEST_F(ProfileStatisticsTest, WaitOrCountBookmarks) {
   TestingProfile* profile = manager()->CreateTestingProfile(
       "Test 1",
       /*testing_factories=*/
-      {{BookmarkModelFactory::GetInstance(),
-        base::BindRepeating(&BuildBookmarkModelWithoutLoad)},
-       {HistoryServiceFactory::GetInstance(),
-        HistoryServiceFactory::GetDefaultFactory()},
-       {WebDataServiceFactory::GetInstance(),
-        WebDataServiceFactory::GetDefaultFactory()},
-       {ProfilePasswordStoreFactory::GetInstance(),
-        base::BindRepeating(&password_manager::BuildPasswordStore<
-                            content::BrowserContext,
-                            password_manager::TestPasswordStore>)}});
+      {TestingProfile::TestingFactory{
+           BookmarkModelFactory::GetInstance(),
+           base::BindRepeating(&BuildBookmarkModelWithoutLoad)},
+       TestingProfile::TestingFactory{
+           HistoryServiceFactory::GetInstance(),
+           HistoryServiceFactory::GetDefaultFactory()},
+       TestingProfile::TestingFactory{
+           WebDataServiceFactory::GetInstance(),
+           WebDataServiceFactory::GetDefaultFactory()},
+       TestingProfile::TestingFactory{
+           ProfilePasswordStoreFactory::GetInstance(),
+           base::BindRepeating(&password_manager::BuildPasswordStore<
+                               content::BrowserContext,
+                               password_manager::TestPasswordStore>)}});
 
   ASSERT_TRUE(profile);
 

@@ -87,14 +87,18 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
     TestingProfile* profile_ = profile_manager()->CreateTestingProfile(
         "History Embeddings Test User",
         {
-            {HistoryServiceFactory::GetInstance(),
-             HistoryServiceFactory::GetDefaultFactory()},
-            {HistoryEmbeddingsServiceFactory::GetInstance(),
-             base::BindRepeating(&BuildTestHistoryEmbeddingsService)},
-            {PageContentAnnotationsServiceFactory::GetInstance(),
-             base::BindRepeating(&BuildTestPageContentAnnotationsService)},
-            {OptimizationGuideKeyedServiceFactory::GetInstance(),
-             base::BindRepeating(&BuildTestOptimizationGuideKeyedService)},
+            TestingProfile::TestingFactory{
+                HistoryServiceFactory::GetInstance(),
+                HistoryServiceFactory::GetDefaultFactory()},
+            TestingProfile::TestingFactory{
+                HistoryEmbeddingsServiceFactory::GetInstance(),
+                base::BindRepeating(&BuildTestHistoryEmbeddingsService)},
+            TestingProfile::TestingFactory{
+                PageContentAnnotationsServiceFactory::GetInstance(),
+                base::BindRepeating(&BuildTestPageContentAnnotationsService)},
+            TestingProfile::TestingFactory{
+                OptimizationGuideKeyedServiceFactory::GetInstance(),
+                base::BindRepeating(&BuildTestOptimizationGuideKeyedService)},
         });
 
     web_contents_ = content::WebContents::Create(

@@ -283,8 +283,9 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
   using enum SBThreatType;
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
-    return {{HistoryServiceFactory::GetInstance(),
-             HistoryServiceFactory::GetDefaultFactory()}};
+    return {TestingProfile::TestingFactory{
+        HistoryServiceFactory::GetInstance(),
+        HistoryServiceFactory::GetDefaultFactory()}};
   }
 
   void InitResource(SBThreatType threat_type,

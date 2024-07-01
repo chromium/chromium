@@ -1277,30 +1277,39 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
 
   virtual TestingProfile::TestingFactories GetTestingFactories() {
     return {
-        {StatefulSSLHostStateDelegateFactory::GetInstance(),
-         StatefulSSLHostStateDelegateFactory::GetDefaultFactoryForTesting()},
-        {BookmarkModelFactory::GetInstance(),
-         BookmarkModelFactory::GetDefaultFactory()},
-        {HistoryServiceFactory::GetInstance(),
-         HistoryServiceFactory::GetDefaultFactory()},
-        {FaviconServiceFactory::GetInstance(),
-         FaviconServiceFactory::GetDefaultFactory()},
-        {SpellcheckServiceFactory::GetInstance(),
-         base::BindRepeating([](content::BrowserContext* profile)
-                                 -> std::unique_ptr<KeyedService> {
-           return std::make_unique<SpellcheckService>(
-               static_cast<Profile*>(profile));
-         })},
-        {TrustedVaultServiceFactory::GetInstance(),
-         TrustedVaultServiceFactory::GetDefaultFactory()},
-        {SyncServiceFactory::GetInstance(),
-         base::BindRepeating(&BuildSyncService)},
-        {ChromeSigninClientFactory::GetInstance(),
-         base::BindRepeating(&signin::BuildTestSigninClient)},
-        {ProtocolHandlerRegistryFactory::GetInstance(),
-         base::BindRepeating(&BuildProtocolHandlerRegistry)},
-        {WebDataServiceFactory::GetInstance(),
-         WebDataServiceFactory::GetDefaultFactory()}};
+        TestingProfile::TestingFactory{
+            StatefulSSLHostStateDelegateFactory::GetInstance(),
+            StatefulSSLHostStateDelegateFactory::GetDefaultFactoryForTesting()},
+        TestingProfile::TestingFactory{
+            BookmarkModelFactory::GetInstance(),
+            BookmarkModelFactory::GetDefaultFactory()},
+        TestingProfile::TestingFactory{
+            HistoryServiceFactory::GetInstance(),
+            HistoryServiceFactory::GetDefaultFactory()},
+        TestingProfile::TestingFactory{
+            FaviconServiceFactory::GetInstance(),
+            FaviconServiceFactory::GetDefaultFactory()},
+        TestingProfile::TestingFactory{
+            SpellcheckServiceFactory::GetInstance(),
+            base::BindRepeating([](content::BrowserContext* profile)
+                                    -> std::unique_ptr<KeyedService> {
+              return std::make_unique<SpellcheckService>(
+                  static_cast<Profile*>(profile));
+            })},
+        TestingProfile::TestingFactory{
+            TrustedVaultServiceFactory::GetInstance(),
+            TrustedVaultServiceFactory::GetDefaultFactory()},
+        TestingProfile::TestingFactory{SyncServiceFactory::GetInstance(),
+                                       base::BindRepeating(&BuildSyncService)},
+        TestingProfile::TestingFactory{
+            ChromeSigninClientFactory::GetInstance(),
+            base::BindRepeating(&signin::BuildTestSigninClient)},
+        TestingProfile::TestingFactory{
+            ProtocolHandlerRegistryFactory::GetInstance(),
+            base::BindRepeating(&BuildProtocolHandlerRegistry)},
+        TestingProfile::TestingFactory{
+            WebDataServiceFactory::GetInstance(),
+            WebDataServiceFactory::GetDefaultFactory()}};
   }
 
   virtual void ConfigureURLRequestContextBuilder(
@@ -2227,8 +2236,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, DeleteBookmarkHistory) {
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        DeleteBookmarksDoesNothingWhenModelNotLoaded) {
   TestingProfile* profile = GetProfileManager()->CreateTestingProfile(
-      "bookmark_profile", {{BookmarkModelFactory::GetInstance(),
-                            BookmarkModelFactory::GetDefaultFactory()}});
+      "bookmark_profile", {TestingProfile::TestingFactory{
+                              BookmarkModelFactory::GetInstance(),
+                              BookmarkModelFactory::GetDefaultFactory()}});
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);
   // For this test to exercise the code path that lead to the crash the
