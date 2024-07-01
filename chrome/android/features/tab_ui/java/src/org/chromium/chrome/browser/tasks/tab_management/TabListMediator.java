@@ -2852,9 +2852,15 @@ class TabListMediator {
                     public void onDismiss(PropertyModel model, int dismissalCause) {
                         if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
                             @TabGroupColorId
+                            int oldColorId = filter.getTabGroupColorWithFallback(rootId);
+                            @TabGroupColorId
                             int currentColorId =
                                     tabGroupVisualDataDialogManager.getCurrentColorId();
-                            filter.setTabGroupColor(rootId, currentColorId);
+                            boolean didChangeColor = oldColorId != currentColorId;
+                            if (didChangeColor) {
+                                filter.setTabGroupColor(rootId, currentColorId);
+                                RecordUserAction.record("TabGroup.RenameDialog.ColorChanged");
+                            }
 
                             String defaultGroupTitle =
                                     tabGroupVisualDataDialogManager.getDefaultGroupTitle();
@@ -2866,6 +2872,7 @@ class TabListMediator {
                             // which is displayed as a tab count and chooses not to change it.
                             if (didChangeTitle) {
                                 filter.setTabGroupTitle(rootId, inputGroupTitle);
+                                RecordUserAction.record("TabGroup.RenameDialog.TitleChanged");
                             }
                         }
 

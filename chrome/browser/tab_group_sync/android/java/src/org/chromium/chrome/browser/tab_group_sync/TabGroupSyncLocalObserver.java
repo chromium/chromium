@@ -7,13 +7,16 @@ package org.chromium.chrome.browser.tab_group_sync;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Token;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.List;
@@ -106,6 +109,24 @@ public final class TabGroupSyncLocalObserver {
                 LogUtils.log(TAG, "onFinishingMultipleTabClosure, tabs# " + tabs.size());
 
                 mRemoteTabGroupMutationHelper.handleMultipleTabClosure(tabs);
+            }
+
+            // This method is for metrics only!
+            @Override
+            public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
+                if (!mTabGroupModelFilter.isTabInTabGroup(tab)) return;
+
+                if (tab.getTabGroupId() == null) return;
+
+                LocalTabGroupId localId = TabGroupSyncUtils.getLocalTabGroupId(tab);
+                SavedTabGroup savedGroup = mTabGroupSyncService.getGroup(localId);
+                if (savedGroup == null) return;
+
+                if (savedGroup.isRemoteGroup) {
+                    RecordUserAction.record("TabGroups.Sync.SelectedTabInRemotelyCreatedGroup");
+                } else {
+                    RecordUserAction.record("TabGroups.Sync.SelectedTabInLocallyCreatedGroup");
+                }
             }
         };
     }

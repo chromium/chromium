@@ -234,7 +234,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                         mEdgeToEdgeControllerSupplier,
                         getActivityType(),
                         this::isInOverviewMode,
-                        this::isWarmOnResume,
                         /* appMenuDelegate= */ this,
                         /* statusBarColorProvider= */ this,
                         getIntentRequestTracker(),

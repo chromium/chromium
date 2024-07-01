@@ -314,7 +314,6 @@ public class RootUiCoordinator
     protected final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     protected final @ActivityType int mActivityType;
     protected final Supplier<Boolean> mIsInOverviewModeSupplier;
-    private final Supplier<Boolean> mIsWarmOnResumeSupplier;
     private final AppMenuDelegate mAppMenuDelegate;
     private final StatusBarColorProvider mStatusBarColorProvider;
     private final Supplier<TabContentManager> mTabContentManagerSupplier;
@@ -381,7 +380,6 @@ public class RootUiCoordinator
      * @param edgeToEdgeControllerSupplier Supplies an {@link EdgeToEdgeController}.
      * @param activityType The {@link ActivityType} for the activity.
      * @param isInOverviewModeSupplier Supplies whether the app is in overview mode.
-     * @param isWarmOnResumeSupplier Supplies whether the app was warm on resume.
      * @param appMenuDelegate The app menu delegate.
      * @param statusBarColorProvider Provides the status bar color.
      * @param intentRequestTracker Tracks intent requests.
@@ -429,7 +427,6 @@ public class RootUiCoordinator
             @NonNull ObservableSupplierImpl<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             @ActivityType int activityType,
             @NonNull Supplier<Boolean> isInOverviewModeSupplier,
-            @NonNull Supplier<Boolean> isWarmOnResumeSupplier,
             @NonNull AppMenuDelegate appMenuDelegate,
             @NonNull StatusBarColorProvider statusBarColorProvider,
             @NonNull IntentRequestTracker intentRequestTracker,
@@ -460,7 +457,6 @@ public class RootUiCoordinator
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
         mActivityType = activityType;
         mIsInOverviewModeSupplier = isInOverviewModeSupplier;
-        mIsWarmOnResumeSupplier = isWarmOnResumeSupplier;
         mAppMenuDelegate = appMenuDelegate;
         mStatusBarColorProvider = statusBarColorProvider;
         mIntentRequestTracker = intentRequestTracker;
@@ -1492,7 +1488,6 @@ public class RootUiCoordinator
                             mActivityLifecycleDispatcher,
                             mStartSurfaceParentTabSupplier,
                             mBottomSheetController,
-                            mIsWarmOnResumeSupplier,
                             mTabContentManagerSupplier.get(),
                             mTabCreatorManagerSupplier.get(),
                             mSnackbarManagerSupplier.get(),

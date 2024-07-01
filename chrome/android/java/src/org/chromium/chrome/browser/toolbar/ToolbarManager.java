@@ -276,7 +276,6 @@ public class ToolbarManager
     private StatusBarColorController mStatusBarColorController;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final BottomSheetController mBottomSheetController;
-    private final Supplier<Boolean> mIsWarmOnResumeSupplier;
     private final TabContentManager mTabContentManager;
     private final TabCreatorManager mTabCreatorManager;
     private final TabObscuringHandler mTabObscuringHandler;
@@ -533,7 +532,6 @@ public class ToolbarManager
      * @param activityLifecycleDispatcher Allows monitoring the activity lifecycle.
      * @param startSurfaceParentTabSupplier Supplies the StartSurface's parent tab.
      * @param bottomSheetController Controls the state of the bottom sheet.
-     * @param isWarmOnResumeSupplier Supplies whether the activity was warm on resume.
      * @param tabContentManager Manages the content of tabs.
      * @param tabCreatorManager Manages the creation of tabs.
      * @param snackbarManager Manages the display of snackbars.
@@ -585,7 +583,6 @@ public class ToolbarManager
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull Supplier<Tab> startSurfaceParentTabSupplier,
             @NonNull BottomSheetController bottomSheetController,
-            @NonNull Supplier<Boolean> isWarmOnResumeSupplier,
             @NonNull TabContentManager tabContentManager,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull SnackbarManager snackbarManager,
@@ -625,7 +622,6 @@ public class ToolbarManager
         mUrlFocusChangedCallback = urlFocusChangedCallback;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mBottomSheetController = bottomSheetController;
-        mIsWarmOnResumeSupplier = isWarmOnResumeSupplier;
         mTabContentManager = tabContentManager;
         mTabCreatorManager = tabCreatorManager;
         mTabObscuringHandler = tabObscuringHandler;
@@ -1675,8 +1671,6 @@ public class ToolbarManager
                                 mScrimCoordinator,
                                 mOmniboxFocusStateSupplier,
                                 mBottomSheetController,
-                                mActivityLifecycleDispatcher,
-                                mIsWarmOnResumeSupplier,
                                 mTabModelSelector,
                                 mTabContentManager,
                                 mCompositorViewHolder,

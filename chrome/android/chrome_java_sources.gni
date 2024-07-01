@@ -43,6 +43,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/SnackbarActivity.java",
   "java/src/org/chromium/chrome/browser/SwipeRefreshHandler.java",
   "java/src/org/chromium/chrome/browser/SynchronousInitializationActivity.java",
+  "java/src/org/chromium/chrome/browser/TabGroupUsageTracker.java",
   "java/src/org/chromium/chrome/browser/TabUsageTracker.java",
   "java/src/org/chromium/chrome/browser/TabbedModeTabDelegateFactory.java",
   "java/src/org/chromium/chrome/browser/UndoRefocusHelper.java",
