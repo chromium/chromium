@@ -41,6 +41,7 @@ WorkerDevToolsManager::GetDevToolsHostFromToken(
       return it.second.get();
     }
   }
+
   return nullptr;
 }
 
