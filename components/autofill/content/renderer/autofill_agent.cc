@@ -1685,6 +1685,9 @@ void AutofillAgent::AjaxSucceeded() {
 void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
                                            const WebString& old_value,
                                            bool was_autofilled) {
+  if (!element.IsConnected()) {
+    return;
+  }
   // The provisionally saved form must be updated on JS changes. However, it
   // should not be changed to another form, so that only the user can set the
   // tracked form and not JS. This call here is meant to keep the tracked form

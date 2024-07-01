@@ -397,8 +397,7 @@ std::u16string FindChildTextInner(const WebNode& node,
     const WebElement element = node.To<WebElement>();
     if (HasTagName<kOption>(element) ||
         (HasTagName<kDiv>(element) && base::Contains(divs_to_skip, node)) ||
-        (element.IsFormControlElement() &&
-         IsAutofillableElement(element.To<WebFormControlElement>()))) {
+        IsAutofillableElement(element.DynamicTo<WebFormControlElement>())) {
       return std::u16string();
     }
     skip_node = HasTagName<kScript>(element) || HasTagName<kNoScript>(element);
@@ -1227,8 +1226,9 @@ bool ShouldSkipFillField(const FormFieldData::FillData& field,
   constexpr char kSkipReasonHistogram[] = "Autofill.RendererFillSkipReason";
   // Skip all checkable or non-modifiable elements, except select fields because
   // some synthetic select element use a hidden select element.
-  if (!IsAutofillableElement(element) || !element.IsEnabled() ||
-      element.IsReadOnly() || IsCheckableElement(element) ||
+  if (!element.IsConnected() || !IsAutofillableElement(element) ||
+      !element.IsEnabled() || element.IsReadOnly() ||
+      IsCheckableElement(element) ||
       (!IsWebElementFocusableForAutofill(element) &&
        !IsSelectElement(element))) {
     base::UmaHistogramEnumeration(kSkipReasonHistogram,
@@ -1770,6 +1770,7 @@ void WebFormControlElementToFormField(
   DCHECK(field);
   DCHECK(element);
   DCHECK(element.GetDocument().GetFrame());
+  DCHECK(element.IsConnected());
   DCHECK(IsAutofillableElement(element));
 
   const FieldRendererId renderer_id = GetFieldRendererId(element);
@@ -1960,14 +1961,18 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     const WebFormElement& form_element,
     const FieldDataManager& field_data_manager,
     DenseSet<ExtractOption> extract_options) {
+  if (form_element && !form_element.IsConnected()) {
+    return std::nullopt;
+  }
+
   std::vector<WebFormControlElement> control_elements =
       GetFormControlElements(document, form_element);
   std::vector<WebElement> iframe_elements =
       GetIframeElements(document, form_element);
 
-  // Extracts fields from |control_elements| into `fields` and sets
+  // Extracts fields from `control_elements` into `fields` and sets
   // `child_frames[i].predecessor` to the field index of the last field that
-  // precedes the |i|th child frame.
+  // precedes the `i`th child frame.
   //
   // If `control_elements[i]` is autofillable, `fields_extracted[i]` is set to
   // true and the corresponding FormFieldData is appended to `fields`.
@@ -1989,7 +1994,8 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   std::vector<ShadowFieldData> shadow_fields;
   for (size_t i = 0, next_iframe = 0; i < control_elements.size(); ++i) {
     const WebFormControlElement& control_element = control_elements[i];
-    if (!IsAutofillableElement(control_element)) {
+    if (!control_element.IsConnected() ||
+        !IsAutofillableElement(control_element)) {
       continue;
     }
     fields.emplace_back();
@@ -2398,7 +2404,7 @@ FindFormAndFieldForFormControlElement(
     DenseSet<ExtractOption> extract_options) {
   DCHECK(element);
 
-  if (!IsAutofillableElement(element)) {
+  if (!element.IsConnected() || !IsAutofillableElement(element)) {
     return std::nullopt;
   }
 

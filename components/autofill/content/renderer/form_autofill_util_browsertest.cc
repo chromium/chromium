@@ -819,7 +819,7 @@ TEST_F(FormAutofillUtilsTest, IsOwnedByFrame) {
   EXPECT_TRUE(IsOwnedByFrame(div, main_frame));
 }
 
-TEST_F(FormAutofillUtilsTest, IsActionEmptyFalse) {
+TEST_F(FormAutofillUtilsTest, ExtractFormData_IsActionEmptyFalse) {
   LoadHTML(
       "<body><form id='form1' action='done.html'><input "
       "id='i1'></form></body>");
@@ -832,7 +832,7 @@ TEST_F(FormAutofillUtilsTest, IsActionEmptyFalse) {
   EXPECT_FALSE(form_data.is_action_empty());
 }
 
-TEST_F(FormAutofillUtilsTest, IsActionEmptyTrue) {
+TEST_F(FormAutofillUtilsTest, ExtractFormData_IsActionEmptyTrue) {
   LoadHTML("<body><form id='form1'><input id='i1'></form></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_form = GetFormElementById(doc, "form1");
@@ -843,7 +843,8 @@ TEST_F(FormAutofillUtilsTest, IsActionEmptyTrue) {
   EXPECT_TRUE(form_data.is_action_empty());
 }
 
-TEST_F(FormAutofillUtilsTest, ExtractBounds) {
+TEST_F(FormAutofillUtilsTest,
+       FindFormAndFieldForFormControlElement_ExtractBounds) {
   LoadHTML("<body><form id='form1'><input id='i1'></form></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetFormControlElementById(doc, "i1");
@@ -856,7 +857,8 @@ TEST_F(FormAutofillUtilsTest, ExtractBounds) {
   EXPECT_FALSE(form.fields().back().bounds().IsEmpty());
 }
 
-TEST_F(FormAutofillUtilsTest, NotExtractBounds) {
+TEST_F(FormAutofillUtilsTest,
+       FindFormAndFieldForFormControlElement_NotExtractBounds) {
   LoadHTML("<body><form id='form1'><input id='i1'></form></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetFormControlElementById(doc, "i1");
@@ -870,7 +872,8 @@ TEST_F(FormAutofillUtilsTest, NotExtractBounds) {
   EXPECT_TRUE(form.fields().back().bounds().IsEmpty());
 }
 
-TEST_F(FormAutofillUtilsTest, ExtractUnownedBounds) {
+TEST_F(FormAutofillUtilsTest,
+       FindFormAndFieldForFormControlElement_ExtractUnownedBounds) {
   LoadHTML("<body><input id='i1'></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetFormControlElementById(doc, "i1");
@@ -883,7 +886,8 @@ TEST_F(FormAutofillUtilsTest, ExtractUnownedBounds) {
   EXPECT_FALSE(form.fields().back().bounds().IsEmpty());
 }
 
-TEST_F(FormAutofillUtilsTest, GetDataListSuggestions) {
+TEST_F(FormAutofillUtilsTest,
+       FindFormAndFieldForFormControlElement_GetDataListSuggestions) {
   LoadHTML(
       "<body><input list='datalist_id' name='count' id='i1'><datalist "
       "id='datalist_id'><option value='1'><option "
@@ -899,7 +903,8 @@ TEST_F(FormAutofillUtilsTest, GetDataListSuggestions) {
   EXPECT_EQ(options[1].content, u"");
 }
 
-TEST_F(FormAutofillUtilsTest, GetDataListSuggestionsWithLabels) {
+TEST_F(FormAutofillUtilsTest,
+       FindFormAndFieldForFormControlElement_GetDataListSuggestionsWithLabels) {
   LoadHTML(
       "<body><input list='datalist_id' name='count' id='i1'><datalist "
       "id='datalist_id'><option value='1'>one</option><option "
@@ -915,7 +920,8 @@ TEST_F(FormAutofillUtilsTest, GetDataListSuggestionsWithLabels) {
   EXPECT_EQ(options[1].content, u"two");
 }
 
-TEST_F(FormAutofillUtilsTest, ExtractDataList) {
+TEST_F(FormAutofillUtilsTest,
+       FindFormAndFieldForFormControlElement_ExtractDataList) {
   LoadHTML(
       "<body><input list='datalist_id' name='count' id='i1'><datalist "
       "id='datalist_id'><option value='1'>one</option><option "
@@ -937,7 +943,8 @@ TEST_F(FormAutofillUtilsTest, ExtractDataList) {
   EXPECT_EQ(field->datalist_options().size(), options.size());
 }
 
-TEST_F(FormAutofillUtilsTest, NotExtractDataList) {
+TEST_F(FormAutofillUtilsTest,
+       FindFormAndFieldForFormControlElement_NotExtractDataList) {
   LoadHTML(
       "<body><input list='datalist_id' name='count' id='i1'><datalist "
       "id='datalist_id'><option value='1'>one</option><option "
@@ -951,6 +958,17 @@ TEST_F(FormAutofillUtilsTest, NotExtractDataList) {
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;
   EXPECT_TRUE(form.fields().back().datalist_options().empty());
+}
+
+TEST_F(FormAutofillUtilsTest,
+       FindFormAndFieldForFormControlElement_Disconnected) {
+  LoadHTML(R"(<input name=count id=t>)");
+  WebDocument doc = GetMainFrame()->GetDocument();
+  auto form_control = GetElementById(doc, "t").To<WebInputElement>();
+  ExecuteJavaScriptForTests(R"(document.getElementById('t').remove();)");
+  EXPECT_EQ(FindFormAndFieldForFormControlElement(form_control,
+                                                  field_data_manager(), {}),
+            std::nullopt);
 }
 
 // Tests the visibility detection of iframes.
@@ -1379,7 +1397,7 @@ TEST_F(FormAutofillUtilsTest, GetFormFieldElements_Unowned) {
 
 // Tests that FormData::fields and FormData::child_frames are extracted fully
 // and in the correct relative order.
-TEST_P(FieldFramesTest, ExtractFieldsAndFrames) {
+TEST_P(FieldFramesTest, ExtractFormData_ExtractFieldsAndFrames) {
   FieldFramesTestParam test_case = GetParam();
   SCOPED_TRACE(testing::Message() << "HTML: " << test_case.html);
   LoadHTML(test_case.html.c_str());
@@ -1525,7 +1543,7 @@ INSTANTIATE_TEST_SUITE_P(
       return cases;
     }()));
 
-TEST_F(FormAutofillUtilsTest, WebFormElementToFormData) {
+TEST_F(FormAutofillUtilsTest, ExtractFormData_WebFormElementToFormData) {
   LoadHTML(R"(
     <form id='form'>
       <input id='input'>
@@ -1560,7 +1578,7 @@ TEST_F(FormAutofillUtilsTest, WebFormElementToFormData) {
 
 // Tests that if the number of iframes exceeds kMaxExtractableChildFrames,
 // child frames of that form are not extracted.
-TEST_F(FormAutofillUtilsTest, ExtractNoFramesIfTooManyIframes) {
+TEST_F(FormAutofillUtilsTest, ExtractFormData_ExtractNoFramesIfTooManyIframes) {
   auto CreateFormElement = [this](const char* element) {
     std::string js = base::StringPrintf(
         "document.forms[0].appendChild(document.createElement('%s'))", element);
