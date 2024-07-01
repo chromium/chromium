@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_view_controller.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_mediator.h"
 
 #import "base/test/metrics/user_action_tester.h"
+#import "components/bookmarks/browser/bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_mediator.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -54,19 +54,16 @@ TEST_F(BookmarksEditorViewControllerTest, Metrics) {
 // Regression test for See crbug.com/1429435
 // Checks sync can safely occurs before the view is loaded.
 TEST_F(BookmarksEditorViewControllerTest, CanSyncBeforeLoad) {
-  const bookmarks::BookmarkNode* mobile_node =
-      local_or_syncable_bookmark_model_->subtle_mobile_node();
+  const bookmarks::BookmarkNode* mobile_node = bookmark_model_->mobile_node();
   const bookmarks::BookmarkNode* bookmark = AddBookmark(mobile_node, u"foo");
   BookmarksEditorMediator* mediator = [[BookmarksEditorMediator alloc]
-      initWithLocalOrSyncableBookmarkModel:local_or_syncable_bookmark_model_
-                      accountBookmarkModel:account_bookmark_model_
-                              bookmarkNode:bookmark
-                                     prefs:nullptr
-                     authenticationService:AuthenticationServiceFactory::
-                                               GetForBrowserState(
-                                                   chrome_browser_state_.get())
-                               syncService:nullptr
-                              browserState:chrome_browser_state_.get()];
+      initWithBookmarkModel:bookmark_model_
+               bookmarkNode:bookmark
+                      prefs:nullptr
+      authenticationService:AuthenticationServiceFactory::GetForBrowserState(
+                                chrome_browser_state_.get())
+                syncService:nullptr
+               browserState:chrome_browser_state_.get()];
   _controller.mutator = mediator;
   [_controller updateSync];
   [mediator disconnect];

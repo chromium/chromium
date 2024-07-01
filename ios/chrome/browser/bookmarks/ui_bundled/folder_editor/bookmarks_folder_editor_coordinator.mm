@@ -11,18 +11,17 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/bookmarks/browser/bookmark_node.h"
-#import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_navigation_controller.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_coordinator.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_coordinator_delegate.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/folder_editor/bookmarks_folder_editor_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_navigation_controller.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_coordinator.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_coordinator_delegate.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/folder_editor/bookmarks_folder_editor_view_controller.h"
 
 @interface BookmarksFolderEditorCoordinator () <
     BookmarksFolderEditorViewControllerDelegate,
@@ -87,23 +86,19 @@
   // TODO(crbug.com/40251259): Create a mediator.
   ChromeBrowserState* browserState =
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
-  LegacyBookmarkModel* localOrSyncableBookmarkModel =
-      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-          browserState);
-  LegacyBookmarkModel* accountBookmarkModel =
-      ios::AccountBookmarkModelFactory::GetForBrowserState(browserState);
+  bookmarks::BookmarkModel* bookmarkModel =
+      ios::BookmarkModelFactory::GetForBrowserState(browserState);
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
   _viewController = [[BookmarksFolderEditorViewController alloc]
-      initWithLocalOrSyncableBookmarkModel:localOrSyncableBookmarkModel
-                      accountBookmarkModel:accountBookmarkModel
-                                folderNode:_folderNode
-                          parentFolderNode:_parentFolderNode
-                     authenticationService:authService
-                               syncService:syncService
-                                   browser:self.browser];
+      initWithBookmarkModel:bookmarkModel
+                 folderNode:_folderNode
+           parentFolderNode:_parentFolderNode
+      authenticationService:authService
+                syncService:syncService
+                    browser:self.browser];
   _viewController.delegate = self;
   _viewController.snackbarCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SnackbarCommands);

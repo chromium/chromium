@@ -13,11 +13,11 @@ class AuthenticationService;
 @protocol BookmarksEditorConsumer;
 @protocol BookmarksEditorMediatorDelegate;
 class ChromeBrowserState;
-class LegacyBookmarkModel;
 class PrefService;
 @protocol SnackbarCommands;
 
 namespace bookmarks {
+class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
@@ -40,23 +40,16 @@ class SyncService;
 @property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
 // Designated initializer.
-// `localOrSyncableBookmarkModel` is the bookmark model for the localOrSyncable
-// storage, must not be `nullptr` and must be loaded. `accountBookmarkModel` is
-// the bookmark model for the localOrSyncable storage, must be `nullptr`, or it
-// should be loaded. `bookmarkNode` mustn't be `nullptr` at initialization time.
-// It also must be a URL. `prefs` is the user pref service.
+// `bookmarkModel` must not be `nullptr` and must be loaded. `bookmarkNode`
+// mustn't be `nullptr` at initialization time. It also must be a URL. `prefs`
+// is the user pref service.
 - (instancetype)
-    initWithLocalOrSyncableBookmarkModel:
-        (LegacyBookmarkModel*)localOrSyncableBookmarkModel
-                    accountBookmarkModel:
-                        (LegacyBookmarkModel*)accountBookmarkModel
-                            bookmarkNode:
-                                (const bookmarks::BookmarkNode*)bookmarkNode
-                                   prefs:(PrefService*)prefs
-                   authenticationService:
-                       (AuthenticationService*)authenticationService
-                             syncService:(syncer::SyncService*)syncService
-                            browserState:(ChromeBrowserState*)browserState
+    initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+             bookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode
+                    prefs:(PrefService*)prefs
+    authenticationService:(AuthenticationService*)authenticationService
+              syncService:(syncer::SyncService*)syncService
+             browserState:(ChromeBrowserState*)browserState
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -11,15 +11,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_node.h"
-#import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
-#import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_coordinator_delegate.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_mediator.h"
@@ -27,6 +19,13 @@
 #import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_view_controller.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_coordinator.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/folder_editor/bookmarks_folder_editor_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
@@ -86,23 +85,19 @@
   _viewController.delegate = self;
   ChromeBrowserState* browserState =
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
-  LegacyBookmarkModel* localOrSyncableBookmarkModel =
-      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-          browserState);
-  LegacyBookmarkModel* accountBookmarkModel =
-      ios::AccountBookmarkModelFactory::GetForBrowserState(browserState);
+  bookmarks::BookmarkModel* bookmarkModel =
+      ios::BookmarkModelFactory::GetForBrowserState(browserState);
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
 
   _mediator = [[BookmarksEditorMediator alloc]
-      initWithLocalOrSyncableBookmarkModel:localOrSyncableBookmarkModel
-                      accountBookmarkModel:accountBookmarkModel
-                              bookmarkNode:_node
-                                     prefs:browserState->GetPrefs()
-                     authenticationService:AuthenticationServiceFactory::
-                                               GetForBrowserState(browserState)
-                               syncService:syncService
-                              browserState:browserState];
+      initWithBookmarkModel:bookmarkModel
+               bookmarkNode:_node
+                      prefs:browserState->GetPrefs()
+      authenticationService:AuthenticationServiceFactory::GetForBrowserState(
+                                browserState)
+                syncService:syncService
+               browserState:browserState];
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
   _mediator.snackbarCommandsHandler = _snackbarCommandsHandler;
@@ -159,7 +154,6 @@
 #pragma mark - BookmarksEditorViewControllerDelegate
 
 - (void)moveBookmark {
-  DCHECK([_mediator bookmarkModel]);
   DCHECK(!_folderChooserCoordinator);
 
   std::set<const bookmarks::BookmarkNode*> hiddenNodes{[_mediator bookmark]};

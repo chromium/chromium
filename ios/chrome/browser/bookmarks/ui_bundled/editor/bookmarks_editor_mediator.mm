@@ -9,6 +9,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/prefs/pref_service.h"
@@ -16,25 +17,21 @@
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_mediator.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_consumer.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_mediator_delegate.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_mediator.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_consumer.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_mediator_delegate.h"
 #import "url/gurl.h"
 
 @interface BookmarksEditorMediator () <BookmarkModelBridgeObserver,
                                        SyncObserverModelBridge> {
   raw_ptr<PrefService> _prefs;
-
-  // Observer for the bookmark model of `self.bookmark`.
-  std::unique_ptr<BookmarkModelBridge> _localOrSyncableBookmarkModelObserver;
-  std::unique_ptr<BookmarkModelBridge> _accountBookmarkModelBridgeObserver;
+  std::unique_ptr<BookmarkModelBridge> _bookmarkModelObserver;
   std::unique_ptr<SyncObserverBridge> _syncObserverModelBridge;
   base::WeakPtr<ChromeBrowserState> _browserState;
   // Whether the user manually changed the folder. In which case it must be
@@ -48,8 +45,7 @@
 @end
 
 @implementation BookmarksEditorMediator {
-  base::WeakPtr<LegacyBookmarkModel> _localOrSyncableBookmarkModel;
-  base::WeakPtr<LegacyBookmarkModel> _accountBookmarkModel;
+  base::WeakPtr<bookmarks::BookmarkModel> _bookmarkModel;
   raw_ptr<syncer::SyncService> _syncService;
   // The folder in which was the bookmark when the view was opened.
   const bookmarks::BookmarkNode* _originalFolder;
@@ -58,37 +54,25 @@
 }
 
 - (instancetype)
-    initWithLocalOrSyncableBookmarkModel:
-        (LegacyBookmarkModel*)localOrSyncableBookmarkModel
-                    accountBookmarkModel:
-                        (LegacyBookmarkModel*)accountBookmarkModel
-                            bookmarkNode:
-                                (const bookmarks::BookmarkNode*)bookmarkNode
-                                   prefs:(PrefService*)prefs
-                   authenticationService:
-                       (AuthenticationService*)authenticationService
-                             syncService:(syncer::SyncService*)syncService
-                            browserState:(ChromeBrowserState*)browserState {
+    initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+             bookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode
+                    prefs:(PrefService*)prefs
+    authenticationService:(AuthenticationService*)authenticationService
+              syncService:(syncer::SyncService*)syncService
+             browserState:(ChromeBrowserState*)browserState {
   self = [super init];
   if (self) {
-    DCHECK(localOrSyncableBookmarkModel);
-    DCHECK(localOrSyncableBookmarkModel->loaded());
-    DCHECK(accountBookmarkModel);
-    DCHECK(accountBookmarkModel->loaded());
+    DCHECK(bookmarkModel);
+    DCHECK(bookmarkModel->loaded());
     DCHECK(bookmarkNode);
     DCHECK(bookmarkNode->is_url()) << "Type: " << bookmarkNode->type();
-    _localOrSyncableBookmarkModel = localOrSyncableBookmarkModel->AsWeakPtr();
-    if (accountBookmarkModel) {
-      _accountBookmarkModel = accountBookmarkModel->AsWeakPtr();
-      _accountBookmarkModelBridgeObserver.reset(
-          new BookmarkModelBridge(self, _accountBookmarkModel.get()));
-    }
+    _bookmarkModel = bookmarkModel->AsWeakPtr();
     _bookmark = bookmarkNode;
     _folder = bookmarkNode->parent();
     _originalFolder = bookmarkNode->parent();
     _prefs = prefs;
-    _localOrSyncableBookmarkModelObserver.reset(
-        new BookmarkModelBridge(self, _localOrSyncableBookmarkModel.get()));
+    _bookmarkModelObserver.reset(
+        new BookmarkModelBridge(self, _bookmarkModel.get()));
     _syncService = syncService;
     _syncObserverModelBridge.reset(new SyncObserverBridge(self, syncService));
     _browserState = browserState->AsWeakPtr();
@@ -98,13 +82,11 @@
 }
 
 - (void)disconnect {
-  _localOrSyncableBookmarkModel = nullptr;
-  _accountBookmarkModel = nullptr;
+  _bookmarkModel = nullptr;
   _bookmark = nullptr;
   _folder = nullptr;
   _prefs = nullptr;
-  _localOrSyncableBookmarkModelObserver.reset();
-  _accountBookmarkModelBridgeObserver.reset();
+  _bookmarkModelObserver.reset();
   _syncService = nullptr;
   _syncObserverModelBridge.reset();
   _browserState = nullptr;
@@ -113,7 +95,7 @@
 }
 
 - (void)dealloc {
-  DCHECK(!_localOrSyncableBookmarkModel);
+  DCHECK(!_bookmarkModel);
 }
 
 #pragma mark - Public
@@ -123,27 +105,11 @@
   [self changeFolder:folder];
 }
 
-#pragma mark - Properties
-
-- (LegacyBookmarkModel*)bookmarkModel {
-  return bookmark_utils_ios::GetBookmarkModelForNode(
-      self.bookmark, _localOrSyncableBookmarkModel.get(),
-      _accountBookmarkModel.get());
-}
-
 #pragma mark - BookmarksEditorMutator
 
 - (BOOL)shouldDisplayCloudSlashSymbolForParentFolder {
-  BookmarkModelType type = bookmark_utils_ios::GetBookmarkModelType(
-      self.folder, _localOrSyncableBookmarkModel.get(),
-      _accountBookmarkModel.get());
-  switch (type) {
-    case BookmarkModelType::kLocalOrSyncable:
-      return bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService);
-    case BookmarkModelType::kAccount:
-      return NO;
-  }
-  NOTREACHED_NORETURN();
+  return _folder && _bookmarkModel->IsLocalOnlyNode(*_folder) &&
+         bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService);
 }
 
 #pragma mark - Private
@@ -211,17 +177,16 @@
     // folder was deleted.
     //
     // In this case, fall back to the default folder, which is the mobile node
-    // for the same storage type as before (local or account).
-    if (_localOrSyncableBookmarkModel->IsNodePartOfModel(self.folder)) {
-      [self changeFolder:_localOrSyncableBookmarkModel->subtle_mobile_node()];
-    } else if (!_accountBookmarkModel->subtle_mobile_node() ||
-               _accountBookmarkModel->subtle_mobile_node()->HasAncestor(node)) {
-      // When dealing with account bookmarks, it is possible that permanent
-      // folders no longer exist (e.g. the user signed out). In this case, fall
-      // back to the local model.
-      [self changeFolder:_localOrSyncableBookmarkModel->subtle_mobile_node()];
+    // for the same storage type as before (local or account). With account
+    // bookmarks, it is possible that permanent folders no longer exist (e.g.
+    // the user signed out), which requires falling back to the local default.
+    // back to the local model.
+    if (_bookmarkModel->IsLocalOnlyNode(*self.folder) ||
+        !_bookmarkModel->account_mobile_node() ||
+        _bookmarkModel->account_mobile_node()->HasAncestor(node)) {
+      [self changeFolder:_bookmarkModel->mobile_node()];
     } else {
-      [self changeFolder:_accountBookmarkModel->subtle_mobile_node()];
+      [self changeFolder:_bookmarkModel->account_mobile_node()];
     }
   }
 }
@@ -264,19 +229,18 @@
   [self.snackbarCommandsHandler
       showSnackbarMessage:bookmark_utils_ios::UpdateBookmarkWithUndoToast(
                               self.bookmark, name, url, _originalFolder,
-                              self.folder, _localOrSyncableBookmarkModel.get(),
-                              _accountBookmarkModel.get(), self.browserState,
-                              _authenticationService, _syncService)];
+                              self.folder, _bookmarkModel.get(),
+                              self.browserState, _authenticationService,
+                              _syncService)];
   if (_manuallyChangedTheFolder) {
-    BookmarkModelType type = bookmark_utils_ios::GetBookmarkModelType(
-        _folder, _localOrSyncableBookmarkModel.get(),
-        _accountBookmarkModel.get());
+    BookmarkModelType type =
+        bookmark_utils_ios::GetBookmarkModelType(_folder, _bookmarkModel.get());
     SetLastUsedBookmarkFolder(_prefs, _folder, type);
   }
 }
 
 - (void)deleteBookmark {
-  if (!(self.bookmark && self.bookmarkModel->loaded())) {
+  if (!(self.bookmark && _bookmarkModel->loaded())) {
     return;
   }
   // To stop getting recursive events from committed bookmark editing changes
@@ -288,7 +252,7 @@
   // TODO(crbug.com/346918509): Clarify if this should remove the matching
   // bookmarks from both BookmarkModel instances.
   std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
-      nodesVector = [self bookmarkModel]->GetNodesByURL([self bookmark]->url());
+      nodesVector = _bookmarkModel->GetNodesByURL([self bookmark]->url());
   std::set<const bookmarks::BookmarkNode*> nodes(nodesVector.begin(),
                                                  nodesVector.end());
   if (!nodesVector.empty()) {
@@ -298,7 +262,7 @@
     [self.snackbarCommandsHandler
         showSnackbarMessageOverBrowserToolbar:
             bookmark_utils_ios::DeleteBookmarksWithUndoToast(
-                nodes, {[self bookmarkModel]}, self.browserState, FROM_HERE)];
+                nodes, _bookmarkModel.get(), self.browserState, FROM_HERE)];
     [self.delegate bookmarkEditorMediatorWantsDismissal:self];
   }
 }

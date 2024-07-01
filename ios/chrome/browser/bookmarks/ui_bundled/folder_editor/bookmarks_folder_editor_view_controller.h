@@ -12,10 +12,10 @@
 class AuthenticationService;
 @class BookmarksFolderEditorViewController;
 class Browser;
-class LegacyBookmarkModel;
 @protocol SnackbarCommands;
 
 namespace bookmarks {
+class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
@@ -68,23 +68,19 @@ class SyncService;
 // Snackbar commands handler for this ViewController.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
-// `localOrSyncableBookmarkModel` must not be `nullptr` and must be loaded.
+// `bookmarkModel` must not be `nullptr` and must be loaded.
 // `parentFolder` must not be `nullptr`.
 // If `folder` is not `nullptr` than it means we're editing an existing folder
 // and `folder` must also be editable (`folder` can't be the root node or any
 // of the permanent nodes).
 // `browser` must not be `nullptr`.
-- (instancetype)
-    initWithLocalOrSyncableBookmarkModel:
-        (LegacyBookmarkModel*)localOrSyncableBookmarkModel
-                    accountBookmarkModel:
-                        (LegacyBookmarkModel*)accountBookmarkModel
-                              folderNode:(const bookmarks::BookmarkNode*)folder
-                        parentFolderNode:
-                            (const bookmarks::BookmarkNode*)parentFolder
-                   authenticationService:(AuthenticationService*)authService
-                             syncService:(syncer::SyncService*)syncService
-                                 browser:(Browser*)browser
+- (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+                           folderNode:(const bookmarks::BookmarkNode*)folder
+                     parentFolderNode:
+                         (const bookmarks::BookmarkNode*)parentFolder
+                authenticationService:(AuthenticationService*)authService
+                          syncService:(syncer::SyncService*)syncService
+                              browser:(Browser*)browser
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
