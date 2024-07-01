@@ -958,12 +958,7 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
 
 TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsDuringBurnIn) {
   MockSearchResultsCallback search_results_callback;
-  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(
-      search_results_callback,
-      Call(Not(Contains(Property("type", &PickerSearchResultsSection::type,
-                                 PickerSectionType::kLinks)))))
-      .Times(AtLeast(1));
+  EXPECT_CALL(search_results_callback, Call).Times(0);
   PickerSearchController controller(&client(), kBurnInPeriod);
 
   controller.StartSearch(
@@ -979,12 +974,7 @@ TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsDuringBurnIn) {
 
 TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsAfterBurnIn) {
   MockSearchResultsCallback search_results_callback;
-  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(
-      search_results_callback,
-      Call(Not(Contains(Property("type", &PickerSearchResultsSection::type,
-                                 PickerSectionType::kLinks)))))
-      .Times(AtLeast(1));
+  EXPECT_CALL(search_results_callback, Call).Times(0);
   PickerSearchController controller(&client(), kBurnInPeriod);
 
   controller.StartSearch(
@@ -1044,6 +1034,125 @@ TEST_F(PickerSearchControllerTest, OnlyStartCrosSearchForCertainCategories) {
                          base::DoNothing());
   controller.StartSearch(u"cat", PickerCategory::kLocalFiles, kAllCategories,
                          base::DoNothing());
+}
+
+TEST_F(PickerSearchControllerTest,
+       PublishesEmptyResultsAfterResultsOnceDoneDuringBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  {
+    ::testing::InSequence seq;
+    // "cat" shouldn't match any categories.
+    EXPECT_CALL(
+        search_results_callback,
+        Call(Contains(Property("type", &PickerSearchResultsSection::type,
+                               PickerSectionType::kLinks))))
+        .Times(1);
+    EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
+  }
+  PickerSearchController controller(&client(), kBurnInPeriod);
+
+  controller.StartSearch(
+      u"cat", std::nullopt, {{PickerCategory::kLinks}},
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  task_environment().FastForwardBy(kBeforeBurnIn);
+  client().cros_search_callback().Run(AppListSearchResultType::kOmnibox,
+                                      {PickerSearchResult::Text(u"cat")});
+}
+
+TEST_F(PickerSearchControllerTest,
+       PublishesEmptyResultsAfterResultsOnceDoneAfterDoneAfterBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  {
+    ::testing::InSequence seq;
+    // "cat" shouldn't match any categories.
+    EXPECT_CALL(
+        search_results_callback,
+        Call(Contains(Property("type", &PickerSearchResultsSection::type,
+                               PickerSectionType::kLinks))))
+        .Times(1);
+    EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
+  }
+  PickerSearchController controller(&client(), kBurnInPeriod);
+
+  controller.StartSearch(
+      u"cat", std::nullopt, {{PickerCategory::kLinks}},
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  task_environment().FastForwardBy(kBurnInPeriod);
+  client().cros_search_callback().Run(AppListSearchResultType::kOmnibox,
+                                      {PickerSearchResult::Text(u"cat")});
+}
+
+TEST_F(PickerSearchControllerTest,
+       DoesNotPublishResultsWhenInterruptedDuringBurnIn) {
+  MockSearchResultsCallback first_search_results_callback;
+  EXPECT_CALL(first_search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(first_search_results_callback,
+              Call(Contains(Property("type", &PickerSearchResultsSection::type,
+                                     PickerSectionType::kLinks))))
+      .Times(0);
+  NiceMock<MockSearchResultsCallback> second_search_results_callback;
+  PickerSearchController controller(&client(), kBurnInPeriod);
+
+  controller.StartSearch(
+      u"cat", std::nullopt, kAllCategories,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&first_search_results_callback)));
+
+  task_environment().FastForwardBy(kBeforeBurnIn);
+  client().cros_search_callback().Run(AppListSearchResultType::kOmnibox,
+                                      {PickerSearchResult::Text(u"cat")});
+  controller.StartSearch(
+      u"dog", std::nullopt, {},
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&second_search_results_callback)));
+}
+
+TEST_F(PickerSearchControllerTest,
+       DoesNotPublishEmptyResultsWhenInterruptedDuringBurnIn) {
+  MockSearchResultsCallback first_search_results_callback;
+  EXPECT_CALL(first_search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(first_search_results_callback, Call(IsEmpty())).Times(0);
+  NiceMock<MockSearchResultsCallback> second_search_results_callback;
+  PickerSearchController controller(&client(), kBurnInPeriod);
+
+  controller.StartSearch(
+      u"cat", std::nullopt, kAllCategories,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&first_search_results_callback)));
+
+  task_environment().FastForwardBy(kBeforeBurnIn);
+  client().cros_search_callback().Run(AppListSearchResultType::kOmnibox,
+                                      {PickerSearchResult::Text(u"cat")});
+  controller.StartSearch(
+      u"dog", std::nullopt, {},
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&second_search_results_callback)));
+}
+
+TEST_F(PickerSearchControllerTest,
+       DoesNotPublishEmptyResultsWhenInterruptedAfterBurnIn) {
+  MockSearchResultsCallback first_search_results_callback;
+  EXPECT_CALL(first_search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(first_search_results_callback, Call(IsEmpty())).Times(0);
+  NiceMock<MockSearchResultsCallback> second_search_results_callback;
+  PickerSearchController controller(&client(), kBurnInPeriod);
+
+  controller.StartSearch(
+      u"cat", std::nullopt, kAllCategories,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&first_search_results_callback)));
+
+  task_environment().FastForwardBy(kBurnInPeriod);
+  client().cros_search_callback().Run(AppListSearchResultType::kOmnibox,
+                                      {PickerSearchResult::Text(u"cat")});
+  controller.StartSearch(
+      u"dog", std::nullopt, {},
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&second_search_results_callback)));
 }
 
 }  // namespace

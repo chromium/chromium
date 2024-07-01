@@ -24,9 +24,13 @@ class PickerSearchResult;
 // managing the order of search results and managing when to publish search
 // results (with burn-in logic).
 // Call `HandleSearchSourceResults` with new results once they arrive.
+// Call `HandleNoMoreResults` once `HandleSearchSourceResults` will never be
+// called again in the future.
 // Any timers start immediately once this class is constructed.
 class ASH_EXPORT PickerSearchAggregator {
  public:
+  // If `callback` is called with empty results, then it will never be called
+  // again (i.e. all search results have been returned).
   explicit PickerSearchAggregator(
       base::TimeDelta burn_in_period,
       PickerViewDelegate::SearchResultsCallback callback);
@@ -37,6 +41,7 @@ class ASH_EXPORT PickerSearchAggregator {
   void HandleSearchSourceResults(PickerSearchSource source,
                                  std::vector<PickerSearchResult> results,
                                  bool has_more_results);
+  void HandleNoMoreResults(bool interrupted);
 
   base::WeakPtr<PickerSearchAggregator> GetWeakPtr();
 
@@ -56,6 +61,8 @@ class ASH_EXPORT PickerSearchAggregator {
   bool IsPostBurnIn() const;
 
   void PublishBurnInResults();
+
+  void SetDriveSearchFinished();
 
   void HandleSearchSourceResultsImpl(PickerSearchSource source,
                                      std::vector<PickerSearchResult> results,

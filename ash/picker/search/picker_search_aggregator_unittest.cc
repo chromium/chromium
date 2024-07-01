@@ -113,6 +113,13 @@ INSTANTIATE_TEST_SUITE_P(Suggestions,
                          PickerSearchAggregatorTest,
                          testing::ValuesIn(kSuggestionTestCases));
 
+class PickerSearchAggregatorNonSuggestionsTest
+    : public PickerSearchAggregatorTest {};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         PickerSearchAggregatorNonSuggestionsTest,
+                         testing::ValuesIn(kNonSuggestionTestCases));
+
 TEST_P(PickerSearchAggregatorTest, DoesNotPublishResultsDuringBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
@@ -126,6 +133,45 @@ TEST_P(PickerSearchAggregatorTest, DoesNotPublishResultsDuringBurnIn) {
                                        {PickerSearchResult::Text(u"test")},
                                        /*has_more_results=*/false);
   task_environment().FastForwardBy(base::Milliseconds(99));
+}
+
+TEST_P(PickerSearchAggregatorTest,
+       DoesNotPublishResultsDuringBurnInIfInterruptedNoMoreResults) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(0);
+
+  PickerSearchAggregator aggregator(
+      /*burn_in_period=*/base::Milliseconds(100),
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  aggregator.HandleSearchSourceResults(GetParam().source,
+                                       {PickerSearchResult::Text(u"test")},
+                                       /*has_more_results=*/false);
+  task_environment().FastForwardBy(base::Milliseconds(99));
+  aggregator.HandleNoMoreResults(/*interrupted=*/true);
+}
+
+TEST_P(PickerSearchAggregatorTest,
+       ImmediatelyPublishesResultsDuringBurnInIfNoMoreResults) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(
+      search_results_callback,
+      Call(ElementsAre(Property("type", &PickerSearchResultsSection::type,
+                                GetParam().section_type))))
+      .Times(1);
+
+  PickerSearchAggregator aggregator(
+      /*burn_in_period=*/base::Milliseconds(100),
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  aggregator.HandleSearchSourceResults(GetParam().source,
+                                       {PickerSearchResult::Text(u"test")},
+                                       /*has_more_results=*/false);
+  task_environment().FastForwardBy(base::Milliseconds(99));
+  aggregator.HandleNoMoreResults(/*interrupted=*/false);
 }
 
 TEST_P(PickerSearchAggregatorTest,
@@ -217,6 +263,164 @@ TEST_P(PickerSearchAggregatorTest, DoNotPublishEmptySectionsPostBurnIn) {
                                        /*has_more_results=*/false);
 }
 
+TEST_P(PickerSearchAggregatorTest, DoNotPublishEmptySearchAfterBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(0);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  aggregator.HandleSearchSourceResults(GetParam().source, {},
+                                       /*has_more_results=*/false);
+  task_environment().FastForwardBy(kBurnInPeriod);
+}
+
+TEST_P(PickerSearchAggregatorTest, DoNotPublishEmptySearchPostBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(0);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+  task_environment().FastForwardBy(kBurnInPeriod);
+
+  aggregator.HandleSearchSourceResults(GetParam().source, {},
+                                       /*has_more_results=*/false);
+}
+
+TEST_P(PickerSearchAggregatorTest,
+       PublishesEmptyAfterResultsIfNoMoreResultsDuringBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  {
+    ::testing::InSequence seq;
+    EXPECT_CALL(
+        search_results_callback,
+        Call(ElementsAre(Property("type", &PickerSearchResultsSection::type,
+                                  GetParam().section_type))))
+        .Times(1);
+    EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
+  }
+
+  PickerSearchAggregator aggregator(
+      /*burn_in_period=*/base::Milliseconds(100),
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  aggregator.HandleSearchSourceResults(GetParam().source,
+                                       {PickerSearchResult::Text(u"test")},
+                                       /*has_more_results=*/false);
+  task_environment().FastForwardBy(base::Milliseconds(99));
+  aggregator.HandleNoMoreResults(/*interrupted=*/false);
+}
+
+TEST_P(PickerSearchAggregatorTest,
+       PublishesEmptyAfterResultsIfNoMoreResultsAfterBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  {
+    ::testing::InSequence seq;
+    EXPECT_CALL(
+        search_results_callback,
+        Call(ElementsAre(Property("type", &PickerSearchResultsSection::type,
+                                  GetParam().section_type))))
+        .Times(1);
+    EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
+  }
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  aggregator.HandleSearchSourceResults(GetParam().source,
+                                       {PickerSearchResult::Text(u"test")},
+                                       /*has_more_results=*/false);
+  task_environment().FastForwardBy(kBurnInPeriod);
+  aggregator.HandleNoMoreResults(/*interrupted=*/false);
+}
+
+// Suggestions are never published post burn in, so don't test on those.
+TEST_P(PickerSearchAggregatorNonSuggestionsTest,
+       PublishesEmptyAfterResultsIfNoMoreResultsPostBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  {
+    ::testing::InSequence seq;
+    EXPECT_CALL(
+        search_results_callback,
+        Call(ElementsAre(Property("type", &PickerSearchResultsSection::type,
+                                  GetParam().section_type))))
+        .Times(1);
+    EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
+  }
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  task_environment().FastForwardBy(kBurnInPeriod);
+  aggregator.HandleSearchSourceResults(GetParam().source,
+                                       {PickerSearchResult::Text(u"test")},
+                                       /*has_more_results=*/false);
+  aggregator.HandleNoMoreResults(/*interrupted=*/false);
+}
+
+TEST_P(PickerSearchAggregatorTest,
+       DoesNotPublishEmptyAfterResultsIfInterruptedNoMoreResultsDuringBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(0);
+
+  PickerSearchAggregator aggregator(
+      /*burn_in_period=*/base::Milliseconds(100),
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  aggregator.HandleSearchSourceResults(GetParam().source,
+                                       {PickerSearchResult::Text(u"test")},
+                                       /*has_more_results=*/false);
+  task_environment().FastForwardBy(base::Milliseconds(99));
+  aggregator.HandleNoMoreResults(/*interrupted=*/true);
+}
+
+TEST_P(PickerSearchAggregatorTest,
+       DoesNotPublishEmptyAfterResultsIfInterruptedNoMoreResultsAfterBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(0);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  aggregator.HandleSearchSourceResults(GetParam().source,
+                                       {PickerSearchResult::Text(u"test")},
+                                       /*has_more_results=*/false);
+  task_environment().FastForwardBy(kBurnInPeriod);
+  aggregator.HandleNoMoreResults(/*interrupted=*/true);
+}
+
+TEST_P(PickerSearchAggregatorTest,
+       DoesNotPublishEmptyAfterResultsIfInterruptedNoMoreResultsPostBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(0);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  task_environment().FastForwardBy(kBurnInPeriod);
+  aggregator.HandleSearchSourceResults(GetParam().source,
+                                       {PickerSearchResult::Text(u"test")},
+                                       /*has_more_results=*/false);
+  aggregator.HandleNoMoreResults(/*interrupted=*/true);
+}
+
 class PickerSearchAggregatorMultipleSourcesTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment& task_environment() {
@@ -231,7 +435,7 @@ class PickerSearchAggregatorMultipleSourcesTest : public testing::Test {
 TEST_F(PickerSearchAggregatorMultipleSourcesTest,
        PublishesEmptySectionsIfNoResultsCameBeforeBurnIn) {
   MockSearchResultsCallback search_results_callback;
-  EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
+  EXPECT_CALL(search_results_callback, Call(_)).Times(0);
 
   PickerSearchAggregator aggregator(
       kBurnInPeriod,
@@ -243,7 +447,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
 TEST_F(PickerSearchAggregatorMultipleSourcesTest,
        PublishesEmptySectionsIfOnlyEmptyResultsCameBeforeBurnIn) {
   MockSearchResultsCallback search_results_callback;
-  EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
+  EXPECT_CALL(search_results_callback, Call(_)).Times(0);
 
   PickerSearchAggregator aggregator(
       kBurnInPeriod,
@@ -567,7 +771,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
        AppendsSearchResultsPostBurnIn) {
   MockSearchResultsCallback search_results_callback;
   testing::InSequence seq;
-  EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
+  EXPECT_CALL(search_results_callback, Call(_)).Times(0);
   // Suggested section do not appear post burn-in.
   EXPECT_CALL(search_results_callback,
               Call(ElementsAre(AllOf(
@@ -739,7 +943,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
        AppendsSearchResultsRetainingSeeMoreResultsPostBurnIn) {
   MockSearchResultsCallback search_results_callback;
   testing::InSequence seq;
-  EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
+  EXPECT_CALL(search_results_callback, Call(_)).Times(0);
   EXPECT_CALL(
       search_results_callback,
       Call(Each(Property("has_more_results",
@@ -783,7 +987,7 @@ class PickerSearchAggregatorGifTest : public testing::Test {
 TEST_F(PickerSearchAggregatorGifTest,
        GifsAreNotPublishedWithoutDriveResultsAfterBurnIn) {
   MockSearchResultsCallback search_results_callback;
-  EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
+  EXPECT_CALL(search_results_callback, Call(_)).Times(0);
 
   PickerSearchAggregator aggregator(
       kBurnInPeriod,
@@ -799,7 +1003,7 @@ TEST_F(PickerSearchAggregatorGifTest,
 TEST_F(PickerSearchAggregatorGifTest,
        GifsAreNotPublishedWithoutDriveResultsPostBurnIn) {
   MockSearchResultsCallback search_results_callback;
-  EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
+  EXPECT_CALL(search_results_callback, Call).Times(0);
 
   PickerSearchAggregator aggregator(
       kBurnInPeriod,
@@ -810,6 +1014,126 @@ TEST_F(PickerSearchAggregatorGifTest,
   aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor,
                                        {PickerSearchResult::Text(u"test")},
                                        /*has_more_results=*/true);
+}
+
+TEST_F(PickerSearchAggregatorGifTest,
+       GifsArePublishedWithoutDriveResultsIfNoMoreResultsBeforeBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  {
+    ::testing::InSequence seq;
+    EXPECT_CALL(
+        search_results_callback,
+        Call(ElementsAre(Property("type", &PickerSearchResultsSection::type,
+                                  PickerSectionType::kGifs))))
+        .Times(1);
+    EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
+  }
+
+  PickerSearchAggregator aggregator(
+      base::Milliseconds(100),
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor,
+                                       {PickerSearchResult::Text(u"test")},
+                                       /*has_more_results=*/true);
+  task_environment().FastForwardBy(base::Milliseconds(99));
+  aggregator.HandleNoMoreResults(/*interrupted=*/false);
+}
+
+TEST_F(PickerSearchAggregatorGifTest,
+       GifsArePublishedWithoutDriveResultsIfNoMoreResultsAfterBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  {
+    ::testing::InSequence seq;
+    EXPECT_CALL(
+        search_results_callback,
+        Call(ElementsAre(Property("type", &PickerSearchResultsSection::type,
+                                  PickerSectionType::kGifs))))
+        .Times(1);
+    EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
+  }
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor,
+                                       {PickerSearchResult::Text(u"test")},
+                                       /*has_more_results=*/true);
+  task_environment().FastForwardBy(kBurnInPeriod);
+  aggregator.HandleNoMoreResults(/*interrupted=*/false);
+}
+
+TEST_F(PickerSearchAggregatorGifTest,
+       GifsArePublishedWithoutDriveResultsIfNoMoreResultsPostBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  {
+    ::testing::InSequence seq;
+    EXPECT_CALL(
+        search_results_callback,
+        Call(ElementsAre(Property("type", &PickerSearchResultsSection::type,
+                                  PickerSectionType::kGifs))))
+        .Times(1);
+    EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
+  }
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+  task_environment().FastForwardBy(kBurnInPeriod);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor,
+                                       {PickerSearchResult::Text(u"test")},
+                                       /*has_more_results=*/true);
+  aggregator.HandleNoMoreResults(/*interrupted=*/false);
+}
+
+TEST_F(PickerSearchAggregatorGifTest,
+       GifsAreNotPublishedIfInterruptedNoMoreResultsBeforeBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(0);
+
+  PickerSearchAggregator aggregator(
+      base::Milliseconds(100),
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor,
+                                       {PickerSearchResult::Text(u"test")},
+                                       /*has_more_results=*/true);
+  task_environment().FastForwardBy(base::Milliseconds(99));
+  aggregator.HandleNoMoreResults(/*interrupted=*/true);
+}
+
+TEST_F(PickerSearchAggregatorGifTest,
+       GifsAreNotPublishedIfInterruptedNoMoreResultsAfterBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(0);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor,
+                                       {PickerSearchResult::Text(u"test")},
+                                       /*has_more_results=*/true);
+  task_environment().FastForwardBy(kBurnInPeriod);
+  aggregator.HandleNoMoreResults(/*interrupted=*/true);
+}
+
+TEST_F(PickerSearchAggregatorGifTest,
+       GifsAreNotPublishedIfInterruptedNoMoreResultsPostBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(0);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+  task_environment().FastForwardBy(kBurnInPeriod);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor,
+                                       {PickerSearchResult::Text(u"test")},
+                                       /*has_more_results=*/true);
+  aggregator.HandleNoMoreResults(/*interrupted=*/true);
 }
 
 TEST_F(PickerSearchAggregatorGifTest,
@@ -859,7 +1183,7 @@ TEST_F(PickerSearchAggregatorGifTest,
        GifsPublishedAfterDriveResultsPostBurnIn) {
   MockSearchResultsCallback search_results_callback;
   testing::InSequence seq;
-  EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
+  EXPECT_CALL(search_results_callback, Call(_)).Times(0);
   // Suggested section do not appear post burn-in.
   EXPECT_CALL(search_results_callback,
               Call(ElementsAre(AllOf(

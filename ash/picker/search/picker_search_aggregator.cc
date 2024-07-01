@@ -12,6 +12,7 @@
 #include "ash/picker/search/picker_search_source.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
+#include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/overloaded.h"
 #include "base/location.h"
@@ -73,6 +74,7 @@ PickerSearchAggregator::PickerSearchAggregator(
     base::TimeDelta burn_in_period,
     PickerViewDelegate::SearchResultsCallback callback) {
   current_callback_ = std::move(callback);
+  CHECK(!current_callback_.is_null());
 
   // TODO: b/324154537 - Show a loading animation while waiting for results.
   burn_in_timer_.Start(FROM_HERE, burn_in_period, this,
@@ -85,6 +87,8 @@ void PickerSearchAggregator::HandleSearchSourceResults(
     PickerSearchSource source,
     std::vector<PickerSearchResult> results,
     bool has_more_results) {
+  CHECK(!current_callback_.is_null())
+      << "Results were obtained after \"no more results\"";
   // GIF results must appear later than Drive results. In the case where GIF
   // search finishes before Drive search, store the GIF results for when Drive
   // search finishes.
@@ -96,14 +100,36 @@ void PickerSearchAggregator::HandleSearchSourceResults(
   HandleSearchSourceResultsImpl(source, std::move(results), has_more_results);
 
   if (source == PickerSearchSource::kDrive) {
-    drive_search_finished_ = true;
-    if (pending_gif_results_.has_value()) {
-      HandleSearchSourceResultsImpl(PickerSearchSource::kTenor,
-                                    std::move(*pending_gif_results_),
-                                    /*has_more_results=*/true);
-      pending_gif_results_ = std::nullopt;
-    }
+    SetDriveSearchFinished();
   }
+}
+
+void PickerSearchAggregator::SetDriveSearchFinished() {
+  if (drive_search_finished_) {
+    return;
+  }
+  drive_search_finished_ = true;
+  if (pending_gif_results_.has_value()) {
+    HandleSearchSourceResultsImpl(PickerSearchSource::kTenor,
+                                  std::move(*pending_gif_results_),
+                                  /*has_more_results=*/true);
+    pending_gif_results_ = std::nullopt;
+  }
+}
+
+void PickerSearchAggregator::HandleNoMoreResults(bool interrupted) {
+  // Only call the callback if it wasn't interrupted.
+  if (!interrupted) {
+    SetDriveSearchFinished();
+    // We could get a "no more results" signal before burn-in finishes.
+    // Publish those results immediately if that is the case.
+    if (burn_in_timer_.IsRunning()) {
+      burn_in_timer_.FireNow();
+    }
+    current_callback_.Run({});
+  }
+  // Ensure that we don't accidentally publish more results afterwards.
+  current_callback_.Reset();
 }
 
 PickerSearchAggregator::PickerSearchResults::PickerSearchResults() = default;
@@ -165,7 +191,9 @@ void PickerSearchAggregator::PublishBurnInResults() {
                             it->second.has_more);
     }
   }
-  current_callback_.Run(std::move(sections));
+  if (!sections.empty()) {
+    current_callback_.Run(std::move(sections));
+  }
 }
 
 void PickerSearchAggregator::HandleSearchSourceResultsImpl(

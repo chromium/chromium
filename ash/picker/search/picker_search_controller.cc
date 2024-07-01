@@ -69,7 +69,9 @@ void PickerSearchController::StartSearch(
       query, std::move(category),
       base::BindRepeating(&PickerSearchAggregator::HandleSearchSourceResults,
                           aggregator_->GetWeakPtr()),
-      /*done_closure=*/base::DoNothing(), &client_.get(), available_categories);
+      base::BindOnce(&PickerSearchAggregator::HandleNoMoreResults,
+                     aggregator_->GetWeakPtr()),
+      &client_.get(), available_categories);
 }
 
 void PickerSearchController::StartEmojiSearch(
