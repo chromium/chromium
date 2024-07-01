@@ -311,7 +311,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       // Session domain
       // keep-sorted start block=yes
       case 'session.new':
-        return await this.#sessionProcessor.create(command.params);
+        return await this.#sessionProcessor.new(command.params);
       case 'session.status':
         return this.#sessionProcessor.status();
       case 'session.subscribe':

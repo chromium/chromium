@@ -38,7 +38,7 @@ export class SessionProcessor {
     return {ready: false, message: 'already connected'};
   }
 
-  async create(_params: Session.NewParameters): Promise<Session.NewResult> {
+  async new(_params: Session.NewParameters): Promise<Session.NewResult> {
     // Since mapper exists, there is a session already.
     // Still the mapper can handle capabilities for us.
     // Currently, only Puppeteer calls here but, eventually, every client
