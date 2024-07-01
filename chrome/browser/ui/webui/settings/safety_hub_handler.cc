@@ -102,10 +102,7 @@ PermissionsData GetUnusedSitePermissionsFromDict(
   std::vector<std::tuple<std::string, std::string,
                          content_settings::ContentSettingConstraints*>>
       keys = {{safety_hub::kExpirationKey, safety_hub::kLifetimeKey,
-               &permissions_data.constraints},
-              {safety_hub::kAbusiveRevocationExpirationKey,
-               safety_hub::kAbusiveRevocationLifetimeKey,
-               &permissions_data.abusive_revocation_constraints}};
+               &permissions_data.constraints}};
   if (base::FeatureList::IsEnabled(
           safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
     keys.push_back({safety_hub::kAbusiveRevocationExpirationKey,
