@@ -11788,6 +11788,7 @@
                     },
                     "enable_features": [
                         "PageContentAnnotations",
+                        "SegmentationPlatformURLVisitResumptionRanker",
                         "TabResumption",
                         "TabResumption1_5",
                         "TabResumption2"
