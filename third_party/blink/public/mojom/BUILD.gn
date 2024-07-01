@@ -49,6 +49,7 @@ mojom("mojom_platform") {
     "clipboard/clipboard.mojom",
     "close_watcher/close_listener.mojom",
     "commit_result/commit_result.mojom",
+    "compute_pressure/web_pressure_manager.mojom",
     "content_extraction/inner_html.mojom",
     "content_extraction/inner_text.mojom",
     "content_index/content_index.mojom",

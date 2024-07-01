@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
+#include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom.h"
 
 namespace content {
 
@@ -25,7 +26,7 @@ class RenderFrameHost;
 //
 // This class is not thread-safe, so each instance must be used on one sequence.
 class CONTENT_EXPORT PressureServiceBase
-    : public device::mojom::PressureManager {
+    : public blink::mojom::WebPressureManager {
  public:
   ~PressureServiceBase() override;
 
@@ -36,7 +37,7 @@ class CONTENT_EXPORT PressureServiceBase
   static bool HasImplicitFocus(RenderFrameHost* render_frame_host);
 
   void BindReceiver(
-      mojo::PendingReceiver<device::mojom::PressureManager> receiver);
+      mojo::PendingReceiver<blink::mojom::WebPressureManager> receiver);
 
   virtual bool CanCallAddClient() const;
 
@@ -77,7 +78,7 @@ class CONTENT_EXPORT PressureServiceBase
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Blink side.
-  mojo::Receiver<device::mojom::PressureManager> GUARDED_BY_CONTEXT(
+  mojo::Receiver<blink::mojom::WebPressureManager> GUARDED_BY_CONTEXT(
       sequence_checker_) manager_receiver_{this};
 
   std::array<PressureClientImpl,

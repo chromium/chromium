@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/compute_pressure/pressure_service_for_frame.h"
+
 #include <vector>
 
 #include "base/barrier_closure.h"
@@ -13,7 +15,6 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "content/browser/compute_pressure/pressure_client_impl.h"
-#include "content/browser/compute_pressure/pressure_service_for_frame.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_frame_host.h"
@@ -27,6 +28,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
+#include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -163,7 +165,7 @@ class PressureServiceForFrameTest : public RenderViewHostImplTestHarness {
   const GURL kTestUrl{"https://example.com/compute_pressure.html"};
   const GURL kInsecureUrl{"http://example.com/compute_pressure.html"};
 
-  mojo::Remote<device::mojom::PressureManager> pressure_manager_;
+  mojo::Remote<blink::mojom::WebPressureManager> pressure_manager_;
   std::unique_ptr<device::ScopedPressureManagerOverrider>
       pressure_manager_overrider_;
 };
@@ -340,7 +342,7 @@ TEST_F(PressureServiceForFrameFencedFrameTest, AccessFromFencedFrame) {
   fenced_frame_rfh = static_cast<RenderFrameHostImpl*>(
       navigation_simulator->GetFinalRenderFrameHost());
 
-  mojo::Remote<device::mojom::PressureManager> fenced_frame_pressure_manager;
+  mojo::Remote<blink::mojom::WebPressureManager> fenced_frame_pressure_manager;
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker>& bib =
       static_cast<RenderFrameHostImpl*>(fenced_frame_rfh)
           ->browser_interface_broker_receiver_for_testing();

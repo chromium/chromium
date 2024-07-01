@@ -107,7 +107,6 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/features.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
-#include "services/device/public/mojom/pressure_manager.mojom.h"
 #include "services/device/public/mojom/vibration_manager.mojom.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "services/metrics/ukm_recorder_factory_impl.h"
@@ -135,6 +134,7 @@
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom.h"
+#include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom.h"
 #include "third_party/blink/public/mojom/contacts/contacts_manager.mojom.h"
 #include "third_party/blink/public/mojom/content_index/content_index.mojom.h"
 #include "third_party/blink/public/mojom/cookie_store/cookie_store.mojom.h"
@@ -657,7 +657,7 @@ void BindBatteryMonitor(
 
 void BindPressureManager(
     RenderFrameHostImpl* host,
-    mojo::PendingReceiver<device::mojom::PressureManager> receiver) {
+    mojo::PendingReceiver<blink::mojom::WebPressureManager> receiver) {
   if (!network::IsOriginPotentiallyTrustworthy(
           host->GetLastCommittedOrigin())) {
     bad_message::ReceivedBadMessage(
@@ -755,7 +755,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   }
 
   if (base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
-    map->Add<device::mojom::PressureManager>(
+    map->Add<blink::mojom::WebPressureManager>(
         base::BindRepeating(&BindPressureManager, base::Unretained(host)));
   }
 
@@ -1358,7 +1358,7 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
       base::BindRepeating(&DedicatedWorkerHost::GetFileSystemAccessManager,
                           base::Unretained(host)));
   if (base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
-    map->Add<device::mojom::PressureManager>(base::BindRepeating(
+    map->Add<blink::mojom::WebPressureManager>(base::BindRepeating(
         &DedicatedWorkerHost::BindPressureService, base::Unretained(host)));
   }
 
@@ -1464,7 +1464,7 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
   map->Add<blink::mojom::BucketManagerHost>(base::BindRepeating(
       &SharedWorkerHost::CreateBucketManagerHost, base::Unretained(host)));
   if (base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
-    map->Add<device::mojom::PressureManager>(base::BindRepeating(
+    map->Add<blink::mojom::WebPressureManager>(base::BindRepeating(
         &SharedWorkerHost::BindPressureService, base::Unretained(host)));
   }
   if (base::FeatureList::IsEnabled(blink::features::kEnableModelExecutionAPI)) {

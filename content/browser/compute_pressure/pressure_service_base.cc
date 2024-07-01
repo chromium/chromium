@@ -84,7 +84,7 @@ bool PressureServiceBase::CanCallAddClient() const {
 }
 
 void PressureServiceBase::BindReceiver(
-    mojo::PendingReceiver<device::mojom::PressureManager> receiver) {
+    mojo::PendingReceiver<blink::mojom::WebPressureManager> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (manager_receiver_.is_bound()) {

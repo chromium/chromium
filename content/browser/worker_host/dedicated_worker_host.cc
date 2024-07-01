@@ -808,7 +808,7 @@ void DedicatedWorkerHost::GetFileSystemAccessManager(
 }
 
 void DedicatedWorkerHost::BindPressureService(
-    mojo::PendingReceiver<device::mojom::PressureManager> receiver) {
+    mojo::PendingReceiver<blink::mojom::WebPressureManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!network::IsOriginPotentiallyTrustworthy(creator_origin_)) {

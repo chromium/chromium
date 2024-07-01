@@ -26,7 +26,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/base/isolation_info.h"
-#include "services/device/public/mojom/pressure_manager.mojom.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
@@ -35,6 +34,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-forward.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
+#include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
@@ -158,7 +158,7 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   void GetFileSystemAccessManager(
       mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver);
   void BindPressureService(
-      mojo::PendingReceiver<device::mojom::PressureManager> receiver);
+      mojo::PendingReceiver<blink::mojom::WebPressureManager> receiver);
 
 #if !BUILDFLAG(IS_ANDROID)
   void BindSerialService(

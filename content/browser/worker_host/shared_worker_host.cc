@@ -562,7 +562,7 @@ void SharedWorkerHost::CreateBucketManagerHost(
 }
 
 void SharedWorkerHost::BindPressureService(
-    mojo::PendingReceiver<device::mojom::PressureManager> receiver) {
+    mojo::PendingReceiver<blink::mojom::WebPressureManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!network::IsOriginPotentiallyTrustworthy(GetStorageKey().origin())) {

@@ -33,6 +33,7 @@
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -163,7 +164,7 @@ class PressureServiceForDedicatedWorkerTest
  protected:
   const GURL kTestUrl{"https://example.com/compute_pressure.html"};
 
-  mojo::Remote<device::mojom::PressureManager> pressure_manager_;
+  mojo::Remote<blink::mojom::WebPressureManager> pressure_manager_;
   std::unique_ptr<device::ScopedPressureManagerOverrider>
       pressure_manager_overrider_;
   DedicatedWorkerServiceImpl worker_service_;
@@ -271,7 +272,7 @@ class PressureServiceForSharedWorkerTest
   const GURL kWorkerUrl{"https://example.com/w.js"};
   const ukm::SourceId kClientUkmSourceId = 12345;
 
-  mojo::Remote<device::mojom::PressureManager> pressure_manager_;
+  mojo::Remote<blink::mojom::WebPressureManager> pressure_manager_;
   mojo::PendingReceiver<blink::mojom::SharedWorkerClient> receiver_;
   std::unique_ptr<device::ScopedPressureManagerOverrider>
       pressure_manager_overrider_;
