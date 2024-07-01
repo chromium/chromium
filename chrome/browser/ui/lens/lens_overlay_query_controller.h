@@ -113,6 +113,10 @@ class LensOverlayQueryController {
       EndpointFetcherCallback fetched_response_callback,
       std::optional<uint64_t> gen204_identifier);
 
+  // Sends a latency Gen204 ping if enabled.
+  virtual void SendLatencyGen204IfEnabled(int64_t latency_ms,
+                                          uint64_t gen204_identifier);
+
   // The callback for full image requests, including upon query flow start
   // and interaction retries.
   LensOverlayFullImageResponseCallback full_image_callback_;
@@ -173,10 +177,6 @@ class LensOverlayQueryController {
 
   // Handles the response from a gen204 request.
   void OnGen204LoaderComplete(std::unique_ptr<std::string> response_body);
-
-  // Sends a latency Gen204 ping if enabled.
-  void SendLatencyGen204IfEnabled(int64_t latency_ms,
-                                  uint64_t gen204_identifier);
 
   // Runs the full image callback with empty response data, for errors.
   void RunFullImageCallbackForError();

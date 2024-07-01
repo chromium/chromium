@@ -63,7 +63,7 @@ const base::FeatureParam<int> kLensOverlayImageCompressionQuality{
 const base::FeatureParam<bool> kLensOverlayUseTieredDownscaling{
     &kLensOverlay, "enable-tiered-downscaling", false};
 const base::FeatureParam<bool> kLensOverlaySendLatencyGen204{
-    &kLensOverlay, "enable-gen204-latency", false};
+    &kLensOverlay, "enable-gen204-latency", true};
 const base::FeatureParam<int> kLensOverlayImageMaxArea{
     &kLensOverlay, "image-dimensions-max-area", 1500000};
 const base::FeatureParam<int> kLensOverlayImageMaxHeight{
