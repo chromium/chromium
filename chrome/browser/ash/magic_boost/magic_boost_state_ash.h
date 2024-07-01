@@ -13,6 +13,10 @@
 
 namespace ash {
 
+namespace input_method {
+class EditorPanelManager;
+}  // namespace input_method
+
 class SessionController;
 class Shell;
 
@@ -40,6 +44,13 @@ class MagicBoostStateAsh : public chromeos::MagicBoostState,
   // Virtual for testing.
   virtual void EnableOrcaFeature();
 
+  input_method::EditorPanelManager* GetEditorPanelManager();
+
+  void set_editor_panel_manager_for_test(
+      input_method::EditorPanelManager* editor_manager) {
+    editor_manager_for_test_ = editor_manager;
+  }
+
  private:
   friend class MagicBoostStateAshTest;
 
@@ -62,6 +73,8 @@ class MagicBoostStateAsh : public chromeos::MagicBoostState,
 
   base::ScopedObservation<ash::SessionController, ash::SessionObserver>
       session_observation_{this};
+
+  raw_ptr<input_method::EditorPanelManager> editor_manager_for_test_ = nullptr;
 
   base::ScopedObservation<ash::Shell, ash::ShellObserver> shell_observation_{
       this};

@@ -216,4 +216,15 @@ void EditorPanelManager::NotifyEditorModeChanged(const EditorMode& mode) {
   }
 }
 
+void EditorPanelManager::OnConsentApproved() {
+  delegate_->ProcessConsentAction(ConsentAction::kApprove);
+}
+
+void EditorPanelManager::OnMagicBoostPromoCardDeclined() {
+  // Reject consent and follow the normal workflow similar to when Orca's promo
+  // card is declined.
+  OnConsentRejected();
+  OnPromoCardDeclined();
+}
+
 }  // namespace ash::input_method

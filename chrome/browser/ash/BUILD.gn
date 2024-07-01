@@ -2911,6 +2911,7 @@ static_library("ash") {
     "//chrome/browser/ash/kcer/nssdb_migration",
     "//chrome/browser/ash/kerberos",
     "//chrome/browser/ash/lock_screen_apps",
+    "//chrome/browser/ash/magic_boost",
     "//chrome/browser/ash/multidevice_debug",
     "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/ash/nearby",

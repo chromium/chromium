@@ -8,7 +8,12 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
+#include "base/functional/bind.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "chrome/browser/ash/input_method/editor_mediator_factory.h"
+#include "chrome/browser/ash/input_method/editor_panel_manager.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/crosapi/mojom/editor_panel.mojom.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -29,7 +34,9 @@ MagicBoostStateAsh::MagicBoostStateAsh() {
   }
 }
 
-MagicBoostStateAsh::~MagicBoostStateAsh() = default;
+MagicBoostStateAsh::~MagicBoostStateAsh() {
+  editor_manager_for_test_ = nullptr;
+}
 
 void MagicBoostStateAsh::OnFirstSessionStarted() {
   PrefService* prefs =
@@ -56,16 +63,36 @@ void MagicBoostStateAsh::AsyncWriteHMREnabled(bool enabled) {
 
 void MagicBoostStateAsh::ShouldIncludeOrcaInOptIn(
     base::OnceCallback<void(bool)> callback) {
-  // TODO(b/340688577): Complete this function.
-  std::move(callback).Run(true);
+  GetEditorPanelManager()->GetEditorPanelContext(base::BindOnce(
+      [](base::OnceCallback<void(bool)> callback,
+         crosapi::mojom::EditorPanelContextPtr panel_context) {
+        // If the mode is `kPromoCard`, it means that user hasn't finished Orca
+        // opt-in flow yet, and we should include Orca in this opt-in flow.
+        std::move(callback).Run(panel_context->editor_panel_mode ==
+                                crosapi::mojom::EditorPanelMode::kPromoCard);
+      },
+      std::move(callback)));
 }
 
 void MagicBoostStateAsh::DisableOrcaFeature() {
-  // TODO(b/340688577): Complete this function.
+  GetEditorPanelManager()->OnMagicBoostPromoCardDeclined();
 }
 
 void MagicBoostStateAsh::EnableOrcaFeature() {
-  // TODO(b/340688577): Complete this function.
+  // Note that we just need to change consent status to enable the Orca feature,
+  // since when Orca consent status is unset, `kOrcaEnabled` should be enabled
+  // by default.
+  GetEditorPanelManager()->OnConsentApproved();
+}
+
+input_method::EditorPanelManager* MagicBoostStateAsh::GetEditorPanelManager() {
+  if (editor_manager_for_test_) {
+    return editor_manager_for_test_;
+  }
+
+  return input_method::EditorMediatorFactory::GetInstance()
+      ->GetForProfile(ProfileManager::GetActiveUserProfile())
+      ->panel_manager();
 }
 
 void MagicBoostStateAsh::OnShellDestroying() {

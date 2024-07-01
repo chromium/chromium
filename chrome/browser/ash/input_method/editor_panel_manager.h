@@ -82,6 +82,10 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
   void RemoveObserver(Observer* observer);
   void NotifyEditorModeChanged(const EditorMode& mode);
 
+  // Used by the Magic Boost opt-in flow. Virtual for testing.
+  virtual void OnConsentApproved();
+  void OnMagicBoostPromoCardDeclined();
+
  private:
   void OnGetPresetTextQueriesResult(
       GetEditorPanelContextCallback callback,

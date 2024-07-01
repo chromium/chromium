@@ -9,13 +9,19 @@
 #include "ash/test/ash_test_base.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
+#include "chrome/browser/ash/input_method/editor_panel_manager.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
+#include "chromeos/crosapi/mojom/editor_panel.mojom-shared.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 using chromeos::HMRConsentStatus;
 using chromeos::MagicBoostState;
 
 namespace ash {
+
+namespace {
 
 class TestMagicBoostStateObserver : public MagicBoostState::Observer {
  public:
@@ -42,6 +48,26 @@ class TestMagicBoostStateObserver : public MagicBoostState::Observer {
   HMRConsentStatus hmr_consent_status_ = HMRConsentStatus::kUnset;
 };
 
+class MockEditorPanelManager : public input_method::EditorPanelManager {
+ public:
+  MockEditorPanelManager()
+      : input_method::EditorPanelManager(/*delegate=*/nullptr) {}
+  MockEditorPanelManager(const MockEditorPanelManager&) = delete;
+  MockEditorPanelManager& operator=(const MockEditorPanelManager&) = delete;
+  ~MockEditorPanelManager() override = default;
+
+  // input_method::EditorPanelManager:
+  MOCK_METHOD(void,
+              GetEditorPanelContext,
+              (base::OnceCallback<void(crosapi::mojom::EditorPanelContextPtr)>),
+              (override));
+  MOCK_METHOD(void, OnPromoCardDeclined, (), (override));
+  MOCK_METHOD(void, OnConsentApproved, (), (override));
+  MOCK_METHOD(void, OnConsentRejected, (), (override));
+};
+
+}  // namespace
+
 class MagicBoostStateAshTest : public AshTestBase {
  protected:
   MagicBoostStateAshTest() = default;
@@ -57,6 +83,8 @@ class MagicBoostStateAshTest : public AshTestBase {
         ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService());
 
     magic_boost_state_ = std::make_unique<MagicBoostStateAsh>();
+    magic_boost_state_->set_editor_panel_manager_for_test(
+        &mock_editor_manager_);
 
     observer_ = std::make_unique<TestMagicBoostStateObserver>();
   }
@@ -72,10 +100,15 @@ class MagicBoostStateAshTest : public AshTestBase {
 
   TestMagicBoostStateObserver* observer() { return observer_.get(); }
 
+  MagicBoostStateAsh* magic_boost_state() { return magic_boost_state_.get(); }
+
+  MockEditorPanelManager& mock_editor_manager() { return mock_editor_manager_; }
+
  private:
   raw_ptr<TestingPrefServiceSimple> prefs_;
   std::unique_ptr<TestMagicBoostStateObserver> observer_;
   std::unique_ptr<MagicBoostStateAsh> magic_boost_state_;
+  testing::NiceMock<MockEditorPanelManager> mock_editor_manager_;
 };
 
 TEST_F(MagicBoostStateAshTest, UpdateHMREnabledState) {
@@ -129,6 +162,104 @@ TEST_F(MagicBoostStateAshTest, UpdateHMRConsentWindowDismissCount) {
 
   prefs()->SetInteger(ash::prefs::kHMRConsentWindowDismissCount, 2);
   EXPECT_EQ(MagicBoostState::Get()->hmr_consent_window_dismiss_count(), 2);
+}
+
+TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInFunctionCall) {
+  // Should fetch panel context from `EditorPanelManager` to see if opt-in is
+  // needed for Orca.
+  EXPECT_CALL(mock_editor_manager(), GetEditorPanelContext);
+  magic_boost_state()->ShouldIncludeOrcaInOptIn(
+      base::BindOnce([](bool result) {}));
+  testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
+}
+
+TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInPromoCard) {
+  ON_CALL(mock_editor_manager(), GetEditorPanelContext)
+      .WillByDefault(
+          [](base::OnceCallback<void(crosapi::mojom::EditorPanelContextPtr)>
+                 callback) {
+            auto context = crosapi::mojom::EditorPanelContext::New();
+            context->editor_panel_mode =
+                crosapi::mojom::EditorPanelMode::kPromoCard;
+            std::move(callback).Run(std::move(context));
+          });
+
+  magic_boost_state()->ShouldIncludeOrcaInOptIn(base::BindOnce([](bool result) {
+    // If `EditorPanelMode` is `kPromoCard`, Orca should be included in opt-in
+    // flow.
+    EXPECT_TRUE(result);
+  }));
+  testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
+}
+
+TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInBlocked) {
+  ON_CALL(mock_editor_manager(), GetEditorPanelContext)
+      .WillByDefault([](base::OnceCallback<void(
+                            crosapi::mojom::EditorPanelContextPtr)> callback) {
+        auto context = crosapi::mojom::EditorPanelContext::New();
+        context->editor_panel_mode = crosapi::mojom::EditorPanelMode::kBlocked;
+        std::move(callback).Run(std::move(context));
+      });
+
+  magic_boost_state()->ShouldIncludeOrcaInOptIn(base::BindOnce([](bool result) {
+    // If `EditorPanelMode` is `kBlocked`, Orca should not be included in opt-in
+    // flow.
+    EXPECT_FALSE(result);
+  }));
+  testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
+}
+
+TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInWrite) {
+  ON_CALL(mock_editor_manager(), GetEditorPanelContext)
+      .WillByDefault([](base::OnceCallback<void(
+                            crosapi::mojom::EditorPanelContextPtr)> callback) {
+        auto context = crosapi::mojom::EditorPanelContext::New();
+        context->editor_panel_mode = crosapi::mojom::EditorPanelMode::kWrite;
+        std::move(callback).Run(std::move(context));
+      });
+
+  magic_boost_state()->ShouldIncludeOrcaInOptIn(base::BindOnce([](bool result) {
+    // If `EditorPanelMode` is `kWrite`, Orca should not be included in opt-in
+    // flow.
+    EXPECT_FALSE(result);
+  }));
+  testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
+}
+
+TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInRewrite) {
+  ON_CALL(mock_editor_manager(), GetEditorPanelContext)
+      .WillByDefault([](base::OnceCallback<void(
+                            crosapi::mojom::EditorPanelContextPtr)> callback) {
+        auto context = crosapi::mojom::EditorPanelContext::New();
+        context->editor_panel_mode = crosapi::mojom::EditorPanelMode::kRewrite;
+        std::move(callback).Run(std::move(context));
+      });
+
+  magic_boost_state()->ShouldIncludeOrcaInOptIn(base::BindOnce([](bool result) {
+    // If `EditorPanelMode` is `kRewrite`, Orca should not be included in
+    // opt-in flow.
+    EXPECT_FALSE(result);
+  }));
+  testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
+}
+
+TEST_F(MagicBoostStateAshTest, DisableOrcaFeature) {
+  // `DisableOrcaFeature` should trigger the correct functions from
+  // `EditorPanelManager`.
+  EXPECT_CALL(mock_editor_manager(), OnConsentRejected);
+  EXPECT_CALL(mock_editor_manager(), OnPromoCardDeclined);
+
+  magic_boost_state()->DisableOrcaFeature();
+  testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
+}
+
+TEST_F(MagicBoostStateAshTest, EnableOrcaFeature) {
+  // `EnableOrcaFeature` should trigger the correct functions from
+  // `EditorPanelManager`.
+  EXPECT_CALL(mock_editor_manager(), OnConsentApproved);
+
+  magic_boost_state()->EnableOrcaFeature();
+  testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
 }
 
 }  // namespace ash
