@@ -191,6 +191,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
       emptyBodyFolder: 'folder body',
       emptyTitleGuest: 'guest title',
       emptyBodyGuest: 'guest body',
+      bookmarksTreeViewEnabled: false,
     });
 
     await initializeUI();
