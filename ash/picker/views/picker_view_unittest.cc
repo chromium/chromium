@@ -864,7 +864,9 @@ TEST_F(PickerViewTest, RecordsSearchLatencyAfterSearchFinished) {
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
           [&, this](FakePickerViewDelegate::SearchResultsCallback callback) {
-            task_environment()->FastForwardBy(base::Seconds(1));
+            // The search automatically publishes results after burn-in + 50ms,
+            // so publish "burn in results" before that.
+            task_environment()->FastForwardBy(PickerController::kBurnInPeriod);
             callback.Run({});
           }),
   });
@@ -874,7 +876,24 @@ TEST_F(PickerViewTest, RecordsSearchLatencyAfterSearchFinished) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
 
   histogram.ExpectUniqueTimeSample("Ash.Picker.Session.SearchLatency",
-                                   base::Seconds(1), 1);
+                                   PickerController::kBurnInPeriod, 1);
+}
+
+TEST_F(PickerViewTest, RecordsSearchLatencyWhenResultsAreAutomaticallyCleared) {
+  base::HistogramTester histogram;
+  FakePickerViewDelegate delegate({
+      .search_function = base::BindLambdaForTesting(
+          [&, this](FakePickerViewDelegate::SearchResultsCallback callback) {
+            task_environment()->FastForwardBy(PickerView::kClearResultsTimeout);
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+
+  histogram.ExpectUniqueTimeSample("Ash.Picker.Session.SearchLatency",
+                                   PickerView::kClearResultsTimeout, 1);
 }
 
 TEST_F(PickerViewTest, BoundsDefaultAlignedWithAnchor) {

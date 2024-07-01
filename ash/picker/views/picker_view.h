@@ -140,6 +140,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // Displays `results` in the emoji bar.
   void PublishEmojiResults(std::vector<PickerSearchResult> results);
 
+  // Clears the search results.
+  void OnClearResultsTimerFired();
+
   // Displays `results` in the search view.
   // If `show_no_results_found` is true and `results` is empty, then a "no
   // results found" view is shown instead of a blank view.

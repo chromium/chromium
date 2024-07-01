@@ -375,12 +375,10 @@ void PickerView::StartSearch(const std::u16string& query) {
   delegate_->GetSessionMetrics().UpdateSearchQuery(query);
   if (!query.empty()) {
     SetActivePage(search_results_view_);
-    // SAFETY: `clear_results_timer_` will be destructed before the child view
-    // pointed to by `search_results_view_`.
     clear_results_timer_.Start(
         FROM_HERE, kClearResultsTimeout,
-        base::BindOnce(&PickerSearchResultsView::ClearSearchResults,
-                       base::Unretained(search_results_view_)));
+        base::BindOnce(&PickerView::OnClearResultsTimerFired,
+                       weak_ptr_factory_.GetWeakPtr()));
     delegate_->StartEmojiSearch(query,
                                 base::BindOnce(&PickerView::PublishEmojiResults,
                                                weak_ptr_factory_.GetWeakPtr()));
@@ -404,11 +402,17 @@ void PickerView::PublishEmojiResults(std::vector<PickerSearchResult> results) {
   }
 }
 
+void PickerView::OnClearResultsTimerFired() {
+  search_results_view_->ClearSearchResults();
+  performance_metrics_.MarkSearchResultsUpdated();
+}
+
 void PickerView::PublishSearchResults(
     bool show_no_results_found,
     std::vector<PickerSearchResultsSection> results) {
   if (clear_results_timer_.IsRunning()) {
-    clear_results_timer_.FireNow();
+    clear_results_timer_.Stop();
+    search_results_view_->ClearSearchResults();
   }
 
   // TODO: b/333826943: This is a hacky way to detect if there are no results.
