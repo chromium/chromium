@@ -422,9 +422,16 @@ void PickerView::PublishSearchResults(
   // Design a better API for notifying when the search has completed without any
   // results.
   if (show_no_results_found && results.empty()) {
-    search_results_view_->ShowNoResultsFound();
-    performance_metrics_.MarkSearchResultsUpdated(
-        PickerPerformanceMetrics::SearchResultsUpdate::kNoResultsFound);
+    bool no_results_found_shown = search_results_view_->SearchStopped();
+    if (no_results_found_shown) {
+      performance_metrics_.MarkSearchResultsUpdated(
+          PickerPerformanceMetrics::SearchResultsUpdate::kNoResultsFound);
+    } else {
+      CHECK(!clear_stale_results)
+          << "Stale results were cleared when no results were found, but the "
+             "\"no results found\" screen was not shown";
+      // `clear_stale_results` must be false here, so nothing happened.
+    }
     return;
   }
 
@@ -517,13 +524,12 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
 void PickerView::PublishCategoryResults(
     std::vector<PickerSearchResultsSection> results) {
   category_results_view_->ClearSearchResults();
-  if (results.empty()) {
-    category_results_view_->ShowNoResultsFound();
-  } else {
-    for (PickerSearchResultsSection& section : results) {
-      category_results_view_->AppendSearchResults(std::move(section));
-    }
+  for (PickerSearchResultsSection& section : results) {
+    category_results_view_->AppendSearchResults(std::move(section));
   }
+  // We are not interested in whether the "no results found" screen was shown as
+  // we do not have performance metrics for category results.
+  (void)category_results_view_->SearchStopped();
 }
 
 void PickerView::AddMainContainerView(PickerLayoutType layout_type) {

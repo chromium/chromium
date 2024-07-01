@@ -389,17 +389,46 @@ TEST_F(PickerSearchResultsViewTest, ClickingSeeMoreLinkCallsCallback) {
   LeftClickOn(*trailing_link);
 }
 
-TEST_F(PickerSearchResultsViewTest, ShowNoResultsFoundShowsView) {
+TEST_F(PickerSearchResultsViewTest, SearchStoppedShowsNoResultsView) {
   MockSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
                                &submenu_controller);
 
-  view.ShowNoResultsFound();
+  EXPECT_TRUE(view.SearchStopped());
 
   EXPECT_FALSE(view.section_list_view_for_testing()->GetVisible());
   EXPECT_TRUE(view.no_results_view_for_testing()->GetVisible());
+}
+
+TEST_F(PickerSearchResultsViewTest,
+       SearchStoppedShowsSectionListIfThereAreResults) {
+  MockSearchResultsViewDelegate mock_delegate;
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSubmenuController submenu_controller;
+  PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
+                               &submenu_controller);
+
+  view.AppendSearchResults(PickerSearchResultsSection(
+      PickerSectionType::kGifs, {}, /*has_more_results=*/true));
+  EXPECT_FALSE(view.SearchStopped());
+
+  EXPECT_TRUE(view.section_list_view_for_testing()->GetVisible());
+  EXPECT_FALSE(view.no_results_view_for_testing()->GetVisible());
+}
+
+TEST_F(PickerSearchResultsViewTest, SearchStoppedHidesLoaderView) {
+  MockSearchResultsViewDelegate mock_delegate;
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSubmenuController submenu_controller;
+  PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
+                               &submenu_controller);
+
+  view.ShowLoadingAnimation();
+  ASSERT_TRUE(view.SearchStopped());
+
+  EXPECT_FALSE(view.skeleton_loader_view_for_testing().GetVisible());
 }
 
 TEST_F(PickerSearchResultsViewTest, ClearSearchResultsShowsSearchResults) {
@@ -408,7 +437,7 @@ TEST_F(PickerSearchResultsViewTest, ClearSearchResultsShowsSearchResults) {
   PickerSubmenuController submenu_controller;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
                                &submenu_controller);
-  view.ShowNoResultsFound();
+  ASSERT_TRUE(view.SearchStopped());
 
   view.ClearSearchResults();
 
@@ -533,12 +562,13 @@ INSTANTIATE_TEST_SUITE_P(
     PickerSearchResultsViewResultSelectionTest,
     testing::ValuesIn<PickerSearchResultTestCase>({
         {"Text", PickerSearchResult::Text(u"result")},
-        {"Gif", PickerSearchResult::Gif(/*preview_url=*/GURL(),
-                                        /*preview_image_url=*/GURL(),
-                                        gfx::Size(10, 10),
-                                        /*full_url=*/GURL(),
-                                        gfx::Size(20, 20),
-                                        u"cat gif")},
+        {"Gif", PickerSearchResult::Gif(
+                    /*preview_url=*/GURL(),
+                    /*preview_image_url=*/GURL(),
+                    gfx::Size(10, 10),
+                    /*full_url=*/GURL(),
+                    gfx::Size(20, 20),
+                    u"cat gif")},
         {"Category",
          PickerSearchResult::Category(PickerCategory::kExpressions)},
         {"LocalFile",

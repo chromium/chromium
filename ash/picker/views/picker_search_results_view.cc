@@ -171,10 +171,14 @@ void PickerSearchResultsView::AppendSearchResults(
   delegate_->RequestPseudoFocus(section_list_view_->GetTopItem());
 }
 
-void PickerSearchResultsView::ShowNoResultsFound() {
+bool PickerSearchResultsView::SearchStopped() {
   StopLoadingAnimation();
+  if (!section_views_.empty()) {
+    return false;
+  }
   no_results_view_->SetVisible(true);
   section_list_view_->SetVisible(false);
+  return true;
 }
 
 void PickerSearchResultsView::ShowLoadingAnimation() {
