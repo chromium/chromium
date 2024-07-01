@@ -256,8 +256,6 @@ component("gpu") {
       "windows/media_foundation_video_encode_accelerator_win.h",
       "windows/mf_audio_encoder.cc",
       "windows/mf_audio_encoder.h",
-      "windows/mf_video_processor_accelerator.cc",
-      "windows/mf_video_processor_accelerator.h",
       "windows/scoped_d3d_buffers.cc",
       "windows/scoped_d3d_buffers.h",
       "windows/supported_profile_helpers.cc",
@@ -666,7 +664,6 @@ source_set("unit_tests") {
       "windows/d3d11_video_processor_proxy_unittest.cc",
       "windows/d3d12_helpers_unittest.cc",
       "windows/mf_audio_encoder_unittest.cc",
-      "windows/mf_video_processor_accelerator_unittest.cc",
       "windows/scoped_d3d_buffers_unittest.cc",
       "windows/supported_profile_helpers_unittest.cc",
     ]
