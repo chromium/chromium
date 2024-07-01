@@ -3665,14 +3665,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_N_MINUTES_AGO" desc="A number of minutes in the past. [ICU Syntax]">
         {MINUTES, plural, =1 {# minute ago} other {# minutes ago}}
       </message>
-      <message name="IDS_N_MINUTES_AGO_NARROW" desc="A number of minutes in the past, made narrow to save space, and unit-like to avoid different plural form unless necessary. [ICU Syntax]">
-        {MINUTES, plural, =1 {# min ago} other {# min ago}}
-      </message>
       <message name="IDS_N_HOURS_AGO" desc="A number of hours in the past. [ICU Syntax]">
         {HOURS, plural, =1 {# hour ago} other {# hours ago}}
-      </message>
-      <message name="IDS_N_HOURS_AGO_NARROW" desc="A number of hours in the past, made narrow to save space, and unit-like to avoid different plural form unless necessary. [ICU Syntax]">
-        {HOURS, plural, =1 {# hr ago} other {# hr ago}}
       </message>
       <message name="IDS_N_DAYS_AGO" desc="A number of days in the past. [ICU Syntax]">
         {DAYS, plural, =1 {# day ago} other {# days ago}}
