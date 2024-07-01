@@ -11,6 +11,7 @@
 #include "ash/picker/picker_asset_fetcher.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
+#include "base/containers/adapters.h"
 #include "base/ranges/algorithm.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/box_layout.h"
@@ -35,17 +36,23 @@ PickerSectionListView::PickerSectionListView(
 PickerSectionListView::~PickerSectionListView() = default;
 
 views::View* PickerSectionListView::GetTopItem() {
-  return children().empty()
-             ? nullptr
-             : views::AsViewClass<PickerSectionView>(children().front().get())
-                   ->GetTopItem();
+  for (views::View* section : children()) {
+    if (views::View* top_item =
+            views::AsViewClass<PickerSectionView>(section)->GetTopItem()) {
+      return top_item;
+    }
+  }
+  return nullptr;
 }
 
 views::View* PickerSectionListView::GetBottomItem() {
-  return children().empty()
-             ? nullptr
-             : views::AsViewClass<PickerSectionView>(children().back().get())
-                   ->GetBottomItem();
+  for (views::View* section : base::Reversed(children())) {
+    if (views::View* bottom_item =
+            views::AsViewClass<PickerSectionView>(section)->GetBottomItem()) {
+      return bottom_item;
+    }
+  }
+  return nullptr;
 }
 
 views::View* PickerSectionListView::GetItemAbove(views::View* item) {

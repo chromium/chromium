@@ -99,6 +99,22 @@ TEST_F(PickerSectionListViewTest, AddsSectionAtTheTop) {
   EXPECT_EQ(section_list.GetTopItem(), top_item);
 }
 
+TEST_F(PickerSectionListViewTest, GetsTopItemWhenTopSectionIsEmpty) {
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSubmenuController submenu_controller;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                     &submenu_controller);
+
+  PickerSectionView* section = section_list.AddSection();
+  PickerItemView* top_item = section->AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+  section->AddListItem(std::make_unique<PickerListItemView>(base::DoNothing()));
+  // Add an empty section at the top.
+  section_list.AddSectionAt(0);
+
+  EXPECT_EQ(section_list.GetTopItem(), top_item);
+}
+
 TEST_F(PickerSectionListViewTest, EmptySectionListHasNoTopItem) {
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
@@ -124,6 +140,22 @@ TEST_F(PickerSectionListViewTest, GetsBottomItem) {
       std::make_unique<PickerListItemView>(base::DoNothing()));
 
   EXPECT_EQ(section_list.GetBottomItem(), bottom_item);
+}
+
+TEST_F(PickerSectionListViewTest, GetsBottomItemWhenBottomSectionIsEmpty) {
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSubmenuController submenu_controller;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                     &submenu_controller);
+
+  PickerSectionView* section = section_list.AddSection();
+  PickerItemView* top_item = section->AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+  section->AddListItem(std::make_unique<PickerListItemView>(base::DoNothing()));
+  // Add an empty section at the bottom.
+  section_list.AddSection();
+
+  EXPECT_EQ(section_list.GetTopItem(), top_item);
 }
 
 TEST_F(PickerSectionListViewTest, EmptySectionListHasNoBottomItem) {
