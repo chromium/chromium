@@ -130,20 +130,20 @@ CollaborationGroupSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void CollaborationGroupSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                                    DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+CollaborationGroupSyncBridge::GetDataForCommit(StorageKeyList storage_keys) {
   NOTREACHED();
 }
 
-void CollaborationGroupSyncBridge::GetAllDataForDebugging(
-    DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+CollaborationGroupSyncBridge::GetAllDataForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const auto& [id, specifics] : ids_to_specifics_) {
     batch->Put(id, SpecificsToEntityData(specifics));
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 std::string CollaborationGroupSyncBridge::GetClientTag(

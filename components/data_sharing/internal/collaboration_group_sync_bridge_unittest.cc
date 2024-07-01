@@ -138,17 +138,7 @@ class CollaborationGroupSyncBridgeTest : public testing::Test {
   syncer::ModelTypeStore& model_type_store() { return *model_type_store_; }
 
   std::vector<sync_pb::CollaborationGroupSpecifics> GetBridgeSpecifics() {
-    std::vector<sync_pb::CollaborationGroupSpecifics> bridge_data;
-
-    base::RunLoop run_loop;
-    bridge().GetAllDataForDebugging(base::BindLambdaForTesting(
-        [&](std::unique_ptr<syncer::DataBatch> passed_data) {
-          bridge_data = ExtractSpecificsFromDataBatch(std::move(passed_data));
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-
-    return bridge_data;
+    return ExtractSpecificsFromDataBatch(bridge().GetAllDataForDebugging());
   }
 
  private:

@@ -207,23 +207,23 @@ PasskeySyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void PasskeySyncBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                         DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> PasskeySyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const std::string& sync_id : storage_keys) {
     if (auto it = data_.find(sync_id); it != data_.end()) {
       batch->Put(sync_id, CreateEntityData(it->second));
     }
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
-void PasskeySyncBridge::GetAllDataForDebugging(DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> PasskeySyncBridge::GetAllDataForDebugging() {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const auto& [sync_id, specifics] : data_) {
     batch->Put(sync_id, CreateEntityData(specifics));
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 bool PasskeySyncBridge::IsEntityDataValid(
