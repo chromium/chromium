@@ -620,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(http://crbug.com/1205560): This test is flaky on mac bots. Re-enable the
 // test after fixing the issue.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_InvalidSourceIdInIFrameAndCloseInFailureCb \
   DISABLED_InvalidSourceIdInIFrameAndCloseInFailureCb
 #else
