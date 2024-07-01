@@ -29,7 +29,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_options.h"
-#include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
+#include "net/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

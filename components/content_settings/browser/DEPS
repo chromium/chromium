@@ -32,7 +32,7 @@ specific_include_rules = {
     "+services/network/public/mojom/shared_dictionary_access_observer.mojom.h",
   ],
   "page_specific_content_settings_unittest.cc": [
-    "+net/extras/shared_dictionary/shared_dictionary_isolation_key.h",
+    "+net/shared_dictionary/shared_dictionary_isolation_key.h",
     "+services/network/public/mojom/shared_dictionary_access_observer.mojom.h",
   ],
   "content_settings_manager_impl.cc": [

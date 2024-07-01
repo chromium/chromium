@@ -16,8 +16,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/disk_cache/disk_cache.h"
-#include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
+#include "net/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace base {

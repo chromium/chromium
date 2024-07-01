@@ -5,7 +5,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_access_checker.h"
 
 #include "net/base/isolation_info.h"
-#include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
+#include "net/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "services/network/cookie_manager.h"
 #include "services/network/cookie_settings.h"
 #include "services/network/network_context.h"

@@ -825,6 +825,8 @@ component("net") {
     "quic/web_transport_client.h",
     "quic/web_transport_error.cc",
     "quic/web_transport_error.h",
+    "shared_dictionary/shared_dictionary_isolation_key.cc",
+    "shared_dictionary/shared_dictionary_isolation_key.h",
     "socket/client_socket_factory.cc",
     "socket/client_socket_factory.h",
     "socket/client_socket_handle.cc",
@@ -1809,7 +1811,7 @@ component("extras") {
     "//base",
     "//sql:sql",
   ]
-  public_deps = [ ":shared_dictionary" ]
+  public_deps = [ ":shared_dictionary_info" ]
 
   if (enable_reporting) {
     sources += [
@@ -1819,12 +1821,10 @@ component("extras") {
   }
 }
 
-component("shared_dictionary") {
+component("shared_dictionary_info") {
   sources = [
     "extras/shared_dictionary/shared_dictionary_info.cc",
     "extras/shared_dictionary/shared_dictionary_info.h",
-    "extras/shared_dictionary/shared_dictionary_isolation_key.cc",
-    "extras/shared_dictionary/shared_dictionary_isolation_key.h",
     "extras/shared_dictionary/shared_dictionary_usage_info.h",
   ]
   defines = [ "IS_NET_SHARED_DICTIONARY_IMPL" ]
@@ -2755,6 +2755,7 @@ test("net_unittests") {
     "quic/set_quic_flag_test.cc",
     "quic/test_quic_crypto_client_config_handle.cc",
     "quic/test_quic_crypto_client_config_handle.h",
+    "shared_dictionary/shared_dictionary_isolation_key_unittest.cc",
     "socket/client_socket_pool_base_unittest.cc",
     "socket/client_socket_pool_unittest.cc",
     "socket/connect_job_factory_unittest.cc",
@@ -2942,7 +2943,6 @@ test("net_unittests") {
 
   if (!is_cronet_build) {
     sources += [
-      "extras/shared_dictionary/shared_dictionary_isolation_key_unittest.cc",
       "extras/sqlite/sqlite_persistent_cookie_store_unittest.cc",
       "extras/sqlite/sqlite_persistent_shared_dictionary_store_unittest.cc",
       "log/trace_net_log_observer_unittest.cc",

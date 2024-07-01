@@ -21,7 +21,7 @@
 #include "content/public/browser/private_aggregation_data_model.h"
 #include "content/public/browser/session_storage_usage_info.h"
 #include "net/cookies/canonical_cookie.h"
-#include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
+#include "net/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"

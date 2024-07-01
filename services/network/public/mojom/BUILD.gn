@@ -253,7 +253,7 @@ mojom("mojom_shared_dictionary") {
       traits_headers = [ "//services/network/public/cpp/shared_dictionary_isolation_key_mojom_traits.h" ]
       traits_sources = [ "//services/network/public/cpp/shared_dictionary_isolation_key_mojom_traits.cc" ]
       traits_public_deps = [
-        "//net:shared_dictionary",
+        "//net",
         "//services/network/public/cpp:schemeful_site_mojom_support",
       ]
     },
@@ -266,7 +266,7 @@ mojom("mojom_shared_dictionary") {
       ]
       traits_headers = [ "//services/network/public/cpp/shared_dictionary_usage_info_mojom_traits.h" ]
       traits_sources = [ "//services/network/public/cpp/shared_dictionary_usage_info_mojom_traits.cc" ]
-      traits_public_deps = [ "//net:shared_dictionary" ]
+      traits_public_deps = [ "//net:shared_dictionary_info" ]
     },
   ]
 }

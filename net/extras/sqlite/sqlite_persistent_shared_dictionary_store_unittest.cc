@@ -20,7 +20,7 @@
 #include "build/build_config.h"
 #include "net/base/schemeful_site.h"
 #include "net/extras/shared_dictionary/shared_dictionary_info.h"
-#include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
+#include "net/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/test/test_with_task_environment.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"

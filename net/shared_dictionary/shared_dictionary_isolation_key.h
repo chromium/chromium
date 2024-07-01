@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_EXTRAS_SHARED_DICTIONARY_SHARED_DICTIONARY_ISOLATION_KEY_H_
-#define NET_EXTRAS_SHARED_DICTIONARY_SHARED_DICTIONARY_ISOLATION_KEY_H_
+#ifndef NET_SHARED_DICTIONARY_SHARED_DICTIONARY_ISOLATION_KEY_H_
+#define NET_SHARED_DICTIONARY_SHARED_DICTIONARY_ISOLATION_KEY_H_
 
 #include <optional>
 
-#include "base/component_export.h"
+#include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
 #include "url/origin.h"
 
@@ -16,7 +16,7 @@ class IsolationInfo;
 class NetworkIsolationKey;
 
 // Key used to isolate shared dictionary storages.
-class COMPONENT_EXPORT(NET_SHARED_DICTIONARY) SharedDictionaryIsolationKey {
+class NET_EXPORT SharedDictionaryIsolationKey {
  public:
   // Creates a SharedDictionaryIsolationKey. Returns nullopt when
   // `frame_origin` or `top_frame_origin` of `isolation_info` is not set or
@@ -65,4 +65,4 @@ class COMPONENT_EXPORT(NET_SHARED_DICTIONARY) SharedDictionaryIsolationKey {
 
 }  // namespace net
 
-#endif  // NET_EXTRAS_SHARED_DICTIONARY_SHARED_DICTIONARY_ISOLATION_KEY_H_
+#endif  // NET_SHARED_DICTIONARY_SHARED_DICTIONARY_ISOLATION_KEY_H_

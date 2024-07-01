@@ -6,7 +6,7 @@
 #define NET_EXTRAS_SHARED_DICTIONARY_SHARED_DICTIONARY_USAGE_INFO_H_
 
 #include "base/component_export.h"
-#include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
+#include "net/shared_dictionary/shared_dictionary_isolation_key.h"
 
 namespace net {
 
