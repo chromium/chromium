@@ -215,6 +215,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
       cros::mojom::CameraPrivacySwitchState state) final;
 
   void CameraEffectChange(cros::mojom::EffectsConfigPtr config) final;
+  void AutoFramingStateChange(cros::mojom::CameraAutoFramingState state) final;
 
   base::UnguessableToken GetTokenForTrustedClient(
       cros::mojom::CameraClientType type);

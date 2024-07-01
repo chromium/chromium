@@ -1688,6 +1688,17 @@ void ImageCapture::GotPhotoState(
     return;
   }
 
+  // Check whether face framing settings and capabilities have changed.
+  if (settings_->hasFaceFraming() != settings->hasFaceFraming() ||
+      (settings_->hasFaceFraming() &&
+       settings_->faceFraming() != settings->faceFraming()) ||
+      capabilities_->hasFaceFraming() != capabilities->hasFaceFraming() ||
+      (capabilities_->hasFaceFraming() &&
+       capabilities_->faceFraming() != capabilities->faceFraming())) {
+    std::move(callback).Run(true);
+    return;
+  }
+
   std::move(callback).Run(false);
 }
 
@@ -2673,7 +2684,8 @@ void ImageCapture::UpdateMediaTrackSettingsAndCapabilities(
       !photo_state->supported_face_framing_modes->empty()) {
     Vector<bool> supported_face_framing_modes;
     for (auto mode : *photo_state->supported_face_framing_modes) {
-      if (mode == MeteringMode::CONTINUOUS) {
+      if (mode == MeteringMode::CONTINUOUS ||
+          mode == MeteringMode::SINGLE_SHOT) {
         supported_face_framing_modes.push_back(true);
       } else if (mode == MeteringMode::NONE) {
         supported_face_framing_modes.push_back(false);

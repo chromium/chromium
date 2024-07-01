@@ -318,6 +318,14 @@ CameraDeviceDelegate::CameraDeviceDelegate(
           ipc_task_runner_,
           base::BindRepeating(&CameraDeviceDelegate::OnCameraEffectsChanged,
                               GetWeakPtr())));
+  auto_framing_state_observer_ =
+      base::SequenceBound<CrosCameraAutoFramingStateObserver>(
+          ui_task_runner,
+          base::BindPostTask(
+              ipc_task_runner_,
+              base::BindRepeating(
+                  &CameraDeviceDelegate::OnAutoFramingStateChanged,
+                  GetWeakPtr())));
 }
 
 CameraDeviceDelegate::~CameraDeviceDelegate() = default;
@@ -1626,6 +1634,16 @@ void CameraDeviceDelegate::OnCameraEffectsChanged(
   current_effects_ = std::move(new_effects);
 }
 
+void CameraDeviceDelegate::OnAutoFramingStateChanged(
+    cros::mojom::CameraAutoFramingState state) {
+  DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+
+  if (current_auto_framing_state_ && *current_auto_framing_state_ != state) {
+    device_context_->OnCaptureConfigurationChanged();
+  }
+  current_auto_framing_state_ = state;
+}
+
 void CameraDeviceDelegate::DoGetPhotoState(
     VideoCaptureDevice::GetPhotoStateCallback callback) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
@@ -1889,8 +1907,8 @@ void CameraDeviceDelegate::DoGetPhotoState(
     }
   }
 
-  // For background blur part, we only set capabilities and current
-  // configuration setting if the feature flag is enabled.
+  // For background blur and face framing part, we only set capabilities and
+  // current configuration setting if the feature flag is enabled.
   //
   // https://w3c.github.io/mediacapture-extensions/#exposing-mediastreamtrack-source-background-blur-support
   if (ash::features::IsVcWebApiEnabled() && !current_effects_.is_null()) {
@@ -1901,6 +1919,17 @@ void CameraDeviceDelegate::DoGetPhotoState(
     photo_state->background_blur_mode = current_effects_->blur_enabled
                                             ? mojom::BackgroundBlurMode::BLUR
                                             : mojom::BackgroundBlurMode::OFF;
+  }
+  // https://w3c.github.io/mediacapture-extensions/#exposing-mediastreamtrack-source-automatic-face-framing-support
+  if (ash::features::IsVcWebApiEnabled() && current_auto_framing_state_) {
+    photo_state->supported_face_framing_modes = {
+        current_auto_framing_state_ == cros::mojom::CameraAutoFramingState::OFF
+            ? mojom::MeteringMode::NONE
+            : mojom::MeteringMode::SINGLE_SHOT};
+    photo_state->current_face_framing_mode =
+        current_auto_framing_state_ == cros::mojom::CameraAutoFramingState::OFF
+            ? mojom::MeteringMode::NONE
+            : mojom::MeteringMode::SINGLE_SHOT;
   }
 
   std::move(callback).Run(std::move(photo_state));

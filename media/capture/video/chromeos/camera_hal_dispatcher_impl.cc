@@ -538,6 +538,8 @@ void CameraHalDispatcherImpl::CameraSWPrivacySwitchStateChange(
 
 void CameraHalDispatcherImpl::CameraEffectChange(
     cros::mojom::EffectsConfigPtr config) {}
+void CameraHalDispatcherImpl::AutoFramingStateChange(
+    cros::mojom::CameraAutoFramingState state) {}
 
 base::UnguessableToken CameraHalDispatcherImpl::GetTokenForTrustedClient(
     cros::mojom::CameraClientType type) {

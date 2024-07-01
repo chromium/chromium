@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_EFFECTS_OBSERVER_H_
-#define MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_EFFECTS_OBSERVER_H_
+#ifndef MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_AUTO_FRAMING_STATE_OBSERVER_H_
+#define MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_AUTO_FRAMING_STATE_OBSERVER_H_
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -15,25 +15,26 @@
 
 namespace media {
 
-// CrosCameraEffectsObserver is used to observe camera effects changed on
-// cros-camera service. This class lives on the thread which the mojo service
-// manager lives.
-class CAPTURE_EXPORT CrosCameraEffectsObserver
+// CrosCameraAutoFramingStateObserver is used to observe auto framing state
+// changed on cros-camera service. This class lives on the thread which the mojo
+// service manager lives.
+class CAPTURE_EXPORT CrosCameraAutoFramingStateObserver
     : public cros::mojom::CrosCameraServiceObserver {
  public:
-  using OnCameraEffectsChangedCallback =
-      base::RepeatingCallback<void(cros::mojom::EffectsConfigPtr)>;
+  using OnAutoFramingStateChangedCallback =
+      base::RepeatingCallback<void(cros::mojom::CameraAutoFramingState)>;
 
-  // When the camera effect changes, |on_camera_effects_changed_callback| will
-  // be invoked on the ui thread.
-  explicit CrosCameraEffectsObserver(
-      OnCameraEffectsChangedCallback on_camera_effects_changed_callback);
+  // When the auto framing state changes,
+  // |on_auto_framing_state_changed_callback| will be invoked on the ui thread.
+  explicit CrosCameraAutoFramingStateObserver(
+      OnAutoFramingStateChangedCallback on_auto_framing_state_changed_callback);
 
-  ~CrosCameraEffectsObserver() override;
+  ~CrosCameraAutoFramingStateObserver() override;
 
-  CrosCameraEffectsObserver(const CrosCameraEffectsObserver&) = delete;
-  CrosCameraEffectsObserver& operator=(const CrosCameraEffectsObserver&) =
-      delete;
+  CrosCameraAutoFramingStateObserver(
+      const CrosCameraAutoFramingStateObserver&) = delete;
+  CrosCameraAutoFramingStateObserver& operator=(
+      const CrosCameraAutoFramingStateObserver&) = delete;
 
  private:
   // CrosCameraServiceObserver implementations.
@@ -56,7 +57,8 @@ class CAPTURE_EXPORT CrosCameraEffectsObserver
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  const OnCameraEffectsChangedCallback on_camera_effects_changed_callback_;
+  const OnAutoFramingStateChangedCallback
+      on_auto_framing_state_changed_callback_;
 
   std::unique_ptr<MojoServiceManagerObserver> mojo_service_manager_observer_;
 
@@ -65,9 +67,9 @@ class CAPTURE_EXPORT CrosCameraEffectsObserver
   mojo::Receiver<cros::mojom::CrosCameraServiceObserver>
       camera_service_observer_receiver_{this};
 
-  base::WeakPtrFactory<CrosCameraEffectsObserver> weak_factory_{this};
+  base::WeakPtrFactory<CrosCameraAutoFramingStateObserver> weak_factory_{this};
 };
 
 }  // namespace media
 
-#endif  // MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_EFFECTS_OBSERVER_H_
+#endif  // MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_AUTO_FRAMING_STATE_OBSERVER_H_

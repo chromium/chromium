@@ -44,6 +44,9 @@ void CrosCameraEffectsObserver::CameraEffectChange(
   on_camera_effects_changed_callback_.Run(std::move(config));
 }
 
+void CrosCameraEffectsObserver::AutoFramingStateChange(
+    cros::mojom::CameraAutoFramingState state) {}
+
 void CrosCameraEffectsObserver::ConnectToCameraService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ash::mojo_service_manager::GetServiceManagerProxy()->Request(
