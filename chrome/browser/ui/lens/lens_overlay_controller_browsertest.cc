@@ -2766,7 +2766,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, EnterprisePolicy) {
   EXPECT_TRUE(LensOverlayController::IsEnabled(browser()));
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, OverlayCopyShortcut) {
+// TODO(crbug.com/350292135): Flaky on all platforms. Re-enable once flakiness
+// is fixed.
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       DISABLED_OverlayCopyShortcut) {
   WaitForPaint();
 
   // State should start in off.
