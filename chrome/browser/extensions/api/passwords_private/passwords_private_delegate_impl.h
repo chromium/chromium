@@ -143,6 +143,7 @@ class PasswordsPrivateDelegateImpl
   bool IsConnectedToCloudAuthenticator(
       content::WebContents* web_contents) override;
   void DeleteAllPasswordManagerData(
+      content::WebContents* web_contents,
       base::OnceCallback<void(bool)> success_callback) override;
 
   base::WeakPtr<PasswordsPrivateDelegate> AsWeakPtr() override;
@@ -226,6 +227,11 @@ class PasswordsPrivateDelegateImpl
   void OnImportPasswordsAuthResult(ImportResultsCallback results_callback,
                                    const std::vector<int>& selected_ids,
                                    bool authenticated);
+
+  // Callback for DeleteAllPasswordManagerData() after authentication check.
+  void OnDeleteAllDataAuthResult(
+      base::OnceCallback<void(bool)> success_callback,
+      bool authenticated);
 
   // SyncServiceObserver overrides.
   void OnStateChanged(syncer::SyncService* sync_service) override;

@@ -711,6 +711,7 @@ ResponseAction PasswordsPrivateIsConnectedToCloudAuthenticatorFunction::Run() {
 ResponseAction PasswordsPrivateDeleteAllPasswordManagerDataFunction::Run() {
   if (auto delegate = GetDelegate(browser_context())) {
     delegate->DeleteAllPasswordManagerData(
+        GetSenderWebContents(),
         base::BindOnce(&PasswordsPrivateDeleteAllPasswordManagerDataFunction::
                            OnDeletionCompleted,
                        this));

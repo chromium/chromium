@@ -150,6 +150,9 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
                       password_manager::PasswordForm::Type type,
                       AddCredentialsCallback completion);
 
+  // Deletes all saved credentials: passwords, passkeys, blocked entries.
+  void DeleteAllData(base::OnceCallback<void(bool)> success_callback);
+
   // Updates all matching password forms in |password_forms|.
   // |completion| will be run after the forms are updated.
   //

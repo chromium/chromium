@@ -97,6 +97,10 @@ password_manager::PasswordStoreChangeList GetChangesForAddedForms(
   return changes;
 }
 
+bool MergeDeleteAllResultsFromPasswordStores(std::vector<bool> results) {
+  return base::ranges::all_of(results, [](bool result) { return result; });
+}
+
 }  // namespace
 
 namespace password_manager {
@@ -173,6 +177,28 @@ bool SavedPasswordsPresenter::RemoveCredential(
   }
   undo_helper_->EndGroupingActions();
   return !forms_to_delete.empty();
+}
+
+void SavedPasswordsPresenter::DeleteAllData(
+    base::OnceCallback<void(bool)> success_callback) {
+  // Synchronosly remove all passkeys if they are available.
+  if (passkey_store_) {
+    passkey_store_->DeleteAllPasskeys();
+  }
+
+  const auto completion_barrier = base::BarrierCallback<bool>(
+      2 - !profile_store_ - !account_store_,
+      base::BindOnce(&MergeDeleteAllResultsFromPasswordStores)
+          .Then(std::move(success_callback)));
+
+  if (account_store_) {
+    account_store_->RemoveLoginsCreatedBetween(
+        FROM_HERE, base::Time(), base::Time::Max(), completion_barrier);
+  }
+  if (profile_store_) {
+    profile_store_->RemoveLoginsCreatedBetween(
+        FROM_HERE, base::Time(), base::Time::Max(), completion_barrier);
+  }
 }
 
 void SavedPasswordsPresenter::UndoLastRemoval() {

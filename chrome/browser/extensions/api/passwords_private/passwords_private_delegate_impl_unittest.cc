@@ -2272,4 +2272,69 @@ TEST_F(PasswordsPrivateDelegateImplTest, GetCredentialGroups_Butter) {
       groups[0].icon_url);
 }
 
+TEST_F(PasswordsPrivateDelegateImplTest, DeleteAllData) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  auto delegate = CreateDelegate();
+  PasswordForm form_profile =
+      CreateSampleForm(PasswordForm::Store::kProfileStore);
+  PasswordForm form_account =
+      CreateSampleForm(PasswordForm::Store::kAccountStore);
+  SetUpPasswordStores({form_profile, form_account});
+  task_environment()->RunUntilIdle();
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
+  webauthn::PasskeyModel* passkey_model =
+      PasskeyModelFactory::GetForProfile(profile());
+  ASSERT_EQ(passkey_model, PasskeyModelFactory::GetForProfile(profile()));
+  ASSERT_TRUE(passkey_model);
+  sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey();
+  passkey_model->AddNewPasskeyForTesting(passkey);
+
+  EXPECT_THAT(profile_store_->stored_passwords(), testing::SizeIs(1));
+  EXPECT_THAT(account_store_->stored_passwords(), testing::SizeIs(1));
+  EXPECT_THAT(passkey_model->GetAllPasskeys(), SizeIs(1));
+
+  ExpectAuthentication(delegate, /*successful=*/true);
+  base::MockCallback<base::OnceCallback<void(bool)>> callback;
+  EXPECT_CALL(callback, Run(true));
+  delegate->DeleteAllPasswordManagerData(web_contents.get(), callback.Get());
+  task_environment()->RunUntilIdle();
+  EXPECT_THAT(profile_store_->stored_passwords(), testing::IsEmpty());
+  EXPECT_THAT(account_store_->stored_passwords(), testing::IsEmpty());
+  EXPECT_THAT(passkey_model->GetAllPasskeys(), testing::IsEmpty());
+}
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+TEST_F(PasswordsPrivateDelegateImplTest, DeleteAllDataWithReauthFailed) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  auto delegate = CreateDelegate();
+  PasswordForm form_profile =
+      CreateSampleForm(PasswordForm::Store::kProfileStore);
+  PasswordForm form_account =
+      CreateSampleForm(PasswordForm::Store::kAccountStore);
+  SetUpPasswordStores({form_profile, form_account});
+  task_environment()->RunUntilIdle();
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
+  webauthn::PasskeyModel* passkey_model =
+      PasskeyModelFactory::GetForProfile(profile());
+  ASSERT_EQ(passkey_model, PasskeyModelFactory::GetForProfile(profile()));
+  ASSERT_TRUE(passkey_model);
+  sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey();
+  passkey_model->AddNewPasskeyForTesting(passkey);
+  task_environment()->RunUntilIdle();
+
+  ExpectAuthentication(delegate, /*successful=*/false);
+  base::MockCallback<base::OnceCallback<void(bool)>> callback;
+  EXPECT_CALL(callback, Run(false));
+  delegate->DeleteAllPasswordManagerData(web_contents.get(), callback.Get());
+  task_environment()->RunUntilIdle();
+  EXPECT_THAT(profile_store_->stored_passwords(), testing::SizeIs(1));
+  EXPECT_THAT(account_store_->stored_passwords(), testing::SizeIs(1));
+  EXPECT_THAT(passkey_model->GetAllPasskeys(), SizeIs(1));
+}
+#endif
+
 }  // namespace extensions

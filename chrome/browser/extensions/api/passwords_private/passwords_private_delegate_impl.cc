@@ -1009,10 +1009,34 @@ bool PasswordsPrivateDelegateImpl::IsConnectedToCloudAuthenticator(
 }
 
 void PasswordsPrivateDelegateImpl::DeleteAllPasswordManagerData(
+    content::WebContents* web_contents,
     base::OnceCallback<void(bool)> success_callback) {
-  // TODO(crbug.com/342366264): Add delete all passwords method to
-  // SavedPasswordsPresenter and call `success_callback` only on completion.
-  std::move(success_callback).Run(true);
+  std::u16string message;
+  // TODO(b/342366264): Verify with UX which messages to show.
+#if BUILDFLAG(IS_MAC)
+  message = l10n_util::GetStringUTF16(
+      IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
+#elif BUILDFLAG(IS_WIN)
+  message = l10n_util::GetStringUTF16(
+      IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT);
+#endif
+
+  AuthenticateUser(
+      web_contents, base::Seconds(0), message,
+      base::BindOnce(&PasswordsPrivateDelegateImpl::OnDeleteAllDataAuthResult,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(success_callback)));
+}
+
+void PasswordsPrivateDelegateImpl::OnDeleteAllDataAuthResult(
+    base::OnceCallback<void(bool)> success_callback,
+    bool authenticated) {
+  if (!authenticated) {
+    std::move(success_callback).Run(false);
+    return;
+  }
+
+  saved_passwords_presenter_.DeleteAllData(std::move(success_callback));
 }
 
 base::WeakPtr<PasswordsPrivateDelegate>

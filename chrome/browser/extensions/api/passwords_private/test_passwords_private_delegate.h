@@ -108,6 +108,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   bool IsConnectedToCloudAuthenticator(
       content::WebContents* web_contents) override;
   void DeleteAllPasswordManagerData(
+      content::WebContents* web_contents,
       base::OnceCallback<void(bool)> success_callback) override;
 
   base::WeakPtr<PasswordsPrivateDelegate> AsWeakPtr() override;
