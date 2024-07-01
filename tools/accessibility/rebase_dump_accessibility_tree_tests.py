@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-# Copyright 2014 The Chromium Authors
+# Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Rebase DumpAccessibilityTree Tests.
+'''Rebase DumpAccessibilityTree Tests.
 
 This script is intended to be run when you make a change that could affect the
 expected results of tests in:
@@ -17,7 +17,7 @@ check for potentially incorrect data pulled from those tests and make sure all
 of the changes look reasonable, then upload the change for code review.
 
 Optional argument: patchset number, otherwise will default to latest patchset
-"""
+'''
 
 from __future__ import print_function
 
@@ -27,6 +27,7 @@ import re
 import sys
 import tempfile
 import time
+from typing import List, Tuple
 import urllib
 import urllib.parse
 
@@ -62,20 +63,41 @@ def Fix(line):
   return line
 
 
-def ParseLog(logdata):
-  '''Parse the log file for failing tests and overwrite the expected
-     result file locally with the actual results from the log.'''
-  lines = logdata.splitlines()
+def SplitTestLogs(lines: List[str]) -> List[List[str]]:
+  '''Separate log lines of many tests into groups of individual test logs.'''
+  files = []
+  for i, line in enumerate(lines):
+    if 'Testing: ' in line:
+      start_i = i
+    elif '<-- End-of-file -->' in line:
+      end_i = i
+      files.append(lines[start_i:end_i + 1])
+  return files
+
+
+def WriteFileOnce(filename: str, data: List[str], directory=TEST_DATA_PATH):
+  '''Write data to a file, limited to once per unique filepath.'''
+  full_path = os.path.join(directory, filename)
+  if full_path in completed_files:
+    return
+  with open(full_path, 'w') as f:
+    f.writelines(data)
+    completed_files.add(full_path)
+
+
+def ParseLog(lines: List[str]) -> Tuple[str, str]:
+  '''Parses a single failing test into an expectation file and test results.'''
   test_file = None
-  expected_file = None
+  expected_file = ''
   start = None
+  actual_text = ''
   for i in range(len(lines)):
     line = Fix(lines[i])
     if line.find('Testing:') >= 0:
       result = re.search('content.test.*accessibility.([^@]*)', line)
       if result:
         test_file = result.group(1)
-      expected_file = None
+      expected_file = ''
       start = None
     if line.find('Expected output:') >= 0:
       result = re.search('content.test.*accessibility.([^@]*)', line)
@@ -83,13 +105,8 @@ def ParseLog(logdata):
         expected_file = result.group(1)
     if line == 'Actual':
       start = i + 2
-    if start and test_file and expected_file and line.find('End-of-file') >= 0:
-      dst_fullpath = os.path.join(TEST_DATA_PATH, expected_file)
-      if dst_fullpath in completed_files:
-        continue
-
-      if line[:3] != '---':
-        start = start + 1  # Skip separator line of hyphens
+    if (start and test_file and expected_file
+        and line.find('End-of-file') >= 0):
       actual = [Fix(line) for line in lines[start:i] if line]
 
       actual_text = '\n'.join(actual)
@@ -97,14 +114,9 @@ def ParseLog(logdata):
       if len(actual) > 0 and actual[-1][-1] != '\n':
         actual_text += '\n'
 
-      fp = open(dst_fullpath, 'w')
-      fp.write(actual_text)
-      fp.close()
-      print("* %s" % os.path.relpath(dst_fullpath))
-      completed_files.add(dst_fullpath)
       start = None
       test_file = None
-      expected_file = None
+  return expected_file, actual_text
 
 
 def Run():
@@ -162,7 +174,10 @@ def Run():
           bb_command_expanded = ' '.join(bb_command)
           # print((BRIGHT_COLOR + '=> %s' + NORMAL_COLOR) % bb_command_expanded)
           output = os.popen(bb_command_expanded).readlines()
-          ParseLog('\n'.join(output))
+          for log in SplitTestLogs(output):
+            filename, actual_text = ParseLog(log)
+            if actual_text:
+              WriteFileOnce(filename, actual_text)
       if not output:
         print('No content_browsertests (with patch) step found')
         continue

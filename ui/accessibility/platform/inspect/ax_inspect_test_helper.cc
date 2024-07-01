@@ -311,7 +311,7 @@ bool AXInspectTestHelper::ValidateAgainstExpectation(
     diff += base::JoinString(actual_lines, "\n");
     diff += "\n";
 
-    // This is used by rebase_dump_accessibility_tree_test.py to signify
+    // This is used by rebase_dump_accessibility_tree_tests.py to signify
     // the end of the file when parsing the actual output from remote logs.
     diff += kMarkEndOfFile;
     diff += "\n";

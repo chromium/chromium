@@ -72,7 +72,7 @@ autoninja -C out/release content_browsertests && \
 Expectation baselines for each OS can be generated via:
 
 ```
-tools/accessibility/rebase_dump_accessibility_tree_test.py
+tools/accessibility/rebase_dump_accessibility_tree_tests.py
 ```
 
 ## Other content_browsertests
