@@ -15827,6 +15827,26 @@
             ]
         }
     ],
+    "PartitionVisitedLinkDatabase": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "PartitionVisitedLinkDatabase",
+                    "enable_features": [
+                        "PartitionVisitedLinkDatabase"
+                    ]
+                }
+            ]
+        }
+    ],
     "PassHistogramSharedMemoryOnLaunch": [
         {
             "platforms": [
