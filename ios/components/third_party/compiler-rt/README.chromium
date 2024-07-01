@@ -4,6 +4,7 @@ URL: https://reviews.llvm.org/source/llvm-github/repository/main/
 Version: 0
 Date: 2023-08-24
 License: Apache 2.0
+Revision: f9ac5575675e4117c2e097a71ad0f02cab92aa97
 License File: LICENSE.TXT
 Shipped: yes
 Security Critical: no
