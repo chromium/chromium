@@ -465,8 +465,6 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
     CHECK(client_shared_image);
   }
 
-  texture_target_ = client_shared_image->GetTextureTarget();
-
   // Wait for the mailbox to be ready to be used.
   WaitSyncToken(shared_image_interface->GenUnverifiedSyncToken());
 
@@ -568,9 +566,6 @@ void CanvasResourceRasterSharedImage::TearDown() {
       shared_image_interface->DestroySharedImage(
           shared_image_sync_token,
           std::move(owning_thread_data().client_shared_image));
-      // Clear `texture_target_` now that the SharedImage from which it was
-      // computed is destroyed.
-      texture_target_ = 0;
     }
     if (raster_interface) {
       if (owning_thread_data().texture_id_for_read_access) {
@@ -707,10 +702,10 @@ scoped_refptr<StaticBitmapImage> CanvasResourceRasterSharedImage::Bitmap() {
   }
   image = AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
       client_shared_image()->mailbox(), GetSyncToken(), texture_id_for_image,
-      image_info, texture_target_, is_origin_top_left_,
-      context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
-      std::move(release_callback), supports_display_compositing_,
-      is_overlay_candidate_);
+      image_info, client_shared_image()->GetTextureTarget(),
+      is_origin_top_left_, context_provider_wrapper_, owning_thread_ref_,
+      owning_thread_task_runner_, std::move(release_callback),
+      supports_display_compositing_, is_overlay_candidate_);
 
   DCHECK(image);
   return image;
@@ -759,6 +754,10 @@ const gpu::Mailbox& CanvasResourceRasterSharedImage::GetOrCreateGpuMailbox(
   // GetOrCreateGpuMailbox() is converted to return ClientSharedImage.
   return client_shared_image() ? client_shared_image()->mailbox()
                                : empty_mailbox_;
+}
+
+GLenum CanvasResourceRasterSharedImage::TextureTarget() const {
+  return client_shared_image() ? client_shared_image()->GetTextureTarget() : 0;
 }
 
 const gpu::SyncToken CanvasResourceRasterSharedImage::GetSyncToken() {
