@@ -5734,13 +5734,18 @@ TEST_P(AppsGridViewTabletTest, PeekingCardOnLastPage) {
   UpdateLayout();
 
   // Start cardified apps grid.
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::TOUCH, 0, 0,
-                                     paged_apps_grid_view_);
+  StartDragForViewAndFireTimer(
+      AppsGridView::TOUCH,
+      GetItemViewInCurrentPageAt(0, 0, paged_apps_grid_view_));
 
-  EXPECT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
-  EXPECT_EQ(1, paged_apps_grid_view_->BackgroundCardCountForTesting());
-
-  EndDrag();
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    EXPECT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
+    EXPECT_EQ(1, paged_apps_grid_view_->BackgroundCardCountForTesting());
+  }));
+  tasks.push_back(
+      base::BindLambdaForTesting([&]() { EndDrag(AppsGridView::TOUCH); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
 }
 
 TEST_P(AppsGridViewTabletTest, BackgroundCardBounds) {
@@ -5749,69 +5754,77 @@ TEST_P(AppsGridViewTabletTest, BackgroundCardBounds) {
   UpdateLayout();
 
   // Enter cardified state.
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::TOUCH, 0, 0,
-                                     paged_apps_grid_view_);
-  ASSERT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
-  ASSERT_EQ(2, paged_apps_grid_view_->BackgroundCardCountForTesting());
+  StartDragForViewAndFireTimer(
+      AppsGridView::TOUCH,
+      GetItemViewInCurrentPageAt(0, 0, paged_apps_grid_view_));
 
-  // Verify that all items in the current page fit within the background card.
-  gfx::Rect background_card_bounds =
-      paged_apps_grid_view_->GetBackgroundCardBoundsForTesting(0);
-  gfx::Rect clip_rect = paged_apps_grid_view_->GetMirroredRect(
-      paged_apps_grid_view_->layer()->clip_rect());
-  gfx::Rect first_item_bounds = GetItemRectOnCurrentPageAt(0, 0);
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    ASSERT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
+    ASSERT_EQ(2, paged_apps_grid_view_->BackgroundCardCountForTesting());
 
-  EXPECT_TRUE(background_card_bounds.Contains(first_item_bounds))
-      << " background card bounds " << background_card_bounds.ToString()
-      << " item bounds " << first_item_bounds.ToString();
-  EXPECT_TRUE(clip_rect.Contains(first_item_bounds))
-      << " clip rect " << clip_rect.ToString() << " item bounds "
-      << first_item_bounds.ToString();
+    // Verify that all items in the current page fit within the background card.
+    const gfx::Rect background_card_bounds =
+        paged_apps_grid_view_->GetBackgroundCardBoundsForTesting(0);
+    const gfx::Rect clip_rect = paged_apps_grid_view_->GetMirroredRect(
+        paged_apps_grid_view_->layer()->clip_rect());
+    const gfx::Rect first_item_bounds = GetItemRectOnCurrentPageAt(0, 0);
 
-  gfx::Rect last_item_bounds = GetItemRectOnCurrentPageAt(
-      GetTilesPerPageInPagedGrid(0) / apps_grid_view_->cols() - 1,
-      apps_grid_view_->cols() - 1);
+    EXPECT_TRUE(background_card_bounds.Contains(first_item_bounds))
+        << " background card bounds " << background_card_bounds.ToString()
+        << " item bounds " << first_item_bounds.ToString();
+    EXPECT_TRUE(clip_rect.Contains(first_item_bounds))
+        << " clip rect " << clip_rect.ToString() << " item bounds "
+        << first_item_bounds.ToString();
 
-  EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
-      << " background card bounds " << background_card_bounds.ToString()
-      << " item bounds " << last_item_bounds.ToString();
-  EXPECT_TRUE(clip_rect.Contains(last_item_bounds))
-      << " clip rect " << clip_rect.ToString() << " item bounds "
-      << last_item_bounds.ToString();
+    const gfx::Rect last_item_bounds = GetItemRectOnCurrentPageAt(
+        GetTilesPerPageInPagedGrid(0) / apps_grid_view_->cols() - 1,
+        apps_grid_view_->cols() - 1);
 
-  // Simulate screen rotation (r = 90 degrees clockwise).
-  UpdateDisplay("1024x768/r");
-  app_list_view_->OnParentWindowBoundsChanged();
+    EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
+        << " background card bounds " << background_card_bounds.ToString()
+        << " item bounds " << last_item_bounds.ToString();
+    EXPECT_TRUE(clip_rect.Contains(last_item_bounds))
+        << " clip rect " << clip_rect.ToString() << " item bounds "
+        << last_item_bounds.ToString();
 
-  ASSERT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
-  ASSERT_EQ(2, paged_apps_grid_view_->BackgroundCardCountForTesting());
+    // Simulate screen rotation (r = 90 degrees clockwise).
+    UpdateDisplay("1024x768/r");
+    app_list_view_->OnParentWindowBoundsChanged();
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    ASSERT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
+    ASSERT_EQ(2, paged_apps_grid_view_->BackgroundCardCountForTesting());
 
-  // Verify that all items in the current page fit within the background card.
-  background_card_bounds =
-      paged_apps_grid_view_->GetBackgroundCardBoundsForTesting(0);
-  clip_rect = paged_apps_grid_view_->GetMirroredRect(
-      paged_apps_grid_view_->layer()->clip_rect());
-  first_item_bounds = GetItemRectOnCurrentPageAt(0, 0);
+    // Verify that all items in the current page fit within the background card.
+    const gfx::Rect background_card_bounds =
+        paged_apps_grid_view_->GetBackgroundCardBoundsForTesting(0);
+    const gfx::Rect clip_rect = paged_apps_grid_view_->GetMirroredRect(
+        paged_apps_grid_view_->layer()->clip_rect());
+    const gfx::Rect first_item_bounds = GetItemRectOnCurrentPageAt(0, 0);
 
-  EXPECT_TRUE(background_card_bounds.Contains(first_item_bounds))
-      << " background card bounds " << background_card_bounds.ToString()
-      << " item bounds " << first_item_bounds.ToString();
-  EXPECT_TRUE(clip_rect.Contains(first_item_bounds))
-      << " clip rect " << clip_rect.ToString() << " item bounds "
-      << first_item_bounds.ToString();
+    EXPECT_TRUE(background_card_bounds.Contains(first_item_bounds))
+        << " background card bounds " << background_card_bounds.ToString()
+        << " item bounds " << first_item_bounds.ToString();
+    EXPECT_TRUE(clip_rect.Contains(first_item_bounds))
+        << " clip rect " << clip_rect.ToString() << " item bounds "
+        << first_item_bounds.ToString();
 
-  last_item_bounds = GetItemRectOnCurrentPageAt(
-      GetTilesPerPageInPagedGrid(0) / apps_grid_view_->cols() - 1,
-      apps_grid_view_->cols() - 1);
+    const gfx::Rect last_item_bounds = GetItemRectOnCurrentPageAt(
+        GetTilesPerPageInPagedGrid(0) / apps_grid_view_->cols() - 1,
+        apps_grid_view_->cols() - 1);
 
-  EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
-      << " background card bounds " << background_card_bounds.ToString()
-      << " item bounds " << last_item_bounds.ToString();
-  EXPECT_TRUE(clip_rect.Contains(last_item_bounds))
-      << " clip rect " << clip_rect.ToString() << " item bounds "
-      << last_item_bounds.ToString();
+    EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
+        << " background card bounds " << background_card_bounds.ToString()
+        << " item bounds " << last_item_bounds.ToString();
+    EXPECT_TRUE(clip_rect.Contains(last_item_bounds))
+        << " clip rect " << clip_rect.ToString() << " item bounds "
+        << last_item_bounds.ToString();
+  }));
+  tasks.push_back(
+      base::BindLambdaForTesting([&]() { EndDrag(AppsGridView::TOUCH); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
 
-  EndDrag(AppsGridView::TOUCH);
   EXPECT_EQ(gfx::Rect(), paged_apps_grid_view_->layer()->clip_rect());
   EXPECT_FALSE(paged_apps_grid_view_->cardified_state_for_testing());
   EXPECT_EQ(0, paged_apps_grid_view_->BackgroundCardCountForTesting());
@@ -5823,80 +5836,95 @@ TEST_P(AppsGridViewTabletTest, BackgroundCardBoundsOnSecondPage) {
   UpdateLayout();
 
   // Enter cardified state, and drag the item to the second apps grid page.
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::TOUCH, 0, 0,
-                                     paged_apps_grid_view_);
-  const gfx::Point to_in_next_page =
-      test_api_->GetItemTileRectAtVisualIndex(1, 0).left_center();
-  // Drag the first item to the next page to create another page.
-  UpdateDragToNeighborPage(true /* next_page */, to_in_next_page,
-                           AppsGridView::TOUCH);
+  StartDragForViewAndFireTimer(
+      AppsGridView::TOUCH,
+      GetItemViewInCurrentPageAt(0, 0, paged_apps_grid_view_));
+
+  std::list<base::OnceClosure> drag_to_next_page;
+  drag_to_next_page.push_back(base::BindLambdaForTesting([&]() {
+    const gfx::Point to_in_next_page =
+        test_api_->GetItemTileRectAtVisualIndex(1, 0).left_center();
+    // Drag the first item to the next page to create another page.
+    UpdateDragToNeighborPage(true /* next_page */, to_in_next_page,
+                             AppsGridView::TOUCH);
+  }));
+  drag_to_next_page.push_back(
+      base::BindLambdaForTesting([&]() { EndDrag(AppsGridView::TOUCH); }));
+  MaybeRunDragAndDropSequenceForAppList(&drag_to_next_page, /*is_touch =*/true);
 
   ASSERT_EQ(1, GetPaginationModel()->selected_page());
 
   // Trigger cardified state again.
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::TOUCH, 0, 0,
-                                     paged_apps_grid_view_);
+  StartDragForViewAndFireTimer(
+      AppsGridView::TOUCH,
+      GetItemViewInCurrentPageAt(0, 0, paged_apps_grid_view_));
 
-  ASSERT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
-  ASSERT_EQ(2, paged_apps_grid_view_->BackgroundCardCountForTesting());
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    ASSERT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
+    ASSERT_EQ(2, paged_apps_grid_view_->BackgroundCardCountForTesting());
 
-  // Verify that all items in the current page fit within the background card.
-  gfx::Rect background_card_bounds =
-      paged_apps_grid_view_->GetBackgroundCardBoundsForTesting(1);
-  gfx::Rect clip_rect = paged_apps_grid_view_->GetMirroredRect(
-      paged_apps_grid_view_->layer()->clip_rect());
-  gfx::Rect first_item_bounds = GetItemRectOnCurrentPageAt(0, 0);
+    // Verify that all items in the current page fit within the background card.
+    const gfx::Rect background_card_bounds =
+        paged_apps_grid_view_->GetBackgroundCardBoundsForTesting(1);
+    const gfx::Rect clip_rect = paged_apps_grid_view_->GetMirroredRect(
+        paged_apps_grid_view_->layer()->clip_rect());
+    const gfx::Rect first_item_bounds = GetItemRectOnCurrentPageAt(0, 0);
 
-  EXPECT_TRUE(background_card_bounds.Contains(first_item_bounds))
-      << " background card bounds " << background_card_bounds.ToString()
-      << " item bounds " << first_item_bounds.ToString();
-  EXPECT_TRUE(clip_rect.Contains(first_item_bounds))
-      << " clip rect " << clip_rect.ToString() << " item bounds "
-      << first_item_bounds.ToString();
+    EXPECT_TRUE(background_card_bounds.Contains(first_item_bounds))
+        << " background card bounds " << background_card_bounds.ToString()
+        << " item bounds " << first_item_bounds.ToString();
+    EXPECT_TRUE(clip_rect.Contains(first_item_bounds))
+        << " clip rect " << clip_rect.ToString() << " item bounds "
+        << first_item_bounds.ToString();
 
-  gfx::Rect last_item_bounds = GetItemRectOnCurrentPageAt(
-      GetTilesPerPageInPagedGrid(1) / apps_grid_view_->cols() - 1,
-      apps_grid_view_->cols() - 1);
+    const gfx::Rect last_item_bounds = GetItemRectOnCurrentPageAt(
+        GetTilesPerPageInPagedGrid(1) / apps_grid_view_->cols() - 1,
+        apps_grid_view_->cols() - 1);
 
-  EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
-      << " background card bounds " << background_card_bounds.ToString()
-      << " item bounds " << last_item_bounds.ToString();
-  EXPECT_TRUE(clip_rect.Contains(last_item_bounds))
-      << " clip rect " << clip_rect.ToString() << " item bounds "
-      << last_item_bounds.ToString();
+    EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
+        << " background card bounds " << background_card_bounds.ToString()
+        << " item bounds " << last_item_bounds.ToString();
+    EXPECT_TRUE(clip_rect.Contains(last_item_bounds))
+        << " clip rect " << clip_rect.ToString() << " item bounds "
+        << last_item_bounds.ToString();
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Simulate screen rotation (r = 90 degrees clockwise).
+    UpdateDisplay("1024x768/r");
 
-  // Simulate screen rotation (r = 90 degrees clockwise).
-  UpdateDisplay("1024x768/r");
+    ASSERT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
+    ASSERT_EQ(2, paged_apps_grid_view_->BackgroundCardCountForTesting());
 
-  ASSERT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
-  ASSERT_EQ(2, paged_apps_grid_view_->BackgroundCardCountForTesting());
+    // Verify that all items in the current page fit within the background card.
+    const gfx::Rect background_card_bounds =
+        paged_apps_grid_view_->GetBackgroundCardBoundsForTesting(1);
+    const gfx::Rect clip_rect = paged_apps_grid_view_->GetMirroredRect(
+        paged_apps_grid_view_->layer()->clip_rect());
+    const gfx::Rect first_item_bounds = GetItemRectOnCurrentPageAt(0, 0);
 
-  // Verify that all items in the current page fit within the background card.
-  background_card_bounds =
-      paged_apps_grid_view_->GetBackgroundCardBoundsForTesting(1);
-  clip_rect = paged_apps_grid_view_->GetMirroredRect(
-      paged_apps_grid_view_->layer()->clip_rect());
-  first_item_bounds = GetItemRectOnCurrentPageAt(0, 0);
+    EXPECT_TRUE(background_card_bounds.Contains(first_item_bounds))
+        << " background card bounds " << background_card_bounds.ToString()
+        << " item bounds " << first_item_bounds.ToString();
+    EXPECT_TRUE(clip_rect.Contains(first_item_bounds))
+        << " clip rect " << clip_rect.ToString() << " item bounds "
+        << first_item_bounds.ToString();
 
-  EXPECT_TRUE(background_card_bounds.Contains(first_item_bounds))
-      << " background card bounds " << background_card_bounds.ToString()
-      << " item bounds " << first_item_bounds.ToString();
-  EXPECT_TRUE(clip_rect.Contains(first_item_bounds))
-      << " clip rect " << clip_rect.ToString() << " item bounds "
-      << first_item_bounds.ToString();
+    const gfx::Rect last_item_bounds = GetItemRectOnCurrentPageAt(
+        GetTilesPerPageInPagedGrid(1) / apps_grid_view_->cols() - 1,
+        apps_grid_view_->cols() - 1);
 
-  last_item_bounds = GetItemRectOnCurrentPageAt(
-      GetTilesPerPageInPagedGrid(1) / apps_grid_view_->cols() - 1,
-      apps_grid_view_->cols() - 1);
+    EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
+        << " background card bounds " << background_card_bounds.ToString()
+        << " item bounds " << last_item_bounds.ToString();
+    EXPECT_TRUE(clip_rect.Contains(last_item_bounds))
+        << " clip rect " << clip_rect.ToString() << " item bounds "
+        << last_item_bounds.ToString();
+  }));
+  tasks.push_back(
+      base::BindLambdaForTesting([&]() { EndDrag(AppsGridView::TOUCH); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
 
-  EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
-      << " background card bounds " << background_card_bounds.ToString()
-      << " item bounds " << last_item_bounds.ToString();
-  EXPECT_TRUE(clip_rect.Contains(last_item_bounds))
-      << " clip rect " << clip_rect.ToString() << " item bounds "
-      << last_item_bounds.ToString();
-
-  EndDrag(AppsGridView::TOUCH);
   EXPECT_EQ(gfx::Rect(), paged_apps_grid_view_->layer()->clip_rect());
   EXPECT_FALSE(paged_apps_grid_view_->cardified_state_for_testing());
   EXPECT_EQ(0, paged_apps_grid_view_->BackgroundCardCountForTesting());
@@ -5993,13 +6021,20 @@ TEST_P(AppsGridViewTabletTest, AppsGridIsCardifiedDuringDrag) {
   GetTestModel()->PopulateApps(2);
   UpdateLayout();
 
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::TOUCH, 0, 0,
-                                     paged_apps_grid_view_);
-  MaybeCheckHaptickEventsCount(0);
+  StartDragForViewAndFireTimer(
+      AppsGridView::TOUCH,
+      GetItemViewInCurrentPageAt(0, 0, paged_apps_grid_view_));
 
-  EXPECT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    MaybeCheckHaptickEventsCount(0);
 
-  EndDrag(AppsGridView::TOUCH);
+    EXPECT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
+  }));
+  tasks.push_back(
+      base::BindLambdaForTesting([&]() { EndDrag(AppsGridView::TOUCH); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
+
   MaybeCheckHaptickEventsCount(0);
 
   EXPECT_FALSE(paged_apps_grid_view_->cardified_state_for_testing());
@@ -6016,18 +6051,27 @@ TEST_P(AppsGridViewTabletTest, DragWithinFolderDoesNotEnterCardifiedState) {
   AppsGridViewTestApi folder_grid_test_api(folder_apps_grid_view());
 
   // Drag the first folder child within the folder.
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::TOUCH, 0, 0,
-                                     folder_apps_grid_view());
-  MaybeCheckHaptickEventsCount(0);
-  const gfx::Point to =
-      folder_grid_test_api.GetItemTileRectOnCurrentPageAt(0, 1).CenterPoint();
-  UpdateDrag(AppsGridView::TOUCH, to, folder_apps_grid_view(), 10 /*steps*/);
-  // The folder item reparent timer should not be triggered.
-  ASSERT_FALSE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+  StartDragForViewAndFireTimer(
+      AppsGridView::TOUCH,
+      GetItemViewInCurrentPageAt(0, 0, folder_apps_grid_view()));
 
-  EXPECT_FALSE(paged_apps_grid_view_->cardified_state_for_testing());
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    MaybeCheckHaptickEventsCount(0);
+    const gfx::Point to =
+        folder_grid_test_api.GetItemTileRectOnCurrentPageAt(0, 1).CenterPoint();
+    UpdateDrag(AppsGridView::TOUCH, to, folder_apps_grid_view(), 10 /*steps*/);
+    // The folder item reparent timer should not be triggered.
+    ASSERT_FALSE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
 
-  EndDrag();
+    EXPECT_FALSE(paged_apps_grid_view_->cardified_state_for_testing());
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // End the drag and check that no more item layer copies remain.
+    EndDrag(AppsGridView::TOUCH);
+  }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
+
   MaybeCheckHaptickEventsCount(0);
 }
 
@@ -6041,21 +6085,30 @@ TEST_P(AppsGridViewTabletTest, DragOutsideFolderEntersCardifiedState) {
   AppsGridViewTestApi folder_grid_test_api(folder_apps_grid_view());
 
   // Drag the first folder child out of the folder.
-  AppListItemView* drag_view = InitiateDragForItemAtCurrentPageAt(
-      AppsGridView::TOUCH, 0, 0, folder_apps_grid_view());
-  MaybeCheckHaptickEventsCount(0);
-  const gfx::Point to =
-      app_list_folder_view()->GetLocalBounds().bottom_center() +
-      gfx::Vector2d(0, drag_view->height()
-                    /*padding to completely exit folder view*/);
-  UpdateDrag(AppsGridView::TOUCH, to, folder_apps_grid_view(), 10 /*steps*/);
-  // Fire the reparent timer that should be started when an item is dragged out
-  // of folder bounds.
-  ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+  AppListItemView* drag_view =
+      GetItemViewInCurrentPageAt(0, 0, folder_apps_grid_view());
+  StartDragForViewAndFireTimer(AppsGridView::TOUCH, drag_view);
 
-  EXPECT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    MaybeCheckHaptickEventsCount(0);
+    const gfx::Point to =
+        app_list_folder_view()->GetLocalBounds().bottom_center() +
+        gfx::Vector2d(0, drag_view->height()
+                      /*padding to completely exit folder view*/);
+    UpdateDrag(AppsGridView::TOUCH, to, folder_apps_grid_view(), 10 /*steps*/);
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Fire the reparent timer that should be started when an item is dragged
+    // out of folder bounds.
+    ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
 
-  EndDrag(AppsGridView::TOUCH);
+    EXPECT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
+  }));
+  tasks.push_back(
+      base::BindLambdaForTesting([&]() { EndDrag(AppsGridView::TOUCH); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
+
   MaybeCheckHaptickEventsCount(0);
   EXPECT_FALSE(paged_apps_grid_view_->cardified_state_for_testing());
 }
@@ -6067,17 +6120,22 @@ TEST_P(AppsGridViewTabletTest, DragItemIntoFolderStaysInCardifiedState) {
   GetTestModel()->CreateAndPopulateFolderWithApps(2);
   GetTestModel()->PopulateApps(1);
   UpdateLayout();
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::TOUCH, 0, 1,
-                                     paged_apps_grid_view_);
-  MaybeCheckHaptickEventsCount(0);
+  StartDragForViewAndFireTimer(
+      AppsGridView::TOUCH,
+      GetItemViewInCurrentPageAt(0, 0, paged_apps_grid_view_));
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    MaybeCheckHaptickEventsCount(0);
+    // Dragging item_1 over folder to expand it.
+    const gfx::Point to = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
+    UpdateDrag(AppsGridView::TOUCH, to, paged_apps_grid_view_, 10 /*steps*/);
 
-  // Dragging item_1 over folder to expand it.
-  const gfx::Point to = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
-  UpdateDrag(AppsGridView::TOUCH, to, paged_apps_grid_view_, 10 /*steps*/);
+    EXPECT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
+  }));
+  tasks.push_back(
+      base::BindLambdaForTesting([&]() { EndDrag(AppsGridView::TOUCH); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
 
-  EXPECT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
-
-  EndDrag(AppsGridView::TOUCH);
   MaybeCheckHaptickEventsCount(0);
   EXPECT_FALSE(paged_apps_grid_view_->cardified_state_for_testing());
   test_api_->WaitForItemMoveAnimationDone();
