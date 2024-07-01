@@ -957,9 +957,6 @@
     'cq': {
       'filepath': 'infra/config/branch/cq.cfg',
     },
-    'cr_elements': {
-      'filepath': 'ui/webui/resources/cr_element',
-    },
     'creator': {
       'filepath': 'components/creator/|' \
                   'chrome/android/java/src/org/chromium/chrome/browser/app/creator/|' \
@@ -1845,11 +1842,6 @@
       'filepath' : 'third_party/blink/renderer/core/permissions_policy/document_policy_features.json5|'\
                    'third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5'
     },
-    'polymer': {
-      'filepath': 'third_party/polymer/|'\
-                  'third_party/web-animations-js/|'\
-                  'tools/polymer'
-    },
     'popup_blocker': {
       'filepath': 'chrome/browser/ui/blocked_content'
     },
@@ -2014,11 +2006,6 @@
     },
     'service_worker': {
       'filepath': 'content/(browser|renderer|child|common)/service_worker/',
-    },
-    'settings': {
-      'filepath': 'chrome/browser/resources/settings/'\
-                  '|chrome/browser/ui/webui/settings/'\
-                  '|chrome/test/data/webui/settings/',
     },
     'settings_os_settings': {
       'filepath': 'chrome/browser/resources/ash/settings/'\
@@ -2840,7 +2827,6 @@
            'tikuta+cc@chromium.org',
            'ukai+cc@chromium.org',
            'yyanagisawa+cc@chromium.org'],
-    'cr_elements': ['michaelpg+watch-elements@chromium.org'],
     'creator':['jeffreycohen+watch-creator@chromium.org',
               'sophey+watch-creator@chromium.org',
               'wiss+watch-creator@chromium.org',
@@ -3160,7 +3146,6 @@
              'minap+watch-plus_addresses@google.com',
              'jkeitel+watch-plus_addresses@google.com'],
     'policy_features': ['feature-control+watch@chromium.org'],
-    'polymer': ['michaelpg+watch-polymer@chromium.org'],
     'popup_blocker': ['csharrison+watch-popups@chromium.org'],
     'precache': ['wifiprefetch-reviews@google.com'],
     'prefetch_proxy': ['marcinjb+p4watch@google.com',
@@ -3218,7 +3203,6 @@
                        'nhiroki@chromium.org',
                        'serviceworker-reviews@chromium.org',
                        'shimazu+serviceworker@chromium.org'],
-    'settings': ['michaelpg+watch-settings@chromium.org'],
     'settings_os_settings': ['croissant-eng+reviews@chromium.org',
                              'cros-settings+reviews@google.com'],
     'settings_os_settings_languages':
