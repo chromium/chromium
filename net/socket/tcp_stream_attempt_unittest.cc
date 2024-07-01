@@ -204,7 +204,7 @@ TEST_F(TcpStreamAttemptTest, Timeout) {
 
   FastForwardBy(TcpStreamAttempt::kTcpHandshakeTimeout);
   rv = helper.WaitForCompletion();
-  EXPECT_THAT(rv, IsError(ERR_TIMED_OUT));
+  EXPECT_THAT(rv, IsError(ERR_CONNECTION_TIMED_OUT));
   ASSERT_FALSE(helper.attempt()->ReleaseStreamSocket());
 }
 

@@ -61,7 +61,7 @@ void TcpStreamAttempt::OnIOComplete(int rv) {
 
 void TcpStreamAttempt::OnTimeout() {
   SetStreamSocket(nullptr);
-  NotifyOfCompletion(ERR_TIMED_OUT);
+  NotifyOfCompletion(ERR_CONNECTION_TIMED_OUT);
 }
 
 }  // namespace net
