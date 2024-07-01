@@ -13,8 +13,10 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/system_cpu/pressure_test_support.h"
+#include "services/device/compute_pressure/probes_manager.h"
 #include "services/device/device_service_test_base.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
 #include "services/device/public/mojom/pressure_update.mojom.h"
@@ -24,9 +26,6 @@
 namespace device {
 
 namespace {
-
-constexpr base::TimeDelta kDefaultSamplingIntervalForTesting =
-    base::Milliseconds(10);
 
 class FakePressureClient : public mojom::PressureClient {
  public:
@@ -99,13 +98,8 @@ class PressureManagerImplTest : public DeviceServiceTestBase {
     auto fake_cpu_probe = std::make_unique<system_cpu::FakeCpuProbe>();
     // CpuSample = 0.63 is converted to PressureState::kFair
     fake_cpu_probe->SetLastSample(system_cpu::CpuSample{0.63});
-    std::unique_ptr<CpuProbeManager> cpu_probe_manager =
-        CpuProbeManager::CreateForTesting(
-            std::move(fake_cpu_probe), kDefaultSamplingIntervalForTesting,
-            base::BindRepeating(&PressureManagerImpl::UpdateClients,
-                                base::Unretained(manager_impl_.get()),
-                                mojom::PressureSource::kCpu));
-    manager_impl_->SetCpuProbeManagerForTesting(std::move(cpu_probe_manager));
+    manager_impl_->GetProbesManagerForTesting()->SetCpuProbeForTesting(
+        std::move(fake_cpu_probe));
     manager_.reset();
     manager_impl_->Bind(manager_.BindNewPipeAndPassReceiver());
   }
@@ -164,7 +158,7 @@ TEST_F(PressureManagerImplTest, ThreeClients) {
 }
 
 TEST_F(PressureManagerImplTest, AddClientNoProbe) {
-  manager_impl_->SetCpuProbeManagerForTesting(nullptr);
+  manager_impl_->GetProbesManagerForTesting()->SetCpuProbeForTesting(nullptr);
 
   FakePressureClient client;
   ASSERT_EQ(AddPressureClient(client.BindNewPipeAndPassRemote(),

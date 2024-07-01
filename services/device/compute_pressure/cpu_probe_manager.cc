@@ -63,6 +63,9 @@ std::unique_ptr<CpuProbeManager> CpuProbeManager::CreateForTesting(
     std::unique_ptr<CpuProbe> system_cpu_probe,
     base::TimeDelta sampling_interval,
     base::RepeatingCallback<void(mojom::PressureState)> sampling_callback) {
+  if (!system_cpu_probe) {
+    return nullptr;
+  }
   return base::WrapUnique(new CpuProbeManager(
       std::move(system_cpu_probe), sampling_interval, sampling_callback));
 }
