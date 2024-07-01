@@ -604,7 +604,7 @@
   </message>
   <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_WARNING_HEADER" desc="Header text displayed in the manifest v2 deprecation panel for the warning stage.">
     {NUM_EXTENSIONS, plural,
-      =1 {This extension may soon no longer be suported}
+      =1 {This extension may soon no longer be supported}
       other {These extensions may soon no longer be supported}
     }
   </message>
@@ -615,7 +615,7 @@
     }
   </message>
   <message name="IDS_EXTENSIONS_MV2_DEPRECATION_MESSAGE_WARNING_HEADER" desc="Header text displayed in the manifest v2 deprecation message for a specific extension during the warning stage.">
-    This extension may soon no longer be suported
+    This extension may soon no longer be supported
   </message>
   <message name="IDS_EXTENSIONS_MV2_DEPRECATION_MESSAGE_WARNING_SUBTITLE" desc="Subtitle text displayed in the manifest v2 deprecation message for a specific extension during the warning stage.">
     Remove or replace it with similar extensions from the <ph name="BEGIN_LINK">&lt;a href='https://chromewebstore.google.com/category/extensions'&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>
