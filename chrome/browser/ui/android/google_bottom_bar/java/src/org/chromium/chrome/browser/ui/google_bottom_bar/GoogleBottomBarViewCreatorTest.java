@@ -62,7 +62,6 @@ import java.util.Map;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class GoogleBottomBarViewCreatorTest {
-
     private static final Map<Integer, Integer> BUTTON_ID_TO_CUSTOM_BUTTON_ID_MAP =
             Map.of(SAVE, 100, SHARE, 101, PIH_BASIC, 103, CUSTOM, 105, SEARCH, 106);
 
@@ -534,6 +533,25 @@ public class GoogleBottomBarViewCreatorTest {
         assertEquals(
                 mActivity.getResources().getDimensionPixelSize(R.dimen.google_bottom_bar_height),
                 mGoogleBottomBarViewCreator.getBottomBarHeightInPx());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void testCreateSearchBoxView_returnsViewWithLensButton() {
+        BottomBarConfig bottomBarConfig =
+                mConfigCreator.create(
+                        GoogleBottomBarIntentParams.newBuilder()
+                                .addAllEncodedButton(List.of(0, SHARE))
+                                .setVariantLayoutType(
+                                        VariantLayoutType.SINGLE_DECKER_WITH_RIGHT_BUTTONS)
+                                .build(),
+                        new ArrayList<>());
+
+        View root = getGoogleBottomBarViewCreator(bottomBarConfig).createGoogleBottomBarView();
+
+        assertNotNull(root.findViewById(R.id.google_bottom_bar_searchbox));
+        ImageButton lensButton = root.findViewById(R.id.google_bottom_bar_searchbox_lens_button);
+        assertNotNull(lensButton);
     }
 
     private void assertButtonLayoutCreated(BottomBarConfig config, ViewGroup root) {
