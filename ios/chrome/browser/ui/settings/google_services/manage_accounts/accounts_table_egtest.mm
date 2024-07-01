@@ -130,6 +130,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [self openAccountSettings];
   [ChromeEarlGreyUI tapAccountsMenuButton:SignOutAccountsButton()];
+  [SigninEarlGreyUI dismissSignoutSnackbar];
 
   // Forget `fakeIdentity`, screens should be popped back to the Main Settings.
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -399,8 +400,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 // Tests that users data is not cleared when the signed in account disappear and
 // it is a managed account.
-// TODO(crbug.com/331778550): Flaky. Re-enable when fixed.
-- (void)DISABLED_testManagedAccountRemovedFromAnotherGoogleApp {
+- (void)testManagedAccountRemovedFromAnotherGoogleApp {
   // Sign In `fakeManagedIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
@@ -440,6 +440,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   // Opens the sign out confirmation dialog.
   [ChromeEarlGreyUI
       tapAccountsMenuButton:chrome_test_util::SignOutAccountsButton()];
+  [SigninEarlGreyUI dismissSignoutSnackbar];
   // Wait until the sheet is fully presented before removing the identity.
   [ChromeEarlGreyUI waitForAppToIdle];
   // Remove the primary accounts.

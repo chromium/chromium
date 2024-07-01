@@ -165,14 +165,8 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
                  grey_text(l10n_util::GetNSString(
                      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM))]
       performAction:grey_tap()];
-  // Note that there's no confirmation of signout, so the `confirmation`
-  // param is ignored. However, there is a snackbar - close it, so that it
-  // can't obstruct other UI items.
-  NSString* snackbarLabel = l10n_util::GetNSString(
-      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE);
-  // The tap checks the existence of the snackbar and also closes it.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(snackbarLabel)]
-      performAction:grey_tap()];
+  // Close the snackbar, so that it can't obstruct other UI items.
+  [self dismissSignoutSnackbar];
 
   // Wait until the user is signed out. Use a longer timeout for cases where
   // sign out also triggers a clear browsing data.
@@ -184,6 +178,14 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
   [SigninEarlGrey verifySignedOut];
+}
+
++ (void)dismissSignoutSnackbar {
+  NSString* snackbarLabel = l10n_util::GetNSString(
+      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE);
+  // The tap checks the existence of the snackbar and also closes it.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(snackbarLabel)]
+      performAction:grey_tap()];
 }
 
 + (void)verifySigninPromoVisibleWithMode:(SigninPromoViewMode)mode {

@@ -33,9 +33,11 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
              enableHistorySync:(BOOL)enableHistorySync;
 
 // Signs the primary account out of Chrome through the accounts list screen.
-// Taps the "Sign Out" button and dismisses the confirmation snackbar. Assumes
-// that sync is replaced by sign-in.
+// Taps the "Sign Out" button and dismisses the confirmation snackbar.
 + (void)signOut;
+
+// dismisses the confirmation snackbar on sign-out.
++ (void)dismissSignoutSnackbar;
 
 // Opens the confirmation dialog to remove an account from the device, without
 // confirming it.
