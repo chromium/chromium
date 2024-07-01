@@ -133,7 +133,8 @@ void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
       std::move(params_or_error).value();
   params.set_site(
       net::SchemefulSite(registration_params_.registration_endpoint())
-          .Serialize());
+          .GetURL()
+          .spec());
   params.set_wrapped_key(wrapped_key_str_);
   *params.mutable_creation_time() =
       bound_session_credentials::TimeToTimestamp(base::Time::Now());

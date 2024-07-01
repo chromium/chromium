@@ -53,6 +53,8 @@ using testing::AssertionFailure;
 using testing::AssertionResult;
 using testing::AssertionSuccess;
 using testing::Eq;
+using testing::IsEmpty;
+using testing::Not;
 using testing::Pointee;
 using HeaderVector = net::HttpRequestHeaders::HeaderVector;
 
@@ -166,6 +168,11 @@ struct CookieRotationResponseParams {
     return {.headers = std::move(headers),
             .status_code = net::HttpStatusCode::HTTP_UNAUTHORIZED,
             .block_server_response_ = block_server_response};
+  }
+
+  static CookieRotationResponseParams CreateServerPersistentError() {
+    return {.status_code = net::HttpStatusCode::HTTP_FORBIDDEN,
+            .block_server_response_ = true};
   }
 
   HeaderVector headers;
@@ -363,7 +370,9 @@ class FakeServerHost {
       : server_(std::move(params)) {}
   ~FakeServerHost() = default;
 
-  void Initialize(net::test_server::EmbeddedTestServer& embedded_test_server) {
+  void Initialize(
+      net::test_server::EmbeddedTestServer& embedded_test_server,
+      base::queue<CookieRotationResponseParams> rotation_responses_params) {
     // If `CookieRotationResponseParams` has `block_server_response` set to
     // true, the server response will be blocked and
     // `on_server_cookie_rotation_response_blocked` will be called with a
@@ -372,14 +381,6 @@ class FakeServerHost {
         base::BindPostTaskToCurrentDefault(base::BindRepeating(
             &FakeServerHost::OnServerCookieRotationResponseBlocked,
             base::Unretained(this)));
-    base::queue<CookieRotationResponseParams> rotation_responses_params;
-    rotation_responses_params.push(
-        CookieRotationResponseParams::CreateChallengeRequired(
-            server_.params().session_id));
-    rotation_responses_params.push(
-        CookieRotationResponseParams::CreateSuccessWithCookies(
-            embedded_test_server.GetURL(kDomain, "/"),
-            /*block_server_response=*/true));
     // Cookie Rotation requests are set to require calling
     // `UnblockCookieRotationResponse()` to unblock the response and complete
     // the request.
@@ -501,13 +502,13 @@ class BoundSessionCookieRefreshServiceImplBrowserTest
   }
 
   void RegisterNewSession() {
-    base::RunLoop run_loop;
-    ExpectSessionParamsUpdate(run_loop.QuitClosure());
+    base::RunLoop registration_params_update;
+    ExpectSessionParamsUpdate(registration_params_update.QuitClosure());
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), embedded_https_test_server().GetURL(
                        kDomain, KTriggerRegistrationPath)));
-    run_loop.Run();
+    registration_params_update.Run();
 
     std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
         throttler_params = service()->GetBoundSessionThrottlerParams();
@@ -516,24 +517,53 @@ class BoundSessionCookieRefreshServiceImplBrowserTest
     EXPECT_EQ(throttler_params[0]->path, "/");
 
     // Cookie rotation request comes immediately after session registration.
-    server_host_.WaitOnServerCookieRotationResponseBlocked();
-    ExpectSessionParamsUpdate(base::DoNothing());
-    ASSERT_TRUE(server_host_.UnblockServerCookieRotationResponse());
+    server_host().WaitOnServerCookieRotationResponseBlocked();
+    base::RunLoop rotation_params_update;
+    ExpectSessionParamsUpdate(rotation_params_update.QuitClosure());
+    ASSERT_TRUE(server_host().UnblockServerCookieRotationResponse());
+    rotation_params_update.Run();
   }
 
-  FakeServerHost& server_host() { return server_host_; }
+  FakeServerHost& server_host() { return *server_host_; }
+
+ protected:
+  virtual std::unique_ptr<FakeServerHost> CreateAndInitializeFakeServerHost(
+      net::test_server::EmbeddedTestServer& embedded_test_server) {
+    auto fake_server_host = std::make_unique<FakeServerHost>(
+        FakeServer::Params{.domain = std::string(kDomain),
+                           .registration_path = "/RegisterSession",
+                           .rotation_path = "/RotateBoundCookies",
+                           .session_id = "007"});
+
+    base::queue<CookieRotationResponseParams> rotation_responses_params;
+    rotation_responses_params.push(
+        CookieRotationResponseParams::CreateChallengeRequired(
+            fake_server_host->params().session_id));
+    rotation_responses_params.push(
+        CookieRotationResponseParams::CreateSuccessWithCookies(
+            embedded_test_server.GetURL(kDomain, "/"),
+            /*block_server_response=*/true));
+
+    fake_server_host->Initialize(embedded_test_server,
+                                 std::move(rotation_responses_params));
+
+    return fake_server_host;
+  }
 
  private:
   void InitializeServer() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+    server_host_ =
+        CreateAndInitializeFakeServerHost(embedded_https_test_server());
+    CHECK(server_host_);
+
     embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
         &net::test_server::HandlePrefixedRequest,
         std::string(KTriggerRegistrationPath),
         base::BindRepeating(&HandleTriggerRegistrationRequest,
                             std::vector<std::string>{std::string(
-                                server_host_.params().registration_path)})));
-
-    server_host_.Initialize(embedded_https_test_server());
+                                server_host_->params().registration_path)})));
 
     embedded_test_server_handle_ =
         embedded_https_test_server().StartAcceptingConnectionsAndReturnHandle();
@@ -549,11 +579,7 @@ class BoundSessionCookieRefreshServiceImplBrowserTest
       switches::kEnableBoundSessionCredentials};
   crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
   // `server_host_` must outlive `embedded_test_server_handle_`.
-  FakeServerHost server_host_{
-      FakeServer::Params{.domain = std::string(kDomain),
-                         .registration_path = "/RegisterSession",
-                         .rotation_path = "/RotateBoundCookies",
-                         .session_id = "007"}};
+  std::unique_ptr<FakeServerHost> server_host_;
   net::test_server::EmbeddedTestServerHandle embedded_test_server_handle_;
   base::OnceClosure params_updated_callback_;
 };
@@ -587,4 +613,41 @@ IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplBrowserTest,
       new_throttler_params = service()->GetBoundSessionThrottlerParams();
   ASSERT_EQ(new_throttler_params.size(), 1U);
   EXPECT_GT(new_throttler_params[0]->cookie_expiry_date, cookie_expiration);
+}
+
+class BoundSessionCookieRefreshServiceImplFailingRotationBrowserTest
+    : public BoundSessionCookieRefreshServiceImplBrowserTest {
+ protected:
+  std::unique_ptr<FakeServerHost> CreateAndInitializeFakeServerHost(
+      net::test_server::EmbeddedTestServer& embedded_test_server) override {
+    auto fake_server_host = std::make_unique<FakeServerHost>(
+        FakeServer::Params{.domain = std::string(kDomain),
+                           .registration_path = "/RegisterSession",
+                           .rotation_path = "/RotateBoundCookies",
+                           .session_id = "007"});
+    base::queue<CookieRotationResponseParams> rotation_responses_params;
+    rotation_responses_params.push(
+        CookieRotationResponseParams::CreateServerPersistentError());
+
+    fake_server_host->Initialize(embedded_test_server,
+                                 std::move(rotation_responses_params));
+
+    return fake_server_host;
+  }
+};
+
+// Regression test for https://crbug.com/349411334.
+IN_PROC_BROWSER_TEST_F(
+    BoundSessionCookieRefreshServiceImplFailingRotationBrowserTest,
+    PRE_TerminateSessionClearsStorage) {
+  RegisterNewSession();
+  // Session should be terminated immediatelly after the first rotation fails.
+  EXPECT_THAT(service()->GetBoundSessionThrottlerParams(), IsEmpty());
+  // Terminated session should not be recreated at the next startup.
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BoundSessionCookieRefreshServiceImplFailingRotationBrowserTest,
+    TerminateSessionClearsStorage) {
+  EXPECT_THAT(service()->GetBoundSessionThrottlerParams(), IsEmpty());
 }

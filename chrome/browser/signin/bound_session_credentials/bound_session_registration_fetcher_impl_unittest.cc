@@ -113,7 +113,7 @@ bound_session_credentials::Credential CreateTestBoundSessionCredential(
 bound_session_credentials::BoundSessionParams CreateTestBoundSessionParams(
     const std::string& wrapped_key) {
   bound_session_credentials::BoundSessionParams params;
-  params.set_site("https://google.com");
+  params.set_site("https://google.com/");
   params.set_session_id("007");
   params.set_wrapped_key(wrapped_key);
   *params.mutable_creation_time() =
