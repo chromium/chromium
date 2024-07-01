@@ -72,11 +72,11 @@ void EditorSystemActuator::InsertText(const std::string& text) {
 }
 
 void EditorSystemActuator::ApproveConsent() {
-  system_->ProcessConsentAction(ConsentAction::kApproved);
+  system_->ProcessConsentAction(ConsentAction::kApprove);
 }
 
 void EditorSystemActuator::DeclineConsent() {
-  system_->ProcessConsentAction(ConsentAction::kDeclined);
+  system_->ProcessConsentAction(ConsentAction::kDecline);
 }
 
 void EditorSystemActuator::OpenUrlInNewWindow(const GURL& url) {

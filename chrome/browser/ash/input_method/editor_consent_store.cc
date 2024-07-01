@@ -39,13 +39,13 @@ void EditorConsentStore::ProcessConsentAction(ConsentAction consent_action) {
   if (current_consent_status == ConsentStatus::kInvalid ||
       current_consent_status == ConsentStatus::kPending ||
       current_consent_status == ConsentStatus::kUnset) {
-    if (consent_action == ConsentAction::kApproved) {
+    if (consent_action == ConsentAction::kApprove) {
       SetConsentStatus(ConsentStatus::kApproved);
       metrics_recorder_->LogEditorState(EditorStates::kApproveConsent);
       return;
     }
 
-    if (consent_action == ConsentAction::kDeclined) {
+    if (consent_action == ConsentAction::kDecline) {
       SetConsentStatus(ConsentStatus::kDeclined);
       OverrideUserPref(/*new_pref_value=*/false);
       metrics_recorder_->LogEditorState(EditorStates::kDeclineConsent);
@@ -55,7 +55,7 @@ void EditorConsentStore::ProcessConsentAction(ConsentAction consent_action) {
 
 void EditorConsentStore::ProcessPromoCardAction(
     PromoCardAction promo_card_action) {
-  if (promo_card_action == PromoCardAction::kDeclined) {
+  if (promo_card_action == PromoCardAction::kDecline) {
     OverrideUserPref(/*new_pref_value=*/false);
   }
 }

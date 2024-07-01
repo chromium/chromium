@@ -205,7 +205,7 @@ void EditorMediator::OnEditorModeChanged(const EditorMode& mode) {
 }
 
 void EditorMediator::OnPromoCardDeclined() {
-  consent_store_->ProcessPromoCardAction(PromoCardAction::kDeclined);
+  consent_store_->ProcessPromoCardAction(PromoCardAction::kDecline);
 }
 
 void EditorMediator::HandleTrigger(

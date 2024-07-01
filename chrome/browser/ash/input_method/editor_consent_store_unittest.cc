@@ -61,7 +61,7 @@ TEST_F(EditorConsentStoreTest,
                                          EditorOpportunityMode::kInvalidInput);
   EditorConsentStore store(profile_.GetPrefs(), &metrics_recorder);
 
-  store.ProcessConsentAction(ConsentAction::kDeclined);
+  store.ProcessConsentAction(ConsentAction::kDecline);
 
   EXPECT_EQ(store.GetConsentStatus(), ConsentStatus::kDeclined);
 }
@@ -77,7 +77,7 @@ TEST_F(EditorConsentStoreTest,
                                          EditorOpportunityMode::kInvalidInput);
   EditorConsentStore store(profile_.GetPrefs(), &metrics_recorder);
 
-  store.ProcessConsentAction(ConsentAction::kApproved);
+  store.ProcessConsentAction(ConsentAction::kApprove);
 
   EXPECT_EQ(store.GetConsentStatus(), ConsentStatus::kApproved);
 }
@@ -93,7 +93,7 @@ TEST_F(EditorConsentStoreTest,
                                          EditorOpportunityMode::kInvalidInput);
   EditorConsentStore store(profile_.GetPrefs(), &metrics_recorder);
 
-  store.ProcessConsentAction(ConsentAction::kDeclined);
+  store.ProcessConsentAction(ConsentAction::kDecline);
   // Simulate a user action to switch on the orca toggle.
   profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
 
@@ -114,7 +114,7 @@ TEST_F(EditorConsentStoreTest,
   // Switch on the orca toggle in the setting page.
   profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
   // Simulate a user action to explicitly decline the promo card.
-  store.ProcessPromoCardAction(PromoCardAction::kDeclined);
+  store.ProcessPromoCardAction(PromoCardAction::kDecline);
 
   EXPECT_FALSE(profile_.GetPrefs()->GetBoolean(prefs::kOrcaEnabled));
 }

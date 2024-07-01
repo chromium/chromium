@@ -124,7 +124,7 @@ void EditorPanelManager::OnPromoCardDeclined() {
 }
 
 void EditorPanelManager::OnConsentRejected() {
-  delegate_->ProcessConsentAction(ConsentAction::kDeclined);
+  delegate_->ProcessConsentAction(ConsentAction::kDecline);
 }
 
 void EditorPanelManager::StartEditingFlow() {

@@ -9,18 +9,18 @@ namespace ash::input_method {
 
 enum class PromoCardAction {
   // User explicitly hits 'Learn More' button to proceed to use the feature.
-  kAccepted,
+  kAccept,
   // User explicitly declines the promo card.
-  kDeclined,
+  kDecline,
   // User dismisses the promo card.
-  kDismissed,
+  kDismiss,
 };
 
 enum class ConsentAction : int {
   // User explicitly hits "Yes/Agree" button.
-  kApproved,
+  kApprove,
   // User explicitly hits "No/Disagree" button.
-  kDeclined
+  kDecline
 };
 
 // Defines the status of the consent which we ask the user to provide before
