@@ -420,7 +420,7 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
       base::OnceCallback<void(bool)> callback);
 
   // Called to stop tracking all parcels.
-  void StopTrackingAllParcels(base::OnceCallback<void(bool)> callback);
+  virtual void StopTrackingAllParcels(base::OnceCallback<void(bool)> callback);
 
   virtual ProductSpecificationsService* GetProductSpecificationsService();
 

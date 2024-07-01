@@ -133,6 +133,10 @@ class MockShoppingService : public commerce::ShoppingService {
                base::OnceCallback<void(bool)> callback),
               (override));
   MOCK_METHOD(void,
+              StopTrackingAllParcels,
+              (base::OnceCallback<void(bool)> callback),
+              (override));
+  MOCK_METHOD(void,
               GetProductSpecificationsForUrls,
               (const std::vector<GURL>& urls,
                ProductSpecificationsCallback callback),

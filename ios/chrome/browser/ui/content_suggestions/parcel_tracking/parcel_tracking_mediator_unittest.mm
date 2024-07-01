@@ -9,6 +9,7 @@
 #import "base/test/test_timeouts.h"
 #import "base/time/time.h"
 #import "components/commerce/core/mock_shopping_service.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -123,4 +124,18 @@ TEST_F(ParcelTrackingMediatorTest, TestParcelTracking) {
   GURL parcelTrackingURL = GURL("http://chromium.org");
   [mediator_ loadParcelTrackingPage:parcelTrackingURL];
   EXPECT_EQ(parcelTrackingURL, url_loader_->last_params.web_params.url);
+}
+
+TEST_F(ParcelTrackingMediatorTest, TestModuleDisabled) {
+  SetupMediator();
+
+  // Set up expectations.
+  EXPECT_CALL(*shopping_service_, StopTrackingAllParcels(testing::_)).Times(1);
+  OCMExpect([delegate_ parcelTrackingDisabled]);
+
+  // Disable the pref.
+  DisableParcelTracking(local_state_.Get());
+
+  // Verify the delegate callback.
+  EXPECT_OCMOCK_VERIFY(delegate_);
 }

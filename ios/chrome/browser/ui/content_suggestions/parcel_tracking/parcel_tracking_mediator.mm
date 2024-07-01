@@ -8,6 +8,8 @@
 #import "base/functional/callback.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/shopping_service.h"
+#import "components/prefs/ios/pref_observer_bridge.h"
+#import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/parcel_tracking/metrics.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
@@ -22,13 +24,18 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 
-@interface ParcelTrackingMediator ()
+@interface ParcelTrackingMediator () <PrefObserverDelegate>
 @end
 
 @implementation ParcelTrackingMediator {
   raw_ptr<commerce::ShoppingService> _shoppingService;
   NSArray<ParcelTrackingItem*>* _parcelTrackingItems;
   UrlLoadingBrowserAgent* _URLLoadingBrowserAgent;
+  raw_ptr<PrefService> _localState;
+  // Bridge to listen to pref changes.
+  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
+  // Registrar for pref changes notifications.
+  PrefChangeRegistrar _prefChangeRegistrar;
 }
 
 - (instancetype)
@@ -38,6 +45,12 @@
   if (self) {
     _shoppingService = shoppingService;
     _URLLoadingBrowserAgent = URLLoadingBrowserAgent;
+
+    _localState = GetApplicationContext()->GetLocalState();
+    _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
+    _prefChangeRegistrar.Init(_localState);
+    _prefObserverBridge->ObserveChangesForPreference(kParcelTrackingDisabled,
+                                                     &_prefChangeRegistrar);
   }
   return self;
 }
@@ -46,6 +59,9 @@
   _shoppingService = nil;
   _URLLoadingBrowserAgent = nil;
   _delegate = nil;
+  _prefChangeRegistrar.RemoveAll();
+  _prefObserverBridge.reset();
+  _localState = nullptr;
 }
 
 - (void)reset {
@@ -72,7 +88,7 @@
 }
 
 - (void)disableModule {
-  DisableParcelTracking(GetApplicationContext()->GetLocalState());
+  DisableParcelTracking(_localState);
   _shoppingService->StopTrackingAllParcels(base::BindOnce(^(bool){
   }));
 
@@ -115,6 +131,16 @@
   [self.delegate logMagicStackEngagementForType:ContentSuggestionsModuleType::
                                                     kParcelTracking];
   _URLLoadingBrowserAgent->Load(UrlLoadParams::InCurrentTab(parcelTrackingURL));
+}
+
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  if (preferenceName == kParcelTrackingDisabled) {
+    if (IsParcelTrackingDisabled(_localState)) {
+      [self disableModule];
+    }
+  }
 }
 
 #pragma mark - Private
