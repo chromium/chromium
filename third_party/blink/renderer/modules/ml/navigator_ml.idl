@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This will be a shared interface by two APIs:
-// - The Model Loader API,
-//     https://github.com/webmachinelearning/model-loader/blob/main/explainer.md
-// - The WebNN API,
-//     https://github.com/webmachinelearning/webnn/blob/main/explainer.md
+// https://www.w3.org/TR/webnn/#api-ml
 
 [
   Exposed=Window,
   SecureContext,
   ImplementedAs=NavigatorML,
-  RuntimeEnabled=MachineLearningCommon
+  RuntimeEnabled=MachineLearningNeuralNetwork
 ] partial interface Navigator {
   [SameObject] readonly attribute ML ml;
 };

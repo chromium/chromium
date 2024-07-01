@@ -5990,10 +5990,6 @@ interface MLGraphBuilder
     method transpose
     method triangular
     method where
-interface MLModelLoader
-    attribute @@toStringTag
-    method constructor
-    method load
 interface MLOperand
     attribute @@toStringTag
     method constructor
