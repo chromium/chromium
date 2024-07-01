@@ -3439,8 +3439,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   const ExtensionId& extension_id = last_loaded_extension_id();
   const Extension* dnr_extension = last_loaded_extension();
 
-  ExtensionPrefs::Get(profile())->SetDNRUseActionCountAsBadgeText(extension_id,
-                                                                  true);
+  PrefsHelper helper(*ExtensionPrefs::Get(profile()));
+  helper.SetUseActionCountAsBadgeText(extension_id, true);
 
   ExtensionAction* action =
       ExtensionActionManager::Get(web_contents()->GetBrowserContext())
@@ -4022,8 +4022,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   const ExtensionId& extension_id = last_loaded_extension_id();
   util::SetIsIncognitoEnabled(extension_id, profile(), true /*enabled*/);
 
-  ExtensionPrefs::Get(profile())->SetDNRUseActionCountAsBadgeText(extension_id,
-                                                                  true);
+  PrefsHelper helper(*ExtensionPrefs::Get(profile()));
+  helper.SetUseActionCountAsBadgeText(extension_id, true);
 
   Browser* incognito_browser = CreateIncognitoBrowser();
   ASSERT_TRUE(
@@ -4102,8 +4102,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
   const Extension* dnr_extension = last_loaded_extension();
 
-  ExtensionPrefs::Get(profile())->SetDNRUseActionCountAsBadgeText(
-      last_loaded_extension_id(), true);
+  PrefsHelper helper(*ExtensionPrefs::Get(profile()));
+  helper.SetUseActionCountAsBadgeText(last_loaded_extension_id(), true);
 
   ExtensionAction* action =
       ExtensionActionManager::Get(web_contents()->GetBrowserContext())
@@ -4204,8 +4204,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
       "extension_1", {URLPattern::kAllUrlsPattern}));
 
   const ExtensionId& extension_1_id = last_loaded_extension_id();
-  ExtensionPrefs::Get(profile())->SetDNRUseActionCountAsBadgeText(
-      extension_1_id, true);
+  PrefsHelper helper(*ExtensionPrefs::Get(profile()));
+  helper.SetUseActionCountAsBadgeText(extension_1_id, true);
 
   ExtensionAction* extension_1_action =
       ExtensionActionManager::Get(web_contents()->GetBrowserContext())
@@ -4237,8 +4237,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
       "extension_2", {URLPattern::kAllUrlsPattern}));
 
   const ExtensionId& extension_2_id = last_loaded_extension_id();
-  ExtensionPrefs::Get(profile())->SetDNRUseActionCountAsBadgeText(
-      extension_2_id, true);
+  helper.SetUseActionCountAsBadgeText(extension_2_id, true);
 
   ExtensionAction* extension_2_action =
       ExtensionActionManager::Get(web_contents()->GetBrowserContext())
@@ -5017,7 +5016,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   EXPECT_TRUE(
       helper.GetDynamicRulesetChecksum(extension_id, dynamic_checksum_1));
   std::optional<std::set<RulesetID>> enabled_static_rulesets =
-      prefs->GetDNREnabledStaticRulesets(extension_id);
+      helper.GetEnabledStaticRulesets(extension_id);
   ASSERT_TRUE(enabled_static_rulesets);
   EXPECT_THAT(
       *enabled_static_rulesets,
@@ -5054,7 +5053,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
 
   // Ensure the preference for enabled static rulesets is cleared on extension
   // update.
-  EXPECT_FALSE(prefs->GetDNREnabledStaticRulesets(extension_id));
+  EXPECT_FALSE(helper.GetEnabledStaticRulesets(extension_id));
 }
 
 // Tests extension update for an extension using declarativeNetRequest.
@@ -5198,7 +5197,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
 
   VerifyPublicRulesetIds(last_loaded_extension(), {ruleset_id});
   std::optional<std::set<RulesetID>> enabled_static_rulesets =
-      prefs->GetDNREnabledStaticRulesets(last_loaded_extension_id());
+      helper.GetEnabledStaticRulesets(last_loaded_extension_id());
   EXPECT_THAT(
       enabled_static_rulesets.value_or(std::set<RulesetID>()),
       UnorderedElementsAre(RulesetID(kMinValidStaticRulesetID.value())));
@@ -5216,7 +5215,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   // Verify that no rulesets are enabled and the prefs contain no checksums nor
   // any enabled ruleset ids.
   VerifyPublicRulesetIds(last_loaded_extension(), {});
-  EXPECT_FALSE(prefs->GetDNREnabledStaticRulesets(last_loaded_extension_id()));
+  EXPECT_FALSE(helper.GetEnabledStaticRulesets(last_loaded_extension_id()));
   EXPECT_FALSE(is_checksum_in_prefs(kMinValidStaticRulesetID));
 
   // Enable the ruleset again (this operation should succeed) and check the
@@ -5226,7 +5225,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
 
   VerifyPublicRulesetIds(last_loaded_extension(), {ruleset_id});
   enabled_static_rulesets =
-      prefs->GetDNREnabledStaticRulesets(last_loaded_extension_id());
+      helper.GetEnabledStaticRulesets(last_loaded_extension_id());
   EXPECT_THAT(
       enabled_static_rulesets.value_or(std::set<RulesetID>()),
       UnorderedElementsAre(RulesetID(kMinValidStaticRulesetID.value())));

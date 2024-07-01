@@ -487,7 +487,7 @@ void RulesMonitorService::OnExtensionLoaded(
             *extension, FileBackedRulesetSource::RulesetFilter::kIncludeAll);
 
     std::optional<std::set<RulesetID>> prefs_enabled_rulesets =
-        prefs_->GetDNREnabledStaticRulesets(extension->id());
+        helper.GetEnabledStaticRulesets(extension->id());
 
     bool ruleset_failed_to_load = false;
     for (auto& source : sources) {
@@ -996,6 +996,7 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
     }
   }
 
+  PrefsHelper helper(*prefs_);
   CompositeMatcher::MatcherList new_matchers;
   new_matchers.reserve(load_data.rulesets.size());
   for (RulesetInfo& ruleset : load_data.rulesets) {
@@ -1017,9 +1018,8 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
     static_ruleset_count += 1;
     static_rule_count += matcher_count;
 
-    ruleset_matcher->SetDisabledRuleIds(
-        PrefsHelper(*prefs_).GetDisabledStaticRuleIds(extension->id(),
-                                                      ruleset_matcher->id()));
+    ruleset_matcher->SetDisabledRuleIds(helper.GetDisabledStaticRuleIds(
+        extension->id(), ruleset_matcher->id()));
 
     new_matchers.push_back(std::move(ruleset_matcher));
   }
@@ -1062,8 +1062,8 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
   // In this case, we don't need to update the DNREnabledStaticRulesets since
   // it will not be changed. (It was empty list and it is still empty)
   if (matcher) {
-    prefs_->SetDNREnabledStaticRulesets(load_data.extension_id,
-                                        matcher->ComputeStaticRulesetIDs());
+    helper.SetEnabledStaticRulesets(load_data.extension_id,
+                                    matcher->ComputeStaticRulesetIDs());
   }
 
   std::move(callback).Run(std::nullopt);

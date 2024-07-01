@@ -95,8 +95,8 @@ int GetTabIdForMatchedRule(content::BrowserContext* browser_context,
 constexpr base::TimeDelta ActionTracker::kNonActiveTabRuleLifespan;
 
 ActionTracker::ActionTracker(content::BrowserContext* browser_context)
-    : browser_context_(browser_context) {
-  extension_prefs_ = ExtensionPrefs::Get(browser_context_);
+    : browser_context_(browser_context),
+      prefs_helper_(*ExtensionPrefs::Get(browser_context_)) {
   StartTrimRulesTask();
 }
 
@@ -173,8 +173,9 @@ void ActionTracker::OnRuleMatched(const RequestAction& request_action,
     return;
 
   size_t action_count = ++tracked_info.action_count;
-  if (!extension_prefs_->GetDNRUseActionCountAsBadgeText(extension_id))
+  if (!prefs_helper_.GetUseActionCountAsBadgeText(extension_id)) {
     return;
+  }
 
   DCHECK(ExtensionsAPIClient::Get());
   ExtensionsAPIClient::Get()->UpdateActionCount(browser_context_, extension_id,
@@ -184,7 +185,7 @@ void ActionTracker::OnRuleMatched(const RequestAction& request_action,
 
 void ActionTracker::OnActionCountAsBadgeTextPreferenceEnabled(
     const ExtensionId& extension_id) const {
-  DCHECK(extension_prefs_->GetDNRUseActionCountAsBadgeText(extension_id));
+  DCHECK(prefs_helper_.GetUseActionCountAsBadgeText(extension_id));
 
   for (auto it = rules_tracked_.begin(); it != rules_tracked_.end(); ++it) {
     const ExtensionTabIdKey& key = it->first;
@@ -273,7 +274,7 @@ void ActionTracker::ResetTrackedInfoForTab(int tab_id, int64_t navigation_id) {
       tab_info = TrackedInfo();
     }
 
-    if (extension_prefs_->GetDNRUseActionCountAsBadgeText(extension_id)) {
+    if (prefs_helper_.GetUseActionCountAsBadgeText(extension_id)) {
       DCHECK(ExtensionsAPIClient::Get());
       ExtensionsAPIClient::Get()->UpdateActionCount(
           browser_context_, extension_id, tab_id, tab_info.action_count,

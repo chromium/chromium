@@ -31,6 +31,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/common/color_parser.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
+#include "extensions/browser/api/declarative_net_request/prefs_helper.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_action_manager.h"
@@ -572,9 +573,10 @@ ExtensionActionGetPopupFunction::RunExtensionAction() {
 
 ExtensionFunction::ResponseAction
 ExtensionActionGetBadgeTextFunction::RunExtensionAction() {
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context());
+  declarative_net_request::PrefsHelper helper(
+      *ExtensionPrefs::Get(browser_context()));
   bool is_dnr_action_count_active =
-      prefs->GetDNRUseActionCountAsBadgeText(extension_id()) &&
+      helper.GetUseActionCountAsBadgeText(extension_id()) &&
       !extension_action_->HasBadgeText(tab_id_);
 
   // Ensure that the placeholder string is returned if this extension is

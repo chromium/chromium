@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "extensions/browser/api/declarative_net_request/prefs_helper.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/extension_id.h"
@@ -29,7 +30,6 @@ class BrowserContext;
 namespace extensions {
 
 class Extension;
-class ExtensionPrefs;
 struct WebRequestInfo;
 
 namespace declarative_net_request {
@@ -211,7 +211,7 @@ class ActionTracker {
 
   raw_ptr<content::BrowserContext> browser_context_;
 
-  raw_ptr<ExtensionPrefs> extension_prefs_;
+  PrefsHelper prefs_helper_;
 };
 
 }  // namespace declarative_net_request

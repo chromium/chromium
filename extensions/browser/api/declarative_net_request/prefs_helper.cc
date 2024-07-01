@@ -27,6 +27,15 @@ constexpr char kDNRChecksumKey[] = "checksum";
 // Declarative Net Request API.
 constexpr char kDNRDisabledStaticRuleIds[] = "dnr_disabled_static_rule_ids";
 
+// Key corresponding to the list of enabled static ruleset IDs for an extension.
+// Used for the Declarative Net Request API.
+constexpr char kDNREnabledStaticRulesetIDs[] = "dnr_enabled_ruleset_ids";
+
+// A boolean preference that indicates whether the extension's icon should be
+// automatically badged to the matched action count for a tab. False by default.
+constexpr char kPrefDNRUseActionCountAsBadgeText[] =
+    "dnr_use_action_count_as_badge_text";
+
 // Stores preferences corresponding to dynamic indexed ruleset for the
 // Declarative Net Request API. Note: we use a separate preference key for
 // dynamic rulesets instead of using the |kDNRStaticRulesetPref| dictionary.
@@ -250,6 +259,55 @@ void PrefsHelper::SetDynamicRulesetChecksum(const ExtensionId& extension_id,
   std::string pref =
       ExtensionPrefs::JoinPrefs({kDNRDynamicRulesetPref, kDNRChecksumKey});
   prefs_->UpdateExtensionPref(extension_id, pref, base::Value(checksum));
+}
+
+std::optional<std::set<RulesetID>> PrefsHelper::GetEnabledStaticRulesets(
+    const ExtensionId& extension_id) const {
+  std::set<RulesetID> ids;
+  const base::Value::List* ids_value =
+      prefs_->ReadPrefAsList(extension_id, kDNREnabledStaticRulesetIDs);
+  if (!ids_value) {
+    return std::nullopt;
+  }
+
+  for (const base::Value& id_value : *ids_value) {
+    if (!id_value.is_int()) {
+      return std::nullopt;
+    }
+
+    ids.insert(RulesetID(id_value.GetInt()));
+  }
+
+  return ids;
+}
+
+void PrefsHelper::SetEnabledStaticRulesets(const ExtensionId& extension_id,
+                                           const std::set<RulesetID>& ids) {
+  base::Value::List ids_list;
+  for (const auto& id : ids) {
+    ids_list.Append(id.value());
+  }
+
+  prefs_->UpdateExtensionPref(extension_id, kDNREnabledStaticRulesetIDs,
+                              base::Value(std::move(ids_list)));
+}
+
+bool PrefsHelper::GetUseActionCountAsBadgeText(
+    const ExtensionId& extension_id) const {
+  bool value = false;
+  if (prefs_->ReadPrefAsBoolean(extension_id, kPrefDNRUseActionCountAsBadgeText,
+                                &value)) {
+    return value;
+  }
+
+  return false;
+}
+
+void PrefsHelper::SetUseActionCountAsBadgeText(
+    const ExtensionId& extension_id,
+    bool use_action_count_as_badge_text) {
+  prefs_->UpdateExtensionPref(extension_id, kPrefDNRUseActionCountAsBadgeText,
+                              base::Value(use_action_count_as_badge_text));
 }
 
 }  // namespace extensions::declarative_net_request

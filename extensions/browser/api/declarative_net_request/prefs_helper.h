@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_PREFS_HELPER_H_
 
 #include <optional>
+#include <set>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -97,6 +98,22 @@ class PrefsHelper {
   bool GetDynamicRulesetChecksum(const ExtensionId& extension_id,
                                  int& checksum) const;
   void SetDynamicRulesetChecksum(const ExtensionId& extension_id, int checksum);
+
+  // Returns the set of enabled static ruleset IDs or std::nullopt if the
+  // extension hasn't updated the set of enabled static rulesets.
+  std::optional<std::set<RulesetID>> GetEnabledStaticRulesets(
+      const ExtensionId& extension_id) const;
+  // Updates the set of enabled static rulesets for the `extension_id`. This
+  // preference gets cleared on extension update.
+  void SetEnabledStaticRulesets(const ExtensionId& extension_id,
+                                const std::set<RulesetID>& ids);
+
+  // Whether the extension with the given `extension_id` is using its ruleset's
+  // matched action count for the badge text. This is set via the
+  // setExtensionActionOptions API call.
+  bool GetUseActionCountAsBadgeText(const ExtensionId& extension_id) const;
+  void SetUseActionCountAsBadgeText(const ExtensionId& extension_id,
+                                    bool use_action_count_as_badge_text);
 
  private:
   const base::Value::Dict* GetDisabledRuleIdsDict(const ExtensionId&) const;

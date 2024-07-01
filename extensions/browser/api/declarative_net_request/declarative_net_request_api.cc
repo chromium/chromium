@@ -557,20 +557,21 @@ DeclarativeNetRequestSetExtensionActionOptionsFunction::Run() {
       declarative_net_request::RulesMonitorService::Get(browser_context());
   DCHECK(rules_monitor_service);
 
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context());
+  declarative_net_request::PrefsHelper helper(
+      *ExtensionPrefs::Get(browser_context()));
   declarative_net_request::ActionTracker& action_tracker =
       rules_monitor_service->action_tracker();
 
   bool use_action_count_as_badge_text =
-      prefs->GetDNRUseActionCountAsBadgeText(extension_id());
+      helper.GetUseActionCountAsBadgeText(extension_id());
 
   if (params->options.display_action_count_as_badge_text &&
       *params->options.display_action_count_as_badge_text !=
           use_action_count_as_badge_text) {
     use_action_count_as_badge_text =
         *params->options.display_action_count_as_badge_text;
-    prefs->SetDNRUseActionCountAsBadgeText(extension_id(),
-                                           use_action_count_as_badge_text);
+    helper.SetUseActionCountAsBadgeText(extension_id(),
+                                        use_action_count_as_badge_text);
 
     // If the preference is switched on, update the extension's badge text
     // with the number of actions matched for this extension. Otherwise, clear

@@ -697,23 +697,6 @@ class ExtensionPrefs : public KeyedService {
   bool NeedsSync(const ExtensionId& extension_id) const;
   void SetNeedsSync(const ExtensionId& extension_id, bool needs_sync);
 
-  // Returns the set of enabled static ruleset IDs or std::nullopt if the
-  // extension hasn't updated the set of enabled static rulesets.
-  std::optional<std::set<declarative_net_request::RulesetID>>
-  GetDNREnabledStaticRulesets(const ExtensionId& extension_id) const;
-  // Updates the set of enabled static rulesets for the |extension_id|. This
-  // preference gets cleared on extension update.
-  void SetDNREnabledStaticRulesets(
-      const ExtensionId& extension_id,
-      const std::set<declarative_net_request::RulesetID>& ids);
-
-  // Whether the extension with the given |extension_id| is using its ruleset's
-  // matched action count for the badge text. This is set via the
-  // setExtensionActionOptions API call.
-  bool GetDNRUseActionCountAsBadgeText(const ExtensionId& extension_id) const;
-  void SetDNRUseActionCountAsBadgeText(const ExtensionId& extension_id,
-                                       bool use_action_count_as_badge_text);
-
   // Whether the ruleset for the given |extension_id| and |ruleset_id| should be
   // ignored while loading the extension.
   bool ShouldIgnoreDNRRuleset(

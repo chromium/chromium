@@ -245,11 +245,6 @@ constexpr const char kDNRChecksumKey[] = "checksum";
 // Used for the Declarative Net Request API.
 constexpr const char kDNREnabledStaticRulesetIDs[] = "dnr_enabled_ruleset_ids";
 
-// A boolean preference that indicates whether the extension's icon should be
-// automatically badged to the matched action count for a tab. False by default.
-constexpr const char kPrefDNRUseActionCountAsBadgeText[] =
-    "dnr_use_action_count_as_badge_text";
-
 // A boolean that indicates if a ruleset should be ignored.
 constexpr const char kDNRIgnoreRulesetKey[] = "ignore_ruleset";
 
@@ -2049,49 +2044,6 @@ void ExtensionPrefs::SetNeedsSync(const ExtensionId& extension_id,
     value = base::Value(true);
   }
   UpdateExtensionPref(extension_id, kPrefNeedsSync, std::move(value));
-}
-
-std::optional<std::set<declarative_net_request::RulesetID>>
-ExtensionPrefs::GetDNREnabledStaticRulesets(
-    const ExtensionId& extension_id) const {
-  std::set<declarative_net_request::RulesetID> ids;
-  const base::Value::List* ids_value =
-      ReadPrefAsList(extension_id, kDNREnabledStaticRulesetIDs);
-  if (!ids_value)
-    return std::nullopt;
-
-  for (const base::Value& id_value : *ids_value) {
-    if (!id_value.is_int())
-      return std::nullopt;
-
-    ids.insert(declarative_net_request::RulesetID(id_value.GetInt()));
-  }
-
-  return ids;
-}
-
-void ExtensionPrefs::SetDNREnabledStaticRulesets(
-    const ExtensionId& extension_id,
-    const std::set<declarative_net_request::RulesetID>& ids) {
-  base::Value::List ids_list;
-  for (const auto& id : ids)
-    ids_list.Append(id.value());
-
-  UpdateExtensionPref(extension_id, kDNREnabledStaticRulesetIDs,
-                      base::Value(std::move(ids_list)));
-}
-
-bool ExtensionPrefs::GetDNRUseActionCountAsBadgeText(
-    const ExtensionId& extension_id) const {
-  return ReadPrefAsBooleanAndReturn(extension_id,
-                                    kPrefDNRUseActionCountAsBadgeText);
-}
-
-void ExtensionPrefs::SetDNRUseActionCountAsBadgeText(
-    const ExtensionId& extension_id,
-    bool use_action_count_as_badge_text) {
-  UpdateExtensionPref(extension_id, kPrefDNRUseActionCountAsBadgeText,
-                      base::Value(use_action_count_as_badge_text));
 }
 
 bool ExtensionPrefs::ShouldIgnoreDNRRuleset(
