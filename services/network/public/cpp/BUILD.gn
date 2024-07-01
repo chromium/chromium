@@ -120,8 +120,6 @@ component("cpp") {
     "self_deleting_url_loader_factory.cc",
     "self_deleting_url_loader_factory.h",
     "session_cookie_delete_predicate.h",
-    "shared_dictionary_encoding_names.cc",
-    "shared_dictionary_encoding_names.h",
     "shared_url_loader_factory.cc",
     "shared_url_loader_factory.h",
     "simple_host_resolver.cc",

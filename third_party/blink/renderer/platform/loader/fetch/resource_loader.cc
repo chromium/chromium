@@ -51,7 +51,6 @@
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/shared_dictionary_encoding_names.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
@@ -874,13 +873,10 @@ void ResourceLoader::DidReceiveResponseInternal(
     fetcher_->GetUseCounter().CountUse(WebFeature::kSharedDictionaryUsed);
     fetcher_->GetUseCounter().CountUse(
         WebFeature::kSharedDictionaryUsedForSubresource);
-    if (EqualIgnoringASCIICase(content_encoding,
-                               network::GetSharedBrotliContentEncodingName())) {
+    if (EqualIgnoringASCIICase(content_encoding, "dcb")) {
       fetcher_->GetUseCounter().CountUse(
           WebFeature::kSharedDictionaryUsedWithSharedBrotli);
-    } else if (EqualIgnoringASCIICase(
-                   content_encoding,
-                   network::GetSharedZstdContentEncodingName())) {
+    } else if (EqualIgnoringASCIICase(content_encoding, "dcz")) {
       fetcher_->GetUseCounter().CountUse(
           WebFeature::kSharedDictionaryUsedWithSharedZstd);
     }

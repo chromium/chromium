@@ -42,6 +42,7 @@
 #include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
+#include "net/shared_dictionary/shared_dictionary_constants.h"
 #include "net/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/ssl/client_cert_identity.h"
 #include "net/ssl/client_cert_identity_test_util.h"
@@ -51,7 +52,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/shared_dictionary_encoding_names.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -762,12 +762,12 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
           if (base::FeatureList::IsEnabled(network::features::kSharedZstd)) {
             response->AddCustomHeader(
                 "content-encoding",
-                network::GetSharedZstdContentEncodingName());
+                net::shared_dictionary::kSharedZstdContentEncodingName);
             response->set_content(kZstdCompressedDataString);
           } else {
             response->AddCustomHeader(
                 "content-encoding",
-                network::GetSharedBrotliContentEncodingName());
+                net::shared_dictionary::kSharedBrotliContentEncodingName);
             response->set_content(kBrotliCompressedDataString);
           }
         } else {

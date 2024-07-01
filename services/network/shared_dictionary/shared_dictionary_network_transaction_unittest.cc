@@ -21,12 +21,12 @@
 #include "net/http/http_transaction_test_util.h"
 #include "net/log/net_log_with_source.h"
 #include "net/shared_dictionary/shared_dictionary.h"
+#include "net/shared_dictionary/shared_dictionary_constants.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/shared_dictionary_error.mojom.h"
-#include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer.h"
@@ -249,8 +249,7 @@ static void BrotliTestTransactionHandler(const net::HttpRequestInfo* request,
                                          std::string* response_data) {
   std::string header_value;
   EXPECT_TRUE(request->extra_headers.GetHeader(
-      network::shared_dictionary::kAvailableDictionaryHeaderName,
-      &header_value));
+      net::shared_dictionary::kAvailableDictionaryHeaderName, &header_value));
   EXPECT_EQ(kTestDictionarySha256Base64, header_value);
   *response_data = kBrotliEncodedDataString;
 }
@@ -260,10 +259,9 @@ static void ZstdTestTransactionHandler(const net::HttpRequestInfo* request,
                                        std::string* response_headers,
                                        std::string* response_data) {
   std::string header_value;
-      EXPECT_TRUE(request->extra_headers.GetHeader(
-          network::shared_dictionary::kAvailableDictionaryHeaderName,
-          &header_value));
-      EXPECT_EQ(kTestDictionarySha256Base64, header_value);
+  EXPECT_TRUE(request->extra_headers.GetHeader(
+      net::shared_dictionary::kAvailableDictionaryHeaderName, &header_value));
+  EXPECT_EQ(kTestDictionarySha256Base64, header_value);
   *response_data = kZstdEncodedDataString;
 }
 
@@ -273,7 +271,7 @@ static const auto kTestTransactionHandlerWithoutAvailableDictionary =
                            std::string* response_headers,
                            std::string* response_data) {
       EXPECT_FALSE(request->extra_headers.HasHeader(
-          network::shared_dictionary::kAvailableDictionaryHeaderName));
+          net::shared_dictionary::kAvailableDictionaryHeaderName));
       *response_data = kTestData;
     });
 

@@ -35,12 +35,12 @@
 #include "net/http/http_request_info.h"
 #include "net/http/structured_headers.h"
 #include "net/shared_dictionary/shared_dictionary.h"
+#include "net/shared_dictionary/shared_dictionary_constants.h"
 #include "net/shared_dictionary/shared_dictionary_header_checker_source_stream.h"
 #include "net/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/ssl/ssl_private_key.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/request_destination.h"
-#include "services/network/public/cpp/shared_dictionary_encoding_names.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
@@ -146,10 +146,12 @@ SharedDictionaryNetworkTransaction::ParseSharedDictionaryEncodingType(
   std::string content_encoding;
   if (!headers.GetNormalizedHeader("Content-Encoding", &content_encoding)) {
     return SharedDictionaryEncodingType::kNotUsed;
-  } else if (content_encoding == GetSharedBrotliContentEncodingName()) {
+  } else if (content_encoding ==
+             net::shared_dictionary::kSharedBrotliContentEncodingName) {
     return SharedDictionaryEncodingType::kSharedBrotli;
   } else if (base::FeatureList::IsEnabled(network::features::kSharedZstd) &&
-             content_encoding == GetSharedZstdContentEncodingName()) {
+             content_encoding ==
+                 net::shared_dictionary::kSharedZstdContentEncodingName) {
     return SharedDictionaryEncodingType::kSharedZstd;
   }
   return SharedDictionaryEncodingType::kNotUsed;
@@ -249,14 +251,17 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
   dictionary_hash_base64_ = base::StrCat(
       {":", base::Base64Encode(shared_dictionary_->hash().data), ":"});
   request_headers->SetHeader(
-      network::shared_dictionary::kAvailableDictionaryHeaderName,
+      net::shared_dictionary::kAvailableDictionaryHeaderName,
       dictionary_hash_base64_);
   if (base::FeatureList::IsEnabled(network::features::kSharedZstd)) {
-    AddAcceptEncoding(request_headers,
-                      base::StrCat({GetSharedBrotliContentEncodingName(), ", ",
-                                    GetSharedZstdContentEncodingName()}));
+    AddAcceptEncoding(
+        request_headers,
+        base::StrCat({net::shared_dictionary::kSharedBrotliContentEncodingName,
+                      ", ",
+                      net::shared_dictionary::kSharedZstdContentEncodingName}));
   } else {
-    AddAcceptEncoding(request_headers, GetSharedBrotliContentEncodingName());
+    AddAcceptEncoding(request_headers,
+                      net::shared_dictionary::kSharedBrotliContentEncodingName);
   }
 
   if (!shared_dictionary_->id().empty()) {

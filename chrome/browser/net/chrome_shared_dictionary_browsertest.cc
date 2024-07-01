@@ -33,9 +33,9 @@
 #include "content/public/test/test_devtools_protocol_client.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
+#include "net/shared_dictionary/shared_dictionary_constants.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/shared_dictionary_encoding_names.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -379,15 +379,17 @@ class ChromeSharedDictionaryBrowserTest : public InProcessBrowserTest {
     } else if (request.relative_url == "/path/brotli_compressed") {
       CHECK(GetAvailableDictionary(request.headers));
       response->set_content_type("text/html");
-      response->AddCustomHeader("content-encoding",
-                                network::GetSharedBrotliContentEncodingName());
+      response->AddCustomHeader(
+          "content-encoding",
+          net::shared_dictionary::kSharedBrotliContentEncodingName);
       response->set_content(kBrotliCompressedDataString);
       return response;
     } else if (request.relative_url == "/path/zstd_compressed") {
       CHECK(GetAvailableDictionary(request.headers));
       response->set_content_type("text/html");
-      response->AddCustomHeader("content-encoding",
-                                network::GetSharedZstdContentEncodingName());
+      response->AddCustomHeader(
+          "content-encoding",
+          net::shared_dictionary::kSharedZstdContentEncodingName);
       response->set_content(kZstdCompressedDataString);
       return response;
     }

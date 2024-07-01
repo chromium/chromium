@@ -826,6 +826,7 @@ component("net") {
     "quic/web_transport_error.cc",
     "quic/web_transport_error.h",
     "shared_dictionary/shared_dictionary.h",
+    "shared_dictionary/shared_dictionary_constants.h",
     "shared_dictionary/shared_dictionary_header_checker_source_stream.cc",
     "shared_dictionary/shared_dictionary_header_checker_source_stream.h",
     "shared_dictionary/shared_dictionary_isolation_key.cc",
