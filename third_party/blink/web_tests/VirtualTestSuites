@@ -1155,7 +1155,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/browsers/windows/post-message"],
     "args": ["--enable-features=PostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlocked"],
-    "expires": "Jul 1, 2024",
+    "expires": "Jul 1, 2025",
     "owners": ["arichiv@chromium.org"]
   },
   {
@@ -1163,7 +1163,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/browsers/windows/post-message"],
     "args": ["--enable-features=PostMessageThirdPartyToFirstPartyDifferentBucketSameOriginBlocked"],
-    "expires": "Jul 1, 2024",
+    "expires": "Jul 1, 2025",
     "owners": ["arichiv@chromium.org"]
   },
   {
@@ -1171,7 +1171,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/browsers/windows/post-message"],
     "args": ["--enable-features=PostMessageThirdPartyToThirdPartyDifferentBucketSameOriginBlocked"],
-    "expires": "Jul 1, 2024",
+    "expires": "Jul 1, 2025",
     "owners": ["arichiv@chromium.org"]
   },
 
