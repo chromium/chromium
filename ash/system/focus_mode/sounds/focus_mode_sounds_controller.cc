@@ -174,6 +174,26 @@ base::flat_set<focus_mode_util::SoundType> ReadSoundSectionPolicy(
   return {};
 }
 
+// Return true if there is no selected playlist, or if the selected playlist
+// type doesn't match `playlists_fetched` (which means the selected playlist
+// couldn't be found in this list), or if the selected playlist is found in the
+// `playlists_fetched`.
+bool MayContainsSelectedPlaylist(
+    const FocusModeSoundsController::SelectedPlaylist& selected_playlist,
+    bool is_soundscape_type,
+    const std::vector<std::unique_ptr<FocusModeSoundsController::Playlist>>&
+        playlists_fetched) {
+  if (selected_playlist.empty() ||
+      selected_playlist.type !=
+          (is_soundscape_type ? focus_mode_util::SoundType::kSoundscape
+                              : focus_mode_util::SoundType::kYouTubeMusic)) {
+    return true;
+  }
+
+  return base::Contains(playlists_fetched, selected_playlist.id,
+                        &FocusModeSoundsController::Playlist::playlist_id);
+}
+
 }  // namespace
 
 FocusModeSoundsController::SelectedPlaylist::SelectedPlaylist() = default;
@@ -354,6 +374,24 @@ void FocusModeSoundsController::OnAllThumbnailsDownloaded(
     bool is_soundscape_type,
     UpdateSoundsViewCallback update_sounds_view_callback,
     std::vector<std::unique_ptr<Playlist>> sorted_playlists) {
+  // For the case that the `selected_playlist_` is missing from the list of
+  // playlists fetched from backend, we will show the cached playlist info if
+  // the selected playlist is currently playing; otherwise, we will clear the
+  // selected playlist in the controller.
+  if (!MayContainsSelectedPlaylist(selected_playlist_, is_soundscape_type,
+                                   sorted_playlists)) {
+    if (selected_playlist_.state == focus_mode_util::SoundState::kPlaying) {
+      sorted_playlists.pop_back();
+      sorted_playlists.insert(
+          sorted_playlists.begin() + 1,
+          std::make_unique<Playlist>(selected_playlist_.id,
+                                     selected_playlist_.title,
+                                     selected_playlist_.thumbnail));
+    } else {
+      ResetSelectedPlaylist();
+    }
+  }
+
   if (is_soundscape_type) {
     soundscape_playlists_.swap(sorted_playlists);
   } else {
