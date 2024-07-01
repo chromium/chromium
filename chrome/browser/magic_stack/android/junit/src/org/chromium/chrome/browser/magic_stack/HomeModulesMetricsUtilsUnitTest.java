@@ -14,6 +14,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 
 /** Unit tests for {@link HomeModulesMetricsUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -193,6 +194,7 @@ public class HomeModulesMetricsUtilsUnitTest {
         int modulePosition = 2;
 
         String histogramName = "MagicStack.Clank.StartSurface.Module.Click";
+        String histogramNameHomeSurface = "StartSurface.Module.Click";
         String histogramNameWithPosition =
                 "MagicStack.Clank.StartSurface.Regular.Module.SingleTab.Click";
         String histogramNameStartupWithPosition =
@@ -201,6 +203,8 @@ public class HomeModulesMetricsUtilsUnitTest {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(histogramName, moduleType)
+                        .expectIntRecord(
+                                histogramNameHomeSurface, ModuleTypeOnStartAndNtp.MAGIC_STACK)
                         .expectIntRecords(histogramNameWithPosition, modulePosition)
                         .build();
         HomeModulesMetricsUtils.recordModuleClicked(
@@ -210,6 +214,8 @@ public class HomeModulesMetricsUtilsUnitTest {
         histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(histogramName, moduleType)
+                        .expectIntRecord(
+                                histogramNameHomeSurface, ModuleTypeOnStartAndNtp.MAGIC_STACK)
                         .expectIntRecords(histogramNameStartupWithPosition, modulePosition)
                         .build();
         HomeModulesMetricsUtils.recordModuleClicked(
