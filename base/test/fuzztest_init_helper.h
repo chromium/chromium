@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_FUZZTEST_INIT_HELPER_H_
-#define THIRD_PARTY_FUZZTEST_INIT_HELPER_H_
+#ifndef BASE_TEST_FUZZTEST_INIT_HELPER_H_
+#define BASE_TEST_FUZZTEST_INIT_HELPER_H_
 
 namespace fuzztest_init_helper {
 
-extern void (*initialization_function)(int* argc, char*** argv);
-
+extern void (*initialization_function)(int argc, char** argv);
 }
 
 // If we're in a test suite which really has fuzztests,
@@ -16,10 +15,10 @@ extern void (*initialization_function)(int* argc, char*** argv);
 // a function that knows how to initialize FuzzTests. Otherwise,
 // it won't, to avoid bringing all of FuzzTests's dependencies
 // into all the other Chromium test suites.
-inline void MaybeInitFuzztest(int* argc, char*** argv) {
+inline void MaybeInitFuzztest(int argc, char** argv) {
   if (fuzztest_init_helper::initialization_function) {
     fuzztest_init_helper::initialization_function(argc, argv);
   }
 }
 
-#endif  // THIRD_PARTY_FUZZTEST_INIT_HELPER_H_
+#endif  // BASE_TEST_FUZZTEST_INIT_HELPER_H_

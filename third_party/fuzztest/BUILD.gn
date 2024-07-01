@@ -11,7 +11,6 @@
 #   targets using an out-of-process runner.
 # - fuzztest, a way of building new fuzzing targets using simpler macros.
 
-import("//build/buildflag_header.gni")
 import("//build/config/android/config.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build_overrides/build.gni")
@@ -362,29 +361,18 @@ source_set("fuzztest") {
   testonly = true
 }
 
-buildflag_header("init_fuzztest_buildflags") {
-  header = "init_fuzztest_buildflags.h"
-  flags =
-      [ "REGISTER_FUZZTESTS_IN_TEST_SUITES=$register_fuzztests_in_test_suites" ]
-}
-
 # Depend on this if you're a test runner executable (or similar)
 # with its own main() but you need to call InitFuzzTest.
 source_set("init_fuzztest") {
   sources = [
-    "confirm_init.cc",
     "src/fuzztest/init_fuzztest.cc",
     "src/fuzztest/init_fuzztest.h",
   ]
   deps = [
-    ":init_fuzztest_buildflags",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl_full",
   ]
-  public_deps = [
-    ":fuzztest_internal",
-    ":init_helper",
-  ]
+  public_deps = [ ":fuzztest_internal" ]
   configs -= fuzztest_remove_configs
   configs += fuzztest_add_configs + [ ":fuzztest_internal_config" ]
   testonly = true
@@ -405,15 +393,4 @@ source_set("fuzztest_gtest_main") {
     data_deps = [ ":centipede" ]
   }
   testonly = true
-}
-
-# A way to potentially init FuzzTest without pulling in all of its deps.
-# For use from generic code such as base/test:test_support.
-# If it turns out the target actually does contain fuzztests, also
-# depend upon :init_fuzztest and this code will end up initializing FuzzTest.
-source_set("init_helper") {
-  sources = [
-    "init_helper.cc",
-    "init_helper.h",
-  ]
 }

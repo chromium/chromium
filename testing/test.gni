@@ -187,7 +187,7 @@ template("mixed_test") {
           # The following target contains a static initializer which
           # will ensure that the code in base/test:test_support
           # ends up calling through to fuzztest::InitFuzzTest.
-          "//third_party/fuzztest:init_fuzztest",
+          "//base/test:confirm_fuzztest_init",
         ]
       }
     }

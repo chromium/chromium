@@ -44,6 +44,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/fuzztest_init_helper.h"
 #include "base/test/gtest_xml_unittest_result_printer.h"
 #include "base/test/gtest_xml_util.h"
 #include "base/test/icu_test_util.h"
@@ -63,7 +64,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
-#include "third_party/fuzztest/init_helper.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/apple/scoped_nsautorelease_pool.h"
@@ -664,16 +664,7 @@ void TestSuite::InitializeFromCommandLine(int* argc, char** argv) {
   // CommandLine::Init() is called earlier from PreInitialize().
   testing::InitGoogleTest(argc, argv);
   testing::InitGoogleMock(argc, argv);
-
-  // Make a copy of argc/argv for the sake of InitFuzzTest, which will store
-  // it and attempt to use it later after other Chromium code might have
-  // changed it.
-  for (int i = 0; i < *argc; i++) {
-    fuzztest_argv_raw_.push_back(argv[i]);
-  }
-  fuzztest_argc_ = fuzztest_argv_raw_.size();
-  fuzztest_argv_ptr_ = fuzztest_argv_raw_.data();
-  MaybeInitFuzztest(&fuzztest_argc_, &fuzztest_argv_ptr_);
+  MaybeInitFuzztest(*argc, argv);
 
 #if BUILDFLAG(IS_IOS)
   InitIOSArgs(*argc, argv);
