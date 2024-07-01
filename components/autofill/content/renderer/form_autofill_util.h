@@ -59,42 +59,7 @@ namespace form_util {
 // extraction, label inference, DOM traversal, and form field preview and
 // autofilling.
 //
-// To understand form extraction, a bit of terminology is relevant:
-//
-// Association:
-// A form control element `t` (e.g., an <input>) can be *associated* with a form
-// element inside its DOM. Examples include
-// - <form id=f><input id=t></form>
-// - <form id=f></form><input id=t form=f>
-// In both examples, the form control element `t` is associated with the form
-// element `f`.
-// Form association is an HTML concept independent of Autofill. We refer to
-// the spec for more detail and avoid defining association here:
-// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#association-of-controls-and-forms
-//
-// Top-most form elements:
-// A form element `f` is called a *top-most* form iff it has no shadow-including
-// form element ancestors. In Autofill, we focus on top-most forms - descendant
-// form elements are flattened into the top-most form ancestor.
-// As a result, Autofill code should not use `form_control_element.Form()`, but
-// must call `GetOwningForm(form_control_element)` instead.
-//
-// Ownership:
-// A form control element `t` is *owned* by a top-most form element `f` iff
-// - `t` is associated with `f` or
-// - `t` is a shadow-including descendant of `f` and not part of `f`'s DOM.
-// A form control element `t` is *unowned* iff no top-most form element owns
-// `t`. That is, to be explicit, `t` is unowned iff
-//  - `t` is not associated with any form control element
-//  - `t` has no shadow-including `form` ancestor in another DOM.
-// Ownership is an Autofill concept and determines the relationship between
-// `FormData` objects (representing a top-most form `f`, a synthetic form for
-// contenteditables, or the "unowned form") and `FormFieldData` objects
-// (representing a subset of form control elements owned by `f`).
-//
-// Note: Autofill does not currently support form-associated custom elements.
-// See https://web.dev/articles/more-capable-form-controls for more
-// information on those.
+// See README.md for the terminology used in this file.
 
 // Mapping from a form element's render id to results of button titles
 // heuristics for a given form element.
