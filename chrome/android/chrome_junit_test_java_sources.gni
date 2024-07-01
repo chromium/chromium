@@ -373,7 +373,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/toolbar/LocationBarModelUnitTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/ToolbarTabControllerImplTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/adaptive/OptionalNewTabButtonControllerActivityTest.java",
-  "junit/src/org/chromium/chrome/browser/toolbar/top/StartSurfaceToolbarMediatorUnitTest.java",
   "junit/src/org/chromium/chrome/browser/ui/AppLaunchDrawBlockerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/ui/ExpandedSheetHelperImplUnitTest.java",
   "junit/src/org/chromium/chrome/browser/ui/IncognitoRestoreAppLaunchDrawBlockerUnitTest.java",

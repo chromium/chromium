@@ -74,7 +74,6 @@ import org.chromium.chrome.browser.gesturenav.TabOnBackGestureHandler;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
-import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -521,7 +520,6 @@ public class ToolbarManager
      * @param appMenuCoordinatorSupplier Supplier of the {@link AppMenuCoordinator}.
      * @param canShowUpdateBadge Whether the update Chrome badge can be shown on the app menu.
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
-     * @param startSurfaceSupplier Supplier of the StartSurface.
      * @param omniboxFocusStateSupplier Supplier to access the focus state of the omnibox.
      * @param promoShownOneshotSupplier Supplier for whether a promo was shown on startup.
      * @param windowAndroid The {@link WindowAndroid} associated with the ToolbarManager.
@@ -572,7 +570,6 @@ public class ToolbarManager
             OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
             boolean canShowUpdateBadge,
             @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            OneshotSupplier<StartSurface> startSurfaceSupplier,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier,
             OneshotSupplier<Boolean> promoShownOneshotSupplier,
             WindowAndroid windowAndroid,
@@ -802,7 +799,6 @@ public class ToolbarManager
                         buttonDataProviders,
                         browsingModeThemeColorProvider,
                         identityDiscController,
-                        mIsStartSurfaceEnabled,
                         initializeWithIncognitoColors,
                         startSurfaceLogoClickedCallback,
                         mConstraintsProxy);
@@ -1297,18 +1293,6 @@ public class ToolbarManager
         mFindToolbarManager = findToolbarManager;
         mFindToolbarManager.addObserver(mFindToolbarObserver);
 
-        startSurfaceSupplier.onAvailable(
-                mCallbackController.makeCancelable(
-                        (startSurface) -> {
-                            mStartSurface = startSurface;
-                            mStartSurfaceHeaderOffsetChangeListener =
-                                    (appbarLayout, verticalOffset) -> {
-                                        mToolbar.onStartSurfaceHeaderOffsetChanged(verticalOffset);
-                                    };
-                            mStartSurface.addHeaderOffsetChangeListener(
-                                    mStartSurfaceHeaderOffsetChangeListener);
-                        }));
-
         Callback<Profile> profileObserver =
                 new Callback<Profile>() {
                     @Override
@@ -1371,13 +1355,8 @@ public class ToolbarManager
      * @param layoutType The layout being switched to.
      */
     private void updateForLayout(@LayoutType int layoutType) {
-        boolean shouldShow =
-                !HubFieldTrial.isHubEnabled() && layoutType == LayoutType.TAB_SWITCHER
-                        || (layoutType == LayoutType.START_SURFACE && !isUrlBarFocused());
-        mToolbar.updateStartSurfaceToolbarState(shouldShow, layoutType);
-
-        if (layoutType == LayoutType.TAB_SWITCHER || layoutType == LayoutType.START_SURFACE) {
-            mLocationBarModel.updateForNonStaticLayout(layoutType == LayoutType.START_SURFACE);
+        if (layoutType == LayoutType.TAB_SWITCHER) {
+            mLocationBarModel.updateForNonStaticLayout(/* isShowingStartSurface= */ false);
             mToolbar.setTabSwitcherMode(layoutType == LayoutType.TAB_SWITCHER);
             updateButtonStatus();
             if (mLocationBarModel.shouldShowLocationBarInOverviewMode()) {
@@ -1394,7 +1373,6 @@ public class ToolbarManager
             List<ButtonDataProvider> buttonDataProviders,
             ThemeColorProvider browsingModeThemeColorProvider,
             IdentityDiscController identityDiscController,
-            boolean isStartSurfaceEnabled,
             boolean initializeWithIncognitoColors,
             Callback<LoadUrlParams> logoClickedCallback,
             ObservableSupplier<Integer> constraintsSupplier) {
@@ -1411,30 +1389,21 @@ public class ToolbarManager
                         buttonDataProviders,
                         mLayoutStateProviderSupplier,
                         browsingModeThemeColorProvider,
-                        mAppThemeColorProvider,
                         mMenuButtonCoordinator,
                         mOverviewModeMenuButtonCoordinator,
                         mMenuButtonCoordinator.getMenuButtonHelperSupplier(),
                         mTabModelSelectorSupplier,
                         mHomepageEnabledSupplier,
-                        identityDiscController,
-                        () ->
-                                identityDiscController.getForStartSurface(
-                                        mLayoutStateProvider == null
-                                                ? LayoutType.NONE
-                                                : mLayoutStateProvider.getActiveLayoutType()),
                         mCompositorViewHolder::getResourceManager,
                         () -> {
                             return IncognitoUtils.isIncognitoModeEnabled(
                                     mTabModelSelector.getCurrentModel().getProfile());
                         },
-                        isStartSurfaceEnabled,
                         HistoryManagerUtils::showHistoryManager,
                         PartnerBrowserCustomizations.getInstance()
                                 ::isHomepageProviderAvailableAndEnabled,
                         DownloadUtils::downloadOfflinePage,
                         initializeWithIncognitoColors,
-                        logoClickedCallback,
                         constraintsSupplier,
                         mCompositorViewHolder.getInMotionSupplier(),
                         mControlsVisibilityDelegate,
@@ -2128,11 +2097,6 @@ public class ToolbarManager
         }
 
         mToolbar.onUrlFocusChange(hasFocus);
-
-        if (mLayoutStateProvider != null
-                && mLayoutStateProvider.isLayoutVisible(LayoutType.START_SURFACE)) {
-            mToolbar.updateStartSurfaceToolbarState(!hasFocus, LayoutType.START_SURFACE);
-        }
 
         if (mFindToolbarManager != null && hasFocus) mFindToolbarManager.hideToolbar();
 

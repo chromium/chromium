@@ -1576,7 +1576,6 @@ public class RootUiCoordinator
                             mAppMenuSupplier,
                             canShowMenuUpdateBadge(),
                             mTabModelSelectorSupplier,
-                            mStartSurfaceSupplier,
                             mOmniboxFocusStateSupplier,
                             mPromoShownOneshotSupplier,
                             mWindowAndroid,
