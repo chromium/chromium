@@ -20,12 +20,12 @@
 #include "net/http/http_transaction.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/log/net_log_with_source.h"
+#include "net/shared_dictionary/shared_dictionary.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/shared_dictionary_error.mojom.h"
-#include "services/network/shared_dictionary/shared_dictionary.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
@@ -89,7 +89,7 @@ const std::string kZstdEncodedDataString =
 
 const size_t kDefaultBufferSize = 1023;
 
-class DummySyncDictionary : public SharedDictionary {
+class DummySyncDictionary : public net::SharedDictionary {
  public:
   explicit DummySyncDictionary(const std::string& data_string,
                                const std::string& id = "")
@@ -103,7 +103,7 @@ class DummySyncDictionary : public SharedDictionary {
   }
   ~DummySyncDictionary() override = default;
 
-  // SharedDictionary
+  // net::SharedDictionary
   int ReadAll(base::OnceCallback<void(int)> callback) override {
     return net::OK;
   }
@@ -125,7 +125,7 @@ class DummyAsyncDictionary : public DummySyncDictionary {
       : DummySyncDictionary(data_string) {}
   ~DummyAsyncDictionary() override = default;
 
-  // SharedDictionary
+  // net::SharedDictionary
   int ReadAll(base::OnceCallback<void(int)> callback) override {
     read_all_callback_ = std::move(callback);
     return net::ERR_IO_PENDING;
@@ -141,19 +141,20 @@ class DummyAsyncDictionary : public DummySyncDictionary {
 class DummySharedDictionaryStorage : public SharedDictionaryStorage {
  public:
   explicit DummySharedDictionaryStorage(
-      std::unique_ptr<SharedDictionary> dictionary)
+      std::unique_ptr<net::SharedDictionary> dictionary)
       : dictionary_(std::move(dictionary)) {}
 
   // SharedDictionaryStorage
-  std::unique_ptr<SharedDictionary> GetDictionarySync(
+  std::unique_ptr<net::SharedDictionary> GetDictionarySync(
       const GURL& url,
       mojom::RequestDestination destination) override {
     return std::move(dictionary_);
   }
-  void GetDictionary(const GURL& url,
-                     mojom::RequestDestination destination,
-                     base::OnceCallback<void(std::unique_ptr<SharedDictionary>)>
-                         callback) override {}
+  void GetDictionary(
+      const GURL& url,
+      mojom::RequestDestination destination,
+      base::OnceCallback<void(std::unique_ptr<net::SharedDictionary>)> callback)
+      override {}
   base::expected<scoped_refptr<SharedDictionaryWriter>,
                  mojom::SharedDictionaryError>
   CreateWriter(const GURL& url,
@@ -184,7 +185,7 @@ class DummySharedDictionaryStorage : public SharedDictionaryStorage {
  private:
   ~DummySharedDictionaryStorage() override = default;
 
-  std::unique_ptr<SharedDictionary> dictionary_;
+  std::unique_ptr<net::SharedDictionary> dictionary_;
   base::ScopedClosureRunner on_deleted_closure_runner_;
 };
 

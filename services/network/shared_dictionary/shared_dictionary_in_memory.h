@@ -5,18 +5,17 @@
 #ifndef SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_IN_MEMORY_H_
 #define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_IN_MEMORY_H_
 
-#include "services/network/shared_dictionary/shared_dictionary.h"
-
 #include <string>
 
 #include "net/base/hash_value.h"
+#include "net/shared_dictionary/shared_dictionary.h"
 
 namespace network {
 
 // A SharedDictionary which can be obtained using
 // SharedDictionaryStorageInMemory::GetDictionary(). All binary data is in the
 // memory. So ReadAll() synchronously returns OK.
-class SharedDictionaryInMemory : public SharedDictionary {
+class SharedDictionaryInMemory : public net::SharedDictionary {
  public:
   SharedDictionaryInMemory(scoped_refptr<net::IOBuffer> data,
                            size_t size,

@@ -100,7 +100,7 @@ class SharedDictionaryStorageOnDisk::RefCountedSharedDictionary
 // This is a subclass of SharedDictionaryOnDisk. This holds a reference to a
 // RefCountedSharedDictionary.
 class SharedDictionaryStorageOnDisk::WrappedSharedDictionary
-    : public SharedDictionary {
+    : public net::SharedDictionary {
  public:
   explicit WrappedSharedDictionary(
       scoped_refptr<RefCountedSharedDictionary> ref_counted_shared_dictionary)
@@ -110,7 +110,7 @@ class SharedDictionaryStorageOnDisk::WrappedSharedDictionary
   WrappedSharedDictionary(const WrappedSharedDictionary&) = delete;
   WrappedSharedDictionary& operator=(const WrappedSharedDictionary&) = delete;
 
-  // SharedDictionary
+  // net::SharedDictionary
   int ReadAll(base::OnceCallback<void(int)> callback) override {
     return ref_counted_shared_dictionary_->ReadAll(std::move(callback));
   }
@@ -170,7 +170,7 @@ SharedDictionaryStorageOnDisk::SharedDictionaryStorageOnDisk(
 
 SharedDictionaryStorageOnDisk::~SharedDictionaryStorageOnDisk() = default;
 
-std::unique_ptr<SharedDictionary>
+std::unique_ptr<net::SharedDictionary>
 SharedDictionaryStorageOnDisk::GetDictionarySync(
     const GURL& url,
     mojom::RequestDestination destination) {
@@ -223,7 +223,7 @@ SharedDictionaryStorageOnDisk::GetDictionarySync(
 void SharedDictionaryStorageOnDisk::GetDictionary(
     const GURL& url,
     mojom::RequestDestination destination,
-    base::OnceCallback<void(std::unique_ptr<SharedDictionary>)> callback) {
+    base::OnceCallback<void(std::unique_ptr<net::SharedDictionary>)> callback) {
   if (is_metadata_ready_) {
     std::move(callback).Run(GetDictionarySync(url, destination));
     return;

@@ -5,8 +5,6 @@
 #ifndef SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_ON_DISK_H_
 #define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_ON_DISK_H_
 
-#include "services/network/shared_dictionary/shared_dictionary.h"
-
 #include <string>
 
 #include "base/component_export.h"
@@ -15,6 +13,7 @@
 #include "base/unguessable_token.h"
 #include "net/base/hash_value.h"
 #include "net/disk_cache/disk_cache.h"
+#include "net/shared_dictionary/shared_dictionary.h"
 
 namespace net {
 class IOBufferWithSize;
@@ -29,7 +28,7 @@ class SharedDictionaryDiskCache;
 // ReadAll() may synchronously return OK if the data has been loaded into memory
 // when the method is called.
 class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryOnDisk
-    : public SharedDictionary {
+    : public net::SharedDictionary {
  public:
   SharedDictionaryOnDisk(size_t size,
                          const net::SHA256HashValue& hash,
@@ -40,7 +39,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryOnDisk
 
   ~SharedDictionaryOnDisk() override;
 
-  // SharedDictionary
+  // net::SharedDictionary
   int ReadAll(base::OnceCallback<void(int)> callback) override;
   scoped_refptr<net::IOBuffer> data() const override;
   size_t size() const override;

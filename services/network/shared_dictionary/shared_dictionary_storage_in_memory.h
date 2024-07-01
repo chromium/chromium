@@ -109,13 +109,14 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
       const SharedDictionaryStorageInMemory&) = delete;
 
   // SharedDictionaryStorage
-  std::unique_ptr<SharedDictionary> GetDictionarySync(
+  std::unique_ptr<net::SharedDictionary> GetDictionarySync(
       const GURL& url,
       mojom::RequestDestination destination) override;
-  void GetDictionary(const GURL& url,
-                     mojom::RequestDestination destination,
-                     base::OnceCallback<void(std::unique_ptr<SharedDictionary>)>
-                         callback) override;
+  void GetDictionary(
+      const GURL& url,
+      mojom::RequestDestination destination,
+      base::OnceCallback<void(std::unique_ptr<net::SharedDictionary>)> callback)
+      override;
   base::expected<scoped_refptr<SharedDictionaryWriter>,
                  mojom::SharedDictionaryError>
   CreateWriter(const GURL& url,

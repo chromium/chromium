@@ -2,23 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_H_
-#define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_H_
+#ifndef NET_SHARED_DICTIONARY_SHARED_DICTIONARY_H_
+#define NET_SHARED_DICTIONARY_SHARED_DICTIONARY_H_
 
 #include <string>
 
-#include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "net/base/net_export.h"
 
 namespace net {
 class IOBuffer;
 struct SHA256HashValue;
-}  // namespace net
-
-namespace network {
 
 // This class is used to read the binary of the shared dictionary.
-class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionary {
+class NET_EXPORT SharedDictionary {
  public:
   virtual ~SharedDictionary() = default;
 
@@ -48,6 +45,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionary {
   virtual const std::string& id() const = 0;
 };
 
-}  // namespace network
+}  // namespace net
 
-#endif  // SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_H_
+#endif  // NET_SHARED_DICTIONARY_SHARED_DICTIONARY_H_

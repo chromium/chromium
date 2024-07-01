@@ -30,9 +30,9 @@
 #include "net/extras/shared_dictionary/shared_dictionary_info.h"
 #include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
 #include "net/http/http_response_headers.h"
+#include "net/shared_dictionary/shared_dictionary.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/shared_dictionary_error.mojom.h"
-#include "services/network/shared_dictionary/shared_dictionary.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_disk_cache.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager_on_disk.h"
@@ -1115,7 +1115,7 @@ TEST_P(SharedDictionaryManagerTest, WriteAndReadDictionary) {
   }
 
   // Check the returned dictionary from GetDictionarySync().
-  std::unique_ptr<SharedDictionary> dict =
+  std::unique_ptr<net::SharedDictionary> dict =
       storage->GetDictionarySync(GURL("https://origin1.test/testfile?hello"),
                                  mojom::RequestDestination::kEmpty);
   ASSERT_TRUE(dict);
@@ -1341,7 +1341,7 @@ TEST_P(SharedDictionaryManagerTest, ZeroSizeDictionaryShouldNotBeStored) {
                   {});
 
   // Check the returned dictionary from GetDictionarySync().
-  std::unique_ptr<SharedDictionary> dict =
+  std::unique_ptr<net::SharedDictionary> dict =
       storage->GetDictionarySync(GURL("https://origin1.test/testfile?hello"),
                                  mojom::RequestDestination::kEmpty);
   EXPECT_FALSE(dict);
@@ -1544,7 +1544,7 @@ TEST_P(SharedDictionaryManagerTest, CacheEvictionAfterUpdatingLastUsedTime) {
   task_environment_.FastForwardBy(base::Seconds(1));
 
   // Call GetDictionary to update the last used time of the dictionary 1-1.
-  std::unique_ptr<SharedDictionary> dict1 = storage1->GetDictionarySync(
+  std::unique_ptr<net::SharedDictionary> dict1 = storage1->GetDictionarySync(
       GURL("https://origin1.test/p1?"), mojom::RequestDestination::kEmpty);
   ASSERT_TRUE(dict1);
 
@@ -1956,7 +1956,7 @@ TEST_P(SharedDictionaryManagerTest, ClearDataDoNotInvalidateActiveDictionary) {
   }
 
   // Get a dictionary before calling ClearData().
-  std::unique_ptr<SharedDictionary> dict = storage->GetDictionarySync(
+  std::unique_ptr<net::SharedDictionary> dict = storage->GetDictionarySync(
       GURL("https://origin.test/p2?"), mojom::RequestDestination::kEmpty);
   ASSERT_TRUE(dict);
 

@@ -21,13 +21,13 @@
 class GURL;
 
 namespace net {
+class SharedDictionary;
 class SourceStream;
 struct TransportInfo;
 }  // namespace net
 
 namespace network {
 
-class SharedDictionary;
 class SharedDictionaryManager;
 class SharedDictionaryStorage;
 
@@ -152,7 +152,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryNetworkTransaction
 
   raw_ref<SharedDictionaryManager> shared_dictionary_manager_;
   scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage_;
-  std::unique_ptr<SharedDictionary> shared_dictionary_;
+  std::unique_ptr<net::SharedDictionary> shared_dictionary_;
   // The Structured Field sf-binary hash of sha256 of dictionary calculated when
   // sending a HTTP request.
   std::string dictionary_hash_base64_;

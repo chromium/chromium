@@ -825,6 +825,7 @@ component("net") {
     "quic/web_transport_client.h",
     "quic/web_transport_error.cc",
     "quic/web_transport_error.h",
+    "shared_dictionary/shared_dictionary.h",
     "shared_dictionary/shared_dictionary_isolation_key.cc",
     "shared_dictionary/shared_dictionary_isolation_key.h",
     "socket/client_socket_factory.cc",

@@ -30,6 +30,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace net {
+class SharedDictionary;
+}  // namespace net
+
 namespace network {
 namespace mojom {
 enum class SharedDictionaryError : int32_t;
@@ -37,7 +41,6 @@ enum class SharedDictionaryError : int32_t;
 
 class URLLoaderFactory;
 class NetworkContext;
-class SharedDictionary;
 class SharedDictionaryStorage;
 class SharedDictionaryDataPipeWriter;
 
@@ -367,7 +370,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   const raw_ptr<NetworkContext> context_;
 
   scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage_;
-  std::unique_ptr<SharedDictionary> shared_dictionary_;
+  std::unique_ptr<net::SharedDictionary> shared_dictionary_;
   raw_ptr<mojom::SharedDictionaryAccessObserver> shared_dictionary_observer_;
   std::unique_ptr<SharedDictionaryDataPipeWriter>
       shared_dictionary_data_pipe_writer_;

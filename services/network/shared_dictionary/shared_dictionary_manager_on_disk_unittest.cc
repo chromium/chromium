@@ -28,9 +28,9 @@
 #include "net/disk_cache/disk_cache_test_util.h"
 #include "net/extras/shared_dictionary/shared_dictionary_info.h"
 #include "net/http/http_response_headers.h"
+#include "net/shared_dictionary/shared_dictionary.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/shared_dictionary_error.mojom.h"
-#include "services/network/shared_dictionary/shared_dictionary.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_disk_cache.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager_on_disk.h"
@@ -289,7 +289,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest, ReusingRefCountedSharedDictionary) {
   FlushCacheTasks();
 
   // Check the returned dictionary from GetDictionarySync().
-  std::unique_ptr<SharedDictionary> dict1 =
+  std::unique_ptr<net::SharedDictionary> dict1 =
       storage->GetDictionarySync(GURL("https://origin.test/testfile?1"),
                                  mojom::RequestDestination::kEmpty);
   ASSERT_TRUE(dict1);
@@ -302,7 +302,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest, ReusingRefCountedSharedDictionary) {
               })));
     run_loop.Run();
   }
-  std::unique_ptr<SharedDictionary> dict2 =
+  std::unique_ptr<net::SharedDictionary> dict2 =
       storage->GetDictionarySync(GURL("https://origin.test/testfile?2"),
                                  mojom::RequestDestination::kEmpty);
   ASSERT_TRUE(dict2);
@@ -367,7 +367,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest, GetDictionaryAfterManagerDeleted) {
   manager.reset();
 
   // GetDictionarySync() must return nullptr, after `manager` was deleted.
-  std::unique_ptr<SharedDictionary> dict =
+  std::unique_ptr<net::SharedDictionary> dict =
       storage->GetDictionarySync(GURL("https://origin.test/testfile?1"),
                                  mojom::RequestDestination::kEmpty);
   EXPECT_FALSE(dict);
@@ -415,7 +415,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest, OverridingDictionary) {
   }
 
   // Check the returned dictionary from GetDictionarySync().
-  std::unique_ptr<SharedDictionary> dict1 = storage->GetDictionarySync(
+  std::unique_ptr<net::SharedDictionary> dict1 = storage->GetDictionarySync(
       GURL("https://origin.test/testfile"), mojom::RequestDestination::kEmpty);
   ASSERT_TRUE(dict1);
 
@@ -442,7 +442,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest, OverridingDictionary) {
   // The disk cache entry should have been doomed.
   EXPECT_FALSE(DiskCacheEntryExists(manager.get(), disk_cache_key_token1));
 
-  std::unique_ptr<SharedDictionary> dict2 = storage->GetDictionarySync(
+  std::unique_ptr<net::SharedDictionary> dict2 = storage->GetDictionarySync(
       GURL("https://origin.test/testfile"), mojom::RequestDestination::kEmpty);
   ASSERT_TRUE(dict2);
 
@@ -483,12 +483,12 @@ TEST_F(SharedDictionaryManagerOnDiskTest, MultipleDictionaries) {
 
     FlushCacheTasks();
 
-    std::unique_ptr<SharedDictionary> dict1 =
+    std::unique_ptr<net::SharedDictionary> dict1 =
         storage->GetDictionarySync(GURL("https://origin.test/testfile1"),
                                    mojom::RequestDestination::kEmpty);
     ASSERT_TRUE(dict1);
 
-    std::unique_ptr<SharedDictionary> dict2 =
+    std::unique_ptr<net::SharedDictionary> dict2 =
         storage->GetDictionarySync(GURL("https://origin.test/testfile2"),
                                    mojom::RequestDestination::kEmpty);
     ASSERT_TRUE(dict2);
@@ -525,11 +525,11 @@ TEST_F(SharedDictionaryManagerOnDiskTest, MultipleDictionaries) {
   ASSERT_EQ(1u, dictionary_map.size());
   ASSERT_EQ(2u, dictionary_map.begin()->second.size());
 
-  std::unique_ptr<SharedDictionary> dict1 = storage->GetDictionarySync(
+  std::unique_ptr<net::SharedDictionary> dict1 = storage->GetDictionarySync(
       GURL("https://origin.test/testfile1"), mojom::RequestDestination::kEmpty);
   ASSERT_TRUE(dict1);
 
-  std::unique_ptr<SharedDictionary> dict2 = storage->GetDictionarySync(
+  std::unique_ptr<net::SharedDictionary> dict2 = storage->GetDictionarySync(
       GURL("https://origin.test/testfile2"), mojom::RequestDestination::kEmpty);
   ASSERT_TRUE(dict2);
 
@@ -578,13 +578,13 @@ TEST_F(SharedDictionaryManagerOnDiskTest, GetDictionary) {
 
   EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin.test/testfile"),
                                           mojom::RequestDestination::kEmpty));
-  std::unique_ptr<SharedDictionary> dict;
-  storage->GetDictionary(GURL("https://origin.test/testfile"),
-                         mojom::RequestDestination::kEmpty,
-                         base::BindLambdaForTesting(
-                             [&](std::unique_ptr<SharedDictionary> dictionary) {
-                               dict = std::move(dictionary);
-                             }));
+  std::unique_ptr<net::SharedDictionary> dict;
+  storage->GetDictionary(
+      GURL("https://origin.test/testfile"), mojom::RequestDestination::kEmpty,
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<net::SharedDictionary> dictionary) {
+            dict = std::move(dictionary);
+          }));
   EXPECT_FALSE(dict);
 
   // RunUntilIdle() to load from the database.
@@ -670,7 +670,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDiskCacheAndGetData) {
       ASSERT_EQ(1u, dictionary_map.begin()->second.size());
     }
 
-    std::unique_ptr<SharedDictionary> dict =
+    std::unique_ptr<net::SharedDictionary> dict =
         storage->GetDictionarySync(GURL("https://origin.test/testfile1"),
                                    mojom::RequestDestination::kEmpty);
     ASSERT_TRUE(dict);
@@ -744,7 +744,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDatabase) {
     FlushCacheTasks();
     EXPECT_FALSE(GetOnDiskDictionaryMap(storage.get()).empty());
 
-    std::unique_ptr<SharedDictionary> dict =
+    std::unique_ptr<net::SharedDictionary> dict =
         storage->GetDictionarySync(GURL("https://origin.test/testfile"),
                                    mojom::RequestDestination::kEmpty);
     ASSERT_TRUE(dict);
@@ -874,7 +874,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest, LastUsedTime) {
     // Move the clock forward by 1 second.
     task_environment_.FastForwardBy(base::Seconds(1));
 
-    std::unique_ptr<SharedDictionary> dict1 =
+    std::unique_ptr<net::SharedDictionary> dict1 =
         storage->GetDictionarySync(GURL("https://origin.test/testfile?1"),
                                    mojom::RequestDestination::kEmpty);
     base::Time last_used_time_after_first_get_dict =
@@ -883,7 +883,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest, LastUsedTime) {
     // Move the clock forward by 1 second.
     task_environment_.FastForwardBy(base::Seconds(1));
 
-    std::unique_ptr<SharedDictionary> dict2 =
+    std::unique_ptr<net::SharedDictionary> dict2 =
         storage->GetDictionarySync(GURL("https://origin.test/testfile?2"),
                                    mojom::RequestDestination::kEmpty);
     last_used_time_after_second_get_dict =
@@ -960,7 +960,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest, ClearData) {
     task_environment_.FastForwardBy(base::Hours(12));
 
     // Get a dictionary before calling ClearData().
-    std::unique_ptr<SharedDictionary> dict = storage->GetDictionarySync(
+    std::unique_ptr<net::SharedDictionary> dict = storage->GetDictionarySync(
         GURL("https://target.test/p3?"), mojom::RequestDestination::kEmpty);
     ASSERT_TRUE(dict);
 
@@ -1126,7 +1126,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest, ClearDataForIsolationKey) {
     FlushCacheTasks();
 
     // Get a dictionary before calling ClearDataForIsolationKey().
-    std::unique_ptr<SharedDictionary> dict = storage1->GetDictionarySync(
+    std::unique_ptr<net::SharedDictionary> dict = storage1->GetDictionarySync(
         GURL("https://origin1.test/p?"), mojom::RequestDestination::kEmpty);
     ASSERT_TRUE(dict);
 
@@ -1827,7 +1827,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
   task_environment_.FastForwardBy(base::Seconds(1));
 
   // Call GetDictionary to update the last used time of the dictionary 1.
-  std::unique_ptr<SharedDictionary> dict1 = storage->GetDictionarySync(
+  std::unique_ptr<net::SharedDictionary> dict1 = storage->GetDictionarySync(
       GURL("https://target1.test/path?"), mojom::RequestDestination::kEmpty);
   ASSERT_TRUE(dict1);
 

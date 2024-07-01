@@ -150,7 +150,6 @@ component("network_service") {
     "sec_header_helpers.h",
     "session_cleanup_cookie_store.cc",
     "session_cleanup_cookie_store.h",
-    "shared_dictionary/shared_dictionary.h",
     "shared_dictionary/shared_dictionary_access_checker.cc",
     "shared_dictionary/shared_dictionary_access_checker.h",
     "shared_dictionary/shared_dictionary_constants.cc",

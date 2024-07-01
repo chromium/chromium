@@ -29,7 +29,7 @@ SharedDictionaryStorageInMemory::SharedDictionaryStorageInMemory(
 
 SharedDictionaryStorageInMemory::~SharedDictionaryStorageInMemory() = default;
 
-std::unique_ptr<SharedDictionary>
+std::unique_ptr<net::SharedDictionary>
 SharedDictionaryStorageInMemory::GetDictionarySync(
     const GURL& url,
     mojom::RequestDestination destination) {
@@ -53,7 +53,7 @@ SharedDictionaryStorageInMemory::GetDictionarySync(
 void SharedDictionaryStorageInMemory::GetDictionary(
     const GURL& url,
     mojom::RequestDestination destination,
-    base::OnceCallback<void(std::unique_ptr<SharedDictionary>)> callback) {
+    base::OnceCallback<void(std::unique_ptr<net::SharedDictionary>)> callback) {
   std::move(callback).Run(GetDictionarySync(url, destination));
 }
 

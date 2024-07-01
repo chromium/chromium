@@ -21,6 +21,7 @@
 #include "net/cookies/cookie_partition_key.h"
 #include "net/http/http_status_code.h"
 #include "net/log/net_log_values.h"
+#include "net/shared_dictionary/shared_dictionary.h"
 #include "services/network/cors/cors_url_loader_factory.h"
 #include "services/network/cors/cors_util.h"
 #include "services/network/cors/preflight_controller.h"
@@ -39,7 +40,6 @@
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/shared_dictionary_error.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "services/network/shared_dictionary/shared_dictionary.h"
 #include "services/network/shared_dictionary/shared_dictionary_access_checker.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_data_pipe_writer.h"
@@ -362,7 +362,7 @@ CorsURLLoader::CorsURLLoader(
         request_.url, request_.destination,
         base::BindOnce(
             [](base::WeakPtr<CorsURLLoader> loader,
-               std::unique_ptr<SharedDictionary> shared_dictionary) {
+               std::unique_ptr<net::SharedDictionary> shared_dictionary) {
               if (loader) {
                 loader->shared_dictionary_ = std::move(shared_dictionary);
               }
