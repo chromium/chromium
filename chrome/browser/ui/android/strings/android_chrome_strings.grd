@@ -1789,7 +1789,12 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_PAGE_MENU_TEXT" translateable="false">
         Go to notification settings
       </message>
-
+      <message name="IDS_SAFETY_HUB_AUTOREVOCATION_TOGGLE_TITLE" translateable="false">
+        Automatically remove permissions
+      </message>
+      <message name="IDS_SAFETY_HUB_AUTOREVOCATION_TOGGLE_SUMMARY" translateable="false">
+        To protect your data, let Chrome remove permissions from sites that you haven’t visited recently
+      </message>
 
        <!-- Safe Browsing preferences -->
       <message name="IDS_PREFS_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing preferences. [CHAR_LIMIT=32]">

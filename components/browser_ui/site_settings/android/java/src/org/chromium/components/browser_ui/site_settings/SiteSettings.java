@@ -8,8 +8,10 @@ import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS
 
 import android.os.Bundle;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
+import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory.Type;
@@ -27,7 +29,12 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 public class SiteSettings extends BaseSiteSettingsFragment
         implements Preference.OnPreferenceClickListener, CustomDividerFragment {
     // The keys for each category shown on the Site Settings page
-    // are defined in the SiteSettingsCategory.
+    // are defined in the SiteSettingsCategory. The only exception is the permission autorevocation
+    // switch at the bottom of the page and its top divider.
+    @VisibleForTesting
+    public static final String PERMISSION_AUTOREVOCATION_PREF = "permission_autorevocation";
+
+    private static final String DIVIDER_PREF = "divider";
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -60,6 +67,12 @@ public class SiteSettings extends BaseSiteSettingsFragment
             if (!getSiteSettingsDelegate().isCategoryVisible(type)) {
                 getPreferenceScreen().removePreference(findPreference(type));
             }
+        }
+
+        // Remove the permission autorevocation preference if Safety Hub is not enabled.
+        if (!getSiteSettingsDelegate().isSafetyHubEnabled()) {
+            getPreferenceScreen().removePreference(findPreference(PERMISSION_AUTOREVOCATION_PREF));
+            getPreferenceScreen().removePreference(findPreference(DIVIDER_PREF));
         }
     }
 
@@ -179,6 +192,19 @@ public class SiteSettings extends BaseSiteSettingsFragment
                                 getSiteSettingsDelegate()
                                         .isBlockAll3PCDEnabledInTrackingProtection()));
             }
+        }
+
+        // For the permission autorevocation switch.
+        ChromeSwitchPreference switch_pref =
+                (ChromeSwitchPreference) findPreference(PERMISSION_AUTOREVOCATION_PREF);
+        if (switch_pref != null) {
+            switch_pref.setChecked(getSiteSettingsDelegate().isPermissionAutorevocationEnabled());
+            switch_pref.setOnPreferenceChangeListener(
+                    (preference, newValue) -> {
+                        getSiteSettingsDelegate()
+                                .setPermissionAutorevocationEnabled((boolean) newValue);
+                        return true;
+                    });
         }
     }
 

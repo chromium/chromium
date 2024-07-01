@@ -205,4 +205,17 @@ public interface SiteSettingsDelegate {
      * @return whether the Privacy Sandbox Rws UI should be shown in the Settings.
      */
     boolean shouldShowPrivacySandboxRwsUi();
+
+    /**
+     * @return whether the Safety Hub is enabled.
+     */
+    boolean isSafetyHubEnabled();
+
+    /**
+     * @return whether the unused site permission autorevocation is enabled.
+     */
+    boolean isPermissionAutorevocationEnabled();
+
+    /** Enable/Disable unused site permission autorevocation. */
+    void setPermissionAutorevocationEnabled(boolean isEnabled);
 }

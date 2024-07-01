@@ -385,4 +385,20 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
                     callback.onResult(mBrowsingDataModel);
                 });
     }
+
+    @Override
+    public boolean isSafetyHubEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB);
+    }
+
+    @Override
+    public boolean isPermissionAutorevocationEnabled() {
+        return UserPrefs.get(mProfile).getBoolean(Pref.UNUSED_SITE_PERMISSIONS_REVOCATION_ENABLED);
+    }
+
+    @Override
+    public void setPermissionAutorevocationEnabled(boolean isEnabled) {
+        UserPrefs.get(mProfile)
+                .setBoolean(Pref.UNUSED_SITE_PERMISSIONS_REVOCATION_ENABLED, isEnabled);
+    }
 }
