@@ -13,8 +13,10 @@
 #include "base/test/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
 
@@ -25,6 +27,16 @@ class PickerItemWithSubmenuViewTest : public views::ViewsTestBase {
  private:
   AshColorProvider provider_;
 };
+
+TEST_F(PickerItemWithSubmenuViewTest, HasAccessibilityAttributes) {
+  PickerItemWithSubmenuView view;
+
+  ui::AXNodeData data;
+  view.GetViewAccessibility().GetAccessibleNodeData(&data);
+
+  EXPECT_EQ(data.role, ax::mojom::Role::kPopUpButton);
+  EXPECT_EQ(data.GetHasPopup(), ax::mojom::HasPopup::kMenu);
+}
 
 TEST_F(PickerItemWithSubmenuViewTest, ShowsSubmenu) {
   PickerSubmenuController submenu_controller;

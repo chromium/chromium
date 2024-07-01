@@ -6,6 +6,7 @@
 #include "ash/picker/views/picker_emoji_bar_view.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
 #include "ash/picker/views/picker_emoticon_item_view.h"
+#include "ash/picker/views/picker_item_with_submenu_view.h"
 #include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_section_list_view.h"
@@ -25,6 +26,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view.h"
@@ -243,6 +245,26 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 
   sm_.ExpectSpeechPattern("Section2");
   sm_.ExpectSpeechPattern("Heading");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       FocusingItemWithSubmenuAnnouncesMenuRole) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  auto* view = widget->SetContentsView(
+      std::make_unique<ash::PickerItemWithSubmenuView>());
+  view->SetLeadingIcon(ui::ImageModel::FromImage(gfx::test::CreateImage(1)));
+  view->SetText(u"meow");
+
+  sm_.Call([view]() { view->RequestFocus(); });
+
+  sm_.ExpectSpeechPattern("meow");
+  sm_.ExpectSpeechPattern("Button");
+  sm_.ExpectSpeechPattern("has pop up");
+  sm_.ExpectSpeechPattern("Press * to activate");
   sm_.Replay();
 }
 

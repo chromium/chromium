@@ -22,6 +22,7 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -84,6 +85,9 @@ PickerItemWithSubmenuView::PickerItemWithSubmenuView()
                           vector_icons::kSubmenuArrowChromeRefreshIcon,
                           cros_tokens::kCrosSysOnSurface))))
       .BuildChildren();
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kPopUpButton);
+  GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kMenu);
 }
 
 PickerItemWithSubmenuView::~PickerItemWithSubmenuView() = default;
