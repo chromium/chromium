@@ -369,6 +369,19 @@ chromium-metrics-reviews@google.com.
              against an engaged site."/>
 </enum>
 
+<!-- LINT.IfChange(NavigationThrottleEvent) -->
+
+<enum name="NavigationThrottleEvent">
+  <int value="0" label="No Event"/>
+  <int value="1" label="WillStartRequest"/>
+  <int value="2" label="WillRedirectRequest"/>
+  <int value="3" label="WillFailRequest"/>
+  <int value="4" label="WillProcessResponse"/>
+  <int value="5" label="WillCommitWithoutUrlLoader"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/navigation_throttle_runner.h:Event)-->
+
 <enum name="NavigationWasServedFromCache">
   <int value="0" label="Navigation wasn't served from cache"/>
   <int value="1" label="Navigation was served from cache"/>

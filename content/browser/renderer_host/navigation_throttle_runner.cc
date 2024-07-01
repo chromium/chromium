@@ -40,18 +40,18 @@ NavigationThrottle::ThrottleCheckResult ExecuteNavigationEvent(
     NavigationThrottle* throttle,
     NavigationThrottleRunner::Event event) {
   switch (event) {
-    case NavigationThrottleRunner::Event::NoEvent:
+    case NavigationThrottleRunner::Event::kNoEvent:
       DUMP_WILL_BE_NOTREACHED();
       return NavigationThrottle::CANCEL_AND_IGNORE;
-    case NavigationThrottleRunner::Event::WillStartRequest:
+    case NavigationThrottleRunner::Event::kWillStartRequest:
       return throttle->WillStartRequest();
-    case NavigationThrottleRunner::Event::WillRedirectRequest:
+    case NavigationThrottleRunner::Event::kWillRedirectRequest:
       return throttle->WillRedirectRequest();
-    case NavigationThrottleRunner::Event::WillFailRequest:
+    case NavigationThrottleRunner::Event::kWillFailRequest:
       return throttle->WillFailRequest();
-    case NavigationThrottleRunner::Event::WillProcessResponse:
+    case NavigationThrottleRunner::Event::kWillProcessResponse:
       return throttle->WillProcessResponse();
-    case NavigationThrottleRunner::Event::WillCommitWithoutUrlLoader:
+    case NavigationThrottleRunner::Event::kWillCommitWithoutUrlLoader:
       return throttle->WillCommitWithoutUrlLoader();
   }
   NOTREACHED_IN_MIGRATION();
@@ -60,18 +60,18 @@ NavigationThrottle::ThrottleCheckResult ExecuteNavigationEvent(
 
 const char* GetEventName(NavigationThrottleRunner::Event event) {
   switch (event) {
-    case NavigationThrottleRunner::Event::NoEvent:
+    case NavigationThrottleRunner::Event::kNoEvent:
       DUMP_WILL_BE_NOTREACHED();
       return "";
-    case NavigationThrottleRunner::Event::WillStartRequest:
+    case NavigationThrottleRunner::Event::kWillStartRequest:
       return "NavigationThrottle::WillStartRequest";
-    case NavigationThrottleRunner::Event::WillRedirectRequest:
+    case NavigationThrottleRunner::Event::kWillRedirectRequest:
       return "NavigationThrottle::WillRedirectRequest";
-    case NavigationThrottleRunner::Event::WillFailRequest:
+    case NavigationThrottleRunner::Event::kWillFailRequest:
       return "NavigationThrottle::WillFailRequest";
-    case NavigationThrottleRunner::Event::WillProcessResponse:
+    case NavigationThrottleRunner::Event::kWillProcessResponse:
       return "NavigationThrottle::WillProcessResponse";
-    case NavigationThrottleRunner::Event::WillCommitWithoutUrlLoader:
+    case NavigationThrottleRunner::Event::kWillCommitWithoutUrlLoader:
       return "NavigationThrottle::WillCommitWithoutUrlLoader";
   }
   NOTREACHED_IN_MIGRATION();
@@ -80,18 +80,18 @@ const char* GetEventName(NavigationThrottleRunner::Event event) {
 
 const char* GetEventNameForHistogram(NavigationThrottleRunner::Event event) {
   switch (event) {
-    case NavigationThrottleRunner::Event::NoEvent:
+    case NavigationThrottleRunner::Event::kNoEvent:
       DUMP_WILL_BE_NOTREACHED();
       return "";
-    case NavigationThrottleRunner::Event::WillStartRequest:
+    case NavigationThrottleRunner::Event::kWillStartRequest:
       return "WillStartRequest";
-    case NavigationThrottleRunner::Event::WillRedirectRequest:
+    case NavigationThrottleRunner::Event::kWillRedirectRequest:
       return "WillRedirectRequest";
-    case NavigationThrottleRunner::Event::WillFailRequest:
+    case NavigationThrottleRunner::Event::kWillFailRequest:
       return "WillFailRequest";
-    case NavigationThrottleRunner::Event::WillProcessResponse:
+    case NavigationThrottleRunner::Event::kWillProcessResponse:
       return "WillProcessResponse";
-    case NavigationThrottleRunner::Event::WillCommitWithoutUrlLoader:
+    case NavigationThrottleRunner::Event::kWillCommitWithoutUrlLoader:
       return "WillCommitWithoutUrlLoader";
   }
   NOTREACHED_IN_MIGRATION();
@@ -132,10 +132,14 @@ NavigationThrottleRunner::~NavigationThrottleRunner() {
                           total_defer_duration_time_);
   base::UmaHistogramCounts100("Navigation.ThrottleTotalDeferCount",
                               defer_count_);
+  base::UmaHistogramTimes("Navigation.ThrottleTotalDeferTime.Request",
+                          total_defer_duration_time_for_request_);
+  base::UmaHistogramCounts100("Navigation.ThrottleTotalDeferCount.Request",
+                              defer_count_for_request_);
 }
 
 void NavigationThrottleRunner::ProcessNavigationEvent(Event event) {
-  DCHECK_NE(Event::NoEvent, event);
+  DCHECK_NE(Event::kNoEvent, event);
   current_event_ = event;
   next_index_ = 0;
   ProcessInternal();
@@ -144,9 +148,17 @@ void NavigationThrottleRunner::ProcessNavigationEvent(Event event) {
 void NavigationThrottleRunner::ResumeProcessingNavigationEvent(
     NavigationThrottle* deferring_throttle) {
   DCHECK_EQ(GetDeferringThrottle(), deferring_throttle);
-  total_defer_duration_time_ +=
+  base::TimeDelta defer_time =
       RecordDeferTimeHistogram(current_event_, defer_start_time_);
+  total_defer_duration_time_ += defer_time;
   defer_count_++;
+  if (current_event_ == Event::kWillStartRequest ||
+      current_event_ == Event::kWillRedirectRequest) {
+    total_defer_duration_time_for_request_ += defer_time;
+    defer_count_for_request_++;
+  }
+  base::UmaHistogramEnumeration("Navigation.ThrottleDeferredEvent",
+                                current_event_);
   RecordDeferTimeUKM();
   ProcessInternal();
 }
@@ -324,7 +336,7 @@ void NavigationThrottleRunner::AddThrottle(
 
 void NavigationThrottleRunner::ProcessInternal() {
   TRACE_EVENT0("navigation", "NavigationThrottleRunner::ProcessInternal");
-  DCHECK_NE(Event::NoEvent, current_event_);
+  DCHECK_NE(Event::kNoEvent, current_event_);
   base::WeakPtr<NavigationThrottleRunner> weak_ref = weak_factory_.GetWeakPtr();
 
   // Capture into a local variable the |navigation_id_| value, since this
@@ -383,12 +395,12 @@ void NavigationThrottleRunner::ProcessInternal() {
 
 void NavigationThrottleRunner::InformDelegate(
     const NavigationThrottle::ThrottleCheckResult& result) {
-  // Now that the event has executed, reset the current event to NoEvent since
+  // Now that the event has executed, reset the current event to kNoEvent since
   // we're no longer processing any event. Do it before the call to the
   // delegate, as it might lead to the deletion of this
   // NavigationThrottleRunner.
   Event event = current_event_;
-  current_event_ = Event::NoEvent;
+  current_event_ = Event::kNoEvent;
   delegate_->OnNavigationEventProcessed(event, result);
   // DO NOT ADD CODE AFTER THIS. The NavigationThrottleRunner might have been
   // deleted by the previous call.

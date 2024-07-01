@@ -38,6 +38,11 @@ chromium-metrics-reviews@google.com.
   <variant name="SwapRFH"/>
 </variants>
 
+<variants name="NavigationThrottleConditions">
+  <variant name="" summary="any kinds of events"/>
+  <variant name=".Request" summary="start or redirect request events"/>
+</variants>
+
 <variants name="NavigationThrottleEvents">
   <variant name="WillFailRequest"/>
   <variant name="WillProcessResponse"/>
@@ -1707,10 +1712,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.ThrottleDeferredEvent"
+    enum="NavigationThrottleEvent" expires_after="2024-12-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the navigation throttle event type that observes DEFER on running
+    NavigationThrottles. Recorded per receiving DEFER decision on each throttle
+    run to understand the distribution.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.ThrottleDeferTime.{Event}" units="ms"
     expires_after="2024-12-01">
   <owner>cduvall@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1726,7 +1741,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Navigation.ThrottleExecutionTime.{Event}" units="ms"
     expires_after="2024-12-01">
   <owner>cduvall@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1739,26 +1753,28 @@ chromium-metrics-reviews@google.com.
   <token key="Event" variants="NavigationThrottleEvents"/>
 </histogram>
 
-<histogram name="Navigation.ThrottleTotalDeferCount" units="throttles"
-    expires_after="2024-12-01">
+<histogram name="Navigation.ThrottleTotalDeferCount{Condition}"
+    units="throttles" expires_after="2024-12-01">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
-    Measures total count of deferral request that a throttle runner asked by any
-    throttle per navigation. Recorded per navigation on destructing
-    NavigationThrottleRunner.
+    Measures total count of deferred requests that a throttle runner asked on
+    {Condition} by any throttle per navigation. Recorded per navigation on
+    destructing NavigationThrottleRunner.
   </summary>
+  <token key="Condition" variants="NavigationThrottleConditions"/>
 </histogram>
 
-<histogram name="Navigation.ThrottleTotalDeferTime" units="ms"
+<histogram name="Navigation.ThrottleTotalDeferTime{Condition}" units="ms"
     expires_after="2024-12-01">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     Measures total duration time that a throttle runner took to wait for
-    deferral request from all throttles. Recorded per navigation on destructing
-    NavigationThrottleRunner.
+    deferred requests on {Condition} from all throttles. Recorded per navigation
+    on destructing NavigationThrottleRunner.
   </summary>
+  <token key="Condition" variants="NavigationThrottleConditions"/>
 </histogram>
 
 <histogram name="Navigation.TimeToActivatePrerender{PreloadingTriggerType}"

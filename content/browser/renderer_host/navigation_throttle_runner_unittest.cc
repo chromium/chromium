@@ -77,7 +77,7 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
   void SimulateEvent(NavigationThrottleRunner::Event event) {
     was_delegate_notified_ = false;
     delegate_result_ = NavigationThrottle::DEFER;
-    observer_last_event_ = NavigationThrottleRunner::Event::NoEvent;
+    observer_last_event_ = NavigationThrottleRunner::Event::kNoEvent;
     runner_->ProcessNavigationEvent(event);
   }
 
@@ -110,35 +110,35 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
 
   void CheckNotifiedOfEvent(TestNavigationThrottle* throttle,
                             NavigationThrottleRunner::Event event) {
-    if (event == NavigationThrottleRunner::Event::WillStartRequest) {
+    if (event == NavigationThrottleRunner::Event::kWillStartRequest) {
       CHECK_EQ(1, throttle->GetCallCount(
                       TestNavigationThrottle::WILL_START_REQUEST));
     } else {
       CHECK_EQ(0, throttle->GetCallCount(
                       TestNavigationThrottle::WILL_START_REQUEST));
     }
-    if (event == NavigationThrottleRunner::Event::WillRedirectRequest) {
+    if (event == NavigationThrottleRunner::Event::kWillRedirectRequest) {
       CHECK_EQ(1, throttle->GetCallCount(
                       TestNavigationThrottle::WILL_REDIRECT_REQUEST));
     } else {
       CHECK_EQ(0, throttle->GetCallCount(
                       TestNavigationThrottle::WILL_REDIRECT_REQUEST));
     }
-    if (event == NavigationThrottleRunner::Event::WillFailRequest) {
+    if (event == NavigationThrottleRunner::Event::kWillFailRequest) {
       CHECK_EQ(
           1, throttle->GetCallCount(TestNavigationThrottle::WILL_FAIL_REQUEST));
     } else {
       CHECK_EQ(
           0, throttle->GetCallCount(TestNavigationThrottle::WILL_FAIL_REQUEST));
     }
-    if (event == NavigationThrottleRunner::Event::WillProcessResponse) {
+    if (event == NavigationThrottleRunner::Event::kWillProcessResponse) {
       CHECK_EQ(1, throttle->GetCallCount(
                       TestNavigationThrottle::WILL_PROCESS_RESPONSE));
     } else {
       CHECK_EQ(0, throttle->GetCallCount(
                       TestNavigationThrottle::WILL_PROCESS_RESPONSE));
     }
-    if (event == NavigationThrottleRunner::Event::WillCommitWithoutUrlLoader) {
+    if (event == NavigationThrottleRunner::Event::kWillCommitWithoutUrlLoader) {
       CHECK_EQ(1, throttle->GetCallCount(
                       TestNavigationThrottle::WILL_COMMIT_WITHOUT_URL_LOADER));
     } else {
@@ -201,7 +201,7 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
   std::unique_ptr<NavigationThrottleRunner> runner_;
   MockNavigationHandle handle_;
   NavigationThrottleRunner::Event observer_last_event_ =
-      NavigationThrottleRunner::Event::NoEvent;
+      NavigationThrottleRunner::Event::kNoEvent;
   bool was_delegate_notified_ = false;
   NavigationThrottle::ThrottleCheckResult delegate_result_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
@@ -279,11 +279,11 @@ INSTANTIATE_TEST_SUITE_P(
     AllEvents,
     NavigationThrottleRunnerTestWithEvent,
     ::testing::Values(
-        NavigationThrottleRunner::Event::WillStartRequest,
-        NavigationThrottleRunner::Event::WillRedirectRequest,
-        NavigationThrottleRunner::Event::WillFailRequest,
-        NavigationThrottleRunner::Event::WillProcessResponse,
-        NavigationThrottleRunner::Event::WillCommitWithoutUrlLoader));
+        NavigationThrottleRunner::Event::kWillStartRequest,
+        NavigationThrottleRunner::Event::kWillRedirectRequest,
+        NavigationThrottleRunner::Event::kWillFailRequest,
+        NavigationThrottleRunner::Event::kWillProcessResponse,
+        NavigationThrottleRunner::Event::kWillCommitWithoutUrlLoader));
 
 class NavigationThrottleRunnerTestWithEventAndAction
     : public NavigationThrottleRunnerTest,
@@ -428,11 +428,11 @@ INSTANTIATE_TEST_SUITE_P(
     NavigationThrottleRunnerTestWithEventAndAction,
     ::testing::Combine(
         ::testing::Values(
-            NavigationThrottleRunner::Event::WillStartRequest,
-            NavigationThrottleRunner::Event::WillRedirectRequest,
-            NavigationThrottleRunner::Event::WillFailRequest,
-            NavigationThrottleRunner::Event::WillProcessResponse,
-            NavigationThrottleRunner::Event::WillCommitWithoutUrlLoader),
+            NavigationThrottleRunner::Event::kWillStartRequest,
+            NavigationThrottleRunner::Event::kWillRedirectRequest,
+            NavigationThrottleRunner::Event::kWillFailRequest,
+            NavigationThrottleRunner::Event::kWillProcessResponse,
+            NavigationThrottleRunner::Event::kWillCommitWithoutUrlLoader),
         ::testing::Values(NavigationThrottle::PROCEED,
                           NavigationThrottle::CANCEL,
                           NavigationThrottle::CANCEL_AND_IGNORE,
@@ -509,11 +509,11 @@ INSTANTIATE_TEST_SUITE_P(
     NavigationThrottleRunnerTestWithEventAndError,
     ::testing::Combine(
         ::testing::Values(
-            NavigationThrottleRunner::Event::WillStartRequest,
-            NavigationThrottleRunner::Event::WillRedirectRequest,
-            NavigationThrottleRunner::Event::WillFailRequest,
-            NavigationThrottleRunner::Event::WillProcessResponse,
-            NavigationThrottleRunner::Event::WillCommitWithoutUrlLoader),
+            NavigationThrottleRunner::Event::kWillStartRequest,
+            NavigationThrottleRunner::Event::kWillRedirectRequest,
+            NavigationThrottleRunner::Event::kWillFailRequest,
+            NavigationThrottleRunner::Event::kWillProcessResponse,
+            NavigationThrottleRunner::Event::kWillCommitWithoutUrlLoader),
         ::testing::Values(net::ERR_BLOCKED_BY_ADMINISTRATOR, net::ERR_ABORTED),
         ::testing::Values(std::nullopt, "<html><body>test</body></html>")));
 

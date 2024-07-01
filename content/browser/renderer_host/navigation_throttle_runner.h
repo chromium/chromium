@@ -21,15 +21,21 @@ namespace content {
 class CONTENT_EXPORT NavigationThrottleRunner {
  public:
   // The different event types that can be processed by NavigationThrottles.
-  // These values are recorded in metrics and should not be renumbered.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // This type is also used in the UKM as set in the RecordDeferTimeUKM().
+  //
+  // LINT.IfChange(Event)
   enum class Event {
-    NoEvent = 0,
-    WillStartRequest = 1,
-    WillRedirectRequest = 2,
-    WillFailRequest = 3,
-    WillProcessResponse = 4,
-    WillCommitWithoutUrlLoader = 5,
+    kNoEvent = 0,
+    kWillStartRequest = 1,
+    kWillRedirectRequest = 2,
+    kWillFailRequest = 3,
+    kWillProcessResponse = 4,
+    kWillCommitWithoutUrlLoader = 5,
+    kMaxValue = kWillCommitWithoutUrlLoader,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:NavigationThrottleEvent)
 
   class Delegate {
    public:
@@ -113,16 +119,18 @@ class CONTENT_EXPORT NavigationThrottleRunner {
 
   // The total duration time that throttles deferred the navigation.
   base::TimeDelta total_defer_duration_time_;
+  base::TimeDelta total_defer_duration_time_for_request_;
 
   // The total count to know how many times a throttle defer the navigation.
   size_t defer_count_ = 0;
+  size_t defer_count_for_request_ = 0;
 
   // This test-only callback will be run the first time a NavigationThrottle
   // defers this navigation.
   base::OnceClosure first_deferral_callback_for_testing_;
 
   // The event currently being processed.
-  Event current_event_ = Event::NoEvent;
+  Event current_event_ = Event::kNoEvent;
 
   // Whether the navigation is in the primary main frame.
   bool is_primary_main_frame_ = false;

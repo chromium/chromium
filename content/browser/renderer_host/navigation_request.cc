@@ -7108,22 +7108,22 @@ void NavigationRequest::OnNavigationEventProcessed(
     NavigationThrottle::ThrottleCheckResult result) {
   DCHECK_NE(NavigationThrottle::DEFER, result.action());
   switch (event) {
-    case NavigationThrottleRunner::Event::NoEvent:
+    case NavigationThrottleRunner::Event::kNoEvent:
       DUMP_WILL_BE_NOTREACHED();
       return;
-    case NavigationThrottleRunner::Event::WillStartRequest:
+    case NavigationThrottleRunner::Event::kWillStartRequest:
       OnWillStartRequestProcessed(result);
       return;
-    case NavigationThrottleRunner::Event::WillRedirectRequest:
+    case NavigationThrottleRunner::Event::kWillRedirectRequest:
       OnWillRedirectRequestProcessed(result);
       return;
-    case NavigationThrottleRunner::Event::WillFailRequest:
+    case NavigationThrottleRunner::Event::kWillFailRequest:
       OnWillFailRequestProcessed(result);
       return;
-    case NavigationThrottleRunner::Event::WillProcessResponse:
+    case NavigationThrottleRunner::Event::kWillProcessResponse:
       OnWillProcessResponseProcessed(result);
       return;
-    case NavigationThrottleRunner::Event::WillCommitWithoutUrlLoader:
+    case NavigationThrottleRunner::Event::kWillCommitWithoutUrlLoader:
       OnWillCommitWithoutUrlLoaderProcessed(result);
       return;
   }
@@ -7405,7 +7405,7 @@ void NavigationRequest::WillStartRequest() {
 
   // Notify each throttle of the request.
   throttle_runner_->ProcessNavigationEvent(
-      NavigationThrottleRunner::Event::WillStartRequest);
+      NavigationThrottleRunner::Event::kWillStartRequest);
   // DO NOT ADD CODE AFTER THIS, as the NavigationHandle might have been deleted
   // by the previous call.
 }
@@ -7438,7 +7438,7 @@ void NavigationRequest::WillRedirectRequest(
 
   // Notify each throttle of the request.
   throttle_runner_->ProcessNavigationEvent(
-      NavigationThrottleRunner::Event::WillRedirectRequest);
+      NavigationThrottleRunner::Event::kWillRedirectRequest);
   // DO NOT ADD CODE AFTER THIS, as the NavigationHandle might have been deleted
   // by the previous call.
 }
@@ -7451,7 +7451,7 @@ void NavigationRequest::WillFailRequest() {
 
   // Notify each throttle of the request.
   throttle_runner_->ProcessNavigationEvent(
-      NavigationThrottleRunner::Event::WillFailRequest);
+      NavigationThrottleRunner::Event::kWillFailRequest);
   // DO NOT ADD CODE AFTER THIS, as the NavigationHandle might have been deleted
   // by the previous call.
 }
@@ -7470,7 +7470,7 @@ void NavigationRequest::WillProcessResponse() {
 
   // Notify each throttle of the response.
   throttle_runner_->ProcessNavigationEvent(
-      NavigationThrottleRunner::Event::WillProcessResponse);
+      NavigationThrottleRunner::Event::kWillProcessResponse);
 
   // `this` may have been deleted by the previous call.
   if (!this_ptr) {
@@ -7499,7 +7499,7 @@ void NavigationRequest::WillCommitWithoutUrlLoader() {
   processing_navigation_throttle_ = true;
 
   throttle_runner_->ProcessNavigationEvent(
-      NavigationThrottleRunner::Event::WillCommitWithoutUrlLoader);
+      NavigationThrottleRunner::Event::kWillCommitWithoutUrlLoader);
 }
 
 bool NavigationRequest::IsSelfReferentialURL() {
