@@ -60,20 +60,13 @@
                    (2 * var(--post-selection-corner-width)));
   }
 
-  :host([enable-selection-dragging]) #selectionCorners {
-    cursor: all-scroll;
-  }
-
-  .draggable {
-    pointer-events: all;
-  }
-
   .corner-hit-box {
     height: 50%;
     max-height: var(--post-selection-corner-hitbox-max-size);
     max-width: var(--post-selection-corner-hitbox-max-size);
     min-height: var(--post-selection-corner-length);
     min-width: var(--post-selection-corner-length);
+    pointer-events: all;
     position: absolute;
     width: 50%;
     z-index: 5; /* Position above words. */
@@ -115,9 +108,9 @@
   <!-- This inner postSelection div isn't technically required, but helps make
    testing easier and more readable. -->
   <div id="postSelection"></div>
-  <div id="selectionCorners" class="draggable">
+  <div id="selectionCorners">
     <template is="dom-repeat" items="[[cornerIds]]">
-      <div id="[[item]]" class="corner-hit-box draggable"></div>
+      <div id="[[item]]" class="corner-hit-box"></div>
     </template>
   </div>
 </div>

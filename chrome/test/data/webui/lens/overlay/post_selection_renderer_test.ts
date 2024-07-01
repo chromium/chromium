@@ -33,13 +33,6 @@ function normalizeY(y: number): number {
   return y / TEST_HEIGHT;
 }
 
-interface BoxDrag {
-  xOffset: number;
-  yOffset: number;
-  expectedTop: number;
-  expectedLeft: number;
-}
-
 suite('PostSelectionRenderer', () => {
   let postSelectionRenderer: PostSelectionRendererElement;
   let testBrowserProxy: TestLensOverlayBrowserProxy;
@@ -86,18 +79,6 @@ suite('PostSelectionRenderer', () => {
         left ? postSelectionBoundingBox.left : postSelectionBoundingBox.right;
     const yTarget =
         top ? postSelectionBoundingBox.top : postSelectionBoundingBox.bottom;
-    simulateDrag(xTarget, yTarget, xOffset, yOffset);
-  }
-
-  // Drags on a the post selection region, starting at the center of the box
-  // and moving by xOffset horizontal pixels and yOffset vertical pixels.
-  function simulateBoxDrag(xOffset: number, yOffset: number): void {
-    const postSelectionBoundingBox =
-        postSelectionRenderer.$.postSelection.getBoundingClientRect();
-    const xTarget =
-        postSelectionBoundingBox.left + postSelectionBoundingBox.width / 2;
-    const yTarget =
-        postSelectionBoundingBox.top + postSelectionBoundingBox.height / 2;
     simulateDrag(xTarget, yTarget, xOffset, yOffset);
   }
 
@@ -513,110 +494,6 @@ suite('PostSelectionRenderer', () => {
     };
 
     assertFalse(postSelectionRenderer.handleDownGesture(dragGesture));
-  });
-
-  test('PostSelectionWholeBox', async () => {
-    postSelectionRenderer.enableSelectionDraggingForTesting();
-
-    await triggerPostSelectionRender({
-      top: normalizeY(10),
-      left: normalizeX(10),
-      width: normalizeX(100),
-      height: normalizeY(70),
-    });
-    assertTrue(isVisible(postSelectionRenderer.$.postSelection));
-
-    await simulateBoxDrag(/*xOffset=*/ 100, /*yOffset=*/ 100);
-
-    const expectedLeft = normalizeX(110);
-    const expectedTop = normalizeY(110);
-    const expectedWidth = normalizeX(100);
-    const expectedHeight = normalizeY(70);
-
-    assertPostSelectionRender(
-        expectedLeft, expectedTop, expectedWidth, expectedHeight);
-    await assertLensRequest(
-        expectedLeft, expectedTop, expectedWidth, expectedHeight);
-  });
-
-  test('PostSelectionOutOfBounds', async () => {
-    postSelectionRenderer.enableSelectionDraggingForTesting();
-
-    await triggerPostSelectionRender({
-      top: normalizeY(10),
-      left: normalizeX(10),
-      width: normalizeX(100),
-      height: normalizeY(70),
-    });
-    assertTrue(isVisible(postSelectionRenderer.$.postSelection));
-
-    const testDrags: BoxDrag[] = [
-      // To Top Left
-      {
-        xOffset: -200,
-        yOffset: -200,
-        expectedTop: PERIMETER_SELECTION_PADDING_PX,
-        expectedLeft: PERIMETER_SELECTION_PADDING_PX,
-      },
-      // To Top Right
-      {
-        xOffset: TEST_WIDTH,
-        yOffset: -200,
-        expectedTop: PERIMETER_SELECTION_PADDING_PX,
-        expectedLeft: TEST_WIDTH - 100 - PERIMETER_SELECTION_PADDING_PX,
-      },
-      // To Bottom Right
-      {
-        xOffset: 200,
-        yOffset: TEST_HEIGHT,
-        expectedTop: TEST_HEIGHT - 70 - PERIMETER_SELECTION_PADDING_PX,
-        expectedLeft: TEST_WIDTH - 100 - PERIMETER_SELECTION_PADDING_PX,
-      },
-      // To Bottom Left
-      {
-        xOffset: -TEST_WIDTH,
-        yOffset: 200,
-        expectedTop: TEST_HEIGHT - 70 - PERIMETER_SELECTION_PADDING_PX,
-        expectedLeft: PERIMETER_SELECTION_PADDING_PX,
-      },
-    ];
-
-    // Perform 4 drags to each of the corners to ensure can't go out of bounds
-    // anywhere.
-    for (const {xOffset, yOffset, expectedLeft, expectedTop} of testDrags) {
-      testBrowserProxy.handler.reset();
-      await simulateBoxDrag(xOffset, yOffset);
-
-      const expectedLeftNorm = normalizeX(expectedLeft);
-      const expectedTopNorm = normalizeY(expectedTop);
-      const expectedWidthNorm = normalizeX(100);
-      const expectedHeightNorm = normalizeY(70);
-
-      assertPostSelectionRender(
-          expectedLeftNorm, expectedTopNorm, expectedWidthNorm,
-          expectedHeightNorm);
-      await assertLensRequest(
-          expectedLeftNorm, expectedTopNorm, expectedWidthNorm,
-          expectedHeightNorm);
-    }
-  });
-
-  test('PostSelectionNoMeaningfulDrag', async () => {
-    postSelectionRenderer.enableSelectionDraggingForTesting();
-
-    await triggerPostSelectionRender({
-      top: normalizeY(10),
-      left: normalizeX(10),
-      width: normalizeX(100),
-      height: normalizeY(70),
-    });
-    assertTrue(isVisible(postSelectionRenderer.$.postSelection));
-
-    await simulateBoxDrag(/*xOffset=*/ 0, /*yOffset=*/ 0);
-
-    // Drag that didn't change the bounds shouldn't issue a Lens request.
-    assertEquals(0, testBrowserProxy.handler.getCallCount('issueLensRequest'));
-    assertEquals(0, metrics.count('Lens.Overlay.Overlay.UserAction'));
   });
 
   test('PostSelectionClearAllSelectionsCallback', async () => {

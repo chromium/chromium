@@ -102,8 +102,6 @@ const base::FeatureParam<bool> kLensOverlayEnableShimmer{
     &kLensOverlay, "enable-shimmer", true};
 const base::FeatureParam<bool> kLensOverlayEnableShimmerSparkles{
     &kLensOverlay, "enable-shimmer-sparkles", true};
-const base::FeatureParam<bool> kLensOverlaySelectionDraggingEnabled{
-    &kLensOverlay, "enable-selection-dragging", false};
 const base::FeatureParam<std::string> kResultsSearchLoadingUrl{
     &kLensOverlay, "results-search-loading-url",
     "https://www.gstatic.com/lens/chrome/"
@@ -427,10 +425,6 @@ bool IsLensOverlayShimmerEnabled() {
 
 bool IsLensOverlayShimmerSparklesEnabled() {
   return kLensOverlayEnableShimmerSparkles.Get();
-}
-
-bool IsLensOverlaySelectionDraggingEnabled() {
-  return kLensOverlaySelectionDraggingEnabled.Get();
 }
 
 bool IsLensOverlayGoogleDseRequired() {

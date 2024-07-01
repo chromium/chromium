@@ -355,10 +355,6 @@ extern bool IsLensOverlayShimmerEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayShimmerSparklesEnabled();
 
-// Returns whether to allow dragging the Lens overlay selection box.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensOverlaySelectionDraggingEnabled();
-
 // Returns whether to require that Google is the user's DSE (default search
 // engine) for the Lens overlay feature to be enabled.
 //
