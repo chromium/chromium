@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -91,12 +92,15 @@ namespace {
 // plane_index is 0 for single planar formats and can be between [0, 3] for
 // multiplanar formats.
 struct FulfillForPlane {
+  FulfillForPlane() = default;
+  FulfillForPlane(const FulfillForPlane&) = default;
+  FulfillForPlane& operator=(const FulfillForPlane&) = default;
+
   explicit FulfillForPlane(ImageContextImpl* context, int plane_index = 0)
       : context_(context), plane_index_(plane_index) {}
 
-  const raw_ptr<ImageContextImpl, AcrossTasksDanglingUntriaged> context_ =
-      nullptr;
-  const int plane_index_ = 0;
+  raw_ptr<ImageContextImpl, AcrossTasksDanglingUntriaged> context_ = nullptr;
+  int plane_index_ = 0;
 };
 
 sk_sp<GrPromiseImageTexture> FulfillGanesh(void* fulfill) {
@@ -132,7 +136,13 @@ void ReleaseGraphite(void* fulfill) {
 }
 
 void CleanUp(void* fulfill) {
+  CHECK(fulfill);
   delete static_cast<FulfillForPlane*>(fulfill);
+}
+
+void CleanUpArray(void* fulfill_array) {
+  CHECK(fulfill_array);
+  base::HeapArray<FulfillForPlane>::DeleteLeakedData(fulfill_array);
 }
 
 gpu::ContextUrl& GetActiveUrl() {
@@ -562,7 +572,9 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
   if (graphite_recorder_) {
     std::array<skgpu::graphite::TextureInfo, SkYUVAInfo::kMaxPlanes>
         texture_infos;
-    void* fulfills[SkYUVAInfo::kMaxPlanes] = {};
+    auto fulfill_array =
+        base::HeapArray<FulfillForPlane>::WithSize(SkYUVAInfo::kMaxPlanes);
+    void* fulfill_ptrs[SkYUVAInfo::kMaxPlanes] = {};
     for (size_t i = 0; i < contexts.size(); ++i) {
       auto* context = static_cast<ImageContextImpl*>(contexts[i]);
       auto format = context->format();
@@ -577,14 +589,16 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
           gpu::GraphitePromiseTextureInfo(gr_context_type_, format,
                                           /*ycbcr_info=*/std::nullopt,
                                           /*plane_index=*/0);
-      fulfills[i] = new FulfillForPlane(context);
+      fulfill_array[i] = FulfillForPlane(context);
+      fulfill_ptrs[i] = &fulfill_array[i];
     }
     skgpu::graphite::YUVABackendTextureInfo yuva_backend_info(
         graphite_recorder_, yuva_info, texture_infos, skgpu::Mipmapped::kNo);
+    void* fulfill_array_ptr = std::move(fulfill_array).leak().data();
     image = SkImages::PromiseTextureFromYUVA(
         graphite_recorder_, yuva_backend_info, std::move(image_color_space),
-        graphite_use_volatile_promise_images_, FulfillGraphite, CleanUp,
-        ReleaseGraphite, {}, fulfills);
+        graphite_use_volatile_promise_images_, FulfillGraphite, CleanUpArray,
+        ReleaseGraphite, fulfill_array_ptr, fulfill_ptrs);
   } else {
     GrBackendFormat formats[SkYUVAInfo::kMaxPlanes] = {};
     void* fulfills[SkYUVAInfo::kMaxPlanes] = {};
@@ -700,22 +714,26 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
     // well as Graphite.
     CHECK(!image_context->ycbcr_info());
 
+    auto fulfill_array =
+        base::HeapArray<FulfillForPlane>::WithSize(SkYUVAInfo::kMaxPlanes);
+    void* fulfill_ptrs[SkYUVAInfo::kMaxPlanes] = {};
     std::vector<skgpu::graphite::TextureInfo> texture_infos;
-    void* fulfills[SkYUVAInfo::kMaxPlanes] = {};
     for (int plane_index = 0; plane_index < format.NumberOfPlanes();
          plane_index++) {
       CHECK_EQ(image_context->origin(), kTopLeft_GrSurfaceOrigin);
-      fulfills[plane_index] = new FulfillForPlane(image_context, plane_index);
+      fulfill_array[plane_index] = FulfillForPlane(image_context, plane_index);
+      fulfill_ptrs[plane_index] = &fulfill_array[plane_index];
       texture_infos.emplace_back(gpu::GraphitePromiseTextureInfo(
           gr_context_type_, format, /*ycbcr_info=*/std::nullopt, plane_index));
     }
 
     skgpu::graphite::YUVABackendTextureInfo yuva_backend_info(
         graphite_recorder_, yuva_info, texture_infos, skgpu::Mipmapped::kNo);
+    void* fulfill_array_ptr = std::move(fulfill_array).leak().data();
     auto image = SkImages::PromiseTextureFromYUVA(
         graphite_recorder_, yuva_backend_info, image_context->color_space(),
-        graphite_use_volatile_promise_images_, FulfillGraphite, CleanUp,
-        ReleaseGraphite, {}, fulfills);
+        graphite_use_volatile_promise_images_, FulfillGraphite, CleanUpArray,
+        ReleaseGraphite, fulfill_array_ptr, fulfill_ptrs);
     LOG_IF(ERROR, !image) << "Failed to create the yuv promise sk image";
     image_context->SetImage(std::move(image), std::move(texture_infos));
   } else {
