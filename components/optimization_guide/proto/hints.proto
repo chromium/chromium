@@ -259,6 +259,9 @@ enum OptimizationType {
   // This optimization provides information about whether a merchant is
   // opted-out of Mastercard virtual cards for a URL.
   VCN_MERCHANT_OPT_OUT_MASTERCARD = 57;
+  // This optimization provides information for whether a page is eligible for
+  // history embeddings.
+  HISTORY_EMBEDDINGS = 59;
 }
 
 // Presents semantics for how page load URLs should be matched.

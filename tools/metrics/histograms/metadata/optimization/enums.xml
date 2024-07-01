@@ -705,6 +705,7 @@ chromium-metrics-reviews@google.com.
   <int value="55" label="CAPITAL_ONE_CREDIT_CARD_BENEFITS_BLOCKED"/>
   <int value="56" label="VCN_MERCHANT_OPT_OUT_DISCOVER"/>
   <int value="57" label="VCN_MERCHANT_OPT_OUT_MASTERCARD"/>
+  <int value="59" label="HISTORY_EMBEDDINGS"/>
 </enum>
 
 <enum name="PageContentAnnotationsStorageStatus">

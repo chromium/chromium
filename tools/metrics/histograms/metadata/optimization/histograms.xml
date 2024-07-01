@@ -162,6 +162,9 @@ chromium-metrics-reviews@google.com.
   <variant name="HistoryClusters"
       summary="This optimization provides information for whether a page
                should be included in a history cluster."/>
+  <variant name="HistoryEmbeddings"
+      summary="This optimization provides information for whether a page is
+               eligible for history embeddings."/>
   <variant name="IBANAutofillBlocked"
       summary="This optimization provides information for whether a page
                should be blocked for IBAN autofill feature."/>

@@ -119,6 +119,8 @@ std::string GetStringNameForOptimizationType(
       return "VcnMerchantOptOutDiscover";
     case proto::OptimizationType::VCN_MERCHANT_OPT_OUT_MASTERCARD:
       return "VcnMerchantOptOutMastercard";
+    case proto::OptimizationType::HISTORY_EMBEDDINGS:
+      return "HistoryEmbeddings";
   }
 
   // The returned string is used to record histograms for the optimization type.
