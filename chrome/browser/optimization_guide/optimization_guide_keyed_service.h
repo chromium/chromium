@@ -190,6 +190,10 @@ class OptimizationGuideKeyedService
       optimization_guide::proto::OptimizationTarget optimization_target,
       std::unique_ptr<optimization_guide::ModelInfo> model_info);
 
+  void SetModelQualityLogsUploaderServiceForTesting(
+      std::unique_ptr<optimization_guide::ModelQualityLogsUploaderService>
+          uploader);
+
   // Creates the platform specific push notification manager. May returns
   // nullptr for desktop or when the push notification feature is disabled.
   static std::unique_ptr<optimization_guide::PushNotificationManager>

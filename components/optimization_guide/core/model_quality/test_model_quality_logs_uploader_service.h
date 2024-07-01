@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 
@@ -31,6 +32,9 @@ class TestModelQualityLogsUploaderService
 
   bool CanUploadLogs(UserVisibleFeatureKey feature) override;
 
+  // Sets a callback that will be run after the next log is uploaded.
+  void WaitForLogUpload(base::OnceCallback<void()> callback);
+
   const std::vector<std::unique_ptr<proto::LogAiDataRequest>>& uploaded_logs()
       const {
     return uploaded_logs_;
@@ -43,6 +47,9 @@ class TestModelQualityLogsUploaderService
   // The list of "uploaded" logs (which are stored in memory rather than
   // actually uploaded), in FIFO order.
   std::vector<std::unique_ptr<proto::LogAiDataRequest>> uploaded_logs_;
+
+  // If not null, will be run after the next log is uploaded.
+  base::OnceCallback<void()> on_log_uploaded_;
 };
 
 }  // namespace optimization_guide

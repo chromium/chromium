@@ -21,10 +21,19 @@ bool TestModelQualityLogsUploaderService::CanUploadLogs(
   return true;
 }
 
+void TestModelQualityLogsUploaderService::WaitForLogUpload(
+    base::OnceCallback<void()> callback) {
+  on_log_uploaded_ = std::move(callback);
+}
+
 void TestModelQualityLogsUploaderService::UploadFinalizedLog(
     std::unique_ptr<proto::LogAiDataRequest> log,
     UserVisibleFeatureKey feature) {
   uploaded_logs_.push_back(std::move(log));
+
+  if (!on_log_uploaded_.is_null()) {
+    std::move(on_log_uploaded_).Run();
+  }
 }
 
 }  // namespace optimization_guide

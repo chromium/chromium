@@ -682,9 +682,8 @@ void ChromeComposeClient::OnAfterFocusOnFormField(
 
 optimization_guide::ModelQualityLogsUploader*
 ChromeComposeClient::GetModelQualityLogsUploader() {
-  return model_quality_uploader_for_test_.value_or(
-      OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(GetWebContents().GetBrowserContext())));
+  return OptimizationGuideKeyedServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
 }
 
 optimization_guide::OptimizationGuideModelExecutor*
@@ -710,11 +709,6 @@ InnerTextProvider* ChromeComposeClient::GetInnerTextProvider() {
 void ChromeComposeClient::SetModelExecutorForTest(
     optimization_guide::OptimizationGuideModelExecutor* model_executor) {
   model_executor_for_test_ = model_executor;
-}
-
-void ChromeComposeClient::SetModelQualityLogsUploaderForTest(
-    optimization_guide::ModelQualityLogsUploader* model_quality_uploader) {
-  model_quality_uploader_for_test_ = model_quality_uploader;
 }
 
 void ChromeComposeClient::SetSkipShowDialogForTest(bool should_skip) {

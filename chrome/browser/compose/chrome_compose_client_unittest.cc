@@ -27,7 +27,9 @@
 #include "chrome/common/compose/compose.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -50,12 +52,12 @@
 #include "components/compose/core/browser/config.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -76,11 +78,14 @@ using ::base::test::EqualsProto;
 using base::test::RunOnceCallback;
 using testing::_;
 using ComposeCallback = base::OnceCallback<void(const std::u16string&)>;
+using optimization_guide::ModelQualityLogEntry;
 using optimization_guide::OptimizationGuideModelExecutionError;
 using optimization_guide::
     OptimizationGuideModelExecutionResultStreamingCallback;
 using optimization_guide::OptimizationGuideModelStreamingExecutionResult;
 using optimization_guide::StreamingResponse;
+using optimization_guide::TestModelQualityLogsUploaderService;
+using optimization_guide::proto::LogAiDataRequest;
 using segmentation_platform::MockSegmentationPlatformService;
 
 namespace {
@@ -120,14 +125,6 @@ class MockModelExecutor
                const google::protobuf::MessageLite& request_metadata,
                optimization_guide::OptimizationGuideModelExecutionResultCallback
                    callback));
-};
-class MockModelQualityLogsUploader
-    : public optimization_guide::ModelQualityLogsUploader {
- public:
-  MOCK_METHOD(
-      void,
-      UploadModelQualityLogs,
-      (std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry));
 };
 
 class MockSession
@@ -216,6 +213,10 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     compose::ResetConfigForTesting();
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
 
+    GetOptimizationGuide().SetModelQualityLogsUploaderServiceForTesting(
+        std::make_unique<TestModelQualityLogsUploaderService>(
+            profile_manager()->local_state()->Get()));
+
     GetProfile()->GetPrefs()->SetBoolean(prefs::kPrefHasCompletedComposeFRE,
                                          true);
     SetPrefsForComposeMSBBState(true);
@@ -225,7 +226,6 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     client_->SetModelExecutorForTest(&model_executor_);
     client_->SetInnerTextProviderForTest(&model_inner_text_);
     client_->SetSkipShowDialogForTest(true);
-    client_->SetModelQualityLogsUploaderForTest(&model_quality_logs_uploader_);
     client_->SetSessionIdForTest(base::Token(kSessionIdHigh, kSessionIdLow));
 
     ON_CALL(model_inner_text(), GetInnerText(_, _, _))
@@ -247,17 +247,14 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
                         callback) {
               base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                   FROM_HERE,
-                  base::BindOnce(
-                      std::move(callback),
-                      OptimizationGuideModelStreamingExecutionResult(
-                          base::ok(OptimizationGuideResponse(
-                              ComposeResponse(true, "Cucumbers"))),
-                          /*provided_by_on_device=*/false,
-                          std::make_unique<
-                              optimization_guide::ModelQualityLogEntry>(
-                              std::make_unique<optimization_guide::proto::
-                                                   LogAiDataRequest>(),
-                              nullptr))));
+                  base::BindOnce(std::move(callback),
+                                 OptimizationGuideModelStreamingExecutionResult(
+                                     base::ok(OptimizationGuideResponse(
+                                         ComposeResponse(true, "Cucumbers"))),
+                                     /*provided_by_on_device=*/false,
+                                     std::make_unique<ModelQualityLogEntry>(
+                                         std::make_unique<LogAiDataRequest>(),
+                                         logs_uploader().GetWeakPtr()))));
             })));
 
     ON_CALL(GetSegmentationPlatformService(),
@@ -372,9 +369,6 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
   ChromeComposeClient& client() { return *client_; }
   MockSession& session() { return session_; }
-  MockModelQualityLogsUploader& model_quality_logs_uploader() {
-    return model_quality_logs_uploader_;
-  }
   MockInnerText& model_inner_text() { return model_inner_text_; }
 
   MockComposeDialog& compose_dialog() { return compose_dialog_; }
@@ -469,8 +463,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
       const optimization_guide::proto::ComposeResponse compose_response,
       bool is_complete = true,
       bool provided_by_on_device = false,
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry =
-          nullptr) {
+      std::unique_ptr<ModelQualityLogEntry> log_entry = nullptr) {
     return OptimizationGuideModelStreamingExecutionResult(
         base::ok(OptimizationGuideResponse(compose_response, is_complete)),
         provided_by_on_device, std::move(log_entry));
@@ -480,6 +473,15 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
   const base::UserActionTester& user_action_tester() const {
     return user_action_tester_;
+  }
+
+  TestModelQualityLogsUploaderService& logs_uploader() {
+    return *static_cast<TestModelQualityLogsUploaderService*>(
+        GetOptimizationGuide().GetModelQualityLogsUploaderService());
+  }
+
+  const std::vector<std::unique_ptr<LogAiDataRequest>>& uploaded_logs() {
+    return logs_uploader().uploaded_logs();
   }
 
   // This helper function is a shortcut to adding a test future to listen for
@@ -506,7 +508,6 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
  private:
   raw_ptr<ChromeComposeClient> client_;
-  testing::NiceMock<MockModelQualityLogsUploader> model_quality_logs_uploader_;
   testing::NiceMock<MockModelExecutor> model_executor_;
   testing::NiceMock<MockInnerText> model_inner_text_;
   testing::NiceMock<MockSession> session_;
@@ -1554,10 +1555,9 @@ TEST_F(ChromeComposeClientTest, TestComposeGenericServerError) {
                                 OptimizationGuideModelExecutionError::
                                     ModelExecutionError::kGenericFailure)),
                     false,
-                    std::make_unique<optimization_guide::ModelQualityLogEntry>(
-                        std::make_unique<
-                            optimization_guide::proto::LogAiDataRequest>(),
-                        nullptr)));
+                    std::make_unique<ModelQualityLogEntry>(
+                        std::make_unique<LogAiDataRequest>(),
+                        logs_uploader().GetWeakPtr())));
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
@@ -1567,17 +1567,6 @@ TEST_F(ChromeComposeClientTest, TestComposeGenericServerError) {
             test_future.SetValue(std::move(response));
           }));
 
-  base::test::TestFuture<
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
-      quality_test_future;
-
-  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
-      .WillRepeatedly(testing::Invoke(
-          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
-                  response) {
-            quality_test_future.SetValue(std::move(response));
-          }));
-
   page_handler()->Compose("a user typed this", false);
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
@@ -1585,20 +1574,15 @@ TEST_F(ChromeComposeClientTest, TestComposeGenericServerError) {
 
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
 
-  std::unique_ptr<optimization_guide::ModelQualityLogEntry> quality_result =
-      quality_test_future.Take();
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
+  EXPECT_TRUE(log_uploaded_signal.Wait());
 
   // Check that the quality modeling log is still correct
-  EXPECT_EQ(
-      kSessionIdHigh,
-      quality_result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-          ->session_id()
-          .high());
-  EXPECT_EQ(
-      kSessionIdLow,
-      quality_result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-          ->session_id()
-          .low());
+  ASSERT_EQ(1u, uploaded_logs().size());
+  const auto& session_id = uploaded_logs()[0]->compose().quality().session_id();
+  EXPECT_EQ(kSessionIdHigh, session_id.high());
+  EXPECT_EQ(kSessionIdLow, session_id.low());
 
   // Check the expected event count metrics.
   std::vector<std::pair<compose::ComposeSessionEventTypes, int>> event_counts =
@@ -1642,10 +1626,9 @@ TEST_F(ChromeComposeClientTest, TestComposeSetTriggeredFromModifierOnError) {
                                 OptimizationGuideModelExecutionError::
                                     ModelExecutionError::kGenericFailure)),
                     false,
-                    std::make_unique<optimization_guide::ModelQualityLogEntry>(
-                        std::make_unique<
-                            optimization_guide::proto::LogAiDataRequest>(),
-                        nullptr)));
+                    std::make_unique<ModelQualityLogEntry>(
+                        std::make_unique<LogAiDataRequest>(),
+                        logs_uploader().GetWeakPtr())));
           })));
   page_handler()->Rewrite(compose::mojom::StyleModifier::kRetry);
 
@@ -2064,27 +2047,19 @@ TEST_F(ChromeComposeClientTest,
       field_data(), base::NullCallback(),
       autofill::AutofillComposeDelegate::UiEntryPoint::kContextMenu);
 
-  base::test::TestFuture<
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
-      quality_test_future;
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
 
-  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
-      .WillRepeatedly(testing::Invoke(
-          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
-                  response) {
-            quality_test_future.SetValue(std::move(response));
-          }));
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
   BindComposeFutureToOnResponseReceived(test_future);
   page_handler()->Compose("a user typed this", false);
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   client().CloseUI(compose::mojom::CloseReason::kInsertButton);
 
-  std::unique_ptr<optimization_guide::ModelQualityLogEntry> quality_result =
-      quality_test_future.Take();
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(1u, uploaded_logs().size());
   EXPECT_FALSE(
-      quality_result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-          ->started_with_proactive_nudge());
+      uploaded_logs()[0]->compose().quality().started_with_proactive_nudge());
 
   // Force reporting of page events UKM.
   NavigateAndCommitActiveTab(GURL("about:blank"));
@@ -2113,27 +2088,18 @@ TEST_F(ChromeComposeClientTest, TestProactiveNudgeRecordedInQualityLogs) {
       field_data(), base::NullCallback(),
       autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup);
 
-  base::test::TestFuture<
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
-      quality_test_future;
-
-  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
-      .WillRepeatedly(testing::Invoke(
-          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
-                  response) {
-            quality_test_future.SetValue(std::move(response));
-          }));
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
   BindComposeFutureToOnResponseReceived(test_future);
   page_handler()->Compose("a user typed this", false);
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   client().CloseUI(compose::mojom::CloseReason::kInsertButton);
 
-  std::unique_ptr<optimization_guide::ModelQualityLogEntry> quality_result =
-      quality_test_future.Take();
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(1u, uploaded_logs().size());
   EXPECT_TRUE(
-      quality_result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-          ->started_with_proactive_nudge());
+      uploaded_logs()[0]->compose().quality().started_with_proactive_nudge());
 
   // Force reporting of page events UKM.
   NavigateAndCommitActiveTab(GURL("about:blank"));
@@ -3367,16 +3333,8 @@ TEST_F(ChromeComposeClientTest, TestComposeQualitySessionId) {
 
   EXPECT_CALL(session(), ExecuteModel(_, _)).Times(3);
 
-  base::test::TestFuture<
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
-      quality_test_future;
-
-  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
-      .WillOnce(testing::Invoke(
-          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
-                  response) {
-            quality_test_future.SetValue(std::move(response));
-          }));
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
 
   page_handler()->Compose("a user typed one", false);
   EXPECT_TRUE(compose_future.Wait());
@@ -3399,57 +3357,32 @@ TEST_F(ChromeComposeClientTest, TestComposeQualitySessionId) {
   page_handler()->Compose("a user typed three", false);
   EXPECT_TRUE(compose_future.Wait());
 
-  std::unique_ptr<optimization_guide::ModelQualityLogEntry> result =
-      quality_test_future.Take();
-  EXPECT_EQ(kSessionIdHigh,
-            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-                ->session_id()
-                .high());
-  EXPECT_EQ(kSessionIdLow,
-            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-                ->session_id()
-                .low());
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(1u, uploaded_logs().size());
+  const auto& session_id = uploaded_logs()[0]->compose().quality().session_id();
+  EXPECT_EQ(kSessionIdHigh, session_id.high());
+  EXPECT_EQ(kSessionIdLow, session_id.low());
 
-  // Close UI should result in upload of quality logs for the two responses left
-  // in the state history.
-  base::test::TestFuture<
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
-      quality_test_future_2;
-  base::test::TestFuture<
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
-      quality_test_future_3;
-  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
-      .WillRepeatedly(testing::Invoke(
-          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
-                  response) {
-            if (!quality_test_future_2.IsReady()) {
-              quality_test_future_2.SetValue(std::move(response));
-            } else {
-              quality_test_future_3.SetValue(std::move(response));
-            }
-          }));
+  // Wait for two log uploads.
+  log_uploaded_signal.Clear();
+  logs_uploader().WaitForLogUpload(
+      log_uploaded_signal.GetCallback().Then(base::BindLambdaForTesting([&]() {
+        EXPECT_TRUE(log_uploaded_signal.WaitAndClear());
+        logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
+      })));
 
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
 
-  result = quality_test_future_2.Take();
-  EXPECT_EQ(kSessionIdHigh,
-            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-                ->session_id()
-                .high());
-  EXPECT_EQ(kSessionIdLow,
-            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-                ->session_id()
-                .low());
-
-  result = quality_test_future_3.Take();
-  EXPECT_EQ(kSessionIdHigh,
-            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-                ->session_id()
-                .high());
-  EXPECT_EQ(kSessionIdLow,
-            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-                ->session_id()
-                .low());
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(3u, uploaded_logs().size());
+  const auto& session_id2 =
+      uploaded_logs()[1]->compose().quality().session_id();
+  EXPECT_EQ(kSessionIdHigh, session_id2.high());
+  EXPECT_EQ(kSessionIdLow, session_id2.low());
+  const auto& session_id3 =
+      uploaded_logs()[2]->compose().quality().session_id();
+  EXPECT_EQ(kSessionIdHigh, session_id3.high());
+  EXPECT_EQ(kSessionIdLow, session_id3.low());
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeQualityLoggedOnSubsequentError) {
@@ -3467,10 +3400,9 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityLoggedOnSubsequentError) {
                                 OptimizationGuideModelExecutionError::
                                     ModelExecutionError::kGenericFailure)),
                     /*provided_by_on_device=*/false,
-                    std::make_unique<optimization_guide::ModelQualityLogEntry>(
-                        std::make_unique<
-                            optimization_guide::proto::LogAiDataRequest>(),
-                        nullptr)));
+                    std::make_unique<ModelQualityLogEntry>(
+                        std::make_unique<LogAiDataRequest>(),
+                        logs_uploader().GetWeakPtr())));
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
@@ -3480,15 +3412,8 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityLoggedOnSubsequentError) {
             compose_future.SetValue(std::move(response));
           }));
 
-  base::test::TestFuture<
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
-      quality_test_future;
-  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
-      .WillRepeatedly(testing::Invoke(
-          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
-                  response) {
-            quality_test_future.SetValue(std::move(response));
-          }));
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
 
   page_handler()->Compose("a user typed this", false);
 
@@ -3502,24 +3427,22 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityLoggedOnSubsequentError) {
   EXPECT_EQ(compose::mojom::ComposeStatus::kServerError,
             compose_result->status);
 
-  std::unique_ptr<optimization_guide::ModelQualityLogEntry> quality_result =
-      quality_test_future.Take();
-
   // Ensure that a quality log is emitted after a second compose error.
-  EXPECT_EQ(
-      kSessionIdLow,
-      quality_result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-          ->session_id()
-          .low());
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(1u, uploaded_logs().size());
+  EXPECT_EQ(kSessionIdLow,
+            uploaded_logs()[0]->compose().quality().session_id().low());
+
   // Close UI to submit remaining quality logs.
+  log_uploaded_signal.Clear();
+  logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
 
-  quality_result = quality_test_future.Take();
-
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(2u, uploaded_logs().size());
   EXPECT_EQ(
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds(),
-      quality_result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-          ->request_latency_ms());
+      uploaded_logs()[1]->compose().quality().request_latency_ms());
 
   // Check that histogram was sent for Compose State removed from undo stack.
   histograms().ExpectBucketCount("Compose.Server.Request.Feedback",
@@ -3541,16 +3464,8 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityLatency) {
 
   EXPECT_CALL(session(), ExecuteModel(_, _)).Times(3);
 
-  base::test::TestFuture<
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
-      quality_test_future;
-
-  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
-      .WillOnce(testing::Invoke(
-          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
-                  response) {
-            quality_test_future.SetValue(std::move(response));
-          }));
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
 
   page_handler()->Compose("a user typed one", false);
   EXPECT_TRUE(compose_future.Wait());
@@ -3573,45 +3488,31 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityLatency) {
   page_handler()->Compose("a user typed three", false);
   EXPECT_TRUE(compose_future.Wait());
 
-  std::unique_ptr<optimization_guide::ModelQualityLogEntry> result =
-      quality_test_future.Take();
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(1u, uploaded_logs().size());
   EXPECT_EQ(
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds(),
-      result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-          ->request_latency_ms());
+      uploaded_logs()[0]->compose().quality().request_latency_ms());
 
   // Close UI should result in upload of quality logs for the two responses left
   // in the state history.
-  base::test::TestFuture<
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
-      quality_test_future_2;
-  base::test::TestFuture<
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
-      quality_test_future_3;
-  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
-      .WillRepeatedly(testing::Invoke(
-          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
-                  response) {
-            if (!quality_test_future_2.IsReady()) {
-              quality_test_future_2.SetValue(std::move(response));
-            } else {
-              quality_test_future_3.SetValue(std::move(response));
-            }
-          }));
+  log_uploaded_signal.Clear();
+  logs_uploader().WaitForLogUpload(
+      log_uploaded_signal.GetCallback().Then(base::BindLambdaForTesting([&]() {
+        EXPECT_TRUE(log_uploaded_signal.WaitAndClear());
+        logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
+      })));
 
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
 
-  result = quality_test_future_2.Take();
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(3u, uploaded_logs().size());
   EXPECT_EQ(
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds(),
-      result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-          ->request_latency_ms());
-
-  result = quality_test_future_3.Take();
+      uploaded_logs()[1]->compose().quality().request_latency_ms());
   EXPECT_EQ(
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds(),
-      result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-          ->request_latency_ms());
+      uploaded_logs()[2]->compose().quality().request_latency_ms());
 }
 
 TEST_F(ChromeComposeClientTest,
@@ -3623,23 +3524,13 @@ TEST_F(ChromeComposeClientTest,
 
   EXPECT_CALL(session(), ExecuteModel(_, _)).Times(2);
 
-  base::test::TestFuture<
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
-      quality_test_future;
-  base::test::TestFuture<
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
-      quality_test_future_2;
-
-  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
-      .WillRepeatedly(testing::Invoke(
-          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
-                  response) {
-            if (!quality_test_future.IsReady()) {
-              quality_test_future.SetValue(std::move(response));
-            } else {
-              quality_test_future_2.SetValue(std::move(response));
-            }
-          }));
+  // Wait for two log uploads.
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader().WaitForLogUpload(
+      log_uploaded_signal.GetCallback().Then(base::BindLambdaForTesting([&]() {
+        EXPECT_TRUE(log_uploaded_signal.WaitAndClear());
+        logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
+      })));
 
   page_handler()->Compose("a user typed this", false);
 
@@ -3652,19 +3543,12 @@ TEST_F(ChromeComposeClientTest,
   // Close UI to submit remaining quality logs.
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
 
-  // This take should clear the quality future from the abandoned request.
-  std::unique_ptr<optimization_guide::ModelQualityLogEntry> result =
-      quality_test_future.Take();
-
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(2u, uploaded_logs().size());
   EXPECT_EQ(optimization_guide::proto::FinalStatus::STATUS_ABANDONED,
-            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-                ->final_status());
-
-  result = quality_test_future_2.Take();
-
+            uploaded_logs()[0]->compose().quality().final_status());
   EXPECT_EQ(optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED,
-            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-                ->final_status());
+            uploaded_logs()[1]->compose().quality().final_status());
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeQualityNewSessionWithSelectedText) {
@@ -3675,16 +3559,8 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityNewSessionWithSelectedText) {
 
   EXPECT_CALL(session(), ExecuteModel(_, _)).Times(2);
 
-  base::test::TestFuture<
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
-      quality_test_future;
-
-  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
-      .WillRepeatedly(testing::Invoke(
-          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
-                  response) {
-            quality_test_future.SetValue(std::move(response));
-          }));
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
 
   page_handler()->Compose("a user typed this", false);
   EXPECT_TRUE(compose_future.Take());  // Reset future for second compose call.
@@ -3695,27 +3571,26 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityNewSessionWithSelectedText) {
   ShowDialogAndBindMojo();
 
   // Get quality result from the abandoned session.
-  std::unique_ptr<optimization_guide::ModelQualityLogEntry> result =
-      quality_test_future.Take();
-
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(1u, uploaded_logs().size());
   EXPECT_EQ(optimization_guide::proto::FinalStatus::STATUS_ABANDONED,
-            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-                ->final_status());
+            uploaded_logs()[0]->compose().quality().final_status());
 
   page_handler()->Compose("a user typed that", false);
   EXPECT_TRUE(compose_future.Take());
 
   // Close UI to submit remaining quality logs.
+  log_uploaded_signal.Clear();
+  logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
 
-  result = quality_test_future.Take();
-
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(2u, uploaded_logs().size());
   EXPECT_EQ(optimization_guide::proto::FinalStatus::STATUS_ABANDONED,
-            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-                ->final_status());
+            uploaded_logs()[1]->compose().quality().final_status());
 }
 
-TEST_F(ChromeComposeClientTest, TestComposeQualitFinishedWithoutInsert) {
+TEST_F(ChromeComposeClientTest, TestComposeQualityFinishedWithoutInsert) {
   ShowDialogAndBindMojo();
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
@@ -3723,16 +3598,8 @@ TEST_F(ChromeComposeClientTest, TestComposeQualitFinishedWithoutInsert) {
 
   EXPECT_CALL(session(), ExecuteModel(_, _));
 
-  base::test::TestFuture<
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
-      quality_test_future;
-
-  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
-      .WillOnce(testing::Invoke(
-          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
-                  response) {
-            quality_test_future.SetValue(std::move(response));
-          }));
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
 
   page_handler()->Compose("a user typed this", false);
   EXPECT_TRUE(compose_future.Take());  // Reset future for second compose call.
@@ -3742,13 +3609,11 @@ TEST_F(ChromeComposeClientTest, TestComposeQualitFinishedWithoutInsert) {
   NavigateAndCommit(web_contents(), next_page);
 
   // Get quality result from the abandoned session.
-  std::unique_ptr<optimization_guide::ModelQualityLogEntry> result =
-      quality_test_future.Take();
-
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(1u, uploaded_logs().size());
   EXPECT_EQ(
       optimization_guide::proto::FinalStatus::STATUS_FINISHED_WITHOUT_INSERT,
-      result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-          ->final_status());
+      uploaded_logs()[0]->compose().quality().final_status());
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeQualityFeedbackPositive) {
@@ -3757,16 +3622,8 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityFeedbackPositive) {
 
   EXPECT_CALL(session(), ExecuteModel(_, _)).Times(1);
 
-  base::test::TestFuture<
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
-      quality_test_future;
-
-  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
-      .WillRepeatedly(testing::Invoke(
-          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
-                  response) {
-            quality_test_future.SetValue(std::move(response));
-          }));
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
 
   ShowDialogAndBindMojo();
   client().GetSessionForActiveComposeField()->SetSkipFeedbackUiForTesting(true);
@@ -3781,12 +3638,10 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityFeedbackPositive) {
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
 
   // Get quality logs sent for the Compose Request.
-  std::unique_ptr<optimization_guide::ModelQualityLogEntry> result =
-      quality_test_future.Take();
-
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(1u, uploaded_logs().size());
   EXPECT_EQ(optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP,
-            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-                ->user_feedback());
+            uploaded_logs()[0]->compose().quality().user_feedback());
 
   // Check that the histogram was sent for request feedback.
   histograms().ExpectUniqueSample(
@@ -3800,16 +3655,8 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityFeedbackNegative) {
 
   EXPECT_CALL(session(), ExecuteModel(_, _)).Times(1);
 
-  base::test::TestFuture<
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
-      quality_test_future;
-
-  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
-      .WillRepeatedly(testing::Invoke(
-          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
-                  response) {
-            quality_test_future.SetValue(std::move(response));
-          }));
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
 
   ShowDialogAndBindMojo();
   client().GetSessionForActiveComposeField()->SetSkipFeedbackUiForTesting(true);
@@ -3824,12 +3671,10 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityFeedbackNegative) {
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
 
   // Get quality logs sent for the Compose Request.
-  std::unique_ptr<optimization_guide::ModelQualityLogEntry> result =
-      quality_test_future.Take();
-
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(1u, uploaded_logs().size());
   EXPECT_EQ(optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN,
-            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-                ->user_feedback());
+            uploaded_logs()[0]->compose().quality().user_feedback());
 
   // Check that the histogram was sent for request feedback.
   histograms().ExpectUniqueSample(
@@ -3845,23 +3690,13 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityWasEdited) {
 
   EXPECT_CALL(session(), ExecuteModel(_, _)).Times(2);
 
-  base::test::TestFuture<
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
-      quality_test_future;
-  base::test::TestFuture<
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
-      quality_test_future_2;
-
-  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
-      .WillRepeatedly(testing::Invoke(
-          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
-                  response) {
-            if (!quality_test_future.IsReady()) {
-              quality_test_future.SetValue(std::move(response));
-            } else {
-              quality_test_future_2.SetValue(std::move(response));
-            }
-          }));
+  // Wait for two log uploads.
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader().WaitForLogUpload(
+      log_uploaded_signal.GetCallback().Then(base::BindLambdaForTesting([&]() {
+        EXPECT_TRUE(log_uploaded_signal.WaitAndClear());
+        logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
+      })));
 
   page_handler()->Compose("a user typed this", false);
 
@@ -3874,34 +3709,27 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityWasEdited) {
   // Close UI to submit remaining quality logs.
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
 
-  // This take should clear the quality future from the model that was undone.
-  std::unique_ptr<optimization_guide::ModelQualityLogEntry> result =
-      quality_test_future.Take();
-
-  EXPECT_TRUE(result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-                  ->was_generated_via_edit());
-
-  result = quality_test_future_2.Take();
-
-  EXPECT_FALSE(result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-                   ->was_generated_via_edit());
-
-  histograms().ExpectBucketCount(compose::kComposeRequestReason,
-                                 compose::ComposeRequestReason::kFirstRequest,
-                                 1);
-  histograms().ExpectBucketCount("Compose.Server.Request.Reason",
-                                 compose::ComposeRequestReason::kFirstRequest,
-                                 1);
-  histograms().ExpectBucketCount(compose::kComposeRequestReason,
-                                 compose::ComposeRequestReason::kUpdateRequest,
-                                 1);
-  histograms().ExpectBucketCount("Compose.Server.Request.Reason",
-                                 compose::ComposeRequestReason::kUpdateRequest,
-                                 1);
-
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(2u, uploaded_logs().size());
+  EXPECT_TRUE(uploaded_logs()[0]->compose().quality().was_generated_via_edit());
+  EXPECT_FALSE(
+      uploaded_logs()[1]->compose().quality().was_generated_via_edit());
   EXPECT_EQ(optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED,
-            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-                ->final_status());
+            uploaded_logs()[1]->compose().quality().final_status());
+
+  histograms().ExpectBucketCount(compose::kComposeRequestReason,
+                                 compose::ComposeRequestReason::kFirstRequest,
+                                 1);
+  histograms().ExpectBucketCount("Compose.Server.Request.Reason",
+                                 compose::ComposeRequestReason::kFirstRequest,
+                                 1);
+  histograms().ExpectBucketCount(compose::kComposeRequestReason,
+                                 compose::ComposeRequestReason::kUpdateRequest,
+                                 1);
+  histograms().ExpectBucketCount("Compose.Server.Request.Reason",
+                                 compose::ComposeRequestReason::kUpdateRequest,
+                                 1);
+
   // Check that the histogram was sent for request feedback.
   histograms().ExpectUniqueSample("Compose.Server.Request.Feedback",
                                   compose::ComposeRequestFeedback::kNoFeedback,
@@ -4238,10 +4066,9 @@ TEST_F(ChromeComposeClientTest, TestOfflineError) {
                                     OptimizationGuideModelExecutionError::
                                         ModelExecutionError::kGenericFailure)),
                     /*provided_by_on_device=*/false,
-                    std::make_unique<optimization_guide::ModelQualityLogEntry>(
-                        std::make_unique<
-                            optimization_guide::proto::LogAiDataRequest>(),
-                        nullptr)));
+                    std::make_unique<ModelQualityLogEntry>(
+                        std::make_unique<LogAiDataRequest>(),
+                        logs_uploader().GetWeakPtr())));
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;

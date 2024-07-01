@@ -196,8 +196,6 @@ class ChromeComposeClient
   int GetSessionCountForTest();
   void SetOptimizationGuideForTest(
       optimization_guide::OptimizationGuideDecider* opt_guide);
-  void SetModelQualityLogsUploaderForTest(
-      optimization_guide::ModelQualityLogsUploader* model_quality_uploader);
   void SetModelExecutorForTest(
       optimization_guide::OptimizationGuideModelExecutor* model_executor);
   void SetSkipShowDialogForTest(bool should_skip);
@@ -272,9 +270,6 @@ class ChromeComposeClient
   // A handle to optimization guide for information about URLs that have
   // recently been navigated to.
   raw_ptr<optimization_guide::OptimizationGuideDecider> opt_guide_;
-
-  std::optional<optimization_guide::ModelQualityLogsUploader*>
-      model_quality_uploader_for_test_;
 
   std::optional<optimization_guide::OptimizationGuideModelExecutor*>
       model_executor_for_test_;
