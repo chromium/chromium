@@ -54,6 +54,12 @@
     display: none;
   }
 
+  :host([shimmer-on-segmentation]) #objectSelectionLayer,
+  :host([shimmer-on-segmentation]) #overlayShimmerCanvas,
+  :host([shimmer-on-segmentation]) #overlayShimmer {
+    z-index: 4;  /* Position above words but below selection corners. */
+  }
+
   #backgroundImage {
     max-width: 100vw;
     max-height: 100vh;
@@ -119,7 +125,7 @@
     /* Prevents displaying the icon until the cursor location is determined. */
     transform: scale(0);
     width: 32px;
-    z-index: 2;
+    z-index: 6;
   }
 
   #cursorImg {
@@ -154,7 +160,7 @@
     padding: 8px 0px;
     pointer-events: auto;
     position: absolute;
-    z-index: 1;
+    z-index: 6;
   }
 
   #copyToast {
