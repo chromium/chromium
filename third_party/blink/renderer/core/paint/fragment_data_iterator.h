@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FRAGMENT_DATA_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FRAGMENT_DATA_ITERATOR_H_
 
+#include <cstddef>
 #include <optional>
 
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
@@ -22,7 +23,7 @@ class FragmentDataIteratorBase {
 
  public:
   explicit FragmentDataIteratorBase(Head& head) : fragment_head_(head) {}
-  explicit FragmentDataIteratorBase(nullptr_t) {}
+  explicit FragmentDataIteratorBase(std::nullptr_t) {}
 
   Data* GetFragmentData() const {
     return !IsDone() ? &fragment_head_.at(idx_) : nullptr;
