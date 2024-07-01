@@ -24,7 +24,6 @@ use_dlcloseshim = use_libfuzzer && is_linux
 # Contains the dependencies needed for sanitizers to link into executables and
 # shared_libraries.
 group("deps") {
-  data = []
   deps = []
   data = []
   if (using_sanitizer) {
@@ -521,25 +520,24 @@ config("tsan_flags") {
 
 config("ubsan_flags") {
   cflags = []
-
-  # These UBSan flags are enabled on the ASan bots for enforcement, as well as
-  # UBSan FYI configurations.
-  #
-  # TODO(crbug.com/40248746): Enable UBSan on Windows ASan bots.
-  # -fsanitize=object-size will need to be suppressed due to
-  # https://github.com/llvm/llvm-project/issues/31914, however there seem to be
-  # other blockers as well.
-  if (is_ubsan || (is_asan && !is_win)) {
+  if (is_ubsan) {
     if (!defined(ubsan_ignorelist_path)) {
       ubsan_ignorelist_path =
           rebase_path("//tools/ubsan/ignorelist.txt", root_build_dir)
     }
 
+    # TODO(crbug.com/40942951): Enable all of -fsanitize=undefined. Note that
+    # both this list and Clang's defaults omit -fsanitize=float-divide-by-zero.
+    # C and C++ leave it undefined to accommodate non-IEEE floating point, but
+    # we assume the compiler implements IEEE floating point, which does define
+    # division by zero.
     cflags += [
+      "-fsanitize=alignment",
       "-fsanitize=bool",
       "-fsanitize=bounds",
       "-fsanitize=builtin",
       "-fsanitize=integer-divide-by-zero",
+      "-fsanitize=null",
       "-fsanitize=nonnull-attribute",
       "-fsanitize=object-size",
       "-fsanitize=return",
@@ -549,21 +547,6 @@ config("ubsan_flags") {
       "-fsanitize=unreachable",
       "-fsanitize=vla-bound",
       "-fsanitize-ignorelist=$ubsan_ignorelist_path",
-    ]
-  }
-
-  # These UBSan flags are only enabled on the UBSan FYI configuration.
-  # TODO(crbug.com/40248746): Fix the remaining failures and enable them as
-  # well.
-  if (is_ubsan) {
-    # TODO(crbug.com/40942951): Enable all of -fsanitize=undefined. Note that
-    # both this list and Clang's defaults omit -fsanitize=float-divide-by-zero.
-    # C and C++ leave it undefined to accommodate non-IEEE floating point, but
-    # we assume the compiler implements IEEE floating point, which does define
-    # division by zero.
-    cflags += [
-      "-fsanitize=alignment",
-      "-fsanitize=null",
     ]
   }
 }

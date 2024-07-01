@@ -163,22 +163,14 @@ TEST(ToolsSanityTest, AccessesToStack) {
   char foo[16];
 
   ReadUninitializedValue(foo);
-  // These accesses may be caught by either ASan or UBSan, with different
-  // errors. We also accept a misaligned access, though it is not misaligned,
-  // because -fsanitize=object-size sometimes reports the wrong error. See
-  // https://github.com/llvm/llvm-project/issues/96333
   HARMFUL_ACCESS(ReadValueOutOfArrayBoundsLeft(foo),
-                 "underflows this variable|load of address .* with "
-                 "insufficient space|load of misaligned address");
+                 "underflows this variable");
   HARMFUL_ACCESS(ReadValueOutOfArrayBoundsRight(foo, 16),
-                 "overflows this variable|load of address .* with insufficient "
-                 "space|load of misaligned address");
+                 "overflows this variable");
   HARMFUL_ACCESS(WriteValueOutOfArrayBoundsLeft(foo),
-                 "underflows this variable|store to address .* with "
-                 "insufficient space|store to misaligned address");
+                 "underflows this variable");
   HARMFUL_ACCESS(WriteValueOutOfArrayBoundsRight(foo, 16),
-                 "overflows this variable|store to address .* with "
-                 "insufficient space|store to misaligned address");
+                 "overflows this variable");
 }
 
 #if defined(ADDRESS_SANITIZER)
