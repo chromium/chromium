@@ -369,6 +369,7 @@ TEST_F(GAIAInfoUpdateServiceTest, ClearGaiaInfoOnStartup) {
 
 TEST_F(GAIAInfoUpdateServiceTest,
        SigninPrefsWithSignedInAccountAndSecondaryAccount) {
+  base::HistogramTester histogram_tester;
   const std::string primary_gaia_id = "primary_gaia_id";
   ASSERT_FALSE(HasAccountPrefs(primary_gaia_id));
 
@@ -408,10 +409,32 @@ TEST_F(GAIAInfoUpdateServiceTest,
   // Secondary account prefs should be cleared.
   EXPECT_FALSE(HasAccountPrefs(secondary_gaia_id));
 
-  // Clearing primary account should now clear the account prefs as well since
-  // the cookie is already cleared.
+  histogram_tester.ExpectUniqueSample("Signin.AccountPref.RemovedCount",
+                                      /*sample=*/1,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.AccountPref.RemovedCount.SignedIn",
+      /*sample=*/1,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount("Signin.AccountPref.RemovedCount.SignedOut",
+                                    /*expected_count=*/0);
+
+  // Clearing primary account should now clear the account prefs as well
+  // since the cookie is already cleared.
   identity_test_env()->ClearPrimaryAccount();
   EXPECT_FALSE(HasAccountPrefs(primary_gaia_id));
+
+  histogram_tester.ExpectUniqueSample("Signin.AccountPref.RemovedCount",
+                                      /*sample=*/1,
+                                      /*expected_bucket_count=*/2);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.AccountPref.RemovedCount.SignedIn",
+      /*sample=*/1,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.AccountPref.RemovedCount.SignedOut",
+      /*sample=*/1,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(GAIAInfoUpdateServiceTest, SigninPrefsWithSignedInWebOnly) {

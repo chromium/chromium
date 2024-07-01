@@ -104,8 +104,9 @@ class SigninPrefs {
   // Keeps all prefs with the gaia ids given in `gaia_ids_to_keep`.
   // This is done this way since we usually are not aware of the accounts that
   // are not there anymore, so we remove all accounts that should not be kept
-  // instead of removing a specific account.
-  void RemoveAllAccountPrefsExcept(
+  // instead of removing a specific account. Returns the number of accounts
+  // that were removed.
+  size_t RemoveAllAccountPrefsExcept(
       const base::flat_set<GaiaId>& gaia_ids_to_keep);
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);

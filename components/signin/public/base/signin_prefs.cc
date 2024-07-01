@@ -68,7 +68,7 @@ bool SigninPrefs::HasAccountPrefs(GaiaId gaia_id) const {
   return pref_service_->GetDict(kSigninAccountPrefs).contains(gaia_id);
 }
 
-void SigninPrefs::RemoveAllAccountPrefsExcept(
+size_t SigninPrefs::RemoveAllAccountPrefsExcept(
     const base::flat_set<GaiaId>& gaia_ids_to_keep) {
   // Get the list of all accounts that should be removed, not in
   // `gaia_ids_to_keep`. Use `std::string` instead of `GaiaId`  because a
@@ -86,6 +86,8 @@ void SigninPrefs::RemoveAllAccountPrefsExcept(
   for (GaiaId account_prefs_to_remove : accounts_prefs_to_remove) {
     scoped_update->Remove(account_prefs_to_remove);
   }
+
+  return accounts_prefs_to_remove.size();
 }
 
 // static

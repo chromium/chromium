@@ -7,6 +7,8 @@
 #include <stddef.h>
 
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -67,7 +69,25 @@ void UpdateAccountsPrefs(
   // above checks on cookies and primary account.
 
   SigninPrefs signin_prefs(pref_service);
-  signin_prefs.RemoveAllAccountPrefsExcept(account_ids_in_chrome);
+  size_t removed_count =
+      signin_prefs.RemoveAllAccountPrefsExcept(account_ids_in_chrome);
+
+  if (removed_count > 0) {
+    // There is a maximum of 10 Gaia accounts on the web. If we add the Chrome
+    // primary account, the theoretical maximum count of accounts in the pref is
+    // 11. The histogram function expects the "exclusive maximum" of 11 + 1.
+    constexpr int kExclusiveMaxRemovedCount = 12;
+    constexpr char kAccountsRemovedHistogramName[] =
+        "Signin.AccountPref.RemovedCount";
+    base::UmaHistogramExactLinear(kAccountsRemovedHistogramName, removed_count,
+                                  kExclusiveMaxRemovedCount);
+    std::string variant_histogram_name =
+        primary_account_info.IsEmpty()
+            ? base::StrCat({kAccountsRemovedHistogramName, ".SignedOut"})
+            : base::StrCat({kAccountsRemovedHistogramName, ".SignedIn"});
+    base::UmaHistogramExactLinear(variant_histogram_name, removed_count,
+                                  kExclusiveMaxRemovedCount);
+  }
 }
 
 }  // namespace

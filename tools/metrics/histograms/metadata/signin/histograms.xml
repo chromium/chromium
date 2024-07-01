@@ -278,6 +278,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Signin.AccountPref.RemovedCount{SigninState}" units="accounts"
+    expires_after="2024-09-28">
+  <owner>droger@chromium.org</owner>
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the number of accounts removed from account-keyed signin
+    preferences. Recorded when accounts are removed from preferences (e.g.
+    clearing cookies or removing signed out accounts from the web), and the user
+    is {SigninState} Chrome at the browser level.
+  </summary>
+  <token key="SigninState">
+    <variant name="" summary="signed in or signed out of"/>
+    <variant name=".SignedIn" summary="signed in to"/>
+    <variant name=".SignedOut" summary="signed out of"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.AccountReconcilorState.OnGaiaResponse"
     enum="SigninAccountReconcilorState" expires_after="2024-11-03">
   <owner>jlebel@chromium.org</owner>

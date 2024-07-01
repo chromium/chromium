@@ -59,14 +59,16 @@ TEST_F(SigninPrefsTest, RemovingAccountPrefs) {
   ASSERT_TRUE(HasAccountPrefs(gaia_id3));
 
   // Should remove `gaia_id3`.
-  signin_prefs().RemoveAllAccountPrefsExcept({gaia_id1, gaia_id2});
+  EXPECT_EQ(signin_prefs().RemoveAllAccountPrefsExcept({gaia_id1, gaia_id2}),
+            1u);
   EXPECT_TRUE(HasAccountPrefs(gaia_id1));
   EXPECT_TRUE(HasAccountPrefs(gaia_id2));
   EXPECT_FALSE(HasAccountPrefs(gaia_id3));
 
   // Should remove `gaia_id2`. Adding a non existing pref should have no effect
   // (`gaia_id3`).
-  signin_prefs().RemoveAllAccountPrefsExcept({gaia_id1, gaia_id3});
+  EXPECT_EQ(signin_prefs().RemoveAllAccountPrefsExcept({gaia_id1, gaia_id3}),
+            1u);
   EXPECT_TRUE(HasAccountPrefs(gaia_id1));
   EXPECT_FALSE(HasAccountPrefs(gaia_id2));
   EXPECT_FALSE(HasAccountPrefs(gaia_id3));
@@ -86,7 +88,7 @@ TEST_F(SigninPrefsTest, RemovingAllAccountPrefs) {
   ASSERT_TRUE(HasAccountPrefs(gaia_id3));
 
   // Passing no accounts in the arguments should clear all prefs.
-  signin_prefs().RemoveAllAccountPrefsExcept({});
+  EXPECT_EQ(signin_prefs().RemoveAllAccountPrefsExcept({}), 3u);
   EXPECT_FALSE(HasAccountPrefs(gaia_id1));
   EXPECT_FALSE(HasAccountPrefs(gaia_id2));
   EXPECT_FALSE(HasAccountPrefs(gaia_id3));
