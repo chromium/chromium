@@ -84,6 +84,7 @@
 #include "chrome/browser/language/url_language_histogram_factory.h"
 #include "chrome/browser/login_detection/login_detection_keyed_service_factory.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
+#include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/media/media_engagement_service_factory.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
@@ -232,6 +233,7 @@
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/content/clipboard_restriction_service.h"
 #include "components/feed/buildflags.h"
+#include "components/manta/features.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -478,7 +480,6 @@
 #include "chrome/browser/download/offline_item_model_manager_factory.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/hid/hid_connection_tracker_factory.h"
-#include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "chrome/browser/new_tab_page/chrome_colors/chrome_colors_factory.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos_service_factory.h"
@@ -496,7 +497,6 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/usb/usb_connection_tracker_factory.h"
-#include "components/manta/features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #endif
 
@@ -924,11 +924,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_ANDROID)
   ManagedConfigurationAPIFactory::GetInstance();
 #endif
-#if !BUILDFLAG(IS_ANDROID)
   if (manta::features::IsMantaServiceEnabled()) {
     manta::MantaServiceFactory::GetInstance();
   }
-#endif
   MediaDeviceSaltServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kAccessCodeCastUI)) {
