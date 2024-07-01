@@ -30,7 +30,7 @@ BASE_FEATURE(kTestFeature, "TestFeature", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSafetyCheckMagicStack,
              "SafetyCheckMagicStack",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kSafetyCheckMagicStackAutorunHoursThreshold[] =
     "SafetyCheckMagicStackAutorunHoursThreshold";
@@ -39,7 +39,7 @@ const char kSafetyCheckMagicStackAutorunHoursThreshold[] =
 const base::TimeDelta TimeDelayForSafetyCheckAutorun() {
   int delay = base::GetFieldTrialParamByFeatureAsInt(
       kSafetyCheckMagicStack, kSafetyCheckMagicStackAutorunHoursThreshold,
-      /*default_value=*/24);
+      /*default_value=*/720);
   return base::Hours(delay);
 }
 

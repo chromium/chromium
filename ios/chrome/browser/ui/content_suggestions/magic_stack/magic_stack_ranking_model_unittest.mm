@@ -17,6 +17,7 @@
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
@@ -25,6 +26,7 @@
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -48,6 +50,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_ranking_model_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_mediator.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_magic_stack_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_helper_delegate.h"
@@ -189,9 +192,11 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 @end
 
 // Expose -hasReceivedMagicStackResponse for waiting for ranking to return.
-@interface MagicStackRankingModel (Testing) <MostVisitedTilesMediatorDelegate,
-                                             ParcelTrackingMediatorDelegate,
-                                             TabResumptionHelperDelegate>
+@interface MagicStackRankingModel (Testing) <
+    MostVisitedTilesMediatorDelegate,
+    ParcelTrackingMediatorDelegate,
+    SafetyCheckMagicStackMediatorDelegate,
+    TabResumptionHelperDelegate>
 @property(nonatomic, assign, readonly) BOOL hasReceivedMagicStackResponse;
 @end
 
@@ -293,6 +298,16 @@ class MagicStackRankingModelTest : public PlatformTest {
                largeIconService:large_icon_service
                  largeIconCache:cache
          URLLoadingBrowserAgent:url_loader_];
+
+    id mockAppState = OCMClassMock([AppState class]);
+
+    _safetyCheckMediator = [[SafetyCheckMagicStackMediator alloc]
+        initWithSafetyCheckManager:IOSChromeSafetyCheckManagerFactory::
+                                       GetForBrowserState(
+                                           chrome_browser_state_.get())
+                        localState:local_state_.Get()
+                          appState:mockAppState];
+
     _magicStackRankingModel = [[MagicStackRankingModel alloc]
         initWithSegmentationService:
             segmentation_platform::SegmentationPlatformServiceFactory::
@@ -300,9 +315,12 @@ class MagicStackRankingModelTest : public PlatformTest {
                         prefService:chrome_browser_state_.get()->GetPrefs()
                          localState:local_state_.Get()
                     moduleMediators:@[
-                      _shortcutsMediator, _setUpListMediator,
-                      _parcelTrackingMediator, _tabResumptionMediator,
-                      _mostVisitedTilesMediator
+                      _shortcutsMediator,
+                      _setUpListMediator,
+                      _parcelTrackingMediator,
+                      _tabResumptionMediator,
+                      _mostVisitedTilesMediator,
+                      _safetyCheckMediator,
                     ]];
 
     metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc]
@@ -319,6 +337,7 @@ class MagicStackRankingModelTest : public PlatformTest {
     [_parcelTrackingMediator disconnect];
     [_shortcutsMediator disconnect];
     [_mostVisitedTilesMediator disconnect];
+    [_safetyCheckMediator disconnect];
   }
 
  protected:
@@ -354,6 +373,7 @@ class MagicStackRankingModelTest : public PlatformTest {
   FakeParcelTrackingMediator* _parcelTrackingMediator;
   FakeTabResumptionMediator* _tabResumptionMediator;
   ShortcutsMediator* _shortcutsMediator;
+  SafetyCheckMagicStackMediator* _safetyCheckMediator;
   MostVisitedTilesMediator* _mostVisitedTilesMediator;
   MagicStackRankingModel* _magicStackRankingModel;
   id setUpListConsumer_;
@@ -436,7 +456,7 @@ TEST_F(MagicStackRankingModelTest, TestModelDidGetLatestRankingOrder) {
         base::RunLoop().RunUntilIdle();
         return [delegate_.rank count] > 0;
       }));
-  NSArray* expectedModuleRank = @[ @(5), @(0), @(1), @(10), @(11) ];
+  NSArray* expectedModuleRank = @[ @(5), @(0), @(1), @(7), @(10), @(11) ];
   EXPECT_EQ([delegate_.rank count], [expectedModuleRank count]);
   for (NSUInteger i = 0; i < [expectedModuleRank count]; i++) {
     MagicStackModule* config = delegate_.rank[i];
@@ -459,12 +479,12 @@ TEST_F(MagicStackRankingModelTest, TestFeatureInsertCalls) {
       }));
 
   [_magicStackRankingModel newParcelsAvailable];
-  EXPECT_EQ(delegate_.lastInsertionIndex, 4u);
+  EXPECT_EQ(delegate_.lastInsertionIndex, 5u);
   EXPECT_EQ(delegate_.lastInsertedItem,
             _parcelTrackingMediator.parcelTrackingItemToShow);
 
   [_magicStackRankingModel tabResumptionHelperDidReceiveItem];
-  EXPECT_EQ(delegate_.lastInsertionIndex, 3u);
+  EXPECT_EQ(delegate_.lastInsertionIndex, 4u);
   EXPECT_EQ(delegate_.lastInsertedItem, _tabResumptionMediator.itemConfig);
 }
 
@@ -501,5 +521,33 @@ TEST_F(MagicStackRankingModelTest, TestMostVisitedTilesMediatorDelegate) {
   OCMExpect([mockDelegate magicStackRankingModel:[OCMArg any]
                                    didRemoveItem:[OCMArg any]]);
   [_magicStackRankingModel removeMostVisitedTilesModule];
+  EXPECT_OCMOCK_VERIFY(mockDelegate);
+}
+
+// Verifies that the ranking model correctly emits removal signals to its
+// delegate in response to feature delegate signals.
+TEST_F(MagicStackRankingModelTest,
+       TestSafetyCheckMediatorDelegateCallsRemoval) {
+  // Assert that delegate API isn't called if rank has not been received yet.
+  id mockDelegate =
+      OCMStrictProtocolMock(@protocol(MagicStackRankingModelDelegate));
+  _magicStackRankingModel.delegate = mockDelegate;
+  [_magicStackRankingModel removeSafetyCheckModule];
+  EXPECT_OCMOCK_VERIFY(mockDelegate);
+
+  FakeMagicStackRankingModelDelegate* fakeDelegate =
+      [[FakeMagicStackRankingModelDelegate alloc] init];
+  _magicStackRankingModel.delegate = fakeDelegate;
+  [_magicStackRankingModel fetchLatestMagicStackRanking];
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), true, ^bool() {
+        base::RunLoop().RunUntilIdle();
+        return [fakeDelegate.rank count] > 0;
+      }));
+
+  _magicStackRankingModel.delegate = mockDelegate;
+  OCMExpect([mockDelegate magicStackRankingModel:[OCMArg any]
+                                   didRemoveItem:[OCMArg any]]);
+  [_magicStackRankingModel removeSafetyCheckModule];
   EXPECT_OCMOCK_VERIFY(mockDelegate);
 }

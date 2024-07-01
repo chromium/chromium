@@ -155,6 +155,10 @@
 #pragma mark - SafetyCheckMagicStackMediatorDelegate
 
 - (void)removeSafetyCheckModule {
+  if (![self isMagicStackOrderReady]) {
+    return;
+  }
+
   UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleDisabledHistogram,
                             ContentSuggestionsModuleType::kSafetyCheck);
   [self.delegate magicStackRankingModel:self
