@@ -980,14 +980,13 @@ TEST_F(AutofillExternalDelegateUnitTest, UpdateDataListWhileShowingPopup) {
 TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutofillDatalistValues) {
   IssueOnQuery();
 
-  std::vector<SelectOption> datalist{
-      {.value = u"Rick", .content = u"Deckard"},
-      {.value = u"Beyonce", .content = u"Knowles"}};
+  std::vector<SelectOption> datalist{{.value = u"Rick", .text = u"Deckard"},
+                                     {.value = u"Beyonce", .text = u"Knowles"}};
   EXPECT_CALL(client(), UpdateAutofillDataListValues(ElementsAre(
                             AllOf(Field(&SelectOption::value, u"Rick"),
-                                  Field(&SelectOption::content, u"Deckard")),
+                                  Field(&SelectOption::text, u"Deckard")),
                             AllOf(Field(&SelectOption::value, u"Beyonce"),
-                                  Field(&SelectOption::content, u"Knowles")))));
+                                  Field(&SelectOption::text, u"Knowles")))));
   external_delegate().SetCurrentDataListValues(datalist);
 
   const auto kExpectedSuggestions = SuggestionVectorIdsAre(
@@ -1015,14 +1014,13 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutofillDatalistValues) {
 TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutocompleteDatalistValues) {
   IssueOnQuery();
 
-  std::vector<SelectOption> datalist{
-      {.value = u"Rick", .content = u"Deckard"},
-      {.value = u"Beyonce", .content = u"Knowles"}};
+  std::vector<SelectOption> datalist{{.value = u"Rick", .text = u"Deckard"},
+                                     {.value = u"Beyonce", .text = u"Knowles"}};
   EXPECT_CALL(client(), UpdateAutofillDataListValues(ElementsAre(
                             AllOf(Field(&SelectOption::value, u"Rick"),
-                                  Field(&SelectOption::content, u"Deckard")),
+                                  Field(&SelectOption::text, u"Deckard")),
                             AllOf(Field(&SelectOption::value, u"Beyonce"),
-                                  Field(&SelectOption::content, u"Knowles")))));
+                                  Field(&SelectOption::text, u"Knowles")))));
   external_delegate().SetCurrentDataListValues(datalist);
 
   const auto kExpectedSuggestions = SuggestionVectorIdsAre(

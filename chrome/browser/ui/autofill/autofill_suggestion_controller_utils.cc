@@ -219,7 +219,7 @@ std::vector<Suggestion> UpdateSuggestionsFromDataList(
   for (size_t i = 0; i < options.size(); i++) {
     suggestions[i].main_text =
         Suggestion::Text(options[i].value, Suggestion::Text::IsPrimary(true));
-    suggestions[i].labels = {{Suggestion::Text(options[i].content)}};
+    suggestions[i].labels = {{Suggestion::Text(options[i].text)}};
     suggestions[i].type = SuggestionType::kDatalistEntry;
   }
   return suggestions;

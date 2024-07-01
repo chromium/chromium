@@ -119,7 +119,7 @@ void TestFillingExpirationMonth(const std::vector<const char*>& values,
 
   ASSERT_FALSE(value_to_fill.empty());
   content_index = GetIndexOfValue(field.options(), value_to_fill);
-  EXPECT_EQ(u"Mar", field.options()[content_index].content);
+  EXPECT_EQ(u"Mar", field.options()[content_index].text);
 
   // Try a two-digit month.
   credit_card.SetExpirationMonth(11);
@@ -129,7 +129,7 @@ void TestFillingExpirationMonth(const std::vector<const char*>& values,
 
   ASSERT_FALSE(value_to_fill.empty());
   content_index = GetIndexOfValue(field.options(), value_to_fill);
-  EXPECT_EQ(u"Nov", field.options()[content_index].content);
+  EXPECT_EQ(u"Nov", field.options()[content_index].text);
 }
 
 struct CreditCardTestCase {

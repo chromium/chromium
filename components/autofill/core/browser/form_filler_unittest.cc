@@ -449,10 +449,10 @@ TEST_F(FormFillerTest, SkipAllPreFilledFieldsExceptIfFieldIsAPlaceholder) {
            {.role = ADDRESS_HOME_STATE,
             .value = kSelectedState,
             .form_control_type = FormControlType::kSelectOne,
-            .select_options = {SelectOption{.value = kSelectedState,
-                                            .content = kSelectedState},
-                               SelectOption{.value = kToBeFilledState,
-                                            .content = kToBeFilledState}}}}});
+            .select_options = {
+                SelectOption{.value = kSelectedState, .text = kSelectedState},
+                SelectOption{.value = kToBeFilledState,
+                             .text = kToBeFilledState}}}}});
   FormsSeen({form});
 
   FormStructure* form_structure = GetFormStructure(form);

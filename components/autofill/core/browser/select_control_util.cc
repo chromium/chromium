@@ -25,10 +25,10 @@ int FindShortestSubstringMatchInSelect(
     const SelectOption& option = field_options[i];
     std::u16string option_value =
         ignore_whitespace ? RemoveWhitespace(option.value) : option.value;
-    std::u16string option_content =
-        ignore_whitespace ? RemoveWhitespace(option.content) : option.content;
+    std::u16string option_text =
+        ignore_whitespace ? RemoveWhitespace(option.text) : option.text;
     if (searcher.Search(option_value, nullptr, nullptr) ||
-        searcher.Search(option_content, nullptr, nullptr)) {
+        searcher.Search(option_text, nullptr, nullptr)) {
       if (best_match == -1 ||
           field_options[best_match].value.size() > option.value.size()) {
         best_match = i;
@@ -48,7 +48,7 @@ std::optional<std::u16string> GetSelectControlValue(
   std::u16string best_match;
   for (size_t i = 0; i < field_options.size(); ++i) {
     const SelectOption& option = field_options[i];
-    if (value == option.value || value == option.content) {
+    if (value == option.value || value == option.text) {
       // An exact match, use it.
       best_match = option.value;
       if (best_match_index) {
@@ -58,7 +58,7 @@ std::optional<std::u16string> GetSelectControlValue(
     }
 
     if (compare.StringsEqual(value, option.value) ||
-        compare.StringsEqual(value, option.content)) {
+        compare.StringsEqual(value, option.text)) {
       // A match, but not in the same case. Save it in case an exact match is
       // not found.
       best_match = option.value;
@@ -112,7 +112,7 @@ std::optional<std::u16string> GetSelectControlValueTokenMatch(
   };
   for (const SelectOption& option : field_options) {
     if (base::ranges::any_of(tokenize(option.value), equals_value) ||
-        base::ranges::any_of(tokenize(option.content), equals_value)) {
+        base::ranges::any_of(tokenize(option.text), equals_value)) {
       return option.value;
     }
   }
@@ -132,7 +132,7 @@ std::optional<std::u16string> GetNumericSelectControlValue(
   for (const SelectOption& option : field_options) {
     int num;
     if ((base::StringToInt(option.value, &num) && num == value) ||
-        (base::StringToInt(option.content, &num) && num == value)) {
+        (base::StringToInt(option.text, &num) && num == value)) {
       return option.value;
     }
   }

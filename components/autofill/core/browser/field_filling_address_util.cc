@@ -86,7 +86,7 @@ std::u16string GetNormalizedStateSelectControlValue(
   for (SelectOption& option : field_options_copy) {
     normalized |= NormalizeAdminAreaForCountryCode(option.value, country_code,
                                                    address_normalizer);
-    normalized |= NormalizeAdminAreaForCountryCode(option.content, country_code,
+    normalized |= NormalizeAdminAreaForCountryCode(option.text, country_code,
                                                    address_normalizer);
   }
 
@@ -249,7 +249,7 @@ std::u16string GetCountrySelectControlValue(
     if (country_code == CountryNames::GetInstance()->GetCountryCode(
                             strip_phone_country_code(option.value)) ||
         country_code == CountryNames::GetInstance()->GetCountryCode(
-                            strip_phone_country_code(option.content))) {
+                            strip_phone_country_code(option.text))) {
       return option.value;
     }
   }
@@ -368,7 +368,7 @@ std::u16string GetPhoneCountryCodeSelectControlValue(
   auto value_or_content_matches = [&](const SelectOption& option) {
     return data_util::FindPossiblePhoneCountryCode(option.value) ==
                phone_country_code ||
-           data_util::FindPossiblePhoneCountryCode(option.content) ==
+           data_util::FindPossiblePhoneCountryCode(option.text) ==
                phone_country_code;
   };
   auto first_match =

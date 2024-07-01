@@ -1169,7 +1169,7 @@ void AutofillExternalDelegate::InsertDataListValues(
   for (size_t i = 0; i < datalist_.size(); i++) {
     (*suggestions)[i].main_text =
         Suggestion::Text(datalist_[i].value, Suggestion::Text::IsPrimary(true));
-    (*suggestions)[i].labels = {{Suggestion::Text(datalist_[i].content)}};
+    (*suggestions)[i].labels = {{Suggestion::Text(datalist_[i].text)}};
     (*suggestions)[i].type = SuggestionType::kDatalistEntry;
   }
 }

@@ -46,7 +46,7 @@ declare interface AutofillFormFieldData {
   placeholder_attribute: string;
   aria_label: string;
   aria_description: string;
-  option_contents: string[];
+  option_texts: string[];
   option_values: string[];
   label?: string;
   identifier?: string;
@@ -524,7 +524,7 @@ gCrWeb.fill.getCanonicalActionForForm = function(
 
 declare interface OptionFieldStrings {
     option_values: string[] & {toJSON?: string|null};
-    option_contents: string[] & {toJSON?: string|null};
+    option_texts: string[]&{toJSON?: string | null};
 }
 
 /**
@@ -534,7 +534,7 @@ declare interface OptionFieldStrings {
  * It is based on the logic in
  *     void GetOptionStringsFromElement(const WebSelectElement& select_element,
  *                                      std::vector<string16>* option_values,
- *                                      std::vector<string16>* option_contents)
+ *                                      std::vector<string16>* option_texts)
  * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
  *
  * @param selectElement A select element from which option data are
@@ -547,14 +547,14 @@ gCrWeb.fill.getOptionStringsFromElement = function(
   field.option_values = [];
   // Protect against custom implementation of Array.toJSON in host pages.
   field.option_values.toJSON = null;
-  field.option_contents = [];
-  field.option_contents.toJSON = null;
+  field.option_texts = [];
+  field.option_texts.toJSON = null;
   const options = selectElement.options;
   for (let i = 0; i < options.length; ++i) {
     const option = options[i]!;
     field.option_values.push(
         option.value.substring(0, fillConstants.MAX_STRING_LENGTH));
-    field.option_contents.push(
+    field.option_texts.push(
         option.text.substring(0, fillConstants.MAX_STRING_LENGTH));
   }
 };

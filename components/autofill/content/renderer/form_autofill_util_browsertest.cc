@@ -256,7 +256,7 @@ TEST_F(FormAutofillUtilsTest, TruncateLargeOptionValuesAndContents) {
   ASSERT_EQ(form_data.fields().size(), 1u);
   ASSERT_EQ(form_data.fields()[0].options().size(), 1u);
   EXPECT_EQ(form_data.fields()[0].options()[0].value, trimmed_option);
-  EXPECT_EQ(form_data.fields()[0].options()[0].content, trimmed_option);
+  EXPECT_EQ(form_data.fields()[0].options()[0].text, trimmed_option);
   EXPECT_TRUE(IsValidOption(form_data.fields()[0].options()[0]));
 }
 
@@ -899,8 +899,8 @@ TEST_F(FormAutofillUtilsTest,
   ASSERT_EQ(options.size(), 2u);
   EXPECT_EQ(options[0].value, u"1");
   EXPECT_EQ(options[1].value, u"2");
-  EXPECT_EQ(options[0].content, u"");
-  EXPECT_EQ(options[1].content, u"");
+  EXPECT_EQ(options[0].text, u"");
+  EXPECT_EQ(options[1].text, u"");
 }
 
 TEST_F(FormAutofillUtilsTest,
@@ -916,8 +916,8 @@ TEST_F(FormAutofillUtilsTest,
   ASSERT_EQ(options.size(), 2u);
   EXPECT_EQ(options[0].value, u"1");
   EXPECT_EQ(options[1].value, u"2");
-  EXPECT_EQ(options[0].content, u"one");
-  EXPECT_EQ(options[1].content, u"two");
+  EXPECT_EQ(options[0].text, u"one");
+  EXPECT_EQ(options[1].text, u"two");
 }
 
 TEST_F(FormAutofillUtilsTest,
@@ -938,8 +938,8 @@ TEST_F(FormAutofillUtilsTest,
   ASSERT_EQ(options.size(), 2u);
   EXPECT_EQ(options[0].value, u"1");
   EXPECT_EQ(options[1].value, u"2");
-  EXPECT_EQ(options[0].content, u"one");
-  EXPECT_EQ(options[1].content, u"two");
+  EXPECT_EQ(options[0].text, u"one");
+  EXPECT_EQ(options[1].text, u"two");
   EXPECT_EQ(field->datalist_options().size(), options.size());
 }
 

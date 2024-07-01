@@ -103,7 +103,7 @@ std::u16string GetExpirationMonthSelectControlValue(
   // Attempt to match with each of the options' content.
   for (const SelectOption& option : field_options) {
     int converted_contents = 0;
-    if (data_util::ParseExpirationMonth(option.content, app_locale,
+    if (data_util::ParseExpirationMonth(option.text, app_locale,
                                         &converted_contents) &&
         month == converted_contents) {
       return option.value;
@@ -146,7 +146,7 @@ std::u16string GetYearSelectControlValue(
 
   for (const SelectOption& option : field_options) {
     if (LastTwoDigitsMatch(value, option.value) ||
-        LastTwoDigitsMatch(value, option.content)) {
+        LastTwoDigitsMatch(value, option.text)) {
       return option.value;
     }
   }

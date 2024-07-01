@@ -1201,13 +1201,13 @@ void FilterOptionElementsAndGetOptionStrings(
   for (const auto& option_element : option_elements) {
     if (HasTagName<kOption>(option_element)) {
       const WebOptionElement option = option_element.To<WebOptionElement>();
-      std::u16string content = option.GetText().Utf16();
-      if (content.empty()) {
-        content = GetAriaLabel(option_element.GetDocument(), option_element);
+      std::u16string text = option.GetText().Utf16();
+      if (text.empty()) {
+        text = GetAriaLabel(option_element.GetDocument(), option_element);
       }
       options->push_back(
           {.value = option.Value().Utf16().substr(0, kMaxStringLength),
-           .content = content.substr(0, kMaxStringLength)});
+           .text = text.substr(0, kMaxStringLength)});
     }
   }
 }
@@ -1751,8 +1751,7 @@ void GetDataListSuggestions(const WebInputElement& element,
         option_element.Value() != option_element.Label()
             ? option_element.Label().Utf16().substr(0, kMaxStringLength)
             : std::u16string();
-    options->push_back(
-        {.value = std::move(value), .content = std::move(content)});
+    options->push_back({.value = std::move(value), .text = std::move(content)});
   }
 }
 

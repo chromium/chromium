@@ -366,23 +366,21 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
 
   // Load option values where present.
   const base::Value::List* option_values = field.FindList("option_values");
-  const base::Value::List* option_contents = field.FindList("option_contents");
-  if (option_values && option_contents) {
-    if (option_values->size() != option_contents->size()) {
+  const base::Value::List* option_texts = field.FindList("option_texts");
+  if (option_values && option_texts) {
+    if (option_values->size() != option_texts->size()) {
       return false;
     }
     std::vector<SelectOption> options;
     auto value_it = option_values->begin();
-    auto content_it = option_contents->begin();
-    while (value_it != option_values->end() &&
-           content_it != option_contents->end()) {
-      if (value_it->is_string() && content_it->is_string()) {
-        options.push_back(
-            {.value = base::UTF8ToUTF16(value_it->GetString()),
-             .content = base::UTF8ToUTF16(content_it->GetString())});
+    auto text_it = option_texts->begin();
+    while (value_it != option_values->end() && text_it != option_texts->end()) {
+      if (value_it->is_string() && text_it->is_string()) {
+        options.push_back({.value = base::UTF8ToUTF16(value_it->GetString()),
+                           .text = base::UTF8ToUTF16(text_it->GetString())});
       }
       ++value_it;
-      ++content_it;
+      ++text_it;
     }
     field_data->set_options(std::move(options));
   }

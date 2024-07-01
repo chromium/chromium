@@ -267,7 +267,7 @@ struct FieldRendererId {
 // autofill::SelectOption (components/autofill/core/common/form_field_data.h)
 struct SelectOption {
   mojo_base.mojom.String16 value;
-  mojo_base.mojom.String16 content;
+  mojo_base.mojom.String16 text;
 };
 
 // autofill::Section::Autocomplete

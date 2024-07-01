@@ -238,7 +238,7 @@ FormFieldData CreateTestSelectOrSelectListField(
   for (size_t i = 0; i < values.size(); ++i) {
     options.push_back({
         .value = base::UTF8ToUTF16(values[i]),
-        .content = base::UTF8ToUTF16(contents[i]),
+        .text = base::UTF8ToUTF16(contents[i]),
     });
   }
   field.set_options(std::move(options));
@@ -257,7 +257,7 @@ FormFieldData CreateTestDatalistField(std::string_view label,
   datalist_options.reserve(std::min(values.size(), labels.size()));
   for (size_t i = 0; i < std::min(values.size(), labels.size()); ++i) {
     datalist_options.push_back({.value = base::UTF8ToUTF16(values[i]),
-                                .content = base::UTF8ToUTF16(labels[i])});
+                                .text = base::UTF8ToUTF16(labels[i])});
   }
   field.set_datalist_options(std::move(datalist_options));
   return field;

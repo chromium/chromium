@@ -291,12 +291,12 @@ bool CreditCardFieldParser::LikelyCardMonthSelectField(
     static constexpr char16_t kNumericalDecemberRe[] = u"12";
     // Maybe we should do more here? E.g., look for (translated) "December".
     return MatchesRegex<kNumericalDecemberRe>(option.value) ||
-           MatchesRegex<kNumericalDecemberRe>(option.content);
+           MatchesRegex<kNumericalDecemberRe>(option.text);
   };
   auto matches_year = [](const SelectOption& option) {
     static constexpr char16_t kNumericalYearRe[] = u"[1-9][0-9][0-9][0-9]";
     return MatchesRegex<kNumericalYearRe>(option.value) ||
-           MatchesRegex<kNumericalYearRe>(option.content);
+           MatchesRegex<kNumericalYearRe>(option.text);
   };
   // If in doubt, return false.
   return matches_december(field->options().back()) &&
@@ -322,7 +322,7 @@ bool CreditCardFieldParser::LikelyCardYearSelectField(
   // numbers 1 to 9 as well in them, which we can filter on.
   auto matches_single_digit_date = [](const SelectOption& option) {
     static constexpr char16_t kSingleDigitDateRe[] = u"\\b[1-9]\\b";
-    return MatchesRegex<kSingleDigitDateRe>(option.content);
+    return MatchesRegex<kSingleDigitDateRe>(option.text);
   };
   if (base::ranges::any_of(field->options(), matches_single_digit_date)) {
     return false;
@@ -340,7 +340,7 @@ bool CreditCardFieldParser::LikelyCardYearSelectField(
   // expiration year, but show it in the context of a birth year selector.
   auto matches_birth_year = [](const SelectOption& option) {
     static constexpr char16_t kBirthYearRe[] = u"(1999|99)";
-    return MatchesRegex<kBirthYearRe>(option.content);
+    return MatchesRegex<kBirthYearRe>(option.text);
   };
   if (base::ranges::any_of(field->options(), matches_birth_year)) {
     return false;
@@ -380,7 +380,7 @@ bool CreditCardFieldParser::LikelyCardYearSelectField(
                                 option_projection) != field->options().end();
   };
   return OptionsContain(years_to_check_2_digit, &SelectOption::value) ||
-         OptionsContain(years_to_check_2_digit, &SelectOption::content);
+         OptionsContain(years_to_check_2_digit, &SelectOption::text);
 }
 
 // static
@@ -713,10 +713,10 @@ FieldType CreditCardFieldParser::DetermineExpirationYearType(
       return CREDIT_CARD_EXP_2_DIGIT_YEAR;
     }
     // Fallback to content.
-    if (OptionsContain(field, year_4_digits, &SelectOption::content)) {
+    if (OptionsContain(field, year_4_digits, &SelectOption::text)) {
       return CREDIT_CARD_EXP_4_DIGIT_YEAR;
     }
-    if (OptionsContain(field, year_2_digits, &SelectOption::content)) {
+    if (OptionsContain(field, year_2_digits, &SelectOption::text)) {
       return CREDIT_CARD_EXP_2_DIGIT_YEAR;
     }
   }

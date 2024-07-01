@@ -78,7 +78,7 @@ TEST_F(FieldFillingUtilTest, GetSelectControlByValue) {
   // can be used for matching.
   std::vector<SelectOption> options = field.options();
   for (size_t i = 0; i < field.options().size(); ++i) {
-    options[i].content = base::NumberToString16(i);
+    options[i].text = base::NumberToString16(i);
   }
   field.set_options(std::move(options));
 

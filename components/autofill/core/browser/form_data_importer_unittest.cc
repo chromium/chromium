@@ -1962,9 +1962,9 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_MonthSelectInvalidText) {
   // Add option values and contents to the expiration month field.
   ASSERT_EQ(u"exp_month", form.fields()[2].name());
   test_api(form).field(2).set_options({
-      {.value = u"1", .content = u"Jan (1)"},
-      {.value = u"2", .content = u"Feb (2)"},
-      {.value = u"3", .content = u"Mar (3)"},
+      {.value = u"1", .text = u"Jan (1)"},
+      {.value = u"2", .text = u"Feb (2)"},
+      {.value = u"3", .text = u"Mar (3)"},
   });
 
   FormStructure form_structure(form);

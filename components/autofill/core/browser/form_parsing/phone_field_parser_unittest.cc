@@ -117,7 +117,7 @@ autofill::FieldGlobalId PhoneFieldParserTest::AppendField(
   field.set_max_length(field_data.max_length);
   std::vector<SelectOption> options;
   for (auto* const element : field_data.options) {
-    options.push_back({.value = u"", .content = base::UTF8ToUTF16(element)});
+    options.push_back({.value = u"", .text = base::UTF8ToUTF16(element)});
   }
   field.set_options(std::move(options));
   field.set_renderer_id(MakeFieldRendererId());

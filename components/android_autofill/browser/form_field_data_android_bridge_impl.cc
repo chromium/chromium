@@ -82,7 +82,7 @@ FormFieldDataAndroidBridgeImpl::GetOrCreateJavaPeer(
       ConvertUTF16ToJavaString(env, field.id_attribute()),
       /*optionValues=*/ProjectOptions(field.options(), &SelectOption::value),
       /*optionContents=*/
-      ProjectOptions(field.options(), &SelectOption::content),
+      ProjectOptions(field.options(), &SelectOption::text),
       IsCheckable(field.check_status()), IsChecked(field.check_status()),
       field.max_length(),
       /*heuristicType=*/field_types.heuristic_type.IsUnknown()
@@ -97,7 +97,7 @@ FormFieldDataAndroidBridgeImpl::GetOrCreateJavaPeer(
       /*datalistValues=*/
       ProjectOptions(field.datalist_options(), &SelectOption::value),
       /*datalistLabels=*/
-      ProjectOptions(field.datalist_options(), &SelectOption::content),
+      ProjectOptions(field.datalist_options(), &SelectOption::text),
       /*visible=*/field.IsFocusable(), field.is_autofilled());
   java_ref_ = JavaObjectWeakGlobalRef(env, obj);
   return obj;

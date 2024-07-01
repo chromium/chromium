@@ -78,7 +78,7 @@ struct SelectOption {
                          const SelectOption& rhs) = default;
 
   std::u16string value;
-  std::u16string content;
+  std::u16string text;
 };
 
 // Stores information about the section of the field.

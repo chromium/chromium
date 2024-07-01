@@ -181,7 +181,7 @@ bool PhoneFieldParser::LikelyAugmentedPhoneCountryCode(
   // regex.
   int total_positive_options =
       base::ranges::count_if(field->options(), [](const SelectOption& option) {
-        return MatchesRegex<kAugmentedPhoneCountryCodeRe>(option.content);
+        return MatchesRegex<kAugmentedPhoneCountryCodeRe>(option.text);
       });
 
   // If the number of the options compared is less or equal to

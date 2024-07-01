@@ -131,7 +131,7 @@ void AndroidAutofillProviderBridgeImpl::ShowDatalistPopup(
   labels.reserve(options.size());
   for (const SelectOption& option : options) {
     values.push_back(option.value);
-    labels.push_back(option.content);
+    labels.push_back(option.text);
   }
 
   Java_AutofillProvider_showDatalistPopup(

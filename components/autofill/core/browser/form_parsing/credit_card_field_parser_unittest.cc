@@ -62,9 +62,9 @@ std::vector<SelectOption> Get4DigitYears() {
 std::vector<SelectOption> Get2DigitYears() {
   std::vector<SelectOption> years = Get4DigitYears();
   for (SelectOption& option : years) {
-    DCHECK_EQ(option.content.size(), 4u);
+    DCHECK_EQ(option.text.size(), 4u);
     DCHECK_EQ(option.value.size(), 4u);
-    option.content = option.content.substr(2);
+    option.text = option.text.substr(2);
     option.value = option.value.substr(2);
   }
   return years;
@@ -73,8 +73,8 @@ std::vector<SelectOption> Get2DigitYears() {
 // Adds prefixes and postfixes to options and labels.
 std::vector<SelectOption> WithNoise(std::vector<SelectOption> options) {
   for (SelectOption& option : options) {
-    option.content = base::StrCat({u"bla", option.content, u"123"});
-    option.value = base::StrCat({u"bla", option.content, u"123"});
+    option.text = base::StrCat({u"bla", option.text, u"123"});
+    option.value = base::StrCat({u"bla", option.text, u"123"});
   }
   return options;
 }

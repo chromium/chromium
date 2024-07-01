@@ -32,7 +32,7 @@ const int kFormFieldDataPickleVersion = 9;
 
 void WriteSelectOption(const SelectOption& option, base::Pickle* pickle) {
   pickle->WriteString16(option.value);
-  pickle->WriteString16(option.content);
+  pickle->WriteString16(option.text);
 }
 
 bool ReadSelectOption(base::PickleIterator* iter, SelectOption* option) {
@@ -40,7 +40,7 @@ bool ReadSelectOption(base::PickleIterator* iter, SelectOption* option) {
   std::u16string content;
   if (!iter->ReadString16(&value) || !iter->ReadString16(&content))
     return false;
-  *option = {.value = value, .content = content};
+  *option = {.value = value, .text = content};
   return true;
 }
 
@@ -161,19 +161,19 @@ bool DeserializeSection7(base::PickleIterator* iter,
 bool DeserializeSection3(base::PickleIterator* iter,
                          FormFieldData* field_data) {
   std::vector<std::u16string> option_values;
-  std::vector<std::u16string> option_contents;
+  std::vector<std::u16string> option_texts;
   base::i18n::TextDirection text_direction = base::i18n::UNKNOWN_DIRECTION;
   if (!ReadAsInt(iter, &text_direction) ||
       !ReadStringVector(iter, &option_values) ||
-      !ReadStringVector(iter, &option_contents) ||
-      option_values.size() != option_contents.size()) {
+      !ReadStringVector(iter, &option_texts) ||
+      option_values.size() != option_texts.size()) {
     return false;
   }
   field_data->set_text_direction(text_direction);
   std::vector<SelectOption> options;
   for (size_t i = 0; i < option_values.size(); ++i) {
     options.push_back({.value = std::move(option_values[i]),
-                       .content = std::move(option_contents[i])});
+                       .text = std::move(option_texts[i])});
   }
   field_data->set_options(std::move(options));
   return true;

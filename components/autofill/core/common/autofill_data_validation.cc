@@ -28,7 +28,7 @@ bool IsValidGURL(const GURL& url) {
 }
 
 bool IsValidOption(const SelectOption& option) {
-  return IsValidString16(option.content) && IsValidString16(option.value);
+  return IsValidString16(option.text) && IsValidString16(option.value);
 }
 
 bool IsValidFormFieldData(const FormFieldData& field) {

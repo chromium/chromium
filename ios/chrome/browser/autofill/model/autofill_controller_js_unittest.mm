@@ -155,7 +155,7 @@ NSArray* GetFormFieldAttributeListsToCheck(NSUInteger mask) {
     return @[
       @"identifier", @"name", @"form_control_type", @"autocomplete_attribute",
       @"max_length", @"should_autocomplete", @"is_checkable", @"value",
-      @"option_values", @"option_contents"
+      @"option_values", @"option_texts"
     ];
   }
 
@@ -188,7 +188,7 @@ NSArray* GetTestFormInputElementWithLabelFromPrevious() {
           @"'John'", @"value",
           @"'John'", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil]];
 }
 
@@ -209,7 +209,7 @@ NSArray* GetTestFormInputElementWithLabelFromEnclosingLabelBefore() {
           @"'John'", @"value",
           @"'John'", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil]];
 }
 
@@ -229,7 +229,7 @@ NSArray* GetTestFormInputElementWithLabelFromPreviousSpan() {
           @"'John'", @"value",
           @"'John'", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil]];
 }
 
@@ -250,7 +250,7 @@ NSArray* GetTestFormInputElementWithLabelFromPreviousParagraph() {
           @"'john@example.com'", @"value",
           @"'john@example.com'", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil]];
 }
 
@@ -270,7 +270,7 @@ NSArray* GetTestFormInputElementWithLabelFromPreviousLabel() {
           @"'12345678'", @"value",
           @"'12345678'", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil]];
 }
 
@@ -291,7 +291,7 @@ NSArray* GetTestFormInputElementWithLabelFromPreviousLabelOtherIgnored() {
           @"'www.jogh.blog'", @"value",
           @"'www.jogh.blog'", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil]];
 }
 
@@ -312,7 +312,7 @@ NSArray* GetTestFormInputElementWithLabelFromPreviousTextSpanBr() {
           @"''", @"value",
           @"''", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil]];
 }
 
@@ -332,7 +332,7 @@ NSArray* GetTestFormInputElementWithLabelFromPreviousTextBrAndSpan() {
           @"''", @"value",
           @"''", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil]];
 }
 
@@ -356,7 +356,7 @@ NSArray* GetTestFormInputElementWithLabelFromListItem() {
           @"'415'", @"value",
           @"'415'", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil],
       [NSDictionary dictionaryWithObjectsAndKeys:
           @"'* Code:'", @"label",
@@ -370,7 +370,7 @@ NSArray* GetTestFormInputElementWithLabelFromListItem() {
           @"'555'", @"value",
           @"'555'", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil],
       [NSDictionary dictionaryWithObjectsAndKeys:
           @"'* Code:'", @"label",
@@ -384,7 +384,7 @@ NSArray* GetTestFormInputElementWithLabelFromListItem() {
           @"'1212'", @"value",
           @"'1212'", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil]];
 }
 
@@ -413,7 +413,7 @@ NSArray* GetTestFormInputElementWithLabelFromTableColumnTD() {
           @"'John'", @"value",
           @"'John'", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil],
       [NSDictionary dictionaryWithObjectsAndKeys:
           @"'Email:'", @"label",
@@ -427,7 +427,7 @@ NSArray* GetTestFormInputElementWithLabelFromTableColumnTD() {
           @"'john@example.com'", @"value",
           @"'john@example.com'", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil]];
 }
 
@@ -457,7 +457,7 @@ NSArray* GetTestFormInputElementWithLabelFromTableColumnTH() {
           @"'John'", @"value",
           @"'John'", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil],
       [NSDictionary dictionaryWithObjectsAndKeys:
           @"'Email:'", @"label",
@@ -471,7 +471,7 @@ NSArray* GetTestFormInputElementWithLabelFromTableColumnTH() {
           @"'john@example.com'", @"value",
           @"'john@example.com'", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil]];
 }
 
@@ -495,7 +495,7 @@ NSArray* GetTestFormInputElementWithLabelFromTableNested() {
           @"'John'", @"value",
           @"'John'", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil]];
 }
 
@@ -522,7 +522,7 @@ NSArray* GetTestFormInputElementWithLabelFromTableRow() {
           @"'John'", @"value",
           @"'John'", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil]];
 }
 
@@ -546,7 +546,7 @@ NSArray* GetTestFormInputElementWithLabelFromDivTable() {
           @"'John'", @"value",
           @"'John'", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil]];
 }
 
@@ -580,7 +580,7 @@ NSArray* GetTestFormInputElementWithLabelFromDefinitionList() {
           @"'Tennis'", @"value",
           @"'Tennis'", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil]];
 }
 
@@ -601,7 +601,7 @@ NSArray* GetTestInputRadio() {
           @"'true'", @"value",
           @"'true'", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil],
       [NSDictionary dictionaryWithObjectsAndKeys:
           @"'False'", @"label",
@@ -615,7 +615,7 @@ NSArray* GetTestInputRadio() {
           @"'false'", @"value",
           @"'false'", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil]];
 }
 
@@ -639,7 +639,7 @@ NSArray* GetTestInputCheckbox() {
           @"'Bike'", @"value",
           @"'Bike'", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil],
       [NSDictionary dictionaryWithObjectsAndKeys:
           @"'Automobile'", @"label",
@@ -653,7 +653,7 @@ NSArray* GetTestInputCheckbox() {
           @"'Car'", @"value",
           @"'Car'", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil],
       [NSDictionary dictionaryWithObjectsAndKeys:
           @"'Missile'", @"label",
@@ -667,7 +667,7 @@ NSArray* GetTestInputCheckbox() {
           @"'Rocket'", @"value",
           @"'Rocket'", @"value_option_text",
           @"undefined", @"option_values",
-          @"undefined", @"option_contents",
+          @"undefined", @"option_texts",
           nil]];
 }
 
@@ -691,7 +691,7 @@ NSArray* GetTestFormSelectElement() {
           @"'CA'", @"value",
           @"'California'", @"value_option_text",
           @[@"'CA'", @"'TX'"], @"option_values",
-          @[@"'California'", @"'Texas'"], @"option_contents",
+          @[@"'California'", @"'Texas'"], @"option_texts",
           nil]];
 }
 
@@ -731,7 +731,7 @@ NSArray* GetTestFormSelectElementWithOptgroup() {
               @"'Lecture 03: Vectors'",
               @"'Lecture 01: What holds world together?'",
               @"'Lecture 02: Electric Field'",
-              @"'Lecture 03: Electric Flux'"], @"option_contents",
+              @"'Lecture 03: Electric Flux'"], @"option_texts",
           nil]];
 }
 
@@ -739,8 +739,8 @@ NSArray* GetTestFormSelectElementWithOptgroup() {
 
 // Generates JavaScripts to check a JavaScripts object `results` with the
 // expected values given in `expected`, which is a dictionary with string
-// values for all the keys other than @"option_vaues" and @"option_contents";
-// the values of @"option_vaues" and @"option_contents" are arrays of
+// values for all the keys other than @"option_values" and @"option_texts";
+// the values of @"option_values" and @"option_texts" are arrays of
 // strings or undefined. Only attributes in `attributes_to_check` are checked.
 // A different expected value is chosen in `expected` for different
 // `extract_mask`.
@@ -755,7 +755,7 @@ NSString* GenerateElementItemVerifyingJavaScripts(NSString* results,
 
   for (NSString* attribute in attributes_to_check) {
     if ([attribute isEqualToString:@"option_values"] ||
-        [attribute isEqualToString:@"option_contents"]) {
+        [attribute isEqualToString:@"option_texts"]) {
       id expected_value = [expected objectForKey:attribute];
       if ([expected_value isKindOfClass:[NSString class]]) {
         [verifying_javascripts
@@ -1267,11 +1267,11 @@ TEST_F(AutofillControllerJsTest, GetOptionStringsFromElement) {
                                    std::size(testing_elements)),
       @[
         @("{\"option_values\":[\"CA\",\"MA\"],"
-          "\"option_contents\":[\"CA\",\"MA\"]}"),
+          "\"option_texts\":[\"CA\",\"MA\"]}"),
         @("{\"option_values\":["
           "\"8.01.1\",\"8.01.2\",\"8.01.3\","
           "\"8.02.1\",\"8.02.2\",\"8.02.3\"],"
-          "\"option_contents\":["
+          "\"option_texts\":["
           "\"Lecture 01: Powers of Ten\","
           "\"Lecture 02: 1D Kinematics\","
           "\"Lecture 03: Vectors\","
@@ -1280,7 +1280,7 @@ TEST_F(AutofillControllerJsTest, GetOptionStringsFromElement) {
           "\"Lecture 03: Electric Flux\""
           "]}"),
         @("{\"option_values\":[\"volvo\",\"saab\",\"opel\",\"audi\"],"
-          "\"option_contents\":[\"Volvo\",\"Saab\",\"Opel\",\"Audi\"]}")
+          "\"option_texts\":[\"Volvo\",\"Saab\",\"Opel\",\"Audi\"]}")
       ]);
 }
 
@@ -1898,7 +1898,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"is_focusable" : @1,
         @"is_user_edited" : @true,
         @"option_values" : @[ @"CA", @"TX" ],
-        @"option_contents" : @[ @"California", @"Texas" ],
+        @"option_texts" : @[ @"California", @"Texas" ],
         @"should_autocomplete" : @1,
         @"value" : @"CA",
         @"label" : @"State:"

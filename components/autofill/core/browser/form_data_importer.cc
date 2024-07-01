@@ -1002,8 +1002,8 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
         // expiration month. Attempt to save with the option value. First find
         // the index of the option text in the select options and try the
         // corresponding value.
-        if (auto it = base::ranges::find(field.options(), value,
-                                         &SelectOption::content);
+        if (auto it =
+                base::ranges::find(field.options(), value, &SelectOption::text);
             it != field.options().end()) {
           result.card.SetInfo(field.Type(), it->value, app_locale);
         }

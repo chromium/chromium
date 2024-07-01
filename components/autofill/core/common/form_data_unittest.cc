@@ -164,13 +164,13 @@ void FillInDummyFormData(FormData* data) {
   field_data.set_is_focusable(true);
   field_data.set_should_autocomplete(false);
   field_data.set_text_direction(base::i18n::RIGHT_TO_LEFT);
-  field_data.set_options({{.value = u"First", .content = u"First"},
-                          {.value = u"Second", .content = u"Second"}});
+  field_data.set_options({{.value = u"First", .text = u"First"},
+                          {.value = u"Second", .text = u"Second"}});
   test_api(*data).Append(field_data);
 
   // Change a few fields.
   field_data.set_max_length(150);
-  field_data.set_options({{.value = u"Third", .content = u"Third"}});
+  field_data.set_options({{.value = u"Third", .text = u"Third"}});
   test_api(*data).Append(field_data);
 }
 

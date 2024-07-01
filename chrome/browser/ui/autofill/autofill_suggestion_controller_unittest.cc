@@ -146,7 +146,7 @@ TEST_F(AutofillSuggestionControllerTest, ShowInformsDelegate) {
 TEST_F(AutofillSuggestionControllerTest, UpdateDataListValues) {
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
   std::vector<SelectOption> options = {
-      {.value = u"data list value 1", .content = u"data list label 1"}};
+      {.value = u"data list value 1", .text = u"data list label 1"}};
   client().popup_controller(manager()).UpdateDataListValues(options);
 
   ASSERT_EQ(3, client().popup_controller(manager()).GetLineCount());
@@ -158,13 +158,13 @@ TEST_F(AutofillSuggestionControllerTest, UpdateDataListValues) {
       client().popup_controller(manager()).GetSuggestionAt(0).main_text.value);
   ASSERT_EQ(1u, result0.labels.size());
   ASSERT_EQ(1u, result0.labels[0].size());
-  EXPECT_EQ(options[0].content, result0.labels[0][0].value);
+  EXPECT_EQ(options[0].text, result0.labels[0][0].value);
   EXPECT_EQ(std::u16string(), result0.additional_label);
-  EXPECT_EQ(options[0].content, client()
-                                    .popup_controller(manager())
-                                    .GetSuggestionAt(0)
-                                    .labels[0][0]
-                                    .value);
+  EXPECT_EQ(options[0].text, client()
+                                 .popup_controller(manager())
+                                 .GetSuggestionAt(0)
+                                 .labels[0][0]
+                                 .value);
   EXPECT_EQ(SuggestionType::kDatalistEntry, result0.type);
 
   Suggestion result1 = client().popup_controller(manager()).GetSuggestionAt(1);
@@ -181,7 +181,7 @@ TEST_F(AutofillSuggestionControllerTest, UpdateDataListValues) {
 
   // Add two data list entries (which should replace the current one).
   options.push_back(
-      {.value = u"data list value 1", .content = u"data list label 1"});
+      {.value = u"data list value 1", .text = u"data list label 1"});
   client().popup_controller(manager()).UpdateDataListValues(options);
   ASSERT_EQ(4, client().popup_controller(manager()).GetLineCount());
 
@@ -198,11 +198,11 @@ TEST_F(AutofillSuggestionControllerTest, UpdateDataListValues) {
   ASSERT_EQ(
       1u,
       client().popup_controller(manager()).GetSuggestionAt(0).labels[0].size());
-  EXPECT_EQ(options[0].content, client()
-                                    .popup_controller(manager())
-                                    .GetSuggestionAt(0)
-                                    .labels[0][0]
-                                    .value);
+  EXPECT_EQ(options[0].text, client()
+                                 .popup_controller(manager())
+                                 .GetSuggestionAt(0)
+                                 .labels[0][0]
+                                 .value);
   EXPECT_EQ(
       std::u16string(),
       client().popup_controller(manager()).GetSuggestionAt(0).additional_label);
@@ -218,11 +218,11 @@ TEST_F(AutofillSuggestionControllerTest, UpdateDataListValues) {
   ASSERT_EQ(
       1u,
       client().popup_controller(manager()).GetSuggestionAt(1).labels[0].size());
-  EXPECT_EQ(options[1].content, client()
-                                    .popup_controller(manager())
-                                    .GetSuggestionAt(1)
-                                    .labels[0][0]
-                                    .value);
+  EXPECT_EQ(options[1].text, client()
+                                 .popup_controller(manager())
+                                 .GetSuggestionAt(1)
+                                 .labels[0][0]
+                                 .value);
   EXPECT_EQ(
       std::u16string(),
       client().popup_controller(manager()).GetSuggestionAt(1).additional_label);
@@ -244,7 +244,7 @@ TEST_F(AutofillSuggestionControllerTest, PopupsWithOnlyDataLists) {
 
   // Replace the datalist element with a new one.
   std::vector<SelectOption> options = {
-      {.value = u"data list value 1", .content = u"data list label 1"}};
+      {.value = u"data list value 1", .text = u"data list label 1"}};
   client().popup_controller(manager()).UpdateDataListValues(options);
 
   ASSERT_EQ(1, client().popup_controller(manager()).GetLineCount());
@@ -257,11 +257,11 @@ TEST_F(AutofillSuggestionControllerTest, PopupsWithOnlyDataLists) {
   ASSERT_EQ(
       1u,
       client().popup_controller(manager()).GetSuggestionAt(0).labels[0].size());
-  EXPECT_EQ(options[0].content, client()
-                                    .popup_controller(manager())
-                                    .GetSuggestionAt(0)
-                                    .labels[0][0]
-                                    .value);
+  EXPECT_EQ(options[0].text, client()
+                                 .popup_controller(manager())
+                                 .GetSuggestionAt(0)
+                                 .labels[0][0]
+                                 .value);
   EXPECT_EQ(
       std::u16string(),
       client().popup_controller(manager()).GetSuggestionAt(0).additional_label);
