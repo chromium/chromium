@@ -2348,7 +2348,7 @@
     "args": ["--enable-blink-features=NonStandardAppearanceValuesHighUsage",
              "--enable-blink-features=NonStandardAppearanceValueSliderVertical"],
     "owners": ["dizhangg@chromium.org"],
-    "expires": "Jul 1, 2024"
+    "expires": "Jul 1, 2025"
   },
   {
     "prefix": "url-non-special",
