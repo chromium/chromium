@@ -6,10 +6,12 @@
 
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/tcp_stream_attempt.h"
+#include "net/ssl/ssl_cert_request_info.h"
 
 namespace net {
 
@@ -38,6 +40,10 @@ LoadState TlsStreamAttempt::GetLoadState() const {
     case State::kTlsAttemptComplete:
       return LOAD_STATE_SSL_HANDSHAKE;
   }
+}
+
+scoped_refptr<SSLCertRequestInfo> TlsStreamAttempt::GetCertRequestInfo() {
+  return ssl_cert_request_info_;
 }
 
 int TlsStreamAttempt::StartInternal() {
@@ -138,12 +144,15 @@ int TlsStreamAttempt::DoTlsAttemptComplete(int rv) {
 
   // TODO(crbug.com/346835898): Record some histograms as SSLConnectJob does.
 
-  // TODO(crbug.com/346835898): Handle following errors as SSLConnectJob does.
-  CHECK_NE(rv, ERR_SSL_CLIENT_AUTH_CERT_NEEDED) << "Not implemented yet";
+  // TODO(crbug.com/346835898): Handle the following error as SSLConnectJob
+  // does.
   CHECK_NE(rv, ERR_ECH_NOT_NEGOTIATED) << "Not implemented yet";
 
   if (rv == OK || IsCertificateError(rv)) {
     SetStreamSocket(std::move(ssl_socket_));
+  } else if (rv == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
+    ssl_cert_request_info_ = base::MakeRefCounted<SSLCertRequestInfo>();
+    ssl_socket_->GetSSLCertRequestInfo(ssl_cert_request_info_.get());
   }
 
   return rv;

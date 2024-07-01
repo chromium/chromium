@@ -73,6 +73,10 @@ std::unique_ptr<StreamSocket> StreamAttempt::ReleaseStreamSocket() {
   return std::move(stream_socket_);
 }
 
+scoped_refptr<SSLCertRequestInfo> StreamAttempt::GetCertRequestInfo() {
+  return nullptr;
+}
+
 void StreamAttempt::SetStreamSocket(std::unique_ptr<StreamSocket> socket) {
   stream_socket_ = std::move(socket);
 }

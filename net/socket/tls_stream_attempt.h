@@ -8,11 +8,13 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/timer/timer.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/socket/stream_attempt.h"
+#include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_config.h"
 
 namespace net {
@@ -56,7 +58,9 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
 
   ~TlsStreamAttempt() override;
 
+  // StreamAttempt implementations:
   LoadState GetLoadState() const override;
+  scoped_refptr<SSLCertRequestInfo> GetCertRequestInfo() override;
 
   bool IsTlsHandshakeStarted() { return tls_handshake_started_; }
 
@@ -90,6 +94,7 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
   bool tls_handshake_started_ = false;
   base::OneShotTimer tls_handshake_timeout_timer_;
   std::unique_ptr<SSLClientSocket> ssl_socket_;
+  scoped_refptr<SSLCertRequestInfo> ssl_cert_request_info_;
 };
 
 }  // namespace net

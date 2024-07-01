@@ -22,6 +22,7 @@
 #include "net/socket/next_proto.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/tcp_stream_attempt.h"
+#include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_config.h"
 #include "net/ssl/test_ssl_config_service.h"
 #include "net/test/gtest_util.h"
@@ -357,6 +358,32 @@ TEST_F(TlsStreamAttemptTest, NegotiatedHttp2) {
       helper.attempt()->ReleaseStreamSocket();
   ASSERT_TRUE(stream_socket);
   EXPECT_EQ(stream_socket->GetNegotiatedProtocol(), kProtoHTTP2);
+}
+
+TEST_F(TlsStreamAttemptTest, ClientAuthCertNeeded) {
+  const HostPortPair kHostPortPair("a.test", 443);
+
+  StaticSocketDataProvider data;
+  socket_factory().AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
+  ssl.cert_request_info = base::MakeRefCounted<SSLCertRequestInfo>();
+  ssl.cert_request_info->host_and_port = kHostPortPair;
+  socket_factory().AddSSLSocketDataProvider(&ssl);
+
+  TlsStreamAttemptHelper helper(params());
+  int rv = helper.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = helper.WaitForCompletion();
+  EXPECT_THAT(rv, IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED));
+
+  std::unique_ptr<StreamSocket> stream_socket =
+      helper.attempt()->ReleaseStreamSocket();
+  ASSERT_FALSE(stream_socket);
+  scoped_refptr<SSLCertRequestInfo> cert_request_info =
+      helper.attempt()->GetCertRequestInfo();
+  ASSERT_TRUE(cert_request_info);
+  EXPECT_EQ(cert_request_info->host_and_port, kHostPortPair);
 }
 
 }  // namespace net

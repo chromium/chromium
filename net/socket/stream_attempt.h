@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_states.h"
@@ -22,6 +23,7 @@ class ClientSocketFactory;
 class HttpNetworkSession;
 class SocketPerformanceWatcherFactory;
 class SSLClientContext;
+class SSLCertRequestInfo;
 class StreamSocket;
 class NetworkQualityEstimator;
 class NetLog;
@@ -67,6 +69,10 @@ class NET_EXPORT_PRIVATE StreamAttempt {
 
   // Returns the load state of this attempt.
   virtual LoadState GetLoadState() const = 0;
+
+  // If the attempt failed with ERR_SSL_CLIENT_AUTH_CERT_NEEDED, returns the
+  // SSLCertRequestInfo received. Otherwise, returns nullptr.
+  virtual scoped_refptr<SSLCertRequestInfo> GetCertRequestInfo();
 
   std::unique_ptr<StreamSocket> ReleaseStreamSocket();
 
