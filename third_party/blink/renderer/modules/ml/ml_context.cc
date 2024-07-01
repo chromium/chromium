@@ -4,12 +4,9 @@
 
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 
-#include "base/notreached.h"
 #include "services/webnn/public/cpp/context_properties.h"
-#include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
-#include "services/webnn/public/mojom/features.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -20,48 +17,18 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_op_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_support_limits.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_buffer.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_error.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
 
 namespace {
-
-webnn::mojom::blink::CreateContextOptions::Device ConvertBlinkDeviceTypeToMojo(
-    const V8MLDeviceType& device_type_blink) {
-  switch (device_type_blink.AsEnum()) {
-    case V8MLDeviceType::Enum::kCpu:
-      return webnn::mojom::blink::CreateContextOptions::Device::kCpu;
-    case V8MLDeviceType::Enum::kGpu:
-      return webnn::mojom::blink::CreateContextOptions::Device::kGpu;
-    case V8MLDeviceType::Enum::kNpu:
-      return webnn::mojom::blink::CreateContextOptions::Device::kNpu;
-  }
-}
-
-webnn::mojom::blink::CreateContextOptions::PowerPreference
-ConvertBlinkPowerPreferenceToMojo(
-    const V8MLPowerPreference& power_preference_blink) {
-  switch (power_preference_blink.AsEnum()) {
-    case V8MLPowerPreference::Enum::kAuto:
-      return webnn::mojom::blink::CreateContextOptions::PowerPreference::
-          kDefault;
-    case V8MLPowerPreference::Enum::kLowPower:
-      return webnn::mojom::blink::CreateContextOptions::PowerPreference::
-          kLowPower;
-    case V8MLPowerPreference::Enum::kHighPerformance:
-      return webnn::mojom::blink::CreateContextOptions::PowerPreference::
-          kHighPerformance;
-  }
-}
 
 MLSupportLimits* SupportedDataTypesToSupportLimits(
     const webnn::SupportedDataTypes& supported_data_types) {
@@ -77,26 +44,6 @@ MLSupportLimits* SupportedDataTypesToSupportLimits(
 
 }  // namespace
 
-// static
-void MLContext::ValidateAndCreate(ScriptPromiseResolver<MLContext>* resolver,
-                                  MLContextOptions* options,
-                                  ML* ml) {
-  ScopedMLTrace scoped_trace("MLContext::ValidateAndCreate");
-
-  auto options_mojo = webnn::mojom::blink::CreateContextOptions::New(
-      ConvertBlinkDeviceTypeToMojo(options->deviceType()),
-      ConvertBlinkPowerPreferenceToMojo(options->powerPreference()),
-      options->numThreads());
-
-  ml->RecordPendingResolver(resolver);
-  ml->CreateWebNNContext(
-      std::move(options_mojo),
-      WTF::BindOnce(&MLContext::OnCreateWebNNContext, WrapPersistent(options),
-                    WrapPersistent(ml), std::move(scoped_trace),
-                    WrapPersistent(resolver)));
-  return;
-}
-
 MLContext::MLContext(
     const V8MLDevicePreference device_preference,
     const V8MLDeviceType device_type,
@@ -104,8 +51,7 @@ MLContext::MLContext(
     const V8MLModelFormat model_format,
     const unsigned int num_threads,
     ML* ml,
-    webnn::mojom::blink::CreateContextSuccessPtr create_context_success,
-    ScriptState* script_state)
+    webnn::mojom::blink::CreateContextSuccessPtr create_context_success)
     : device_preference_(device_preference),
       device_type_(device_type),
       power_preference_(power_preference),
@@ -114,9 +60,9 @@ MLContext::MLContext(
       ml_(ml),
       remote_context_(ml->GetExecutionContext()),
       properties_(std::move(create_context_success->context_properties)) {
-  remote_context_.Bind(std::move(create_context_success->context_remote),
-                       ExecutionContext::From(script_state)
-                           ->GetTaskRunner(TaskType::kMachineLearning));
+  remote_context_.Bind(
+      std::move(create_context_success->context_remote),
+      ml_->GetExecutionContext()->GetTaskRunner(TaskType::kMachineLearning));
 }
 
 MLContext::~MLContext() = default;
@@ -198,33 +144,6 @@ void MLContext::CreateWebNNGraph(
 
   remote_context_->CreateGraph(std::move(graph_info),
                                WTF::BindOnce(std::move(callback)));
-}
-
-void MLContext::OnCreateWebNNContext(
-    MLContextOptions* options,
-    ML* ml,
-    ScopedMLTrace scoped_trace,
-    ScriptPromiseResolver<MLContext>* resolver,
-    webnn::mojom::blink::CreateContextResultPtr result) {
-  ml->RemovePendingResolver(resolver);
-  ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state) {
-    return;
-  }
-
-  if (result->is_error()) {
-    const auto& create_context_error = result->get_error();
-    resolver->RejectWithDOMException(
-        WebNNErrorCodeToDOMExceptionCode(create_context_error->code),
-        create_context_error->message);
-    return;
-  }
-  auto* context = MakeGarbageCollected<MLContext>(
-      options->devicePreference(), options->deviceType(),
-      options->powerPreference(), options->modelFormat(), options->numThreads(),
-      ml, std::move(result->get_success()), script_state);
-
-  resolver->Resolve(context);
 }
 
 void MLContext::CreateWebNNBuffer(

@@ -9,14 +9,11 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_preference.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_model_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_power_preference.h"
-#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
-#include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -30,29 +27,20 @@ class ML;
 class MLBuffer;
 class MLBufferDescriptor;
 class MLComputeResult;
-class MLContextOptions;
 class MLOpSupportLimits;
 
 class MODULES_EXPORT MLContext : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // Resolves `resolver` with a newly created MLContext. The caller must call
-  // `Promise()` on `resolver` before calling this method.
-  static void ValidateAndCreate(ScriptPromiseResolver<MLContext>* resolver,
-                                MLContextOptions* options,
-                                ML* ml);
-
-  // The constructor shouldn't be called directly. The callers should use the
-  // ValidateAndCreate() method instead.
-  MLContext(const V8MLDevicePreference device_preference,
-            const V8MLDeviceType device_type,
-            const V8MLPowerPreference power_preference,
-            const V8MLModelFormat model_format,
-            const unsigned int num_threads,
-            ML* ml,
-            webnn::mojom::blink::CreateContextSuccessPtr create_context_success,
-            ScriptState* script_state);
+  MLContext(
+      const V8MLDevicePreference device_preference,
+      const V8MLDeviceType device_type,
+      const V8MLPowerPreference power_preference,
+      const V8MLModelFormat model_format,
+      const unsigned int num_threads,
+      ML* ml,
+      webnn::mojom::blink::CreateContextSuccessPtr create_context_success);
 
   MLContext(const MLContext&) = delete;
   MLContext& operator=(const MLContext&) = delete;
@@ -137,16 +125,6 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   const MLOpSupportLimits* opSupportLimits(ScriptState* script_state);
 
  private:
-  // The callback of creating `WebNNContext` mojo interface from WebNN Service.
-  // Return `CreateContextResult::kNotSupported` on non-supported input
-  // configuration.
-  static void OnCreateWebNNContext(
-      MLContextOptions* options,
-      ML* ml,
-      ScopedMLTrace scoped_trace,
-      ScriptPromiseResolver<MLContext>* resolver,
-      webnn::mojom::blink::CreateContextResultPtr result);
-
   // Validate and write ArrayBuffer data to hardware accelerated OS
   // machine learning buffers in the WebNN Service.
   // `src_data` is the source span of the array buffer data.
