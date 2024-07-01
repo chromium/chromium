@@ -97,8 +97,6 @@ found in the LICENSE file.
 
     <!-- The size of the text for tab titles. -->
     <dimen name="compositor_tab_title_text_size">13sp</dimen>
-    <!-- The size of the text for group titles. -->
-    <dimen name="compositor_group_title_text_size">12sp</dimen>
     <!-- The size of the bounding box for favicons. -->
     <dimen name="compositor_tab_title_favicon_size">16dp</dimen>
     <!-- Slop value for allowing slight misses on the compositor button. -->
