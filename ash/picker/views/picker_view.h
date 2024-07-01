@@ -144,11 +144,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   void OnClearResultsTimerFired();
 
   // Displays `results` in the search view.
-  // If `show_no_results_found` is true, `results` is empty and no results were
-  // previously published, then a "no results found" view is shown instead of a
-  // blank view.
-  void PublishSearchResults(bool show_no_results_found,
-                            std::vector<PickerSearchResultsSection> results);
+  // If `results` is empty and no results were previously published, then a "no
+  // results found" view is shown instead of a blank view.
+  void PublishSearchResults(std::vector<PickerSearchResultsSection> results);
 
   // Selects a category. This shows the category view and fetches zero-state
   // results for the category, which are returned to `PublishCategoryResults`.

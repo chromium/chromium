@@ -679,6 +679,49 @@ TEST_F(PickerViewTest, SearchingReplacesOldResultsWithNewResults) {
           Property("text", &views::Label::GetText, u"Matching links")))));
 }
 
+TEST_F(PickerViewTest, ShowsNoResultsBeforeTimeout) {
+  base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
+  FakePickerViewDelegate delegate({
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue(std::move(callback));
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  task_environment()->FastForwardBy(PickerView::kClearResultsTimeout -
+                                    base::Milliseconds(1));
+  future.Take().Run({});
+
+  EXPECT_TRUE(picker_view->search_results_view_for_testing()
+                  .no_results_view_for_testing()
+                  ->GetVisible());
+}
+
+TEST_F(PickerViewTest, ShowsNoResultsAfterTimeout) {
+  base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
+  FakePickerViewDelegate delegate({
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue(std::move(callback));
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  task_environment()->FastForwardBy(PickerView::kClearResultsTimeout);
+  future.Take().Run({});
+
+  EXPECT_TRUE(picker_view->search_results_view_for_testing()
+                  .no_results_view_for_testing()
+                  ->GetVisible());
+}
+
 TEST_F(PickerViewTest, DoesNotClearResultsBeforeTimeout) {
   base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
   FakePickerViewDelegate delegate({
@@ -842,7 +885,17 @@ TEST_F(PickerViewTest, RecordsSearchLatencyAfterSearchFinished) {
             // The search automatically publishes results after burn-in + 50ms,
             // so publish "burn in results" before that.
             task_environment()->FastForwardBy(PickerController::kBurnInPeriod);
-            callback.Run({});
+            // This needs to be non-empty, or else `MarkSearchResultsUpdated`
+            // will be called with `kNoResultsFound` - which does not emit the
+            // search latency metric.
+            // TODO: b/349913604 - Replace the metric with a new one which
+            // records search latency even if "no results found" was shown.
+            callback.Run({
+                PickerSearchResultsSection(
+                    PickerSectionType::kSuggestions,
+                    {{PickerSearchResult::Text(u"result")}},
+                    /*has_more_results=*/false),
+            });
           }),
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
@@ -1572,26 +1625,6 @@ TEST_F(PickerViewTest,
       u"a");
   EXPECT_TRUE(
       view->search_field_view_for_testing().textfield_for_testing().HasFocus());
-}
-
-TEST_F(PickerViewTest, AllCategorySearchDoesNotShowNoResultsPage) {
-  base::test::TestFuture<void> future;
-  FakePickerViewDelegate delegate({
-      .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
-            future.SetValue();
-            callback.Run({});
-          }),
-  });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
-  widget->Show();
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
-  ASSERT_TRUE(future.Wait());
-
-  EXPECT_FALSE(GetPickerViewFromWidget(*widget)
-                   ->search_results_view_for_testing()
-                   .no_results_view_for_testing()
-                   ->GetVisible());
 }
 
 TEST_F(PickerViewTest, CategoryOnlySearchShowsNoResultsPage) {

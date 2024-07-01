@@ -385,9 +385,8 @@ void PickerView::StartSearch(const std::u16string& query) {
                                                weak_ptr_factory_.GetWeakPtr()));
     delegate_->StartSearch(
         query, selected_category_,
-        base::BindRepeating(
-            &PickerView::PublishSearchResults, weak_ptr_factory_.GetWeakPtr(),
-            /*show_no_results_found=*/selected_category_.has_value()));
+        base::BindRepeating(&PickerView::PublishSearchResults,
+                            weak_ptr_factory_.GetWeakPtr()));
   } else if (selected_category_.has_value()) {
     SetActivePage(category_results_view_);
   } else {
@@ -410,7 +409,6 @@ void PickerView::OnClearResultsTimerFired() {
 }
 
 void PickerView::PublishSearchResults(
-    bool show_no_results_found,
     std::vector<PickerSearchResultsSection> results) {
   bool clear_stale_results = clear_results_timer_.IsRunning();
   if (clear_stale_results) {
@@ -418,10 +416,7 @@ void PickerView::PublishSearchResults(
     search_results_view_->ClearSearchResults();
   }
 
-  // TODO: b/333826943: This is a hacky way to detect if there are no results.
-  // Design a better API for notifying when the search has completed without any
-  // results.
-  if (show_no_results_found && results.empty()) {
+  if (results.empty()) {
     bool no_results_found_shown = search_results_view_->SearchStopped();
     if (no_results_found_shown) {
       performance_metrics_.MarkSearchResultsUpdated(
