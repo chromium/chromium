@@ -52,6 +52,7 @@
             android:drawableTop="@drawable/ic_action_home"
             android:text="Home"
             android:gravity="center_horizontal"
+            tools:ignore="UseCompatTextViewDrawableXml"
             android:layout_weight="1">
         </TextView>
         <!--suppress HardcodedText -->
@@ -62,6 +63,7 @@
             android:drawableTop="@drawable/ic_alert_error"
             android:text="Crashes"
             android:gravity="center_horizontal"
+            tools:ignore="UseCompatTextViewDrawableXml"
             android:layout_weight="1">
         </TextView>
         <!--suppress HardcodedText -->
@@ -72,6 +74,7 @@
             android:drawableTop="@drawable/ic_flag"
             android:text="Flags"
             android:gravity="center_horizontal"
+            tools:ignore="UseCompatTextViewDrawableXml"
             android:layout_weight="1">
         </TextView>
         <!--suppress HardcodedText -->

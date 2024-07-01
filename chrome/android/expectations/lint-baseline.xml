@@ -1840,39 +1840,6 @@
 
     <issue
         id="UseCompatTextViewDrawableXml"
-        message="Use `app:drawableTopCompat` instead of `android:drawableTop`"
-        errorLine1="            android:drawableTop=&quot;@drawable/ic_action_home&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/nonembedded/java/res_devui/layout/activity_main.xml"
-            line="50"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UseCompatTextViewDrawableXml"
-        message="Use `app:drawableTopCompat` instead of `android:drawableTop`"
-        errorLine1="            android:drawableTop=&quot;@drawable/ic_alert_error&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/nonembedded/java/res_devui/layout/activity_main.xml"
-            line="60"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UseCompatTextViewDrawableXml"
-        message="Use `app:drawableTopCompat` instead of `android:drawableTop`"
-        errorLine1="            android:drawableTop=&quot;@drawable/ic_flag&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/nonembedded/java/res_devui/layout/activity_main.xml"
-            line="70"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UseCompatTextViewDrawableXml"
         message="Use `app:drawableEndCompat` instead of `android:drawableEnd`"
         errorLine1="    android:drawableEnd=&quot;@drawable/exclamation_triangle&quot;"
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
