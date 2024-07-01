@@ -1618,12 +1618,7 @@
   },
   "telemetry_perf_unittests": {
     "label": "//chrome/test:telemetry_perf_unittests",
-    "type": "script",
-    "script": "//testing/scripts/run_telemetry_as_googletest.py",
-    "args": [
-      "../../tools/perf/run_tests",
-      "-v",
-    ],
+    "type": "generated_script",
   },
   "telemetry_perf_unittests_android_chrome": {
     "label": "//chrome/test:telemetry_perf_unittests_android_chrome",

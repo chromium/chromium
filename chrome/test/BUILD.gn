@@ -1129,16 +1129,9 @@ if (is_android) {
     "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
   ]
   if (is_chromeos_ash && is_chromeos_device) {
-    # For native CrOS VM/DUT tests, prepend the cros_test_wrapper to the test
-    # command, which will automatically handle spinning up a VM and/or deploying
-    # the browser to the DUT prior to test execution.
-    generate_wrapper("telemetry_gpu_integration_test") {
-      executable = "$root_out_dir/bin/cros_test_wrapper"
-      wrapper_script = "$root_out_dir/bin/run_${target_name}"
-      executable_args = [ "../../testing/scripts/run_gpu_integration_test_as_googletest.py" ] + _telemetry_args
-
-      testonly = true
-      data_deps = _telemetry_data_deps + [ "//chromeos:cros_test_wrapper" ]
+    cros_test_wrapper_script_test("telemetry_gpu_integration_test") {
+      args = [ "../../testing/scripts/run_gpu_integration_test_as_googletest.py" ] + _telemetry_args
+      data_deps = _telemetry_data_deps
     }
   } else {
     script_test("telemetry_gpu_integration_test") {
@@ -6004,12 +5997,31 @@ group("telemetry_perf_unittests_base") {
 }
 
 if (!is_android) {
-  group("telemetry_perf_unittests") {
-    testonly = true
-    data_deps = [
-      ":telemetry_perf_unittests_base",
-      "//tools/perf:perf",
-    ]
+  _args = [
+    "../../tools/perf/run_tests",
+    "-v",
+    "--chromium-output-directory=@WrappedPath(.)",
+  ]
+  if (is_debug) {
+    _args += [ "--browser=debug" ]
+  } else {
+    _args += [ "--browser=release" ]
+  }
+  _data_deps = [
+    ":telemetry_perf_unittests_base",
+    "//tools/perf:perf",
+  ]
+  if (is_chromeos_ash && is_chromeos_device) {
+    cros_test_wrapper_script_test("telemetry_perf_unittests") {
+      args = [ "../../testing/scripts/run_telemetry_as_googletest.py" ] + _args
+      data_deps = _data_deps
+    }
+  } else {
+    script_test("telemetry_perf_unittests") {
+      script = "//testing/scripts/run_telemetry_as_googletest.py"
+      args = _args
+      data_deps = _data_deps
+    }
   }
 } else {
   template("telemetry_perf_unittests_android_template") {

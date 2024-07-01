@@ -1749,14 +1749,9 @@ targets.binaries.script(
     ],
 )
 
-targets.binaries.script(
+targets.binaries.generated_script(
     name = "telemetry_perf_unittests",
     label = "//chrome/test:telemetry_perf_unittests",
-    script = "//testing/scripts/run_telemetry_as_googletest.py",
-    args = [
-        "../../tools/perf/run_tests",
-        "-v",
-    ],
 )
 
 targets.binaries.script(

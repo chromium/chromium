@@ -508,6 +508,32 @@ template("generate_runner_script") {
   }
 }
 
+# Handy template to define a generated_script test prepended with the
+# cros_test_wrapper, which will automatically handle spinning up a CrOS VM
+# and/or deploying the browser to the DUT prior to test execution.
+template("cros_test_wrapper_script_test") {
+  forward_variables_from(invoker,
+                         [
+                           "data_deps",
+                           "args",
+                         ])
+  generate_wrapper("${target_name}") {
+    executable = "$root_out_dir/bin/cros_test_wrapper"
+    wrapper_script = "$root_out_dir/bin/run_${target_name}"
+    testonly = true
+
+    if (!defined(args)) {
+      args = []
+    }
+    executable_args = args
+
+    if (!defined(data_deps)) {
+      data_deps = []
+    }
+    data_deps += [ "//chromeos:cros_test_wrapper" ]
+  }
+}
+
 template("tast_test") {
   forward_variables_from(invoker, "*")
 
