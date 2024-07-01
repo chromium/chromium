@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//components/optimization_guide/features.gni")
@@ -930,6 +931,10 @@ source_set("unit_tests") {
       "//components/history_embeddings",
       "//ui/base/clipboard:clipboard_test_support",
     ]
+  }
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/constants:constants" ]
   }
 
   if (use_blink) {

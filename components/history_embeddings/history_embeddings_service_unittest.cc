@@ -30,16 +30,23 @@
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace history_embeddings {
 
 class HistoryEmbeddingsServiceTest : public testing::Test {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        kHistoryEmbeddings, {
-                                {"UseMlEmbedder", "false"},
-                                {"SearchPassageMinimumWordCount", "3"},
-                            });
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kHistoryEmbeddings,
+          {{"UseMlEmbedder", "false"}, {"SearchPassageMinimumWordCount", "3"}}},
+#if BUILDFLAG(IS_CHROMEOS)
+         {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        },
+        /*disabled_features=*/{});
 
     OSCryptMocker::SetUp();
 

@@ -173,7 +173,7 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       prefs->GetInteger(history_clusters::prefs::kLastSelectedTab));
 
   bool enable_history_embeddings =
-      base::FeatureList::IsEnabled(history_embeddings::kHistoryEmbeddings);
+      history_embeddings::IsHistoryEmbeddingEnabled();
   source->AddBoolean("enableHistoryEmbeddings", enable_history_embeddings);
   static constexpr webui::LocalizedString kHistoryEmbeddingsStrings[] = {
       {"historyEmbeddingsDisclaimer", IDS_HISTORY_EMBEDDINGS_DISCLAIMER},

@@ -1,4 +1,5 @@
 include_rules = [
+  "+chromeos/constants/chromeos_features.h",
   "+components/history",
   "+components/keyed_service/core",
   "+components/os_crypt/sync",

@@ -11,6 +11,10 @@
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "content/public/test/browser_test.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 class HistoryUIBrowserTest : public WebUIMochaBrowserTest {
  protected:
   HistoryUIBrowserTest() {
@@ -182,8 +186,14 @@ IN_PROC_BROWSER_TEST_F(HistoryProductSpecificationsListTest, Load) {
 class HistoryWithHistoryEmbeddingsTest : public WebUIMochaBrowserTest {
  protected:
   HistoryWithHistoryEmbeddingsTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        history_embeddings::kHistoryEmbeddings);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{history_embeddings::kHistoryEmbeddings,
+#if BUILDFLAG(IS_CHROMEOS)
+                              chromeos::features::
+                                  kFeatureManagementHistoryEmbedding
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        },
+        /*disabled_features=*/{});
     set_test_loader_host(chrome::kChromeUIHistoryHost);
   }
 

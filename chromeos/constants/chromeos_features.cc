@@ -571,6 +571,10 @@ bool IsPkcs12ToChapsDualWriteEnabled() {
   return base::FeatureList::IsEnabled(kEnablePkcs12ToChapsDualWrite);
 }
 
+bool IsFeatureManagementHistoryEmbeddingEnabled() {
+  return base::FeatureList::IsEnabled(kFeatureManagementHistoryEmbedding);
+}
+
 int RoundedWindowsRadius() {
   if (!IsRoundedWindowsEnabled()) {
     return 0;

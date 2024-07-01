@@ -26,6 +26,10 @@
 #include "ui/base/l10n/time_format.h"
 #include "ui/webui/resources/cr_components/history_embeddings/history_embeddings.mojom.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 std::unique_ptr<KeyedService> BuildTestHistoryEmbeddingsService(
     content::BrowserContext* browser_context) {
   auto* profile = Profile::FromBrowserContext(browser_context);
@@ -61,8 +65,16 @@ std::unique_ptr<KeyedService> BuildTestOptimizationGuideKeyedService(
 class HistoryEmbeddingsHandlerTest : public testing::Test {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        history_embeddings::kHistoryEmbeddings, {{"UseMlEmbedder", "false"}});
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{history_embeddings::kHistoryEmbeddings,
+                               {{"UseMlEmbedder", "false"}}},
+#if BUILDFLAG(IS_CHROMEOS)
+                              {chromeos::features::
+                                   kFeatureManagementHistoryEmbedding,
+                               {{}}}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        },
+        /*disabled_features=*/{});
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());

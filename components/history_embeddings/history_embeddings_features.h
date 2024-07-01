@@ -87,6 +87,8 @@ extern const base::FeatureParam<int> kMaxPassagesPerPage;
 extern const base::FeatureParam<bool> kDeleteEmbeddings;
 extern const base::FeatureParam<bool> kRebuildEmbeddings;
 
+bool IsHistoryEmbeddingEnabled();
+
 }  // namespace history_embeddings
 
 #endif  // COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_FEATURES_H_

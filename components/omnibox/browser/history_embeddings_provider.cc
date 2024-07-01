@@ -36,7 +36,7 @@ HistoryEmbeddingsProvider::~HistoryEmbeddingsProvider() = default;
 
 void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
                                       bool minimal_changes) {
-  if (!base::FeatureList::IsEnabled(history_embeddings::kHistoryEmbeddings)) {
+  if (!history_embeddings::IsHistoryEmbeddingEnabled()) {
     return;
   }
 

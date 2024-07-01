@@ -1,4 +1,5 @@
 include_rules = [
+  "+chromeos/constants/chromeos_features.h",
   "+chromeos/crosapi/cpp/gurl_os_handler_utils.h",
   "+chromeos/crosapi/cpp/lacros_startup_state.h",
   "+components/bookmarks/browser",

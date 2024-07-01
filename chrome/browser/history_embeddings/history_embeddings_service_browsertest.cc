@@ -21,6 +21,10 @@
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
 #include "content/public/test/browser_test.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace history_embeddings {
 
 class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
@@ -31,7 +35,11 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
     feature_list_.InitWithFeaturesAndParameters(
         {{kHistoryEmbeddings,
           {{"UseMlEmbedder", "false"}, {"SendQualityLog", "true"}}},
-         {page_content_annotations::features::kPageContentAnnotations, {{}}}},
+         {page_content_annotations::features::kPageContentAnnotations, {{}}},
+#if BUILDFLAG(IS_CHROMEOS)
+         {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        },
         /*disabled_features=*/{});
 
     InProcessBrowserTest::SetUp();

@@ -181,6 +181,9 @@ bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled();
 [[nodiscard]] COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
     base::AutoReset<bool> SetAppInstallServiceUriEnabledForTesting();
 
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+bool IsFeatureManagementHistoryEmbeddingEnabled();
+
 }  // namespace features
 }  // namespace chromeos
 

@@ -45,7 +45,7 @@ void HistoryEmbeddingsTabHelper::OnUpdatedHistoryForNavigation(
     base::Time visit_time,
     const GURL& url) {
   if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !base::FeatureList::IsEnabled(history_embeddings::kHistoryEmbeddings) ||
+      !history_embeddings::IsHistoryEmbeddingEnabled() ||
       !GetHistoryEmbeddingsService()) {
     return;
   }
@@ -64,7 +64,7 @@ void HistoryEmbeddingsTabHelper::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
   if (!render_frame_host->IsInPrimaryMainFrame() ||
-      !base::FeatureList::IsEnabled(history_embeddings::kHistoryEmbeddings) ||
+      !history_embeddings::IsHistoryEmbeddingEnabled() ||
       !GetHistoryEmbeddingsService()) {
     return;
   }
