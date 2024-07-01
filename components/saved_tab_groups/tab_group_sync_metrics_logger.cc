@@ -118,6 +118,9 @@ void TabGroupSyncMetricsLogger::LogEvent(
     case TabGroupEvent::kTabRemoved:
       LogTabRemoved(group_create_origin, tab_create_origin);
       break;
+    case TabGroupEvent::kTabSelected:
+      // TODO(shaktisahu): Provide implementation in next CL.
+      break;
   }
 }
 

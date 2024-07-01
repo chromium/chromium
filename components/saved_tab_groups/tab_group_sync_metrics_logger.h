@@ -15,24 +15,6 @@
 
 namespace tab_groups {
 
-// LINT.IfChange(TabGroupEvent)
-// Various types of mutation events associated with tab groups and tabs.
-// Used for metrics only. These values are persisted to logs. Entries should not
-// be renumbered and numeric values should never be reused.
-enum class TabGroupEvent {
-  kTabGroupCreated = 0,
-  kTabGroupRemoved = 1,
-  kTabGroupOpened = 2,
-  kTabGroupClosed = 3,
-  kTabGroupVisualsChanged = 4,
-  kTabGroupTabsReordered = 5,
-  kTabAdded = 6,
-  kTabRemoved = 7,
-  kTabNavigated = 8,
-  kMaxValue = kTabNavigated,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabGroupEvent)
-
 // LINT.IfChange(DeviceType)
 // Represents device types which can be a local device or a remote device.
 // If it is a local device, only `kLocal` will be captured.

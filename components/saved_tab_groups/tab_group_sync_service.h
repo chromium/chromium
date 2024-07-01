@@ -14,6 +14,7 @@
 #include "base/supports_user_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/types.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -25,17 +26,6 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace tab_groups {
-
-// Whether the update was originated by a change in the local or remote
-// client.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.tab_group_sync
-enum class TriggerSource {
-  // The source is a remote chrome client.
-  REMOTE = 0,
-
-  // The source is the local chrome client.
-  LOCAL = 1,
-};
 
 // The core service class for handling tab group sync across devices. Provides
 // mutation methods to propagate local changes to remote and observer interface
