@@ -173,7 +173,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Speech) {
   RunSidePanelTest("side_panel/read_anything/speech_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, UpdateVoicePack) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_UpdateVoicePack DISABLED_UpdateVoicePack
+#else
+#define MAYBE_UpdateVoicePack UpdateVoicePack
+#endif
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, MAYBE_UpdateVoicePack) {
   RunSidePanelTest("side_panel/read_anything/update_voice_pack_test.js",
                    "mocha.run()");
 }

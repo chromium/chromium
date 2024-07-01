@@ -406,13 +406,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
             menuToOpen: () => this.$.fontMenu.get(),
           },
       );
-
-      this.toolbarContainerObserver_ =
-          new ResizeObserver(this.onToolbarResize_);
-      this.toolbarContainerObserver_.observe(this.$.toolbarContainer);
-      this.windowResizeCallback_ = this.onWindowResize_.bind(this);
-      window.addEventListener('resize', this.windowResizeCallback_);
     }
+    this.toolbarContainerObserver_ = new ResizeObserver(this.onToolbarResize_);
+    this.toolbarContainerObserver_.observe(this.$.toolbarContainer);
+    this.windowResizeCallback_ = this.onWindowResize_.bind(this);
+    window.addEventListener('resize', this.windowResizeCallback_);
 
     this.initFonts_();
     this.loadFontsStylesheet();

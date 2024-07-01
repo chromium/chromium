@@ -382,8 +382,7 @@ BASE_FEATURE(kReadAnythingImagesViaAlgorithm,
 bool IsReadAnythingImagesViaAlgorithmEnabled() {
   return base::FeatureList::IsEnabled(
              ::features::kReadAnythingImagesViaAlgorithm) &&
-         IsReadAnythingWithAlgorithmEnabled() &&
-         IsReadAnythingReadAloudEnabled();
+         IsReadAnythingWithAlgorithmEnabled();
 }
 
 BASE_FEATURE(kReadAnythingDocsIntegration,
