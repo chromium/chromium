@@ -69,7 +69,10 @@ class SyncServiceFactoryTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     app_list::AppListSyncableServiceFactory::SetUseInTesting(false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    base::ThreadPoolInstance::Get()->FlushForTesting();
+    // There may tasks in flight referencing fields owned by the test fixture.
+    // Make sure they are flushed now to prevent memory safety errors, e.g.
+    // use-after-destruction errors.
+    task_environment_.RunUntilIdle();
   }
 
  protected:
