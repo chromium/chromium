@@ -545,6 +545,15 @@ class AppWindow : public content::WebContentsDelegate,
   // be fetched and set using this URL.
   GURL app_icon_url_;
 
+  // These callbacks are called when the navigation is finished on both browser
+  // and renderer sides.
+  std::vector<DidFinishFirstNavigationCallback>
+      on_did_finish_first_navigation_callbacks_;
+
+  // Whether the first navigation was completed in both browser and renderer
+  // processes.
+  bool did_finish_first_navigation_ = false;
+
   std::unique_ptr<NativeAppWindow> native_app_window_;
   std::unique_ptr<AppWindowContents> app_window_contents_;
   std::unique_ptr<AppDelegate> app_delegate_;
@@ -589,14 +598,6 @@ class AppWindow : public content::WebContentsDelegate,
   // Whether the app window is loaded and ready. It is used to resolve the
   // race condition of loading custom app icon and app content simultaneously.
   bool window_ready_ = false;
-
-  // These callbacks are called when the navigation is finished on both browser
-  // and renderer sides.
-  std::vector<DidFinishFirstNavigationCallback>
-      on_did_finish_first_navigation_callbacks_;
-  // Whether the first navigation was completed in both browser and renderer
-  // processes.
-  bool did_finish_first_navigation_ = false;
 
   // Allows tests to wait for draggable regions to be sent from the renderer.
   base::OnceClosure on_update_draggable_regions_callback_for_testing_;
