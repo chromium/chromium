@@ -933,7 +933,7 @@ bool SharedContextState::OnMemoryDump(
       raster::DumpGrMemoryStatistics(gr_context(), pmd, std::nullopt);
     }
   } else if (graphite_context()) {
-    // TODO(https://crbug.com/330806170): There's no Skia API to get the total
+    // TODO(https://crbug.com/337985503): There's no Skia API to get the total
     // total resource size including unbudgeted (client) allocations so just
     // emit the per-resource stats for non-background dumps for now. After we
     // add a Skia API to get total resource allocation size, we can add that to
