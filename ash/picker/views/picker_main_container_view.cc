@@ -9,6 +9,7 @@
 
 #include "ash/picker/views/picker_contents_view.h"
 #include "ash/picker/views/picker_page_view.h"
+#include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_style.h"
 #include "ash/style/system_shadow.h"
@@ -48,6 +49,48 @@ PickerMainContainerView::PickerMainContainerView() {
 }
 
 PickerMainContainerView::~PickerMainContainerView() = default;
+
+views::View* PickerMainContainerView::GetTopItem() {
+  return active_page_->GetTopItem();
+}
+
+views::View* PickerMainContainerView::GetBottomItem() {
+  return active_page_->GetBottomItem();
+}
+
+views::View* PickerMainContainerView::GetItemAbove(views::View* item) {
+  if (search_field_view_->Contains(item)) {
+    views::View* prev_item = GetNextPickerPseudoFocusableView(
+        item, PickerPseudoFocusDirection::kBackward, /*should_loop=*/false);
+    return Contains(prev_item) ? prev_item : nullptr;
+  }
+  // Try to get an item above `item`, skipping items outside of the active page
+  // (such as search field buttons).
+  return active_page_->GetItemAbove(item);
+}
+
+views::View* PickerMainContainerView::GetItemBelow(views::View* item) {
+  if (search_field_view_->Contains(item)) {
+    views::View* next_item = GetNextPickerPseudoFocusableView(
+        item, PickerPseudoFocusDirection::kForward, /*should_loop=*/false);
+    return Contains(next_item) ? next_item : nullptr;
+  }
+  // Try to get an item below `item`, skipping items outside of the active page
+  // (such as search field buttons).
+  return active_page_->GetItemBelow(item);
+}
+
+views::View* PickerMainContainerView::GetItemLeftOf(views::View* item) {
+  return active_page_->GetItemLeftOf(item);
+}
+
+views::View* PickerMainContainerView::GetItemRightOf(views::View* item) {
+  return active_page_->GetItemRightOf(item);
+}
+
+bool PickerMainContainerView::ContainsItem(views::View* item) {
+  return Contains(item);
+}
 
 PickerSearchFieldView* PickerMainContainerView::AddSearchFieldView(
     std::unique_ptr<PickerSearchFieldView> search_field_view) {

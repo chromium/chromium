@@ -1305,6 +1305,75 @@ TEST_F(PickerViewTest, ShiftTabKeyNavigatesSearchResultsWithoutEmojiBar) {
               Optional(PickerSearchResult::Text(u"Result B")));
 }
 
+TEST_F(PickerViewTest, ShiftTabNavigatesToClearButton) {
+  base::test::TestFuture<void> future;
+  FakePickerViewDelegate delegate({
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue();
+            callback.Run({
+                PickerSearchResultsSection(
+                    PickerSectionType::kSuggestions,
+                    {{PickerSearchResult::Text(u"Result A"),
+                      PickerSearchResult::Text(u"Result B")}},
+                    /*has_more_results=*/false),
+            });
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(future.Wait());
+  ViewDrawnWaiter().Wait(GetPickerViewFromWidget(*widget)
+                             ->search_results_view_for_testing()
+                             .section_list_view_for_testing()
+                             ->GetTopItem());
+
+  // Navigate backward, to clear button.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+
+  EXPECT_EQ(GetPickerViewFromWidget(*widget)
+                ->search_field_view_for_testing()
+                .textfield_for_testing()
+                .GetText(),
+            u"");
+}
+
+TEST_F(PickerViewTest, DownArrowKeyNavigatesFromClearButtonToSearchResults) {
+  base::test::TestFuture<void> future;
+  FakePickerViewDelegate delegate({
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue();
+            callback.Run({
+                PickerSearchResultsSection(
+                    PickerSectionType::kSuggestions,
+                    {{PickerSearchResult::Text(u"Result A"),
+                      PickerSearchResult::Text(u"Result B")}},
+                    /*has_more_results=*/false),
+            });
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(future.Wait());
+  ViewDrawnWaiter().Wait(GetPickerViewFromWidget(*widget)
+                             ->search_results_view_for_testing()
+                             .section_list_view_for_testing()
+                             ->GetTopItem());
+
+  // Navigate backward, to clear button.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  // Navigate downward, to the first search result.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+
+  EXPECT_THAT(delegate.last_inserted_result(),
+              Optional(PickerSearchResult::Text(u"Result A")));
+}
+
 TEST_F(PickerViewTest, ShowsSubmenuOnMouseHover) {
   FakePickerViewDelegate delegate({
       .zero_state_suggested_results =
