@@ -180,47 +180,72 @@ void SerializeContentType(const chrome_screen_ai::ContentType& content_type,
   }
 }
 
-void UpdateCharacterOffsets(const chrome_screen_ai::WordBox& word_box,
-                            ui::AXNodeData& inline_text_box) {
-  std::vector<int32_t> character_offsets = inline_text_box.GetIntListAttribute(
-      ax::mojom::IntListAttribute::kCharacterOffsets);
-
-  switch (word_box.direction()) {
+// Returns the width of the space between two consecutive words in the given
+// direction.
+int GetSpaceWidth(chrome_screen_ai::Direction direction,
+                  const chrome_screen_ai::Rect& word1,
+                  const chrome_screen_ai::Rect& word2) {
+  switch (direction) {
     case chrome_screen_ai::DIRECTION_LEFT_TO_RIGHT: {
-      int32_t line_offset =
-          base::ClampRound(inline_text_box.relative_bounds.bounds.x());
-      ranges::transform(
-          word_box.symbols(), std::back_inserter(character_offsets),
-          [line_offset](const chrome_screen_ai::SymbolBox& symbol) {
-            return symbol.bounding_box().x() - line_offset;
-          });
-      break;
-    }
-    case chrome_screen_ai::DIRECTION_RIGHT_TO_LEFT: {
-      int32_t line_offset =
-          base::ClampRound(inline_text_box.relative_bounds.bounds.x() +
-                           inline_text_box.relative_bounds.bounds.width());
-      ranges::transform(
-          word_box.symbols(), std::back_inserter(character_offsets),
-          [line_offset](const chrome_screen_ai::SymbolBox& symbol) {
-            return line_offset - symbol.bounding_box().x() -
-                   symbol.bounding_box().width();
-          });
-      break;
-    }
-    default:
-      // To be added when OCR supports it.
-      return;
-  }
+      return word2.x() - (word1.x() + word1.width());
 
-  if (character_offsets.size()) {
-    inline_text_box.AddIntListAttribute(
-        ax::mojom::IntListAttribute::kCharacterOffsets, character_offsets);
+      case chrome_screen_ai::DIRECTION_RIGHT_TO_LEFT:
+        return word1.x() - (word2.x() + word2.width());
+
+      case chrome_screen_ai::DIRECTION_TOP_TO_BOTTOM:
+      case chrome_screen_ai::DIRECTION_UNSPECIFIED:
+      case chrome_screen_ai::Direction_INT_MIN_SENTINEL_DO_NOT_USE_:
+      case chrome_screen_ai::Direction_INT_MAX_SENTINEL_DO_NOT_USE_:
+        // To be added when OCR supports it.
+        return 0;
+    }
   }
 }
 
+void UpdateCharacterOffsets(const chrome_screen_ai::WordBox& word_box,
+                            ui::AXNodeData& inline_text_box,
+                            int next_space_width) {
+  chrome_screen_ai::Direction direction = word_box.direction();
+
+  if (direction != chrome_screen_ai::DIRECTION_LEFT_TO_RIGHT &&
+      direction != chrome_screen_ai::DIRECTION_RIGHT_TO_LEFT) {
+    // To be added when OCR supports it. Without Character Offsets, character
+    // and word boundary boxes are not drawn.
+    return;
+  }
+
+  if (word_box.symbols().empty()) {
+    return;
+  }
+
+  std::vector<int32_t> character_offsets = inline_text_box.GetIntListAttribute(
+      ax::mojom::IntListAttribute::kCharacterOffsets);
+
+  int32_t line_offset =
+      (direction == chrome_screen_ai::DIRECTION_LEFT_TO_RIGHT)
+          ? base::ClampRound(inline_text_box.relative_bounds.bounds.x())
+          : base::ClampRound(inline_text_box.relative_bounds.bounds.x() +
+                             inline_text_box.relative_bounds.bounds.width());
+
+  ranges::transform(word_box.symbols(), std::back_inserter(character_offsets),
+                    [line_offset](const chrome_screen_ai::SymbolBox& symbol) {
+                      return abs(symbol.bounding_box().x() +
+                                 symbol.bounding_box().width() - line_offset);
+                    });
+
+  if (word_box.has_space_after()) {
+    // Character offsets are in the direction of text, so adding space is
+    // the same for LTR and RTL.
+    character_offsets.push_back(character_offsets.back() + next_space_width);
+  }
+
+  inline_text_box.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kCharacterOffsets, character_offsets);
+}
+
 void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
-                      ui::AXNodeData& inline_text_box) {
+                      ui::AXNodeData& inline_text_box,
+                      int next_space_width) {
   DCHECK_NE(inline_text_box.id, ui::kInvalidAXNodeID);
 
   // TODO(crbug.com/347622611): Drop empty words in preprocessing.
@@ -228,22 +253,23 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
     return;
   }
 
-  // The boundaries of each `inline_text_box` is computed as the union of the
-  // boundaries of all `word_box`es that are inside.
-  // TODO(crbug.com/40918372): What if the angles of orientation are different?
-  // Do we need to apply the related transform, or is the fact that the
-  // transform is the same between line and word boxes results in no difference?
+  // The boundaries of each `inline_text_box` is computed as the union of
+  // the boundaries of all `word_box`es that are inside.
+  // TODO(crbug.com/40918372): What if the angles of orientation are
+  // different? Do we need to apply the related transform, or is the fact
+  // that the transform is the same between line and word boxes results in
+  // no difference?
   inline_text_box.relative_bounds.bounds.Union(gfx::RectF(
       word_box.bounding_box().x(), word_box.bounding_box().y(),
       word_box.bounding_box().width(), word_box.bounding_box().height()));
 
-  UpdateCharacterOffsets(word_box, inline_text_box);
+  UpdateCharacterOffsets(word_box, inline_text_box, next_space_width);
 
   std::string inner_text =
       inline_text_box.GetStringAttribute(ax::mojom::StringAttribute::kName);
   inner_text += word_box.utf8_string();
-  // Word length should specify the number of characters, which differs from the
-  // number of bytes in multi-byte characters.
+  // Word length should specify the number of characters, which differs
+  // from the number of bytes in multi-byte characters.
   size_t word_length = base::UTF8ToUTF16(word_box.utf8_string()).length();
   if (word_box.has_space_after()) {
     inner_text += " ";
@@ -306,16 +332,17 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
 
 // Creates an inline text box for every style span in the provided
 // `static_text_node`, starting from `start_from_word_index` in the node's
-// `word_boxes`. Returns the number of inline text box nodes that have been
-// initialized in `node_data`.
+// `word_boxes`. Returns the number of inline text box nodes that have
+// been initialized in `node_data`.
 size_t SerializeWordBoxes(const google::protobuf::RepeatedPtrField<
                               chrome_screen_ai::WordBox>& word_boxes,
                           const int start_from_word_index,
                           const size_t node_index,
                           ui::AXNodeData& static_text_node,
                           std::vector<ui::AXNodeData>& node_data) {
-  if (word_boxes.empty())
+  if (word_boxes.empty()) {
     return 0u;
+  }
   DCHECK_LT(start_from_word_index, word_boxes.size());
   DCHECK_LT(node_index, node_data.size());
   DCHECK_NE(static_text_node.id, ui::kInvalidAXNodeID);
@@ -323,8 +350,8 @@ size_t SerializeWordBoxes(const google::protobuf::RepeatedPtrField<
   DCHECK_EQ(inline_text_box_node.role, ax::mojom::Role::kUnknown);
   inline_text_box_node.role = ax::mojom::Role::kInlineTextBox;
   inline_text_box_node.id = GetNextNegativeNodeID();
-  // The union of the bounding boxes in this formatting context is set as the
-  // bounding box of `inline_text_box_node`.
+  // The union of the bounding boxes in this formatting context is set as
+  // the bounding box of `inline_text_box_node`.
   DCHECK(inline_text_box_node.relative_bounds.bounds.IsEmpty());
 
   static_text_node.child_ids.push_back(inline_text_box_node.id);
@@ -339,7 +366,16 @@ size_t SerializeWordBoxes(const google::protobuf::RepeatedPtrField<
                           });
   for (auto word_iter = formatting_context_start;
        word_iter != formatting_context_end; ++word_iter) {
-    SerializeWordBox(*word_iter, inline_text_box_node);
+    int next_space_width = 0;
+    if (word_iter->has_space_after() &&
+        (word_iter + 1) != formatting_context_end) {
+      // Since words belong to the same formatting context, they have the
+      // same direction.
+      next_space_width =
+          GetSpaceWidth(word_iter->direction(), word_iter->bounding_box(),
+                        (word_iter + 1)->bounding_box());
+    }
+    SerializeWordBox(*word_iter, inline_text_box_node, next_space_width);
   }
 
   std::string language = formatting_context_start->language();
@@ -361,9 +397,10 @@ size_t SerializeWordBoxes(const google::protobuf::RepeatedPtrField<
 }
 
 // Returns the number of accessibility nodes that have been initialized in
-// `node_data`. A single `line_box` may turn into a number of inline text boxes
-// depending on how many formatting contexts it contains. If `line_box` is of a
-// non-textual nature, only one node will be initialized.
+// `node_data`. A single `line_box` may turn into a number of inline text
+// boxes depending on how many formatting contexts it contains. If
+// `line_box` is of a non-textual nature, only one node will be
+// initialized.
 size_t SerializeLineBox(const chrome_screen_ai::LineBox& line_box,
                         const size_t index,
                         ui::AXNodeData& parent_node,
@@ -388,8 +425,9 @@ size_t SerializeLineBox(const chrome_screen_ai::LineBox& line_box,
   SerializeDirection(line_box.direction(), line_box_node);
   parent_node.child_ids.push_back(line_box_node.id);
 
-  if (!ui::IsText(line_box_node.role))
+  if (!ui::IsText(line_box_node.role)) {
     return 1u;
+  }
   return 1u + SerializeWordBoxes(line_box.words(),
                                  /* start_from_word_index */ 0, (index + 1u),
                                  line_box_node, node_data);

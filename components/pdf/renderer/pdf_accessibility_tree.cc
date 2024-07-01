@@ -203,6 +203,8 @@ std::unique_ptr<ui::AXNodeData> CreateBannerNode(ui::AXNodeID id,
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+// TODO(crbug.com/40918372): Consider rotated images and PDF rotations in
+// creating the transform.
 gfx::Transform MakeTransformForImage(const gfx::RectF image_screen_size,
                                      const gfx::SizeF image_pixel_size) {
   // Nodes created with OCR results from the image will be misaligned on screen
@@ -1213,11 +1215,35 @@ void PdfAccessibilityTree::OnOcrDataReceived(
         // image node's bounds.
         node_from_ocr.relative_bounds.bounds = image_bounds;
       } else {
+        int original_width = node_from_ocr.relative_bounds.bounds.width();
         node_from_ocr.relative_bounds.bounds =
             transform.MapRect(node_from_ocr.relative_bounds.bounds);
         // Make all the other nodes relative to the page node.
         node_from_ocr.relative_bounds.bounds.Offset(image_bounds.x(),
                                                     image_bounds.y());
+
+        // Character offsets are computed in pixel and based on the image size
+        // that is sent to OCR. They should be scaled if the view size is
+        // different.
+        if (node_from_ocr.HasIntListAttribute(
+                ax::mojom::IntListAttribute::kCharacterOffsets) &&
+            node_from_ocr.relative_bounds.bounds.width() != original_width) {
+          std::vector<int32_t> character_offsets =
+              node_from_ocr.GetIntListAttribute(
+                  ax::mojom::IntListAttribute::kCharacterOffsets);
+
+          // TODO(crbug.com/40918372): Update when transform contains image/pdf
+          // rotation.
+          float ratio =
+              static_cast<float>(node_from_ocr.relative_bounds.bounds.width()) /
+              original_width;
+          base::ranges::for_each(character_offsets, [ratio](int32_t& offset) {
+            offset = static_cast<int32_t>(offset * ratio);
+          });
+          node_from_ocr.AddIntListAttribute(
+              ax::mojom::IntListAttribute::kCharacterOffsets,
+              character_offsets);
+        }
       }
       // Make all nodes relative to the root node.
       node_from_ocr.relative_bounds.offset_container_id = doc_node_->id;

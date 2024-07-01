@@ -471,7 +471,7 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
         "text_direction=ltr language=en\n"
         "      id=-7 inlineTextBox name=Day  (100, 100)-(19, 19) "
         "background_color=&FFFFFF00 color=&FF000000 text_direction=ltr "
-        "character_offsets=0,4,13 word_starts=0 word_ends=3\n"
+        "character_offsets=4,10,19,19 word_starts=0 word_ends=3\n"
         "  id=-8 contentInfo child_ids=-9 (800, 900)-(1, 1)\n"
         "    id=-9 staticText name=End of extracted text (800, 900)-(1, 1)\n");
     EXPECT_EQ(expected_update, update.ToString());
@@ -551,7 +551,7 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
         "text_direction=rtl language=fa\n"
         "      id=-7 inlineTextBox name=روز  (100, 100)-(19, 19) "
         "background_color=&FFFFFF00 color=&FF000000 text_direction=rtl "
-        "character_offsets=15,9,0 word_starts=0 word_ends=3\n"
+        "character_offsets=15,9,0,0 word_starts=0 word_ends=3\n"
         "  id=-8 contentInfo child_ids=-9 (800, 900)-(1, 1)\n"
         "    id=-9 staticText name=End of extracted text (800, 900)-(1, 1)\n");
     EXPECT_EQ(expected_update, update.ToString());
