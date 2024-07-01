@@ -1466,6 +1466,29 @@ void MaybeSetBoolSetting(bool value,
   setting = value;
 }
 
+void MaybeSetEyeGazeCorrectionSetting(
+    bool value,
+    const Vector<bool>& capability,
+    std::optional<EyeGazeCorrectionMode>& setting) {
+  if (!base::Contains(capability, value)) {
+    return;
+  }
+
+  setting = ParseEyeGazeCorrection(value);
+}
+
+void MaybeSetFaceFramingSetting(bool value,
+                                const Vector<bool>& capability,
+                                bool& has_setting,
+                                MeteringMode& setting) {
+  if (!base::Contains(capability, value)) {
+    return;
+  }
+
+  has_setting = true;
+  setting = ParseFaceFraming(value);
+}
+
 void MaybeSetDoubleSetting(double value,
                            const MediaSettingsRange& capability,
                            bool& has_setting,
@@ -1926,10 +1949,24 @@ void ImageCapture::SetVideoTrackDeviceSettingsFromTrack(
           *device_settings->background_blur, capabilities_->backgroundBlur(),
           settings->has_background_blur_mode, settings->background_blur_mode);
     }
+    if (device_settings->eye_gaze_correction.has_value() &&
+        capabilities_->hasEyeGazeCorrection()) {
+      MaybeSetEyeGazeCorrectionSetting(*device_settings->eye_gaze_correction,
+                                       capabilities_->eyeGazeCorrection(),
+                                       settings->eye_gaze_correction_mode);
+    }
+    if (device_settings->face_framing.has_value() &&
+        capabilities_->hasFaceFraming()) {
+      MaybeSetFaceFramingSetting(
+          *device_settings->face_framing, capabilities_->faceFraming(),
+          settings->has_face_framing_mode, settings->face_framing_mode);
+    }
 
     if (service_.is_bound() &&
         (settings->has_pan || settings->has_tilt || settings->has_zoom ||
-         settings->has_torch || settings->has_background_blur_mode)) {
+         settings->has_torch || settings->has_background_blur_mode ||
+         settings->has_face_framing_mode ||
+         settings->eye_gaze_correction_mode.has_value())) {
       service_->SetPhotoOptions(
           SourceId(), std::move(settings),
           WTF::BindOnce(&ImageCapture::OnSetVideoTrackDeviceSettingsFromTrack,
