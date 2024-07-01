@@ -22,11 +22,14 @@
         [[graphicsTablet.name]]
       </h2>
       <div class="subsection">
-        <cr-link-row id="customizeTabletButtons"
-            class="bottom-divider" on-click="onCustomizeTabletButtonsClick"
-            aria-describedby="graphicsTabletName"
-            label="$i18n{customizeTabletButtonsLabel}">
-        </cr-link-row>
+        <template is="dom-if"
+            if="[[showCustomizeTabletButtonsRow(graphicsTablet)]]">
+          <cr-link-row id="customizeTabletButtons"
+              class="bottom-divider" on-click="onCustomizeTabletButtonsClick"
+              aria-describedby="graphicsTabletName"
+              label="$i18n{customizeTabletButtonsLabel}">
+          </cr-link-row>
+        </template>
         <cr-link-row id="customizePenButtons"
             class="hr bottom-divider" on-click="onCustomizePenButtonsClick"
             aria-describedby="graphicsTabletName"

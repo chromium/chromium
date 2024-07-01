@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {DevicePageBrowserProxyImpl, fakeGraphicsTablets, Router, routes, SettingsGraphicsTabletSubpageElement} from 'chrome://os-settings/os_settings.js';
+import {DevicePageBrowserProxyImpl, fakeGraphicsTablets, fakeGraphicsTablets2, GraphicsTablet, Router, routes, SettingsGraphicsTabletSubpageElement} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -23,21 +23,41 @@ suite('<settings-graphics-tablet-subpage>', () => {
     DevicePageBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     Router.getInstance().navigateTo(routes.GRAPHICS_TABLET);
+  });
 
+  teardown(() => {
+    Router.getInstance().resetRouteForTesting();
     clearBody();
+  });
+
+  async function initializeGraphicsTablet(
+      fakeGraphicsTablets: GraphicsTablet[]) {
     graphicsTabletPage =
         document.createElement('settings-graphics-tablet-subpage');
     graphicsTabletPage.graphicsTablets = fakeGraphicsTablets;
     graphicsTabletPage.prefs = getFakePrefs();
     document.body.appendChild(graphicsTabletPage);
-    await flushTasks();
-  });
+    return flushTasks();
+  }
 
-  teardown(() => {
-    Router.getInstance().resetRouteForTesting();
-  });
+  test(
+      'hide customize tablet buttons row for device has metadata but no tablet buttons',
+      async () => {
+        await initializeGraphicsTablet(fakeGraphicsTablets2);
+        assertEquals(routes.GRAPHICS_TABLET, Router.getInstance().currentRoute);
+
+        const customizeTabletButtons =
+            graphicsTabletPage.shadowRoot!.querySelector<HTMLButtonElement>(
+                '#customizeTabletButtons');
+        const customizePenButtons =
+            graphicsTabletPage.shadowRoot!.querySelector<HTMLButtonElement>(
+                '#customizePenButtons');
+        assertFalse(isVisible(customizeTabletButtons));
+        assertTrue(isVisible(customizePenButtons));
+      });
 
   test('graphics tablet subpage visibility', async () => {
+    await initializeGraphicsTablet(fakeGraphicsTablets);
     assertEquals(routes.GRAPHICS_TABLET, Router.getInstance().currentRoute);
     const items = graphicsTabletPage.shadowRoot!.querySelectorAll('.device');
     // Verify that all graphics tablets are displayed and their ids are same

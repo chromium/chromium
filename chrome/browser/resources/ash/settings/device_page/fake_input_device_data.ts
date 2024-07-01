@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AcceleratorAction, ActionChoice, ChargeState, CustomizableButton, CustomizationRestriction, ExtendedFkeysModifier, GraphicsTablet, Keyboard, MetaKey, ModifierKey, Mouse, MouseButtonConfig, PointingStick, SimulateRightClickModifier, SixPackKeyInfo, SixPackShortcutModifier, StaticShortcutAction, Stylus, TopRowActionKey, Touchpad, Vkey} from './input_device_settings_types.js';
+import {AcceleratorAction, ActionChoice, ChargeState, CustomizableButton, CustomizationRestriction, ExtendedFkeysModifier, GraphicsTablet, GraphicsTabletButtonConfig, Keyboard, MetaKey, ModifierKey, Mouse, MouseButtonConfig, PointingStick, SimulateRightClickModifier, SixPackKeyInfo, SixPackShortcutModifier, StaticShortcutAction, Stylus, TopRowActionKey, Touchpad, Vkey} from './input_device_settings_types.js';
 
 const defaultSixPackKeyRemappings: SixPackKeyInfo = {
   pageDown: SixPackShortcutModifier.kSearch,
@@ -646,6 +646,7 @@ export const fakeGraphicsTablets: GraphicsTablet[] = [
         },
       ],
     },
+    graphicsTabletButtonConfig: GraphicsTabletButtonConfig.kNoConfig,
   },
   {
     id: 16,
@@ -705,6 +706,53 @@ export const fakeGraphicsTablets: GraphicsTablet[] = [
         },
       ],
     },
+    graphicsTabletButtonConfig:
+        GraphicsTabletButtonConfig.kWacomStandardFourButtons,
+  },
+];
+
+export const fakeGraphicsTablets2: GraphicsTablet[] = [
+  {
+    id: 15,
+    deviceKey: 'test:key',
+    name: 'Test device without tablet buttons',
+    settings: {
+      tabletButtonRemappings: [],
+      penButtonRemappings: [
+        {
+          name: 'Undo',
+          button: {
+            vkey: Vkey.kNum2,
+          },
+          remappingAction: {
+            keyEvent: {
+              vkey: Vkey.kKeyZ,
+              domCode: 0,
+              domKey: 0,
+              modifiers: 4,
+              keyDisplay: 'z',
+            },
+          },
+        },
+        {
+          name: 'Redo',
+          button: {
+            vkey: Vkey.kNum3,
+          },
+          remappingAction: {
+            keyEvent: {
+              vkey: Vkey.kKeyZ,
+              domCode: 0,
+              domKey: 0,
+              modifiers: 6,
+              keyDisplay: 'z',
+            },
+          },
+        },
+      ],
+    },
+    graphicsTabletButtonConfig:
+        GraphicsTabletButtonConfig.kWacomStandardFourButtons,
   },
 ];
 

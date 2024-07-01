@@ -84,6 +84,7 @@ export interface GraphicsTablet {
   id: number;
   name: string;
   settings: GraphicsTabletSettings;
+  graphicsTabletButtonConfig: GraphicsTabletButtonConfig;
 }
 
 export interface GraphicsTabletSettings {
@@ -156,6 +157,11 @@ export const CustomizationRestriction =
 
 export type MouseButtonConfig = InputDeviceSettingsTypes.MouseButtonConfig;
 export const MouseButtonConfig = InputDeviceSettingsTypes.MouseButtonConfig;
+
+export type GraphicsTabletButtonConfig =
+    InputDeviceSettingsTypes.GraphicsTabletButtonConfig;
+export const GraphicsTabletButtonConfig =
+    InputDeviceSettingsTypes.GraphicsTabletButtonConfig;
 
 export interface KeyboardObserverInterface {
   // Fired when the keyboard list is updated.
