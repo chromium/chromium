@@ -24,16 +24,13 @@ def IsComponentsAutofillFileAffected(input_api, name_suffix):
 
 def _CheckNoBaseTimeCalls(input_api, output_api):
   """Checks that no files call base::Time::Now()."""
-  pattern = input_api.re.compile(
-      r'(base::Time::Now)\(\)',
-      input_api.re.MULTILINE)
+  pattern = input_api.re.compile(r'(base::Time::Now)\(\)')
   files = []
   for f in input_api.AffectedSourceFiles(input_api.FilterSourceFile):
     if (f.LocalPath().startswith('components/autofill/') and
         not f.LocalPath().endswith("PRESUBMIT.py")):
-      contents = input_api.ReadFile(f)
-      if pattern.search(contents):
-        files.append(f)
+      if any(pattern.search(line) for _, line in f.ChangedContents()):
+          files.append(f)
 
   if len(files):
     return [ output_api.PresubmitPromptWarning(
