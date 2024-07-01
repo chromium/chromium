@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "chrome/test/base/ash/interactive/hotspot/hotspot_state_observer.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/ash/interactive/network/shill_service_util.h"
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
@@ -16,6 +17,10 @@
 
 namespace ash {
 namespace {
+
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOSSettingsId);
+
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(HotspotStateObserver, kHotspotStateService);
 
 class HotspotPolicyInteractiveUITest : public InteractiveAshTest {
  protected:
@@ -40,24 +45,25 @@ class HotspotPolicyInteractiveUITest : public InteractiveAshTest {
         shill_service_info().service_guid(),
         shill_service_info().service_name(), shill::kTypeCellular,
         shill::kStateOnline, /*visible=*/true);
+  }
 
+  const ShillServiceInfo& shill_service_info() { return shill_service_info_; }
+
+  void restrict_hotspot() {
     base::Value::Dict global_config;
     global_config.Set(::onc::global_network_config::kAllowCellularHotspot,
                       false);
     NetworkHandler::Get()->managed_network_configuration_handler()->SetPolicy(
-        ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
-        base::Value::List(), global_config);
+        ::onc::ONC_SOURCE_DEVICE_POLICY, std::string(), base::Value::List(),
+        global_config);
   }
-
-  const ShillServiceInfo& shill_service_info() { return shill_service_info_; }
 
  private:
   const ShillServiceInfo shill_service_info_ = ShillServiceInfo(/*id=*/0);
 };
 
-IN_PROC_BROWSER_TEST_F(HotspotPolicyInteractiveUITest, HotspotPolicy) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOSSettingsId);
-
+IN_PROC_BROWSER_TEST_F(HotspotPolicyInteractiveUITest,
+                       ApplyPolicyWithHotspotOff) {
   ui::ElementContext context =
       LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
 
@@ -69,13 +75,83 @@ IN_PROC_BROWSER_TEST_F(HotspotPolicyInteractiveUITest, HotspotPolicy) {
 
       NavigateSettingsToInternetPage(kOSSettingsId),
 
-      Log("Waiting for hotspot summary item to exist then wait for the policy "
-          "icon"),
+      Log("Waiting for hotspot summary item to exist"),
 
       WaitForElementExists(kOSSettingsId,
                            settings::hotspot::HotspotSummaryItem()),
 
+      Log("Enforce the policy to restrict users from enabling hotspot"),
+
+      Do([&]() { restrict_hotspot(); }),
+
+      Log("Wait for hotspot toggle to be disabled"),
+
       WaitForElementDisabled(kOSSettingsId, settings::hotspot::HotspotToggle()),
+
+      Log("Wait for the policy icon to be shown"),
+
+      WaitForElementExists(kOSSettingsId,
+                           settings::hotspot::HotspotPolicyIcon()),
+
+      Log("Test complete"));
+}
+
+IN_PROC_BROWSER_TEST_F(HotspotPolicyInteractiveUITest,
+                       ApplyPolicyWithHotspotOn) {
+  ui::ElementContext context =
+      LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
+
+  ShillManagerClient::Get()
+      ->GetTestInterface()
+      ->SetSimulateTetheringEnableResult(FakeShillSimulatedResult::kSuccess,
+                                         shill::kTetheringEnableResultSuccess);
+
+  // Run the following steps with the OS Settings context set as the default.
+  RunTestSequenceInContext(
+      context,
+
+      Log("Navigating to the internet page"),
+
+      NavigateSettingsToInternetPage(kOSSettingsId),
+
+      Log("Waiting for hotspot summary item to exist"),
+
+      WaitForElementExists(kOSSettingsId,
+                           settings::hotspot::HotspotSummaryItem()),
+
+      WaitForElementEnabled(kOSSettingsId, settings::hotspot::HotspotToggle()),
+
+      Log("Make sure hotspot is initially disabled"),
+
+      ObserveState(kHotspotStateService,
+                   std::make_unique<HotspotStateObserver>()),
+      WaitForState(kHotspotStateService,
+                   hotspot_config::mojom::HotspotState::kDisabled),
+      WaitForToggleState(kOSSettingsId, settings::hotspot::HotspotToggle(),
+                         false),
+
+      Log("Waiting for hotspot toggle to be enabled then click it"),
+
+      ClickElement(kOSSettingsId, settings::hotspot::HotspotToggle()),
+
+      Log("Wait for the hotspot state to be enabled"),
+
+      WaitForState(kHotspotStateService,
+                   hotspot_config::mojom::HotspotState::kEnabled),
+      WaitForToggleState(kOSSettingsId, settings::hotspot::HotspotToggle(),
+                         true),
+
+      Log("Enforce the policy to restrict users from enabling hotspot"),
+
+      Do([&]() { restrict_hotspot(); }),
+
+      Log("Wait for hotspot toggle to be turned off"),
+
+      WaitForElementDisabled(kOSSettingsId, settings::hotspot::HotspotToggle()),
+      WaitForToggleState(kOSSettingsId, settings::hotspot::HotspotToggle(),
+                         false),
+
+      Log("Wait for the policy icon to be shown"),
 
       WaitForElementExists(kOSSettingsId,
                            settings::hotspot::HotspotPolicyIcon()),
