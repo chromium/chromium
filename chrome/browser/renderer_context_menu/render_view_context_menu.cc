@@ -2039,7 +2039,7 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
   }
 
   const int search_for_image_idc = GetSearchForImageIdc();
-  if (LensOverlayController::IsEnabled(GetProfile())) {
+  if (LensOverlayController::IsEnabled(GetBrowser())) {
     const gfx::VectorIcon& icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         vector_icons::kGoogleLensMonochromeLogoIcon;
@@ -2698,7 +2698,7 @@ void RenderViewContextMenu::AppendClickToCallItem() {
 }
 
 void RenderViewContextMenu::AppendRegionSearchItem() {
-  if (LensOverlayController::IsEnabled(GetProfile())) {
+  if (LensOverlayController::IsEnabled(GetBrowser())) {
     const gfx::VectorIcon& icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         vector_icons::kGoogleLensMonochromeLogoIcon;
@@ -3872,8 +3872,8 @@ bool RenderViewContextMenu::IsRegionSearchEnabled() const {
     return false;
   }
 
-  if (LensOverlayController::IsEnabled(GetProfile())) {
-    return GetBrowser()->is_type_normal();
+  if (LensOverlayController::IsEnabled(GetBrowser())) {
+    return true;
   }
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
@@ -4282,7 +4282,7 @@ void RenderViewContextMenu::ExecSearchLensForImage(bool is_image_translate) {
       lens::AmbientSearchEntryPoint::
           CONTEXT_MENU_SEARCH_IMAGE_WITH_GOOGLE_LENS);
 
-  if (LensOverlayController::IsEnabled(GetProfile()) &&
+  if (LensOverlayController::IsEnabled(GetBrowser()) &&
       lens::features::UseLensOverlayForImageSearch()) {
     auto view_bounds = render_frame_host->GetView()->GetViewBounds();
     auto tab_bounds = source_web_contents_->GetViewBounds();
@@ -4334,7 +4334,7 @@ void RenderViewContextMenu::OpenLensOverlayWithPreselectedRegion(
 void RenderViewContextMenu::ExecRegionSearch(
     int event_flags,
     bool is_google_default_search_provider) {
-  if (LensOverlayController::IsEnabled(GetProfile())) {
+  if (LensOverlayController::IsEnabled(GetBrowser())) {
     LensOverlayController* const controller =
         LensOverlayController::GetController(source_web_contents_);
     CHECK(controller);

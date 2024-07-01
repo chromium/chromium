@@ -341,7 +341,7 @@ void LocationBarView::Init() {
     // TODO(crbug.com/40835681): Improve the ordering heuristics for page action
     // icons and determine a way to handle simultaneous icon animations.
     if (lens::features::IsOmniboxEntryPointEnabled() &&
-        LensOverlayController::IsEnabled(profile_)) {
+        LensOverlayController::IsEnabled(browser_)) {
       params.types_enabled.push_back(PageActionIconType::kLensOverlay);
     }
 
@@ -528,7 +528,7 @@ OmniboxView* LocationBarView::GetOmniboxView() {
 
 void LocationBarView::AddedToWidget() {
   if (lens::features::IsOmniboxEntryPointEnabled() &&
-      LensOverlayController::IsEnabled(profile_) && GetFocusManager()) {
+      LensOverlayController::IsEnabled(browser_) && GetFocusManager()) {
     CHECK(!focus_manager_);
     focus_manager_ = GetFocusManager();
     focus_manager_->AddFocusChangeListener(this);

@@ -265,7 +265,7 @@ void BrowserFrameMac::ValidateUserInterfaceItem(
       result->new_toggle_state =
           prefs->GetBoolean(omnibox::kShowGoogleLensShortcut);
       // Disable this menu option if the LensOverlay feature is not enabled.
-      result->enable = LensOverlayController::IsEnabled(browser->profile());
+      result->enable = LensOverlayController::IsEnabled(browser);
       break;
     }
     case IDC_TOGGLE_JAVASCRIPT_APPLE_EVENTS: {

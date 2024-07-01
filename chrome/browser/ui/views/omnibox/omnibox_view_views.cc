@@ -1843,7 +1843,7 @@ void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
                                             IDS_CONTEXT_MENU_SHOW_FULL_URLS);
   }
 
-  if (LensOverlayController::IsEnabled(location_bar_view_->profile())) {
+  if (LensOverlayController::IsEnabled(location_bar_view_->browser())) {
     menu_contents->AddCheckItemWithStringId(
         IDC_SHOW_GOOGLE_LENS_SHORTCUT,
         IDS_CONTEXT_MENU_SHOW_GOOGLE_LENS_SHORTCUT);
