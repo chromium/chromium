@@ -52,7 +52,8 @@ class ClientControlledShellSurfaceDelegate
                        int64_t display_id,
                        const gfx::Rect& bounds_in_display,
                        bool is_resize,
-                       int bounds_change) override;
+                       int bounds_change,
+                       bool is_adjusted_bounds) override;
   void OnDragStarted(int component) override;
   void OnDragFinished(int x, int y, bool canceled) override;
   void OnZoomLevelChanged(ZoomChange zoom_change) override;

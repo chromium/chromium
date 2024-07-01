@@ -39,7 +39,8 @@ class ArcGhostWindowDelegate
                        int64_t display_id,
                        const gfx::Rect& bounds_in_screen,
                        bool is_resize,
-                       int bounds_change) override;
+                       int bounds_change,
+                       bool is_adjusted_bounds) override;
 
   void OnDragStarted(int component) override;
 

@@ -12,6 +12,7 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
@@ -26,6 +27,7 @@
 #include "ui/aura/window_delegate.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
@@ -391,6 +393,54 @@ TEST_F(WaylandRemoteShellTest, DisplayRotation) {
   EXPECT_EQ(expected_bounds, bounds_change.bounds_in_display);
   EXPECT_EQ(ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_PIP,
             bounds_change.reason);
+}
+
+// Test that bounds changes are properly handled when the display is rotated in
+// tablet mode.
+TEST_F(WaylandRemoteShellTest, DisplayRotationInTabletMode) {
+  UpdateDisplay("800x600");
+  display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+  // Enable tablet mode.
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+  task_environment()->RunUntilIdle();
+
+  auto shell_surface = exo::test::ShellSurfaceBuilder({256, 256})
+                           .SetDelegate(CreateDelegate())
+                           .BuildClientControlledShellSurface();
+  auto* surface = shell_surface->root_surface();
+  auto* const widget = shell_surface->GetWidget();
+  auto* const window = widget->GetNativeWindow();
+  const display::Display& display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+
+  // Snap window.
+  ash::WindowSnapWMEvent event(ash::WM_EVENT_SNAP_SECONDARY);
+  ash::WindowState::Get(window)->OnWMEvent(&event);
+  shell_surface->SetSnapSecondary(chromeos::kDefaultSnapRatio);
+  shell_surface->SetGeometry(gfx::Rect(400, 0, 400, 520));
+  surface->Commit();
+
+  // Rotate the display.
+  ResetEventRecords();
+  ash::Shell::Get()->display_manager()->SetDisplayRotation(
+      display.id(), display::Display::ROTATE_90,
+      display::Display::RotationSource::ACCELEROMETER);
+  // Any bounds change due to display rotation is deferred until the next event
+  // loop.
+  EXPECT_TRUE(remote_shell_event_sequence().empty());
+  // When the bounds set by the client requires the "adjustment" on the new
+  // display configuration, do not adjust it.
+  shell_surface->SetBounds(display.id(), gfx::Rect(600, 0, 400, 520));
+  surface->Commit();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(1UL, remote_shell_requested_bounds_changes().size());
+  EXPECT_EQ(
+      ash::SplitViewController::Get(window->GetRootWindow())
+          ->GetSnappedWindowBoundsInScreen(ash::SnapPosition::kSecondary,
+                                           window, chromeos::kDefaultSnapRatio,
+                                           /*account_for_divider_width=*/true),
+      remote_shell_requested_bounds_changes()[0].bounds_in_display);
 }
 
 // Removing secandary display and re-reconnect it restores the bounds of

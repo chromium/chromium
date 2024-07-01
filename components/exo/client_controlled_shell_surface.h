@@ -54,7 +54,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
                                  int64_t display_id,
                                  const gfx::Rect& bounds_in_display,
                                  bool is_resize,
-                                 int bounds_change) = 0;
+                                 int bounds_change,
+                                 bool is_adjusted_bounds) = 0;
     virtual void OnDragStarted(int component) = 0;
     virtual void OnDragFinished(int x, int y, bool canceled) = 0;
     virtual void OnZoomLevelChanged(ZoomChange zoom_change) = 0;
@@ -143,7 +144,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
                            chromeos::WindowStateType requested_state,
                            int64_t display_id,
                            const gfx::Rect& bounds,
-                           int drag_bounds_change);
+                           int drag_bounds_change,
+                           bool is_adjusted_bounds);
 
   // Sends the window drag events to client.
   void OnDragStarted(int component);

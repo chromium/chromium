@@ -403,11 +403,12 @@ void WaylandRemoteSurfaceDelegate::OnBoundsChanged(
     int64_t display_id,
     const gfx::Rect& bounds_in_display,
     bool is_resize,
-    int bounds_change) {
+    int bounds_change,
+    bool is_adjusted_bounds) {
   if (shell_) {
     shell_->OnRemoteSurfaceBoundsChanged(
         resource_, current_state, requested_state, display_id,
-        bounds_in_display, is_resize, bounds_change);
+        bounds_in_display, is_resize, bounds_change, is_adjusted_bounds);
   }
 }
 void WaylandRemoteSurfaceDelegate::OnDragStarted(int component) {
@@ -773,7 +774,8 @@ void WaylandRemoteShell::OnRemoteSurfaceBoundsChanged(
     int64_t display_id,
     const gfx::Rect& bounds_in_display,
     bool resize,
-    int bounds_change) {
+    int bounds_change,
+    bool is_adjusted_bounds) {
   uint32_t reason =
       ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_RESIZE;
   if (!resize)
@@ -800,6 +802,12 @@ void WaylandRemoteShell::OnRemoteSurfaceBoundsChanged(
   }
 
   if (in_display_update_ || needs_send_display_metrics_) {
+    if (is_adjusted_bounds && pending_bounds_changes_.count(resource) > 0) {
+      // If there is any ash-requested bounds for the resource, do not overwrite
+      // it with the adjusted bounds which is based on the bounds before the
+      // display update, which is to be obsolete soon.
+      return;
+    }
     // We store only the latest bounds for each |resource|.
     pending_bounds_changes_.insert_or_assign(
         std::move(resource),

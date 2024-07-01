@@ -1232,7 +1232,8 @@ class TestClientControlledShellSurfaceDelegate
                        int64_t display_id,
                        const gfx::Rect& bounds_in_display,
                        bool is_resize,
-                       int bounds_change) override {
+                       int bounds_change,
+                       bool is_adjusted_bounds) override {
     bounds_change_count_++;
     requested_bounds_.push_back(bounds_in_display);
     requested_display_ids_.push_back(display_id);
@@ -1941,7 +1942,8 @@ TEST_F(ClientControlledShellSurfaceDisplayTest,
 
   shell_surface->OnBoundsChangeEvent(WindowStateType::kNormal,
                                      WindowStateType::kNormal, display_id,
-                                     gfx::Rect(10, 10, 100, 100), 0);
+                                     gfx::Rect(10, 10, 100, 100), 0,
+                                     /*is_adjusted_bounds=*/false);
   ASSERT_EQ(1, delegate->bounds_change_count());
 
   EXPECT_FALSE(shell_surface->GetWidget()->IsMinimized());
@@ -1952,13 +1954,15 @@ TEST_F(ClientControlledShellSurfaceDisplayTest,
   EXPECT_TRUE(shell_surface->GetWidget()->IsMinimized());
   shell_surface->OnBoundsChangeEvent(WindowStateType::kMinimized,
                                      WindowStateType::kMinimized, display_id,
-                                     gfx::Rect(0, 0, 100, 100), 0);
+                                     gfx::Rect(0, 0, 100, 100), 0,
+                                     /*is_adjusted_bounds=*/false);
   ASSERT_EQ(1, delegate->bounds_change_count());
 
   // Send bounds change when exiting minmized.
   shell_surface->OnBoundsChangeEvent(WindowStateType::kMinimized,
                                      WindowStateType::kNormal, display_id,
-                                     gfx::Rect(0, 0, 100, 100), 0);
+                                     gfx::Rect(0, 0, 100, 100), 0,
+                                     /*is_adjusted_bounds=*/false);
   ASSERT_EQ(2, delegate->bounds_change_count());
 
   // Snapped, in clamshell mode.
@@ -1969,7 +1973,8 @@ TEST_F(ClientControlledShellSurfaceDisplayTest,
   surface->Commit();
   shell_surface->OnBoundsChangeEvent(WindowStateType::kMinimized,
                                      WindowStateType::kSecondarySnapped,
-                                     display_id, gfx::Rect(0, 0, 100, 100), 0);
+                                     display_id, gfx::Rect(0, 0, 100, 100), 0,
+                                     /*is_adjusted_bounds=*/false);
   EXPECT_EQ(3, delegate->bounds_change_count());
   EXPECT_EQ(
       frame_view->GetClientBoundsForWindowBounds(gfx::Rect(0, 0, 100, 100)),
@@ -1980,7 +1985,8 @@ TEST_F(ClientControlledShellSurfaceDisplayTest,
   EnableTabletMode(true);
   shell_surface->OnBoundsChangeEvent(WindowStateType::kMinimized,
                                      WindowStateType::kSecondarySnapped,
-                                     display_id, gfx::Rect(0, 0, 100, 100), 0);
+                                     display_id, gfx::Rect(0, 0, 100, 100), 0,
+                                     /*is_adjusted_bounds=*/false);
   EXPECT_EQ(4, delegate->bounds_change_count());
   EXPECT_EQ(gfx::Rect(0, 0, 100, 100), delegate->requested_bounds().back());
 }

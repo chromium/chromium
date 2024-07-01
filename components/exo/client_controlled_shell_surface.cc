@@ -137,7 +137,8 @@ class ClientControlledStateDelegate
         bounds_in_display,
         window_state->drag_details() && shell_surface_->IsDragging()
             ? window_state->drag_details()->bounds_change
-            : 0);
+            : 0,
+        /*is_adjusted_bounds=*/false);
   }
 
  private:
@@ -663,7 +664,8 @@ void ClientControlledShellSurface::OnBoundsChangeEvent(
     chromeos::WindowStateType requested_state,
     int64_t display_id,
     const gfx::Rect& window_bounds,
-    int bounds_change) {
+    int bounds_change,
+    bool is_adjusted_bounds) {
   // 1) Do no update the bounds unless we have geometry from client.
   // 2) Do not update the bounds if window is minimized unless it
   // exiting the minimzied state.
@@ -695,7 +697,8 @@ void ClientControlledShellSurface::OnBoundsChangeEvent(
   const gfx::Rect scaled_client_bounds =
       gfx::ScaleToRoundedRect(client_bounds, scale);
   delegate_->OnBoundsChanged(current_state, requested_state, display_id,
-                             scaled_client_bounds, is_resize, bounds_change);
+                             scaled_client_bounds, is_resize, bounds_change,
+                             is_adjusted_bounds);
 
   auto* window_state = GetWindowState();
   if (server_reparent_window_ &&
@@ -1100,7 +1103,8 @@ void ClientControlledShellSurface::SetWidgetBounds(const gfx::Rect& bounds,
         -target_display.bounds().OffsetFromOrigin());
 
     OnBoundsChangeEvent(state_type, state_type, target_display.id(),
-                        adjusted_bounds_in_display, 0);
+                        adjusted_bounds_in_display, 0,
+                        /*is_adjusted_bounds=*/true);
   }
 
   UpdateHostWindowOrigin();

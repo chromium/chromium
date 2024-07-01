@@ -75,7 +75,8 @@ void ClientControlledShellSurfaceDelegate::OnBoundsChanged(
     int64_t display_id,
     const gfx::Rect& bounds_in_screen,
     bool is_resize,
-    int bounds_change) {
+    int bounds_change,
+    bool is_adjusted_bounds) {
   ASSERT_TRUE(display_id != display::kInvalidDisplayId);
 
   auto* window_state =
