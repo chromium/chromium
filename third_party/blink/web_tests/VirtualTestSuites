@@ -1386,7 +1386,7 @@
       "wpt_internal/html/semantics/popovers/popover-hint-crash.tentative.html"
     ],
     "args": ["--disable-blink-features=HTMLPopoverHint"],
-    "expires": "Jul 1, 2024"
+    "expires": "Jul 1, 2025"
   },
   {
     "prefix": "html-anchor-attribute-disabled",
@@ -2081,7 +2081,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/custom-elements/scoped-registry"],
     "args": ["--disable-blink-features=ScopedCustomElementRegistry"],
-    "expires": "Jul 1, 2024"
+    "expires": "Jul 1, 2025"
   },
 
   "This individual test must be run separately from others, because it makes a",
