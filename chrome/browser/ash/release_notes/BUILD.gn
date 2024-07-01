@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//components/nacl/features.gni")
 
 assert(is_chromeos_ash)
 
@@ -32,7 +33,6 @@ source_set("release_notes") {
     "//chromeos/ash/components/login/login_state",
     "//chromeos/strings",
     "//chromeos/strings:strings_grit",
-    "//components/nacl/common:minimal_content_dummy",
     "//components/prefs",
     "//components/services/app_service/public/cpp:app_types",
     "//components/user_manager",
@@ -43,6 +43,9 @@ source_set("release_notes") {
     "//ui/chromeos",
     "//ui/message_center/public/cpp",
   ]
+  if (enable_nacl) {
+    deps += [ "//components/nacl/common:minimal_content_dummy" ]
+  }
 }
 
 source_set("unit_tests") {
