@@ -65,6 +65,9 @@ void DownloadManagerMediator::SetPrefService(PrefService* pref_service) {
 void DownloadManagerMediator::SetConsumer(
     id<DownloadManagerConsumer> consumer) {
   consumer_ = consumer;
+  if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
+    SetGoogleDriveAppInstalled(IsGoogleDriveAppInstalled());
+  }
   UpdateConsumer();
 }
 
@@ -197,7 +200,7 @@ void DownloadManagerMediator::UpdateConsumer() {
     id<SystemIdentity> identity =
         upload_task_ ? upload_task_->GetIdentity() : nil;
     [consumer_ setSaveToDriveUserEmail:identity.userEmail];
-    [consumer_ setInstallDriveButtonVisible:!IsGoogleDriveAppInstalled()
+    [consumer_ setInstallDriveButtonVisible:!is_google_drive_app_installed_
                                    animated:NO];
     [consumer_ setCanOpenFile:filename.MatchesExtension(".pdf")];
   } else if (state == kDownloadManagerStateSucceeded &&
@@ -216,6 +219,10 @@ void DownloadManagerMediator::UpdateConsumer() {
     UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
                                     l10n_util::GetNSString(a11y_announcement));
   }
+}
+
+void DownloadManagerMediator::SetGoogleDriveAppInstalled(bool installed) {
+  is_google_drive_app_installed_ = installed;
 }
 
 void DownloadManagerMediator::MoveToUserDocumentsIfFileExists(
@@ -317,6 +324,9 @@ void DownloadManagerMediator::SetUploadTask(UploadTask* task) {
 
 void DownloadManagerMediator::AppWillEnterForeground() {
   CHECK(base::FeatureList::IsEnabled(kIOSDownloadNoUIUpdateInBackground));
+  if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
+    SetGoogleDriveAppInstalled(IsGoogleDriveAppInstalled());
+  }
   UpdateConsumer();
 }
 
