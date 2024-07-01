@@ -1464,3 +1464,5 @@ crbug.com/328849073 virtual/no-auto-wpt-origin-isolation/external/wpt/html/seman
 crbug.com/328501805 external/wpt/html/semantics/interactive-elements/the-summary-element/interactive-content.html [ Slow ]
 
 crbug.com/341380030 [ Mac ] external/wpt/css/css-pseudo/text-selection.html [ Slow ]
+
+crbug.com/349647498 [ Mac10.15 ] virtual/threaded/external/wpt/css/css-backgrounds/border-image-image-type-005.htm [ Slow ]
