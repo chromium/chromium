@@ -7098,13 +7098,19 @@ const CSSValue* PositionTryOptions::CSSValueFromComputedStyleInternal(
           style.GetPositionTryOptions()) {
     CSSValueList* option_list = CSSValueList::CreateCommaSeparated();
     for (const PositionTryOption& option : options->GetOptions()) {
-      // inset-area( <inset-area> )
       if (!option.GetInsetArea().IsNone()) {
-        auto* function =
-            MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kInsetArea);
-        function->Append(
-            *ComputedStyleUtils::ValueForInsetArea(option.GetInsetArea()));
-        option_list->Append(*function);
+        if (RuntimeEnabledFeatures::CSSInsetAreaValueEnabled()) {
+          // <inset-area>
+          option_list->Append(
+              *ComputedStyleUtils::ValueForInsetArea(option.GetInsetArea()));
+        } else {
+          // inset-area( <inset-area> )
+          auto* function =
+              MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kInsetArea);
+          function->Append(
+              *ComputedStyleUtils::ValueForInsetArea(option.GetInsetArea()));
+          option_list->Append(*function);
+        }
         continue;
       }
       // [<dashed-ident> || <try-tactic>]
@@ -7137,9 +7143,18 @@ void PositionTryOptions::ApplyValue(StyleResolverState& state,
   for (const auto& option : To<CSSValueList>(value)) {
     // inset-area( <inset-area> )
     if (const auto* function = DynamicTo<CSSFunctionValue>(option.Get())) {
+      CHECK(!RuntimeEnabledFeatures::CSSInsetAreaValueEnabled());
       CHECK_EQ(1u, function->length());
       blink::InsetArea inset_area =
           StyleBuilderConverter::ConvertInsetArea(state, function->First());
+      options.push_back(PositionTryOption(inset_area));
+      continue;
+    }
+    // <'inset-area'>
+    if (IsA<CSSValuePair>(option.Get()) ||
+        IsA<CSSIdentifierValue>(option.Get())) {
+      blink::InsetArea inset_area =
+          StyleBuilderConverter::ConvertInsetArea(state, *option.Get());
       options.push_back(PositionTryOption(inset_area));
       continue;
     }

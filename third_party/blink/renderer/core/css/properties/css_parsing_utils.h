@@ -765,7 +765,7 @@ bool ShouldLowerCaseCounterStyleNameOnParse(const AtomicString&,
 template <class T>
   requires std::is_same_v<T, CSSParserTokenStream> ||
            std::is_same_v<T, CSSParserTokenRange>
-const CSSValue* ConsumeInsetArea(T&);
+CSSValue* ConsumeInsetArea(T&);
 
 // inset-area can take one or two keywords. If the second is omitted, either the
 // first is repeated, or the second is span-all. This method returns true if the

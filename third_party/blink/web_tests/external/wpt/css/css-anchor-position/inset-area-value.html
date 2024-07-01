@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>CSS Anchor Positioning: inset-area()</title>
+<title>CSS Anchor Positioning: <'inset-area'> value</title>
 <link rel="help" href="https://drafts.csswg.org/css-anchor-position-1/#position-try-options">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -40,32 +40,32 @@
 </div>
 <script>
 
-// Test that a given inset-area() produces the same result as a reference
+// Test that a given <'inset-area'> produces the same result as a reference
 // element that is styled with an inset-area declaration directly.
-function test_inset_area_fn(inset_area_function, inset_area_expected) {
+function test_inset_area_fn(inset_area) {
   test((t) => {
     t.add_cleanup(() => {
       style.textContent = '';
     });
     style.textContent = `
       #target {
-        position-try-options: ${inset_area_function};
+        position-try-options: ${inset_area};
       }
       #ref {
-        inset-area: ${inset_area_expected};
+        inset-area: ${inset_area};
       }
     `;
     assert_equals(target.offsetLeft, ref.offsetLeft, 'offsetLeft');
     assert_equals(target.offsetTop, ref.offsetTop, 'offsetTop');
-  }, `${inset_area_function}, ${inset_area_expected}`);
+  }, `${inset_area}`);
 }
 
-test_inset_area_fn('inset-area(top left)', 'top left');
-test_inset_area_fn('inset-area(span-top left)', 'span-top left');
-test_inset_area_fn('inset-area(top span-left)', 'top span-left');
-test_inset_area_fn('inset-area(top center)', 'top center');
-test_inset_area_fn('inset-area(left center)', 'left center');
-test_inset_area_fn('inset-area(start center)', 'start center');
-test_inset_area_fn('inset-area(center start)', 'center start');
+test_inset_area_fn('top left');
+test_inset_area_fn('span-top left');
+test_inset_area_fn('top span-left');
+test_inset_area_fn('top center');
+test_inset_area_fn('left center');
+test_inset_area_fn('start center');
+test_inset_area_fn('center start');
 
 </script>

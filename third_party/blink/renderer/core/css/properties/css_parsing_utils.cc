@@ -8564,6 +8564,8 @@ CSSValue* ConsumeDashedIdentOrTactic(CSSParserTokenStream& stream,
 
 // inset-area( <inset-area> )
 CSSValue* ConsumeInsetAreaFunction(CSSParserTokenStream& stream) {
+  CHECK(!RuntimeEnabledFeatures::CSSInsetAreaValueEnabled());
+
   if (stream.Peek().FunctionId() != CSSValueID::kInsetArea) {
     return nullptr;
   }
@@ -8586,13 +8588,17 @@ CSSValue* ConsumeSinglePositionTryOption(CSSParserTokenStream& stream,
   if (CSSValue* value = ConsumeDashedIdentOrTactic(stream, context)) {
     return value;
   }
+  if (RuntimeEnabledFeatures::CSSInsetAreaValueEnabled()) {
+    // <inset-area>
+    return ConsumeInsetArea(stream);
+  }
   // inset-area( <inset-area> )
   return ConsumeInsetAreaFunction(stream);
 }
 
 CSSValue* ConsumePositionTryOptions(CSSParserTokenStream& stream,
                                     const CSSParserContext& context) {
-  // none | [ [<dashed-ident> || <try-tactic>] | inset-area( <inset-area> ) ]#
+  // none | [ [<dashed-ident> || <try-tactic>] | <'inset-area'> ]#
   if (stream.Peek().Id() == CSSValueID::kNone) {
     return ConsumeIdent(stream);
   }
@@ -8652,7 +8658,7 @@ struct InsetAreaKeyword {
             (first.type == kStartEnd || first.type == kSelfStartEnd));
   }
 
-  const CSSIdentifierValue* value;
+  CSSIdentifierValue* value;
   Type type;
 };
 
@@ -8769,7 +8775,7 @@ std::optional<InsetAreaKeyword> ConsumeInsetAreaKeyword(T& stream) {
 template <class T>
   requires std::is_same_v<T, CSSParserTokenStream> ||
            std::is_same_v<T, CSSParserTokenRange>
-const CSSValue* ConsumeInsetArea(T& range) {
+CSSValue* ConsumeInsetArea(T& range) {
   std::optional<InsetAreaKeyword> first = ConsumeInsetAreaKeyword(range);
   if (!first.has_value()) {
     return nullptr;
@@ -8790,8 +8796,8 @@ const CSSValue* ConsumeInsetArea(T& range) {
   if (!InsetAreaKeyword::IsCompatiblePair(first.value(), second.value())) {
     return nullptr;
   }
-  const CSSIdentifierValue* first_value = first.value().value;
-  const CSSIdentifierValue* second_value = second.value().value;
+  CSSIdentifierValue* first_value = first.value().value;
+  CSSIdentifierValue* second_value = second.value().value;
   if (first_value->GetValueID() == second_value->GetValueID()) {
     return first_value;
   }
@@ -8808,7 +8814,7 @@ const CSSValue* ConsumeInsetArea(T& range) {
                                             CSSValuePair::kDropIdenticalValues);
 }
 
-template const CSSValue* ConsumeInsetArea(CSSParserTokenStream& range);
+template CSSValue* ConsumeInsetArea(CSSParserTokenStream& range);
 
 bool IsRepeatedInsetAreaValue(CSSValueID value_id) {
   switch (value_id) {

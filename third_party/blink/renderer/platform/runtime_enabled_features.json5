@@ -909,6 +909,12 @@
       status: "stable",
     },
     {
+      // For the position-try-fallbacks property, replaces the inset-area()
+      // syntax with just <'inset-area'>.
+      name: "CSSInsetAreaValue",
+      status: "experimental",
+    },
+    {
       // https://chromestatus.com/feature/6289894144212992
       name: "CSSKeyframesRuleLength",
       status: "stable",
