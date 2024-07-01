@@ -1745,21 +1745,22 @@ TEST_F(NativeWidgetMacTest, NoopReparentNativeView) {
 class ParentCloseMonitor : public WidgetObserver {
  public:
   explicit ParentCloseMonitor(Widget* parent) {
-    Widget* child = new Widget();
-    child->AddObserver(this);
-    Widget::InitParams init_params(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+    child_widget_ = std::make_unique<Widget>();
+    child_widget_->AddObserver(this);
+    Widget::InitParams init_params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                   Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     init_params.parent = parent->GetNativeView();
     init_params.bounds = gfx::Rect(100, 100, 100, 100);
-    init_params.native_widget =
-        CreatePlatformNativeWidgetImpl(child, kStubCapture, nullptr);
-    child->Init(std::move(init_params));
-    child->Show();
+    init_params.native_widget = CreatePlatformNativeWidgetImpl(
+        child_widget_.get(), kStubCapture, nullptr);
+    child_widget_->Init(std::move(init_params));
+    child_widget_->Show();
 
     // NSWindow parent/child relationship should be established on Show() and
     // the parent should have a delegate. Retain the parent since it can't be
     // retrieved from the child while it is being destroyed.
     parent_nswindow_ =
-        child->GetNativeWindow().GetNativeNSWindow().parentWindow;
+        child_widget_->GetNativeWindow().GetNativeNSWindow().parentWindow;
     EXPECT_TRUE(parent_nswindow_);
     EXPECT_TRUE([parent_nswindow_ delegate]);
   }
@@ -1798,6 +1799,7 @@ class ParentCloseMonitor : public WidgetObserver {
  private:
   NSWindow* __strong parent_nswindow_;
   bool child_closed_ = false;
+  std::unique_ptr<Widget> child_widget_;
 };
 
 // Ensures when a parent window is destroyed, and triggers its child windows to
@@ -1826,15 +1828,31 @@ TEST_F(NativeWidgetMacTest, NoParentDelegateDuringTeardown) {
 
   // Test the WIDGET_OWNS_NATIVE_WIDGET flow.
   {
-    std::unique_ptr<Widget> parent(new Widget);
-    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
-    params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    auto parent = std::make_unique<Widget>();
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
     params.bounds = gfx::Rect(100, 100, 300, 200);
     parent->Init(std::move(params));
     parent->Show();
 
     ParentCloseMonitor monitor(parent.get());
-    parent = nil;
+    parent.reset();
+    EXPECT_TRUE(monitor.child_closed());
+  }
+
+  // Test the CLIENT_OWNS_WIDGET flow.
+  {
+    auto parent = std::make_unique<Widget>();
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
+    params.bounds = gfx::Rect(100, 100, 300, 200);
+    parent->Init(std::move(params));
+    parent->Show();
+
+    ParentCloseMonitor monitor(parent.get());
+    parent->CloseNow();
     EXPECT_TRUE(monitor.child_closed());
   }
 }
@@ -1983,8 +2001,8 @@ TEST_F(NativeWidgetMacTest, ContentOpacity) {
 // Test the expected result of GetWorkAreaBoundsInScreen().
 TEST_F(NativeWidgetMacTest, GetWorkAreaBoundsInScreen) {
   Widget widget;
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
 
   // This is relative to the top-left of the primary screen, so unless the bot's
   // display is smaller than 400x300, the window will be wholly contained there.
@@ -2042,19 +2060,21 @@ TEST_F(NativeWidgetMacTest, ChangeFocusOnChangeFirstResponder) {
 
 // Test two kinds of widgets to re-parent.
 TEST_F(NativeWidgetMacTest, ReparentNativeViewTypes) {
-  std::unique_ptr<Widget> toplevel1(new Widget);
-  Widget::InitParams toplevel_params =
-      CreateParams(Widget::InitParams::TYPE_POPUP);
-  toplevel_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  auto toplevel1 = std::make_unique<Widget>();
+  Widget::InitParams toplevel_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
   toplevel1->Init(std::move(toplevel_params));
   toplevel1->Show();
 
-  std::unique_ptr<Widget> toplevel2(new Widget);
+  auto toplevel2 = std::make_unique<Widget>();
+  toplevel_params = CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                 Widget::InitParams::TYPE_POPUP);
   toplevel2->Init(std::move(toplevel_params));
   toplevel2->Show();
 
-  Widget* child = new Widget;
-  Widget::InitParams child_params(Widget::InitParams::TYPE_CONTROL);
+  auto child = std::make_unique<Widget>();
+  Widget::InitParams child_params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                  Widget::InitParams::TYPE_CONTROL);
   child->Init(std::move(child_params));
   child->Show();
 

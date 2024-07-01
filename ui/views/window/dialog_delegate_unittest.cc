@@ -103,8 +103,7 @@ class DialogTest : public ViewsTestBase {
     // These tests all expect to use a custom frame on the dialog so they can
     // control hit-testing and other behavior. Custom frames are only supported
     // with a parent widget, so create the parent widget here.
-    parent_widget_ =
-        CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+    parent_widget_ = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
     parent_widget_->Show();
 
     InitializeDialog();
@@ -565,7 +564,7 @@ TEST_F(DialogDelegateCloseTest, CloseParentWidgetDoesNotInvokeCloseCallback) {
   auto dialog_owned = std::make_unique<DialogDelegateView>();
   DialogDelegateView* dialog = dialog_owned.get();
   std::unique_ptr<Widget> parent =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   Widget* widget = DialogDelegate::CreateDialogWidget(
       std::move(dialog_owned), GetContext(), parent->GetNativeView());
 

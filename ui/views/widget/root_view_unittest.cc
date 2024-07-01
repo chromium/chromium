@@ -7,6 +7,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -40,8 +43,8 @@ class RootViewTestState {
  public:
   explicit RootViewTestState(ViewsTestBase* delegate,
                              RootViewTestStateInit init = {}) {
-    Widget::InitParams init_params = delegate->CreateParams(init.type);
-    init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    Widget::InitParams init_params = delegate->CreateParams(
+        Widget::InitParams::CLIENT_OWNS_WIDGET, init.type);
     if (init.bounds != gfx::Rect())
       init_params.bounds = init.bounds;
     widget_.Init(std::move(init_params));
@@ -740,17 +743,20 @@ class DeleteWidgetOnMouseExit : public View {
   METADATA_HEADER(DeleteWidgetOnMouseExit, View)
 
  public:
-  explicit DeleteWidgetOnMouseExit(Widget* widget) : widget_(widget) {}
+  explicit DeleteWidgetOnMouseExit(base::OnceClosure on_mouse_exit_callback)
+      : on_mouse_exit_callback_(std::move(on_mouse_exit_callback)) {}
 
   DeleteWidgetOnMouseExit(const DeleteWidgetOnMouseExit&) = delete;
   DeleteWidgetOnMouseExit& operator=(const DeleteWidgetOnMouseExit&) = delete;
 
   ~DeleteWidgetOnMouseExit() override = default;
 
-  void OnMouseExited(const ui::MouseEvent& event) override { delete widget_; }
+  void OnMouseExited(const ui::MouseEvent& event) override {
+    std::move(on_mouse_exit_callback_).Run();
+  }
 
  private:
-  raw_ptr<Widget> widget_;
+  base::OnceClosure on_mouse_exit_callback_;
 };
 
 BEGIN_METADATA(DeleteWidgetOnMouseExit)
@@ -761,16 +767,17 @@ END_METADATA
 // Test that there is no crash if a View deletes its parent Widget in
 // View::OnMouseExited().
 TEST_F(RootViewTest, DeleteWidgetOnMouseExitDispatch) {
-  Widget* widget = new Widget;
-  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
-  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams init_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
   widget->Init(std::move(init_params));
   widget->SetBounds(gfx::Rect(10, 10, 500, 500));
-  WidgetDeletionObserver widget_deletion_observer(widget);
+  WidgetDeletionObserver widget_deletion_observer(widget.get());
 
   auto content = std::make_unique<View>();
-  View* child = new DeleteWidgetOnMouseExit(widget);
-  content->AddChildView(child);
+  auto* child = content->AddChildView(std::make_unique<DeleteWidgetOnMouseExit>(
+      base::BindOnce([](std::unique_ptr<Widget>* widget) { widget->reset(); },
+                     base::Unretained(&widget))));
   widget->SetContentsView(std::move(content));
 
   // Make |child| smaller than the containing Widget and RootView.
@@ -797,18 +804,18 @@ TEST_F(RootViewTest, DeleteWidgetOnMouseExitDispatch) {
 // Test that there is no crash if a View deletes its parent widget as a result
 // of a mouse exited event which was propagated from one of its children.
 TEST_F(RootViewTest, DeleteWidgetOnMouseExitDispatchFromChild) {
-  Widget* widget = new Widget;
-  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
-  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams init_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
   widget->Init(std::move(init_params));
   widget->SetBounds(gfx::Rect(10, 10, 500, 500));
-  WidgetDeletionObserver widget_deletion_observer(widget);
+  WidgetDeletionObserver widget_deletion_observer(widget.get());
 
-  View* child = new DeleteWidgetOnMouseExit(widget);
-  View* subchild = new View();
-  View* content = widget->SetContentsView(std::make_unique<View>());
-  content->AddChildView(child);
-  child->AddChildView(subchild);
+  auto* content = widget->SetContentsView(std::make_unique<View>());
+  auto* child = content->AddChildView(std::make_unique<DeleteWidgetOnMouseExit>(
+      base::BindOnce([](std::unique_ptr<Widget>* widget) { widget->reset(); },
+                     base::Unretained(&widget))));
+  auto* subchild = child->AddChildView(std::make_unique<View>());
 
   // Make |child| and |subchild| smaller than the containing Widget and
   // RootView.
