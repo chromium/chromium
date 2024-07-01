@@ -393,6 +393,9 @@ def main():
   print('Please, wait until the try bots succeeded '
         'and then push the binaries to RBE.')
   print()
+  print('To update the Clang/Rust DEPS entries, run:\n  '
+        'tools/clang/scripts/sync_deps.py')
+  print()
   print('To regenerate BUILD.gn rules for Rust stdlib (needed if dep versions '
         'in the stdlib change for example), run:\n  tools/rust/gnrt_stdlib.py.')
   print()
