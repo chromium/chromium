@@ -44,19 +44,12 @@ void CredentialCache::SaveCredentialsAndBlocklistedForOrigin(
                           return credential.origin() == origin;
                         });
   // Move unnotified shared credentials to the top.
-  // Check if there are shared password before checking the feature flag to
-  // avoid unnecessarily activating the user in the experiment. This should be
-  // cleaned up together with the feature flag check.
   auto is_unnotified_shared_credential = [](const UiCredential& credential) {
     return credential.is_shared() &&
            !credential.sharing_notification_displayed();
   };
-  if (base::ranges::any_of(credentials, is_unnotified_shared_credential) &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kSharedPasswordNotificationUI)) {
-    std::stable_partition(credentials.begin(), credentials.end(),
-                          is_unnotified_shared_credential);
-  }
+  std::stable_partition(credentials.begin(), credentials.end(),
+                        is_unnotified_shared_credential);
 
   GetOrCreateCredentialStore(origin).SaveCredentials(std::move(credentials));
 
@@ -70,10 +63,7 @@ void CredentialCache::SaveCredentialsAndBlocklistedForOrigin(
       // The cache is only useful when the sharing notification UI is displayed
       // since it is used to mark those credentials as notified after the user
       // interacts with the UI.
-      if (base::FeatureList::IsEnabled(
-              password_manager::features::kSharedPasswordNotificationUI)) {
         unnotified_shared_credentials.push_back(form);
-      }
     }
   }
   GetOrCreateCredentialStore(origin).SaveUnnotifiedSharedCredentials(

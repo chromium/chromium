@@ -113,10 +113,6 @@ BASE_DECLARE_FEATURE(kRestartToGainAccessToKeychain);
 BASE_DECLARE_FEATURE(kScreenlockReauthPromoCard);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
-// Enables the notification UI that is displayed to the user when visiting a
-// website for which a stored password has been shared by another user.
-BASE_DECLARE_FEATURE(kSharedPasswordNotificationUI);
-
 // Displays at least the decryptable and never saved logins in the password
 // manager
 BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);

@@ -2280,8 +2280,6 @@ class ManagePasswordsUIControllerWithBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{
-      password_manager::features::kSharedPasswordNotificationUI};
   TestPasswordManagerClient client_;
 };
 

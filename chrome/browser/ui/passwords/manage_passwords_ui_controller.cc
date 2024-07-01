@@ -374,9 +374,7 @@ void ManagePasswordsUIController::OnPasswordAutofilled(
                    password_manager::PasswordForm::Type::kReceivedViaSharing &&
                !form->sharing_notification_displayed;
       });
-  if (has_unnotified_shared_credentials &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kSharedPasswordNotificationUI)) {
+  if (has_unnotified_shared_credentials) {
     passwords_data_.TransitionToState(
         password_manager::ui::NOTIFY_RECEIVED_SHARED_CREDENTIALS);
     bubble_status_ = BubbleStatus::SHOULD_POP_UP;

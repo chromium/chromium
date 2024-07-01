@@ -164,15 +164,6 @@ void CheckPasswordDetailsVisitMetricCount(int count) {
         password_manager::features::kIOSPasswordAuthOnEntryV2);
   }
 
-  if ([self isRunningTest:@selector
-            (testOpenPasswordBottomSheetWithSingleSharedPassword)] ||
-      [self isRunningTest:@selector
-            (testOpenPasswordBottomSheetWithMultipleSharedPasswords)] ||
-      [self isRunningTest:@selector
-            (testOpenPasswordBottomSheetWithSharedPasswordsAndUseKeyboard)]) {
-    config.features_enabled.push_back(
-        password_manager::features::kSharedPasswordNotificationUI);
-  }
   return config;
 }
 

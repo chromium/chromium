@@ -1160,10 +1160,6 @@ class SharedPasswordsNotificationBubbleInteractiveUiTest
  public:
   ~SharedPasswordsNotificationBubbleInteractiveUiTest() override = default;
   auto ScreenshotSharedPasswordsNotificationRootView(const char* baseline);
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      password_manager::features::kSharedPasswordNotificationUI};
 };
 
 auto SharedPasswordsNotificationBubbleInteractiveUiTest::

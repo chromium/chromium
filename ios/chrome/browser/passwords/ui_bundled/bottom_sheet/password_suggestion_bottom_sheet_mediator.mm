@@ -498,8 +498,6 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
     if (form.type ==
             password_manager::PasswordForm::Type::kReceivedViaSharing &&
         !form.sharing_notification_displayed) {
-      if (base::FeatureList::IsEnabled(
-              password_manager::features::kSharedPasswordNotificationUI)) {
         _sharedUnnotifiedForms.push_back(&form);
         __weak __typeof__(self) weakSelf = self;
         image_fetcher::ImageFetcherParams params(NO_TRAFFIC_ANNOTATION_YET,
@@ -513,7 +511,6 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
               }
             }),
             params);
-      }
     }
     _credentials.push_back(password_manager::CredentialUIEntry(form));
   }
@@ -522,9 +519,7 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 // Returns whether the bottom sheet should contain a notification about shared
 // passwords.
 - (BOOL)shouldDisplaySharingNotification {
-  return (_sharedUnnotifiedForms.size() > 0) &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::kSharedPasswordNotificationUI);
+  return (_sharedUnnotifiedForms.size() > 0);
 }
 
 // Marks sharing notification as displayed in password store for all credentials

@@ -64,9 +64,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.GetLoginMatchType;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FaviconOrFallback;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
@@ -378,7 +376,6 @@ public class TouchToFillControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SHARED_PASSWORD_NOTIFICATION_UI)
     public void testShowSheetForOneSharedCredential() {
         List<Integer> postedTasksTraits = new ArrayList();
         ShadowPostTask.setTestImpl(
@@ -449,7 +446,6 @@ public class TouchToFillControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SHARED_PASSWORD_NOTIFICATION_UI)
     public void testShowSheetForMultipleSharedCredentials() {
         Credential sharedCredential1 =
                 new Credential(

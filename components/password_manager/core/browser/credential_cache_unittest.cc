@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -112,9 +111,6 @@ TEST_F(CredentialCacheTest, StoresCredentialsSortedByAplhabetAndOrigins) {
 }
 
 TEST_F(CredentialCacheTest, StoresUnnotifiedSharedCredentialsCredentials) {
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kSharedPasswordNotificationUI);
-
   Origin origin = Origin::Create(GURL(kExampleSite));
   const std::string kNonShared = "non_shared";
   const std::string kSharedNotified = "shared_notified";
@@ -155,44 +151,6 @@ TEST_F(CredentialCacheTest, StoresUnnotifiedSharedCredentialsCredentials) {
           Property(&UiCredential::username, base::UTF8ToUTF16(kNonShared)),
           Property(&UiCredential::username,
                    base::UTF8ToUTF16(kSharedNotified))));
-}
-
-TEST_F(
-    CredentialCacheTest,
-    DoesNotStoreUnnotifiedSharedCredentialsCredentialsWhenFeatureIsDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kSharedPasswordNotificationUI);
-
-  Origin origin = Origin::Create(GURL(kExampleSite));
-  const std::string kNonShared = "non_shared";
-  const std::string kSharedUnnotified = "shared_unnotified";
-
-  PasswordForm non_shared_credentials = CreateEntry(
-      kNonShared, "pass", GURL(kExampleSite), PasswordForm::MatchType::kExact);
-
-  PasswordForm shared_unnotified_credentials =
-      CreateEntry(kSharedUnnotified, "pass", GURL(kExampleSite),
-                  PasswordForm::MatchType::kExact);
-  shared_unnotified_credentials.type = PasswordForm::Type::kReceivedViaSharing;
-  shared_unnotified_credentials.sharing_notification_displayed = false;
-  std::vector<PasswordForm> matches = {
-      std::move(non_shared_credentials),
-      std::move(shared_unnotified_credentials)};
-  cache()->SaveCredentialsAndBlocklistedForOrigin(
-      matches, IsOriginBlocklisted(false), origin);
-
-  EXPECT_THAT(
-      cache()->GetCredentialStore(origin).GetUnnotifiedSharedCredentials(),
-      testing::IsEmpty());
-
-  // The order shouldn't be changed since the feature is disabled.
-  EXPECT_THAT(
-      cache()->GetCredentialStore(origin).GetCredentials(),
-      testing::ElementsAre(
-          Property(&UiCredential::username, base::UTF8ToUTF16(kNonShared)),
-          Property(&UiCredential::username,
-                   base::UTF8ToUTF16(kSharedUnnotified))));
 }
 
 TEST_F(CredentialCacheTest, StoresCredentialsForIndependentOrigins) {

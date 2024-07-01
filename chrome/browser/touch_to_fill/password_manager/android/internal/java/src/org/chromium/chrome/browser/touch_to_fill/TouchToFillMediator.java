@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.touch_to_fill;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.SHARED_PASSWORD_NOTIFICATION_UI;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.CREDENTIAL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FAVICON_OR_FALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FORMATTED_ORIGIN;
@@ -39,7 +38,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FaviconOrFallback;
@@ -447,9 +445,7 @@ class TouchToFillMediator {
         // after the UI is complete.
         List<Credential> sharedCredentials = new ArrayList<Credential>();
         for (Credential credential : credentials) {
-            if (credential.isShared()
-                    && !credential.isSharingNotificationDisplayed()
-                    && ChromeFeatureList.isEnabled(SHARED_PASSWORD_NOTIFICATION_UI)) {
+            if (credential.isShared() && !credential.isSharingNotificationDisplayed()) {
                 sharedCredentials.add(credential);
             }
         }

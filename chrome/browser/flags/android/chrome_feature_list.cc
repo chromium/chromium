@@ -322,7 +322,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &optimization_guide::features::kPushNotifications,
     &page_info::kPageInfoAboutThisSiteMoreLangs,
     &password_manager::features::kBiometricTouchToFill,
-    &password_manager::features::kSharedPasswordNotificationUI,
     &password_manager::features::
         kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning,
     &password_manager::features::
