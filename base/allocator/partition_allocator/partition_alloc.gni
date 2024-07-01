@@ -95,7 +95,8 @@ declare_args() {
 
   # Puts the regular and BRP pools right next to each other, so that we can
   # check "belongs to one of the two pools" with a single bitmask operation.
-  glue_core_pools = false
+  # TODO(crbug.com/350104111): Fix ios-simulator failures to remove `!is_ios`.
+  glue_core_pools = use_partition_alloc_as_malloc && !is_ios
 
   # Introduces pointer compression support in PA. These are 4-byte
   # pointers that can point within the core pools (regular and BRP).
@@ -256,6 +257,7 @@ stack_scan_supported =
 # - has_memory_tagging
 if (!use_partition_alloc) {
   use_partition_alloc_as_malloc = false
+  glue_core_pools = false
   enable_backup_ref_ptr_support = false
   use_raw_ptr_backup_ref_impl = false
   use_asan_backup_ref_ptr = false
