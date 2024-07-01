@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -174,6 +175,9 @@ uint32_t GraphBuilderDml::CreateOutputEdge(const NodeOutput* node_output) {
 Microsoft::WRL::ComPtr<IDMLCompiledOperator> GraphBuilderDml::Compile(
     DML_EXECUTION_FLAGS flags) const {
   TRACE_EVENT0("gpu", "dml::GraphBuilderDml::Compile");
+
+  SCOPED_UMA_HISTOGRAM_TIMER("WebNN.DML.TimingMs.Compilation");
+
   // Ensure `dml_nodes` vector is ordered by node index of operator node.
   std::vector<DML_GRAPH_NODE_DESC> dml_nodes(operator_nodes_.size());
   for (const auto& operator_node : operator_nodes_) {

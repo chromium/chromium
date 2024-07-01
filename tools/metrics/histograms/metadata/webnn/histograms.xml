@@ -40,6 +40,10 @@ chromium-metrics-reviews@google.com.
       summary="Time predictionFromFeatures took on the model."/>
 </variants>
 
+<variants name="WebNNDMLActions">
+  <variant name="Compilation" summary="Time to compile the DirectML graph."/>
+</variants>
+
 <histogram name="WebNN.CoreML.TimingMs.{WebNNCoreMLActions}" units="ms"
     expires_after="2025-02-26">
   <owner>reillyg@chromium.org</owner>
@@ -47,6 +51,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time taken to perform a WebNN CoreML action. This includes model
     creation, model compilation, and model inference.
+  </summary>
+</histogram>
+
+<histogram name="WebNN.DML.TimingMs.{WebNNDMLActions}" units="ms"
+    expires_after="2025-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    The time taken to perform a WebNN DML action. This includes model
+    compilation.
   </summary>
 </histogram>
 
