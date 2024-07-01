@@ -140,12 +140,32 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
     DCHECK(reading_flow_container.GetLayoutBox());
     DCHECK(!reading_flow_container_);
     reading_flow_container_ = reading_flow_container;
-    auto children =
-        reading_flow_container_->GetLayoutBox()->ReadingFlowElements();
-    reading_flow_next_elements_.ReserveCapacityForSize(children.size());
-    reading_flow_previous_elements_.ReserveCapacityForSize(children.size());
+    auto* children = MakeGarbageCollected<HeapVector<Member<Element>>>(
+        reading_flow_container_->GetLayoutBox()->ReadingFlowElements());
+    // Layout box only includes elements with layout object. We need to add
+    // display: contents elements to the reading flow order separately.
+    HeapVector<Member<Element>> to_visit;
+    to_visit.push_back(reading_flow_container_);
+    wtf_size_t i = 0;
+    while (i < to_visit.size()) {
+      // We are visiting all children instead of descendants because we are only
+      // interested in display: contents elements that are between the reading
+      // flow container and its items. A display: contents element should be
+      // included in the reading flow if its parent is a reading flow container
+      // or a display: contents part of the reading flow.
+      for (Element& child : ElementTraversal::ChildrenOf(*to_visit[i])) {
+        if (child.HasDisplayContentsStyle()) {
+          DCHECK(!children->Contains(child));
+          children->push_back(child);
+          to_visit.push_back(child);
+        }
+      }
+      ++i;
+    }
+    reading_flow_next_elements_.ReserveCapacityForSize(children->size());
+    reading_flow_previous_elements_.ReserveCapacityForSize(children->size());
     Element* prev_element = nullptr;
-    for (Element* child : children) {
+    for (Element* child : *children) {
       if (!IsOwnedByRoot(*child)) {
         continue;
       }
@@ -163,7 +183,10 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
     }
   }
 
-  bool IsReadingFlowItem(const Element& element) {
+  bool IsReadingFlowItemOrDisplayContents(const Element& element) {
+    if (element.HasDisplayContentsStyle()) {
+      return true;
+    }
     return element.GetLayoutBox() &&
            element.GetLayoutBox()->Parent() ==
                reading_flow_container_->GetLayoutBox();
@@ -178,8 +201,6 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
     // we need to find the prior reading-flow item, and step forward from
     // there.
     Member<const Element> prior_reading_flow_item;
-    // TODO(crbug.com/336349857): This check is worst case quadratic.
-    // Re-evaluate how to improve performance.
     for (Element& descendant : ElementTraversal::DescendantsOf(*root_)) {
       // If next_in_dom_order is nullptr, this condition is never met. The
       // prior_reading_flow_item will be the last reading-flow item visited
@@ -211,7 +232,7 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
   const Element* Next(const Element& current) {
     const Element* dom_next = NextInDomOrder(current);
     if (reading_flow_container_ &&
-        (!dom_next || IsReadingFlowItem(*dom_next))) {
+        (!dom_next || IsReadingFlowItemOrDisplayContents(*dom_next))) {
       return NextReadingFlowItem(dom_next);
     }
     return dom_next;
@@ -229,7 +250,11 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
     if (!previous_reading_flow_item) {
       return nullptr;
     }
-
+    // If previous_reading_flow_item has display contents, then we should not
+    // visit its children and should return itself directly.
+    if (previous_reading_flow_item->HasDisplayContentsStyle()) {
+      return previous_reading_flow_item;
+    }
     // We visit all inclusive descendants of previous_reading_flow_item to find
     // the last root owned DOM child.
     for (const Element* child =
@@ -261,7 +286,8 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
   //    is a fragment child of the root, use the reading flow.
   // 2. Else, use the DOM tree order.
   const Element* Previous(const Element& current) {
-    return reading_flow_container_ && IsReadingFlowItem(current)
+    return reading_flow_container_ &&
+                   IsReadingFlowItemOrDisplayContents(current)
                ? PreviousReadingFlowItem(current)
                : PreviousInDomOrder(current);
   }
@@ -277,10 +303,19 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
   }
 
   const Element* Last() {
-    const Element* last =
-        reading_flow_last_element_
-            ? ElementTraversal::LastWithinOrSelf(*reading_flow_last_element_)
-            : ElementTraversal::LastWithin(*root_);
+    const Element* last;
+    if (reading_flow_last_element_) {
+      // If reading_flow_last_element_ has display contents, then we should not
+      // visit its children and should return itself directly.
+      if (reading_flow_last_element_->HasDisplayContentsStyle()) {
+        DCHECK(IsOwnedByRoot(*reading_flow_last_element_));
+        last = reading_flow_last_element_;
+      } else {
+        last = ElementTraversal::LastWithinOrSelf(*reading_flow_last_element_);
+      }
+    } else {
+      last = ElementTraversal::LastWithin(*root_);
+    }
     while (last && !IsOwnedByRoot(const_cast<Element&>(*last))) {
       last = ElementTraversal::Previous(*last, root_);
     }
