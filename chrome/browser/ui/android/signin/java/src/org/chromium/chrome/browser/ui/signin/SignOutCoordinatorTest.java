@@ -37,6 +37,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -62,6 +63,7 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.accessibility.UiAccessibilityFeatures;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.HashSet;
@@ -71,7 +73,10 @@ import java.util.concurrent.ExecutionException;
 /** Instrumentation tests for {@link SignOutDialogCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+@EnableFeatures({
+    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
+    UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK
+})
 public class SignOutCoordinatorTest {
     @Rule
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
@@ -98,6 +103,7 @@ public class SignOutCoordinatorTest {
 
     @Before
     public void setUp() {
+        LibraryLoader.getInstance().ensureInitialized();
         mActivityTestRule.launchActivity(null);
     }
 

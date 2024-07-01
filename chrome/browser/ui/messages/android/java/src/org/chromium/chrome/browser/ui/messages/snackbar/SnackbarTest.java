@@ -272,18 +272,30 @@ public class SnackbarTest {
                     snackbar.setDuration(0);
                     Assert.assertEquals(
                             "Snackbar should use default duration when client sets duration to 0.",
-                            SnackbarManager.getDefaultDurationForTesting(),
+                            SnackbarManager.getDefaultTypeActionSnackbarDuration(),
                             mManager.getDuration(snackbar));
                 });
 
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    snackbar.setDuration(7);
+                    snackbar.setDuration(70000);
                     Assert.assertEquals(
                             "Snackbar should use set duration when no gesture performing a11y "
                                     + "services are running.",
-                            7,
+                            70000,
+                            mManager.getDuration(snackbar));
+                });
+
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    snackbar.setDuration(
+                            SnackbarManager.getDefaultTypeActionSnackbarDuration() / 2);
+                    Assert.assertEquals(
+                            "Snackbar should use default duration when client sets a very short"
+                                    + " duration.",
+                            SnackbarManager.getDefaultTypeActionSnackbarDuration(),
                             mManager.getDuration(snackbar));
                 });
 
@@ -294,7 +306,7 @@ public class SnackbarTest {
                     snackbar.setDuration(SnackbarManager.getDefaultA11yDurationForTesting() / 3);
                     Assert.assertEquals(
                             "Snackbar should use default a11y duration when set duration is less"
-                                    + " than default and a gesture performing a11y service is running.",
+                                + " than default and a gesture performing a11y service is running.",
                             SnackbarManager.getDefaultA11yDurationForTesting(),
                             mManager.getDuration(snackbar));
                 });

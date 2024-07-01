@@ -72,11 +72,13 @@ public class SnackbarManager
     public static final int DEFAULT_SNACKBAR_DURATION_MS = 3000;
     // For snackbars with long strings where a longer duration is favorable.
     public static final int DEFAULT_SNACKBAR_DURATION_LONG_MS = 8000;
+    public static final int DEFAULT_TYPE_ACTION_SNACKBAR_DURATION_MS = 10000;
     private static final int ACCESSIBILITY_MODE_SNACKBAR_DURATION_MS = 30000;
 
     // Used instead of the constant so tests can override the value.
     private static int sSnackbarDurationMs = DEFAULT_SNACKBAR_DURATION_MS;
     private static int sAccessibilitySnackbarDurationMs = ACCESSIBILITY_MODE_SNACKBAR_DURATION_MS;
+    private static int sTypeActionSnackbarDurationsMs = DEFAULT_TYPE_ACTION_SNACKBAR_DURATION_MS;
 
     private Activity mActivity;
     private SnackbarView mView;
@@ -351,15 +353,19 @@ public class SnackbarManager
 
     @VisibleForTesting
     int getDuration(Snackbar snackbar) {
-        int durationMs = snackbar.getDuration();
-        if (durationMs == 0) durationMs = sSnackbarDurationMs;
+        int durationMs = Math.max(snackbar.getDuration(), sSnackbarDurationMs);
+        if (snackbar.isTypeAction()) {
+            durationMs = Math.max(sTypeActionSnackbarDurationsMs, durationMs);
+        }
 
-        // If no a11y service that can perform gestures is enabled, use the set duration. Otherwise
-        // multiply the duration by the recommended multiplier and use that with a minimum of 30s.
-        return !AccessibilityState.isPerformGesturesEnabled()
-                ? durationMs
-                : AccessibilityState.getRecommendedTimeoutMillis(
-                        sAccessibilitySnackbarDurationMs, durationMs);
+        // If a11y is on, set a longer minimum duration; otherwise, use the recommended timeout
+        // duration.
+        int minDuration =
+                AccessibilityState.isPerformGesturesEnabled()
+                        ? sAccessibilitySnackbarDurationMs
+                        : durationMs;
+
+        return AccessibilityState.getRecommendedTimeoutMillis(minDuration, durationMs);
     }
 
     /** Disables the snackbar manager. This is only intended for testing purposes. */
@@ -374,12 +380,14 @@ public class SnackbarManager
     public static void setDurationForTesting(int durationMs) {
         sSnackbarDurationMs = durationMs;
         sAccessibilitySnackbarDurationMs = durationMs;
+        sTypeActionSnackbarDurationsMs = durationMs;
     }
 
     /** Clears any overrides set for testing. */
     public static void resetDurationForTesting() {
         sSnackbarDurationMs = DEFAULT_SNACKBAR_DURATION_MS;
         sAccessibilitySnackbarDurationMs = ACCESSIBILITY_MODE_SNACKBAR_DURATION_MS;
+        sTypeActionSnackbarDurationsMs = DEFAULT_TYPE_ACTION_SNACKBAR_DURATION_MS;
     }
 
     static int getDefaultDurationForTesting() {
@@ -388,6 +396,10 @@ public class SnackbarManager
 
     static int getDefaultA11yDurationForTesting() {
         return sAccessibilitySnackbarDurationMs;
+    }
+
+    static int getDefaultTypeActionSnackbarDuration() {
+        return sTypeActionSnackbarDurationsMs;
     }
 
     /**

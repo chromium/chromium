@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.SavePageCallba
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -222,6 +223,7 @@ public class OfflinePageUtilsTest {
     public void testShowOfflineSnackbarIfNecessary() throws Exception {
         // Arrange - build a mock controller for sensing.
         OfflinePageUtils.setSnackbarDurationForTesting(1000);
+        SnackbarManager.setDurationForTesting(2500);
         final MockSnackbarController mockSnackbarController = new MockSnackbarController();
 
         // Save an offline page.
