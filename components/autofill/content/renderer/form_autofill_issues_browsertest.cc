@@ -212,7 +212,7 @@ TEST_F(
   WebLocalFrame* web_frame = GetMainFrame();
 
   std::vector<FormIssue> form_issues =
-      GetFormIssuesForTesting(form_util::GetAutofillableFormControlElements(
+      GetFormIssuesForTesting(form_util::GetOwnedAutofillableFormControls(
                                   web_frame->GetDocument(), WebFormElement()),
                               {});
 

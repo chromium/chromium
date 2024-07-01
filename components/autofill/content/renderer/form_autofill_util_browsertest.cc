@@ -1376,7 +1376,7 @@ TEST_F(FormAutofillUtilsTest, GetFormFieldElements_Unowned) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   std::vector<WebFormControlElement> unowned_form_fields =
-      form_util::GetFormControlElements(doc, WebFormElement());
+      form_util::GetOwnedFormControls(doc, WebFormElement());
 
   // Both `<select>` and `<selectlist>` contain <button> elements in their
   // Shadow DOM.
@@ -2123,8 +2123,8 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormInLightDom) {
   EXPECT_EQ(GetOwningForm(t1), f);
   EXPECT_EQ(GetOwningForm(t2), f);
   EXPECT_EQ(GetOwningForm(t3), f_unowned);
-  EXPECT_THAT(GetFormControlElements(doc, f), ElementsAre(t1, t2));
-  EXPECT_THAT(GetFormControlElements(doc, f_unowned), ElementsAre(t3));
+  EXPECT_THAT(GetOwnedFormControls(doc, f), ElementsAre(t1, t2));
+  EXPECT_THAT(GetOwnedFormControls(doc, f_unowned), ElementsAre(t3));
 }
 
 // Tests that explicit association overrules DOM ancestry when determining the
@@ -2178,9 +2178,9 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormInLightDomWithExplicitAssociation) {
   EXPECT_EQ(GetOwningForm(t6), f1);
   EXPECT_EQ(GetOwningForm(t7), f2);
   EXPECT_EQ(GetOwningForm(t8), f_unowned);
-  EXPECT_THAT(GetFormControlElements(doc, f1), ElementsAre(t1, t4, t6));
-  EXPECT_THAT(GetFormControlElements(doc, f2), ElementsAre(t2, t3, t7));
-  EXPECT_THAT(GetFormControlElements(doc, f_unowned), ElementsAre(t5, t8));
+  EXPECT_THAT(GetOwnedFormControls(doc, f1), ElementsAre(t1, t4, t6));
+  EXPECT_THAT(GetOwnedFormControls(doc, f2), ElementsAre(t2, t3, t7));
+  EXPECT_THAT(GetOwnedFormControls(doc, f_unowned), ElementsAre(t5, t8));
 }
 
 // Tests that input elements in shadow DOM whose closest ancestor is in the
@@ -2220,8 +2220,8 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormInShadowDomWithoutFormInShadowDom) {
   EXPECT_EQ(GetOwningForm(t1), f1);
   EXPECT_EQ(GetOwningForm(t2), f1);
   EXPECT_EQ(GetOwningForm(t3), f_unowned);
-  EXPECT_THAT(GetFormControlElements(doc, f1), ElementsAre(t1, t2));
-  EXPECT_THAT(GetFormControlElements(doc, f_unowned), ElementsAre(t3));
+  EXPECT_THAT(GetOwnedFormControls(doc, f1), ElementsAre(t1, t2));
+  EXPECT_THAT(GetOwnedFormControls(doc, f_unowned), ElementsAre(t3));
 }
 
 // Tests that the owning form of a form control element is the furthest
@@ -2269,9 +2269,9 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormInShadowDomWithFormInShadowDom) {
   EXPECT_EQ(GetOwningForm(t1), f1);
   EXPECT_EQ(GetOwningForm(t2), f1);
   EXPECT_EQ(GetOwningForm(t3), f3);
-  EXPECT_THAT(GetFormControlElements(doc, f1), ElementsAre(t1, t2));
-  EXPECT_THAT(GetFormControlElements(doc, f3), ElementsAre(t3));
-  EXPECT_THAT(GetFormControlElements(doc, f_unowned), IsEmpty());
+  EXPECT_THAT(GetOwnedFormControls(doc, f1), ElementsAre(t1, t2));
+  EXPECT_THAT(GetOwnedFormControls(doc, f3), ElementsAre(t3));
+  EXPECT_THAT(GetOwnedFormControls(doc, f_unowned), IsEmpty());
 }
 
 // Tests that the owning form is returned correctly even if there are multiple
@@ -2323,8 +2323,8 @@ TEST_F(FormAutofillUtilsTest,
   EXPECT_EQ(GetOwningForm(t3), f1);
   EXPECT_EQ(GetOwningForm(t4), f1);
   EXPECT_EQ(GetOwningForm(t5), f1);
-  EXPECT_THAT(GetFormControlElements(doc, f1), ElementsAre(t1, t2, t3, t4, t5));
-  EXPECT_THAT(GetFormControlElements(doc, f_unowned), IsEmpty());
+  EXPECT_THAT(GetOwnedFormControls(doc, f1), ElementsAre(t1, t2, t3, t4, t5));
+  EXPECT_THAT(GetOwnedFormControls(doc, f_unowned), IsEmpty());
 }
 
 // Tests that the owning form is computed correctly for form control elements
@@ -2385,10 +2385,10 @@ TEST_F(FormAutofillUtilsTest,
   EXPECT_EQ(GetOwningForm(t5), f1);
   EXPECT_EQ(GetOwningForm(t6), f1);
   EXPECT_EQ(GetOwningForm(t7), f4);
-  EXPECT_THAT(GetFormControlElements(doc, f1),
+  EXPECT_THAT(GetOwnedFormControls(doc, f1),
               ElementsAre(t1, t2, t3, t4, t5, t6));
-  EXPECT_THAT(GetFormControlElements(doc, f4), ElementsAre(t7));
-  EXPECT_THAT(GetFormControlElements(doc, f_unowned), IsEmpty());
+  EXPECT_THAT(GetOwnedFormControls(doc, f4), ElementsAre(t7));
+  EXPECT_THAT(GetOwnedFormControls(doc, f_unowned), IsEmpty());
 }
 
 }  // namespace

@@ -1966,7 +1966,7 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   }
 
   std::vector<WebFormControlElement> control_elements =
-      GetFormControlElements(document, form_element);
+      GetOwnedFormControls(document, form_element);
   std::vector<WebElement> iframe_elements =
       GetIframeElements(document, form_element);
 
@@ -2342,18 +2342,18 @@ base::i18n::TextDirection GetTextDirectionForElement(
   return direction;
 }
 
-std::vector<WebFormControlElement> GetFormControlElements(
+std::vector<WebFormControlElement> GetOwnedFormControls(
     const WebDocument& document,
     const WebFormElement& form_element) {
   return form_element ? form_element.GetFormControlElements().ReleaseVector()
                       : GetUnownedFormControlElements(document);
 }
 
-std::vector<WebFormControlElement> GetAutofillableFormControlElements(
+std::vector<WebFormControlElement> GetOwnedAutofillableFormControls(
     const WebDocument& document,
     const WebFormElement& form_element) {
   std::vector<WebFormControlElement> elements =
-      GetFormControlElements(document, form_element);
+      GetOwnedFormControls(document, form_element);
   std::erase_if(elements, std::not_fn(&IsAutofillableElement));
   return elements;
 }
@@ -2433,11 +2433,11 @@ FindFormAndFieldForFormControlElement(
   }
 
   // This is not reachable if the following holds:
-  // `base::Contains(GetFormControlElements(GetOwningForm(element)), element)`.
+  // `base::Contains(GetOwnedFormControls(GetOwningForm(element)), element)`.
   // This does not hold if `element` is an unowned element in a shadow DOM and
   // kAutofillIncludeShadowDomInUnassociatedListedElements is disabled. Then
   // `GetOwningForm(element)` returns the unowned form, but
-  // GetFormControlElements() does not include the field.
+  // `GetOwnedFormControls()` does not include the field.
   // See crbug.com/347059988 for more details.
   if (base::FeatureList::IsEnabled(
           blink::features::
@@ -2486,7 +2486,7 @@ FindFormAndFieldForFormControlElement(
     SCOPED_CRASH_KEY_NUMBER(
         "Autofill", "assoc_form_size",
         document ? static_cast<int>(
-                       GetFormControlElements(document, form_element).size())
+                       GetOwnedFormControls(document, form_element).size())
                  : -1);
     NOTREACHED(base::NotFatalUntil::M129);
   }

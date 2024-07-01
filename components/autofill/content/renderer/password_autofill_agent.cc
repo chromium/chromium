@@ -365,7 +365,7 @@ WebInputElement FindUsernameElementPrecedingPasswordElement(
   DCHECK(password_element);
 
   std::vector<WebFormControlElement> elements =
-      form_util::GetAutofillableFormControlElements(
+      form_util::GetOwnedAutofillableFormControls(
           frame->GetDocument(),
           form_util::GetFormElementForPasswordInput(password_element));
 
@@ -1269,7 +1269,7 @@ void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
                         alternative_form_signature);
     }
     AnnotateFieldsWithSignatures(
-        form_util::GetAutofillableFormControlElements(document, form),
+        form_util::GetOwnedAutofillableFormControls(document, form),
         form_signature, alternative_form_signature);
   }
 
@@ -1284,7 +1284,7 @@ void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
         GetAlternativeFormSignatureAsString(*form_data);
   }
   AnnotateFieldsWithSignatures(
-      form_util::GetAutofillableFormControlElements(document, WebFormElement()),
+      form_util::GetOwnedAutofillableFormControls(document, WebFormElement()),
       form_signature, alternative_form_signature);
 }
 
@@ -1371,7 +1371,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
   bool add_unowned_inputs = true;
   if (only_visible) {
     std::vector<WebFormControlElement> control_elements =
-        form_util::GetAutofillableFormControlElements(doc, WebFormElement());
+        form_util::GetOwnedAutofillableFormControls(doc, WebFormElement());
     add_unowned_inputs = base::ranges::any_of(
         control_elements, &IsWebElementFocusableForAutofill);
     LogBoolean(logger.get(), Logger::STRING_UNOWNED_INPUTS_VISIBLE,

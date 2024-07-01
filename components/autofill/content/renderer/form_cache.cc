@@ -206,7 +206,7 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
   WebFormElement form_element =
       form_util::GetFormByRendererId(form.data.renderer_id());
   std::vector<WebFormControlElement> control_elements =
-      form_util::GetAutofillableFormControlElements(document, form_element);
+      form_util::GetOwnedAutofillableFormControls(document, form_element);
   if (control_elements.size() != form.fields.size()) {
     // Keep things simple.  Don't show predictions for forms that were modified
     // between page load and the server's response to our query.

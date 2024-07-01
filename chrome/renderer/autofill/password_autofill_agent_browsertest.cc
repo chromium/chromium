@@ -4056,7 +4056,7 @@ TEST_F(PasswordAutofillAgentTest,
     blink::WebVector<WebFormElement> forms = document.GetTopLevelForms();
     WebFormElement form_element = forms[0];
     std::vector<blink::WebFormControlElement> control_elements =
-        form_util::GetAutofillableFormControlElements(document, form_element);
+        form_util::GetOwnedAutofillableFormControls(document, form_element);
     if (test_case.has_fillable_username) {
       username_element_ = control_elements[0].To<WebInputElement>();
       password_element_ = control_elements[1].To<WebInputElement>();

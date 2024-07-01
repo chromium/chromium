@@ -179,14 +179,14 @@ base::i18n::TextDirection GetTextDirectionForElement(
 // Returns all the form control elements
 // - owned by `form_element` if `!form_element.IsNull()`;
 // - owned by no form otherwise.
-std::vector<blink::WebFormControlElement> GetFormControlElements(
+std::vector<blink::WebFormControlElement> GetOwnedFormControls(
     const blink::WebDocument& document,
     const blink::WebFormElement& form_element);
 
 // Returns all the autofillable form control elements
 // - owned by `form_element` if `!form_element.IsNull()`;
 // - owned by no form otherwise.
-std::vector<blink::WebFormControlElement> GetAutofillableFormControlElements(
+std::vector<blink::WebFormControlElement> GetOwnedAutofillableFormControls(
     const blink::WebDocument& document,
     const blink::WebFormElement& form_element);
 

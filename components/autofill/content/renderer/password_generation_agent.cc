@@ -488,7 +488,7 @@ bool PasswordGenerationAgent::SetUpTriggeredGeneration() {
     WebFormElement form = form_util::GetFormElementForPasswordInput(
         last_focused_password_element);
     std::vector<WebFormControlElement> control_elements =
-        form_util::GetAutofillableFormControlElements(document, form);
+        form_util::GetOwnedAutofillableFormControls(document, form);
 
     MaybeCreateCurrentGenerationItem(
         last_focused_password_element,
