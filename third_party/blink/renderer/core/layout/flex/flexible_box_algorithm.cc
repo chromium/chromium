@@ -936,15 +936,18 @@ TransformedWritingMode FlexibleBoxAlgorithm::GetTransformedWritingMode(
     const ComputedStyle& style) {
   WritingMode mode = style.GetWritingMode();
   if (!style.ResolvedIsColumnFlexDirection()) {
-    static_assert(
-        static_cast<TransformedWritingMode>(WritingMode::kHorizontalTb) ==
-                TransformedWritingMode::kTopToBottomWritingMode &&
-            static_cast<TransformedWritingMode>(WritingMode::kVerticalLr) ==
-                TransformedWritingMode::kLeftToRightWritingMode &&
-            static_cast<TransformedWritingMode>(WritingMode::kVerticalRl) ==
-                TransformedWritingMode::kRightToLeftWritingMode,
-        "WritingMode and TransformedWritingMode must match values.");
-    return static_cast<TransformedWritingMode>(mode);
+    switch (mode) {
+      case WritingMode::kHorizontalTb:
+        return TransformedWritingMode::kTopToBottomWritingMode;
+      case WritingMode::kVerticalLr:
+      case WritingMode::kSidewaysLr:
+        return TransformedWritingMode::kLeftToRightWritingMode;
+      case WritingMode::kVerticalRl:
+      case WritingMode::kSidewaysRl:
+        return TransformedWritingMode::kRightToLeftWritingMode;
+    }
+    NOTREACHED_IN_MIGRATION();
+    return TransformedWritingMode::kTopToBottomWritingMode;
   }
 
   switch (mode) {
@@ -954,12 +957,14 @@ TransformedWritingMode FlexibleBoxAlgorithm::GetTransformedWritingMode(
                  : TransformedWritingMode::kRightToLeftWritingMode;
     case WritingMode::kVerticalLr:
     case WritingMode::kVerticalRl:
+    case WritingMode::kSidewaysRl:
       return style.IsLeftToRightDirection()
                  ? TransformedWritingMode::kTopToBottomWritingMode
                  : TransformedWritingMode::kBottomToTopWritingMode;
-    // TODO(layout-dev): Sideways-lr and sideways-rl are not yet supported.
-    default:
-      break;
+    case WritingMode::kSidewaysLr:
+      return style.IsLeftToRightDirection()
+                 ? TransformedWritingMode::kBottomToTopWritingMode
+                 : TransformedWritingMode::kTopToBottomWritingMode;
   }
   NOTREACHED_IN_MIGRATION();
   return TransformedWritingMode::kTopToBottomWritingMode;
