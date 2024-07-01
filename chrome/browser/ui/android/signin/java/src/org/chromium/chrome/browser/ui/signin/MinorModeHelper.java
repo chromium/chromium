@@ -36,7 +36,7 @@ import java.lang.annotation.RetentionPolicy;
  *       is updated in minor-safe way.
  * </ol>
  *
- * <p>Use {@link resolveMinorMode} and {@link trackLatency} methods as entry points.
+ * <p>Use {@link resolveMinorMode} as an entry point.
  */
 public class MinorModeHelper implements IdentityManager.Observer {
 
@@ -73,31 +73,6 @@ public class MinorModeHelper implements IdentityManager.Observer {
             "Signin.AccountCapabilities.FetchLatency";
     private static final String IMMEDIATELY_AVAILABLE_HISTOGRAM_NAME =
             "Signin.AccountCapabilities.ImmediatelyAvailable";
-
-    private static final String BUTTONS_SHOWN_HISTOGRAM_NAME = "Signin.SyncButtons.Shown";
-    private static final String BUTTON_CLICKED_HISTOGRAM_NAME = "Signin.SyncButtons.Clicked";
-
-    @IntDef({
-        SyncButtonsType.SYNC_EQUAL_WEIGHTED_DEPRECATED,
-        SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED,
-        SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED,
-        SyncButtonsType.HISTORY_SYNC_NOT_EQUAL_WEIGHTED,
-        SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_DEADLINE,
-        SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY,
-        SyncButtonsType.NUM_ENTRIES,
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface SyncButtonsType {
-        // These values are persisted to logs. Entries should not be renumbered and
-        // numeric values should never be reused.
-        int SYNC_EQUAL_WEIGHTED_DEPRECATED = 0;
-        int SYNC_NOT_EQUAL_WEIGHTED = 1;
-        int HISTORY_SYNC_EQUAL_WEIGHTED = 2;
-        int HISTORY_SYNC_NOT_EQUAL_WEIGHTED = 3;
-        int SYNC_EQUAL_WEIGHTED_FROM_DEADLINE = 4;
-        int SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY = 5;
-        int NUM_ENTRIES = 6;
-    };
 
     private static boolean sDisableHistorySyncOptInTimeoutForTesting;
 
@@ -144,14 +119,8 @@ public class MinorModeHelper implements IdentityManager.Observer {
                 new MinorModeHelper(identityManager, primaryAccount, uiUpdater));
     }
 
-    /** Similar to {@link resolveMinorMode}, but only tracks latency, without altering the UI. */
-    static void trackLatency(IdentityManager identityManager, CoreAccountInfo primaryAccount) {
-        resolveMinorMode(identityManager, primaryAccount, (mode) -> {});
-    }
-
-    static void recordButtonsShown(@SyncButtonsType int type) {
-        RecordHistogram.recordEnumeratedHistogram(
-                BUTTONS_SHOWN_HISTOGRAM_NAME, type, SyncButtonsType.NUM_ENTRIES);
+    static void recordButtonsShown(@SigninMetricsUtils.SyncButtonsType int type) {
+        SigninMetricsUtils.recordButtonsShownOnHistorySync(type);
     }
 
     /**

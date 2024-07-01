@@ -288,15 +288,15 @@ class SigninView extends LinearLayout {
         switch (mScreenMode) {
             case ScreenMode.RESTRICTED:
                 MinorModeHelper.recordButtonsShown(
-                        MinorModeHelper.SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY);
+                        SigninMetricsUtils.SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY);
                 break;
             case ScreenMode.UNRESTRICTED:
                 MinorModeHelper.recordButtonsShown(
-                        MinorModeHelper.SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED);
+                        SigninMetricsUtils.SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED);
                 break;
             case ScreenMode.DEADLINED:
                 MinorModeHelper.recordButtonsShown(
-                        MinorModeHelper.SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_DEADLINE);
+                        SigninMetricsUtils.SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_DEADLINE);
                 break;
         }
     }
