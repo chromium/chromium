@@ -7,9 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/ui/settings/google_services/sync_error_settings_command_handler.h"
+
 @protocol AccountMenuMediator;
 
-@protocol AccountMenuMediatorDelegate <NSObject>
+@protocol AccountMenuMediatorDelegate <SyncErrorSettingsCommandHandler>
 
 - (void)mediatorWantsToBeDismissed:(AccountMenuMediator*)mediator;
 

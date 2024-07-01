@@ -217,7 +217,35 @@
 }
 
 - (void)didTapErrorButton {
-  // TODO(crbug.com/349101034) Handle errors.
+  switch (_error.errorType) {
+    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate: {
+      if (_authenticationService->HasCachedMDMErrorForIdentity(
+              _primaryIdentity)) {
+        [self.delegate openMDMErrodDialogWithSystemIdentity:_primaryIdentity];
+      } else {
+        [self.delegate openPrimaryAccountReauthDialog];
+      }
+      break;
+    }
+    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
+      [self.delegate openPassphraseDialogWithModalPresentation:YES];
+      break;
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForPasswords:
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForEverything:
+      [self.delegate openTrustedVaultReauthForFetchKeys];
+      break;
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForPasswords:
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForEverything:
+      [self.delegate openTrustedVaultReauthForDegradedRecoverability];
+      break;
+    case syncer::SyncService::UserActionableError::kGenericUnrecoverableError:
+    case syncer::SyncService::UserActionableError::kNone:
+      NOTREACHED_IN_MIGRATION();
+  }
 }
 
 #pragma mark - Private

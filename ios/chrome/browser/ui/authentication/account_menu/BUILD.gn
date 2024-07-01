@@ -37,8 +37,10 @@ source_set("account_menu") {
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/authentication/signout_action_sheet",
+    "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/google_services",
     "//ios/chrome/browser/ui/settings/google_services/manage_accounts",
+    "//ios/chrome/browser/ui/settings/sync",
   ]
 }
 

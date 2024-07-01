@@ -8,12 +8,17 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_service_utils.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -29,6 +34,9 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_coordinator.h"
+#import "ios/chrome/browser/ui/settings/settings_root_view_controlling.h"
+#import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/sync/sync_encryption_table_view_controller.h"
 
 @interface AccountMenuCoordinator () <
     AccountMenuMediatorDelegate,
@@ -50,6 +58,7 @@
   AccountMenuMediator* _mediator;
   // The coordinator for the action sheet to sign out.
   SignoutActionSheetCoordinator* _signoutActionSheetCoordinator;
+  raw_ptr<syncer::SyncService> _syncService;
 
   // ApplicationCommands handler.
   id<ApplicationCommands> _applicationHandler;
@@ -63,11 +72,9 @@
   [super start];
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  _syncService = SyncServiceFactory::GetForBrowserState(browserState);
   _authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
-
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
   signin::IdentityManager* identityManager =
@@ -94,7 +101,7 @@
   _navigationController.presentationController.delegate = self;
 
   _mediator =
-      [[AccountMenuMediator alloc] initWithSyncService:syncService
+      [[AccountMenuMediator alloc] initWithSyncService:_syncService
                                  accountManagerService:accountManagerService
                                            authService:_authenticationService
                                        identityManager:identityManager];
@@ -109,7 +116,7 @@
 
 - (void)stop {
   // TODO(crbug.com/336719423): Change condition to CHECK(_viewController). But
-  // firt inform the parent coordinator at didTapClose that this view was
+  // first inform the parent coordinator at didTapClose that this view was
   // dismissed.
   if (!_viewController) {
     return;
@@ -131,6 +138,7 @@
   _mediator.delegate = nil;
   _mediator = nil;
   _applicationHandler = nil;
+  _syncService = nullptr;
   _authenticationService = nullptr;
   [self stopSignoutActionSheetCoordinator];
   [self stopAccountsCoordinator];
@@ -217,8 +225,7 @@
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kAddAccount
                identity:nil
-            accessPoint:signin_metrics::AccessPoint::
-                            ACCESS_POINT_NTP_IDENTITY_DISC
+            accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
                callback:callback];
@@ -253,6 +260,84 @@
   [self.delegate acountMenuCoordinatorShouldStop:self];
 }
 
+#pragma mark - SyncErrorSettingsCommandHandler
+
+- (void)openPassphraseDialogWithModalPresentation:(BOOL)presentModally {
+  if (presentModally) {
+    SyncEncryptionPassphraseTableViewController* controllerToPresent =
+        [[SyncEncryptionPassphraseTableViewController alloc]
+            initWithBrowser:self.browser];
+    controllerToPresent.presentModally = YES;
+    UINavigationController* navigationController =
+        [[UINavigationController alloc]
+            initWithRootViewController:controllerToPresent];
+    navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    [self configureHandlersForRootViewController:controllerToPresent];
+    [_navigationController presentViewController:navigationController
+                                        animated:YES
+                                      completion:nil];
+    return;
+  }
+  UIViewController<SettingsRootViewControlling>* controllerToPush;
+  // If there was a sync error, prompt the user to enter the passphrase.
+  // Otherwise, show the full encryption options.
+  if (_syncService->GetUserSettings()->IsPassphraseRequired()) {
+    controllerToPush = [[SyncEncryptionPassphraseTableViewController alloc]
+        initWithBrowser:self.browser];
+  } else {
+    controllerToPush = [[SyncEncryptionTableViewController alloc]
+        initWithBrowser:self.browser];
+  }
+
+  [self configureHandlersForRootViewController:controllerToPush];
+  [_navigationController pushViewController:controllerToPush animated:YES];
+}
+
+- (void)openTrustedVaultReauthForFetchKeys {
+  id<ApplicationCommands> applicationCommands =
+      static_cast<id<ApplicationCommands>>(
+          self.browser->GetCommandDispatcher());
+  syncer::TrustedVaultUserActionTriggerForUMA trigger =
+      syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU;
+  [applicationCommands
+      showTrustedVaultReauthForFetchKeysFromViewController:_navigationController
+                                                   trigger:trigger
+                                               accessPoint:accessPoint];
+}
+
+- (void)openTrustedVaultReauthForDegradedRecoverability {
+  id<ApplicationCommands> applicationCommands =
+      static_cast<id<ApplicationCommands>>(
+          self.browser->GetCommandDispatcher());
+  syncer::TrustedVaultUserActionTriggerForUMA trigger =
+      syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU;
+  [applicationCommands
+      showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
+          _navigationController
+                                                                trigger:trigger
+                                                            accessPoint:
+                                                                accessPoint];
+}
+
+- (void)openMDMErrodDialogWithSystemIdentity:(id<SystemIdentity>)identity {
+  _authenticationService->ShowMDMErrorDialogForIdentity(identity);
+}
+
+- (void)openPrimaryAccountReauthDialog {
+  id<ApplicationCommands> applicationCommands =
+      static_cast<id<ApplicationCommands>>(
+          self.browser->GetCommandDispatcher());
+  ShowSigninCommand* signinCommand = [[ShowSigninCommand alloc]
+      initWithOperation:AuthenticationOperation::kPrimaryAccountReauth
+            accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU];
+  [applicationCommands showSignin:signinCommand
+               baseViewController:_navigationController];
+}
+
 #pragma mark - Private
 
 - (void)stopAccountsCoordinator {
@@ -262,6 +347,16 @@
 
 - (void)resetAccountDetailsControllerDismissCallback {
   _accountDetailsControllerDismissCallback.Reset();
+}
+
+- (void)configureHandlersForRootViewController:
+    (id<SettingsRootViewControlling>)controller {
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  controller.applicationHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
+  controller.browserHandler = HandlerForProtocol(dispatcher, BrowserCommands);
+  controller.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
+  controller.snackbarHandler = HandlerForProtocol(dispatcher, SnackbarCommands);
 }
 
 - (void)stopSignoutActionSheetCoordinator {
