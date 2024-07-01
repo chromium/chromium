@@ -847,6 +847,9 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_LENS_OVERLAY" desc="The name of the Lens overlay command in the content area context menu">
             Search with Google Lens
           </message>
+          <message name="IDS_CONTENT_LENS_OVERLAY_ENTRYPOINT_LABEL" desc="The label of the Lens overlay entrypoint in the omnibox">
+            Google Lens
+          </message>
           <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1" desc="The name of the Lens Region Search command in the content area context menu">
             Search page with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
@@ -1183,6 +1186,9 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_LENS_OVERLAY" desc="In Title Case: The name of the Lens overlay command in the content area context menu">
             Search with Google Lens
+          </message>
+          <message name="IDS_CONTENT_LENS_OVERLAY_ENTRYPOINT_LABEL" desc="The label of the Lens overlay entrypoint in the omnibox">
+            Google Lens
           </message>
           <message name="IDS_CONTENT_CONTEXT_TRANSLATEIMAGE" desc="In Title Case: The name of the Translate Image command in the content area context menu">
             Translate Text in Image with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google</ex></ph>

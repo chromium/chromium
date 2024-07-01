@@ -810,7 +810,16 @@ void LocationBarView::Layout(PassKey) {
 
   // Perform layout.
   int entry_width = width();
-  const int reserved_width = omnibox_view_->GetMinimumSize().width();
+
+  // Use the unelided omnibox width as the `reserved_width` so preferred size
+  // calculations of decorations are calculated to maximize this constraint.
+  // TODO(crbug.com/350541615): This can be removed once current non-resizable
+  // decorations are updated to support LocationBayLayout::auto_collapse.
+  const int inset_width = GetInsets().width();
+  const int padding = GetLayoutConstant(LOCATION_BAR_ELEMENT_PADDING);
+  const int unelided_omnibox_width = omnibox_view_->GetUnelidedTextWidth();
+  const int reserved_width = unelided_omnibox_width + inset_width + padding * 2;
+
   leading_decorations.LayoutPass1(&entry_width, reserved_width);
   trailing_decorations.LayoutPass1(&entry_width, reserved_width);
   leading_decorations.LayoutPass2(&entry_width);

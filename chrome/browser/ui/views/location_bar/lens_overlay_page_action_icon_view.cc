@@ -63,7 +63,8 @@ LensOverlayPageActionIconView::LensOverlayPageActionIconView(
 
   SetProperty(views::kElementIdentifierKey,
               kLensOverlayPageActionIconElementId);
-  SetLabel(l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_LENS_OVERLAY));
+  SetLabel(
+      l10n_util::GetStringUTF16(IDS_CONTENT_LENS_OVERLAY_ENTRYPOINT_LABEL));
   SetUseTonalColorsWhenExpanded(true);
   SetPaintLabelOverSolidBackground(true);
 }
@@ -131,19 +132,38 @@ const gfx::VectorIcon& LensOverlayPageActionIconView::GetVectorIcon() const {
 
 gfx::Size LensOverlayPageActionIconView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  // TODO: tluk - Currently all page action icons are treated as non-resizable
-  // by LocationBarLayout. Page actions should be updated to be resizable by
-  // the LocationBarLayout, until then control the icon's preferred size
-  // based on the available space.
-  const gfx::Size full_size =
-      PageActionIconView::CalculatePreferredSize(available_size);
   // TODO(tluk): Update GetSizeForLabelWidth() to correctly calculate padding
   // for empty label widths and replace the calculation below.
+  const gfx::Size full_size =
+      PageActionIconView::CalculatePreferredSize(available_size);
   const gfx::Insets view_insets = GetInsets();
   const gfx::Size reduced_size =
       image_container_view()->GetPreferredSize() +
       gfx::Size(view_insets.left() * 2, view_insets.height());
-  return available_size.width() < full_size.width() ? reduced_size : full_size;
+
+  // Size icon to its full width if there are no size constraints.
+  if (!available_size.width().is_bounded()) {
+    return full_size;
+  }
+
+  // Handle minimum size requests.
+  int available_width = available_size.width().value();
+  if (available_width == 0) {
+    return reduced_size;
+  }
+
+  // Adjust the available width by the minimum size of the parent's other
+  // children. This is necessary as the PageActionIconContainer's BoxLayout
+  // passes in the total size available to each of its child views, and the
+  // combined preferred size calculations of the children may not correctly
+  // respect the available size.
+  available_width -= parent()->GetMinimumSize().width() - reduced_size.width();
+
+  // TODO(crbug.com/350541615): Currently all page action icons are treated as
+  // non-resizable by LocationBarLayout. Page actions should be updated to be
+  // resizable by the LocationBarLayout, until then control the icon's preferred
+  // size based on the available space.
+  return available_width < full_size.width() ? reduced_size : full_size;
 }
 
 BEGIN_METADATA(LensOverlayPageActionIconView)
