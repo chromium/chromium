@@ -5294,6 +5294,9 @@ static_library("browser") {
       "//chrome/browser/ash/accessibility/live_caption",
       "//chrome/browser/ash/accessibility/service",
       "//chrome/browser/ash/android_sms",
+      "//chrome/browser/ash/app_mode",
+      "//chrome/browser/ash/app_mode/auto_sleep",
+      "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/apps",
       "//chrome/browser/ash/assistant",
@@ -5524,6 +5527,9 @@ static_library("browser") {
     ]
     allow_circular_includes_from += [
       "//chrome/browser/ash",
+      "//chrome/browser/ash/app_mode",
+      "//chrome/browser/ash/app_mode/auto_sleep",
+      "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/shimless_rma",
       "//chrome/browser/ash/accessibility/live_caption",

@@ -429,6 +429,8 @@ source_set("chromeos") {
       "//chrome/browser/ash/system_web_apps/apps",
       "//chrome/browser/ash/system_web_apps/apps/help_app",
       "//chrome/browser/ash/video_conference",
+      "//chrome/browser/ash/app_mode",
+      "//chrome/browser/ash/app_mode/web_app",
     ]
     public_deps += [
       "//ash/constants",
@@ -443,6 +445,8 @@ source_set("chromeos") {
       "//ash/webui/file_manager:file_manager_ui",
       "//ash/webui/file_manager:file_manager_untrusted_ui",
       "//chrome/browser/ash/accessibility",
+      "//chrome/browser/ash/app_mode",
+      "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/attestation",
       "//chrome/browser/ash/cert_provisioning",
@@ -563,7 +567,10 @@ static_library("test_support") {
   ]
 
   if (is_chromeos_ash) {
-    public_deps += [ "//chrome/browser/ash:test_support" ]
+    public_deps += [
+      "//chrome/browser/ash:test_support",
+      "//chrome/browser/ash/app_mode:test_support",
+    ]
   }
 
   deps = [

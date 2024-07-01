@@ -3810,6 +3810,8 @@ static_library("ui") {
       "//chrome/browser/ash/app_list/search/ranking:proto",
       "//chrome/browser/ash/app_list/search/util:proto",
       "//chrome/browser/ash/app_list/vector_icons",
+      "//chrome/browser/ash/app_mode",
+      "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/apps",
       "//chrome/browser/ash/assistant",

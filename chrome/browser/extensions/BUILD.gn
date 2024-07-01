@@ -1241,6 +1241,8 @@ source_set("extensions") {
       "//ash/webui/resources:media_app_bundle_resources_grit",
       "//ash/webui/settings/public/constants:mojom",
       "//chrome/browser/ash/accessibility",
+      "//chrome/browser/ash/app_mode",
+      "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/attestation",
       "//chrome/browser/ash/bruschetta",
@@ -1309,6 +1311,8 @@ source_set("extensions") {
     ]
 
     allow_circular_includes_from += [
+      "//chrome/browser/ash/app_mode",
+      "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/attestation",

@@ -880,6 +880,7 @@ static_library("test_support") {
       "//ash/webui/scanning:url_constants",
       "//ash/webui/shortcut_customization_ui:url_constants",
       "//chrome/browser/ash",
+      "//chrome/browser/ash/app_mode",
       "//chrome/browser/ash/system_web_apps",
       "//chromeos/ash/components/account_manager",
       "//chromeos/ash/components/dbus/session_manager",
@@ -2214,6 +2215,16 @@ if (!is_android) {
         "//chrome/browser/ash/base",
         "//chrome/browser/ash/customization",
         "//remoting/host/chromeos:features",
+
+        # TODO(b/335293584) : Remove after c/b/a/login/ has been migrated.
+        "//chrome/browser/ash/app_mode:browser_tests",
+        "//chrome/browser/ash/app_mode/auto_sleep:browser_tests",
+      ]
+      allow_circular_includes_from += [
+        # TODO(b/335293584) : Remove after c/b/a/login/ has been migrated.
+
+        "//chrome/browser/ash/app_mode:browser_tests",
+        "//chrome/browser/ash/app_mode/auto_sleep:browser_tests",
       ]
     }
 
@@ -4562,14 +4573,6 @@ if (!is_android) {
         "../browser/ash/app_list/search/test/search_results_changed_waiter.h",
         "../browser/ash/app_list/search/test/test_continue_files_search_provider.cc",
         "../browser/ash/app_list/search/test/test_continue_files_search_provider.h",
-        "../browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_controller_browsertest.cc",
-        "../browser/ash/app_mode/kiosk_app_update_service_browsertest.cc",
-        "../browser/ash/app_mode/kiosk_chrome_app_manager_browsertest.cc",
-        "../browser/ash/app_mode/kiosk_crash_restore_browsertest.cc",
-        "../browser/ash/app_mode/kiosk_pixel_browsertest.cc",
-        "../browser/ash/app_mode/kiosk_system_web_app_browsertest.cc",
-        "../browser/ash/app_mode/kiosk_troubleshooting_tools_browsertest.cc",
-        "../browser/ash/app_mode/web_app/web_kiosk_app_data_browsertest.cc",
         "../browser/ash/arc/accessibility/arc_accessibility_helper_bridge_browsertest.cc",
         "../browser/ash/arc/auth/arc_auth_service_browsertest.cc",
         "../browser/ash/arc/auth/arc_robot_auth_code_fetcher_browsertest.cc",

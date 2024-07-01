@@ -123,10 +123,16 @@ source_set("permissions") {
       "//ui/android",
     ]
   }
+  allow_circular_includes_from = []
 
   if (is_chromeos_ash) {
     deps += [
       "//chrome/browser/ash",
+      "//chrome/browser/ash/app_mode/web_app",
+      "//chrome/browser/ash/shimless_rma",
+    ]
+    allow_circular_includes_from += [
+      "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/ash/shimless_rma",
     ]
   }
@@ -200,7 +206,10 @@ source_set("unit_tests") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash:test_support" ]
+    deps += [
+      "//chrome/browser/ash:test_support",
+      "//chrome/browser/ash/app_mode/web_app",
+    ]
   }
 }
 
