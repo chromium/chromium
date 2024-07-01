@@ -44,9 +44,9 @@ class ScreenAIDownloaderAshTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
+  FakeScreenAIDownloader install_state_;
   crosapi::ScreenAIDownloaderAsh downloader_ash_;
   mojo::Remote<crosapi::mojom::ScreenAIDownloader> downloader_remote_;
-  FakeScreenAIDownloader install_state_;
 };
 
 TEST_F(ScreenAIDownloaderAshTest, EnsurePendingCallbackDestruction) {
