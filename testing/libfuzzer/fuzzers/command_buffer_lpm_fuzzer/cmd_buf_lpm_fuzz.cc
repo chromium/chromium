@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "testing/libfuzzer/fuzzers/command_buffer_lpm_fuzzer/cmd_buf_lpm_fuzz.h"
 
 #include <dawn/dawn_proc.h>
 #include <dawn/webgpu_cpp.h>
+#include <stddef.h>
+#include <stdint.h>
+
 #include <memory>
 #include <vector>
 
@@ -33,12 +35,11 @@
 #include "gpu/ipc/in_process_command_buffer.h"
 #include "gpu/ipc/webgpu_in_process_context.h"
 #include "mojo/core/embedder/embedder.h"
-
-#include "testing/libfuzzer/fuzzers/command_buffer_lpm_fuzzer/cmd_buf_lpm_fuzz.h"
 #include "testing/libfuzzer/fuzzers/command_buffer_lpm_fuzzer/cmd_buf_lpm_fuzz.pb.h"
 #include "testing/libfuzzer/fuzzers/command_buffer_lpm_fuzzer/webgpu_support.h"
 #include "testing/libfuzzer/libfuzzer_exports.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
+#include "ui/gl/test/gl_surface_test_support.h"
 
 namespace gpu::cmdbuf::fuzzing {
 
@@ -84,6 +85,10 @@ void CmdBufFuzz::GfxInit() {
   preferences.use_webgpu_adapter = WebGPUAdapterName::kSwiftShader;
   preferences.enable_unsafe_webgpu = true;
   preferences.enable_gpu_service_logging_gpu = true;
+
+  // Configure the GL implementation to use stub bindings to ensure that any
+  // later creation of the GL surface succeeds.
+  CHECK(gl::GLSurfaceTestSupport::InitializeOneOffWithStubBindings());
 
   VLOG(3) << "TestGpuServiceHolder: starting GPU threads";
   gpu_service_holder_ =
