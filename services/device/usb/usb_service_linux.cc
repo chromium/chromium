@@ -25,7 +25,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/device_event_log/device_event_log.h"
-#include "device/base/features.h"
 #include "device/udev_linux/udev_watcher.h"
 #include "services/device/usb/usb_device_handle.h"
 #include "services/device/usb/usb_device_linux.h"
@@ -34,6 +33,8 @@
 namespace device {
 
 namespace {
+
+constexpr std::string_view kUsbSubsystem = "usb";
 
 // Standard USB requests and descriptor types:
 const uint16_t kUsbVersion2_1 = 0x0210;
@@ -124,10 +125,7 @@ UsbServiceLinux::BlockingTaskRunnerHelper::BlockingTaskRunnerHelper(
 
   // Initializing udev for device enumeration and monitoring may fail. In that
   // case this service will continue to exist but no devices will be found.
-  std::vector<UdevWatcher::Filter> filters;
-  if (base::FeatureList::IsEnabled(features::kUdevUsbSubsystemFilter)) {
-    filters.emplace_back("usb", "");
-  }
+  const std::vector<UdevWatcher::Filter> filters = {{kUsbSubsystem, ""}};
   watcher_ = UdevWatcher::StartWatching(this, filters);
   if (watcher_)
     watcher_->EnumerateExistingDevices();
@@ -146,11 +144,9 @@ void UsbServiceLinux::BlockingTaskRunnerHelper::OnDeviceAdded(
 
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  // TODO(crbug.com/330576401): Remove this check once kUdevUsbSubsystemFilter
-  // is enabled everywhere.
   const char* subsystem = udev_device_get_subsystem(device.get());
-  if (!subsystem || strcmp(subsystem, "usb") != 0)
-    return;
+  CHECK(subsystem);
+  CHECK_EQ(subsystem, kUsbSubsystem);
 
   const char* value = udev_device_get_devnode(device.get());
   if (!value)

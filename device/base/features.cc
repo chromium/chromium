@@ -19,6 +19,7 @@ BASE_FEATURE(kNewBLEGattSessionHandling,
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace features {
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 // Controls whether Web Bluetooth should support confirm-only and confirm-PIN
 // pairing mode on Win/Linux
@@ -27,10 +28,5 @@ BASE_FEATURE(kWebBluetoothConfirmPairingSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
-#if defined(USE_UDEV)
-BASE_FEATURE(kUdevUsbSubsystemFilter,
-             "UdevUsbSubsystemFilter",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // defined(USE_UDEV)
 }  // namespace features
 }  // namespace device
