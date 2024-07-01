@@ -13,10 +13,10 @@ namespace net {
 
 // A HttpTransactionFactory to create SharedDictionaryNetworkTransactions.
 class NET_EXPORT SharedDictionaryNetworkTransactionFactory
-    : public net::HttpTransactionFactory {
+    : public HttpTransactionFactory {
  public:
   SharedDictionaryNetworkTransactionFactory(
-      std::unique_ptr<net::HttpTransactionFactory> network_layer,
+      std::unique_ptr<HttpTransactionFactory> network_layer,
       bool enable_shared_zstd);
 
   SharedDictionaryNetworkTransactionFactory(
@@ -26,14 +26,14 @@ class NET_EXPORT SharedDictionaryNetworkTransactionFactory
 
   ~SharedDictionaryNetworkTransactionFactory() override;
 
-  // net::HttpTransactionFactory methods:
-  int CreateTransaction(net::RequestPriority priority,
-                        std::unique_ptr<net::HttpTransaction>* trans) override;
-  net::HttpCache* GetCache() override;
-  net::HttpNetworkSession* GetSession() override;
+  // HttpTransactionFactory methods:
+  int CreateTransaction(RequestPriority priority,
+                        std::unique_ptr<HttpTransaction>* trans) override;
+  HttpCache* GetCache() override;
+  HttpNetworkSession* GetSession() override;
 
  private:
-  std::unique_ptr<net::HttpTransactionFactory> network_layer_;
+  std::unique_ptr<HttpTransactionFactory> network_layer_;
   const bool enable_shared_zstd_;
 };
 

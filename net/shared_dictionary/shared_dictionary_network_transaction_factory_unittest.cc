@@ -12,10 +12,10 @@
 namespace net {
 namespace {
 
-class DummyHttpTransactionFactory : public net::HttpTransactionFactory {
+class DummyHttpTransactionFactory : public HttpTransactionFactory {
  public:
   explicit DummyHttpTransactionFactory()
-      : network_layer_(std::make_unique<net::MockNetworkLayer>()) {}
+      : network_layer_(std::make_unique<MockNetworkLayer>()) {}
 
   DummyHttpTransactionFactory(const DummyHttpTransactionFactory&) = delete;
   DummyHttpTransactionFactory& operator=(const DummyHttpTransactionFactory&) =
@@ -24,19 +24,19 @@ class DummyHttpTransactionFactory : public net::HttpTransactionFactory {
   ~DummyHttpTransactionFactory() override = default;
 
   // HttpTransactionFactory methods:
-  int CreateTransaction(net::RequestPriority priority,
-                        std::unique_ptr<net::HttpTransaction>* trans) override {
+  int CreateTransaction(RequestPriority priority,
+                        std::unique_ptr<HttpTransaction>* trans) override {
     create_transaction_called_ = true;
     if (is_broken_) {
-      return net::ERR_FAILED;
+      return ERR_FAILED;
     }
     return network_layer_->CreateTransaction(priority, trans);
   }
-  net::HttpCache* GetCache() override {
+  HttpCache* GetCache() override {
     get_cache_called_ = true;
     return network_layer_->GetCache();
   }
-  net::HttpNetworkSession* GetSession() override {
+  HttpNetworkSession* GetSession() override {
     get_session_called_ = true;
     return network_layer_->GetSession();
   }
@@ -51,7 +51,7 @@ class DummyHttpTransactionFactory : public net::HttpTransactionFactory {
   bool create_transaction_called_ = false;
   bool get_cache_called_ = false;
   bool get_session_called_ = false;
-  std::unique_ptr<net::HttpTransactionFactory> network_layer_;
+  std::unique_ptr<HttpTransactionFactory> network_layer_;
 };
 
 TEST(SharedDictionaryNetworkTransactionFactoryTest, CreateTransaction) {
@@ -60,10 +60,9 @@ TEST(SharedDictionaryNetworkTransactionFactoryTest, CreateTransaction) {
   SharedDictionaryNetworkTransactionFactory factory =
       SharedDictionaryNetworkTransactionFactory(std::move(dummy_factory),
                                                 /*enable_shared_zstd=*/true);
-  std::unique_ptr<net::HttpTransaction> transaction;
+  std::unique_ptr<HttpTransaction> transaction;
   EXPECT_FALSE(dummy_factory_ptr->create_transaction_called());
-  EXPECT_EQ(net::OK,
-            factory.CreateTransaction(net::DEFAULT_PRIORITY, &transaction));
+  EXPECT_EQ(OK, factory.CreateTransaction(DEFAULT_PRIORITY, &transaction));
   EXPECT_TRUE(dummy_factory_ptr->create_transaction_called());
   EXPECT_TRUE(transaction);
 }
@@ -75,9 +74,9 @@ TEST(SharedDictionaryNetworkTransactionFactoryTest, CreateTransactionFailure) {
       SharedDictionaryNetworkTransactionFactory(std::move(dummy_factory),
                                                 /*enable_shared_zstd=*/true);
   dummy_factory_ptr->set_is_broken();
-  std::unique_ptr<net::HttpTransaction> transaction;
-  EXPECT_EQ(net::ERR_FAILED,
-            factory.CreateTransaction(net::DEFAULT_PRIORITY, &transaction));
+  std::unique_ptr<HttpTransaction> transaction;
+  EXPECT_EQ(ERR_FAILED,
+            factory.CreateTransaction(DEFAULT_PRIORITY, &transaction));
   EXPECT_FALSE(transaction);
 }
 

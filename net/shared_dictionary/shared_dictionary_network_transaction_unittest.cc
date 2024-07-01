@@ -87,7 +87,7 @@ class DummySyncDictionary : public SharedDictionary {
  public:
   explicit DummySyncDictionary(const std::string& data_string,
                                const std::string& id = "")
-      : data_(base::MakeRefCounted<net::StringIOBuffer>(data_string)),
+      : data_(base::MakeRefCounted<StringIOBuffer>(data_string)),
         size_(data_string.size()),
         id_(id) {
     std::unique_ptr<crypto::SecureHash> secure_hash =
@@ -98,19 +98,17 @@ class DummySyncDictionary : public SharedDictionary {
   ~DummySyncDictionary() override = default;
 
   // SharedDictionary
-  int ReadAll(base::OnceCallback<void(int)> callback) override {
-    return net::OK;
-  }
-  scoped_refptr<net::IOBuffer> data() const override { return data_; }
+  int ReadAll(base::OnceCallback<void(int)> callback) override { return OK; }
+  scoped_refptr<IOBuffer> data() const override { return data_; }
   size_t size() const override { return size_; }
-  const net::SHA256HashValue& hash() const override { return hash_; }
+  const SHA256HashValue& hash() const override { return hash_; }
   const std::string& id() const override { return id_; }
 
  private:
-  const scoped_refptr<net::IOBuffer> data_;
+  const scoped_refptr<IOBuffer> data_;
   const size_t size_;
   const std::string id_;
-  net::SHA256HashValue hash_;
+  SHA256HashValue hash_;
 };
 
 class DummyAsyncDictionary : public DummySyncDictionary {
@@ -122,7 +120,7 @@ class DummyAsyncDictionary : public DummySyncDictionary {
   // SharedDictionary
   int ReadAll(base::OnceCallback<void(int)> callback) override {
     read_all_callback_ = std::move(callback);
-    return net::ERR_IO_PENDING;
+    return ERR_IO_PENDING;
   }
   base::OnceCallback<void(int)> TakeReadAllCallback() {
     return std::move(read_all_callback_);
@@ -132,15 +130,14 @@ class DummyAsyncDictionary : public DummySyncDictionary {
   base::OnceCallback<void(int)> read_all_callback_;
 };
 
-net::TransportInfo TestSpdyTransportInfo() {
-  return net::TransportInfo(
-      net::TransportType::kDirect,
-      net::IPEndPoint(net::IPAddress::IPv4Localhost(), 80),
-      /*accept_ch_frame_arg=*/"",
-      /*cert_is_issued_by_known_root=*/false, net::kProtoHTTP2);
+TransportInfo TestSpdyTransportInfo() {
+  return TransportInfo(TransportType::kDirect,
+                       IPEndPoint(IPAddress::IPv4Localhost(), 80),
+                       /*accept_ch_frame_arg=*/"",
+                       /*cert_is_issued_by_known_root=*/false, kProtoHTTP2);
 }
 
-static void BrotliTestTransactionHandler(const net::HttpRequestInfo* request,
+static void BrotliTestTransactionHandler(const HttpRequestInfo* request,
                                          std::string* response_status,
                                          std::string* response_headers,
                                          std::string* response_data) {
@@ -151,7 +148,7 @@ static void BrotliTestTransactionHandler(const net::HttpRequestInfo* request,
   *response_data = kBrotliEncodedDataString;
 }
 
-static void ZstdTestTransactionHandler(const net::HttpRequestInfo* request,
+static void ZstdTestTransactionHandler(const HttpRequestInfo* request,
                                        std::string* response_status,
                                        std::string* response_headers,
                                        std::string* response_data) {
@@ -163,7 +160,7 @@ static void ZstdTestTransactionHandler(const net::HttpRequestInfo* request,
 }
 
 static const auto kTestTransactionHandlerWithoutAvailableDictionary =
-    base::BindRepeating([](const net::HttpRequestInfo* request,
+    base::BindRepeating([](const HttpRequestInfo* request,
                            std::string* response_status,
                            std::string* response_headers,
                            std::string* response_data) {
@@ -174,12 +171,12 @@ static const auto kTestTransactionHandlerWithoutAvailableDictionary =
 
 constexpr char kTestUrl[] = "https://test.example/test";
 
-const net::MockTransaction kBrotliDictionaryTestTransaction = {
+const MockTransaction kBrotliDictionaryTestTransaction = {
     .url = kTestUrl,
     .method = "GET",
     .request_time = base::Time(),
     .request_headers = "sec-fetch-dest: document\r\n",
-    .load_flags = net::LOAD_CAN_USE_SHARED_DICTIONARY,
+    .load_flags = LOAD_CAN_USE_SHARED_DICTIONARY,
     .transport_info = TestSpdyTransportInfo(),
     .status = "HTTP/1.1 200 OK",
     .response_headers = "content-encoding: dcb\n",
@@ -188,22 +185,22 @@ const net::MockTransaction kBrotliDictionaryTestTransaction = {
     .dns_aliases = {},
     .fps_cache_filter = std::nullopt,
     .browser_run_id = std::nullopt,
-    .test_mode = net::TEST_MODE_NORMAL,
+    .test_mode = TEST_MODE_NORMAL,
     .handler = base::BindRepeating(&BrotliTestTransactionHandler),
-    .read_handler = net::MockTransactionReadHandler(),
+    .read_handler = MockTransactionReadHandler(),
     .cert = nullptr,
     .cert_status = 0,
     .ssl_connection_status = 0,
-    .start_return_code = net::OK,
-    .read_return_code = net::OK,
+    .start_return_code = OK,
+    .read_return_code = OK,
 };
 
-const net::MockTransaction kZstdDictionaryTestTransaction = {
+const MockTransaction kZstdDictionaryTestTransaction = {
     .url = kTestUrl,
     .method = "GET",
     .request_time = base::Time(),
     .request_headers = "sec-fetch-dest: document\r\n",
-    .load_flags = net::LOAD_CAN_USE_SHARED_DICTIONARY,
+    .load_flags = LOAD_CAN_USE_SHARED_DICTIONARY,
     .transport_info = TestSpdyTransportInfo(),
     .status = "HTTP/1.1 200 OK",
     .response_headers = "content-encoding: dcz\n",
@@ -212,21 +209,21 @@ const net::MockTransaction kZstdDictionaryTestTransaction = {
     .dns_aliases = {},
     .fps_cache_filter = std::nullopt,
     .browser_run_id = std::nullopt,
-    .test_mode = net::TEST_MODE_NORMAL,
+    .test_mode = TEST_MODE_NORMAL,
     .handler = base::BindRepeating(&ZstdTestTransactionHandler),
-    .read_handler = net::MockTransactionReadHandler(),
+    .read_handler = MockTransactionReadHandler(),
     .cert = nullptr,
     .cert_status = 0,
     .ssl_connection_status = 0,
-    .start_return_code = net::OK,
-    .read_return_code = net::OK,
+    .start_return_code = OK,
+    .read_return_code = OK,
 };
 
 class SharedDictionaryNetworkTransactionTest : public ::testing::Test {
  public:
   SharedDictionaryNetworkTransactionTest()
       : scoped_mock_transaction_(kBrotliDictionaryTestTransaction),
-        network_layer_(std::make_unique<net::MockNetworkLayer>()) {}
+        network_layer_(std::make_unique<MockNetworkLayer>()) {}
   ~SharedDictionaryNetworkTransactionTest() override = default;
 
   SharedDictionaryNetworkTransactionTest(
@@ -235,27 +232,26 @@ class SharedDictionaryNetworkTransactionTest : public ::testing::Test {
       const SharedDictionaryNetworkTransactionTest&) = delete;
 
  protected:
-  std::unique_ptr<net::HttpTransaction> CreateNetworkTransaction() {
-    std::unique_ptr<net::HttpTransaction> network_transaction;
-    network_layer_->CreateTransaction(net::DEFAULT_PRIORITY,
-                                      &network_transaction);
+  std::unique_ptr<HttpTransaction> CreateNetworkTransaction() {
+    std::unique_ptr<HttpTransaction> network_transaction;
+    network_layer_->CreateTransaction(DEFAULT_PRIORITY, &network_transaction);
     return network_transaction;
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
-  net::MockNetworkLayer& network_layer() { return *network_layer_.get(); }
+  MockNetworkLayer& network_layer() { return *network_layer_.get(); }
 
-  std::optional<net::ScopedMockTransaction> scoped_mock_transaction_;
+  std::optional<ScopedMockTransaction> scoped_mock_transaction_;
 
  private:
-  std::unique_ptr<net::MockNetworkLayer> network_layer_;
+  std::unique_ptr<MockNetworkLayer> network_layer_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(SharedDictionaryNetworkTransactionTest, SyncDictionary) {
-  net::MockHttpRequest request(*scoped_mock_transaction_);
+  MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
          const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
@@ -266,18 +262,18 @@ TEST_F(SharedDictionaryNetworkTransactionTest, SyncDictionary) {
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
-  net::TestCompletionCallback start_callback;
+  TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+                                NetLogWithSource()),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
 
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
   ASSERT_THAT(
       transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_IO_PENDING));
+      test::IsError(ERR_IO_PENDING));
   int read_result = read_callback.WaitForResult();
   EXPECT_THAT(read_result, kTestData.size());
   EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
@@ -289,7 +285,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NotAllowedToUseDictionary) {
   scoped_mock_transaction_->handler =
       kTestTransactionHandlerWithoutAvailableDictionary;
 
-  net::MockHttpRequest request(*scoped_mock_transaction_);
+  MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
          const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
@@ -301,18 +297,18 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NotAllowedToUseDictionary) {
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return false; }));
 
-  net::TestCompletionCallback start_callback;
+  TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+                                NetLogWithSource()),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
 
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
   ASSERT_THAT(
       transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_IO_PENDING));
+      test::IsError(ERR_IO_PENDING));
   int read_result = read_callback.WaitForResult();
   EXPECT_THAT(read_result, kTestData.size());
   EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
@@ -321,7 +317,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NotAllowedToUseDictionary) {
 TEST_F(SharedDictionaryNetworkTransactionTest, DictionaryId) {
   // Change MockTransaction to check the dictionary-id header
   scoped_mock_transaction_->handler = base::BindRepeating(
-      [](const net::HttpRequestInfo* request, std::string* response_status,
+      [](const HttpRequestInfo* request, std::string* response_status,
          std::string* response_headers, std::string* response_data) {
         std::string dictionary_id;
         EXPECT_TRUE(
@@ -330,7 +326,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, DictionaryId) {
         *response_data = kBrotliEncodedDataString;
       });
 
-  net::MockHttpRequest request(*scoped_mock_transaction_);
+  MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
          const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
@@ -342,18 +338,18 @@ TEST_F(SharedDictionaryNetworkTransactionTest, DictionaryId) {
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
-  net::TestCompletionCallback start_callback;
+  TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+                                NetLogWithSource()),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
 
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
   ASSERT_THAT(
       transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_IO_PENDING));
+      test::IsError(ERR_IO_PENDING));
   int read_result = read_callback.WaitForResult();
   EXPECT_THAT(read_result, kTestData.size());
   EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
@@ -363,7 +359,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
        DictionaryIdWithBackSlashAndDquote) {
   // Change MockTransaction to check the dictionary-id header
   scoped_mock_transaction_->handler = base::BindRepeating(
-      [](const net::HttpRequestInfo* request, std::string* response_status,
+      [](const HttpRequestInfo* request, std::string* response_status,
          std::string* response_headers, std::string* response_data) {
         std::string dictionary_id;
         EXPECT_TRUE(
@@ -372,7 +368,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
         *response_data = kBrotliEncodedDataString;
       });
 
-  net::MockHttpRequest request(*scoped_mock_transaction_);
+  MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
          const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
@@ -384,18 +380,18 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
-  net::TestCompletionCallback start_callback;
+  TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+                                NetLogWithSource()),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
 
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
   ASSERT_THAT(
       transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_IO_PENDING));
+      test::IsError(ERR_IO_PENDING));
   int read_result = read_callback.WaitForResult();
   EXPECT_THAT(read_result, kTestData.size());
   EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
@@ -404,13 +400,13 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
 TEST_F(SharedDictionaryNetworkTransactionTest, EmptyDictionaryId) {
   // Change MockTransaction to check the dictionary-id header
   scoped_mock_transaction_->handler = base::BindRepeating(
-      [](const net::HttpRequestInfo* request, std::string* response_status,
+      [](const HttpRequestInfo* request, std::string* response_status,
          std::string* response_headers, std::string* response_data) {
         EXPECT_FALSE(request->extra_headers.HasHeader("dictionary-id"));
         *response_data = kBrotliEncodedDataString;
       });
 
-  net::MockHttpRequest request(*scoped_mock_transaction_);
+  MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
          const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
@@ -421,18 +417,18 @@ TEST_F(SharedDictionaryNetworkTransactionTest, EmptyDictionaryId) {
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
-  net::TestCompletionCallback start_callback;
+  TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+                                NetLogWithSource()),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
 
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
   ASSERT_THAT(
       transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_IO_PENDING));
+      test::IsError(ERR_IO_PENDING));
   int read_result = read_callback.WaitForResult();
   EXPECT_THAT(read_result, kTestData.size());
   EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
@@ -449,7 +445,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
       kTestTransactionHandlerWithoutAvailableDictionary;
   scoped_mock_transaction_->transport_info.cert_is_issued_by_known_root = false;
 
-  net::MockHttpRequest request(*scoped_mock_transaction_);
+  MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
          const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
@@ -460,18 +456,18 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
-  net::TestCompletionCallback start_callback;
+  TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+                                NetLogWithSource()),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
 
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
   ASSERT_THAT(
       transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_IO_PENDING));
+      test::IsError(ERR_IO_PENDING));
   int read_result = read_callback.WaitForResult();
   EXPECT_THAT(read_result, kTestData.size());
   EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
@@ -486,7 +482,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
   // check that the there is a correct available-dictionary request header.
   scoped_mock_transaction_->transport_info.cert_is_issued_by_known_root = true;
 
-  net::MockHttpRequest request(*scoped_mock_transaction_);
+  MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
          const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
@@ -497,18 +493,18 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
-  net::TestCompletionCallback start_callback;
+  TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+                                NetLogWithSource()),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
 
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
   ASSERT_THAT(
       transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_IO_PENDING));
+      test::IsError(ERR_IO_PENDING));
   int read_result = read_callback.WaitForResult();
   EXPECT_THAT(read_result, kTestData.size());
   EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
@@ -521,11 +517,11 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
       features::kCompressionDictionaryTransportRequireKnownRootCert);
   // The BrotliTestTransactionHandler `new_mock_transaction.handler` will check
   // that the there is a correct available-dictionary request header.
-  net::ScopedMockTransaction scoped_mock_transaction(
+  ScopedMockTransaction scoped_mock_transaction(
       kBrotliDictionaryTestTransaction, "http:///localhost:1234/test");
   scoped_mock_transaction.transport_info.cert_is_issued_by_known_root = false;
 
-  net::MockHttpRequest request(scoped_mock_transaction);
+  MockHttpRequest request(scoped_mock_transaction);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
          const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
@@ -536,18 +532,18 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
-  net::TestCompletionCallback start_callback;
+  TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+                                NetLogWithSource()),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
 
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
   ASSERT_THAT(
       transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_IO_PENDING));
+      test::IsError(ERR_IO_PENDING));
   int read_result = read_callback.WaitForResult();
   EXPECT_THAT(read_result, kTestData.size());
   EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
@@ -559,7 +555,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoMatchingDictionary) {
   scoped_mock_transaction_->handler =
       kTestTransactionHandlerWithoutAvailableDictionary;
 
-  net::MockHttpRequest request(*scoped_mock_transaction_);
+  MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
          const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
@@ -570,18 +566,18 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoMatchingDictionary) {
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
-  net::TestCompletionCallback start_callback;
+  TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+                                NetLogWithSource()),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
 
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
   ASSERT_THAT(
       transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_IO_PENDING));
+      test::IsError(ERR_IO_PENDING));
   int read_result = read_callback.WaitForResult();
   EXPECT_THAT(read_result, kTestData.size());
   EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
@@ -593,7 +589,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, OpaqueFrameOrigin) {
   scoped_mock_transaction_->handler =
       kTestTransactionHandlerWithoutAvailableDictionary;
 
-  net::MockHttpRequest request(*scoped_mock_transaction_);
+  MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
          const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
@@ -607,18 +603,18 @@ TEST_F(SharedDictionaryNetworkTransactionTest, OpaqueFrameOrigin) {
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
-  net::TestCompletionCallback start_callback;
+  TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+                                NetLogWithSource()),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
 
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
   ASSERT_THAT(
       transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_IO_PENDING));
+      test::IsError(ERR_IO_PENDING));
   int read_result = read_callback.WaitForResult();
   EXPECT_THAT(read_result, kTestData.size());
   EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
@@ -630,7 +626,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, WithoutValidLoadFlag) {
   scoped_mock_transaction_->handler =
       kTestTransactionHandlerWithoutAvailableDictionary;
 
-  net::MockHttpRequest request(*scoped_mock_transaction_);
+  MockHttpRequest request(*scoped_mock_transaction_);
   bool getter_called = false;
   request.dictionary_getter = base::BindRepeating(
       [](bool* getter_called,
@@ -643,22 +639,22 @@ TEST_F(SharedDictionaryNetworkTransactionTest, WithoutValidLoadFlag) {
   SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
                                                  /*enable_shared_zstd=*/false);
 
-  CHECK_EQ(net::LOAD_CAN_USE_SHARED_DICTIONARY, request.load_flags);
+  CHECK_EQ(LOAD_CAN_USE_SHARED_DICTIONARY, request.load_flags);
   // Change load_flags not to trigger the shared dictionary logic.
-  request.load_flags = net::LOAD_NORMAL;
+  request.load_flags = LOAD_NORMAL;
 
-  net::TestCompletionCallback start_callback;
+  TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+                                NetLogWithSource()),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
 
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
   ASSERT_THAT(
       transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_IO_PENDING));
+      test::IsError(ERR_IO_PENDING));
   int read_result = read_callback.WaitForResult();
   EXPECT_THAT(read_result, kTestData.size());
   EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
@@ -672,7 +668,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoSbrContentEncoding) {
   // Change MockTransaction to remove `content-encoding: dcb`.
   scoped_mock_transaction_->response_headers = "";
 
-  net::MockHttpRequest request(*scoped_mock_transaction_);
+  MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
          const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
@@ -683,18 +679,18 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoSbrContentEncoding) {
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
-  net::TestCompletionCallback start_callback;
+  TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+                                NetLogWithSource()),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
 
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
   ASSERT_THAT(
       transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_IO_PENDING));
+      test::IsError(ERR_IO_PENDING));
   int read_result = read_callback.WaitForResult();
 
   // When there is no "content-encoding: dcb" header,
@@ -705,7 +701,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoSbrContentEncoding) {
 
 TEST_F(SharedDictionaryNetworkTransactionTest, WrongContentDictionaryHeader) {
   scoped_mock_transaction_->handler = base::BindRepeating(
-      [](const net::HttpRequestInfo* request, std::string* response_status,
+      [](const HttpRequestInfo* request, std::string* response_status,
          std::string* response_headers, std::string* response_data) {
         std::string data = kBrotliEncodedDataString;
         // Change the first byte of the compressed data to trigger
@@ -714,7 +710,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, WrongContentDictionaryHeader) {
         *response_data = data;
       });
 
-  net::MockHttpRequest request(*scoped_mock_transaction_);
+  MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
          const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
@@ -725,25 +721,23 @@ TEST_F(SharedDictionaryNetworkTransactionTest, WrongContentDictionaryHeader) {
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
-  net::TestCompletionCallback start_callback;
-  ASSERT_THAT(
-      start_callback.GetResult(transaction.Start(
-          &request, start_callback.callback(), net::NetLogWithSource())),
-      net::test::IsError(net::OK));
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
-  ASSERT_THAT(
-      read_callback.GetResult(
-          transaction.Read(buf.get(), buf->size(), read_callback.callback())),
-      net::test::IsError(net::ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER));
+  TestCompletionCallback start_callback;
+  ASSERT_THAT(start_callback.GetResult(transaction.Start(
+                  &request, start_callback.callback(), NetLogWithSource())),
+              test::IsError(OK));
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
+  ASSERT_THAT(read_callback.GetResult(transaction.Read(
+                  buf.get(), buf->size(), read_callback.callback())),
+              test::IsError(ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER));
 }
 TEST_F(SharedDictionaryNetworkTransactionTest, MultipleContentEncodingWithSbr) {
   // Change MockTransaction to set `content-encoding: dcb, deflate`.
   scoped_mock_transaction_->response_headers =
       "content-encoding: dcb, deflate\n";
 
-  net::MockHttpRequest request(*scoped_mock_transaction_);
+  MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
          const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
@@ -754,18 +748,18 @@ TEST_F(SharedDictionaryNetworkTransactionTest, MultipleContentEncodingWithSbr) {
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
-  net::TestCompletionCallback start_callback;
+  TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+                                NetLogWithSource()),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
 
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
   ASSERT_THAT(
       transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_IO_PENDING));
+      test::IsError(ERR_IO_PENDING));
   int read_result = read_callback.WaitForResult();
 
   // When there is Content-Encoding header which value is other than "dcb",
@@ -780,7 +774,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
       std::make_unique<DummyAsyncDictionary>(kTestDictionaryData);
   DummyAsyncDictionary* dictionary_ptr = dictionary.get();
 
-  net::MockHttpRequest request(kBrotliDictionaryTestTransaction);
+  MockHttpRequest request(kBrotliDictionaryTestTransaction);
   request.dictionary_getter = base::BindRepeating(
       [](std::unique_ptr<DummyAsyncDictionary>* dictionary,
          const std::optional<SharedDictionaryIsolationKey>& isolation_key,
@@ -794,23 +788,23 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
-  net::TestCompletionCallback start_callback;
+  TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+                                NetLogWithSource()),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
 
   base::OnceCallback<void(int)> dictionary_read_all_callback =
       dictionary_ptr->TakeReadAllCallback();
   ASSERT_TRUE(dictionary_read_all_callback);
-  std::move(dictionary_read_all_callback).Run(net::OK);
+  std::move(dictionary_read_all_callback).Run(OK);
 
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
   ASSERT_THAT(
       transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_IO_PENDING));
+      test::IsError(ERR_IO_PENDING));
   int read_result = read_callback.WaitForResult();
   EXPECT_THAT(read_result, kTestData.size());
   EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
@@ -822,7 +816,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
       std::make_unique<DummyAsyncDictionary>(kTestDictionaryData);
   DummyAsyncDictionary* dictionary_ptr = dictionary.get();
 
-  net::MockHttpRequest request(kBrotliDictionaryTestTransaction);
+  MockHttpRequest request(kBrotliDictionaryTestTransaction);
   request.dictionary_getter = base::BindRepeating(
       [](std::unique_ptr<DummyAsyncDictionary>* dictionary,
          const std::optional<SharedDictionaryIsolationKey>& isolation_key,
@@ -836,26 +830,26 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
-  net::TestCompletionCallback start_callback;
+  TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+                                NetLogWithSource()),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
 
   base::OnceCallback<void(int)> dictionary_read_all_callback =
       dictionary_ptr->TakeReadAllCallback();
   ASSERT_TRUE(dictionary_read_all_callback);
 
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
   ASSERT_THAT(
       transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_IO_PENDING));
+      test::IsError(ERR_IO_PENDING));
   RunUntilIdle();
   EXPECT_FALSE(read_callback.have_result());
 
-  std::move(dictionary_read_all_callback).Run(net::OK);
+  std::move(dictionary_read_all_callback).Run(OK);
 
   int read_result = read_callback.WaitForResult();
   EXPECT_THAT(read_result, kTestData.size());
@@ -868,7 +862,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
       std::make_unique<DummyAsyncDictionary>(kTestDictionaryData);
   DummyAsyncDictionary* dictionary_ptr = dictionary.get();
 
-  net::MockHttpRequest request(kBrotliDictionaryTestTransaction);
+  MockHttpRequest request(kBrotliDictionaryTestTransaction);
   request.dictionary_getter = base::BindRepeating(
       [](std::unique_ptr<DummyAsyncDictionary>* dictionary,
          const std::optional<SharedDictionaryIsolationKey>& isolation_key,
@@ -883,28 +877,28 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
   transaction->SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
-  net::TestCompletionCallback start_callback;
+  TestCompletionCallback start_callback;
   ASSERT_THAT(transaction->Start(&request, start_callback.callback(),
-                                 net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+                                 NetLogWithSource()),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
 
   base::OnceCallback<void(int)> dictionary_read_all_callback =
       dictionary_ptr->TakeReadAllCallback();
   ASSERT_TRUE(dictionary_read_all_callback);
 
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
   ASSERT_THAT(
       transaction->Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_IO_PENDING));
+      test::IsError(ERR_IO_PENDING));
   RunUntilIdle();
   EXPECT_FALSE(read_callback.have_result());
 
   transaction.reset();
 
-  std::move(dictionary_read_all_callback).Run(net::OK);
+  std::move(dictionary_read_all_callback).Run(OK);
 
   EXPECT_FALSE(read_callback.have_result());
 }
@@ -915,7 +909,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
       std::make_unique<DummyAsyncDictionary>(kTestDictionaryData);
   DummyAsyncDictionary* dictionary_ptr = dictionary.get();
 
-  net::MockHttpRequest request(kBrotliDictionaryTestTransaction);
+  MockHttpRequest request(kBrotliDictionaryTestTransaction);
   request.dictionary_getter = base::BindRepeating(
       [](std::unique_ptr<DummyAsyncDictionary>* dictionary,
          const std::optional<SharedDictionaryIsolationKey>& isolation_key,
@@ -929,23 +923,23 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
-  net::TestCompletionCallback start_callback;
+  TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+                                NetLogWithSource()),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
 
   base::OnceCallback<void(int)> dictionary_read_all_callback =
       dictionary_ptr->TakeReadAllCallback();
   ASSERT_TRUE(dictionary_read_all_callback);
-  std::move(dictionary_read_all_callback).Run(net::ERR_FAILED);
+  std::move(dictionary_read_all_callback).Run(ERR_FAILED);
 
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
   ASSERT_THAT(
       transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_DICTIONARY_LOAD_FAILED));
+      test::IsError(ERR_DICTIONARY_LOAD_FAILED));
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest,
@@ -954,7 +948,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
       std::make_unique<DummyAsyncDictionary>(kTestDictionaryData);
   DummyAsyncDictionary* dictionary_ptr = dictionary.get();
 
-  net::MockHttpRequest request(kBrotliDictionaryTestTransaction);
+  MockHttpRequest request(kBrotliDictionaryTestTransaction);
   request.dictionary_getter = base::BindRepeating(
       [](std::unique_ptr<DummyAsyncDictionary>* dictionary,
          const std::optional<SharedDictionaryIsolationKey>& isolation_key,
@@ -968,34 +962,34 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
-  net::TestCompletionCallback start_callback;
+  TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+                                NetLogWithSource()),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
 
   base::OnceCallback<void(int)> dictionary_read_all_callback =
       dictionary_ptr->TakeReadAllCallback();
   ASSERT_TRUE(dictionary_read_all_callback);
 
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
   ASSERT_THAT(
       transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_IO_PENDING));
+      test::IsError(ERR_IO_PENDING));
   RunUntilIdle();
   EXPECT_FALSE(read_callback.have_result());
 
-  std::move(dictionary_read_all_callback).Run(net::ERR_FAILED);
+  std::move(dictionary_read_all_callback).Run(ERR_FAILED);
 
-  EXPECT_EQ(net::ERR_DICTIONARY_LOAD_FAILED, read_callback.WaitForResult());
+  EXPECT_EQ(ERR_DICTIONARY_LOAD_FAILED, read_callback.WaitForResult());
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, Restart) {
-  net::ScopedMockTransaction mock_transaction(net::kSimpleGET_Transaction);
-  mock_transaction.start_return_code = net::ERR_FAILED;
-  net::MockHttpRequest request(mock_transaction);
+  ScopedMockTransaction mock_transaction(kSimpleGET_Transaction);
+  mock_transaction.start_return_code = ERR_FAILED;
+  MockHttpRequest request(mock_transaction);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
          const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
@@ -1004,32 +998,31 @@ TEST_F(SharedDictionaryNetworkTransactionTest, Restart) {
   SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
                                                  /*enable_shared_zstd=*/false);
 
-  net::TestCompletionCallback start_callback;
+  TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(),
-              net::test::IsError(net::ERR_FAILED));
+                                NetLogWithSource()),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(ERR_FAILED));
 
   {
-    net::TestCompletionCallback restart_callback;
+    TestCompletionCallback restart_callback;
     ASSERT_THAT(
         transaction.RestartIgnoringLastError(restart_callback.callback()),
-        net::test::IsError(net::ERR_FAILED));
+        test::IsError(ERR_FAILED));
   }
   {
-    net::TestCompletionCallback restart_callback;
+    TestCompletionCallback restart_callback;
     ASSERT_THAT(
         transaction.RestartWithCertificate(
             /*client_cert=*/nullptr,
             /*client_private_key=*/nullptr, restart_callback.callback()),
-        net::test::IsError(net::ERR_FAILED));
+        test::IsError(ERR_FAILED));
   }
   {
-    net::TestCompletionCallback restart_callback;
-    ASSERT_THAT(transaction.RestartWithAuth(net::AuthCredentials(),
+    TestCompletionCallback restart_callback;
+    ASSERT_THAT(transaction.RestartWithAuth(AuthCredentials(),
                                             restart_callback.callback()),
-                net::test::IsError(net::ERR_FAILED));
+                test::IsError(ERR_FAILED));
   }
   ASSERT_FALSE(transaction.IsReadyToRestartForAuth());
 }
@@ -1051,9 +1044,8 @@ TEST_F(SharedDictionaryNetworkTransactionTest, DoneReading) {
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, GetLoadState) {
-  net::ScopedMockTransaction scoped_mock_transaction(
-      net::kSimpleGET_Transaction);
-  net::MockHttpRequest request(scoped_mock_transaction);
+  ScopedMockTransaction scoped_mock_transaction(kSimpleGET_Transaction);
+  MockHttpRequest request(scoped_mock_transaction);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
          const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
@@ -1062,33 +1054,32 @@ TEST_F(SharedDictionaryNetworkTransactionTest, GetLoadState) {
   SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
                                                  /*enable_shared_zstd=*/false);
 
-  net::TestCompletionCallback start_callback;
+  TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+                                NetLogWithSource()),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
 
-  EXPECT_EQ(net::LOAD_STATE_IDLE, transaction.GetLoadState());
+  EXPECT_EQ(LOAD_STATE_IDLE, transaction.GetLoadState());
 
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(1);
-  net::TestCompletionCallback read_callback;
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(1);
+  TestCompletionCallback read_callback;
   ASSERT_THAT(
       transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_IO_PENDING));
+      test::IsError(ERR_IO_PENDING));
   int read_result = read_callback.WaitForResult();
   EXPECT_THAT(read_result, 1);
 
-  EXPECT_EQ(net::LOAD_STATE_READING_RESPONSE, transaction.GetLoadState());
+  EXPECT_EQ(LOAD_STATE_READING_RESPONSE, transaction.GetLoadState());
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, SharedZstd) {
   // Override MockTransaction to use `content-encoding: dcz`.
   scoped_mock_transaction_.reset();
-  net::ScopedMockTransaction new_mock_transaction(
-      kZstdDictionaryTestTransaction);
+  ScopedMockTransaction new_mock_transaction(kZstdDictionaryTestTransaction);
 
-  net::MockHttpRequest request(new_mock_transaction);
+  MockHttpRequest request(new_mock_transaction);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
          const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
@@ -1099,23 +1090,23 @@ TEST_F(SharedDictionaryNetworkTransactionTest, SharedZstd) {
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
-  net::TestCompletionCallback start_callback;
+  TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+                                NetLogWithSource()),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
 
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
 #if defined(NET_DISABLE_ZSTD)
   ASSERT_THAT(
       transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_CONTENT_DECODING_FAILED));
+      test::IsError(ERR_CONTENT_DECODING_FAILED));
 #else   // defined(NET_DISABLE_ZSTD)
   ASSERT_THAT(
       transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_IO_PENDING));
+      test::IsError(ERR_IO_PENDING));
   int read_result = read_callback.WaitForResult();
   EXPECT_THAT(read_result, kTestData.size());
   EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
@@ -1125,11 +1116,10 @@ TEST_F(SharedDictionaryNetworkTransactionTest, SharedZstd) {
 TEST_F(SharedDictionaryNetworkTransactionTest, NoZstdDContentEncoding) {
   // Change MockTransaction to remove `content-encoding: dcz`.
   scoped_mock_transaction_.reset();
-  net::ScopedMockTransaction scoped_mock_transaction(
-      kZstdDictionaryTestTransaction);
+  ScopedMockTransaction scoped_mock_transaction(kZstdDictionaryTestTransaction);
   scoped_mock_transaction.response_headers = "";
 
-  net::MockHttpRequest request(scoped_mock_transaction);
+  MockHttpRequest request(scoped_mock_transaction);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
          const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
@@ -1140,18 +1130,18 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoZstdDContentEncoding) {
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
-  net::TestCompletionCallback start_callback;
+  TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+                                NetLogWithSource()),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
 
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
   ASSERT_THAT(
       transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_IO_PENDING));
+      test::IsError(ERR_IO_PENDING));
   int read_result = read_callback.WaitForResult();
 
   // When there is no "content-encoding: dcz" header,
@@ -1249,8 +1239,8 @@ class SharedDictionaryNetworkTransactionProtocolCheckTest
   ~SharedDictionaryNetworkTransactionProtocolCheckTest() override = default;
 
  protected:
-  net::MockTransaction CreateMockTransaction() {
-    net::MockTransaction mock_transaction = kBrotliDictionaryTestTransaction;
+  MockTransaction CreateMockTransaction() {
+    MockTransaction mock_transaction = kBrotliDictionaryTestTransaction;
     if (IsLocalHost()) {
       mock_transaction.url = "http://localhost/test";
     }
@@ -1261,11 +1251,11 @@ class SharedDictionaryNetworkTransactionProtocolCheckTest
           kTestTransactionHandlerWithoutAvailableDictionary;
     }
     if (IsHttp2()) {
-      mock_transaction.transport_info.negotiated_protocol = net::kProtoHTTP2;
+      mock_transaction.transport_info.negotiated_protocol = kProtoHTTP2;
     } else if (IsHttp3()) {
-      mock_transaction.transport_info.negotiated_protocol = net::kProtoQUIC;
+      mock_transaction.transport_info.negotiated_protocol = kProtoQUIC;
     } else {
-      mock_transaction.transport_info.negotiated_protocol = net::kProtoHTTP11;
+      mock_transaction.transport_info.negotiated_protocol = kProtoHTTP11;
     }
     return mock_transaction;
   }
@@ -1335,9 +1325,9 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(SharedDictionaryNetworkTransactionProtocolCheckTest, Basic) {
   // Reset `scoped_mock_transaction_` to use the custom ScopedMockTransaction.
   scoped_mock_transaction_.reset();
-  net::ScopedMockTransaction new_mock_transaction(CreateMockTransaction());
+  ScopedMockTransaction new_mock_transaction(CreateMockTransaction());
 
-  net::MockHttpRequest request(new_mock_transaction);
+  MockHttpRequest request(new_mock_transaction);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
          const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
@@ -1348,18 +1338,18 @@ TEST_P(SharedDictionaryNetworkTransactionProtocolCheckTest, Basic) {
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
-  net::TestCompletionCallback start_callback;
+  TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+                                NetLogWithSource()),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
 
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
   ASSERT_THAT(
       transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_IO_PENDING));
+      test::IsError(ERR_IO_PENDING));
   int read_result = read_callback.WaitForResult();
   EXPECT_THAT(read_result, kTestData.size());
   EXPECT_EQ(kTestData, std::string(buf->data(), read_result));

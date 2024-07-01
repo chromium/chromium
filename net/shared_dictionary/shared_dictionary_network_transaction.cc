@@ -43,10 +43,10 @@ namespace net {
 
 namespace {
 
-// Convert the interface from net::HttpTransaction to net::SourceStream.
-class ProxyingSourceStream : public net::SourceStream {
+// Convert the interface from HttpTransaction to SourceStream.
+class ProxyingSourceStream : public SourceStream {
  public:
-  explicit ProxyingSourceStream(net::HttpTransaction* transaction)
+  explicit ProxyingSourceStream(HttpTransaction* transaction)
       : SourceStream(SourceStream::TYPE_NONE), transaction_(transaction) {}
 
   ProxyingSourceStream(const ProxyingSourceStream&) = delete;
@@ -55,9 +55,9 @@ class ProxyingSourceStream : public net::SourceStream {
   ~ProxyingSourceStream() override = default;
 
   // SourceStream implementation:
-  int Read(net::IOBuffer* dest_buffer,
+  int Read(IOBuffer* dest_buffer,
            int buffer_size,
-           net::CompletionOnceCallback callback) override {
+           CompletionOnceCallback callback) override {
     DCHECK(transaction_);
     return transaction_->Read(dest_buffer, buffer_size, std::move(callback));
   }
@@ -67,15 +67,15 @@ class ProxyingSourceStream : public net::SourceStream {
   bool MayHaveMoreBytes() const override { return true; }
 
  private:
-  const raw_ptr<net::HttpTransaction> transaction_;
+  const raw_ptr<HttpTransaction> transaction_;
 };
 
-void AddAcceptEncoding(net::HttpRequestHeaders* request_headers,
+void AddAcceptEncoding(HttpRequestHeaders* request_headers,
                        std::string_view encoding_header) {
   std::string accept_encoding;
   request_headers->SetHeader(
-      net::HttpRequestHeaders::kAcceptEncoding,
-      request_headers->GetHeader(net::HttpRequestHeaders::kAcceptEncoding,
+      HttpRequestHeaders::kAcceptEncoding,
+      request_headers->GetHeader(HttpRequestHeaders::kAcceptEncoding,
                                  &accept_encoding)
           ? base::StrCat({accept_encoding, ", ", encoding_header})
           : std::string(encoding_header));
@@ -84,16 +84,16 @@ void AddAcceptEncoding(net::HttpRequestHeaders* request_headers,
 }  // namespace
 
 SharedDictionaryNetworkTransaction::PendingReadTask::PendingReadTask(
-    net::IOBuffer* buf,
+    IOBuffer* buf,
     int buf_len,
-    net::CompletionOnceCallback callback)
+    CompletionOnceCallback callback)
     : buf(buf), buf_len(buf_len), callback(std::move(callback)) {}
 
 SharedDictionaryNetworkTransaction::PendingReadTask::~PendingReadTask() =
     default;
 
 SharedDictionaryNetworkTransaction::SharedDictionaryNetworkTransaction(
-    std::unique_ptr<net::HttpTransaction> network_transaction,
+    std::unique_ptr<HttpTransaction> network_transaction,
     bool enable_shared_zstd)
     : enable_shared_zstd_(enable_shared_zstd),
       network_transaction_(std::move(network_transaction)) {
@@ -105,11 +105,10 @@ SharedDictionaryNetworkTransaction::SharedDictionaryNetworkTransaction(
 SharedDictionaryNetworkTransaction::~SharedDictionaryNetworkTransaction() =
     default;
 
-int SharedDictionaryNetworkTransaction::Start(
-    const net::HttpRequestInfo* request,
-    net::CompletionOnceCallback callback,
-    const net::NetLogWithSource& net_log) {
-  if (!(request->load_flags & net::LOAD_CAN_USE_SHARED_DICTIONARY) ||
+int SharedDictionaryNetworkTransaction::Start(const HttpRequestInfo* request,
+                                              CompletionOnceCallback callback,
+                                              const NetLogWithSource& net_log) {
+  if (!(request->load_flags & LOAD_CAN_USE_SHARED_DICTIONARY) ||
       !request->dictionary_getter) {
     return network_transaction_->Start(request, std::move(callback), net_log);
   }
@@ -133,7 +132,7 @@ int SharedDictionaryNetworkTransaction::Start(
 
 SharedDictionaryNetworkTransaction::SharedDictionaryEncodingType
 SharedDictionaryNetworkTransaction::ParseSharedDictionaryEncodingType(
-    const net::HttpResponseHeaders& headers) {
+    const HttpResponseHeaders& headers) {
   std::string content_encoding;
   if (!headers.GetNormalizedHeader("Content-Encoding", &content_encoding)) {
     return SharedDictionaryEncodingType::kNotUsed;
@@ -149,7 +148,7 @@ SharedDictionaryNetworkTransaction::ParseSharedDictionaryEncodingType(
 }
 
 void SharedDictionaryNetworkTransaction::OnStartCompleted(
-    net::CompletionOnceCallback callback,
+    CompletionOnceCallback callback,
     int result) {
   if (shared_dictionary_) {
     base::UmaHistogramSparse(
@@ -160,7 +159,7 @@ void SharedDictionaryNetworkTransaction::OnStartCompleted(
         -result);
   }
 
-  if (result != net::OK || !shared_dictionary_) {
+  if (result != OK || !shared_dictionary_) {
     std::move(callback).Run(result);
     return;
   }
@@ -173,16 +172,15 @@ void SharedDictionaryNetworkTransaction::OnStartCompleted(
     return;
   }
 
-  shared_dictionary_used_response_info_ =
-      std::make_unique<net::HttpResponseInfo>(
-          *network_transaction_->GetResponseInfo());
+  shared_dictionary_used_response_info_ = std::make_unique<HttpResponseInfo>(
+      *network_transaction_->GetResponseInfo());
   shared_dictionary_used_response_info_->did_use_shared_dictionary = true;
   std::move(callback).Run(result);
 }
 
 void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
     const GURL& request_url,
-    net::HttpRequestHeaders* request_headers) {
+    HttpRequestHeaders* request_headers) {
   // `shared_dictionary_` may have been already set if this transaction was
   // restarted
   if (!shared_dictionary_) {
@@ -192,24 +190,24 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
     return;
   }
 
-  if (!net::IsLocalhost(request_url)) {
+  if (!IsLocalhost(request_url)) {
     if (!base::FeatureList::IsEnabled(
-            net::features::kCompressionDictionaryTransportOverHttp1) &&
-        negotiated_protocol_ != net::kProtoHTTP2 &&
-        negotiated_protocol_ != net::kProtoQUIC) {
+            features::kCompressionDictionaryTransportOverHttp1) &&
+        negotiated_protocol_ != kProtoHTTP2 &&
+        negotiated_protocol_ != kProtoQUIC) {
       shared_dictionary_.reset();
       return;
     }
     if (!base::FeatureList::IsEnabled(
-            net::features::kCompressionDictionaryTransportOverHttp2) &&
-        negotiated_protocol_ == net::kProtoHTTP2) {
+            features::kCompressionDictionaryTransportOverHttp2) &&
+        negotiated_protocol_ == kProtoHTTP2) {
       shared_dictionary_.reset();
       return;
     }
   }
   if (base::FeatureList::IsEnabled(
-          net::features::kCompressionDictionaryTransportRequireKnownRootCert) &&
-      !cert_is_issued_by_known_root_ && !net::IsLocalhost(request_url)) {
+          features::kCompressionDictionaryTransportRequireKnownRootCert) &&
+      !cert_is_issued_by_known_root_ && !IsLocalhost(request_url)) {
     shared_dictionary_.reset();
     return;
   }
@@ -239,7 +237,7 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
 
   if (!shared_dictionary_->id().empty()) {
     std::optional<std::string> serialized_id =
-        net::structured_headers::SerializeItem(shared_dictionary_->id());
+        structured_headers::SerializeItem(shared_dictionary_->id());
     if (serialized_id) {
       request_headers->SetHeader("Dictionary-ID", *serialized_id);
     }
@@ -251,7 +249,7 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
         [](base::WeakPtr<SharedDictionaryNetworkTransaction> self,
            base::Time read_start_time, int result) {
           if (!self) {
-            bool succeeded = result == net::OK;
+            bool succeeded = result == OK;
             base::UmaHistogramTimes(
                 base::StrCat({"Net.SharedDictionaryTransaction."
                               "AbortedWhileReadingDictionary.",
@@ -265,7 +263,7 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
 
     int read_result =
         shared_dictionary_->ReadAll(std::move(split_callback.first));
-    if (read_result != net::ERR_IO_PENDING) {
+    if (read_result != ERR_IO_PENDING) {
       std::move(split_callback.second).Run(read_result);
     }
   }
@@ -274,7 +272,7 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
 void SharedDictionaryNetworkTransaction::OnReadSharedDictionary(
     base::Time read_start_time,
     int result) {
-  bool succeeded = result == net::OK;
+  bool succeeded = result == OK;
   base::UmaHistogramTimes(
       base::StrCat({"Net.SharedDictionaryTransaction.DictionaryReadLatency.",
                     succeeded ? "Success" : "Failure"}),
@@ -290,14 +288,14 @@ void SharedDictionaryNetworkTransaction::OnReadSharedDictionary(
     auto split_callback = base::SplitOnceCallback(std::move(task->callback));
     int ret =
         Read(task->buf.get(), task->buf_len, std::move(split_callback.first));
-    if (ret != net::ERR_IO_PENDING) {
+    if (ret != ERR_IO_PENDING) {
       std::move(split_callback.second).Run(ret);
     }
   }
 }
 
 int SharedDictionaryNetworkTransaction::RestartIgnoringLastError(
-    net::CompletionOnceCallback callback) {
+    CompletionOnceCallback callback) {
   shared_dictionary_used_response_info_.reset();
   return network_transaction_->RestartIgnoringLastError(
       base::BindOnce(&SharedDictionaryNetworkTransaction::OnStartCompleted,
@@ -305,9 +303,9 @@ int SharedDictionaryNetworkTransaction::RestartIgnoringLastError(
 }
 
 int SharedDictionaryNetworkTransaction::RestartWithCertificate(
-    scoped_refptr<net::X509Certificate> client_cert,
-    scoped_refptr<net::SSLPrivateKey> client_private_key,
-    net::CompletionOnceCallback callback) {
+    scoped_refptr<X509Certificate> client_cert,
+    scoped_refptr<SSLPrivateKey> client_private_key,
+    CompletionOnceCallback callback) {
   shared_dictionary_used_response_info_.reset();
   return network_transaction_->RestartWithCertificate(
       std::move(client_cert), std::move(client_private_key),
@@ -316,8 +314,8 @@ int SharedDictionaryNetworkTransaction::RestartWithCertificate(
 }
 
 int SharedDictionaryNetworkTransaction::RestartWithAuth(
-    const net::AuthCredentials& credentials,
-    net::CompletionOnceCallback callback) {
+    const AuthCredentials& credentials,
+    CompletionOnceCallback callback) {
   shared_dictionary_used_response_info_.reset();
   return network_transaction_->RestartWithAuth(
       credentials,
@@ -329,10 +327,9 @@ bool SharedDictionaryNetworkTransaction::IsReadyToRestartForAuth() {
   return network_transaction_->IsReadyToRestartForAuth();
 }
 
-int SharedDictionaryNetworkTransaction::Read(
-    net::IOBuffer* buf,
-    int buf_len,
-    net::CompletionOnceCallback callback) {
+int SharedDictionaryNetworkTransaction::Read(IOBuffer* buf,
+                                             int buf_len,
+                                             CompletionOnceCallback callback) {
   if (!shared_dictionary_used_response_info_) {
     return network_transaction_->Read(buf, buf_len, std::move(callback));
   }
@@ -344,13 +341,13 @@ int SharedDictionaryNetworkTransaction::Read(
       CHECK(!pending_read_task_);
       pending_read_task_ =
           std::make_unique<PendingReadTask>(buf, buf_len, std::move(callback));
-      return net::ERR_IO_PENDING;
+      return ERR_IO_PENDING;
     case DictionaryStatus::kFinished:
       if (!shared_compression_stream_) {
         // Wrap the source `network_transaction_` with a
         // SharedDictionaryHeaderCheckerSourceStream to check the header
         // of Dictionary-Compressed stream.
-        std::unique_ptr<net::SourceStream> header_checker_source_stream =
+        std::unique_ptr<SourceStream> header_checker_source_stream =
             std::make_unique<SharedDictionaryHeaderCheckerSourceStream>(
                 std::make_unique<ProxyingSourceStream>(
                     network_transaction_.get()),
@@ -366,18 +363,16 @@ int SharedDictionaryNetworkTransaction::Read(
           SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
               "Network.SharedDictionary."
               "CreateBrotliSourceStreamWithDictionary");
-          shared_compression_stream_ =
-              net::CreateBrotliSourceStreamWithDictionary(
-                  std::move(header_checker_source_stream),
-                  shared_dictionary_->data(), shared_dictionary_->size());
+          shared_compression_stream_ = CreateBrotliSourceStreamWithDictionary(
+              std::move(header_checker_source_stream),
+              shared_dictionary_->data(), shared_dictionary_->size());
         } else if (shared_dictionary_encoding_type_ ==
                    SharedDictionaryEncodingType::kSharedZstd) {
           SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
               "Network.SharedDictionary.CreateZstdSourceStreamWithDictionary");
-          shared_compression_stream_ =
-              net::CreateZstdSourceStreamWithDictionary(
-                  std::move(header_checker_source_stream),
-                  shared_dictionary_->data(), shared_dictionary_->size());
+          shared_compression_stream_ = CreateZstdSourceStreamWithDictionary(
+              std::move(header_checker_source_stream),
+              shared_dictionary_->data(), shared_dictionary_->size());
         }
 
         UMA_HISTOGRAM_ENUMERATION("Network.SharedDictionary.EncodingType",
@@ -386,12 +381,12 @@ int SharedDictionaryNetworkTransaction::Read(
       // When NET_DISABLE_ZSTD or NET_DISABLE_ZSTD is set,
       // `shared_compression_stream_` can be null.
       if (!shared_compression_stream_) {
-        return net::ERR_CONTENT_DECODING_FAILED;
+        return ERR_CONTENT_DECODING_FAILED;
       }
       return shared_compression_stream_->Read(buf, buf_len,
                                               std::move(callback));
     case DictionaryStatus::kFailed:
-      return net::ERR_DICTIONARY_LOAD_FAILED;
+      return ERR_DICTIONARY_LOAD_FAILED;
   }
 }
 
@@ -415,46 +410,45 @@ void SharedDictionaryNetworkTransaction::DoneReading() {
   network_transaction_->DoneReading();
 }
 
-const net::HttpResponseInfo*
-SharedDictionaryNetworkTransaction::GetResponseInfo() const {
+const HttpResponseInfo* SharedDictionaryNetworkTransaction::GetResponseInfo()
+    const {
   if (shared_dictionary_used_response_info_) {
     return shared_dictionary_used_response_info_.get();
   }
   return network_transaction_->GetResponseInfo();
 }
 
-net::LoadState SharedDictionaryNetworkTransaction::GetLoadState() const {
+LoadState SharedDictionaryNetworkTransaction::GetLoadState() const {
   return network_transaction_->GetLoadState();
 }
 
 void SharedDictionaryNetworkTransaction::SetQuicServerInfo(
-    net::QuicServerInfo* quic_server_info) {
+    QuicServerInfo* quic_server_info) {
   network_transaction_->SetQuicServerInfo(quic_server_info);
 }
 
 bool SharedDictionaryNetworkTransaction::GetLoadTimingInfo(
-    net::LoadTimingInfo* load_timing_info) const {
+    LoadTimingInfo* load_timing_info) const {
   return network_transaction_->GetLoadTimingInfo(load_timing_info);
 }
 
 bool SharedDictionaryNetworkTransaction::GetRemoteEndpoint(
-    net::IPEndPoint* endpoint) const {
+    IPEndPoint* endpoint) const {
   return network_transaction_->GetRemoteEndpoint(endpoint);
 }
 
 void SharedDictionaryNetworkTransaction::PopulateNetErrorDetails(
-    net::NetErrorDetails* details) const {
+    NetErrorDetails* details) const {
   return network_transaction_->PopulateNetErrorDetails(details);
 }
 
-void SharedDictionaryNetworkTransaction::SetPriority(
-    net::RequestPriority priority) {
+void SharedDictionaryNetworkTransaction::SetPriority(RequestPriority priority) {
   network_transaction_->SetPriority(priority);
 }
 
 void SharedDictionaryNetworkTransaction::
     SetWebSocketHandshakeStreamCreateHelper(
-        net::WebSocketHandshakeStreamBase::CreateHelper* create_helper) {
+        WebSocketHandshakeStreamBase::CreateHelper* create_helper) {
   network_transaction_->SetWebSocketHandshakeStreamCreateHelper(create_helper);
 }
 
@@ -464,17 +458,17 @@ void SharedDictionaryNetworkTransaction::SetBeforeNetworkStartCallback(
 }
 
 void SharedDictionaryNetworkTransaction::SetRequestHeadersCallback(
-    net::RequestHeadersCallback callback) {
+    RequestHeadersCallback callback) {
   network_transaction_->SetRequestHeadersCallback(std::move(callback));
 }
 
 void SharedDictionaryNetworkTransaction::SetResponseHeadersCallback(
-    net::ResponseHeadersCallback callback) {
+    ResponseHeadersCallback callback) {
   network_transaction_->SetResponseHeadersCallback(std::move(callback));
 }
 
 void SharedDictionaryNetworkTransaction::SetEarlyResponseHeadersCallback(
-    net::ResponseHeadersCallback callback) {
+    ResponseHeadersCallback callback) {
   network_transaction_->SetEarlyResponseHeadersCallback(std::move(callback));
 }
 
@@ -488,7 +482,7 @@ int SharedDictionaryNetworkTransaction::ResumeNetworkStart() {
 }
 
 void SharedDictionaryNetworkTransaction::SetModifyRequestHeadersCallback(
-    base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback) {
+    base::RepeatingCallback<void(HttpRequestHeaders*)> callback) {
   // This method should not be called for this class.
   NOTREACHED_IN_MIGRATION();
 }
@@ -499,8 +493,8 @@ void SharedDictionaryNetworkTransaction::
   is_shared_dictionary_read_allowed_callback_ = std::move(callback);
 }
 
-net::ConnectionAttempts
-SharedDictionaryNetworkTransaction::GetConnectionAttempts() const {
+ConnectionAttempts SharedDictionaryNetworkTransaction::GetConnectionAttempts()
+    const {
   return network_transaction_->GetConnectionAttempts();
 }
 
@@ -513,15 +507,15 @@ bool SharedDictionaryNetworkTransaction::IsMdlMatchForMetrics() const {
 }
 
 int SharedDictionaryNetworkTransaction::OnConnected(
-    const net::TransportInfo& info,
-    net::CompletionOnceCallback callback) {
+    const TransportInfo& info,
+    CompletionOnceCallback callback) {
   cert_is_issued_by_known_root_ = info.cert_is_issued_by_known_root;
   negotiated_protocol_ = info.negotiated_protocol;
 
   if (connected_callback_) {
     return connected_callback_.Run(info, std::move(callback));
   }
-  return net::OK;
+  return OK;
 }
 
 }  // namespace net

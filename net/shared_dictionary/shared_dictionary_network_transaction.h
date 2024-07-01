@@ -37,11 +37,10 @@ struct TransportInfo;
 // "content-encoding" header of the response from the server is "dcb" or "dcz",
 // this class will decode the response body using a `BrotliSourceStream` or
 // `ZstdSourceStream` with the dictionary.
-class NET_EXPORT SharedDictionaryNetworkTransaction
-    : public net::HttpTransaction {
+class NET_EXPORT SharedDictionaryNetworkTransaction : public HttpTransaction {
  public:
   SharedDictionaryNetworkTransaction(
-      std::unique_ptr<net::HttpTransaction> network_transaction,
+      std::unique_ptr<HttpTransaction> network_transaction,
       bool enable_shared_zstd);
 
   SharedDictionaryNetworkTransaction(
@@ -52,50 +51,47 @@ class NET_EXPORT SharedDictionaryNetworkTransaction
   ~SharedDictionaryNetworkTransaction() override;
 
   // HttpTransaction methods:
-  int Start(const net::HttpRequestInfo* request,
-            net::CompletionOnceCallback callback,
-            const net::NetLogWithSource& net_log) override;
-  int RestartIgnoringLastError(net::CompletionOnceCallback callback) override;
-  int RestartWithCertificate(
-      scoped_refptr<net::X509Certificate> client_cert,
-      scoped_refptr<net::SSLPrivateKey> client_private_key,
-      net::CompletionOnceCallback callback) override;
-  int RestartWithAuth(const net::AuthCredentials& credentials,
-                      net::CompletionOnceCallback callback) override;
+  int Start(const HttpRequestInfo* request,
+            CompletionOnceCallback callback,
+            const NetLogWithSource& net_log) override;
+  int RestartIgnoringLastError(CompletionOnceCallback callback) override;
+  int RestartWithCertificate(scoped_refptr<X509Certificate> client_cert,
+                             scoped_refptr<SSLPrivateKey> client_private_key,
+                             CompletionOnceCallback callback) override;
+  int RestartWithAuth(const AuthCredentials& credentials,
+                      CompletionOnceCallback callback) override;
   bool IsReadyToRestartForAuth() override;
 
-  int Read(net::IOBuffer* buf,
+  int Read(IOBuffer* buf,
            int buf_len,
-           net::CompletionOnceCallback callback) override;
+           CompletionOnceCallback callback) override;
   void StopCaching() override;
   int64_t GetTotalReceivedBytes() const override;
   int64_t GetTotalSentBytes() const override;
   int64_t GetReceivedBodyBytes() const override;
   void DoneReading() override;
-  const net::HttpResponseInfo* GetResponseInfo() const override;
-  net::LoadState GetLoadState() const override;
-  void SetQuicServerInfo(net::QuicServerInfo* quic_server_info) override;
-  bool GetLoadTimingInfo(net::LoadTimingInfo* load_timing_info) const override;
-  bool GetRemoteEndpoint(net::IPEndPoint* endpoint) const override;
-  void PopulateNetErrorDetails(net::NetErrorDetails* details) const override;
-  void SetPriority(net::RequestPriority priority) override;
+  const HttpResponseInfo* GetResponseInfo() const override;
+  LoadState GetLoadState() const override;
+  void SetQuicServerInfo(QuicServerInfo* quic_server_info) override;
+  bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const override;
+  bool GetRemoteEndpoint(IPEndPoint* endpoint) const override;
+  void PopulateNetErrorDetails(NetErrorDetails* details) const override;
+  void SetPriority(RequestPriority priority) override;
   void SetWebSocketHandshakeStreamCreateHelper(
-      net::WebSocketHandshakeStreamBase::CreateHelper* create_helper) override;
+      WebSocketHandshakeStreamBase::CreateHelper* create_helper) override;
   void SetBeforeNetworkStartCallback(
       BeforeNetworkStartCallback callback) override;
   void SetConnectedCallback(const ConnectedCallback& callback) override;
-  void SetRequestHeadersCallback(net::RequestHeadersCallback callback) override;
-  void SetResponseHeadersCallback(
-      net::ResponseHeadersCallback callback) override;
+  void SetRequestHeadersCallback(RequestHeadersCallback callback) override;
+  void SetResponseHeadersCallback(ResponseHeadersCallback callback) override;
   void SetEarlyResponseHeadersCallback(
-      net::ResponseHeadersCallback callback) override;
+      ResponseHeadersCallback callback) override;
   void SetModifyRequestHeadersCallback(
-      base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback)
-      override;
+      base::RepeatingCallback<void(HttpRequestHeaders*)> callback) override;
   void SetIsSharedDictionaryReadAllowedCallback(
       base::RepeatingCallback<bool()> callback) override;
   int ResumeNetworkStart() override;
-  net::ConnectionAttempts GetConnectionAttempts() const override;
+  ConnectionAttempts GetConnectionAttempts() const override;
   void CloseConnectionOnDestruction() override;
   bool IsMdlMatchForMetrics() const override;
 
@@ -118,32 +114,31 @@ class NET_EXPORT SharedDictionaryNetworkTransaction
 
   class PendingReadTask {
    public:
-    PendingReadTask(net::IOBuffer* buf,
+    PendingReadTask(IOBuffer* buf,
                     int buf_len,
-                    net::CompletionOnceCallback callback);
+                    CompletionOnceCallback callback);
 
     PendingReadTask(const PendingReadTask&) = delete;
     PendingReadTask& operator=(const PendingReadTask&) = delete;
 
     ~PendingReadTask();
 
-    scoped_refptr<net::IOBuffer> buf;
+    scoped_refptr<IOBuffer> buf;
     int buf_len;
-    net::CompletionOnceCallback callback;
+    CompletionOnceCallback callback;
   };
 
   SharedDictionaryEncodingType ParseSharedDictionaryEncodingType(
-      const net::HttpResponseHeaders& headers);
+      const HttpResponseHeaders& headers);
 
-  void OnStartCompleted(net::CompletionOnceCallback callback, int result);
+  void OnStartCompleted(CompletionOnceCallback callback, int result);
 
   void ModifyRequestHeaders(const GURL& request_url,
-                            net::HttpRequestHeaders* request_headers);
+                            HttpRequestHeaders* request_headers);
 
   void OnReadSharedDictionary(base::Time read_start_time, int result);
 
-  int OnConnected(const net::TransportInfo& info,
-                  net::CompletionOnceCallback callback);
+  int OnConnected(const TransportInfo& info, CompletionOnceCallback callback);
 
   const bool enable_shared_zstd_;
 
@@ -162,17 +157,17 @@ class NET_EXPORT SharedDictionaryNetworkTransaction
   base::RepeatingCallback<bool()> is_shared_dictionary_read_allowed_callback_;
 
   // The network side transaction.
-  std::unique_ptr<net::HttpTransaction> network_transaction_;
+  std::unique_ptr<HttpTransaction> network_transaction_;
 
-  std::unique_ptr<net::SourceStream> shared_compression_stream_;
+  std::unique_ptr<SourceStream> shared_compression_stream_;
 
   // This is set only when a shared dictionary is used for decoding the body.
-  std::unique_ptr<net::HttpResponseInfo> shared_dictionary_used_response_info_;
+  std::unique_ptr<HttpResponseInfo> shared_dictionary_used_response_info_;
 
   ConnectedCallback connected_callback_;
 
   bool cert_is_issued_by_known_root_ = false;
-  net::NextProto negotiated_protocol_ = net::kProtoUnknown;
+  NextProto negotiated_protocol_ = kProtoUnknown;
 
   base::RepeatingCallback<std::unique_ptr<SharedDictionary>()>
       shared_dictionary_getter_;

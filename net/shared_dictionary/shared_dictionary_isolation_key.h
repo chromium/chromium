@@ -22,7 +22,7 @@ class NET_EXPORT SharedDictionaryIsolationKey {
   // `frame_origin` or `top_frame_origin` of `isolation_info` is not set or
   // opaque, or `nonce` is set.
   static std::optional<SharedDictionaryIsolationKey> MaybeCreate(
-      const net::IsolationInfo& isolation_info);
+      const IsolationInfo& isolation_info);
 
   // Creates a SharedDictionaryIsolationKey. Returns nullopt when
   // `frame_origin` or `top_frame_origin` of `network_isolation_key` is not set
@@ -33,10 +33,10 @@ class NET_EXPORT SharedDictionaryIsolationKey {
 
   SharedDictionaryIsolationKey() = default;
   SharedDictionaryIsolationKey(const url::Origin& frame_origin,
-                               const net::SchemefulSite& top_frame_site);
+                               const SchemefulSite& top_frame_site);
 
   const url::Origin& frame_origin() const { return frame_origin_; }
-  const net::SchemefulSite& top_frame_site() const { return top_frame_site_; }
+  const SchemefulSite& top_frame_site() const { return top_frame_site_; }
 
   ~SharedDictionaryIsolationKey();
 
@@ -60,7 +60,7 @@ class NET_EXPORT SharedDictionaryIsolationKey {
 
  private:
   url::Origin frame_origin_;
-  net::SchemefulSite top_frame_site_;
+  SchemefulSite top_frame_site_;
 };
 
 }  // namespace net

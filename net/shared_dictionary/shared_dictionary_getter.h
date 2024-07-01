@@ -19,7 +19,7 @@ class SharedDictionary;
 
 using SharedDictionaryGetter =
     base::RepeatingCallback<std::unique_ptr<SharedDictionary>(
-        const std::optional<net::SharedDictionaryIsolationKey>& isolation_key,
+        const std::optional<SharedDictionaryIsolationKey>& isolation_key,
         const GURL& request_url)>;
 
 }  // namespace net

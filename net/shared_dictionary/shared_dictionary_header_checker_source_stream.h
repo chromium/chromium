@@ -30,12 +30,12 @@ class GrowableIOBuffer;
 // When an error occurred while reading the upstream, this class passes the
 // error to the reader of this class. When the header bytes from the upstream
 // was different from the expected header, this class passes
-// net::ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER to the reader.
+// ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER to the reader.
 //
 // This class consumes the header bytes from the upstream. So the reader of
 // this class can read the bytes after the header bytes.
 class NET_EXPORT SharedDictionaryHeaderCheckerSourceStream
-    : public net::SourceStream {
+    : public SourceStream {
  public:
   enum class Type {
     kDictionaryCompressedBrotli,
@@ -44,7 +44,7 @@ class NET_EXPORT SharedDictionaryHeaderCheckerSourceStream
   SharedDictionaryHeaderCheckerSourceStream(
       std::unique_ptr<SourceStream> upstream,
       Type type,
-      const net::SHA256HashValue& dictionary_hash);
+      const SHA256HashValue& dictionary_hash);
   SharedDictionaryHeaderCheckerSourceStream(
       const SharedDictionaryHeaderCheckerSourceStream&) = delete;
   SharedDictionaryHeaderCheckerSourceStream& operator=(
@@ -52,9 +52,9 @@ class NET_EXPORT SharedDictionaryHeaderCheckerSourceStream
   ~SharedDictionaryHeaderCheckerSourceStream() override;
 
   // SourceStream implementation:
-  int Read(net::IOBuffer* dest_buffer,
+  int Read(IOBuffer* dest_buffer,
            int buffer_size,
-           net::CompletionOnceCallback callback) override;
+           CompletionOnceCallback callback) override;
   std::string Description() const override;
   bool MayHaveMoreBytes() const override;
 
@@ -69,14 +69,14 @@ class NET_EXPORT SharedDictionaryHeaderCheckerSourceStream
 
   std::unique_ptr<SourceStream> upstream_;
   const Type type_;
-  const net::SHA256HashValue dictionary_hash_;
+  const SHA256HashValue dictionary_hash_;
 
-  scoped_refptr<net::GrowableIOBuffer> head_read_buffer_;
-  int header_check_result_ = net::ERR_IO_PENDING;
+  scoped_refptr<GrowableIOBuffer> head_read_buffer_;
+  int header_check_result_ = ERR_IO_PENDING;
 
-  scoped_refptr<net::IOBuffer> pending_read_buf_;
+  scoped_refptr<IOBuffer> pending_read_buf_;
   int pending_read_buf_len_ = 0;
-  net::CompletionOnceCallback pending_callback_;
+  CompletionOnceCallback pending_callback_;
 };
 
 }  // namespace net

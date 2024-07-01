@@ -20,15 +20,14 @@ class NET_EXPORT SharedDictionary {
   virtual ~SharedDictionary() = default;
 
   // Reads the whole binary of the dictionary. If an error has occurred, returns
-  // net::ERR_FAILED. If the binary of the dictionary is already in the memory
-  // returns net::OK. Otherwise returns net::ERR_IO_PENDING and `callback` will
-  // be called asynchronously with net::OK or net::ERR_FAILED depending on the
-  // success status.
+  // ERR_FAILED. If the binary of the dictionary is already in the memory
+  // returns OK. Otherwise returns ERR_IO_PENDING and `callback` will be called
+  // asynchronously with OK or ERR_FAILED depending on the success status.
   virtual int ReadAll(base::OnceCallback<void(int)> callback) = 0;
 
   // Returns the buffer which contains the binary of the dictionary.
   // ReadAll() must have succeeded before calling this method.
-  virtual scoped_refptr<net::IOBuffer> data() const = 0;
+  virtual scoped_refptr<IOBuffer> data() const = 0;
 
   // Returns the binary size of the dictionary. It is safe to call this method
   // before calling ReadAll().
@@ -36,7 +35,7 @@ class NET_EXPORT SharedDictionary {
 
   // Returns the hash of the binary of the dictionary. It is safe to call this
   // method before calling ReadAll().
-  virtual const net::SHA256HashValue& hash() const = 0;
+  virtual const SHA256HashValue& hash() const = 0;
 
   // Returns the server-provided id of the dictionary. When this id is not
   // empty, it will be serialized [RFC8941] and sent in "Dictionary-ID" request

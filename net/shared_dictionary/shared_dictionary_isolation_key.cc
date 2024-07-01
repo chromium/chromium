@@ -11,8 +11,7 @@ namespace net {
 
 // static
 std::optional<SharedDictionaryIsolationKey>
-SharedDictionaryIsolationKey::MaybeCreate(
-    const net::IsolationInfo& isolation_info) {
+SharedDictionaryIsolationKey::MaybeCreate(const IsolationInfo& isolation_info) {
   if (!isolation_info.frame_origin() ||
       isolation_info.frame_origin()->opaque() ||
       !isolation_info.top_frame_origin() ||
@@ -22,7 +21,7 @@ SharedDictionaryIsolationKey::MaybeCreate(
   }
   return SharedDictionaryIsolationKey(
       *isolation_info.frame_origin(),
-      net::SchemefulSite(*isolation_info.top_frame_origin()));
+      SchemefulSite(*isolation_info.top_frame_origin()));
 }
 
 // static
@@ -42,7 +41,7 @@ SharedDictionaryIsolationKey::MaybeCreate(
 
 SharedDictionaryIsolationKey::SharedDictionaryIsolationKey(
     const url::Origin& frame_origin,
-    const net::SchemefulSite& top_frame_site)
+    const SchemefulSite& top_frame_site)
     : frame_origin_(frame_origin), top_frame_site_(top_frame_site) {
   CHECK(!frame_origin.opaque());
   CHECK(!top_frame_site.opaque());

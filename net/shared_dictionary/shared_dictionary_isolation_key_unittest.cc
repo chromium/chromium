@@ -12,41 +12,41 @@ namespace net {
 
 namespace {
 const GURL kUrl1("https://origin1.test/");
-const net::SchemefulSite kSite1(GURL("https://origin1.test/"));
-const net::SchemefulSite kSite2(GURL("https://origin2.test/"));
+const SchemefulSite kSite1(GURL("https://origin1.test/"));
+const SchemefulSite kSite2(GURL("https://origin2.test/"));
 }  // namespace
 
 TEST(SharedDictionaryIsolationKeyTest, MaybeCreate) {
   url::Origin origin = url::Origin::Create(kUrl1);
   const std::optional<SharedDictionaryIsolationKey> isolation_key =
       SharedDictionaryIsolationKey::MaybeCreate(
-          net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
-                                     origin, origin, net::SiteForCookies()));
+          IsolationInfo::Create(IsolationInfo::RequestType::kOther, origin,
+                                origin, SiteForCookies()));
   EXPECT_TRUE(isolation_key);
 }
 
 TEST(SharedDictionaryIsolationKeyTest, MaybeCreateOpaqueTopFrameOrigin) {
   const std::optional<SharedDictionaryIsolationKey> isolation_key =
-      SharedDictionaryIsolationKey::MaybeCreate(net::IsolationInfo::Create(
-          net::IsolationInfo::RequestType::kOther, url::Origin(),
-          url::Origin::Create(kUrl1), net::SiteForCookies()));
+      SharedDictionaryIsolationKey::MaybeCreate(IsolationInfo::Create(
+          IsolationInfo::RequestType::kOther, url::Origin(),
+          url::Origin::Create(kUrl1), SiteForCookies()));
   EXPECT_FALSE(isolation_key);
 }
 
 TEST(SharedDictionaryIsolationKeyTest, MaybeCreateOpaqueFrameOrigin) {
   url::Origin origin = url::Origin::Create(kUrl1);
   const std::optional<SharedDictionaryIsolationKey> isolation_key =
-      SharedDictionaryIsolationKey::MaybeCreate(net::IsolationInfo::Create(
-          net::IsolationInfo::RequestType::kOther, origin, url::Origin(),
-          net::SiteForCookies()));
+      SharedDictionaryIsolationKey::MaybeCreate(
+          IsolationInfo::Create(IsolationInfo::RequestType::kOther, origin,
+                                url::Origin(), SiteForCookies()));
   EXPECT_FALSE(isolation_key);
 }
 
 TEST(SharedDictionaryIsolationKeyTest, MaybeCreateWithNonce) {
   const std::optional<SharedDictionaryIsolationKey> isolation_key =
-      SharedDictionaryIsolationKey::MaybeCreate(net::IsolationInfo::Create(
-          net::IsolationInfo::RequestType::kOther, url::Origin::Create(kUrl1),
-          url::Origin(), net::SiteForCookies(),
+      SharedDictionaryIsolationKey::MaybeCreate(IsolationInfo::Create(
+          IsolationInfo::RequestType::kOther, url::Origin::Create(kUrl1),
+          url::Origin(), SiteForCookies(),
           /*nonce=*/base::UnguessableToken::Create()));
   EXPECT_FALSE(isolation_key);
 }
