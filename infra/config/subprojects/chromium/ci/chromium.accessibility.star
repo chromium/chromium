@@ -60,6 +60,7 @@ ci.builder(
             "fuchsia",
             "blink_symbol",
             "minimal_symbols",
+            "x64",
         ],
     ),
     targets = targets.bundle(
@@ -109,6 +110,8 @@ ci.builder(
             "release_builder_blink",
             "remoteexec",
             "dcheck_always_on",
+            "linux",
+            "x64",
         ],
     ),
     targets = targets.bundle(
