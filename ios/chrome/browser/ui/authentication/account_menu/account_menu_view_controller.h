@@ -8,14 +8,29 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_consumer.h"
 
+@protocol AccountMenuDataSource;
+@protocol AccountMenuMutator;
 @protocol AccountMenuViewControllerPresentationDelegate;
 
-@interface AccountMenuViewController : ChromeTableViewController
+// Identifier for the "manage your account" menu entry.
+extern const char kManageYourGoogleAccountIdentifier[];
+// Identifier for the "Edit account list" menu entry.
+extern const char kEditAccountListIdentifier[];
+
+@interface AccountMenuViewController
+    : ChromeTableViewController <AccountMenuConsumer>
 
 // The delegate for the view controller.
 @property(nonatomic, weak) id<AccountMenuViewControllerPresentationDelegate>
     delegate;
+
+// The mutator for the account menu.
+@property(nonatomic, weak) id<AccountMenuMutator> mutator;
+
+// The data source for the account menu.
+@property(nonatomic, weak) id<AccountMenuDataSource> dataSource;
 
 @end
 

@@ -1,0 +1,270 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator.h"
+
+#import "base/strings/sys_string_conversions.h"
+#import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
+#import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
+#import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
+#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_consumer.h"
+#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_data_source.h"
+#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator_delegate.h"
+#import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
+
+@interface AccountMenuMediator () <ChromeAccountManagerServiceObserver,
+                                   IdentityManagerObserverBridgeDelegate,
+                                   SyncObserverModelBridge>
+
+@end
+
+@implementation AccountMenuMediator {
+  // Account manager service to retrieve Chrome identities.
+  raw_ptr<ChromeAccountManagerService> _accountManagerService;
+  // Chrome account manager service observer bridge.
+  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
+      _accountManagerServiceObserver;
+  raw_ptr<AuthenticationService> _authenticationService;
+  raw_ptr<signin::IdentityManager> _identityManager;
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserver;
+  raw_ptr<syncer::SyncService> _syncService;
+  std::unique_ptr<SyncObserverBridge> _syncObserver;
+  // The primary identity.
+  id<SystemIdentity> _primaryIdentity;
+  // The displayed error, if any.
+  AccountErrorUIInfo* _error;
+
+  // The list of identities to display and their index in the table view’s
+  // identities section
+  NSMutableArray<id<SystemIdentity>>* _identities;
+
+  // The type of account error that is being displayed in the error section for
+  // signed in accounts. Is set to kNone when there is no error section.
+  syncer::SyncService::UserActionableError _diplayedAccountErrorType;
+}
+
+- (instancetype)initWithSyncService:(syncer::SyncService*)syncService
+              accountManagerService:
+                  (ChromeAccountManagerService*)accountManagerService
+                        authService:(AuthenticationService*)authService
+                    identityManager:(signin::IdentityManager*)identityManager {
+  self = [super init];
+  if (self) {
+    CHECK(syncService);
+    CHECK(accountManagerService);
+    CHECK(authService);
+    CHECK(identityManager);
+    _identities = [NSMutableArray array];
+    _accountManagerService = accountManagerService;
+    _accountManagerServiceObserver =
+        std::make_unique<ChromeAccountManagerServiceObserverBridge>(
+            self, _accountManagerService);
+    _authenticationService = authService;
+    _identityManager = identityManager;
+    _identityManagerObserver =
+        std::make_unique<signin::IdentityManagerObserverBridge>(
+            _identityManager, self);
+    _primaryIdentity = _authenticationService->GetPrimaryIdentity(
+        signin::ConsentLevel::kSignin);
+    _syncService = syncService;
+    _syncObserver = std::make_unique<SyncObserverBridge>(self, _syncService);
+    _diplayedAccountErrorType = syncer::SyncService::UserActionableError::kNone;
+    [self updatePrimaryAccountID];
+    [self updateIdentities];
+    _error = GetAccountErrorUIInfo(_syncService);
+  }
+  return self;
+}
+
+- (void)disconnect {
+  _accountManagerService = nullptr;
+  _accountManagerServiceObserver.reset();
+  _authenticationService = nullptr;
+  _identityManagerObserver.reset();
+  _identityManager = nullptr;
+  _syncObserver.reset();
+  _syncService = nullptr;
+  _identities = nil;
+  _primaryIdentity = nullptr;
+}
+
+#pragma mark - AccountMenuDataSource
+
+- (NSArray<NSString*>*)secondaryAccountsGaiaIDs {
+  NSMutableArray<NSString*>* gaiaIDs = [NSMutableArray array];
+  for (id<SystemIdentity> identity : _identities) {
+    [gaiaIDs addObject:identity.gaiaID];
+  }
+  return gaiaIDs;
+}
+
+- (TableViewIdentityItem*)identityItemForGaiaID:(NSString*)gaiaID {
+  for (id<SystemIdentity> identity : _identities) {
+    if (gaiaID == identity.gaiaID) {
+      TableViewIdentityItem* item =
+          [[TableViewIdentityItem alloc] initWithType:0];
+      item.identityViewStyle = IdentityViewStyleIdentityChooser;
+      item.gaiaID = identity.gaiaID;
+      item.name = identity.userFullName;
+      item.email = identity.userEmail;
+      item.avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
+          identity, IdentityAvatarSize::Regular);
+      return item;
+    }
+  }
+  NOTREACHED_NORETURN();
+}
+
+- (NSString*)primaryAccountEmail {
+  return _primaryIdentity.userEmail;
+}
+
+- (NSString*)primaryAccountUserFullName {
+  return _primaryIdentity.userFullName;
+}
+
+- (UIImage*)primaryAccountAvatar {
+  return _accountManagerService->GetIdentityAvatarWithIdentity(
+      _primaryIdentity, IdentityAvatarSize::Large);
+}
+
+- (AccountErrorUIInfo*)accountErrorUIInfo {
+  return _error;
+}
+
+#pragma mark - ChromeAccountManagerServiceObserver
+
+- (void)identityListChanged {
+  [self updateIdentities];
+}
+
+- (void)identityUpdated:(id<SystemIdentity>)identity {
+  [self updateIdentities];
+}
+
+- (void)onChromeAccountManagerServiceShutdown:
+    (ChromeAccountManagerService*)accountManagerService {
+  // TODO(crbug.com/40067367): This method can be removed once
+  // crbug.com/40067367 is fixed.
+  [self disconnect];
+}
+
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      return;
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      _primaryIdentity = _authenticationService->GetPrimaryIdentity(
+          signin::ConsentLevel::kSignin);
+      [self updateIdentities];
+      [self.consumer updatePrimaryAccount];
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      if (self.accountSwitchingInProgress) {
+        return;
+      }
+      [self.delegate mediatorWantsToBeDismissed:self];
+      break;
+  }
+}
+
+#pragma mark - SyncObserverModelBridge
+
+- (void)onSyncStateChanged {
+  AccountErrorUIInfo* newError = GetAccountErrorUIInfo(_syncService);
+  if (newError == _error) {
+    return;
+  }
+  _error = newError;
+  [self.consumer updateErrorSection:_error];
+}
+
+#pragma mark - AccountMenuMutator
+
+- (void)accountTappedWithGaiaID:(NSString*)gaiaID {
+  if (self.accountSwitchingInProgress || self.signOutFlowInProgress) {
+    return;
+  }
+  id<SystemIdentity> newIdentity = nil;
+  for (id<SystemIdentity> identity : _identities) {
+    if (identity.gaiaID == gaiaID) {
+      newIdentity = identity;
+      break;
+    }
+  }
+  CHECK(newIdentity);
+  self.accountSwitchingInProgress = YES;
+  __weak __typeof(self) weakSelf = self;
+  _authenticationService->SignOut(
+      signin_metrics::ProfileSignout::kChangeAccountInAccountMenu, NO, ^{
+        AccountMenuMediator* strongSelf = weakSelf;
+        if (strongSelf) {
+          strongSelf->_authenticationService->SignIn(
+              newIdentity,
+              signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU);
+          strongSelf.accountSwitchingInProgress = NO;
+        }
+      });
+}
+
+- (void)didTapErrorButton {
+  // TODO(crbug.com/349101034) Handle errors.
+}
+
+#pragma mark - Private
+
+- (void)updatePrimaryAccountID {
+  _primaryIdentity =
+      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+}
+
+- (void)updateIdentities {
+  NSArray<id<SystemIdentity>>* allIdentities =
+      _accountManagerService->GetAllIdentities();
+
+  NSMutableArray<NSString*>* tablegaiaIDsToRemove = [NSMutableArray array];
+  NSMutableArray<NSString*>* tableIndicesToAdd = [NSMutableArray array];
+
+  for (id<SystemIdentity> secondaryIdentity : allIdentities) {
+    if (secondaryIdentity == _primaryIdentity) {
+      continue;
+    }
+    BOOL mustAdd = YES;
+    for (id<SystemIdentity> displayedIdentity : _identities) {
+      if (secondaryIdentity.gaiaID == displayedIdentity.gaiaID) {
+        mustAdd = NO;
+        break;
+      }
+    }
+    if (mustAdd) {
+      [_identities addObject:secondaryIdentity];
+      [tableIndicesToAdd addObject:secondaryIdentity.gaiaID];
+    }
+  }
+
+  for (NSUInteger i = 0; i < _identities.count; ++i) {
+    id<SystemIdentity> identity = _identities[i];
+    if (![allIdentities containsObject:identity] ||
+        identity == _primaryIdentity) {
+      [tablegaiaIDsToRemove addObject:identity.gaiaID];
+      [_identities removeObjectAtIndex:i--];
+      // There will be a new object at place `i`. So we must decrease `i`.
+    }
+  }
+
+  [self.consumer updateAccountListWithGaiaIDsToAdd:tableIndicesToAdd
+                                   gaiaIDsToRemove:tablegaiaIDsToRemove];
+  // In case the primary account information changed.
+  [self.consumer updatePrimaryAccount];
+}
+
+@end

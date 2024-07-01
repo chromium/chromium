@@ -20,6 +20,11 @@
 // The user tapped on "Edit account list".
 - (void)didTapEditAccountList;
 
-@end
+// Sign out and display a toast.
+- (void)signOutFromTargetRect:(CGRect)targetRect;
 
+// The user tapped on "Add account…".
+- (void)didTapAddAccount;
+
+@end
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_ACCOUNT_MENU_ACCOUNT_MENU_VIEW_CONTROLLER_PRESENTATION_DELEGATE_H_

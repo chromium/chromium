@@ -4,13 +4,32 @@
 
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
 
+#import "base/apple/foundation_util.h"
+#import "base/check.h"
+#import "base/check_op.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/signin/model/constants.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_constants.h"
+#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_data_source.h"
+#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mutator.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller_presentation_delegate.h"
+#import "ios/chrome/browser/ui/authentication/cells/central_account_view.h"
+#import "ios/chrome/browser/ui/authentication/cells/table_view_identity_cell.h"
+#import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -21,29 +40,55 @@ const char kManageYourGoogleAccountIdentifier[] =
 
 namespace {
 
+// Size of the symbols.
+constexpr CGFloat kErrorSymbolSize = 22.;
+
 // Height and width of the buttons.
 constexpr CGFloat kButtonSize = 22;
 
 constexpr CGFloat kHalfSheetCornerRadius = 20.0;
 
+// Sections used in the account menu.
+typedef NS_ENUM(NSUInteger, SectionIdentifier) {
+  // Sync errors.
+  SyncErrorsSectionIdentifier = kSectionIdentifierEnumZero,
+  // List of accounts
+  AccountsSectionIdentifier,
+  // manage accounts, sign-out
+  SignOutSectionIdentifier,
+};
+
+typedef NS_ENUM(NSUInteger, RowIdentifier) {
+  // Error section
+  RowIdentifierErrorExplanation = kItemTypeEnumZero,
+  RowIdentifierErrorButton,
+  // Signout section
+  RowIdentifierSignOut,
+  // Accounts section.
+  RowIdentifierAddAccount,
+  // The secondary account entries use the gaia ID as item identifier.
+};
+
 }  // namespace
 
-@implementation AccountMenuViewController
+@implementation AccountMenuViewController {
+  UITableViewDiffableDataSource* _accountMenuDataSource;
+}
 
 #pragma mark - UIViewController
-
-- (void)viewWillDisappear:(BOOL)animated {
-  [super viewWillDisappear:animated];
-  [self.delegate viewControllerWantsToBeClosed:self];
-}
 
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.tableView.accessibilityIdentifier = kAccountMenuTableViewId;
   self.tableView.backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+  RegisterTableViewCell<TableViewIdentityCell>(self.tableView);
+  RegisterTableViewCell<SettingsImageDetailTextCell>(self.tableView);
+  RegisterTableViewCell<TableViewTextCell>(self.tableView);
   [self setUpBottomSheetPresentationController];
   [self setUpNavigationController];
+  [self setUpTableContent];
+  [self updatePrimaryAccount];
 }
 
 #pragma mark - Private
@@ -105,6 +150,65 @@ constexpr CGFloat kHalfSheetCornerRadius = 20.0;
       [[UIBarButtonItem alloc] initWithImage:ellipsisImage menu:ellipsisMenu];
 }
 
+- (UITableViewCell*)cellForTableView:(UITableView*)tableView
+                           indexPath:(NSIndexPath*)indexPath
+                      itemIdentifier:(id)itemIdentifier {
+  NSString* gaiaID = base::apple::ObjCCast<NSString>(itemIdentifier);
+  if (gaiaID) {
+    // `itemIdentifier` is a gaia id.
+    TableViewIdentityItem* item =
+        [self.dataSource identityItemForGaiaID:gaiaID];
+    TableViewIdentityCell* cell =
+        DequeueTableViewCell<TableViewIdentityCell>(tableView);
+    [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
+    return cell;
+  }
+
+  // Otherwise `itemIdentifier` is a `RowIdentifier`.
+  RowIdentifier rowIdentifier = static_cast<RowIdentifier>(
+      base::apple::ObjCCastStrict<NSNumber>(itemIdentifier).integerValue);
+  NSString* label = nil;
+  switch (rowIdentifier) {
+    case RowIdentifierErrorExplanation: {
+      SettingsImageDetailTextCell* cell =
+          DequeueTableViewCell<SettingsImageDetailTextCell>(tableView);
+      SettingsImageDetailTextItem* item =
+          [[SettingsImageDetailTextItem alloc] initWithType:0];
+      item.detailText =
+          l10n_util::GetNSString(self.dataSource.accountErrorUIInfo.messageID);
+      item.image =
+          DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kErrorSymbolSize);
+      item.imageViewTintColor = [UIColor colorNamed:kRed500Color];
+      [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
+      cell.selectionStyle = UITableViewCellSelectionStyleNone;
+      return cell;
+    }
+    case RowIdentifierErrorButton:
+      label = l10n_util::GetNSString(
+          self.dataSource.accountErrorUIInfo.buttonLabelID);
+      break;
+    case RowIdentifierAddAccount:
+      label =
+          l10n_util::GetNSString(IDS_IOS_OPTIONS_ACCOUNTS_ADD_ACCOUNT_BUTTON);
+      break;
+    case RowIdentifierSignOut:
+      label =
+          l10n_util::GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM);
+      break;
+    default:
+      NOTREACHED_NORETURN();
+  }
+  // If the function has not returned yet. This cell contains only text.
+
+  TableViewTextItem* item = [[TableViewTextItem alloc] init];
+  item.textColor = [UIColor colorNamed:kBlueColor];
+  item.accessibilityTraits = UIAccessibilityTraitButton;
+  item.text = label;
+  TableViewTextCell* cell = DequeueTableViewCell<TableViewTextCell>(tableView);
+  [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
+  return cell;
+}
+
 // Sets up the sheet presentation controller and its properties when using
 // UIModalPresentationPageSheet mode.
 - (void)setUpBottomSheetPresentationController {
@@ -124,6 +228,145 @@ constexpr CGFloat kHalfSheetCornerRadius = 20.0;
 
 - (void)userTappedOnClose {
   [self.delegate viewControllerWantsToBeClosed:self];
+}
+
+- (void)setUpTableContent {
+  // Configure the table items.
+  __weak __typeof(self) weakSelf = self;
+  _accountMenuDataSource = [[UITableViewDiffableDataSource alloc]
+      initWithTableView:self.tableView
+           cellProvider:^UITableViewCell*(UITableView* tableView,
+                                          NSIndexPath* indexPath, id itemId) {
+             return [weakSelf cellForTableView:tableView
+                                     indexPath:indexPath
+                                itemIdentifier:itemId];
+           }];
+  self.tableView.dataSource = _accountMenuDataSource;
+
+  NSDiffableDataSourceSnapshot* snapshot =
+      [[NSDiffableDataSourceSnapshot alloc] init];
+
+  AccountErrorUIInfo* error = self.dataSource.accountErrorUIInfo;
+  if (error) {
+    [snapshot appendSectionsWithIdentifiers:@[
+      @(SyncErrorsSectionIdentifier),
+    ]];
+    [snapshot appendItemsWithIdentifiers:@[
+      @(RowIdentifierErrorExplanation), @(RowIdentifierErrorButton)
+    ]
+               intoSectionWithIdentifier:@(SyncErrorsSectionIdentifier)];
+  }
+
+  [snapshot appendSectionsWithIdentifiers:@[ @(AccountsSectionIdentifier) ]];
+  NSMutableArray* accountsIdentifiers = [[NSMutableArray alloc] init];
+  NSArray<NSString*>* gaiaIDs = self.dataSource.secondaryAccountsGaiaIDs;
+  for (NSString* gaiaID in gaiaIDs) {
+    [accountsIdentifiers addObject:gaiaID];
+  }
+  [accountsIdentifiers addObject:@(RowIdentifierAddAccount)];
+  [snapshot appendItemsWithIdentifiers:accountsIdentifiers
+             intoSectionWithIdentifier:@(AccountsSectionIdentifier)];
+
+  [snapshot appendSectionsWithIdentifiers:@[ @(SignOutSectionIdentifier) ]];
+  [snapshot appendItemsWithIdentifiers:@[ @(RowIdentifierSignOut) ]
+             intoSectionWithIdentifier:@(SignOutSectionIdentifier)];
+
+  [_accountMenuDataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  id itemIdentifier =
+      [_accountMenuDataSource itemIdentifierForIndexPath:indexPath];
+  NSString* gaiaID = base::apple::ObjCCast<NSString>(itemIdentifier);
+  if (gaiaID) {
+    // `itemIdentifier` is a gaiaID.
+    base::RecordAction(
+        base::UserMetricsAction("Signin_AccountMenu_SelectAccount"));
+    [self.mutator accountTappedWithGaiaID:gaiaID];
+  } else {
+    // Otherwise `itemIdentifier` is a `RowIdentifier`.
+    RowIdentifier rowIdentifier = static_cast<RowIdentifier>(
+        base::apple::ObjCCastStrict<NSNumber>(itemIdentifier).integerValue);
+    switch (rowIdentifier) {
+      case RowIdentifierAddAccount:
+        base::RecordAction(
+            base::UserMetricsAction("Signin_AccountMenu_AddAccount"));
+        [self.delegate didTapAddAccount];
+        break;
+      case RowIdentifierErrorExplanation:
+        break;
+      case RowIdentifierErrorButton:
+        base::RecordAction(
+            base::UserMetricsAction("Signin_AccountMenu_ErrorButton"));
+        [self.mutator didTapErrorButton];
+        break;
+      case RowIdentifierSignOut:
+        base::RecordAction(
+            base::UserMetricsAction("Signin_AccountMenu_Signout"));
+        CGRect cellRect = [tableView rectForRowAtIndexPath:indexPath];
+        [self.delegate signOutFromTargetRect:cellRect];
+        break;
+    }
+  }
+  [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+#pragma mark - AccountMenuConsumer
+
+- (void)updatePrimaryAccount {
+  CentralAccountView* identityAccountItem = [[CentralAccountView alloc]
+      initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0)
+        avatarImage:self.dataSource.primaryAccountAvatar
+               name:self.dataSource.primaryAccountUserFullName
+              email:self.dataSource.primaryAccountEmail];
+  self.tableView.tableHeaderView = identityAccountItem;
+  [self.tableView reloadData];
+}
+
+- (void)updateErrorSection:(AccountErrorUIInfo*)error {
+  NSDiffableDataSourceSnapshot* snapshot = _accountMenuDataSource.snapshot;
+  if (error == nil) {
+    // The error disappeared.
+    CHECK_EQ([snapshot indexOfSectionIdentifier:@(SyncErrorsSectionIdentifier)],
+             0);
+    [snapshot
+        deleteSectionsWithIdentifiers:@[ @(SyncErrorsSectionIdentifier) ]];
+  } else if ([snapshot
+                 indexOfSectionIdentifier:@(SyncErrorsSectionIdentifier)] ==
+             NSNotFound) {
+    // The error appeared.
+    [snapshot insertSectionsWithIdentifiers:@[ @(SyncErrorsSectionIdentifier) ]
+                beforeSectionWithIdentifier:@(AccountsSectionIdentifier)];
+    [snapshot appendItemsWithIdentifiers:@[
+      @(RowIdentifierErrorExplanation), @(RowIdentifierErrorButton)
+    ]
+               intoSectionWithIdentifier:@(SyncErrorsSectionIdentifier)];
+  } else {
+    // The error changed. No need to change the sections, only their content.
+  }
+  [_accountMenuDataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
+- (void)updateAccountListWithGaiaIDsToAdd:(NSArray<NSString*>*)indicesToAdd
+                          gaiaIDsToRemove:(NSArray<NSString*>*)gaiaIDsToRemove {
+  NSDiffableDataSourceSnapshot* snapshot = _accountMenuDataSource.snapshot;
+
+  NSMutableArray* accountsIdentifiersToAdd = [[NSMutableArray alloc] init];
+  for (NSString* gaiaID in indicesToAdd) {
+    [accountsIdentifiersToAdd addObject:gaiaID];
+  }
+  [snapshot insertItemsWithIdentifiers:accountsIdentifiersToAdd
+              beforeItemWithIdentifier:@(RowIdentifierAddAccount)];
+
+  NSMutableArray* accountsIdentifiersToRemove = [[NSMutableArray alloc] init];
+  for (NSString* gaiaID in gaiaIDsToRemove) {
+    [accountsIdentifiersToRemove addObject:gaiaID];
+  }
+  [snapshot deleteItemsWithIdentifiers:accountsIdentifiersToRemove];
+  [_accountMenuDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
 #pragma mark - UIResponder

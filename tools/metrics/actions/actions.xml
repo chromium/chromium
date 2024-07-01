@@ -35377,12 +35377,55 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_AccountMenu_AddAccount">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user taps on &quot;Add account…&quot; from the account
+    menu. iOS only.
+  </description>
+</action>
+
+<action name="Signin_AccountMenu_EditAccountList">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user taps on &quot;Edit Account List&quot; menu entry in
+    the account menu. iOS only.
+  </description>
+</action>
+
+<action name="Signin_AccountMenu_ErrorButton">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user taps on &quot;Error&quot; button in the account menu.
+    iOS only.
+  </description>
+</action>
+
 <action name="Signin_AccountMenu_ManageAccount">
   <owner>arthurmilchior@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <description>
-    Recorded when the user tap to manage the account from the account menu’s
-    menu. iOS only.
+    Recorded when the user tap to manage the account from the account menu. iOS
+    only.
+  </description>
+</action>
+
+<action name="Signin_AccountMenu_SelectAccount">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user selects an account in the account menu. iOS only.
+  </description>
+</action>
+
+<action name="Signin_AccountMenu_Signout">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user signes out from the account menu. iOS only.
   </description>
 </action>
 
