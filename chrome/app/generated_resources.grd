@@ -17070,30 +17070,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name = "IDS_CHROMELABS_ENABLED_WITH_VARIATION_NAME" desc="Label for combobox option for an enabled variation that will have a description describing what variation is enabled in the placeholder.">
       Enabled – <ph name="VARIATION_NAME">$1<ex>tabs shrink to pinned tab width</ex></ph>
     </message>
-    <!-- ChromeLabs Customize Chrome SidePanel-->
-    <message name="IDS_CUSTOMIZE_CHROME_SIDE_PANEL_EXPERIMENT_NAME" desc="The name for the Customize Chrome Side Panel experiment.">
-      Customize Chrome Side Panel
-    </message>
-    <message name="IDS_CUSTOMIZE_CHROME_SIDE_PANEL_DESCRIPTION" desc="The description for the Customize Chrome Side Panel experiment.">
-      Enables the ability to use Customize Chrome functionality from the unified side panel on the New Tab Page.
-    </message>
-    <!-- ChromeLabs ChromeRefresh2023-->
-    <message name="IDS_CHROMEREFRESH2023_EXPERIMENT_NAME" desc="The name of the project for Chrome's desktop UI redesign.">
-      Chrome Refresh 2023
-    </message>
-    <message name="IDS_CHROMEREFRESH2023_DESCRIPTION" desc="The description of the project for Chrome's desktop UI redesign.">
-      Enables the new desktop design. Customize Chrome Side Panel must also be enabled.
-    </message>
-     <message name="IDS_CHROMEREFRESH2023_WITHOUT_OMNIBOX" desc="Indicates no omnibox design changes in Chrome's desktop UI redesign.">
-      without Omnibox
-    </message>
-    <!-- ChromeLabs ChromeWebuiRefresh2023-->
-    <message name="IDS_CHROMEWEBUIREFRESH2023_EXPERIMENT_NAME" desc="The name of the project for Chrome's desktop WebUI redesign.">
-      Chrome WebUI Refresh 2023
-    </message>
-    <message name="IDS_CHROMEWEBUIREFRESH2023_DESCRIPTION" desc="The description of the project for Chrome's desktop WebUI redesign.">
-      Enables the new desktop design for WebUI. Chrome Refresh 2023 must also be enabled.
-    </message>
     <!-- ChromeLabs Tab Scrolling -->
     <message name="IDS_TAB_SCROLLING_EXPERIMENT_NAME" desc="Name for Tab Scrolling experiment">
       Tab Scrolling
