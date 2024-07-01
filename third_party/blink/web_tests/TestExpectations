@@ -7521,3 +7521,7 @@ crbug.com/348101805 external/wpt/html/browsers/browsing-the-web/overlapping-navi
 
 # Gardener 2024-06-28
 crbug.com/349938120 [ Linux ] wpt_internal/webmidi/requestmidiaccess-basic.https.html [ Failure Pass ]
+
+# Gardener 2024-07-01
+crbug.com/40199822 [ Win11-arm64 ] svg/dynamic-updates/SVGFEComponentTransferElement-dom-tableValues-attr.html [ Failure Pass ]
+crbug.com/40199822 [ Win11-arm64 ] svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-tableValues-prop.html [ Failure Pass ]
