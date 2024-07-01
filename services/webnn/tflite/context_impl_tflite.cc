@@ -27,6 +27,11 @@ ContextImplTflite::ContextImplTflite(
 
 ContextImplTflite::~ContextImplTflite() = default;
 
+base::WeakPtr<WebNNContextImpl> ContextImplTflite::AsWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return weak_factory_.GetWeakPtr();
+}
+
 void ContextImplTflite::CreateGraphImpl(mojom::GraphInfoPtr graph_info,
                                         CreateGraphImplCallback callback) {
   std::move(callback).Run(

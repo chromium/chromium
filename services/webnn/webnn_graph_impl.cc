@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/dcheck_is_on.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "services/webnn/error.h"
@@ -2103,14 +2104,14 @@ WebNNGraphImpl::ComputeResourceInfo::operator=(ComputeResourceInfo&&) = default;
 
 WebNNGraphImpl::ComputeResourceInfo::~ComputeResourceInfo() = default;
 
-WebNNGraphImpl::WebNNGraphImpl(ComputeResourceInfo compute_resource_info)
-    : compute_resource_info_(std::move(compute_resource_info)) {}
-
 WebNNGraphImpl::WebNNGraphImpl(WebNNContextImpl* context,
                                ComputeResourceInfo compute_resource_info)
     : compute_resource_info_(std::move(compute_resource_info)),
       context_(context) {
   CHECK(context_);
+#if DCHECK_IS_ON()
+  context_->AssertCalledOnValidSequence();
+#endif
 }
 
 WebNNGraphImpl::~WebNNGraphImpl() = default;

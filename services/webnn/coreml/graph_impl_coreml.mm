@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
+#include "base/dcheck_is_on.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -31,11 +32,13 @@
 #include "base/types/expected_macros.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
+#include "services/webnn/coreml/context_impl_coreml.h"
 #include "services/webnn/coreml/graph_builder_coreml.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
+#include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_switches.h"
 
 @interface WebNNMLFeatureProvider : NSObject <MLFeatureProvider>
@@ -192,12 +195,14 @@ mojo_base::BigBuffer ExtractMaybeNonContiguousOutput(
 
 // static
 void GraphImplCoreml::CreateAndBuild(
+    ContextImplCoreml* context,
     mojom::GraphInfoPtr graph_info,
     mojom::CreateContextOptionsPtr context_options,
     ContextProperties context_properties,
     WebNNContextImpl::CreateGraphImplCallback callback) {
   auto wrapped_callback = base::BindPostTaskToCurrentDefault(
-      base::BindOnce(&GraphImplCoreml::DidCreateAndBuild, std::move(callback)));
+      base::BindOnce(&GraphImplCoreml::DidCreateAndBuild, context->AsWeakPtr(),
+                     std::move(callback)));
 
   base::ThreadPool::PostTask(
       FROM_HERE,
@@ -350,6 +355,7 @@ void GraphImplCoreml::LoadCompiledModelOnBackgroundThread(
 
 // static
 void GraphImplCoreml::DidCreateAndBuild(
+    base::WeakPtr<WebNNContextImpl> context,
     WebNNContextImpl::CreateGraphImplCallback callback,
     base::expected<std::unique_ptr<Params>, mojom::ErrorPtr> result) {
   if (!result.has_value()) {
@@ -358,8 +364,18 @@ void GraphImplCoreml::DidCreateAndBuild(
     return;
   }
 
-  std::move(callback).Run(
-      base::WrapUnique(new GraphImplCoreml(*std::move(result))));
+  if (!context) {
+    std::move(callback).Run(base::unexpected(mojom::Error::New(
+        mojom::Error::Code::kUnknownError, "Context was destroyed.")));
+    return;
+  }
+
+#if DCHECK_IS_ON()
+  context->AssertCalledOnValidSequence();
+#endif
+
+  std::move(callback).Run(base::WrapUnique(new GraphImplCoreml(
+      static_cast<ContextImplCoreml*>(context.get()), *std::move(result))));
 }
 
 // static
@@ -416,8 +432,9 @@ GraphImplCoreml::GetCoreMLFeatureInfo(
                                             operand_info.coreml_name);
 }
 
-GraphImplCoreml::GraphImplCoreml(std::unique_ptr<Params> params)
-    : WebNNGraphImpl(std::move(params->compute_resource_info)),
+GraphImplCoreml::GraphImplCoreml(ContextImplCoreml* context,
+                                 std::unique_ptr<Params> params)
+    : WebNNGraphImpl(context, std::move(params->compute_resource_info)),
       input_feature_info_(std::move(params->input_feature_info)),
       coreml_name_to_operand_name_(
           std::move(params->coreml_name_to_operand_name)),

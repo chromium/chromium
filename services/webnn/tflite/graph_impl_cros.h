@@ -32,6 +32,7 @@ class GraphImplCrOS final : public WebNNGraphImpl {
 
  private:
   GraphImplCrOS(
+      ContextImplCrOS* context_impl,
       ComputeResourceInfo compute_resource_info,
       mojo::PendingRemote<ml::model_loader::mojom::Model> pending_remote);
 

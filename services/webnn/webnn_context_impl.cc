@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
@@ -38,18 +39,25 @@ void WebNNContextImpl::OnConnectionError() {
   context_provider_->OnConnectionError(this);
 }
 
+#if DCHECK_IS_ON()
+void WebNNContextImpl::AssertCalledOnValidSequence() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+#endif
+
 void WebNNContextImpl::CreateGraph(
     mojom::GraphInfoPtr graph_info,
     mojom::WebNNContext::CreateGraphCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!WebNNGraphImpl::ValidateGraph(properties_, *graph_info)) {
     receiver_.ReportBadMessage(kBadMessageInvalidGraph);
     return;
   }
   // Call CreateGraphImpl() implemented by a backend.
-  CreateGraphImpl(
-      std::move(graph_info),
-      base::BindOnce(&WebNNContextImpl::DidCreateWebNNGraphImpl,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  CreateGraphImpl(std::move(graph_info),
+                  base::BindOnce(&WebNNContextImpl::DidCreateWebNNGraphImpl,
+                                 AsWeakPtr(), std::move(callback)));
 }
 
 void WebNNContextImpl::CreateBuffer(
@@ -91,6 +99,8 @@ void WebNNContextImpl::DisconnectAndDestroyWebNNBufferImpl(
 void WebNNContextImpl::DidCreateWebNNGraphImpl(
     mojom::WebNNContext::CreateGraphCallback callback,
     base::expected<std::unique_ptr<WebNNGraphImpl>, mojom::ErrorPtr> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!result.has_value()) {
     std::move(callback).Run(
         mojom::CreateGraphResult::NewError(std::move(result.error())));

@@ -5,6 +5,7 @@
 #ifndef SERVICES_WEBNN_TFLITE_CONTEXT_IMPL_CROS_H_
 #define SERVICES_WEBNN_TFLITE_CONTEXT_IMPL_CROS_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/ml/mojom/ml_service.mojom.h"
 #include "components/ml/mojom/web_platform_model.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -24,6 +25,9 @@ class ContextImplCrOS final : public WebNNContextImpl {
   ContextImplCrOS& operator=(const ContextImplCrOS&) = delete;
 
   ~ContextImplCrOS() override;
+
+  // WebNNContextImpl:
+  base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
 
   // Load the TFLite model with ML Service, the `ModelLoader` interface needs to
   // be created if it's not bound.

@@ -228,7 +228,7 @@ GraphImplTflite::GraphImplTflite(
     scoped_refptr<GraphResources> graph_resources,
     std::unique_ptr<ComputeResources> compute_resources,
     ContextImplTflite* context)
-    : WebNNGraphImpl(std::move(compute_resource_info)),
+    : WebNNGraphImpl(context, std::move(compute_resource_info)),
       context_(context),
       graph_resources_(std::move(graph_resources)),
       compute_resources_(std::move(compute_resources)) {}

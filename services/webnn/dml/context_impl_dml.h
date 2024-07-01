@@ -34,6 +34,9 @@ class ContextImplDml final : public WebNNContextImpl {
 
   ~ContextImplDml() override;
 
+  // WebNNContextImpl:
+  base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
+
   void ReadBuffer(BufferImplDml* src_buffer,
                   mojom::WebNNBuffer::ReadBufferCallback callback);
 

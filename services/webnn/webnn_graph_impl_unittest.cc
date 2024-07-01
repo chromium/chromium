@@ -8,6 +8,8 @@
 #include <limits>
 
 #include "base/containers/contains.h"
+#include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -117,6 +119,12 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
                          GetContextPropertiesForTesting()) {}
   ~FakeWebNNContextImpl() override = default;
 
+  // WebNNContextImpl:
+  base::WeakPtr<WebNNContextImpl> AsWeakPtr() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   void CreateGraphImpl(mojom::GraphInfoPtr graph_info,
                        CreateGraphImplCallback callback) override {
@@ -130,6 +138,8 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
     return std::make_unique<FakeWebNNBufferImpl>(
         std::move(receiver), this, std::move(buffer_info), buffer_handle);
   }
+
+  base::WeakPtrFactory<FakeWebNNContextImpl> weak_factory_{this};
 };
 
 // Helper class to create the FakeWebNNContext that is intended to test

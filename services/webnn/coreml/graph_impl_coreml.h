@@ -25,6 +25,8 @@
 
 namespace webnn::coreml {
 
+class ContextImplCoreml;
+
 // GraphImplCoreml inherits from WebNNGraphImpl to represent a CoreML graph
 // implementation. It is mainly responsible for building and compiling a CoreML
 // graph from mojom::GraphInfo via GraphBuilderCoreml, then initializing and
@@ -37,6 +39,7 @@ namespace webnn::coreml {
 class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
  public:
   static void CreateAndBuild(
+      ContextImplCoreml* context,
       mojom::GraphInfoPtr graph_info,
       mojom::CreateContextOptionsPtr context_options,
       ContextProperties context_properties,
@@ -85,7 +88,7 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
     MLModel* __strong ml_model;
   };
 
-  explicit GraphImplCoreml(std::unique_ptr<Params> params);
+  GraphImplCoreml(ContextImplCoreml* context, std::unique_ptr<Params> params);
 
   static MLFeatureValue* CreateFeatureValue(
       GraphImplCoreml::CoreMLFeatureInfo* feature_info,
@@ -112,6 +115,7 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
       NSError* error);
 
   static void DidCreateAndBuild(
+      base::WeakPtr<WebNNContextImpl> context,
       WebNNContextImpl::CreateGraphImplCallback callback,
       base::expected<std::unique_ptr<Params>, mojom::ErrorPtr> result);
 

@@ -7,8 +7,10 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
+#include "base/dcheck_is_on.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -42,6 +44,15 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   WebNNContextImpl& operator=(const WebNNContextImpl&) = delete;
 
   ~WebNNContextImpl() override;
+
+  virtual base::WeakPtr<WebNNContextImpl> AsWeakPtr()
+      VALID_CONTEXT_REQUIRED(sequence_checker_) = 0;
+
+#if DCHECK_IS_ON()
+  // Callers which obtain a WeakPtr from the method above may use this helper to
+  // assert that the WeakPtr is being used correctly.
+  void AssertCalledOnValidSequence() const;
+#endif  // DCHECK_IS_ON()
 
   // Disassociates a `WebNNBuffer` instance owned by this context by its handle.
   // Called when a `WebNNBuffer` instance has a connection error. After this
@@ -91,6 +102,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       mojom::BufferInfoPtr buffer_info,
       const base::UnguessableToken& buffer_handle) = 0;
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
   mojo::Receiver<mojom::WebNNContext> receiver_;
 
   // Owns this object.
@@ -110,8 +123,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // GraphsImpls which are stored on the context to allow graph
   // operations to use this context safely via a raw_ptr.
   mojo::UniqueAssociatedReceiverSet<mojom::WebNNGraph> graph_impls_;
-
-  base::WeakPtrFactory<WebNNContextImpl> weak_factory_{this};
 };
 
 }  // namespace webnn

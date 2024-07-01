@@ -23,6 +23,9 @@ class ContextImplTflite final : public WebNNContextImpl {
 
   ~ContextImplTflite() override;
 
+  // WebNNContextImpl:
+  base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
+
   const mojom::CreateContextOptions& options() const { return *options_; }
 
  private:
@@ -35,6 +38,8 @@ class ContextImplTflite final : public WebNNContextImpl {
       const base::UnguessableToken& buffer_handle) override;
 
   mojom::CreateContextOptionsPtr options_;
+
+  base::WeakPtrFactory<ContextImplTflite> weak_factory_{this};
 };
 
 }  // namespace webnn::tflite

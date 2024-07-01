@@ -34,12 +34,14 @@ void GraphImplCrOS::CreateAndBuild(
   context_impl->LoadModel(
       std::move(conversion_result.value()),
       base::BindOnce(
-          [](ComputeResourceInfo compute_resource_info,
+          [](base::WeakPtr<WebNNContextImpl> context,
+             ComputeResourceInfo compute_resource_info,
              WebNNContextImpl::CreateGraphImplCallback callback,
              ml::model_loader::mojom::LoadModelResult result,
              mojo::PendingRemote<ml::model_loader::mojom::Model> pending_remote,
              ml::model_loader::mojom::ModelInfoPtr tensor_info) {
-            if (result != ml::model_loader::mojom::LoadModelResult::kOk) {
+            if (!context ||
+                result != ml::model_loader::mojom::LoadModelResult::kOk) {
               std::move(callback).Run(base::unexpected(
                   mojom::Error::New(mojom::Error::Code::kUnknownError,
                                     "Failed to load model with ml service.")));
@@ -49,17 +51,20 @@ void GraphImplCrOS::CreateAndBuild(
             // TODO(crbug.com/330806169): Pass `WebNNGraph` directly to ML
             // Service and not have to bounce through the browser process.
             std::move(callback).Run(base::WrapUnique(new GraphImplCrOS(
+                static_cast<ContextImplCrOS*>(context.get()),
                 std::move(compute_resource_info), std::move(pending_remote))));
           },
-          ComputeResourceInfo(*graph_info), std::move(callback)));
+          context_impl->AsWeakPtr(), ComputeResourceInfo(*graph_info),
+          std::move(callback)));
 }
 
 GraphImplCrOS::~GraphImplCrOS() = default;
 
 GraphImplCrOS::GraphImplCrOS(
+    ContextImplCrOS* context_impl,
     ComputeResourceInfo compute_resource_info,
     mojo::PendingRemote<ml::model_loader::mojom::Model> pending_remote)
-    : WebNNGraphImpl(std::move(compute_resource_info)) {
+    : WebNNGraphImpl(context_impl, std::move(compute_resource_info)) {
   model_remote_.Bind(std::move(pending_remote));
 }
 

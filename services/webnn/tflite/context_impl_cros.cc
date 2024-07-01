@@ -22,6 +22,11 @@ ContextImplCrOS::ContextImplCrOS(
 
 ContextImplCrOS::~ContextImplCrOS() = default;
 
+base::WeakPtr<WebNNContextImpl> ContextImplCrOS::AsWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return weak_factory_.GetWeakPtr();
+}
+
 void ContextImplCrOS::LoadModel(
     flatbuffers::DetachedBuffer model_content,
     ml::model_loader::mojom::ModelLoader::LoadCallback callback) {

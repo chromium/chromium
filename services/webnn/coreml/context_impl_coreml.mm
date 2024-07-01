@@ -6,6 +6,7 @@
 
 #import <CoreML/CoreML.h>
 
+#include "base/sequence_checker.h"
 #include "services/webnn/coreml/graph_builder_coreml.h"
 #include "services/webnn/coreml/graph_impl_coreml.h"
 #include "services/webnn/public/cpp/context_properties.h"
@@ -26,9 +27,14 @@ ContextImplCoreml::ContextImplCoreml(
 
 ContextImplCoreml::~ContextImplCoreml() = default;
 
+base::WeakPtr<WebNNContextImpl> ContextImplCoreml::AsWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return weak_factory_.GetWeakPtr();
+}
+
 void ContextImplCoreml::CreateGraphImpl(mojom::GraphInfoPtr graph_info,
                                         CreateGraphImplCallback callback) {
-  GraphImplCoreml::CreateAndBuild(std::move(graph_info), options_.Clone(),
+  GraphImplCoreml::CreateAndBuild(this, std::move(graph_info), options_.Clone(),
                                   properties(), std::move(callback));
 }
 

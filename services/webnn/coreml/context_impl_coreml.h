@@ -5,6 +5,7 @@
 #ifndef SERVICES_WEBNN_COREML_CONTEXT_IMPL_COREML_H_
 #define SERVICES_WEBNN_COREML_CONTEXT_IMPL_COREML_H_
 
+#include "base/memory/weak_ptr.h"
 #include "services/webnn/webnn_context_impl.h"
 
 namespace webnn::coreml {
@@ -29,6 +30,9 @@ class API_AVAILABLE(macos(14.0)) ContextImplCoreml final
 
   ~ContextImplCoreml() override;
 
+  // WebNNContextImpl:
+  base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
+
  private:
   void CreateGraphImpl(mojom::GraphInfoPtr graph_info,
                        CreateGraphImplCallback callback) override;
@@ -39,6 +43,8 @@ class API_AVAILABLE(macos(14.0)) ContextImplCoreml final
       const base::UnguessableToken& buffer_handle) override;
 
   mojom::CreateContextOptionsPtr options_;
+
+  base::WeakPtrFactory<ContextImplCoreml> weak_factory_{this};
 };
 
 }  // namespace webnn::coreml
