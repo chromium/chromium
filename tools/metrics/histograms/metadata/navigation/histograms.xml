@@ -1753,6 +1753,40 @@ chromium-metrics-reviews@google.com.
   <token key="Event" variants="NavigationThrottleEvents"/>
 </histogram>
 
+<histogram name="Navigation.Throttles.PolicyBlocklist.DeferDurationTime"
+    units="ms" expires_after="2024-12-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures duration times that PolicyBlocklistNavigationThrottles asks to
+    defer navigation request. The time is accumulated on resuming request each
+    time, and recorded on destructing the throttle for the request.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.Throttles.PolicyBlocklist.RequestThrottleAction"
+    units="PolicyBlocklistRequestThrottleAction" expires_after="2024-12-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Remembers the PolicyBlocklistNavigationThrottles' actions for
+    WillStartRequest() and WillRedirectRequest() and classify as the
+    PolicyBlocklistRequestThrottleAction. The classified type is recorded on
+    destructing the throttle for the request.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.Throttles.PolicyBlocklist.RequestToResponseTime"
+    units="ms" expires_after="2024-12-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures duration times from the time PolicyBlocklistNavigationThrottles
+    observes the first WillStartRequest() to the time it observes the
+    WillProcessResponse(). Recorded when the WillProcessResponse() is handled.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.ThrottleTotalDeferCount{Condition}"
     units="throttles" expires_after="2024-12-01">
   <owner>toyoshim@chromium.org</owner>

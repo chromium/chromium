@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_POLICY_CONTENT_POLICY_BLOCKLIST_NAVIGATION_THROTTLE_H_
 #define COMPONENTS_POLICY_CONTENT_POLICY_BLOCKLIST_NAVIGATION_THROTTLE_H_
 
+#include "base/time/time.h"
 #include "components/policy/content/safe_sites_navigation_throttle.h"
 #include "content/public/browser/navigation_throttle.h"
 
@@ -32,9 +33,25 @@ class PolicyBlocklistNavigationThrottle : public content::NavigationThrottle {
   // NavigationThrottle overrides.
   ThrottleCheckResult WillStartRequest() override;
   ThrottleCheckResult WillRedirectRequest() override;
+  ThrottleCheckResult WillProcessResponse() override;
   const char* GetNameForLogging() override;
 
  private:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(RequestThrottleAction)
+  enum class RequestThrottleAction {
+    kNoRequest = 0,
+    kProceed = 1,
+    kBlock = 2,
+    kDefer = 3,
+    kProceedAfterDefer = 4,
+    kBlockAfterDefer = 5,
+    kMaxValue = kBlockAfterDefer,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:PolicyBlocklistRequestThrottleAction)
+
   // Returns TRUE if this navigation is to view-source: and view-source is on
   // the URLBlocklist.
   bool IsBlockedViewSourceNavigation();
@@ -45,6 +62,17 @@ class PolicyBlocklistNavigationThrottle : public content::NavigationThrottle {
   ThrottleCheckResult CheckSafeSitesFilter(const GURL& url);
   void OnDeferredSafeSitesResult(bool is_safe,
                                  ThrottleCheckResult cancel_result);
+
+  void UpdateRequestThrottleAction(
+      content::NavigationThrottle::ThrottleAction action);
+
+  RequestThrottleAction request_throttle_action_ =
+      RequestThrottleAction::kNoRequest;
+
+  base::TimeTicks request_time_;
+  base::TimeTicks defer_time_;
+  base::TimeDelta defer_duration_;
+
   SafeSitesNavigationThrottle safe_sites_navigation_throttle_;
 
   raw_ptr<PolicyBlocklistService, DanglingUntriaged> blocklist_service_;

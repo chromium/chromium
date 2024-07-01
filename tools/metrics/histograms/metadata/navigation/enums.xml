@@ -412,6 +412,19 @@ chromium-metrics-reviews@google.com.
              OriginAgentCluster-by-default)"/>
 </enum>
 
+<!-- LINT.IfChange(PolicyBlocklistRequestThrottleAction) -->
+
+<enum name="PolicyBlocklistRequestThrottleAction">
+  <int value="0" label="No request call"/>
+  <int value="1" label="Proceed w/o defer"/>
+  <int value="2" label="Block w/o defer"/>
+  <int value="3" label="Defer"/>
+  <int value="4" label="Defer and proceed"/>
+  <int value="5" label="Defer and block"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/policy/content/policy_blocklist_navigation_throttle.h:RequestThrottleAction) -->
+
 <enum name="PrerenderActivationHeaderMismatchType">
   <int value="-2073835455"
       label="experimentalnon-standard: missing in prerendering request's
