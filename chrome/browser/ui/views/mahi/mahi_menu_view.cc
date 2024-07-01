@@ -47,6 +47,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/flex_layout.h"
@@ -94,6 +95,31 @@ void StyleMenuButton(views::LabelButton* button, const gfx::VectorIcon& icon) {
                                            ui::kColorSysTonalOutline),
       kButtonPadding));
 }
+
+// Custom widget to ensure the MahiMenuView follows the same theme as the
+// browser context menu.
+class MahiMenuWidget : public views::Widget {
+ public:
+  explicit MahiMenuWidget(views::Widget::InitParams init_params)
+      : views::Widget(std::move(init_params)) {}
+  MahiMenuWidget(const Widget&) = delete;
+  MahiMenuWidget& operator=(const Widget&) = delete;
+  ~MahiMenuWidget() override = default;
+
+ protected:
+  const ui::ColorProvider* GetColorProvider() const override {
+    // Get the color provider for the active menu controller's owner if possible
+    // to match the color theme for the browser.
+    auto* active_menu_controller = views::MenuController::GetActiveInstance();
+
+    // The menu might already be closed.
+    if (active_menu_controller && active_menu_controller->owner()) {
+      return active_menu_controller->owner()->GetColorProvider();
+    }
+
+    return views::Widget::GetColorProvider();
+  }
+};
 
 }  // namespace
 
@@ -254,7 +280,7 @@ views::UniqueWidgetPtr MahiMenuView::CreateWidget(
 #endif
 
   views::UniqueWidgetPtr widget =
-      std::make_unique<views::Widget>(std::move(params));
+      std::make_unique<MahiMenuWidget>(std::move(params));
   MahiMenuView* mahi_menu_view =
       widget->SetContentsView(std::make_unique<MahiMenuView>(surface));
   mahi_menu_view->UpdateBounds(anchor_view_bounds);
