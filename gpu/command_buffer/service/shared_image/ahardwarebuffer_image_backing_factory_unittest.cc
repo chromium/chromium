@@ -575,17 +575,18 @@ GlLegacySharedImage::GlLegacySharedImage(
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   GLenum expected_target = GL_TEXTURE_2D;
 
-  // Provide usage settings to model an SI that is written via raster and read
-  // via GL (e.g., for canvas import into WebGL). Add
+  // Provide usage settings to model an SI that is written via raster, read
+  // via GL (e.g., for canvas import into WebGL), and used as an overlay. Add
   // SHARED_IMAGE_USAGE_DISPLAY_READ if modeling the display compositor being on
   // the same thread as raster.
-  gpu::SharedImageUsageSet usage =
-      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_RASTER_WRITE;
+  SharedImageUsageSet usage = {SHARED_IMAGE_USAGE_GLES2_READ,
+                               SHARED_IMAGE_USAGE_RASTER_WRITE,
+                               SHARED_IMAGE_USAGE_SCANOUT};
   if (!is_thread_safe) {
-    usage |= SHARED_IMAGE_USAGE_DISPLAY_READ;
+    usage |= SharedImageUsageSet({SHARED_IMAGE_USAGE_DISPLAY_READ});
   }
   if (concurrent_read_write) {
-    usage |= SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+    usage |= SharedImageUsageSet({SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE});
   }
   backing_ = backing_factory->CreateSharedImage(
       mailbox_, format, surface_handle, size_, color_space, surface_origin,
