@@ -8,17 +8,14 @@
 #include <memory>
 #include <string>
 
-#include "ash/public/cpp/session/session_observer.h"
-#include "ash/session/session_controller_impl.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
 #include "chrome/browser/ash/mahi/mahi_cache_manager.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "components/manta/mahi_provider.h"
-#include "components/prefs/pref_change_registrar.h"
-#include "components/prefs/pref_service.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
@@ -26,7 +23,8 @@ namespace ash {
 class MahiNudgeController;
 
 // Implementation of `MahiManager`.
-class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
+class MahiManagerImpl : public chromeos::MahiManager,
+                        public chromeos::MagicBoostState::Observer {
  public:
   MahiManagerImpl();
 
@@ -59,14 +57,12 @@ class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
   // Called when availability for a refresh changes based on the shown content.
   void NotifyRefreshAvailability(bool available);
 
-  // SessionObserver:
-  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
-
  private:
   friend class MahiManagerImplTest;
   friend class MahiManagerImplFeatureKeyTest;
 
-  void OnMahiPrefChanged();
+  // chromeos::MagicBoostState::Observer:
+  void OnHMREnabledUpdated(bool enabled) override;
 
   // Initialize required provider if it is not initialized yet, and discard
   // pending requests to avoid racing condition.
@@ -97,9 +93,9 @@ class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
       base::Value::Dict dict,
       manta::MantaStatus status);
 
-  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  base::ScopedObservation<SessionController, SessionObserver>
-      session_observation_{this};
+  base::ScopedObservation<chromeos::MagicBoostState,
+                          chromeos::MagicBoostState::Observer>
+      magic_boost_state_observation_{this};
 
   // These `Ptr`s should never be null. To invalidate them, assign them a
   // `New()` instead of calling `reset()`.
@@ -136,7 +132,6 @@ class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
   base::UnguessableToken media_app_client_id_;
 
   base::WeakPtrFactory<MahiManagerImpl> weak_ptr_factory_for_requests_{this};
-  base::WeakPtrFactory<MahiManagerImpl> weak_ptr_factory_for_pref_{this};
 };
 
 }  // namespace ash

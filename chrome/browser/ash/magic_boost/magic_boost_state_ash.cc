@@ -38,10 +38,9 @@ MagicBoostStateAsh::~MagicBoostStateAsh() {
   editor_manager_for_test_ = nullptr;
 }
 
-void MagicBoostStateAsh::OnFirstSessionStarted() {
-  PrefService* prefs =
-      ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  RegisterPrefChanges(prefs);
+void MagicBoostStateAsh::OnActiveUserPrefServiceChanged(
+    PrefService* pref_service) {
+  RegisterPrefChanges(pref_service);
 }
 
 int32_t MagicBoostStateAsh::AsyncIncrementHMRConsentWindowDismissCount() {

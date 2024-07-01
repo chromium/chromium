@@ -55,7 +55,7 @@ class MagicBoostStateAsh : public chromeos::MagicBoostState,
   friend class MagicBoostStateAshTest;
 
   // ash::SessionObserver:
-  void OnFirstSessionStarted() override;
+  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   // ash::ShellObserver:
   void OnShellDestroying() override;
