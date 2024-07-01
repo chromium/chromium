@@ -68,10 +68,6 @@ class LegacyBookmarkModelWithSharedUnderlyingModel
       size_t max_count) override;
   const bookmarks::BookmarkNode* GetNodeById(int64_t id) override;
   bool IsNodePartOfModel(const bookmarks::BookmarkNode* node) const override;
-  const bookmarks::BookmarkNode* MoveToOtherModelPossiblyWithNewNodeIdsAndUuids(
-      const bookmarks::BookmarkNode* node,
-      LegacyBookmarkModel* dest_model,
-      const bookmarks::BookmarkNode* dest_parent) override;
   base::WeakPtr<LegacyBookmarkModel> AsWeakPtr() override;
 
   // BookmarkModelObserver overrides.

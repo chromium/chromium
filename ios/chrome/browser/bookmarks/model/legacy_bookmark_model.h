@@ -30,11 +30,6 @@ class BookmarkNode;
 struct QueryFields;
 }  // namespace bookmarks
 
-namespace ios {
-class AccountBookmarkModelFactory;
-class LocalOrSyncableBookmarkModelFactory;
-}  // namespace ios
-
 // iOS-specific interface that mimcs bookmarks::BookmarkModel that allows
 // a gradual migration of code under ios/ to use one BookmarkModel instance
 // instead of two, by allowing subclasses to expose the legacy behavior (two
@@ -93,9 +88,6 @@ class LegacyBookmarkModel : public KeyedService {
                                         size_t index,
                                         const std::u16string& title,
                                         const GURL& url);
-  void RemoveMany(const std::set<const bookmarks::BookmarkNode*>& nodes,
-                  bookmarks::metrics::BookmarkEditSource source,
-                  const base::Location& location);
   void CommitPendingWriteForTest();
 
   // LegacyBookmarkModel has three top-level permanent nodes (as opposed to
@@ -128,18 +120,8 @@ class LegacyBookmarkModel : public KeyedService {
   virtual const bookmarks::BookmarkNode* GetNodeById(int64_t id) = 0;
   // Returns whether `node` is part of, or relevant, in the scope of `this`.
   virtual bool IsNodePartOfModel(const bookmarks::BookmarkNode* node) const = 0;
-  virtual const bookmarks::BookmarkNode*
-  MoveToOtherModelPossiblyWithNewNodeIdsAndUuids(
-      const bookmarks::BookmarkNode* node,
-      LegacyBookmarkModel* dest_model,
-      const bookmarks::BookmarkNode* dest_parent) = 0;
 
   virtual base::WeakPtr<LegacyBookmarkModel> AsWeakPtr() = 0;
-
- protected:
-  // Allow factories to access the underlying model.
-  friend class ios::AccountBookmarkModelFactory;
-  friend class ios::LocalOrSyncableBookmarkModelFactory;
 
   virtual const bookmarks::BookmarkModel* underlying_model() const = 0;
   virtual bookmarks::BookmarkModel* underlying_model() = 0;

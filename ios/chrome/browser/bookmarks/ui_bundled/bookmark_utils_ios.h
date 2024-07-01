@@ -26,6 +26,7 @@ class GURL;
 class LegacyBookmarkModel;
 
 namespace bookmarks {
+class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
@@ -97,6 +98,16 @@ BookmarkModelType GetBookmarkModelType(
     LegacyBookmarkModel* profile_model,
     LegacyBookmarkModel* account_model);
 
+// Returns the model type for a node, based on where `bookmark_node` exists in
+// `bookmar_model`, i.e. under which permanent folder it exists.
+// `bookmark_node` is the bookmark to query. It must not be null.
+// `bookmark_model` is bookmark model. It must not be null.
+// `bookmark_model` must contain `bookmark_node`.
+// This function is linear in time in the depth of the bookmark_node.
+BookmarkModelType GetBookmarkModelType(
+    const bookmarks::BookmarkNode* bookmark_node,
+    const bookmarks::BookmarkModel* bookmark_model);
+
 // Returns the bookmark model for a node, based on profile model and account
 // model.
 // `bookmark_node` is the bookmark to query. It can not be null.
@@ -116,14 +127,20 @@ bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service);
 
 // Returns true if the user opted-in and can use the account storage.
 // E.g. if the passphrase is missing, the storage may not be available.
+// TODO(crbug.com/346918509): `sync_service` isn't used and can be removed.
 bool IsAccountBookmarkStorageAvailable(syncer::SyncService* sync_service,
                                        LegacyBookmarkModel* account_model);
 
 // Updates `node`.
 // `folder` is the intended parent of `node`.
 // Returns a boolean signifying whether any change was performed.
-// Note: This function might invalidate `node` if `folder` and `node` belong to
-// different `BookmarkModel` instances.
+bool UpdateBookmark(const bookmarks::BookmarkNode* node,
+                    NSString* title,
+                    const GURL& url,
+                    const bookmarks::BookmarkNode* folder,
+                    bookmarks::BookmarkModel* model);
+
+// Legacy equivalent for the above.
 bool UpdateBookmark(const bookmarks::BookmarkNode* node,
                     NSString* title,
                     const GURL& url,
@@ -133,10 +150,20 @@ bool UpdateBookmark(const bookmarks::BookmarkNode* node,
 
 // Similar to `UpdateBookmark`, but returns a snackbar that allows to
 // undo the performed action. Returns nil if there's nothing to undo.
-// Note: This function might invalidate `node` if `folder` and `node` belong to
-// different `BookmarkModel` instances.
 // TODO(crbug.com/40137712): Refactor to include position and replace two
 // functions below.
+MDCSnackbarMessage* UpdateBookmarkWithUndoToast(
+    const bookmarks::BookmarkNode* node,
+    NSString* title,
+    const GURL& url,
+    const bookmarks::BookmarkNode* original_folder,
+    const bookmarks::BookmarkNode* folder,
+    bookmarks::BookmarkModel* model,
+    ChromeBrowserState* browser_state,
+    base::WeakPtr<AuthenticationService> authenticationService,
+    raw_ptr<syncer::SyncService> syncService);
+
+// Legacy equivalent for the above.
 MDCSnackbarMessage* UpdateBookmarkWithUndoToast(
     const bookmarks::BookmarkNode* node,
     NSString* title,
@@ -157,13 +184,30 @@ MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
     const GURL& url,
     const bookmarks::BookmarkNode* folder,
     int position,
+    bookmarks::BookmarkModel* model,
+    ChromeBrowserState* browser_state);
+
+// Legacy equivalent for the above.
+MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
+    NSString* title,
+    const GURL& url,
+    const bookmarks::BookmarkNode* folder,
+    int position,
     LegacyBookmarkModel* local_or_syncable_model,
     LegacyBookmarkModel* account_model,
     ChromeBrowserState* browser_state);
 
 // Updates a bookmark node position, and returns a snackbar with an undo action.
-// `node` and `folder` must belong to the same model. Returns nil if the
-// operation wasn't successful or there's nothing to undo.
+// Returns nil if the operation wasn't successful or there's nothing to undo.
+MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
+    const bookmarks::BookmarkNode* node,
+    const bookmarks::BookmarkNode* folder,
+    size_t position,
+    bookmarks::BookmarkModel* model,
+    ChromeBrowserState* browser_state);
+
+// Legacy equivalent for the above. `node` and `folder` must belong to the same
+// model.
 MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
     const bookmarks::BookmarkNode* node,
     const bookmarks::BookmarkNode* folder,
@@ -172,9 +216,16 @@ MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
     LegacyBookmarkModel* account_model,
     ChromeBrowserState* browser_state);
 
-// Deletes all nodes in `bookmarks` from models in `bookmark_models` that are
-// in `bookmarks`, and returns a snackbar with an undo action. Returns nil if
-// the operation wasn't successful or there's nothing to undo.
+// Deletes all nodes in `bookmarks` from `bookmark_model` and returns a snackbar
+// with an undo action. Returns nil if the operation wasn't successful or
+// there's nothing to undo.
+MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
+    const std::set<const bookmarks::BookmarkNode*>& bookmarks,
+    bookmarks::BookmarkModel* bookmark_model,
+    ChromeBrowserState* browser_state,
+    const base::Location& location);
+
+// Legacy equivalent for the above.
 MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
     const std::set<const bookmarks::BookmarkNode*>& bookmarks,
     const std::vector<LegacyBookmarkModel*>& bookmark_models,
@@ -183,17 +234,31 @@ MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
 
 // Deletes all nodes in `bookmarks`.
 void DeleteBookmarks(const std::set<const bookmarks::BookmarkNode*>& bookmarks,
+                     bookmarks::BookmarkModel* bookmark_model,
+                     const base::Location& location);
+
+// Legacy equivalent for the above.
+void DeleteBookmarks(const std::set<const bookmarks::BookmarkNode*>& bookmarks,
                      LegacyBookmarkModel* model,
                      const base::Location& location);
 
 // Move all `bookmarks_to_move` to the given `folder`, and returns a snackbar
 // with an undo action. Returns nil if the operation wasn't successful or
 // there's nothing to undo.
+MDCSnackbarMessage* MoveBookmarksWithUndoToast(
+    const std::vector<const bookmarks::BookmarkNode*>& bookmarks_to_move,
+    bookmarks::BookmarkModel* model,
+    const bookmarks::BookmarkNode* destination_folder,
+    ChromeBrowserState* browser_state,
+    base::WeakPtr<AuthenticationService> authenticationService,
+    raw_ptr<syncer::SyncService> syncService);
+
+// Legacy equivalent for the above.
 // This method updates `bookmarks_to_move` with new pointers to moved nodes, see
 // `MoveBookmarks` documentation for details.
 MDCSnackbarMessage* MoveBookmarksWithUndoToast(
     std::vector<const bookmarks::BookmarkNode*>& bookmarks_to_move,
-    LegacyBookmarkModel* local_model,
+    LegacyBookmarkModel* local_or_syncable_model,
     LegacyBookmarkModel* account_model,
     const bookmarks::BookmarkNode* destination_folder,
     ChromeBrowserState* browser_state,
@@ -203,6 +268,12 @@ MDCSnackbarMessage* MoveBookmarksWithUndoToast(
 // Move all `bookmarks` to the given `folder`.
 // Returns whether this method actually moved bookmarks (for example, only
 // moving a folder to its parent will return `false`).
+bool MoveBookmarks(
+    const std::vector<const bookmarks::BookmarkNode*>& bookmarks_to_move,
+    bookmarks::BookmarkModel* model,
+    const bookmarks::BookmarkNode* destination_folder);
+
+// Legacy equivalent for the above.
 // This method updates `bookmarks_to_move` with new pointers to moved nodes. In
 // other words, when the node contained in `bookmarks_to_move` at index N is
 // moved - the updated `BookmarkNode` pointer is saved in `bookmarks_to_move` at

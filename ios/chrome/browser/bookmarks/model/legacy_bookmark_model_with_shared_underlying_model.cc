@@ -448,15 +448,6 @@ bool LegacyBookmarkModelWithSharedUnderlyingModel::IsNodePartOfModel(
   return node && !IsNodeExcludedFromView(node);
 }
 
-const bookmarks::BookmarkNode* LegacyBookmarkModelWithSharedUnderlyingModel::
-    MoveToOtherModelPossiblyWithNewNodeIdsAndUuids(
-        const bookmarks::BookmarkNode* node,
-        LegacyBookmarkModel* dest_model,
-        const bookmarks::BookmarkNode* dest_parent) {
-  underlying_model()->Move(node, dest_parent, dest_parent->children().size());
-  return node;
-}
-
 base::WeakPtr<LegacyBookmarkModel>
 LegacyBookmarkModelWithSharedUnderlyingModel::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();

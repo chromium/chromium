@@ -6,30 +6,7 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-
-namespace {
-
-// Removes all subnodes of `node`, including `node`, that are in `bookmarks`.
-void RemoveBookmarksRecursive(
-    const std::set<const bookmarks::BookmarkNode*>& bookmarks,
-    bookmarks::BookmarkModel* model,
-    bookmarks::metrics::BookmarkEditSource source,
-    const bookmarks::BookmarkNode* node,
-    const base::Location& location) {
-  // Remove children in reverse order, so that the index remains valid.
-  for (size_t i = node->children().size(); i > 0; --i) {
-    RemoveBookmarksRecursive(bookmarks, model, source,
-                             node->children()[i - 1].get(), location);
-  }
-
-  if (base::Contains(bookmarks, node)) {
-    model->Remove(node, source, location);
-  }
-}
-
-}  // namespace
 
 LegacyBookmarkModel::LegacyBookmarkModel() = default;
 
@@ -113,14 +90,6 @@ const bookmarks::BookmarkNode* LegacyBookmarkModel::AddURL(
     const std::u16string& title,
     const GURL& url) {
   return underlying_model()->AddURL(parent, index, title, url);
-}
-
-void LegacyBookmarkModel::RemoveMany(
-    const std::set<const bookmarks::BookmarkNode*>& nodes,
-    bookmarks::metrics::BookmarkEditSource source,
-    const base::Location& location) {
-  RemoveBookmarksRecursive(nodes, underlying_model(), source,
-                           underlying_model()->root_node(), location);
 }
 
 void LegacyBookmarkModel::CommitPendingWriteForTest() {
