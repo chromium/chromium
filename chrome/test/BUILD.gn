@@ -3973,6 +3973,7 @@ if (!is_android) {
         "../browser/extensions/protocol_handler_apitest.cc",
         "../browser/extensions/renderer_initialization_browsertest.cc",
         "../browser/extensions/sandboxed_pages_apitest.cc",
+        "../browser/extensions/scoped_test_mv2_enabler_browsertest.cc",
         "../browser/extensions/script_executor_browsertest.cc",
         "../browser/extensions/script_injection_tracker_browsertest.cc",
         "../browser/extensions/service_worker_apitest.cc",

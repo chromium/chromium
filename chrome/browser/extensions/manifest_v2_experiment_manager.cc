@@ -28,6 +28,9 @@ namespace extensions {
 
 namespace {
 
+// Whether to override the MV2 deprecation for testing purposes.
+bool g_allow_mv2_for_testing = false;
+
 // Stores the bit for whether the user has acknowledged the MV2 deprecation
 // notice for a given extension in the warning stage.
 constexpr PrefMap kMV2DeprecationExtensionWarningAcknowledgedPref = {
@@ -211,6 +214,10 @@ bool ManifestV2ExperimentManager::ShouldBlockExtensionInstallation(
     Manifest::Type manifest_type,
     mojom::ManifestLocation manifest_location,
     const HashedExtensionId& hashed_id) {
+  if (g_allow_mv2_for_testing) {
+    return false;
+  }
+
   // Only block extension installation during the disablement phase.
   if (!ShouldDisableExtensionsForExperimentStage(experiment_stage_)) {
     return false;
@@ -279,6 +286,12 @@ void ManifestV2ExperimentManager::OnExtensionSystemReady() {
 }
 
 void ManifestV2ExperimentManager::DisableAffectedExtensions() {
+  // If MV2 extensions are allowed for testing purposes, don't disable any of
+  // them.
+  if (g_allow_mv2_for_testing) {
+    return;
+  }
+
   if (!ShouldDisableExtensionsForExperimentStage(experiment_stage_)) {
     return;
   }
@@ -405,6 +418,11 @@ bool ManifestV2ExperimentManager::DidUserReEnableExtensionForTesting(
 
 void ManifestV2ExperimentManager::DisableAffectedExtensionsForTesting() {
   DisableAffectedExtensions();
+}
+
+base::AutoReset<bool> ManifestV2ExperimentManager::AllowMV2ExtensionsForTesting(
+    base::PassKey<ScopedTestMV2Enabler> pass_key) {
+  return base::AutoReset<bool>(&g_allow_mv2_for_testing, true);
 }
 
 }  // namespace extensions

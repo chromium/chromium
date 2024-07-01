@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/extensions/mv2_deprecation_impact_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -24,6 +25,7 @@ class BrowserContext;
 namespace extensions {
 class Extension;
 class ExtensionPrefs;
+class ScopedTestMV2Enabler;
 enum class MV2ExperimentStage;
 
 // The central class responsible for managing experiments related to the MV2
@@ -87,6 +89,10 @@ class ManifestV2ExperimentManager : public KeyedService,
   // useful to have an extension that's installed in the body of a test get
   // disabled, since this normally only happens on startup.
   void DisableAffectedExtensionsForTesting();
+
+  // See ScopedTestMV2Enabler for details.
+  static base::AutoReset<bool> AllowMV2ExtensionsForTesting(
+      base::PassKey<ScopedTestMV2Enabler> pass_key);
 
  private:
   // Lazily initialize and access `extension_prefs_`. We do this lazily because:

@@ -1523,6 +1523,8 @@ static_library("test_support") {
     "mock_extension_special_storage_policy.h",
     "scoped_database_manager_for_test.cc",
     "scoped_database_manager_for_test.h",
+    "scoped_test_mv2_enabler.cc",
+    "scoped_test_mv2_enabler.h",
     "test_blocklist.cc",
     "test_blocklist.h",
     "test_blocklist_state_fetcher.cc",
