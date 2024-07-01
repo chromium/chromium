@@ -1144,7 +1144,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TabGroups.TabsPerGroupCountAtStartup" units="groups"
+<histogram name="TabGroups.TabsPerGroupCountAtStartup" units="tabs"
     expires_after="2025-04-11">
   <owner>gambard@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
