@@ -27,8 +27,11 @@ extern const int kTabAgeThresholdHoursDefaultValue;
 extern const char kURLAggregateCountLimit[];
 extern const int kURLAggregateCountLimitDefaultValue;
 
-// Feature flag to disable History visibility score filter
+// Feature flag to disable History visibility score filter.
 BASE_DECLARE_FEATURE(kVisitedURLRankingHistoryVisibilityScoreFilter);
+
+// Feature flag to disable the segmentation metrics transformer.
+BASE_DECLARE_FEATURE(kVisitedURLRankingSegmentationMetricsData);
 
 }  // namespace visited_url_ranking::features
 

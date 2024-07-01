@@ -34,7 +34,7 @@ TEST_F(URLVisitUtilTest, CreateInputContextFromURLVisitAggregate) {
 
   std::optional<ProcessedValue> tab_count = input_context->GetMetadataArgument(
       kURLVisitAggregateSchema
-          .at(URLVisitAggregateRankingModelInputSignals::kTabCount)
+          .at(URLVisitAggregateRankingModelInputSignals::kLocalTabCount)
           .name);
   ASSERT_TRUE(tab_count);
   EXPECT_EQ(tab_count.value(), ProcessedValue::FromFloat(1.0f));

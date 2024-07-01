@@ -4,10 +4,11 @@
 
 #include "components/visited_url_ranking/public/url_visit_util.h"
 
+#include <math.h>
+
 #include <array>
 #include <optional>
 #include <string>
-#include <math.h>
 
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
@@ -77,18 +78,23 @@ scoped_refptr<InputContext> AsInputContext(
     const URLVisitAggregate& url_visit_aggregate) {
   base::flat_map<std::string, ProcessedValue> signal_value_map;
 
-  auto* tab_data =
+  auto* local_tab_data =
+      (url_visit_aggregate.fetcher_data_map.find(Fetcher::kTabModel) !=
+       url_visit_aggregate.fetcher_data_map.end())
+          ? std::get_if<URLVisitAggregate::TabData>(
+                &url_visit_aggregate.fetcher_data_map.at(Fetcher::kTabModel))
+          : nullptr;
+
+  auto* session_tab_data =
       (url_visit_aggregate.fetcher_data_map.find(Fetcher::kSession) !=
        url_visit_aggregate.fetcher_data_map.end())
           ? std::get_if<URLVisitAggregate::TabData>(
                 &url_visit_aggregate.fetcher_data_map.at(Fetcher::kSession))
           : nullptr;
-  if (!tab_data &&
-      url_visit_aggregate.fetcher_data_map.find(Fetcher::kTabModel) !=
-          url_visit_aggregate.fetcher_data_map.end()) {
-    tab_data = std::get_if<URLVisitAggregate::TabData>(
-        &url_visit_aggregate.fetcher_data_map.at(Fetcher::kTabModel));
-  }
+
+  // For cases where distinguishing between local and session tab data is not
+  // relevant, prioritize using local tab data when constructing signals.
+  auto* tab_data = local_tab_data ? local_tab_data : session_tab_data;
 
   auto* history_data =
       (url_visit_aggregate.fetcher_data_map.find(Fetcher::kHistory) !=
@@ -123,9 +129,16 @@ scoped_refptr<InputContext> AsInputContext(
       case kNumTimesActive:
         value = ProcessedValue::FromFloat(url_visit_aggregate.num_times_active);
         break;
-      case kTabCount:
-        if (tab_data) {
-          value = ProcessedValue::FromFloat(BucketizeExp(tab_data->tab_count, 50));
+      case kLocalTabCount:
+        if (local_tab_data) {
+          value = ProcessedValue::FromFloat(
+              BucketizeExp(local_tab_data->tab_count, 50));
+        }
+        break;
+      case kSessionTabCount:
+        if (session_tab_data) {
+          value = ProcessedValue::FromFloat(
+              BucketizeExp(session_tab_data->tab_count, 50));
         }
         break;
       case kVisitCount:
@@ -167,6 +180,22 @@ scoped_refptr<InputContext> AsInputContext(
       case kPlatform:
         value =
             ProcessedValue::FromFloat(static_cast<float>(GetPlatformInput()));
+        break;
+      case kSeenCountLastDay:
+      case kActivatedCountLastDay:
+      case kDismissedCountLastDay:
+      case kSeenCountLast7Days:
+      case kActivatedCountLast7Days:
+      case kDismissedCountLast7Days:
+      case kSeenCountLast30Days:
+      case kActivatedCountLast30Days:
+      case kDismissedCountLast30Days:
+        if (url_visit_aggregate.metrics_signals.find(field_schema.name) !=
+            url_visit_aggregate.metrics_signals.end()) {
+          value = ProcessedValue::FromFloat(
+              url_visit_aggregate.metrics_signals.at(field_schema.name));
+        }
+        break;
     }
 
     signal_value_map.emplace(field_schema.name, std::move(value));

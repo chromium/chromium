@@ -31,6 +31,8 @@ enum class URLVisitAggregatesTransformType {
   kDefaultAppUrlFilter = 4,
   // Filter based on last active timestamp.
   kRecencyFilter = 5,
+  // Set segmenation metrics related fields.
+  kSegmentationMetricsData = 6,
 };
 
 // The options that may be specified when fetching URL visit data.

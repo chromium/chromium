@@ -7,6 +7,7 @@
 
 #include "components/segmentation_platform/public/database_client.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace segmentation_platform {
 

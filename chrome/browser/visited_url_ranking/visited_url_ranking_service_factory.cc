@@ -30,6 +30,7 @@
 #include "components/visited_url_ranking/internal/transformer/history_url_visit_aggregates_categories_transformer.h"
 #include "components/visited_url_ranking/internal/transformer/history_url_visit_aggregates_visibility_score_transformer.h"
 #include "components/visited_url_ranking/internal/transformer/recency_filter_transformer.h"
+#include "components/visited_url_ranking/internal/transformer/url_visit_aggregates_segmentation_metrics_transformer.h"
 #include "components/visited_url_ranking/internal/visited_url_ranking_service_impl.h"
 #include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/url_visit_aggregates_transformer.h"
@@ -124,9 +125,15 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceForBrowserContext(
         std::make_unique<visited_url_ranking::HistoryURLVisitDataFetcher>(hs));
   }
 
+  // TODO(crbug.com/349317344): Move transformers map to a shareable helper
+  // method to avoid having to update the various factories when adding new
+  // transformers.
   std::map<URLVisitAggregatesTransformType,
            std::unique_ptr<URLVisitAggregatesTransformer>>
       transformers = {};
+  transformers.emplace(
+      URLVisitAggregatesTransformType::kSegmentationMetricsData,
+      std::make_unique<URLVisitAggregatesSegmentationMetricsTransformer>(sps));
   auto* bookmark_model = BookmarkModelFactory::GetForBrowserContext(profile);
   if (bookmark_model) {
     auto bookmarks_transformer =

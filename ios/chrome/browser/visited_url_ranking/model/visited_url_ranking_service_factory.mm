@@ -13,6 +13,7 @@
 #import "components/visited_url_ranking/internal/transformer/history_url_visit_aggregates_categories_transformer.h"
 #import "components/visited_url_ranking/internal/transformer/history_url_visit_aggregates_visibility_score_transformer.h"
 #import "components/visited_url_ranking/internal/transformer/recency_filter_transformer.h"
+#import "components/visited_url_ranking/internal/transformer/url_visit_aggregates_segmentation_metrics_transformer.h"
 #import "components/visited_url_ranking/internal/visited_url_ranking_service_impl.h"
 #import "components/visited_url_ranking/public/url_visit_util.h"
 #import "components/visited_url_ranking/public/visited_url_ranking_service.h"
@@ -86,6 +87,15 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceFor(
            std::unique_ptr<visited_url_ranking::URLVisitAggregatesTransformer>>
       transformers = {};
 
+  auto* segmentation_platform_service = segmentation_platform::
+      SegmentationPlatformServiceFactory::GetForBrowserState(browser_state);
+  transformers.emplace(
+      visited_url_ranking::URLVisitAggregatesTransformType::
+          kSegmentationMetricsData,
+      std::make_unique<visited_url_ranking::
+                           URLVisitAggregatesSegmentationMetricsTransformer>(
+          segmentation_platform_service));
+
   // TODO(crbug.com/329242209): Add various aggregate transformers (e.g,
   // shopping) to the service's map of supported transformers.
   auto* bookmark_model =
@@ -118,8 +128,6 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceFor(
       visited_url_ranking::URLVisitAggregatesTransformType::kRecencyFilter,
       std::make_unique<visited_url_ranking::RecencyFilterTransformer>());
 
-  auto* segmentation_platform_service = segmentation_platform::
-      SegmentationPlatformServiceFactory::GetForBrowserState(browser_state);
   return std::make_unique<visited_url_ranking::VisitedURLRankingServiceImpl>(
       segmentation_platform_service, std::move(data_fetchers),
       std::move(transformers));

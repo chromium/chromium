@@ -26,14 +26,20 @@ static_library("internal") {
     "transformer/history_url_visit_aggregates_visibility_score_transformer.h",
     "transformer/recency_filter_transformer.cc",
     "transformer/recency_filter_transformer.h",
+    "transformer/url_visit_aggregates_segmentation_metrics_transformer.cc",
+    "transformer/url_visit_aggregates_segmentation_metrics_transformer.h",
     "visited_url_ranking_service_impl.cc",
     "visited_url_ranking_service_impl.h",
   ]
 
+  #TODO(crbug.com/347191610): Refactor code to eliminate visibility
+  #requirement below for `embedder/default_model`.
   deps = [
     "//base",
     "//components/bookmarks/browser",
     "//components/history/core/browser",
+    "//components/segmentation_platform/embedder/default_model:default_model",
+    "//components/segmentation_platform/internal:internal",
     "//components/segmentation_platform/public",
     "//components/sessions",
     "//components/sync_sessions",
@@ -71,6 +77,7 @@ source_set("unit_tests") {
     "transformer/history_url_visit_aggregates_categories_transformer_unittest.cc",
     "transformer/history_url_visit_aggregates_visibility_score_transformer_unittest.cc",
     "transformer/recency_filter_transformer_unittest.cc",
+    "transformer/url_visit_aggregates_segmentation_metrics_transformer_unittest.cc",
     "visited_url_ranking_service_impl_unittest.cc",
   ]
 
@@ -81,6 +88,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/bookmarks/browser:browser",
     "//components/history/core/browser",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/internal",
     "//components/segmentation_platform/public",
     "//components/segmentation_platform/public:test_support",
     "//components/sessions",
