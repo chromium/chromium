@@ -10,6 +10,7 @@
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/common/id_allocator.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/context_state.h"
 #include "gpu/command_buffer/service/gl_surface_mock.h"
@@ -31,6 +32,8 @@
 #define GL_DEPTH24_STENCIL8 0x88F0
 #endif
 
+namespace gpu::gles2 {
+
 using ::gl::MockGLInterface;
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -47,9 +50,6 @@ using ::testing::SetArgPointee;
 using ::testing::SetArgPointee;
 using ::testing::StrEq;
 using ::testing::StrictMock;
-
-namespace gpu {
-namespace gles2 {
 
 TEST_P(GLES2DecoderTest, GenerateMipmapWrongFormatsFails) {
   EXPECT_CALL(*gl_, GenerateMipmapEXT(_)).Times(0);
@@ -2921,7 +2921,9 @@ TEST_P(GLES2DecoderTest, CreateAndTexStorage2DSharedImageCHROMIUM) {
       GetSharedImageManager()->Register(
           std::make_unique<TestImageBacking>(
               mailbox, format, gfx::Size(10, 10), gfx::ColorSpace(),
-              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, 0, 0,
+              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, 0,
+              SharedImageUsageSet({SHARED_IMAGE_USAGE_GLES2_READ,
+                                   SHARED_IMAGE_USAGE_GLES2_WRITE}),
               kNewServiceId),
           &memory_tracker);
 
@@ -2984,7 +2986,9 @@ TEST_P(GLES2DecoderTest,
       GetSharedImageManager()->Register(
           std::make_unique<TestImageBacking>(
               mailbox, format, gfx::Size(10, 10), gfx::ColorSpace(),
-              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, 0, 0,
+              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, 0,
+              SharedImageUsageSet({SHARED_IMAGE_USAGE_GLES2_READ,
+                                   SHARED_IMAGE_USAGE_GLES2_WRITE}),
               kNewServiceId),
           &memory_tracker);
 
@@ -3001,7 +3005,7 @@ TEST_P(GLES2DecoderTest,
   shared_image.reset();
 }
 
-TEST_P(GLES2DecoderTest, BeginEndSharedImageAccessCRHOMIUM) {
+TEST_P(GLES2DecoderTest, BeginEndSharedImageAccessCHROMIUM) {
   MemoryTypeTracker memory_tracker(memory_tracker_.get());
   Mailbox mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
@@ -3009,8 +3013,10 @@ TEST_P(GLES2DecoderTest, BeginEndSharedImageAccessCRHOMIUM) {
       GetSharedImageManager()->Register(
           std::make_unique<TestImageBacking>(
               mailbox, format, gfx::Size(10, 10), gfx::ColorSpace(),
-              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, 0, 0,
-              kNewServiceId),
+              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+              SharedImageUsageSet({SHARED_IMAGE_USAGE_GLES2_READ,
+                                   SHARED_IMAGE_USAGE_GLES2_WRITE}),
+              0, kNewServiceId),
           &memory_tracker);
 
   auto& cmd = *GetImmediateAs<
@@ -3069,7 +3075,8 @@ TEST_P(GLES2DecoderTest, BeginSharedImageAccessDirectCHROMIUMCantBeginAccess) {
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   auto shared_image_backing = std::make_unique<TestImageBacking>(
       mailbox, format, gfx::Size(10, 10), gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, 0, 0, kNewServiceId);
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, 0,
+      SharedImageUsageSet({SHARED_IMAGE_USAGE_GLES2_READ}), kNewServiceId);
   // Set the shared image to fail BeginAccess.
   shared_image_backing->set_can_access(false);
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
@@ -4263,5 +4270,4 @@ TEST_P(GLES3DecoderTest, ClearRenderableLevelsWithOutOfRangeBaseLevel) {
 
 // TODO(gman): TexSubImage2DImmediate
 
-}  // namespace gles2
-}  // namespace gpu
+}  // namespace gpu::gles2
