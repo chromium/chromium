@@ -615,6 +615,69 @@ FieldTypeSet GetTargetFieldsForAddressFillingSuggestionType(
   NOTREACHED_NORETURN();
 }
 
+bool ShouldOfferSingleFieldFormFill(
+    const FormFieldData& field,
+    const AutofillField* autofill_field,
+    AutofillSuggestionTriggerSource trigger_source,
+    const SuggestionsContext& context,
+    AutofillClient& client) {
+  if (trigger_source ==
+      AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick) {
+    return false;
+  }
+  // Do not offer single field form fill suggestions for credit card number,
+  // cvc, and expiration date related fields. Standalone cvc fields (used to
+  // re-authenticate the use of a credit card the website has on file) will be
+  // handled separately because those have the field type
+  // CREDIT_CARD_STANDALONE_VERIFICATION_CODE.
+  FieldType server_type =
+      autofill_field ? autofill_field->Type().GetStorableType() : UNKNOWN_TYPE;
+  if (data_util::IsCreditCardExpirationType(server_type) ||
+      server_type == CREDIT_CARD_VERIFICATION_CODE ||
+      server_type == CREDIT_CARD_NUMBER) {
+    return false;
+  }
+
+  // Do not offer single field form fill suggestions if popups are suppressed
+  // due to an unrecognized autocomplete attribute. Note that in the context
+  // of Autofill, the popup for credit card related fields is not getting
+  // suppressed due to an unrecognized autocomplete attribute.
+  // TODO(crbug.com/40853053): Revisit here to see whether we should offer
+  // IBAN filling for fields with unrecognized autocomplete attribute
+  if (context.suppress_reason == SuppressReason::kAutocompleteUnrecognized) {
+    // Display the IPH only if the form can be autofilled and the user has
+    // profiles which can fill the current field.
+    if (autofill_field &&
+        FieldTypeGroupToFormType(autofill_field->Type().group()) ==
+            FormType::kAddressForm &&
+        base::ranges::any_of(
+            client.GetPersonalDataManager()
+                ->address_data_manager()
+                .GetProfiles(),
+            [field_type = autofill_field->Type().GetStorableType()](
+                const AutofillProfile* profile) {
+              return profile->HasInfo(field_type);
+            }) &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillEnableManualFallbackIPH)) {
+      client.ShowAutofillFieldIphForManualFallbackFeature(field);
+    }
+    return false;
+  }
+
+  // Therefore, we check the attribute explicitly.
+  if (autofill_field &&
+      autofill_field->Type().html_type() == HtmlFieldType::kUnrecognized) {
+    return false;
+  }
+
+  // Finally, check that the scheme is secure.
+  if (context.suppress_reason == SuppressReason::kInsecureForm) {
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver,
@@ -1431,74 +1494,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     return;
   }
 
-  // TODO(crbug.com/340494671): Move ShouldOfferSingleFieldFormFill out of
-  // OnAskForValuesToFillImpl.
-  auto ShouldOfferSingleFieldFormFill = [&] {
-    if (!should_offer_other_suggestions) {
-      return false;
-    }
-
-    if (trigger_source ==
-        AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick) {
-      return false;
-    }
-
-    // Do not offer single field form fill suggestions for credit card number,
-    // cvc, and expiration date related fields. Standalone cvc fields (used to
-    // re-authenticate the use of a credit card the website has on file) will be
-    // handled separately because those have the field type
-    // CREDIT_CARD_STANDALONE_VERIFICATION_CODE.
-    FieldType server_type = autofill_field
-                                ? autofill_field->Type().GetStorableType()
-                                : UNKNOWN_TYPE;
-    if (data_util::IsCreditCardExpirationType(server_type) ||
-        server_type == CREDIT_CARD_VERIFICATION_CODE ||
-        server_type == CREDIT_CARD_NUMBER) {
-      return false;
-    }
-
-    // Do not offer single field form fill suggestions if popups are suppressed
-    // due to an unrecognized autocomplete attribute. Note that in the context
-    // of Autofill, the popup for credit card related fields is not getting
-    // suppressed due to an unrecognized autocomplete attribute.
-    // TODO(crbug.com/40853053): Revisit here to see whether we should offer
-    // IBAN filling for fields with unrecognized autocomplete attribute
-    if (context.suppress_reason == SuppressReason::kAutocompleteUnrecognized) {
-      // Display the IPH only if the form can be autofilled and the user has
-      // profiles which can fill the current field.
-      if (autofill_field &&
-          FieldTypeGroupToFormType(autofill_field->Type().group()) ==
-              FormType::kAddressForm &&
-          base::ranges::any_of(
-              client()
-                  .GetPersonalDataManager()
-                  ->address_data_manager()
-                  .GetProfiles(),
-              [field_type = autofill_field->Type().GetStorableType()](
-                  const AutofillProfile* profile) {
-                return profile->HasInfo(field_type);
-              }) &&
-          base::FeatureList::IsEnabled(
-              features::kAutofillEnableManualFallbackIPH)) {
-        client().ShowAutofillFieldIphForManualFallbackFeature(field);
-      }
-      return false;
-    }
-
-    // Therefore, we check the attribute explicitly.
-    if (autofill_field &&
-        autofill_field->Type().html_type() == HtmlFieldType::kUnrecognized) {
-      return false;
-    }
-
-    // Finally, check that the scheme is secure.
-    if (context.suppress_reason == SuppressReason::kInsecureForm) {
-      return false;
-    }
-    return true;
-  };
-
-  if (ShouldOfferSingleFieldFormFill()) {
+  if (should_offer_other_suggestions &&
+      ShouldOfferSingleFieldFormFill(field, autofill_field, trigger_source,
+                                     context, client())) {
     bool handled_by_single_field_form_filler =
         single_field_form_fill_router_->OnGetSingleFieldSuggestions(
             form_structure, field, autofill_field, client(),
