@@ -35,8 +35,12 @@ found in the LICENSE file.
     </style>
     <style name="ThemeOverlay.BrowserUI.TextInputLayout" parent="">
         <item name="editTextStyle">@style/Widget.BrowserUI.TextInputEditText</item>
+        <item name="autoCompleteTextViewStyle">@style/Widget.BrowserUI.AutoCompleteTextView</item>
     </style>
     <style name="Widget.BrowserUI.TextInputEditText" parent="Widget.Design.TextInputEditText">
+        <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
+    </style>
+    <style name="Widget.BrowserUI.AutoCompleteTextView" parent="Widget.AppCompat.AutoCompleteTextView">
         <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
     </style>
 
