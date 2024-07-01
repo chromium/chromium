@@ -75,7 +75,8 @@
     _syncService = syncService;
     _syncObserver = std::make_unique<SyncObserverBridge>(self, _syncService);
     _diplayedAccountErrorType = syncer::SyncService::UserActionableError::kNone;
-    [self updatePrimaryAccountID];
+    _primaryIdentity = _authenticationService->GetPrimaryIdentity(
+        signin::ConsentLevel::kSignin);
     [self updateIdentities];
     _error = GetAccountErrorUIInfo(_syncService);
   }
@@ -166,7 +167,6 @@
       _primaryIdentity = _authenticationService->GetPrimaryIdentity(
           signin::ConsentLevel::kSignin);
       [self updateIdentities];
-      [self.consumer updatePrimaryAccount];
       break;
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
       if (self.accountSwitchingInProgress) {
@@ -250,11 +250,8 @@
 
 #pragma mark - Private
 
-- (void)updatePrimaryAccountID {
-  _primaryIdentity =
-      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-}
-
+// Updates the identity list in `_identities`, and sends an notification to
+// the consumer.
 - (void)updateIdentities {
   NSArray<id<SystemIdentity>>* allIdentities =
       _accountManagerService->GetAllIdentities();
