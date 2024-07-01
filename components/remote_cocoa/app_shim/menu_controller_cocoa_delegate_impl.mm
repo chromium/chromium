@@ -208,23 +208,24 @@ NSImage* IPHDotImage(const remote_cocoa::mojom::MenuControllerParams& params) {
       }
 
       if (@available(macOS 14.0, *)) {
-        // This early return handles two cases.
-        //
-        // 1. If this window isn't the window implementing the menu, this call
-        //    to get the frame will return an empty rect. Return, as this would
-        //    be the wrong window.
-        //
-        // 2. When the notification first fires, the layout isn't complete and
-        //    the menu item bounds will be reported to have a width of 10. If
-        //    the width is too small, early return, as the callback will happen
-        //    again, that time with the correct bounds.
-        if (strongMenu.numberOfItems &&
-            NSWidth([strongMenu itemAtIndex:0].accessibilityFrame) < 20) {
+        // Ensure that only notifications for the correct internal menu view
+        // class trigger this.
+        if (![[note.object className] isEqual:@"NSContextMenuItemView"]) {
           return;
+        }
+
+        // Ensure that the bounds for all the needed menu items are available.
+        // In testing, this was always true even for the first notification, so
+        // this is not expected to fail and is included for paranoia.
+        for (auto [elementId, index] : elementIds) {
+          NSRect frame = [strongMenu itemAtIndex:index].accessibilityFrame;
+          if (NSWidth(frame) < 10) {
+            return;
+          }
         }
       }
 
-      // The notification may fire more than once; only process the first
+      // These notifications will fire more than once; only process the first
       // time.
       if (menuShown) {
         return;
@@ -250,14 +251,11 @@ NSImage* IPHDotImage(const remote_cocoa::mojom::MenuControllerParams& params) {
         // macOS 13 and earlier use the old Carbon Menu Manager, and getting the
         // bounds of menus is pretty wackadoodle.
         //
-        // Even though with macOS 11 through macOS 13 watching for
-        // NSWindowDidOrderOnScreenAndFinishAnimatingNotification would work to
-        // guarantee that the menu is on the screen and can be queried for size,
-        // with macOS 10.15, there's no involvement from Cocoa, so there's no
-        // good notification that the menu window was shown. Therefore, rely on
-        // NSMenuDidBeginTrackingNotification, but then spin the event loop
-        // once. This practically guarantees that the menu is on screen and can
-        // be queried for size.
+        // Because menus are implemented in Carbon, the only notification that
+        // can be relied upon is `NSMenuDidBeginTrackingNotification`, but that
+        // is fired before layout is done. Therefore, spin the event loop once.
+        // This practically guarantees that the menu is on screen and can be
+        // queried for size.
         dispatch_after(
             dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_MSEC),
             dispatch_get_main_queue(), ^{
@@ -271,15 +269,25 @@ NSImage* IPHDotImage(const remote_cocoa::mojom::MenuControllerParams& params) {
       };
     };
 
+    // Register for a notification to get a callback when the menu is shown.
+    // `NSMenuDidBeginTrackingNotification` might seem ideal, but it fires very
+    // early in menu tracking, before layout happens.
     if (@available(macOS 14.0, *)) {
-      NSString* notificationName =
-          @"NSWindowDidOrderOnScreenAndFinishAnimatingNotification";
-      [_menuObservers addObject:[NSNotificationCenter.defaultCenter
-                                    addObserverForName:notificationName
-                                                object:nil
-                                                 queue:nil
-                                            usingBlock:shownCallback]];
+      // With macOS 14+, menus are implemented with Cocoa. Because all the menu-
+      // specific notifications fire very early, before layout, rely on the
+      // NSViewFrameDidChangeNotification being fired for a specific menu
+      // implementation class.
+      [_menuObservers
+          addObject:[NSNotificationCenter.defaultCenter
+                        addObserverForName:NSViewFrameDidChangeNotification
+                                    object:nil
+                                     queue:nil
+                                usingBlock:shownCallback]];
     } else {
+      // Before macOS 14, menus were implemented with Carbon and only the basic
+      // notifications were hooked up. Therefore, as much as
+      // `NSMenuDidBeginTrackingNotification` is not ideal, register for it, and
+      // play `dispatch_after` games, above.
       [_menuObservers
           addObject:[NSNotificationCenter.defaultCenter
                         addObserverForName:NSMenuDidBeginTrackingNotification
