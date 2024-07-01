@@ -150,13 +150,12 @@ class ComposeState {
     mojo_state_ = std::move(mojo_state);
   }
 
-  void UploadModelQualityLogs(
-      raw_ptr<optimization_guide::ModelQualityLogsUploader> logs_uploader) {
-    if (!logs_uploader || !modeling_log_entry_) {
+  void UploadModelQualityLogs() {
+    if (!modeling_log_entry_) {
       return;
     }
     LogRequestFeedback();
-    logs_uploader->UploadModelQualityLogs(TakeModelingLogEntry());
+    optimization_guide::ModelQualityLogEntry::Upload(TakeModelingLogEntry());
   }
 
   void LogRequestFeedback() {
@@ -198,7 +197,6 @@ class ComposeState {
 ComposeSession::ComposeSession(
     content::WebContents* web_contents,
     optimization_guide::OptimizationGuideModelExecutor* executor,
-    optimization_guide::ModelQualityLogsUploader* model_quality_logs_uploader,
     base::Token session_id,
     InnerTextProvider* inner_text,
     autofill::FieldGlobalId node_id,
@@ -215,7 +213,6 @@ ComposeSession::ComposeSession(
       ukm_source_id_(web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()),
       node_id_(node_id),
       is_page_language_supported_(is_page_language_supported),
-      model_quality_logs_uploader_(model_quality_logs_uploader),
       session_id_(session_id),
       weak_ptr_factory_(this) {
   session_duration_ = std::make_unique<base::ElapsedTimer>();
@@ -315,31 +312,26 @@ ComposeSession::~ComposeSession() {
   // a modeling_log_entry. However in order to more easily test the quality
   // uploads we are calling upload directly here.
 
-  if (!model_quality_logs_uploader_) {
-    // Can not upload any logs so exit early.
-    return;
-  }
-
   if (most_recent_error_log_) {
     // First set final status on most_recent_error_log.
     most_recent_error_log_
         ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
         ->set_final_status(final_status_);
-    model_quality_logs_uploader_->UploadModelQualityLogs(
+    optimization_guide::ModelQualityLogEntry::Upload(
         std::move(most_recent_error_log_));
   } else if (auto last_response_state = LastResponseState();
              last_response_state.has_value()) {
     if (auto* log_entry = last_response_state->modeling_log_entry()) {
       log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
           ->set_final_status(final_status_);
-      last_response_state->UploadModelQualityLogs(model_quality_logs_uploader_);
+      last_response_state->UploadModelQualityLogs();
     }
   }
 
   for (auto& state : history_) {
     // Upload all saved states with a valid quality logs member (those tied to
     // a ComposeResponse) and then clear all states.
-    state->UploadModelQualityLogs(model_quality_logs_uploader_);
+    state->UploadModelQualityLogs();
   }
 }
 
@@ -639,8 +631,8 @@ void ComposeSession::ModelExecutionComplete(
     token->set_low(session_id_.low());
     // In the event that we are holding onto an error log upload it before it
     // gets overwritten
-    if (most_recent_error_log_ && model_quality_logs_uploader_) {
-      model_quality_logs_uploader_->UploadModelQualityLogs(
+    if (most_recent_error_log_) {
+      optimization_guide::ModelQualityLogEntry::Upload(
           std::move(most_recent_error_log_));
     }
 
@@ -701,7 +693,7 @@ void ComposeSession::AddNewResponseToHistory(
 
 void ComposeSession::EraseForwardStatesInHistory() {
   for (size_t i = history_current_index_ + 1; i < history_.size(); i++) {
-    history_[i]->UploadModelQualityLogs(model_quality_logs_uploader_);
+    history_[i]->UploadModelQualityLogs();
   }
   if (history_.size() > history_current_index_ + 1) {
     history_.erase(history_.begin() + history_current_index_ + 1,
@@ -1194,8 +1186,8 @@ void ComposeSession::SetQualityLogEntryUponError(
         ->set_was_generated_via_edit(was_input_edited);
     // In the event that we are holding onto an error log upload it before it
     // gets overwritten
-    if (most_recent_error_log_ && model_quality_logs_uploader_) {
-      model_quality_logs_uploader_->UploadModelQualityLogs(
+    if (most_recent_error_log_) {
+      optimization_guide::ModelQualityLogEntry::Upload(
           std::move(most_recent_error_log_));
     }
 

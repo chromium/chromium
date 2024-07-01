@@ -177,7 +177,6 @@ static_library("core") {
     "model_quality/feature_type_map.h",
     "model_quality/model_quality_log_entry.cc",
     "model_quality/model_quality_log_entry.h",
-    "model_quality/model_quality_logs_uploader.h",
     "model_quality/model_quality_logs_uploader_service.cc",
     "model_quality/model_quality_logs_uploader_service.h",
     "model_quality/model_quality_util.cc",

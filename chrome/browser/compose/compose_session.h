@@ -20,7 +20,6 @@
 #include "chrome/common/compose/compose.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_metrics.h"
-#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -86,7 +85,6 @@ class ComposeSession
   ComposeSession(
       content::WebContents* web_contents,
       optimization_guide::OptimizationGuideModelExecutor* executor,
-      optimization_guide::ModelQualityLogsUploader* model_quality_logs_uploader,
       base::Token session_id,
       InnerTextProvider* inner_text,
       autofill::FieldGlobalId node_id,
@@ -385,12 +383,6 @@ class ComposeSession
   bool is_page_language_supported_;
 
   base::OnceClosure continue_compose_;
-
-  // This pointer is obtained form a BrowserContextKeyedService.
-  // TODO(b/314328835) Add a BrowserContextKeyedServiceShutdownNotifierFactory
-  // to nullify when keyed service is destyroyed.
-  raw_ptr<optimization_guide::ModelQualityLogsUploader>
-      model_quality_logs_uploader_;
 
   base::Token session_id_;
 

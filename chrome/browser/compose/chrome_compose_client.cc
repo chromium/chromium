@@ -202,8 +202,8 @@ void ChromeComposeClient::BindComposeDialog(
   if (origin ==
       url::Origin::Create(GURL(chrome::kChromeUIUntrustedComposeUrl))) {
     debug_session_ = std::make_unique<ComposeSession>(
-        &GetWebContents(), GetModelExecutor(), GetModelQualityLogsUploader(),
-        GetSessionId(), GetInnerTextProvider(),
+        &GetWebContents(), GetModelExecutor(), GetSessionId(),
+        GetInnerTextProvider(),
         autofill::FieldGlobalId{{}, autofill::FieldRendererId(-1)},
         IsPageLanguageSupported(), this);
     debug_session_->set_collect_inner_text(false);
@@ -421,8 +421,8 @@ void ChromeComposeClient::CreateOrUpdateSession(
     }
     // Now create and set up a new session.
     auto new_session = std::make_unique<ComposeSession>(
-        &GetWebContents(), GetModelExecutor(), GetModelQualityLogsUploader(),
-        GetSessionId(), GetInnerTextProvider(), trigger_field.global_id(),
+        &GetWebContents(), GetModelExecutor(), GetSessionId(),
+        GetInnerTextProvider(), trigger_field.global_id(),
         IsPageLanguageSupported(), this, std::move(callback));
     current_session = new_session.get();
     sessions_.insert_or_assign(active_compose_ids_.value().first,
@@ -697,12 +697,6 @@ void ChromeComposeClient::OnAfterFocusOnFormField(
   // a valid value when triggering a compose nudge or showing the compose
   // dialog.
   active_compose_ids_.reset();
-}
-
-optimization_guide::ModelQualityLogsUploader*
-ChromeComposeClient::GetModelQualityLogsUploader() {
-  return OptimizationGuideKeyedServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
 }
 
 optimization_guide::OptimizationGuideModelExecutor*

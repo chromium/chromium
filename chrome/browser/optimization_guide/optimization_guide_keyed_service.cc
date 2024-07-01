@@ -674,31 +674,6 @@ void OptimizationGuideKeyedService::
   }
 }
 
-void OptimizationGuideKeyedService::UploadModelQualityLogs(
-    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (!model_quality_logs_uploader_service_) {
-    return;
-  }
-
-  // Don't trigger upload for an empty log entry.
-  if (!log_entry || !log_entry->log_ai_data_request()) {
-    return;
-  }
-
-  auto feature = optimization_guide::GetModelExecutionFeature(
-      log_entry->log_ai_data_request()->feature_case());
-
-  TRACE_EVENT1(
-      "browser", "OptimizationGuideKeyedService::UploadModelQualityLogs",
-      "feature",
-      optimization_guide::GetStringNameForModelExecutionFeature(feature));
-
-  // This uploads the logs on ModelQualityLogEntry destruction.
-  log_entry.reset();
-}
-
 void OptimizationGuideKeyedService::OnProfileInitializationComplete(
     Profile* profile) {
   DCHECK(profile_observation_.IsObservingSource(profile));
