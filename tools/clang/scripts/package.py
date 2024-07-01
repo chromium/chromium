@@ -100,15 +100,10 @@ def PackageInArchive(directory_path, archive_path):
   with tarfile.open(archive_path + '.tar.xz',
                     'w:xz',
                     preset=9 | lzma.PRESET_EXTREME) as tar_xz:
-    with tarfile.open(archive_path + '.tgz', 'w:gz') as tar_gz:
-      for f in sorted(os.listdir(directory_path)):
-        tar_xz.add(os.path.join(directory_path, f),
-                   arcname=f,
-                   filter=PrintTarProgress)
-        # TODO(crbug.com/40202359) Stop making gzip'ed archives once the
-        # reclient push processes are updated to consume the .xz files
-        # instead.
-        tar_gz.add(os.path.join(directory_path, f), arcname=f)
+    for f in sorted(os.listdir(directory_path)):
+      tar_xz.add(os.path.join(directory_path, f),
+                 arcname=f,
+                 filter=PrintTarProgress)
 
 
 def MaybeUpload(do_upload,
@@ -618,7 +613,7 @@ def main():
 
   # Create main archive.
   PackageInArchive(pdir, pdir)
-  MaybeUpload(args.upload, args.bucket, pdir + '.t*z', gcs_platform)
+  MaybeUpload(args.upload, args.bucket, pdir + '.tar.xz', gcs_platform)
 
   # Upload build log next to it.
   os.rename('buildlog.txt', pdir + '-buildlog.txt')
@@ -640,7 +635,7 @@ def main():
           os.path.join(runtime_dir, f),
       )
     PackageInArchive(runtime_dir, runtime_dir)
-    MaybeUpload(args.upload, args.bucket, f'{runtime_dir}.t*z', gcs_platform)
+    MaybeUpload(args.upload, args.bucket, f'{runtime_dir}.tar.xz', gcs_platform)
 
   # Zip up llvm-code-coverage for code coverage.
   code_coverage_dir = 'llvm-code-coverage-' + stamp
@@ -650,7 +645,7 @@ def main():
     shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'bin', filename + exe_ext),
                 os.path.join(code_coverage_dir, 'bin'))
   PackageInArchive(code_coverage_dir, code_coverage_dir)
-  MaybeUpload(args.upload, args.bucket, code_coverage_dir + '.t*z',
+  MaybeUpload(args.upload, args.bucket, code_coverage_dir + '.tar.xz',
               gcs_platform)
 
   # Zip up llvm-objdump and related tools for sanitizer coverage and Supersize.
@@ -671,7 +666,7 @@ def main():
   if sys.platform != 'win32':
     os.symlink('llvm-objdump', os.path.join(objdumpdir, 'bin', 'llvm-otool'))
   PackageInArchive(objdumpdir, objdumpdir)
-  MaybeUpload(args.upload, args.bucket, objdumpdir + '.t*z', gcs_platform)
+  MaybeUpload(args.upload, args.bucket, objdumpdir + '.tar.xz', gcs_platform)
 
   # Zip up clang-tidy for users who opt into it, and Tricium.
   clang_tidy_dir = 'clang-tidy-' + stamp
@@ -680,7 +675,8 @@ def main():
   shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'bin', 'clang-tidy' + exe_ext),
               os.path.join(clang_tidy_dir, 'bin'))
   PackageInArchive(clang_tidy_dir, clang_tidy_dir)
-  MaybeUpload(args.upload, args.bucket, clang_tidy_dir + '.t*z', gcs_platform)
+  MaybeUpload(args.upload, args.bucket, clang_tidy_dir + '.tar.xz',
+              gcs_platform)
 
   # Zip up clangd and related tools for users who opt into it.
   clangd_dir = 'clangd-' + stamp
@@ -692,7 +688,7 @@ def main():
       os.path.join(LLVM_RELEASE_DIR, 'bin', 'clang-include-cleaner' + exe_ext),
       os.path.join(clangd_dir, 'bin'))
   PackageInArchive(clangd_dir, clangd_dir)
-  MaybeUpload(args.upload, args.bucket, clangd_dir + '.t*z', gcs_platform)
+  MaybeUpload(args.upload, args.bucket, clangd_dir + '.tar.xz', gcs_platform)
 
   # Zip up clang-format so we can update it (separately from the clang roll).
   clang_format_dir = 'clang-format-' + stamp
@@ -701,7 +697,8 @@ def main():
   shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'bin', 'clang-format' + exe_ext),
               os.path.join(clang_format_dir, 'bin'))
   PackageInArchive(clang_format_dir, clang_format_dir)
-  MaybeUpload(args.upload, args.bucket, clang_format_dir + '.t*z', gcs_platform)
+  MaybeUpload(args.upload, args.bucket, clang_format_dir + '.tar.xz',
+              gcs_platform)
 
   if sys.platform == 'darwin':
     # dsymutil isn't part of the main zip, and it gets periodically
@@ -713,7 +710,7 @@ def main():
     shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'bin', 'dsymutil'),
                 os.path.join(dsymdir, 'bin'))
     PackageInArchive(dsymdir, dsymdir)
-    MaybeUpload(args.upload, args.bucket, dsymdir + '.t*z', gcs_platform)
+    MaybeUpload(args.upload, args.bucket, dsymdir + '.tar.xz', gcs_platform)
 
   # Zip up the translation_unit tool.
   translation_unit_dir = 'translation_unit-' + stamp
@@ -723,7 +720,7 @@ def main():
                            exe_ext),
               os.path.join(translation_unit_dir, 'bin'))
   PackageInArchive(translation_unit_dir, translation_unit_dir)
-  MaybeUpload(args.upload, args.bucket, translation_unit_dir + '.t*z',
+  MaybeUpload(args.upload, args.bucket, translation_unit_dir + '.tar.xz',
               gcs_platform)
 
   # Zip up the libclang binaries.
@@ -739,7 +736,7 @@ def main():
                              filename),
                 os.path.join(libclang_dir, 'bindings', 'python', 'clang'))
   PackageInArchive(libclang_dir, libclang_dir)
-  MaybeUpload(args.upload, args.bucket, libclang_dir + '.t*z', gcs_platform)
+  MaybeUpload(args.upload, args.bucket, libclang_dir + '.tar.xz', gcs_platform)
 
   if sys.platform == 'win32' and args.upload:
     binaries = [f for f in want if f.endswith('.exe') or f.endswith('.dll')]
