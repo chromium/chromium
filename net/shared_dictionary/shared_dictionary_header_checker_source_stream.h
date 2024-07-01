@@ -2,23 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_HEADER_CHECKER_SOURCE_STREAM_H_
-#define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_HEADER_CHECKER_SOURCE_STREAM_H_
+#ifndef NET_SHARED_DICTIONARY_SHARED_DICTIONARY_HEADER_CHECKER_SOURCE_STREAM_H_
+#define NET_SHARED_DICTIONARY_SHARED_DICTIONARY_HEADER_CHECKER_SOURCE_STREAM_H_
 
 #include <memory>
 #include <string>
 
-#include "base/component_export.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/hash_value.h"
+#include "net/base/net_export.h"
 #include "net/filter/source_stream.h"
 
 namespace net {
 class IOBuffer;
 class GrowableIOBuffer;
-}  // namespace net
-
-namespace network {
 
 // This class is used to check the header bytes of "Dictionary-Compressed
 // Brotli" stream and "Dictionary-Compressed Zstandard" stream.
@@ -37,8 +34,8 @@ namespace network {
 //
 // This class consumes the header bytes from the upstream. So the reader of
 // this class can read the bytes after the header bytes.
-class COMPONENT_EXPORT(NETWORK_SERVICE)
-    SharedDictionaryHeaderCheckerSourceStream : public net::SourceStream {
+class NET_EXPORT SharedDictionaryHeaderCheckerSourceStream
+    : public net::SourceStream {
  public:
   enum class Type {
     kDictionaryCompressedBrotli,
@@ -82,6 +79,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE)
   net::CompletionOnceCallback pending_callback_;
 };
 
-}  // namespace network
+}  // namespace net
 
-#endif  // SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_HEADER_CHECKER_SOURCE_STREAM_H_
+#endif  // NET_SHARED_DICTIONARY_SHARED_DICTIONARY_HEADER_CHECKER_SOURCE_STREAM_H_

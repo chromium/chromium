@@ -35,6 +35,7 @@
 #include "net/http/http_request_info.h"
 #include "net/http/structured_headers.h"
 #include "net/shared_dictionary/shared_dictionary.h"
+#include "net/shared_dictionary/shared_dictionary_header_checker_source_stream.h"
 #include "net/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/ssl/ssl_private_key.h"
 #include "services/network/public/cpp/features.h"
@@ -42,7 +43,6 @@
 #include "services/network/public/cpp/shared_dictionary_encoding_names.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
-#include "services/network/shared_dictionary/shared_dictionary_header_checker_source_stream.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 
@@ -373,14 +373,14 @@ int SharedDictionaryNetworkTransaction::Read(
         // SharedDictionaryHeaderCheckerSourceStream to check the header
         // of Dictionary-Compressed stream.
         std::unique_ptr<net::SourceStream> header_checker_source_stream =
-            std::make_unique<SharedDictionaryHeaderCheckerSourceStream>(
+            std::make_unique<net::SharedDictionaryHeaderCheckerSourceStream>(
                 std::make_unique<ProxyingSourceStream>(
                     network_transaction_.get()),
                 shared_dictionary_encoding_type_ ==
                         SharedDictionaryEncodingType::kSharedBrotli
-                    ? SharedDictionaryHeaderCheckerSourceStream::Type::
+                    ? net::SharedDictionaryHeaderCheckerSourceStream::Type::
                           kDictionaryCompressedBrotli
-                    : SharedDictionaryHeaderCheckerSourceStream::Type::
+                    : net::SharedDictionaryHeaderCheckerSourceStream::Type::
                           kDictionaryCompressedZstd,
                 shared_dictionary_->hash());
         if (shared_dictionary_encoding_type_ ==

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/shared_dictionary/shared_dictionary_header_checker_source_stream.h"
+#include "net/shared_dictionary/shared_dictionary_header_checker_source_stream.h"
 
 #include <memory>
 
@@ -17,7 +17,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace network {
+namespace net {
 
 namespace {
 
@@ -320,4 +320,4 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, WrongHashAsync) {
   CheckAsyncRead(net::ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER, 2);
 }
 
-}  // namespace network
+}  // namespace net
