@@ -172,9 +172,13 @@ SavedTabGroup DataToSavedTabGroup(const proto::SavedTabGroupData& data) {
       GetLastUpdaterCacheGuidFromSpecifics(specific);
 
   bool created_before_syncing_tab_groups = false;
+  base::Time last_user_interaction_time;
   if (data.has_local_tab_group_data()) {
     created_before_syncing_tab_groups =
         data.local_tab_group_data().created_before_syncing_tab_groups();
+    last_user_interaction_time = TimeFromWindowsEpochMicros(
+        data.local_tab_group_data()
+            .last_user_interaction_time_windows_epoch_micros());
   }
 
   SavedTabGroup group = SavedTabGroup(
@@ -182,6 +186,7 @@ SavedTabGroup DataToSavedTabGroup(const proto::SavedTabGroupData& data) {
       std::move(creator_cache_guid), std::move(last_updater_cache_guid),
       created_before_syncing_tab_groups, creation_time);
   group.SetUpdateTimeWindowsEpochMicros(update_time);
+  group.SetLastUserInteractionTime(last_user_interaction_time);
 
   return group;
 }
@@ -234,6 +239,12 @@ proto::SavedTabGroupData SavedTabGroupToData(const SavedTabGroup& group) {
 
   pb_data.mutable_local_tab_group_data()->set_created_before_syncing_tab_groups(
       group.created_before_syncing_tab_groups());
+  pb_data.mutable_local_tab_group_data()
+      ->set_last_user_interaction_time_windows_epoch_micros(
+          group.last_user_interaction_time()
+              .ToDeltaSinceWindowsEpoch()
+              .InMicroseconds());
+
   pb_data.set_version(kCurrentSchemaVersion);
 
   // Note: When adding a new syncable field, also update IsSyncEquivalent().

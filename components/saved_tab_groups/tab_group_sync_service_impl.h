@@ -83,6 +83,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void MoveTab(const LocalTabGroupID& group_id,
                const LocalTabID& tab_id,
                int new_group_index) override;
+  void OnTabSelected(const LocalTabGroupID& group_id,
+                     const LocalTabID& tab_id) override;
 
   std::vector<SavedTabGroup> GetAllGroups() override;
   std::optional<SavedTabGroup> GetGroup(const base::Uuid& guid) override;
@@ -94,6 +96,11 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void UpdateLocalTabId(const LocalTabGroupID& local_group_id,
                         const base::Uuid& sync_tab_id,
                         const LocalTabID& local_tab_id) override;
+
+  bool IsRemoteDevice(
+      const std::optional<std::string>& cache_guid) const override;
+  void RecordTabGroupEvent(const EventDetails& event_details) override;
+
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetSavedTabGroupControllerDelegate() override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate>

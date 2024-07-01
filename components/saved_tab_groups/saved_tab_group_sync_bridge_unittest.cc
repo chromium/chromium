@@ -617,6 +617,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, AddSyncData) {
                          group.saved_guid(), /*position=*/std::nullopt);
   group.SetCreatorCacheGuid("remote_cache_guid");
   group.AddTabLocally(tab_1).AddTabLocally(tab_2);
+  group.SetCreatorCacheGuid("remote_cache_guid");
 
   bridge_->ApplyIncrementalSyncChanges(
       bridge_->CreateMetadataChangeList(),
@@ -635,8 +636,6 @@ TEST_F(SavedTabGroupSyncBridgeTest, AddSyncData) {
     EXPECT_TRUE(AreSavedTabGroupTabsEqual(
         tab, *group_from_model->GetTab(tab.saved_tab_guid())));
   }
-
-  EXPECT_TRUE(group_from_model->is_remote_group());
 
   // Ensure a tab added to an existing group in the bridge is added into the
   // model correctly.

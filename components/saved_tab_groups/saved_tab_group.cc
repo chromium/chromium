@@ -164,6 +164,12 @@ SavedTabGroup& SavedTabGroup::SetUpdateTimeWindowsEpochMicros(
   return *this;
 }
 
+SavedTabGroup& SavedTabGroup::SetLastUserInteractionTime(
+    base::Time last_user_interaction_time) {
+  last_user_interaction_time_ = last_user_interaction_time;
+  return *this;
+}
+
 SavedTabGroup& SavedTabGroup::SetPosition(size_t position) {
   position_ = position;
   SetUpdateTimeWindowsEpochMicros(base::Time::Now());
@@ -178,11 +184,6 @@ SavedTabGroup& SavedTabGroup::SetPinned(bool pinned) {
     position_ = std::nullopt;
     SetUpdateTimeWindowsEpochMicros(base::Time::Now());
   }
-  return *this;
-}
-
-SavedTabGroup& SavedTabGroup::SetIsRemoteGroup(bool is_remote_group) {
-  is_remote_group_ = is_remote_group;
   return *this;
 }
 

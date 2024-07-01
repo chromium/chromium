@@ -33,14 +33,17 @@ public class SavedTabGroup {
     /** The color of the tab group. */
     public @TabGroupColorId int color;
 
-    /** Whether the tab group was created on a remote device. */
-    public boolean isRemoteGroup;
-
     /** Timestamp for when the tab was created. */
     public long creationTimeMs;
 
     /** Timestamp for when the tab was last updated. */
     public long updateTimeMs;
+
+    /* The sync cache guid of the device that created the tab group. */
+    public String creatorCacheGuid;
+
+    /* The sync cache guid of the device that last updated the tab group. */
+    public String lastUpdaterCacheGuid;
 
     /** The tabs associated with this saved tab group. */
     public List<SavedTabGroupTab> savedTabs = new ArrayList<>();
@@ -56,8 +59,6 @@ public class SavedTabGroup {
         sb.append(title);
         sb.append(", color = ");
         sb.append(color);
-        sb.append(", isRemoteGroup = ");
-        sb.append(isRemoteGroup);
         sb.append(", # of Tabs = ");
         sb.append(savedTabs.size());
 

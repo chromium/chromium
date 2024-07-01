@@ -65,6 +65,7 @@ class MockTabGroupSyncService : public TabGroupSyncService {
                std::optional<size_t>));
   MOCK_METHOD(void, RemoveTab, (const LocalTabGroupID&, const LocalTabID&));
   MOCK_METHOD(void, MoveTab, (const LocalTabGroupID&, const LocalTabID&, int));
+  MOCK_METHOD(void, OnTabSelected, (const LocalTabGroupID&, const LocalTabID&));
 
   MOCK_METHOD(std::vector<SavedTabGroup>, GetAllGroups, ());
   MOCK_METHOD(std::optional<SavedTabGroup>, GetGroup, (const base::Uuid&));
@@ -78,6 +79,11 @@ class MockTabGroupSyncService : public TabGroupSyncService {
   MOCK_METHOD(void,
               UpdateLocalTabId,
               (const LocalTabGroupID&, const base::Uuid&, const LocalTabID&));
+  MOCK_METHOD(bool,
+              IsRemoteDevice,
+              (const std::optional<std::string>&),
+              (const));
+  MOCK_METHOD(void, RecordTabGroupEvent, (const EventDetails&));
 
   MOCK_METHOD(syncer::ModelTypeSyncBridge*, bridge, ());
   MOCK_METHOD(base::WeakPtr<syncer::ModelTypeControllerDelegate>,
@@ -170,10 +176,13 @@ TEST_F(TabGroupSyncServiceAndroidTest, SavedTabGroupConversion) {
   SavedTabGroup group = test::CreateTestSavedTabGroup();
   group.SetTitle(kTestGroupTitle);
   group.SetColor(tab_groups::TabGroupColorId::kRed);
+  group.SetCreatorCacheGuid("creator_cache_guid");
+  group.SetLastUpdaterCacheGuid("last_updater_cache_guid");
 
   SavedTabGroupTab tab3(GURL(), kTestTabTitle, group.saved_guid(),
                         /*position=*/std::nullopt,
-                        /*saved_tab_guid=*/std::nullopt, /*local_tab_id=*/9);
+                        /*saved_tab_guid=*/std::nullopt, /*local_tab_id=*/9,
+                        "creator_cache_guid", "last_updater_cache_guid");
   group.AddTabLocally(tab3);
   auto j_group = TabGroupSyncConversionsBridge::CreateGroup(env, group);
   Java_TabGroupSyncServiceAndroidUnitTest_testSavedTabGroupConversion(

@@ -57,13 +57,15 @@ class SavedTabGroup {
   const base::Time& update_time_windows_epoch_micros() const {
     return update_time_windows_epoch_micros_;
   }
+  const base::Time& last_user_interaction_time() const {
+    return last_user_interaction_time_;
+  }
   const std::optional<std::string>& creator_cache_guid() const {
     return creator_cache_guid_;
   }
   const std::optional<std::string>& last_updater_cache_guid() const {
     return last_updater_cache_guid_;
   }
-  bool is_remote_group() const { return is_remote_group_; }
   bool created_before_syncing_tab_groups() const {
     return created_before_syncing_tab_groups_;
   }
@@ -107,9 +109,10 @@ class SavedTabGroup {
       bool created_before_syncing_tab_groups);
   SavedTabGroup& SetUpdateTimeWindowsEpochMicros(
       base::Time update_time_windows_epoch_micros);
+  SavedTabGroup& SetLastUserInteractionTime(
+      base::Time last_user_interaction_time);
   SavedTabGroup& SetPosition(size_t position);
   SavedTabGroup& SetPinned(bool pinned);
-  SavedTabGroup& SetIsRemoteGroup(bool is_remote_group);
 
   // Tab mutators.
   // Add `tab` into its position in `saved_tabs_` if it is set. Otherwise add it
@@ -211,9 +214,6 @@ class SavedTabGroup {
   // if the group was just created. Used for metrics purposes only.
   std::optional<std::string> last_updater_cache_guid_;
 
-  // Whether the tab group was created from a remote device.
-  bool is_remote_group_ = false;
-
   // Whether the tab group was created when sync was disabled.
   bool created_before_syncing_tab_groups_;
 
@@ -223,6 +223,11 @@ class SavedTabGroup {
   // Timestamp for when the tab was last updated using windows epoch
   // microseconds.
   base::Time update_time_windows_epoch_micros_;
+
+  // Timestamp of last explicit user interaction with the group, which currently
+  // refers to tab addition, tab removal and tab navigation only. Only for
+  // metrics.
+  base::Time last_user_interaction_time_;
 };
 
 }  // namespace tab_groups

@@ -62,6 +62,10 @@ class SavedTabGroupConversionTest : public testing::Test {
               sp2.local_tab_group_data().created_before_syncing_tab_groups());
     EXPECT_EQ(sp1.local_tab_group_data().close_and_delete_on_next_restore(),
               sp2.local_tab_group_data().close_and_delete_on_next_restore());
+    EXPECT_EQ(sp1.local_tab_group_data()
+                  .last_user_interaction_time_windows_epoch_micros(),
+              sp2.local_tab_group_data()
+                  .last_user_interaction_time_windows_epoch_micros());
   }
 
   // Compare SavedTabGroups
@@ -74,6 +78,8 @@ class SavedTabGroupConversionTest : public testing::Test {
               group2.creation_time_windows_epoch_micros());
     EXPECT_EQ(group1.update_time_windows_epoch_micros(),
               group2.update_time_windows_epoch_micros());
+    EXPECT_EQ(group1.last_user_interaction_time(),
+              group2.last_user_interaction_time());
     EXPECT_EQ(group1.creator_cache_guid(), group2.creator_cache_guid());
     EXPECT_EQ(group1.last_updater_cache_guid(),
               group2.last_updater_cache_guid());
@@ -109,6 +115,7 @@ TEST_F(SavedTabGroupConversionTest, GroupToDataRetainsData) {
       "last_updater_cache_guid_1",  // last_updater_cache_guid
       /*created_before_syncing_tab_groups=*/true,
       creation_time_windows_epoch_micros, update_time_windows_epoch_micros);
+  group.SetLastUserInteractionTime(time_);
 
   proto::SavedTabGroupData proto =
       SavedTabGroupSyncBridge::SavedTabGroupToDataForTest(group);
@@ -192,6 +199,8 @@ TEST_F(SavedTabGroupConversionTest, VerifyLocalFieldsOnProtoToGroupConversion) {
       pb_data.mutable_local_tab_group_data();
   DCHECK(pb_local_group_data);
   pb_local_group_data->set_created_before_syncing_tab_groups(true);
+  pb_local_group_data->set_last_user_interaction_time_windows_epoch_micros(
+      time_in_micros);
 
 #if BUILDFLAG(IS_ANDROID)
   std::string serialized_local_id = base::Token::CreateRandom().ToString();

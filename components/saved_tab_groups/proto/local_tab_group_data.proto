@@ -23,4 +23,7 @@ message LocalTabGroupData {
   // on the client-side (e.g. sign-out or group deletion message received
   // while the associated browser window wasn't available).
   optional bool close_and_delete_on_next_restore = 3;
+
+  // Timestamp of last explicit user interaction with the tab group.
+  optional int64 last_user_interaction_time_windows_epoch_micros = 4;
 }
