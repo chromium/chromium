@@ -137,10 +137,10 @@
   </cr-button>
 </cr-toast-manager>
 <template is="dom-if"
-    if="[[shouldShowBypassWarningDialog_(bypassDialogItemId_)]]"
+    if="[[shouldShowBypassWarningPrompt_(bypassPromptItemId_)]]"
     restamp>
   <download-bypass-warning-confirmation-dialog
-      file-name="[[computeBypassWarningDialogFileName_(bypassDialogItemId_)]]"
+      file-name="[[computeBypassWarningPromptFileName_(bypassPromptItemId_)]]"
       on-close="onBypassWarningConfirmationDialogClose_">
   </download-bypass-warning-confirmation-dialog>
 </template>

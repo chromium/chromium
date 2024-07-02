@@ -325,7 +325,7 @@ void DownloadsDOMHandler::SaveSuspiciousRequiringGesture(
   }
 }
 
-void DownloadsDOMHandler::RecordOpenBypassWarningPrompt(const std::string& id) {
+void DownloadsDOMHandler::RecordOpenBypassWarningDialog(const std::string& id) {
   CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_OPEN_BYPASS_WARNING_PROMPT);
   download::DownloadItem* file = GetDownloadByStringId(id);
   if (!CanLogWarningMetrics(file)) {
@@ -338,10 +338,10 @@ void DownloadsDOMHandler::RecordOpenBypassWarningPrompt(const std::string& id) {
                           WarningAction::KEEP);
 }
 
-void DownloadsDOMHandler::SaveDangerousFromPromptRequiringGesture(
+void DownloadsDOMHandler::SaveDangerousFromDialogRequiringGesture(
     const std::string& id) {
   if (!GetWebUIWebContents()->HasRecentInteraction()) {
-    LOG(ERROR) << "SaveDangerousFromPromptRequiringGesture received without "
+    LOG(ERROR) << "SaveDangerousFromDialogRequiringGesture received without "
                   "recent user interaction";
     return;
   }
@@ -367,7 +367,7 @@ void DownloadsDOMHandler::SaveDangerousFromPromptRequiringGesture(
   file->ValidateDangerousDownload();
 }
 
-void DownloadsDOMHandler::RecordCancelBypassWarningPrompt(
+void DownloadsDOMHandler::RecordCancelBypassWarningDialog(
     const std::string& id) {
   CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_CANCEL_BYPASS_WARNING_PROMPT);
   download::DownloadItem* file = GetDownloadByStringId(id);

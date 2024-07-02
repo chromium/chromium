@@ -136,18 +136,18 @@ interface PageHandler {
   SaveSuspiciousRequiringGesture(string id);
 
   // Called when "Download dangerous file" is clicked from the
-  // chrome://downloads overflow menu to open the warning bypass prompt, for
-  // dangerous files. Only records the opening of the warning bypass prompt.
-  RecordOpenBypassWarningPrompt(string id);
+  // chrome://downloads overflow menu to open the warning bypass dialog, for
+  // dangerous files. Only records the opening of the warning bypass dialog.
+  RecordOpenBypassWarningDialog(string id);
 
   // Called when "Download dangerous file" is clicked from the
-  // chrome://downloads warning bypass prompt, for dangerous files.
-  SaveDangerousFromPromptRequiringGesture(string id);
+  // chrome://downloads warning dialog, for dangerous files.
+  SaveDangerousFromDialogRequiringGesture(string id);
 
   // Called when "Cancel" is clicked on the chrome://downloads warning bypass
-  // prompt, or the prompt is closed by dismissing it. Only records the event
+  // dialog, or the dialog is closed by dismissing it. Only records the event
   // and potentially sends a report.
-  RecordCancelBypassWarningPrompt(string id);
+  RecordCancelBypassWarningDialog(string id);
 
   DiscardDangerous(string id);
   RetryDownload(string id);

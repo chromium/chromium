@@ -261,7 +261,7 @@ suite('manager tests', function() {
         await callbackRouterRemote.$.flushForTesting();
         flush();
         const recordOpenId = await testBrowserProxy.handler.whenCalled(
-            'recordOpenBypassWarningPrompt');
+            'recordOpenBypassWarningDialog');
         assertEquals('itemId', recordOpenId);
         const dialog = manager.shadowRoot!.querySelector(
             'download-bypass-warning-confirmation-dialog');
@@ -273,7 +273,7 @@ suite('manager tests', function() {
         await callbackRouterRemote.$.flushForTesting();
         flush();
         const saveDangerousId = await testBrowserProxy.handler.whenCalled(
-            'saveDangerousFromPromptRequiringGesture');
+            'saveDangerousFromDialogRequiringGesture');
         assertEquals('itemId', saveDangerousId);
         assertFalse(dialog.$.dialog.open);
       });
@@ -300,7 +300,7 @@ suite('manager tests', function() {
     await callbackRouterRemote.$.flushForTesting();
     flush();
     const recordOpenId = await testBrowserProxy.handler.whenCalled(
-        'recordOpenBypassWarningPrompt');
+        'recordOpenBypassWarningDialog');
     assertEquals('itemId', recordOpenId);
     const dialog = manager.shadowRoot!.querySelector(
         'download-bypass-warning-confirmation-dialog');
@@ -312,7 +312,7 @@ suite('manager tests', function() {
     await callbackRouterRemote.$.flushForTesting();
     flush();
     const recordCancelId = await testBrowserProxy.handler.whenCalled(
-        'recordCancelBypassWarningPrompt');
+        'recordCancelBypassWarningDialog');
     assertEquals('itemId', recordCancelId);
     assertFalse(dialog.$.dialog.open);
   });

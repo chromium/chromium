@@ -376,7 +376,7 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest,
 }
 
 TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest,
-       SaveDangerousFromPromptRequiringGesture) {
+       SaveDangerousFromDialogRequiringGesture) {
   SetUpDangerousDownload();
 
   TestDownloadsDOMHandler handler(page_.BindAndGetRemote(), manager(),
@@ -385,7 +385,7 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest,
   SimulateMouseGestureOnWebUI();
 
   EXPECT_CALL(dangerous_download_, ValidateDangerousDownload());
-  handler.SaveDangerousFromPromptRequiringGesture("1");
+  handler.SaveDangerousFromDialogRequiringGesture("1");
 
   // Verify that dangerous download report is sent.
   safe_browsing::ClientSafeBrowsingReportRequest expected_report;
@@ -404,25 +404,25 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest,
 }
 
 TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest,
-       SaveDangerousFromPromptRequiringGesture_NoRecentInteraction) {
+       SaveDangerousFromDialogRequiringGesture_NoRecentInteraction) {
   SetUpDangerousDownload();
 
   TestDownloadsDOMHandler handler(page_.BindAndGetRemote(), manager(),
                                   web_ui());
 
   EXPECT_CALL(dangerous_download_, ValidateDangerousDownload()).Times(0);
-  handler.SaveDangerousFromPromptRequiringGesture("1");
+  handler.SaveDangerousFromDialogRequiringGesture("1");
 }
 
 TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest,
-       RecordCancelBypassWarningPrompt) {
+       RecordCancelBypassWarningDialog) {
   SetUpDangerousDownload();
 
   TestDownloadsDOMHandler handler(page_.BindAndGetRemote(), manager(),
                                   web_ui());
 
   EXPECT_CALL(dangerous_download_, ValidateDangerousDownload()).Times(0);
-  handler.RecordCancelBypassWarningPrompt("1");
+  handler.RecordCancelBypassWarningDialog("1");
 
   // Verify no cancel report is sent, since it's not a terminal action.
   EXPECT_TRUE(test_safe_browsing_factory_->test_safe_browsing_service()
@@ -485,7 +485,7 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestTrustSafetySentimentService,
 }
 
 TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestTrustSafetySentimentService,
-       SaveDangerousFromPrompt_CallsTrustSafetySentimentService) {
+       SaveDangerousFromDialog_CallsTrustSafetySentimentService) {
   profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingSurveysEnabled, true);
   SetUpDangerousDownload();
   ExpectTrustSafetySentimentServiceCall(
@@ -498,5 +498,5 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestTrustSafetySentimentService,
   SimulateMouseGestureOnWebUI();
 
   EXPECT_CALL(dangerous_download_, ValidateDangerousDownload());
-  handler.SaveDangerousFromPromptRequiringGesture("1");
+  handler.SaveDangerousFromDialogRequiringGesture("1");
 }

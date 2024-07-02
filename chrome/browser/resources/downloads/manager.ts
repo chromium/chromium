@@ -88,7 +88,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
         notify: true,
       },
 
-      bypassDialogItemId_: {
+      bypassPromptItemId_: {
         type: String,
         value: '',
       },
@@ -125,7 +125,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   private hasShadow_: boolean;
   private inSearchMode_: boolean;
   private spinnerActive_: boolean;
-  private bypassDialogItemId_: string;
+  private bypassPromptItemId_: string;
   // <if expr="_google_chrome">
   private firstDangerousItemId_: string;
   private esbDownloadRowPromo_: boolean;
@@ -210,9 +210,9 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   private onSaveDangerousClick_(e: SaveDangerousClickEvent) {
     const bypassItem = this.items_.find(item => item.id === e.detail.id);
     if (bypassItem) {
-      this.bypassDialogItemId_ = bypassItem.id;
+      this.bypassPromptItemId_ = bypassItem.id;
       assert(!!this.mojoHandler_);
-      this.mojoHandler_.recordOpenBypassWarningPrompt(this.bypassDialogItemId_);
+      this.mojoHandler_.recordOpenBypassWarningDialog(this.bypassPromptItemId_);
     }
   }
 
@@ -249,34 +249,34 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   }
   // </if>
 
-  private shouldShowBypassWarningDialog_(): boolean {
-    return this.bypassDialogItemId_ !== '';
+  private shouldShowBypassWarningPrompt_(): boolean {
+    return this.bypassPromptItemId_ !== '';
   }
 
-  private computeBypassWarningDialogFileName_(): string {
+  private computeBypassWarningPromptFileName_(): string {
     const bypassItem =
-        this.items_.find(item => item.id === this.bypassDialogItemId_);
+        this.items_.find(item => item.id === this.bypassPromptItemId_);
     return bypassItem?.fileName || '';
   }
 
   private hideBypassWarningDialog_() {
-    this.bypassDialogItemId_ = '';
+    this.bypassPromptItemId_ = '';
   }
 
   private onBypassWarningConfirmationDialogClose_() {
     const dialog = this.shadowRoot!.querySelector(
         'download-bypass-warning-confirmation-dialog');
     assert(dialog);
-    assert(this.bypassDialogItemId_ !== '');
+    assert(this.bypassPromptItemId_ !== '');
     assert(!!this.mojoHandler_);
     if (dialog.wasConfirmed()) {
-      this.mojoHandler_.saveDangerousFromPromptRequiringGesture(
-          this.bypassDialogItemId_);
+      this.mojoHandler_.saveDangerousFromDialogRequiringGesture(
+          this.bypassPromptItemId_);
     } else {
       // Closing the dialog by clicking cancel is treated the same as closing
       // the dialog by pressing Esc. Both are treated as CANCEL, not CLOSE.
-      this.mojoHandler_.recordCancelBypassWarningPrompt(
-          this.bypassDialogItemId_);
+      this.mojoHandler_.recordCancelBypassWarningDialog(
+          this.bypassPromptItemId_);
     }
     this.hideBypassWarningDialog_();
   }
@@ -424,7 +424,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   private removeItem_(index: number) {
     const removed = this.items_.splice(index, 1);
     this.updateHideDates_(index, index);
-    if (removed.some(item => item.id === this.bypassDialogItemId_)) {
+    if (removed.some(item => item.id === this.bypassPromptItemId_)) {
       this.hideBypassWarningDialog_();
     }
     this.notifySplices('items_', [{
