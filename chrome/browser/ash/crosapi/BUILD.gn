@@ -349,6 +349,7 @@ static_library("crosapi") {
     "//chrome/browser/ash/notifications",
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys/key_permissions",
+    "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/privacy_hub",
     "//chrome/browser/ash/remote_apps",
     "//chrome/browser/ash/smart_reader",

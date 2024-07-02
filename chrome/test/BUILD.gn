@@ -2207,6 +2207,8 @@ if (!is_android) {
         "//chrome/browser/ash/accessibility/service",
         "//chrome/browser/ash/base",
         "//chrome/browser/ash/customization",
+        "//chrome/browser/ash/plugin_vm",
+        "//chrome/browser/ash/plugin_vm:test_support",
         "//remoting/host/chromeos:features",
 
         # TODO(b/335293584) : Remove after c/b/a/login/ has been migrated.

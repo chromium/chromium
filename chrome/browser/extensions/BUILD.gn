@@ -1255,6 +1255,7 @@ source_set("extensions") {
       "//chrome/browser/ash/net",
       "//chrome/browser/ash/ownership",
       "//chrome/browser/ash/platform_keys",
+      "//chrome/browser/ash/plugin_vm",
       "//chrome/browser/ash/remote_apps",
       "//chrome/browser/ash/system_logs",
       "//chrome/browser/ash/system_web_apps/apps",

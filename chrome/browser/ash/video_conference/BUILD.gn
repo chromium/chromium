@@ -36,6 +36,7 @@ static_library("video_conference") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/camera_mic",
     "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chromeos/crosapi/mojom:mojom_shared",
