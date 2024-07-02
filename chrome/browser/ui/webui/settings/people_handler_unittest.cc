@@ -1023,16 +1023,15 @@ TEST(PeopleHandlerDiceTest, StoredAccountsList) {
 
   network::TestURLLoaderFactory url_loader_factory =
       network::TestURLLoaderFactory();
-  TestingProfile::TestingFactories factories =
-      IdentityTestEnvironmentProfileAdaptor::
-          GetIdentityTestEnvironmentFactories();
-  factories.push_back(
-      {ChromeSigninClientFactory::GetInstance(),
-       base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
-                           &url_loader_factory)});
 
   TestingProfile::Builder builder;
-  builder.AddTestingFactories(factories);
+  builder.AddTestingFactories(
+      IdentityTestEnvironmentProfileAdaptor::
+          GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+              {TestingProfile::TestingFactory{
+                  ChromeSigninClientFactory::GetInstance(),
+                  base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                      &url_loader_factory)}}));
 
   std::unique_ptr<TestingProfile> profile = builder.Build();
   ASSERT_EQ(true, AccountConsistencyModeManager::IsDiceEnabledForProfile(
@@ -1148,17 +1147,16 @@ TEST(PeopleHandlerMainProfile, GetStoredAccountsList) {
 
   network::TestURLLoaderFactory url_loader_factory =
       network::TestURLLoaderFactory();
-  TestingProfile::TestingFactories factories =
-      IdentityTestEnvironmentProfileAdaptor::
-          GetIdentityTestEnvironmentFactories();
-  factories.push_back(
-      {ChromeSigninClientFactory::GetInstance(),
-       base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
-                           &url_loader_factory)});
 
   TestingProfile::Builder builder;
   builder.SetIsMainProfile(true);
-  builder.AddTestingFactories(factories);
+  builder.AddTestingFactories(
+      IdentityTestEnvironmentProfileAdaptor::
+          GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+              {TestingProfile::TestingFactory{
+                  ChromeSigninClientFactory::GetInstance(),
+                  base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                      &url_loader_factory)}}));
 
   std::unique_ptr<TestingProfile> profile =
       IdentityTestEnvironmentProfileAdaptor::
@@ -1191,17 +1189,16 @@ TEST(PeopleHandlerSecondaryProfile, GetStoredAccountsList) {
 
   network::TestURLLoaderFactory url_loader_factory =
       network::TestURLLoaderFactory();
-  TestingProfile::TestingFactories factories =
-      IdentityTestEnvironmentProfileAdaptor::
-          GetIdentityTestEnvironmentFactories();
-  factories.push_back(
-      {ChromeSigninClientFactory::GetInstance(),
-       base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
-                           &url_loader_factory)});
 
   TestingProfile::Builder builder;
   builder.SetIsMainProfile(false);
-  builder.AddTestingFactories(factories);
+  builder.AddTestingFactories(
+      IdentityTestEnvironmentProfileAdaptor::
+          GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+              {TestingProfile::TestingFactory{
+                  ChromeSigninClientFactory::GetInstance(),
+                  base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                      &url_loader_factory)}}));
 
   std::unique_ptr<TestingProfile> profile =
       IdentityTestEnvironmentProfileAdaptor::
@@ -1534,16 +1531,16 @@ TEST(PeopleHandlerWebOnlySigninTest, ChromeSigninUserAvailableOnWebSignin) {
 
   network::TestURLLoaderFactory url_loader_factory =
       network::TestURLLoaderFactory();
-  TestingProfile::TestingFactories factories =
-      IdentityTestEnvironmentProfileAdaptor::
-          GetIdentityTestEnvironmentFactories();
-  factories.push_back(
-      {ChromeSigninClientFactory::GetInstance(),
-       base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
-                           &url_loader_factory)});
 
   TestingProfile::Builder builder;
-  builder.AddTestingFactories(factories);
+  builder.AddTestingFactories(
+      IdentityTestEnvironmentProfileAdaptor::
+          GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+              {TestingProfile::TestingFactory{
+                  ChromeSigninClientFactory::GetInstance(),
+                  base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                      &url_loader_factory)}}));
+
   std::unique_ptr<TestingProfile> profile = builder.Build();
   auto identity_test_env_adaptor =
       std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());

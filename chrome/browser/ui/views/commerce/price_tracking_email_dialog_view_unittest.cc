@@ -49,10 +49,8 @@ class PriceTrackingEmailDialogViewUnitTest : public BrowserWithTestWindowTest {
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    TestingProfile::TestingFactories factories;
-    IdentityTestEnvironmentProfileAdaptor::
-        AppendIdentityTestEnvironmentFactories(&factories);
-    return factories;
+    return IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactories();
   }
 
   void CreateAndShowDialog() {

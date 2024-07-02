@@ -64,10 +64,9 @@ class SafetyHubCardDataHelperTest : public testing::Test {
     ASSERT_TRUE(profile_manager_->SetUp());
     // The profile that we create should use the proper testing factories that
     // encompass the identity test environment.
-    TestingProfile::TestingFactories factories =
-        IdentityTestEnvironmentProfileAdaptor::
-            GetIdentityTestEnvironmentFactories();
-    profile_ = profile_manager_->CreateTestingProfile(kEmail, factories);
+    profile_ = profile_manager_->CreateTestingProfile(
+        kEmail, IdentityTestEnvironmentProfileAdaptor::
+                    GetIdentityTestEnvironmentFactories());
 
     // Create an adaptor for the identity test environment, as we do not
     // directly control how the idenity test environment will be used.

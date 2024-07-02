@@ -100,26 +100,28 @@ class BookmarkBubbleViewTestBase : public BrowserWithTestWindowTest {
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    TestingProfile::TestingFactories factories = {
-        {BookmarkModelFactory::GetInstance(),
-         BookmarkModelFactory::GetDefaultFactory()},
-        {commerce::ShoppingServiceFactory::GetInstance(),
-         base::BindRepeating([](content::BrowserContext* context) {
-           return commerce::MockShoppingService::Build();
-         })},
-        // Used by IdentityTestEnvironmentProfileAdaptor.
-        {ChromeSigninClientFactory::GetInstance(),
-         base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
-                             test_url_loader_factory())},
-        // Used by ImageService.
-        {SyncServiceFactory::GetInstance(),
-         base::BindRepeating([](content::BrowserContext*) {
-           return static_cast<std::unique_ptr<KeyedService>>(
-               std::make_unique<syncer::TestSyncService>());
-         })}};
-    IdentityTestEnvironmentProfileAdaptor::
-        AppendIdentityTestEnvironmentFactories(&factories);
-    return factories;
+    return IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+            {TestingProfile::TestingFactory{
+                 BookmarkModelFactory::GetInstance(),
+                 BookmarkModelFactory::GetDefaultFactory()},
+             TestingProfile::TestingFactory{
+                 commerce::ShoppingServiceFactory::GetInstance(),
+                 base::BindRepeating([](content::BrowserContext* context) {
+                   return commerce::MockShoppingService::Build();
+                 })},
+             // Used by IdentityTestEnvironmentProfileAdaptor.
+             TestingProfile::TestingFactory{
+                 ChromeSigninClientFactory::GetInstance(),
+                 base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                     test_url_loader_factory())},
+             // Used by ImageService.
+             TestingProfile::TestingFactory{
+                 SyncServiceFactory::GetInstance(),
+                 base::BindRepeating([](content::BrowserContext*) {
+                   return static_cast<std::unique_ptr<KeyedService>>(
+                       std::make_unique<syncer::TestSyncService>());
+                 })}});
   }
 
   BookmarkModel* GetBookmarkModel() { return bookmark_model_; }

@@ -183,12 +183,11 @@ class ProcessDiceHeaderDelegateImplTest
 
   // ChromeRenderViewHostTestHarness:
   TestingProfile::TestingFactories GetTestingFactories() const override {
-    TestingProfile::TestingFactories factories = {
-        {DiceWebSigninInterceptorFactory::GetInstance(),
-         base::BindRepeating(&CreateMockDiceWebSigninInterceptor)}};
-    IdentityTestEnvironmentProfileAdaptor::
-        AppendIdentityTestEnvironmentFactories(&factories);
-    return factories;
+    return IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+            {TestingProfile::TestingFactory{
+                DiceWebSigninInterceptorFactory::GetInstance(),
+                base::BindRepeating(&CreateMockDiceWebSigninInterceptor)}});
   }
 
   void TearDown() override {

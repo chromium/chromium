@@ -53,14 +53,13 @@ void IdentityTestEnvironmentProfileAdaptor::
 }
 
 // static
-void IdentityTestEnvironmentProfileAdaptor::
-    AppendIdentityTestEnvironmentFactories(
-        TestingProfile::TestingFactories* factories_to_append_to) {
-  TestingProfile::TestingFactories identity_factories =
-      GetIdentityTestEnvironmentFactories();
-  factories_to_append_to->insert(factories_to_append_to->end(),
-                                 identity_factories.begin(),
-                                 identity_factories.end());
+TestingProfile::TestingFactories IdentityTestEnvironmentProfileAdaptor::
+    GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+        TestingProfile::TestingFactories testing_factories) {
+  for (auto& factory : GetIdentityTestEnvironmentFactories()) {
+    testing_factories.push_back(std::move(factory));
+  }
+  return testing_factories;
 }
 
 // static

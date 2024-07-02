@@ -159,12 +159,11 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    TestingProfile::TestingFactories factories = {
-        {ConsentAuditorFactory::GetInstance(),
-         base::BindRepeating(&BuildFakeConsentAuditor)}};
-    IdentityTestEnvironmentProfileAdaptor::
-        AppendIdentityTestEnvironmentFactories(&factories);
-    return factories;
+    return IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+            {TestingProfile::TestingFactory{
+                ConsentAuditorFactory::GetInstance(),
+                base::BindRepeating(&BuildFakeConsentAuditor)}});
   }
 
   const std::unordered_map<std::string, int>& GetStringToGrdIdMap() {

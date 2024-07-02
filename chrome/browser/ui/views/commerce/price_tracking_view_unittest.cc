@@ -60,16 +60,16 @@ class PriceTrackingViewTest : public BrowserWithTestWindowTest {
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    TestingProfile::TestingFactories factories = {
-        {BookmarkModelFactory::GetInstance(),
-         BookmarkModelFactory::GetDefaultFactory()},
-        {commerce::ShoppingServiceFactory::GetInstance(),
-         base::BindRepeating([](content::BrowserContext* context) {
-           return commerce::MockShoppingService::Build();
-         })}};
-    IdentityTestEnvironmentProfileAdaptor::
-        AppendIdentityTestEnvironmentFactories(&factories);
-    return factories;
+    return IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+            {TestingProfile::TestingFactory{
+                 BookmarkModelFactory::GetInstance(),
+                 BookmarkModelFactory::GetDefaultFactory()},
+             TestingProfile::TestingFactory{
+                 commerce::ShoppingServiceFactory::GetInstance(),
+                 base::BindRepeating([](content::BrowserContext* context) {
+                   return commerce::MockShoppingService::Build();
+                 })}});
   }
 
   void SetUpDependencies() {

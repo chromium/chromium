@@ -94,16 +94,14 @@ class MediaRouterContextualMenuUnitTest : public BrowserWithTestWindowTest {
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    TestingProfile::TestingFactories factories = {
-        {media_router::ChromeMediaRouterFactory::GetInstance(),
-         base::BindRepeating(&media_router::MockMediaRouter::Create)},
-        {media_router::MediaRouterUIServiceFactory::GetInstance(),
-         base::BindRepeating(&BuildUIService)}};
-
-    IdentityTestEnvironmentProfileAdaptor::
-        AppendIdentityTestEnvironmentFactories(&factories);
-
-    return factories;
+    return IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+            {TestingProfile::TestingFactory{
+                 media_router::ChromeMediaRouterFactory::GetInstance(),
+                 base::BindRepeating(&media_router::MockMediaRouter::Create)},
+             TestingProfile::TestingFactory{
+                 media_router::MediaRouterUIServiceFactory::GetInstance(),
+                 base::BindRepeating(&BuildUIService)}});
   }
 
  protected:

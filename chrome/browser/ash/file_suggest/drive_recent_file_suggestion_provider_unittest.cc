@@ -181,15 +181,14 @@ class DriveRecentFileSuggestionProviderTest : public ::testing::Test {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
-    TestingProfile::TestingFactories factories;
-    factories.push_back(
-        {drive::DriveIntegrationServiceFactory::GetInstance(),
-         base::BindRepeating(&DriveRecentFileSuggestionProviderTest::
-                                 BuildTestDriveIntegrationService,
-                             base::Unretained(this))});
-    profile_ =
-        profile_manager_->CreateTestingProfile(kEmail, /*prefs=*/{}, kEmail16,
-                                               /*avatar_id=*/0, factories);
+    profile_ = profile_manager_->CreateTestingProfile(
+        kEmail, /*prefs=*/{}, kEmail16,
+        /*avatar_id=*/0,
+        {TestingProfile::TestingFactory{
+            drive::DriveIntegrationServiceFactory::GetInstance(),
+            base::BindRepeating(&DriveRecentFileSuggestionProviderTest::
+                                    BuildTestDriveIntegrationService,
+                                base::Unretained(this))}});
 
     AccountId account_id =
         AccountId::FromUserEmailGaiaId(profile_->GetProfileUserName(), "12345");

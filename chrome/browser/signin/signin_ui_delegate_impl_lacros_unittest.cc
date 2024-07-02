@@ -124,12 +124,12 @@ class SigninUiDelegateImplLacrosTest : public ::testing::TestWithParam<bool> {
     CHECK(profile_manager_.SetUp());
     // Need to explicitly create the `SigninManager` as it usually doesn't exist
     // in tests.
-    TestingProfile::TestingFactories factories = {
-        {SigninManagerFactory::GetInstance(),
-         base::BindRepeating(&BuildSigninManager)}};
-    IdentityTestEnvironmentProfileAdaptor::
-        AppendIdentityTestEnvironmentFactories(&factories);
-    profile_ = profile_manager_.CreateTestingProfile("Default", factories);
+    profile_ = profile_manager_.CreateTestingProfile(
+        "Default", IdentityTestEnvironmentProfileAdaptor::
+                       GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+                           {TestingProfile::TestingFactory{
+                               SigninManagerFactory::GetInstance(),
+                               base::BindRepeating(&BuildSigninManager)}}));
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
   }

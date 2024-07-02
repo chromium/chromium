@@ -65,12 +65,11 @@ class PriceTrackingBubbleDialogViewUnitTest : public BrowserWithTestWindowTest {
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    TestingProfile::TestingFactories factories = {
-        {BookmarkModelFactory::GetInstance(),
-         BookmarkModelFactory::GetDefaultFactory()}};
-    IdentityTestEnvironmentProfileAdaptor::
-        AppendIdentityTestEnvironmentFactories(&factories);
-    return factories;
+    return IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+            {TestingProfile::TestingFactory{
+                BookmarkModelFactory::GetInstance(),
+                BookmarkModelFactory::GetDefaultFactory()}});
   }
 
   void CreateBubbleViewAndShow(PriceTrackingBubbleDialogView::Type type) {

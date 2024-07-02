@@ -51,15 +51,13 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory));
 
-  TestingProfile::TestingFactories factories =
+  builder.AddTestingFactories(
       IdentityTestEnvironmentProfileAdaptor::
-          GetIdentityTestEnvironmentFactories();
-  factories.emplace_back(
-      ChromeSigninClientFactory::GetInstance(),
-      base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
-                          &test_url_loader_factory));
-
-  builder.AddTestingFactories(factories);
+          GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+              {TestingProfile::TestingFactory{
+                  ChromeSigninClientFactory::GetInstance(),
+                  base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                      &test_url_loader_factory)}}));
 
   return IdentityTestEnvironmentProfileAdaptor::
       CreateProfileForIdentityTestEnvironment(builder);
