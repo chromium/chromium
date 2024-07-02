@@ -766,8 +766,8 @@ void StoreMetricsReporter::OnGetPasswordStoreResultsFrom(
   // StoreMetricsReporter has been destructed already (e.g. if the user closes
   // the browser profile for which metrics are being reported) so
   // `OnBackgroundMetricsReportingCompleted` won't run.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&ReportAllMetrics, custom_passphrase_enabled_,
                      sync_username_, is_opted_in_account_storage_,
                      is_safe_browsing_enabled_,
