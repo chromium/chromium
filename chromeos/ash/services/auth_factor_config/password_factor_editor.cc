@@ -178,7 +178,7 @@ void PasswordFactorEditor::UpdatePasswordWithContext(
 
   // Note that old online factors might have label "legacy-0" instead of
   // "gaia", so we use password_factor->ref().label() here.
-  auth_factor_editor_.ReplacePasswordFactor(
+  auth_factor_editor_.UpdatePasswordFactor(
       std::move(user_context), cryptohome::RawPassword(new_password),
       password_factor->ref().label(),
       base::BindOnce(&PasswordFactorEditor::OnPasswordConfigured,

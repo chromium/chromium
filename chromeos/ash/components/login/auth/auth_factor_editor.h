@@ -136,15 +136,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
                          const cryptohome::KeyLabel& label,
                          AuthOperationCallback callback);
 
-  // Replaces the user's password with a new value. A password must
+  // Updates the user's password with a new value. A password must
   // already be configured prior to calling this. On success, as this will
   // modify the auth factor configurations of the user, the context auth factor
   // configurations will be cleared.
   // Session should be authenticated.
-  void ReplacePasswordFactor(std::unique_ptr<UserContext> context,
-                             cryptohome::RawPassword new_password,
-                             const cryptohome::KeyLabel& label,
-                             AuthOperationCallback callback);
+  void UpdatePasswordFactor(std::unique_ptr<UserContext> context,
+                            cryptohome::RawPassword new_password,
+                            const cryptohome::KeyLabel& label,
+                            AuthOperationCallback callback);
 
   // Updates the user's password factor's metadata. The password must already
   // be configured prior to calling this. On success, as this will modify the
@@ -204,11 +204,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
                              AuthOperationCallback calllback,
                              const std::string& system_salt);
 
-  void ReplacePasswordFactorImpl(std::unique_ptr<UserContext> context,
-                                 cryptohome::RawPassword new_password,
-                                 const cryptohome::KeyLabel& label,
-                                 AuthOperationCallback callback,
-                                 const std::string& system_salt);
+  void UpdatePasswordFactorImpl(std::unique_ptr<UserContext> context,
+                                cryptohome::RawPassword new_password,
+                                const cryptohome::KeyLabel& label,
+                                AuthOperationCallback callback,
+                                const std::string& system_salt);
 
   const raw_ptr<UserDataAuthClient, DanglingUntriaged> client_;
   base::WeakPtrFactory<AuthFactorEditor> weak_factory_{this};

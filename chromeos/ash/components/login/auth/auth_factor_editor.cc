@@ -448,15 +448,15 @@ void AuthFactorEditor::SetPasswordFactor(std::unique_ptr<UserContext> context,
       std::move(callback)));
 }
 
-void AuthFactorEditor::ReplacePasswordFactor(
+void AuthFactorEditor::UpdatePasswordFactor(
     std::unique_ptr<UserContext> context,
     cryptohome::RawPassword new_password,
     const cryptohome::KeyLabel& label,
     AuthOperationCallback callback) {
-  LOGIN_LOG(EVENT) << "Replacing password with label: " << label;
+  LOGIN_LOG(EVENT) << "Updating password with label: " << label;
 
   SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
-      &AuthFactorEditor::ReplacePasswordFactorImpl, weak_factory_.GetWeakPtr(),
+      &AuthFactorEditor::UpdatePasswordFactorImpl, weak_factory_.GetWeakPtr(),
       std::move(context), std::move(new_password), std::move(label),
       std::move(callback)));
 }
@@ -495,7 +495,7 @@ void AuthFactorEditor::SetPasswordFactorImpl(
                               std::move(callback)));
 }
 
-void AuthFactorEditor::ReplacePasswordFactorImpl(
+void AuthFactorEditor::UpdatePasswordFactorImpl(
     std::unique_ptr<UserContext> context,
     cryptohome::RawPassword new_password,
     const cryptohome::KeyLabel& label,
