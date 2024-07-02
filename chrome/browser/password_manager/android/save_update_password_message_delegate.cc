@@ -198,7 +198,7 @@ void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
   int title_message_id;
   if (update_password) {
     title_message_id = IDS_UPDATE_PASSWORD;
-  } else if (pending_credentials.federation_origin.opaque()) {
+  } else if (!pending_credentials.IsFederatedCredential()) {
     title_message_id = IDS_SAVE_PASSWORD;
   } else {
     title_message_id = IDS_SAVE_ACCOUNT;

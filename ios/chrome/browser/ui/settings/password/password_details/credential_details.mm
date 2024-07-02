@@ -42,7 +42,7 @@
 
     _userDisplayName = base::SysUTF16ToNSString(credential.user_display_name);
 
-    if (credential.federation_origin.opaque()) {
+    if (!credential.federation_origin.IsValid()) {
       _password = base::SysUTF16ToNSString(credential.password);
     } else {
       _federation =
@@ -56,7 +56,7 @@
                           ? CredentialTypeBlocked
                           : CredentialTypeRegularPassword;
     if (_credentialType == CredentialTypeRegularPassword &&
-        !credential.federation_origin.opaque()) {
+        credential.federation_origin.IsValid()) {
       _credentialType = CredentialTypeFederation;
     }
     if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&

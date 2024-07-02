@@ -240,14 +240,14 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
       return;
     }
   }
-  if (!form.federation_origin.opaque()) {
+  if (form.federation_origin.IsValid()) {
     // If this is a federated credential, check it against the federated matches
     // produced by the PasswordFormManager. If a match is found, update it and
     // return.
     for (const password_manager::PasswordForm& match :
          form_manager_->GetFormFetcher()->GetFederatedMatches()) {
       if (match.username_value == form.username_value &&
-          match.federation_origin.IsSameOriginWith(form.federation_origin)) {
+          match.federation_origin == form.federation_origin) {
         form_manager_->Save();
         return;
       }

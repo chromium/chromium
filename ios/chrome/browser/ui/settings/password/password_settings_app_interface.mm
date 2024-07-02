@@ -366,7 +366,7 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   federated.url = GURL(base::SysNSStringToUTF16(origin));
   federated.signon_realm = federated.url.spec();
   federated.federation_origin =
-      url::Origin::Create(GURL(base::SysNSStringToUTF16(federatedOrigin)));
+      url::SchemeHostPort(GURL(base::SysNSStringToUTF16(federatedOrigin)));
   return SaveToPasswordProfileStore(federated);
 }
 

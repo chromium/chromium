@@ -472,7 +472,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_FederatedCredential) {
   stored.match_type = PasswordForm::MatchType::kExact;
   PasswordForm parsed = GetTestCredential();
   parsed.password_value.clear();
-  parsed.federation_origin = url::Origin::Create(GURL(kTestFederationURL));
+  parsed.federation_origin = url::SchemeHostPort(GURL(kTestFederationURL));
 
   EXPECT_EQ(nullptr, GetMatchForUpdating(parsed, {&stored}));
 }

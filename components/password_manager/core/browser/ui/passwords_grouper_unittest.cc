@@ -102,7 +102,7 @@ TEST_F(PasswordsGrouperTest, GetAllCredentials) {
   federated_form.signon_realm = "federation://test.com/accounts.federation.com";
   federated_form.username_value = u"username2";
   federated_form.federation_origin =
-      url::Origin::Create(GURL("https://test.com"));
+      url::SchemeHostPort(GURL("https://test.com"));
 
   GroupedFacets group;
   group.facets = {
@@ -178,7 +178,7 @@ TEST_F(PasswordsGrouperTest, GetAffiliatedGroupsWithGroupingInfo) {
   federated_form.signon_realm = "federation://test.com/accounts.federation.com";
   federated_form.username_value = u"username2";
   federated_form.federation_origin =
-      url::Origin::Create(GURL("https://accounts.federation.com"));
+      url::SchemeHostPort(GURL("https://accounts.federation.com"));
 
   std::vector<FacetURI> facets = {
       FacetURI::FromPotentiallyInvalidSpec(form.signon_realm),
@@ -224,7 +224,7 @@ TEST_F(PasswordsGrouperTest, GroupPasswords) {
   federated_form.signon_realm = "federation://test.com/accounts.federation.com";
   federated_form.username_value = u"username2";
   federated_form.federation_origin =
-      url::Origin::Create(GURL("https://accounts.federation.com"));
+      url::SchemeHostPort(GURL("https://accounts.federation.com"));
 
   GroupedFacets group;
   group.facets = {
@@ -268,7 +268,7 @@ TEST_F(PasswordsGrouperTest, GroupCredentialsWithoutAffiliation) {
   federated_form.signon_realm = "federation://test.com/accounts.federation.com";
   federated_form.username_value = u"username2";
   federated_form.federation_origin =
-      url::Origin::Create(GURL("https://accounts.federation.com"));
+      url::SchemeHostPort(GURL("https://accounts.federation.com"));
 
   GroupedFacets federated_group;
   federated_group.facets = {
@@ -321,7 +321,7 @@ TEST_F(PasswordsGrouperTest, FederatedCredentialsGroupedWithRegular) {
   federated_form.signon_realm = "federation://test.com/accounts.federation.com";
   federated_form.username_value = u"username2";
   federated_form.federation_origin =
-      url::Origin::Create(GURL("https://accounts.federation.com"));
+      url::SchemeHostPort(GURL("https://accounts.federation.com"));
 
   EXPECT_CALL(affiliation_service(), GetGroupingInfo)
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(
@@ -470,7 +470,7 @@ TEST_F(PasswordsGrouperTest, FederatedAndroidAppGroupedWithRegularPasswords) {
   federated_android_form.username_value = u"test@gmail.com";
   federated_android_form.url = GURL(federated_android_form.signon_realm);
   federated_android_form.federation_origin =
-      url::Origin::Create(GURL(u"https://federatedOrigin.com"));
+      url::SchemeHostPort(GURL(u"https://federatedOrigin.com"));
 
   GroupedFacets group;
   group.facets = {
@@ -506,7 +506,7 @@ TEST_F(PasswordsGrouperTest, EncodedCharactersInSignonRealm) {
   federated_form.signon_realm = "federation://test.com/accounts.federation.com";
   federated_form.username_value = u"username2";
   federated_form.federation_origin =
-      url::Origin::Create(GURL("https://accounts.federation.com"));
+      url::SchemeHostPort(GURL("https://accounts.federation.com"));
 
   GroupedFacets group;
   // Group them only by TLD.

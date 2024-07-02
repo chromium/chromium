@@ -78,7 +78,7 @@ void FilterDuplicatesInFederatedCredentials(
       });
 
   for (auto& form : forms) {
-    CHECK(!form->federation_origin.opaque());
+    CHECK(form->federation_origin.IsValid());
     // |forms| contains credentials from both the profile and account stores.
     // Therefore, it could potentially contains duplicate federated
     // credentials. In case of duplicates, favor the account store version.
@@ -102,7 +102,7 @@ void FilterIrrelevantForms(std::vector<std::unique_ptr<PasswordForm>>& forms,
       return true;
     }
 
-    if (form->federation_origin.opaque()) {
+    if (!form->IsFederatedCredential()) {
       // Remove passwords if they shouldn't be included.
       return !include_passwords;
     }

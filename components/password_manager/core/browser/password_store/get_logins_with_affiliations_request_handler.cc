@@ -99,7 +99,7 @@ void TrimUsernameOnlyCredentials(std::vector<PasswordForm>& credentials) {
   // Remove username-only credentials which are not federated.
   std::erase_if(credentials, [](const PasswordForm& form) {
     return form.scheme == PasswordForm::Scheme::kUsernameOnly &&
-           form.federation_origin.opaque();
+           !form.IsFederatedCredential();
   });
 
   // Set "skip_zero_click" on federated credentials.

@@ -223,7 +223,7 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
   // This is testing that when two federated credentials have the same username
   // for the same origin, the account store version is passed to the UI.
   GURL federation_url("https://google.com/");
-  form_.federation_origin = url::Origin::Create(federation_url);
+  form_.federation_origin = url::SchemeHostPort(federation_url);
   form_.password_value = std::u16string();
   form_.signon_realm = "federation://www.example.com/google.com";
 

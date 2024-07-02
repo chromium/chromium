@@ -152,7 +152,7 @@ TEST_F(PasswordSaveUpdateViewTest,
       kURL, web_contents()->GetPrimaryMainFrame());
 
   // Set the federation_origin to force a Federated Credentials bubble.
-  pending_password_.federation_origin = kOrigin;
+  pending_password_.federation_origin = url::SchemeHostPort(kURL);
   pending_password_.match_type =
       password_manager::PasswordForm::MatchType::kExact;
   CreateViewAndShow();

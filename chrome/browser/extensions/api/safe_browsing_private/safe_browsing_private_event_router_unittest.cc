@@ -248,11 +248,9 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
   void TriggerOnLoginEvent(
       const GURL& url,
       const std::u16string& login_user_name,
-      std::optional<url::Origin> federated_origin = std::nullopt) {
+      url::SchemeHostPort federated_origin = url::SchemeHostPort()) {
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
-        ->OnLoginEvent(url, federated_origin.has_value(),
-                       federated_origin.has_value() ? federated_origin.value()
-                                                    : url::Origin(),
+        ->OnLoginEvent(url, federated_origin.IsValid(), federated_origin,
                        login_user_name);
   }
 
@@ -925,7 +923,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnLoginEventFederated) {
       profile_->GetProfileUserName(), GetProfileIdentifier(), u"*****");
 
   TriggerOnLoginEvent(GURL("https://www.example.com/"), u"login-username",
-                      url::Origin::Create(GURL("https://www.google.com")));
+                      url::SchemeHostPort(GURL("https://www.google.com")));
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnPasswordBreach) {

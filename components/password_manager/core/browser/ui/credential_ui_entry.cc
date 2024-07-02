@@ -299,7 +299,7 @@ std::string CreateSortKey(const CredentialUIEntry& credential) {
            kSortKeyPartsSeparator + base::UTF16ToUTF8(credential.password);
 
     key += kSortKeyPartsSeparator;
-    if (!credential.federation_origin.opaque()) {
+    if (credential.federation_origin.IsValid()) {
       key += credential.federation_origin.host();
     }
   }

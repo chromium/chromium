@@ -136,7 +136,7 @@ std::unique_ptr<views::Label> CreatePasswordLabel(
     const password_manager::PasswordForm& form) {
   std::unique_ptr<views::Label> label = std::make_unique<views::Label>(
       GetDisplayPassword(form), views::style::CONTEXT_DIALOG_BODY_TEXT);
-  if (form.federation_origin.opaque()) {
+  if (!form.IsFederatedCredential()) {
     label->SetTextStyle(STYLE_SECONDARY_MONOSPACED);
     label->SetObscured(true);
     label->SetElideBehavior(gfx::TRUNCATE);

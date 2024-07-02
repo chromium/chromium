@@ -81,7 +81,7 @@ class ManagePasswordsStateTest : public testing::Test {
 
     local_federated_form_ = saved_match_;
     local_federated_form_.federation_origin =
-        url::Origin::Create(GURL("https://idp.com"));
+        url::SchemeHostPort(GURL("https://idp.com"));
     local_federated_form_.password_value.clear();
     local_federated_form_.signon_realm =
         "federation://example.com/accounts.com";

@@ -407,7 +407,7 @@ std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetSavedPasswords()
   auto credentials = GetSavedCredentials();
   std::erase_if(credentials, [](const auto& credential) {
     return !credential.passkey_credential_id.empty() ||
-           credential.blocked_by_user || !credential.federation_origin.opaque();
+           credential.blocked_by_user || credential.federation_origin.IsValid();
   });
   return credentials;
 }

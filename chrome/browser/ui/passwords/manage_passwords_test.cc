@@ -117,7 +117,7 @@ void ManagePasswordsTest::SetupManagingPasswords(
                                 "/somelongeroriginurl.com";
   federated_form.url = embedded_test_server()->GetURL("/empty.html");
   federated_form.federation_origin =
-      url::Origin::Create(GURL("https://somelongeroriginurl.com/"));
+      url::SchemeHostPort(GURL("https://somelongeroriginurl.com/"));
   federated_form.username_value = u"test_federation_username";
   federated_form.match_type = password_manager::PasswordForm::MatchType::kExact;
   // Overrides url to a defined value to avoid flakiness in pixel tests.

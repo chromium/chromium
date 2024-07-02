@@ -61,7 +61,7 @@ CredentialEditBridge::CredentialEditBridge(
   Java_CredentialEditBridge_initAndLaunchUi(
       base::android::AttachCurrentThread(), java_bridge_,
       reinterpret_cast<intptr_t>(this), context, settings_launcher,
-      credential.blocked_by_user, !credential.federation_origin.opaque());
+      credential.blocked_by_user, credential.federation_origin.IsValid());
 }
 
 CredentialEditBridge::~CredentialEditBridge() {
@@ -135,7 +135,7 @@ std::u16string CredentialEditBridge::GetDisplayURLOrAppName() {
 }
 
 std::u16string CredentialEditBridge::GetDisplayFederationOrigin() {
-  return !credential_.federation_origin.opaque()
+  return credential_.federation_origin.IsValid()
              ? url_formatter::FormatUrl(
                    credential_.federation_origin.GetURL(),
                    url_formatter::kFormatUrlOmitDefaults |

@@ -21,7 +21,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "url/gurl.h"
-#include "url/origin.h"
+#include "url/scheme_host_port.h"
 
 namespace password_manager {
 
@@ -417,7 +417,7 @@ struct PasswordForm {
   GURL icon_url;
 
   // The origin of identity provider used for federated login.
-  url::Origin federation_origin;
+  url::SchemeHostPort federation_origin;
 
   // If true, Chrome will not return this credential to a site in response to
   // 'navigator.credentials.request()' without user interaction.

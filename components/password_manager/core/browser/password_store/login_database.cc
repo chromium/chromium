@@ -263,10 +263,9 @@ void BindAddStatement(const PasswordForm& form,
   s->BindString(COLUMN_ICON_URL,
                 form.icon_url.is_valid() ? form.icon_url.spec() : "");
   // An empty Origin serializes as "null" which would be strange to store here.
-  s->BindString(COLUMN_FEDERATION_URL,
-                form.federation_origin.opaque()
-                    ? std::string()
-                    : form.federation_origin.Serialize());
+  s->BindString(COLUMN_FEDERATION_URL, form.federation_origin.IsValid()
+                                           ? form.federation_origin.Serialize()
+                                           : std::string());
   s->BindInt(COLUMN_SKIP_ZERO_CLICK, form.skip_zero_click);
   s->BindInt(COLUMN_GENERATION_UPLOAD_STATUS,
              static_cast<int>(form.generation_upload_status));
@@ -1464,9 +1463,9 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(
   s.BindString(next_param++,
                form.icon_url.is_valid() ? form.icon_url.spec() : "");
   // An empty Origin serializes as "null" which would be strange to store here.
-  s.BindString(next_param++, form.federation_origin.opaque()
-                                 ? std::string()
-                                 : form.federation_origin.Serialize());
+  s.BindString(next_param++, form.federation_origin.IsValid()
+                                 ? form.federation_origin.Serialize()
+                                 : std::string());
   s.BindInt(next_param++, form.skip_zero_click);
   s.BindInt(next_param++, static_cast<int>(form.generation_upload_status));
   base::Pickle username_pickle =
@@ -1724,7 +1723,7 @@ PasswordForm LoginDatabase::GetFormWithoutPasswordFromStatement(
   form.display_name = s.ColumnString16(COLUMN_DISPLAY_NAME);
   form.icon_url = GURL(s.ColumnString(COLUMN_ICON_URL));
   form.federation_origin =
-      url::Origin::Create(GURL(s.ColumnString(COLUMN_FEDERATION_URL)));
+      url::SchemeHostPort(GURL(s.ColumnString(COLUMN_FEDERATION_URL)));
   form.skip_zero_click = (s.ColumnInt(COLUMN_SKIP_ZERO_CLICK) > 0);
   form.generation_upload_status =
       static_cast<PasswordForm::GenerationUploadStatus>(

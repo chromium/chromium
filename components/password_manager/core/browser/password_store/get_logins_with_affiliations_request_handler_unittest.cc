@@ -463,7 +463,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
   federated_credential.signon_realm = kAffiliatedAndroidApp;
   federated_credential.username_value = u"test";
   federated_credential.federation_origin =
-      url::Origin::Create(GURL("https://google.com/"));
+      url::SchemeHostPort(GURL("https://google.com/"));
   federated_credential.skip_zero_click = false;
 
   backend()->AddLoginAsync(username_only, base::DoNothing());

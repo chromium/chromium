@@ -278,8 +278,8 @@ const PasswordForm* GetMatchForUpdating(
     bool username_updated_in_bubble) {
   // This is the case for the credential management API. It should not depend on
   // form managers. Once that's the case, this should be turned into a DCHECK.
-  // TODO(crbug.com/40620575): turn it into a DCHECK.
-  if (!submitted_form.federation_origin.opaque()) {
+  // TODO(crbug/40620575): turn it into a DCHECK.
+  if (submitted_form.IsFederatedCredential()) {
     return nullptr;
   }
 

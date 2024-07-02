@@ -580,7 +580,7 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
       CreatePasswordLabel(password_form);
   password_label->SetID(
       static_cast<int>(ManagePasswordsViewIDs::kPasswordLabel));
-  if (!password_form.federation_origin.opaque()) {
+  if (password_form.IsFederatedCredential()) {
     // Federated credentials, there is no note and no copy password button.
     AddChildView(CreateDetailsRow(vector_icons::kPasswordManagerIcon,
                                   std::move(password_label)));

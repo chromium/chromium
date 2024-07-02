@@ -275,9 +275,9 @@ sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
   password_data.set_avatar_url(
       password_form.icon_url.is_valid() ? password_form.icon_url.spec() : "");
   password_data.set_federation_url(
-      password_form.federation_origin.opaque()
-          ? std::string()
-          : password_form.federation_origin.Serialize());
+      password_form.federation_origin.IsValid()
+          ? password_form.federation_origin.Serialize()
+          : std::string());
   *password_data.mutable_password_issues() =
       PasswordIssuesMapToProto(password_form.password_issues);
   *password_data.mutable_notes() =
@@ -344,7 +344,7 @@ PasswordForm PasswordFromSpecifics(
   password.display_name = base::UTF8ToUTF16(password_data.display_name());
   password.icon_url = GURL(password_data.avatar_url());
   password.federation_origin =
-      url::Origin::Create(GURL(password_data.federation_url()));
+      url::SchemeHostPort(GURL(password_data.federation_url()));
   password.password_issues = PasswordIssuesMapFromProto(password_data);
   password.notes = PasswordNotesFromProto(password_data.notes());
   password.sender_email = base::UTF8ToUTF16(password_data.sender_email());

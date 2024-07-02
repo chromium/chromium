@@ -1313,10 +1313,10 @@ PasswordsPrivateDelegateImpl::CreatePasswordUiEntryFromCredentialUiEntry(
         credential.creation_time->InMillisecondsSinceUnixEpoch();
   }
   entry.stored_in = extensions::StoreSetFromCredential(credential);
-  if (!credential.federation_origin.opaque()) {
+  if (credential.federation_origin.IsValid()) {
     std::u16string formatted_origin =
-        url_formatter::FormatOriginForSecurityDisplay(
-            credential.federation_origin,
+        url_formatter::FormatUrlForSecurityDisplay(
+            credential.federation_origin.GetURL(),
             url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 
     entry.federation_text = base::UTF16ToUTF8(formatted_origin);

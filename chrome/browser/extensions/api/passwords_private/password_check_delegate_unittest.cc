@@ -147,8 +147,8 @@ PasswordForm MakeSavedFederatedCredential(
   form.signon_realm = std::string(signon_realm);
   form.url = GURL(signon_realm);
   form.username_value = std::u16string(username);
-  form.federation_origin = url::Origin::Create(GURL(provider));
-  CHECK(!form.federation_origin.opaque());
+  form.federation_origin = url::SchemeHostPort(GURL(provider));
+  CHECK(form.federation_origin.IsValid());
   form.in_store = store;
   return form;
 }

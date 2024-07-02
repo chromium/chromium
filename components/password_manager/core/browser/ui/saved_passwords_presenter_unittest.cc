@@ -198,7 +198,7 @@ TEST_F(SavedPasswordsPresenterTest, NotifyObservers) {
 TEST_F(SavedPasswordsPresenterTest, IgnoredCredentials) {
   PasswordForm federated_form;
   federated_form.federation_origin =
-      url::Origin::Create(GURL("https://example.com"));
+      url::SchemeHostPort(GURL("https://example.com"));
 
   StrictMockSavedPasswordsPresenterObserver observer;
   presenter().AddObserver(&observer);
@@ -816,7 +816,7 @@ TEST_F(SavedPasswordsPresenterTest,
   federated_form.signon_realm = "https://federated.com";
   federated_form.username_value = u"example@gmail.com";
   federated_form.federation_origin =
-      url::Origin::Create(GURL(u"federatedOrigin.com"));
+      url::SchemeHostPort(GURL(u"federatedOrigin.com"));
   federated_form.in_store = PasswordForm::Store::kProfileStore;
 
   store().AddLogin(form);
@@ -863,7 +863,7 @@ TEST_F(SavedPasswordsPresenterTest, GetSavedCredentialsWithPasskeys) {
   federated_form.signon_realm = "federation://federated.com/idp.com";
   federated_form.username_value = u"example@gmail.com";
   federated_form.federation_origin =
-      url::Origin::Create(GURL("federation-origin.com"));
+      url::SchemeHostPort(GURL("federation-origin.com"));
   federated_form.in_store = PasswordForm::Store::kProfileStore;
 
   sync_pb::WebauthnCredentialSpecifics passkey = CreateTestPasskey();

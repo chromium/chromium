@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest,
   form.icon_url = embedded_test_server()->GetURL("/icon.png");
   form.display_name = u"Peter Pan";
   form.federation_origin =
-      url::Origin::Create(GURL("https://google.com/federation"));
+      url::SchemeHostPort(GURL("https://google.com/federation"));
   local_credentials.push_back(
       std::make_unique<password_manager::PasswordForm>(form));
 
@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(
   form.icon_url = icon_url;
   form.display_name = u"Peter Pan";
   form.federation_origin =
-      url::Origin::Create(GURL("https://google.com/federation"));
+      url::SchemeHostPort(GURL("https://google.com/federation"));
   local_credentials.push_back(
       std::make_unique<password_manager::PasswordForm>(form));
 
@@ -578,7 +578,7 @@ void PasswordDialogViewTest::ShowUi(const std::string& name) {
     form.icon_url = GURL("https://google.com/icon.png");
     form.display_name = u"Peter";
     form.federation_origin =
-        url::Origin::Create(GURL("https://google.com/federation"));
+        url::SchemeHostPort(GURL("https://google.com/federation"));
     local_credentials.push_back(
         std::make_unique<password_manager::PasswordForm>(form));
     controller()->OnAutoSignin(std::move(local_credentials),
@@ -594,19 +594,19 @@ void PasswordDialogViewTest::ShowUi(const std::string& name) {
       form.display_name = u"Tinkerbell";
       form.username_value = u"tinkerbell@pan.test";
       form.federation_origin =
-          url::Origin::Create(GURL("https://google.com/neverland"));
+          url::SchemeHostPort(GURL("https://google.com/neverland"));
       local_credentials.push_back(
           std::make_unique<password_manager::PasswordForm>(form));
       form.display_name = u"James Hook";
       form.username_value = u"james@pan.test";
       form.federation_origin =
-          url::Origin::Create(GURL("https://google.com/jollyroger"));
+          url::SchemeHostPort(GURL("https://google.com/jollyroger"));
       local_credentials.push_back(
           std::make_unique<password_manager::PasswordForm>(form));
       form.display_name = u"Wendy Darling";
       form.username_value = u"wendy@pan.test";
       form.federation_origin =
-          url::Origin::Create(GURL("https://google.com/london"));
+          url::SchemeHostPort(GURL("https://google.com/london"));
       local_credentials.push_back(
           std::make_unique<password_manager::PasswordForm>(form));
     }

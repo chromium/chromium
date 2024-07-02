@@ -83,7 +83,7 @@ gfx::ImageSkia ScaleImageForAccountAvatar(gfx::ImageSkia skia_image) {
 std::pair<std::u16string, std::u16string> GetCredentialLabelsForAccountChooser(
     const password_manager::PasswordForm& form) {
   std::u16string federation;
-  if (!form.federation_origin.opaque()) {
+  if (form.IsFederatedCredential()) {
     federation = GetDisplayFederation(form);
   }
 
@@ -179,12 +179,13 @@ std::u16string GetDisplayUsername(
 
 std::u16string GetDisplayFederation(
     const password_manager::PasswordForm& form) {
-  return url_formatter::FormatOriginForSecurityDisplay(
-      form.federation_origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+  return url_formatter::FormatUrlForSecurityDisplay(
+      form.federation_origin.GetURL(),
+      url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 }
 
 std::u16string GetDisplayPassword(const password_manager::PasswordForm& form) {
-  return form.federation_origin.opaque()
+  return !form.IsFederatedCredential()
              ? form.password_value
              : l10n_util::GetStringFUTF16(IDS_PASSWORDS_VIA_FEDERATION,
                                           GetDisplayFederation(form));

@@ -1026,7 +1026,7 @@ void ChromePasswordManagerClient::CheckSafeBrowsingReputation(
 void ChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(
     const GURL& url,
     bool is_federated,
-    const url::Origin& federated_origin,
+    const url::SchemeHostPort& federated_origin,
     const std::u16string& login_user_name) const {
   extensions::SafeBrowsingPrivateEventRouter* router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(

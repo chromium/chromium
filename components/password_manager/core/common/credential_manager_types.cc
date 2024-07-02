@@ -34,7 +34,7 @@ CredentialInfo::CredentialInfo(CredentialType type,
                                std::optional<std::u16string> name,
                                GURL icon,
                                std::optional<std::u16string> password,
-                               url::Origin federation)
+                               url::SchemeHostPort federation)
     : type(type),
       id(std::move(id)),
       name(std::move(name)),
@@ -44,10 +44,10 @@ CredentialInfo::CredentialInfo(CredentialType type,
   switch (type) {
     case CredentialType::CREDENTIAL_TYPE_EMPTY:
       password = std::u16string();
-      federation = url::Origin();
+      federation = url::SchemeHostPort();
       break;
     case CredentialType::CREDENTIAL_TYPE_PASSWORD:
-      federation = url::Origin();
+      federation = url::SchemeHostPort();
       break;
     case CredentialType::CREDENTIAL_TYPE_FEDERATED:
       password = std::u16string();

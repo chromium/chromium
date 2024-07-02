@@ -27,11 +27,11 @@ base::android::ScopedJavaLocalRef<jobject> CreateNativeCredential(
           ? std::string()
           : password_form.url.DeprecatedGetOriginAsURL().spec();
   std::string federation =
-      password_form.federation_origin.opaque()
-          ? std::string()
-          : l10n_util::GetStringFUTF8(
+      password_form.IsFederatedCredential()
+          ? l10n_util::GetStringFUTF8(
                 IDS_PASSWORDS_VIA_FEDERATION,
-                base::ASCIIToUTF16(password_form.federation_origin.host()));
+                base::ASCIIToUTF16(password_form.federation_origin.host()))
+          : std::string();
   return Java_Credential_createCredential(
       env, ConvertUTF16ToJavaString(env, password_form.username_value),
       ConvertUTF16ToJavaString(env, password_form.display_name),

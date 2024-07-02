@@ -67,7 +67,7 @@ std::unique_ptr<PasswordForm> FillPasswordFormWithData(
   if (use_federated_login) {
     form->password_value.clear();
     form->federation_origin =
-        url::Origin::Create(GURL("https://accounts.google.com/login"));
+        url::SchemeHostPort(GURL("https://accounts.google.com/login"));
     if (!affiliations::IsValidAndroidFacetURI(form->signon_realm)) {
       form->signon_realm =
           "federation://" + form->url.host() + "/accounts.google.com";

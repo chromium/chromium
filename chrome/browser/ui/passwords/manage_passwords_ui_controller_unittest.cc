@@ -337,7 +337,7 @@ void ManagePasswordsUIControllerTest::SetUp() {
       test_federated_form_.url.DeprecatedGetOriginAsURL().spec();
   test_federated_form_.username_value = u"username";
   test_federated_form_.federation_origin =
-      url::Origin::Create(GURL("https://federation.test/"));
+      url::SchemeHostPort(GURL("https://federation.test/"));
   test_federated_form_.match_type = PasswordForm::MatchType::kExact;
 
   submitted_form_ = test_local_form_;

@@ -145,7 +145,7 @@ PasswordForm GenerateFederatedCredentialForm() {
   form.url = GURL("http://accounts.federated.com/LoginAuth");
   form.action = GURL("http://accounts.federated.com/Login");
   form.federation_origin =
-      url::Origin::Create(GURL("https://accounts.federated.com/"));
+      url::SchemeHostPort(GURL("https://accounts.federated.com/"));
   return form;
 }
 
@@ -237,7 +237,7 @@ bool AddZeroClickableLogin(LoginDatabase* db,
   form.signon_realm = form.url.spec();
   form.display_name = ASCIIToUTF16(unique_string);
   form.icon_url = origin;
-  form.federation_origin = url::Origin::Create(origin);
+  form.federation_origin = url::SchemeHostPort(origin);
   form.date_created = base::Time::Now();
 
   form.skip_zero_click = false;
@@ -543,7 +543,7 @@ TEST_P(LoginDatabaseTest, TestFederatedMatching) {
   form2.password_value = u"";
   form2.type = PasswordForm::Type::kApi;
   form2.federation_origin =
-      url::Origin::Create(GURL("https://accounts.google.com/"));
+      url::SchemeHostPort(GURL("https://accounts.google.com/"));
 
   // Add it and make sure it is there.
   EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
@@ -576,7 +576,7 @@ TEST_P(LoginDatabaseTest, TestFederatedMatchingLocalhost) {
   form.url = GURL("http://localhost/");
   form.signon_realm = "federation://localhost/accounts.google.com";
   form.federation_origin =
-      url::Origin::Create(GURL("https://accounts.google.com/"));
+      url::SchemeHostPort(GURL("https://accounts.google.com/"));
   form.username_value = u"test@gmail.com";
   form.type = PasswordForm::Type::kApi;
   form.scheme = PasswordForm::Scheme::kHtml;
@@ -732,7 +732,7 @@ TEST_P(LoginDatabaseTest, TestFederatedMatchingWithoutPSLMatching) {
   form2.username_value = u"test1@gmail.com";
   form2.type = PasswordForm::Type::kApi;
   form2.federation_origin =
-      url::Origin::Create(GURL("https://accounts.google.com/"));
+      url::SchemeHostPort(GURL("https://accounts.google.com/"));
 
   EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
   EXPECT_EQ(AddChangeForForm(form2), db().AddLogin(form2));
@@ -765,7 +765,7 @@ TEST_P(LoginDatabaseTest, TestFederatedPSLMatching) {
   form.username_value = u"test1@gmail.com";
   form.type = PasswordForm::Type::kApi;
   form.federation_origin =
-      url::Origin::Create(GURL("https://accounts.google.com/"));
+      url::SchemeHostPort(GURL("https://accounts.google.com/"));
   form.scheme = PasswordForm::Scheme::kHtml;
   EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
 
@@ -967,7 +967,7 @@ static bool AddTimestampedLogin(LoginDatabase* db,
   form.display_name = ASCIIToUTF16(unique_string);
   form.icon_url = GURL("https://accounts.google.com/Icon");
   form.federation_origin =
-      url::Origin::Create(GURL("https://accounts.google.com/"));
+      url::SchemeHostPort(GURL("https://accounts.google.com/"));
   form.skip_zero_click = true;
 
   if (date_is_creation) {
@@ -1122,7 +1122,7 @@ TEST_P(LoginDatabaseTest, BlocklistedLogins) {
   form.display_name = u"Mr. Smith";
   form.icon_url = GURL("https://accounts.google.com/Icon");
   form.federation_origin =
-      url::Origin::Create(GURL("https://accounts.google.com/"));
+      url::SchemeHostPort(GURL("https://accounts.google.com/"));
   form.skip_zero_click = true;
 
   EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
@@ -1460,7 +1460,7 @@ TEST_P(LoginDatabaseTest, UpdateLogin) {
   form.display_name = u"Mr. Smith";
   form.icon_url = GURL("https://accounts.google.com/Icon");
   form.federation_origin =
-      url::Origin::Create(GURL("https://accounts.google.com/"));
+      url::SchemeHostPort(GURL("https://accounts.google.com/"));
   form.skip_zero_click = true;
   form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("gaia_id"));
 

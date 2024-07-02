@@ -306,11 +306,11 @@ bool SaveUpdateBubbleController::DidAuthForAccountStoreOptInFail() const {
 }
 
 std::u16string SaveUpdateBubbleController::GetTitle() const {
-  PasswordTitleType type =
-      IsCurrentStateUpdate() ? PasswordTitleType::UPDATE_PASSWORD
-                             : (GetPendingPassword().federation_origin.opaque()
-                                    ? PasswordTitleType::SAVE_PASSWORD
-                                    : PasswordTitleType::SAVE_ACCOUNT);
+  PasswordTitleType type = IsCurrentStateUpdate()
+                               ? PasswordTitleType::UPDATE_PASSWORD
+                               : (GetPendingPassword().IsFederatedCredential()
+                                      ? PasswordTitleType::SAVE_ACCOUNT
+                                      : PasswordTitleType::SAVE_PASSWORD);
   return GetSavePasswordDialogTitleText(GetWebContents()->GetVisibleURL(),
                                         GetOrigin(), type);
 }

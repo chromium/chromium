@@ -293,7 +293,7 @@ class PasswordDetailsTableViewControllerTest
     form.username_value = u"test@egmail.com";
     form.url = GURL(u"http://www.example.com/");
     form.signon_realm = form.url.spec();
-    form.federation_origin = url::Origin::Create(GURL(kExampleCom));
+    form.federation_origin = url::SchemeHostPort(GURL(kExampleCom));
     NSMutableArray<CredentialDetails*>* passwords = [NSMutableArray array];
     CredentialDetails* password = [[CredentialDetails alloc]
         initWithCredential:password_manager::CredentialUIEntry(form)];

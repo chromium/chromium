@@ -41,7 +41,7 @@ TEST(CreateUrlCollectionFromFormTest, UrlsFromFederatedForm) {
   federated_form.signon_realm = "federation://example.com/google.com";
   federated_form.url = GURL("https://example.com/");
   federated_form.federation_origin =
-      url::Origin::Create(GURL("https://google.com/"));
+      url::SchemeHostPort(GURL("https://google.com/"));
 
   api::passwords_private::UrlCollection federated_urls =
       CreateUrlCollectionFromCredential(CredentialUIEntry(federated_form));

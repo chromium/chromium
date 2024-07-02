@@ -912,7 +912,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
 void SafeBrowsingPrivateEventRouter::OnLoginEvent(
     const GURL& url,
     bool is_federated,
-    const url::Origin& federated_origin,
+    const url::SchemeHostPort& federated_origin,
     const std::u16string& username) {
   std::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client_->GetReportingSettings();

@@ -77,7 +77,7 @@ PasswordForm CreateLocalFederatedCredential() {
   form.url = GURL("http://localhost/");
   form.action = GURL("http://localhost/");
   form.federation_origin =
-      url::Origin::Create(GURL("https://federation.example.com"));
+      url::SchemeHostPort(GURL("https://federation.example.com"));
   form.match_type = PasswordForm::MatchType::kExact;
   return form;
 }

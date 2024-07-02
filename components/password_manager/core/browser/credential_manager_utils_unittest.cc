@@ -20,8 +20,6 @@ class CredentialManagerUtilsTest : public testing::Test {
  protected:
   url::Origin origin_{url::Origin::Create(GURL("https://example.test/"))};
   GURL icon_{"https://fast-cdn.test/icon.png"};
-  url::Origin federation_{
-      url::Origin::Create(GURL("https://federation.test/"))};
 };
 
 TEST_F(CredentialManagerUtilsTest, CreatePasswordFormEmpty) {
@@ -40,7 +38,7 @@ TEST_F(CredentialManagerUtilsTest, CreatePasswordFormFederation) {
   info.id = u"id";
   info.name = u"name";
   info.icon = icon_;
-  info.federation = federation_;
+  info.federation = url::SchemeHostPort(GURL("https://federation.test/"));
   info.type = CredentialType::CREDENTIAL_TYPE_FEDERATED;
 
   form = CreatePasswordFormFromCredentialInfo(info, origin_);
@@ -79,7 +77,7 @@ TEST_F(CredentialManagerUtilsTest, CreatePasswordFormLocal) {
 
   // Local credentials have empty federation_origins, non-empty passwords, and
   // a signon realm that matches the origin.
-  EXPECT_TRUE(form->federation_origin.opaque());
+  EXPECT_EQ(form->federation_origin, url::SchemeHostPort());
   EXPECT_EQ(info.password, form->password_value);
   EXPECT_EQ(origin_.GetURL().spec(), form->signon_realm);
 }

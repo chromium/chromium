@@ -1149,7 +1149,7 @@ class PasswordsFallbackWithPasswordDatabaseEntriesTest
         break;
       case PasswordDatabaseEntryType::kFederated:
         password_form.federation_origin =
-            url::Origin::Create(GURL("http://test.com"));
+            url::SchemeHostPort(GURL("http://test.com"));
         break;
       case PasswordDatabaseEntryType::kUsernameOnly:
         password_form.scheme =

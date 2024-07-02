@@ -49,7 +49,6 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
-
 namespace mojo {
 
 using blink::mojom::blink::AttestationConveyancePreference;
@@ -138,14 +137,17 @@ CredentialInfoPtr TypeConverter<CredentialInfoPtr, blink::Credential*>::Convert(
     info->password = password_credential->password();
     info->name = password_credential->name();
     info->icon = password_credential->iconURL();
-    info->federation = blink::SecurityOrigin::CreateUniqueOpaque();
+    info->federation = url::SchemeHostPort();
   } else {
     DCHECK(credential->IsFederatedCredential());
     ::blink::FederatedCredential* federated_credential =
         static_cast<::blink::FederatedCredential*>(credential);
     info->type = CredentialType::FEDERATED;
     info->password = g_empty_string;
-    info->federation = federated_credential->GetProviderAsOrigin();
+    scoped_refptr<const blink::SecurityOrigin> origin =
+        federated_credential->GetProviderAsOrigin();
+    info->federation = url::SchemeHostPort(
+        origin->Protocol().Utf8(), origin->Host().Utf8(), origin->Port());
     info->name = federated_credential->name();
     info->icon = federated_credential->iconURL();
   }
@@ -158,8 +160,13 @@ TypeConverter<blink::Credential*, CredentialInfoPtr>::Convert(
     const CredentialInfoPtr& info) {
   switch (info->type) {
     case CredentialType::FEDERATED:
-      return blink::FederatedCredential::Create(info->id, info->federation,
-                                                info->name, info->icon);
+      return blink::FederatedCredential::Create(
+          info->id,
+          blink::SecurityOrigin::CreateFromValidTuple(
+              String::FromUTF8(info->federation.scheme()),
+              String::FromUTF8(info->federation.host()),
+              info->federation.port()),
+          info->name, info->icon);
     case CredentialType::PASSWORD:
       return blink::PasswordCredential::Create(info->id, info->password,
                                                info->name, info->icon);

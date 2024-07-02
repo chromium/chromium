@@ -76,7 +76,7 @@ MatchResult GetMatchResult(const PasswordForm& form,
     return MatchResult::PSL_MATCH;
   }
 
-  const bool allow_federated_match = !form.federation_origin.opaque();
+  const bool allow_federated_match = form.federation_origin.IsValid();
   if (allow_federated_match &&
       IsFederatedRealm(form.signon_realm, form_digest.url) &&
       form.url.DeprecatedGetOriginAsURL() ==

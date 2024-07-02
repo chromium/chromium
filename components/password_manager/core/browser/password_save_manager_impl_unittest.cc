@@ -392,7 +392,7 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
     federated.signon_realm = "federation://example.in/google.com";
     federated.type = PasswordForm::Type::kApi;
     federated.federation_origin =
-        url::Origin::Create(GURL("https://google.com/"));
+        url::SchemeHostPort(GURL("https://google.com/"));
     federated.username_value = u"federated_username";
     return federated;
   }

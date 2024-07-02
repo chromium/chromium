@@ -473,7 +473,7 @@ TEST_P(CredentialManagerImplTest, CredentialManagerOnStore) {
   EXPECT_EQ(form_.password_value, new_form.password_value);
   EXPECT_EQ(form_.url, new_form.url);
   EXPECT_EQ(form_.signon_realm, new_form.signon_realm);
-  EXPECT_TRUE(new_form.federation_origin.opaque());
+  EXPECT_EQ(new_form.federation_origin, url::SchemeHostPort());
   EXPECT_EQ(form_.icon_url, new_form.icon_url);
   EXPECT_FALSE(form_.skip_zero_click);
   EXPECT_EQ(PasswordForm::Scheme::kHtml, new_form.scheme);
@@ -486,7 +486,7 @@ TEST_P(CredentialManagerImplTest, CredentialManagerOnStoreFederated) {
   EXPECT_CALL(*client_, NotifyStorePasswordCalled());
 
   bool called = false;
-  form_.federation_origin = url::Origin::Create(GURL("https://google.com/"));
+  form_.federation_origin = url::SchemeHostPort(GURL("https://google.com/"));
   form_.password_value = std::u16string();
   form_.signon_realm = "federation://example.com/google.com";
   auto info = PasswordFormToCredentialInfo(form_);
@@ -518,7 +518,7 @@ TEST_P(CredentialManagerImplTest, StoreFederatedAfterPassword) {
   federated.password_value.clear();
   federated.type = PasswordForm::Type::kApi;
   federated.federation_origin =
-      url::Origin::Create(GURL("https://google.com/"));
+      url::SchemeHostPort(GURL("https://google.com/"));
   federated.signon_realm = "federation://example.com/google.com";
   auto info = PasswordFormToCredentialInfo(federated);
   std::unique_ptr<PasswordFormManagerForUI> pending_manager;
@@ -701,7 +701,7 @@ TEST_P(CredentialManagerImplTest, CredentialManagerStoreOverwriteZeroClick) {
 
 TEST_P(CredentialManagerImplTest,
        CredentialManagerFederatedStoreOverwriteZeroClick) {
-  form_.federation_origin = url::Origin::Create(GURL("https://example.com/"));
+  form_.federation_origin = url::SchemeHostPort(GURL("https://example.com/"));
   form_.password_value = std::u16string();
   form_.skip_zero_click = true;
   form_.signon_realm = "federation://example.com/example.com";
@@ -983,7 +983,7 @@ TEST_P(CredentialManagerImplTest,
   PasswordForm federated = origin_path_form_;
   federated.password_value.clear();
   federated.federation_origin =
-      url::Origin::Create(GURL("https://google.com/"));
+      url::SchemeHostPort(GURL("https://google.com/"));
   federated.signon_realm =
       "federation://" + federated.url.host() + "/google.com";
   store_->AddLogin(federated);
@@ -1084,7 +1084,7 @@ TEST_P(CredentialManagerImplTest,
 
 TEST_P(CredentialManagerImplTest,
        CredentialManagerOnRequestCredentialFederatedMatch) {
-  form_.federation_origin = url::Origin::Create(GURL("https://example.com/"));
+  form_.federation_origin = url::SchemeHostPort(GURL("https://example.com/"));
   form_.password_value = std::u16string();
   store_->AddLogin(form_);
   client_->set_first_run_seen(true);
@@ -1101,7 +1101,7 @@ TEST_P(CredentialManagerImplTest,
 
 TEST_P(CredentialManagerImplTest,
        CredentialManagerOnRequestCredentialFederatedNoMatch) {
-  form_.federation_origin = url::Origin::Create(GURL("https://example.com/"));
+  form_.federation_origin = url::SchemeHostPort(GURL("https://example.com/"));
   form_.password_value = std::u16string();
   store_->AddLogin(form_);
   client_->set_first_run_seen(true);
@@ -1153,7 +1153,7 @@ TEST_P(CredentialManagerImplTest,
 TEST_P(CredentialManagerImplTest,
        CredentialManagerOnRequestCredentialAffiliatedFederatedMatch) {
   affiliated_form1_.federation_origin =
-      url::Origin::Create(GURL("https://example.com/"));
+      url::SchemeHostPort(GURL("https://example.com/"));
   affiliated_form1_.password_value = std::u16string();
   store_->AddLogin(affiliated_form1_);
   client_->set_first_run_seen(true);
@@ -1174,7 +1174,7 @@ TEST_P(CredentialManagerImplTest,
 TEST_P(CredentialManagerImplTest,
        CredentialManagerOnRequestCredentialAffiliatedFederatedNoMatch) {
   affiliated_form1_.federation_origin =
-      url::Origin::Create(GURL("https://example.com/"));
+      url::SchemeHostPort(GURL("https://example.com/"));
   affiliated_form1_.password_value = std::u16string();
   store_->AddLogin(affiliated_form1_);
   client_->set_first_run_seen(true);
@@ -1549,7 +1549,7 @@ TEST_P(CredentialManagerImplTest, ZeroClickWithPSLCredential) {
 
 TEST_P(CredentialManagerImplTest, ZeroClickWithPSLAndNormalCredentials) {
   form_.password_value.clear();
-  form_.federation_origin = url::Origin::Create(GURL("https://google.com/"));
+  form_.federation_origin = url::SchemeHostPort(GURL("https://google.com/"));
   form_.signon_realm = "federation://" + form_.url.host() + "/google.com";
   form_.skip_zero_click = false;
   store_->AddLogin(form_);
@@ -1641,7 +1641,7 @@ TEST_P(CredentialManagerImplTest, BlockedPasswordCredential) {
 }
 
 TEST_P(CredentialManagerImplTest, BlockedFederatedCredential) {
-  form_.federation_origin = url::Origin::Create(GURL("https://example.com/"));
+  form_.federation_origin = url::SchemeHostPort(GURL("https://example.com/"));
   form_.password_value = std::u16string();
   form_.signon_realm = "federation://example.com/example.com";
 
@@ -1699,7 +1699,7 @@ TEST_P(CredentialManagerImplTest, RespectBlockedFederatedCredential) {
   blocked_form.signon_realm = blocked_form.url.spec();
   store_->AddLogin(blocked_form);
 
-  form_.federation_origin = url::Origin::Create(GURL("https://example.com/"));
+  form_.federation_origin = url::SchemeHostPort(GURL("https://example.com/"));
   form_.password_value = std::u16string();
   form_.signon_realm = "federation://example.com/example.com";
   auto info = PasswordFormToCredentialInfo(form_);
@@ -1719,7 +1719,7 @@ TEST_P(CredentialManagerImplTest,
        ManagePasswordsUICredentialsUpdatedUnconditionallyInSilentMediation) {
   PasswordForm federated = origin_path_form_;
   federated.federation_origin =
-      url::Origin::Create(GURL("https://google.com/"));
+      url::SchemeHostPort(GURL("https://google.com/"));
   federated.signon_realm =
       "federation://" + federated.url.host() + "/google.com";
   store_->AddLogin(federated);
@@ -1755,7 +1755,7 @@ TEST_P(CredentialManagerImplTest,
   EXPECT_CALL(*mock_factory, TryCreateLeakCheck).Times(0);
   cm_service_impl()->set_leak_factory(std::move(mock_factory));
 
-  form_.federation_origin = url::Origin::Create(GURL("https://example.com/"));
+  form_.federation_origin = url::SchemeHostPort(GURL("https://example.com/"));
   form_.password_value = std::u16string();
   form_.signon_realm = "federation://example.com/example.com";
   CallStore(PasswordFormToCredentialInfo(form_), base::DoNothing());

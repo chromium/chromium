@@ -206,7 +206,7 @@ PasswordForm CreateFederated(const std::string& username_value = "user",
   PasswordForm form = CreateNonFederated(username_value, date_last_used);
   form.signon_realm = kTestFederatedRealm;
   form.password_value.clear();
-  form.federation_origin = url::Origin::Create(GURL(kTestFederationURL));
+  form.federation_origin = url::SchemeHostPort(GURL(kTestFederationURL));
   form.match_type = PasswordForm::MatchType::kExact;
   return form;
 }
@@ -218,7 +218,7 @@ PasswordForm CreateAndroidFederated(
   PasswordForm form =
       CreateHTMLForm("android://hash@com.example.android/", username_value,
                      /*password_value=*/"", date_last_used);
-  form.federation_origin = url::Origin::Create(GURL(kTestFederationURL));
+  form.federation_origin = url::SchemeHostPort(GURL(kTestFederationURL));
   form.match_type = PasswordForm::MatchType::kAffiliated;
   return form;
 }

@@ -361,7 +361,7 @@ bool PasswordForm::HasNewPasswordElement() const {
 }
 
 bool PasswordForm::IsFederatedCredential() const {
-  return !federation_origin.opaque();
+  return federation_origin.IsValid();
 }
 
 bool PasswordForm::IsSingleUsername() const {

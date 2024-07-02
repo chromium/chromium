@@ -35,7 +35,7 @@ class PasswordPickerViewControllerTest
       form.username_value = u"user" + num_str + u"@gmail.com";
       form.url = GURL(url);
       form.signon_realm = form.url.spec();
-      form.federation_origin = url::Origin::Create(GURL(url));
+      form.federation_origin = url::SchemeHostPort(GURL(url));
 
       auto credential = password_manager::CredentialUIEntry(form);
       credentials.push_back(credential);
