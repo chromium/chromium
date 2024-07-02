@@ -118,10 +118,6 @@ declare_args() {
 
   # Rust gtest interop.
   enable_rust_gtest_interop = enable_rust
-
-  # Deprecated alias for `enable_rust_cxx`.
-  # TODO(crbug.com/40286066): Remove once downstream projects stop using this.
-  enable_cxx = enable_rust_cxx
 }
 
 # Use the Rust toolchain built in-tree. When false, we use the prebuilt Rust
