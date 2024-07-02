@@ -133,9 +133,6 @@ public class ContextualSearchManager
     private final ObserverList<ContextualSearchObserver> mObservers =
             new ObserverList<ContextualSearchObserver>();
 
-    private final ObserverList<ContextualSearchSelectionObserver> mSelectionObservers =
-            new ObserverList<ContextualSearchSelectionObserver>();
-
     private final Activity mActivity;
     private final Profile mProfile;
     private final ContextualSearchTabPromotionDelegate mTabPromotionDelegate;
@@ -1091,11 +1088,6 @@ public class ContextualSearchManager
         int startOffset = mContext.getSelectionStartOffset();
         int endOffset = mContext.getSelectionEndOffset();
 
-        ContextualSearchSelection sel =
-                new ContextualSearchSelection(
-                        mContext.getEncoding(), surroundingText, startOffset, endOffset);
-        notifyInternalObservers(sel);
-
         GSAContextDisplaySelection selection =
                 new GSAContextDisplaySelection(
                         mContext.getEncoding(), surroundingText, startOffset, endOffset);
@@ -1103,20 +1095,8 @@ public class ContextualSearchManager
     }
 
     /**
-     * Notifies all internal Contextual Search observers that a search has occurred. This API is for
-     * internal, Chromium-only observers that don't share the selection data with any servers and
-     * only process it locally.
-     *
-     * @param selectionContext The selection and context that triggered the search.
-     */
-    private void notifyInternalObservers(ContextualSearchSelection selectionContext) {
-        for (ContextualSearchSelectionObserver observer : mSelectionObservers) {
-            observer.onSelectionChanged(selectionContext);
-        }
-    }
-
-    /**
      * Notifies all Contextual Search observers that a search has occurred.
+     *
      * @param selectionContext The selection and context that triggered the search.
      */
     private void notifyShowContextualSearch(GSAContextDisplaySelection selectionContext) {
@@ -1132,20 +1112,6 @@ public class ContextualSearchManager
         for (ContextualSearchObserver observer : mObservers) {
             observer.onHideContextualSearch();
         }
-    }
-
-    /**
-     * @param observer An observer to notify when the user performs a contextual search.
-     */
-    public void addObserver(ContextualSearchSelectionObserver observer) {
-        mSelectionObservers.addObserver(observer);
-    }
-
-    /**
-     * @param observer An observer to no longer notify when the user performs a contextual search.
-     */
-    public void removeObserver(ContextualSearchSelectionObserver observer) {
-        mSelectionObservers.removeObserver(observer);
     }
 
     // ============================================================================================

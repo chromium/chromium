@@ -58,8 +58,6 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager.ContextualSearchTabPromotionDelegate;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchObserver;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelection;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionObserver;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -335,7 +333,6 @@ public class RootUiCoordinator
     protected final ObservableSupplierImpl<ContextualSearchManager>
             mContextualSearchManagerSupplier = new ObservableSupplierImpl<>();
     @Nullable private ContextualSearchObserver mReadAloudContextualSearchObserver;
-    @Nullable private ContextualSearchSelectionObserver mContextualSearchSelectionObserver;
     @Nullable private PageZoomCoordinator mPageZoomCoordinator;
     private AppMenuObserver mAppMenuObserver;
     private boolean mKeyboardVisibleDuringFoldTransition;
@@ -763,7 +760,6 @@ public class RootUiCoordinator
                     mContextualSearchManagerSupplier.get();
             if (contextualSearchManager != null) {
                 contextualSearchManager.removeObserver(mReadAloudContextualSearchObserver);
-                contextualSearchManager.removeObserver(mContextualSearchSelectionObserver);
             }
             var readAloudController = mReadAloudControllerSupplier.get();
             mReadAloudControllerSupplier.set(null);
@@ -927,16 +923,6 @@ public class RootUiCoordinator
                             mWindowAndroid,
                             mActivityLifecycleDispatcher);
             mReadAloudControllerSupplier.set(controller);
-            mContextualSearchSelectionObserver =
-                    new ContextualSearchSelectionObserver() {
-                        @Override
-                        public void onSelectionChanged(ContextualSearchSelection selectionContext) {
-                            controller.tapToSeek(
-                                    selectionContext.content,
-                                    selectionContext.startOffset,
-                                    selectionContext.endOffset);
-                        }
-                    };
             mReadAloudContextualSearchObserver =
                     new ContextualSearchObserver() {
                         @Override
@@ -954,7 +940,6 @@ public class RootUiCoordinator
                     mContextualSearchManagerSupplier.get();
             if (contextualSearchManager != null) {
                 contextualSearchManager.addObserver(mReadAloudContextualSearchObserver);
-                contextualSearchManager.addObserver(mContextualSearchSelectionObserver);
             }
         }
     }

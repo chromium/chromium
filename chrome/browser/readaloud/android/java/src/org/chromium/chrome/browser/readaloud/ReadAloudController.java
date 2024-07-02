@@ -1463,8 +1463,7 @@ public class ReadAloudController
     }
 
     /**
-     * Triggered with ContextualSearch's onSelectionChange. Sends the selected webpage content and
-     * playback to TapToSeekHandler to find the selected word in the playback and seek to it.
+     * TODO(crbug.com/305737581): finish implementation.
      *
      * @param content Selected word and surrounding content
      * @param beginOffset index of where the selected word starts within the content
