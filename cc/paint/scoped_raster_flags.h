@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/stack_allocated.h"
 #include "cc/paint/decode_stashing_image_provider.h"
 #include "cc/paint/paint_export.h"
@@ -78,9 +77,7 @@ class CC_PAINT_EXPORT ScopedRasterFlags {
     return &*modified_flags_;
   }
 
-  // RAW_PTR_EXCLUSION: Performance: visible in sampling profiler and stack
-  // scoped.
-  RAW_PTR_EXCLUSION const PaintFlags* original_flags_ = nullptr;
+  const PaintFlags* original_flags_ = nullptr;
   std::optional<PaintFlags> modified_flags_;
   std::optional<DecodeStashingImageProvider> decode_stashing_image_provider_;
   bool decode_failed_ = false;
