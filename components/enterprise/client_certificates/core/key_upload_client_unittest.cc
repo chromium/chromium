@@ -142,8 +142,9 @@ class KeyUploadClientTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<KeyUploadClient> upload_client_;
-  std::unique_ptr<MockCloudManagementDelegate> mock_management_delegate_ =
-      std::make_unique<StrictMock<MockCloudManagementDelegate>>();
+  std::unique_ptr<enterprise_attestation::MockCloudManagementDelegate>
+      mock_management_delegate_ = std::make_unique<
+          StrictMock<enterprise_attestation::MockCloudManagementDelegate>>();
 };
 
 TEST_F(KeyUploadClientTest, CreateCertificate_Success) {

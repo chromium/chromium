@@ -6585,8 +6585,6 @@ static_library("browser") {
       "enterprise/client_certificates/certificate_provisioning_service_factory.h",
       "enterprise/client_certificates/certificate_store_factory.cc",
       "enterprise/client_certificates/certificate_store_factory.h",
-      "enterprise/client_certificates/profile_cloud_management_delegate.cc",
-      "enterprise/client_certificates/profile_cloud_management_delegate.h",
       "enterprise/client_certificates/profile_context_delegate.cc",
       "enterprise/client_certificates/profile_context_delegate.h",
     ]

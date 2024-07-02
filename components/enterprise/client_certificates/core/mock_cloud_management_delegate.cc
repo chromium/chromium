@@ -4,9 +4,9 @@
 
 #include "components/enterprise/client_certificates/core/mock_cloud_management_delegate.h"
 
-namespace client_certificates {
+namespace enterprise_attestation {
 
 MockCloudManagementDelegate::MockCloudManagementDelegate() = default;
 MockCloudManagementDelegate::~MockCloudManagementDelegate() = default;
 
-}  // namespace client_certificates
+}  // namespace enterprise_attestation

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CLIENT_CERTIFICATES_PROFILE_CLOUD_MANAGEMENT_DELEGATE_H_
-#define CHROME_BROWSER_ENTERPRISE_CLIENT_CERTIFICATES_PROFILE_CLOUD_MANAGEMENT_DELEGATE_H_
+#ifndef COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_PROFILE_CLOUD_MANAGEMENT_DELEGATE_H_
+#define COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_PROFILE_CLOUD_MANAGEMENT_DELEGATE_H_
 
 #include "base/memory/raw_ptr.h"
 #include "components/enterprise/client_certificates/core/cloud_management_delegate.h"
@@ -19,7 +19,7 @@ namespace enterprise_management {
 class PolicyData;
 }  // namespace enterprise_management
 
-namespace client_certificates {
+namespace enterprise_attestation {
 
 class ProfileCloudManagementDelegate : public CloudManagementDelegate {
  public:
@@ -45,9 +45,9 @@ class ProfileCloudManagementDelegate : public CloudManagementDelegate {
   std::unique_ptr<enterprise_management::DependencyFactory> dependency_factory_;
   const raw_ptr<enterprise::ProfileIdService> profile_id_service_;
 
-  std::unique_ptr<client_certificates::DMServerClient> dmserver_client_;
+  std::unique_ptr<DMServerClient> dmserver_client_;
 };
 
-}  // namespace client_certificates
+}  // namespace enterprise_attestation
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CLIENT_CERTIFICATES_PROFILE_CLOUD_MANAGEMENT_DELEGATE_H_
+#endif  // COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_PROFILE_CLOUD_MANAGEMENT_DELEGATE_H_

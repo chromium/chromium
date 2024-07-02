@@ -24,7 +24,7 @@ namespace policy {
 class DeviceManagementService;
 }  // namespace policy
 
-namespace client_certificates {
+namespace enterprise_attestation {
 
 // Client with a simple interface for sending a request to the DM server,
 // abstracting away the networking implementation details.
@@ -50,6 +50,6 @@ class DMServerClient {
   virtual ~DMServerClient() = default;
 };
 
-}  // namespace client_certificates
+}  // namespace enterprise_attestation
 
 #endif  // COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_DM_SERVER_CLIENT_H_

@@ -86,7 +86,8 @@ CreateRequest(scoped_refptr<PrivateKey> private_key, bool create_certificate) {
 class KeyUploadClientImpl : public KeyUploadClient {
  public:
   explicit KeyUploadClientImpl(
-      std::unique_ptr<CloudManagementDelegate> management_delegate);
+      std::unique_ptr<enterprise_attestation::CloudManagementDelegate>
+          management_delegate);
   ~KeyUploadClientImpl() override;
 
   // KeyUploadClient:
@@ -121,19 +122,22 @@ class KeyUploadClientImpl : public KeyUploadClient {
   void OnSyncResponseReceived(SyncKeyCallback callback,
                               policy::DMServerJobResult result);
 
-  std::unique_ptr<CloudManagementDelegate> management_delegate_;
+  std::unique_ptr<enterprise_attestation::CloudManagementDelegate>
+      management_delegate_;
 
   base::WeakPtrFactory<KeyUploadClientImpl> weak_factory_{this};
 };
 
 // static
 std::unique_ptr<KeyUploadClient> KeyUploadClient::Create(
-    std::unique_ptr<CloudManagementDelegate> management_delegate) {
+    std::unique_ptr<enterprise_attestation::CloudManagementDelegate>
+        management_delegate) {
   return std::make_unique<KeyUploadClientImpl>(std::move(management_delegate));
 }
 
 KeyUploadClientImpl::KeyUploadClientImpl(
-    std::unique_ptr<CloudManagementDelegate> management_delegate)
+    std::unique_ptr<enterprise_attestation::CloudManagementDelegate>
+        management_delegate)
     : management_delegate_(std::move(management_delegate)) {
   CHECK(management_delegate_);
 }

@@ -8,6 +8,7 @@ assert(enterprise_client_certificates)
 
 source_set("core") {
   public = [
+    "browser_cloud_management_delegate.h",
     "certificate_provisioning_service.h",
     "certificate_store.h",
     "client_certificates_service.h",
@@ -25,6 +26,7 @@ source_set("core") {
     "private_key.h",
     "private_key_factory.h",
     "private_key_types.h",
+    "profile_cloud_management_delegate.h",
     "store_error.h",
     "unexportable_private_key.h",
     "unexportable_private_key_factory.h",
@@ -32,6 +34,7 @@ source_set("core") {
   ]
 
   sources = [
+    "browser_cloud_management_delegate.cc",
     "certificate_provisioning_service.cc",
     "certificate_store.cc",
     "client_certificates_service.cc",
@@ -47,6 +50,7 @@ source_set("core") {
     "private_key.cc",
     "private_key_factory.cc",
     "private_key_types.cc",
+    "profile_cloud_management_delegate.cc",
     "ssl_client_cert_identity_wrapper.cc",
     "ssl_client_cert_identity_wrapper.h",
     "ssl_key_converter.cc",
@@ -60,12 +64,15 @@ source_set("core") {
   public_deps = [
     "//base",
     "//components/enterprise/client_certificates/proto:db_client_certs",
+    "//components/enterprise/core",
     "//components/keyed_service/core",
     "//components/leveldb_proto",
     "//crypto",
   ]
 
   deps = [
+    "//components/enterprise",
+    "//components/enterprise/browser/identifiers",
     "//components/policy/core/common",
     "//components/policy/proto",
     "//components/prefs",

@@ -19,7 +19,7 @@
 
 using ::testing::_;
 
-namespace client_certificates {
+namespace enterprise_attestation {
 namespace {
 
 class DMServerClientUnitTest : public testing::Test {
@@ -257,4 +257,4 @@ TEST_F(DMServerClientUnitTest, UploadBrowserPublicKey_NullProfileId_Succeeds) {
                   .response.has_browser_public_key_upload_response());
 }
 
-}  // namespace client_certificates
+}  // namespace enterprise_attestation

@@ -14,7 +14,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
 
-namespace client_certificates {
+namespace enterprise_attestation {
 
 class DMServerClientImpl : public DMServerClient {
  public:
@@ -146,4 +146,4 @@ void DMServerClientImpl::UploadBrowserPublicKey(
       device_management_service_->CreateJob(std::move(config));
 }
 
-}  // namespace client_certificates
+}  // namespace enterprise_attestation

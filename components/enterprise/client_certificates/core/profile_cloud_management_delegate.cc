@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/client_certificates/profile_cloud_management_delegate.h"
+#include "components/enterprise/client_certificates/core/profile_cloud_management_delegate.h"
 
 #include "base/check.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
@@ -13,7 +13,7 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
-namespace client_certificates {
+namespace enterprise_attestation {
 
 ProfileCloudManagementDelegate::ProfileCloudManagementDelegate(
     std::unique_ptr<enterprise_management::DependencyFactory>
@@ -67,4 +67,4 @@ std::optional<std::string> ProfileCloudManagementDelegate::GetClientID() const {
   return policy_data->device_id();
 }
 
-}  // namespace client_certificates
+}  // namespace enterprise_attestation

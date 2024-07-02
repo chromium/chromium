@@ -4,9 +4,9 @@
 
 #include "components/enterprise/client_certificates/core/mock_dm_server_client.h"
 
-namespace client_certificates {
+namespace enterprise_attestation {
 
 MockDMServerClient::MockDMServerClient() = default;
 MockDMServerClient::~MockDMServerClient() = default;
 
-}  // namespace client_certificates
+}  // namespace enterprise_attestation
