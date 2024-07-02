@@ -37,22 +37,26 @@ class BuilderPropsTests(unittest.TestCase):
 
   def testNoProps(self):
     # Empty base dir
-    props, _ = builders.find_builder_props('some-bucket', 'some-builder')
+    props, _ = builders.find_builder_props('some-builder',
+                                           bucket_name='some-bucket')
     self.assertIsNone(props)
 
     # Empty bucket dir
     os.makedirs(self.tmp_dir.joinpath('some-bucket'))
-    props, _ = builders.find_builder_props('some-bucket', 'some-builder')
+    props, _ = builders.find_builder_props('some-builder',
+                                           bucket_name='some-bucket')
     self.assertIsNone(props)
 
     # Empty builder dir
     os.makedirs(self.tmp_dir.joinpath('some-bucket', 'some-builder'))
-    props, _ = builders.find_builder_props('some-bucket', 'some-builder')
+    props, _ = builders.find_builder_props('some-builder',
+                                           bucket_name='some-bucket')
     self.assertIsNone(props)
 
     # No src-internal checkout.
     shutil.rmtree(self.tmp_internal_dir)
-    props, _ = builders.find_builder_props('some-bucket', 'some-builder')
+    props, _ = builders.find_builder_props('some-builder',
+                                           bucket_name='some-bucket')
     self.assertIsNone(props)
 
   def testSomeProps(self):
@@ -61,28 +65,58 @@ class BuilderPropsTests(unittest.TestCase):
     with open(builder_dir.joinpath('properties.json'), 'w') as f:
       json.dump({'some-key': 'some-val'}, f)
 
-    props, _ = builders.find_builder_props('some-bucket', 'some-builder')
+    props, _ = builders.find_builder_props('some-builder',
+                                           bucket_name='some-bucket')
     self.assertEqual(props['some-key'], 'some-val')
+
+  def testBucketName(self):
+    # Missing bucket_name should be fine since there's only one builder that
+    # matches the bulder name.
+    builder_dir = self.tmp_dir.joinpath('some-bucket1', 'some-builder')
+    os.makedirs(builder_dir)
+    with open(builder_dir.joinpath('properties.json'), 'w') as f:
+      json.dump({'some-key': 'some-val'}, f)
+    props, _ = builders.find_builder_props('some-builder')
+    self.assertEqual(props['some-key'], 'some-val')
+
+    # Missing bucket_name should fail since there's now multiple builders that
+    # match the builder name under different projects.
+    builder_dir = self.tmp_dir.joinpath('some-bucket2', 'some-builder')
+    os.makedirs(builder_dir)
+    with open(builder_dir.joinpath('properties.json'), 'w') as f:
+      json.dump({'some-key': 'some-val'}, f)
+    props, _ = builders.find_builder_props('some-builder')
+    self.assertIsNone(props)
 
   def testInternalProps(self):
     # Create props for a public and internal builder, then fetch those props.
-    builder_dir = self.tmp_dir.joinpath('some-bucket', 'some-public-builder')
+    builder_dir = self.tmp_dir.joinpath('some-bucket', 'some-builder')
     os.makedirs(builder_dir)
     with open(builder_dir.joinpath('properties.json'), 'w') as f:
       json.dump({'some-key': 'some-public-val'}, f)
 
-    internal_builder_dir = self.tmp_dir.joinpath('some-bucket',
-                                                 'some-internal-builder')
+    internal_builder_dir = self.tmp_internal_dir.joinpath(
+        'some-bucket', 'some-builder')
     os.makedirs(internal_builder_dir)
     with open(internal_builder_dir.joinpath('properties.json'), 'w') as f:
       json.dump({'some-key': 'some-internal-val'}, f)
 
-    props, _ = builders.find_builder_props('some-bucket', 'some-public-builder')
+    props, _ = builders.find_builder_props('some-builder',
+                                           bucket_name='some-bucket',
+                                           project_name='chromium')
     self.assertEqual(props['some-key'], 'some-public-val')
 
-    props, _ = builders.find_builder_props('some-bucket',
-                                           'some-internal-builder')
+    props, _ = builders.find_builder_props('some-builder',
+                                           bucket_name='some-bucket',
+                                           project_name='chrome')
     self.assertEqual(props['some-key'], 'some-internal-val')
+
+    # Missing project_name should return the internal builder since that's what
+    # we want to default to.
+    props, project = builders.find_builder_props('some-builder',
+                                                 bucket_name='some-bucket')
+    self.assertEqual(props['some-key'], 'some-internal-val')
+    self.assertEqual(project, 'chrome')
 
 
 if __name__ == '__main__':

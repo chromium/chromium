@@ -17,12 +17,13 @@ _INTERNAL_BUILDER_PROP_DIRS = _SRC_DIR.joinpath('internal', 'infra', 'config',
                                                 'generated', 'builders')
 
 
-def find_builder_props(bucket_name, builder_name):
+def find_builder_props(builder_name, bucket_name=None, project_name=None):
   """Finds the checked-in json props file for the builder.
 
   Args:
-    bucket_name: Bucket name of the builder
     builder_name: Builder name of the builder
+    bucket_name: Bucket name of the builder
+    project_name: Project name of the builder
 
   Returns:
     Tuple of (Dict of the builder's input props, LUCI project of the builder).
@@ -31,9 +32,11 @@ def find_builder_props(bucket_name, builder_name):
 
   def _walk_props_dir(props_dir):
     matches = []
-    # TODO(crbug.com/41492688): Allow bucket_name to be optional?
+    if not props_dir.exists():
+      return matches
     for bucket_path in props_dir.iterdir():
-      if not bucket_path.is_dir() or bucket_path.name != bucket_name:
+      if not bucket_path.is_dir() or (bucket_name
+                                      and bucket_path.name != bucket_name):
         continue
       for builder_path in bucket_path.iterdir():
         if builder_path.name != builder_name:
@@ -47,20 +50,24 @@ def find_builder_props(bucket_name, builder_name):
         matches.append(prop_file)
     return matches
 
-  project = 'chrome'
   possible_matches = []
-  if _INTERNAL_BUILDER_PROP_DIRS.exists():
-    possible_matches += _walk_props_dir(_INTERNAL_BUILDER_PROP_DIRS)
+  if not project_name or project_name == 'chrome':
+    matches = _walk_props_dir(_INTERNAL_BUILDER_PROP_DIRS)
+    if matches:
+      project_name = 'chrome'
+      possible_matches += matches
 
-  public_matches = _walk_props_dir(_BUILDER_PROP_DIRS)
-  if public_matches:
-    project = 'chromium'
-    possible_matches += public_matches
+  if not project_name or project_name == 'chromium':
+    matches = _walk_props_dir(_BUILDER_PROP_DIRS)
+    if matches:
+      project_name = 'chromium'
+      possible_matches += matches
 
   if not possible_matches:
     logging.error(
-        '[red]No prop file found. Are you sure you have the correct bucket '
-        '("%s") and builder name ("%s")?[/]', bucket_name, builder_name)
+        '[red]No prop file found. Are you sure you have the correct project '
+        '("%s"), bucket ("%s"), and builder name ("%s")?[/]', project_name,
+        bucket_name, builder_name)
     if not _INTERNAL_BUILDER_PROP_DIRS.exists():
       logging.warning(
           'src-internal not detected in this checkout. Perhaps the builder '
@@ -68,8 +75,9 @@ def find_builder_props(bucket_name, builder_name):
           "your checkout if a you're a Googler.")
     return None, None
   if len(possible_matches) > 1:
-    logging.error('[red]Found multiple prop files for builder %s:[/]',
-                  builder_name)
+    logging.error(
+        '[red]Found multiple prop files for builder %s. Pass in a project '
+        '("-p") and bucket name ("-B").[/]', builder_name)
     for m in possible_matches:
       logging.error(m)
     return None, None
@@ -79,4 +87,4 @@ def find_builder_props(bucket_name, builder_name):
   with open(possible_matches[0]) as f:
     props = json.load(f)
 
-  return props, project
+  return props, project_name

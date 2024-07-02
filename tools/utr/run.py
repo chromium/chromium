@@ -19,6 +19,7 @@ import argparse
 import logging
 import os
 import pathlib
+import re
 import sys
 
 import builders
@@ -55,6 +56,13 @@ def add_common_args(parser):
                       '-b',
                       required=True,
                       help='Name of the builder we want to replicate.')
+  parser.add_argument(
+      '--project',
+      '-p',
+      help="Name of the project of the builder. Note: if you're on a release "
+      'branch, you can exclude the milestone part of the name (eg: you can '
+      'pass "chrome" instead of "chrome-m123"). Will attempt to automatically '
+      'determine if not specified.')
   parser.add_argument(
       '--bucket',
       '-B',
@@ -154,6 +162,15 @@ def parse_args(args=None):
     if args.run_mode != 'compile':
       parser.print_help()
       parser.error('Please provide a test to run')
+  if args.project:
+    if re.fullmatch(r'chromium(-m\d+)?', args.project):
+      args.project = 'chromium'
+    elif re.fullmatch(r'chrome(-m\d+)?', args.project):
+      args.project = 'chrome'
+    else:
+      parser.error(
+          f'Unknown project: "{args.project}". Please select "chrome" or '
+          '"chromium".')
   return args
 
 
@@ -178,8 +195,8 @@ def main():
   if not recipe.check_luci_context_auth():
     return 1
 
-  builder_props, project = builders.find_builder_props(args.bucket,
-                                                       args.builder)
+  builder_props, project = builders.find_builder_props(
+      args.builder, bucket_name=args.bucket, project_name=args.project)
   if not builder_props:
     return 1
 
