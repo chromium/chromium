@@ -409,7 +409,7 @@ linux_memory_builder(
     name = "linux-lacros-asan-lsan-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
-            config = "chromium_no_telemetry_dependencies",
+            config = "chromium",
             apply_configs = [
                 "chromeos",
             ],

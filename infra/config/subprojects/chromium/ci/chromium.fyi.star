@@ -2381,7 +2381,7 @@ ci.builder(
     description_html = "Dangling ptr check for lacros.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
-            config = "chromium_no_telemetry_dependencies",
+            config = "chromium",
             apply_configs = [
                 "chromeos",
             ],

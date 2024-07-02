@@ -30,7 +30,7 @@
                 "apply_configs": [
                   "chromeos"
                 ],
-                "config": "chromium_no_telemetry_dependencies"
+                "config": "chromium"
               }
             }
           },
@@ -59,7 +59,7 @@
                   "use_clang_coverage",
                   "chromeos"
                 ],
-                "config": "chromium_no_telemetry_dependencies"
+                "config": "chromium"
               },
               "parent": {
                 "bucket": "ci",
