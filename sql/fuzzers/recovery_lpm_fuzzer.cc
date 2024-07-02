@@ -48,6 +48,18 @@
 
 namespace {
 
+// usage: LPM_ADDITIONAL_ARGS="..." sql_recovery_lpm_fuzzer testcases...
+//
+// Positional args:
+//   testcases                  One or more testcase files to run.
+//
+// Optional additional args (passed in through the LPM_ADDITIONAL_ARGS
+// environment variable):
+//   --dump_input               Prints the testcase file to the console in a
+//   human readable format.
+//   --out_db_path <file path>  Copies the database after it's been mutated to
+//   the given path.
+
 std::optional<base::CommandLine> GetCommandLine() {
   char* additional_args = std::getenv("LPM_ADDITIONAL_ARGS");
   if (additional_args == nullptr) {
@@ -78,6 +90,12 @@ class Environment {
     if (command_line) {
       should_dump_input_ =
           should_dump_input_ || command_line->HasSwitch("dump_input");
+      if (command_line->HasSwitch("out_db_path")) {
+        out_db_path_ = MakeAbsoluteFilePath(
+                           command_line->GetSwitchValuePath("out_db_path"))
+                           .AppendASCII("db")
+                           .AddExtensionASCII("sqlite");
+      }
     }
 
     // Logging must be initialized before `ScopedLoggingSettings`. See
@@ -99,6 +117,9 @@ class Environment {
 
   // The path to the database's backing file.
   const base::FilePath& db_path() const { return db_path_; }
+
+  // The path the database is copied to after it's been mutated.
+  const base::FilePath& out_db_path() const { return out_db_path_; }
 
   // Deletes the backing file and related journal files.
   void DeleteDbFiles() const {
@@ -144,6 +165,7 @@ class Environment {
   base::ScopedTempDir temp_dir_;
   base::FilePath db_path_;
   bool should_dump_input_ = false;
+  base::FilePath out_db_path_;
 };
 
 // A wrapper around the fuzzer's input proto. Does some preprocessing to map the
@@ -300,6 +322,10 @@ DEFINE_PROTO_FUZZER(const sql_fuzzers::RecoveryFuzzerTestCase& fuzzer_input) {
           -1);
     }
     CHECK_EQ(file_length, file.GetLength());
+  }
+
+  if (!env.out_db_path().empty()) {
+    base::CopyFile(env.db_path(), env.out_db_path());
   }
 
   bool attempted_recovery = false;
