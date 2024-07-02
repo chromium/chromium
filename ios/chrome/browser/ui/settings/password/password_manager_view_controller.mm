@@ -255,6 +255,14 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 // The item used to present the Password Manager widget promo.
 @property(nonatomic, readonly) InlinePromoItem* widgetPromoItem;
 
+// Deleting passwords updates the SavedPasswordsPresenter, resulting in an
+// observer callback, which handles general data updates with a `reloadData`.
+// Visually, it is better to handle user-initiated changes with more specific
+// actions such as inserting or removing items/sections, instead of waiting on a
+// data reload. This boolean is used to stop the observer callback from acting
+// on user-initiated changes.
+@property(nonatomic, readwrite, assign) BOOL deletionInProgress;
+
 @end
 
 @implementation PasswordManagerViewController {
@@ -859,6 +867,10 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
                blockedSites:
                    (const std::vector<password_manager::CredentialUIEntry>&)
                        blockedSites {
+  if (self.deletionInProgress) {
+    return;
+  }
+
   if (!_didReceivePasswords) {
     _blockedSites = blockedSites;
     _affiliatedGroups = affiliatedGroups;
@@ -1459,6 +1471,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 }
 
 - (void)deleteItemAtIndexPaths:(NSArray<NSIndexPath*>*)indexPaths {
+  self.deletionInProgress = YES;
+
   std::vector<password_manager::CredentialUIEntry> credentialsToDelete;
   for (NSIndexPath* indexPath in indexPaths) {
     // Only form items are editable.
@@ -1535,8 +1549,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
           [strongSelf reloadData];
         }
         [strongSelf updateUIForEditState];
+        strongSelf.deletionInProgress = NO;
       }];
-
   [self.delegate deleteCredentials:credentialsToDelete];
 }
 

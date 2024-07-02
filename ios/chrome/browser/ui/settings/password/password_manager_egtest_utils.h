@@ -47,6 +47,10 @@ inline constexpr NSString* kDefaultRpId = @"example.com";
 // Default user id used for passkey creation.
 inline constexpr NSString* kDefaultUserId = @"user_id";
 
+// Matcher for the Password Manager's view that's presented when the user
+// doesn't have any saved passwords.
+id<GREYMatcher> PasswordManagerEmptyView();
+
 // Matcher for a specific state of the Password Checkup cell in the
 // Password Manager.
 id<GREYMatcher> PasswordCheckupCellForState(PasswordCheckUIState state,

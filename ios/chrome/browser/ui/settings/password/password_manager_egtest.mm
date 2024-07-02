@@ -736,7 +736,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
             (testPasswordManagerWidgetPromoInstructionsDeviceOrientation)] ||
       [self
           isRunningTest:@selector
-          (testOpeningPasswordManagerWidgetPromoInstructionsWithFailedAuth)]) {
+          (testOpeningPasswordManagerWidgetPromoInstructionsWithFailedAuth)] ||
+      [self isRunningTest:@selector(testDeletingLastAffiliatedGroup)]) {
     config.iph_feature_enabled = "IPH_iOSPromoPasswordManagerWidget";
     config.additional_args.push_back(base::StringPrintf(
         "--enable-features=%s",
@@ -3887,6 +3888,38 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // Check that the text view is the first responder.
   [[EarlGrey selectElementWithMatcher:PasswordDetailNote()]
       assertWithMatcher:grey_firstResponder()];
+}
+
+// Tests that deleting the last affiliated group (composed of at least two
+// passwords) while the Password Manager view is scrolled down results in
+// showing the empty state view. See crbug.com/41492279.
+- (void)testDeletingLastAffiliatedGroup {
+  // Form an affiliated group with two passwords.
+  SavePasswordFormToProfileStore(/*password=*/@"password1",
+                                 /*username=*/@"user1",
+                                 /*origin=*/@"https://example11.com");
+  SavePasswordFormToProfileStore(/*password=*/@"password2",
+                                 /*username=*/@"user2",
+                                 /*origin=*/@"https://example11.com");
+
+  OpenPasswordManager();
+
+  // Scroll down to the bottom of the Password Manager table view.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  // Delete the affiliated group with a left swipe.
+  [[EarlGrey selectElementWithMatcher:grey_text(@"example11.com")]
+      performAction:grey_swipeSlowInDirectionWithStartPoint(kGREYDirectionLeft,
+                                                            0.9, 0.5)];
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify that the empty view is now displayed.
+  [[EarlGrey selectElementWithMatcher:password_manager_test_utils::
+                                          PasswordManagerEmptyView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

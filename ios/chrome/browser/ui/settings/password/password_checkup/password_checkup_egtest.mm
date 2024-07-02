@@ -50,15 +50,6 @@ constexpr NSString* kReusedPassword = @"reused password";
 constexpr NSString* kSafePassword = @"s@fe pa55word!";
 constexpr NSString* kWeakPassword = @"1";
 
-#pragma mark - Password Manager matchers
-
-// Matcher for the Password Manager's view that's presented when the user
-// doesn't have any saved passwords.
-id<GREYMatcher> PasswordManagerEmptyView() {
-  return grey_text(
-      l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_EMPTY_TITLE));
-}
-
 #pragma mark - Password Checkup Homepage matchers
 
 // Matcher for the TableView in the Password Checkup Homepage.
@@ -689,7 +680,8 @@ NSString* LeakedPasswordDescription() {
   [ChromeEarlGreyUI waitForAppToIdle];
 
   // Verify that the empty view of Password Manager is now displayed.
-  [[EarlGrey selectElementWithMatcher:PasswordManagerEmptyView()]
+  [[EarlGrey selectElementWithMatcher:password_manager_test_utils::
+                                          PasswordManagerEmptyView()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
