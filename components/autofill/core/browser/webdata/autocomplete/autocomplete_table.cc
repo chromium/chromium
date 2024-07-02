@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/341324165): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table.h"
 
 #include <memory>
@@ -412,13 +407,12 @@ bool AutocompleteTable::AddFormFieldValueTime(
     std::vector<std::string> message_parts = {base::StringPrintf(
         "(Failure during %s, SQL error code = %d, table_exists = %d, ",
         failure_location, sql_error_code, autofill_table_exists)};
-    for (const char* column_name :
-         {"count", "date_last_used", "name", "value"}) {
-      message_parts.push_back(base::StringPrintf(
-          "column %s exists = %d,", column_name,
-          db_->DoesColumnExist(
-              "autofill",
-              base::cstring_view(column_name, strlen(column_name)))));
+    static constexpr auto kColumnNames = std::to_array<base::cstring_view>(
+        {"count", "date_last_used", "name", "value"});
+    for (base::cstring_view column_name : kColumnNames) {
+      message_parts.push_back(
+          base::StringPrintf("column %s exists = %d,", column_name.c_str(),
+                             db_->DoesColumnExist("autofill", column_name)));
     }
     return base::StrCat(message_parts);
   };
