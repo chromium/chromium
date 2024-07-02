@@ -5324,6 +5324,7 @@ static_library("browser") {
       "//chrome/browser/ash/events",
       "//chrome/browser/ash/exo",
       "//chrome/browser/ash/first_run",
+      "//chrome/browser/ash/floating_sso",
       "//chrome/browser/ash/geolocation",
       "//chrome/browser/ash/growth",
       "//chrome/browser/ash/hats",
