@@ -737,6 +737,7 @@ const char kGStatic[] = ".gstatic.com";
   item.URLKey = URLAggregate->url_key;
   item.requestID = URLAggregate->request_id;
   item.commandHandler = self;
+  item.delegate = self;
   if (tab.id > 0 && tab.session_tag && !isLocal) {
     item.sessionName = base::SysUTF8ToNSString(tab.session_name.value());
     _sessionTag = tab.session_tag.value();
