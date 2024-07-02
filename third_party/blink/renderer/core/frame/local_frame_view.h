@@ -1077,7 +1077,7 @@ class CORE_EXPORT LocalFrameView final
 #endif
 
   PluginSet plugins_;
-  HeapHashSet<Member<Scrollbar>> scrollbars_;
+  HeapHashSet<Member<Scrollbar>, WTF::MemberHashRecordReplayId<Scrollbar>> scrollbars_;
 
   // TODO(bokan): This is unneeded when root-layer-scrolls is turned on.
   // crbug.com/417782.

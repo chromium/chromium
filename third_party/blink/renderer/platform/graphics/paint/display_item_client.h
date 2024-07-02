@@ -25,6 +25,8 @@ namespace blink {
 // dereferenced unless we can make sure the client is still alive.
 class PLATFORM_EXPORT DisplayItemClient : public GarbageCollectedMixin {
  public:
+  HAS_RECORD_REPLAY_ID();
+
   DisplayItemClient()
       : paint_invalidation_reason_(
             static_cast<uint8_t>(PaintInvalidationReason::kJustCreated)),
@@ -118,9 +120,6 @@ class PLATFORM_EXPORT DisplayItemClient : public GarbageCollectedMixin {
 
   mutable uint8_t paint_invalidation_reason_ : 7;
   mutable uint8_t marked_for_validation_ : 1;
-
-  // A deterministic ID is needed for Id().
-  int record_replay_id_ = 0;
 };
 
 inline bool operator==(const DisplayItemClient& client1,
