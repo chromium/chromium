@@ -94,7 +94,6 @@ Mock_glBindUniformLocationCHROMIUM(GLuint program,
                                    GLint location,
                                    const char* name);
 static void GL_BINDING_CALL Mock_glBindVertexArray(GLuint array);
-static void GL_BINDING_CALL Mock_glBindVertexArrayAPPLE(GLuint array);
 static void GL_BINDING_CALL Mock_glBindVertexArrayOES(GLuint array);
 static void GL_BINDING_CALL Mock_glBindVertexBuffer(GLuint bindingindex,
                                                     GLuint buffer,
@@ -244,9 +243,6 @@ static void GL_BINDING_CALL Mock_glClearTexSubImageEXT(GLuint texture,
 static GLenum GL_BINDING_CALL Mock_glClientWaitSync(GLsync sync,
                                                     GLbitfield flags,
                                                     GLuint64 timeout);
-static GLenum GL_BINDING_CALL Mock_glClientWaitSyncAPPLE(GLsync sync,
-                                                         GLbitfield flags,
-                                                         GLuint64 timeout);
 static void GL_BINDING_CALL Mock_glClipControlEXT(GLenum origin, GLenum depth);
 static void GL_BINDING_CALL Mock_glColorMask(GLboolean red,
                                              GLboolean green,
@@ -440,8 +436,6 @@ static void GL_BINDING_CALL Mock_glDebugMessageInsertKHR(GLenum source,
                                                          const char* buf);
 static void GL_BINDING_CALL Mock_glDeleteBuffers(GLsizei n,
                                                  const GLuint* buffers);
-static void GL_BINDING_CALL Mock_glDeleteFencesAPPLE(GLsizei n,
-                                                     const GLuint* fences);
 static void GL_BINDING_CALL Mock_glDeleteFencesNV(GLsizei n,
                                                   const GLuint* fences);
 static void GL_BINDING_CALL
@@ -466,15 +460,12 @@ static void GL_BINDING_CALL
 Mock_glDeleteSemaphoresEXT(GLsizei n, const GLuint* semaphores);
 static void GL_BINDING_CALL Mock_glDeleteShader(GLuint shader);
 static void GL_BINDING_CALL Mock_glDeleteSync(GLsync sync);
-static void GL_BINDING_CALL Mock_glDeleteSyncAPPLE(GLsync sync);
 static void GL_BINDING_CALL Mock_glDeleteTextures(GLsizei n,
                                                   const GLuint* textures);
 static void GL_BINDING_CALL Mock_glDeleteTransformFeedbacks(GLsizei n,
                                                             const GLuint* ids);
 static void GL_BINDING_CALL Mock_glDeleteVertexArrays(GLsizei n,
                                                       const GLuint* arrays);
-static void GL_BINDING_CALL
-Mock_glDeleteVertexArraysAPPLE(GLsizei n, const GLuint* arrays);
 static void GL_BINDING_CALL Mock_glDeleteVertexArraysOES(GLsizei n,
                                                          const GLuint* arrays);
 static void GL_BINDING_CALL Mock_glDepthFunc(GLenum func);
@@ -595,10 +586,7 @@ static void GL_BINDING_CALL Mock_glEndTransformFeedback(void);
 static void GL_BINDING_CALL Mock_glEndTransformFeedbackEXT(void);
 static GLsync GL_BINDING_CALL Mock_glFenceSync(GLenum condition,
                                                GLbitfield flags);
-static GLsync GL_BINDING_CALL Mock_glFenceSyncAPPLE(GLenum condition,
-                                                    GLbitfield flags);
 static void GL_BINDING_CALL Mock_glFinish(void);
-static void GL_BINDING_CALL Mock_glFinishFenceAPPLE(GLuint fence);
 static void GL_BINDING_CALL Mock_glFinishFenceNV(GLuint fence);
 static void GL_BINDING_CALL Mock_glFlush(void);
 static void GL_BINDING_CALL Mock_glFlushMappedBufferRange(GLenum target,
@@ -679,7 +667,6 @@ Mock_glFramebufferTexturePixelLocalStorageANGLE(GLint plane,
                                                 GLint layer);
 static void GL_BINDING_CALL Mock_glFrontFace(GLenum mode);
 static void GL_BINDING_CALL Mock_glGenBuffers(GLsizei n, GLuint* buffers);
-static void GL_BINDING_CALL Mock_glGenFencesAPPLE(GLsizei n, GLuint* fences);
 static void GL_BINDING_CALL Mock_glGenFencesNV(GLsizei n, GLuint* fences);
 static void GL_BINDING_CALL Mock_glGenFramebuffers(GLsizei n,
                                                    GLuint* framebuffers);
@@ -700,8 +687,6 @@ static void GL_BINDING_CALL Mock_glGenTextures(GLsizei n, GLuint* textures);
 static void GL_BINDING_CALL Mock_glGenTransformFeedbacks(GLsizei n,
                                                          GLuint* ids);
 static void GL_BINDING_CALL Mock_glGenVertexArrays(GLsizei n, GLuint* arrays);
-static void GL_BINDING_CALL Mock_glGenVertexArraysAPPLE(GLsizei n,
-                                                        GLuint* arrays);
 static void GL_BINDING_CALL Mock_glGenVertexArraysOES(GLsizei n,
                                                       GLuint* arrays);
 static void GL_BINDING_CALL Mock_glGenerateMipmap(GLenum target);
@@ -1343,7 +1328,6 @@ static GLboolean GL_BINDING_CALL Mock_glIsEnabled(GLenum cap);
 static GLboolean GL_BINDING_CALL Mock_glIsEnabledi(GLenum target, GLuint index);
 static GLboolean GL_BINDING_CALL Mock_glIsEnablediOES(GLenum target,
                                                       GLuint index);
-static GLboolean GL_BINDING_CALL Mock_glIsFenceAPPLE(GLuint fence);
 static GLboolean GL_BINDING_CALL Mock_glIsFenceNV(GLuint fence);
 static GLboolean GL_BINDING_CALL Mock_glIsFramebuffer(GLuint framebuffer);
 static GLboolean GL_BINDING_CALL Mock_glIsFramebufferEXT(GLuint framebuffer);
@@ -1356,11 +1340,9 @@ static GLboolean GL_BINDING_CALL Mock_glIsRenderbufferEXT(GLuint renderbuffer);
 static GLboolean GL_BINDING_CALL Mock_glIsSampler(GLuint sampler);
 static GLboolean GL_BINDING_CALL Mock_glIsShader(GLuint shader);
 static GLboolean GL_BINDING_CALL Mock_glIsSync(GLsync sync);
-static GLboolean GL_BINDING_CALL Mock_glIsSyncAPPLE(GLsync sync);
 static GLboolean GL_BINDING_CALL Mock_glIsTexture(GLuint texture);
 static GLboolean GL_BINDING_CALL Mock_glIsTransformFeedback(GLuint id);
 static GLboolean GL_BINDING_CALL Mock_glIsVertexArray(GLuint array);
-static GLboolean GL_BINDING_CALL Mock_glIsVertexArrayAPPLE(GLuint array);
 static GLboolean GL_BINDING_CALL Mock_glIsVertexArrayOES(GLuint array);
 static void GL_BINDING_CALL Mock_glLineWidth(GLfloat width);
 static void GL_BINDING_CALL Mock_glLinkProgram(GLuint program);
@@ -1749,7 +1731,6 @@ static void GL_BINDING_CALL Mock_glScissor(GLint x,
                                            GLint y,
                                            GLsizei width,
                                            GLsizei height);
-static void GL_BINDING_CALL Mock_glSetFenceAPPLE(GLuint fence);
 static void GL_BINDING_CALL Mock_glSetFenceNV(GLuint fence, GLenum condition);
 static void GL_BINDING_CALL Mock_glShaderBinary(GLsizei n,
                                                 const GLuint* shaders,
@@ -1788,7 +1769,6 @@ static void GL_BINDING_CALL Mock_glStencilOpSeparate(GLenum face,
                                                      GLenum fail,
                                                      GLenum zfail,
                                                      GLenum zpass);
-static GLboolean GL_BINDING_CALL Mock_glTestFenceAPPLE(GLuint fence);
 static GLboolean GL_BINDING_CALL Mock_glTestFenceNV(GLuint fence);
 static void GL_BINDING_CALL Mock_glTexBuffer(GLenum target,
                                              GLenum internalformat,
@@ -2168,9 +2148,6 @@ static void GL_BINDING_CALL Mock_glWaitSemaphoreEXT(GLuint semaphore,
 static void GL_BINDING_CALL Mock_glWaitSync(GLsync sync,
                                             GLbitfield flags,
                                             GLuint64 timeout);
-static void GL_BINDING_CALL Mock_glWaitSyncAPPLE(GLsync sync,
-                                                 GLbitfield flags,
-                                                 GLuint64 timeout);
 static void GL_BINDING_CALL Mock_glWindowRectanglesEXT(GLenum mode,
                                                        GLsizei n,
                                                        const GLint* box);

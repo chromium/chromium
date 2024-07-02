@@ -248,12 +248,6 @@ void GL_BINDING_CALL MockGLInterface::Mock_glBindVertexArray(GLuint array) {
   interface_->BindVertexArrayOES(array);
 }
 
-void GL_BINDING_CALL
-MockGLInterface::Mock_glBindVertexArrayAPPLE(GLuint array) {
-  MakeGlMockFunctionUnique("glBindVertexArrayAPPLE");
-  interface_->BindVertexArrayOES(array);
-}
-
 void GL_BINDING_CALL MockGLInterface::Mock_glBindVertexArrayOES(GLuint array) {
   MakeGlMockFunctionUnique("glBindVertexArrayOES");
   interface_->BindVertexArrayOES(array);
@@ -582,14 +576,6 @@ MockGLInterface::Mock_glClientWaitSync(GLsync sync,
                                        GLuint64 timeout) {
   MakeGlMockFunctionUnique("glClientWaitSync");
   return interface_->ClientWaitSync(sync, flags, timeout);
-}
-
-GLenum GL_BINDING_CALL
-MockGLInterface::Mock_glClientWaitSyncAPPLE(GLsync sync,
-                                            GLbitfield flags,
-                                            GLuint64 timeout) {
-  MakeGlMockFunctionUnique("glClientWaitSyncAPPLE");
-  return interface_->ClientWaitSyncAPPLE(sync, flags, timeout);
 }
 
 void GL_BINDING_CALL MockGLInterface::Mock_glClipControlEXT(GLenum origin,
@@ -946,12 +932,6 @@ MockGLInterface::Mock_glDeleteBuffers(GLsizei n, const GLuint* buffers) {
 }
 
 void GL_BINDING_CALL
-MockGLInterface::Mock_glDeleteFencesAPPLE(GLsizei n, const GLuint* fences) {
-  MakeGlMockFunctionUnique("glDeleteFencesAPPLE");
-  interface_->DeleteFencesAPPLE(n, fences);
-}
-
-void GL_BINDING_CALL
 MockGLInterface::Mock_glDeleteFencesNV(GLsizei n, const GLuint* fences) {
   MakeGlMockFunctionUnique("glDeleteFencesNV");
   interface_->DeleteFencesNV(n, fences);
@@ -1039,11 +1019,6 @@ void GL_BINDING_CALL MockGLInterface::Mock_glDeleteSync(GLsync sync) {
   interface_->DeleteSync(sync);
 }
 
-void GL_BINDING_CALL MockGLInterface::Mock_glDeleteSyncAPPLE(GLsync sync) {
-  MakeGlMockFunctionUnique("glDeleteSyncAPPLE");
-  interface_->DeleteSyncAPPLE(sync);
-}
-
 void GL_BINDING_CALL
 MockGLInterface::Mock_glDeleteTextures(GLsizei n, const GLuint* textures) {
   MakeGlMockFunctionUnique("glDeleteTextures");
@@ -1059,13 +1034,6 @@ MockGLInterface::Mock_glDeleteTransformFeedbacks(GLsizei n, const GLuint* ids) {
 void GL_BINDING_CALL
 MockGLInterface::Mock_glDeleteVertexArrays(GLsizei n, const GLuint* arrays) {
   MakeGlMockFunctionUnique("glDeleteVertexArrays");
-  interface_->DeleteVertexArraysOES(n, arrays);
-}
-
-void GL_BINDING_CALL
-MockGLInterface::Mock_glDeleteVertexArraysAPPLE(GLsizei n,
-                                                const GLuint* arrays) {
-  MakeGlMockFunctionUnique("glDeleteVertexArraysAPPLE");
   interface_->DeleteVertexArraysOES(n, arrays);
 }
 
@@ -1403,20 +1371,9 @@ GLsync GL_BINDING_CALL MockGLInterface::Mock_glFenceSync(GLenum condition,
   return interface_->FenceSync(condition, flags);
 }
 
-GLsync GL_BINDING_CALL
-MockGLInterface::Mock_glFenceSyncAPPLE(GLenum condition, GLbitfield flags) {
-  MakeGlMockFunctionUnique("glFenceSyncAPPLE");
-  return interface_->FenceSyncAPPLE(condition, flags);
-}
-
 void GL_BINDING_CALL MockGLInterface::Mock_glFinish(void) {
   MakeGlMockFunctionUnique("glFinish");
   interface_->Finish();
-}
-
-void GL_BINDING_CALL MockGLInterface::Mock_glFinishFenceAPPLE(GLuint fence) {
-  MakeGlMockFunctionUnique("glFinishFenceAPPLE");
-  interface_->FinishFenceAPPLE(fence);
 }
 
 void GL_BINDING_CALL MockGLInterface::Mock_glFinishFenceNV(GLuint fence) {
@@ -1617,12 +1574,6 @@ void GL_BINDING_CALL MockGLInterface::Mock_glGenBuffers(GLsizei n,
   interface_->GenBuffersARB(n, buffers);
 }
 
-void GL_BINDING_CALL MockGLInterface::Mock_glGenFencesAPPLE(GLsizei n,
-                                                            GLuint* fences) {
-  MakeGlMockFunctionUnique("glGenFencesAPPLE");
-  interface_->GenFencesAPPLE(n, fences);
-}
-
 void GL_BINDING_CALL MockGLInterface::Mock_glGenFencesNV(GLsizei n,
                                                          GLuint* fences) {
   MakeGlMockFunctionUnique("glGenFencesNV");
@@ -1698,12 +1649,6 @@ MockGLInterface::Mock_glGenTransformFeedbacks(GLsizei n, GLuint* ids) {
 void GL_BINDING_CALL MockGLInterface::Mock_glGenVertexArrays(GLsizei n,
                                                              GLuint* arrays) {
   MakeGlMockFunctionUnique("glGenVertexArrays");
-  interface_->GenVertexArraysOES(n, arrays);
-}
-
-void GL_BINDING_CALL
-MockGLInterface::Mock_glGenVertexArraysAPPLE(GLsizei n, GLuint* arrays) {
-  MakeGlMockFunctionUnique("glGenVertexArraysAPPLE");
   interface_->GenVertexArraysOES(n, arrays);
 }
 
@@ -3096,11 +3041,6 @@ GLboolean GL_BINDING_CALL MockGLInterface::Mock_glIsEnablediOES(GLenum target,
   return interface_->IsEnablediOES(target, index);
 }
 
-GLboolean GL_BINDING_CALL MockGLInterface::Mock_glIsFenceAPPLE(GLuint fence) {
-  MakeGlMockFunctionUnique("glIsFenceAPPLE");
-  return interface_->IsFenceAPPLE(fence);
-}
-
 GLboolean GL_BINDING_CALL MockGLInterface::Mock_glIsFenceNV(GLuint fence) {
   MakeGlMockFunctionUnique("glIsFenceNV");
   return interface_->IsFenceNV(fence);
@@ -3166,11 +3106,6 @@ GLboolean GL_BINDING_CALL MockGLInterface::Mock_glIsSync(GLsync sync) {
   return interface_->IsSync(sync);
 }
 
-GLboolean GL_BINDING_CALL MockGLInterface::Mock_glIsSyncAPPLE(GLsync sync) {
-  MakeGlMockFunctionUnique("glIsSyncAPPLE");
-  return interface_->IsSyncAPPLE(sync);
-}
-
 GLboolean GL_BINDING_CALL MockGLInterface::Mock_glIsTexture(GLuint texture) {
   MakeGlMockFunctionUnique("glIsTexture");
   return interface_->IsTexture(texture);
@@ -3184,12 +3119,6 @@ MockGLInterface::Mock_glIsTransformFeedback(GLuint id) {
 
 GLboolean GL_BINDING_CALL MockGLInterface::Mock_glIsVertexArray(GLuint array) {
   MakeGlMockFunctionUnique("glIsVertexArray");
-  return interface_->IsVertexArrayOES(array);
-}
-
-GLboolean GL_BINDING_CALL
-MockGLInterface::Mock_glIsVertexArrayAPPLE(GLuint array) {
-  MakeGlMockFunctionUnique("glIsVertexArrayAPPLE");
   return interface_->IsVertexArrayOES(array);
 }
 
@@ -4071,11 +4000,6 @@ void GL_BINDING_CALL MockGLInterface::Mock_glScissor(GLint x,
   interface_->Scissor(x, y, width, height);
 }
 
-void GL_BINDING_CALL MockGLInterface::Mock_glSetFenceAPPLE(GLuint fence) {
-  MakeGlMockFunctionUnique("glSetFenceAPPLE");
-  interface_->SetFenceAPPLE(fence);
-}
-
 void GL_BINDING_CALL MockGLInterface::Mock_glSetFenceNV(GLuint fence,
                                                         GLenum condition) {
   MakeGlMockFunctionUnique("glSetFenceNV");
@@ -4161,11 +4085,6 @@ void GL_BINDING_CALL MockGLInterface::Mock_glStencilOpSeparate(GLenum face,
                                                                GLenum zpass) {
   MakeGlMockFunctionUnique("glStencilOpSeparate");
   interface_->StencilOpSeparate(face, fail, zfail, zpass);
-}
-
-GLboolean GL_BINDING_CALL MockGLInterface::Mock_glTestFenceAPPLE(GLuint fence) {
-  MakeGlMockFunctionUnique("glTestFenceAPPLE");
-  return interface_->TestFenceAPPLE(fence);
 }
 
 GLboolean GL_BINDING_CALL MockGLInterface::Mock_glTestFenceNV(GLuint fence) {
@@ -5005,13 +4924,6 @@ void GL_BINDING_CALL MockGLInterface::Mock_glWaitSync(GLsync sync,
   interface_->WaitSync(sync, flags, timeout);
 }
 
-void GL_BINDING_CALL MockGLInterface::Mock_glWaitSyncAPPLE(GLsync sync,
-                                                           GLbitfield flags,
-                                                           GLuint64 timeout) {
-  MakeGlMockFunctionUnique("glWaitSyncAPPLE");
-  interface_->WaitSyncAPPLE(sync, flags, timeout);
-}
-
 void GL_BINDING_CALL
 MockGLInterface::Mock_glWindowRectanglesEXT(GLenum mode,
                                             GLsizei n,
@@ -5096,8 +5008,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
         Mock_glBindUniformLocationCHROMIUM);
   if (strcmp(name, "glBindVertexArray") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glBindVertexArray);
-  if (strcmp(name, "glBindVertexArrayAPPLE") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glBindVertexArrayAPPLE);
   if (strcmp(name, "glBindVertexArrayOES") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glBindVertexArrayOES);
   if (strcmp(name, "glBindVertexBuffer") == 0)
@@ -5182,8 +5092,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glClearTexSubImageEXT);
   if (strcmp(name, "glClientWaitSync") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glClientWaitSync);
-  if (strcmp(name, "glClientWaitSyncAPPLE") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glClientWaitSyncAPPLE);
   if (strcmp(name, "glClipControlEXT") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glClipControlEXT);
   if (strcmp(name, "glColorMask") == 0)
@@ -5257,8 +5165,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
         Mock_glDebugMessageInsertKHR);
   if (strcmp(name, "glDeleteBuffers") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glDeleteBuffers);
-  if (strcmp(name, "glDeleteFencesAPPLE") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glDeleteFencesAPPLE);
   if (strcmp(name, "glDeleteFencesNV") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glDeleteFencesNV);
   if (strcmp(name, "glDeleteFramebuffers") == 0)
@@ -5291,8 +5197,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glDeleteShader);
   if (strcmp(name, "glDeleteSync") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glDeleteSync);
-  if (strcmp(name, "glDeleteSyncAPPLE") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glDeleteSyncAPPLE);
   if (strcmp(name, "glDeleteTextures") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glDeleteTextures);
   if (strcmp(name, "glDeleteTransformFeedbacks") == 0)
@@ -5300,9 +5204,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
         Mock_glDeleteTransformFeedbacks);
   if (strcmp(name, "glDeleteVertexArrays") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glDeleteVertexArrays);
-  if (strcmp(name, "glDeleteVertexArraysAPPLE") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(
-        Mock_glDeleteVertexArraysAPPLE);
   if (strcmp(name, "glDeleteVertexArraysOES") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glDeleteVertexArraysOES);
@@ -5412,12 +5313,8 @@ MockGLInterface::GetGLProcAddress(const char* name) {
         Mock_glEndTransformFeedbackEXT);
   if (strcmp(name, "glFenceSync") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glFenceSync);
-  if (strcmp(name, "glFenceSyncAPPLE") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glFenceSyncAPPLE);
   if (strcmp(name, "glFinish") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glFinish);
-  if (strcmp(name, "glFinishFenceAPPLE") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glFinishFenceAPPLE);
   if (strcmp(name, "glFinishFenceNV") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glFinishFenceNV);
   if (strcmp(name, "glFlush") == 0)
@@ -5482,8 +5379,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glFrontFace);
   if (strcmp(name, "glGenBuffers") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glGenBuffers);
-  if (strcmp(name, "glGenFencesAPPLE") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glGenFencesAPPLE);
   if (strcmp(name, "glGenFencesNV") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glGenFencesNV);
   if (strcmp(name, "glGenFramebuffers") == 0)
@@ -5511,8 +5406,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
         Mock_glGenTransformFeedbacks);
   if (strcmp(name, "glGenVertexArrays") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glGenVertexArrays);
-  if (strcmp(name, "glGenVertexArraysAPPLE") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glGenVertexArraysAPPLE);
   if (strcmp(name, "glGenVertexArraysOES") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glGenVertexArraysOES);
   if (strcmp(name, "glGenerateMipmap") == 0)
@@ -5911,8 +5804,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glIsEnabledi);
   if (strcmp(name, "glIsEnablediOES") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glIsEnablediOES);
-  if (strcmp(name, "glIsFenceAPPLE") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glIsFenceAPPLE);
   if (strcmp(name, "glIsFenceNV") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glIsFenceNV);
   if (strcmp(name, "glIsFramebuffer") == 0)
@@ -5937,16 +5828,12 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glIsShader);
   if (strcmp(name, "glIsSync") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glIsSync);
-  if (strcmp(name, "glIsSyncAPPLE") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glIsSyncAPPLE);
   if (strcmp(name, "glIsTexture") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glIsTexture);
   if (strcmp(name, "glIsTransformFeedback") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glIsTransformFeedback);
   if (strcmp(name, "glIsVertexArray") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glIsVertexArray);
-  if (strcmp(name, "glIsVertexArrayAPPLE") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glIsVertexArrayAPPLE);
   if (strcmp(name, "glIsVertexArrayOES") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glIsVertexArrayOES);
   if (strcmp(name, "glLineWidth") == 0)
@@ -6194,8 +6081,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
         Mock_glSamplerParameterivRobustANGLE);
   if (strcmp(name, "glScissor") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glScissor);
-  if (strcmp(name, "glSetFenceAPPLE") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glSetFenceAPPLE);
   if (strcmp(name, "glSetFenceNV") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glSetFenceNV);
   if (strcmp(name, "glShaderBinary") == 0)
@@ -6218,8 +6103,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glStencilOp);
   if (strcmp(name, "glStencilOpSeparate") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glStencilOpSeparate);
-  if (strcmp(name, "glTestFenceAPPLE") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glTestFenceAPPLE);
   if (strcmp(name, "glTestFenceNV") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glTestFenceNV);
   if (strcmp(name, "glTexBuffer") == 0)
@@ -6428,8 +6311,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glWaitSemaphoreEXT);
   if (strcmp(name, "glWaitSync") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glWaitSync);
-  if (strcmp(name, "glWaitSyncAPPLE") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glWaitSyncAPPLE);
   if (strcmp(name, "glWindowRectanglesEXT") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glWindowRectanglesEXT);
   return reinterpret_cast<GLFunctionPointerType>(&MockGlInvalidFunction);

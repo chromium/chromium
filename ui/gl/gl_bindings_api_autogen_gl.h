@@ -140,9 +140,6 @@ void glClearTexSubImageFn(GLuint texture,
 GLenum glClientWaitSyncFn(GLsync sync,
                           GLbitfield flags,
                           GLuint64 timeout) override;
-GLenum glClientWaitSyncAPPLEFn(GLsync sync,
-                               GLbitfield flags,
-                               GLuint64 timeout) override;
 void glClipControlEXTFn(GLenum origin, GLenum depth) override;
 void glColorMaskFn(GLboolean red,
                    GLboolean green,
@@ -308,7 +305,6 @@ void glDebugMessageInsertFn(GLenum source,
                             GLsizei length,
                             const char* buf) override;
 void glDeleteBuffersARBFn(GLsizei n, const GLuint* buffers) override;
-void glDeleteFencesAPPLEFn(GLsizei n, const GLuint* fences) override;
 void glDeleteFencesNVFn(GLsizei n, const GLuint* fences) override;
 void glDeleteFramebuffersEXTFn(GLsizei n, const GLuint* framebuffers) override;
 void glDeleteMemoryObjectsEXTFn(GLsizei n,
@@ -322,7 +318,6 @@ void glDeleteSamplersFn(GLsizei n, const GLuint* samplers) override;
 void glDeleteSemaphoresEXTFn(GLsizei n, const GLuint* semaphores) override;
 void glDeleteShaderFn(GLuint shader) override;
 void glDeleteSyncFn(GLsync sync) override;
-void glDeleteSyncAPPLEFn(GLsync sync) override;
 void glDeleteTexturesFn(GLsizei n, const GLuint* textures) override;
 void glDeleteTransformFeedbacksFn(GLsizei n, const GLuint* ids) override;
 void glDeleteVertexArraysOESFn(GLsizei n, const GLuint* arrays) override;
@@ -393,9 +388,7 @@ void glEndQueryFn(GLenum target) override;
 void glEndTilingQCOMFn(GLbitfield preserveMask) override;
 void glEndTransformFeedbackFn(void) override;
 GLsync glFenceSyncFn(GLenum condition, GLbitfield flags) override;
-GLsync glFenceSyncAPPLEFn(GLenum condition, GLbitfield flags) override;
 void glFinishFn(void) override;
-void glFinishFenceAPPLEFn(GLuint fence) override;
 void glFinishFenceNVFn(GLuint fence) override;
 void glFlushFn(void) override;
 void glFlushMappedBufferRangeFn(GLenum target,
@@ -448,7 +441,6 @@ void glFramebufferTexturePixelLocalStorageANGLEFn(GLint plane,
 void glFrontFaceFn(GLenum mode) override;
 void glGenBuffersARBFn(GLsizei n, GLuint* buffers) override;
 void glGenerateMipmapEXTFn(GLenum target) override;
-void glGenFencesAPPLEFn(GLsizei n, GLuint* fences) override;
 void glGenFencesNVFn(GLsizei n, GLuint* fences) override;
 void glGenFramebuffersEXTFn(GLsizei n, GLuint* framebuffers) override;
 GLuint glGenProgramPipelinesFn(GLsizei n, GLuint* pipelines) override;
@@ -949,7 +941,6 @@ void glInvalidateTextureANGLEFn(GLenum target) override;
 GLboolean glIsBufferFn(GLuint buffer) override;
 GLboolean glIsEnabledFn(GLenum cap) override;
 GLboolean glIsEnablediOESFn(GLenum target, GLuint index) override;
-GLboolean glIsFenceAPPLEFn(GLuint fence) override;
 GLboolean glIsFenceNVFn(GLuint fence) override;
 GLboolean glIsFramebufferEXTFn(GLuint framebuffer) override;
 GLboolean glIsProgramFn(GLuint program) override;
@@ -959,7 +950,6 @@ GLboolean glIsRenderbufferEXTFn(GLuint renderbuffer) override;
 GLboolean glIsSamplerFn(GLuint sampler) override;
 GLboolean glIsShaderFn(GLuint shader) override;
 GLboolean glIsSyncFn(GLsync sync) override;
-GLboolean glIsSyncAPPLEFn(GLsync sync) override;
 GLboolean glIsTextureFn(GLuint texture) override;
 GLboolean glIsTransformFeedbackFn(GLuint id) override;
 GLboolean glIsVertexArrayOESFn(GLuint array) override;
@@ -1270,7 +1260,6 @@ void glSamplerParameterivRobustANGLEFn(GLuint sampler,
                                        GLsizei bufSize,
                                        const GLint* param) override;
 void glScissorFn(GLint x, GLint y, GLsizei width, GLsizei height) override;
-void glSetFenceAPPLEFn(GLuint fence) override;
 void glSetFenceNVFn(GLuint fence, GLenum condition) override;
 void glShaderBinaryFn(GLsizei n,
                       const GLuint* shaders,
@@ -1304,7 +1293,6 @@ void glStencilOpSeparateFn(GLenum face,
                            GLenum fail,
                            GLenum zfail,
                            GLenum zpass) override;
-GLboolean glTestFenceAPPLEFn(GLuint fence) override;
 GLboolean glTestFenceNVFn(GLuint fence) override;
 void glTexBufferFn(GLenum target,
                    GLenum internalformat,
@@ -1599,7 +1587,4 @@ void glWaitSemaphoreEXTFn(GLuint semaphore,
                           const GLuint* textures,
                           const GLenum* srcLayouts) override;
 void glWaitSyncFn(GLsync sync, GLbitfield flags, GLuint64 timeout) override;
-void glWaitSyncAPPLEFn(GLsync sync,
-                       GLbitfield flags,
-                       GLuint64 timeout) override;
 void glWindowRectanglesEXTFn(GLenum mode, GLsizei n, const GLint* box) override;

@@ -17,10 +17,6 @@
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_version_info.h"
 
-#if BUILDFLAG(IS_APPLE)
-#include "ui/gl/gl_fence_apple.h"
-#endif
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define USE_GL_FENCE_ANDROID_NATIVE_FENCE_SYNC
 #include "ui/gl/gl_fence_android_native_fence_sync.h"
@@ -44,9 +40,6 @@ bool GLFence::IsSupported() {
 
   return g_current_gl_version->is_es3 ||
          (display && display->ext->b_EGL_KHR_fence_sync) ||
-#if BUILDFLAG(IS_APPLE)
-         g_current_gl_driver->ext.b_GL_APPLE_fence ||
-#endif
          g_current_gl_driver->ext.b_GL_NV_fence;
 }
 
@@ -70,11 +63,7 @@ std::unique_ptr<GLFence> GLFence::Create() {
     // Prefer ARB_sync which supports server-side wait.
     fence = std::make_unique<GLFenceARB>();
     DCHECK(fence);
-#if BUILDFLAG(IS_APPLE)
-  } else if (g_current_gl_driver->ext.b_GL_APPLE_fence) {
-    fence = std::make_unique<GLFenceAPPLE>();
-    DCHECK(fence);
-#else   // IS_APPLE
+#if !BUILDFLAG(IS_APPLE)
   } else if (display && display->ext->b_EGL_KHR_fence_sync) {
     fence = GLFenceEGL::Create();
     DCHECK(fence);

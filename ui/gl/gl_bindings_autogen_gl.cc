@@ -321,10 +321,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_ANGLE_vulkan_image");
   ext.b_GL_ANGLE_webgl_compatibility =
       gfx::HasExtension(extensions, "GL_ANGLE_webgl_compatibility");
-  ext.b_GL_APPLE_fence = gfx::HasExtension(extensions, "GL_APPLE_fence");
-  ext.b_GL_APPLE_sync = gfx::HasExtension(extensions, "GL_APPLE_sync");
-  ext.b_GL_APPLE_vertex_array_object =
-      gfx::HasExtension(extensions, "GL_APPLE_vertex_array_object");
   ext.b_GL_ARB_timer_query =
       gfx::HasExtension(extensions, "GL_ARB_timer_query");
   ext.b_GL_CHROMIUM_bind_uniform_location =
@@ -556,9 +552,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   } else if (ext.b_GL_OES_vertex_array_object) {
     fn.glBindVertexArrayOESFn = reinterpret_cast<glBindVertexArrayOESProc>(
         GetGLProcAddress("glBindVertexArrayOES"));
-  } else if (ext.b_GL_APPLE_vertex_array_object) {
-    fn.glBindVertexArrayOESFn = reinterpret_cast<glBindVertexArrayOESProc>(
-        GetGLProcAddress("glBindVertexArrayAPPLE"));
   }
 
   if (ver->IsAtLeastGL(4u, 3u) || ver->IsAtLeastGLES(3u, 1u)) {
@@ -680,11 +673,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         GetGLProcAddress("glClientWaitSync"));
   }
 
-  if (ext.b_GL_APPLE_sync) {
-    fn.glClientWaitSyncAPPLEFn = reinterpret_cast<glClientWaitSyncAPPLEProc>(
-        GetGLProcAddress("glClientWaitSyncAPPLE"));
-  }
-
   if (ext.b_GL_EXT_clip_control) {
     fn.glClipControlEXTFn = reinterpret_cast<glClipControlEXTProc>(
         GetGLProcAddress("glClipControlEXT"));
@@ -789,11 +777,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         GetGLProcAddress("glDebugMessageInsertKHR"));
   }
 
-  if (ext.b_GL_APPLE_fence) {
-    fn.glDeleteFencesAPPLEFn = reinterpret_cast<glDeleteFencesAPPLEProc>(
-        GetGLProcAddress("glDeleteFencesAPPLE"));
-  }
-
   if (ext.b_GL_NV_fence) {
     fn.glDeleteFencesNVFn = reinterpret_cast<glDeleteFencesNVProc>(
         GetGLProcAddress("glDeleteFencesNV"));
@@ -855,11 +838,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         reinterpret_cast<glDeleteSyncProc>(GetGLProcAddress("glDeleteSync"));
   }
 
-  if (ext.b_GL_APPLE_sync) {
-    fn.glDeleteSyncAPPLEFn = reinterpret_cast<glDeleteSyncAPPLEProc>(
-        GetGLProcAddress("glDeleteSyncAPPLE"));
-  }
-
   if (ver->IsAtLeastGL(4u, 0u) || ver->IsAtLeastGLES(3u, 0u)) {
     fn.glDeleteTransformFeedbacksFn =
         reinterpret_cast<glDeleteTransformFeedbacksProc>(
@@ -874,10 +852,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
     fn.glDeleteVertexArraysOESFn =
         reinterpret_cast<glDeleteVertexArraysOESProc>(
             GetGLProcAddress("glDeleteVertexArraysOES"));
-  } else if (ext.b_GL_APPLE_vertex_array_object) {
-    fn.glDeleteVertexArraysOESFn =
-        reinterpret_cast<glDeleteVertexArraysOESProc>(
-            GetGLProcAddress("glDeleteVertexArraysAPPLE"));
   }
 
   if (ver->IsAtLeastGL(4u, 1u) || ver->is_es) {
@@ -1045,16 +1019,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         reinterpret_cast<glFenceSyncProc>(GetGLProcAddress("glFenceSync"));
   }
 
-  if (ext.b_GL_APPLE_sync) {
-    fn.glFenceSyncAPPLEFn = reinterpret_cast<glFenceSyncAPPLEProc>(
-        GetGLProcAddress("glFenceSyncAPPLE"));
-  }
-
-  if (ext.b_GL_APPLE_fence) {
-    fn.glFinishFenceAPPLEFn = reinterpret_cast<glFinishFenceAPPLEProc>(
-        GetGLProcAddress("glFinishFenceAPPLE"));
-  }
-
   if (ext.b_GL_NV_fence) {
     fn.glFinishFenceNVFn = reinterpret_cast<glFinishFenceNVProc>(
         GetGLProcAddress("glFinishFenceNV"));
@@ -1172,11 +1136,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         GetGLProcAddress("glGenerateMipmapEXT"));
   }
 
-  if (ext.b_GL_APPLE_fence) {
-    fn.glGenFencesAPPLEFn = reinterpret_cast<glGenFencesAPPLEProc>(
-        GetGLProcAddress("glGenFencesAPPLE"));
-  }
-
   if (ext.b_GL_NV_fence) {
     fn.glGenFencesNVFn =
         reinterpret_cast<glGenFencesNVProc>(GetGLProcAddress("glGenFencesNV"));
@@ -1234,9 +1193,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   } else if (ext.b_GL_OES_vertex_array_object) {
     fn.glGenVertexArraysOESFn = reinterpret_cast<glGenVertexArraysOESProc>(
         GetGLProcAddress("glGenVertexArraysOES"));
-  } else if (ext.b_GL_APPLE_vertex_array_object) {
-    fn.glGenVertexArraysOESFn = reinterpret_cast<glGenVertexArraysOESProc>(
-        GetGLProcAddress("glGenVertexArraysAPPLE"));
   }
 
   if (ver->IsAtLeastGL(3u, 1u) || ver->IsAtLeastGLES(3u, 0u)) {
@@ -1919,11 +1875,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         GetGLProcAddress("glIsEnablediOES"));
   }
 
-  if (ext.b_GL_APPLE_fence) {
-    fn.glIsFenceAPPLEFn = reinterpret_cast<glIsFenceAPPLEProc>(
-        GetGLProcAddress("glIsFenceAPPLE"));
-  }
-
   if (ext.b_GL_NV_fence) {
     fn.glIsFenceNVFn =
         reinterpret_cast<glIsFenceNVProc>(GetGLProcAddress("glIsFenceNV"));
@@ -1969,11 +1920,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         reinterpret_cast<glIsSyncProc>(GetGLProcAddress("glIsSync"));
   }
 
-  if (ext.b_GL_APPLE_sync) {
-    fn.glIsSyncAPPLEFn =
-        reinterpret_cast<glIsSyncAPPLEProc>(GetGLProcAddress("glIsSyncAPPLE"));
-  }
-
   if (ver->IsAtLeastGL(4u, 0u) || ver->IsAtLeastGLES(3u, 0u)) {
     fn.glIsTransformFeedbackFn = reinterpret_cast<glIsTransformFeedbackProc>(
         GetGLProcAddress("glIsTransformFeedback"));
@@ -1985,9 +1931,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   } else if (ext.b_GL_OES_vertex_array_object) {
     fn.glIsVertexArrayOESFn = reinterpret_cast<glIsVertexArrayOESProc>(
         GetGLProcAddress("glIsVertexArrayOES"));
-  } else if (ext.b_GL_APPLE_vertex_array_object) {
-    fn.glIsVertexArrayOESFn = reinterpret_cast<glIsVertexArrayOESProc>(
-        GetGLProcAddress("glIsVertexArrayAPPLE"));
   }
 
   if (!ver->is_es) {
@@ -2492,11 +2435,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
             GetGLProcAddress("glSamplerParameterivRobustANGLE"));
   }
 
-  if (ext.b_GL_APPLE_fence) {
-    fn.glSetFenceAPPLEFn = reinterpret_cast<glSetFenceAPPLEProc>(
-        GetGLProcAddress("glSetFenceAPPLE"));
-  }
-
   if (ext.b_GL_NV_fence) {
     fn.glSetFenceNVFn =
         reinterpret_cast<glSetFenceNVProc>(GetGLProcAddress("glSetFenceNV"));
@@ -2515,11 +2453,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   if (ext.b_GL_QCOM_tiled_rendering) {
     fn.glStartTilingQCOMFn = reinterpret_cast<glStartTilingQCOMProc>(
         GetGLProcAddress("glStartTilingQCOM"));
-  }
-
-  if (ext.b_GL_APPLE_fence) {
-    fn.glTestFenceAPPLEFn = reinterpret_cast<glTestFenceAPPLEProc>(
-        GetGLProcAddress("glTestFenceAPPLE"));
   }
 
   if (ext.b_GL_NV_fence) {
@@ -2817,11 +2750,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         reinterpret_cast<glWaitSyncProc>(GetGLProcAddress("glWaitSync"));
   }
 
-  if (ext.b_GL_APPLE_sync) {
-    fn.glWaitSyncAPPLEFn = reinterpret_cast<glWaitSyncAPPLEProc>(
-        GetGLProcAddress("glWaitSyncAPPLE"));
-  }
-
   if (ext.b_GL_EXT_window_rectangles) {
     fn.glWindowRectanglesEXTFn = reinterpret_cast<glWindowRectanglesEXTProc>(
         GetGLProcAddress("glWindowRectanglesEXT"));
@@ -3113,12 +3041,6 @@ GLenum GLApiBase::glClientWaitSyncFn(GLsync sync,
   return driver_->fn.glClientWaitSyncFn(sync, flags, timeout);
 }
 
-GLenum GLApiBase::glClientWaitSyncAPPLEFn(GLsync sync,
-                                          GLbitfield flags,
-                                          GLuint64 timeout) {
-  return driver_->fn.glClientWaitSyncAPPLEFn(sync, flags, timeout);
-}
-
 void GLApiBase::glClipControlEXTFn(GLenum origin, GLenum depth) {
   driver_->fn.glClipControlEXTFn(origin, depth);
 }
@@ -3388,10 +3310,6 @@ void GLApiBase::glDeleteBuffersARBFn(GLsizei n, const GLuint* buffers) {
   driver_->fn.glDeleteBuffersARBFn(n, buffers);
 }
 
-void GLApiBase::glDeleteFencesAPPLEFn(GLsizei n, const GLuint* fences) {
-  driver_->fn.glDeleteFencesAPPLEFn(n, fences);
-}
-
 void GLApiBase::glDeleteFencesNVFn(GLsizei n, const GLuint* fences) {
   driver_->fn.glDeleteFencesNVFn(n, fences);
 }
@@ -3437,10 +3355,6 @@ void GLApiBase::glDeleteShaderFn(GLuint shader) {
 
 void GLApiBase::glDeleteSyncFn(GLsync sync) {
   driver_->fn.glDeleteSyncFn(sync);
-}
-
-void GLApiBase::glDeleteSyncAPPLEFn(GLsync sync) {
-  driver_->fn.glDeleteSyncAPPLEFn(sync);
 }
 
 void GLApiBase::glDeleteTexturesFn(GLsizei n, const GLuint* textures) {
@@ -3625,16 +3539,8 @@ GLsync GLApiBase::glFenceSyncFn(GLenum condition, GLbitfield flags) {
   return driver_->fn.glFenceSyncFn(condition, flags);
 }
 
-GLsync GLApiBase::glFenceSyncAPPLEFn(GLenum condition, GLbitfield flags) {
-  return driver_->fn.glFenceSyncAPPLEFn(condition, flags);
-}
-
 void GLApiBase::glFinishFn(void) {
   driver_->fn.glFinishFn();
-}
-
-void GLApiBase::glFinishFenceAPPLEFn(GLuint fence) {
-  driver_->fn.glFinishFenceAPPLEFn(fence);
 }
 
 void GLApiBase::glFinishFenceNVFn(GLuint fence) {
@@ -3754,10 +3660,6 @@ void GLApiBase::glGenBuffersARBFn(GLsizei n, GLuint* buffers) {
 
 void GLApiBase::glGenerateMipmapEXTFn(GLenum target) {
   driver_->fn.glGenerateMipmapEXTFn(target);
-}
-
-void GLApiBase::glGenFencesAPPLEFn(GLsizei n, GLuint* fences) {
-  driver_->fn.glGenFencesAPPLEFn(n, fences);
 }
 
 void GLApiBase::glGenFencesNVFn(GLsizei n, GLuint* fences) {
@@ -4774,10 +4676,6 @@ GLboolean GLApiBase::glIsEnablediOESFn(GLenum target, GLuint index) {
   return driver_->fn.glIsEnablediOESFn(target, index);
 }
 
-GLboolean GLApiBase::glIsFenceAPPLEFn(GLuint fence) {
-  return driver_->fn.glIsFenceAPPLEFn(fence);
-}
-
 GLboolean GLApiBase::glIsFenceNVFn(GLuint fence) {
   return driver_->fn.glIsFenceNVFn(fence);
 }
@@ -4812,10 +4710,6 @@ GLboolean GLApiBase::glIsShaderFn(GLuint shader) {
 
 GLboolean GLApiBase::glIsSyncFn(GLsync sync) {
   return driver_->fn.glIsSyncFn(sync);
-}
-
-GLboolean GLApiBase::glIsSyncAPPLEFn(GLsync sync) {
-  return driver_->fn.glIsSyncAPPLEFn(sync);
 }
 
 GLboolean GLApiBase::glIsTextureFn(GLuint texture) {
@@ -5444,10 +5338,6 @@ void GLApiBase::glScissorFn(GLint x, GLint y, GLsizei width, GLsizei height) {
   driver_->fn.glScissorFn(x, y, width, height);
 }
 
-void GLApiBase::glSetFenceAPPLEFn(GLuint fence) {
-  driver_->fn.glSetFenceAPPLEFn(fence);
-}
-
 void GLApiBase::glSetFenceNVFn(GLuint fence, GLenum condition) {
   driver_->fn.glSetFenceNVFn(fence, condition);
 }
@@ -5513,10 +5403,6 @@ void GLApiBase::glStencilOpSeparateFn(GLenum face,
                                       GLenum zfail,
                                       GLenum zpass) {
   driver_->fn.glStencilOpSeparateFn(face, fail, zfail, zpass);
-}
-
-GLboolean GLApiBase::glTestFenceAPPLEFn(GLuint fence) {
-  return driver_->fn.glTestFenceAPPLEFn(fence);
 }
 
 GLboolean GLApiBase::glTestFenceNVFn(GLuint fence) {
@@ -6126,12 +6012,6 @@ void GLApiBase::glWaitSyncFn(GLsync sync, GLbitfield flags, GLuint64 timeout) {
   driver_->fn.glWaitSyncFn(sync, flags, timeout);
 }
 
-void GLApiBase::glWaitSyncAPPLEFn(GLsync sync,
-                                  GLbitfield flags,
-                                  GLuint64 timeout) {
-  driver_->fn.glWaitSyncAPPLEFn(sync, flags, timeout);
-}
-
 void GLApiBase::glWindowRectanglesEXTFn(GLenum mode,
                                         GLsizei n,
                                         const GLint* box) {
@@ -6473,13 +6353,6 @@ GLenum TraceGLApi::glClientWaitSyncFn(GLsync sync,
   return gl_api_->glClientWaitSyncFn(sync, flags, timeout);
 }
 
-GLenum TraceGLApi::glClientWaitSyncAPPLEFn(GLsync sync,
-                                           GLbitfield flags,
-                                           GLuint64 timeout) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glClientWaitSyncAPPLE");
-  return gl_api_->glClientWaitSyncAPPLEFn(sync, flags, timeout);
-}
-
 void TraceGLApi::glClipControlEXTFn(GLenum origin, GLenum depth) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glClipControlEXT");
   gl_api_->glClipControlEXTFn(origin, depth);
@@ -6779,11 +6652,6 @@ void TraceGLApi::glDeleteBuffersARBFn(GLsizei n, const GLuint* buffers) {
   gl_api_->glDeleteBuffersARBFn(n, buffers);
 }
 
-void TraceGLApi::glDeleteFencesAPPLEFn(GLsizei n, const GLuint* fences) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glDeleteFencesAPPLE");
-  gl_api_->glDeleteFencesAPPLEFn(n, fences);
-}
-
 void TraceGLApi::glDeleteFencesNVFn(GLsizei n, const GLuint* fences) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glDeleteFencesNV");
   gl_api_->glDeleteFencesNVFn(n, fences);
@@ -6841,11 +6709,6 @@ void TraceGLApi::glDeleteShaderFn(GLuint shader) {
 void TraceGLApi::glDeleteSyncFn(GLsync sync) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glDeleteSync");
   gl_api_->glDeleteSyncFn(sync);
-}
-
-void TraceGLApi::glDeleteSyncAPPLEFn(GLsync sync) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glDeleteSyncAPPLE");
-  gl_api_->glDeleteSyncAPPLEFn(sync);
 }
 
 void TraceGLApi::glDeleteTexturesFn(GLsizei n, const GLuint* textures) {
@@ -7075,19 +6938,9 @@ GLsync TraceGLApi::glFenceSyncFn(GLenum condition, GLbitfield flags) {
   return gl_api_->glFenceSyncFn(condition, flags);
 }
 
-GLsync TraceGLApi::glFenceSyncAPPLEFn(GLenum condition, GLbitfield flags) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glFenceSyncAPPLE");
-  return gl_api_->glFenceSyncAPPLEFn(condition, flags);
-}
-
 void TraceGLApi::glFinishFn(void) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glFinish");
   gl_api_->glFinishFn();
-}
-
-void TraceGLApi::glFinishFenceAPPLEFn(GLuint fence) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glFinishFenceAPPLE");
-  gl_api_->glFinishFenceAPPLEFn(fence);
 }
 
 void TraceGLApi::glFinishFenceNVFn(GLuint fence) {
@@ -7237,11 +7090,6 @@ void TraceGLApi::glGenBuffersARBFn(GLsizei n, GLuint* buffers) {
 void TraceGLApi::glGenerateMipmapEXTFn(GLenum target) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glGenerateMipmapEXT");
   gl_api_->glGenerateMipmapEXTFn(target);
-}
-
-void TraceGLApi::glGenFencesAPPLEFn(GLsizei n, GLuint* fences) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glGenFencesAPPLE");
-  gl_api_->glGenFencesAPPLEFn(n, fences);
 }
 
 void TraceGLApi::glGenFencesNVFn(GLsizei n, GLuint* fences) {
@@ -8451,11 +8299,6 @@ GLboolean TraceGLApi::glIsEnablediOESFn(GLenum target, GLuint index) {
   return gl_api_->glIsEnablediOESFn(target, index);
 }
 
-GLboolean TraceGLApi::glIsFenceAPPLEFn(GLuint fence) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glIsFenceAPPLE");
-  return gl_api_->glIsFenceAPPLEFn(fence);
-}
-
 GLboolean TraceGLApi::glIsFenceNVFn(GLuint fence) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glIsFenceNV");
   return gl_api_->glIsFenceNVFn(fence);
@@ -8499,11 +8342,6 @@ GLboolean TraceGLApi::glIsShaderFn(GLuint shader) {
 GLboolean TraceGLApi::glIsSyncFn(GLsync sync) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glIsSync");
   return gl_api_->glIsSyncFn(sync);
-}
-
-GLboolean TraceGLApi::glIsSyncAPPLEFn(GLsync sync) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glIsSyncAPPLE");
-  return gl_api_->glIsSyncAPPLEFn(sync);
 }
 
 GLboolean TraceGLApi::glIsTextureFn(GLuint texture) {
@@ -9247,11 +9085,6 @@ void TraceGLApi::glScissorFn(GLint x, GLint y, GLsizei width, GLsizei height) {
   gl_api_->glScissorFn(x, y, width, height);
 }
 
-void TraceGLApi::glSetFenceAPPLEFn(GLuint fence) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glSetFenceAPPLE");
-  gl_api_->glSetFenceAPPLEFn(fence);
-}
-
 void TraceGLApi::glSetFenceNVFn(GLuint fence, GLenum condition) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glSetFenceNV");
   gl_api_->glSetFenceNVFn(fence, condition);
@@ -9328,11 +9161,6 @@ void TraceGLApi::glStencilOpSeparateFn(GLenum face,
                                        GLenum zpass) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glStencilOpSeparate");
   gl_api_->glStencilOpSeparateFn(face, fail, zfail, zpass);
-}
-
-GLboolean TraceGLApi::glTestFenceAPPLEFn(GLuint fence) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glTestFenceAPPLE");
-  return gl_api_->glTestFenceAPPLEFn(fence);
 }
 
 GLboolean TraceGLApi::glTestFenceNVFn(GLuint fence) {
@@ -10037,13 +9865,6 @@ void TraceGLApi::glWaitSyncFn(GLsync sync, GLbitfield flags, GLuint64 timeout) {
   gl_api_->glWaitSyncFn(sync, flags, timeout);
 }
 
-void TraceGLApi::glWaitSyncAPPLEFn(GLsync sync,
-                                   GLbitfield flags,
-                                   GLuint64 timeout) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glWaitSyncAPPLE");
-  gl_api_->glWaitSyncAPPLEFn(sync, flags, timeout);
-}
-
 void TraceGLApi::glWindowRectanglesEXTFn(GLenum mode,
                                          GLsizei n,
                                          const GLint* box) {
@@ -10461,16 +10282,6 @@ GLenum LogGLApi::glClientWaitSyncFn(GLsync sync,
   return result;
 }
 
-GLenum LogGLApi::glClientWaitSyncAPPLEFn(GLsync sync,
-                                         GLbitfield flags,
-                                         GLuint64 timeout) {
-  GL_SERVICE_LOG("glClientWaitSyncAPPLE" << "(" << sync << ", " << flags << ", "
-                                         << timeout << ")");
-  GLenum result = gl_api_->glClientWaitSyncAPPLEFn(sync, flags, timeout);
-  GL_SERVICE_LOG("GL_RESULT: " << result);
-  return result;
-}
-
 void LogGLApi::glClipControlEXTFn(GLenum origin, GLenum depth) {
   GL_SERVICE_LOG("glClipControlEXT" << "(" << GLEnums::GetStringEnum(origin)
                                     << ", " << GLEnums::GetStringEnum(depth)
@@ -10865,13 +10676,6 @@ void LogGLApi::glDeleteBuffersARBFn(GLsizei n, const GLuint* buffers) {
   gl_api_->glDeleteBuffersARBFn(n, buffers);
 }
 
-void LogGLApi::glDeleteFencesAPPLEFn(GLsizei n, const GLuint* fences) {
-  GL_SERVICE_LOG("glDeleteFencesAPPLE" << "(" << n << ", "
-                                       << static_cast<const void*>(fences)
-                                       << ")");
-  gl_api_->glDeleteFencesAPPLEFn(n, fences);
-}
-
 void LogGLApi::glDeleteFencesNVFn(GLsizei n, const GLuint* fences) {
   GL_SERVICE_LOG("glDeleteFencesNV" << "(" << n << ", "
                                     << static_cast<const void*>(fences) << ")");
@@ -10942,11 +10746,6 @@ void LogGLApi::glDeleteShaderFn(GLuint shader) {
 void LogGLApi::glDeleteSyncFn(GLsync sync) {
   GL_SERVICE_LOG("glDeleteSync" << "(" << sync << ")");
   gl_api_->glDeleteSyncFn(sync);
-}
-
-void LogGLApi::glDeleteSyncAPPLEFn(GLsync sync) {
-  GL_SERVICE_LOG("glDeleteSyncAPPLE" << "(" << sync << ")");
-  gl_api_->glDeleteSyncAPPLEFn(sync);
 }
 
 void LogGLApi::glDeleteTexturesFn(GLsizei n, const GLuint* textures) {
@@ -11212,22 +11011,9 @@ GLsync LogGLApi::glFenceSyncFn(GLenum condition, GLbitfield flags) {
   return result;
 }
 
-GLsync LogGLApi::glFenceSyncAPPLEFn(GLenum condition, GLbitfield flags) {
-  GL_SERVICE_LOG("glFenceSyncAPPLE" << "(" << GLEnums::GetStringEnum(condition)
-                                    << ", " << flags << ")");
-  GLsync result = gl_api_->glFenceSyncAPPLEFn(condition, flags);
-  GL_SERVICE_LOG("GL_RESULT: " << result);
-  return result;
-}
-
 void LogGLApi::glFinishFn(void) {
   GL_SERVICE_LOG("glFinish" << "(" << ")");
   gl_api_->glFinishFn();
-}
-
-void LogGLApi::glFinishFenceAPPLEFn(GLuint fence) {
-  GL_SERVICE_LOG("glFinishFenceAPPLE" << "(" << fence << ")");
-  gl_api_->glFinishFenceAPPLEFn(fence);
 }
 
 void LogGLApi::glFinishFenceNVFn(GLuint fence) {
@@ -11401,12 +11187,6 @@ void LogGLApi::glGenerateMipmapEXTFn(GLenum target) {
   GL_SERVICE_LOG("glGenerateMipmapEXT" << "(" << GLEnums::GetStringEnum(target)
                                        << ")");
   gl_api_->glGenerateMipmapEXTFn(target);
-}
-
-void LogGLApi::glGenFencesAPPLEFn(GLsizei n, GLuint* fences) {
-  GL_SERVICE_LOG("glGenFencesAPPLE" << "(" << n << ", "
-                                    << static_cast<const void*>(fences) << ")");
-  gl_api_->glGenFencesAPPLEFn(n, fences);
 }
 
 void LogGLApi::glGenFencesNVFn(GLsizei n, GLuint* fences) {
@@ -12960,13 +12740,6 @@ GLboolean LogGLApi::glIsEnablediOESFn(GLenum target, GLuint index) {
   return result;
 }
 
-GLboolean LogGLApi::glIsFenceAPPLEFn(GLuint fence) {
-  GL_SERVICE_LOG("glIsFenceAPPLE" << "(" << fence << ")");
-  GLboolean result = gl_api_->glIsFenceAPPLEFn(fence);
-  GL_SERVICE_LOG("GL_RESULT: " << result);
-  return result;
-}
-
 GLboolean LogGLApi::glIsFenceNVFn(GLuint fence) {
   GL_SERVICE_LOG("glIsFenceNV" << "(" << fence << ")");
   GLboolean result = gl_api_->glIsFenceNVFn(fence);
@@ -13026,13 +12799,6 @@ GLboolean LogGLApi::glIsShaderFn(GLuint shader) {
 GLboolean LogGLApi::glIsSyncFn(GLsync sync) {
   GL_SERVICE_LOG("glIsSync" << "(" << sync << ")");
   GLboolean result = gl_api_->glIsSyncFn(sync);
-  GL_SERVICE_LOG("GL_RESULT: " << result);
-  return result;
-}
-
-GLboolean LogGLApi::glIsSyncAPPLEFn(GLsync sync) {
-  GL_SERVICE_LOG("glIsSyncAPPLE" << "(" << sync << ")");
-  GLboolean result = gl_api_->glIsSyncAPPLEFn(sync);
   GL_SERVICE_LOG("GL_RESULT: " << result);
   return result;
 }
@@ -13945,11 +13711,6 @@ void LogGLApi::glScissorFn(GLint x, GLint y, GLsizei width, GLsizei height) {
   gl_api_->glScissorFn(x, y, width, height);
 }
 
-void LogGLApi::glSetFenceAPPLEFn(GLuint fence) {
-  GL_SERVICE_LOG("glSetFenceAPPLE" << "(" << fence << ")");
-  gl_api_->glSetFenceAPPLEFn(fence);
-}
-
 void LogGLApi::glSetFenceNVFn(GLuint fence, GLenum condition) {
   GL_SERVICE_LOG("glSetFenceNV" << "(" << fence << ", "
                                 << GLEnums::GetStringEnum(condition) << ")");
@@ -14064,13 +13825,6 @@ void LogGLApi::glStencilOpSeparateFn(GLenum face,
                                        << ", " << GLEnums::GetStringEnum(zpass)
                                        << ")");
   gl_api_->glStencilOpSeparateFn(face, fail, zfail, zpass);
-}
-
-GLboolean LogGLApi::glTestFenceAPPLEFn(GLuint fence) {
-  GL_SERVICE_LOG("glTestFenceAPPLE" << "(" << fence << ")");
-  GLboolean result = gl_api_->glTestFenceAPPLEFn(fence);
-  GL_SERVICE_LOG("GL_RESULT: " << result);
-  return result;
 }
 
 GLboolean LogGLApi::glTestFenceNVFn(GLuint fence) {
@@ -14936,14 +14690,6 @@ void LogGLApi::glWaitSyncFn(GLsync sync, GLbitfield flags, GLuint64 timeout) {
   gl_api_->glWaitSyncFn(sync, flags, timeout);
 }
 
-void LogGLApi::glWaitSyncAPPLEFn(GLsync sync,
-                                 GLbitfield flags,
-                                 GLuint64 timeout) {
-  GL_SERVICE_LOG("glWaitSyncAPPLE" << "(" << sync << ", " << flags << ", "
-                                   << timeout << ")");
-  gl_api_->glWaitSyncAPPLEFn(sync, flags, timeout);
-}
-
 void LogGLApi::glWindowRectanglesEXTFn(GLenum mode,
                                        GLsizei n,
                                        const GLint* box) {
@@ -15246,13 +14992,6 @@ GLenum NoContextGLApi::glClientWaitSyncFn(GLsync sync,
   return static_cast<GLenum>(0);
 }
 
-GLenum NoContextGLApi::glClientWaitSyncAPPLEFn(GLsync sync,
-                                               GLbitfield flags,
-                                               GLuint64 timeout) {
-  NoContextHelper("glClientWaitSyncAPPLE");
-  return static_cast<GLenum>(0);
-}
-
 void NoContextGLApi::glClipControlEXTFn(GLenum origin, GLenum depth) {
   NoContextHelper("glClipControlEXT");
 }
@@ -15504,10 +15243,6 @@ void NoContextGLApi::glDeleteBuffersARBFn(GLsizei n, const GLuint* buffers) {
   NoContextHelper("glDeleteBuffersARB");
 }
 
-void NoContextGLApi::glDeleteFencesAPPLEFn(GLsizei n, const GLuint* fences) {
-  NoContextHelper("glDeleteFencesAPPLE");
-}
-
 void NoContextGLApi::glDeleteFencesNVFn(GLsizei n, const GLuint* fences) {
   NoContextHelper("glDeleteFencesNV");
 }
@@ -15555,10 +15290,6 @@ void NoContextGLApi::glDeleteShaderFn(GLuint shader) {
 
 void NoContextGLApi::glDeleteSyncFn(GLsync sync) {
   NoContextHelper("glDeleteSync");
-}
-
-void NoContextGLApi::glDeleteSyncAPPLEFn(GLsync sync) {
-  NoContextHelper("glDeleteSyncAPPLE");
 }
 
 void NoContextGLApi::glDeleteTexturesFn(GLsizei n, const GLuint* textures) {
@@ -15745,17 +15476,8 @@ GLsync NoContextGLApi::glFenceSyncFn(GLenum condition, GLbitfield flags) {
   return nullptr;
 }
 
-GLsync NoContextGLApi::glFenceSyncAPPLEFn(GLenum condition, GLbitfield flags) {
-  NoContextHelper("glFenceSyncAPPLE");
-  return nullptr;
-}
-
 void NoContextGLApi::glFinishFn(void) {
   NoContextHelper("glFinish");
-}
-
-void NoContextGLApi::glFinishFenceAPPLEFn(GLuint fence) {
-  NoContextHelper("glFinishFenceAPPLE");
 }
 
 void NoContextGLApi::glFinishFenceNVFn(GLuint fence) {
@@ -15869,10 +15591,6 @@ void NoContextGLApi::glGenBuffersARBFn(GLsizei n, GLuint* buffers) {
 
 void NoContextGLApi::glGenerateMipmapEXTFn(GLenum target) {
   NoContextHelper("glGenerateMipmapEXT");
-}
-
-void NoContextGLApi::glGenFencesAPPLEFn(GLsizei n, GLuint* fences) {
-  NoContextHelper("glGenFencesAPPLE");
 }
 
 void NoContextGLApi::glGenFencesNVFn(GLsizei n, GLuint* fences) {
@@ -16858,11 +16576,6 @@ GLboolean NoContextGLApi::glIsEnablediOESFn(GLenum target, GLuint index) {
   return GL_FALSE;
 }
 
-GLboolean NoContextGLApi::glIsFenceAPPLEFn(GLuint fence) {
-  NoContextHelper("glIsFenceAPPLE");
-  return GL_FALSE;
-}
-
 GLboolean NoContextGLApi::glIsFenceNVFn(GLuint fence) {
   NoContextHelper("glIsFenceNV");
   return GL_FALSE;
@@ -16905,11 +16618,6 @@ GLboolean NoContextGLApi::glIsShaderFn(GLuint shader) {
 
 GLboolean NoContextGLApi::glIsSyncFn(GLsync sync) {
   NoContextHelper("glIsSync");
-  return GL_FALSE;
-}
-
-GLboolean NoContextGLApi::glIsSyncAPPLEFn(GLsync sync) {
-  NoContextHelper("glIsSyncAPPLE");
   return GL_FALSE;
 }
 
@@ -17530,10 +17238,6 @@ void NoContextGLApi::glScissorFn(GLint x,
   NoContextHelper("glScissor");
 }
 
-void NoContextGLApi::glSetFenceAPPLEFn(GLuint fence) {
-  NoContextHelper("glSetFenceAPPLE");
-}
-
 void NoContextGLApi::glSetFenceNVFn(GLuint fence, GLenum condition) {
   NoContextHelper("glSetFenceNV");
 }
@@ -17598,11 +17302,6 @@ void NoContextGLApi::glStencilOpSeparateFn(GLenum face,
                                            GLenum zfail,
                                            GLenum zpass) {
   NoContextHelper("glStencilOpSeparate");
-}
-
-GLboolean NoContextGLApi::glTestFenceAPPLEFn(GLuint fence) {
-  NoContextHelper("glTestFenceAPPLE");
-  return GL_FALSE;
 }
 
 GLboolean NoContextGLApi::glTestFenceNVFn(GLuint fence) {
@@ -18211,12 +17910,6 @@ void NoContextGLApi::glWaitSyncFn(GLsync sync,
                                   GLbitfield flags,
                                   GLuint64 timeout) {
   NoContextHelper("glWaitSync");
-}
-
-void NoContextGLApi::glWaitSyncAPPLEFn(GLsync sync,
-                                       GLbitfield flags,
-                                       GLuint64 timeout) {
-  NoContextHelper("glWaitSyncAPPLE");
 }
 
 void NoContextGLApi::glWindowRectanglesEXTFn(GLenum mode,

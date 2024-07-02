@@ -290,8 +290,6 @@ component("gl") {
       "egl_surface_io_surface.cc",
       "egl_surface_io_surface.h",
       "gl_display_egl.mm",
-      "gl_fence_apple.cc",
-      "gl_fence_apple.h",
     ]
 
     # Do not compile with ARC because //gpu/command_buffer code is not able to

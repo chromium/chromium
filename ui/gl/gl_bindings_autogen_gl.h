@@ -162,9 +162,6 @@ typedef void(GL_BINDING_CALL* glClearTexSubImageProc)(GLuint texture,
 typedef GLenum(GL_BINDING_CALL* glClientWaitSyncProc)(GLsync sync,
                                                       GLbitfield flags,
                                                       GLuint64 timeout);
-typedef GLenum(GL_BINDING_CALL* glClientWaitSyncAPPLEProc)(GLsync sync,
-                                                           GLbitfield flags,
-                                                           GLuint64 timeout);
 typedef void(GL_BINDING_CALL* glClipControlEXTProc)(GLenum origin,
                                                     GLenum depth);
 typedef void(GL_BINDING_CALL* glColorMaskProc)(GLboolean red,
@@ -342,8 +339,6 @@ typedef void(GL_BINDING_CALL* glDebugMessageInsertProc)(GLenum source,
                                                         const char* buf);
 typedef void(GL_BINDING_CALL* glDeleteBuffersARBProc)(GLsizei n,
                                                       const GLuint* buffers);
-typedef void(GL_BINDING_CALL* glDeleteFencesAPPLEProc)(GLsizei n,
-                                                       const GLuint* fences);
 typedef void(GL_BINDING_CALL* glDeleteFencesNVProc)(GLsizei n,
                                                     const GLuint* fences);
 typedef void(GL_BINDING_CALL* glDeleteFramebuffersEXTProc)(
@@ -368,7 +363,6 @@ typedef void(GL_BINDING_CALL* glDeleteSemaphoresEXTProc)(
     const GLuint* semaphores);
 typedef void(GL_BINDING_CALL* glDeleteShaderProc)(GLuint shader);
 typedef void(GL_BINDING_CALL* glDeleteSyncProc)(GLsync sync);
-typedef void(GL_BINDING_CALL* glDeleteSyncAPPLEProc)(GLsync sync);
 typedef void(GL_BINDING_CALL* glDeleteTexturesProc)(GLsizei n,
                                                     const GLuint* textures);
 typedef void(GL_BINDING_CALL* glDeleteTransformFeedbacksProc)(
@@ -459,10 +453,7 @@ typedef void(GL_BINDING_CALL* glEndTilingQCOMProc)(GLbitfield preserveMask);
 typedef void(GL_BINDING_CALL* glEndTransformFeedbackProc)(void);
 typedef GLsync(GL_BINDING_CALL* glFenceSyncProc)(GLenum condition,
                                                  GLbitfield flags);
-typedef GLsync(GL_BINDING_CALL* glFenceSyncAPPLEProc)(GLenum condition,
-                                                      GLbitfield flags);
 typedef void(GL_BINDING_CALL* glFinishProc)(void);
-typedef void(GL_BINDING_CALL* glFinishFenceAPPLEProc)(GLuint fence);
 typedef void(GL_BINDING_CALL* glFinishFenceNVProc)(GLuint fence);
 typedef void(GL_BINDING_CALL* glFlushProc)(void);
 typedef void(GL_BINDING_CALL* glFlushMappedBufferRangeProc)(GLenum target,
@@ -524,7 +515,6 @@ typedef void(GL_BINDING_CALL* glFramebufferTexturePixelLocalStorageANGLEProc)(
 typedef void(GL_BINDING_CALL* glFrontFaceProc)(GLenum mode);
 typedef void(GL_BINDING_CALL* glGenBuffersARBProc)(GLsizei n, GLuint* buffers);
 typedef void(GL_BINDING_CALL* glGenerateMipmapEXTProc)(GLenum target);
-typedef void(GL_BINDING_CALL* glGenFencesAPPLEProc)(GLsizei n, GLuint* fences);
 typedef void(GL_BINDING_CALL* glGenFencesNVProc)(GLsizei n, GLuint* fences);
 typedef void(GL_BINDING_CALL* glGenFramebuffersEXTProc)(GLsizei n,
                                                         GLuint* framebuffers);
@@ -1129,7 +1119,6 @@ typedef GLboolean(GL_BINDING_CALL* glIsBufferProc)(GLuint buffer);
 typedef GLboolean(GL_BINDING_CALL* glIsEnabledProc)(GLenum cap);
 typedef GLboolean(GL_BINDING_CALL* glIsEnablediOESProc)(GLenum target,
                                                         GLuint index);
-typedef GLboolean(GL_BINDING_CALL* glIsFenceAPPLEProc)(GLuint fence);
 typedef GLboolean(GL_BINDING_CALL* glIsFenceNVProc)(GLuint fence);
 typedef GLboolean(GL_BINDING_CALL* glIsFramebufferEXTProc)(GLuint framebuffer);
 typedef GLboolean(GL_BINDING_CALL* glIsProgramProc)(GLuint program);
@@ -1140,7 +1129,6 @@ typedef GLboolean(GL_BINDING_CALL* glIsRenderbufferEXTProc)(
 typedef GLboolean(GL_BINDING_CALL* glIsSamplerProc)(GLuint sampler);
 typedef GLboolean(GL_BINDING_CALL* glIsShaderProc)(GLuint shader);
 typedef GLboolean(GL_BINDING_CALL* glIsSyncProc)(GLsync sync);
-typedef GLboolean(GL_BINDING_CALL* glIsSyncAPPLEProc)(GLsync sync);
 typedef GLboolean(GL_BINDING_CALL* glIsTextureProc)(GLuint texture);
 typedef GLboolean(GL_BINDING_CALL* glIsTransformFeedbackProc)(GLuint id);
 typedef GLboolean(GL_BINDING_CALL* glIsVertexArrayOESProc)(GLuint array);
@@ -1493,7 +1481,6 @@ typedef void(GL_BINDING_CALL* glScissorProc)(GLint x,
                                              GLint y,
                                              GLsizei width,
                                              GLsizei height);
-typedef void(GL_BINDING_CALL* glSetFenceAPPLEProc)(GLuint fence);
 typedef void(GL_BINDING_CALL* glSetFenceNVProc)(GLuint fence, GLenum condition);
 typedef void(GL_BINDING_CALL* glShaderBinaryProc)(GLsizei n,
                                                   const GLuint* shaders,
@@ -1533,7 +1520,6 @@ typedef void(GL_BINDING_CALL* glStencilOpSeparateProc)(GLenum face,
                                                        GLenum fail,
                                                        GLenum zfail,
                                                        GLenum zpass);
-typedef GLboolean(GL_BINDING_CALL* glTestFenceAPPLEProc)(GLuint fence);
 typedef GLboolean(GL_BINDING_CALL* glTestFenceNVProc)(GLuint fence);
 typedef void(GL_BINDING_CALL* glTexBufferProc)(GLenum target,
                                                GLenum internalformat,
@@ -1905,9 +1891,6 @@ typedef void(GL_BINDING_CALL* glWaitSemaphoreEXTProc)(GLuint semaphore,
 typedef void(GL_BINDING_CALL* glWaitSyncProc)(GLsync sync,
                                               GLbitfield flags,
                                               GLuint64 timeout);
-typedef void(GL_BINDING_CALL* glWaitSyncAPPLEProc)(GLsync sync,
-                                                   GLbitfield flags,
-                                                   GLuint64 timeout);
 typedef void(GL_BINDING_CALL* glWindowRectanglesEXTProc)(GLenum mode,
                                                          GLsizei n,
                                                          const GLint* box);
@@ -1934,9 +1917,6 @@ struct ExtensionsGL {
   bool b_GL_ANGLE_translated_shader_source;
   bool b_GL_ANGLE_vulkan_image;
   bool b_GL_ANGLE_webgl_compatibility;
-  bool b_GL_APPLE_fence;
-  bool b_GL_APPLE_sync;
-  bool b_GL_APPLE_vertex_array_object;
   bool b_GL_ARB_timer_query;
   bool b_GL_CHROMIUM_bind_uniform_location;
   bool b_GL_CHROMIUM_copy_texture;
@@ -2048,7 +2028,6 @@ struct ProcsGL {
   glClearTexImageProc glClearTexImageFn;
   glClearTexSubImageProc glClearTexSubImageFn;
   glClientWaitSyncProc glClientWaitSyncFn;
-  glClientWaitSyncAPPLEProc glClientWaitSyncAPPLEFn;
   glClipControlEXTProc glClipControlEXTFn;
   glColorMaskProc glColorMaskFn;
   glColorMaskiOESProc glColorMaskiOESFn;
@@ -2078,7 +2057,6 @@ struct ProcsGL {
   glDebugMessageControlProc glDebugMessageControlFn;
   glDebugMessageInsertProc glDebugMessageInsertFn;
   glDeleteBuffersARBProc glDeleteBuffersARBFn;
-  glDeleteFencesAPPLEProc glDeleteFencesAPPLEFn;
   glDeleteFencesNVProc glDeleteFencesNVFn;
   glDeleteFramebuffersEXTProc glDeleteFramebuffersEXTFn;
   glDeleteMemoryObjectsEXTProc glDeleteMemoryObjectsEXTFn;
@@ -2090,7 +2068,6 @@ struct ProcsGL {
   glDeleteSemaphoresEXTProc glDeleteSemaphoresEXTFn;
   glDeleteShaderProc glDeleteShaderFn;
   glDeleteSyncProc glDeleteSyncFn;
-  glDeleteSyncAPPLEProc glDeleteSyncAPPLEFn;
   glDeleteTexturesProc glDeleteTexturesFn;
   glDeleteTransformFeedbacksProc glDeleteTransformFeedbacksFn;
   glDeleteVertexArraysOESProc glDeleteVertexArraysOESFn;
@@ -2130,9 +2107,7 @@ struct ProcsGL {
   glEndTilingQCOMProc glEndTilingQCOMFn;
   glEndTransformFeedbackProc glEndTransformFeedbackFn;
   glFenceSyncProc glFenceSyncFn;
-  glFenceSyncAPPLEProc glFenceSyncAPPLEFn;
   glFinishProc glFinishFn;
-  glFinishFenceAPPLEProc glFinishFenceAPPLEFn;
   glFinishFenceNVProc glFinishFenceNVFn;
   glFlushProc glFlushFn;
   glFlushMappedBufferRangeProc glFlushMappedBufferRangeFn;
@@ -2160,7 +2135,6 @@ struct ProcsGL {
   glFrontFaceProc glFrontFaceFn;
   glGenBuffersARBProc glGenBuffersARBFn;
   glGenerateMipmapEXTProc glGenerateMipmapEXTFn;
-  glGenFencesAPPLEProc glGenFencesAPPLEFn;
   glGenFencesNVProc glGenFencesNVFn;
   glGenFramebuffersEXTProc glGenFramebuffersEXTFn;
   glGenProgramPipelinesProc glGenProgramPipelinesFn;
@@ -2315,7 +2289,6 @@ struct ProcsGL {
   glIsBufferProc glIsBufferFn;
   glIsEnabledProc glIsEnabledFn;
   glIsEnablediOESProc glIsEnablediOESFn;
-  glIsFenceAPPLEProc glIsFenceAPPLEFn;
   glIsFenceNVProc glIsFenceNVFn;
   glIsFramebufferEXTProc glIsFramebufferEXTFn;
   glIsProgramProc glIsProgramFn;
@@ -2325,7 +2298,6 @@ struct ProcsGL {
   glIsSamplerProc glIsSamplerFn;
   glIsShaderProc glIsShaderFn;
   glIsSyncProc glIsSyncFn;
-  glIsSyncAPPLEProc glIsSyncAPPLEFn;
   glIsTextureProc glIsTextureFn;
   glIsTransformFeedbackProc glIsTransformFeedbackFn;
   glIsVertexArrayOESProc glIsVertexArrayOESFn;
@@ -2423,7 +2395,6 @@ struct ProcsGL {
   glSamplerParameterivProc glSamplerParameterivFn;
   glSamplerParameterivRobustANGLEProc glSamplerParameterivRobustANGLEFn;
   glScissorProc glScissorFn;
-  glSetFenceAPPLEProc glSetFenceAPPLEFn;
   glSetFenceNVProc glSetFenceNVFn;
   glShaderBinaryProc glShaderBinaryFn;
   glShaderSourceProc glShaderSourceFn;
@@ -2435,7 +2406,6 @@ struct ProcsGL {
   glStencilMaskSeparateProc glStencilMaskSeparateFn;
   glStencilOpProc glStencilOpFn;
   glStencilOpSeparateProc glStencilOpSeparateFn;
-  glTestFenceAPPLEProc glTestFenceAPPLEFn;
   glTestFenceNVProc glTestFenceNVFn;
   glTexBufferProc glTexBufferFn;
   glTexBufferRangeProc glTexBufferRangeFn;
@@ -2523,7 +2493,6 @@ struct ProcsGL {
   glViewportProc glViewportFn;
   glWaitSemaphoreEXTProc glWaitSemaphoreEXTFn;
   glWaitSyncProc glWaitSyncFn;
-  glWaitSyncAPPLEProc glWaitSyncAPPLEFn;
   glWindowRectanglesEXTProc glWindowRectanglesEXTFn;
 };
 
@@ -2667,9 +2636,6 @@ class GL_EXPORT GLApi {
   virtual GLenum glClientWaitSyncFn(GLsync sync,
                                     GLbitfield flags,
                                     GLuint64 timeout) = 0;
-  virtual GLenum glClientWaitSyncAPPLEFn(GLsync sync,
-                                         GLbitfield flags,
-                                         GLuint64 timeout) = 0;
   virtual void glClipControlEXTFn(GLenum origin, GLenum depth) = 0;
   virtual void glColorMaskFn(GLboolean red,
                              GLboolean green,
@@ -2835,7 +2801,6 @@ class GL_EXPORT GLApi {
                                       GLsizei length,
                                       const char* buf) = 0;
   virtual void glDeleteBuffersARBFn(GLsizei n, const GLuint* buffers) = 0;
-  virtual void glDeleteFencesAPPLEFn(GLsizei n, const GLuint* fences) = 0;
   virtual void glDeleteFencesNVFn(GLsizei n, const GLuint* fences) = 0;
   virtual void glDeleteFramebuffersEXTFn(GLsizei n,
                                          const GLuint* framebuffers) = 0;
@@ -2851,7 +2816,6 @@ class GL_EXPORT GLApi {
   virtual void glDeleteSemaphoresEXTFn(GLsizei n, const GLuint* semaphores) = 0;
   virtual void glDeleteShaderFn(GLuint shader) = 0;
   virtual void glDeleteSyncFn(GLsync sync) = 0;
-  virtual void glDeleteSyncAPPLEFn(GLsync sync) = 0;
   virtual void glDeleteTexturesFn(GLsizei n, const GLuint* textures) = 0;
   virtual void glDeleteTransformFeedbacksFn(GLsizei n, const GLuint* ids) = 0;
   virtual void glDeleteVertexArraysOESFn(GLsizei n, const GLuint* arrays) = 0;
@@ -2925,9 +2889,7 @@ class GL_EXPORT GLApi {
   virtual void glEndTilingQCOMFn(GLbitfield preserveMask) = 0;
   virtual void glEndTransformFeedbackFn(void) = 0;
   virtual GLsync glFenceSyncFn(GLenum condition, GLbitfield flags) = 0;
-  virtual GLsync glFenceSyncAPPLEFn(GLenum condition, GLbitfield flags) = 0;
   virtual void glFinishFn(void) = 0;
-  virtual void glFinishFenceAPPLEFn(GLuint fence) = 0;
   virtual void glFinishFenceNVFn(GLuint fence) = 0;
   virtual void glFlushFn(void) = 0;
   virtual void glFlushMappedBufferRangeFn(GLenum target,
@@ -2984,7 +2946,6 @@ class GL_EXPORT GLApi {
   virtual void glFrontFaceFn(GLenum mode) = 0;
   virtual void glGenBuffersARBFn(GLsizei n, GLuint* buffers) = 0;
   virtual void glGenerateMipmapEXTFn(GLenum target) = 0;
-  virtual void glGenFencesAPPLEFn(GLsizei n, GLuint* fences) = 0;
   virtual void glGenFencesNVFn(GLsizei n, GLuint* fences) = 0;
   virtual void glGenFramebuffersEXTFn(GLsizei n, GLuint* framebuffers) = 0;
   virtual GLuint glGenProgramPipelinesFn(GLsizei n, GLuint* pipelines) = 0;
@@ -3508,7 +3469,6 @@ class GL_EXPORT GLApi {
   virtual GLboolean glIsBufferFn(GLuint buffer) = 0;
   virtual GLboolean glIsEnabledFn(GLenum cap) = 0;
   virtual GLboolean glIsEnablediOESFn(GLenum target, GLuint index) = 0;
-  virtual GLboolean glIsFenceAPPLEFn(GLuint fence) = 0;
   virtual GLboolean glIsFenceNVFn(GLuint fence) = 0;
   virtual GLboolean glIsFramebufferEXTFn(GLuint framebuffer) = 0;
   virtual GLboolean glIsProgramFn(GLuint program) = 0;
@@ -3518,7 +3478,6 @@ class GL_EXPORT GLApi {
   virtual GLboolean glIsSamplerFn(GLuint sampler) = 0;
   virtual GLboolean glIsShaderFn(GLuint shader) = 0;
   virtual GLboolean glIsSyncFn(GLsync sync) = 0;
-  virtual GLboolean glIsSyncAPPLEFn(GLsync sync) = 0;
   virtual GLboolean glIsTextureFn(GLuint texture) = 0;
   virtual GLboolean glIsTransformFeedbackFn(GLuint id) = 0;
   virtual GLboolean glIsVertexArrayOESFn(GLuint array) = 0;
@@ -3843,7 +3802,6 @@ class GL_EXPORT GLApi {
                                                  GLsizei bufSize,
                                                  const GLint* param) = 0;
   virtual void glScissorFn(GLint x, GLint y, GLsizei width, GLsizei height) = 0;
-  virtual void glSetFenceAPPLEFn(GLuint fence) = 0;
   virtual void glSetFenceNVFn(GLuint fence, GLenum condition) = 0;
   virtual void glShaderBinaryFn(GLsizei n,
                                 const GLuint* shaders,
@@ -3877,7 +3835,6 @@ class GL_EXPORT GLApi {
                                      GLenum fail,
                                      GLenum zfail,
                                      GLenum zpass) = 0;
-  virtual GLboolean glTestFenceAPPLEFn(GLuint fence) = 0;
   virtual GLboolean glTestFenceNVFn(GLuint fence) = 0;
   virtual void glTexBufferFn(GLenum target,
                              GLenum internalformat,
@@ -4219,9 +4176,6 @@ class GL_EXPORT GLApi {
   virtual void glWaitSyncFn(GLsync sync,
                             GLbitfield flags,
                             GLuint64 timeout) = 0;
-  virtual void glWaitSyncAPPLEFn(GLsync sync,
-                                 GLbitfield flags,
-                                 GLuint64 timeout) = 0;
   virtual void glWindowRectanglesEXTFn(GLenum mode,
                                        GLsizei n,
                                        const GLint* box) = 0;
@@ -4293,8 +4247,6 @@ class GL_EXPORT GLApi {
 #define glClearTexImage ::gl::g_current_gl_context->glClearTexImageFn
 #define glClearTexSubImage ::gl::g_current_gl_context->glClearTexSubImageFn
 #define glClientWaitSync ::gl::g_current_gl_context->glClientWaitSyncFn
-#define glClientWaitSyncAPPLE \
-  ::gl::g_current_gl_context->glClientWaitSyncAPPLEFn
 #define glClipControlEXT ::gl::g_current_gl_context->glClipControlEXTFn
 #define glColorMask ::gl::g_current_gl_context->glColorMaskFn
 #define glColorMaskiOES ::gl::g_current_gl_context->glColorMaskiOESFn
@@ -4336,7 +4288,6 @@ class GL_EXPORT GLApi {
   ::gl::g_current_gl_context->glDebugMessageControlFn
 #define glDebugMessageInsert ::gl::g_current_gl_context->glDebugMessageInsertFn
 #define glDeleteBuffersARB ::gl::g_current_gl_context->glDeleteBuffersARBFn
-#define glDeleteFencesAPPLE ::gl::g_current_gl_context->glDeleteFencesAPPLEFn
 #define glDeleteFencesNV ::gl::g_current_gl_context->glDeleteFencesNVFn
 #define glDeleteFramebuffersEXT \
   ::gl::g_current_gl_context->glDeleteFramebuffersEXTFn
@@ -4353,7 +4304,6 @@ class GL_EXPORT GLApi {
   ::gl::g_current_gl_context->glDeleteSemaphoresEXTFn
 #define glDeleteShader ::gl::g_current_gl_context->glDeleteShaderFn
 #define glDeleteSync ::gl::g_current_gl_context->glDeleteSyncFn
-#define glDeleteSyncAPPLE ::gl::g_current_gl_context->glDeleteSyncAPPLEFn
 #define glDeleteTextures ::gl::g_current_gl_context->glDeleteTexturesFn
 #define glDeleteTransformFeedbacks \
   ::gl::g_current_gl_context->glDeleteTransformFeedbacksFn
@@ -4407,9 +4357,7 @@ class GL_EXPORT GLApi {
 #define glEndTransformFeedback \
   ::gl::g_current_gl_context->glEndTransformFeedbackFn
 #define glFenceSync ::gl::g_current_gl_context->glFenceSyncFn
-#define glFenceSyncAPPLE ::gl::g_current_gl_context->glFenceSyncAPPLEFn
 #define glFinish ::gl::g_current_gl_context->glFinishFn
-#define glFinishFenceAPPLE ::gl::g_current_gl_context->glFinishFenceAPPLEFn
 #define glFinishFenceNV ::gl::g_current_gl_context->glFinishFenceNVFn
 #define glFlush ::gl::g_current_gl_context->glFlushFn
 #define glFlushMappedBufferRange \
@@ -4443,7 +4391,6 @@ class GL_EXPORT GLApi {
 #define glFrontFace ::gl::g_current_gl_context->glFrontFaceFn
 #define glGenBuffersARB ::gl::g_current_gl_context->glGenBuffersARBFn
 #define glGenerateMipmapEXT ::gl::g_current_gl_context->glGenerateMipmapEXTFn
-#define glGenFencesAPPLE ::gl::g_current_gl_context->glGenFencesAPPLEFn
 #define glGenFencesNV ::gl::g_current_gl_context->glGenFencesNVFn
 #define glGenFramebuffersEXT ::gl::g_current_gl_context->glGenFramebuffersEXTFn
 #define glGenProgramPipelines \
@@ -4681,7 +4628,6 @@ class GL_EXPORT GLApi {
 #define glIsBuffer ::gl::g_current_gl_context->glIsBufferFn
 #define glIsEnabled ::gl::g_current_gl_context->glIsEnabledFn
 #define glIsEnablediOES ::gl::g_current_gl_context->glIsEnablediOESFn
-#define glIsFenceAPPLE ::gl::g_current_gl_context->glIsFenceAPPLEFn
 #define glIsFenceNV ::gl::g_current_gl_context->glIsFenceNVFn
 #define glIsFramebufferEXT ::gl::g_current_gl_context->glIsFramebufferEXTFn
 #define glIsProgram ::gl::g_current_gl_context->glIsProgramFn
@@ -4691,7 +4637,6 @@ class GL_EXPORT GLApi {
 #define glIsSampler ::gl::g_current_gl_context->glIsSamplerFn
 #define glIsShader ::gl::g_current_gl_context->glIsShaderFn
 #define glIsSync ::gl::g_current_gl_context->glIsSyncFn
-#define glIsSyncAPPLE ::gl::g_current_gl_context->glIsSyncAPPLEFn
 #define glIsTexture ::gl::g_current_gl_context->glIsTextureFn
 #define glIsTransformFeedback \
   ::gl::g_current_gl_context->glIsTransformFeedbackFn
@@ -4825,7 +4770,6 @@ class GL_EXPORT GLApi {
 #define glSamplerParameterivRobustANGLE \
   ::gl::g_current_gl_context->glSamplerParameterivRobustANGLEFn
 #define glScissor ::gl::g_current_gl_context->glScissorFn
-#define glSetFenceAPPLE ::gl::g_current_gl_context->glSetFenceAPPLEFn
 #define glSetFenceNV ::gl::g_current_gl_context->glSetFenceNVFn
 #define glShaderBinary ::gl::g_current_gl_context->glShaderBinaryFn
 #define glShaderSource ::gl::g_current_gl_context->glShaderSourceFn
@@ -4839,7 +4783,6 @@ class GL_EXPORT GLApi {
   ::gl::g_current_gl_context->glStencilMaskSeparateFn
 #define glStencilOp ::gl::g_current_gl_context->glStencilOpFn
 #define glStencilOpSeparate ::gl::g_current_gl_context->glStencilOpSeparateFn
-#define glTestFenceAPPLE ::gl::g_current_gl_context->glTestFenceAPPLEFn
 #define glTestFenceNV ::gl::g_current_gl_context->glTestFenceNVFn
 #define glTexBuffer ::gl::g_current_gl_context->glTexBufferFn
 #define glTexBufferRange ::gl::g_current_gl_context->glTexBufferRangeFn
@@ -4947,7 +4890,6 @@ class GL_EXPORT GLApi {
 #define glViewport ::gl::g_current_gl_context->glViewportFn
 #define glWaitSemaphoreEXT ::gl::g_current_gl_context->glWaitSemaphoreEXTFn
 #define glWaitSync ::gl::g_current_gl_context->glWaitSyncFn
-#define glWaitSyncAPPLE ::gl::g_current_gl_context->glWaitSyncAPPLEFn
 #define glWindowRectanglesEXT \
   ::gl::g_current_gl_context->glWindowRectanglesEXTFn
 
