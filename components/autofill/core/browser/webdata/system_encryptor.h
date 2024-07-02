@@ -18,6 +18,12 @@ class SystemEncryptor : public AutofillTableEncryptor {
 
   ~SystemEncryptor() override = default;
 
+  bool EncryptString(const std::string& plaintext,
+                     std::string* ciphertext) const override;
+
+  bool DecryptString(const std::string& ciphertext,
+                     std::string* plaintext) const override;
+
   bool EncryptString16(const std::u16string& plaintext,
                        std::string* ciphertext) const override;
 
