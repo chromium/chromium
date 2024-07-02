@@ -602,6 +602,9 @@ class CONTENT_EXPORT RenderThreadImpl
   bool cached_items_requested_ = false;
   bool use_cached_routing_table_ = false;
 
+  std::optional<base::ThreadPoolInstance::ScopedRestrictedTasks>
+      restrict_thread_pool_;
+
   base::WeakPtrFactory<RenderThreadImpl> weak_factory_{this};
 };
 

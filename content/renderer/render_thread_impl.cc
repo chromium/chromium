@@ -1343,6 +1343,14 @@ void RenderThreadImpl::SetProcessState(
   bool was_backgrounded = IsBackgrounded(process_priority_);
   bool is_backgrounded = IsBackgrounded(process_priority);
 
+  if (base::FeatureList::IsEnabled(features::kRestrictThreadPoolInBackground)) {
+    if (process_priority == base::Process::Priority::kUserBlocking) {
+      restrict_thread_pool_.reset();
+    } else if (!restrict_thread_pool_) {
+      restrict_thread_pool_.emplace();
+    }
+  }
+
   if (!process_priority_.has_value() || is_backgrounded != was_backgrounded) {
     if (is_backgrounded) {
       OnRendererBackgrounded();

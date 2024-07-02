@@ -781,6 +781,12 @@ BASE_FEATURE(kRenderDocument,
              "RenderDocument",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Restrict the maximum number of concurrent ThreadPool tasks when a renderer is
+// low priority.
+BASE_FEATURE(kRestrictThreadPoolInBackground,
+             "RestrictThreadPoolInBackground",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Reuse compositor instances with RenderDocument
 BASE_FEATURE(kRenderDocumentCompositorReuse,
              "RenderDocumentCompositorReuse",
