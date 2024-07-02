@@ -129,10 +129,8 @@ class CustomizeChromePageHandler
   void OnNtpBackgroundServiceShuttingDown() override;
 
   // SelectFileDialog::Listener:
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void FileSelectionCanceled() override;
 
   ChooseLocalCustomBackgroundCallback choose_local_custom_background_callback_;
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;

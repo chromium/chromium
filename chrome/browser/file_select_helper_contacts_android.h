@@ -16,10 +16,13 @@ class FileSelectHelperContactsAndroid : public FileSelectHelper {
 
   // A SelectFileDialog::Listener override. |file| and |index| are unused in
   // this override, since the file contents are passed in as string to |params|.
+  //
+  // TODO(https://crbug.com/340178601): what does this comment mean? how can the
+  // file contents be passed in via params? params is supplied by the caller...
   void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelectionCanceled() override;
 
  private:
   friend class FileSelectHelper;

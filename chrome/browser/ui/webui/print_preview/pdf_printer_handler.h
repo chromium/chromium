@@ -56,10 +56,8 @@ class PdfPrinterHandler : public PrinterHandler,
                   PrintCallback callback) override;
 
   // SelectFileDialog::Listener implementation.
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void FileSelectionCanceled() override;
 
   // Sets |pdf_file_saved_closure_| to |closure|.
   void SetPdfSavedClosureForTesting(base::OnceClosure closure);

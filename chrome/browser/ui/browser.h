@@ -1102,10 +1102,8 @@ class Browser : public TabStripModelObserver,
       const zoom::ZoomController::ZoomChangedEventData& data) override;
 
   // Overridden from SelectFileDialog::Listener:
-  void FileSelected(const ui::SelectedFileInfo& file_info,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file_info, int index) override;
+  void FileSelectionCanceled() override;
 
   // Overridden from ThemeServiceObserver:
   void OnThemeChanged() override;

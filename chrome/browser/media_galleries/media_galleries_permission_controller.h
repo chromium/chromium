@@ -120,10 +120,8 @@ class MediaGalleriesPermissionController
   void OnPreferencesInitialized();
 
   // SelectFileDialog::Listener implementation:
-  void FileSelected(const ui::SelectedFileInfo& file_info,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file_info, int index) override;
+  void FileSelectionCanceled() override;
 
   // RemovableStorageObserver implementation.
   // Used to keep dialog in sync with removable device status.

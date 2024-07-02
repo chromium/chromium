@@ -87,8 +87,7 @@ void SessionLogHandler::RegisterMessages() {
 }
 
 void SessionLogHandler::FileSelected(const ui::SelectedFileInfo& file,
-                                     int index,
-                                     void* params) {
+                                     int index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(session_log_handler_sequence_checker_);
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -103,7 +102,7 @@ void SessionLogHandler::FileSelected(const ui::SelectedFileInfo& file,
   select_file_dialog_.reset();
 }
 
-void SessionLogHandler::FileSelectionCanceled(void* params) {
+void SessionLogHandler::FileSelectionCanceled() {
   RejectJavascriptCallback(save_session_log_callback_id_,
                            /*response=*/false);
   save_session_log_callback_id_ = "";

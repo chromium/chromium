@@ -57,6 +57,13 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   // re-entrant.
   // WARNING: See note about the lifetime of the Listener in the
   // SelectFileDialog::Create() comments below.
+  //
+  // TODO(https://crbug.com/340178601): remove the params field. The default
+  // implementations of the variants that take params call the variants that do
+  // not take params, so if your client code does not use params, you should
+  // override the variants that do not accept params. We will gradually refactor
+  // away all overrides of the deprecated params variants, then remove the
+  // params argument altogether.
   class SHELL_DIALOGS_EXPORT Listener {
    public:
     // Notifies the Listener that a file/folder selection has been made. The
@@ -65,7 +72,8 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
     // initial call to SelectFile.
     virtual void FileSelected(const SelectedFileInfo& file,
                               int index,
-                              void* params) = 0;
+                              void* params);
+    virtual void FileSelected(const SelectedFileInfo& file, int index) {}
 
     // Notifies the Listener that many files have been selected. The files are
     // in |files|. |params| is the contextual value passed to SelectFile.
@@ -73,11 +81,13 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
     // made, as the default implementation will call NOTREACHED.
     virtual void MultiFilesSelected(const std::vector<SelectedFileInfo>& files,
                                     void* params);
+    virtual void MultiFilesSelected(const std::vector<SelectedFileInfo>& files);
 
     // Notifies the Listener that the file/folder selection was canceled (via
     // the user canceling or closing the selection dialog box, for example).
     // |params| is the contextual value passed to SelectFile.
-    virtual void FileSelectionCanceled(void* params) = 0;
+    virtual void FileSelectionCanceled(void* params);
+    virtual void FileSelectionCanceled() {}
 
    protected:
     virtual ~Listener() = default;
@@ -193,9 +203,9 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   // |owning_window| is the window the dialog is modal to, or NULL for a
   //   modeless dialog.
   // |params| is data from the calling context which will be passed through to
-  //   the listener. Can be NULL.
+  //   the listener. Can be NULL. Non-NULL values of |params| are deprecated.
   // |caller| is the URL of the dialog caller which can be used to check further
-  // Policy restrictions, when applicable. Can be NULL.
+  //   policy restrictions, when applicable. Can be NULL.
   // NOTE: only one instance of any shell dialog can be shown per owning_window
   // at a time (for obvious reasons).
   void SelectFile(Type type,

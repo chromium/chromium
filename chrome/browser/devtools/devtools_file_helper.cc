@@ -84,14 +84,12 @@ class SelectFileDialog : public ui::SelectFileDialog::Listener {
   }
 
   // ui::SelectFileDialog::Listener implementation.
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override {
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override {
     std::move(selected_callback_).Run(file.path());
     delete this;
   }
 
-  void FileSelectionCanceled(void* params) override {
+  void FileSelectionCanceled() override {
     if (canceled_callback_) {
       std::move(canceled_callback_).Run();
     }

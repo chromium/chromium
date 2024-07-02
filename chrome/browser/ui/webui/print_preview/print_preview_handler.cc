@@ -1260,10 +1260,8 @@ void PrintPreviewHandler::BadMessageReceived() {
 }
 
 void PrintPreviewHandler::FileSelectedForTesting(const base::FilePath& path,
-                                                 int index,
-                                                 void* params) {
-  GetPdfPrinterHandler()->FileSelected(ui::SelectedFileInfo(path), index,
-                                       params);
+                                                 int index) {
+  GetPdfPrinterHandler()->FileSelected(ui::SelectedFileInfo(path), index);
 }
 
 void PrintPreviewHandler::SetPdfSavedClosureForTesting(

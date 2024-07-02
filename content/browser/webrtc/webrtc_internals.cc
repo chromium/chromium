@@ -666,8 +666,7 @@ void WebRTCInternals::RenderProcessExited(
 }
 
 void WebRTCInternals::FileSelected(const ui::SelectedFileInfo& file,
-                                   int /* unused_index */,
-                                   void* /*unused_params */) {
+                                   int /* unused_index */) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   switch (selection_type_) {
     case SelectionType::kRtcEventLogs: {
@@ -690,7 +689,7 @@ void WebRTCInternals::FileSelected(const ui::SelectedFileInfo& file,
   }
 }
 
-void WebRTCInternals::FileSelectionCanceled(void* params) {
+void WebRTCInternals::FileSelectionCanceled() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   switch (selection_type_) {
     case SelectionType::kRtcEventLogs:

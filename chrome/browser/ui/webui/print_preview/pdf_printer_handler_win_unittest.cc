@@ -48,14 +48,13 @@ class FakePdfPrinterHandler : public PdfPrinterHandler {
         save_failed_(false) {}
 
   void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override {
+                    int index) override {
     // Since we always cancel the dialog as soon as it is initialized, this
     // should never be called.
     NOTREACHED_IN_MIGRATION();
   }
 
-  void FileSelectionCanceled(void* params) override {
+  void FileSelectionCanceled() override {
     save_failed_ = true;
     run_loop_.Quit();
   }

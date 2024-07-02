@@ -158,16 +158,14 @@ class SelectFileDialogWinTest : public ::testing::Test,
   ~SelectFileDialogWinTest() override = default;
 
   // ui::SelectFileDialog::Listener:
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override {
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override {
     selected_paths_.push_back(file.path());
   }
-  void MultiFilesSelected(const std::vector<ui::SelectedFileInfo>& files,
-                          void* params) override {
+  void MultiFilesSelected(
+      const std::vector<ui::SelectedFileInfo>& files) override {
     selected_paths_ = ui::SelectedFileInfoListToFilePathList(files);
   }
-  void FileSelectionCanceled(void* params) override { was_cancelled_ = true; }
+  void FileSelectionCanceled() override { was_cancelled_ = true; }
 
   // Runs the scheduler until no tasks are executing anymore.
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }

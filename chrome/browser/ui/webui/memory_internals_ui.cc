@@ -170,10 +170,8 @@ class MemoryInternalsDOMHandler : public content::WebUIMessageHandler,
                                    std::vector<base::ProcessId> profiled_pids);
 
   // SelectFileDialog::Listener implementation:
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void FileSelectionCanceled() override;
 
   void SaveTraceFinished(bool success);
 
@@ -378,8 +376,7 @@ void MemoryInternalsDOMHandler::ReturnProcessListOnUIThread(
 }
 
 void MemoryInternalsDOMHandler::FileSelected(const ui::SelectedFileInfo& file,
-                                             int index,
-                                             void* params) {
+                                             int index) {
   base::Value result("Saving...");
   FireWebUIListener("save-dump-progress", result);
 
@@ -391,7 +388,7 @@ void MemoryInternalsDOMHandler::FileSelected(const ui::SelectedFileInfo& file,
   select_file_dialog_ = nullptr;
 }
 
-void MemoryInternalsDOMHandler::FileSelectionCanceled(void* params) {
+void MemoryInternalsDOMHandler::FileSelectionCanceled() {
   select_file_dialog_ = nullptr;
 }
 

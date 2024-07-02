@@ -1286,8 +1286,7 @@ void NewTabPageHandler::OnNtpBackgroundServiceShuttingDown() {
 }
 
 void NewTabPageHandler::FileSelected(const ui::SelectedFileInfo& file,
-                                     int index,
-                                     void* params) {
+                                     int index) {
   DCHECK(choose_local_custom_background_callback_);
   if (ntp_custom_background_service_) {
     profile_->set_last_selected_directory(file.path().DirName());
@@ -1304,7 +1303,7 @@ void NewTabPageHandler::FileSelected(const ui::SelectedFileInfo& file,
     std::move(choose_local_custom_background_callback_).Run(true);
 }
 
-void NewTabPageHandler::FileSelectionCanceled(void* params) {
+void NewTabPageHandler::FileSelectionCanceled() {
   DCHECK(choose_local_custom_background_callback_);
   select_file_dialog_ = nullptr;
   // File selection can happen at any time after NTP load, and is not logged

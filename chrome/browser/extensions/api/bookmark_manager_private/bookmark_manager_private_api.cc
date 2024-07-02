@@ -758,7 +758,7 @@ void BookmarkManagerPrivateIOFunction::ShowSelectFileDialog(
       base::FilePath::StringType(), owning_window, nullptr);
 }
 
-void BookmarkManagerPrivateIOFunction::FileSelectionCanceled(void* params) {
+void BookmarkManagerPrivateIOFunction::FileSelectionCanceled() {
   select_file_dialog_.reset();
   Release();  // Balanced in BookmarkManagerPrivateIOFunction::SelectFile()
 }
@@ -778,8 +778,7 @@ BookmarkManagerPrivateImportFunction::RunOnReady() {
 
 void BookmarkManagerPrivateImportFunction::FileSelected(
     const ui::SelectedFileInfo& file,
-    int index,
-    void* params) {
+    int index) {
   // Deletes itself.
   ExternalProcessImporterHost* importer_host = new ExternalProcessImporterHost;
   importer::SourceProfile source_profile;
@@ -818,8 +817,7 @@ BookmarkManagerPrivateExportFunction::RunOnReady() {
 
 void BookmarkManagerPrivateExportFunction::FileSelected(
     const ui::SelectedFileInfo& file,
-    int index,
-    void* params) {
+    int index) {
   bookmark_html_writer::WriteBookmarks(GetProfile(), file.path(), nullptr);
   select_file_dialog_.reset();
   Release();  // Balanced in BookmarkManagerPrivateIOFunction::SelectFile()

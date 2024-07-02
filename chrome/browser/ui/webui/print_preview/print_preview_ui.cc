@@ -1117,7 +1117,7 @@ void PrintPreviewUI::SetDelegateForTesting(TestDelegate* delegate) {
 }
 
 void PrintPreviewUI::SetSelectedFileForTesting(const base::FilePath& path) {
-  handler_->FileSelectedForTesting(path, 0, nullptr);
+  handler_->FileSelectedForTesting(path, 0);  // IN-TEST
 }
 
 void PrintPreviewUI::SetPdfSavedClosureForTesting(base::OnceClosure closure) {

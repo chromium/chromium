@@ -89,12 +89,10 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
   ~FileSystemChooser() override;
 
   // ui::SelectFileDialog::Listener:
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
-  void MultiFilesSelected(const std::vector<ui::SelectedFileInfo>& files,
-                          void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void MultiFilesSelected(
+      const std::vector<ui::SelectedFileInfo>& files) override;
+  void FileSelectionCanceled() override;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

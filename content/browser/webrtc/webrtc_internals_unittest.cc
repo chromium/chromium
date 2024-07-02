@@ -676,7 +676,7 @@ TEST_F(WebRtcInternalsTest, AudioDebugRecordingsFileSelectionCanceled) {
   WebRTCInternalsForTest webrtc_internals;
 
   webrtc_internals.AddObserver(&observer);
-  webrtc_internals.FileSelectionCanceled(nullptr);
+  webrtc_internals.FileSelectionCanceled();
 
   loop.Run();
 

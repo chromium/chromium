@@ -311,7 +311,7 @@ TEST_F(ArcSelectFilesHandlerTest, FileSelected_CallbackCalled) {
   arc_select_files_handler_->SelectFiles(request, callback.Get());
 
   EXPECT_CALL(std::move(callback), Run(_)).Times(1);
-  arc_select_files_handler_->FileSelected(ui::SelectedFileInfo(), 0, nullptr);
+  arc_select_files_handler_->FileSelected(ui::SelectedFileInfo(), 0);
 }
 
 TEST_F(ArcSelectFilesHandlerTest, FileSelected_PickerActivitySelected) {
@@ -334,8 +334,7 @@ TEST_F(ArcSelectFilesHandlerTest, FileSelected_PickerActivitySelected) {
 
   base::FilePath path =
       ConvertAndroidActivityToFilePath(package_name, activity_name);
-  arc_select_files_handler_->FileSelected(ui::SelectedFileInfo(path), 0,
-                                          nullptr);
+  arc_select_files_handler_->FileSelected(ui::SelectedFileInfo(path), 0);
 }
 
 TEST_F(ArcSelectFilesHandlerTest, FileSelectionCanceled_CallbackCalled) {
@@ -350,7 +349,7 @@ TEST_F(ArcSelectFilesHandlerTest, FileSelectionCanceled_CallbackCalled) {
   EXPECT_CALL(std::move(callback),
               Run(SelectFilesResultMatcher(expected_result.get())))
       .Times(1);
-  arc_select_files_handler_->FileSelectionCanceled(nullptr);
+  arc_select_files_handler_->FileSelectionCanceled();
 }
 
 TEST_F(ArcSelectFilesHandlerTest, OnFileSelectorEvent) {

@@ -274,14 +274,13 @@ content::WebContents* MediaGalleriesPermissionController::WebContents() {
   return web_contents_;
 }
 
-void MediaGalleriesPermissionController::FileSelectionCanceled(void* params) {
+void MediaGalleriesPermissionController::FileSelectionCanceled() {
   select_folder_dialog_.reset();
 }
 
 void MediaGalleriesPermissionController::FileSelected(
     const ui::SelectedFileInfo& file,
-    int /*index*/,
-    void* /*params*/) {
+    int /*index*/) {
   // |web_contents_| is NULL in tests.
   if (web_contents_) {
     extensions::file_system_api::SetLastChooseEntryDirectory(

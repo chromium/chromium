@@ -57,12 +57,6 @@ class SelectFileDialogMacTest : public PlatformTest,
   SelectFileDialogMacTest(const SelectFileDialogMacTest&) = delete;
   SelectFileDialogMacTest& operator=(const SelectFileDialogMacTest&) = delete;
 
-  // Overridden from SelectFileDialog::Listener.
-  void FileSelected(const SelectedFileInfo& file,
-                    int index,
-                    void* params) override {}
-  void FileSelectionCanceled(void* params) override {}
-
  protected:
   base::test::TaskEnvironment task_environment_ = base::test::TaskEnvironment(
       base::test::TaskEnvironment::MainThreadType::UI);

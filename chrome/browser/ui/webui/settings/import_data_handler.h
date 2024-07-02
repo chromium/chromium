@@ -62,10 +62,8 @@ class ImportDataHandler : public SettingsPageUIHandler,
   void ImportEnded() override;
 
   // ui::SelectFileDialog::Listener:
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void FileSelectionCanceled() override;
 
   std::unique_ptr<ImporterList> importer_list_;
 

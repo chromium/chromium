@@ -115,13 +115,10 @@ bool FolderSelectionDialogController::ShouldConsumeEvent(
 
 void FolderSelectionDialogController::FileSelected(
     const ui::SelectedFileInfo& file,
-    int index,
-    void* params) {
+    int index) {
   did_user_select_a_folder_ = true;
   delegate_->OnFolderSelected(file.path());
 }
-
-void FolderSelectionDialogController::FileSelectionCanceled(void* params) {}
 
 void FolderSelectionDialogController::OnTransientChildAdded(
     aura::Window* window,

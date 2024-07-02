@@ -103,10 +103,8 @@ class Exporter : public ui::SelectFileDialog::Listener {
   Exporter& operator=(const Exporter&) = delete;
 
   // SelectFileDialog::Listener implementation.
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void FileSelectionCanceled() override;
 
  private:
   ~Exporter() override;
@@ -161,9 +159,7 @@ Exporter::~Exporter() {
     select_file_dialog_->ListenerDestroyed();
 }
 
-void Exporter::FileSelected(const ui::SelectedFileInfo& file,
-                            int index,
-                            void* params) {
+void Exporter::FileSelected(const ui::SelectedFileInfo& file, int index) {
   std::string data;
 
   // If we're doing a full export, the behaviour that is desired is the same as
@@ -202,7 +198,7 @@ void Exporter::FileSelected(const ui::SelectedFileInfo& file,
   delete this;
 }
 
-void Exporter::FileSelectionCanceled(void* params) {
+void Exporter::FileSelectionCanceled() {
   delete this;
 }
 

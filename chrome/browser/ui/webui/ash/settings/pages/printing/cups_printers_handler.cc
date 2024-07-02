@@ -1121,8 +1121,7 @@ void CupsPrintersHandler::ResolvePrintersDone(
 }
 
 void CupsPrintersHandler::FileSelected(const ui::SelectedFileInfo& file,
-                                       int index,
-                                       void* params) {
+                                       int index) {
   DCHECK(!webui_callback_id_.empty());
 
   select_file_dialog_ = nullptr;
@@ -1139,7 +1138,7 @@ void CupsPrintersHandler::FileSelected(const ui::SelectedFileInfo& file,
                      weak_factory_.GetWeakPtr(), file.path()));
 }
 
-void CupsPrintersHandler::FileSelectionCanceled(void* params) {
+void CupsPrintersHandler::FileSelectionCanceled() {
   select_file_dialog_ = nullptr;
 }
 

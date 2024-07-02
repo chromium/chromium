@@ -565,8 +565,7 @@ void CustomizeChromePageHandler::OnNtpBackgroundServiceShuttingDown() {
 }
 
 void CustomizeChromePageHandler::FileSelected(const ui::SelectedFileInfo& file,
-                                              int index,
-                                              void* params) {
+                                              int index) {
   DCHECK(choose_local_custom_background_callback_);
   if (ntp_custom_background_service_) {
     theme_service_->UseDefaultTheme();
@@ -579,7 +578,7 @@ void CustomizeChromePageHandler::FileSelected(const ui::SelectedFileInfo& file,
   std::move(choose_local_custom_background_callback_).Run(true);
 }
 
-void CustomizeChromePageHandler::FileSelectionCanceled(void* params) {
+void CustomizeChromePageHandler::FileSelectionCanceled() {
   DCHECK(choose_local_custom_background_callback_);
   select_file_dialog_ = nullptr;
   LogEvent(NTP_BACKGROUND_UPLOAD_CANCEL);

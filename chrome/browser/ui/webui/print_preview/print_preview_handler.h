@@ -110,9 +110,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
                             int preview_request_id);
 
   // Notifies PDF Printer Handler that |path| was selected. Used for tests.
-  void FileSelectedForTesting(const base::FilePath& path,
-                              int index,
-                              void* params);
+  void FileSelectedForTesting(const base::FilePath& path, int index);
 
   // Sets |pdf_file_saved_closure_| to |closure|.
   void SetPdfSavedClosureForTesting(base::OnceClosure closure);

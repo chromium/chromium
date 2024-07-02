@@ -168,8 +168,8 @@ FileSelectHelper::~FileSelectHelper() {
 }
 
 void FileSelectHelper::FileSelected(const ui::SelectedFileInfo& file,
-                                    int index,
-                                    void* params) {
+                                    int /* index */,
+                                    void* /* params */) {
   if (IsValidProfile(profile_)) {
     base::FilePath path = file.file_path;
     if (dialog_mode_ != FileChooserParams::Mode::kUploadFolder)
@@ -202,8 +202,7 @@ void FileSelectHelper::FileSelected(const ui::SelectedFileInfo& file,
 }
 
 void FileSelectHelper::MultiFilesSelected(
-    const std::vector<ui::SelectedFileInfo>& files,
-    void* params) {
+    const std::vector<ui::SelectedFileInfo>& files) {
   if (!files.empty() && IsValidProfile(profile_)) {
     base::FilePath path = files[0].file_path;
     if (dialog_mode_ != FileChooserParams::Mode::kUploadFolder)
@@ -220,7 +219,7 @@ void FileSelectHelper::MultiFilesSelected(
 #endif  // BUILDFLAG(IS_MAC)
 }
 
-void FileSelectHelper::FileSelectionCanceled(void* params) {
+void FileSelectHelper::FileSelectionCanceled() {
   RunFileChooserEnd();
 }
 
@@ -264,7 +263,7 @@ void FileSelectHelper::OnListDone(int error) {
   std::unique_ptr<ActiveDirectoryEnumeration> entry =
       std::move(directory_enumeration_);
   if (error) {
-    FileSelectionCanceled(nullptr);
+    FileSelectionCanceled();
     return;
   }
 

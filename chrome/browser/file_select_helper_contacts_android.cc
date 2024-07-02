@@ -29,7 +29,7 @@ void FileSelectHelperContactsAndroid::FileSelected(
           (char*)params));
 }
 
-void FileSelectHelperContactsAndroid::FileSelectionCanceled(void* params) {}
+void FileSelectHelperContactsAndroid::FileSelectionCanceled() {}
 
 void FileSelectHelperContactsAndroid::ProcessContactsForAndroid(
     const std::string& contacts) {

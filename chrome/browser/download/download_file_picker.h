@@ -44,10 +44,8 @@ class DownloadFilePicker : public ui::SelectFileDialog::Listener,
   ~DownloadFilePicker() override;
 
   // SelectFileDialog::Listener implementation.
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void FileSelectionCanceled() override;
 
   // DownloadItem::Observer
   void OnDownloadDestroyed(download::DownloadItem* download) override;

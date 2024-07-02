@@ -336,8 +336,7 @@ void PdfPrinterHandler::StartPrint(
 }
 
 void PdfPrinterHandler::FileSelected(const ui::SelectedFileInfo& file,
-                                     int /* index */,
-                                     void* /* params */) {
+                                     int /* index */) {
   // Update downloads location and save sticky settings.
   DownloadPrefs* download_prefs = DownloadPrefs::FromBrowserContext(profile_);
   download_prefs->SetSaveFilePath(file.path().DirName());
@@ -347,7 +346,7 @@ void PdfPrinterHandler::FileSelected(const ui::SelectedFileInfo& file,
   PostPrintToPdfTask();
 }
 
-void PdfPrinterHandler::FileSelectionCanceled(void* params) {
+void PdfPrinterHandler::FileSelectionCanceled() {
   std::move(print_callback_).Run(base::Value("PDFPrintCanceled"));
   select_file_dialog_.reset();
 }
@@ -492,7 +491,7 @@ void PdfPrinterHandler::PostPrintToPdfTask() {
 }
 
 void PdfPrinterHandler::OnGotUniqueFileName(const base::FilePath& path) {
-  FileSelected(ui::SelectedFileInfo(path), 0, nullptr);
+  FileSelected(ui::SelectedFileInfo(path), 0);
 }
 
 void PdfPrinterHandler::OnDirectorySelected(const base::FilePath& filename,

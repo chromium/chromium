@@ -89,13 +89,12 @@ gfx::NativeWindow UserImageFileSelector::GetBrowserWindow() {
 }
 
 void UserImageFileSelector::FileSelected(const ui::SelectedFileInfo& file,
-                                         int index,
-                                         void* params) {
+                                         int index) {
   std::move(selected_cb_).Run(file.path());
   select_file_dialog_.reset();
 }
 
-void UserImageFileSelector::FileSelectionCanceled(void* params) {
+void UserImageFileSelector::FileSelectionCanceled() {
   if (!canceled_cb_.is_null()) {
     std::move(canceled_cb_).Run();
   }

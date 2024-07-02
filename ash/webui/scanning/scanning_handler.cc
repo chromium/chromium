@@ -92,8 +92,7 @@ void ScanningHandler::RegisterMessages() {
 }
 
 void ScanningHandler::FileSelected(const ui::SelectedFileInfo& file,
-                                   int index,
-                                   void* params) {
+                                   int index) {
   DCHECK(IsJavascriptAllowed());
 
   select_file_dialog_ = nullptr;
@@ -101,7 +100,7 @@ void ScanningHandler::FileSelected(const ui::SelectedFileInfo& file,
                             CreateSelectedPathValue(file.path()));
 }
 
-void ScanningHandler::FileSelectionCanceled(void* params) {
+void ScanningHandler::FileSelectionCanceled() {
   DCHECK(IsJavascriptAllowed());
 
   select_file_dialog_ = nullptr;

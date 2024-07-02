@@ -38,10 +38,8 @@ class FileChooserChromeOs::Core : public ui::SelectFileDialog::Listener {
   void Show();
 
   // ui::SelectFileDialog::Listener implementation.
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void FileSelectionCanceled() override;
 
  private:
   void RunCallback(const FileChooser::Result& result);
@@ -84,12 +82,11 @@ FileChooserChromeOs::Core::~Core() {
 }
 
 void FileChooserChromeOs::Core::FileSelected(const ui::SelectedFileInfo& file,
-                                             int index,
-                                             void* params) {
+                                             int index) {
   RunCallback(file.file_path);
 }
 
-void FileChooserChromeOs::Core::FileSelectionCanceled(void* params) {
+void FileChooserChromeOs::Core::FileSelectionCanceled() {
   RunCallback(protocol::MakeFileTransferError(
       FROM_HERE, protocol::FileTransfer_Error_Type_CANCELED));
 }

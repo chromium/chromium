@@ -116,17 +116,16 @@ class SelectFileDialogHolder : public ui::SelectFileDialog::Listener {
  private:
   // ui::SelectFileDialog::Listener:
   void FileSelected(const ui::SelectedFileInfo& file,
-                    int file_type_index,
-                    void* params) override {
+                    int file_type_index) override {
     OnSelected({file}, file_type_index);
   }
 
-  void MultiFilesSelected(const std::vector<ui::SelectedFileInfo>& files,
-                          void* params) override {
+  void MultiFilesSelected(
+      const std::vector<ui::SelectedFileInfo>& files) override {
     OnSelected(files, /*file_type_index=*/0);
   }
 
-  void FileSelectionCanceled(void* params) override {
+  void FileSelectionCanceled() override {
     // Cancel is the same as selecting nothing.
     OnSelected({}, /*file_type_index=*/0);
   }

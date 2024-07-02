@@ -2586,9 +2586,7 @@ void Browser::OnZoomChanged(
 ///////////////////////////////////////////////////////////////////////////////
 // Browser, ui::SelectFileDialog::Listener implementation:
 
-void Browser::FileSelected(const ui::SelectedFileInfo& file_info,
-                           int index,
-                           void* params) {
+void Browser::FileSelected(const ui::SelectedFileInfo& file_info, int index) {
   // Transfer the ownership of select file dialog so that the ref count is
   // released after the function returns. This is needed because the passed-in
   // data such as |file_info| and |params| could be owned by the dialog.
@@ -2607,7 +2605,7 @@ void Browser::FileSelected(const ui::SelectedFileInfo& file_info,
           /*navigation_handle_callback=*/{});
 }
 
-void Browser::FileSelectionCanceled(void* params) {
+void Browser::FileSelectionCanceled() {
   select_file_dialog_.reset();
 }
 

@@ -184,10 +184,8 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void OnChangeInFeatureCurrentlyEnabledState(bool is_now_enabled) override;
 
   // SelectFileDialog::Listener:
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void FileSelectionCanceled() override;
 
   void OnLogoAvailable(
       GetDoodleCallback callback,
