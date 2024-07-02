@@ -53,7 +53,17 @@
 
 namespace {
 
+base::FilePath GetBundlePath() {
+  if (!base::apple::AmIBundled()) {
+    return base::FilePath();
+  }
+  return base::apple::OuterBundlePath();
+}
+
 base::FilePath GetMainExecutableName() {
+  if (!base::apple::AmIBundled()) {
+    return base::FilePath();
+  }
   base::FilePath path;
   base::PathService::Get(base::FILE_EXE, &path);
   return path.BaseName();
@@ -64,8 +74,7 @@ base::FilePath GetMainExecutableName() {
 ChromeBrowserMainPartsMac::ChromeBrowserMainPartsMac(bool is_integration_test,
                                                      StartupData* startup_data)
     : ChromeBrowserMainPartsPosix(is_integration_test, startup_data),
-      code_sign_clone_manager_(base::apple::OuterBundlePath(),
-                               GetMainExecutableName()) {}
+      code_sign_clone_manager_(GetBundlePath(), GetMainExecutableName()) {}
 
 ChromeBrowserMainPartsMac::~ChromeBrowserMainPartsMac() = default;
 

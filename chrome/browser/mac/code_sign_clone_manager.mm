@@ -514,7 +514,8 @@ CodeSignCloneManager::CodeSignCloneManager(
     const base::FilePath& src_path,
     const base::FilePath& main_executable_name,
     CloneCallback callback) {
-  if (!base::FeatureList::IsEnabled(kMacAppCodeSignClone)) {
+  if (!base::FeatureList::IsEnabled(kMacAppCodeSignClone) || src_path.empty() ||
+      main_executable_name.empty()) {
     return;
   }
 
