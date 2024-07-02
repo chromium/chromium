@@ -191,7 +191,9 @@ UIImageView* BrandingImageView() {
 
   self.aboveTitleView = [self brandingIconView];
   self.titleString =
-      l10n_util::GetNSString(IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_IOS);
+      l10n_util::GetNSString([_delegate shouldShowNotice]
+                                 ? IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_NOTICE_IOS
+                                 : IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_IOS);
   self.titleTextStyle = UIFontTextStyleTitle2;
   self.primaryActionString =
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_IOS);

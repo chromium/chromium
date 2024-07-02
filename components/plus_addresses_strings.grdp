@@ -47,6 +47,9 @@
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_IOS" desc="Title for the experimental enterprise plus addresses feature modal on iOS." translateable="false">
       Lorem Ipsum
     </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_NOTICE_IOS" desc="Title for the experimental enterprise plus addresses feature modal on iOS used when the bottom sheet is shown for the first time." translateable="false">
+      First time usage title placeholder.
+    </message>
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_IOS" desc="The description text on the creation bottomsheet for plus addresses on iOS." translateable="false">
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua (<ph name="GAIA_EMAIL">$1<ex>foo@gmail.com</ex></ph>).
     </message>
