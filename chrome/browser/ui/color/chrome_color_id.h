@@ -386,14 +386,14 @@
   E_CPONLY(kColorPipWindowSkipAdButtonBorder) \
   /* Product Specifications colors */ \
   E_CPONLY(kColorProductSpecificationsButtonBackground) \
-  E_CPONLY(kColorProductSpecificationsTonalButtonBackground) \
-  E_CPONLY(kColorProductSpecificationsContentBackground) \
   E_CPONLY(kColorProductSpecificationsDivider) \
+  E_CPONLY(kColorProductSpecificationsIcon) \
   E_CPONLY(kColorProductSpecificationsPageBackground) \
   E_CPONLY(kColorProductSpecificationsPrimaryTitle) \
-  E_CPONLY(kColorProductSpecificationsIcon) \
   E_CPONLY(kColorProductSpecificationsSecondaryTitle) \
   E_CPONLY(kColorProductSpecificationsSummaryBackground) \
+  E_CPONLY(kColorProductSpecificationsSummaryBackgroundDragging) \
+  E_CPONLY(kColorProductSpecificationsTonalButtonBackground) \
   /* Profile Menu colors. */ \
   E_CPONLY(kColorProfileMenuBackground) \
   E_CPONLY(kColorProfileMenuHeaderBackground) \

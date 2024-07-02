@@ -21,6 +21,12 @@
     width: var(--column-width);
   }
 
+  .col[is-dragging] {
+    background-color: var(
+        --color-product-specifications-summary-background-dragging);
+    z-index: 2;
+  }
+
   .col:last-of-type {
     overflow: hidden;
   }
@@ -79,6 +85,7 @@
     width: calc(var(--column-width) + 8px);
   }
 
+   /* TODO(b/331955377): Stop visible span from moving with dragged column. */
   .col:not(:first-child) .detail-title span {
     visibility: hidden;
   }
@@ -90,11 +97,13 @@
 </style>
 
 <div id="table" on-pointerleave="onHideOpenTabButton_">
-  <template is="dom-repeat" items="[[columns]]" as="column"
-      index-as="columnIndex">
+  <template is="dom-repeat" id="columnRepeat" items="[[columns]]"
+      as="column" index-as="columnIndex">
     <div class="col"
         style$="grid-row: span [[getRowCount_(column.productDetails.length)]]"
-        on-pointerenter="onShowOpenTabButton_">
+        on-pointerenter="onShowOpenTabButton_"
+        draggable="true"
+        is-dragging$="[[isDragging_(columnIndex, draggingColumn)]]">
       <product-selector
           selected-item="[[column.selectedItem]]"
           excluded-urls="[[getUrls_(columns)]]"

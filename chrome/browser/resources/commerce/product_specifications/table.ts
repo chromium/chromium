@@ -8,18 +8,22 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 
+import {assert} from '//resources/js/assert.js';
 import {getFaviconForPageURL} from '//resources/js/icon.js';
+import type {DomRepeat} from '//resources/polymer/v3_0/polymer/lib/elements/dom-repeat.js';
 import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {TableColumn} from './app.js';
+import {DragAndDropManager} from './drag_and_drop_manager.js';
 import {getTemplate} from './table.html.js';
 
 export interface TableElement {
   $: {
     table: HTMLElement,
+    columnRepeat: DomRepeat,
   };
 }
 
@@ -35,17 +39,66 @@ export class TableElement extends PolymerElement {
   static get properties() {
     return {
       columns: Array,
+      draggingColumn: HTMLElement,
       hoveredColumnIndex_: Number,
     };
   }
 
   columns: TableColumn[];
+  draggingColumn: HTMLElement|null = null;
   private hoveredColumnIndex_: number|null = null;
 
+  private dragAndDropManager: DragAndDropManager = new DragAndDropManager();
   private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
 
-  //   Determines the number of rows needed in the grid layout.
-  //   This is the sum of:
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this.dragAndDropManager.init(this);
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.dragAndDropManager.destroy();
+  }
+
+  // Called by |dragAndDropManager|.
+  moveColumnOnDrop(fromIndex: number, dropIndex: number) {
+    const columns = this.columns;
+    const [draggingColumn] = columns.splice(fromIndex, 1);
+    assert(draggingColumn);
+    columns.splice(dropIndex, 0, draggingColumn);
+    // TODO(b/331955377): Update the order of the columns in the backend via
+    // |shoppingApi|.
+    this.notifySplices('columns', [
+      {
+        index: fromIndex,
+        removed: [draggingColumn],
+        addedCount: 0,
+        object: columns,
+        type: 'splice',
+      },
+      {
+        index: dropIndex,
+        removed: [],
+        addedCount: 1,
+        object: columns,
+        type: 'splice',
+      },
+    ]);
+  }
+
+  // |this.draggingColumn| is set by |dragAndDropManager|.
+  private isDragging_(columnIndex: number) {
+    return this.draggingColumn &&
+        columnIndex ===
+        (this.$.columnRepeat.modelForElement(this.draggingColumn) as unknown as
+         {
+           columnIndex: number,
+         }).columnIndex;
+  }
+
+  // Determines the number of rows needed in the grid layout.
+  // This is the sum of:
   //   - 1 row for the product selector.
   //   - 1 row for the image container.
   //   - Number of product details.
