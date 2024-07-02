@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab_resumption;
 
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -319,5 +320,6 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
         urlImageProvider.destroy();
         assertNull(urlImageProvider.getImageServiceBridgeForTesting());
         assertNull(urlImageProvider.getLargeIconBridgeForTesting());
+        assertTrue(urlImageProvider.isDestroyed());
     }
 }

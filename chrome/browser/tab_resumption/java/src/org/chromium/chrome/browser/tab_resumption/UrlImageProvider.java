@@ -132,6 +132,11 @@ public class UrlImageProvider {
                 /* isSelected= */ false);
     }
 
+    /** Returns whether this UrlImageProvider instance has been destroyed. */
+    public boolean isDestroyed() {
+        return mLargeIconBridge == null;
+    }
+
     LargeIconBridge getLargeIconBridgeForTesting() {
         return mLargeIconBridge;
     }

@@ -242,6 +242,9 @@ public class TabResumptionTileContainerView extends LinearLayout {
                 getCallbackController()
                         .makeCancelable(
                                 () -> {
+                                    // TODO(b/350021945): Remove check when root cause is found.
+                                    if (urlImageProvider.isDestroyed()) return;
+
                                     urlImageProvider.fetchImageForUrl(
                                             entry.url,
                                             (bitmap) -> {
@@ -267,7 +270,10 @@ public class TabResumptionTileContainerView extends LinearLayout {
                                             fetchRegularImage.run();
                                         }
                                     });
-            urlImageProvider.fetchSalientImage(entry.url, isSingle, fetchSalientImageCallback);
+            // TODO(b/350021945): Remove check when root cause is found.
+            if (!urlImageProvider.isDestroyed()) {
+                urlImageProvider.fetchSalientImage(entry.url, isSingle, fetchSalientImageCallback);
+            }
         } else {
             fetchRegularImage.run();
         }
