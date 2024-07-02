@@ -145308,6 +145308,19 @@
         ],
         {}
        ]
+      ],
+      "text-box-trim-text-emphasis-start-001.html": [
+       "2c38611ee32eea85a2fa2f7d27ded1d491dfc9cb",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-text-emphasis-start-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      }
     },
@@ -327199,6 +327212,10 @@
       "text-box-trim-tall-line-001-ref.html": [
        "dc0d31e2f60533e6880ef8ee3e21ec4425ed2926",
        []
+      ],
+      "text-box-trim-text-emphasis-start-001-ref.html": [
+       "96e0c5a32083082422335f53d67d2fefec3c156a",
+       []
       ]
      }
     },
@@ -401170,6 +401187,14 @@
     ],
     "video-decoder.crossOriginIsolated.https.any.js.headers": [
      "5f8621ef83660c66f0d037ea28fafefb558140f1",
+     []
+    ],
+    "video-encoder-h264.https.any.worker_high-6.2-expected.txt": [
+     "3c94b3c80671e48cfffa1adf2ec63ff713fdda52",
+     []
+    ],
+    "video-encoder-h264.https.any_high-6.2-expected.txt": [
+     "3c94b3c80671e48cfffa1adf2ec63ff713fdda52",
      []
     ],
     "video-encoder-utils.js": [
@@ -679358,7 +679383,7 @@
      ]
     ],
     "video-encoder-h264.https.any.js": [
-     "82370a8338c2c46a42449d0111cd5f97cd85ddbd",
+     "e63024a64b40a0e6aa87de869922be7025963f71",
      [
       "webcodecs/video-encoder-h264.https.any.html?baseline",
       {
@@ -679390,6 +679415,10 @@
         [
          "variant",
          "?high"
+        ],
+        [
+         "variant",
+         "?high-6.2"
         ]
        ]
       }
@@ -679425,6 +679454,49 @@
         [
          "variant",
          "?high"
+        ],
+        [
+         "variant",
+         "?high-6.2"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-encoder-h264.https.any.html?high-6.2",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/common/media.js"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?baseline"
+        ],
+        [
+         "variant",
+         "?main"
+        ],
+        [
+         "variant",
+         "?high"
+        ],
+        [
+         "variant",
+         "?high-6.2"
         ]
        ]
       }
@@ -679460,6 +679532,10 @@
         [
          "variant",
          "?high"
+        ],
+        [
+         "variant",
+         "?high-6.2"
         ]
        ]
       }
@@ -679495,6 +679571,10 @@
         [
          "variant",
          "?high"
+        ],
+        [
+         "variant",
+         "?high-6.2"
         ]
        ]
       }
@@ -679530,6 +679610,49 @@
         [
          "variant",
          "?high"
+        ],
+        [
+         "variant",
+         "?high-6.2"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-encoder-h264.https.any.worker.html?high-6.2",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/common/media.js"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?baseline"
+        ],
+        [
+         "variant",
+         "?main"
+        ],
+        [
+         "variant",
+         "?high"
+        ],
+        [
+         "variant",
+         "?high-6.2"
         ]
        ]
       }
@@ -679565,6 +679688,10 @@
         [
          "variant",
          "?high"
+        ],
+        [
+         "variant",
+         "?high-6.2"
         ]
        ]
       }
