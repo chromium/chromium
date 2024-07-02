@@ -1195,7 +1195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.TimeToRecordPeriodicStats" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2024-10-01">
   <owner>bingler@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
